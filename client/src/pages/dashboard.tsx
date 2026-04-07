@@ -7008,7 +7008,11 @@ export default function Dashboard() {
     const byCourse: Record<string, Array<{task: Task; daysLeft: number}>> = {};
     const other: Array<{task: Task; daysLeft: number}> = [];
     for (const cd of deduped) {
-      const courseCode = cd.task.courseName?.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '') || '';
+      let courseCode = cd.task.courseName?.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '') || '';
+      if (!courseCode) {
+        const bracketMatch = (cd.task.title || '').match(/^\[([^\]\s-]+)/);
+        if (bracketMatch) courseCode = bracketMatch[1].trim().toUpperCase().replace(/\s/g, '');
+      }
       if (courseCode) {
         if (!byCourse[courseCode]) byCourse[courseCode] = [];
         byCourse[courseCode].push(cd);
@@ -27893,7 +27897,8 @@ export default function Dashboard() {
                     return null;
                   })()}
                   {(() => {
-                    const courseBars = countdownBarsByRow.byCourse[courseName] || [];
+                    const courseCodeNorm = courseName.trim().replace(/\s/g, '').toUpperCase();
+                    const courseBars = countdownBarsByRow.byCourse[courseCodeNorm] || countdownBarsByRow.byCourse[courseName] || [];
                     if (courseBars.length === 0) return null;
                     const todayDow = stableToday.getDay();
                     const dws = gridSizes.dayColumnWidths;
@@ -27908,30 +27913,36 @@ export default function Dashboard() {
                     const widthFrac = frSpan / totalFr;
                     const barH = 3;
                     const barGap = 14;
+                    const rowHeight = maxCourseRowHeight || gridSizes.courseRowHeight || 60;
+                    const maxBarsVisible = Math.max(1, Math.floor((rowHeight - 4) / barGap));
+                    const needsScroll = courseBars.length > maxBarsVisible;
+                    const totalBarsHeight = courseBars.length * barGap;
                     return (
-                      <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, bottom: '1px', pointerEvents: 'none', overflow: 'visible', zIndex: 2 }}>
-                        <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, overflow: 'visible' }}>
-                          {courseBars.map((cd, idx) => {
-                            const t = cd.task;
-                            const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
-                            const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
-                            const needsPulse = isNotStarted && cd.daysLeft <= 2 && !t.isCompleted;
-                            const labelText = (t.title || '').replace(/\[[^\]]*\]\s*/g, '').trim();
-                            const barHPx = needsPulse ? 4 : barH;
-                            const yOff = idx * barGap;
-                            return (
-                              <div key={`cbar-cr-${t.id}`} className="countdown-bar-wrapper" style={{ position: 'absolute', left: 0, right: 0, bottom: `${yOff}px`, height: `${barGap}px`, pointerEvents: 'none', overflow: 'visible' }} data-testid={`countdown-bar-cr-${t.id}`}>
-                                <div style={{ position: 'absolute', left: 0, top: '2px', right: 0, height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
-                                  <div style={{ width: '10px', minWidth: '10px', height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
-                                  <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
-                                    <span style={{ fontSize: '9px', fontWeight: 500, color: barColor, letterSpacing: '-0.2px', lineHeight: '10px' }}>{cd.daysLeft}<span style={{ letterSpacing: '0.5px' }}> </span>d</span>
+                      <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 2, overflow: 'hidden' }}>
+                        <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, top: 0, overflowY: needsScroll ? 'auto' : 'hidden', overflowX: 'hidden', pointerEvents: needsScroll ? 'auto' : 'none', scrollbarWidth: 'none' as any, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+                          <div style={{ minHeight: `${totalBarsHeight}px`, position: 'relative' }}>
+                            {courseBars.map((cd, idx) => {
+                              const t = cd.task;
+                              const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
+                              const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
+                              const needsPulse = isNotStarted && cd.daysLeft <= 2 && !t.isCompleted;
+                              const labelText = (t.title || '').replace(/\[[^\]]*\]\s*/g, '').trim();
+                              const barHPx = needsPulse ? 4 : barH;
+                              const yOff = idx * barGap;
+                              return (
+                                <div key={`cbar-cr-${t.id}`} className="countdown-bar-wrapper" style={{ position: 'absolute', left: 0, right: 0, top: `${yOff}px`, height: `${barGap}px`, pointerEvents: 'none' }} data-testid={`countdown-bar-cr-${t.id}`}>
+                                  <div style={{ position: 'absolute', left: 0, top: '2px', right: 0, height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
+                                    <div style={{ width: '10px', minWidth: '10px', height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
+                                    <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
+                                      <span style={{ fontSize: '9px', fontWeight: 500, color: barColor, letterSpacing: '-0.2px', lineHeight: '10px' }}>{cd.daysLeft}<span style={{ letterSpacing: '0.5px' }}> </span>d</span>
+                                    </div>
+                                    <span style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(0,0,0,0.85)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flexShrink: 1, minWidth: 0, paddingLeft: '1px', paddingRight: '3px', lineHeight: '10px' }}>{labelText}</span>
+                                    <div className={needsPulse ? 'countdown-bar-pulse' : ''} style={{ flex: 1, height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '0 2px 2px 0', minWidth: '4px', boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined }} />
                                   </div>
-                                  <span style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(0,0,0,0.85)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flexShrink: 1, minWidth: 0, paddingLeft: '1px', paddingRight: '3px', lineHeight: '10px' }}>{labelText}</span>
-                                  <div className={needsPulse ? 'countdown-bar-pulse' : ''} style={{ flex: 1, height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '0 2px 2px 0', minWidth: '4px', boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined }} />
                                 </div>
-                              </div>
-                            );
-                          })}
+                              );
+                            })}
+                          </div>
                         </div>
                       </div>
                     );
@@ -28121,30 +28132,36 @@ export default function Dashboard() {
                       const widthFrac = frSpan / totalFr;
                       const barH = 3;
                       const barGap = 14;
+                      const otherRowHeight = gridSizes.otherRowHeight || 60;
+                      const maxBarsVisible = Math.max(1, Math.floor((otherRowHeight - 4) / barGap));
+                      const needsScroll = otherBars.length > maxBarsVisible;
+                      const totalBarsHeight = otherBars.length * barGap;
                       return (
-                        <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, bottom: '1px', pointerEvents: 'none', overflow: 'visible', zIndex: 2 }}>
-                          <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, overflow: 'visible' }}>
-                            {otherBars.map((cd, idx) => {
-                              const t = cd.task;
-                              const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
-                              const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
-                              const needsPulse = isNotStarted && cd.daysLeft <= 2 && !t.isCompleted;
-                              const labelText = (t.title || '').replace(/\[[^\]]*\]\s*/g, '').trim();
-                              const barHPx = needsPulse ? 4 : barH;
-                              const yOff = idx * barGap;
-                              return (
-                                <div key={`cbar-or-${t.id}`} className="countdown-bar-wrapper" style={{ position: 'absolute', left: 0, right: 0, bottom: `${yOff}px`, height: `${barGap}px`, pointerEvents: 'none', overflow: 'visible' }} data-testid={`countdown-bar-or-${t.id}`}>
-                                  <div style={{ position: 'absolute', left: 0, top: '2px', right: 0, height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
-                                    <div style={{ width: '10px', minWidth: '10px', height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
-                                    <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
-                                      <span style={{ fontSize: '9px', fontWeight: 500, color: barColor, letterSpacing: '-0.2px', lineHeight: '10px' }}>{cd.daysLeft}<span style={{ letterSpacing: '0.5px' }}> </span>d</span>
+                        <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 2, overflow: 'hidden' }}>
+                          <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, top: 0, overflowY: needsScroll ? 'auto' : 'hidden', overflowX: 'hidden', pointerEvents: needsScroll ? 'auto' : 'none', scrollbarWidth: 'none' as any, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+                            <div style={{ minHeight: `${totalBarsHeight}px`, position: 'relative' }}>
+                              {otherBars.map((cd, idx) => {
+                                const t = cd.task;
+                                const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
+                                const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
+                                const needsPulse = isNotStarted && cd.daysLeft <= 2 && !t.isCompleted;
+                                const labelText = (t.title || '').replace(/\[[^\]]*\]\s*/g, '').trim();
+                                const barHPx = needsPulse ? 4 : barH;
+                                const yOff = idx * barGap;
+                                return (
+                                  <div key={`cbar-or-${t.id}`} className="countdown-bar-wrapper" style={{ position: 'absolute', left: 0, right: 0, top: `${yOff}px`, height: `${barGap}px`, pointerEvents: 'none' }} data-testid={`countdown-bar-or-${t.id}`}>
+                                    <div style={{ position: 'absolute', left: 0, top: '2px', right: 0, height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
+                                      <div style={{ width: '10px', minWidth: '10px', height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
+                                      <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
+                                        <span style={{ fontSize: '9px', fontWeight: 500, color: barColor, letterSpacing: '-0.2px', lineHeight: '10px' }}>{cd.daysLeft}<span style={{ letterSpacing: '0.5px' }}> </span>d</span>
+                                      </div>
+                                      <span style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(0,0,0,0.85)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flexShrink: 1, minWidth: 0, paddingLeft: '1px', paddingRight: '3px', lineHeight: '10px' }}>{labelText}</span>
+                                      <div className={needsPulse ? 'countdown-bar-pulse' : ''} style={{ flex: 1, height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '0 2px 2px 0', minWidth: '4px', boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined }} />
                                     </div>
-                                    <span style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(0,0,0,0.85)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flexShrink: 1, minWidth: 0, paddingLeft: '1px', paddingRight: '3px', lineHeight: '10px' }}>{labelText}</span>
-                                    <div className={needsPulse ? 'countdown-bar-pulse' : ''} style={{ flex: 1, height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '0 2px 2px 0', minWidth: '4px', boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined }} />
                                   </div>
-                                </div>
-                              );
-                            })}
+                                );
+                              })}
+                            </div>
                           </div>
                         </div>
                       );
