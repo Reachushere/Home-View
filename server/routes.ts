@@ -1007,6 +1007,8 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
         frame.src = data.url;
       } else if (data.action === 'go_home') {
         frame.src = '${baseUrl}/?auth=5747';
+      } else if (data.action === 'stop_playback') {
+        frame.src = '${baseUrl}/?auth=5747';
       }
     }).catch(function(){});
   }
@@ -9477,6 +9479,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       } else if (data.action === 'stop_playback') {
         lastTs = data.timestamp || Date.now();
         fetch('${baseUrl}/api/tablet-nav/ack', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({timestamp:data.timestamp,device:'tv'})}).catch(function(){});
+        if (frame) { frame.src = 'about:blank'; frame.remove(); frame = null; }
+        if (!waiting) { waiting = document.createElement('div'); waiting.id='waiting'; waiting.style.cssText='display:flex;align-items:center;justify-content:center;width:100vw;height:100vh;background:#000;color:#555;font-size:24px;font-family:sans-serif;position:fixed;top:0;left:0'; waiting.textContent='Waiting...'; document.body.appendChild(waiting); }
       }
     }).catch(function(){});
   }
@@ -12657,10 +12661,23 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
     catWashTrace('TV', `TURN OFF — Fire Stick + Samsung TV (reason=${reason})`);
     await Promise.allSettled([
+      haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'am force-stop com.amazon.cloud9' }, 'Nest Stop Silk'),
       haServiceCallSafe('media_player/turn_off', { entity_id: FIRE_STICK_ADB_ENTITY }, 'Nest Stop FireStick'),
       haServiceCallSafe('media_player/turn_off', { entity_id: CAT_TV_ENTITY }, 'Nest Stop Samsung TV'),
     ]);
-    console.log(`[Nest Stop] Fire Stick + Samsung TV turn-off sent`);
+    console.log(`[Nest Stop] Fire Stick + Samsung TV turn-off sent (attempt 1)`);
+    setTimeout(async () => {
+      try {
+        await Promise.allSettled([
+          haServiceCallSafe('media_player/turn_off', { entity_id: FIRE_STICK_ADB_ENTITY }, 'Nest Stop FireStick retry'),
+          haServiceCallSafe('media_player/turn_off', { entity_id: CAT_TV_ENTITY }, 'Nest Stop Samsung TV retry'),
+          haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_SLEEP' }, 'Nest Stop FireStick SLEEP'),
+        ]);
+        console.log(`[Nest Stop] TV turn-off retry sent (attempt 2 + SLEEP key)`);
+      } catch (e: any) {
+        console.warn(`[Nest Stop] TV turn-off retry failed: ${e.message}`);
+      }
+    }, 3000);
     catWashTrace('StopWithGoodbye', `EXIT reason=${reason}`);
   }
 
