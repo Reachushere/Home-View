@@ -10480,6 +10480,133 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   checkAndActivateSemester();
   setInterval(checkAndActivateSemester, 6 * 60 * 60 * 1000);
 
+  async function monitorOneDriveFolderRenames(): Promise<void> {
+    try {
+      const { listOneDriveFolderChildren, checkOneDriveFolderExists } = await import("./onedrive");
+      const allSemesters = await storage.getAllSemesterSettings();
+      if (!allSemesters || allSemesters.length === 0) return;
+
+      for (const semester of allSemesters) {
+        const startDate = semester.semesterStartDate ? new Date(semester.semesterStartDate) : null;
+        if (!startDate) continue;
+        const year = startDate.getFullYear();
+
+        const semTypeVariants = (() => {
+          const t = (semester.semesterType || 'winter').toLowerCase();
+          if (t.includes('spring') || t.includes('summer')) return ['Spring-Summer', 'Spring & Summer', 'Spring_Summer'];
+          if (t.includes('fall')) return ['Fall'];
+          return ['Winter'];
+        })();
+
+        const isSpSu = (semester.semesterType || '').toLowerCase().includes('spring') || (semester.semesterType || '').toLowerCase().includes('summer');
+
+        const courseSlots = [
+          { idx: 1, code: semester.course1Code, name: semester.course1Name, term: (semester as any).course1SpringSummerTerm },
+          { idx: 2, code: semester.course2Code, name: semester.course2Name, term: (semester as any).course2SpringSummerTerm },
+          { idx: 3, code: semester.course3Code, name: semester.course3Name, term: (semester as any).course3SpringSummerTerm },
+        ];
+
+        for (const slot of courseSlots) {
+          if (!slot.code) continue;
+          const isTBD = slot.code.toLowerCase().startsWith('tbd');
+
+          const expectedFolderName = isTBD
+            ? `${slot.code.toUpperCase()} - To Be Determined`
+            : `${slot.code} - ${slot.name}`;
+
+          const subFolders: string[] = [];
+          if (isSpSu && slot.term) {
+            const t = slot.term.toLowerCase();
+            if (t === 'first_half' || t === 'a') subFolders.push('Spring - First Half');
+            else if (t === 'second_half' || t === 'b') subFolders.push('Summer - Second Half');
+            else if (t === 'full') subFolders.push('Full');
+          }
+
+          let foundFolder: { name: string; id: string } | null = null;
+
+          for (const variant of semTypeVariants) {
+            const searchPaths = subFolders.length > 0
+              ? subFolders.map(sf => `${`/School/1. TMU/Courses/${year}/${variant}`}/${sf}`)
+              : [`/School/1. TMU/Courses/${year}/${variant}`];
+
+            for (const searchPath of searchPaths) {
+              const exists = await checkOneDriveFolderExists(searchPath);
+              if (!exists) continue;
+              const children = await listOneDriveFolderChildren(searchPath);
+              const folders = children.filter((c: any) => c.folder);
+
+              const exactMatch = folders.find((f: any) => f.name === expectedFolderName);
+              if (exactMatch) {
+                foundFolder = exactMatch;
+                break;
+              }
+
+              if (isTBD) {
+                const tbdVariants = [
+                  `${slot.code.toUpperCase()} - TBD`,
+                  `${slot.code.toUpperCase()} - To Be Determined`,
+                  slot.code.toUpperCase(),
+                ];
+                const tbdMatch = folders.find((f: any) => tbdVariants.includes(f.name.trim()));
+                if (tbdMatch) {
+                  foundFolder = tbdMatch;
+                  break;
+                }
+              }
+
+              const codeMatch = folders.find((f: any) => {
+                const parts = f.name.split(' - ');
+                if (parts.length < 2) return false;
+                const folderCode = parts[0].trim();
+                return folderCode.toUpperCase() === slot.code.toUpperCase() && f.name !== expectedFolderName;
+              });
+              if (codeMatch) {
+                foundFolder = codeMatch;
+                break;
+              }
+            }
+            if (foundFolder) break;
+          }
+
+          if (foundFolder && foundFolder.name !== expectedFolderName) {
+            const parts = foundFolder.name.split(' - ');
+            const newCode = parts[0].trim();
+            const newName = parts.slice(1).join(' - ').trim();
+            if (!newCode || !newName) continue;
+
+            const updates: Record<string, string> = {};
+            if (newCode !== slot.code) updates[`course${slot.idx}Code`] = newCode;
+            if (newName !== slot.name) updates[`course${slot.idx}Name`] = newName;
+
+            if (Object.keys(updates).length > 0) {
+              const oldFolderSuffix = expectedFolderName;
+              const newFolderName = foundFolder.name;
+              const modKey = `course${slot.idx}ModuleFolder`;
+              const readKey = `course${slot.idx}ReadingFolder`;
+              const oldMod = (semester as any)[modKey] as string | null;
+              const oldRead = (semester as any)[readKey] as string | null;
+              if (oldMod && oldMod.includes(oldFolderSuffix)) {
+                updates[modKey] = oldMod.replace(oldFolderSuffix, newFolderName);
+              }
+              if (oldRead && oldRead.includes(oldFolderSuffix)) {
+                updates[readKey] = oldRead.replace(oldFolderSuffix, newFolderName);
+              }
+
+              await storage.updateSemesterSettings(semester.id, updates);
+              console.log(`[OneDrive Monitor] Synced folder rename for course ${slot.idx} in ${semester.semesterName}: "${oldFolderSuffix}" → "${newFolderName}" | Updates: ${JSON.stringify(updates)}`);
+            }
+          }
+        }
+      }
+    } catch (err: any) {
+      console.error('[OneDrive Monitor] Error checking folder renames:', err.message);
+    }
+  }
+
+  setTimeout(() => monitorOneDriveFolderRenames(), 30000);
+  setInterval(monitorOneDriveFolderRenames, 5 * 60 * 1000);
+  console.log('=== [OneDrive Monitor] Folder rename sync started (checking every 5 minutes) ===');
+
   const recordWeatherHourly = async () => {
     try {
       const resp = await fetch(`http://localhost:${process.env.PORT || 5000}/api/weather-history/record`, { method: 'POST' });
