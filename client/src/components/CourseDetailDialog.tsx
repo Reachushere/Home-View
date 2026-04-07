@@ -355,6 +355,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
   const assignmentsRef = useRef<HTMLDivElement>(null);
   const modulesRef = useRef<HTMLDivElement>(null);
   const [weekMappingEdits, setWeekMappingEdits] = useState<Record<number, { confirmed: boolean; courseWeekLabel: string; notes: string }>>({});
+  const [extraWeeks, setExtraWeeks] = useState<number[]>(() => {
+    try { const stored = localStorage.getItem(`extraWeeks_${courseCodeClean}`); return stored ? JSON.parse(stored) : []; } catch { return []; }
+  });
   const [weekStyleChoice, setWeekStyleChoice] = useState<string | null>(null);
   const [showWeekCalendar, setShowWeekCalendar] = useState(false);
   const [weekCalendarMonth, setWeekCalendarMonth] = useState(() => {
@@ -3669,6 +3672,129 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     </div>
                   );
                 })}
+
+                {extraWeeks.map((weekNum) => {
+                  const lastRegularWeek = LAST_WEEK;
+                  const lastWeekDates = getWeekDates(lastRegularWeek, semesterStart, readingWeekStart);
+                  const weeksAfterLast = weekNum - lastRegularWeek;
+                  const extraStart = new Date(lastWeekDates.end);
+                  extraStart.setDate(extraStart.getDate() + (weeksAfterLast - 1) * 7 + 1);
+                  const extraEnd = new Date(extraStart);
+                  extraEnd.setDate(extraEnd.getDate() + 6);
+                  const formatDate = (d: Date) => d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+                  const dateRange = `${formatDate(extraStart)} - ${formatDate(extraEnd)}`;
+                  const edit = weekMappingEdits[weekNum] || { confirmed: false, courseWeekLabel: '', notes: '' };
+                  const isConfirmed = edit.confirmed;
+                  const hasCustomLabel = edit.courseWeekLabel && edit.courseWeekLabel !== '';
+                  const weekFiles = filesByWeek[weekNum] || [];
+
+                  return (
+                    <div
+                      key={weekNum}
+                      className="rounded-lg border overflow-hidden bg-white/[0.08] border-white/20 hover:border-white/30 transition-colors"
+                      data-testid={`week-mapping-row-${weekNum}`}
+                    >
+                      <div className="flex items-center gap-2 px-2.5 py-2 bg-white/[0.06]">
+                        <button
+                          onClick={() => {
+                            const newState = { ...edit, confirmed: !isConfirmed };
+                            setWeekMappingEdits(prev => ({ ...prev, [weekNum]: newState }));
+                            saveWeekMapping(weekNum, newState);
+                          }}
+                          className={`flex-shrink-0 w-5 h-5 rounded border flex items-center justify-center transition-colors ${
+                            isConfirmed
+                              ? 'bg-green-500/30 border-green-500/50 text-green-300'
+                              : 'bg-white/5 border-white/20 text-white/30 hover:border-white/40'
+                          }`}
+                          data-testid={`button-confirm-week-${weekNum}`}
+                        >
+                          {isConfirmed && <Check className="h-3 w-3" />}
+                        </button>
+
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="text-[12px] font-semibold text-white">{dateRange}</span>
+                            {hasCustomLabel && (
+                              <span className="text-[10px] px-1 py-0.5 bg-amber-500/15 text-amber-300 rounded">
+                                {edit.courseWeekLabel}
+                              </span>
+                            )}
+                            <span className="text-[8px] px-1.5 py-0.5 bg-purple-500/20 text-purple-300 rounded font-medium">Extra</span>
+                          </div>
+                        </div>
+
+                        <button
+                          onClick={() => {
+                            const updated = extraWeeks.filter(w => w !== weekNum);
+                            setExtraWeeks(updated);
+                            localStorage.setItem(`extraWeeks_${courseCodeClean}`, JSON.stringify(updated));
+                          }}
+                          className="h-6 px-2 text-[10px] bg-red-500/15 border border-red-500/30 rounded text-red-300 hover:bg-red-500/25 flex items-center gap-1 transition-colors flex-shrink-0"
+                          data-testid={`button-remove-week-${weekNum}`}
+                        >
+                          Remove
+                        </button>
+                      </div>
+
+                      {(edit as any).notesOpen && (
+                        <div className="px-2.5 pb-2">
+                          <textarea
+                            placeholder="Week notes..."
+                            value={edit.notes}
+                            onChange={(e) => {
+                              setWeekMappingEdits(prev => ({ ...prev, [weekNum]: { ...edit, notes: e.target.value } }));
+                            }}
+                            onBlur={() => saveWeekMapping(weekNum, edit)}
+                            rows={3}
+                            className="w-full text-[10px] bg-white border border-white/30 rounded px-2 py-1.5 text-black placeholder:text-black/40 focus:border-white/60 outline-none resize-y"
+                            style={{ minHeight: '60px' }}
+                            data-testid={`input-week-notes-${weekNum}`}
+                          />
+                        </div>
+                      )}
+
+                      <div className="px-2.5 py-1.5 flex items-center gap-2 border-t border-white/[0.06]">
+                        <span className="text-[8px] text-white uppercase tracking-wider font-medium">Uploads</span>
+                        <button
+                          onClick={() => handleWeekFileUpload(weekNum, 'reading')}
+                          disabled={weekUploadingState[`${weekNum}-reading`]}
+                          className="h-5 px-2 text-[8px] font-medium bg-white/10 hover:bg-white/15 text-white border border-white/20 rounded flex items-center gap-1 transition-colors disabled:opacity-50"
+                          data-testid={`button-upload-reading-week-${weekNum}`}
+                        >
+                          {weekUploadingState[`${weekNum}-reading`] ? <Loader2 className="h-2.5 w-2.5 animate-spin" /> : <Upload className="h-2.5 w-2.5" />}
+                          Reading
+                        </button>
+                        <button
+                          onClick={() => handleWeekFileUpload(weekNum, 'module')}
+                          disabled={weekUploadingState[`${weekNum}-module`]}
+                          className="h-5 px-2 text-[8px] font-medium bg-white/10 hover:bg-white/15 text-white border border-white/20 rounded flex items-center gap-1 transition-colors disabled:opacity-50"
+                          data-testid={`button-upload-module-week-${weekNum}`}
+                        >
+                          {weekUploadingState[`${weekNum}-module`] ? <Loader2 className="h-2.5 w-2.5 animate-spin" /> : <Upload className="h-2.5 w-2.5" />}
+                          Module
+                        </button>
+                        {weekFiles.length > 0 && (
+                          <span className="text-[8px] text-white ml-auto">{weekFiles.length} file{weekFiles.length !== 1 ? 's' : ''}</span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+
+                <button
+                  onClick={() => {
+                    const maxWeek = extraWeeks.length > 0 ? Math.max(...extraWeeks) : LAST_WEEK;
+                    const newWeek = maxWeek + 1;
+                    const updated = [...extraWeeks, newWeek];
+                    setExtraWeeks(updated);
+                    localStorage.setItem(`extraWeeks_${courseCodeClean}`, JSON.stringify(updated));
+                  }}
+                  className="w-full h-8 mt-1 rounded-lg border-2 border-dashed border-white/20 hover:border-white/40 bg-white/[0.03] hover:bg-white/[0.06] text-white/60 hover:text-white text-[11px] font-medium flex items-center justify-center gap-1.5 transition-colors"
+                  data-testid="button-add-extra-week"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  Add Week
+                </button>
               </div>
             </>)}
           </div>
