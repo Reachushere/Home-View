@@ -15182,6 +15182,19 @@ export default function Dashboard() {
             const ddOnly = new Date(dd.getFullYear(), dd.getMonth(), dd.getDate());
             return { ...t, flagDiffDays: Math.round((ddOnly.getTime() - nowDate.getTime()) / (1000 * 60 * 60 * 24)) };
           });
+        const classSoon = upcoming
+          .filter(t => t.type === 'class' && t.id !== next.id && (!nextPrep || t.id !== nextPrep.id) && !flaggedSoon.some(f => f.id === t.id))
+          .filter(t => {
+            const dd = new Date(t.dueDate!);
+            const ddOnly = new Date(dd.getFullYear(), dd.getMonth(), dd.getDate());
+            const dDiff = Math.round((ddOnly.getTime() - nowDate.getTime()) / (1000 * 60 * 60 * 24));
+            return dDiff >= 0 && dDiff <= 7;
+          })
+          .map(t => {
+            const dd = new Date(t.dueDate!);
+            const ddOnly = new Date(dd.getFullYear(), dd.getMonth(), dd.getDate());
+            return { ...t, classDiffDays: Math.round((ddOnly.getTime() - nowDate.getTime()) / (1000 * 60 * 60 * 24)) };
+          });
         return (
           <div
             className="font-raleway"
@@ -15322,6 +15335,34 @@ export default function Dashboard() {
                     )}
                   </div>
                 ))}
+                {classSoon.map(ct => {
+                  const ctCourse = ct.courseName ? coursesData.courses.find(c => ct.courseName!.includes(c.name.split(' - ')[0])) : null;
+                  const ctColor = ctCourse?.colorEnd || ctCourse?.color || 'rgb(0, 180, 0)';
+                  return (
+                    <div
+                      key={`class-${ct.id}`}
+                      style={{ display: 'flex', alignItems: 'center', gap: '4px', pointerEvents: 'auto', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                      onMouseEnter={() => setHoveredCountdownTaskIdDebounced(ct.id)}
+                      onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
+                      data-testid={`countdown-class-${ct.id}`}
+                    >
+                      <span data-countdown-bullet={`class-${ct.id}`} style={{ color: ct.classDiffDays >= 3 ? 'rgb(0, 180, 0)' : ct.classDiffDays === 2 ? '#e89200' : '#dc2626', fontSize: '18px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: 0 }}>•</span>
+                      {ct.classDiffDays === 0 ? (
+                        <>
+                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px' }}>TODAY:</span>
+                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{(ct.title || '').replace(/\[.*?\]\s*/g, '').trim() || ct.title}</span>
+                        </>
+                      ) : (
+                        <>
+                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>In</span>
+                          <span data-countdown-badge style={{ backgroundColor: ct.classDiffDays >= 3 ? 'rgb(0, 180, 0)' : ct.classDiffDays === 2 ? '#e89200' : '#dc2626', color: '#ffffff', fontSize: '11.5px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", fontWeight: 700, lineHeight: 1, letterSpacing: '0.3px', padding: '1px 3px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px' }}>{ct.classDiffDays}</span>
+                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, lineHeight: 1, letterSpacing: '0.3px' }}>{ct.classDiffDays === 1 ? 'day,' : 'days,'}</span>
+                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px' }}>you have </span><span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{(ct.title || '').replace(/\[.*?\]\s*/g, '').trim() || ct.title}.</span>
+                        </>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
             </div>
@@ -27963,14 +28004,10 @@ export default function Dashboard() {
                     const widthFrac = frSpan / totalFr;
                     const barH = 3;
                     const barGap = 14;
-                    const rowHeight = maxCourseRowHeight || gridSizes.courseRowHeight || 60;
-                    const maxBarsVisible = Math.max(1, Math.floor((rowHeight - 4) / barGap));
-                    const needsScroll = courseBars.length > maxBarsVisible;
-                    const totalBarsHeight = courseBars.length * barGap;
                     return (
-                      <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 2, overflow: 'hidden' }}>
-                        <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, top: 0, overflowY: needsScroll ? 'auto' : 'hidden', overflowX: 'hidden', pointerEvents: needsScroll ? 'auto' : 'none', scrollbarWidth: 'none' as any, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
-                          <div style={{ minHeight: `${totalBarsHeight}px`, position: 'relative' }}>
+                      <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 2 }}>
+                        <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, top: 0, overflowY: 'auto', overflowX: 'hidden', pointerEvents: 'auto', scrollbarWidth: 'none' as any }}>
+                          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', minHeight: '100%' }}>
                             {courseBars.map((cd, idx) => {
                               const t = cd.task;
                               const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
@@ -27978,10 +28015,9 @@ export default function Dashboard() {
                               const needsPulse = isNotStarted && cd.daysLeft <= 2 && !t.isCompleted;
                               const labelText = (t.title || '').replace(/\[[^\]]*\]\s*/g, '').trim();
                               const barHPx = needsPulse ? 4 : barH;
-                              const yOff = idx * barGap;
                               return (
-                                <div key={`cbar-cr-${t.id}`} className="countdown-bar-wrapper" style={{ position: 'absolute', left: 0, right: 0, top: `${yOff}px`, height: `${barGap}px`, pointerEvents: 'none' }} data-testid={`countdown-bar-cr-${t.id}`}>
-                                  <div style={{ position: 'absolute', left: 0, top: '2px', right: 0, height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
+                                <div key={`cbar-cr-${t.id}`} className="countdown-bar-wrapper" style={{ height: `${barGap}px`, flexShrink: 0, pointerEvents: 'none' }} data-testid={`countdown-bar-cr-${t.id}`}>
+                                  <div style={{ paddingTop: '2px', height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
                                     <div style={{ width: '10px', minWidth: '10px', height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
                                     <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
                                       <span style={{ fontSize: '9px', fontWeight: 500, color: barColor, letterSpacing: '-0.2px', lineHeight: '10px' }}>{cd.daysLeft}<span style={{ letterSpacing: '0.5px' }}> </span>d</span>
@@ -28181,14 +28217,10 @@ export default function Dashboard() {
                       const widthFrac = frSpan / totalFr;
                       const barH = 3;
                       const barGap = 14;
-                      const otherRowHeight = gridSizes.otherRowHeight || 60;
-                      const maxBarsVisible = Math.max(1, Math.floor((otherRowHeight - 4) / barGap));
-                      const needsScroll = otherBars.length > maxBarsVisible;
-                      const totalBarsHeight = otherBars.length * barGap;
                       return (
-                        <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 2, overflow: 'hidden' }}>
-                          <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, top: 0, overflowY: needsScroll ? 'auto' : 'hidden', overflowX: 'hidden', pointerEvents: needsScroll ? 'auto' : 'none', scrollbarWidth: 'none' as any, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
-                            <div style={{ minHeight: `${totalBarsHeight}px`, position: 'relative' }}>
+                        <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 2 }}>
+                          <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, top: 0, overflowY: 'auto', overflowX: 'hidden', pointerEvents: 'auto', scrollbarWidth: 'none' as any }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', minHeight: '100%' }}>
                               {otherBars.map((cd, idx) => {
                                 const t = cd.task;
                                 const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
@@ -28196,10 +28228,9 @@ export default function Dashboard() {
                                 const needsPulse = isNotStarted && cd.daysLeft <= 2 && !t.isCompleted;
                                 const labelText = (t.title || '').replace(/\[[^\]]*\]\s*/g, '').trim();
                                 const barHPx = needsPulse ? 4 : barH;
-                                const yOff = idx * barGap;
                                 return (
-                                  <div key={`cbar-or-${t.id}`} className="countdown-bar-wrapper" style={{ position: 'absolute', left: 0, right: 0, top: `${yOff}px`, height: `${barGap}px`, pointerEvents: 'none' }} data-testid={`countdown-bar-or-${t.id}`}>
-                                    <div style={{ position: 'absolute', left: 0, top: '2px', right: 0, height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
+                                  <div key={`cbar-or-${t.id}`} className="countdown-bar-wrapper" style={{ height: `${barGap}px`, flexShrink: 0, pointerEvents: 'none' }} data-testid={`countdown-bar-or-${t.id}`}>
+                                    <div style={{ paddingTop: '2px', height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
                                       <div style={{ width: '10px', minWidth: '10px', height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
                                       <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
                                         <span style={{ fontSize: '9px', fontWeight: 500, color: barColor, letterSpacing: '-0.2px', lineHeight: '10px' }}>{cd.daysLeft}<span style={{ letterSpacing: '0.5px' }}> </span>d</span>
