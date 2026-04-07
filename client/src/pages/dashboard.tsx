@@ -31170,7 +31170,7 @@ export default function Dashboard() {
                             onDragEnter={(e) => { e.preventDefault(); e.stopPropagation(); setHwDragOverTarget(dragKey); }}
                             onDragLeave={(e) => { e.preventDefault(); e.stopPropagation(); if (hwDragOverTarget === dragKey) setHwDragOverTarget(null); }}
                             onDrop={(e) => { e.preventDefault(); e.stopPropagation(); setHwDragOverTarget(null); const file = e.dataTransfer.files?.[0]; if (file) item.drop(file); }}
-                            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1px', position: 'relative', flex: '1 1 0', alignSelf: 'stretch', minWidth: 0, backgroundColor: item.bg, padding: '4px 1px 3px', borderRadius: '6px', overflow: 'visible', outline: isDragOver ? '2px solid rgba(255,255,255,0.8)' : 'none', outlineOffset: '-2px', transition: 'outline 0.15s ease', opacity: 1, isolation: 'isolate' }}
+                            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', gap: '1px', position: 'relative', flex: '1 1 0', alignSelf: 'stretch', minWidth: 0, backgroundColor: item.bg, padding: '4px 1px 3px', borderRadius: '6px', overflow: 'visible', outline: isDragOver ? '2px solid rgba(255,255,255,0.8)' : 'none', outlineOffset: '-2px', transition: 'outline 0.15s ease', opacity: 1, isolation: 'isolate' }}
                             data-testid={`drop-${item.type}-${pd.courseCode.toLowerCase()}`}>
                             <div style={{ position: 'absolute', top: '2px', left: 0, right: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2px', zIndex: 5, flexWrap: 'nowrap', overflow: 'hidden' }}>
                               <span style={{ fontSize: '10px', fontWeight: 400, color: textColor, letterSpacing: '0.5px', fontFamily: "'Raleway', sans-serif", whiteSpace: 'nowrap', flexShrink: 0 }}>{item.label}</span>
@@ -31180,7 +31180,7 @@ export default function Dashboard() {
                                 </div>
                               )}
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginTop: '8px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginTop: '12px' }}>
                               <div style={{ position: 'relative', width: circleSize, height: circleSize, flexShrink: 0 }}>
                                 <svg width={circleSize} height={circleSize} style={{ transform: 'rotate(-90deg)' }}>
                                   <circle cx={circleSize/2} cy={circleSize/2} r={radius} fill="none" stroke={circleColor === '#000' || circleColor === 'black' ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.3)'} strokeWidth={strokeWidth} />
