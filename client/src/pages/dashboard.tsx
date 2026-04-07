@@ -28744,15 +28744,15 @@ export default function Dashboard() {
                 const baseOtherRowHeight = Math.max(57, gridSizes.otherRowHeight || 57);
                 const otherRowHeight = baseOtherRowHeight + missingRows * courseRowH;
                 return (
-                  <div ref={otherRowRef} className="w-full flex-shrink-0 relative z-[43] group/otherrow flex" style={{ height: `${otherRowHeight}px`, overflow: 'hidden' }}>
-                    <div className="px-1 py-0.5 text-[8px] font-[785] tracking-wide flex items-center justify-center text-white/80 relative cursor-pointer hover:brightness-110 flex-shrink-0" onClick={() => setOtherRowEditOpen(true)} style={{ width: `${gridSizes.timeColumnWidth}px`, background: (() => { const stops = otherRowColors.labelStops ? (() => { try { return JSON.parse(otherRowColors.labelStops); } catch { return []; } })() : []; const allStops = [{ position: 0, color: otherRowColors.labelStart }, ...stops, { position: 100, color: otherRowColors.labelEnd }]; return `linear-gradient(180deg, ${allStops.map((s: any) => `${s.color} ${s.position}%`).join(', ')})`; })(), borderBottom: `1px dotted ${otherRowColors.borderColor || '#999'}`, overflow: 'hidden' }} data-testid="other-row-label">
+                  <div ref={otherRowRef} className="w-full flex-shrink-0 relative z-[43] group/otherrow" style={{ height: `${otherRowHeight}px`, overflow: 'hidden' }}>
+                    <div className="px-1 py-0.5 text-[8px] font-[785] tracking-wide flex items-center justify-center text-white/80 cursor-pointer hover:brightness-110" onClick={() => setOtherRowEditOpen(true)} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${gridSizes.timeColumnWidth}px`, zIndex: 50, background: (() => { const stops = otherRowColors.labelStops ? (() => { try { return JSON.parse(otherRowColors.labelStops); } catch { return []; } })() : []; const allStops = [{ position: 0, color: otherRowColors.labelStart }, ...stops, { position: 100, color: otherRowColors.labelEnd }]; return `linear-gradient(180deg, ${allStops.map((s: any) => `${s.color} ${s.position}%`).join(', ')})`; })(), borderBottom: `1px dotted ${otherRowColors.borderColor || '#999'}`, overflow: 'hidden' }} data-testid="other-row-label">
                       OTHER
                       <div style={{ position: 'absolute', top: '1px', right: '1px', zIndex: 2 }} onClick={(e) => { e.stopPropagation(); setOtherRowEditOpen(true); }} data-testid="pencil-edit-other-row"><Pencil className="w-[9px] h-[9px] text-white" strokeWidth={3} /></div>
                     </div>
                     {gridSizes.moduleColumnWidth > 0 && (
-                      <div className="flex-shrink-0" style={{ width: `${gridSizes.moduleColumnWidth + 9}px`, backgroundColor: otherRowColors.courseRowColor || otherRowColors.cellBg }} />
+                      <div style={{ position: 'absolute', left: `${gridSizes.timeColumnWidth}px`, top: 0, bottom: 0, width: `${gridSizes.moduleColumnWidth + 9}px`, backgroundColor: otherRowColors.courseRowColor || otherRowColors.cellBg, zIndex: 50 }} />
                     )}
-                    <div className="flex flex-1 min-w-0 relative" style={{ overflow: 'hidden' }}>
+                    <div className="flex min-w-0 relative" style={{ overflow: 'hidden', marginLeft: `${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px`, height: '100%' }}>
                     {weekDays.map((day, dayIdx) => {
                       const cellDate = startOfDayET(day);
                       const isOtherToday = isSameDayET(day, stableToday);
