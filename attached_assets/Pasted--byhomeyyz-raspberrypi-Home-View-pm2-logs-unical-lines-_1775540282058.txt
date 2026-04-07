@@ -1,0 +1,102 @@
+[]byhomeyyz@raspberrypi:~/Home-View pm2 logs unical --lines 100 --nostream 2>&1 | tail -10000
+0|unical   | [Raw Story] Monitor DISABLED in development (only runs in production)
+0|unical   | [Email Router] Unified email intake ready at POST /api/webhook/email
+0|unical   | [Gmail Ticker] Webhook endpoint ready at POST /api/webhook/ticker
+0|unical   | === [Alexa Scheduler] Started (checking every 30 seconds) ===
+0|unical   |
+0|unical   | > rest-express@1.0.0 dev
+0|unical   | > NODE_ENV=development tsx server/index.ts
+0|unical   |
+0|unical   | [TTS] Rate limit active until 2026-05-01T00:00:00.000Z — using Edge TTS
+0|unical   | [Raw Story] Monitor DISABLED in development (only runs in production)
+0|unical   | [Email Router] Unified email intake ready at POST /api/webhook/email
+0|unical   | [Gmail Ticker] Webhook endpoint ready at POST /api/webhook/ticker
+0|unical   | === [Alexa Scheduler] Started (checking every 30 seconds) ===
+0|unical   |
+0|unical   | > rest-express@1.0.0 dev
+0|unical   | > NODE_ENV=development tsx server/index.ts
+0|unical   |
+0|unical   | [TTS] Rate limit active until 2026-05-01T00:00:00.000Z — using Edge TTS
+0|unical   | [Raw Story] Monitor DISABLED in development (only runs in production)
+0|unical   | [Email Router] Unified email intake ready at POST /api/webhook/email
+0|unical   | [Gmail Ticker] Webhook endpoint ready at POST /api/webhook/ticker
+0|unical   | === [Alexa Scheduler] Started (checking every 30 seconds) ===
+0|unical   |
+0|unical   | > rest-express@1.0.0 dev
+0|unical   | > NODE_ENV=development tsx server/index.ts
+0|unical   |
+0|unical   | [TTS] Rate limit active until 2026-05-01T00:00:00.000Z — using Edge TTS
+0|unical   | [Raw Story] Monitor DISABLED in development (only runs in production)
+0|unical   | [Email Router] Unified email intake ready at POST /api/webhook/email
+0|unical   | [Gmail Ticker] Webhook endpoint ready at POST /api/webhook/ticker
+0|unical   | === [Alexa Scheduler] Started (checking every 30 seconds) ===
+0|unical   |
+0|unical   | > rest-express@1.0.0 dev
+0|unical   | > NODE_ENV=development tsx server/index.ts
+0|unical   |
+0|unical   | [TTS] Rate limit active until 2026-05-01T00:00:00.000Z — using Edge TTS
+0|unical   | [Raw Story] Monitor DISABLED in development (only runs in production)
+0|unical   | [Email Router] Unified email intake ready at POST /api/webhook/email
+0|unical   | [Gmail Ticker] Webhook endpoint ready at POST /api/webhook/ticker
+0|unical   | === [Alexa Scheduler] Started (checking every 30 seconds) ===
+0|unical   |
+0|unical   | > rest-express@1.0.0 dev
+0|unical   | > NODE_ENV=development tsx server/index.ts
+0|unical   |
+0|unical   | [TTS] Rate limit active until 2026-05-01T00:00:00.000Z — using Edge TTS
+0|unical   | [Raw Story] Monitor DISABLED in development (only runs in production)
+0|unical   | [Email Router] Unified email intake ready at POST /api/webhook/email
+0|unical   | [Gmail Ticker] Webhook endpoint ready at POST /api/webhook/ticker
+0|unical   | === [Alexa Scheduler] Started (checking every 30 seconds) ===
+0|unical   | 1:37:33 AM [express] GET /api/ha-automations 200 in 16ms :: []
+0|unical   |
+0|unical   | > rest-express@1.0.0 dev
+0|unical   | > NODE_ENV=development tsx server/index.ts
+0|unical   |
+0|unical   | [TTS] Rate limit active until 2026-05-01T00:00:00.000Z — using Edge TTS
+0|unical   | [Raw Story] Monitor DISABLED in development (only runs in production)
+0|unical   | [Email Router] Unified email intake ready at POST /api/webhook/email
+0|unical   | [Gmail Ticker] Webhook endpoint ready at POST /api/webhook/ticker
+0|unical   | === [Alexa Scheduler] Started (checking every 30 seconds) ===
+0|unical   |
+0|unical   | > rest-express@1.0.0 dev
+0|unical   | > NODE_ENV=development tsx server/index.ts
+0|unical   |
+0|unical   | [TTS] Rate limit active until 2026-05-01T00:00:00.000Z — using Edge TTS
+0|unical   | [Raw Story] Monitor DISABLED in development (only runs in production)
+0|unical   | [Email Router] Unified email intake ready at POST /api/webhook/email
+0|unical   | [Gmail Ticker] Webhook endpoint ready at POST /api/webhook/ticker
+0|unical   | === [Alexa Scheduler] Started (checking every 30 seconds) ===
+0|unical   |
+0|unical   | > rest-express@1.0.0 dev
+0|unical   | > NODE_ENV=development tsx server/index.ts
+0|unical   |
+0|unical   | [TTS] Rate limit active until 2026-05-01T00:00:00.000Z — using Edge TTS
+0|unical   | [Raw Story] Monitor DISABLED in development (only runs in production)
+0|unical   | [Email Router] Unified email intake ready at POST /api/webhook/email
+0|unical   | [Gmail Ticker] Webhook endpoint ready at POST /api/webhook/ticker
+0|unical   | === [Alexa Scheduler] Started (checking every 30 seconds) ===
+0|unical   |
+0|unical   | > rest-express@1.0.0 dev
+0|unical   | > NODE_ENV=development tsx server/index.ts
+0|unical   |
+0|unical   | [TTS] Rate limit active until 2026-05-01T00:00:00.000Z — using Edge TTS
+0|unical   | [Raw Story] Monitor DISABLED in development (only runs in production)
+0|unical   | [Email Router] Unified email intake ready at POST /api/webhook/email
+0|unical   | [Gmail Ticker] Webhook endpoint ready at POST /api/webhook/ticker
+0|unical   | === [Alexa Scheduler] Started (checking every 30 seconds) ===
+0|unical   |
+0|unical   | > rest-express@1.0.0 dev
+0|unical   | > NODE_ENV=development tsx server/index.ts
+0|unical   |
+0|unical   | [TTS] Rate limit active until 2026-05-01T00:00:00.000Z — using Edge TTS
+0|unical   | [Raw Story] Monitor DISABLED in development (only runs in production)
+0|unical   | [Email Router] Unified email intake ready at POST /api/webhook/email
+0|unical   | [Gmail Ticker] Webhook endpoint ready at POST /api/webhook/ticker
+0|unical   | === [Alexa Scheduler] Started (checking every 30 seconds) ===
+0|unical   |
+0|unical   | > rest-express@1.0.0 dev
+0|unical   | > NODE_ENV=development tsx server/index.ts
+0|unical   |
+
+byhomeyyz@raspberrypi:~/Home-View $
