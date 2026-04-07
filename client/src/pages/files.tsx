@@ -1142,21 +1142,47 @@ export default function FilesPage() {
     return getFilesInFolder(selectedFolder);
   };
 
-  // Get breadcrumb path for selected folder
+  const oneDriveBasePath = "/School/1. TMU/Courses/2026/Winter";
+
   const getBreadcrumb = () => {
-    if (!selectedFolder) return ["/files"];
+    if (!selectedFolder) return [oneDriveBasePath];
     
-    // Handle custom folders
     if (selectedFolder.startsWith("custom-")) {
       const customId = parseInt(selectedFolder.replace("custom-", ""));
       const customFolder = customFoldersData.find(cf => cf.id === customId);
       if (customFolder) {
-        return [`/files/${customFolder.parentFolderId}/${customFolder.name}`];
+        return [`${oneDriveBasePath}/${customFolder.name}`];
       }
     }
     
-    const folderPath = selectedFolder.replace(/^(week-\d+)-/, '$1/');
-    return [`/files/${folderPath}`];
+    const parts = selectedFolder.split("-");
+    const pathSegments: string[] = [];
+    
+    if (parts[0] === "week" && parts[1]) {
+      const weekNum = parts[1];
+      const weekName = `Week ${weekNum}`;
+      
+      if (parts.length >= 3) {
+        const courseId = parts[2].toUpperCase();
+        pathSegments.push(courseId);
+        pathSegments.push(weekName);
+        
+        if (parts.length >= 4) {
+          const contentType = parts[3].charAt(0).toUpperCase() + parts[3].slice(1);
+          pathSegments.push(contentType);
+        }
+      } else {
+        pathSegments.push(weekName);
+      }
+    } else if (selectedFolder === "completed") {
+      pathSegments.push("Completed");
+    } else if (selectedFolder === "other") {
+      pathSegments.push("Other");
+    } else if (selectedFolder === "my-folder") {
+      pathSegments.push("My Folder");
+    }
+    
+    return [`${oneDriveBasePath}${pathSegments.length > 0 ? '/' + pathSegments.join('/') : ''}`];
   };
 
   const navigateBack = () => {
@@ -1255,6 +1281,7 @@ export default function FilesPage() {
         {viewMode === 'all' ? (
           <>
             <div className="flex items-center gap-1 text-sm text-gray-400 flex-1 min-w-0 truncate ml-2">
+              <Cloud className="h-3 w-3 text-white/60 shrink-0" />
               <span className="truncate text-white">{getBreadcrumb()[0]}</span>
             </div>
             <ObjectUploader
