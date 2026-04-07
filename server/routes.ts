@@ -11053,11 +11053,15 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
     const everywhereActive = isSpotifyPlayingOnEverywhere();
     if (everywhereActive) {
-      console.log(`[Speakers] Everywhere group is playing Spotify — only stopping Nest speaker + media group, preserving cat washroom Echos`);
+      console.log(`[Speakers] Everywhere group is playing Spotify — only stopping Nest speaker + HA Voice + media group, preserving cat washroom Echos`);
       await Promise.allSettled([
         fetch(`${haUrl}/api/services/media_player/media_stop`, {
           method: 'POST', headers: haHeaders,
           body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY }),
+        }),
+        fetch(`${haUrl}/api/services/media_player/media_stop`, {
+          method: 'POST', headers: haHeaders,
+          body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY }),
         }),
         fetch(`${haUrl}/api/services/media_player/media_stop`, {
           method: 'POST', headers: haHeaders,
@@ -11076,6 +11080,10 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         }),
         fetch(`${haUrl}/api/services/media_player/media_stop`, {
           method: 'POST', headers: haHeaders,
+          body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY }),
+        }),
+        fetch(`${haUrl}/api/services/media_player/media_stop`, {
+          method: 'POST', headers: haHeaders,
           body: JSON.stringify({ entity_id: CAT_ECHO_ENTITIES }),
         }),
         fetch(`${haUrl}/api/services/media_player/media_stop`, {
@@ -11091,7 +11099,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           body: JSON.stringify({ entity_id: CAT_WR_MEDIA_GROUP }),
         }),
       ]);
-      console.log(`[Speakers] Stopped Nest + cat washroom Echos + media group (stop + pause)`);
+      console.log(`[Speakers] Stopped Nest + HA Voice + cat washroom Echos + media group (stop + pause)`);
     }
   }
 
@@ -14174,13 +14182,20 @@ document.body.removeChild(a);
 
     try {
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-      await fetch(`${haUrl}/api/services/media_player/media_stop`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY }),
-      });
-      console.log(`[Cat Wash Stop] Sent media_stop to Nest speaker`);
-      stopped.push("nestSpeaker");
+      await Promise.allSettled([
+        fetch(`${haUrl}/api/services/media_player/media_stop`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY }),
+        }),
+        fetch(`${haUrl}/api/services/media_player/media_stop`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY }),
+        }),
+      ]);
+      console.log(`[Cat Wash Stop] Sent media_stop to Nest speaker + HA Voice`);
+      stopped.push("nestSpeaker", "haVoice");
 
       const appUrl = DEPLOYED_APP_URL;
       try {
