@@ -31973,10 +31973,10 @@ export default function Dashboard() {
                     alignItems: 'stretch',
                     overflowX: 'hidden',
                     overflowY: 'hidden',
-                    scrollbarWidth: 'none',
+                    scrollbarWidth: 'none' as any,
                     padding: '0',
                   }}>
-                    <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '1px 6px 0px 6px', overflowY: 'auto', scrollbarWidth: 'none', position: 'relative', background: (() => { const stops = otherRowColors.labelStops ? (() => { try { return JSON.parse(otherRowColors.labelStops); } catch { return []; } })() : []; const allStops = [{ position: 0, color: otherRowColors.labelStart }, ...stops, { position: 100, color: otherRowColors.labelEnd }]; return `linear-gradient(180deg, ${allStops.map((s: any) => `${s.color} ${s.position}%`).join(', ')})`; })() }}
+                    <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', padding: '1px 6px 0px 6px', overflowY: 'auto', scrollbarWidth: 'none' as any, position: 'relative', background: (() => { const stops = otherRowColors.labelStops ? (() => { try { return JSON.parse(otherRowColors.labelStops); } catch { return []; } })() : []; const allStops = [{ position: 0, color: otherRowColors.labelStart }, ...stops, { position: 100, color: otherRowColors.labelEnd }]; return `linear-gradient(180deg, ${allStops.map((s: any) => `${s.color} ${s.position}%`).join(', ')})`; })() }}
                       onWheel={(e) => {
                         e.stopPropagation();
                         e.currentTarget.scrollTop += e.deltaY;
