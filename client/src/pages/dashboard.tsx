@@ -28574,7 +28574,7 @@ export default function Dashboard() {
                     const barH = 3;
                     const barGap = 14;
                     return (
-                      <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 5 }}>
+                      <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 10 }}>
                         <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, top: 0, overflowY: 'auto', overflowX: 'hidden', pointerEvents: 'none', scrollbarWidth: 'none' as any }}>
                           <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', minHeight: '100%' }}>
                             {courseBars.filter(cd => cd.daysLeft > 0).map((cd, idx) => {
@@ -28793,7 +28793,7 @@ export default function Dashboard() {
                       const barH = 3;
                       const barGap = 14;
                       return (
-                        <div style={{ position: 'absolute', left: 0, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 5 }}>
+                        <div style={{ position: 'absolute', left: 0, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 10 }}>
                           <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, top: 0, overflowY: 'auto', overflowX: 'hidden', pointerEvents: 'none', scrollbarWidth: 'none' as any }}>
                             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', minHeight: '100%' }}>
                               {otherBars.filter(cd => cd.daysLeft > 0).map((cd, idx) => {
