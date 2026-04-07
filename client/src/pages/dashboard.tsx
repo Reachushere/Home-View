@@ -30342,22 +30342,15 @@ export default function Dashboard() {
           data-testid="section-coming-up"
         >
           <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', border: '1.5px solid rgba(255,255,255,0.5)', pointerEvents: 'none', zIndex: 9999 }} />
-          {cooldownSeconds !== null && (
+          {(cooldownSeconds !== null || true) && (
             <div
               className="absolute z-[60]"
               style={{ top: '-16px', right: '7px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', height: '15px', pointerEvents: 'none', opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.2s ease' }}
               data-testid="cooldown-timer"
             >
-              <div style={{ height: '15px', borderRadius: '0 0 6px 6px', background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.2)', borderTop: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)', padding: '0 8px', gap: '6px' }}>
-                <span style={{ fontSize: '9px', fontWeight: 600, letterSpacing: '1px', fontFamily: 'monospace', color: cooldownFading ? 'rgba(150,150,150,0.8)' : (cooldownSeconds <= 10 ? '#ff4444' : '#ff6b6b'), textShadow: cooldownFading ? 'none' : '0 0 6px rgba(255,80,80,0.4)', transition: 'color 1s ease-out, text-shadow 1s ease-out', lineHeight: 1 }}>
-                  {cooldownFading ? 'READY' : `COOLDOWN ${cooldownSeconds}s`}
-                </span>
-                {!cooldownFading && (
-                  <div style={{ width: '60px', height: '3px', borderRadius: '2px', background: 'rgba(255,255,255,0.1)', overflow: 'hidden' }}>
-                    <div style={{ height: '100%', borderRadius: '2px', background: cooldownSeconds <= 10 ? '#ff4444' : '#ff6b6b', width: `${Math.max(0, (cooldownSeconds / 60) * 100)}%`, transition: 'width 1s linear, background 0.5s ease' }} />
-                  </div>
-                )}
-              </div>
+              <span style={{ fontSize: '9px', fontWeight: 600, fontFamily: 'monospace', color: cooldownFading ? 'rgba(150,150,150,0.8)' : (cooldownSeconds !== null && cooldownSeconds <= 10 ? '#ff4444' : '#ff6b6b'), transition: 'color 1s ease-out', lineHeight: 1 }}>
+                {cooldownFading ? '0' : `${cooldownSeconds ?? 0}`}
+              </span>
             </div>
           )}
           {/* Date navigation tab above glass box */}
