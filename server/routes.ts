@@ -16,7 +16,7 @@ import { objectStorageClient } from "./replit_integrations/object_storage/object
 import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars, createPrepCalendarEvent, updatePrepCalendarEvent, createEventInCalendar, deleteEventFromCalendar, createRecurringClassEvent, findExistingEventBySummary, findAndDeleteDuplicateEvents, createYearlyScholarshipEvent, syncGoogleEventsToReview, getGoogleCalendarClient } from "./googleCalendar";
 import { getSecondAccountAuthUrl, exchangeCodeForTokens, isSecondAccountConnected, disconnectSecondAccount, createEventInSecondAccount, createPrepEventInSecondAccount, deleteEventFromSecondAccount, updateEventInSecondAccount, getEventsFromSecondAccount } from "./secondGoogleAccount";
 import { getThirdAccountAuthUrl, exchangeCodeForTokensThird, isThirdAccountConnected, disconnectThirdAccount, getEventsFromThirdAccount, listThirdAccountCalendars, getEventsFromThirdAccountCalendar, createEventOnThirdAccountCalendar, deleteEventOnThirdAccountCalendar } from "./thirdGoogleAccount";
-import { textToSpeech, initTTSFallbackStatus } from "./replit_integrations/audio/client";
+import { textToSpeech, initTTSFallbackStatus, clearTTSRateLimit, getTTSStatus } from "./replit_integrations/audio/client";
 import { sendTestEmail, sendTaskReminder, sendDailyDigest, sendTestSms, sendSmsReminder, sendTestHaPush, sendHaTaskReminder, sendEchoVoiceAnnouncement, sendCalendarInvite, type TaskReminder } from "./email";
 import { syncOutlookEventsToReview, fetchOutlookCalendarEvents, findOrCreateMailFolder, createMailRule, moveExistingEmailsToFolder, moveAllEmailsFromFolder, deleteMailRulesByName, getMailFolderId, moveEmailsNotFromDomains, getOutlookClient } from "./outlookCalendar";
 import { parseTickerCommand, extractInlineExpiry } from "./gmailTicker";
@@ -840,6 +840,17 @@ export async function registerRoutes(
 ): Promise<Server> {
 
   await initTTSFallbackStatus();
+
+  if (HOME_ASSISTANT_URL && HOME_ASSISTANT_TOKEN) {
+    const haUrlStartup = HOME_ASSISTANT_URL.replace(/\/$/, '');
+    const haHeadersStartup = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
+    Promise.allSettled([
+      fetch(`${haUrlStartup}/api/services/input_boolean/turn_off`, { method: 'POST', headers: haHeadersStartup, body: JSON.stringify({ entity_id: MODULE_READING_CONFIRMED }) }),
+      fetch(`${haUrlStartup}/api/services/input_boolean/turn_off`, { method: 'POST', headers: haHeadersStartup, body: JSON.stringify({ entity_id: MODULE_READING_PENDING }) }),
+    ]).then(() => {
+      console.log(`[Startup] Reset MODULE_READING_CONFIRMED and MODULE_READING_PENDING booleans`);
+    }).catch(() => {});
+  }
 
   const serverPort = process.env.PORT || 5000;
 
@@ -9998,6 +10009,15 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       reason = 'post-stop';
     }
     res.json({ active: cooldownRemaining > 0, remaining: cooldownRemaining, reason });
+  });
+
+  app.get("/api/tts-status", (_req, res) => {
+    res.json(getTTSStatus());
+  });
+
+  app.post("/api/tts-rate-limit/clear", async (_req, res) => {
+    const result = await clearTTSRateLimit();
+    res.json(result);
   });
 
   app.get("/api/health", async (_req, res) => {

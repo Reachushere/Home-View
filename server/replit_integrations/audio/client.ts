@@ -23,7 +23,14 @@ export async function initTTSFallbackStatus() {
     const rows = await db.select().from(appState).where(eq(appState.key, 'tts_rate_limit_reset'));
     if (rows.length > 0) {
       const resetMs = parseInt(rows[0].value);
-      if (resetMs > Date.now()) {
+      const MAX_RATE_LIMIT_DURATION = 24 * 60 * 60 * 1000;
+      if (resetMs > Date.now() + MAX_RATE_LIMIT_DURATION) {
+        console.log(`[TTS] Stored rate limit reset ${new Date(resetMs).toISOString()} is more than 24h away — clearing stale record`);
+        useEdgeTTSFallback = false;
+        rateLimitResetTime = null;
+        await db.delete(appState).where(eq(appState.key, 'tts_rate_limit_reset'));
+        console.log(`[TTS] Stale rate limit cleared — using OpenAI TTS`);
+      } else if (resetMs > Date.now()) {
         useEdgeTTSFallback = true;
         rateLimitResetTime = resetMs;
         console.log(`[TTS] Rate limit active until ${new Date(resetMs).toISOString()} — using Edge TTS`);
@@ -37,6 +44,30 @@ export async function initTTSFallbackStatus() {
   } catch (e: any) {
     console.error(`[TTS] Failed to check rate limit status: ${e.message}`);
   }
+}
+
+export async function clearTTSRateLimit() {
+  try {
+    const { db } = await import("../../db");
+    const { appState } = await import("../../../shared/schema");
+    const { eq } = await import("drizzle-orm");
+    await db.delete(appState).where(eq(appState.key, 'tts_rate_limit_reset'));
+    useEdgeTTSFallback = false;
+    rateLimitResetTime = null;
+    console.log(`[TTS] Rate limit manually cleared — using OpenAI TTS`);
+    return { cleared: true };
+  } catch (e: any) {
+    console.error(`[TTS] Failed to clear rate limit: ${e.message}`);
+    return { cleared: false, error: e.message };
+  }
+}
+
+export function getTTSStatus() {
+  return {
+    usingEdgeTTS: useEdgeTTSFallback,
+    rateLimitResetTime: rateLimitResetTime ? new Date(rateLimitResetTime).toISOString() : null,
+    edgeTTSConsecutiveFailures: edgeTTSConsecutiveFailures,
+  };
 }
 
 async function saveRateLimitReset(resetMs: number) {
@@ -315,26 +346,28 @@ export async function textToSpeech(
   slowPace: boolean = false
 ): Promise<Buffer> {
   if (useEdgeTTSFallback) {
-    if (edgeTTSConsecutiveFailures >= EDGE_TTS_MAX_CONSECUTIVE_FAILURES) {
-      console.log(`[TTS] Edge TTS has ${edgeTTSConsecutiveFailures} consecutive failures — trying personal OpenAI`);
+    const hasPersonalKey = !!process.env.OPENAI_API_KEY;
+    if (hasPersonalKey) {
       try {
+        console.log(`[TTS] Replit key rate-limited — using personal OpenAI key`);
         return await personalOpenAITTSGenerate(text, voice, format, slowPace);
       } catch (personalErr: any) {
-        console.warn(`[TTS] Personal OpenAI TTS failed: ${personalErr.message} — falling back to local TTS`);
-        return localTTSGenerate(text);
+        console.warn(`[TTS] Personal OpenAI TTS failed: ${personalErr.message} — falling back to Edge TTS`);
       }
     }
     try {
       console.log(`[TTS] Using Edge TTS fallback (voice: ${edgeVoiceMap[voice] || edgeVoiceMap.echo})`);
       return await edgeTTSGenerate(text, voice);
     } catch (edgeErr: any) {
-      console.warn(`[TTS] Edge TTS failed (${edgeTTSConsecutiveFailures} consecutive): ${edgeErr.message} — trying personal OpenAI`);
-      try {
-        return await personalOpenAITTSGenerate(text, voice, format, slowPace);
-      } catch (personalErr: any) {
-        console.warn(`[TTS] Personal OpenAI TTS also failed: ${personalErr.message} — falling back to local TTS`);
-        return localTTSGenerate(text);
+      console.warn(`[TTS] Edge TTS failed (${edgeTTSConsecutiveFailures} consecutive): ${edgeErr.message}`);
+      if (!hasPersonalKey) {
+        try {
+          return await personalOpenAITTSGenerate(text, voice, format, slowPace);
+        } catch (personalErr: any) {
+          console.warn(`[TTS] Personal OpenAI TTS also failed: ${personalErr.message} — falling back to local TTS`);
+        }
       }
+      return localTTSGenerate(text);
     }
   }
 
@@ -356,10 +389,17 @@ export async function textToSpeech(
   } catch (err: any) {
     if (err?.status === 429 || err?.code === 'RATELIMIT_EXCEEDED') {
       const resetHeader = err?.headers?.get?.('x-ratelimit-reset') || err?.headers?.['x-ratelimit-reset'];
-      const resetMs = resetHeader ? parseInt(String(resetHeader)) : Date.now() + 60 * 60 * 1000;
+      let resetMs = resetHeader ? parseInt(String(resetHeader)) : Date.now() + 60 * 60 * 1000;
+      if (resetMs < 1e12) resetMs = resetMs * 1000;
+      const MAX_RATE_LIMIT_DURATION = 24 * 60 * 60 * 1000;
+      if (resetMs > Date.now() + MAX_RATE_LIMIT_DURATION) {
+        console.log(`[TTS] Rate limit reset ${new Date(resetMs).toISOString()} is suspiciously far — capping to 1 hour`);
+        resetMs = Date.now() + 60 * 60 * 1000;
+      }
       console.log(`[TTS] Rate limited — switching to Edge TTS until ${new Date(resetMs).toISOString()}`);
       useEdgeTTSFallback = true;
       rateLimitResetTime = resetMs;
+      await saveRateLimitReset(resetMs);
       try {
         return await edgeTTSGenerate(text, voice);
       } catch (edgeErr: any) {
