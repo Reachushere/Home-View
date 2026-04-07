@@ -27242,7 +27242,7 @@ export default function Dashboard() {
                               const isActualToday = isSameDayET(day, stableToday);
                               const isActuallyPast = !isActualToday && startOfDayET(day) < stableToday;
                               const isMrNextSchoolWeek = !isActualToday && day.getDay() !== 6 && startOfDayET(day) >= stableNextSat;
-                              const cellBg = isActualToday ? '#e4ecf5' : isMrNextSchoolWeek ? dimColor(course.bg, 0.375) : isActuallyPast ? dimColor(course.bg) : dimColor(course.bg, 0.75);
+                              const cellBg = isActualToday ? '#e4ecf5' : isMrNextSchoolWeek ? dimColor(course.bg, 0.75) : isActuallyPast ? dimColor(course.bg) : dimColor(course.bg, 0.375);
                               
                               // If this day is before today, show empty cell
                               if (isBeforeToday) {
@@ -27521,7 +27521,7 @@ export default function Dashboard() {
                     const isDayAfterToday = startOfDayET(day) > stableToday && !isDayToday;
                     const isDayBeforeToday = !isDayToday && startOfDayET(day) < stableToday;
                     const isDayNextSchoolWeek = !isDayToday && day.getDay() !== 6 && startOfDayET(day) >= stableNextSat;
-                    const cellBgColor = isDayToday ? '#e4ecf5' : isDayNextSchoolWeek ? dimColor(course.bg, 0.375) : dimColor(course.bg, 0.75);
+                    const cellBgColor = isDayToday ? '#e4ecf5' : isDayNextSchoolWeek ? dimColor(course.bg, 0.75) : dimColor(course.bg, 0.375);
                     const cellDate = startOfDayET(day);
                     
                     const dueTasks = allTasks?.filter(task => {
@@ -28127,7 +28127,7 @@ export default function Dashboard() {
                       const isOtherBeforeToday = !isOtherToday && startOfDayET(day) < stableToday;
                       const otherBaseBg = otherRowColors.courseRowColor || otherRowColors.cellBg;
                       const isOtherNextSchoolWeek = !isOtherToday && day.getDay() !== 6 && startOfDayET(day) >= stableNextSat;
-                      const otherCellBg = isOtherToday ? '#e4ecf5' : isOtherNextSchoolWeek ? dimColor(otherBaseBg, 0.375) : dimColor(otherBaseBg, 0.75);
+                      const otherCellBg = isOtherToday ? '#e4ecf5' : isOtherNextSchoolWeek ? dimColor(otherBaseBg, 0.75) : dimColor(otherBaseBg, 0.375);
                       return (
                         <div
                           key={dayIdx}
