@@ -11755,14 +11755,11 @@ export default function Dashboard() {
         }
       }
     }
-    const overlayStart = conflictExtra + (maxStartMin / 60) * baseHeight;
-    const totalRowHeight = baseHeight + conflictExtra;
-    const visibleInRow = totalRowHeight - overlayStart;
+    if (maxStartMin === 0) return 0;
+    const frac = 1 - maxStartMin / 60;
     const minVisible = 40;
-    if (visibleInRow < minVisible) {
-      return minVisible - visibleInRow;
-    }
-    return 0;
+    const needed = Math.ceil(minVisible / frac) - baseHeight;
+    return needed > 0 ? needed : 0;
   };
 
   const getEffectiveRowHeight = (h: number) => {
