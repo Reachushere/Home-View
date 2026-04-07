@@ -4075,7 +4075,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 
       for (const course of COURSES) {
         const courseCode = course.code.toLowerCase();
-        const courseFullName = `${course.code} - ${course.name}`;
+        const courseFullName = buildCourseFolderName(course.code, course.name);
         const moduleFolderKey = `week-${weekNumber}-${courseCode}-module`;
         const readingFolderKey = `week-${weekNumber}-${courseCode}-reading`;
 
@@ -6021,7 +6021,7 @@ async function pollStatus(timeout){
       const semester = await storage.getActiveSemesterSettings();
       for (let ci = 0; ci < courses.length; ci++) {
         const course = courses[ci];
-        const courseFolderName = `${course.code} - ${course.name}`;
+        const courseFolderName = buildCourseFolderName(course.code, course.name);
         const courseResult = await createOneDriveFolder(semPath, courseFolderName);
         results.push({ path: `${semPath}/${courseFolderName}`, ...courseResult });
         const coursePath = `${semPath}/${courseFolderName}`;
@@ -6215,7 +6215,7 @@ async function pollStatus(timeout){
         : new Date().getFullYear();
       const cName = targetSemester[`course${courseIndex}Name` as keyof typeof targetSemester] || courseName || courseCode;
       const cCode = String(targetSemester[`course${courseIndex}Code` as keyof typeof targetSemester] || courseCode);
-      const courseFolderName = `${cCode} - ${cName}`;
+      const courseFolderName = buildCourseFolderName(cCode, String(cName));
       const courseFolderPath = `/School/1. TMU/Courses/${year}/${semType}/${courseFolderName}`;
 
       const children = await listOneDriveFolderChildren(courseFolderPath);
@@ -10876,6 +10876,14 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     if (LIBERAL_CODES.has(codeWithNum)) return 200;
     if (OPEN_ELECTIVE_CODES.has(codeWithNum)) return 300;
     return 999;
+  }
+
+  function buildCourseFolderName(code: string, name: string): string {
+    if (!name || name === code) return code;
+    if (name.toUpperCase().startsWith(code.toUpperCase() + ' - ') || name.toUpperCase().startsWith(code.toUpperCase() + ' – ')) {
+      return name;
+    }
+    return `${code} - ${name}`;
   }
 
   function getSemesterTypeFolder(semType: string | null | undefined): string {
