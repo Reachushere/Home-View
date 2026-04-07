@@ -8,7 +8,7 @@ import { join } from "path";
 import { EdgeTTS } from "node-edge-tts";
 
 export const openai = new OpenAI({
-  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY || 'dummy-key-not-configured',
+  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY || 'dummy-key-not-configured',
   baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
 });
 
@@ -323,50 +323,24 @@ export async function voiceChatStream(
  * Text-to-Speech: Converts text to speech verbatim.
  * Uses gpt-audio model via Replit AI Integrations.
  */
-async function personalOpenAITTSGenerate(text: string, voice: string, format: string, slowPace: boolean): Promise<Buffer> {
-  const personalKey = process.env.OPENAI_API_KEY;
-  if (!personalKey) throw new Error("Personal OPENAI_API_KEY not configured");
-  const personalOpenAI = new OpenAI({ apiKey: personalKey });
-  console.log(`[TTS] Using personal OpenAI account (tts-1, voice: ${voice})`);
-  const response = await personalOpenAI.audio.speech.create({
-    model: "tts-1",
-    voice: voice as any,
-    input: text.slice(0, 4096),
-    response_format: format === "wav" ? "wav" : "mp3",
-    speed: slowPace ? 0.85 : 1.0,
-  });
-  const arrayBuffer = await response.arrayBuffer();
-  return Buffer.from(arrayBuffer);
-}
-
 export async function textToSpeech(
   text: string,
   voice: "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer" = "echo",
   format: "wav" | "mp3" | "flac" | "opus" | "pcm16" = "wav",
   slowPace: boolean = false
 ): Promise<Buffer> {
-  if (useEdgeTTSFallback) {
-    const hasPersonalKey = !!process.env.OPENAI_API_KEY;
-    if (hasPersonalKey) {
-      try {
-        console.log(`[TTS] Replit key rate-limited — using personal OpenAI key`);
-        return await personalOpenAITTSGenerate(text, voice, format, slowPace);
-      } catch (personalErr: any) {
-        console.warn(`[TTS] Personal OpenAI TTS failed: ${personalErr.message} — falling back to Edge TTS`);
-      }
+  const hasReplitKey = !!process.env.AI_INTEGRATIONS_OPENAI_API_KEY;
+  const hasReplitBaseUrl = !!process.env.AI_INTEGRATIONS_OPENAI_BASE_URL;
+  const hasReplitIntegration = hasReplitKey && hasReplitBaseUrl;
+
+  if (!hasReplitIntegration || useEdgeTTSFallback) {
+    if (!hasReplitIntegration) {
+      console.log(`[TTS] No Replit AI integration — using Edge TTS (free, no charges)`);
     }
     try {
-      console.log(`[TTS] Using Edge TTS fallback (voice: ${edgeVoiceMap[voice] || edgeVoiceMap.echo})`);
       return await edgeTTSGenerate(text, voice);
     } catch (edgeErr: any) {
-      console.warn(`[TTS] Edge TTS failed (${edgeTTSConsecutiveFailures} consecutive): ${edgeErr.message}`);
-      if (!hasPersonalKey) {
-        try {
-          return await personalOpenAITTSGenerate(text, voice, format, slowPace);
-        } catch (personalErr: any) {
-          console.warn(`[TTS] Personal OpenAI TTS also failed: ${personalErr.message} — falling back to local TTS`);
-        }
-      }
+      console.warn(`[TTS] Edge TTS failed (${edgeTTSConsecutiveFailures} consecutive): ${edgeErr.message} — falling back to local TTS`);
       return localTTSGenerate(text);
     }
   }
@@ -400,28 +374,12 @@ export async function textToSpeech(
       useEdgeTTSFallback = true;
       rateLimitResetTime = resetMs;
       await saveRateLimitReset(resetMs);
-      try {
-        return await edgeTTSGenerate(text, voice);
-      } catch (edgeErr: any) {
-        console.warn(`[TTS] Edge TTS also failed: ${edgeErr.message} — trying personal OpenAI`);
-        try {
-          return await personalOpenAITTSGenerate(text, voice, format, slowPace);
-        } catch (personalErr: any) {
-          console.warn(`[TTS] Personal OpenAI TTS also failed: ${personalErr.message} — falling back to local TTS`);
-          return localTTSGenerate(text);
-        }
-      }
     }
     try {
       return await edgeTTSGenerate(text, voice);
     } catch (edgeErr: any) {
-      console.warn(`[TTS] OpenAI error + Edge TTS failed: ${edgeErr.message} — trying personal OpenAI`);
-      try {
-        return await personalOpenAITTSGenerate(text, voice, format, slowPace);
-      } catch (personalErr: any) {
-        console.warn(`[TTS] Personal OpenAI TTS also failed: ${personalErr.message} — falling back to local TTS`);
-        return localTTSGenerate(text);
-      }
+      console.warn(`[TTS] Edge TTS also failed: ${edgeErr.message} — falling back to local TTS`);
+      return localTTSGenerate(text);
     }
   }
 }

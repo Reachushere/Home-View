@@ -7,12 +7,6 @@ const openai = new OpenAI({
   baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
 });
 
-function getPersonalOpenAI(): OpenAI | null {
-  const key = process.env.OPENAI_API_KEY;
-  if (!key) return null;
-  return new OpenAI({ apiKey: key });
-}
-
 export function registerChatRoutes(app: Express): void {
   app.get("/api/conversations", async (req: Request, res: Response) => {
     try {
@@ -78,35 +72,12 @@ export function registerChatRoutes(app: Express): void {
       res.setHeader("Cache-Control", "no-cache");
       res.setHeader("Connection", "keep-alive");
 
-      let stream: any;
-      let usedPersonal = false;
-      try {
-        stream = await openai.chat.completions.create({
+      const stream = await openai.chat.completions.create({
           model: "gpt-5.1",
           messages: chatMessages,
           stream: true,
           max_completion_tokens: 2048,
         });
-      } catch (err: any) {
-        const is429 = err?.status === 429 || err?.message?.includes('429') || err?.message?.includes('Rate limit');
-        if (is429) {
-          const personal = getPersonalOpenAI();
-          if (personal) {
-            console.log(`[Chat] Replit OpenAI rate limited — falling back to personal OpenAI`);
-            stream = await personal.chat.completions.create({
-              model: "gpt-4o-mini",
-              messages: chatMessages,
-              stream: true,
-              max_completion_tokens: 2048,
-            });
-            usedPersonal = true;
-          } else {
-            throw err;
-          }
-        } else {
-          throw err;
-        }
-      }
 
       let fullResponse = "";
 

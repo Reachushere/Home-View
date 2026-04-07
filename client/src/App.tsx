@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AccessGate } from "@/components/access-gate";
 import { WifiOff } from "lucide-react";
 
+import OpenAIApprovalNotifier from "@/components/OpenAIApprovalNotifier";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
 import FilesPage from "@/pages/files";
@@ -167,6 +168,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <ConnectionBanner />
+        <OpenAIApprovalNotifier />
         <AccessGate>
           <Toaster />
           <Router />

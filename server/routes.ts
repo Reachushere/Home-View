@@ -25,6 +25,7 @@ import { getSchedulerStatus } from "./reminderScheduler";
 import { fetchTMUCalendarEvents } from "./tmuCalendar";
 import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles, createOneDriveFolder, getOneDriveFileContentAsText, getOneDriveItemByPath, createOneDriveTextFile, updateOneDriveFileContent, deleteOneDriveItem, resolveSharedNotebookUrl, getSharedNotebookSections, getPagesBySectionId, startDeviceCodeFlow, pollDeviceCodeAuth, isOneDriveConnected } from "./onedrive";
 import * as spotifyApi from "./spotify";
+import { hasReplitOpenAI, hasPersonalOpenAI, getApprovedOpenAIConfig, resolveApproval, getPendingApprovals, getRecentApprovals, subscribeToApprovals } from "./openai-approval";
 
 // Helper function to generate repeated task due dates
 function generateRepeatDates(
@@ -8318,11 +8319,10 @@ async function pollStatus(timeout){
       }
       if (toTranslate.length > 0) {
         const OpenAI = (await import("openai")).default;
-        const _tApiKey = process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY;
-        const _tCfg: any = { apiKey: _tApiKey };
-        if (process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_BASE_URL) {
-          _tCfg.baseURL = process.env.AI_INTEGRATIONS_OPENAI_BASE_URL;
-        }
+        const _tConfig = await getApprovedOpenAIConfig("Translation", `Translate ${toTranslate.length} Spotify track names to Japanese`, "~$0.01");
+        if (!_tConfig) throw new Error("OpenAI not available — no Replit integration key and personal key not approved");
+        const _tCfg: any = { apiKey: _tConfig.apiKey };
+        if (_tConfig.baseURL) _tCfg.baseURL = _tConfig.baseURL;
         const openai = new OpenAI(_tCfg);
         const batch = toTranslate.slice(0, 20);
         const prompt = batch.map((t, i) => `${i + 1}. ${t}`).join("\n");
@@ -10085,6 +10085,40 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     });
   });
 
+  app.get("/api/openai-approval/pending", (_req, res) => {
+    res.json(getPendingApprovals());
+  });
+
+  app.get("/api/openai-approval/recent", (_req, res) => {
+    res.json(getRecentApprovals());
+  });
+
+  app.post("/api/openai-approval/:id/respond", (req, res) => {
+    const { id } = req.params;
+    const { approved } = req.body;
+    const ok = resolveApproval(id, !!approved);
+    if (!ok) return res.status(404).json({ error: "Approval not found or already resolved" });
+    res.json({ success: true, approved: !!approved });
+  });
+
+  app.get("/api/openai-approval/stream", (req, res) => {
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+    res.write(`data: ${JSON.stringify({ type: "connected" })}\n\n`);
+
+    const pending = getPendingApprovals();
+    for (const a of pending) {
+      res.write(`data: ${JSON.stringify({ type: "approval", data: a })}\n\n`);
+    }
+
+    const unsub = subscribeToApprovals((approval) => {
+      res.write(`data: ${JSON.stringify({ type: "approval", data: approval })}\n\n`);
+    });
+
+    req.on("close", unsub);
+  });
+
   app.get("/api/system-health", async (_req, res) => {
     const uptimeSeconds = Math.round((Date.now() - SERVER_START_TIME) / 1000);
     const checks: Record<string, { status: 'ok' | 'degraded' | 'down' | 'unconfigured'; message: string; details?: any }> = {};
@@ -10124,10 +10158,11 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       checks.oneDrive = { status: 'down', message: e.message || 'Connection failed' };
     }
 
-    const hasOpenAI = !!(process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY);
+    const hasReplitAI = hasReplitOpenAI();
+    const hasPersonalAI = hasPersonalOpenAI();
     checks.openAI = {
-      status: hasOpenAI ? 'ok' : 'unconfigured',
-      message: hasOpenAI ? 'Configured' : 'Missing API key',
+      status: hasReplitAI ? 'ok' : (hasPersonalAI ? 'degraded' : 'unconfigured'),
+      message: hasReplitAI ? 'Replit integration' : (hasPersonalAI ? 'Personal key (approval required)' : 'Missing API key'),
     };
 
     try {
@@ -18358,13 +18393,12 @@ document.body.removeChild(a);
       }
 
       const OpenAI = (await import('openai')).default;
-      const _apiKey = process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY;
-      const _cfg: any = { apiKey: _apiKey };
-      if (process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_BASE_URL) {
-        _cfg.baseURL = process.env.AI_INTEGRATIONS_OPENAI_BASE_URL;
-      }
+      const _syllConfig = await getApprovedOpenAIConfig("Syllabus Parse", "Parse syllabus PDF to extract course schedule", "~$0.02-0.05");
+      if (!_syllConfig) return res.status(503).json({ error: "OpenAI not available — no Replit integration key and personal key not approved" });
+      const _cfg: any = { apiKey: _syllConfig.apiKey };
+      if (_syllConfig.baseURL) _cfg.baseURL = _syllConfig.baseURL;
       const openai = new OpenAI(_cfg);
-      console.log(`[Syllabus Parse] Using ${process.env.AI_INTEGRATIONS_OPENAI_API_KEY ? 'AI_INTEGRATIONS key' : 'user OPENAI_API_KEY'}`);
+      console.log(`[Syllabus Parse] Using ${_syllConfig.baseURL ? 'AI_INTEGRATIONS key' : 'personal key (approved)'}`);
 
       const semesterInfo = semesterStartDate
         ? `\n\nIMPORTANT SEMESTER DATES:
@@ -18512,11 +18546,10 @@ Return ONLY the JSON object, no markdown formatting.`;
       }
 
       const OpenAI = (await import('openai')).default;
-      const _apiKey = process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY;
-      const _cfg: any = { apiKey: _apiKey };
-      if (process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_BASE_URL) {
-        _cfg.baseURL = process.env.AI_INTEGRATIONS_OPENAI_BASE_URL;
-      }
+      const _asgConfig = await getApprovedOpenAIConfig("Assignment Parse", "Extract assignment details from PDF", "~$0.02-0.05");
+      if (!_asgConfig) return res.status(503).json({ error: "OpenAI not available — no Replit integration key and personal key not approved" });
+      const _cfg: any = { apiKey: _asgConfig.apiKey };
+      if (_asgConfig.baseURL) _cfg.baseURL = _asgConfig.baseURL;
       const openai = new OpenAI(_cfg);
 
       const prompt = `Extract assignment details from this academic document. Return a JSON object with these fields:
@@ -20517,11 +20550,10 @@ Return ONLY the JSON object, no markdown formatting.`;
       if (!code || !language) return res.status(400).json({ error: "code and language required" });
 
       const OpenAI = (await import("openai")).default;
-      const _cApiKey = process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY;
-      const _cCfg: any = { apiKey: _cApiKey };
-      if (process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_BASE_URL) {
-        _cCfg.baseURL = process.env.AI_INTEGRATIONS_OPENAI_BASE_URL;
-      }
+      const _crConfig = await getApprovedOpenAIConfig("Code Review", `Review ${language} code`, "~$0.01");
+      if (!_crConfig) return res.status(503).json({ error: "OpenAI not available — no Replit integration key and personal key not approved" });
+      const _cCfg: any = { apiKey: _crConfig.apiKey };
+      if (_crConfig.baseURL) _cCfg.baseURL = _crConfig.baseURL;
       const openai = new OpenAI(_cCfg);
 
       const completion = await openai.chat.completions.create({

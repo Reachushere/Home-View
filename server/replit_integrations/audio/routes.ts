@@ -5,12 +5,6 @@ import { openai, speechToText, ensureCompatibleFormat } from "./client";
 
 const audioBodyParser = express.json({ limit: "50mb" });
 
-function getPersonalOpenAI(): OpenAI | null {
-  const key = process.env.OPENAI_API_KEY;
-  if (!key) return null;
-  return new OpenAI({ apiKey: key });
-}
-
 export function registerAudioRoutes(app: Express): void {
   app.get("/api/conversations", async (req: Request, res: Response) => {
     try {
@@ -87,35 +81,13 @@ export function registerAudioRoutes(app: Express): void {
 
       res.write(`data: ${JSON.stringify({ type: "user_transcript", data: userTranscript })}\n\n`);
 
-      let stream: any;
-      try {
-        stream = await openai.chat.completions.create({
+      const stream = await openai.chat.completions.create({
           model: "gpt-audio",
           modalities: ["text", "audio"],
           audio: { voice, format: "pcm16" },
           messages: chatHistory,
           stream: true,
         });
-      } catch (err: any) {
-        const is429 = err?.status === 429 || err?.message?.includes('429') || err?.message?.includes('Rate limit');
-        if (is429) {
-          const personal = getPersonalOpenAI();
-          if (personal) {
-            console.log(`[Audio] Replit OpenAI rate limited — falling back to personal OpenAI`);
-            stream = await personal.chat.completions.create({
-              model: "gpt-4o-mini-audio-preview",
-              modalities: ["text", "audio"],
-              audio: { voice, format: "pcm16" },
-              messages: chatHistory,
-              stream: true,
-            });
-          } else {
-            throw err;
-          }
-        } else {
-          throw err;
-        }
-      }
 
       let assistantTranscript = "";
 
