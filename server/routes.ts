@@ -11449,9 +11449,27 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   async function playOnNestSpeaker(audioUrl: string, maxRetries: number = 2): Promise<{ success: boolean; actuallyPlaying: boolean }> {
     const fullUrl = audioUrl.startsWith('http') ? audioUrl : `${DEPLOYED_APP_URL}${audioUrl}`;
     console.log(`[Nest] Playing audio: ${fullUrl}`);
+
+    let mediaContentId = fullUrl;
+    let mediaContentType = "audio/mpeg";
+
+    const audioPathLocal = audioUrl.startsWith('http') ? new URL(audioUrl).pathname : audioUrl;
+    try {
+      const haMediaId = await uploadAudioToHA(audioPathLocal);
+      if (haMediaId) {
+        mediaContentId = haMediaId;
+        mediaContentType = "music";
+        console.log(`[Nest] Using HA media source: ${mediaContentId}`);
+      } else {
+        console.log(`[Nest] HA upload failed, falling back to direct URL: ${fullUrl}`);
+      }
+    } catch (e: any) {
+      console.log(`[Nest] HA upload error: ${e.message}, falling back to direct URL`);
+    }
+
     try {
       await haServiceCall('media_player/play_media', {
-        entity_id: NEST_SPEAKER_ENTITY, media_content_id: fullUrl, media_content_type: "audio/mpeg"
+        entity_id: NEST_SPEAKER_ENTITY, media_content_id: mediaContentId, media_content_type: mediaContentType
       }, 'Nest Play Direct');
     } catch (e: any) {
       console.error(`[Nest] play_media failed: ${e.message}`);
