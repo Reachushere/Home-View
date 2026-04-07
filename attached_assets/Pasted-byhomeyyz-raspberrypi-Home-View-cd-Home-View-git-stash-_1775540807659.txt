@@ -1,0 +1,47 @@
+byhomeyyz@raspberrypi:~/Home-View $ cd ~/Home-View && git stash && git pull origin main && git stash pop && pm2 restart unical
+Saved working directory and index state WIP on main: a82c2effe Add countdown bar visual to homework panel tasks
+remote: Enumerating objects: 39, done.
+remote: Counting objects: 100% (39/39), done.
+remote: Compressing objects: 100% (8/8), done.
+remote: Total 31 (delta 25), reused 29 (delta 23), pack-reused 0 (from 0)
+Unpacking objects: 100% (31/31), 21.64 KiB | 221.00 KiB/s, done.
+From https://github.com/Reachushere/Home-View
+ * branch                main       -> FETCH_HEAD
+   a82c2effe..f9d4d428a  main       -> origin/main
+Updating a82c2effe..f9d4d428a
+Fast-forward
+ ...byhomeyyz-raspberrypi-Home-View-pm2-logs-unical-lines-_1775540282058.txt | 102 ++++++++++++++++++++++++++++++++
+ ...yhomeyyz-raspberrypi-Home-View-npm-install-g-pm2-kill-_1775495542617.txt |  33 +++++++++++
+ ...yhomeyyz-raspberrypi-Home-View-pm2-logs-unical-lines-2_1775540316564.txt |  67 +++++++++++++++++++++
+ ...ill-lsof-t-i-5000-2-dev-null-cd-Home-View-pm2-start-np_1775495610674.txt |  33 +++++++++++
+ ...est-resource-http-172-24-1-204-5000-api-ha-news-scan-i_1775540515581.txt | 113 ++++++++++++++++++++++++++++++++++++
+ attached_assets/image_1775495476679.png                                     | Bin 0 -> 15626 bytes
+ client/src/pages/dashboard.tsx                                              |   4 +-
+ server/routes.ts                                                            |  14 ++++-
+ 8 files changed, 363 insertions(+), 3 deletions(-)
+ create mode 100644 attached_assets/Pasted--byhomeyyz-raspberrypi-Home-View-pm2-logs-unical-lines-_1775540282058.txt
+ create mode 100644 attached_assets/Pasted-byhomeyyz-raspberrypi-Home-View-npm-install-g-pm2-kill-_1775495542617.txt
+ create mode 100644 attached_assets/Pasted-byhomeyyz-raspberrypi-Home-View-pm2-logs-unical-lines-2_1775540316564.txt
+ create mode 100644 attached_assets/Pasted-kill-lsof-t-i-5000-2-dev-null-cd-Home-View-pm2-start-np_1775495610674.txt
+ create mode 100644 attached_assets/Pasted-rest-resource-http-172-24-1-204-5000-api-ha-news-scan-i_1775540515581.txt
+ create mode 100644 attached_assets/image_1775495476679.png
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        new file:   .env
+        new file:   .google_tokens.json
+        new file:   .onedrive_tokens.json
+        new file:   unical_db_backup.sql
+
+Dropped refs/stash@{0} (1efca2e33654c26864010cbed01c2028005f73ee)
+Use --update-env to update environment variables
+[PM2] Applying action restartProcessId on app [unical](ids: [ 0 ])
+[PM2] [unical](0) ✓
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+├────┼────────────────────┼──────────┼──────┼───────────┼──────────┼──────────┤
+│ 0  │ unical             │ fork     │ 117… │ online    │ 0%       │ 18.7mb   │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+byhomeyyz@raspberrypi:~/Home-View $
