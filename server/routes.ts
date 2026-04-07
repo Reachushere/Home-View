@@ -16246,7 +16246,7 @@ document.body.removeChild(a);
       const semesterFolderMap: Record<string, string[]> = {
         'fall': ['Fall'],
         'winter': ['Winter'],
-        'spring_summer': ['Spring & Summer', 'Spring_Summer', 'Spring Summer'],
+        'spring_summer': ['Spring & Summer', 'Spring_Summer', 'Spring Summer', 'Spring-Summer'],
       };
 
       for (const semester of allSemesters) {
@@ -16276,11 +16276,36 @@ document.body.removeChild(a);
           continue;
         }
 
+      const springSummerSubFolders = ['Full', 'Spring - First Half', 'Summer - Second Half'];
+
       for (const courseCode of courseCodes) {
         try {
-          const matchedFolder = baseFolders.find((f: any) =>
+          let matchedFolder = baseFolders.find((f: any) =>
             f.type === 'folder' && f.name.toUpperCase().startsWith(courseCode.toUpperCase())
           );
+
+          if (!matchedFolder && semester.semesterType === 'spring_summer') {
+            for (const subFolderName of springSummerSubFolders) {
+              const subFolder = baseFolders.find((f: any) =>
+                f.type === 'folder' && f.name === subFolderName
+              );
+              if (!subFolder) continue;
+              try {
+                const subContents = await listOneDriveItems(subFolder.path);
+                const found = subContents.find((f: any) =>
+                  f.type === 'folder' && f.name.toUpperCase().startsWith(courseCode.toUpperCase())
+                );
+                if (found) {
+                  matchedFolder = found;
+                  console.log(`[Monitor Sync] Found ${courseCode} inside ${subFolderName}`);
+                  break;
+                }
+              } catch (e: any) {
+                continue;
+              }
+            }
+          }
+
           if (!matchedFolder) continue;
 
           const coursePath = matchedFolder.path;
