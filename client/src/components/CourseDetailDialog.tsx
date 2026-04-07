@@ -3377,15 +3377,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   )}
                 </div>
 
-                <div className="flex items-center gap-2 px-2 py-1 mb-0.5 border-b border-white/10">
-                  <div className="flex-shrink-0 w-5" />
-                  <div className="flex-1 min-w-0 text-[8px] text-white/40 font-semibold uppercase tracking-wider">Week / Dates</div>
-                  <div className="flex-shrink-0 w-[72px] text-[8px] text-white/40 font-semibold uppercase tracking-wider text-center">Reading</div>
-                  <div className="flex-shrink-0 w-[72px] text-[8px] text-white/40 font-semibold uppercase tracking-wider text-center">Module</div>
-                  <div className="flex-shrink-0 w-20 text-[8px] text-white/40 font-semibold uppercase tracking-wider text-center">Label</div>
-                  <div className="w-20 text-[8px] text-white/40 font-semibold uppercase tracking-wider text-center">Notes</div>
-                </div>
-
                 {Array.from({ length: LAST_WEEK - FIRST_WEEK + 1 }, (_, i) => i + FIRST_WEEK).map((weekNum) => {
                   const weekDates = getWeekDates(weekNum, semesterStart, readingWeekStart);
                   const weekStart = new Date(weekDates.start);
@@ -3398,298 +3389,274 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   const effectiveRWStart = selectedReadingWeekStart || readingWeekStart;
                   const currentWeek = getWeekNumber(new Date(), semesterStart, effectiveRWStart);
                   const isCurrent = weekNum === currentWeek;
+                  const weekFiles = modulesByWeek[weekNum] || [];
 
                   return (
                     <div
                       key={weekNum}
-                      className={`flex items-center gap-2 px-2 py-1.5 rounded ${isCurrent ? 'bg-blue-500/10 border border-blue-500/20' : 'hover:bg-white/5'}`}
+                      className={`rounded-lg border overflow-hidden ${isCurrent ? 'bg-blue-500/8 border-blue-500/30' : 'bg-white/[0.03] border-white/10 hover:border-white/15'} transition-colors`}
                       data-testid={`week-mapping-row-${weekNum}`}
                     >
-                      <button
-                        onClick={() => {
-                          const newState = { ...edit, confirmed: !isConfirmed };
-                          setWeekMappingEdits(prev => ({ ...prev, [weekNum]: newState }));
-                          saveWeekMapping(weekNum, newState);
-                        }}
-                        className={`flex-shrink-0 w-5 h-5 rounded border flex items-center justify-center transition-colors ${
-                          isConfirmed
-                            ? 'bg-green-500/30 border-green-500/50 text-green-300'
-                            : 'bg-white/5 border-white/20 text-white/30 hover:border-white/40'
-                        }`}
-                        data-testid={`button-confirm-week-${weekNum}`}
-                      >
-                        {isConfirmed && <Check className="h-3 w-3" />}
-                      </button>
+                      <div className={`flex items-center gap-2 px-2.5 py-2 ${isCurrent ? 'bg-blue-500/10' : 'bg-white/[0.04]'}`}>
+                        <button
+                          onClick={() => {
+                            const newState = { ...edit, confirmed: !isConfirmed };
+                            setWeekMappingEdits(prev => ({ ...prev, [weekNum]: newState }));
+                            saveWeekMapping(weekNum, newState);
+                          }}
+                          className={`flex-shrink-0 w-5 h-5 rounded border flex items-center justify-center transition-colors ${
+                            isConfirmed
+                              ? 'bg-green-500/30 border-green-500/50 text-green-300'
+                              : 'bg-white/5 border-white/20 text-white/30 hover:border-white/40'
+                          }`}
+                          data-testid={`button-confirm-week-${weekNum}`}
+                        >
+                          {isConfirmed && <Check className="h-3 w-3" />}
+                        </button>
 
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <span className={`text-[10px] font-medium ${isCurrent ? 'text-blue-300' : 'text-white'}`}>
-                            Week {weekNum}
-                          </span>
-                          <span className="text-[8px] text-white">{dateRange}</span>
-                          {isCurrent && <span className="text-[7px] px-1 py-0.5 bg-blue-500/20 text-blue-300 rounded">Current</span>}
-                          {hasCustomLabel && (
-                            <span className="text-[8px] px-1 py-0.5 bg-amber-500/15 text-amber-300 rounded">
-                              Course: {edit.courseWeekLabel}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className={`text-[11px] font-semibold ${isCurrent ? 'text-blue-300' : 'text-white'}`}>
+                              Week {weekNum}
                             </span>
+                            <span className="text-[9px] text-white/60">{dateRange}</span>
+                            {isCurrent && <span className="text-[7px] px-1.5 py-0.5 bg-blue-500/25 text-blue-200 rounded font-semibold uppercase">Current</span>}
+                            {hasCustomLabel && (
+                              <span className="text-[8px] px-1 py-0.5 bg-amber-500/15 text-amber-300 rounded">
+                                {edit.courseWeekLabel}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="relative flex-shrink-0">
+                          <button
+                            onClick={() => { setCourseWeekCalendarOpen(courseWeekCalendarOpen === weekNum ? null : weekNum); setCourseWeekCalMonth(weekStart); }}
+                            className="h-5 px-1.5 text-[8px] bg-white/10 border border-white/25 rounded text-white hover:border-white/40 flex items-center gap-1 transition-colors"
+                            data-testid={`button-course-week-label-${weekNum}`}
+                          >
+                            <Calendar className="h-2.5 w-2.5 flex-shrink-0 text-white/50" />
+                            <span className="truncate">{edit.courseWeekLabel || 'Label'}</span>
+                          </button>
+                          {courseWeekCalendarOpen === weekNum && (
+                            <div ref={weekCalendarRef} className="absolute right-0 top-6 z-50 bg-gray-900 border border-white/25 rounded-lg p-2 shadow-xl" style={{ width: '200px' }} onClick={(e) => e.stopPropagation()}>
+                              <div className="flex items-center justify-between mb-1">
+                                <button onClick={() => setCourseWeekCalMonth(new Date(courseWeekCalMonth.getFullYear(), courseWeekCalMonth.getMonth() - 1, 1))} className="text-white/50 hover:text-white p-0.5"><ChevronLeft className="h-3 w-3" /></button>
+                                <span className="text-[9px] text-white font-medium">{courseWeekCalMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
+                                <button onClick={() => setCourseWeekCalMonth(new Date(courseWeekCalMonth.getFullYear(), courseWeekCalMonth.getMonth() + 1, 1))} className="text-white/50 hover:text-white p-0.5"><ChevronRight className="h-3 w-3" /></button>
+                              </div>
+                              <div className="grid grid-cols-7 gap-0.5 text-center">
+                                {['S','M','T','W','T','F','S'].map((d, i) => <div key={i} className="text-[7px] text-white/40 font-medium py-0.5">{d}</div>)}
+                                {(() => {
+                                  const yr = courseWeekCalMonth.getFullYear();
+                                  const mo = courseWeekCalMonth.getMonth();
+                                  const firstDow = new Date(yr, mo, 1).getDay();
+                                  const dim = new Date(yr, mo + 1, 0).getDate();
+                                  const cells = [];
+                                  for (let i = 0; i < firstDow; i++) cells.push(<div key={`e-${i}`} />);
+                                  for (let d = 1; d <= dim; d++) {
+                                    const dt = new Date(yr, mo, d);
+                                    const wn = getWeekNumber(dt, semesterStart, readingWeekStart);
+                                    const isThisWeek = wn === weekNum;
+                                    cells.push(
+                                      <button
+                                        key={d}
+                                        className={`text-[8px] py-0.5 rounded transition-colors ${isThisWeek ? 'bg-blue-500/30 text-blue-200 font-bold' : 'text-white/70 hover:bg-white/10'}`}
+                                        onClick={() => {
+                                          const label = `Week ${weekNum}`;
+                                          const newState = { ...edit, courseWeekLabel: label };
+                                          setWeekMappingEdits(prev => ({ ...prev, [weekNum]: newState }));
+                                          saveWeekMapping(weekNum, newState);
+                                          setCourseWeekCalendarOpen(null);
+                                        }}
+                                      >{d}</button>
+                                    );
+                                  }
+                                  return cells;
+                                })()}
+                              </div>
+                              <div className="mt-1 flex gap-1">
+                                <input
+                                  type="text"
+                                  placeholder="Custom label"
+                                  value={edit.courseWeekLabel}
+                                  onChange={(e) => setWeekMappingEdits(prev => ({ ...prev, [weekNum]: { ...edit, courseWeekLabel: e.target.value } }))}
+                                  onBlur={() => saveWeekMapping(weekNum, edit)}
+                                  className="flex-1 h-5 text-[8px] bg-white/10 border border-white/25 rounded px-1.5 text-white placeholder:text-white/40 focus:border-white/50 outline-none"
+                                  data-testid={`input-course-week-label-${weekNum}`}
+                                />
+                                <button onClick={() => setCourseWeekCalendarOpen(null)} className="text-[7px] text-white/50 hover:text-white px-1">Done</button>
+                              </div>
+                            </div>
                           )}
                         </div>
+
+                        <input
+                          type="text"
+                          placeholder="Notes"
+                          value={edit.notes}
+                          onChange={(e) => {
+                            setWeekMappingEdits(prev => ({ ...prev, [weekNum]: { ...edit, notes: e.target.value } }));
+                          }}
+                          onBlur={() => saveWeekMapping(weekNum, edit)}
+                          className="w-20 h-5 text-[8px] bg-white/10 border border-white/25 rounded px-1.5 text-white placeholder:text-white/70 focus:border-white/50 outline-none flex-shrink-0"
+                          data-testid={`input-week-notes-${weekNum}`}
+                        />
                       </div>
 
-                      <button
-                        onClick={() => handleWeekFileUpload(weekNum, 'reading')}
-                        disabled={weekUploadingState[`${weekNum}-reading`]}
-                        className="flex-shrink-0 h-5 px-2.5 text-[9px] font-medium bg-white hover:bg-white/90 text-black border border-white/50 rounded flex items-center gap-1 transition-colors disabled:opacity-50"
-                        data-testid={`button-upload-reading-${weekNum}`}
-                      >
-                        {weekUploadingState[`${weekNum}-reading`] ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}
-                        Upload File
-                      </button>
-
-                      <button
-                        onClick={() => handleWeekFileUpload(weekNum, 'module')}
-                        disabled={weekUploadingState[`${weekNum}-module`]}
-                        className="flex-shrink-0 h-5 px-2.5 text-[9px] font-medium bg-white hover:bg-white/90 text-black border border-white/50 rounded flex items-center gap-1 transition-colors disabled:opacity-50"
-                        data-testid={`button-upload-module-${weekNum}`}
-                      >
-                        {weekUploadingState[`${weekNum}-module`] ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}
-                        Upload File
-                      </button>
-
-                      <div className="relative flex-shrink-0">
+                      <div className="px-2.5 py-1.5 flex items-center gap-2 border-t border-white/[0.06]">
+                        <span className="text-[8px] text-white/40 uppercase tracking-wider font-medium">Uploads</span>
                         <button
-                          onClick={() => { setCourseWeekCalendarOpen(courseWeekCalendarOpen === weekNum ? null : weekNum); setCourseWeekCalMonth(weekStart); }}
-                          className="w-20 h-5 text-[8px] bg-white/10 border border-white/25 rounded px-1.5 text-white hover:border-white/40 flex items-center gap-1 transition-colors"
-                          data-testid={`button-course-week-label-${weekNum}`}
+                          onClick={() => handleWeekFileUpload(weekNum, 'reading')}
+                          disabled={weekUploadingState[`${weekNum}-reading`]}
+                          className="h-5 px-2 text-[8px] font-medium bg-white/10 hover:bg-white/15 text-white border border-white/20 rounded flex items-center gap-1 transition-colors disabled:opacity-50"
+                          data-testid={`button-upload-reading-${weekNum}`}
                         >
-                          <Calendar className="h-2.5 w-2.5 flex-shrink-0 text-white/50" />
-                          <span className="truncate">{edit.courseWeekLabel || 'Set week'}</span>
+                          {weekUploadingState[`${weekNum}-reading`] ? <Loader2 className="h-2.5 w-2.5 animate-spin" /> : <Upload className="h-2.5 w-2.5" />}
+                          Reading
                         </button>
-                        {courseWeekCalendarOpen === weekNum && (
-                          <div ref={weekCalendarRef} className="absolute right-0 top-6 z-50 bg-gray-900 border border-white/25 rounded-lg p-2 shadow-xl" style={{ width: '200px' }} onClick={(e) => e.stopPropagation()}>
-                            <div className="flex items-center justify-between mb-1">
-                              <button onClick={() => setCourseWeekCalMonth(new Date(courseWeekCalMonth.getFullYear(), courseWeekCalMonth.getMonth() - 1, 1))} className="text-white/50 hover:text-white p-0.5"><ChevronLeft className="h-3 w-3" /></button>
-                              <span className="text-[9px] text-white font-medium">{courseWeekCalMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
-                              <button onClick={() => setCourseWeekCalMonth(new Date(courseWeekCalMonth.getFullYear(), courseWeekCalMonth.getMonth() + 1, 1))} className="text-white/50 hover:text-white p-0.5"><ChevronRight className="h-3 w-3" /></button>
-                            </div>
-                            <div className="grid grid-cols-7 gap-0.5 text-center">
-                              {['S','M','T','W','T','F','S'].map((d, i) => <div key={i} className="text-[7px] text-white/40 font-medium py-0.5">{d}</div>)}
-                              {(() => {
-                                const yr = courseWeekCalMonth.getFullYear();
-                                const mo = courseWeekCalMonth.getMonth();
-                                const firstDow = new Date(yr, mo, 1).getDay();
-                                const dim = new Date(yr, mo + 1, 0).getDate();
-                                const cells = [];
-                                for (let i = 0; i < firstDow; i++) cells.push(<div key={`e-${i}`} />);
-                                for (let d = 1; d <= dim; d++) {
-                                  const dt = new Date(yr, mo, d);
-                                  const wn = getWeekNumber(dt, semesterStart, readingWeekStart);
-                                  const isThisWeek = wn === weekNum;
-                                  cells.push(
-                                    <button
-                                      key={d}
-                                      className={`text-[8px] py-0.5 rounded transition-colors ${isThisWeek ? 'bg-blue-500/30 text-blue-200 font-bold' : 'text-white/70 hover:bg-white/10'}`}
-                                      onClick={() => {
-                                        const label = `Week ${weekNum}`;
-                                        const newState = { ...edit, courseWeekLabel: label };
-                                        setWeekMappingEdits(prev => ({ ...prev, [weekNum]: newState }));
-                                        saveWeekMapping(weekNum, newState);
-                                        setCourseWeekCalendarOpen(null);
-                                      }}
-                                    >{d}</button>
-                                  );
-                                }
-                                return cells;
-                              })()}
-                            </div>
-                            <div className="mt-1 flex gap-1">
-                              <input
-                                type="text"
-                                placeholder="Custom label"
-                                value={edit.courseWeekLabel}
-                                onChange={(e) => setWeekMappingEdits(prev => ({ ...prev, [weekNum]: { ...edit, courseWeekLabel: e.target.value } }))}
-                                onBlur={() => saveWeekMapping(weekNum, edit)}
-                                className="flex-1 h-5 text-[8px] bg-white/10 border border-white/25 rounded px-1.5 text-white placeholder:text-white/40 focus:border-white/50 outline-none"
-                                data-testid={`input-course-week-label-${weekNum}`}
-                              />
-                              <button onClick={() => setCourseWeekCalendarOpen(null)} className="text-[7px] text-white/50 hover:text-white px-1">Done</button>
-                            </div>
-                          </div>
+                        <button
+                          onClick={() => handleWeekFileUpload(weekNum, 'module')}
+                          disabled={weekUploadingState[`${weekNum}-module`]}
+                          className="h-5 px-2 text-[8px] font-medium bg-white/10 hover:bg-white/15 text-white border border-white/20 rounded flex items-center gap-1 transition-colors disabled:opacity-50"
+                          data-testid={`button-upload-module-${weekNum}`}
+                        >
+                          {weekUploadingState[`${weekNum}-module`] ? <Loader2 className="h-2.5 w-2.5 animate-spin" /> : <Upload className="h-2.5 w-2.5" />}
+                          Module
+                        </button>
+                        {weekFiles.length > 0 && (
+                          <span className="text-[8px] text-white/30 ml-auto">{weekFiles.length} file{weekFiles.length !== 1 ? 's' : ''}</span>
                         )}
                       </div>
 
-                      <input
-                        type="text"
-                        placeholder="Notes"
-                        value={edit.notes}
-                        onChange={(e) => {
-                          setWeekMappingEdits(prev => ({ ...prev, [weekNum]: { ...edit, notes: e.target.value } }));
-                        }}
-                        onBlur={() => saveWeekMapping(weekNum, edit)}
-                        className="w-20 h-5 text-[8px] bg-white/10 border border-white/25 rounded px-1.5 text-white placeholder:text-white/70 focus:border-white/50 outline-none"
-                        data-testid={`input-week-notes-${weekNum}`}
-                      />
+                      {weekFiles.length > 0 && (
+                        <div className="px-2.5 pb-2 space-y-1.5">
+                          {weekFiles.map(file => {
+                            const progress = getModuleProgress(file);
+                            const complete = isModuleComplete(file);
+                            const circleSize = 22;
+                            const strokeWidth = 2.5;
+                            const radius = (circleSize - strokeWidth) / 2;
+                            const circumference = 2 * Math.PI * radius;
+                            const offset = circumference - (progress / 100) * circumference;
+                            const progressColor = progress >= 80 ? '#22c55e' : progress > 0 ? '#f97316' : '#ef4444';
+                            const fileNameRaw = (file.displayName || file.originalName || '').replace(/\.pdf$/i, '');
+                            const cCode = courseInfo?.courseCode?.trim() || courseInfo?.courseName?.split(' - ')[0]?.trim() || '';
+                            const fileName = cCode ? fileNameRaw.replace(new RegExp(`^${cCode}[,\\s]*`, 'i'), '').replace(/^[,\\s]+/, '') : fileNameRaw;
+                            const chunksPerDay = file.totalChunks > 0 ? Math.ceil(file.totalChunks / 7) : 0;
+                            const weekStartDate = new Date(weekDates.start);
+                            const now = new Date();
+                            const dayOfWeek = Math.max(0, Math.min(7, Math.floor((now.getTime() - weekStartDate.getTime()) / (24 * 60 * 60 * 1000))));
+                            const expectedByToday = isCurrent ? Math.min(file.totalChunks, chunksPerDay * (dayOfWeek + 1)) : 0;
+                            const checkedSet = getCheckedChunks(file);
+                            const actualListened = file.listened ? file.totalChunks : checkedSet.size;
+                            const diff = actualListened - expectedByToday;
+
+                            return (
+                              <div key={file.id} className="rounded bg-white/[0.04] border border-white/[0.08]" data-testid={`module-inline-week-${weekNum}-file-${file.id}`}>
+                                <div className="flex items-center gap-2 px-2 py-1.5">
+                                  <button
+                                    className={`flex-shrink-0 w-4 h-4 rounded-sm border-2 flex items-center justify-center transition-colors ${
+                                      complete ? "bg-green-500 border-green-500" : "border-white/30 hover:border-white/50"
+                                    } ${isEditingInfo ? 'cursor-pointer' : ''}`}
+                                    onClick={() => { if (isEditingInfo) handleModuleCheckToggle(file, !complete); }}
+                                    data-testid={`module-inline-check-${file.id}`}
+                                  >
+                                    {complete && <Check className="h-3 w-3 text-white" />}
+                                  </button>
+                                  <svg width={circleSize} height={circleSize} style={{ flexShrink: 0, transform: 'rotate(-90deg)' }}>
+                                    <circle cx={circleSize / 2} cy={circleSize / 2} r={radius} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={strokeWidth} />
+                                    <circle cx={circleSize / 2} cy={circleSize / 2} r={radius} fill="none" stroke={progressColor} strokeWidth={strokeWidth} strokeDasharray={circumference} strokeDashoffset={offset} strokeLinecap="round" />
+                                  </svg>
+                                  <div className="flex flex-col flex-1 min-w-0">
+                                    <span className="text-[10px] text-white truncate" title={fileName}>
+                                      {fileName}
+                                    </span>
+                                    {isEditingInfo && file.totalChunks > 0 && (
+                                      <div className="flex items-center gap-2 mt-0.5">
+                                        <input
+                                          type="range"
+                                          min={0}
+                                          max={file.totalChunks}
+                                          value={file.lastChunkIndex || 0}
+                                          onChange={(e) => handleModuleSliderChange(file, parseInt(e.target.value, 10))}
+                                          className="flex-1 h-1 accent-white/60"
+                                          style={{ cursor: 'pointer' }}
+                                          data-testid={`module-inline-slider-${file.id}`}
+                                        />
+                                        <span className="text-[9px] text-white/60 flex-shrink-0 w-[45px] text-right">
+                                          {file.lastChunkIndex || 0}/{file.totalChunks}
+                                        </span>
+                                      </div>
+                                    )}
+                                  </div>
+                                  <span className="text-[11px] font-semibold flex-shrink-0 text-white" data-testid={`module-inline-progress-${file.id}`}>
+                                    {progress}%
+                                  </span>
+                                </div>
+                                {file.totalChunks > 0 && (() => {
+                                  const checked = getCheckedChunks(file);
+                                  return (
+                                    <div className="flex flex-wrap gap-[3px] px-2 pb-1.5" data-testid={`module-inline-chunks-${file.id}`}>
+                                      {Array.from({ length: file.totalChunks }, (_, i) => {
+                                        const isChecked = checked.has(i);
+                                        return (
+                                          <div
+                                            key={i}
+                                            className={`rounded transition-colors ${isEditingInfo ? 'cursor-pointer hover:opacity-80' : ''}`}
+                                            style={{
+                                              width: '10px',
+                                              height: '10px',
+                                              backgroundColor: isChecked ? (courseInfo.colorEnd || courseInfo.color || '#22c55e') : 'transparent',
+                                              border: `1.5px solid ${isChecked ? (courseInfo.colorEnd || courseInfo.color || '#22c55e') : 'rgba(255,255,255,0.3)'}`,
+                                            }}
+                                            onClick={() => { if (isEditingInfo) handleChunkToggle(file, i); }}
+                                            title={`Chunk ${i + 1}${isChecked ? ' (listened)' : ''}`}
+                                            data-testid={`chunk-inline-${file.id}-${i}`}
+                                          />
+                                        );
+                                      })}
+                                      <span className="text-[8px] text-white/50 ml-1 self-center">{checked.size}/{file.totalChunks}</span>
+                                    </div>
+                                  );
+                                })()}
+                                {isCurrent && file.totalChunks > 0 && !complete && (() => {
+                                  const pacePercent = file.totalChunks > 0 ? Math.round((expectedByToday / file.totalChunks) * 100) : 0;
+                                  const actualPercent = file.totalChunks > 0 ? Math.round((actualListened / file.totalChunks) * 100) : 0;
+                                  return (
+                                    <div className="px-2 pb-2 space-y-1" data-testid={`module-inline-pace-${file.id}`}>
+                                      <div className="flex items-center justify-between text-[9px]">
+                                        <span className="text-white/70">{chunksPerDay} chunks/day</span>
+                                        <span className={`font-bold ${diff > 0 ? 'text-green-400' : diff < 0 ? 'text-red-400' : 'text-yellow-400'}`}>
+                                          {diff > 0 ? `+${diff} ahead` : diff < 0 ? `${diff} behind` : 'On track'}
+                                        </span>
+                                      </div>
+                                      <div className="relative h-[6px] rounded-full bg-white/[0.12] overflow-hidden">
+                                        <div
+                                          className="absolute top-0 left-0 h-full rounded-full transition-all"
+                                          style={{ width: `${Math.min(100, actualPercent)}%`, backgroundColor: diff >= 0 ? '#22c55e' : '#f97316' }}
+                                        />
+                                        <div
+                                          className="absolute top-0 h-full border-r-2 border-white/80"
+                                          style={{ left: `${Math.min(100, pacePercent)}%` }}
+                                          title={`Expected: ${expectedByToday}/${file.totalChunks} by today (Day ${dayOfWeek + 1})`}
+                                        />
+                                      </div>
+                                      <div className="flex items-center justify-between text-[8px] text-white/50">
+                                        <span>{actualListened}/{file.totalChunks} done</span>
+                                        <span>Day {dayOfWeek + 1}: {expectedByToday} expected</span>
+                                      </div>
+                                    </div>
+                                  );
+                                })()}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
                   );
                 })}
-              </div>
-
-              <div className="mt-3 border-t border-white/15 pt-3">
-                <div className="flex items-center gap-1.5 mb-2 px-1">
-                  <BookOpen className="h-3.5 w-3.5 text-white/60" />
-                  <h3 className="text-[11px] font-medium text-white uppercase">Module Progress</h3>
-                  <span className="text-[8px] text-white/30 ml-1">(not counted in GPA)</span>
-                </div>
-                <div className="space-y-1" data-testid="modules-list-inline">
-                  {(() => {
-                    const hasAnyModules = Object.values(modulesByWeek).some(files => files.length > 0);
-                    if (!hasAnyModules) {
-                      return (
-                        <div className="text-[10px] text-white/30 text-center py-3">
-                          No module files found for this course
-                        </div>
-                      );
-                    }
-                    const effectiveRWStart = selectedReadingWeekStart || readingWeekStart;
-                    const currentModuleWeek = getWeekNumber(new Date(), semesterStart, effectiveRWStart);
-                    return Array.from({ length: LAST_WEEK - FIRST_WEEK + 1 }, (_, i) => FIRST_WEEK + i).map(weekNum => {
-                      const files = modulesByWeek[weekNum] || [];
-                      const isCurrentWeek = weekNum === currentModuleWeek;
-                      if (files.length === 0) {
-                        return (
-                          <div key={weekNum} className={`flex items-center gap-2 px-2 py-1.5 rounded ${isCurrentWeek ? 'bg-white/[0.08] border-2 border-white' : 'bg-white/[0.03] border border-white/[0.06]'}`} data-testid={`module-inline-week-${weekNum}`}>
-                            <button className="flex-shrink-0 w-4 h-4 rounded-sm border-2 flex items-center justify-center border-white/30" disabled />
-                            <span className={`text-[12px] flex-1 ${isCurrentWeek ? 'text-white font-medium' : 'text-white/50'}`}>Week {weekNum}</span>
-                            {isCurrentWeek && <span className="text-[9px] text-white font-semibold uppercase mr-1 bg-white/20 px-1.5 py-0.5 rounded">Current</span>}
-                            <span className={`text-[10px] ${isCurrentWeek ? 'text-white/50' : 'text-white/30'}`}>No file</span>
-                          </div>
-                        );
-                      }
-                      return files.map(file => {
-                        const progress = getModuleProgress(file);
-                        const complete = isModuleComplete(file);
-                        const circleSize = 24;
-                        const strokeWidth = 2.5;
-                        const radius = (circleSize - strokeWidth) / 2;
-                        const circumference = 2 * Math.PI * radius;
-                        const offset = circumference - (progress / 100) * circumference;
-                        const progressColor = progress >= 80 ? '#22c55e' : progress > 0 ? '#f97316' : '#ef4444';
-                        const fileNameRaw = (file.displayName || file.originalName || '').replace(/\.pdf$/i, '');
-                        const courseCode = courseInfo?.courseCode?.trim() || courseInfo?.courseName?.split(' - ')[0]?.trim() || '';
-                        const fileName = courseCode ? fileNameRaw.replace(new RegExp(`^${courseCode}[,\\s]*`, 'i'), '').replace(/^[,\\s]+/, '') : fileNameRaw;
-                        const chunksPerDay = file.totalChunks > 0 ? Math.ceil(file.totalChunks / 7) : 0;
-                        const weekDates = getWeekDates(weekNum, semesterStart, readingWeekStart);
-                        const weekStartDate = new Date(weekDates.start);
-                        const now = new Date();
-                        const dayOfWeek = Math.max(0, Math.min(7, Math.floor((now.getTime() - weekStartDate.getTime()) / (24 * 60 * 60 * 1000))));
-                        const expectedByToday = isCurrentWeek ? Math.min(file.totalChunks, chunksPerDay * (dayOfWeek + 1)) : 0;
-                        const checkedSet = getCheckedChunks(file);
-                        const actualListened = file.listened ? file.totalChunks : checkedSet.size;
-                        const diff = actualListened - expectedByToday;
-                        return (
-                          <div key={file.id} className={`rounded ${isCurrentWeek ? 'bg-white/[0.08] border-2 border-white' : 'bg-white/[0.04] border border-white/[0.08] hover:border-white/15'} transition-colors`} data-testid={`module-inline-week-${weekNum}-file-${file.id}`}>
-                            <div className="flex items-center gap-2 px-2 py-2">
-                              <button
-                                className={`flex-shrink-0 w-4 h-4 rounded-sm border-2 flex items-center justify-center transition-colors ${
-                                  complete ? "bg-green-500 border-green-500" : "border-white/30 hover:border-white/50"
-                                } ${isEditingInfo ? 'cursor-pointer' : ''}`}
-                                onClick={() => { if (isEditingInfo) handleModuleCheckToggle(file, !complete); }}
-                                data-testid={`module-inline-check-${file.id}`}
-                              >
-                                {complete && <Check className="h-3 w-3 text-white" />}
-                              </button>
-                              <svg width={circleSize} height={circleSize} style={{ flexShrink: 0, transform: 'rotate(-90deg)' }}>
-                                <circle cx={circleSize / 2} cy={circleSize / 2} r={radius} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={strokeWidth} />
-                                <circle cx={circleSize / 2} cy={circleSize / 2} r={radius} fill="none" stroke={progressColor} strokeWidth={strokeWidth} strokeDasharray={circumference} strokeDashoffset={offset} strokeLinecap="round" />
-                              </svg>
-                              <div className="flex flex-col flex-1 min-w-0">
-                                <span className="text-[12px] text-white truncate" title={fileName}>
-                                  <span className={isCurrentWeek ? 'text-white/80' : 'text-white/60'}>Week {weekNum}</span> - {fileName}
-                                  {isCurrentWeek && <span className="text-[9px] text-white font-semibold uppercase ml-1.5 bg-white/20 px-1.5 py-0.5 rounded">Current</span>}
-                                </span>
-                                {isEditingInfo && file.totalChunks > 0 && (
-                                  <div className="flex items-center gap-2 mt-0.5">
-                                    <input
-                                      type="range"
-                                      min={0}
-                                      max={file.totalChunks}
-                                      value={file.lastChunkIndex || 0}
-                                      onChange={(e) => handleModuleSliderChange(file, parseInt(e.target.value, 10))}
-                                      className="flex-1 h-1 accent-white/60"
-                                      style={{ cursor: 'pointer' }}
-                                      data-testid={`module-inline-slider-${file.id}`}
-                                    />
-                                    <span className="text-[10px] text-white/60 flex-shrink-0 w-[45px] text-right">
-                                      {file.lastChunkIndex || 0}/{file.totalChunks}
-                                    </span>
-                                  </div>
-                                )}
-                              </div>
-                              <span className="text-[12px] font-semibold flex-shrink-0 text-white" data-testid={`module-inline-progress-${file.id}`}>
-                                {progress}%
-                              </span>
-                            </div>
-                            {file.totalChunks > 0 && (() => {
-                              const checked = getCheckedChunks(file);
-                              return (
-                                <div className="flex flex-wrap gap-[3px] px-2 pb-2" data-testid={`module-inline-chunks-${file.id}`}>
-                                  {Array.from({ length: file.totalChunks }, (_, i) => {
-                                    const isChecked = checked.has(i);
-                                    return (
-                                      <div
-                                        key={i}
-                                        className={`rounded transition-colors ${isEditingInfo ? 'cursor-pointer hover:opacity-80' : ''}`}
-                                        style={{
-                                          width: '11px',
-                                          height: '11px',
-                                          backgroundColor: isChecked ? (courseInfo.colorEnd || courseInfo.color || '#22c55e') : 'transparent',
-                                          border: `1.5px solid ${isChecked ? (courseInfo.colorEnd || courseInfo.color || '#22c55e') : 'rgba(255,255,255,0.3)'}`,
-                                        }}
-                                        onClick={() => { if (isEditingInfo) handleChunkToggle(file, i); }}
-                                        title={`Chunk ${i + 1}${isChecked ? ' (listened)' : ''}`}
-                                        data-testid={`chunk-inline-${file.id}-${i}`}
-                                      />
-                                    );
-                                  })}
-                                  <span className="text-[9px] text-white/70 ml-1 self-center">{checked.size}/{file.totalChunks}</span>
-                                </div>
-                              );
-                            })()}
-                            {isCurrentWeek && file.totalChunks > 0 && !complete && (() => {
-                              const pacePercent = file.totalChunks > 0 ? Math.round((expectedByToday / file.totalChunks) * 100) : 0;
-                              const actualPercent = file.totalChunks > 0 ? Math.round((actualListened / file.totalChunks) * 100) : 0;
-                              return (
-                                <div className="px-2 pb-2.5 space-y-1.5" data-testid={`module-inline-pace-${file.id}`}>
-                                  <div className="flex items-center justify-between text-[11px]">
-                                    <span className="text-white/90">{chunksPerDay} chunks/day to finish this week</span>
-                                    <span className={`font-bold ${diff > 0 ? 'text-green-400' : diff < 0 ? 'text-red-400' : 'text-yellow-400'}`}>
-                                      {diff > 0 ? `+${diff} ahead` : diff < 0 ? `${diff} behind` : 'On track'}
-                                    </span>
-                                  </div>
-                                  <div className="relative h-[8px] rounded-full bg-white/[0.12] overflow-hidden">
-                                    <div
-                                      className="absolute top-0 left-0 h-full rounded-full transition-all"
-                                      style={{ width: `${Math.min(100, actualPercent)}%`, backgroundColor: diff >= 0 ? '#22c55e' : '#f97316' }}
-                                    />
-                                    <div
-                                      className="absolute top-0 h-full border-r-2 border-white/80"
-                                      style={{ left: `${Math.min(100, pacePercent)}%` }}
-                                      title={`Expected: ${expectedByToday}/${file.totalChunks} by today (Day ${dayOfWeek + 1})`}
-                                    />
-                                  </div>
-                                  <div className="flex items-center justify-between text-[10px] text-white/70">
-                                    <span>Actual: {actualListened}/{file.totalChunks}</span>
-                                    <span>Expected by Day {dayOfWeek + 1}: {expectedByToday}/{file.totalChunks}</span>
-                                  </div>
-                                </div>
-                              );
-                            })()}
-                          </div>
-                        );
-                      });
-                    });
-                  })()}
-                </div>
               </div>
             </>)}
           </div>
