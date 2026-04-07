@@ -6976,6 +6976,49 @@ export default function Dashboard() {
 
   const hasUnackedReminders = allTasks.some((t: any) => t.type === 'reminder' && t.isAcknowledged === false && !t.isCompleted);
 
+  const countdownBarsByRow = useMemo(() => {
+    const ss = semesterSettingsRef.current;
+    const semStart = ss?.semesterStartDate ? new Date(ss.semesterStartDate) : null;
+    const rwStart = ss?.readingWeekStart || null;
+    const currentWeekNum = semStart ? getWeekNumber(new Date(), semStart, rwStart) : null;
+    if (currentWeekNum !== null && currentWeekNum !== selectedWeek) return { byCourse: {} as Record<string, Array<{task: Task; daysLeft: number}>>, other: [] as Array<{task: Task; daysLeft: number}> };
+    const twoWeeksOut = new Date(stableToday.getTime() + 14 * 24 * 60 * 60 * 1000);
+    const allCountdown = (allTasks || []).filter(t => {
+      if (t.showCountdownBar === false || t.showCountdownBarMain === false || t.isCompleted) return false;
+      const tDue = startOfDayET(new Date(t.dueDate));
+      if (tDue <= stableToday || tDue > twoWeeksOut) return false;
+      return true;
+    }).map(t => {
+      const tDue = startOfDayET(new Date(t.dueDate));
+      const daysLeft = Math.max(0, Math.round((tDue.getTime() - stableToday.getTime()) / (1000*60*60*24)));
+      return { task: t, daysLeft };
+    }).sort((a, b) => {
+      const aDue = new Date(a.task.dueDate).getTime();
+      const bDue = new Date(b.task.dueDate).getTime();
+      return aDue - bDue || (a.task.title || '').localeCompare(b.task.title || '');
+    });
+    const seenNames = new Map<string, number>();
+    const deduped = allCountdown.filter(cd => {
+      const name = (cd.task.title || '').trim().toLowerCase();
+      if (!name) return true;
+      if (seenNames.has(name)) return false;
+      seenNames.set(name, 1);
+      return true;
+    });
+    const byCourse: Record<string, Array<{task: Task; daysLeft: number}>> = {};
+    const other: Array<{task: Task; daysLeft: number}> = [];
+    for (const cd of deduped) {
+      const courseCode = cd.task.courseName?.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '') || '';
+      if (courseCode) {
+        if (!byCourse[courseCode]) byCourse[courseCode] = [];
+        byCourse[courseCode].push(cd);
+      } else {
+        other.push(cd);
+      }
+    }
+    return { byCourse, other };
+  }, [allTasks, stableToday, selectedWeek]);
+
   useEffect(() => {
     if (!allTasksRaw || allTasksRaw.length === 0) return;
     if (authLevel !== '5747') return;
@@ -11392,10 +11435,7 @@ export default function Dashboard() {
   const timeSlots = Array.from({ length: 24 }, (_, i) => i);
   const calendarScrollRef = useRef<HTMLDivElement>(null);
   const calScrollTopRef = useRef(0);
-  const countdownOverlayRef = useRef<HTMLDivElement>(null);
   const calendarContentRef = useRef<HTMLDivElement>(null);
-  const countdownBarsDataRef = useRef<Array<{taskId: number, daysLeft: number, title: string}>>([]);
-  const activeBarIdxRef = useRef(-1);
 
   
   // Auto-scroll to current time by default
@@ -26960,7 +27000,53 @@ export default function Dashboard() {
 
                 return (
               <>
-              <div ref={courseRowsRef} data-testid="course-rows-container" style={{ borderTop: '1px solid black', marginTop: '-2px' }}>
+              <div ref={courseRowsRef} data-testid="course-rows-container" style={{ borderTop: '1px solid black', marginTop: '-2px' }} onMouseMove={(e) => {
+                const allBarWrappers = (e.currentTarget as HTMLElement).querySelectorAll('[data-testid^="countdown-bar-cr-"], [data-testid^="countdown-bar-or-"]');
+                let foundBar: HTMLElement | null = null;
+                for (const bw of allBarWrappers) {
+                  const r = bw.getBoundingClientRect();
+                  if (r.height > 0 && e.clientY >= r.top && e.clientY <= r.bottom && e.clientX >= r.left && e.clientX <= r.right) {
+                    foundBar = bw as HTMLElement;
+                    break;
+                  }
+                }
+                if (!foundBar) {
+                  const tip = document.getElementById('cbar-tooltip');
+                  if (tip) tip.style.display = 'none';
+                  return;
+                }
+                const testId = foundBar.getAttribute('data-testid') || '';
+                const taskIdStr = testId.replace(/^countdown-bar-[co]r-/, '');
+                const taskId = parseInt(taskIdStr);
+                if (isNaN(taskId)) return;
+                const allBars = [...(countdownBarsByRow.byCourse ? Object.values(countdownBarsByRow.byCourse).flat() : []), ...(countdownBarsByRow.other || [])];
+                const bd = allBars.find(b => b.task.id === taskId);
+                if (!bd) return;
+                let tip = document.getElementById('cbar-tooltip');
+                if (!tip) {
+                  tip = document.createElement('div');
+                  tip.id = 'cbar-tooltip';
+                  Object.assign(tip.style, {
+                    position: 'fixed', zIndex: '99999', pointerEvents: 'none',
+                    background: 'rgba(255,255,255,0.97)', color: '#1a1a1a',
+                    border: '1px solid rgba(0,0,0,0.15)', borderRadius: '6px',
+                    padding: '6px 10px', fontSize: '11px', fontWeight: '600',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.18)', whiteSpace: 'nowrap',
+                    lineHeight: '1.3', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis',
+                    display: 'none'
+                  });
+                  document.body.appendChild(tip);
+                }
+                const label = (bd.task.title || '').replace(/\[[^\]]*\]\s*/g, '').trim();
+                const dColor = bd.daysLeft <= 1 ? '#ef4444' : bd.daysLeft === 2 ? '#f97316' : bd.daysLeft <= 4 ? '#f59e0b' : '#22c55e';
+                tip.innerHTML = `<span style="color:${dColor};font-weight:700">${bd.daysLeft}d</span> &nbsp;${label}`;
+                tip.style.left = `${Math.min(e.clientX + 12, window.innerWidth - 300)}px`;
+                tip.style.top = `${e.clientY - 30}px`;
+                tip.style.display = '';
+              }} onMouseLeave={() => {
+                const tip = document.getElementById('cbar-tooltip');
+                if (tip) tip.style.display = 'none';
+              }}>
               {filteredCourses.map((courseData, courseIdx) => {
                 const courseName = courseData.name.split(' - ')[0].toUpperCase();
                 const rgb = hexToRgb(courseData.color);
@@ -27852,6 +27938,50 @@ export default function Dashboard() {
                     };
                     return null;
                   })()}
+                  {(() => {
+                    const courseBars = countdownBarsByRow.byCourse[courseName] || [];
+                    if (courseBars.length === 0) return null;
+                    const todayDow = stableToday.getDay();
+                    const dws = gridSizes.dayColumnWidths;
+                    const totalFr = dws.reduce((s: number, v: number) => s + v, 0);
+                    const fixedPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
+                    let frBefore = 0;
+                    for (let i = 0; i <= todayDow && i < dws.length; i++) frBefore += dws[i];
+                    let frSpan = 0;
+                    for (let i = todayDow + 1; i <= Math.min(todayDow + 2, dws.length - 1); i++) frSpan += dws[i];
+                    if (frSpan === 0) return null;
+                    const leftFrac = frBefore / totalFr;
+                    const widthFrac = frSpan / totalFr;
+                    const barH = 3;
+                    const barGap = 14;
+                    return (
+                      <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, bottom: '1px', pointerEvents: 'none', overflow: 'visible', zIndex: 2 }}>
+                        <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, overflow: 'visible' }}>
+                          {courseBars.map((cd, idx) => {
+                            const t = cd.task;
+                            const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
+                            const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
+                            const needsPulse = isNotStarted && cd.daysLeft <= 2 && !t.isCompleted;
+                            const labelText = (t.title || '').replace(/\[[^\]]*\]\s*/g, '').trim();
+                            const barHPx = needsPulse ? 4 : barH;
+                            const yOff = idx * barGap;
+                            return (
+                              <div key={`cbar-cr-${t.id}`} className="countdown-bar-wrapper" style={{ position: 'absolute', left: 0, right: 0, bottom: `${yOff}px`, height: `${barGap}px`, pointerEvents: 'none', overflow: 'visible' }} data-testid={`countdown-bar-cr-${t.id}`}>
+                                <div style={{ position: 'absolute', left: 0, top: '2px', right: 0, height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
+                                  <div style={{ width: '10px', minWidth: '10px', height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
+                                  <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
+                                    <span style={{ fontSize: '9px', fontWeight: 500, color: barColor, letterSpacing: '-0.2px', lineHeight: '10px' }}>{cd.daysLeft}<span style={{ letterSpacing: '0.5px' }}> </span>d</span>
+                                  </div>
+                                  <span style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(0,0,0,0.85)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flexShrink: 1, minWidth: 0, paddingLeft: '1px', paddingRight: '3px', lineHeight: '10px' }}>{labelText}</span>
+                                  <div className={needsPulse ? 'countdown-bar-pulse' : ''} style={{ flex: 1, height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '0 2px 2px 0', minWidth: '4px', boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined }} />
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })()}
                   {/* Course row resize handle */}
                   <div
                     className="absolute bottom-0 left-0 right-0 h-[3px] cursor-row-resize z-[50] opacity-0 group-hover/courserow:opacity-100 hover:bg-blue-400/50 transition-opacity"
@@ -28021,6 +28151,50 @@ export default function Dashboard() {
                         </div>
                       );
                     })}
+                    {(() => {
+                      const otherBars = countdownBarsByRow.other;
+                      if (otherBars.length === 0) return null;
+                      const todayDow = stableToday.getDay();
+                      const dws = gridSizes.dayColumnWidths;
+                      const totalFr = dws.reduce((s: number, v: number) => s + v, 0);
+                      const fixedPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
+                      let frBefore = 0;
+                      for (let i = 0; i <= todayDow && i < dws.length; i++) frBefore += dws[i];
+                      let frSpan = 0;
+                      for (let i = todayDow + 1; i <= Math.min(todayDow + 2, dws.length - 1); i++) frSpan += dws[i];
+                      if (frSpan === 0) return null;
+                      const leftFrac = frBefore / totalFr;
+                      const widthFrac = frSpan / totalFr;
+                      const barH = 3;
+                      const barGap = 14;
+                      return (
+                        <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, bottom: '1px', pointerEvents: 'none', overflow: 'visible', zIndex: 2 }}>
+                          <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, overflow: 'visible' }}>
+                            {otherBars.map((cd, idx) => {
+                              const t = cd.task;
+                              const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
+                              const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
+                              const needsPulse = isNotStarted && cd.daysLeft <= 2 && !t.isCompleted;
+                              const labelText = (t.title || '').replace(/\[[^\]]*\]\s*/g, '').trim();
+                              const barHPx = needsPulse ? 4 : barH;
+                              const yOff = idx * barGap;
+                              return (
+                                <div key={`cbar-or-${t.id}`} className="countdown-bar-wrapper" style={{ position: 'absolute', left: 0, right: 0, bottom: `${yOff}px`, height: `${barGap}px`, pointerEvents: 'none', overflow: 'visible' }} data-testid={`countdown-bar-or-${t.id}`}>
+                                  <div style={{ position: 'absolute', left: 0, top: '2px', right: 0, height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
+                                    <div style={{ width: '10px', minWidth: '10px', height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
+                                    <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
+                                      <span style={{ fontSize: '9px', fontWeight: 500, color: barColor, letterSpacing: '-0.2px', lineHeight: '10px' }}>{cd.daysLeft}<span style={{ letterSpacing: '0.5px' }}> </span>d</span>
+                                    </div>
+                                    <span style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(0,0,0,0.85)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flexShrink: 1, minWidth: 0, paddingLeft: '1px', paddingRight: '3px', lineHeight: '10px' }}>{labelText}</span>
+                                    <div className={needsPulse ? 'countdown-bar-pulse' : ''} style={{ flex: 1, height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '0 2px 2px 0', minWidth: '4px', boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined }} />
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })()}
                     <div
                       className="absolute bottom-0 left-0 right-0 h-[3px] cursor-row-resize z-[50] opacity-0 group-hover/otherrow:opacity-100 hover:bg-blue-400/50 transition-opacity"
                       onMouseDown={(e) => handleRowResizeStart(e, 'other')}
@@ -28236,145 +28410,10 @@ export default function Dashboard() {
             <div ref={calendarScrollRef} className="overflow-y-auto" style={{ height: '100%', scrollbarWidth: 'none' }} onScroll={(e) => {
               const st = (e.target as HTMLDivElement).scrollTop;
               calScrollTopRef.current = st;
-            }} onMouseMove={(e) => {
-              const overlayEl = countdownOverlayRef.current;
-              const barsData = countdownBarsDataRef.current;
-              if (!overlayEl || barsData.length === 0) return;
-              const overlayRect = overlayEl.getBoundingClientRect();
-              const barGap = 18;
-              const relY = e.clientY - overlayRect.top;
-              const barIdx = Math.floor(relY / barGap);
-              if (barIdx < 0 || barIdx >= barsData.length || relY < 0) {
-                const tip = document.getElementById('cbar-tooltip');
-                if (tip) tip.style.display = 'none';
-                activeBarIdxRef.current = -1;
-                return;
-              }
-              const barScreenTop = overlayRect.top + barIdx * barGap;
-              const barScreenBot = barScreenTop + barGap;
-              const wrapper = overlayEl.querySelector(`.countdown-bar-wrapper[data-bar-idx="${barIdx}"]`) as HTMLElement;
-              if (!wrapper) return;
-              const wrapperRect = wrapper.getBoundingClientRect();
-              if (e.clientX < wrapperRect.left || e.clientX > wrapperRect.right) {
-                const tip = document.getElementById('cbar-tooltip');
-                if (tip) tip.style.display = 'none';
-                activeBarIdxRef.current = -1;
-                return;
-              }
-              const bd = barsData[barIdx];
-              if (!bd) return;
-              const allEls = document.querySelectorAll('[data-testid^="time-task-"], [data-testid^="gcal-event-"]');
-              let intersects = false;
-              for (const el of allEls) {
-                const r = el.getBoundingClientRect();
-                if (r.height > 0 && barScreenBot >= r.top && barScreenTop <= r.bottom) { intersects = true; break; }
-              }
-              if (!intersects) {
-                const tip = document.getElementById('cbar-tooltip');
-                if (tip) tip.style.display = 'none';
-                activeBarIdxRef.current = barIdx;
-                return;
-              }
-              let tip = document.getElementById('cbar-tooltip');
-              if (!tip) {
-                tip = document.createElement('div');
-                tip.id = 'cbar-tooltip';
-                Object.assign(tip.style, {
-                  position: 'fixed', zIndex: '99999', pointerEvents: 'none',
-                  background: 'rgba(255,255,255,0.97)', color: '#1a1a1a',
-                  border: '1px solid rgba(0,0,0,0.15)', borderRadius: '6px',
-                  padding: '6px 10px', fontSize: '11px', fontWeight: '600',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.18)', whiteSpace: 'nowrap',
-                  lineHeight: '1.3', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis',
-                  display: 'none'
-                });
-                document.body.appendChild(tip);
-              }
-              const label = (bd.title || '').replace(/\[[^\]]*\]\s*/g, '').trim();
-              const dColor = bd.daysLeft <= 1 ? '#ef4444' : bd.daysLeft === 2 ? '#f97316' : bd.daysLeft <= 4 ? '#f59e0b' : '#22c55e';
-              tip.innerHTML = `<span style="color:${dColor};font-weight:700">${bd.daysLeft}d</span> &nbsp;${label}`;
-              const tipX = Math.min(e.clientX + 12, window.innerWidth - 300);
-              const tipY = e.clientY - 30;
-              tip.style.left = `${tipX}px`;
-              tip.style.top = `${tipY}px`;
-              tip.style.display = '';
-              activeBarIdxRef.current = barIdx;
-            }} onMouseLeave={() => {
-              const tip = document.getElementById('cbar-tooltip');
-              if (tip) tip.style.display = 'none';
-              activeBarIdxRef.current = -1;
             }}>
 
               <div data-calendar-content style={{ backgroundColor: '#faf8f5', borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px', position: 'relative', paddingBottom: '0px' }}>
-                {/* Countdown bars — at top of content div so sticky positioning works when scrolling down */}
-                {(() => {
-                  const currentWeekNum = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : null;
-                  if (currentWeekNum !== null && currentWeekNum !== selectedWeek) { countdownBarsDataRef.current = []; return null; }
-                  const twoWeeksOut = new Date(stableToday.getTime() + 14 * 24 * 60 * 60 * 1000);
-                  const allCountdown = (allTasks || []).filter(t => {
-                    if (t.showCountdownBar === false || t.showCountdownBarMain === false || t.isCompleted) return false;
-                    const tDue = startOfDayET(new Date(t.dueDate));
-                    if (tDue <= stableToday || tDue > twoWeeksOut) return false;
-                    return true;
-                  }).map(t => {
-                    const tDue = startOfDayET(new Date(t.dueDate));
-                    const daysLeft = Math.max(0, Math.round((tDue.getTime() - stableToday.getTime()) / (1000*60*60*24)));
-                    return { task: t, tDue, daysLeft };
-                  }).sort((a, b) => a.tDue.getTime() - b.tDue.getTime() || (a.task.title || '').localeCompare(b.task.title || ''));
-                  const seenNames = new Map<string, number>();
-                  const deduped = allCountdown.filter(cd => {
-                    const name = (cd.task.title || '').trim().toLowerCase();
-                    if (!name) return true;
-                    if (seenNames.has(name)) return false;
-                    seenNames.set(name, 1);
-                    return true;
-                  });
-                  if (deduped.length === 0) { countdownBarsDataRef.current = []; return null; }
-                  countdownBarsDataRef.current = deduped.map(cd => ({ taskId: cd.task.id, daysLeft: cd.daysLeft, title: cd.task.title || '' }));
-                  const todayDow = stableToday.getDay();
-                  const dws = gridSizes.dayColumnWidths;
-                  const totalFr = dws.reduce((s: number, v: number) => s + v, 0);
-                  const fixedPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
-                  let frBefore = 0;
-                  for (let i = 0; i <= todayDow && i < dws.length; i++) frBefore += dws[i];
-                  let frSpan = 0;
-                  for (let i = todayDow + 1; i <= Math.min(todayDow + 2, dws.length - 1); i++) frSpan += dws[i];
-                  if (frSpan === 0) return null;
-                  const leftFrac = frBefore / totalFr;
-                  const widthFrac = frSpan / totalFr;
-                  const barH = 3;
-                  const barGap = 18;
-                  const totalBarsHeight = deduped.length * barGap;
-                  return (
-                    <div ref={countdownOverlayRef} data-bars-height={String(totalBarsHeight)} style={{ position: 'sticky', top: `calc(50% - ${Math.round(totalBarsHeight / 2)}px)`, zIndex: 1, pointerEvents: 'none', overflow: 'visible', height: 0 }} data-testid="countdown-bars-overlay">
-                      <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, top: 0, overflow: 'visible' }}>
-                        <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, top: 0, overflow: 'visible' }}>
-                        {deduped.map((cd, idx) => {
-                          const t = cd.task;
-                          const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
-                          const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
-                          const needsPulse = isNotStarted && cd.daysLeft <= 2 && !t.isCompleted;
-                          const labelText = (t.title || '').replace(/\[[^\]]*\]\s*/g, '').trim();
-                          const barHPx = needsPulse ? 4 : barH;
-                          const yOff = idx * barGap;
-                          return (
-                            <div key={`cbar-main-${t.id}`} className="countdown-bar-wrapper" data-bar-idx={idx} style={{ position: 'absolute', left: '0px', right: 0, top: `${yOff}px`, height: `${barGap}px`, pointerEvents: 'none', cursor: 'default', overflow: 'visible', zIndex: 1 }} onDoubleClick={() => setEditingTask(t as any)} data-testid={`countdown-bar-${t.id}`}>
-                              <div style={{ position: 'absolute', left: '0px', top: '2px', right: 0, height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
-                                <div style={{ width: '10px', minWidth: '10px', height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
-                                <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
-                                  <span style={{ fontSize: '9px', fontWeight: 500, color: barColor, letterSpacing: '-0.2px', lineHeight: '10px' }}>{cd.daysLeft}<span style={{ letterSpacing: '0.5px' }}> </span>d</span>
-                                </div>
-                                <span style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(0,0,0,0.85)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flexShrink: 1, minWidth: 0, paddingLeft: '1px', paddingRight: '3px', lineHeight: '10px' }}>{labelText}</span>
-                                <div className={needsPulse ? 'countdown-bar-pulse' : ''} style={{ flex: 1, height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '0 2px 2px 0', minWidth: '4px', boxShadow: needsPulse ? `0 0 6px ${barColor}, 0 0 12px ${barColor}` : undefined }} />
-                              </div>
-                            </div>
-                          );
-                        })}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })()}
+                {/* Countdown bars moved to course rows and other row */}
                 {timeSlots.map((hour, hourIdx) => {
                   const currentHour = new Date().getHours();
                   const isCurrentHour = hour === currentHour;
