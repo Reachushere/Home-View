@@ -11394,6 +11394,8 @@ export default function Dashboard() {
   const calScrollTopRef = useRef(0);
   const countdownOverlayRef = useRef<HTMLDivElement>(null);
   const calendarContentRef = useRef<HTMLDivElement>(null);
+  const countdownBarsDataRef = useRef<Array<{taskId: number, daysLeft: number, title: string}>>([]);
+  const activeBarIdxRef = useRef(-1);
 
   
   // Auto-scroll to current time by default
@@ -11438,6 +11440,102 @@ export default function Dashboard() {
     return () => { document.removeEventListener('scroll', handler, true); timers.forEach(t => clearTimeout(t)); };
   }, []);
 
+
+  useEffect(() => {
+    const scrollEl = calendarScrollRef.current;
+    if (!scrollEl) return;
+    const clearBarHighlight = () => {
+      const overlayEl = countdownOverlayRef.current;
+      if (!overlayEl) return;
+      overlayEl.style.zIndex = '1';
+      overlayEl.querySelectorAll('.countdown-bar-wrapper').forEach(el => {
+        (el as HTMLElement).style.opacity = '';
+        (el as HTMLElement).style.pointerEvents = '';
+        (el as HTMLElement).style.zIndex = '1';
+      });
+      const bg = document.getElementById('cbar-hover-bg-portal');
+      if (bg) bg.remove();
+    };
+    const handleMouseMove = (e: MouseEvent) => {
+      const overlayEl = countdownOverlayRef.current;
+      if (!overlayEl) return;
+      const barsData = countdownBarsDataRef.current;
+      if (barsData.length === 0) return;
+      const target = e.target as HTMLElement;
+      const isOverTask = !!target.closest('[data-testid^="time-task-"], [data-testid^="gcal-event-"]');
+      if (isOverTask) {
+        if (activeBarIdxRef.current >= 0) { clearBarHighlight(); activeBarIdxRef.current = -1; }
+        return;
+      }
+      const overlayRect = overlayEl.getBoundingClientRect();
+      const barGap = 18;
+      const relY = e.clientY - overlayRect.top;
+      const barIdx = Math.floor(relY / barGap);
+      if (barIdx < 0 || barIdx >= barsData.length || relY < 0) {
+        if (activeBarIdxRef.current >= 0) { clearBarHighlight(); activeBarIdxRef.current = -1; }
+        return;
+      }
+      const wrappers = overlayEl.querySelectorAll('.countdown-bar-wrapper');
+      const wrapper = wrappers[barIdx] as HTMLElement;
+      if (!wrapper) return;
+      const wrapperRect = wrapper.getBoundingClientRect();
+      if (e.clientX < wrapperRect.left || e.clientX > wrapperRect.right) {
+        if (activeBarIdxRef.current >= 0) { clearBarHighlight(); activeBarIdxRef.current = -1; }
+        return;
+      }
+      if (barIdx === activeBarIdxRef.current) return;
+      clearBarHighlight();
+      activeBarIdxRef.current = barIdx;
+      overlayEl.style.zIndex = '200';
+      wrappers.forEach((el, i) => {
+        if (i !== barIdx) {
+          (el as HTMLElement).style.opacity = '0';
+          (el as HTMLElement).style.pointerEvents = 'none';
+        } else {
+          (el as HTMLElement).style.zIndex = '300';
+        }
+      });
+      const barRect = wrapper.getBoundingClientRect();
+      const midY = barRect.top + barRect.height / 2;
+      const allTaskEls = document.querySelectorAll('[data-testid^="time-task-"], [data-testid^="gcal-event-"]');
+      let taskEl: Element | null = null;
+      let bestDist = Infinity;
+      for (const el of allTaskEls) {
+        const r = el.getBoundingClientRect();
+        if (r.height === 0) continue;
+        if (midY >= r.top - 2 && midY <= r.bottom + 2) {
+          const dist = Math.abs(midY - (r.top + r.height / 2));
+          if (dist < bestDist) { bestDist = dist; taskEl = el; }
+        }
+      }
+      if (taskEl) {
+        const contentDiv = overlayEl.closest('[data-calendar-content]') as HTMLElement;
+        if (contentDiv) {
+          const bg = document.createElement('div');
+          bg.id = 'cbar-hover-bg-portal';
+          const contentRect = contentDiv.getBoundingClientRect();
+          const taskRect = taskEl.getBoundingClientRect();
+          const scrollTop = contentDiv.parentElement?.scrollTop || 0;
+          Object.assign(bg.style, {
+            position: 'absolute', background: 'rgba(255,255,255,0.97)', borderRadius: '3px',
+            boxShadow: '0 1px 4px rgba(0,0,0,0.12)', zIndex: '99', pointerEvents: 'none',
+            left: `${taskRect.left - contentRect.left}px`, top: `${taskRect.top - contentRect.top + scrollTop}px`,
+            width: `${taskRect.width}px`, height: `${taskRect.height}px`
+          });
+          contentDiv.appendChild(bg);
+        }
+      }
+    };
+    const handleMouseLeave = () => {
+      if (activeBarIdxRef.current >= 0) { clearBarHighlight(); activeBarIdxRef.current = -1; }
+    };
+    scrollEl.addEventListener('mousemove', handleMouseMove);
+    scrollEl.addEventListener('mouseleave', handleMouseLeave);
+    return () => {
+      scrollEl.removeEventListener('mousemove', handleMouseMove);
+      scrollEl.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, []);
 
   // Current week dates (Week 2 = Jan 17-23, 2026)
   const currentWeekInfo = findCurrentWeekFromList(weeks, new Date()) || weeks.find(w => w.weekNumber === selectedWeek);
@@ -28257,7 +28355,8 @@ export default function Dashboard() {
                     seenNames.set(name, 1);
                     return true;
                   });
-                  if (deduped.length === 0) return null;
+                  if (deduped.length === 0) { countdownBarsDataRef.current = []; return null; }
+                  countdownBarsDataRef.current = deduped.map(cd => ({ taskId: cd.task.id, daysLeft: cd.daysLeft, title: cd.task.title || '' }));
                   const todayDow = stableToday.getDay();
                   const dws = gridSizes.dayColumnWidths;
                   const totalFr = dws.reduce((s: number, v: number) => s + v, 0);
@@ -28273,7 +28372,7 @@ export default function Dashboard() {
                   const barGap = 18;
                   const totalBarsHeight = deduped.length * barGap;
                   return (
-                    <div ref={countdownOverlayRef} data-bars-height={String(totalBarsHeight)} style={{ position: 'sticky', top: `calc(50% - ${Math.round(totalBarsHeight / 2)}px)`, zIndex: 200, pointerEvents: 'none', overflow: 'visible', height: 0 }} data-testid="countdown-bars-overlay">
+                    <div ref={countdownOverlayRef} data-bars-height={String(totalBarsHeight)} style={{ position: 'sticky', top: `calc(50% - ${Math.round(totalBarsHeight / 2)}px)`, zIndex: 1, pointerEvents: 'none', overflow: 'visible', height: 0 }} data-testid="countdown-bars-overlay">
                       <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, top: 0, overflow: 'visible' }}>
                         <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, top: 0, overflow: 'visible' }}>
                         {deduped.map((cd, idx) => {
@@ -28285,7 +28384,7 @@ export default function Dashboard() {
                           const barHPx = needsPulse ? 4 : barH;
                           const yOff = idx * barGap;
                           return (
-                            <div key={`cbar-main-${t.id}`} className="countdown-bar-wrapper" style={{ position: 'absolute', left: '0px', right: 0, top: `${yOff}px`, height: `${barGap}px`, pointerEvents: 'auto', cursor: 'default', overflow: 'visible', zIndex: 1 }} onMouseEnter={(e) => { const wrapper = e.currentTarget; const overlay = wrapper.closest('[data-testid="countdown-bars-overlay"]') as HTMLElement; if (!overlay) return; const contentDiv = overlay.closest('[data-calendar-content]') as HTMLElement; if (!contentDiv) return; overlay.querySelectorAll('.countdown-bar-wrapper').forEach(el => { if (el !== wrapper) { (el as HTMLElement).style.opacity = '0'; (el as HTMLElement).style.pointerEvents = 'none'; } }); const barRect = wrapper.getBoundingClientRect(); const midY = barRect.top + barRect.height / 2; let taskEl: Element | null = document.querySelector(`[data-testid="time-task-${t.id}"]`); if (!taskEl) { const allTaskEls = document.querySelectorAll('[data-testid^="time-task-"], [data-testid^="gcal-event-"]'); let bestDist = Infinity; for (const el of allTaskEls) { const r = el.getBoundingClientRect(); if (r.height === 0) continue; if (midY >= r.top - 2 && midY <= r.bottom + 2) { const dist = Math.abs(midY - (r.top + r.height / 2)); if (dist < bestDist) { bestDist = dist; taskEl = el; } } } } if (taskEl) { const old = document.getElementById('cbar-hover-bg-portal'); if (old) old.remove(); const bg = document.createElement('div'); bg.id = 'cbar-hover-bg-portal'; const contentRect = contentDiv.getBoundingClientRect(); const taskRect = taskEl.getBoundingClientRect(); const scrollTop = contentDiv.parentElement?.scrollTop || 0; Object.assign(bg.style, { position: 'absolute', background: 'rgba(255,255,255,0.97)', borderRadius: '3px', boxShadow: '0 1px 4px rgba(0,0,0,0.12)', zIndex: '99', pointerEvents: 'none', left: `${taskRect.left - contentRect.left}px`, top: `${taskRect.top - contentRect.top + scrollTop}px`, width: `${taskRect.width}px`, height: `${taskRect.height}px` }); contentDiv.appendChild(bg); } }} onMouseLeave={(e) => { const wrapper = e.currentTarget; const overlay = wrapper.closest('[data-testid="countdown-bars-overlay"]') as HTMLElement; if (overlay) { overlay.querySelectorAll('.countdown-bar-wrapper').forEach(el => { (el as HTMLElement).style.opacity = ''; (el as HTMLElement).style.pointerEvents = 'auto'; }); } const bg = document.getElementById('cbar-hover-bg-portal'); if (bg) bg.remove(); }} onDoubleClick={() => setEditingTask(t as any)} data-testid={`countdown-bar-${t.id}`}>
+                            <div key={`cbar-main-${t.id}`} className="countdown-bar-wrapper" style={{ position: 'absolute', left: '0px', right: 0, top: `${yOff}px`, height: `${barGap}px`, pointerEvents: 'none', cursor: 'default', overflow: 'visible', zIndex: 1 }} onDoubleClick={() => setEditingTask(t as any)} data-testid={`countdown-bar-${t.id}`}>
                               <div style={{ position: 'absolute', left: '0px', top: '2px', right: 0, height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
                                 <div style={{ width: '10px', minWidth: '10px', height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
                                 <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
