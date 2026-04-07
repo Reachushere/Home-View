@@ -356,11 +356,10 @@ export async function textToSpeech(
   } catch (err: any) {
     if (err?.status === 429 || err?.code === 'RATELIMIT_EXCEEDED') {
       const resetHeader = err?.headers?.get?.('x-ratelimit-reset') || err?.headers?.['x-ratelimit-reset'];
-      const resetMs = resetHeader ? parseInt(String(resetHeader)) : Date.now() + 30 * 24 * 60 * 60 * 1000;
+      const resetMs = resetHeader ? parseInt(String(resetHeader)) : Date.now() + 60 * 60 * 1000;
       console.log(`[TTS] Rate limited — switching to Edge TTS until ${new Date(resetMs).toISOString()}`);
       useEdgeTTSFallback = true;
       rateLimitResetTime = resetMs;
-      await saveRateLimitReset(resetMs);
       try {
         return await edgeTTSGenerate(text, voice);
       } catch (edgeErr: any) {
