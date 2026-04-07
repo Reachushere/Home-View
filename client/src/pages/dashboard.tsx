@@ -7006,6 +7006,13 @@ export default function Dashboard() {
       }
     }
     const deduped = dedupedArr.filter(Boolean);
+    const titleToCourse = new Map<string, string>();
+    for (const t of (allTasks || [])) {
+      if (!t.courseName) continue;
+      const name = (t.title || '').trim().toLowerCase();
+      if (name) titleToCourse.set(name, t.courseName);
+    }
+    const courseTaskTypes = new Set(['module', 'reading', 'discussion', 'quiz', 'assignment', 'essay', 'exam', 'lab']);
     const byCourse: Record<string, Array<{task: Task; daysLeft: number}>> = {};
     const other: Array<{task: Task; daysLeft: number}> = [];
     for (const cd of deduped) {
@@ -7014,10 +7021,14 @@ export default function Dashboard() {
         const bracketMatch = (cd.task.title || '').match(/^\[([^\]\s-]+)/);
         if (bracketMatch) courseCode = bracketMatch[1].trim().toUpperCase().replace(/\s/g, '');
       }
+      if (!courseCode) {
+        const inferredCourse = titleToCourse.get((cd.task.title || '').trim().toLowerCase());
+        if (inferredCourse) courseCode = inferredCourse.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '') || '';
+      }
       if (courseCode) {
         if (!byCourse[courseCode]) byCourse[courseCode] = [];
         byCourse[courseCode].push(cd);
-      } else {
+      } else if (!courseTaskTypes.has((cd.task.type || '').toLowerCase())) {
         other.push(cd);
       }
     }
