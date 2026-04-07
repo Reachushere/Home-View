@@ -18643,9 +18643,9 @@ export default function Dashboard() {
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap', marginBottom: '1px', overflow: 'hidden' }}>
                   {effectiveCourseName && (
-                    <span style={{ fontSize: '8px', fontWeight: 600, color: '#ffffff', background: courseColor, padding: '0px 4px', borderRadius: '3px', lineHeight: '14px', whiteSpace: 'nowrap', flexShrink: 0 }} data-testid={`day-detail-course-${task.id}`}>{effectiveCourseName.split(' - ')[0]}{courseFullName ? ` - ${courseFullName}` : ''}</span>
+                    <span style={{ fontSize: '8px', fontWeight: 600, color: '#ffffff', background: courseColor, padding: '0px 4px', borderRadius: '3px', lineHeight: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: '30px', flexShrink: 1 }} data-testid={`day-detail-course-${task.id}`}>{effectiveCourseName.split(' - ')[0]}{courseFullName ? ` - ${courseFullName}` : ''}</span>
                   )}
-                  <span style={{ fontSize: '7px', fontWeight: 600, color: pColor, background: `${pColor}22`, padding: '0px 4px', borderRadius: '3px', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', lineHeight: '12px' }}>{task.priority}</span>
+                  <span style={{ fontSize: '7px', fontWeight: 600, color: pColor, background: `${pColor}22`, padding: '0px 4px', borderRadius: '3px', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', lineHeight: '12px', flexShrink: 0 }}>{task.priority}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'nowrap', fontSize: '8px', color: '#ffffff', overflow: 'hidden' }}>
                   {dueTime && <span>⏰ Due {dueTime}</span>}
