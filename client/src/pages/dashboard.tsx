@@ -27000,53 +27000,7 @@ export default function Dashboard() {
 
                 return (
               <>
-              <div ref={courseRowsRef} data-testid="course-rows-container" style={{ borderTop: '1px solid black', marginTop: '-2px' }} onMouseMove={(e) => {
-                const allBarWrappers = (e.currentTarget as HTMLElement).querySelectorAll('[data-testid^="countdown-bar-cr-"], [data-testid^="countdown-bar-or-"]');
-                let foundBar: HTMLElement | null = null;
-                for (const bw of allBarWrappers) {
-                  const r = bw.getBoundingClientRect();
-                  if (r.height > 0 && e.clientY >= r.top && e.clientY <= r.bottom && e.clientX >= r.left && e.clientX <= r.right) {
-                    foundBar = bw as HTMLElement;
-                    break;
-                  }
-                }
-                if (!foundBar) {
-                  const tip = document.getElementById('cbar-tooltip');
-                  if (tip) tip.style.display = 'none';
-                  return;
-                }
-                const testId = foundBar.getAttribute('data-testid') || '';
-                const taskIdStr = testId.replace(/^countdown-bar-[co]r-/, '');
-                const taskId = parseInt(taskIdStr);
-                if (isNaN(taskId)) return;
-                const allBars = [...(countdownBarsByRow.byCourse ? Object.values(countdownBarsByRow.byCourse).flat() : []), ...(countdownBarsByRow.other || [])];
-                const bd = allBars.find(b => b.task.id === taskId);
-                if (!bd) return;
-                let tip = document.getElementById('cbar-tooltip');
-                if (!tip) {
-                  tip = document.createElement('div');
-                  tip.id = 'cbar-tooltip';
-                  Object.assign(tip.style, {
-                    position: 'fixed', zIndex: '99999', pointerEvents: 'none',
-                    background: 'rgba(255,255,255,0.97)', color: '#1a1a1a',
-                    border: '1px solid rgba(0,0,0,0.15)', borderRadius: '6px',
-                    padding: '6px 10px', fontSize: '11px', fontWeight: '600',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.18)', whiteSpace: 'nowrap',
-                    lineHeight: '1.3', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis',
-                    display: 'none'
-                  });
-                  document.body.appendChild(tip);
-                }
-                const label = (bd.task.title || '').replace(/\[[^\]]*\]\s*/g, '').trim();
-                const dColor = bd.daysLeft <= 1 ? '#ef4444' : bd.daysLeft === 2 ? '#f97316' : bd.daysLeft <= 4 ? '#f59e0b' : '#22c55e';
-                tip.innerHTML = `<span style="color:${dColor};font-weight:700">${bd.daysLeft}d</span> &nbsp;${label}`;
-                tip.style.left = `${Math.min(e.clientX + 12, window.innerWidth - 300)}px`;
-                tip.style.top = `${e.clientY - 30}px`;
-                tip.style.display = '';
-              }} onMouseLeave={() => {
-                const tip = document.getElementById('cbar-tooltip');
-                if (tip) tip.style.display = 'none';
-              }}>
+              <div ref={courseRowsRef} data-testid="course-rows-container" style={{ borderTop: '1px solid black', marginTop: '-2px' }}>
               {filteredCourses.map((courseData, courseIdx) => {
                 const courseName = courseData.name.split(' - ')[0].toUpperCase();
                 const rgb = hexToRgb(courseData.color);
