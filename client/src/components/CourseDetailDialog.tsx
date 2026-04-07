@@ -896,14 +896,19 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
     }
   };
 
+  const isTaskUngraded = (t: Task) => t.excludeFromGpa || t.type === 'discussion';
+
+  const gradedCourseTasks = useMemo(() => courseTasks.filter(t => !isTaskUngraded(t)), [courseTasks]);
+  const ungradedCourseTasks = useMemo(() => courseTasks.filter(t => isTaskUngraded(t)), [courseTasks]);
+
   const sortedTasks = useMemo(() => {
     const pushCompleted = (list: typeof courseTasks) => {
       const incomplete = list.filter(t => !t.isCompleted);
       const completed = list.filter(t => t.isCompleted);
       return [...incomplete, ...completed];
     };
-    if (sortField === 'manual') return pushCompleted(courseTasks);
-    const sorted = [...courseTasks].sort((a, b) => {
+    if (sortField === 'manual') return pushCompleted(gradedCourseTasks);
+    const sorted = [...gradedCourseTasks].sort((a, b) => {
       let cmp = 0;
       switch (sortField) {
         case 'title': cmp = (a.title || '').localeCompare(b.title || ''); break;
@@ -921,7 +926,13 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
       return sortDir === 'desc' ? -cmp : cmp;
     });
     return pushCompleted(sorted);
-  }, [courseTasks, sortField, sortDir]);
+  }, [gradedCourseTasks, sortField, sortDir]);
+
+  const sortedUngradedTasks = useMemo(() => {
+    const incomplete = ungradedCourseTasks.filter(t => !t.isCompleted);
+    const completed = ungradedCourseTasks.filter(t => t.isCompleted);
+    return [...incomplete, ...completed];
+  }, [ungradedCourseTasks]);
 
   const [dragId, setDragId] = useState<number | null>(null);
   const [dragOverId, setDragOverId] = useState<number | null>(null);
@@ -932,9 +943,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
 
   const groups = useMemo(() => {
     const g = new Set<string>();
-    courseTasks.forEach(t => { if (t.assignmentGroup) g.add(t.assignmentGroup); });
+    gradedCourseTasks.forEach(t => { if (t.assignmentGroup) g.add(t.assignmentGroup); });
     return Array.from(g).sort();
-  }, [courseTasks]);
+  }, [gradedCourseTasks]);
 
   const ungroupedTasks = useMemo(() => sortedTasks.filter(t => !t.assignmentGroup), [sortedTasks]);
 
@@ -1007,10 +1018,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
   };
 
   const completedCount = courseTasks.filter((t) => t.isCompleted).length;
-  const totalWeight = courseTasks.reduce((s, t) => s + (t.gradeWeight || 0), 0);
+  const totalWeight = gradedCourseTasks.reduce((s, t) => s + (t.gradeWeight || 0), 0);
 
   const gradeCalc = useMemo(() => {
-    const gradedTasks = courseTasks.filter(t => !t.excludeFromGpa && t.gradeTotal && t.gradeValue !== null && t.gradeValue !== undefined && (t.gradeValue !== 0 || t.isCompleted));
+    const gradedTasks = gradedCourseTasks.filter(t => t.gradeTotal && t.gradeValue !== null && t.gradeValue !== undefined && (t.gradeValue !== 0 || t.isCompleted));
     if (gradedTasks.length === 0) return null;
     const sumScore = gradedTasks.reduce((s, t) => s + (t.gradeValue || 0), 0);
     const sumTotal = gradedTasks.reduce((s, t) => s + (t.gradeTotal || 0), 0);
@@ -1022,7 +1033,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
       gradedWeight,
       gradedCount: gradedTasks.length,
     };
-  }, [courseTasks, totalWeight]);
+  }, [gradedCourseTasks, totalWeight]);
 
   const onGradeCalculatedRef = useRef(onGradeCalculated);
   onGradeCalculatedRef.current = onGradeCalculated;
@@ -1631,11 +1642,12 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           </span>
         </div>
         <div className="flex items-center flex-shrink-0" style={{ gap: '10px', marginLeft: '8px' }} onClick={(e) => e.stopPropagation()}>
-          <label className="flex items-center cursor-pointer" title={task.excludeFromGpa ? "Excluded from grade" : "Included in grade"} data-testid={`toggle-gpa-${task.id}`}>
+          <label className="flex items-center gap-1 cursor-pointer" title={task.excludeFromGpa ? "Not gradable — click to mark as graded" : "Gradable — click to mark as ungraded"} data-testid={`toggle-gpa-${task.id}`}>
             <div className="relative" onClick={() => updateTaskMutation.mutate({ id: task.id, data: { excludeFromGpa: !task.excludeFromGpa }, _task: task })}>
-              <div className={`w-6 h-3.5 rounded-full transition-colors ${task.excludeFromGpa ? 'bg-red-500/60' : 'bg-green-500/60'}`} />
+              <div className={`w-6 h-3.5 rounded-full transition-colors ${task.excludeFromGpa ? 'bg-white/20' : 'bg-green-500/60'}`} />
               <div className={`absolute top-0.5 w-2.5 h-2.5 rounded-full bg-white transition-transform ${task.excludeFromGpa ? 'left-0.5' : 'left-3'}`} />
             </div>
+            <span className={`text-[7px] ${task.excludeFromGpa ? 'text-white/40' : 'text-green-400'}`}>{task.excludeFromGpa ? 'Ungraded' : 'Graded'}</span>
           </label>
           <button
             onClick={(e) => {
@@ -1813,12 +1825,12 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
     );
   };
 
-  const renderUngradedRow = (task: Task) => {
+  const renderUngradedAssignmentRow = (task: Task) => {
     const TypeIcon = TASK_TYPE_OPTIONS.find((t) => t.value === task.type)?.icon || FileText;
     const overdue = !task.isCompleted && isOverdue(task.dueDate);
     return (
+      <React.Fragment key={task.id}>
       <div
-        key={task.id}
         className={`flex items-center px-1.5 py-1.5 rounded-md border transition-all ${
           task.isCompleted ? "bg-white/5 border-white/5" :
           overdue ? "bg-red-500/10 border-red-500/20" :
@@ -1836,13 +1848,38 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
         >
           {task.isCompleted && <Check className="h-3 w-3 text-white" />}
         </button>
+        <TypeIcon className={`h-3.5 w-3.5 flex-shrink-0 ${task.isCompleted ? 'text-white/30' : 'text-white/60'}`} style={{ marginRight: '8px' }} />
         <div className="flex-1 min-w-0">
           <div
             className={`text-[10px] font-medium truncate flex items-center gap-1 cursor-pointer hover:underline ${task.isCompleted ? "line-through text-white/50" : "text-white"}`}
-            onClick={(e) => { e.stopPropagation(); e.preventDefault(); if (expandedTaskId === task.id) { setExpandedTaskId(null); setEditTaskFields(null); } else { setExpandedTaskId(task.id); const d = task.dueDate ? new Date(task.dueDate) : null; setEditTaskFields({ title: task.title || '', type: task.type || 'other', dueDate: d ? `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` : '', dueTime: d ? `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}` : '', timezone: (task as any).timezone || 'America/Toronto', description: task.description || '', gradeWeight: task.gradeWeight?.toString() || '', gradeTotal: task.gradeTotal?.toString() || '', gradeValue: task.gradeValue?.toString() || '', reminder1: task.reminder1 ?? 30, reminder2: task.reminder2 ?? 120, reminder3: task.reminder3 ?? null, reminder4: task.reminder4 ?? null, hideFromSummary: task.hideFromSummary ?? false }); } }}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (expandedTaskId === task.id) {
+                setExpandedTaskId(null);
+                setEditTaskFields(null);
+              } else {
+                setExpandedTaskId(task.id);
+                const d = task.dueDate ? new Date(task.dueDate) : null;
+                setEditTaskFields({
+                  title: task.title || '',
+                  type: task.type || 'other',
+                  dueDate: d ? `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` : '',
+                  dueTime: d ? `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}` : '',
+                  timezone: (task as any).timezone || 'America/Toronto',
+                  description: task.description || '',
+                  gradeWeight: task.gradeWeight?.toString() || '',
+                  gradeTotal: task.gradeTotal?.toString() || '',
+                  gradeValue: task.gradeValue?.toString() || '',
+                  reminder1: task.reminder1 ?? 30,
+                  reminder2: task.reminder2 ?? 120,
+                  reminder3: task.reminder3 ?? null,
+                  reminder4: task.reminder4 ?? null,
+                  hideFromSummary: task.hideFromSummary ?? false,
+                });
+              }
+            }}
             data-testid={`link-edit-ungraded-${task.id}`}
           >
-            <TypeIcon className="h-3 w-3 flex-shrink-0 text-white/40" />
             {task.title}
           </div>
           <div className="flex items-center gap-2 text-[8px] text-white">
@@ -1852,20 +1889,86 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             <span className="capitalize">{task.type}</span>
           </div>
         </div>
-        <label className="flex items-center cursor-pointer flex-shrink-0 ml-2" title="Mark as gradable" data-testid={`toggle-gradable-${task.id}`}>
-          <div className="relative" onClick={() => updateTaskMutation.mutate({ id: task.id, data: { excludeFromGpa: !task.excludeFromGpa }, _task: task })}>
-            <div className={`w-6 h-3.5 rounded-full transition-colors ${task.excludeFromGpa ? 'bg-red-500/60' : 'bg-green-500/60'}`} />
-            <div className={`absolute top-0.5 w-2.5 h-2.5 rounded-full bg-white transition-transform ${task.excludeFromGpa ? 'left-0.5' : 'left-3'}`} />
-          </div>
-        </label>
-        <button
-          onClick={(e) => { e.stopPropagation(); deleteTaskMutation.mutate({ id: task.id, _task: task }); }}
-          className="flex-shrink-0 text-white hover:text-red-400 transition-colors p-0.5 ml-2"
-          data-testid={`button-delete-ungraded-${task.id}`}
-        >
-          <Trash2 className="h-[15px] w-[15px]" />
-        </button>
+        <div className="flex items-center flex-shrink-0" style={{ gap: '6px', marginLeft: '8px' }} onClick={(e) => e.stopPropagation()}>
+          <label className="flex items-center gap-1 cursor-pointer" title={task.type === 'discussion' ? "Discussion posts are always ungraded" : "Not gradable — click to mark as graded"} data-testid={`toggle-gpa-ungraded-${task.id}`}>
+            <div className="relative" onClick={() => { if (task.type !== 'discussion') updateTaskMutation.mutate({ id: task.id, data: { excludeFromGpa: !task.excludeFromGpa }, _task: task }); }}>
+              <div className={`w-6 h-3.5 rounded-full transition-colors ${task.type === 'discussion' ? 'bg-white/10' : 'bg-white/20'}`} />
+              <div className={`absolute top-0.5 left-0.5 w-2.5 h-2.5 rounded-full bg-white transition-transform`} />
+            </div>
+            <span className="text-[7px] text-white/40">Ungraded</span>
+          </label>
+          <button
+            onClick={(e) => { e.stopPropagation(); deleteTaskMutation.mutate({ id: task.id, _task: task }); }}
+            className="flex-shrink-0 text-white hover:text-red-400 transition-colors p-0.5"
+            data-testid={`button-delete-ungraded-${task.id}`}
+          >
+            <Trash2 className="h-[15px] w-[15px]" />
+          </button>
+        </div>
       </div>
+      {expandedTaskId === task.id && editTaskFields && (
+        <div className="bg-white/5 border border-white/15 rounded-lg p-3 mb-1 space-y-2 ml-6" data-testid={`inline-edit-form-${task.id}`}>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <Label className="text-[9px] text-white mb-0.5 block">Title</Label>
+              <Input value={editTaskFields.title} onChange={(e) => setEditTaskFields({ ...editTaskFields, title: e.target.value })} className="h-7 text-[10px] bg-white/10 border-white/15 text-white" data-testid={`input-inline-title-${task.id}`} />
+            </div>
+            <div>
+              <Label className="text-[9px] text-white mb-0.5 block">Type</Label>
+              <select value={editTaskFields.type} onChange={(e) => setEditTaskFields({ ...editTaskFields, type: e.target.value })} className="w-full h-7 rounded bg-white/10 border border-white/15 text-white text-[10px] px-1.5" data-testid={`select-inline-type-${task.id}`}>
+                {TASK_TYPE_OPTIONS.map((t) => (<option key={t.value} value={t.value} className="bg-gray-800">{t.label}</option>))}
+              </select>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <Label className="text-[9px] text-white mb-0.5 block">Due Date</Label>
+              <Input type="date" value={editTaskFields.dueDate} onChange={(e) => setEditTaskFields({ ...editTaskFields, dueDate: e.target.value })} className="h-7 !text-[10px] text-white bg-white/10 border-white/15" style={{ colorScheme: 'dark' }} data-testid={`input-inline-date-${task.id}`} />
+            </div>
+            <div>
+              <Label className="text-[9px] text-white mb-0.5 block">Due Time</Label>
+              <Input type="time" value={editTaskFields.dueTime} onChange={(e) => setEditTaskFields({ ...editTaskFields, dueTime: e.target.value })} className="h-7 !text-[10px] text-white bg-white/10 border-white/15" style={{ colorScheme: 'dark' }} data-testid={`input-inline-time-${task.id}`} />
+            </div>
+          </div>
+          <div>
+            <Label className="text-[9px] text-white mb-0.5 block">Description</Label>
+            <Input value={editTaskFields.description} onChange={(e) => setEditTaskFields({ ...editTaskFields, description: e.target.value })} className="h-7 text-[10px] bg-white/10 border-white/15 text-white placeholder:text-white/25" placeholder="Optional description" data-testid={`input-inline-desc-${task.id}`} />
+          </div>
+          <div className="flex items-center justify-end gap-3 pt-2">
+            <Button size="sm" variant="ghost" onClick={() => { setExpandedTaskId(null); setEditTaskFields(null); }} className="h-9 px-4 text-[13px] font-semibold text-white hover:text-white hover:bg-white/10 border border-white/20" data-testid={`button-inline-cancel-${task.id}`}>Cancel</Button>
+            <Button
+              size="sm"
+              onClick={() => {
+                const updates: Record<string, any> = {};
+                if (editTaskFields.title !== task.title) updates.title = editTaskFields.title;
+                if (editTaskFields.type !== task.type) updates.type = editTaskFields.type;
+                if (editTaskFields.description !== (task.description || '')) updates.description = editTaskFields.description;
+                if (editTaskFields.dueDate) {
+                  const dd = new Date(editTaskFields.dueDate);
+                  if (editTaskFields.dueTime) {
+                    const [h, m] = editTaskFields.dueTime.split(':').map(Number);
+                    dd.setHours(h, m, 0, 0);
+                  } else {
+                    dd.setHours(23, 59, 0, 0);
+                  }
+                  updates.dueDate = dd.toISOString();
+                }
+                if (Object.keys(updates).length > 0) {
+                  updateTaskMutation.mutate({ id: task.id, data: updates, _task: task });
+                }
+                setExpandedTaskId(null);
+                setEditTaskFields(null);
+                toast({ title: "Task updated" });
+              }}
+              className="h-9 px-5 text-[13px] font-semibold bg-blue-600 hover:bg-blue-500 text-white"
+              data-testid={`button-inline-save-${task.id}`}
+            >
+              Save Changes
+            </Button>
+          </div>
+        </div>
+      )}
+      </React.Fragment>
     );
   };
 
@@ -4095,7 +4198,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               </div>
             )}
 
-            {courseTasks.length > 0 && (() => {
+            {gradedCourseTasks.length > 0 && (() => {
               const SortIcon = ({ field }: { field: SortField }) => {
                 if (sortField !== field) return null;
                 return sortDir === 'asc' ? <ArrowUp className="h-2 w-2 inline ml-0.5" /> : <ArrowDown className="h-2 w-2 inline ml-0.5" />;
@@ -4118,7 +4221,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   </div>
                   <div className="flex-shrink-0 flex justify-center" style={{ width: '14px', marginLeft: '4px', marginRight: '4px', overflow: 'visible' }}>
                   </div>
-                  <div className={`flex-1 min-w-0 ${hdrCls('title')}`} style={{ marginLeft: isEditingInfo ? '36px' : '36px' }} onClick={() => toggleSort('title')} data-testid="sort-title">Assignments<SortIcon field="title" />
+                  <div className={`flex-1 min-w-0 ${hdrCls('title')}`} style={{ marginLeft: isEditingInfo ? '36px' : '36px' }} onClick={() => toggleSort('title')} data-testid="sort-title">Graded Assignments<SortIcon field="title" />
                   </div>
                   <div className="flex items-end flex-shrink-0 text-white" style={{ gap: '10px', position: 'relative', left: isEditingInfo ? '-24px' : '-15px' }}>
                     <span className={`w-[33px] text-center leading-tight ${hdrCls('score')}`} onClick={() => toggleSort('score')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'relative', left: isEditingInfo ? '-5px' : '-5px' }} data-testid="sort-score">
@@ -4201,7 +4304,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 </div>
               ))}
             </div>
-            {courseTasks.length > 0 && (
+            {gradedCourseTasks.length > 0 && (
               <div className="flex items-center px-1.5 py-1.5 mt-1 rounded-md border border-amber-400/30 bg-amber-400/5" style={{ margin: '4px 4px 0 4px' }} data-testid="grade-totals-row">
                 <div className="flex-shrink-0" style={{ width: '14px', marginRight: '10px' }} />
                 <div className="flex-shrink-0" style={{ width: '16px', marginRight: '10px' }} />
@@ -4211,10 +4314,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 <div className="flex-1 min-w-0 text-[11px] font-bold text-white" style={{ marginLeft: '25px' }}>Totals</div>
                 <div className="flex items-center flex-shrink-0" style={{ gap: '10px', position: 'relative', left: isEditingInfo ? '-17px' : '-8px' }}>
                   <span className="text-[11px] font-bold w-[33px] text-center text-amber-400" data-testid="text-sum-value">
-                    {(() => { const v = courseTasks.filter(t => !t.excludeFromGpa).reduce((s, t) => s + (t.gradeValue || 0), 0); return v ? v.toFixed(2) : '—'; })()}
+                    {(() => { const v = gradedCourseTasks.reduce((s, t) => s + (t.gradeValue || 0), 0); return v ? v.toFixed(2) : '—'; })()}
                   </span>
                   <span className="text-[11px] font-bold w-[33px] text-center text-amber-400" data-testid="text-sum-total">
-                    {(() => { const v = courseTasks.filter(t => !t.excludeFromGpa).reduce((s, t) => s + (t.gradeTotal || 0), 0); return v ? v.toFixed(2) : '—'; })()}
+                    {(() => { const v = gradedCourseTasks.reduce((s, t) => s + (t.gradeTotal || 0), 0); return v ? v.toFixed(2) : '—'; })()}
                   </span>
                   <span className={`text-[11px] font-bold w-[33px] text-center ${
                     totalWeight === 100 ? 'text-green-400' : totalWeight > 100 ? 'text-red-400' : 'text-amber-400'
@@ -4231,24 +4334,19 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               </div>
             )}
 
-          {(() => {
-            const ungradedAll = courseTasks.filter(t => t.excludeFromGpa);
-            if (ungradedAll.length === 0) return null;
-            return (
-              <div className="mt-3" data-testid="ungraded-section">
-                <div className="flex items-center gap-1.5 px-1 mb-1.5">
-                  <h3 className="text-[10px] font-semibold text-white/60 uppercase tracking-wide">Ungraded</h3>
-                  <span className="text-[9px] text-white/40">({ungradedAll.length})</span>
+            {ungradedCourseTasks.length > 0 && (
+              <>
+                <div className="flex items-center px-1.5 py-1 text-[8px] font-bold text-white/60" style={{ margin: '12px 4px 0 4px' }} data-testid="ungraded-section-header">
+                  <span className="flex-1">Ungraded Assignments</span>
+                  <span className="text-[7px] text-white/30">{ungradedCourseTasks.length} items</span>
                 </div>
-                <div className="flex flex-col" style={{ gap: '4px' }}>
-                  {ungradedAll.map(task => renderUngradedRow(task))}
+                <div className="flex flex-col" style={{ gap: '3px', padding: '0 4px' }} data-testid="ungraded-assignments-list">
+                  {sortedUngradedTasks.map(task => renderUngradedAssignmentRow(task))}
                 </div>
-              </div>
-            );
-          })()}
+              </>
+            )}
 
           </>)}
-
 
           </div>
           </div>
