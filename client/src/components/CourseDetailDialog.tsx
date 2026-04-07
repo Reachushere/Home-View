@@ -2958,7 +2958,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               </div>
             </div>
 
-            {showWeekMappings && (
+            {showWeekMappings && (<>
               <div className="mt-2 bg-white/5 border border-white/15 rounded-lg p-3 space-y-1" data-testid="week-mappings-panel">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[9px] text-white">Confirm each week follows the standard TMU academic calendar for this course</span>
@@ -3280,7 +3280,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                         data-testid={`button-upload-reading-${weekNum}`}
                       >
                         {weekUploadingState[`${weekNum}-reading`] ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}
-                        Reading
+                        Upload File
                       </button>
 
                       <button
@@ -3290,7 +3290,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                         data-testid={`button-upload-module-${weekNum}`}
                       >
                         {weekUploadingState[`${weekNum}-module`] ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}
-                        Module
+                        Upload File
                       </button>
 
                       <div className="relative flex-shrink-0">
@@ -3370,7 +3370,165 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   );
                 })}
               </div>
-            )}
+
+              <div className="mt-3 border-t border-white/15 pt-3">
+                <div className="flex items-center gap-1.5 mb-2 px-1">
+                  <BookOpen className="h-3.5 w-3.5 text-white/60" />
+                  <h3 className="text-[11px] font-medium text-white uppercase">Module Progress</h3>
+                  <span className="text-[8px] text-white/30 ml-1">(not counted in GPA)</span>
+                </div>
+                <div className="space-y-1" data-testid="modules-list-inline">
+                  {(() => {
+                    const hasAnyModules = Object.values(modulesByWeek).some(files => files.length > 0);
+                    if (!hasAnyModules) {
+                      return (
+                        <div className="text-[10px] text-white/30 text-center py-3">
+                          No module files found for this course
+                        </div>
+                      );
+                    }
+                    const effectiveRWStart = selectedReadingWeekStart || readingWeekStart;
+                    const currentModuleWeek = getWeekNumber(new Date(), semesterStart, effectiveRWStart);
+                    return Array.from({ length: LAST_WEEK - FIRST_WEEK + 1 }, (_, i) => FIRST_WEEK + i).map(weekNum => {
+                      const files = modulesByWeek[weekNum] || [];
+                      const isCurrentWeek = weekNum === currentModuleWeek;
+                      if (files.length === 0) {
+                        return (
+                          <div key={weekNum} className={`flex items-center gap-2 px-2 py-1.5 rounded ${isCurrentWeek ? 'bg-white/[0.08] border-2 border-white' : 'bg-white/[0.03] border border-white/[0.06]'}`} data-testid={`module-inline-week-${weekNum}`}>
+                            <button className="flex-shrink-0 w-4 h-4 rounded-sm border-2 flex items-center justify-center border-white/30" disabled />
+                            <span className={`text-[12px] flex-1 ${isCurrentWeek ? 'text-white font-medium' : 'text-white/50'}`}>Week {weekNum}</span>
+                            {isCurrentWeek && <span className="text-[9px] text-white font-semibold uppercase mr-1 bg-white/20 px-1.5 py-0.5 rounded">Current</span>}
+                            <span className={`text-[10px] ${isCurrentWeek ? 'text-white/50' : 'text-white/30'}`}>No file</span>
+                          </div>
+                        );
+                      }
+                      return files.map(file => {
+                        const progress = getModuleProgress(file);
+                        const complete = isModuleComplete(file);
+                        const circleSize = 24;
+                        const strokeWidth = 2.5;
+                        const radius = (circleSize - strokeWidth) / 2;
+                        const circumference = 2 * Math.PI * radius;
+                        const offset = circumference - (progress / 100) * circumference;
+                        const progressColor = progress >= 80 ? '#22c55e' : progress > 0 ? '#f97316' : '#ef4444';
+                        const fileNameRaw = (file.displayName || file.originalName || '').replace(/\.pdf$/i, '');
+                        const courseCode = courseInfo?.courseCode?.trim() || courseInfo?.courseName?.split(' - ')[0]?.trim() || '';
+                        const fileName = courseCode ? fileNameRaw.replace(new RegExp(`^${courseCode}[,\\s]*`, 'i'), '').replace(/^[,\\s]+/, '') : fileNameRaw;
+                        const chunksPerDay = file.totalChunks > 0 ? Math.ceil(file.totalChunks / 7) : 0;
+                        const weekDates = getWeekDates(weekNum, semesterStart, readingWeekStart);
+                        const weekStartDate = new Date(weekDates.start);
+                        const now = new Date();
+                        const dayOfWeek = Math.max(0, Math.min(7, Math.floor((now.getTime() - weekStartDate.getTime()) / (24 * 60 * 60 * 1000))));
+                        const expectedByToday = isCurrentWeek ? Math.min(file.totalChunks, chunksPerDay * (dayOfWeek + 1)) : 0;
+                        const checkedSet = getCheckedChunks(file);
+                        const actualListened = file.listened ? file.totalChunks : checkedSet.size;
+                        const diff = actualListened - expectedByToday;
+                        return (
+                          <div key={file.id} className={`rounded ${isCurrentWeek ? 'bg-white/[0.08] border-2 border-white' : 'bg-white/[0.04] border border-white/[0.08] hover:border-white/15'} transition-colors`} data-testid={`module-inline-week-${weekNum}-file-${file.id}`}>
+                            <div className="flex items-center gap-2 px-2 py-2">
+                              <button
+                                className={`flex-shrink-0 w-4 h-4 rounded-sm border-2 flex items-center justify-center transition-colors ${
+                                  complete ? "bg-green-500 border-green-500" : "border-white/30 hover:border-white/50"
+                                } ${isEditingInfo ? 'cursor-pointer' : ''}`}
+                                onClick={() => { if (isEditingInfo) handleModuleCheckToggle(file, !complete); }}
+                                data-testid={`module-inline-check-${file.id}`}
+                              >
+                                {complete && <Check className="h-3 w-3 text-white" />}
+                              </button>
+                              <svg width={circleSize} height={circleSize} style={{ flexShrink: 0, transform: 'rotate(-90deg)' }}>
+                                <circle cx={circleSize / 2} cy={circleSize / 2} r={radius} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={strokeWidth} />
+                                <circle cx={circleSize / 2} cy={circleSize / 2} r={radius} fill="none" stroke={progressColor} strokeWidth={strokeWidth} strokeDasharray={circumference} strokeDashoffset={offset} strokeLinecap="round" />
+                              </svg>
+                              <div className="flex flex-col flex-1 min-w-0">
+                                <span className="text-[12px] text-white truncate" title={fileName}>
+                                  <span className={isCurrentWeek ? 'text-white/80' : 'text-white/60'}>Week {weekNum}</span> - {fileName}
+                                  {isCurrentWeek && <span className="text-[9px] text-white font-semibold uppercase ml-1.5 bg-white/20 px-1.5 py-0.5 rounded">Current</span>}
+                                </span>
+                                {isEditingInfo && file.totalChunks > 0 && (
+                                  <div className="flex items-center gap-2 mt-0.5">
+                                    <input
+                                      type="range"
+                                      min={0}
+                                      max={file.totalChunks}
+                                      value={file.lastChunkIndex || 0}
+                                      onChange={(e) => handleModuleSliderChange(file, parseInt(e.target.value, 10))}
+                                      className="flex-1 h-1 accent-white/60"
+                                      style={{ cursor: 'pointer' }}
+                                      data-testid={`module-inline-slider-${file.id}`}
+                                    />
+                                    <span className="text-[10px] text-white/60 flex-shrink-0 w-[45px] text-right">
+                                      {file.lastChunkIndex || 0}/{file.totalChunks}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                              <span className="text-[12px] font-semibold flex-shrink-0 text-white" data-testid={`module-inline-progress-${file.id}`}>
+                                {progress}%
+                              </span>
+                            </div>
+                            {file.totalChunks > 0 && (() => {
+                              const checked = getCheckedChunks(file);
+                              return (
+                                <div className="flex flex-wrap gap-[3px] px-2 pb-2" data-testid={`module-inline-chunks-${file.id}`}>
+                                  {Array.from({ length: file.totalChunks }, (_, i) => {
+                                    const isChecked = checked.has(i);
+                                    return (
+                                      <div
+                                        key={i}
+                                        className={`rounded transition-colors ${isEditingInfo ? 'cursor-pointer hover:opacity-80' : ''}`}
+                                        style={{
+                                          width: '11px',
+                                          height: '11px',
+                                          backgroundColor: isChecked ? (courseInfo.colorEnd || courseInfo.color || '#22c55e') : 'transparent',
+                                          border: `1.5px solid ${isChecked ? (courseInfo.colorEnd || courseInfo.color || '#22c55e') : 'rgba(255,255,255,0.3)'}`,
+                                        }}
+                                        onClick={() => { if (isEditingInfo) handleChunkToggle(file, i); }}
+                                        title={`Chunk ${i + 1}${isChecked ? ' (listened)' : ''}`}
+                                        data-testid={`chunk-inline-${file.id}-${i}`}
+                                      />
+                                    );
+                                  })}
+                                  <span className="text-[9px] text-white/70 ml-1 self-center">{checked.size}/{file.totalChunks}</span>
+                                </div>
+                              );
+                            })()}
+                            {isCurrentWeek && file.totalChunks > 0 && !complete && (() => {
+                              const pacePercent = file.totalChunks > 0 ? Math.round((expectedByToday / file.totalChunks) * 100) : 0;
+                              const actualPercent = file.totalChunks > 0 ? Math.round((actualListened / file.totalChunks) * 100) : 0;
+                              return (
+                                <div className="px-2 pb-2.5 space-y-1.5" data-testid={`module-inline-pace-${file.id}`}>
+                                  <div className="flex items-center justify-between text-[11px]">
+                                    <span className="text-white/90">{chunksPerDay} chunks/day to finish this week</span>
+                                    <span className={`font-bold ${diff > 0 ? 'text-green-400' : diff < 0 ? 'text-red-400' : 'text-yellow-400'}`}>
+                                      {diff > 0 ? `+${diff} ahead` : diff < 0 ? `${diff} behind` : 'On track'}
+                                    </span>
+                                  </div>
+                                  <div className="relative h-[8px] rounded-full bg-white/[0.12] overflow-hidden">
+                                    <div
+                                      className="absolute top-0 left-0 h-full rounded-full transition-all"
+                                      style={{ width: `${Math.min(100, actualPercent)}%`, backgroundColor: diff >= 0 ? '#22c55e' : '#f97316' }}
+                                    />
+                                    <div
+                                      className="absolute top-0 h-full border-r-2 border-white/80"
+                                      style={{ left: `${Math.min(100, pacePercent)}%` }}
+                                      title={`Expected: ${expectedByToday}/${file.totalChunks} by today (Day ${dayOfWeek + 1})`}
+                                    />
+                                  </div>
+                                  <div className="flex items-center justify-between text-[10px] text-white/70">
+                                    <span>Actual: {actualListened}/{file.totalChunks}</span>
+                                    <span>Expected by Day {dayOfWeek + 1}: {expectedByToday}/{file.totalChunks}</span>
+                                  </div>
+                                </div>
+                              );
+                            })()}
+                          </div>
+                        );
+                      });
+                    });
+                  })()}
+                </div>
+              </div>
+            </>)}
           </div>
 
           <div ref={assignmentsRef} style={{ marginTop: '10px' }}>
@@ -3778,174 +3936,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
 
           </>)}
 
-          <div ref={modulesRef} className="mt-3">
-            <div style={{ border: '2px solid rgba(255,255,255,0.2)', borderRadius: '8px', padding: '12px' }}>
-            <div
-              className="flex items-center justify-between cursor-pointer select-none py-1.5 px-2 rounded-md hover:bg-white/5 transition-colors"
-              onClick={() => { const next = !showModules; setShowModules(next); if (next) setTimeout(() => { const el = modulesRef.current; if (el) { const scrollParent = el.closest('.overflow-y-auto') as HTMLElement | null; if (scrollParent) { const elTop = (el as HTMLElement).offsetTop - scrollParent.offsetTop; scrollParent.scrollTo({ top: elTop - 4, behavior: 'smooth' }); } else { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } } }, 80); }}
-              data-testid="toggle-modules-section"
-            >
-              <div className="flex items-center gap-1.5">
-                <BookOpen className="h-3.5 w-3.5 text-white/60" />
-                <h3 className="text-[11px] font-medium text-white uppercase">Module Progress</h3>
-                <span className="text-[8px] text-white/30 ml-1">(not counted in GPA)</span>
-              </div>
-              {showModules ? <ChevronDown className="h-3 w-3 text-white/50" /> : <ChevronRight className="h-3 w-3 text-white/50" />}
-            </div>
-            {showModules && (
-              <div className="mt-1 space-y-1" data-testid="modules-list">
-                {(() => {
-                  const hasAnyModules = Object.values(modulesByWeek).some(files => files.length > 0);
-                  if (!hasAnyModules) {
-                    return (
-                      <div className="text-[10px] text-white/30 text-center py-3">
-                        No module files found for this course
-                      </div>
-                    );
-                  }
-                  const effectiveRWStart = selectedReadingWeekStart || readingWeekStart;
-                  const currentModuleWeek = getWeekNumber(new Date(), semesterStart, effectiveRWStart);
-                  return Array.from({ length: LAST_WEEK - FIRST_WEEK + 1 }, (_, i) => FIRST_WEEK + i).map(weekNum => {
-                    const files = modulesByWeek[weekNum] || [];
-                    const isCurrentWeek = weekNum === currentModuleWeek;
-                    if (files.length === 0) {
-                      return (
-                        <div key={weekNum} className={`flex items-center gap-2 px-2 py-1.5 rounded ${isCurrentWeek ? 'bg-white/[0.08] border-2 border-white' : 'bg-white/[0.03] border border-white/[0.06]'}`} data-testid={`module-week-${weekNum}`}>
-                          <button className="flex-shrink-0 w-4 h-4 rounded-sm border-2 flex items-center justify-center border-white/30" disabled />
-                          <span className={`text-[12px] flex-1 ${isCurrentWeek ? 'text-white font-medium' : 'text-white/50'}`}>Week {weekNum}</span>
-                          {isCurrentWeek && <span className="text-[9px] text-white font-semibold uppercase mr-1 bg-white/20 px-1.5 py-0.5 rounded">Current</span>}
-                          <span className={`text-[10px] ${isCurrentWeek ? 'text-white/50' : 'text-white/30'}`}>No file</span>
-                        </div>
-                      );
-                    }
-                    return files.map(file => {
-                      const progress = getModuleProgress(file);
-                      const complete = isModuleComplete(file);
-                      const circleSize = 24;
-                      const strokeWidth = 2.5;
-                      const radius = (circleSize - strokeWidth) / 2;
-                      const circumference = 2 * Math.PI * radius;
-                      const offset = circumference - (progress / 100) * circumference;
-                      const progressColor = progress >= 80 ? '#22c55e' : progress > 0 ? '#f97316' : '#ef4444';
-                      const fileNameRaw = (file.displayName || file.originalName || '').replace(/\.pdf$/i, '');
-                      const courseCode = courseInfo?.courseCode?.trim() || courseInfo?.courseName?.split(' - ')[0]?.trim() || '';
-                      const fileName = courseCode ? fileNameRaw.replace(new RegExp(`^${courseCode}[,\\s]*`, 'i'), '').replace(/^[,\\s]+/, '') : fileNameRaw;
-                      const chunksPerDay = file.totalChunks > 0 ? Math.ceil(file.totalChunks / 7) : 0;
-                      const weekDates = getWeekDates(weekNum, semesterStart, readingWeekStart);
-                      const weekStartDate = new Date(weekDates.start);
-                      const now = new Date();
-                      const dayOfWeek = Math.max(0, Math.min(7, Math.floor((now.getTime() - weekStartDate.getTime()) / (24 * 60 * 60 * 1000))));
-                      const expectedByToday = isCurrentWeek ? Math.min(file.totalChunks, chunksPerDay * (dayOfWeek + 1)) : 0;
-                      const checkedSet = getCheckedChunks(file);
-                      const actualListened = file.listened ? file.totalChunks : checkedSet.size;
-                      const diff = actualListened - expectedByToday;
-                      return (
-                        <div key={file.id} className={`rounded ${isCurrentWeek ? 'bg-white/[0.08] border-2 border-white' : 'bg-white/[0.04] border border-white/[0.08] hover:border-white/15'} transition-colors`} data-testid={`module-week-${weekNum}-file-${file.id}`}>
-                          <div className="flex items-center gap-2 px-2 py-2">
-                            <button
-                              className={`flex-shrink-0 w-4 h-4 rounded-sm border-2 flex items-center justify-center transition-colors ${
-                                complete ? "bg-green-500 border-green-500" : "border-white/30 hover:border-white/50"
-                              } ${isEditingInfo ? 'cursor-pointer' : ''}`}
-                              onClick={() => { if (isEditingInfo) handleModuleCheckToggle(file, !complete); }}
-                              data-testid={`module-check-${file.id}`}
-                            >
-                              {complete && <Check className="h-3 w-3 text-white" />}
-                            </button>
-                            <svg width={circleSize} height={circleSize} style={{ flexShrink: 0, transform: 'rotate(-90deg)' }}>
-                              <circle cx={circleSize / 2} cy={circleSize / 2} r={radius} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={strokeWidth} />
-                              <circle cx={circleSize / 2} cy={circleSize / 2} r={radius} fill="none" stroke={progressColor} strokeWidth={strokeWidth} strokeDasharray={circumference} strokeDashoffset={offset} strokeLinecap="round" />
-                            </svg>
-                            <div className="flex flex-col flex-1 min-w-0">
-                              <span className="text-[12px] text-white truncate" title={fileName}>
-                                <span className={isCurrentWeek ? 'text-white/80' : 'text-white/60'}>Week {weekNum}</span> - {fileName}
-                                {isCurrentWeek && <span className="text-[9px] text-white font-semibold uppercase ml-1.5 bg-white/20 px-1.5 py-0.5 rounded">Current</span>}
-                              </span>
-                              {isEditingInfo && file.totalChunks > 0 && (
-                                <div className="flex items-center gap-2 mt-0.5">
-                                  <input
-                                    type="range"
-                                    min={0}
-                                    max={file.totalChunks}
-                                    value={file.lastChunkIndex || 0}
-                                    onChange={(e) => handleModuleSliderChange(file, parseInt(e.target.value, 10))}
-                                    className="flex-1 h-1 accent-white/60"
-                                    style={{ cursor: 'pointer' }}
-                                    data-testid={`module-slider-${file.id}`}
-                                  />
-                                  <span className="text-[10px] text-white/60 flex-shrink-0 w-[45px] text-right">
-                                    {file.lastChunkIndex || 0}/{file.totalChunks}
-                                  </span>
-                                </div>
-                              )}
-                            </div>
-                            <span className={`text-[12px] font-semibold flex-shrink-0 text-white`} data-testid={`module-progress-${file.id}`}>
-                              {progress}%
-                            </span>
-                          </div>
-                          {file.totalChunks > 0 && (() => {
-                            const checked = getCheckedChunks(file);
-                            return (
-                              <div className="flex flex-wrap gap-[3px] px-2 pb-2" data-testid={`module-chunks-${file.id}`}>
-                                {Array.from({ length: file.totalChunks }, (_, i) => {
-                                  const isChecked = checked.has(i);
-                                  return (
-                                    <div
-                                      key={i}
-                                      className={`rounded transition-colors ${isEditingInfo ? 'cursor-pointer hover:opacity-80' : ''}`}
-                                      style={{
-                                        width: '11px',
-                                        height: '11px',
-                                        backgroundColor: isChecked ? (courseInfo.colorEnd || courseInfo.color || '#22c55e') : 'transparent',
-                                        border: `1.5px solid ${isChecked ? (courseInfo.colorEnd || courseInfo.color || '#22c55e') : 'rgba(255,255,255,0.3)'}`,
-                                      }}
-                                      onClick={() => { if (isEditingInfo) handleChunkToggle(file, i); }}
-                                      title={`Chunk ${i + 1}${isChecked ? ' (listened)' : ''}`}
-                                      data-testid={`chunk-${file.id}-${i}`}
-                                    />
-                                  );
-                                })}
-                                <span className="text-[9px] text-white/70 ml-1 self-center">{checked.size}/{file.totalChunks}</span>
-                              </div>
-                            );
-                          })()}
-                          {isCurrentWeek && file.totalChunks > 0 && !complete && (() => {
-                            const pacePercent = file.totalChunks > 0 ? Math.round((expectedByToday / file.totalChunks) * 100) : 0;
-                            const actualPercent = file.totalChunks > 0 ? Math.round((actualListened / file.totalChunks) * 100) : 0;
-                            return (
-                              <div className="px-2 pb-2.5 space-y-1.5" data-testid={`module-pace-${file.id}`}>
-                                <div className="flex items-center justify-between text-[11px]">
-                                  <span className="text-white/90">{chunksPerDay} chunks/day to finish this week</span>
-                                  <span className={`font-bold ${diff > 0 ? 'text-green-400' : diff < 0 ? 'text-red-400' : 'text-yellow-400'}`}>
-                                    {diff > 0 ? `+${diff} ahead` : diff < 0 ? `${diff} behind` : 'On track'}
-                                  </span>
-                                </div>
-                                <div className="relative h-[8px] rounded-full bg-white/[0.12] overflow-hidden">
-                                  <div
-                                    className="absolute top-0 left-0 h-full rounded-full transition-all"
-                                    style={{ width: `${Math.min(100, actualPercent)}%`, backgroundColor: diff >= 0 ? '#22c55e' : '#f97316' }}
-                                  />
-                                  <div
-                                    className="absolute top-0 h-full border-r-2 border-white/80"
-                                    style={{ left: `${Math.min(100, pacePercent)}%` }}
-                                    title={`Expected: ${expectedByToday}/${file.totalChunks} by today (Day ${dayOfWeek + 1})`}
-                                  />
-                                </div>
-                                <div className="flex items-center justify-between text-[10px] text-white/70">
-                                  <span>Actual: {actualListened}/{file.totalChunks}</span>
-                                  <span>Expected by Day {dayOfWeek + 1}: {expectedByToday}/{file.totalChunks}</span>
-                                </div>
-                              </div>
-                            );
-                          })()}
-                        </div>
-                      );
-                    });
-                  });
-                })()}
-              </div>
-            )}
-            </div>
-          </div>
 
           </div>
           </div>
