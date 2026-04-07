@@ -333,7 +333,11 @@ const FOLDER_TYPES = [
 
 // Helper function to convert 24-hour time to 12-hour format
 const formatTimeTo12Hour = (time24: string): string => {
-  const [hours, minutes] = time24.split(':').map(Number);
+  let [hours, minutes] = time24.split(':').map(Number);
+  if (minutes === 59) {
+    minutes = 0;
+    hours = hours + 1;
+  }
   const period = hours >= 12 ? 'PM' : 'AM';
   const hours12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
   return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
@@ -24176,11 +24180,11 @@ export default function Dashboard() {
                                     const summerLabel = (ss?.summerStartDate || ss?.summerEndDate) ? `${fmtD(ss.summerStartDate || '')} – ${fmtD(ss.summerEndDate || '')}` : 'Set dates';
                                     return (
                                       <>
-                                        <span className="text-[8px] whitespace-nowrap px-1.5 py-0.5 rounded border cursor-pointer hover:bg-white/15 transition-colors" style={{ color: '#ffffff', background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)', marginRight: '2px' }} onClick={(e) => { e.stopPropagation(); setSemDatePickerKey(sem.key); setSemDatePickerHalf('spring'); }} data-testid={`dates-pill-spring-${sem.key}`}>
-                                          <span style={{ fontWeight: 600 }}>Spring:</span> {springLabel}
+                                        <span className="text-[10px] whitespace-nowrap px-1.5 py-0.5 rounded border cursor-pointer hover:bg-white/15 transition-colors" style={{ color: '#ffffff', background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)', marginRight: '2px' }} onClick={(e) => { e.stopPropagation(); setSemDatePickerKey(sem.key); setSemDatePickerHalf('spring'); }} data-testid={`dates-pill-spring-${sem.key}`}>
+                                          <span style={{ fontWeight: 700 }}>Spring:</span> {springLabel}
                                         </span>
-                                        <span className="text-[8px] whitespace-nowrap px-1.5 py-0.5 rounded border cursor-pointer hover:bg-white/15 transition-colors" style={{ color: '#ffffff', background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)', marginRight: '3px' }} onClick={(e) => { e.stopPropagation(); setSemDatePickerKey(sem.key); setSemDatePickerHalf('summer'); }} data-testid={`dates-pill-summer-${sem.key}`}>
-                                          <span style={{ fontWeight: 600 }}>Summer:</span> {summerLabel}
+                                        <span className="text-[10px] whitespace-nowrap px-1.5 py-0.5 rounded border cursor-pointer hover:bg-white/15 transition-colors" style={{ color: '#ffffff', background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)', marginRight: '3px' }} onClick={(e) => { e.stopPropagation(); setSemDatePickerKey(sem.key); setSemDatePickerHalf('summer'); }} data-testid={`dates-pill-summer-${sem.key}`}>
+                                          <span style={{ fontWeight: 700 }}>Summer:</span> {summerLabel}
                                         </span>
                                       </>
                                     );
@@ -29062,9 +29066,10 @@ export default function Dashboard() {
                           onDragLeave={handleDragLeave}
                           onDrop={(e) => handleDrop(e, day, hour)}
                           onDoubleClick={(e) => {
-                            if (hourTasks.length > 0) {
+                            const allCellTasks = [...hourTasks, ...continuingTasks];
+                            if (allCellTasks.length > 0) {
                               e.stopPropagation();
-                              setEditingTask(hourTasks[0]);
+                              setEditingTask(allCellTasks[0]);
                               return;
                             }
                             
@@ -29238,6 +29243,20 @@ export default function Dashboard() {
                             const tomorrow = addDays(stableToday, 1);
                             const isDueToday = !task.isCompleted && isSameDayET(new Date(task.dueDate), stableToday);
                             const isDueTomorrow = !task.isCompleted && isSameDayET(new Date(task.dueDate), tomorrow);
+                            const isDarkBg = (() => {
+                              if (task.isCompleted) return false;
+                              const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode);
+                              const taskBg = cMatch?.taskBgColor || (colors?.bg) || '';
+                              if (!taskBg) return false;
+                              const hex = taskBg.replace('#', '');
+                              if (hex.length === 6) {
+                                const r = parseInt(hex.substring(0, 2), 16);
+                                const g = parseInt(hex.substring(2, 4), 16);
+                                const b = parseInt(hex.substring(4, 6), 16);
+                                return (r * 299 + g * 587 + b * 114) / 1000 < 160;
+                              }
+                              return false;
+                            })();
                             
                             let taskHeight = rowHeight - 4;
                             let topOffset = 2;
@@ -29291,8 +29310,8 @@ export default function Dashboard() {
                                 onTouchEnd={handleTouchEnd}
                                 onTouchMove={handleTouchMove}
                                 title={(task.title || '').replace(/\[[^\]]*\]\s*/g, '').trim() + (task.dueDate ? ` — ${format(new Date(task.dueDate), 'MMM d, h:mm a')}` : '')}
-                                onMouseEnter={(e) => { if (totalItems > 1) { const el = e.currentTarget as HTMLElement; el.style.transition = 'none'; el.style.width = 'calc(100% - 4px)'; el.style.left = '2px'; el.style.zIndex = '55'; el.style.boxShadow = '0 4px 16px rgba(0,0,0,0.35)'; } }}
-                                onMouseLeave={(e) => { if (totalItems > 1) { const el = e.currentTarget as HTMLElement; const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); el.style.transition = 'none'; el.style.width = hasNextDueBox ? `calc(${columnWidth / 2}% - 4px)` : `calc(${columnWidth}% - 4px)`; el.style.left = hasNextDueBox ? `calc(${taskIdx * columnWidth / 2}% + 2px)` : `calc(${taskIdx * columnWidth}% + 2px)`; el.style.zIndex = selectedTaskId === task.id ? '55' : (draggedTask?.id === task.id ? '53' : '43'); el.style.boxShadow = ''; } }}
+                                onMouseEnter={(e) => { if (totalItems > 1) { const el = e.currentTarget as HTMLElement; el.style.zIndex = '55'; el.style.boxShadow = '0 4px 16px rgba(0,0,0,0.35)'; } }}
+                                onMouseLeave={(e) => { if (totalItems > 1) { const el = e.currentTarget as HTMLElement; el.style.zIndex = selectedTaskId === task.id ? '55' : (draggedTask?.id === task.id ? '53' : '43'); el.style.boxShadow = ''; } }}
                                 className={`absolute shadow-sm cursor-grab active:cursor-grabbing rounded overflow-visible ${
                                   draggedTask?.id === task.id ? "opacity-50" : ""
                                 } ${
@@ -29364,7 +29383,7 @@ export default function Dashboard() {
                                         <div style={{ width: '10px', height: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><img src={teacherWhiteIconPath} alt="Class" style={{ width: '10px', height: '10px', objectFit: 'contain' }} data-testid={`type-icon-time-${task.id}`} /></div>
                                       ) : (() => { const SIcon = iconMap[effectiveType] || MoreHorizontal; return <div style={{ width: '10px', height: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><SIcon style={{ width: '10px', height: '10px', color: 'white' } as any} data-testid={`type-icon-time-${task.id}`} /></div>; })()}
                                       </div>
-                                      <span style={{ fontSize: '9px', fontWeight: 500, color: '#000000', letterSpacing: '0.3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, padding: '1px 3px' }}>
+                                      <span style={{ fontSize: '9px', fontWeight: 500, color: isDarkBg ? '#ffffff' : '#000000', letterSpacing: '0.3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, padding: '1px 3px' }}>
                                         {(() => { const raw = (task.title || '').replace(/[\[\]]/g, '').replace(/^\s+/, '').replace(/^online\s+/i, ''); const t = raw; const isModRead = /^(module|reading|module\s*(?:&|and)\s*reading)$/i.test(t.trim()); if (isModRead && task.courseName) { const cc = task.courseName.split(' - ')[0]?.trim(); if (cc) return `${cc} ${t}`; } return t; })()}
                                       </span>
                                       
@@ -29385,8 +29404,8 @@ export default function Dashboard() {
                                   </div>
                                   {(() => { const hasAtt = (task.attachments?.length && task.attachments.some((att: any) => { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; return !!url; })) || task.referenceLink; return hasAtt ? <img src={pdfAttachIconPath} alt="PDF" style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0 }} data-testid={`attachment-icon-time-${task.id}`} /> : null; })()}
                                   <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', height: '14px', overflow: 'hidden' }}>
-                                    <span style={{ fontSize: '9px', fontWeight: 400, color: '#000000', lineHeight: '14px', fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
-                                      {task.eventStartTime && task.eventEndTime ? `${formatTimeTo12Hour(task.eventStartTime)} - ${formatTimeTo12Hour(task.eventEndTime)}` : format(new Date(task.dueDate), "h:mm a")}
+                                    <span style={{ fontSize: '9px', fontWeight: 400, color: isDarkBg ? '#ffffff' : '#000000', lineHeight: '14px', fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
+                                      {task.eventStartTime && task.eventEndTime ? `${formatTimeTo12Hour(task.eventStartTime)} - ${formatTimeTo12Hour(task.eventEndTime)}` : (() => { const d = new Date(task.dueDate); const m = d.getMinutes(); if (m === 59) { const rd = new Date(d); rd.setMinutes(0); rd.setHours(rd.getHours() + 1); return format(rd, "h:mm a"); } return format(d, "h:mm a"); })()}
                                     </span>
                                   </div>
                                   {(() => { const dm = courseDeliveryModes[courseCode] || ''; return dm === 'virtual' ? <img src={zoomCamPath} alt="Zoom" style={{ width: '14px', height: '14px', objectFit: 'contain', borderRadius: '50%', flexShrink: 0 }} data-testid={`zoom-icon-time-${task.id}`} /> : null; })()}
@@ -29536,6 +29555,20 @@ export default function Dashboard() {
                   const isDueTomorrow = !task.isCompleted && isSameDayET(new Date(task.dueDate), tomorrow);
                   
                   const taskDay = weekDays[dayIdx];
+                  const isDarkBg = (() => {
+                    if (task.isCompleted) return false;
+                    const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode);
+                    const taskBg = cMatch?.taskBgColor || (colors?.bg) || '';
+                    if (!taskBg) return false;
+                    const hex = taskBg.replace('#', '');
+                    if (hex.length === 6) {
+                      const r = parseInt(hex.substring(0, 2), 16);
+                      const g = parseInt(hex.substring(2, 4), 16);
+                      const b = parseInt(hex.substring(4, 6), 16);
+                      return (r * 299 + g * 587 + b * 114) / 1000 < 160;
+                    }
+                    return false;
+                  })();
                   
                   return (
                     <div
@@ -29544,8 +29577,8 @@ export default function Dashboard() {
                       onDragStart={(e) => handleDragStart(e, task)}
                       onDragEnd={handleDragEnd}
                       title={(task.title || '').replace(/\[[^\]]*\]\s*/g, '').trim() + (task.dueDate ? ` — ${format(new Date(task.dueDate), 'MMM d, h:mm a')}` : '')}
-                      onMouseEnter={(e) => { if (oi.totalCols > 1) { const el = e.currentTarget as HTMLElement; el.style.zIndex = '60'; el.style.transition = 'width 0.15s ease, left 0.15s ease'; el.style.boxShadow = '0 4px 16px rgba(0,0,0,0.35)'; el.style.width = el.dataset.hoverWidth || el.style.width; if (oi.col > 0) el.style.left = el.dataset.hoverLeft || el.style.left; } }}
-                      onMouseLeave={(e) => { if (oi.totalCols > 1) { const el = e.currentTarget as HTMLElement; el.style.left = el.dataset.origLeft || el.style.left; el.style.width = el.dataset.origWidth || el.style.width; el.style.zIndex = selectedTaskId === task.id ? '55' : (draggedTask?.id === task.id ? '53' : String(51 + oi.col)); el.style.transition = 'left 0.15s ease, width 0.15s ease'; el.style.boxShadow = ''; } }}
+                      onMouseEnter={(e) => { if (oi.totalCols > 1) { const el = e.currentTarget as HTMLElement; el.style.zIndex = '60'; el.style.boxShadow = '0 4px 16px rgba(0,0,0,0.35)'; } }}
+                      onMouseLeave={(e) => { if (oi.totalCols > 1) { const el = e.currentTarget as HTMLElement; el.style.zIndex = selectedTaskId === task.id ? '55' : (draggedTask?.id === task.id ? '53' : String(51 + oi.col)); el.style.boxShadow = ''; } }}
                       onClick={(e) => {
                         e.stopPropagation();
                         setSelectedTaskId(task.id);
@@ -29676,8 +29709,8 @@ export default function Dashboard() {
                         </div>
                         {(() => { const hasAtt = (task.attachments?.length && task.attachments.some((att: any) => { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; return !!url; })) || task.referenceLink; return hasAtt ? <img src={pdfAttachIconPath} alt="PDF" style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0 }} data-testid={`attachment-icon-multi-${task.id}`} /> : null; })()}
                         <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
-                          <div style={{ fontSize: '9px', fontWeight: 400, color: '#000000', lineHeight: 1.2, fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                            {task.eventStartTime && task.eventEndTime ? `${formatTimeTo12Hour(task.eventStartTime)} - ${formatTimeTo12Hour(task.eventEndTime)}` : format(new Date(task.dueDate), "h:mm a")}
+                          <div style={{ fontSize: '9px', fontWeight: 400, color: isDarkBg ? '#ffffff' : '#000000', lineHeight: 1.2, fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {task.eventStartTime && task.eventEndTime ? `${formatTimeTo12Hour(task.eventStartTime)} - ${formatTimeTo12Hour(task.eventEndTime)}` : (() => { const d = new Date(task.dueDate); const m = d.getMinutes(); if (m === 59) { const rd = new Date(d); rd.setMinutes(0); rd.setHours(rd.getHours() + 1); return format(rd, "h:mm a"); } return format(d, "h:mm a"); })()}
                           </div>
                         </div>
                         {(() => { const dm = courseDeliveryModes[courseCode] || ''; return dm === 'virtual' ? <img src={zoomCamPath} alt="Zoom" style={{ width: '14px', height: '14px', objectFit: 'contain', borderRadius: '50%', flexShrink: 0 }} data-testid={`zoom-icon-multi-${task.id}`} /> : null; })()}
@@ -38416,19 +38449,24 @@ function TaskForm({
           }
         }
         const patchRes = await apiRequest("PATCH", `/api/tasks/${task.id}`, payload);
-        if (data.type === 'essay' && !task.referenceLink) {
-          try {
-            const courseCode = data.courseName?.split(' - ')[0]?.split(' ')[0]?.trim() || '';
-            const courseNamePart = data.courseName?.split(' - ').slice(1).join(' - ')?.trim() || '';
-            await apiRequest("POST", "/api/tasks/essay-template", {
-              taskId: task.id,
-              assignmentName: data.title,
-              courseCode,
-              courseName: courseNamePart,
-              dueDate: finalDueDate.toISOString(),
-            });
-          } catch (essayErr) {
-            console.error("Essay template creation failed for edited task:", essayErr);
+        if (data.type === 'essay') {
+          const hasEssayAttachment = task.attachments?.some((att: any) => {
+            try { const parsed = typeof att === 'string' ? JSON.parse(att) : att; return parsed?.type === 'onedrive' && parsed?.name?.includes('BrynKaiHendricks_'); } catch { return false; }
+          });
+          if (!task.referenceLink && !hasEssayAttachment) {
+            try {
+              const courseCode = data.courseName?.split(' - ')[0]?.split(' ')[0]?.trim() || '';
+              const courseNamePart = data.courseName?.split(' - ').slice(1).join(' - ')?.trim() || '';
+              await apiRequest("POST", "/api/tasks/essay-template", {
+                taskId: task.id,
+                assignmentName: data.title,
+                courseCode,
+                courseName: courseNamePart,
+                dueDate: finalDueDate.toISOString(),
+              });
+            } catch (essayErr) {
+              console.error("Essay template creation failed for edited task:", essayErr);
+            }
           }
         }
         return patchRes;
