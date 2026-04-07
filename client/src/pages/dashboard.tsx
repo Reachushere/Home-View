@@ -27544,8 +27544,9 @@ export default function Dashboard() {
                     const courseIdxInSem = courses.indexOf(sc);
                     const semPalette = semDefaultPalettes[semKey] || [{ start: '#6b7280', end: '#9ca3af' }];
                     const defaultPair = semPalette[courseIdxInSem >= 0 ? courseIdxInSem % semPalette.length : 0] || { start: '#6b7280', end: '#9ca3af' };
+                    const displayCode = isTBDSlot ? codeNorm : actualCodeNorm;
                     allDisplayCourses.push({
-                      name: fullName ? `${actualCodeNorm} - ${fullName}` : actualCodeNorm,
+                      name: fullName ? `${displayCode} - ${fullName}` : displayCode,
                       color: semColor || matchedCourse?.color || defaultPair.start,
                       colorEnd: semColorEnd || matchedCourse?.colorEnd || defaultPair.end,
                       colorStops: semColorStops || matchedCourse?.colorStops || '',
@@ -27592,7 +27593,10 @@ export default function Dashboard() {
                   if (ssA === 'B' && ssB === 'A') return 1;
                   return 0;
                 });
-                const allKnownCodes = Object.values(semesterCourseAssignments).flat().map(c => c.code.replace(/\s/g, '').toUpperCase()).filter(Boolean);
+                const allKnownCodes = [
+                  ...Object.values(semesterCourseAssignments).flat().map(c => c.code.replace(/\s/g, '').toUpperCase()),
+                  ...allDisplayCourses.map(c => c.name.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '') || ''),
+                ].filter(Boolean);
                 const maxCourseRowHeight = 3 * 20 + 2 * 2 + 4;
 
                 return (
@@ -27916,10 +27920,12 @@ export default function Dashboard() {
                           </>
                         );
                       }
+                      const isTBDLabel = code.startsWith('TBD_SLOT') || code === 'TBD';
+                      const displayCodeLabel = isTBDLabel ? 'TBD' : code;
                       const words = fullName.split(' ');
                       return (
                         <>
-                          <span className="font-[785]">{code}</span>
+                          <span className="font-[785]">{displayCodeLabel}</span>
                           {words.map((word, i) => <span key={i}>{word}</span>)}
                         </>
                       );
