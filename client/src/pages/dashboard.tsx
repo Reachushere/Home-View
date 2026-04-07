@@ -34439,7 +34439,7 @@ export default function Dashboard() {
             </DialogHeader>
             {editingTask && (
               <>
-              <div style={{ overflowY: 'auto', flex: 1, minHeight: 0 }}>
+              <div style={{ paddingTop: '8px' }}>
               <TaskForm 
                 key={`edit-task-${editingTask.id}`}
                 task={editingTask}
@@ -34628,7 +34628,10 @@ export default function Dashboard() {
                 </div>
               )}
               </div>
-              <div className="flex justify-end gap-3 pt-3 mt-2 border-t border-white/10" style={{ flexShrink: 0 }}>
+              </>
+            )}
+            {editingTask && (
+              <DialogFooter className="flex justify-end gap-3 border-t border-white/10" style={{ flexShrink: 0 }}>
                 <button
                   type="button"
                   className="inline-flex items-center justify-center rounded-md px-4 py-1.5 text-white/70 hover:text-white transition-all duration-200"
@@ -34663,8 +34666,7 @@ export default function Dashboard() {
                 >
                   Update Task
                 </button>
-              </div>
-              </>
+              </DialogFooter>
             )}
           </DialogContent>
         </Dialog>
