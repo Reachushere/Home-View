@@ -2072,6 +2072,25 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
 
   const weatherCache: { data: any | null; timestamp: number } = { data: null, timestamp: 0 };
 
+  async function fetchWithRetry(url: string, options?: RequestInit, retries = 3, delayMs = 1000): Promise<Response> {
+    for (let attempt = 0; attempt < retries; attempt++) {
+      try {
+        const response = await fetch(url, options);
+        if (response.ok) return response;
+        if (attempt < retries - 1) {
+          await new Promise(r => setTimeout(r, delayMs * Math.pow(2, attempt)));
+        }
+      } catch (err) {
+        if (attempt < retries - 1) {
+          await new Promise(r => setTimeout(r, delayMs * Math.pow(2, attempt)));
+        } else {
+          throw err;
+        }
+      }
+    }
+    return fetch(url, options);
+  }
+
   app.get("/api/weather", async (_req, res) => {
     try {
       const now = Date.now();
@@ -2095,25 +2114,45 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
         'exceptional': 0,
       };
 
-      const [stateRes, forecastRes, sunRes, hourlyRes] = await Promise.all([
+      const [stateRes, forecastRes, sunRes, hourlyRes] = await Promise.allSettled([
         fetch(`${haUrl}/api/states/weather.toronto_forecast`, { headers }),
         fetch(`${haUrl}/api/services/weather/get_forecasts?return_response`, {
           method: 'POST', headers,
           body: JSON.stringify({ entity_id: 'weather.toronto_forecast', type: 'daily' }),
         }),
-        fetch('https://api.open-meteo.com/v1/forecast?latitude=43.6275&longitude=-79.3962&daily=sunrise,sunset,weather_code,temperature_2m_max,temperature_2m_min&timezone=America/Toronto&forecast_days=10&past_days=7'),
-        fetch('https://api.open-meteo.com/v1/forecast?latitude=43.6275&longitude=-79.3962&hourly=temperature_2m,weather_code&timezone=America/Toronto&forecast_days=2'),
+        fetchWithRetry('https://api.open-meteo.com/v1/forecast?latitude=43.6275&longitude=-79.3962&daily=sunrise,sunset,weather_code,temperature_2m_max,temperature_2m_min&timezone=America/Toronto&forecast_days=10&past_days=7'),
+        fetchWithRetry('https://api.open-meteo.com/v1/forecast?latitude=43.6275&longitude=-79.3962&hourly=temperature_2m,weather_code&timezone=America/Toronto&forecast_days=2'),
       ]);
 
-      const stateData = await stateRes.json();
-      const forecastData = await forecastRes.json();
-      const sunData = await sunRes.json();
-      const hourlyData = await hourlyRes.json();
+      const stateData = stateRes.status === 'fulfilled' && stateRes.value.ok ? await stateRes.value.json() : { state: 'cloudy', attributes: {} };
+      const forecastData = forecastRes.status === 'fulfilled' && forecastRes.value.ok ? await forecastRes.value.json() : {};
+      const sunData = sunRes.status === 'fulfilled' && sunRes.value.ok ? await sunRes.value.json() : { daily: { time: [], sunrise: [], sunset: [], weather_code: [], temperature_2m_max: [], temperature_2m_min: [] } };
+      const hourlyData = hourlyRes.status === 'fulfilled' && hourlyRes.value.ok ? await hourlyRes.value.json() : { hourly: { time: [], temperature_2m: [], weather_code: [] } };
+
+      const haAvailable = stateRes.status === 'fulfilled' && stateRes.value.ok;
+      if (!haAvailable) console.log("[Weather] HA unavailable, using Open-Meteo fallback for current conditions");
 
       const attrs = stateData.attributes || {};
-      const currentCondition = stateData.state || 'cloudy';
-      const currentTemp = attrs.temperature ?? 0;
-      const currentWind = attrs.wind_speed ?? 0;
+      let currentCondition = stateData.state || 'cloudy';
+      let currentTemp = attrs.temperature ?? 0;
+      let currentWind = attrs.wind_speed ?? 0;
+
+      if (!haAvailable && sunData?.daily?.time?.length > 0) {
+        const nowET = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+        const todayIdx = sunData.daily.time.indexOf(`${nowET.getFullYear()}-${String(nowET.getMonth() + 1).padStart(2, '0')}-${String(nowET.getDate()).padStart(2, '0')}`);
+        if (todayIdx >= 0) {
+          currentTemp = Math.round(((sunData.daily.temperature_2m_max?.[todayIdx] ?? 0) + (sunData.daily.temperature_2m_min?.[todayIdx] ?? 0)) / 2);
+          const wc = sunData.daily.weather_code?.[todayIdx] ?? 3;
+          currentCondition = wc <= 1 ? 'sunny' : wc <= 2 ? 'partlycloudy' : wc <= 3 ? 'cloudy' : wc <= 48 ? 'fog' : wc <= 67 ? 'rainy' : wc <= 77 ? 'snowy' : wc <= 82 ? 'rainy' : 'lightning';
+        }
+        if (hourlyData?.hourly?.time?.length > 0) {
+          const nowIso = nowET.toISOString().substring(0, 13);
+          const hrIdx = hourlyData.hourly.time.findIndex((t: string) => t.startsWith(nowIso.substring(0, 13)));
+          if (hrIdx >= 0) {
+            currentTemp = Math.round(hourlyData.hourly.temperature_2m[hrIdx]);
+          }
+        }
+      }
 
       const nowToronto = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
       const hour = nowToronto.getHours();
@@ -2130,7 +2169,22 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
       });
 
       const todayStr = `${nowToronto.getFullYear()}-${String(nowToronto.getMonth() + 1).padStart(2, '0')}-${String(nowToronto.getDate()).padStart(2, '0')}`;
-      const todaySun = sunMap[todayStr];
+      let todaySun = sunMap[todayStr];
+
+      if (!todaySun || (!todaySun.sunrise && !todaySun.sunset)) {
+        const dayOfYear = Math.floor((nowToronto.getTime() - new Date(nowToronto.getFullYear(), 0, 0).getTime()) / 86400000);
+        const seasonFactor = Math.cos((dayOfYear - 172) * 2 * Math.PI / 365);
+        const srMinutes = Math.round(397 - seasonFactor * 67);
+        const ssMinutes = Math.round(1140 + seasonFactor * 120);
+        const srH = Math.floor(srMinutes / 60);
+        const srM = srMinutes % 60;
+        const ssH = Math.floor(ssMinutes / 60);
+        const ssM = ssMinutes % 60;
+        const fallbackSunrise = `${todayStr}T${String(srH).padStart(2, '0')}:${String(srM).padStart(2, '0')}`;
+        const fallbackSunset = `${todayStr}T${String(ssH).padStart(2, '0')}:${String(ssM).padStart(2, '0')}`;
+        todaySun = { sunrise: fallbackSunrise, sunset: fallbackSunset };
+        console.log(`[Weather] Using computed sunrise/sunset: ${fallbackSunrise}, ${fallbackSunset}`);
+      }
 
       const dailyEntries: { date: string; high: number; low: number; weatherCode: number; sunrise?: string; sunset?: string }[] = [];
 
@@ -2181,8 +2235,20 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
           weather_code: dailyEntries.map(d => d.weatherCode),
           temperature_2m_max: dailyEntries.map(d => d.high),
           temperature_2m_min: dailyEntries.map(d => d.low),
-          sunrise: dailyEntries.map(d => d.sunrise || ''),
-          sunset: dailyEntries.map(d => d.sunset || ''),
+          sunrise: dailyEntries.map((d, i) => {
+            if (d.sunrise) return d.sunrise;
+            const dayOfYear = Math.floor((new Date(d.date + 'T12:00:00').getTime() - new Date(new Date(d.date).getFullYear(), 0, 0).getTime()) / 86400000);
+            const sf = Math.cos((dayOfYear - 172) * 2 * Math.PI / 365);
+            const srMin = Math.round(397 - sf * 67);
+            return `${d.date}T${String(Math.floor(srMin / 60)).padStart(2, '0')}:${String(srMin % 60).padStart(2, '0')}`;
+          }),
+          sunset: dailyEntries.map((d, i) => {
+            if (d.sunset) return d.sunset;
+            const dayOfYear = Math.floor((new Date(d.date + 'T12:00:00').getTime() - new Date(new Date(d.date).getFullYear(), 0, 0).getTime()) / 86400000);
+            const sf = Math.cos((dayOfYear - 172) * 2 * Math.PI / 365);
+            const ssMin = Math.round(1140 + sf * 120);
+            return `${d.date}T${String(Math.floor(ssMin / 60)).padStart(2, '0')}:${String(ssMin % 60).padStart(2, '0')}`;
+          }),
         },
         hourly: {
           time: hourlyData?.hourly?.time || [],
@@ -2203,13 +2269,17 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
     } catch (err) {
       console.error("Error fetching weather from HA/EC:", err);
       try {
-        const fallback = await fetch('https://api.open-meteo.com/v1/forecast?latitude=43.6275&longitude=-79.3962&current=weather_code,temperature_2m,wind_speed_10m,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=America/Toronto&forecast_days=10&past_days=7&models=gem_seamless');
+        const fallback = await fetchWithRetry('https://api.open-meteo.com/v1/forecast?latitude=43.6275&longitude=-79.3962&current=weather_code,temperature_2m,wind_speed_10m,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset&hourly=temperature_2m,weather_code&timezone=America/Toronto&forecast_days=10&past_days=7&models=gem_seamless');
         const data = await fallback.json();
         weatherCache.data = data;
         weatherCache.timestamp = Date.now();
         res.json(data);
       } catch (fallbackErr) {
         console.error("Fallback weather also failed:", fallbackErr);
+        if (weatherCache.data) {
+          console.log("[Weather] Serving stale cache");
+          return res.json(weatherCache.data);
+        }
         res.status(500).json({ error: "Failed to fetch weather" });
       }
     }
