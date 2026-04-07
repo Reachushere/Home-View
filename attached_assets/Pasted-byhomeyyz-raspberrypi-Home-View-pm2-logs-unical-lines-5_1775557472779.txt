@@ -1,0 +1,341 @@
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs unical --lines 500 --nostream | grep -i "chunk\|playing\|playback\|error\|fail\|tablet-nav\|media_player"
+0|unical   | TTS audio saved locally: /tts-audio/prep-136-chunk-28-1775557225901.mp3
+0|unical   | [AudioPrep] Generating chunk 30/52 for CPPA122, Module 8 - Introduction.pdf (1435 chars)
+0|unical   | Generating OpenAI TTS for 1435 chars, file: prep-136-chunk-29
+0|unical   | TTS audio saved locally: /tts-audio/prep-136-chunk-29-1775557227718.mp3
+0|unical   | [AudioPrep] Generating chunk 31/52 for CPPA122, Module 8 - Introduction.pdf (1487 chars)
+0|unical   | Generating OpenAI TTS for 1487 chars, file: prep-136-chunk-30
+0|unical   | TTS audio saved locally: /tts-audio/prep-136-chunk-30-1775557229328.mp3
+0|unical   | [AudioPrep] Generating chunk 32/52 for CPPA122, Module 8 - Introduction.pdf (1447 chars)
+0|unical   | Generating OpenAI TTS for 1332 chars, file: prep-136-chunk-31
+0|unical   | TTS audio saved locally: /tts-audio/prep-136-chunk-31-1775557231153.mp3
+0|unical   | [AudioPrep] Generating chunk 33/52 for CPPA122, Module 8 - Introduction.pdf (1498 chars)
+0|unical   | Generating OpenAI TTS for 1498 chars, file: prep-136-chunk-32
+0|unical   | 6:20:32 AM [express] GET /api/health 200 in 0ms :: {"status":"ok","uptime":194,"ha":{"connected":true,"lastSuccessAt":"2026-04-07T10:20:30.057Z","lastFailureAt":null,"consecutiveFailures":0,"totalChecks":4,"totalFailures":0,"lastError":null,"downSince":null,"commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-07T10:20:32.564Z"}
+0|unical   | TTS audio saved locally: /tts-audio/prep-136-chunk-32-1775557232910.mp3
+0|unical   | [AudioPrep] Generating chunk 34/52 for CPPA122, Module 8 - Introduction.pdf (1486 chars)
+0|unical   | Generating OpenAI TTS for 1486 chars, file: prep-136-chunk-33
+0|unical   | TTS audio saved locally: /tts-audio/prep-136-chunk-33-1775557234671.mp3
+0|unical   | 6:20:35 AM [express] GET /api/kitchen/status 304 in 1ms :: {"isPlaying":false,"progress":null}
+0|unical   | [AudioPrep] Generating chunk 35/52 for CPPA122, Module 8 - Introduction.pdf (1427 chars)
+0|unical   | Generating OpenAI TTS for 1427 chars, file: prep-136-chunk-34
+0|unical   | TTS audio saved locally: /tts-audio/prep-136-chunk-34-1775557236229.mp3
+0|unical   | [AudioPrep] Generating chunk 36/52 for CPPA122, Module 8 - Introduction.pdf (1471 chars)
+0|unical   | Generating OpenAI TTS for 1471 chars, file: prep-136-chunk-35
+0|unical   | TTS audio saved locally: /tts-audio/prep-136-chunk-35-1775557238004.mp3
+0|unical   | [AudioPrep] Generating chunk 37/52 for CPPA122, Module 8 - Introduction.pdf (1436 chars)
+0|unical   | Generating OpenAI TTS for 1436 chars, file: prep-136-chunk-36
+0|unical   | TTS audio saved locally: /tts-audio/prep-136-chunk-36-1775557239963.mp3
+0|unical   | [AudioPrep] Generating chunk 38/52 for CPPA122, Module 8 - Introduction.pdf (1351 chars)
+0|unical   | Generating OpenAI TTS for 1351 chars, file: prep-136-chunk-37
+0|unical   | TTS audio saved locally: /tts-audio/prep-136-chunk-37-1775557241523.mp3
+0|unical   | [AudioPrep] Generating chunk 39/52 for CPPA122, Module 8 - Introduction.pdf (1427 chars)
+0|unical   | Generating OpenAI TTS for 1427 chars, file: prep-136-chunk-38
+0|unical   | TTS audio saved locally: /tts-audio/prep-136-chunk-38-1775557243371.mp3
+0|unical   | [AudioPrep] Generating chunk 40/52 for CPPA122, Module 8 - Introduction.pdf (1348 chars)
+0|unical   | Generating OpenAI TTS for 1348 chars, file: prep-136-chunk-39
+0|unical   | TTS audio saved locally: /tts-audio/prep-136-chunk-39-1775557245163.mp3
+0|unical   | [AudioPrep] Generating chunk 41/52 for CPPA122, Module 8 - Introduction.pdf (1455 chars)
+0|unical   | Generating OpenAI TTS for 1455 chars, file: prep-136-chunk-40
+0|unical   | TTS audio saved locally: /tts-audio/prep-136-chunk-40-1775557246839.mp3
+0|unical   | [AudioPrep] Generating chunk 42/52 for CPPA122, Module 8 - Introduction.pdf (1374 chars)
+0|unical   | Generating OpenAI TTS for 1374 chars, file: prep-136-chunk-41
+0|unical   | TTS audio saved locally: /tts-audio/prep-136-chunk-41-1775557248413.mp3
+0|unical   | [AudioPrep] Generating chunk 43/52 for CPPA122, Module 8 - Introduction.pdf (1489 chars)
+0|unical   | Generating OpenAI TTS for 1489 chars, file: prep-136-chunk-42
+0|unical   | TTS audio saved locally: /tts-audio/prep-136-chunk-42-1775557250038.mp3
+0|unical   | [AudioPrep] Generating chunk 44/52 for CPPA122, Module 8 - Introduction.pdf (1325 chars)
+0|unical   | Generating OpenAI TTS for 1325 chars, file: prep-136-chunk-43
+0|unical   | TTS audio saved locally: /tts-audio/prep-136-chunk-43-1775557251608.mp3
+0|unical   | [AudioPrep] Generating chunk 45/52 for CPPA122, Module 8 - Introduction.pdf (1470 chars)
+0|unical   | Generating OpenAI TTS for 1470 chars, file: prep-136-chunk-44
+0|unical   | TTS audio saved locally: /tts-audio/prep-136-chunk-44-1775557253366.mp3
+0|unical   | [AudioPrep] Generating chunk 46/52 for CPPA122, Module 8 - Introduction.pdf (1211 chars)
+0|unical   | Generating OpenAI TTS for 1211 chars, file: prep-136-chunk-45
+0|unical   | TTS audio saved locally: /tts-audio/prep-136-chunk-45-1775557254978.mp3
+0|unical   | [AudioPrep] Generating chunk 47/52 for CPPA122, Module 8 - Introduction.pdf (1475 chars)
+0|unical   | Generating OpenAI TTS for 1475 chars, file: prep-136-chunk-46
+0|unical   | TTS audio saved locally: /tts-audio/prep-136-chunk-46-1775557256719.mp3
+0|unical   | [AudioPrep] Generating chunk 48/52 for CPPA122, Module 8 - Introduction.pdf (1396 chars)
+0|unical   | Generating OpenAI TTS for 1396 chars, file: prep-136-chunk-47
+0|unical   | TTS audio saved locally: /tts-audio/prep-136-chunk-47-1775557258264.mp3
+0|unical   | [AudioPrep] Generating chunk 49/52 for CPPA122, Module 8 - Introduction.pdf (1473 chars)
+0|unical   | Generating OpenAI TTS for 1473 chars, file: prep-136-chunk-48
+0|unical   | TTS audio saved locally: /tts-audio/prep-136-chunk-48-1775557260074.mp3
+0|unical   | [AudioPrep] Generating chunk 50/52 for CPPA122, Module 8 - Introduction.pdf (1476 chars)
+0|unical   | Generating OpenAI TTS for 1476 chars, file: prep-136-chunk-49
+0|unical   | TTS audio saved locally: /tts-audio/prep-136-chunk-49-1775557262083.mp3
+0|unical   | [AudioPrep] Generating chunk 51/52 for CPPA122, Module 8 - Introduction.pdf (1471 chars)
+0|unical   | Generating OpenAI TTS for 1471 chars, file: prep-136-chunk-50
+0|unical   | TTS audio saved locally: /tts-audio/prep-136-chunk-50-1775557264003.mp3
+0|unical   | [AudioPrep] Generating chunk 52/52 for CPPA122, Module 8 - Introduction.pdf (1119 chars)
+0|unical   | Generating OpenAI TTS for 1119 chars, file: prep-136-chunk-51
+0|unical   | TTS audio saved locally: /tts-audio/prep-136-chunk-51-1775557265738.mp3
+0|unical   | [AudioPrep] ===== Completed CPPA122, Module 8 - Introduction.pdf: 52 chunks in 114s =====
+0|unical   | [AudioPrep] IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf: 167589 chars → 123 chunks
+0|unical   | [AudioPrep] Generating chunk 1/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1436 chars)
+0|unical   | Generating OpenAI TTS for 1436 chars, file: prep-138-chunk-0
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-0-1775557287685.mp3
+0|unical   | [AudioPrep] Generating chunk 2/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1465 chars)
+0|unical   | Generating OpenAI TTS for 1465 chars, file: prep-138-chunk-1
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-1-1775557289547.mp3
+0|unical   | [AudioPrep] Generating chunk 3/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1236 chars)
+0|unical   | Generating OpenAI TTS for 1236 chars, file: prep-138-chunk-2
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-2-1775557291064.mp3
+0|unical   | [AudioPrep] Generating chunk 4/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (399 chars)
+0|unical   | Generating OpenAI TTS for 399 chars, file: prep-138-chunk-3
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-3-1775557292318.mp3
+0|unical   | 6:21:32 AM [express] GET /api/health 200 in 1ms :: {"status":"ok","uptime":254,"ha":{"connected":true,"lastSuccessAt":"2026-04-07T10:21:29.984Z","lastFailureAt":null,"consecutiveFailures":0,"totalChecks":5,"totalFailures":0,"lastError":null,"downSince":null,"commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-07T10:21:32.414Z"}
+0|unical   | [AudioPrep] Generating chunk 5/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1670 chars)
+0|unical   | Generating OpenAI TTS for 1670 chars, file: prep-138-chunk-4
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-4-1775557294407.mp3
+0|unical   | [AudioPrep] Generating chunk 6/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (324 chars)
+0|unical   | Generating OpenAI TTS for 324 chars, file: prep-138-chunk-5
+0|unical   | 6:21:35 AM [express] GET /api/kitchen/status 304 in 1ms :: {"isPlaying":false,"progress":null}
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-5-1775557295836.mp3
+0|unical   | [AudioPrep] Generating chunk 7/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1412 chars)
+0|unical   | Generating OpenAI TTS for 1412 chars, file: prep-138-chunk-6
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-6-1775557297514.mp3
+0|unical   | [AudioPrep] Generating chunk 8/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1493 chars)
+0|unical   | Generating OpenAI TTS for 1493 chars, file: prep-138-chunk-7
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-7-1775557299211.mp3
+0|unical   | [AudioPrep] Generating chunk 9/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1316 chars)
+0|unical   | Generating OpenAI TTS for 1316 chars, file: prep-138-chunk-8
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-8-1775557300905.mp3
+0|unical   | [AudioPrep] Generating chunk 10/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (944 chars)
+0|unical   | Generating OpenAI TTS for 944 chars, file: prep-138-chunk-9
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-9-1775557302390.mp3
+0|unical   | [AudioPrep] Generating chunk 11/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (821 chars)
+0|unical   | Generating OpenAI TTS for 591 chars, file: prep-138-chunk-10
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-10-1775557303778.mp3
+0|unical   | [AudioPrep] Generating chunk 12/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1284 chars)
+0|unical   | Generating OpenAI TTS for 942 chars, file: prep-138-chunk-11
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-11-1775557305329.mp3
+0|unical   | [AudioPrep] Generating chunk 13/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1445 chars)
+0|unical   | Generating OpenAI TTS for 1445 chars, file: prep-138-chunk-12
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-12-1775557307087.mp3
+0|unical   | [AudioPrep] Generating chunk 14/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1399 chars)
+0|unical   | Generating OpenAI TTS for 1399 chars, file: prep-138-chunk-13
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-13-1775557320110.mp3
+0|unical   | [AudioPrep] Generating chunk 15/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1442 chars)
+0|unical   | Generating OpenAI TTS for 1442 chars, file: prep-138-chunk-14
+0|unical   | [TRACE 6:22:01 AM] [CatLights] WEBHOOK RECEIVED | state={"active":false,"sessionId":0,"file":null,"chunk":null,"lightsPrompt":false,"trigger":null,"msSinceStop":null,"msSinceManualStop":null,"msSinceStart":null} | {"body":{"state":"on"}}
+0|unical   | [TRACE 6:22:01 AM] [CatLights] STATE RESOLVED: on | state={"active":false,"sessionId":0,"file":null,"chunk":null,"lightsPrompt":false,"trigger":null,"msSinceStop":null,"msSinceManualStop":null,"msSinceStart":null} | {"bodyState":"on","bodyAction":"","method":"body"}
+0|unical   | [Cat Lights] Architecture: server-side TTS → Google Nest speaker (media_player.play_media)
+0|unical   | [FileOrder] Found unlistened files in week 12: CPPA122, Module 12 - Introduction.pdf (chunk=13) → CFNF400, Module 12 - Learning Objectives.pdf (chunk=0)
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-14-1775557321764.mp3
+0|unical   | [AudioPrep] Generating chunk 16/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1331 chars)
+0|unical   | Generating OpenAI TTS for 1331 chars, file: prep-138-chunk-15
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-15-1775557323363.mp3
+0|unical   | [AudioPrep] Generating chunk 17/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1430 chars)
+0|unical   | Generating OpenAI TTS for 1430 chars, file: prep-138-chunk-16
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-16-1775557325042.mp3
+0|unical   | [AudioPrep] Generating chunk 18/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1122 chars)
+0|unical   | Generating OpenAI TTS for 1122 chars, file: prep-138-chunk-17
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-17-1775557326598.mp3
+0|unical   | [AudioPrep] Generating chunk 19/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1266 chars)
+0|unical   | Generating OpenAI TTS for 1266 chars, file: prep-138-chunk-18
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-18-1775557328343.mp3
+0|unical   | [AudioPrep] Generating chunk 20/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1431 chars)
+0|unical   | Generating OpenAI TTS for 1329 chars, file: prep-138-chunk-19
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-19-1775557330055.mp3
+0|unical   | [AudioPrep] Generating chunk 21/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1350 chars)
+0|unical   | Generating OpenAI TTS for 1295 chars, file: prep-138-chunk-20
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-20-1775557331610.mp3
+0|unical   | [AudioPrep] Generating chunk 22/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1160 chars)
+0|unical   | Generating OpenAI TTS for 1160 chars, file: prep-138-chunk-21
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-21-1775557333250.mp3
+0|unical   | 6:22:13 AM [express] POST /api/webhook/cat-lights-confirm 200 in 187ms :: {"action":"confirmed","message":"Module reading confirmed — starting playback"}
+0|unical   | [TRACE 6:22:13 AM] [CatLights] CONFIRMATION RECEIVED — starting playback | state={"active":false,"sessionId":0,"file":null,"chunk":null,"lightsPrompt":true,"trigger":null,"msSinceStop":null,"msSinceManualStop":null,"msSinceStart":null}
+0|unical   | [Cat Lights] Confirmation received — starting playback
+0|unical   | [TRACE 6:22:13 AM] [PlaybackFlow] STARTING file=CPPA122, Module 12 - Introduction.pdf id=231 | state={"active":false,"sessionId":0,"file":null,"chunk":null,"lightsPrompt":false,"trigger":"lights","msSinceStop":null,"msSinceManualStop":null,"msSinceStart":null} | {"logPrefix":"[Cat Lights]","voice":"echo"}
+0|unical   | [Cat Lights] Paused audio preparation for live playback
+0|unical   | [Cat Lights] Will resume from chunk 12 (saved: 13)
+0|unical   | [Cat Lights] Removed checkmark from context chunk 12 for replay
+0|unical   | [Cat Lights] tablet-nav set for master (TV nav deferred until Silk launches)
+0|unical   | [Cat Lights] Persisted playback session to DB (file=231, chunk=12/0)
+0|unical   | [Cat Lights] ====== TABLET SETUP START (tablet-nav polling) ======
+0|unical   | [TRACE 6:22:13 AM] [TV] SETUP START | state={"active":true,"sessionId":1,"file":"CPPA122, Module 12 - Introduction.pdf","chunk":"12/0","lightsPrompt":false,"trigger":"lights","msSinceStop":null,"msSinceManualStop":null,"msSinceStart":204}
+0|unical   | [Cat Lights] tablet-nav set for master — tablet will navigate via polling
+0|unical   | [TRACE 6:22:13 AM] [TV] Fire Stick state: off | state={"active":true,"sessionId":1,"file":"CPPA122, Module 12 - Introduction.pdf","chunk":"12/0","lightsPrompt":false,"trigger":"lights","msSinceStop":null,"msSinceManualStop":null,"msSinceStart":266}
+0|unical   | [TRACE 6:22:14 AM] [TV] Fire Stick is OFF/standby — turning ON directly (CEC will wake Samsung TV). No OFF cycle needed. | state={"active":true,"sessionId":1,"file":"CPPA122, Module 12 - Introduction.pdf","chunk":"12/0","lightsPrompt":false,"trigger":"lights","msSinceStop":null,"msSinceManualStop":null,"msSinceStart":340}
+0|unical   | [Nest] Playing audio: https://home-view--bkh416.replit.app/tts-audio/confirm-1775557334983-1775557335355.mp3
+0|unical   | [Toothbrush] Poll #1: state="idle" (playbackActive=true, nestPlaying=false)
+0|unical   | [TRACE 6:22:17 AM] [TV] Fire Stick turn_on OK on attempt 1 | state={"active":true,"sessionId":1,"file":"CPPA122, Module 12 - Introduction.pdf","chunk":"12/0","lightsPrompt":false,"trigger":"lights","msSinceStop":null,"msSinceManualStop":null,"msSinceStart":4203}
+0|unical   | [Nest State] entity=media_player.bathroom_speaker state=idle media_title=none
+0|unical   | [Toothbrush] Poll #2: state="idle" (playbackActive=true, nestPlaying=false)
+0|unical   | [TRACE 6:22:20 AM] [TV] Waiting 8s for Fire Stick + Samsung TV to wake | state={"active":true,"sessionId":1,"file":"CPPA122, Module 12 - Introduction.pdf","chunk":"12/0","lightsPrompt":false,"trigger":"lights","msSinceStop":null,"msSinceManualStop":null,"msSinceStart":6725}
+0|unical   | [Nest State] entity=media_player.bathroom_speaker state=idle media_title=none
+0|unical   | [Toothbrush] Poll #3: state="idle" (playbackActive=true, nestPlaying=false)
+0|unical   | [Nest State] entity=media_player.bathroom_speaker state=idle media_title=none
+0|unical   | [Cat Lights] Confirm TTS played on Nest speaker via OpenAI/Edge TTS (actuallyPlaying=false)
+0|unical   | [Cat Lights] Confirm TTS playing, waiting 6s
+0|unical   | [TRACE 6:22:28 AM] [TV] Samsung TV state check 1: off | state={"active":true,"sessionId":1,"file":"CPPA122, Module 12 - Introduction.pdf","chunk":"12/0","lightsPrompt":false,"trigger":"lights","msSinceStop":null,"msSinceManualStop":null,"msSinceStart":14794}
+0|unical   | 6:22:32 AM [express] GET /api/health 200 in 1ms :: {"status":"ok","uptime":314,"ha":{"connected":true,"lastSuccessAt":"2026-04-07T10:22:29.868Z","lastFailureAt":null,"consecutiveFailures":0,"totalChecks":6,"totalFailures":0,"lastError":null,"downSince":null,"commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-07T10:22:32.405Z"}
+0|unical   | 6:22:35 AM [express] GET /api/kitchen/status 304 in 1ms :: {"isPlaying":false,"progress":null}
+0|unical   | [TRACE 6:22:35 AM] [TV] Samsung TV state check 2: on | state={"active":true,"sessionId":1,"file":"CPPA122, Module 12 - Introduction.pdf","chunk":"12/0","lightsPrompt":false,"trigger":"lights","msSinceStop":null,"msSinceManualStop":null,"msSinceStart":22105}
+0|unical   | [Toothbrush] Poll #10: state="idle" (playbackActive=true, nestPlaying=false)
+0|unical   | [Cat Lights] Setting TV tablet-nav command now that Silk is launched
+0|unical   | [TRACE 6:22:55 AM] [TV] SETUP COMPLETE | state={"active":true,"sessionId":1,"file":"CPPA122, Module 12 - Introduction.pdf","chunk":"12/0","lightsPrompt":false,"trigger":"lights","msSinceStop":null,"msSinceManualStop":null,"msSinceStart":42017}
+0|unical   | [Cat Lights] Nest volume set to 0.75 for playback
+0|unical   | [Nest Playback] Starting session 1: "CPPA122, Module 12 - Introduction.pdf" from chunk 12/0
+0|unical   | [Nest Playback] No chunks for "CPPA122, Module 12 - Introduction.pdf" (id=231) — text extraction failed, skipping without marking listened
+0|unical   | [FileOrder] Found unlistened files in week 12: CFNF400, Module 12 - Learning Objectives.pdf (chunk=0)
+0|unical   | [Nest Playback] Skipping to next file: CFNF400, Module 12 - Learning Objectives.pdf (id=232)
+0|unical   | [Nest Playback] Next file also has no extractable text, stopping
+0|unical   | [TRACE 6:22:57 AM] [NestPlayback] FINALLY BLOCK — cleaning up session 1 | state={"active":false,"sessionId":1,"file":null,"chunk":null,"lightsPrompt":false,"trigger":"lights","msSinceStop":null,"msSinceManualStop":null,"msSinceStart":null}
+0|unical   | [Nest Playback] Resumed audio preparation
+0|unical   | [AudioPrep] Generating chunk 23/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1384 chars)
+0|unical   | Generating OpenAI TTS for 1384 chars, file: prep-138-chunk-22
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-22-1775557378874.mp3
+0|unical   | [AudioPrep] Generating chunk 24/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1486 chars)
+0|unical   | Generating OpenAI TTS for 1486 chars, file: prep-138-chunk-23
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-23-1775557391732.mp3
+0|unical   | [AudioPrep] Generating chunk 25/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1212 chars)
+0|unical   | Generating OpenAI TTS for 1212 chars, file: prep-138-chunk-24
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-24-1775557393259.mp3
+0|unical   | [AudioPrep] Generating chunk 26/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1487 chars)
+0|unical   | Generating OpenAI TTS for 1487 chars, file: prep-138-chunk-25
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-25-1775557395006.mp3
+0|unical   | [AudioPrep] Generating chunk 27/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1463 chars)
+0|unical   | Generating OpenAI TTS for 1463 chars, file: prep-138-chunk-26
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-26-1775557396850.mp3
+0|unical   | [AudioPrep] Generating chunk 28/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1347 chars)
+0|unical   | Generating OpenAI TTS for 1347 chars, file: prep-138-chunk-27
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-27-1775557398361.mp3
+0|unical   | [AudioPrep] Generating chunk 29/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1277 chars)
+0|unical   | Generating OpenAI TTS for 1277 chars, file: prep-138-chunk-28
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-28-1775557399949.mp3
+0|unical   | [AudioPrep] Generating chunk 30/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1469 chars)
+0|unical   | Generating OpenAI TTS for 1469 chars, file: prep-138-chunk-29
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-29-1775557401573.mp3
+0|unical   | [AudioPrep] Generating chunk 31/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1453 chars)
+0|unical   | Generating OpenAI TTS for 1271 chars, file: prep-138-chunk-30
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-30-1775557403166.mp3
+0|unical   | [AudioPrep] Generating chunk 32/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1150 chars)
+0|unical   | Generating OpenAI TTS for 1150 chars, file: prep-138-chunk-31
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-31-1775557404824.mp3
+0|unical   | [AudioPrep] Generating chunk 33/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1189 chars)
+0|unical   | Generating OpenAI TTS for 1189 chars, file: prep-138-chunk-32
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-32-1775557406536.mp3
+0|unical   | [AudioPrep] Generating chunk 34/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1406 chars)
+0|unical   | Generating OpenAI TTS for 1303 chars, file: prep-138-chunk-33
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-33-1775557408150.mp3
+0|unical   | [AudioPrep] Generating chunk 35/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1498 chars)
+0|unical   | Generating OpenAI TTS for 1498 chars, file: prep-138-chunk-34
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-34-1775557410143.mp3
+0|unical   | [AudioPrep] Generating chunk 36/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1451 chars)
+0|unical   | Generating OpenAI TTS for 1451 chars, file: prep-138-chunk-35
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-35-1775557411893.mp3
+0|unical   | 6:23:32 AM [express] GET /api/health 200 in 0ms :: {"status":"ok","uptime":374,"ha":{"connected":true,"lastSuccessAt":"2026-04-07T10:23:30.078Z","lastFailureAt":null,"consecutiveFailures":0,"totalChecks":7,"totalFailures":0,"lastError":null,"downSince":null,"commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-07T10:23:32.400Z"}
+0|unical   | [AudioPrep] Generating chunk 37/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1485 chars)
+0|unical   | Generating OpenAI TTS for 1485 chars, file: prep-138-chunk-36
+0|unical   | 6:23:35 AM [express] GET /api/kitchen/status 304 in 0ms :: {"isPlaying":false,"progress":null}
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-36-1775557424803.mp3
+0|unical   | [AudioPrep] Generating chunk 38/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1496 chars)
+0|unical   | Generating OpenAI TTS for 1496 chars, file: prep-138-chunk-37
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-37-1775557426694.mp3
+0|unical   | [AudioPrep] Generating chunk 39/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1355 chars)
+0|unical   | Generating OpenAI TTS for 1355 chars, file: prep-138-chunk-38
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-38-1775557428465.mp3
+0|unical   | [AudioPrep] Generating chunk 40/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1389 chars)
+0|unical   | Generating OpenAI TTS for 1389 chars, file: prep-138-chunk-39
+0|unical   | TTS audio saved locally: /tts-audio/prep-138-chunk-39-1775557441390.mp3
+0|unical   | [AudioPrep] Generating chunk 41/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1440 chars)
+0|unical   | Generating OpenAI TTS for 1440 chars, file: prep-138-chunk-40
+0|unical   | [TRACE 6:24:08 AM] [CatLights] WEBHOOK RECEIVED | state={"active":false,"sessionId":1,"file":null,"chunk":null,"lightsPrompt":false,"trigger":"lights","msSinceStop":71304,"msSinceManualStop":null,"msSinceStart":null} | {"body":{"state":"off"}}
+0|unical   | [TRACE 6:24:08 AM] [CatLights] STATE RESOLVED: off | state={"active":false,"sessionId":1,"file":null,"chun":null,"lightsPrompt":false,"trigger":"lights","msSinceStop":71305,"msSinceManualStop":null,"msSinceStart":null} | {"bodyState":"off","bodyAction":"","method":"body"}
+0|unical   | [Cat Lights] Architecture: server-side TTS → Google Nest speaker (media_player.play_media)
+0|unical   | [TRACE 6:24:08 AM] [CatLights] LIGHT OFF — stopping all playback | state={"active":false,"sessionId":1,"file":null,"chunk":null,"lightsPrompt":false,"trigger":"lights","msSinceStop":71305,"msSinceManualStop":null,"msSinceStart":null}
+0|unical   | [Cat Lights] Light off — stopping all playback and saving progress
+/home/byhomeyyz/.pm2/logs/unical-error.log last 500 lines:
+0|unical   | Error checking partner status: Error: Failed to get partner status: 401
+0|unical   | [HA Health] ✗ Still disconnected (2 consecutive failures): HTTP 401
+0|unical   | Error checking partner status: Error: Failed to get partner status: 401
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | Error listing OneDrive items: GraphError: The resource could not be found.
+0|unical   |     at new GraphError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphError.ts:63:3)
+0|unical   |     at Function.GraphErrorHandler.constructErrorFromResponse (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:77:18)
+0|unical   |     at Function.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:104:31)
+0|unical   |     at Function.GraphErrorHandler.getError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:101:65)
+0|unical   |   body: '{"code":"itemNotFound","message":"The resource could not be found.","innerError":{"date":"2026-04-07T10:03:52","request-id":"a5a4522d-0577-4914-b037-b35395969968","client-request-id":"72e5b8e6-b556-e435-3b50-46a2cfa70ff0"}}',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   | [Gmail] Error fetching D2L announcements: Gmail API error 403: {
+0|unical   |   "error": {
+0|unical   |     "errors": [
+0|unical   |         "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+0|unical   | Error recording weather: SyntaxError: Unexpected token '<', "<html>
+0|unical   | [Weather History] Failed to record: {"error":"Failed to record weather"}
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Cat Lights] Error: ReferenceError: require is not defined
+0|unical   | Internal Server Error: Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+0|unical   | Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 2 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Cat Lights] Error: ReferenceError: require is not defined
+0|unical   | Internal Server Error: Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+0|unical   | Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+0|unical   | Error listing OneDrive items: GraphError: The resource could not be found.
+0|unical   |     at new GraphError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphError.ts:63:3)
+0|unical   |     at Function.GraphErrorHandler.constructErrorFromResponse (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:77:18)
+0|unical   |     at Function.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:104:31)
+0|unical   |     at Function.GraphErrorHandler.getError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:101:65)
+0|unical   |   body: '{"code":"itemNotFound","message":"The resource could not be found.","innerError":{"date":"2026-04-07T10:08:42","request-id":"a8c8c296-bbb4-443b-8f9c-cf9f0784ff38","client-request-id":"0f35a867-06d5-c9ce-1948-fc6954db77d9"}}',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | Error listing OneDrive items: GraphError: The resource could not be found.
+0|unical   |     at new GraphError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphError.ts:63:3)
+0|unical   |     at Function.GraphErrorHandler.constructErrorFromResponse (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:77:18)
+0|unical   |     at Function.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:104:31)
+0|unical   |     at Function.GraphErrorHandler.getError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:101:65)
+0|unical   |   body: '{"code":"itemNotFound","message":"The resource could not be found.","innerError":{"date":"2026-04-07T10:13:18","request-id":"9a47e09c-58fe-4a9f-83eb-71b4cdcc162d","client-request-id":"ea49de6d-53b7-0d47-3643-834a46cebe89"}}',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   | [Gmail] Error fetching D2L announcements: Gmail API error 403: {
+0|unical   |   "error": {
+0|unical   |     "errors": [
+0|unical   |         "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+0|unical   | Error recording weather: SyntaxError: Unexpected token '<', "<html>
+0|unical   | [Weather History] Failed to record: {"error":"Failed to record weather"}
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | Error listing OneDrive items: GraphError: The resource could not be found.
+0|unical   |     at new GraphError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphError.ts:63:3)
+0|unical   |     at Function.GraphErrorHandler.constructErrorFromResponse (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:77:18)
+0|unical   |     at Function.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:104:31)
+0|unical   |     at Function.GraphErrorHandler.getError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:101:65)
+0|unical   |   body: '{"code":"itemNotFound","message":"The resource could not be found.","innerError":{"date":"2026-04-07T10:17:30","request-id":"9b5a539c-2fca-44c3-8828-6277a4214cfc","client-request-id":"4fa01284-c32e-9c53-1f25-6a6bf6169092"}}',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   | Error recording weather: TypeError: fetch failed
+0|unical   |   [cause]: Error: Client network socket disconnected before secure TLS connection was established
+0|unical   | [Weather History] Failed to record: {"error":"Failed to record weather"}
+0|unical   | [Gmail] Error fetching D2L announcements: Gmail API error 403: {
+0|unical   |   "error": {
+0|unical   |     "errors": [
+0|unical   |         "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | Error listing OneDrive items: GraphError: The resource could not be found.
+0|unical   |     at new GraphError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphError.ts:63:3)
+0|unical   |     at Function.GraphErrorHandler.constructErrorFromResponse (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:77:18)
+0|unical   |     at Function.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:104:31)
+0|unical   |     at Function.GraphErrorHandler.getError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:101:65)
+0|unical   |   body: '{"code":"itemNotFound","message":"The resource could not be found.","innerError":{"date":"2026-04-07T10:22:20","request-id":"d9909fe2-f99d-4fef-8048-a4703ccd3923","client-request-id":"d0f81c15-624b-c586-5acb-fcc9e2a2c602"}}',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+byhomeyyz@raspberrypi:~/Home-View $
