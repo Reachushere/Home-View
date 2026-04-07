@@ -26048,11 +26048,11 @@ export default function Dashboard() {
             </Button>
           </div>
           
-          {weatherData?.daily && (
-            <div className="grid w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), height: '16px', marginTop: '-3px' }}>
+          <div className="grid w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), height: '16px', marginTop: '-3px' }}>
               <div style={{ minWidth: 0 }} />
               {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0 }} />}
               {weekDays.map((day, idx) => {
+                if (!weatherData?.daily) return <div key={idx} style={{ minWidth: 0 }} />;
                 const dateStr = format(day, 'yyyy-MM-dd');
                 const dayForecast = weatherData.daily?.find(d => d.date === dateStr);
                 const isPast = day < startOfDayET(new Date());
@@ -26163,7 +26163,6 @@ export default function Dashboard() {
                 );
               })}
             </div>
-          )}
           <div className="flex-1 min-h-0 relative" style={{ overflow: 'visible' }}>
             <button
               onClick={() => {
