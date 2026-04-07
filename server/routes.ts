@@ -10563,7 +10563,10 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
                   }
                 }
                 const unrecognized = folders.filter((f: any) => !knownFolderNames.has(f.name.trim()));
-                const tbdNum = parseInt(slot.code.replace(/\D/g, '')) || 1;
+                if (subFolders.length > 0 && unrecognized.length === 1) {
+                  foundFolder = unrecognized[0];
+                  break;
+                }
                 const allTbdCodes = courseSlots.filter(s => s.code?.toLowerCase().startsWith('tbd')).map(s => s.code!.toUpperCase()).sort();
                 const tbdIdx = allTbdCodes.indexOf(slot.code.toUpperCase());
                 if (unrecognized.length > 0 && tbdIdx >= 0 && tbdIdx < unrecognized.length) {
