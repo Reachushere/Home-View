@@ -30657,39 +30657,95 @@ export default function Dashboard() {
           </div>
         </div>
         ) : (
-        <div className="mb-[12px] mt-[0px] relative flex gap-4 transition-opacity duration-300" style={{ height: calendarHeight - 35, flexShrink: 0, order: 1, marginLeft: '-4px' }}>
-          <div style={{ width: 'calc(100% - 67px)', height: 'calc(100% - 10px)', marginTop: '6px' }} className="relative overflow-visible">
-          {/* Glass effect backing box */}
+        <div className="mb-[0px] mt-[0px] relative flex gap-4 transition-opacity duration-300" style={{ height: calendarHeight - 12 - d2lTickerHeight, flexShrink: 0, order: 1, paddingTop: `${10 + d2lTickerHeight}px` }}>
+          <div className="relative overflow-visible" style={{ width: '100%' }}>
+          {/* Glass effect backing box - same as main calendar */}
           <div 
             className="absolute pointer-events-none"
             style={{ 
-              top: '-7px', 
-              left: '-15px', 
-              right: '-15px', 
-              bottom: '-27px', 
-              background: 'rgba(255, 255, 255, 0.35)',
-              borderRadius: '20px',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+              top: '-4px', 
+              left: '-17px', 
+              right: `${-(calendarReduction - 3) - 15 + 6 + 6 + 2}px`, 
+              bottom: '-16px', 
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
+              borderRadius: '12px',
+              border: '1px solid rgba(255,255,255,0.5)',
+              borderTop: '1px solid rgba(255,255,255,0.7)',
+              borderBottom: '1px solid rgba(255,255,255,0.15)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)'
             }}
           />
-          <div className="relative" style={{ height: 'calc(100% + 5px)', marginTop: '8px', marginLeft: '-15px', width: 'calc(100% + 30px)' }}>
-            <div className="absolute inset-0 pointer-events-none z-[100]" style={{ border: '2px solid black', borderRadius: '16px' }} />
-            <div className="overflow-hidden h-full" style={{ background: 'black', borderRadius: '16px' }}>
+
+          {/* Today View button */}
+          <Button
+            variant="ghost"
+            className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white/60 border-0 leading-tight fixed"
+            data-tpo data-tpo-opacity="1"
+            style={{ bottom: `${calendarBottom - 18}px`, left: `${calendarLeft + 9}px`, zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
+            onClick={() => setDayDetailDate(startOfDayET(new Date()))}
+            data-testid="button-today-view-month"
+          >
+            Today View
+          </Button>
+          <div
+            className="fixed"
+            data-tpo data-tpo-opacity="1"
+            style={{ bottom: `${calendarBottom - 18}px`, left: `${calendarLeft + 76}px`, zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'center', gap: '6px' }}
+          >
+            <div style={{ width: '1px', height: '12px', background: 'rgba(255,255,255,0.5)', marginLeft: '6px', marginBottom: '5px' }} />
+            <Button
+              variant="ghost"
+              className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white/60 border-0 leading-tight"
+              onClick={() => {
+                setCurrentMonth(new Date());
+              }}
+              data-testid="button-current-view-month"
+            >
+              Current
+            </Button>
+            <div style={{ width: '1px', height: '12px', background: 'rgba(255,255,255,0.5)', marginLeft: '6px', marginBottom: '5px' }} />
+            <Button
+              variant="ghost"
+              className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white/60 border-0 leading-tight"
+              onClick={() => {
+                setCalendarView("week");
+              }}
+              data-testid="button-week-view-month"
+            >
+              Week View
+            </Button>
+          </div>
+
+          {/* Date navigation tab - month mode */}
+          <div
+            className="absolute z-[60]"
+            style={{ top: '-29px', right: '7px', left: '10px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', height: '15px', pointerEvents: 'auto', opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.2s ease' }}
+            data-testid="date-nav-tab-month"
+          >
+            <div style={{ width: '225px', height: '15px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)', padding: '0 2px' }}>
+              <div className="cursor-pointer hover:bg-white/20 rounded" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 4px', margin: '-8px 0', height: 'calc(100% + 16px)', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))} data-testid="button-month-prev"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>◀</span></div>
+              <span style={{ fontSize: '10px', fontWeight: 500, color: '#000', whiteSpace: 'nowrap', lineHeight: 1, letterSpacing: '0.3px', flex: 1, textAlign: 'center' }}>{format(currentMonth, "MMMM yyyy")}</span>
+              <div className="cursor-pointer hover:bg-white/20 rounded" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 4px', margin: '-8px 0', height: 'calc(100% + 16px)', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))} data-testid="button-month-next"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▶</span></div>
+            </div>
+          </div>
+
+          <div className="relative" style={{ height: '100%', marginTop: '0px' }}>
+            <div className="overflow-hidden h-full" style={{ borderRadius: '8px', border: '1px solid rgba(255,255,255,0.3)' }}>
             <div className="p-0 h-full flex flex-col" style={{ overflow: 'hidden' }}>
               {/* Month Header */}
-              <div className="flex items-center justify-between p-3 border-b border-border sticky top-0 bg-white z-10">
-                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))}>
+              <div className="flex items-center justify-between px-3 py-1.5" style={{ background: 'rgba(0,0,0,0.6)', borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
+                <Button variant="ghost" size="icon" className="h-6 w-6 text-white hover:bg-white/20" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))}>
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
-                <span className="text-lg font-bold text-black dark:text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{format(currentMonth, "MMMM yyyy")}</span>
-                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))}>
+                <span className="text-sm font-bold text-white" style={{ fontFamily: "'Raleway', sans-serif" }}>{format(currentMonth, "MMMM yyyy")}</span>
+                <Button variant="ghost" size="icon" className="h-6 w-6 text-white hover:bg-white/20" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))}>
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>
               {/* Day of Week Headers */}
-              <div className="grid grid-cols-7 border-b border-border">
+              <div className="grid grid-cols-7" style={{ background: 'rgba(0,0,0,0.4)', borderBottom: '1px solid rgba(255,255,255,0.15)' }}>
                 {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((day) => (
-                  <div key={day} className="p-2 text-center text-xs font-bold text-muted-foreground border-r border-border last:border-r-0">
+                  <div key={day} className="py-1 text-center text-[10px] font-bold" style={{ color: 'rgba(255,255,255,0.7)', borderRight: '1px solid rgba(255,255,255,0.1)' }}>
                     {day}
                   </div>
                 ))}
@@ -30714,16 +30770,20 @@ export default function Dashboard() {
                     {days.map((day, idx) => {
                       const isCurrentMonth = day.getMonth() === currentMonth.getMonth();
                       const isToday = isSameDayET(day, new Date());
-                      const dayTasks = allTasks.filter(t => isSameDayET(new Date(t.dueDate), day));
+                      const dayTasks = allTasks.filter(t => !t.isCompleted && isSameDayET(new Date(t.dueDate), day));
                       const monthDayStr = format(day, "yyyy-MM-dd");
                       const monthDayShift = localShiftMap[monthDayStr];
+                      const cellBg = monthDayShift === 'day' ? 'rgba(200,180,50,0.25)' : monthDayShift === 'night' ? 'rgba(180,100,200,0.2)' : isCurrentMonth ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.55)';
                       
                       return (
                         <div
                           key={idx}
-                          className={`p-1 border-r border-b border-border last:border-r-0 relative cursor-pointer`}
+                          className="p-1 relative cursor-pointer hover:brightness-125"
                           style={{
-                            backgroundColor: monthDayShift === 'day' ? '#fcfdc9' : monthDayShift === 'night' ? '#fde5ff' : undefined
+                            backgroundColor: cellBg,
+                            borderRight: '1px solid rgba(255,255,255,0.08)',
+                            borderBottom: '1px solid rgba(255,255,255,0.08)',
+                            overflow: 'hidden'
                           }}
                           onClick={() => {
                             const weekInfo = weeks.find(w => {
@@ -30739,10 +30799,9 @@ export default function Dashboard() {
                         >
                           {monthDayShift === 'day' && <SunIcon className="absolute top-0.5 right-0.5 h-3 w-3 text-yellow-500" fill="currentColor" strokeWidth={1.5} />}
                           {monthDayShift === 'night' && <MoonIcon className="absolute top-0.5 right-0.5 h-3 w-3 text-purple-400" fill="currentColor" strokeWidth={1.5} />}
-                          <div className={`text-xs font-bold mb-1 ${
-                            isToday ? "text-[#5979CC]" : "text-foreground"
-                          }`}>
-                            {format(day, "d")}
+                          <div className="text-xs font-bold mb-0.5" style={{ color: isToday ? '#5979CC' : isCurrentMonth ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.35)' }}>
+                            {isToday && <span style={{ background: '#5979CC', color: '#fff', borderRadius: '50%', width: '16px', height: '16px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' }}>{format(day, "d")}</span>}
+                            {!isToday && format(day, "d")}
                           </div>
                           <div className="space-y-0.5">
                             {dayTasks.slice(0, 3).map((task) => {
@@ -30751,13 +30810,11 @@ export default function Dashboard() {
                               return (
                                 <div
                                   key={task.id}
-                                  className={`text-[7px] px-1 py-0.5 rounded truncate border ${
-                                    task.isCompleted ? "line-through" : ""
-                                  }`}
+                                  className="text-[7px] px-1 py-0.5 rounded truncate"
                                   style={{
-                                    backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || (task.type === 'other' ? otherRowColors.taskBgColor : '#e5e7eb')),
-                                    color: task.isCompleted ? '#6b7280' : (colors?.text || '#000'),
-                                    borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || (task.type === 'other' ? otherRowColors.borderColor : '#9ca3af'))
+                                    backgroundColor: colors?.bg || (task.type === 'other' ? otherRowColors.taskBgColor : 'rgba(255,255,255,0.15)'),
+                                    color: colors?.text || '#fff',
+                                    borderLeft: `2px solid ${colors?.border || (task.type === 'other' ? otherRowColors.borderColor : 'rgba(255,255,255,0.4)')}`
                                   }}
                                   title={task.title}
                                 >
@@ -30766,7 +30823,7 @@ export default function Dashboard() {
                               );
                             })}
                             {dayTasks.length > 3 && (
-                              <div className="text-[7px] text-muted-foreground text-center">+{dayTasks.length - 3} more</div>
+                              <div className="text-[7px] text-center" style={{ color: 'rgba(255,255,255,0.5)' }}>+{dayTasks.length - 3} more</div>
                             )}
                           </div>
                         </div>
