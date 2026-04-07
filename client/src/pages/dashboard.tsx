@@ -28705,8 +28705,8 @@ export default function Dashboard() {
                                     />
                                   </div>
                                   {(() => { const hasAtt = (task.attachments?.length && task.attachments.some((att: any) => { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; return !!url; })) || task.referenceLink; return hasAtt ? <img src={pdfAttachIconPath} alt="PDF" style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0 }} data-testid={`attachment-icon-time-${task.id}`} /> : null; })()}
-                                  <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', height: '14px' }}>
-                                    <span style={{ fontSize: '9px', fontWeight: 400, color: '#000000', lineHeight: '14px', fontStyle: 'italic' }}>
+                                  <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', height: '14px', overflow: 'hidden' }}>
+                                    <span style={{ fontSize: '9px', fontWeight: 400, color: '#000000', lineHeight: '14px', fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
                                       {task.eventStartTime && task.eventEndTime ? `${formatTimeTo12Hour(task.eventStartTime)} - ${formatTimeTo12Hour(task.eventEndTime)}` : format(new Date(task.dueDate), "h:mm a")}
                                     </span>
                                   </div>
@@ -28990,8 +28990,8 @@ export default function Dashboard() {
                         />
                         </div>
                         {(() => { const hasAtt = (task.attachments?.length && task.attachments.some((att: any) => { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; return !!url; })) || task.referenceLink; return hasAtt ? <img src={pdfAttachIconPath} alt="PDF" style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0 }} data-testid={`attachment-icon-multi-${task.id}`} /> : null; })()}
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: '9px', fontWeight: 400, color: '#000000', lineHeight: 1.2, fontStyle: 'italic' }}>
+                        <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
+                          <div style={{ fontSize: '9px', fontWeight: 400, color: '#000000', lineHeight: 1.2, fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {task.eventStartTime && task.eventEndTime ? `${formatTimeTo12Hour(task.eventStartTime)} - ${formatTimeTo12Hour(task.eventEndTime)}` : format(new Date(task.dueDate), "h:mm a")}
                           </div>
                         </div>
