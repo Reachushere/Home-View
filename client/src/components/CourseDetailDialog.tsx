@@ -3379,7 +3379,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   const weekDates = getWeekDates(weekNum, semesterStart, readingWeekStart);
                   const weekStart = new Date(weekDates.start);
                   const weekEnd = new Date(weekDates.end);
-                  const formatDate = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                  const formatDate = (d: Date) => d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
                   const dateRange = `${formatDate(weekStart)} - ${formatDate(weekEnd)}`;
                   const edit = weekMappingEdits[weekNum] || { confirmed: false, courseWeekLabel: '', notes: '' };
                   const isConfirmed = edit.confirmed;
@@ -3414,7 +3414,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
 
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-1.5 flex-wrap">
-                            <span className="text-[13px] font-semibold text-white">{dateRange}</span>
+                            <span className="text-[12px] font-semibold text-white">{dateRange}</span>
                             {isCurrent && <span className="text-[9px] px-1.5 py-0.5 bg-blue-500/25 text-blue-200 rounded font-semibold uppercase">Current</span>}
                             {hasCustomLabel && (
                               <span className="text-[10px] px-1 py-0.5 bg-amber-500/15 text-amber-300 rounded">
