@@ -27299,7 +27299,7 @@ export default function Dashboard() {
                               return ({ 0:'Sunny',1:'Mostly Clear',2:'Partly Cloudy',3:'Cloudy',45:'Foggy',48:'Foggy',51:'Light Drizzle',53:'Drizzle',55:'Heavy Drizzle',61:'Light Rain',63:'Rainy',65:'Heavy Rain',66:'Freezing Rain',67:'Freezing Rain',71:'Light Snow',73:'Snowy',75:'Heavy Snow',77:'Snow Grains',80:'Showers',81:'Showers',82:'Heavy Showers',85:'Snow Showers',86:'Snow Showers',95:'Thunderstorms',96:'Hail',99:'Severe Storms' })[c] || 'Mixed';
                             };
                             return (
-                              <div className="absolute z-20 flex flex-col" style={{ top: 6, bottom: 6, left: 3, width: '48px', gap: '0px', pointerEvents: 'none' }} data-testid="today-hourly-forecast">
+                              <div className="absolute z-20 flex flex-col" style={{ top: 6, bottom: 6, left: 6, width: '48px', gap: '0px', pointerEvents: 'none' }} data-testid="today-hourly-forecast">
                                 {forecasts.map((fc, i) => (
                                   <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, borderBottom: i < forecasts.length - 1 ? '1px solid rgba(255,255,255,0.4)' : 'none' }}>
                                     <div style={{ flex: 1, background: '#1a1a2e', borderRadius: i === 0 ? '3px 3px 0 0' : i === forecasts.length - 1 ? '0 0 3px 3px' : '0', padding: '1px 2px 1px 2px', display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: 0, overflow: 'visible' }} data-testid={`hourly-forecast-${fc.offset}h`}>
