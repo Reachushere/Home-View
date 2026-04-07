@@ -28238,59 +28238,51 @@ export default function Dashboard() {
               calScrollTopRef.current = st;
             }} onMouseMove={(e) => {
               const overlayEl = countdownOverlayRef.current;
-              if (!overlayEl) { return; }
+              if (!overlayEl) return;
               const barsData = countdownBarsDataRef.current;
-              if (barsData.length === 0) { return; }
-              const overlayRect = overlayEl.getBoundingClientRect();
-              const barGap = 18;
-              const relY = e.clientY - overlayRect.top;
-              const barIdx = Math.floor(relY / barGap);
-              if (barIdx >= 0 && barIdx < barsData.length && relY >= 0) {
-                console.log('[CBAR] mousemove hit bar', barIdx, 'relY=', Math.round(relY), 'overlayTop=', Math.round(overlayRect.top), 'clientY=', Math.round(e.clientY));
-              }
+              if (barsData.length === 0) return;
               const target = e.target as HTMLElement;
               const isOverTask = !!target.closest('[data-testid^="time-task-"], [data-testid^="gcal-event-"]');
               if (isOverTask) {
                 if (activeBarIdxRef.current >= 0) {
-                  overlayEl.style.zIndex = '1';
-                  overlayEl.querySelectorAll('.countdown-bar-wrapper').forEach(el => { (el as HTMLElement).style.opacity = ''; (el as HTMLElement).style.pointerEvents = ''; (el as HTMLElement).style.zIndex = '1'; });
+                  overlayEl.removeAttribute('data-cbar-active');
+                  overlayEl.querySelectorAll('.countdown-bar-wrapper[data-cbar-highlight]').forEach(el => el.removeAttribute('data-cbar-highlight'));
                   const bg = document.getElementById('cbar-hover-bg-portal'); if (bg) bg.remove();
                   activeBarIdxRef.current = -1;
                 }
                 return;
               }
+              const overlayRect = overlayEl.getBoundingClientRect();
+              const barGap = 18;
+              const relY = e.clientY - overlayRect.top;
+              const barIdx = Math.floor(relY / barGap);
               if (barIdx < 0 || barIdx >= barsData.length || relY < 0) {
                 if (activeBarIdxRef.current >= 0) {
-                  overlayEl.style.zIndex = '1';
-                  overlayEl.querySelectorAll('.countdown-bar-wrapper').forEach(el => { (el as HTMLElement).style.opacity = ''; (el as HTMLElement).style.pointerEvents = ''; (el as HTMLElement).style.zIndex = '1'; });
+                  overlayEl.removeAttribute('data-cbar-active');
+                  overlayEl.querySelectorAll('.countdown-bar-wrapper[data-cbar-highlight]').forEach(el => el.removeAttribute('data-cbar-highlight'));
                   const bg = document.getElementById('cbar-hover-bg-portal'); if (bg) bg.remove();
                   activeBarIdxRef.current = -1;
                 }
                 return;
               }
-              const wrappers = overlayEl.querySelectorAll('.countdown-bar-wrapper');
-              const wrapper = wrappers[barIdx] as HTMLElement;
+              const wrapper = overlayEl.querySelector(`.countdown-bar-wrapper[data-bar-idx="${barIdx}"]`) as HTMLElement;
               if (!wrapper) return;
               const wrapperRect = wrapper.getBoundingClientRect();
               if (e.clientX < wrapperRect.left || e.clientX > wrapperRect.right) {
                 if (activeBarIdxRef.current >= 0) {
-                  overlayEl.style.zIndex = '1';
-                  overlayEl.querySelectorAll('.countdown-bar-wrapper').forEach(el => { (el as HTMLElement).style.opacity = ''; (el as HTMLElement).style.pointerEvents = ''; (el as HTMLElement).style.zIndex = '1'; });
+                  overlayEl.removeAttribute('data-cbar-active');
+                  overlayEl.querySelectorAll('.countdown-bar-wrapper[data-cbar-highlight]').forEach(el => el.removeAttribute('data-cbar-highlight'));
                   const bg = document.getElementById('cbar-hover-bg-portal'); if (bg) bg.remove();
                   activeBarIdxRef.current = -1;
                 }
                 return;
               }
               if (barIdx === activeBarIdxRef.current) return;
-              overlayEl.style.zIndex = '1';
-              overlayEl.querySelectorAll('.countdown-bar-wrapper').forEach(el => { (el as HTMLElement).style.opacity = ''; (el as HTMLElement).style.pointerEvents = ''; (el as HTMLElement).style.zIndex = '1'; });
+              overlayEl.querySelectorAll('.countdown-bar-wrapper[data-cbar-highlight]').forEach(el => el.removeAttribute('data-cbar-highlight'));
               const oldBg = document.getElementById('cbar-hover-bg-portal'); if (oldBg) oldBg.remove();
               activeBarIdxRef.current = barIdx;
-              overlayEl.style.zIndex = '200';
-              wrappers.forEach((el, i) => {
-                if (i !== barIdx) { (el as HTMLElement).style.opacity = '0'; (el as HTMLElement).style.pointerEvents = 'none'; }
-                else { (el as HTMLElement).style.zIndex = '300'; }
-              });
+              overlayEl.setAttribute('data-cbar-active', String(barIdx));
+              wrapper.setAttribute('data-cbar-highlight', '');
               const barRect = wrapper.getBoundingClientRect();
               const midY = barRect.top + barRect.height / 2;
               const allTaskEls = document.querySelectorAll('[data-testid^="time-task-"], [data-testid^="gcal-event-"]');
@@ -28320,8 +28312,8 @@ export default function Dashboard() {
               if (activeBarIdxRef.current >= 0) {
                 const overlayEl = countdownOverlayRef.current;
                 if (overlayEl) {
-                  overlayEl.style.zIndex = '1';
-                  overlayEl.querySelectorAll('.countdown-bar-wrapper').forEach(el => { (el as HTMLElement).style.opacity = ''; (el as HTMLElement).style.pointerEvents = ''; (el as HTMLElement).style.zIndex = '1'; });
+                  overlayEl.removeAttribute('data-cbar-active');
+                  overlayEl.querySelectorAll('.countdown-bar-wrapper[data-cbar-highlight]').forEach(el => el.removeAttribute('data-cbar-highlight'));
                 }
                 const bg = document.getElementById('cbar-hover-bg-portal'); if (bg) bg.remove();
                 activeBarIdxRef.current = -1;
@@ -28379,7 +28371,7 @@ export default function Dashboard() {
                           const barHPx = needsPulse ? 4 : barH;
                           const yOff = idx * barGap;
                           return (
-                            <div key={`cbar-main-${t.id}`} className="countdown-bar-wrapper" style={{ position: 'absolute', left: '0px', right: 0, top: `${yOff}px`, height: `${barGap}px`, pointerEvents: 'none', cursor: 'default', overflow: 'visible', zIndex: 1 }} onDoubleClick={() => setEditingTask(t as any)} data-testid={`countdown-bar-${t.id}`}>
+                            <div key={`cbar-main-${t.id}`} className="countdown-bar-wrapper" data-bar-idx={idx} style={{ position: 'absolute', left: '0px', right: 0, top: `${yOff}px`, height: `${barGap}px`, pointerEvents: 'none', cursor: 'default', overflow: 'visible', zIndex: 1 }} onDoubleClick={() => setEditingTask(t as any)} data-testid={`countdown-bar-${t.id}`}>
                               <div style={{ position: 'absolute', left: '0px', top: '2px', right: 0, height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
                                 <div style={{ width: '10px', minWidth: '10px', height: `${barHPx}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
                                 <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
