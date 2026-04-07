@@ -16243,10 +16243,10 @@ document.body.removeChild(a);
       const syncedFiles: any[] = [];
       const errors: any[] = [];
 
-      const semesterFolderMap: Record<string, string> = {
-        'fall': 'Fall',
-        'winter': 'Winter',
-        'spring_summer': 'Spring_Summer',
+      const semesterFolderMap: Record<string, string[]> = {
+        'fall': ['Fall'],
+        'winter': ['Winter'],
+        'spring_summer': ['Spring & Summer', 'Spring_Summer', 'Spring Summer'],
       };
 
       for (const semester of allSemesters) {
@@ -16255,14 +16255,22 @@ document.body.removeChild(a);
 
         const yearMatch = semester.semesterName?.match(/\d{4}/);
         const year = yearMatch ? yearMatch[0] : new Date().getFullYear().toString();
-        const folderType = semesterFolderMap[semester.semesterType] || semester.semesterType;
-        const basePath = `/School/1. TMU/Courses/${year}/${folderType}`;
+        const folderNames = semesterFolderMap[semester.semesterType] || [semester.semesterType];
 
         let baseFolders: any[] = [];
-        try {
-          baseFolders = await listOneDriveItems(basePath);
-        } catch (e: any) {
-          console.log(`[Monitor Sync] OneDrive folder not found: ${basePath} — skipping`);
+        let usedBasePath = '';
+        for (const folderName of folderNames) {
+          const tryPath = `/School/1. TMU/Courses/${year}/${folderName}`;
+          try {
+            baseFolders = await listOneDriveItems(tryPath);
+            usedBasePath = tryPath;
+            break;
+          } catch (e: any) {
+            continue;
+          }
+        }
+        if (baseFolders.length === 0) {
+          console.log(`[Monitor Sync] OneDrive folder not found for ${semester.semesterName} — tried: ${folderNames.join(', ')}`);
           continue;
         }
 
