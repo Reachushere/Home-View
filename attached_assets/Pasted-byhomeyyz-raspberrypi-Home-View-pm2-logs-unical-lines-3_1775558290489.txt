@@ -1,0 +1,271 @@
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs unical --lines 300 --nostream | grep -i "cat light\|playback\|nest\|chunk\|tablet-nav\|No chunks\|extract\|error"
+/home/byhomeyyz/.pm2/logs/unical-error.log last 300 lines:
+0|unical   | [ExtractText] Local file not found: /home/byhomeyyz/Home-View/dist/public/uploads/1775479419945-Units_3_14_-_3_16.pdf
+0|unical   | [ExtractText] Local file not found: /home/byhomeyyz/Home-View/dist/public/uploads/1775479406281-CPPA122__Module_10_-_Introduction.pdf
+0|unical   | [ExtractText] Local file not found: /home/byhomeyyz/Home-View/dist/public/uploads/1775479407046-156CBEBA.pdf
+0|unical   | [ExtractText] Local file not found: /home/byhomeyyz/Home-View/dist/public/uploads/1775479407261-26929898.pdf
+0|unical   | [ExtractText] Local file not found: /home/byhomeyyz/Home-View/dist/public/uploads/1775479407556-AUMA-UP42-ResPapr-CommEngageLocalComm.Jones_.Oct11.pdf
+0|unical   | [ExtractText] Local file not found: /home/byhomeyyz/Home-View/dist/public/uploads/1775479407757-The_Paradox_of_Participation__An_Overview_of_Public_Participation_and_Local_Government_in_Canada_26_01_13_02_25_03.pdf
+0|unical   | [ExtractText] Local file not found: /home/byhomeyyz/Home-View/dist/public/uploads/1775479409939-CFNF400__Module_10_-_Learning_Objectives.pdf
+0|unical   | [ExtractText] Local file not found: /home/byhomeyyz/Home-View/dist/public/uploads/1775479412183-Units_3_6_-_3_13.pdf
+0|unical   | [ExtractText] Local file not found: /home/byhomeyyz/Home-View/dist/public/uploads/1775479391309-Can_Public_Adm_-_2019_-_Lucas_-_Multilevel_policy_from_the_municipal_perspective__A_pan_Canadian_survey.pdf
+0|unical   | [ExtractText] Local file not found: /home/byhomeyyz/Home-View/dist/public/uploads/1775479391443-proquest.com_printviewfile_accountid_13631.pdf
+0|unical   | [ExtractText] Local file not found: /home/byhomeyyz/Home-View/dist/public/uploads/1775479391632-Reflections_on_Who_Does_What___IMFG.pdf
+0|unical   | [ExtractText] Local file not found: /home/byhomeyyz/Home-View/dist/public/uploads/1775479398775-Uber_launches_lawsuit_over__bad_faith__council_vote__calls_on_court_to_overturn_ridesharing_cap.pdf
+0|unical   | [ExtractText] Local file not found: /home/byhomeyyz/Home-View/dist/public/uploads/1775479401590-CFNF400__Module_9_-_Learning_Objectives.pdf
+0|unical   | [ExtractText] Local file not found: /home/byhomeyyz/Home-View/dist/public/uploads/1775479403912-Units_3_1_-_3_5.pdf
+0|unical   | [ExtractText] Local file not found: /home/byhomeyyz/Home-View/dist/public/uploads/1775479421485-CPPA122__Module_12_-_Introduction.pdf
+0|unical   | Error listing OneDrive items: GraphError: The resource could not be found.
+0|unical   |     at new GraphError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphError.ts:63:3)
+0|unical   |     at Function.GraphErrorHandler.constructErrorFromResponse (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:77:18)
+0|unical   |     at Function.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:104:31)
+0|unical   |     at Function.GraphErrorHandler.getError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:101:65)
+0|unical   |   body: '{"code":"itemNotFound","message":"The resource could not be found.","innerError":{"date":"2026-04-07T10:22:20","request-id":"d9909fe2-f99d-4fef-8048-a4703ccd3923","client-request-id":"d0f81c15-624b-c586-5acb-fcc9e2a2c602"}}',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   | [ExtractText] Local file not found: /home/byhomeyyz/Home-View/dist/public/uploads/1775479423371-CFNF400__Module_12_-_Learning_Objectives.pdf
+0|unical   | [Gmail] Error fetching D2L announcements: Gmail API error 403: {
+0|unical   |   "error": {
+0|unical   |     "errors": [
+0|unical   |         "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+0|unical   | Error listing OneDrive items: GraphError: The resource could not be found.
+0|unical   |     at new GraphError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphError.ts:63:3)
+0|unical   |     at Function.GraphErrorHandler.constructErrorFromResponse (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:77:18)
+0|unical   |     at Function.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:104:31)
+0|unical   |     at Function.GraphErrorHandler.getError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:101:65)
+0|unical   |   body: '{"code":"itemNotFound","message":"The resource could not be found.","innerError":{"date":"2026-04-07T10:27:19","request-id":"9d8a042c-91fb-43c5-8368-a0585e5a291d","client-request-id":"6ae5aa90-8efe-88ef-d4d5-107ad8a89328"}}',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   | [ExtractText] Local file not found: /home/byhomeyyz/Home-View/dist/public/uploads/1775479385959-CFNF400__Module_7_-_Assignment_Detail.pdf
+0|unical   | [ExtractText] Local file not found: /home/byhomeyyz/Home-View/dist/public/uploads/1775479377948-CPPA122__Module_6_-_Introduction.pdf
+0|unical   | [ExtractText] Local file not found: /home/byhomeyyz/Home-View/dist/public/uploads/1775479378495-Can_Public_Adm_-_2023_-_Eidelman_-_How_do_municipal_mayors_and_councillors_communicate_with_other_levels_of_government_.pdf
+0|unical   | [ExtractText] Local file not found: /home/byhomeyyz/Home-View/dist/public/uploads/1775479379500-Canadian_Geographer___Le_g_ographe_canadien_-_2022_-_Gibson_-_Do_more__with_less__The_realities_of_local_government_in.pdf
+0|unical   | [ExtractText] Local file not found: /home/byhomeyyz/Home-View/dist/public/uploads/1775479379755-How_to_get_cities_out_of_their_constitutional_straitjacket.pdf
+0|unical   | [ExtractText] Local file not found: /home/byhomeyyz/Home-View/dist/public/uploads/1775479380174-What_we_expect_from_regional_and_city_governments_is_increasingly_out_of_step_with_their_powers___CBC_News.pdf
+0|unical   | [ExtractText] Local file not found: /home/byhomeyyz/Home-View/dist/public/uploads/1775479381697-CFNF400__Module_6_-_Topic_Overview.pdf
+0|unical   | [ExtractText] Local file not found: /home/byhomeyyz/Home-View/dist/public/uploads/1775479383445-Units_2_7_-_2_9.pdf
+0|unical   | Error listing OneDrive items: GraphError: The resource could not be found.
+0|unical   |     at new GraphError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphError.ts:63:3)
+0|unical   |     at Function.GraphErrorHandler.constructErrorFromResponse (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:77:18)
+0|unical   |     at Function.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:104:31)
+0|unical   |     at Function.GraphErrorHandler.getError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:101:65)
+0|unical   |   body: '{"code":"itemNotFound","message":"The resource could not be found.","innerError":{"date":"2026-04-07T10:31:09","request-id":"af6c4a0a-01c4-406f-98b7-00ff75bc7cb7","client-request-id":"f38fe827-8b3a-e72e-1fa2-a9e3e47251d4"}}',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   | [Gmail] Error fetching D2L announcements: Gmail API error 403: {
+0|unical   |   "error": {
+0|unical   |     "errors": [
+0|unical   |         "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+0|unical   | Error recording weather: TypeError: fetch failed
+0|unical   |   [cause]: Error: Client network socket disconnected before secure TLS connection was established
+0|unical   | [Weather History] Failed to record: {"error":"Failed to record weather"}
+0|unical   | Error listing OneDrive items: GraphError: The resource could not be found.
+0|unical   |     at new GraphError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphError.ts:63:3)
+0|unical   |     at Function.GraphErrorHandler.constructErrorFromResponse (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:77:18)
+0|unical   |     at Function.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:104:31)
+0|unical   |     at Function.GraphErrorHandler.getError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:101:65)
+0|unical   |   body: '{"code":"itemNotFound","message":"The resource could not be found.","innerError":{"date":"2026-04-07T10:35:58","request-id":"0cf3fb30-11a4-4c93-8e90-59dcfb7ca4d7","client-request-id":"ed9bc923-aaf3-2096-6937-8f942fa92012"}}',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   | 6:35:56 AM [express] GET /api/health 200 in 0ms :: {"status":"ok","uptime":299,"ha":{"connected":true,"lastSuccessAt":"2026-04-07T10:35:11.221Z","lastFailureAt":null,"consecutiveFailures":0,"totalChecks":5,"totalFailures":0,"lastError":null,"downSince":null,"commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-07T10:35:56.406Z"}
+0|unical   | TTS audio saved locally: /tts-audio/prep-213-chunk-24-1775558156627.mp3
+0|unical   | [AudioPrep] Generating chunk 26/52 for CPPA122, Module 10 - Introduction.pdf (1481 chars)
+0|unical   | Generating OpenAI TTS for 1481 chars, file: prep-213-chunk-25
+0|unical   | TTS audio saved locally: /tts-audio/prep-213-chunk-25-1775558158227.mp3
+0|unical   | [AudioPrep] Generating chunk 27/52 for CPPA122, Module 10 - Introduction.pdf (1439 chars)
+0|unical   | Generating OpenAI TTS for 1439 chars, file: prep-213-chunk-26
+0|unical   | TTS audio saved locally: /tts-audio/prep-213-chunk-26-1775558160118.mp3
+0|unical   | [AudioPrep] Generating chunk 28/52 for CPPA122, Module 10 - Introduction.pdf (1368 chars)
+0|unical   | Generating OpenAI TTS for 1368 chars, file: prep-213-chunk-27
+0|unical   | TTS audio saved locally: /tts-audio/prep-213-chunk-27-1775558161784.mp3
+0|unical   | [AudioPrep] Generating chunk 29/52 for CPPA122, Module 10 - Introduction.pdf (1380 chars)
+0|unical   | Generating OpenAI TTS for 1324 chars, file: prep-213-chunk-28
+0|unical   | TTS audio saved locally: /tts-audio/prep-213-chunk-28-1775558163466.mp3
+0|unical   | [AudioPrep] Generating chunk 30/52 for CPPA122, Module 10 - Introduction.pdf (1480 chars)
+0|unical   | Generating OpenAI TTS for 1480 chars, file: prep-213-chunk-29
+0|unical   | TTS audio saved locally: /tts-audio/prep-213-chunk-29-1775558165075.mp3
+0|unical   | [AudioPrep] Generating chunk 31/52 for CPPA122, Module 10 - Introduction.pdf (1407 chars)
+0|unical   | Generating OpenAI TTS for 1407 chars, file: prep-213-chunk-30
+0|unical   | 6:36:06 AM [express] GET /api/health 200 in 1ms :: {"status":"ok","uptime":309,"ha":{"connected":true,"lastSuccessAt":"2026-04-07T10:35:11.221Z","lastFailureAt":null,"consecutiveFailures":0,"totalChecks":5,"totalFailures":0,"lastError":null,"downSince":null,"commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-07T10:36:06.405Z"}
+0|unical   | TTS audio saved locally: /tts-audio/prep-213-chunk-30-1775558166637.mp3
+0|unical   | [AudioPrep] Generating chunk 32/52 for CPPA122, Module 10 - Introduction.pdf (1427 chars)
+0|unical   | Generating OpenAI TTS for 1427 chars, file: prep-213-chunk-31
+0|unical   | TTS audio saved locally: /tts-audio/prep-213-chunk-31-1775558168506.mp3
+0|unical   | [AudioPrep] Generating chunk 33/52 for CPPA122, Module 10 - Introduction.pdf (1423 chars)
+0|unical   | Generating OpenAI TTS for 1423 chars, file: prep-213-chunk-32
+0|unical   | TTS audio saved locally: /tts-audio/prep-213-chunk-32-1775558170126.mp3
+0|unical   | [AudioPrep] Generating chunk 34/52 for CPPA122, Module 10 - Introduction.pdf (1442 chars)
+0|unical   | Generating OpenAI TTS for 1442 chars, file: prep-213-chunk-33
+0|unical   | TTS audio saved locally: /tts-audio/prep-213-chunk-33-1775558171738.mp3
+0|unical   | [AudioPrep] Generating chunk 35/52 for CPPA122, Module 10 - Introduction.pdf (1459 chars)
+0|unical   | Generating OpenAI TTS for 1459 chars, file: prep-213-chunk-34
+0|unical   | TTS audio saved locally: /tts-audio/prep-213-chunk-34-1775558173464.mp3
+0|unical   | [AudioPrep] Generating chunk 36/52 for CPPA122, Module 10 - Introduction.pdf (1383 chars)
+0|unical   | Generating OpenAI TTS for 1383 chars, file: prep-213-chunk-35
+0|unical   | TTS audio saved locally: /tts-audio/prep-213-chunk-35-1775558175134.mp3
+0|unical   | [AudioPrep] Generating chunk 37/52 for CPPA122, Module 10 - Introduction.pdf (1454 chars)
+0|unical   | Generating OpenAI TTS for 1454 chars, file: prep-213-chunk-36
+0|unical   | 6:36:16 AM [express] GET /api/health 200 in 0ms :: {"status":"ok","uptime":319,"ha":{"connected":true,"lastSuccessAt":"2026-04-07T10:36:11.166Z","lastFailureAt":null,"consecutiveFailures":0,"totalChecks":6,"totalFailures":0,"lastError":null,"downSince":null,"commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-07T10:36:16.412Z"}
+0|unical   | TTS audio saved locally: /tts-audio/prep-213-chunk-36-1775558177084.mp3
+0|unical   | [AudioPrep] Generating chunk 38/52 for CPPA122, Module 10 - Introduction.pdf (1474 chars)
+0|unical   | Generating OpenAI TTS for 1474 chars, file: prep-213-chunk-37
+0|unical   | TTS audio saved locally: /tts-audio/prep-213-chunk-37-1775558178623.mp3
+0|unical   | [AudioPrep] Generating chunk 39/52 for CPPA122, Module 10 - Introduction.pdf (1385 chars)
+0|unical   | Generating OpenAI TTS for 1385 chars, file: prep-213-chunk-38
+0|unical   | TTS audio saved locally: /tts-audio/prep-213-chunk-38-1775558180187.mp3
+0|unical   | [AudioPrep] Generating chunk 40/52 for CPPA122, Module 10 - Introduction.pdf (1412 chars)
+0|unical   | Generating OpenAI TTS for 1412 chars, file: prep-213-chunk-39
+0|unical   | TTS audio saved locally: /tts-audio/prep-213-chunk-39-1775558181700.mp3
+0|unical   | [AudioPrep] Generating chunk 41/52 for CPPA122, Module 10 - Introduction.pdf (1432 chars)
+0|unical   | Generating OpenAI TTS for 1432 chars, file: prep-213-chunk-40
+0|unical   | [TRACE 6:36:23 AM] [CatLights] WEBHOOK RECEIVED | state={"active":false,"sessionId":0,"file":null,"chunk":null,"lightsPrompt":false,"trigger":null,"msSinceStop":null,"msSinceManualStop":null,"msSinceStart":null} | {"body":{"state":"on"}}
+0|unical   | [Cat Lights] ====== WEBHOOK TRIGGERED ======
+0|unical   | [Cat Lights] Timestamp: 4/7/2026, 6:36:23 AM
+0|unical   | [Cat Lights] Request body: {"state":"on"}
+0|unical   | [Cat Lights] Body parsing: state="on", action="", rawToState=undefined, trigger="none"
+0|unical   | [Cat Lights] Using body state directly: on
+0|unical   | [TRACE 6:36:23 AM] [CatLights] STATE RESOLVED: on | state={"active":false,"sessionId":0,"file":null,"chunk":null,"lightsPrompt":false,"trigger":null,"msSinceStop":null,"msSinceManualStop":null,"msSinceStart":null} | {"bodyState":"on","bodyAction":"","method":"body"}
+0|unical   | [Cat Lights] Light state: on (body state: on)
+0|unical   | [Cat Lights] Architecture: server-side TTS → Google Nest speaker (media_player.play_media)
+0|unical   | TTS audio saved locally: /tts-audio/prep-213-chunk-40-1775558183305.mp3
+0|unical   | [FileOrder] Found unlistened files in week 12: CPPA122, Module 12 - Introduction.pdf (chunk=13) → CFNF400, Module 12 - Learning Objectives.pdf (chunk=0)
+0|unical   | [Cat Lights] Using cached file — syncing OneDrive in background
+0|unical   | [Cat Lights] Syncing OneDrive for 3 courses, week 12
+0|unical   | [AudioPrep] Generating chunk 42/52 for CPPA122, Module 10 - Introduction.pdf (1254 chars)
+0|unical   | Generating OpenAI TTS for 1254 chars, file: prep-213-chunk-41
+0|unical   | [Cat Lights] Early device wake: tablet wake + brightness sent (TV deferred until confirmation)
+0|unical   | [Cat Lights] Quick acknowledgment played via HA Cloud TTS (primary)
+0|unical   | TTS audio saved locally: /tts-audio/prep-213-chunk-41-1775558184926.mp3
+0|unical   | [AudioPrep] Generating chunk 43/52 for CPPA122, Module 10 - Introduction.pdf (942 chars)
+0|unical   | Generating OpenAI TTS for 942 chars, file: prep-213-chunk-42
+0|unical   | 6:36:26 AM [express] GET /api/health 200 in 1ms :: {"status":"ok","uptime":329,"ha":{"connected":true,"lastSuccessAt":"2026-04-07T10:36:11.166Z","lastFailureAt":null,"consecutiveFailures":0,"totalChecks":6,"totalFailures":0,"lastError":null,"downSince":null,"commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-07T10:36:26.408Z"}
+0|unical   | TTS audio saved locally: /tts-audio/prep-213-chunk-42-1775558186435.mp3
+0|unical   | [AudioPrep] Generating chunk 44/52 for CPPA122, Module 10 - Introduction.pdf (1420 chars)
+0|unical   | Generating OpenAI TTS for 1420 chars, file: prep-213-chunk-43
+0|unical   | [Cat Lights] OneDrive sync complete
+0|unical   | [Cat Lights] Found next file: your CPPA Module for week 12 — CPPA122, Module 12 - Introduction.pdf (id=231)
+0|unical   | [Cat Lights] Sending TTS prompt: "Would you like to play your CPPA Module for week 12?"
+0|unical   | TTS audio saved locally: /tts-audio/prep-213-chunk-43-1775558188051.mp3
+0|unical   | [Cat Lights] TTS prompt played via HA Cloud TTS (primary)
+0|unical   | [AudioPrep] Generating chunk 45/52 for CPPA122, Module 10 - Introduction.pdf (1466 chars)
+0|unical   | Generating OpenAI TTS for 1466 chars, file: prep-213-chunk-44
+0|unical   | TTS audio saved locally: /tts-audio/prep-213-chunk-44-1775558189798.mp3
+0|unical   | [Cat Lights] Waiting up to 23s for confirmation (webhook-primary, backup poll every 10s)...
+0|unical   | [AudioPrep] Generating chunk 46/52 for CPPA122, Module 10 - Introduction.pdf (1429 chars)
+0|unical   | Generating OpenAI TTS for 1429 chars, file: prep-213-chunk-45
+0|unical   | [Cat Lights Confirm] ====== CONFIRMATION RECEIVED ======
+0|unical   | [Cat Lights Confirm] Stopped media on cat washroom Echos
+0|unical   | 6:36:35 AM [express] POST /api/webhook/cat-lights-confirm 200 in 200ms :: {"action":"confirmed","message":"Module reading confirmed — starting playback"}
+0|unical   | [TRACE 6:36:35 AM] [CatLights] CONFIRMATION RECEIVED — starting playback | state={"active":false,"sessionId":0,"file":null,"chunk":null,"lightsPrompt":true,"trigger":null,"msSinceStop":null,"msSinceManualStop":null,"msSinceStart":null}
+0|unical   | [Cat Lights] Confirmation received — starting playback
+0|unical   | [TRACE 6:36:35 AM] [PlaybackFlow] STARTING file=CPPA122, Module 12 - Introduction.pdf id=231 | state={"active":false,"sessionId":0,"file":null,"chunk":null,"lightsPrompt":false,"trigger":"lights","msSinceStop":null,"msSinceManualStop":null,"msSinceStart":null} | {"logPrefix":"[Cat Lights]","voice":"echo"}
+0|unical   | [Cat Lights] Paused audio preparation for live playback
+0|unical   | [Cat Lights] Will resume from chunk 12 (saved: 13)
+0|unical   | [Cat Lights] tablet-nav set for master (TV nav deferred until Silk launches)
+0|unical   | [ExtractText] Using cached text for CPPA122, Module 12 - Introduction.pdf (17153 chars)
+0|unical   | [Cat Lights] Set HA Voice volume to 0.45
+0|unical   | [Cat Lights] Text extraction ready (17153 chars)
+0|unical   | [Cat Lights] Using pre-prepared audio for chunk 12
+0|unical   | [Cat Lights] Persisted playback session to DB (file=231, chunk=12/13)
+0|unical   | [Cat Lights] ====== TABLET SETUP START (tablet-nav polling) ======
+0|unical   | [Cat Lights] ====== TV SETUP START ======
+0|unical   | [TRACE 6:36:36 AM] [TV] SETUP START | state={"active":true,"sessionId":1,"file":"CPPA122, Module 12 - Introduction.pdf","chunk":"12/13","lightsPrompt":false,"trigger":"lights","msSinceStop":null,"msSinceManualStop":null,"msSinceStart":267}
+0|unical   | [Cat Lights] Fire Stick current state: off
+0|unical   | [TRACE 6:36:36 AM] [TV] Fire Stick state: off | state={"active":true,"sessionId":1,"file":"CPPA122, Module 12 - Introduction.pdf","chunk":"12/13","lightsPrompt":false,"trigger":"lights","msSinceStop":null,"msSinceManualStop":null,"msSinceStart":336}
+0|unical   | [Cat Lights] tablet-nav set for master — tablet will navigate via polling
+0|unical   | [Cat Lights] ====== TABLET SETUP COMPLETE ======
+0|unical   | [Cat Lights] Samsung TV turn_on sent (WoL)
+0|unical   | [TRACE 6:36:36 AM] [TV] Fire Stick is OFF/standby — turning ON directly (CEC will wake Samsung TV). No OFF cycle needed. | state={"active":true,"sessionId":1,"file":"CPPA122, Module 12 - Introduction.pdf","chunk":"12/13","lightsPrompt":false,"trigger":"lights","msSinceStop":null,"msSinceManualStop":null,"msSinceStart":400}
+0|unical   | [Cat Lights] Fire Stick is off/standby — just turning ON (preserves Silk if backgrounded)
+0|unical   | 6:36:36 AM [express] GET /api/health 200 in 1ms :: {"status":"ok","uptime":339,"ha":{"connected":true,"lastSuccessAt":"2026-04-07T10:36:11.166Z","lastFailureAt":null,"consecutiveFailures":0,"totalChecks":6,"totalFailures":0,"lastError":null,"downSince":null,"commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-07T10:36:36.408Z"}
+0|unical   | [Nest] Playing audio: https://home-view--bkh416.replit.app/tts-audio/confirm-1775558197315-1775558197648.mp3
+0|unical   | [Cat Lights] Fire Stick turn_on: OK (attempt 1) — CEC should turn on Samsung TV
+0|unical   | [TRACE 6:36:39 AM] [TV] Fire Stick turn_on OK on attempt 1 | state={"active":true,"sessionId":1,"file":"CPPA122, Module 12 - Introduction.pdf","chunk":"12/13","lightsPrompt":false,"trigger":"lights","msSinceStop":null,"msSinceManualStop":null,"msSinceStart":3286}
+0|unical   | [Toothbrush] Poll #1: state="idle" (playbackActive=true, nestPlaying=false)
+0|unical   | [Cat Lights] Fire Stick WAKEUP sent
+0|unical   | [TRACE 6:36:41 AM] [TV] Waiting 8s for Fire Stick + Samsung TV to wake | state={"active":true,"sessionId":1,"file":"CPPA122, Module 12 - Introduction.pdf","chunk":"12/13","lightsPrompt":false,"trigger":"lights","msSinceStop":null,"msSinceManualStop":null,"msSinceStart":5571}
+0|unical   | [Cat Lights] Waiting 8s for TV + Fire Stick boot...
+0|unical   | [Toothbrush] Poll #2: state="idle" (playbackActive=true, nestPlaying=false)
+0|unical   | TTS audio saved locally: /tts-audio/prep-213-chunk-45-1775558202632.mp3
+0|unical   | [Nest State] entity=media_player.bathroom_speaker state=idle media_title=none
+0|unical   | [Nest] Speaker state check 1: idle
+0|unical   | [Nest] State "idle" — rechecking...
+0|unical   | [Toothbrush] Poll #3: state="idle" (playbackActive=true, nestPlaying=false)
+0|unical   | 6:36:46 AM [express] GET /api/health 200 in 1ms :: {"status":"ok","uptime":349,"ha":{"connected":true,"lastSuccessAt":"2026-04-07T10:36:11.166Z","lastFailureAt":null,"consecutiveFailures":0,"totalChecks":6,"totalFailures":0,"lastError":null,"downSince":null,"commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-07T10:36:46.424Z"}
+0|unical   | [Nest State] entity=media_player.bathroom_speaker state=idle media_title=none
+0|unical   | [Nest] Speaker state check 2: idle
+0|unical   | [Nest] State "idle" — rechecking...
+0|unical   | [Nest State] entity=media_player.bathroom_speaker state=idle media_title=none
+0|unical   | [Nest] Speaker state check 3: idle
+0|unical   | [Nest] State "idle" after 3 checks — play_media was sent, assuming it played
+0|unical   | [Cat Lights] Confirm TTS played on Nest speaker via OpenAI/Edge TTS (actuallyPlaying=false)
+0|unical   | [Cat Lights] Confirm TTS playing, waiting 6s
+0|unical   | [Cat Lights] Samsung TV state check 1/3: off
+0|unical   | [TRACE 6:36:49 AM] [TV] Samsung TV state check 1: off | state={"active":true,"sessionId":1,"file":"CPPA122, Module 12 - Introduction.pdf","chunk":"12/13","lightsPrompt":false,"trigger":"lights","msSinceStop":null,"msSinceManualStop":null,"msSinceStart":13703}
+0|unical   | [Cat Lights] Samsung TV still off — sending another WoL + CEC kick
+0|unical   | [Cat Lights] Confirm TTS finished
+0|unical   | [Cat Lights] Samsung TV state check 2/3: off
+0|unical   | [TRACE 6:36:57 AM] [TV] Samsung TV state check 2: off | state={"active":true,"sessionId":1,"file":"CPPA122, Module 12 - Introduction.pdf","chunk":"12/13","lightsPrompt":false,"trigger":"lights","msSinceStop":null,"msSinceManualStop":null,"msSinceStart":21191}
+0|unical   | [Cat Lights] Samsung TV still off — sending another WoL + CEC kick
+0|unical   | [Cat Lights] Samsung TV state check 3/3: on
+0|unical   | [TRACE 6:37:04 AM] [TV] Samsung TV state check 3: on | state={"active":true,"sessionId":1,"file":"CPPA122, Module 12 - Introduction.pdf","chunk":"12/13","lightsPrompt":false,"trigger":"lights","msSinceStop":null,"msSinceManualStop":null,"msSinceStart":28242}
+0|unical   | [Cat Lights] Samsung TV is ON — proceeding
+0|unical   | [Cat Lights] Waiting 5s before Silk launch to let Fire Stick UI fully boot...
+0|unical   | [Toothbrush] Poll #10: state="idle" (playbackActive=true, nestPlaying=false)
+0|unical   | [Cat Lights] Extra WAKEUP sent before Silk launch
+0|unical   | [Cat Lights] Force-stopped Silk before fresh launch
+0|unical   | [Cat Lights] Silk launched with wrapper URL (attempt 1)
+0|unical   | [Cat Lights] Setting TV tablet-nav command now that Silk is launched
+0|unical   | [Cat Lights] Fire Stick immersive mode set
+0|unical   | [TRACE 6:37:23 AM] [TV] SETUP COMPLETE | state={"active":true,"sessionId":1,"file":"CPPA122, Module 12 - Introduction.pdf","chunk":"12/13","lightsPrompt":false,"trigger":"lights","msSinceStop":null,"msSinceManualStop":null,"msSinceStart":47142}
+0|unical   | [Cat Lights] ====== TV SETUP COMPLETE ======
+0|unical   | [Cat Lights] Nest volume set to 0.75 for playback
+0|unical   | [Nest Playback] Starting session 1: "CPPA122, Module 12 - Introduction.pdf" from chunk 12/13
+0|unical   | [Nest Playback] Starting first chunk immediately
+0|unical   | [Nest Playback] Loaded 13 pre-prepared audio chunks
+0|unical   | [Nest Playback] 12 chunks already checked — will skip them
+0|unical   | [Nest Playback] Using pre-prepared audio for chunk 13/13
+0|unical   | [Nest] Playing audio: https://home-view--bkh416.replit.app/tts-audio/prep-231-chunk-12-1775557914802.mp3
+0|unical   | [Nest State] entity=media_player.bathroom_speaker state=idle media_title=none
+0|unical   | [Nest] Speaker state check 1: idle
+0|unical   | [Nest] State "idle" — rechecking...
+0|unical   | [Nest State] entity=media_player.bathroom_speaker state=idle media_title=none
+0|unical   | [Nest] Speaker state check 2: idle
+0|unical   | [Nest] State "idle" — rechecking...
+0|unical   | 6:37:32 AM [express] GET /api/health 200 in 0ms :: {"status":"ok","uptime":395,"ha":{"connected":true,"lastSuccessAt":"2026-04-07T10:37:10.995Z","lastFailureAt":null,"consecutiveFailures":0,"totalChecks":7,"totalFailures":0,"lastError":null,"downSince":null,"commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-07T10:37:32.417Z"}
+0|unical   | [Nest State] entity=media_player.bathroom_speaker state=idle media_title=none
+0|unical   | [Nest] Speaker state check 3: idle
+0|unical   | [Nest] State "idle" after 3 checks — play_media was sent, assuming it played
+0|unical   | [Nest Playback] Nest state unconfirmed for chunk 13 — trusting play_media succeeded
+0|unical   | [Nest Playback] Playing chunk 13, ~5s
+0|unical   | [Toothbrush] Poll #20: state="idle" (playbackActive=true, nestPlaying=false)
+0|unical   | [Nest State] entity=media_player.bathroom_speaker state=idle media_title=none
+0|unical   | [Nest] Chunk confirmed done via HA (6s total)
+0|unical   | [Nest Playback] Chunk 13 done, chunksPlayedSinceLastPrompt=1
+0|unical   | [Nest Playback] Saved chunk 12 as checked (13/13 total)
+0|unical   | [Nest Playback] All chunks complete for "CPPA122, Module 12 - Introduction.pdf"
+0|unical   | [FileOrder] Found unlistened files in week 12: CFNF400, Module 12 - Learning Objectives.pdf (chunk=0)
+0|unical   | [Nest Playback] Transition: "your CPPA Module for week 12 is complete. Now playing your CFNF Module for week 12."
+0|unical   | Generating OpenAI TTS for 83 chars, file: nest-transition-1775558260711
+0|unical   | TTS audio saved locally: /tts-audio/nest-transition-1775558260711-1775558262328.mp3
+0|unical   | [Nest] Playing audio: https://home-view--bkh416.replit.app/tts-audio/nest-transition-1775558260711-1775558262328.mp3
+0|unical   | [Nest State] entity=media_player.bathroom_speaker state=idle media_title=none
+0|unical   | [Nest] Speaker state check 1: idle
+0|unical   | [Nest] State "idle" — rechecking...
+0|unical   | [Nest State] entity=media_player.bathroom_speaker state=idle media_title=none
+0|unical   | [Nest] Speaker state check 2: idle
+0|unical   | [Nest] State "idle" — rechecking...
+0|unical   | [Nest State] entity=media_player.bathroom_speaker state=idle media_title=none
+0|unical   | [Nest] Speaker state check 3: idle
+0|unical   | [Nest] State "idle" after 3 checks — play_media was sent, assuming it played
+0|unical   | [ExtractText] Using cached text for CFNF400, Module 12 - Learning Objectives.pdf (21024 chars)
+0|unical   | [Nest Playback] Starting next file: "CFNF400, Module 12 - Learning Objectives.pdf" (15 chunks)
+0|unical   | [Nest Playback] Starting session 1: "CFNF400, Module 12 - Learning Objectives.pdf" from chunk 0/15
+0|unical   | [Nest Playback] Starting first chunk immediately
+0|unical   | [TRACE 6:37:58 AM] [NestPlayback] FINALLY BLOCK — cleaning up session 1 | state={"active":true,"sessionId":1,"file":"CFNF400, Module 12 - Learning Objectives.pdf","chunk":"0/15","lightsPrompt":false,"trigger":"lights","msSinceStop":null,"msSinceManualStop":null,"msSinceStart":82707}
+0|unical   | [Nest Playback] Resumed audio preparation
+0|unical   | [Nest Playback] Loaded 15 pre-prepared audio chunks
+0|unical   | [Nest Playback] Aborted at chunk 0
+0|unical   | [Nest Playback] Saved progress on abort: chunk 0
+0|unical   | [TRACE 6:37:58 AM] [NestPlayback] FINALLY BLOCK — cleaning up session 1 | state={"active":false,"sessionId":1,"file":null,"chunk":null,"lightsPrompt":false,"trigger":"lights","msSinceStop":7,"msSinceManualStop":null,"msSinceStart":null}
+0|unical   | [Nest Playback] Resumed audio preparation
+0|unical   | [AudioPrep] Generating chunk 47/52 for CPPA122, Module 10 - Introduction.pdf (1463 chars)
+0|unical   | Generating OpenAI TTS for 1463 chars, file: prep-213-chunk-46
+0|unical   | TTS audio saved locally: /tts-audio/prep-213-chunk-46-1775558280520.mp3
+byhomeyyz@raspberrypi:~/Home-View $
