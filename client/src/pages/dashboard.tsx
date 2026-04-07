@@ -28483,7 +28483,7 @@ export default function Dashboard() {
                   if (taskDueDate >= otherWkStart && taskDueDate < otherWkEnd) return true;
                   if (task.startDate) {
                     const taskStartDate = startOfDayET(new Date(task.startDate));
-                    if (taskStartDate < otherWkEnd && taskDueDate > otherWkStart) return true;
+                    if (taskStartDate >= otherWkStart && taskStartDate < otherWkEnd) return true;
                   }
                   return false;
                 }) || [];
@@ -28496,7 +28496,7 @@ export default function Dashboard() {
                   if (projTargetDate >= otherWkStart && projTargetDate < otherWkEnd) return true;
                   if (proj.startDate) {
                     const projStartDate = startOfDayET(new Date(proj.startDate));
-                    if (projStartDate < otherWkEnd && projTargetDate > otherWkStart) return true;
+                    if (projStartDate >= otherWkStart && projStartDate < otherWkEnd) return true;
                   }
                   return false;
                 });
@@ -31721,7 +31721,7 @@ export default function Dashboard() {
                     zIndex: 45,
                     display: 'flex',
                     flexDirection: 'column',
-                    overflow: 'visible',
+                    overflow: 'hidden',
                     borderBottom: '0.5px solid rgba(255,255,255,0.2)',
                   }}
                 >
