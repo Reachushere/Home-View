@@ -28609,8 +28609,8 @@ export default function Dashboard() {
                 const baseOtherRowHeight = Math.max(57, gridSizes.otherRowHeight || 57);
                 const otherRowHeight = baseOtherRowHeight + missingRows * courseRowH;
                 return (
-                  <div ref={otherRowRef} className="grid w-full flex-shrink-0 relative z-[43] group/otherrow" style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${otherRowHeight}px` }}>
-                    <div className="px-1 py-0.5 text-[8px] font-[785] tracking-wide flex items-center justify-center text-white/80 relative cursor-pointer hover:brightness-110" onClick={() => setOtherRowEditOpen(true)} style={{ background: (() => { const stops = otherRowColors.labelStops ? (() => { try { return JSON.parse(otherRowColors.labelStops); } catch { return []; } })() : []; const allStops = [{ position: 0, color: otherRowColors.labelStart }, ...stops, { position: 100, color: otherRowColors.labelEnd }]; return `linear-gradient(180deg, ${allStops.map((s: any) => `${s.color} ${s.position}%`).join(', ')})`; })(), borderBottom: `1px dotted ${otherRowColors.borderColor || '#999'}` }} data-testid="other-row-label">
+                  <div ref={otherRowRef} className="grid w-full flex-shrink-0 relative z-[43] group/otherrow" style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${otherRowHeight}px`, overflow: 'hidden' }}>
+                    <div className="px-1 py-0.5 text-[8px] font-[785] tracking-wide flex items-center justify-center text-white/80 relative cursor-pointer hover:brightness-110" onClick={() => setOtherRowEditOpen(true)} style={{ background: (() => { const stops = otherRowColors.labelStops ? (() => { try { return JSON.parse(otherRowColors.labelStops); } catch { return []; } })() : []; const allStops = [{ position: 0, color: otherRowColors.labelStart }, ...stops, { position: 100, color: otherRowColors.labelEnd }]; return `linear-gradient(180deg, ${allStops.map((s: any) => `${s.color} ${s.position}%`).join(', ')})`; })(), borderBottom: `1px dotted ${otherRowColors.borderColor || '#999'}`, overflow: 'hidden' }} data-testid="other-row-label">
                       OTHER
                       <div style={{ position: 'absolute', top: '1px', right: '1px', zIndex: 2 }} onClick={(e) => { e.stopPropagation(); setOtherRowEditOpen(true); }} data-testid="pencil-edit-other-row"><Pencil className="w-[9px] h-[9px] text-white" strokeWidth={3} /></div>
                     </div>
@@ -28648,7 +28648,7 @@ export default function Dashboard() {
                         <div
                           key={dayIdx}
                           className="relative flex flex-col gap-0.5 pt-0.5 course-cell-scroll"
-                          style={{ backgroundColor: otherCellBg, padding: isOtherToday ? '2px 1px 2px 3px' : '2px 1px 2px 1px', borderBottom: isOtherToday ? '1px dotted #666' : `1.5px dotted ${otherRowColors.borderColor}`, overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'thin', maxHeight: `${otherRowHeight}px`, zIndex: 6 }}
+                          style={{ backgroundColor: otherCellBg, padding: isOtherToday ? '2px 1px 2px 3px' : '2px 1px 2px 1px', borderBottom: isOtherToday ? '1px dotted #666' : `1.5px dotted ${otherRowColors.borderColor}`, overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'thin', maxHeight: `${otherRowHeight}px` }}
                           data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
                         >
                           <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', borderLeft: day.getDay() === 6 ? '3px solid #000' : '1.5px dotted rgba(0,0,0,0.25)', zIndex: 5, pointerEvents: 'none' }} />
@@ -28665,7 +28665,7 @@ export default function Dashboard() {
                                   backgroundColor: isUnackedReminder ? 'rgba(220, 38, 38, 0.25)' : otherRowColors.taskBgColor,
                                   borderColor: isUnackedReminder ? 'rgba(220, 38, 38, 0.6)' : otherRowColors.borderColor,
                                   position: 'relative',
-                                  zIndex: 1,
+                                  zIndex: 6,
                                 }}
                                 title={task.title}
                                 data-testid={`other-task-${task.id}`}
@@ -28707,7 +28707,7 @@ export default function Dashboard() {
                                   borderColor: proj.color || otherRowColors.borderColor,
                                   borderStyle: 'dashed',
                                   position: 'relative',
-                                  zIndex: 1,
+                                  zIndex: 6,
                                 }}
                                 onClick={() => { setEditingProject(proj); setProjectDialogOpen(true); }}
                                 title={proj.name}
