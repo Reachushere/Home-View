@@ -1859,7 +1859,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
 
         <div className="flex items-center justify-between px-3 py-2 border-b border-white/10 flex-shrink-0">
           <div className="flex items-center gap-2">
-            <span className="text-[11px] text-white uppercase font-medium">Course Info</span>
+            <span className="text-[11px] text-white uppercase font-medium">Course Details</span>
             {syllabusObjectPath && (
               <Button
                 variant="outline"
