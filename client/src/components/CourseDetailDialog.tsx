@@ -3034,7 +3034,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   <span className="text-[10px] font-medium text-white uppercase">Weekly Deadlines</span>
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-[10px] text-white/70 w-[80px]">Module due:</span>
+                  <span className="text-[10px] text-white w-[80px]">Module due:</span>
                   <select
                     value={moduleDueDay}
                     onChange={(e) => { setModuleDueDay(e.target.value); saveModuleDeadlineSettings('moduleDeadline_day', e.target.value); }}
@@ -3058,9 +3058,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     className="h-6 text-[10px] bg-white/10 border border-white/20 rounded px-1.5 text-white cursor-pointer"
                     data-testid="input-module-due-time"
                   />
-                </div>
-                <div className="flex items-center gap-2 mt-1">
-                  <label className="flex items-center gap-1.5 cursor-pointer">
+                  <label className="flex items-center gap-1.5 cursor-pointer ml-2">
                     <input
                       type="checkbox"
                       checked={discussionEnabled}
@@ -3068,12 +3066,12 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                       className="w-3.5 h-3.5 rounded-sm"
                       data-testid="checkbox-discussion-enabled"
                     />
-                    <span className="text-[10px] text-white/70">Include discussion post</span>
+                    <span className="text-[10px] text-white">Include discussion post</span>
                   </label>
                 </div>
                 {discussionEnabled && (
-                  <div className="flex items-center gap-2 flex-wrap pl-5">
-                    <span className="text-[10px] text-white/70 w-[80px]">Discussion due:</span>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-[10px] text-white w-[80px]">Discussion due:</span>
                     <select
                       value={discussionDueDay}
                       onChange={(e) => { setDiscussionDueDay(e.target.value); saveModuleDeadlineSettings('discussionDeadline_day', e.target.value); }}
