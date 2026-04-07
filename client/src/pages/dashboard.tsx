@@ -23773,7 +23773,7 @@ export default function Dashboard() {
                         const isTBD = slot.code.toUpperCase().startsWith('TBD');
                         courses.push({
                           code: slot.code,
-                          name: isTBD ? 'TBD' : slot.code,
+                          name: isTBD ? slot.code.toUpperCase() : slot.code,
                           fullName: slot.name || 'To Be Determined',
                           period: slot.period,
                         });
@@ -27525,7 +27525,7 @@ export default function Dashboard() {
                         const isTBD = codeNorm.startsWith('TBD');
                         dbCourses.push({
                           code: isTBD ? `TBD_SLOT${ci}` : code,
-                          name: isTBD ? 'TBD' : code,
+                          name: isTBD ? code.toUpperCase() : code,
                           fullName: (dbSemForKey as any)[`course${ci}Name`] || 'To Be Determined',
                           period: '',
                           _dbSlot: ci,
