@@ -27305,14 +27305,15 @@ export default function Dashboard() {
                 }
                 
                 // Calculate how many tasks this course has in the current week to set dynamic height
+                const sortedWd = [...weekDays].sort((a, b) => a.getTime() - b.getTime());
                 const courseTaskCount = tasks?.filter(task => {
                   const courseCode = course.name.split(' - ')[0]?.trim().toUpperCase() || '';
                   if (!courseCode || !task.courseName?.toUpperCase().startsWith(courseCode)) return false;
                   if (task.isCompleted) return false;
                   if (task.hideFromSummary) return false;
                   const taskDueDate = startOfDayET(new Date(task.dueDate));
-                  const weekStart = startOfDayET(weekDays[0]);
-                  const weekEnd = startOfDayET(addDays(weekDays[6], 1));
+                  const weekStart = startOfDayET(sortedWd[0]);
+                  const weekEnd = startOfDayET(addDays(sortedWd[sortedWd.length - 1], 1));
                   if (taskDueDate >= weekStart && taskDueDate < weekEnd) return true;
                   if (task.startDate) {
                     const taskStartDate = startOfDayET(new Date(task.startDate));
@@ -27329,8 +27330,8 @@ export default function Dashboard() {
                   if (proj.status === 'completed' || proj.status === 'cancelled') return false;
                   if (!proj.targetDate) return false;
                   const projTargetDate = startOfDayET(new Date(proj.targetDate));
-                  const weekStart = startOfDayET(weekDays[0]);
-                  const weekEnd = startOfDayET(addDays(weekDays[6], 1));
+                  const weekStart = startOfDayET(sortedWd[0]);
+                  const weekEnd = startOfDayET(addDays(sortedWd[sortedWd.length - 1], 1));
                   if (projTargetDate >= weekStart && projTargetDate < weekEnd) return true;
                   if (proj.startDate) {
                     const projStartDate = startOfDayET(new Date(proj.startDate));
@@ -27382,8 +27383,9 @@ export default function Dashboard() {
                   </div>
                   {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: course.bg, borderBottom: `1.5px dotted ${courseData.color}dd` }} />}
                   {(() => {
-                    const cwWeekStart = startOfDayET(weekDays[0]);
-                    const cwWeekEnd = startOfDayET(addDays(weekDays[5], 1));
+                    const sortedWeekDays = [...weekDays].sort((a, b) => a.getTime() - b.getTime());
+                    const cwWeekStart = startOfDayET(sortedWeekDays[0]);
+                    const cwWeekEnd = startOfDayET(addDays(sortedWeekDays[sortedWeekDays.length - 1], 1));
                     const courseCodeUpper = course.name.split(' - ')[0]?.trim().toUpperCase() || '';
                     const courseWeekTasks = (allTasks?.filter(task => {
                       if (!courseCodeUpper || !task.courseName?.toUpperCase().startsWith(courseCodeUpper)) return false;
@@ -28015,6 +28017,9 @@ export default function Dashboard() {
                 const renderedCourseCount = courseRowRects.length;
                 const missingRows = Math.max(0, expectedCourseCount - renderedCourseCount);
                 const courseRowH = 3 * 20 + 2 * 2 + 4;
+                const otherSortedWd = [...weekDays].sort((a, b) => a.getTime() - b.getTime());
+                const otherWkStart = startOfDayET(otherSortedWd[0]);
+                const otherWkEnd = startOfDayET(addDays(otherSortedWd[otherSortedWd.length - 1], 1));
                 const otherTasks = allTasks?.filter(task => {
                   if (task.type !== 'other' && task.type !== 'meeting' && task.type !== 'reminder') return false;
                   if (task.type === 'meeting' && task.courseName) return false;
@@ -28029,12 +28034,10 @@ export default function Dashboard() {
                   if (task.isCompleted) return false;
                   if (task.hideFromSummary) return false;
                   const taskDueDate = startOfDayET(new Date(task.dueDate));
-                  const weekStart = startOfDayET(weekDays[0]);
-                  const weekEnd = startOfDayET(addDays(weekDays[6], 1));
-                  if (taskDueDate >= weekStart && taskDueDate < weekEnd) return true;
+                  if (taskDueDate >= otherWkStart && taskDueDate < otherWkEnd) return true;
                   if (task.startDate) {
                     const taskStartDate = startOfDayET(new Date(task.startDate));
-                    if (taskStartDate < weekEnd && taskDueDate > weekStart) return true;
+                    if (taskStartDate < otherWkEnd && taskDueDate > otherWkStart) return true;
                   }
                   return false;
                 }) || [];
@@ -28044,12 +28047,10 @@ export default function Dashboard() {
                   const hasCourseMatch = proj.courseName && activeCourseNames.includes(proj.courseName.split(' - ')[0]?.toUpperCase());
                   if (hasCourseMatch) return false;
                   const projTargetDate = startOfDayET(new Date(proj.targetDate));
-                  const weekStart = startOfDayET(weekDays[0]);
-                  const weekEnd = startOfDayET(addDays(weekDays[6], 1));
-                  if (projTargetDate >= weekStart && projTargetDate < weekEnd) return true;
+                  if (projTargetDate >= otherWkStart && projTargetDate < otherWkEnd) return true;
                   if (proj.startDate) {
                     const projStartDate = startOfDayET(new Date(proj.startDate));
-                    if (projStartDate < weekEnd && projTargetDate > weekStart) return true;
+                    if (projStartDate < otherWkEnd && projTargetDate > otherWkStart) return true;
                   }
                   return false;
                 });
@@ -30960,8 +30961,9 @@ export default function Dashboard() {
             const otherBottom = savedBottom || fallbackBottom;
             const expandedTop = 45;
             const expandedHeight = otherBottom - expandedTop;
-            const weekStart = weekDays.length > 0 ? startOfDayET(weekDays[0]) : null;
-            const weekEnd = weekDays.length > 6 ? startOfDayET(addDays(weekDays[6], 1)) : null;
+            const sortedWdOther = weekDays.length > 0 ? [...weekDays].sort((a, b) => a.getTime() - b.getTime()) : [];
+            const weekStart = sortedWdOther.length > 0 ? startOfDayET(sortedWdOther[0]) : null;
+            const weekEnd = sortedWdOther.length > 0 ? startOfDayET(addDays(sortedWdOther[sortedWdOther.length - 1], 1)) : null;
             const otherProgressTasks = (allTasks || []).filter(t => {
               if (t.isCompleted) return false;
               if (t.hideFromSummary) return false;
