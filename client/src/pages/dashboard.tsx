@@ -28241,87 +28241,60 @@ export default function Dashboard() {
               if (!overlayEl) return;
               const barsData = countdownBarsDataRef.current;
               if (barsData.length === 0) return;
+              const target = e.target as HTMLElement;
+              if (target.closest('[data-testid^="time-task-"], [data-testid^="gcal-event-"]')) {
+                const tip = document.getElementById('cbar-tooltip');
+                if (tip) tip.remove();
+                activeBarIdxRef.current = -1;
+                return;
+              }
               const overlayRect = overlayEl.getBoundingClientRect();
               const barGap = 18;
               const relY = e.clientY - overlayRect.top;
               const barIdx = Math.floor(relY / barGap);
-              const target = e.target as HTMLElement;
-              const isOverTask = !!target.closest('[data-testid^="time-task-"], [data-testid^="gcal-event-"]');
-              if (barIdx >= 0 && barIdx < barsData.length && relY >= 0) {
-                console.log('[CBAR] bar', barIdx, 'isOverTask=', isOverTask, 'target=', target.tagName + '.' + target.className?.toString().slice(0,30));
-              }
-              if (isOverTask) {
-                if (activeBarIdxRef.current >= 0) {
-                  overlayEl.removeAttribute('data-cbar-active');
-                  overlayEl.querySelectorAll('.countdown-bar-wrapper[data-cbar-highlight]').forEach(el => el.removeAttribute('data-cbar-highlight'));
-                  const bg = document.getElementById('cbar-hover-bg-portal'); if (bg) bg.remove();
-                  activeBarIdxRef.current = -1;
-                }
-                return;
-              }
               if (barIdx < 0 || barIdx >= barsData.length || relY < 0) {
-                if (activeBarIdxRef.current >= 0) {
-                  overlayEl.removeAttribute('data-cbar-active');
-                  overlayEl.querySelectorAll('.countdown-bar-wrapper[data-cbar-highlight]').forEach(el => el.removeAttribute('data-cbar-highlight'));
-                  const bg = document.getElementById('cbar-hover-bg-portal'); if (bg) bg.remove();
-                  activeBarIdxRef.current = -1;
-                }
+                const tip = document.getElementById('cbar-tooltip');
+                if (tip) tip.remove();
+                activeBarIdxRef.current = -1;
                 return;
               }
               const wrapper = overlayEl.querySelector(`.countdown-bar-wrapper[data-bar-idx="${barIdx}"]`) as HTMLElement;
               if (!wrapper) return;
               const wrapperRect = wrapper.getBoundingClientRect();
               if (e.clientX < wrapperRect.left || e.clientX > wrapperRect.right) {
-                if (activeBarIdxRef.current >= 0) {
-                  overlayEl.removeAttribute('data-cbar-active');
-                  overlayEl.querySelectorAll('.countdown-bar-wrapper[data-cbar-highlight]').forEach(el => el.removeAttribute('data-cbar-highlight'));
-                  const bg = document.getElementById('cbar-hover-bg-portal'); if (bg) bg.remove();
-                  activeBarIdxRef.current = -1;
-                }
+                const tip = document.getElementById('cbar-tooltip');
+                if (tip) tip.remove();
+                activeBarIdxRef.current = -1;
                 return;
               }
-              if (barIdx === activeBarIdxRef.current) return;
-              overlayEl.querySelectorAll('.countdown-bar-wrapper[data-cbar-highlight]').forEach(el => el.removeAttribute('data-cbar-highlight'));
-              const oldBg = document.getElementById('cbar-hover-bg-portal'); if (oldBg) oldBg.remove();
+              const bd = barsData[barIdx];
+              if (!bd) return;
+              let tip = document.getElementById('cbar-tooltip');
+              if (!tip) {
+                tip = document.createElement('div');
+                tip.id = 'cbar-tooltip';
+                Object.assign(tip.style, {
+                  position: 'fixed', zIndex: '99999', pointerEvents: 'none',
+                  background: 'rgba(255,255,255,0.97)', color: '#1a1a1a',
+                  border: '1px solid rgba(0,0,0,0.15)', borderRadius: '6px',
+                  padding: '6px 10px', fontSize: '11px', fontWeight: '600',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.18)', whiteSpace: 'nowrap',
+                  lineHeight: '1.3', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis'
+                });
+                document.body.appendChild(tip);
+              }
+              const label = (bd.title || '').replace(/\[[^\]]*\]\s*/g, '').trim();
+              const dColor = bd.daysLeft <= 1 ? '#ef4444' : bd.daysLeft === 2 ? '#f97316' : bd.daysLeft <= 4 ? '#f59e0b' : '#22c55e';
+              tip.innerHTML = `<span style="color:${dColor};font-weight:700">${bd.daysLeft}d</span> &nbsp;${label}`;
+              const tipX = Math.min(e.clientX + 12, window.innerWidth - 300);
+              const tipY = e.clientY - 30;
+              tip.style.left = `${tipX}px`;
+              tip.style.top = `${tipY}px`;
               activeBarIdxRef.current = barIdx;
-              overlayEl.setAttribute('data-cbar-active', String(barIdx));
-              wrapper.setAttribute('data-cbar-highlight', '');
-              console.log('[CBAR] ACTIVATED bar', barIdx, 'overlay has data-cbar-active=', overlayEl.getAttribute('data-cbar-active'), 'wrapper has highlight=', wrapper.hasAttribute('data-cbar-highlight'), 'overlayZIndex computed=', getComputedStyle(overlayEl).zIndex);
-              const barRect = wrapper.getBoundingClientRect();
-              const midY = barRect.top + barRect.height / 2;
-              const allTaskEls = document.querySelectorAll('[data-testid^="time-task-"], [data-testid^="gcal-event-"]');
-              let taskEl: Element | null = null;
-              let bestDist = Infinity;
-              for (const el of allTaskEls) {
-                const r = el.getBoundingClientRect();
-                if (r.height === 0) continue;
-                if (midY >= r.top - 2 && midY <= r.bottom + 2) {
-                  const dist = Math.abs(midY - (r.top + r.height / 2));
-                  if (dist < bestDist) { bestDist = dist; taskEl = el; }
-                }
-              }
-              if (taskEl) {
-                const contentDiv = overlayEl.closest('[data-calendar-content]') as HTMLElement;
-                if (contentDiv) {
-                  const bg = document.createElement('div');
-                  bg.id = 'cbar-hover-bg-portal';
-                  const contentRect = contentDiv.getBoundingClientRect();
-                  const taskRect = taskEl.getBoundingClientRect();
-                  const scrollTop = contentDiv.parentElement?.scrollTop || 0;
-                  Object.assign(bg.style, { position: 'absolute', background: 'rgba(255,255,255,0.97)', borderRadius: '3px', boxShadow: '0 1px 4px rgba(0,0,0,0.12)', zIndex: '99', pointerEvents: 'none', left: `${taskRect.left - contentRect.left}px`, top: `${taskRect.top - contentRect.top + scrollTop}px`, width: `${taskRect.width}px`, height: `${taskRect.height}px` });
-                  contentDiv.appendChild(bg);
-                }
-              }
             }} onMouseLeave={() => {
-              if (activeBarIdxRef.current >= 0) {
-                const overlayEl = countdownOverlayRef.current;
-                if (overlayEl) {
-                  overlayEl.removeAttribute('data-cbar-active');
-                  overlayEl.querySelectorAll('.countdown-bar-wrapper[data-cbar-highlight]').forEach(el => el.removeAttribute('data-cbar-highlight'));
-                }
-                const bg = document.getElementById('cbar-hover-bg-portal'); if (bg) bg.remove();
-                activeBarIdxRef.current = -1;
-              }
+              const tip = document.getElementById('cbar-tooltip');
+              if (tip) tip.remove();
+              activeBarIdxRef.current = -1;
             }}>
 
               <div data-calendar-content style={{ backgroundColor: '#faf8f5', borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px', position: 'relative', paddingBottom: '0px' }}>

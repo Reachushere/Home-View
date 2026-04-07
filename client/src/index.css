@@ -2582,20 +2582,6 @@ input[type="date"]::-webkit-datetime-edit-year-field {
   z-index: 46 !important;
 }
 
-[data-cbar-active] {
-  z-index: 200 !important;
-}
-
-[data-cbar-active] .countdown-bar-wrapper {
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
-[data-cbar-active] .countdown-bar-wrapper[data-cbar-highlight] {
-  opacity: 1 !important;
-  pointer-events: auto !important;
-  z-index: 300 !important;
-}
 
 
 .side-tab-hover-left:hover {
