@@ -1145,7 +1145,7 @@ export default function FilesPage() {
   const oneDriveBasePath = "/School/1. TMU/Courses/2026/Winter";
 
   const getBreadcrumb = () => {
-    if (!selectedFolder) return [oneDriveBasePath];
+    if (!selectedFolder) return ["Courses / Winter 2026"];
     
     if (selectedFolder.startsWith("custom-")) {
       const customId = parseInt(selectedFolder.replace("custom-", ""));
