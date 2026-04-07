@@ -329,58 +329,12 @@ export async function textToSpeech(
   format: "wav" | "mp3" | "flac" | "opus" | "pcm16" = "wav",
   slowPace: boolean = false
 ): Promise<Buffer> {
-  const hasReplitKey = !!process.env.AI_INTEGRATIONS_OPENAI_API_KEY;
-  const hasReplitBaseUrl = !!process.env.AI_INTEGRATIONS_OPENAI_BASE_URL;
-  const hasReplitIntegration = hasReplitKey && hasReplitBaseUrl;
-
-  if (!hasReplitIntegration || useEdgeTTSFallback) {
-    if (!hasReplitIntegration) {
-      console.log(`[TTS] No Replit AI integration — using Edge TTS (free, no charges)`);
-    }
-    try {
-      return await edgeTTSGenerate(text, voice);
-    } catch (edgeErr: any) {
-      console.warn(`[TTS] Edge TTS failed (${edgeTTSConsecutiveFailures} consecutive): ${edgeErr.message} — falling back to local TTS`);
-      return localTTSGenerate(text);
-    }
-  }
-
+  console.log(`[TTS] Using Edge TTS (free, no charges)`);
   try {
-    const systemContent = slowPace
-      ? "You are an assistant that performs text-to-speech. Speak at a slow, measured pace — slightly slower than normal conversational speed. Enunciate clearly."
-      : "You are an assistant that performs text-to-speech. Read the text naturally and clearly.";
-    const response = await openai.chat.completions.create({
-      model: "gpt-audio",
-      modalities: ["text", "audio"],
-      audio: { voice, format },
-      messages: [
-        { role: "system", content: systemContent },
-        { role: "user", content: `Repeat the following text verbatim: ${text}` },
-      ],
-    });
-    const audioData = (response.choices[0]?.message as any)?.audio?.data ?? "";
-    return Buffer.from(audioData, "base64");
-  } catch (err: any) {
-    if (err?.status === 429 || err?.code === 'RATELIMIT_EXCEEDED') {
-      const resetHeader = err?.headers?.get?.('x-ratelimit-reset') || err?.headers?.['x-ratelimit-reset'];
-      let resetMs = resetHeader ? parseInt(String(resetHeader)) : Date.now() + 60 * 60 * 1000;
-      if (resetMs < 1e12) resetMs = resetMs * 1000;
-      const MAX_RATE_LIMIT_DURATION = 24 * 60 * 60 * 1000;
-      if (resetMs > Date.now() + MAX_RATE_LIMIT_DURATION) {
-        console.log(`[TTS] Rate limit reset ${new Date(resetMs).toISOString()} is suspiciously far — capping to 1 hour`);
-        resetMs = Date.now() + 60 * 60 * 1000;
-      }
-      console.log(`[TTS] Rate limited — switching to Edge TTS until ${new Date(resetMs).toISOString()}`);
-      useEdgeTTSFallback = true;
-      rateLimitResetTime = resetMs;
-      await saveRateLimitReset(resetMs);
-    }
-    try {
-      return await edgeTTSGenerate(text, voice);
-    } catch (edgeErr: any) {
-      console.warn(`[TTS] Edge TTS also failed: ${edgeErr.message} — falling back to local TTS`);
-      return localTTSGenerate(text);
-    }
+    return await edgeTTSGenerate(text, voice);
+  } catch (edgeErr: any) {
+    console.warn(`[TTS] Edge TTS failed: ${edgeErr.message} — falling back to local TTS`);
+    return localTTSGenerate(text);
   }
 }
 
