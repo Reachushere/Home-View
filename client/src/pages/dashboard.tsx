@@ -24065,7 +24065,7 @@ export default function Dashboard() {
                           const isCurrentSem = sem.key === currentSemKey;
                           const colMap: Record<string, number> = { 'ss2025': 2, 'f2025': 3 };
                           return (
-                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'transparent', borderColor: isCurrentSem ? '#ffffff' : 'rgba(255,255,255,0.45)', borderWidth: isCurrentSem ? '3px' : '1px', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), minHeight: `${28 + 12 + 3 * 40}px`, alignSelf: 'stretch' }}
+                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'transparent', borderColor: isCurrentSem ? '#1e90ff' : 'rgba(255,255,255,0.45)', borderWidth: isCurrentSem ? '3px' : '1px', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), minHeight: `${28 + 12 + 3 * 40}px`, alignSelf: 'stretch' }}
                               onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; e.currentTarget.style.boxShadow = '0 0 8px rgba(255,255,255,0.5)'; }}
                               onDragLeave={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
                               onDrop={(e) => {
@@ -24101,7 +24101,7 @@ export default function Dashboard() {
                                 const semHasStarted = semDef ? new Date() >= new Date(semDef.start) : false;
                                 const allCoursesAdded = semDef ? semDef.codes.every(c => allAssignmentsAddedMap[c] || allAssignmentsAddedMap[c.toUpperCase()]) : true;
                                 const needsRedBorder = isCurrentSem && semHasStarted && !allCoursesAdded;
-                                const borderCol = isCurrentSem ? (needsRedBorder ? '#ef4444' : '#ffffff') : isPast || isEnded ? 'rgba(150,150,150,0.5)' : 'rgba(255,255,255,0.3)';
+                                const borderCol = isCurrentSem ? (needsRedBorder ? '#ef4444' : '#1e90ff') : isPast || isEnded ? 'rgba(150,150,150,0.5)' : 'rgba(255,255,255,0.3)';
                                 const semGradients: Record<string, string> = {
                                   'w2026': 'linear-gradient(180deg, rgba(30,60,120,0.55) 0%, rgba(15,30,60,0.35) 100%)',
                                   'ss2026': 'linear-gradient(180deg, rgba(120,80,30,0.55) 0%, rgba(60,40,15,0.35) 100%)',
@@ -24117,7 +24117,7 @@ export default function Dashboard() {
                                   'f2025': 'linear-gradient(180deg, rgba(100,50,80,0.55) 0%, rgba(50,25,40,0.35) 100%)',
                                 };
                                 const bgCol = isCurrentSem ? 'rgba(10,15,30,0.85)' : isPast || isEnded ? 'rgba(160,160,160,0.35)' : (semGradients[sem.key] || 'transparent');
-                                const shadow = isCurrentSem ? (needsRedBorder ? { boxShadow: '0 0 6px rgba(239,68,68,0.6), 0 0 12px rgba(239,68,68,0.4), 0 0 18px rgba(239,68,68,0.3)' } : { boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)' }) : {};
+                                const shadow = isCurrentSem ? (needsRedBorder ? { boxShadow: '0 0 6px rgba(239,68,68,0.6), 0 0 12px rgba(239,68,68,0.4), 0 0 18px rgba(239,68,68,0.3)' } : { boxShadow: '0 0 6px rgba(30,144,255,0.5), 0 0 12px rgba(30,144,255,0.3), 0 0 18px rgba(30,144,255,0.2)' }) : {};
                                 return { background: bgCol, borderColor: borderCol, ...shadow, position: 'relative' as const, borderWidth: isCurrentSem ? '2px' : undefined };
                               })()}>
                                 <div className="px-2 py-1.5 flex items-center justify-between">
