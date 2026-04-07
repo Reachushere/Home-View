@@ -1,0 +1,309 @@
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs --lines 100 --nostream
+[TAILING] Tailing last 100 lines for [all] processes (change the value with --lines option)
+/home/byhomeyyz/.pm2/pm2.log last 100 lines:
+PM2        | 2026-04-07T11:15:08: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:08: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:12: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:12: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:12: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:15: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:15: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:15: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:19: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:19: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:19: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:23: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:23: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:23: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:27: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:27: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:27: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:31: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:31: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:31: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:35: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:35: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:35: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:38: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:38: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:38: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:42: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:42: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:42: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:44: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T11:15:44: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:44: PM2 log: pid=634571 msg=process killed
+PM2        | 2026-04-07T11:17:07: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:17:07: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:28:36: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T11:28:36: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T11:28:36: PM2 log: pid=634801 msg=process killed
+PM2        | 2026-04-07T11:30:29: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:30:29: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:51:41: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T11:51:42: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-07T11:51:42: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-07T11:51:42: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-07T11:51:42: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-07T11:51:42: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-07T11:51:42: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-07T11:51:42: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-07T11:51:42: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-07T11:51:42: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-07T11:51:42: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-07T11:51:43: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-07T11:51:43: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-07T11:51:43: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-07T11:51:43: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-07T11:51:43: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-07T11:51:43: PM2 log: Process with pid 635816 still alive after 1600ms, sending it SIGKILL now...
+PM2        | 2026-04-07T11:51:43: PM2 log: App [unical:0] exited with code [0] via signal [SIGKILL]
+PM2        | 2026-04-07T11:51:43: PM2 log: pid=635816 msg=process killed
+PM2        | 2026-04-07T11:51:43: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:51:43: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T12:07:45: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T12:07:45: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T12:07:45: PM2 log: pid=636211 msg=process killed
+PM2        | 2026-04-07T12:07:45: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T12:07:45: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T12:27:34: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T12:27:34: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T12:27:34: PM2 log: pid=636572 msg=process killed
+PM2        | 2026-04-07T12:27:34: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T12:27:34: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T12:39:33: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T12:39:33: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T12:39:33: PM2 log: pid=637572 msg=process killed
+PM2        | 2026-04-07T12:39:33: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T12:39:33: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T12:55:10: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T12:55:11: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T12:55:11: PM2 log: pid=637881 msg=process killed
+PM2        | 2026-04-07T12:55:11: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T12:55:11: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T13:01:31: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T13:01:32: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T13:01:32: PM2 log: pid=638255 msg=process killed
+PM2        | 2026-04-07T13:01:32: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T13:01:32: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T13:13:34: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T13:13:34: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T13:13:34: PM2 log: pid=638459 msg=process killed
+PM2        | 2026-04-07T13:13:34: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T13:13:34: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T13:34:37: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T13:34:37: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T13:34:38: PM2 log: pid=638739 msg=process killed
+PM2        | 2026-04-07T13:34:38: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T13:34:38: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T13:39:16: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T13:39:16: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T13:39:16: PM2 log: pid=639102 msg=process killed
+PM2        | 2026-04-07T13:39:16: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T13:39:16: PM2 log: App [unical:0] online
+
+/home/byhomeyyz/.pm2/logs/unical-error.log last 100 lines:
+0|unical   |             "url": "https://console.developers.google.com/apis/api/gmail.googleapis.com/overview?project=690968796215"
+0|unical   |           }
+0|unical   |         ]
+0|unical   |       }
+0|unical   |     ]
+0|unical   |   }
+0|unical   | }
+0|unical   |
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+
+/home/byhomeyyz/.pm2/logs/unical-out.log last 100 lines:
+0|unical   | [AudioPrep] Generating chunk 19/42 for 26929898.pdf (1421 chars)
+0|unical   | Generating Edge TTS for 1421 chars, file: prep-215-chunk-18
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 788ms, 548928 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-18-1775583804832.mp3
+0|unical   | [AudioPrep] Generating chunk 20/42 for 26929898.pdf (1434 chars)
+0|unical   | Generating Edge TTS for 1434 chars, file: prep-215-chunk-19
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 1094ms, 579168 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-19-1775583806733.mp3
+0|unical   | [AudioPrep] Generating chunk 21/42 for 26929898.pdf (1466 chars)
+0|unical   | Generating Edge TTS for 1466 chars, file: prep-215-chunk-20
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 860ms, 578592 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-20-1775583808399.mp3
+0|unical   | [AudioPrep] Generating chunk 22/42 for 26929898.pdf (1363 chars)
+0|unical   | Generating Edge TTS for 1363 chars, file: prep-215-chunk-21
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 966ms, 518112 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-21-1775583810171.mp3
+0|unical   | [AudioPrep] Generating chunk 23/42 for 26929898.pdf (1259 chars)
+0|unical   | Generating Edge TTS for 1259 chars, file: prep-215-chunk-22
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 751ms, 487152 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-22-1775583811729.mp3
+0|unical   | [AudioPrep] Generating chunk 24/42 for 26929898.pdf (1372 chars)
+0|unical   | Generating Edge TTS for 1241 chars, file: prep-215-chunk-23
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 1016ms, 469440 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-23-1775583813551.mp3
+0|unical   | [AudioPrep] Generating chunk 25/42 for 26929898.pdf (1482 chars)
+0|unical   | Generating Edge TTS for 1482 chars, file: prep-215-chunk-24
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 856ms, 576000 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-24-1775583815213.mp3
+0|unical   | [AudioPrep] Generating chunk 26/42 for 26929898.pdf (1380 chars)
+0|unical   | Generating Edge TTS for 1380 chars, file: prep-215-chunk-25
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 948ms, 523296 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-25-1775583816967.mp3
+0|unical   | [AudioPrep] Generating chunk 27/42 for 26929898.pdf (1385 chars)
+0|unical   | Generating Edge TTS for 1385 chars, file: prep-215-chunk-26
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 851ms, 532656 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-26-1775583818624.mp3
+0|unical   | [AudioPrep] Generating chunk 28/42 for 26929898.pdf (1377 chars)
+0|unical   | Generating Edge TTS for 1377 chars, file: prep-215-chunk-27
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 1050ms, 511056 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-27-1775583820480.mp3
+0|unical   | [AudioPrep] Generating chunk 29/42 for 26929898.pdf (1495 chars)
+0|unical   | Generating Edge TTS for 1495 chars, file: prep-215-chunk-28
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 1625ms, 897120 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-28-1775583822911.mp3
+0|unical   | [AudioPrep] Generating chunk 30/42 for 26929898.pdf (1500 chars)
+0|unical   | Generating Edge TTS for 1500 chars, file: prep-215-chunk-29
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 1281ms, 892512 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-29-1775583824998.mp3
+0|unical   | [AudioPrep] Generating chunk 31/42 for 26929898.pdf (1497 chars)
+0|unical   | Generating Edge TTS for 1497 chars, file: prep-215-chunk-30
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 1179ms, 803232 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-30-1775583826984.mp3
+0|unical   | [AudioPrep] Generating chunk 32/42 for 26929898.pdf (1356 chars)
+0|unical   | Generating Edge TTS for 1356 chars, file: prep-215-chunk-31
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 1161ms, 677520 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-31-1775583828951.mp3
+0|unical   | [AudioPrep] Generating chunk 33/42 for 26929898.pdf (1477 chars)
+0|unical   | Generating Edge TTS for 1409 chars, file: prep-215-chunk-32
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 3187ms, 821376 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-32-1775583832943.mp3
+0|unical   | [AudioPrep] Generating chunk 34/42 for 26929898.pdf (1433 chars)
+0|unical   | Generating Edge TTS for 1367 chars, file: prep-215-chunk-33
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 975ms, 697104 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-33-1775583834725.mp3
+0|unical   | [AudioPrep] Generating chunk 35/42 for 26929898.pdf (1499 chars)
+0|unical   | Generating Edge TTS for 1499 chars, file: prep-215-chunk-34
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 1683ms, 641664 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-34-1775583837215.mp3
+0|unical   | [AudioPrep] Generating chunk 36/42 for 26929898.pdf (1485 chars)
+0|unical   | Generating Edge TTS for 1417 chars, file: prep-215-chunk-35
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 1188ms, 821808 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-35-1775583839209.mp3
+0|unical   | [AudioPrep] Generating chunk 37/42 for 26929898.pdf (1456 chars)
+0|unical   | Generating Edge TTS for 1456 chars, file: prep-215-chunk-36
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 1271ms, 633600 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-36-1775583841287.mp3
+0|unical   | [AudioPrep] Generating chunk 38/42 for 26929898.pdf (1481 chars)
+0|unical   | Generating Edge TTS for 1415 chars, file: prep-215-chunk-37
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 1261ms, 742320 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-37-1775583843354.mp3
+
+byhomeyyz@raspberrypi:~/Home-View $
