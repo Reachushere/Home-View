@@ -3894,6 +3894,141 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
+  app.post("/api/tasks/generate-weekly-deadlines", async (req, res) => {
+    try {
+      const { courseCode, courseName, moduleDueDay, moduleDueTime, discussionEnabled, discussionDueDay, discussionDueTime } = req.body;
+      if (!courseCode || !moduleDueDay) {
+        return res.status(400).json({ error: "courseCode and moduleDueDay are required" });
+      }
+
+      const activeSemester = await storage.getActiveSemesterSettings();
+      if (!activeSemester?.semesterStartDate) {
+        return res.status(400).json({ error: "No active semester found" });
+      }
+      const semesterStart = new Date(activeSemester.semesterStartDate);
+      const readingWeekStart = activeSemester.readingWeekStart ? new Date(activeSemester.readingWeekStart) : null;
+
+      const dayMap: Record<string, number> = { 'Saturday': 0, 'Sunday': 1, 'Monday': 2, 'Tuesday': 3, 'Wednesday': 4, 'Thursday': 5, 'Friday': 6 };
+
+      const allTasks = await storage.getTasks({});
+      let created = 0;
+      let skipped = 0;
+
+      for (let weekNum = FIRST_WEEK; weekNum <= LAST_WEEK; weekNum++) {
+        const weekDates = getWeekDates(weekNum, semesterStart, readingWeekStart);
+        const weekStart = new Date(weekDates.start);
+
+        const moduleDayOffset = dayMap[moduleDueDay] ?? 6;
+        const timeParts = (moduleDueTime || '23:59').split(':');
+        const modHour = parseInt(timeParts[0] || '23', 10);
+        const modMin = parseInt(timeParts[1] || '59', 10);
+        const moduleDueDate = new Date(weekStart);
+        moduleDueDate.setDate(moduleDueDate.getDate() + moduleDayOffset);
+        moduleDueDate.setHours(modHour, modMin, 0, 0);
+
+        const existingModule = allTasks.find(t => {
+          const tCode = (t.courseName || '').split(' - ')[0]?.replace(/\s/g, '').toUpperCase();
+          return tCode === courseCode.toUpperCase() && t.weekNumber === weekNum && t.type === 'module';
+        });
+
+        if (!existingModule) {
+          await storage.createTask({
+            title: `Week ${weekNum} Module`,
+            description: '',
+            type: 'module',
+            courseName: courseName || courseCode,
+            weekNumber: weekNum,
+            dueDate: moduleDueDate,
+            priority: 'medium',
+            isCompleted: false,
+            isMissed: false,
+            reminder1: 120,
+            reminder2: 1440,
+            repeatType: 'none',
+            sortOrder: 0,
+            isAcknowledged: false,
+            excludeFromGpa: true,
+            flagged: false,
+            reminderEmail: false,
+            reminderAlexa: false,
+            reminderSms: false,
+            showCountdownBar: false,
+            showCountdownBarMain: false,
+            showCountdownBarSummary: false,
+            countdownBarDays: 0,
+            repeatSpanDays: 1,
+            shiftAdjust: false,
+            taskStatus: 'not_started',
+            hideFromSummary: false,
+            hideFromTimeline: false,
+            hideFromCountdown: false,
+          });
+          created++;
+        } else {
+          skipped++;
+        }
+
+        if (discussionEnabled && discussionDueDay) {
+          const discDayOffset = dayMap[discussionDueDay] ?? 4;
+          const discTimeParts = (discussionDueTime || '23:59').split(':');
+          const discHour = parseInt(discTimeParts[0] || '23', 10);
+          const discMin = parseInt(discTimeParts[1] || '59', 10);
+          const discDueDate = new Date(weekStart);
+          discDueDate.setDate(discDueDate.getDate() + discDayOffset);
+          discDueDate.setHours(discHour, discMin, 0, 0);
+
+          const existingDisc = allTasks.find(t => {
+            const tCode = (t.courseName || '').split(' - ')[0]?.replace(/\s/g, '').toUpperCase();
+            return tCode === courseCode.toUpperCase() && t.weekNumber === weekNum && t.type === 'discussion';
+          });
+
+          if (!existingDisc) {
+            await storage.createTask({
+              title: `Week ${weekNum} Discussion Post`,
+              description: '',
+              type: 'discussion',
+              courseName: courseName || courseCode,
+              weekNumber: weekNum,
+              dueDate: discDueDate,
+              priority: 'medium',
+              isCompleted: false,
+              isMissed: false,
+              reminder1: 120,
+              reminder2: 1440,
+              repeatType: 'none',
+              sortOrder: 0,
+              isAcknowledged: false,
+              excludeFromGpa: true,
+              flagged: false,
+              reminderEmail: false,
+              reminderAlexa: false,
+              reminderSms: false,
+              showCountdownBar: false,
+              showCountdownBarMain: false,
+              showCountdownBarSummary: false,
+              countdownBarDays: 0,
+              repeatSpanDays: 1,
+              shiftAdjust: false,
+              taskStatus: 'not_started',
+              hideFromSummary: false,
+              hideFromTimeline: false,
+              hideFromCountdown: false,
+            });
+            created++;
+          } else {
+            skipped++;
+          }
+        }
+      }
+
+      console.log(`[WeeklyDeadlines] Generated ${created} tasks for ${courseCode} (${skipped} skipped)`);
+      res.json({ success: true, created, skipped });
+    } catch (error: any) {
+      console.error("[WeeklyDeadlines] Error:", error);
+      res.status(500).json({ error: error.message || "Failed to generate deadlines" });
+    }
+  });
+
   // POST /api/tasks/auto-create-file-tasks - Auto-create tasks for module/reading files without corresponding tasks
   app.post("/api/tasks/auto-create-file-tasks", async (req, res) => {
     try {

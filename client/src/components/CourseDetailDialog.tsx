@@ -333,6 +333,24 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
   const [showWeekMappings, setShowWeekMappings] = useState(false);
   const [showAssignments, setShowAssignments] = useState(!initialEditMode);
   const [showModules, setShowModules] = useState(true);
+
+  const courseCodeClean = courseInfo.courseCode?.replace(/\s/g, '').toUpperCase() || '';
+  const [moduleDueDay, setModuleDueDay] = useState<string>(() => {
+    try { return localStorage.getItem(`moduleDeadline_${courseCodeClean}_day`) || ''; } catch { return ''; }
+  });
+  const [moduleDueTime, setModuleDueTime] = useState<string>(() => {
+    try { return localStorage.getItem(`moduleDeadline_${courseCodeClean}_time`) || '23:59'; } catch { return '23:59'; }
+  });
+  const [discussionEnabled, setDiscussionEnabled] = useState<boolean>(() => {
+    try { return localStorage.getItem(`discussionEnabled_${courseCodeClean}`) === 'true'; } catch { return false; }
+  });
+  const [discussionDueDay, setDiscussionDueDay] = useState<string>(() => {
+    try { return localStorage.getItem(`discussionDeadline_${courseCodeClean}_day`) || ''; } catch { return ''; }
+  });
+  const [discussionDueTime, setDiscussionDueTime] = useState<string>(() => {
+    try { return localStorage.getItem(`discussionDeadline_${courseCodeClean}_time`) || '23:59'; } catch { return '23:59'; }
+  });
+  const [generatingDeadlines, setGeneratingDeadlines] = useState(false);
   const weekMappingsRef = useRef<HTMLDivElement>(null);
   const assignmentsRef = useRef<HTMLDivElement>(null);
   const modulesRef = useRef<HTMLDivElement>(null);
@@ -408,6 +426,45 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
     };
     input.click();
   }, [courseInfo.courseCode, courseInfo.courseName, courseInfo.fullName, semesterStart, readingWeekStart, toast]);
+
+  const saveModuleDeadlineSettings = useCallback((field: string, value: string) => {
+    const key = `${field}_${courseCodeClean}`;
+    localStorage.setItem(key, value);
+  }, [courseCodeClean]);
+
+  const generateWeeklyDeadlines = useCallback(async () => {
+    if (!moduleDueDay) {
+      toast({ title: 'Select a module due day first', variant: 'destructive' });
+      return;
+    }
+    setGeneratingDeadlines(true);
+    try {
+      const resp = await fetch('/api/tasks/generate-weekly-deadlines', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          courseCode: courseCodeClean,
+          courseName: courseInfo.fullName || courseInfo.courseName || '',
+          moduleDueDay,
+          moduleDueTime,
+          discussionEnabled,
+          discussionDueDay: discussionEnabled ? discussionDueDay : null,
+          discussionDueTime: discussionEnabled ? discussionDueTime : null,
+        }),
+      });
+      const result = await resp.json();
+      if (resp.ok) {
+        toast({ title: 'Deadlines generated', description: `Created ${result.created} tasks (${result.skipped} already existed)` });
+      } else {
+        toast({ title: 'Error', description: result.error || 'Failed to generate deadlines', variant: 'destructive' });
+      }
+    } catch (err: any) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setGeneratingDeadlines(false);
+    }
+  }, [courseCodeClean, courseInfo.fullName, courseInfo.courseName, moduleDueDay, moduleDueTime, discussionEnabled, discussionDueDay, discussionDueTime, toast]);
+
   const { uploadFile, isUploading } = useUpload();
   const [editInfo, setEditInfo] = useState({
     courseCode: courseInfo.courseCode || '',
@@ -2959,6 +3016,91 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             </div>
 
             {showWeekMappings && (<>
+              <div className="mt-2 bg-white/5 border border-white/15 rounded-lg p-3 space-y-2" data-testid="module-deadline-settings">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <Clock className="h-3 w-3 text-white/60" />
+                  <span className="text-[10px] font-medium text-white uppercase">Weekly Deadlines</span>
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[10px] text-white/70 w-[80px]">Module due:</span>
+                  <select
+                    value={moduleDueDay}
+                    onChange={(e) => { setModuleDueDay(e.target.value); saveModuleDeadlineSettings('moduleDeadline_day', e.target.value); }}
+                    className="h-6 text-[10px] bg-white/10 border border-white/20 rounded px-1.5 text-white cursor-pointer"
+                    data-testid="select-module-due-day"
+                  >
+                    <option value="">Select day...</option>
+                    <option value="Saturday">Saturday</option>
+                    <option value="Sunday">Sunday</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                  </select>
+                  <span className="text-[10px] text-white/50">at</span>
+                  <input
+                    type="time"
+                    value={moduleDueTime}
+                    onChange={(e) => { setModuleDueTime(e.target.value); saveModuleDeadlineSettings('moduleDeadline_time', e.target.value); }}
+                    className="h-6 text-[10px] bg-white/10 border border-white/20 rounded px-1.5 text-white cursor-pointer"
+                    data-testid="input-module-due-time"
+                  />
+                </div>
+                <div className="flex items-center gap-2 mt-1">
+                  <label className="flex items-center gap-1.5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={discussionEnabled}
+                      onChange={(e) => { setDiscussionEnabled(e.target.checked); saveModuleDeadlineSettings('discussionEnabled', String(e.target.checked)); }}
+                      className="w-3.5 h-3.5 rounded-sm"
+                      data-testid="checkbox-discussion-enabled"
+                    />
+                    <span className="text-[10px] text-white/70">Include discussion post</span>
+                  </label>
+                </div>
+                {discussionEnabled && (
+                  <div className="flex items-center gap-2 flex-wrap pl-5">
+                    <span className="text-[10px] text-white/70 w-[80px]">Discussion due:</span>
+                    <select
+                      value={discussionDueDay}
+                      onChange={(e) => { setDiscussionDueDay(e.target.value); saveModuleDeadlineSettings('discussionDeadline_day', e.target.value); }}
+                      className="h-6 text-[10px] bg-white/10 border border-white/20 rounded px-1.5 text-white cursor-pointer"
+                      data-testid="select-discussion-due-day"
+                    >
+                      <option value="">Select day...</option>
+                      <option value="Saturday">Saturday</option>
+                      <option value="Sunday">Sunday</option>
+                      <option value="Monday">Monday</option>
+                      <option value="Tuesday">Tuesday</option>
+                      <option value="Wednesday">Wednesday</option>
+                      <option value="Thursday">Thursday</option>
+                      <option value="Friday">Friday</option>
+                    </select>
+                    <span className="text-[10px] text-white/50">at</span>
+                    <input
+                      type="time"
+                      value={discussionDueTime}
+                      onChange={(e) => { setDiscussionDueTime(e.target.value); saveModuleDeadlineSettings('discussionDeadline_time', e.target.value); }}
+                      className="h-6 text-[10px] bg-white/10 border border-white/20 rounded px-1.5 text-white cursor-pointer"
+                      data-testid="input-discussion-due-time"
+                    />
+                  </div>
+                )}
+                <div className="flex items-center gap-2 mt-1">
+                  <Button
+                    size="sm"
+                    onClick={generateWeeklyDeadlines}
+                    disabled={!moduleDueDay || generatingDeadlines}
+                    className="h-6 px-3 text-[10px] bg-green-500/20 hover:bg-green-500/30 text-green-300 border border-green-500/30 disabled:opacity-40"
+                    data-testid="button-generate-deadlines"
+                  >
+                    {generatingDeadlines ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Calendar className="h-3 w-3 mr-1" />}
+                    Generate Tasks for All Weeks
+                  </Button>
+                </div>
+              </div>
+
               <div className="mt-2 bg-white/5 border border-white/15 rounded-lg p-3 space-y-1" data-testid="week-mappings-panel">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[9px] text-white">Confirm each week follows the standard TMU academic calendar for this course</span>

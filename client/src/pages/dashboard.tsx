@@ -29238,7 +29238,8 @@ export default function Dashboard() {
                                   const moduleBoxColor = (() => {
                                     const cMatch2 = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode.toUpperCase());
                                     if (cMatch2?.color) return cMatch2.color;
-                                    return cMatch2?.colorEnd || (gradColors?.end || otherRowColors.labelEnd);
+                                    const gradColors2 = courseCode ? getCourseGradientColors(courseCode) : null;
+                                    return cMatch2?.colorEnd || (gradColors2?.end || otherRowColors.labelEnd);
                                   })();
                                   return (
                                     <div style={{
