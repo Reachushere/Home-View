@@ -3816,8 +3816,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                                       key={i}
                                       className={`rounded-[2px] transition-colors ${isEditingInfo ? 'cursor-pointer hover:opacity-80' : ''}`}
                                       style={{
-                                        width: file.totalChunks > 30 ? '6px' : '8px',
-                                        height: file.totalChunks > 30 ? '6px' : '8px',
+                                        width: '6px',
+                                        height: '6px',
                                         backgroundColor: isChecked ? (courseInfo.colorEnd || courseInfo.color || '#22c55e') : 'rgba(255,255,255,0.08)',
                                         border: `1px solid ${isChecked ? 'transparent' : 'rgba(255,255,255,0.12)'}`,
                                       }}
