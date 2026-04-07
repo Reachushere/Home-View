@@ -27739,8 +27739,20 @@ export default function Dashboard() {
                 if (hasFullWeekTasks) {
                   return (
                     <div key={course.name} className="w-full flex-shrink-0 flex" style={{ borderBottom: `1.5px dotted ${courseData.color}dd` }}>
-                      <div className="px-1 py-0.5 text-[10px] font-semibold tracking-normal flex items-center justify-center cursor-pointer hover:brightness-110 flex-shrink-0" onClick={() => { if (selectedCertCourse) return; const cd = courseData; const code = cd.name.split(' - ')[0]?.trim(); const cName = cd.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code })); }} style={{ background: course.label, overflow: 'hidden', minWidth: 0, width: `${gridSizes.timeColumnWidth}px`, position: 'relative', color: course.fontColor || 'white' }} data-testid={`course-row-label-${course.name}`}>
-                        {course.name}
+                      <div className="px-1 py-0.5 text-[8px] font-medium tracking-normal flex flex-col items-center justify-center leading-tight cursor-pointer hover:brightness-110 flex-shrink-0" onClick={() => { if (selectedCertCourse) return; const cd = courseData; const code = cd.name.split(' - ')[0]?.trim(); const cName = cd.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code })); }} style={{ background: course.label, overflow: 'hidden', minWidth: 0, width: `${gridSizes.timeColumnWidth}px`, position: 'relative', color: course.fontColor || 'white' }} data-testid={`course-row-label-${course.name}`}>
+                        {(() => {
+                          const code = course.name.split(' - ')[0];
+                          const fullName = course.name.split(' - ').slice(1).join(' - ');
+                          const isTBDLabel = code.startsWith('TBD_SLOT') || code === 'TBD';
+                          const displayCodeLabel = isTBDLabel ? 'TBD' : code;
+                          const words = fullName.trim() ? fullName.trim().split(/\s+/) : [];
+                          return (
+                            <>
+                              <span className="font-[785]">{displayCodeLabel}</span>
+                              {words.map((word, i) => <span key={i} className="text-center">{word}</span>)}
+                            </>
+                          );
+                        })()}
                         <div style={{ position: 'absolute', top: '1px', right: '1px', zIndex: 2 }} onClick={(e) => { e.stopPropagation(); if (selectedCertCourse) return; const cd = courseData; const code = cd.name.split(' - ')[0]?.trim(); const cName = cd.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code, openInEdit: true })); }} data-testid={`pencil-edit-course-${course.name}`}><Pencil className="w-[9px] h-[9px]" style={{ color: course.fontColor || 'white' }} strokeWidth={3} /></div>
                       </div>
                       <div className="flex-1 min-w-0">
