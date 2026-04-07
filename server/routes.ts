@@ -11562,6 +11562,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   async function uploadAudioToHA(audioPath: string): Promise<string | null> {
     const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
     try {
+      const pathMod = await import("path");
       const localPath = audioPath.startsWith('/') ? audioPath : `/${audioPath}`;
       const diskPath = pathMod.join(process.cwd(), 'dist', 'public', localPath);
       const fsMod = await import('fs');

@@ -1,0 +1,1132 @@
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs --nostream --lines 500
+[TAILING] Tailing last 500 lines for [all] processes (change the value with --lines option)
+/home/byhomeyyz/.pm2/pm2.log last 500 lines:
+PM2        | 2026-04-07T11:04:13: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T11:04:13: PM2 log: pid=628003 msg=process killed
+PM2        | 2026-04-07T11:04:13: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:04:13: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:04:17: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:04:17: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:04:17: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:04:20: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:04:20: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:04:20: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:04:24: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:04:24: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:04:24: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:04:28: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:04:28: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:04:28: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:04:32: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:04:32: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:04:32: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:04:36: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:04:36: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:04:36: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:04:40: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:04:40: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:04:40: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:04:44: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:04:44: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:04:44: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:04:48: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:04:48: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:04:48: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:04:52: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:04:52: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:04:52: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:04:56: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:04:56: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:04:56: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:04:59: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:04:59: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:04:59: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:05:03: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:05:03: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:05:03: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:05:07: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:05:07: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:05:07: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:05:11: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:05:11: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:05:11: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:05:15: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:05:15: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:05:15: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:05:19: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:05:19: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:05:19: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:05:23: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:05:23: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:05:23: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:05:26: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:05:26: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:05:26: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:05:30: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:05:30: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:05:30: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:05:34: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:05:34: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:05:34: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:05:38: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:05:38: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:05:38: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:05:42: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:05:42: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:05:42: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:05:46: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:05:46: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:05:46: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:05:49: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:05:49: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:05:49: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:05:53: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:05:53: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:05:53: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:05:57: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:05:57: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:05:57: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:06:01: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:06:01: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:06:01: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:06:05: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:06:05: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:06:05: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:06:09: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:06:09: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:06:09: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:06:13: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:06:13: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:06:13: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:06:17: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:06:17: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:06:17: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:06:21: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:06:21: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:06:21: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:06:25: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:06:25: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:06:25: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:06:29: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:06:29: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:06:29: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:06:32: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:06:32: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:06:32: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:06:36: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:06:36: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:06:36: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:06:40: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:06:40: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:06:40: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:06:44: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:06:44: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:06:44: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:06:48: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:06:48: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:06:48: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:06:52: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:06:52: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:06:52: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:06:56: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:06:56: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:06:56: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:06:59: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:06:59: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:06:59: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:07:03: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:07:03: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:07:03: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:07:07: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:07:07: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:07:07: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:07:11: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:07:11: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:07:11: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:07:15: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:07:15: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:07:15: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:07:19: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:07:19: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:07:19: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:07:22: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:07:22: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:07:22: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:07:26: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:07:26: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:07:26: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:07:30: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:07:30: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:07:30: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:07:34: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:07:34: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:07:34: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:07:38: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:07:38: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:07:38: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:07:42: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:07:42: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:07:42: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:07:46: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:07:46: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:07:46: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:07:49: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:07:49: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:07:49: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:07:53: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:07:53: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:07:53: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:07:57: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:07:57: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:07:57: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:08:01: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:08:01: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:08:01: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:08:05: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:08:05: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:08:05: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:08:09: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:08:09: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:08:09: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:08:13: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:08:13: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:08:13: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:08:17: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:08:17: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:08:17: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:08:21: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:08:21: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:08:21: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:08:24: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:08:24: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:08:24: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:08:28: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:08:28: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:08:28: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:08:32: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:08:32: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:08:32: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:08:36: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:08:36: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:08:36: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:08:40: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:08:40: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:08:40: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:08:44: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:08:44: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:08:44: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:08:49: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:08:49: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:08:49: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:08:55: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:08:55: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:08:55: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:09:00: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:09:00: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:09:00: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:09:05: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:09:05: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:09:05: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:09:10: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:09:10: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:09:10: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:09:14: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T11:09:14: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T11:09:14: PM2 log: pid=631024 msg=process killed
+PM2        | 2026-04-07T11:10:05: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:10:05: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:10:09: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:10:09: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:10:09: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:10:13: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:10:13: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:10:13: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:10:17: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:10:17: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:10:17: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:10:21: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:10:21: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:10:21: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:10:25: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:10:25: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:10:25: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:10:29: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:10:29: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:10:29: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:10:33: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:10:33: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:10:33: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:10:37: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:10:37: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:10:37: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:10:41: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:10:41: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:10:41: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:10:44: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:10:44: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:10:44: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:10:48: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:10:48: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:10:48: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:10:52: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:10:52: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:10:52: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:10:56: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:10:56: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:10:56: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:11:00: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:11:00: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:11:00: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:11:04: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:11:04: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:11:04: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:11:08: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:11:08: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:11:08: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:11:11: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:11:11: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:11:11: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:11:15: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:11:15: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:11:15: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:11:19: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:11:19: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:11:19: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:11:23: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:11:23: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:11:23: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:11:27: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:11:27: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:11:27: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:11:31: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:11:31: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:11:31: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:11:35: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:11:35: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:11:35: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:11:39: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:11:39: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:11:39: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:11:42: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:11:42: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:11:42: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:11:46: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:11:46: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:11:46: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:11:50: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:11:50: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:11:50: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:11:54: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:11:54: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:11:54: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:11:58: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:11:58: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:11:58: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:12:02: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:12:02: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:12:02: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:12:06: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:12:06: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:12:06: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:12:09: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:12:09: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:12:09: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:12:13: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:12:13: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:12:13: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:12:17: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:12:17: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:12:17: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:12:21: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:12:21: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:12:21: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:12:25: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:12:25: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:12:25: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:12:29: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:12:29: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:12:29: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:12:32: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:12:32: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:12:32: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:12:36: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:12:36: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:12:36: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:12:40: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:12:40: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:12:40: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:12:44: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:12:44: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:12:44: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:12:48: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:12:48: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:12:48: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:12:52: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:12:52: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:12:52: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:12:56: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:12:56: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:12:56: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:12:59: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:12:59: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:12:59: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:13:03: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:13:03: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:13:03: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:13:07: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:13:07: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:13:07: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:13:11: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:13:11: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:13:11: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:13:15: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:13:15: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:13:15: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:13:19: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:13:19: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:13:19: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:13:23: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:13:23: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:13:23: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:13:26: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:13:26: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:13:26: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:13:30: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:13:30: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:13:30: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:13:34: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:13:34: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:13:34: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:13:38: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:13:38: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:13:38: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:13:42: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:13:42: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:13:42: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:13:47: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:13:47: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:13:47: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:13:50: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:13:50: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:13:50: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:13:55: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:13:55: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:13:55: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:13:58: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:13:58: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:13:58: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:14:02: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:14:02: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:14:02: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:14:06: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:14:06: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:14:06: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:14:10: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:14:10: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:14:10: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:14:14: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:14:14: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:14:14: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:14:17: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:14:17: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:14:17: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:14:21: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:14:21: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:14:21: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:14:25: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:14:25: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:14:25: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:14:29: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:14:29: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:14:29: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:14:33: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:14:33: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:14:33: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:14:37: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:14:37: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:14:37: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:14:41: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:14:41: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:14:41: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:14:44: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:14:44: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:14:44: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:14:48: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:14:48: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:14:48: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:14:52: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:14:52: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:14:52: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:14:56: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:14:56: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:14:56: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:00: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:00: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:00: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:04: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:04: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:04: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:08: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:08: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:08: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:12: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:12: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:12: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:15: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:15: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:15: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:19: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:19: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:19: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:23: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:23: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:23: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:27: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:27: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:27: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:31: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:31: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:31: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:35: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:35: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:35: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:38: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:38: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:38: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:42: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:42: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:42: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:44: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T11:15:44: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:44: PM2 log: pid=634571 msg=process killed
+PM2        | 2026-04-07T11:17:07: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:17:07: PM2 log: App [unical:0] online
+
+/home/byhomeyyz/.pm2/logs/unical-error.log last 500 lines:
+0|unical   |     at doListen (node:net:2139:7)
+0|unical   |     at process.processTicksAndRejections (node:internal/process/task_queues:83:21)
+0|unical   | Emitted 'error' event on Server instance at:
+0|unical   |     at emitErrorNT (node:net:1944:8)
+0|unical   |     at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+0|unical   |   code: 'EADDRINUSE',
+0|unical   |   errno: -98,
+0|unical   |   syscall: 'listen',
+0|unical   |   address: '0.0.0.0',
+0|unical   |   port: 5000
+0|unical   | }
+0|unical   |
+0|unical   | Node.js v20.20.2
+0|unical   | npm warn Unknown builtin config "globalignorefile". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+0|unical   | node:events:502
+0|unical   |       throw er; // Unhandled 'error' event
+0|unical   |       ^
+0|unical   |
+0|unical   | Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+0|unical   |     at Server.setupListenHandle [as _listen2] (node:net:1908:16)
+0|unical   |     at listenInCluster (node:net:1965:12)
+0|unical   |     at doListen (node:net:2139:7)
+0|unical   |     at process.processTicksAndRejections (node:internal/process/task_queues:83:21)
+0|unical   | Emitted 'error' event on Server instance at:
+0|unical   |     at emitErrorNT (node:net:1944:8)
+0|unical   |     at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+0|unical   |   code: 'EADDRINUSE',
+0|unical   |   errno: -98,
+0|unical   |   syscall: 'listen',
+0|unical   |   address: '0.0.0.0',
+0|unical   |   port: 5000
+0|unical   | }
+0|unical   |
+0|unical   | Node.js v20.20.2
+0|unical   | npm warn Unknown builtin config "globalignorefile". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+0|unical   | node:events:502
+0|unical   |       throw er; // Unhandled 'error' event
+0|unical   |       ^
+0|unical   |
+0|unical   | Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+0|unical   |     at Server.setupListenHandle [as _listen2] (node:net:1908:16)
+0|unical   |     at listenInCluster (node:net:1965:12)
+0|unical   |     at doListen (node:net:2139:7)
+0|unical   |     at process.processTicksAndRejections (node:internal/process/task_queues:83:21)
+0|unical   | Emitted 'error' event on Server instance at:
+0|unical   |     at emitErrorNT (node:net:1944:8)
+0|unical   |     at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+0|unical   |   code: 'EADDRINUSE',
+0|unical   |   errno: -98,
+0|unical   |   syscall: 'listen',
+0|unical   |   address: '0.0.0.0',
+0|unical   |   port: 5000
+0|unical   | }
+0|unical   |
+0|unical   | Node.js v20.20.2
+0|unical   | npm warn Unknown builtin config "globalignorefile". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+0|unical   | node:events:502
+0|unical   |       throw er; // Unhandled 'error' event
+0|unical   |       ^
+0|unical   |
+0|unical   | Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+0|unical   |     at Server.setupListenHandle [as _listen2] (node:net:1908:16)
+0|unical   |     at listenInCluster (node:net:1965:12)
+0|unical   |     at doListen (node:net:2139:7)
+0|unical   |     at process.processTicksAndRejections (node:internal/process/task_queues:83:21)
+0|unical   | Emitted 'error' event on Server instance at:
+0|unical   |     at emitErrorNT (node:net:1944:8)
+0|unical   |     at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+0|unical   |   code: 'EADDRINUSE',
+0|unical   |   errno: -98,
+0|unical   |   syscall: 'listen',
+0|unical   |   address: '0.0.0.0',
+0|unical   |   port: 5000
+0|unical   | }
+0|unical   |
+0|unical   | Node.js v20.20.2
+0|unical   | npm warn Unknown builtin config "globalignorefile". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+0|unical   | node:events:502
+0|unical   |       throw er; // Unhandled 'error' event
+0|unical   |       ^
+0|unical   |
+0|unical   | Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+0|unical   |     at Server.setupListenHandle [as _listen2] (node:net:1908:16)
+0|unical   |     at listenInCluster (node:net:1965:12)
+0|unical   |     at doListen (node:net:2139:7)
+0|unical   |     at process.processTicksAndRejections (node:internal/process/task_queues:83:21)
+0|unical   | Emitted 'error' event on Server instance at:
+0|unical   |     at emitErrorNT (node:net:1944:8)
+0|unical   |     at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+0|unical   |   code: 'EADDRINUSE',
+0|unical   |   errno: -98,
+0|unical   |   syscall: 'listen',
+0|unical   |   address: '0.0.0.0',
+0|unical   |   port: 5000
+0|unical   | }
+0|unical   |
+0|unical   | Node.js v20.20.2
+0|unical   | npm warn Unknown builtin config "globalignorefile". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+0|unical   | node:events:502
+0|unical   |       throw er; // Unhandled 'error' event
+0|unical   |       ^
+0|unical   |
+0|unical   | Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+0|unical   |     at Server.setupListenHandle [as _listen2] (node:net:1908:16)
+0|unical   |     at listenInCluster (node:net:1965:12)
+0|unical   |     at doListen (node:net:2139:7)
+0|unical   |     at process.processTicksAndRejections (node:internal/process/task_queues:83:21)
+0|unical   | Emitted 'error' event on Server instance at:
+0|unical   |     at emitErrorNT (node:net:1944:8)
+0|unical   |     at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+0|unical   |   code: 'EADDRINUSE',
+0|unical   |   errno: -98,
+0|unical   |   syscall: 'listen',
+0|unical   |   address: '0.0.0.0',
+0|unical   |   port: 5000
+0|unical   | }
+0|unical   |
+0|unical   | Node.js v20.20.2
+0|unical   | npm warn Unknown builtin config "globalignorefile". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+0|unical   | npm warn Unknown builtin config "globalignorefile". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+0|unical   | [Gmail] Error fetching D2L announcements: Gmail API error 403: {
+0|unical   |   "error": {
+0|unical   |     "code": 403,
+0|unical   |     "message": "Gmail API has not been used in project 690968796215 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/gmail.googleapis.com/overview?project=690968796215 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.",
+0|unical   |     "errors": [
+0|unical   |       {
+0|unical   |         "message": "Gmail API has not been used in project 690968796215 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/gmail.googleapis.com/overview?project=690968796215 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.",
+0|unical   |         "domain": "usageLimits",
+0|unical   |         "reason": "accessNotConfigured",
+0|unical   |         "extendedHelp": "https://console.developers.google.com"
+0|unical   |       }
+0|unical   |     ],
+0|unical   |     "status": "PERMISSION_DENIED",
+0|unical   |     "details": [
+0|unical   |       {
+0|unical   |         "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+0|unical   |         "reason": "SERVICE_DISABLED",
+0|unical   |         "domain": "googleapis.com",
+0|unical   |         "metadata": {
+0|unical   |           "activationUrl": "https://console.developers.google.com/apis/api/gmail.googleapis.com/overview?project=690968796215",
+0|unical   |           "service": "gmail.googleapis.com",
+0|unical   |           "containerInfo": "690968796215",
+0|unical   |           "consumer": "projects/690968796215",
+0|unical   |           "serviceTitle": "Gmail API"
+0|unical   |         }
+0|unical   |       },
+0|unical   |       {
+0|unical   |         "@type": "type.googleapis.com/google.rpc.LocalizedMessage",
+0|unical   |         "locale": "en-US",
+0|unical   |         "message": "Gmail API has not been used in project 690968796215 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/gmail.googleapis.com/overview?project=690968796215 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."
+0|unical   |       },
+0|unical   |       {
+0|unical   |         "@type": "type.googleapis.com/google.rpc.Help",
+0|unical   |         "links": [
+0|unical   |           {
+0|unical   |             "description": "Google developers console API activation",
+0|unical   |             "url": "https://console.developers.google.com/apis/api/gmail.googleapis.com/overview?project=690968796215"
+0|unical   |           }
+0|unical   |         ]
+0|unical   |       }
+0|unical   |     ]
+0|unical   |   }
+0|unical   | }
+0|unical   |
+0|unical   | [Stop TV Samsung] fetch attempt 1/3 failed: This operation was aborted — retrying in 1500ms
+0|unical   | Error listing OneDrive items: GraphError: The resource could not be found.
+0|unical   |     at new GraphError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphError.ts:63:3)
+0|unical   |     at Function.GraphErrorHandler.constructErrorFromResponse (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:77:18)
+0|unical   |     at Function.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:104:31)
+0|unical   |     at step (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:196:27)
+0|unical   |     at Object.next (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:177:57)
+0|unical   |     at /home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:170:75
+0|unical   |     at new Promise (<anonymous>)
+0|unical   |     at Object.__awaiter (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:166:16)
+0|unical   |     at Function.GraphErrorHandler.getError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:101:65)
+0|unical   |     at GraphRequest.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphRequest.ts:391:55) {
+0|unical   |   statusCode: 404,
+0|unical   |   code: 'itemNotFound',
+0|unical   |   requestId: 'f36f2ecb-246f-4427-9d7f-dc991ecc5312',
+0|unical   |   date: 2026-04-07T19:18:36.000Z,
+0|unical   |   body: '{"code":"itemNotFound","message":"The resource could not be found.","innerError":{"date":"2026-04-07T15:18:36","request-id":"f36f2ecb-246f-4427-9d7f-dc991ecc5312","client-request-id":"6bb1a039-a3f3-5f99-056e-6924b9e36770"}}',
+0|unical   |   headers: Headers {
+0|unical   |     'cache-control': 'no-store, no-cache, max-age=0, private',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'content-type': 'application/json',
+0|unical   |     'content-encoding': 'gzip',
+0|unical   |     vary: 'Accept-Encoding',
+0|unical   |     'strict-transport-security': 'max-age=31536000',
+0|unical   |     'request-id': 'f36f2ecb-246f-4427-9d7f-dc991ecc5312',
+0|unical   |     'client-request-id': '6bb1a039-a3f3-5f99-056e-6924b9e36770',
+0|unical   |     'x-ms-ags-diagnostic': '{"ServerInfo":{"DataCenter":"Canada East","Slice":"E","Ring":"3","ScaleUnit":"001","RoleInstance":"QB1PEPF0000579D"}}',
+0|unical   |     splogid: '30ab07a2-f037-c000-9ebf-52dc7920ab51',
+0|unical   |     date: 'Tue, 07 Apr 2026 15:18:35 GMT'
+0|unical   |   }
+0|unical   | }
+0|unical   | Error listing OneDrive items: GraphError: The resource could not be found.
+0|unical   |     at new GraphError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphError.ts:63:3)
+0|unical   |     at Function.GraphErrorHandler.constructErrorFromResponse (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:77:18)
+0|unical   |     at Function.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:104:31)
+0|unical   |     at step (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:196:27)
+0|unical   |     at Object.next (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:177:57)
+0|unical   |     at /home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:170:75
+0|unical   |     at new Promise (<anonymous>)
+0|unical   |     at Object.__awaiter (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:166:16)
+0|unical   |     at Function.GraphErrorHandler.getError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:101:65)
+0|unical   |     at GraphRequest.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphRequest.ts:391:55) {
+0|unical   |   statusCode: 404,
+0|unical   |   code: 'itemNotFound',
+0|unical   |   requestId: 'eace0978-072a-43f5-8a92-022fed615537',
+0|unical   |   date: 2026-04-07T19:18:37.000Z,
+0|unical   |   body: '{"code":"itemNotFound","message":"The resource could not be found.","innerError":{"date":"2026-04-07T15:18:37","request-id":"eace0978-072a-43f5-8a92-022fed615537","client-request-id":"95b41cc9-7996-9a25-2438-b3352acce460"}}',
+0|unical   |   headers: Headers {
+0|unical   |     'cache-control': 'no-store, no-cache, max-age=0, private',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'content-type': 'application/json',
+0|unical   |     'content-encoding': 'gzip',
+0|unical   |     vary: 'Accept-Encoding',
+0|unical   |     'strict-transport-security': 'max-age=31536000',
+0|unical   |     'request-id': 'eace0978-072a-43f5-8a92-022fed615537',
+0|unical   |     'client-request-id': '95b41cc9-7996-9a25-2438-b3352acce460',
+0|unical   |     'x-ms-ags-diagnostic': '{"ServerInfo":{"DataCenter":"Canada East","Slice":"E","Ring":"3","ScaleUnit":"001","RoleInstance":"QB1PEPF0000579D"}}',
+0|unical   |     splogid: '30ab07a2-1051-c000-725b-95c8460d879a',
+0|unical   |     date: 'Tue, 07 Apr 2026 15:18:36 GMT'
+0|unical   |   }
+0|unical   | }
+0|unical   | Error listing OneDrive items: GraphError: The resource could not be found.
+0|unical   |     at new GraphError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphError.ts:63:3)
+0|unical   |     at Function.GraphErrorHandler.constructErrorFromResponse (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:77:18)
+0|unical   |     at Function.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:104:31)
+0|unical   |     at step (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:196:27)
+0|unical   |     at Object.next (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:177:57)
+0|unical   |     at /home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:170:75
+0|unical   |     at new Promise (<anonymous>)
+0|unical   |     at Object.__awaiter (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:166:16)
+0|unical   |     at Function.GraphErrorHandler.getError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:101:65)
+0|unical   |     at GraphRequest.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphRequest.ts:391:55) {
+0|unical   |   statusCode: 404,
+0|unical   |   code: 'itemNotFound',
+0|unical   |   requestId: 'd16507d5-4190-4300-a480-0813e7a753c5',
+0|unical   |   date: 2026-04-07T19:18:37.000Z,
+0|unical   |   body: '{"code":"itemNotFound","message":"The resource could not be found.","innerError":{"date":"2026-04-07T15:18:37","request-id":"d16507d5-4190-4300-a480-0813e7a753c5","client-request-id":"da817186-4893-1109-8577-9fc218897abd"}}',
+0|unical   |   headers: Headers {
+0|unical   |     'cache-control': 'no-store, no-cache, max-age=0, private',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'content-type': 'application/json',
+0|unical   |     'content-encoding': 'gzip',
+0|unical   |     vary: 'Accept-Encoding',
+0|unical   |     'strict-transport-security': 'max-age=31536000',
+0|unical   |     'request-id': 'd16507d5-4190-4300-a480-0813e7a753c5',
+0|unical   |     'client-request-id': 'da817186-4893-1109-8577-9fc218897abd',
+0|unical   |     'x-ms-ags-diagnostic': '{"ServerInfo":{"DataCenter":"Canada East","Slice":"E","Ring":"3","ScaleUnit":"001","RoleInstance":"QB1PEPF0000579D"}}',
+0|unical   |     splogid: '30ab07a2-4065-c000-9ebf-5060e238270a',
+0|unical   |     date: 'Tue, 07 Apr 2026 15:18:36 GMT'
+0|unical   |   }
+0|unical   | }
+0|unical   | Error listing OneDrive items: GraphError: The resource could not be found.
+0|unical   |     at new GraphError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphError.ts:63:3)
+0|unical   |     at Function.GraphErrorHandler.constructErrorFromResponse (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:77:18)
+0|unical   |     at Function.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:104:31)
+0|unical   |     at step (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:196:27)
+0|unical   |     at Object.next (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:177:57)
+0|unical   |     at /home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:170:75
+0|unical   |     at new Promise (<anonymous>)
+0|unical   |     at Object.__awaiter (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:166:16)
+0|unical   |     at Function.GraphErrorHandler.getError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:101:65)
+0|unical   |     at GraphRequest.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphRequest.ts:391:55) {
+0|unical   |   statusCode: 404,
+0|unical   |   code: 'itemNotFound',
+0|unical   |   requestId: '030ebfad-82f9-464d-ad85-602d6e139b7f',
+0|unical   |   date: 2026-04-07T19:18:40.000Z,
+0|unical   |   body: '{"code":"itemNotFound","message":"The resource could not be found.","innerError":{"date":"2026-04-07T15:18:40","request-id":"030ebfad-82f9-464d-ad85-602d6e139b7f","client-request-id":"896a848f-6220-5135-a9ec-a7684e5e895c"}}',
+0|unical   |   headers: Headers {
+0|unical   |     'cache-control': 'no-store, no-cache, max-age=0, private',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'content-type': 'application/json',
+0|unical   |     'content-encoding': 'gzip',
+0|unical   |     vary: 'Accept-Encoding',
+0|unical   |     'strict-transport-security': 'max-age=31536000',
+0|unical   |     'request-id': '030ebfad-82f9-464d-ad85-602d6e139b7f',
+0|unical   |     'client-request-id': '896a848f-6220-5135-a9ec-a7684e5e895c',
+0|unical   |     'x-ms-ags-diagnostic': '{"ServerInfo":{"DataCenter":"Canada East","Slice":"E","Ring":"3","ScaleUnit":"001","RoleInstance":"QB1PEPF0000579D"}}',
+0|unical   |     splogid: '31ab07a2-0016-c000-9ebf-53e277321b2a',
+0|unical   |     date: 'Tue, 07 Apr 2026 15:18:39 GMT'
+0|unical   |   }
+0|unical   | }
+0|unical   | Error listing OneDrive items: GraphError: The resource could not be found.
+0|unical   |     at new GraphError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphError.ts:63:3)
+0|unical   |     at Function.GraphErrorHandler.constructErrorFromResponse (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:77:18)
+0|unical   |     at Function.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:104:31)
+0|unical   |     at step (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:196:27)
+0|unical   |     at Object.next (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:177:57)
+0|unical   |     at /home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:170:75
+0|unical   |     at new Promise (<anonymous>)
+0|unical   |     at Object.__awaiter (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:166:16)
+0|unical   |     at Function.GraphErrorHandler.getError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:101:65)
+0|unical   |     at GraphRequest.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphRequest.ts:391:55) {
+0|unical   |   statusCode: 404,
+0|unical   |   code: 'itemNotFound',
+0|unical   |   requestId: '859f3fc5-d0ac-4330-95a1-1d85572b12d8',
+0|unical   |   date: 2026-04-07T19:18:40.000Z,
+0|unical   |   body: '{"code":"itemNotFound","message":"The resource could not be found.","innerError":{"date":"2026-04-07T15:18:40","request-id":"859f3fc5-d0ac-4330-95a1-1d85572b12d8","client-request-id":"408edb2e-8dd9-7570-22b8-a18628f51587"}}',
+0|unical   |   headers: Headers {
+0|unical   |     'cache-control': 'no-store, no-cache, max-age=0, private',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'content-type': 'application/json',
+0|unical   |     'content-encoding': 'gzip',
+0|unical   |     vary: 'Accept-Encoding',
+0|unical   |     'strict-transport-security': 'max-age=31536000',
+0|unical   |     'request-id': '859f3fc5-d0ac-4330-95a1-1d85572b12d8',
+0|unical   |     'client-request-id': '408edb2e-8dd9-7570-22b8-a18628f51587',
+0|unical   |     'x-ms-ags-diagnostic': '{"ServerInfo":{"DataCenter":"Canada East","Slice":"E","Ring":"3","ScaleUnit":"001","RoleInstance":"QB1PEPF0000579D"}}',
+0|unical   |     splogid: '31ab07a2-c02d-c000-725b-9fcd426e17a6',
+0|unical   |     date: 'Tue, 07 Apr 2026 15:18:39 GMT'
+0|unical   |   }
+0|unical   | }
+0|unical   | Error listing OneDrive items: GraphError: The resource could not be found.
+0|unical   |     at new GraphError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphError.ts:63:3)
+0|unical   |     at Function.GraphErrorHandler.constructErrorFromResponse (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:77:18)
+0|unical   |     at Function.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:104:31)
+0|unical   |     at step (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:196:27)
+0|unical   |     at Object.next (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:177:57)
+0|unical   |     at /home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:170:75
+0|unical   |     at new Promise (<anonymous>)
+0|unical   |     at Object.__awaiter (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:166:16)
+0|unical   |     at Function.GraphErrorHandler.getError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:101:65)
+0|unical   |     at GraphRequest.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphRequest.ts:391:55) {
+0|unical   |   statusCode: 404,
+0|unical   |   code: 'itemNotFound',
+0|unical   |   requestId: '6a4568c2-2264-4b2d-b90c-888f83e67921',
+0|unical   |   date: 2026-04-07T19:18:41.000Z,
+0|unical   |   body: '{"code":"itemNotFound","message":"The resource could not be found.","innerError":{"date":"2026-04-07T15:18:41","request-id":"6a4568c2-2264-4b2d-b90c-888f83e67921","client-request-id":"71426b5a-c50f-13de-62d4-a694902fddcb"}}',
+0|unical   |   headers: Headers {
+0|unical   |     'cache-control': 'no-store, no-cache, max-age=0, private',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'content-type': 'application/json',
+0|unical   |     'content-encoding': 'gzip',
+0|unical   |     vary: 'Accept-Encoding',
+0|unical   |     'strict-transport-security': 'max-age=31536000',
+0|unical   |     'request-id': '6a4568c2-2264-4b2d-b90c-888f83e67921',
+0|unical   |     'client-request-id': '71426b5a-c50f-13de-62d4-a694902fddcb',
+0|unical   |     'x-ms-ags-diagnostic': '{"ServerInfo":{"DataCenter":"Canada East","Slice":"E","Ring":"3","ScaleUnit":"001","RoleInstance":"QB1PEPF0000579D"}}',
+0|unical   |     splogid: '31ab07a2-5041-c000-9ebf-536d318f869b',
+0|unical   |     date: 'Tue, 07 Apr 2026 15:18:40 GMT'
+0|unical   |   }
+0|unical   | }
+0|unical   | Error listing OneDrive items: GraphError: The resource could not be found.
+0|unical   |     at new GraphError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphError.ts:63:3)
+0|unical   |     at Function.GraphErrorHandler.constructErrorFromResponse (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:77:18)
+0|unical   |     at Function.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:104:31)
+0|unical   |     at step (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:196:27)
+0|unical   |     at Object.next (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:177:57)
+0|unical   |     at /home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:170:75
+0|unical   |     at new Promise (<anonymous>)
+0|unical   |     at Object.__awaiter (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:166:16)
+0|unical   |     at Function.GraphErrorHandler.getError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:101:65)
+0|unical   |     at GraphRequest.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphRequest.ts:391:55) {
+0|unical   |   statusCode: 404,
+0|unical   |   code: 'itemNotFound',
+0|unical   |   requestId: '9f711f46-b4c5-4a8d-bfcc-72286c1bc94f',
+0|unical   |   date: 2026-04-07T19:18:43.000Z,
+0|unical   |   body: '{"code":"itemNotFound","message":"The resource could not be found.","innerError":{"date":"2026-04-07T15:18:43","request-id":"9f711f46-b4c5-4a8d-bfcc-72286c1bc94f","client-request-id":"c00c64ec-7621-18fd-4434-22e28929ad08"}}',
+0|unical   |   headers: Headers {
+0|unical   |     'cache-control': 'no-store, no-cache, max-age=0, private',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'content-type': 'application/json',
+0|unical   |     'content-encoding': 'gzip',
+0|unical   |     vary: 'Accept-Encoding',
+0|unical   |     'strict-transport-security': 'max-age=31536000',
+0|unical   |     'request-id': '9f711f46-b4c5-4a8d-bfcc-72286c1bc94f',
+0|unical   |     'client-request-id': 'c00c64ec-7621-18fd-4434-22e28929ad08',
+0|unical   |     'x-ms-ags-diagnostic': '{"ServerInfo":{"DataCenter":"Canada East","Slice":"E","Ring":"3","ScaleUnit":"001","RoleInstance":"QB1PEPF0000579D"}}',
+0|unical   |     splogid: '31ab07a2-d0d0-c000-725b-908a3509a386',
+0|unical   |     date: 'Tue, 07 Apr 2026 15:18:42 GMT'
+0|unical   |   }
+0|unical   | }
+0|unical   | Error listing OneDrive items: GraphError: The resource could not be found.
+0|unical   |     at new GraphError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphError.ts:63:3)
+0|unical   |     at Function.GraphErrorHandler.constructErrorFromResponse (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:77:18)
+0|unical   |     at Function.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:104:31)
+0|unical   |     at step (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:196:27)
+0|unical   |     at Object.next (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:177:57)
+0|unical   |     at /home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:170:75
+0|unical   |     at new Promise (<anonymous>)
+0|unical   |     at Object.__awaiter (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:166:16)
+0|unical   |     at Function.GraphErrorHandler.getError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:101:65)
+0|unical   |     at GraphRequest.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphRequest.ts:391:55) {
+0|unical   |   statusCode: 404,
+0|unical   |   code: 'itemNotFound',
+0|unical   |   requestId: '415eff3d-02e4-46e2-8132-242059c5cec7',
+0|unical   |   date: 2026-04-07T19:18:43.000Z,
+0|unical   |   body: '{"code":"itemNotFound","message":"The resource could not be found.","innerError":{"date":"2026-04-07T15:18:43","request-id":"415eff3d-02e4-46e2-8132-242059c5cec7","client-request-id":"8541ed8e-629f-b4fe-3848-6640ab52b0b8"}}',
+0|unical   |   headers: Headers {
+0|unical   |     'cache-control': 'no-store, no-cache, max-age=0, private',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'content-type': 'application/json',
+0|unical   |     'content-encoding': 'gzip',
+0|unical   |     vary: 'Accept-Encoding',
+0|unical   |     'strict-transport-security': 'max-age=31536000',
+0|unical   |     'request-id': '415eff3d-02e4-46e2-8132-242059c5cec7',
+0|unical   |     'client-request-id': '8541ed8e-629f-b4fe-3848-6640ab52b0b8',
+0|unical   |     'x-ms-ags-diagnostic': '{"ServerInfo":{"DataCenter":"Canada East","Slice":"E","Ring":"3","ScaleUnit":"001","RoleInstance":"QB1PEPF0000579D"}}',
+0|unical   |     splogid: '31ab07a2-10e8-c000-9ebf-5f0fe57f654c',
+0|unical   |     date: 'Tue, 07 Apr 2026 15:18:42 GMT'
+0|unical   |   }
+0|unical   | }
+0|unical   | Error listing OneDrive items: GraphError: The resource could not be found.
+0|unical   |     at new GraphError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphError.ts:63:3)
+0|unical   |     at Function.GraphErrorHandler.constructErrorFromResponse (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:77:18)
+0|unical   |     at Function.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:104:31)
+0|unical   |     at step (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:196:27)
+0|unical   |     at Object.next (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:177:57)
+0|unical   |     at /home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:170:75
+0|unical   |     at new Promise (<anonymous>)
+0|unical   |     at Object.__awaiter (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:166:16)
+0|unical   |     at Function.GraphErrorHandler.getError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:101:65)
+0|unical   |     at GraphRequest.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphRequest.ts:391:55) {
+0|unical   |   statusCode: 404,
+0|unical   |   code: 'itemNotFound',
+0|unical   |   requestId: 'ee06ac06-4a8f-48b2-8119-a80841bfa2db',
+0|unical   |   date: 2026-04-07T19:18:44.000Z,
+0|unical   |   body: '{"code":"itemNotFound","message":"The resource could not be found.","innerError":{"date":"2026-04-07T15:18:44","request-id":"ee06ac06-4a8f-48b2-8119-a80841bfa2db","client-request-id":"ad533314-bfea-7a6c-e488-49e65100bd69"}}',
+0|unical   |   headers: Headers {
+0|unical   |     'cache-control': 'no-store, no-cache, max-age=0, private',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'content-type': 'application/json',
+0|unical   |     'content-encoding': 'gzip',
+0|unical   |     vary: 'Accept-Encoding',
+0|unical   |     'strict-transport-security': 'max-age=31536000',
+0|unical   |     'request-id': 'ee06ac06-4a8f-48b2-8119-a80841bfa2db',
+0|unical   |     'client-request-id': 'ad533314-bfea-7a6c-e488-49e65100bd69',
+0|unical   |     'x-ms-ags-diagnostic': '{"ServerInfo":{"DataCenter":"Canada East","Slice":"E","Ring":"3","ScaleUnit":"001","RoleInstance":"QB1PEPF0000579D"}}',
+0|unical   |     splogid: '31ab07a2-00fb-c000-9ebf-503d9afafb21',
+0|unical   |     date: 'Tue, 07 Apr 2026 15:18:43 GMT'
+0|unical   |   }
+0|unical   | }
+0|unical   | Error listing OneDrive items: GraphError: The resource could not be found.
+0|unical   |     at new GraphError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphError.ts:63:3)
+0|unical   |     at Function.GraphErrorHandler.constructErrorFromResponse (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:77:18)
+0|unical   |     at Function.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:104:31)
+0|unical   |     at step (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:196:27)
+0|unical   |     at Object.next (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:177:57)
+0|unical   |     at /home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:170:75
+0|unical   |     at new Promise (<anonymous>)
+0|unical   |     at Object.__awaiter (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:166:16)
+0|unical   |     at Function.GraphErrorHandler.getError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:101:65)
+0|unical   |     at GraphRequest.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphRequest.ts:391:55) {
+0|unical   |   statusCode: 404,
+0|unical   |   code: 'itemNotFound',
+0|unical   |   requestId: 'c5a6a6a1-4332-42e4-9e8d-ab3293528347',
+0|unical   |   date: 2026-04-07T19:18:44.000Z,
+0|unical   |   body: '{"code":"itemNotFound","message":"The resource could not be found.","innerError":{"date":"2026-04-07T15:18:44","request-id":"c5a6a6a1-4332-42e4-9e8d-ab3293528347","client-request-id":"60aa63dd-d3b3-1a69-e583-e068391afab0"}}',
+0|unical   |   headers: Headers {
+0|unical   |     'cache-control': 'no-store, no-cache, max-age=0, private',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'content-type': 'application/json',
+0|unical   |     'content-encoding': 'gzip',
+0|unical   |     vary: 'Accept-Encoding',
+0|unical   |     'strict-transport-security': 'max-age=31536000',
+0|unical   |     'request-id': 'c5a6a6a1-4332-42e4-9e8d-ab3293528347',
+0|unical   |     'client-request-id': '60aa63dd-d3b3-1a69-e583-e068391afab0',
+0|unical   |     'x-ms-ags-diagnostic': '{"ServerInfo":{"DataCenter":"Canada East","Slice":"E","Ring":"3","ScaleUnit":"001","RoleInstance":"QB1PEPF0000579D"}}',
+0|unical   |     splogid: '32ab07a2-b00c-c000-725b-94aa68fb6250',
+0|unical   |     date: 'Tue, 07 Apr 2026 15:18:43 GMT'
+0|unical   |   }
+0|unical   | }
+0|unical   | Error listing OneDrive items: GraphError: The resource could not be found.
+0|unical   |     at new GraphError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphError.ts:63:3)
+0|unical   |     at Function.GraphErrorHandler.constructErrorFromResponse (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:77:18)
+0|unical   |     at Function.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:104:31)
+0|unical   |     at step (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:196:27)
+0|unical   |     at Object.next (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:177:57)
+0|unical   |     at /home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:170:75
+0|unical   |     at new Promise (<anonymous>)
+0|unical   |     at Object.__awaiter (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:166:16)
+0|unical   |     at Function.GraphErrorHandler.getError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:101:65)
+0|unical   |     at GraphRequest.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphRequest.ts:391:55) {
+0|unical   |   statusCode: 404,
+0|unical   |   code: 'itemNotFound',
+0|unical   |   requestId: 'fad52aab-a2c0-4c5c-8c46-fb8e87ac8c52',
+0|unical   |   date: 2026-04-07T19:18:44.000Z,
+0|unical   |   body: '{"code":"itemNotFound","message":"The resource could not be found.","innerError":{"date":"2026-04-07T15:18:44","request-id":"fad52aab-a2c0-4c5c-8c46-fb8e87ac8c52","client-request-id":"df2bf7cf-1829-16cc-7b18-89157fefee5e"}}',
+0|unical   |   headers: Headers {
+0|unical   |     'cache-control': 'no-store, no-cache, max-age=0, private',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'content-type': 'application/json',
+0|unical   |     'content-encoding': 'gzip',
+0|unical   |     vary: 'Accept-Encoding',
+0|unical   |     'strict-transport-security': 'max-age=31536000',
+0|unical   |     'request-id': 'fad52aab-a2c0-4c5c-8c46-fb8e87ac8c52',
+0|unical   |     'client-request-id': 'df2bf7cf-1829-16cc-7b18-89157fefee5e',
+0|unical   |     'x-ms-ags-diagnostic': '{"ServerInfo":{"DataCenter":"Canada East","Slice":"E","Ring":"3","ScaleUnit":"001","RoleInstance":"QB1PEPF0000579D"}}',
+0|unical   |     splogid: '32ab07a2-a01e-c000-725b-98c851f021dc',
+0|unical   |     date: 'Tue, 07 Apr 2026 15:18:43 GMT'
+0|unical   |   }
+0|unical   | }
+0|unical   | [BABEL] Note: The code generator has deoptimised the styling of /home/byhomeyyz/Home-View/client/src/pages/dashboard.tsx as it exceeds the max of 500KB.
+0|unical   | [Nest Playback Vol] fetch attempt 1/3 failed: fetch failed — retrying in 1500ms
+0|unical   | [HA Upload] Error: pathMod is not defined
+0|unical   | [Nest Playback] Nest state unconfirmed for chunk 1 — trying HA Cloud TTS fallback
+0|unical   | [Nest Playback] Chunk 1 all playback methods FAILED (1/3)
+
+/home/byhomeyyz/.pm2/logs/unical-out.log last 500 lines:
+0|unical   | hem passing grades according to a 2019 survey. Only one-third of Canadians feel that they can influence decisions at the municipal level; Canadians are skeptical that local governments listen to them or act on what they tell the local government . As the level of government that describes itself as closest to the people, municipal government has an important relationship with the public, and survey results like these are concerning. Earlier in the course we explored the tension between the municipal service delivery role and the democratic, governance role (see Municipal Role). You will learn in this module that there is a similar tension in municipal relationships involving services , democratic representation , and accountability . Municipal-public relationships are further complicated by changes in the demographic composition of communities. Larger urban municipalities are much more diverse, there is greater polarization of income and opportunity, and many of us belong to multiple communities within and outside our home municipality neighbourhoods are no longer the main defining feature of our connection to municipalities. At the same time, municipal issues have grown and become more complex, and lack of public understanding may present barriers to stronger relationships.","words":["Like","other","relationships,","the","municipal","relationship","with","the","public","is","complex.","Most","Canadians","are","satisfied","with","their","local","government","and","give","them","passing","grades","according","to","a","2019","survey.","Only","one-third","of","Canadians","feel","that","they","can","influence","decisions","at","the","municipal","level;","Canadians","are","skeptical","that","local","governments","listen","to","them","or","act","on","what","they","tell","the","local","government",".","As","the","level","of","government","that","describes","itself","as","closest","to","the","people,","municipal","government","has","an","important","relationship","with","the","public,","and","survey","results","like","these","are","concerning.","Earlier","in","the","course","we","explored","the","tension","between","the","municipal","service","delivery","role","and","the","democratic,","governance","role","(see","Municipal","Role).","You","will","learn","in","this","module","that","there","is","a","similar","tension","in","municipal","relationships","involving","services",",","democratic","representation",",","and","accountability",".","Municipal-public","relationships","are","further","complicated","by","changes","in","the","demographic","composition","of","communities.","Larger","urban","municipalities","are","much","more","diverse,","there","is","greater","polarization","of","income","and","opportunity,","and","many","of","us","belong","to","multiple","communities","within","and","outside","our","home","municipality","neighbourhoods","are","no","longer","the","main","defining","feature","of","our","connection","to","municipalities.","At","the","same","time,","municipal","issues","have","grown","and","become","more","complex,","and","lack","of","public","understanding","may","present","barriers","to","stronger","relationships."],"wordIndex":0,"volumeChange":null}
+0|unical   | 11:20:15 AM [express] GET /api/cat-wash/progress 304 in 0ms :: {"active":true,"fileId":213,"fileName":"CPPA122, Module 10 - Introduction.pdf","chunkIndex":0,"totalChunks":52,"chunkText":"Like other relationships, the municipal relationship with the public is complex. Most Canadians are satisfied with their local government and give them passing grades according to a 2019 survey. Only one-third of Canadians feel that they can influence decisions at the municipal level; Canadians are skeptical that local governments listen to them or act on what they tell the local government . As the level of government that describes itself as closest to the people, municipal government has an important relationship with the public, and survey results like these are concerning. Earlier in the course we explored the tension between the municipal service delivery role and the democratic, governance role (see Municipal Role). You will learn in this module that there is a similar tension in municipal relationships involving services , democratic representation , and accountability . Municipal-public relationships are further complicated by changes in the demographic composition of communities. Larger urban municipalities are much more diverse, there is greater polarization of income and opportunity, and many of us belong to multiple communities within and outside our home municipality neighbourhoods are no longer the main defining feature of our connection to municipalities. At the same time, municipal issues have grown and become more complex, and lack of public understanding may present barriers to stronger relationships.","words":["Like","other","relationships,","the","municipal","relationship","with","the","public","is","complex.","Most","Canadians","are","satisfied","with","their","local","government","and","give","them","passing","grades","according","to","a","2019","survey.","Only","one-third","of","Canadians","feel","that","they","can","influence","decisions","at","the","municipal","level;","Canadians","are","skeptical","that","local","governments","listen","to","them","or","act","on","what","they","tell","the","local","government",".","As","the","level","of","government","that","describes","itself","as","closest","to","the","people,","municipal","government","has","an","important","relationship","with","the","public,","and","survey","results","like","these","are","concerning.","Earlier","in","the","course","we","explored","the","tension","between","the","municipal","service","delivery","role","and","the","democratic,","governance","role","(see","Municipal","Role).","You","will","learn","in","this","module","that","there","is","a","similar","tension","in","municipal","relationships","involving","services",",","democratic","representation",",","and","accountability",".","Municipal-public","relationships","are","further","complicated","by","changes","in","the","demographic","composition","of","communities.","Larger","urban","municipalities","are","much","more","diverse,","there","is","greater","polarization","of","income","and","opportunity,","and","many","of","us","belong","to","multiple","communities","within","and","outside","our","home","municipality","neighbourhoods","are","no","longer","the","main","defining","feature","of","our","connection","to","municipalities.","At","the","same","time,","municipal","issues","have","grown","and","become","more","complex,","and","lack","of","public","understanding","may","present","barriers","to","stronger","relationships."],"wordIndex":0,"volumeChange":null}
+0|unical   | 11:20:15 AM [express] GET /api/cat-wash/progress 304 in 0ms :: {"active":true,"fileId":213,"fileName":"CPPA122, Module 10 - Introduction.pdf","chunkIndex":0,"totalChunks":52,"chunkText":"Like other relationships, the municipal relationship with the public is complex. Most Canadians are satisfied with their local government and give them passing grades according to a 2019 survey. Only one-third of Canadians feel that they can influence decisions at the municipal level; Canadians are skeptical that local governments listen to them or act on what they tell the local government . As the level of government that describes itself as closest to the people, municipal government has an important relationship with the public, and survey results like these are concerning. Earlier in the course we explored the tension between the municipal service delivery role and the democratic, governance role (see Municipal Role). You will learn in this module that there is a similar tension in municipal relationships involving services , democratic representation , and accountability . Municipal-public relationships are further complicated by changes in the demographic composition of communities. Larger urban municipalities are much more diverse, there is greater polarization of income and opportunity, and many of us belong to multiple communities within and outside our home municipality neighbourhoods are no longer the main defining feature of our connection to municipalities. At the same time, municipal issues have grown and become more complex, and lack of public understanding may present barriers to stronger relationships.","words":["Like","other","relationships,","the","municipal","relationship","with","the","public","is","complex.","Most","Canadians","are","satisfied","with","their","local","government","and","give","them","passing","grades","according","to","a","2019","survey.","Only","one-third","of","Canadians","feel","that","they","can","influence","decisions","at","the","municipal","level;","Canadians","are","skeptical","that","local","governments","listen","to","them","or","act","on","what","they","tell","the","local","government",".","As","the","level","of","government","that","describes","itself","as","closest","to","the","people,","municipal","government","has","an","important","relationship","with","the","public,","and","survey","results","like","these","are","concerning.","Earlier","in","the","course","we","explored","the","tension","between","the","municipal","service","delivery","role","and","the","democratic,","governance","role","(see","Municipal","Role).","You","will","learn","in","this","module","that","there","is","a","similar","tension","in","municipal","relationships","involving","services",",","democratic","representation",",","and","accountability",".","Municipal-public","relationships","are","further","complicated","by","changes","in","the","demographic","composition","of","communities.","Larger","urban","municipalities","are","much","more","diverse,","there","is","greater","polarization","of","income","and","opportunity,","and","many","of","us","belong","to","multiple","communities","within","and","outside","our","home","municipality","neighbourhoods","are","no","longer","the","main","defining","feature","of","our","connection","to","municipalities.","At","the","same","time,","municipal","issues","have","grown","and","become","more","complex,","and","lack","of","public","understanding","may","present","barriers","to","stronger","relationships."],"wordIndex":0,"volumeChange":null}
+0|unical   | 11:20:16 AM [express] GET /api/cat-wash/progress 304 in 1ms :: {"active":true,"fileId":213,"fileName":"CPPA122, Module 10 - Introduction.pdf","chunkIndex":0,"totalChunks":52,"chunkText":"Like other relationships, the municipal relationship with the public is complex. Most Canadians are satisfied with their local government and give them passing grades according to a 2019 survey. Only one-third of Canadians feel that they can influence decisions at the municipal level; Canadians are skeptical that local governments listen to them or act on what they tell the local government . As the level of government that describes itself as closest to the people, municipal government has an important relationship with the public, and survey results like these are concerning. Earlier in the course we explored the tension between the municipal service delivery role and the democratic, governance role (see Municipal Role). You will learn in this module that there is a similar tension in municipal relationships involving services , democratic representation , and accountability . Municipal-public relationships are further complicated by changes in the demographic composition of communities. Larger urban municipalities are much more diverse, there is greater polarization of income and opportunity, and many of us belong to multiple communities within and outside our home municipality neighbourhoods are no longer the main defining feature of our connection to municipalities. At the same time, municipal issues have grown and become more complex, and lack of public understanding may present barriers to stronger relationships.","words":["Like","other","relationships,","the","municipal","relationship","with","the","public","is","complex.","Most","Canadians","are","satisfied","with","their","local","government","and","give","them","passing","grades","according","to","a","2019","survey.","Only","one-third","of","Canadians","feel","that","they","can","influence","decisions","at","the","municipal","level;","Canadians","are","skeptical","that","local","governments","listen","to","them","or","act","on","what","they","tell","the","local","government",".","As","the","level","of","government","that","describes","itself","as","closest","to","the","people,","municipal","government","has","an","important","relationship","with","the","public,","and","survey","results","like","these","are","concerning.","Earlier","in","the","course","we","explored","the","tension","between","the","municipal","service","delivery","role","and","the","democratic,","governance","role","(see","Municipal","Role).","You","will","learn","in","this","module","that","there","is","a","similar","tension","in","municipal","relationships","involving","services",",","democratic","representation",",","and","accountability",".","Municipal-public","relationships","are","further","complicated","by","changes","in","the","demographic","composition","of","communities.","Larger","urban","municipalities","are","much","more","diverse,","there","is","greater","polarization","of","income","and","opportunity,","and","many","of","us","belong","to","multiple","communities","within","and","outside","our","home","municipality","neighbourhoods","are","no","longer","the","main","defining","feature","of","our","connection","to","municipalities.","At","the","same","time,","municipal","issues","have","grown","and","become","more","complex,","and","lack","of","public","understanding","may","present","barriers","to","stronger","relationships."],"wordIndex":0,"volumeChange":null}
+0|unical   | [Tablet Nav DB] GET tv: no rows found
+0|unical   | 11:20:16 AM [express] GET /api/tablet-nav 200 in 2ms :: {"action":null}
+0|unical   | 11:20:16 AM [express] GET /api/cat-wash/progress 304 in 1ms :: {"active":true,"fileId":213,"fileName":"CPPA122, Module 10 - Introduction.pdf","chunkIndex":0,"totalChunks":52,"chunkText":"Like other relationships, the municipal relationship with the public is complex. Most Canadians are satisfied with their local government and give them passing grades according to a 2019 survey. Only one-third of Canadians feel that they can influence decisions at the municipal level; Canadians are skeptical that local governments listen to them or act on what they tell the local government . As the level of government that describes itself as closest to the people, municipal government has an important relationship with the public, and survey results like these are concerning. Earlier in the course we explored the tension between the municipal service delivery role and the democratic, governance role (see Municipal Role). You will learn in this module that there is a similar tension in municipal relationships involving services , democratic representation , and accountability . Municipal-public relationships are further complicated by changes in the demographic composition of communities. Larger urban municipalities are much more diverse, there is greater polarization of income and opportunity, and many of us belong to multiple communities within and outside our home municipality neighbourhoods are no longer the main defining feature of our connection to municipalities. At the same time, municipal issues have grown and become more complex, and lack of public understanding may present barriers to stronger relationships.","words":["Like","other","relationships,","the","municipal","relationship","with","the","public","is","complex.","Most","Canadians","are","satisfied","with","their","local","government","and","give","them","passing","grades","according","to","a","2019","survey.","Only","one-third","of","Canadians","feel","that","they","can","influence","decisions","at","the","municipal","level;","Canadians","are","skeptical","that","local","governments","listen","to","them","or","act","on","what","they","tell","the","local","government",".","As","the","level","of","government","that","describes","itself","as","closest","to","the","people,","municipal","government","has","an","important","relationship","with","the","public,","and","survey","results","like","these","are","concerning.","Earlier","in","the","course","we","explored","the","tension","between","the","municipal","service","delivery","role","and","the","democratic,","governance","role","(see","Municipal","Role).","You","will","learn","in","this","module","that","there","is","a","similar","tension","in","municipal","relationships","involving","services",",","democratic","representation",",","and","accountability",".","Municipal-public","relationships","are","further","complicated","by","changes","in","the","demographic","composition","of","communities.","Larger","urban","municipalities","are","much","more","diverse,","there","is","greater","polarization","of","income","and","opportunity,","and","many","of","us","belong","to","multiple","communities","within","and","outside","our","home","municipality","neighbourhoods","are","no","longer","the","main","defining","feature","of","our","connection","to","municipalities.","At","the","same","time,","municipal","issues","have","grown","and","become","more","complex,","and","lack","of","public","understanding","may","present","barriers","to","stronger","relationships."],"wordIndex":0,"volumeChange":null}
+0|unical   | 11:20:17 AM [express] GET /api/cat-wash/progress 304 in 1ms :: {"active":true,"fileId":213,"fileName":"CPPA122, Module 10 - Introduction.pdf","chunkIndex":0,"totalChunks":52,"chunkText":"Like other relationships, the municipal relationship with the public is complex. Most Canadians are satisfied with their local government and give them passing grades according to a 2019 survey. Only one-third of Canadians feel that they can influence decisions at the municipal level; Canadians are skeptical that local governments listen to them or act on what they tell the local government . As the level of government that describes itself as closest to the people, municipal government has an important relationship with the public, and survey results like these are concerning. Earlier in the course we explored the tension between the municipal service delivery role and the democratic, governance role (see Municipal Role). You will learn in this module that there is a similar tension in municipal relationships involving services , democratic representation , and accountability . Municipal-public relationships are further complicated by changes in the demographic composition of communities. Larger urban municipalities are much more diverse, there is greater polarization of income and opportunity, and many of us belong to multiple communities within and outside our home municipality neighbourhoods are no longer the main defining feature of our connection to municipalities. At the same time, municipal issues have grown and become more complex, and lack of public understanding may present barriers to stronger relationships.","words":["Like","other","relationships,","the","municipal","relationship","with","the","public","is","complex.","Most","Canadians","are","satisfied","with","their","local","government","and","give","them","passing","grades","according","to","a","2019","survey.","Only","one-third","of","Canadians","feel","that","they","can","influence","decisions","at","the","municipal","level;","Canadians","are","skeptical","that","local","governments","listen","to","them","or","act","on","what","they","tell","the","local","government",".","As","the","level","of","government","that","describes","itself","as","closest","to","the","people,","municipal","government","has","an","important","relationship","with","the","public,","and","survey","results","like","these","are","concerning.","Earlier","in","the","course","we","explored","the","tension","between","the","municipal","service","delivery","role","and","the","democratic,","governance","role","(see","Municipal","Role).","You","will","learn","in","this","module","that","there","is","a","similar","tension","in","municipal","relationships","involving","services",",","democratic","representation",",","and","accountability",".","Municipal-public","relationships","are","further","complicated","by","changes","in","the","demographic","composition","of","communities.","Larger","urban","municipalities","are","much","more","diverse,","there","is","greater","polarization","of","income","and","opportunity,","and","many","of","us","belong","to","multiple","communities","within","and","outside","our","home","municipality","neighbourhoods","are","no","longer","the","main","defining","feature","of","our","connection","to","municipalities.","At","the","same","time,","municipal","issues","have","grown","and","become","more","complex,","and","lack","of","public","understanding","may","present","barriers","to","stronger","relationships."],"wordIndex":0,"volumeChange":null}
+0|unical   | 11:20:17 AM [express] GET /api/cat-wash/progress 304 in 1ms :: {"active":true,"fileId":213,"fileName":"CPPA122, Module 10 - Introduction.pdf","chunkIndex":0,"totalChunks":52,"chunkText":"Like other relationships, the municipal relationship with the public is complex. Most Canadians are satisfied with their local government and give them passing grades according to a 2019 survey. Only one-third of Canadians feel that they can influence decisions at the municipal level; Canadians are skeptical that local governments listen to them or act on what they tell the local government . As the level of government that describes itself as closest to the people, municipal government has an important relationship with the public, and survey results like these are concerning. Earlier in the course we explored the tension between the municipal service delivery role and the democratic, governance role (see Municipal Role). You will learn in this module that there is a similar tension in municipal relationships involving services , democratic representation , and accountability . Municipal-public relationships are further complicated by changes in the demographic composition of communities. Larger urban municipalities are much more diverse, there is greater polarization of income and opportunity, and many of us belong to multiple communities within and outside our home municipality neighbourhoods are no longer the main defining feature of our connection to municipalities. At the same time, municipal issues have grown and become more complex, and lack of public understanding may present barriers to stronger relationships.","words":["Like","other","relationships,","the","municipal","relationship","with","the","public","is","complex.","Most","Canadians","are","satisfied","with","their","local","government","and","give","them","passing","grades","according","to","a","2019","survey.","Only","one-third","of","Canadians","feel","that","they","can","influence","decisions","at","the","municipal","level;","Canadians","are","skeptical","that","local","governments","listen","to","them","or","act","on","what","they","tell","the","local","government",".","As","the","level","of","government","that","describes","itself","as","closest","to","the","people,","municipal","government","has","an","important","relationship","with","the","public,","and","survey","results","like","these","are","concerning.","Earlier","in","the","course","we","explored","the","tension","between","the","municipal","service","delivery","role","and","the","democratic,","governance","role","(see","Municipal","Role).","You","will","learn","in","this","module","that","there","is","a","similar","tension","in","municipal","relationships","involving","services",",","democratic","representation",",","and","accountability",".","Municipal-public","relationships","are","further","complicated","by","changes","in","the","demographic","composition","of","communities.","Larger","urban","municipalities","are","much","more","diverse,","there","is","greater","polarization","of","income","and","opportunity,","and","many","of","us","belong","to","multiple","communities","within","and","outside","our","home","municipality","neighbourhoods","are","no","longer","the","main","defining","feature","of","our","connection","to","municipalities.","At","the","same","time,","municipal","issues","have","grown","and","become","more","complex,","and","lack","of","public","understanding","may","present","barriers","to","stronger","relationships."],"wordIndex":0,"volumeChange":null}
+0|unical   | 11:20:18 AM [express] GET /api/cat-wash/progress 304 in 1ms :: {"active":true,"fileId":213,"fileName":"CPPA122, Module 10 - Introduction.pdf","chunkIndex":0,"totalChunks":52,"chunkText":"Like other relationships, the municipal relationship with the public is complex. Most Canadians are satisfied with their local government and give them passing grades according to a 2019 survey. Only one-third of Canadians feel that they can influence decisions at the municipal level; Canadians are skeptical that local governments listen to them or act on what they tell the local government . As the level of government that describes itself as closest to the people, municipal government has an important relationship with the public, and survey results like these are concerning. Earlier in the course we explored the tension between the municipal service delivery role and the democratic, governance role (see Municipal Role). You will learn in this module that there is a similar tension in municipal relationships involving services , democratic representation , and accountability . Municipal-public relationships are further complicated by changes in the demographic composition of communities. Larger urban municipalities are much more diverse, there is greater polarization of income and opportunity, and many of us belong to multiple communities within and outside our home municipality neighbourhoods are no longer the main defining feature of our connection to municipalities. At the same time, municipal issues have grown and become more complex, and lack of public understanding may present barriers to stronger relationships.","words":["Like","other","relationships,","the","municipal","relationship","with","the","public","is","complex.","Most","Canadians","are","satisfied","with","their","local","government","and","give","them","passing","grades","according","to","a","2019","survey.","Only","one-third","of","Canadians","feel","that","they","can","influence","decisions","at","the","municipal","level;","Canadians","are","skeptical","that","local","governments","listen","to","them","or","act","on","what","they","tell","the","local","government",".","As","the","level","of","government","that","describes","itself","as","closest","to","the","people,","municipal","government","has","an","important","relationship","with","the","public,","and","survey","results","like","these","are","concerning.","Earlier","in","the","course","we","explored","the","tension","between","the","municipal","service","delivery","role","and","the","democratic,","governance","role","(see","Municipal","Role).","You","will","learn","in","this","module","that","there","is","a","similar","tension","in","municipal","relationships","involving","services",",","democratic","representation",",","and","accountability",".","Municipal-public","relationships","are","further","complicated","by","changes","in","the","demographic","composition","of","communities.","Larger","urban","municipalities","are","much","more","diverse,","there","is","greater","polarization","of","income","and","opportunity,","and","many","of","us","belong","to","multiple","communities","within","and","outside","our","home","municipality","neighbourhoods","are","no","longer","the","main","defining","feature","of","our","connection","to","municipalities.","At","the","same","time,","municipal","issues","have","grown","and","become","more","complex,","and","lack","of","public","understanding","may","present","barriers","to","stronger","relationships."],"wordIndex":0,"volumeChange":null}
+0|unical   | 11:20:18 AM [express] GET /api/cat-wash/progress 304 in 1ms :: {"active":true,"fileId":213,"fileName":"CPPA122, Module 10 - Introduction.pdf","chunkIndex":0,"totalChunks":52,"chunkText":"Like other relationships, the municipal relationship with the public is complex. Most Canadians are satisfied with their local government and give them passing grades according to a 2019 survey. Only one-third of Canadians feel that they can influence decisions at the municipal level; Canadians are skeptical that local governments listen to them or act on what they tell the local government . As the level of government that describes itself as closest to the people, municipal government has an important relationship with the public, and survey results like these are concerning. Earlier in the course we explored the tension between the municipal service delivery role and the democratic, governance role (see Municipal Role). You will learn in this module that there is a similar tension in municipal relationships involving services , democratic representation , and accountability . Municipal-public relationships are further complicated by changes in the demographic composition of communities. Larger urban municipalities are much more diverse, there is greater polarization of income and opportunity, and many of us belong to multiple communities within and outside our home municipality neighbourhoods are no longer the main defining feature of our connection to municipalities. At the same time, municipal issues have grown and become more complex, and lack of public understanding may present barriers to stronger relationships.","words":["Like","other","relationships,","the","municipal","relationship","with","the","public","is","complex.","Most","Canadians","are","satisfied","with","their","local","government","and","give","them","passing","grades","according","to","a","2019","survey.","Only","one-third","of","Canadians","feel","that","they","can","influence","decisions","at","the","municipal","level;","Canadians","are","skeptical","that","local","governments","listen","to","them","or","act","on","what","they","tell","the","local","government",".","As","the","level","of","government","that","describes","itself","as","closest","to","the","people,","municipal","government","has","an","important","relationship","with","the","public,","and","survey","results","like","these","are","concerning.","Earlier","in","the","course","we","explored","the","tension","between","the","municipal","service","delivery","role","and","the","democratic,","governance","role","(see","Municipal","Role).","You","will","learn","in","this","module","that","there","is","a","similar","tension","in","municipal","relationships","involving","services",",","democratic","representation",",","and","accountability",".","Municipal-public","relationships","are","further","complicated","by","changes","in","the","demographic","composition","of","communities.","Larger","urban","municipalities","are","much","more","diverse,","there","is","greater","polarization","of","income","and","opportunity,","and","many","of","us","belong","to","multiple","communities","within","and","outside","our","home","municipality","neighbourhoods","are","no","longer","the","main","defining","feature","of","our","connection","to","municipalities.","At","the","same","time,","municipal","issues","have","grown","and","become","more","complex,","and","lack","of","public","understanding","may","present","barriers","to","stronger","relationships."],"wordIndex":0,"volumeChange":null}
+0|unical   | 11:20:19 AM [express] GET /api/cat-wash/progress 304 in 1ms :: {"active":true,"fileId":213,"fileName":"CPPA122, Module 10 - Introduction.pdf","chunkIndex":0,"totalChunks":52,"chunkText":"Like other relationships, the municipal relationship with the public is complex. Most Canadians are satisfied with their local government and give them passing grades according to a 2019 survey. Only one-third of Canadians feel that they can influence decisions at the municipal level; Canadians are skeptical that local governments listen to them or act on what they tell the local government . As the level of government that describes itself as closest to the people, municipal government has an important relationship with the public, and survey results like these are concerning. Earlier in the course we explored the tension between the municipal service delivery role and the democratic, governance role (see Municipal Role). You will learn in this module that there is a similar tension in municipal relationships involving services , democratic representation , and accountability . Municipal-public relationships are further complicated by changes in the demographic composition of communities. Larger urban municipalities are much more diverse, there is greater polarization of income and opportunity, and many of us belong to multiple communities within and outside our home municipality neighbourhoods are no longer the main defining feature of our connection to municipalities. At the same time, municipal issues have grown and become more complex, and lack of public understanding may present barriers to stronger relationships.","words":["Like","other","relationships,","the","municipal","relationship","with","the","public","is","complex.","Most","Canadians","are","satisfied","with","their","local","government","and","give","them","passing","grades","according","to","a","2019","survey.","Only","one-third","of","Canadians","feel","that","they","can","influence","decisions","at","the","municipal","level;","Canadians","are","skeptical","that","local","governments","listen","to","them","or","act","on","what","they","tell","the","local","government",".","As","the","level","of","government","that","describes","itself","as","closest","to","the","people,","municipal","government","has","an","important","relationship","with","the","public,","and","survey","results","like","these","are","concerning.","Earlier","in","the","course","we","explored","the","tension","between","the","municipal","service","delivery","role","and","the","democratic,","governance","role","(see","Municipal","Role).","You","will","learn","in","this","module","that","there","is","a","similar","tension","in","municipal","relationships","involving","services",",","democratic","representation",",","and","accountability",".","Municipal-public","relationships","are","further","complicated","by","changes","in","the","demographic","composition","of","communities.","Larger","urban","municipalities","are","much","more","diverse,","there","is","greater","polarization","of","income","and","opportunity,","and","many","of","us","belong","to","multiple","communities","within","and","outside","our","home","municipality","neighbourhoods","are","no","longer","the","main","defining","feature","of","our","connection","to","municipalities.","At","the","same","time,","municipal","issues","have","grown","and","become","more","complex,","and","lack","of","public","understanding","may","present","barriers","to","stronger","relationships."],"wordIndex":0,"volumeChange":null}
+0|unical   | [Tablet Nav DB] GET tv: no rows found
+0|unical   | 11:20:19 AM [express] GET /api/tablet-nav 200 in 2ms :: {"action":null}
+0|unical   | 11:20:19 AM [express] GET /api/cat-wash/progress 304 in 1ms :: {"active":true,"fileId":213,"fileName":"CPPA122, Module 10 - Introduction.pdf","chunkIndex":0,"totalChunks":52,"chunkText":"Like other relationships, the municipal relationship with the public is complex. Most Canadians are satisfied with their local government and give them passing grades according to a 2019 survey. Only one-third of Canadians feel that they can influence decisions at the municipal level; Canadians are skeptical that local governments listen to them or act on what they tell the local government . As the level of government that describes itself as closest to the people, municipal government has an important relationship with the public, and survey results like these are concerning. Earlier in the course we explored the tension between the municipal service delivery role and the democratic, governance role (see Municipal Role). You will learn in this module that there is a similar tension in municipal relationships involving services , democratic representation , and accountability . Municipal-public relationships are further complicated by changes in the demographic composition of communities. Larger urban municipalities are much more diverse, there is greater polarization of income and opportunity, and many of us belong to multiple communities within and outside our home municipality neighbourhoods are no longer the main defining feature of our connection to municipalities. At the same time, municipal issues have grown and become more complex, and lack of public understanding may present barriers to stronger relationships.","words":["Like","other","relationships,","the","municipal","relationship","with","the","public","is","complex.","Most","Canadians","are","satisfied","with","their","local","government","and","give","them","passing","grades","according","to","a","2019","survey.","Only","one-third","of","Canadians","feel","that","they","can","influence","decisions","at","the","municipal","level;","Canadians","are","skeptical","that","local","governments","listen","to","them","or","act","on","what","they","tell","the","local","government",".","As","the","level","of","government","that","describes","itself","as","closest","to","the","people,","municipal","government","has","an","important","relationship","with","the","public,","and","survey","results","like","these","are","concerning.","Earlier","in","the","course","we","explored","the","tension","between","the","municipal","service","delivery","role","and","the","democratic,","governance","role","(see","Municipal","Role).","You","will","learn","in","this","module","that","there","is","a","similar","tension","in","municipal","relationships","involving","services",",","democratic","representation",",","and","accountability",".","Municipal-public","relationships","are","further","complicated","by","changes","in","the","demographic","composition","of","communities.","Larger","urban","municipalities","are","much","more","diverse,","there","is","greater","polarization","of","income","and","opportunity,","and","many","of","us","belong","to","multiple","communities","within","and","outside","our","home","municipality","neighbourhoods","are","no","longer","the","main","defining","feature","of","our","connection","to","municipalities.","At","the","same","time,","municipal","issues","have","grown","and","become","more","complex,","and","lack","of","public","understanding","may","present","barriers","to","stronger","relationships."],"wordIndex":0,"volumeChange":null}
+0|unical   | 11:20:20 AM [express] GET /api/cat-wash/progress 304 in 1ms :: {"active":true,"fileId":213,"fileName":"CPPA122, Module 10 - Introduction.pdf","chunkIndex":0,"totalChunks":52,"chunkText":"Like other relationships, the municipal relationship with the public is complex. Most Canadians are satisfied with their local government and give them passing grades according to a 2019 survey. Only one-third of Canadians feel that they can influence decisions at the municipal level; Canadians are skeptical that local governments listen to them or act on what they tell the local government . As the level of government that describes itself as closest to the people, municipal government has an important relationship with the public, and survey results like these are concerning. Earlier in the course we explored the tension between the municipal service delivery role and the democratic, governance role (see Municipal Role). You will learn in this module that there is a similar tension in municipal relationships involving services , democratic representation , and accountability . Municipal-public relationships are further complicated by changes in the demographic composition of communities. Larger urban municipalities are much more diverse, there is greater polarization of income and opportunity, and many of us belong to multiple communities within and outside our home municipality neighbourhoods are no longer the main defining feature of our connection to municipalities. At the same time, municipal issues have grown and become more complex, and lack of public understanding may present barriers to stronger relationships.","words":["Like","other","relationships,","the","municipal","relationship","with","the","public","is","complex.","Most","Canadians","are","satisfied","with","their","local","government","and","give","them","passing","grades","according","to","a","2019","survey.","Only","one-third","of","Canadians","feel","that","they","can","influence","decisions","at","the","municipal","level;","Canadians","are","skeptical","that","local","governments","listen","to","them","or","act","on","what","they","tell","the","local","government",".","As","the","level","of","government","that","describes","itself","as","closest","to","the","people,","municipal","government","has","an","important","relationship","with","the","public,","and","survey","results","like","these","are","concerning.","Earlier","in","the","course","we","explored","the","tension","between","the","municipal","service","delivery","role","and","the","democratic,","governance","role","(see","Municipal","Role).","You","will","learn","in","this","module","that","there","is","a","similar","tension","in","municipal","relationships","involving","services",",","democratic","representation",",","and","accountability",".","Municipal-public","relationships","are","further","complicated","by","changes","in","the","demographic","composition","of","communities.","Larger","urban","municipalities","are","much","more","diverse,","there","is","greater","polarization","of","income","and","opportunity,","and","many","of","us","belong","to","multiple","communities","within","and","outside","our","home","municipality","neighbourhoods","are","no","longer","the","main","defining","feature","of","our","connection","to","municipalities.","At","the","same","time,","municipal","issues","have","grown","and","become","more","complex,","and","lack","of","public","understanding","may","present","barriers","to","stronger","relationships."],"wordIndex":0,"volumeChange":null}
+0|unical   | [TRACE 11:20:20 AM] [CatLights] WEBHOOK RECEIVED | state={"active":true,"sessionId":1,"file":"CPPA122, Module 10 - Introduction.pdf","chunk":"0/52","lightsPrompt":false,"trigger":"lights","msSinceStop":null,"msSinceManualStop":null,"msSinceStart":101922} | {"body":{"state":"off"}}
+0|unical   | [Cat Lights] ====== WEBHOOK TRIGGERED ======
+0|unical   | [Cat Lights] Timestamp: 4/7/2026, 11:20:20 AM
+0|unical   | [Cat Lights] Request body: {"state":"off"}
+0|unical   | [Cat Lights] Body parsing: state="off", action="", rawToState=undefined, trigger="none"
+0|unical   | [Cat Lights] Using body state directly: off
+0|unical   | [TRACE 11:20:20 AM] [CatLights] STATE RESOLVED: off | state={"active":true,"sessionId":1,"file":"CPPA122, Module 10 - Introduction.pdf","chunk":"0/52","lightsPrompt":false,"trigger":"lights","msSinceStop":null,"msSinceManualStop":null,"msSinceStart":101923} | {"bodyState":"off","bodyAction":"","method":"body"}
+0|unical   | [Cat Lights] Light state: off (body state: off)
+0|unical   | [Cat Lights] Architecture: server-side TTS → Google Nest speaker (media_player.play_media)
+0|unical   | [TRACE 11:20:20 AM] [CatLights] LIGHT OFF — stopping all playback | state={"active":true,"sessionId":1,"file":"CPPA122, Module 10 - Introduction.pdf","chunk":"0/52","lightsPrompt":false,"trigger":"lights","msSinceStop":null,"msSinceManualStop":null,"msSinceStart":101923}
+0|unical   | [Cat Lights] Light off — stopping all playback and saving progress
+0|unical   | [TRACE 11:20:20 AM] [StopWithGoodbye] ENTER reason=light_off keepOpen=false | state={"active":true,"sessionId":1,"file":"CPPA122, Module 10 - Introduction.pdf","chunk":"0/52","lightsPrompt":false,"trigger":"lights","msSinceStop":null,"msSinceManualStop":null,"msSinceStart":101924}
+0|unical   | [Nest] Stopped playback
+0|unical   | [Nest Stop] Reason: light_off. Goodbye: "Stopping. Your position has been saved. See you next time Bryn."
+0|unical   | 11:20:20 AM [express] GET /api/cat-wash/progress 304 in 1ms :: {"active":true,"fileId":213,"fileName":"CPPA122, Module 10 - Introduction.pdf","chunkIndex":0,"totalChunks":52,"chunkText":"Like other relationships, the municipal relationship with the public is complex. Most Canadians are satisfied with their local government and give them passing grades according to a 2019 survey. Only one-third of Canadians feel that they can influence decisions at the municipal level; Canadians are skeptical that local governments listen to them or act on what they tell the local government . As the level of government that describes itself as closest to the people, municipal government has an important relationship with the public, and survey results like these are concerning. Earlier in the course we explored the tension between the municipal service delivery role and the democratic, governance role (see Municipal Role). You will learn in this module that there is a similar tension in municipal relationships involving services , democratic representation , and accountability . Municipal-public relationships are further complicated by changes in the demographic composition of communities. Larger urban municipalities are much more diverse, there is greater polarization of income and opportunity, and many of us belong to multiple communities within and outside our home municipality neighbourhoods are no longer the main defining feature of our connection to municipalities. At the same time, municipal issues have grown and become more complex, and lack of public understanding may present barriers to stronger relationships.","words":["Like","other","relationships,","the","municipal","relationship","with","the","public","is","complex.","Most","Canadians","are","satisfied","with","their","local","government","and","give","them","passing","grades","according","to","a","2019","survey.","Only","one-third","of","Canadians","feel","that","they","can","influence","decisions","at","the","municipal","level;","Canadians","are","skeptical","that","local","governments","listen","to","them","or","act","on","what","they","tell","the","local","government",".","As","the","level","of","government","that","describes","itself","as","closest","to","the","people,","municipal","government","has","an","important","relationship","with","the","public,","and","survey","results","like","these","are","concerning.","Earlier","in","the","course","we","explored","the","tension","between","the","municipal","service","delivery","role","and","the","democratic,","governance","role","(see","Municipal","Role).","You","will","learn","in","this","module","that","there","is","a","similar","tension","in","municipal","relationships","involving","services",",","democratic","representation",",","and","accountability",".","Municipal-public","relationships","are","further","complicated","by","changes","in","the","demographic","composition","of","communities.","Larger","urban","municipalities","are","much","more","diverse,","there","is","greater","polarization","of","income","and","opportunity,","and","many","of","us","belong","to","multiple","communities","within","and","outside","our","home","municipality","neighbourhoods","are","no","longer","the","main","defining","feature","of","our","connection","to","municipalities.","At","the","same","time,","municipal","issues","have","grown","and","become","more","complex,","and","lack","of","public","understanding","may","present","barriers","to","stronger","relationships."],"wordIndex":0,"volumeChange":null}
+0|unical   | 11:20:21 AM [express] GET /api/cat-wash/progress 304 in 1ms :: {"active":true,"fileId":213,"fileName":"CPPA122, Module 10 - Introduction.pdf","chunkIndex":0,"totalChunks":52,"chunkText":"Like other relationships, the municipal relationship with the public is complex. Most Canadians are satisfied with their local government and give them passing grades according to a 2019 survey. Only one-third of Canadians feel that they can influence decisions at the municipal level; Canadians are skeptical that local governments listen to them or act on what they tell the local government . As the level of government that describes itself as closest to the people, municipal government has an important relationship with the public, and survey results like these are concerning. Earlier in the course we explored the tension between the municipal service delivery role and the democratic, governance role (see Municipal Role). You will learn in this module that there is a similar tension in municipal relationships involving services , democratic representation , and accountability . Municipal-public relationships are further complicated by changes in the demographic composition of communities. Larger urban municipalities are much more diverse, there is greater polarization of income and opportunity, and many of us belong to multiple communities within and outside our home municipality neighbourhoods are no longer the main defining feature of our connection to municipalities. At the same time, municipal issues have grown and become more complex, and lack of public understanding may present barriers to stronger relationships.","words":["Like","other","relationships,","the","municipal","relationship","with","the","public","is","complex.","Most","Canadians","are","satisfied","with","their","local","government","and","give","them","passing","grades","according","to","a","2019","survey.","Only","one-third","of","Canadians","feel","that","they","can","influence","decisions","at","the","municipal","level;","Canadians","are","skeptical","that","local","governments","listen","to","them","or","act","on","what","they","tell","the","local","government",".","As","the","level","of","government","that","describes","itself","as","closest","to","the","people,","municipal","government","has","an","important","relationship","with","the","public,","and","survey","results","like","these","are","concerning.","Earlier","in","the","course","we","explored","the","tension","between","the","municipal","service","delivery","role","and","the","democratic,","governance","role","(see","Municipal","Role).","You","will","learn","in","this","module","that","there","is","a","similar","tension","in","municipal","relationships","involving","services",",","democratic","representation",",","and","accountability",".","Municipal-public","relationships","are","further","complicated","by","changes","in","the","demographic","composition","of","communities.","Larger","urban","municipalities","are","much","more","diverse,","there","is","greater","polarization","of","income","and","opportunity,","and","many","of","us","belong","to","multiple","communities","within","and","outside","our","home","municipality","neighbourhoods","are","no","longer","the","main","defining","feature","of","our","connection","to","municipalities.","At","the","same","time,","municipal","issues","have","grown","and","become","more","complex,","and","lack","of","public","understanding","may","present","barriers","to","stronger","relationships."],"wordIndex":0,"volumeChange":null}
+0|unical   | 11:20:21 AM [express] GET /api/health 200 in 1ms :: {"status":"ok","uptime":187,"ha":{"connected":true,"lastSuccessAt":"2026-04-07T15:19:22.364Z","lastFailureAt":null,"consecutiveFailures":0,"totalChecks":3,"totalFailures":0,"lastError":null,"downSince":null,"commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-07T15:20:21.247Z"}
+0|unical   | 11:20:21 AM [express] GET /api/cat-wash/progress 304 in 1ms :: {"active":true,"fileId":213,"fileName":"CPPA122, Module 10 - Introduction.pdf","chunkIndex":0,"totalChunks":52,"chunkText":"Like other relationships, the municipal relationship with the public is complex. Most Canadians are satisfied with their local government and give them passing grades according to a 2019 survey. Only one-third of Canadians feel that they can influence decisions at the municipal level; Canadians are skeptical that local governments listen to them or act on what they tell the local government . As the level of government that describes itself as closest to the people, municipal government has an important relationship with the public, and survey results like these are concerning. Earlier in the course we explored the tension between the municipal service delivery role and the democratic, governance role (see Municipal Role). You will learn in this module that there is a similar tension in municipal relationships involving services , democratic representation , and accountability . Municipal-public relationships are further complicated by changes in the demographic composition of communities. Larger urban municipalities are much more diverse, there is greater polarization of income and opportunity, and many of us belong to multiple communities within and outside our home municipality neighbourhoods are no longer the main defining feature of our connection to municipalities. At the same time, municipal issues have grown and become more complex, and lack of public understanding may present barriers to stronger relationships.","words":["Like","other","relationships,","the","municipal","relationship","with","the","public","is","complex.","Most","Canadians","are","satisfied","with","their","local","government","and","give","them","passing","grades","according","to","a","2019","survey.","Only","one-third","of","Canadians","feel","that","they","can","influence","decisions","at","the","municipal","level;","Canadians","are","skeptical","that","local","governments","listen","to","them","or","act","on","what","they","tell","the","local","government",".","As","the","level","of","government","that","describes","itself","as","closest","to","the","people,","municipal","government","has","an","important","relationship","with","the","public,","and","survey","results","like","these","are","concerning.","Earlier","in","the","course","we","explored","the","tension","between","the","municipal","service","delivery","role","and","the","democratic,","governance","role","(see","Municipal","Role).","You","will","learn","in","this","module","that","there","is","a","similar","tension","in","municipal","relationships","involving","services",",","democratic","representation",",","and","accountability",".","Municipal-public","relationships","are","further","complicated","by","changes","in","the","demographic","composition","of","communities.","Larger","urban","municipalities","are","much","more","diverse,","there","is","greater","polarization","of","income","and","opportunity,","and","many","of","us","belong","to","multiple","communities","within","and","outside","our","home","municipality","neighbourhoods","are","no","longer","the","main","defining","feature","of","our","connection","to","municipalities.","At","the","same","time,","municipal","issues","have","grown","and","become","more","complex,","and","lack","of","public","understanding","may","present","barriers","to","stronger","relationships."],"wordIndex":0,"volumeChange":null}
+0|unical   | 11:20:22 AM [express] GET /api/cat-wash/progress 304 in 1ms :: {"active":true,"fileId":213,"fileName":"CPPA122, Module 10 - Introduction.pdf","chunkIndex":0,"totalChunks":52,"chunkText":"Like other relationships, the municipal relationship with the public is complex. Most Canadians are satisfied with their local government and give them passing grades according to a 2019 survey. Only one-third of Canadians feel that they can influence decisions at the municipal level; Canadians are skeptical that local governments listen to them or act on what they tell the local government . As the level of government that describes itself as closest to the people, municipal government has an important relationship with the public, and survey results like these are concerning. Earlier in the course we explored the tension between the municipal service delivery role and the democratic, governance role (see Municipal Role). You will learn in this module that there is a similar tension in municipal relationships involving services , democratic representation , and accountability . Municipal-public relationships are further complicated by changes in the demographic composition of communities. Larger urban municipalities are much more diverse, there is greater polarization of income and opportunity, and many of us belong to multiple communities within and outside our home municipality neighbourhoods are no longer the main defining feature of our connection to municipalities. At the same time, municipal issues have grown and become more complex, and lack of public understanding may present barriers to stronger relationships.","words":["Like","other","relationships,","the","municipal","relationship","with","the","public","is","complex.","Most","Canadians","are","satisfied","with","their","local","government","and","give","them","passing","grades","according","to","a","2019","survey.","Only","one-third","of","Canadians","feel","that","they","can","influence","decisions","at","the","municipal","level;","Canadians","are","skeptical","that","local","governments","listen","to","them","or","act","on","what","they","tell","the","local","government",".","As","the","level","of","government","that","describes","itself","as","closest","to","the","people,","municipal","government","has","an","important","relationship","with","the","public,","and","survey","results","like","these","are","concerning.","Earlier","in","the","course","we","explored","the","tension","between","the","municipal","service","delivery","role","and","the","democratic,","governance","role","(see","Municipal","Role).","You","will","learn","in","this","module","that","there","is","a","similar","tension","in","municipal","relationships","involving","services",",","democratic","representation",",","and","accountability",".","Municipal-public","relationships","are","further","complicated","by","changes","in","the","demographic","composition","of","communities.","Larger","urban","municipalities","are","much","more","diverse,","there","is","greater","polarization","of","income","and","opportunity,","and","many","of","us","belong","to","multiple","communities","within","and","outside","our","home","municipality","neighbourhoods","are","no","longer","the","main","defining","feature","of","our","connection","to","municipalities.","At","the","same","time,","municipal","issues","have","grown","and","become","more","complex,","and","lack","of","public","understanding","may","present","barriers","to","stronger","relationships."],"wordIndex":0,"volumeChange":null}
+0|unical   | [Tablet Nav DB] GET tv: no rows found
+0|unical   | 11:20:22 AM [express] GET /api/tablet-nav 200 in 2ms :: {"action":null}
+0|unical   | 11:20:22 AM [express] GET /api/cat-wash/progress 304 in 1ms :: {"active":true,"fileId":213,"fileName":"CPPA122, Module 10 - Introduction.pdf","chunkIndex":0,"totalChunks":52,"chunkText":"Like other relationships, the municipal relationship with the public is complex. Most Canadians are satisfied with their local government and give them passing grades according to a 2019 survey. Only one-third of Canadians feel that they can influence decisions at the municipal level; Canadians are skeptical that local governments listen to them or act on what they tell the local government . As the level of government that describes itself as closest to the people, municipal government has an important relationship with the public, and survey results like these are concerning. Earlier in the course we explored the tension between the municipal service delivery role and the democratic, governance role (see Municipal Role). You will learn in this module that there is a similar tension in municipal relationships involving services , democratic representation , and accountability . Municipal-public relationships are further complicated by changes in the demographic composition of communities. Larger urban municipalities are much more diverse, there is greater polarization of income and opportunity, and many of us belong to multiple communities within and outside our home municipality neighbourhoods are no longer the main defining feature of our connection to municipalities. At the same time, municipal issues have grown and become more complex, and lack of public understanding may present barriers to stronger relationships.","words":["Like","other","relationships,","the","municipal","relationship","with","the","public","is","complex.","Most","Canadians","are","satisfied","with","their","local","government","and","give","them","passing","grades","according","to","a","2019","survey.","Only","one-third","of","Canadians","feel","that","they","can","influence","decisions","at","the","municipal","level;","Canadians","are","skeptical","that","local","governments","listen","to","them","or","act","on","what","they","tell","the","local","government",".","As","the","level","of","government","that","describes","itself","as","closest","to","the","people,","municipal","government","has","an","important","relationship","with","the","public,","and","survey","results","like","these","are","concerning.","Earlier","in","the","course","we","explored","the","tension","between","the","municipal","service","delivery","role","and","the","democratic,","governance","role","(see","Municipal","Role).","You","will","learn","in","this","module","that","there","is","a","similar","tension","in","municipal","relationships","involving","services",",","democratic","representation",",","and","accountability",".","Municipal-public","relationships","are","further","complicated","by","changes","in","the","demographic","composition","of","communities.","Larger","urban","municipalities","are","much","more","diverse,","there","is","greater","polarization","of","income","and","opportunity,","and","many","of","us","belong","to","multiple","communities","within","and","outside","our","home","municipality","neighbourhoods","are","no","longer","the","main","defining","feature","of","our","connection","to","municipalities.","At","the","same","time,","municipal","issues","have","grown","and","become","more","complex,","and","lack","of","public","understanding","may","present","barriers","to","stronger","relationships."],"wordIndex":0,"volumeChange":null}
+0|unical   | 11:20:23 AM [express] GET /api/cat-wash/progress 304 in 1ms :: {"active":true,"fileId":213,"fileName":"CPPA122, Module 10 - Introduction.pdf","chunkIndex":0,"totalChunks":52,"chunkText":"Like other relationships, the municipal relationship with the public is complex. Most Canadians are satisfied with their local government and give them passing grades according to a 2019 survey. Only one-third of Canadians feel that they can influence decisions at the municipal level; Canadians are skeptical that local governments listen to them or act on what they tell the local government . As the level of government that describes itself as closest to the people, municipal government has an important relationship with the public, and survey results like these are concerning. Earlier in the course we explored the tension between the municipal service delivery role and the democratic, governance role (see Municipal Role). You will learn in this module that there is a similar tension in municipal relationships involving services , democratic representation , and accountability . Municipal-public relationships are further complicated by changes in the demographic composition of communities. Larger urban municipalities are much more diverse, there is greater polarization of income and opportunity, and many of us belong to multiple communities within and outside our home municipality neighbourhoods are no longer the main defining feature of our connection to municipalities. At the same time, municipal issues have grown and become more complex, and lack of public understanding may present barriers to stronger relationships.","words":["Like","other","relationships,","the","municipal","relationship","with","the","public","is","complex.","Most","Canadians","are","satisfied","with","their","local","government","and","give","them","passing","grades","according","to","a","2019","survey.","Only","one-third","of","Canadians","feel","that","they","can","influence","decisions","at","the","municipal","level;","Canadians","are","skeptical","that","local","governments","listen","to","them","or","act","on","what","they","tell","the","local","government",".","As","the","level","of","government","that","describes","itself","as","closest","to","the","people,","municipal","government","has","an","important","relationship","with","the","public,","and","survey","results","like","these","are","concerning.","Earlier","in","the","course","we","explored","the","tension","between","the","municipal","service","delivery","role","and","the","democratic,","governance","role","(see","Municipal","Role).","You","will","learn","in","this","module","that","there","is","a","similar","tension","in","municipal","relationships","involving","services",",","democratic","representation",",","and","accountability",".","Municipal-public","relationships","are","further","complicated","by","changes","in","the","demographic","composition","of","communities.","Larger","urban","municipalities","are","much","more","diverse,","there","is","greater","polarization","of","income","and","opportunity,","and","many","of","us","belong","to","multiple","communities","within","and","outside","our","home","municipality","neighbourhoods","are","no","longer","the","main","defining","feature","of","our","connection","to","municipalities.","At","the","same","time,","municipal","issues","have","grown","and","become","more","complex,","and","lack","of","public","understanding","may","present","barriers","to","stronger","relationships."],"wordIndex":0,"volumeChange":null}
+0|unical   | 11:20:23 AM [express] GET /api/cat-wash/progress 304 in 1ms :: {"active":true,"fileId":213,"fileName":"CPPA122, Module 10 - Introduction.pdf","chunkIndex":0,"totalChunks":52,"chunkText":"Like other relationships, the municipal relationship with the public is complex. Most Canadians are satisfied with their local government and give them passing grades according to a 2019 survey. Only one-third of Canadians feel that they can influence decisions at the municipal level; Canadians are skeptical that local governments listen to them or act on what they tell the local government . As the level of government that describes itself as closest to the people, municipal government has an important relationship with the public, and survey results like these are concerning. Earlier in the course we explored the tension between the municipal service delivery role and the democratic, governance role (see Municipal Role). You will learn in this module that there is a similar tension in municipal relationships involving services , democratic representation , and accountability . Municipal-public relationships are further complicated by changes in the demographic composition of communities. Larger urban municipalities are much more diverse, there is greater polarization of income and opportunity, and many of us belong to multiple communities within and outside our home municipality neighbourhoods are no longer the main defining feature of our connection to municipalities. At the same time, municipal issues have grown and become more complex, and lack of public understanding may present barriers to stronger relationships.","words":["Like","other","relationships,","the","municipal","relationship","with","the","public","is","complex.","Most","Canadians","are","satisfied","with","their","local","government","and","give","them","passing","grades","according","to","a","2019","survey.","Only","one-third","of","Canadians","feel","that","they","can","influence","decisions","at","the","municipal","level;","Canadians","are","skeptical","that","local","governments","listen","to","them","or","act","on","what","they","tell","the","local","government",".","As","the","level","of","government","that","describes","itself","as","closest","to","the","people,","municipal","government","has","an","important","relationship","with","the","public,","and","survey","results","like","these","are","concerning.","Earlier","in","the","course","we","explored","the","tension","between","the","municipal","service","delivery","role","and","the","democratic,","governance","role","(see","Municipal","Role).","You","will","learn","in","this","module","that","there","is","a","similar","tension","in","municipal","relationships","involving","services",",","democratic","representation",",","and","accountability",".","Municipal-public","relationships","are","further","complicated","by","changes","in","the","demographic","composition","of","communities.","Larger","urban","municipalities","are","much","more","diverse,","there","is","greater","polarization","of","income","and","opportunity,","and","many","of","us","belong","to","multiple","communities","within","and","outside","our","home","municipality","neighbourhoods","are","no","longer","the","main","defining","feature","of","our","connection","to","municipalities.","At","the","same","time,","municipal","issues","have","grown","and","become","more","complex,","and","lack","of","public","understanding","may","present","barriers","to","stronger","relationships."],"wordIndex":0,"volumeChange":null}
+0|unical   | 11:20:24 AM [express] GET /api/cat-wash/progress 304 in 1ms :: {"active":true,"fileId":213,"fileName":"CPPA122, Module 10 - Introduction.pdf","chunkIndex":0,"totalChunks":52,"chunkText":"Like other relationships, the municipal relationship with the public is complex. Most Canadians are satisfied with their local government and give them passing grades according to a 2019 survey. Only one-third of Canadians feel that they can influence decisions at the municipal level; Canadians are skeptical that local governments listen to them or act on what they tell the local government . As the level of government that describes itself as closest to the people, municipal government has an important relationship with the public, and survey results like these are concerning. Earlier in the course we explored the tension between the municipal service delivery role and the democratic, governance role (see Municipal Role). You will learn in this module that there is a similar tension in municipal relationships involving services , democratic representation , and accountability . Municipal-public relationships are further complicated by changes in the demographic composition of communities. Larger urban municipalities are much more diverse, there is greater polarization of income and opportunity, and many of us belong to multiple communities within and outside our home municipality neighbourhoods are no longer the main defining feature of our connection to municipalities. At the same time, municipal issues have grown and become more complex, and lack of public understanding may present barriers to stronger relationships.","words":["Like","other","relationships,","the","municipal","relationship","with","the","public","is","complex.","Most","Canadians","are","satisfied","with","their","local","government","and","give","them","passing","grades","according","to","a","2019","survey.","Only","one-third","of","Canadians","feel","that","they","can","influence","decisions","at","the","municipal","level;","Canadians","are","skeptical","that","local","governments","listen","to","them","or","act","on","what","they","tell","the","local","government",".","As","the","level","of","government","that","describes","itself","as","closest","to","the","people,","municipal","government","has","an","important","relationship","with","the","public,","and","survey","results","like","these","are","concerning.","Earlier","in","the","course","we","explored","the","tension","between","the","municipal","service","delivery","role","and","the","democratic,","governance","role","(see","Municipal","Role).","You","will","learn","in","this","module","that","there","is","a","similar","tension","in","municipal","relationships","involving","services",",","democratic","representation",",","and","accountability",".","Municipal-public","relationships","are","further","complicated","by","changes","in","the","demographic","composition","of","communities.","Larger","urban","municipalities","are","much","more","diverse,","there","is","greater","polarization","of","income","and","opportunity,","and","many","of","us","belong","to","multiple","communities","within","and","outside","our","home","municipality","neighbourhoods","are","no","longer","the","main","defining","feature","of","our","connection","to","municipalities.","At","the","same","time,","municipal","issues","have","grown","and","become","more","complex,","and","lack","of","public","understanding","may","present","barriers","to","stronger","relationships."],"wordIndex":0,"volumeChange":null}
+0|unical   | 11:20:24 AM [express] GET /api/cat-wash/progress 304 in 1ms :: {"active":true,"fileId":213,"fileName":"CPPA122, Module 10 - Introduction.pdf","chunkIndex":0,"totalChunks":52,"chunkText":"Like other relationships, the municipal relationship with the public is complex. Most Canadians are satisfied with their local government and give them passing grades according to a 2019 survey. Only one-third of Canadians feel that they can influence decisions at the municipal level; Canadians are skeptical that local governments listen to them or act on what they tell the local government . As the level of government that describes itself as closest to the people, municipal government has an important relationship with the public, and survey results like these are concerning. Earlier in the course we explored the tension between the municipal service delivery role and the democratic, governance role (see Municipal Role). You will learn in this module that there is a similar tension in municipal relationships involving services , democratic representation , and accountability . Municipal-public relationships are further complicated by changes in the demographic composition of communities. Larger urban municipalities are much more diverse, there is greater polarization of income and opportunity, and many of us belong to multiple communities within and outside our home municipality neighbourhoods are no longer the main defining feature of our connection to municipalities. At the same time, municipal issues have grown and become more complex, and lack of public understanding may present barriers to stronger relationships.","words":["Like","other","relationships,","the","municipal","relationship","with","the","public","is","complex.","Most","Canadians","are","satisfied","with","their","local","government","and","give","them","passing","grades","according","to","a","2019","survey.","Only","one-third","of","Canadians","feel","that","they","can","influence","decisions","at","the","municipal","level;","Canadians","are","skeptical","that","local","governments","listen","to","them","or","act","on","what","they","tell","the","local","government",".","As","the","level","of","government","that","describes","itself","as","closest","to","the","people,","municipal","government","has","an","important","relationship","with","the","public,","and","survey","results","like","these","are","concerning.","Earlier","in","the","course","we","explored","the","tension","between","the","municipal","service","delivery","role","and","the","democratic,","governance","role","(see","Municipal","Role).","You","will","learn","in","this","module","that","there","is","a","similar","tension","in","municipal","relationships","involving","services",",","democratic","representation",",","and","accountability",".","Municipal-public","relationships","are","further","complicated","by","changes","in","the","demographic","composition","of","communities.","Larger","urban","municipalities","are","much","more","diverse,","there","is","greater","polarization","of","income","and","opportunity,","and","many","of","us","belong","to","multiple","communities","within","and","outside","our","home","municipality","neighbourhoods","are","no","longer","the","main","defining","feature","of","our","connection","to","municipalities.","At","the","same","time,","municipal","issues","have","grown","and","become","more","complex,","and","lack","of","public","understanding","may","present","barriers","to","stronger","relationships."],"wordIndex":0,"volumeChange":null}
+0|unical   | [Toothbrush] Polling stopped
+0|unical   | [Nest Stop] Cleared persisted playback session
+0|unical   | [Tablet Nav DB] SET master: wrote {"action":"stop_playback","goodbyeText":"","keepOpen":false,"timestamp":17755752, verify rows=1
+0|unical   | [Tablet Nav DB] SET master: wrote {"action":"stop_playback","goodbyeText":"","timestamp":1775575224695}, verify rows=1
+0|unical   | [Tablet Nav] Command SET for master: stop_playback url=none ts=1775575224695 pending=["master","tv"]
+0|unical   | 11:20:24 AM [express] POST /api/tablet-nav/set 200 in 4ms :: {"ok":true}
+0|unical   | [Tablet Nav DB] SET tv: wrote {"action":"stop_playback","keepOpen":false,"timestamp":1775575224695}, verify rows=1
+0|unical   | [Tablet Nav DB] SET tv: wrote {"action":"stop_playback","timestamp":1775575224695}, verify rows=1
+0|unical   | [Tablet Nav] Command SET for tv: stop_playback url=none ts=1775575224695 pending=["master","tv"]
+0|unical   | 11:20:24 AM [express] POST /api/tablet-nav/set 200 in 4ms :: {"ok":true}
+0|unical   | [TRACE 11:20:24 AM] [TV] TURN OFF — Fire Stick + Samsung TV (reason=light_off) | state={"active":false,"sessionId":1,"file":null,"chunk":null,"lightsPrompt":false,"trigger":"lights","msSinceStop":35,"msSinceManualStop":null,"msSinceStart":null}
+0|unical   | 11:20:25 AM [express] GET /api/cat-wash/progress 200 in 1ms :: {"active":false}
+0|unical   | [Tablet Nav GET] tv FOUND from memory: action=stop_playback age=914ms
+0|unical   | 11:20:25 AM [express] GET /api/tablet-nav 200 in 1ms :: {"action":"stop_playback","timestamp":1775575224695}
+0|unical   | [Tablet Nav] Command acknowledged and cleared for tv
+0|unical   | 11:20:25 AM [express] POST /api/tablet-nav/ack 200 in 6ms :: {"ok":true}
+0|unical   | 11:20:25 AM [express] GET /api/cat-wash/progress 304 in 1ms :: {"active":false}
+0|unical   | 11:20:26 AM [express] GET /api/cat-wash/progress 304 in 1ms :: {"active":false}
+0|unical   | [HA Cloud TTS] Abort detected during wait
+0|unical   | 11:20:26 AM [express] GET /api/cat-wash/progress 304 in 0ms :: {"active":false}
+0|unical   | [HA Cloud TTS] Playing chunk (1443 chars) on media_player.home_assistant_voice_097c38_media_player
+0|unical   | [HA Cloud TTS] Waiting ~85s for chunk to finish
+0|unical   | [HA Cloud TTS] Abort detected during wait
+0|unical   | [Nest Stop] Fire Stick + Samsung TV turn-off sent
+0|unical   | [TRACE 11:20:27 AM] [StopWithGoodbye] EXIT reason=light_off | state={"active":false,"sessionId":1,"file":null,"chunk":null,"lightsPrompt":false,"trigger":"lights","msSinceStop":2739,"msSinceManualStop":null,"msSinceStart":null}
+0|unical   | [Speakers] Stopped Nest + cat washroom Echos + media group (stop + pause)
+0|unical   | 11:20:27 AM [express] GET /api/cat-wash/progress 304 in 1ms :: {"active":false}
+0|unical   | [Nest Playback] Aborted at chunk 1
+0|unical   | [Nest Playback] Saved progress on abort: chunk 1
+0|unical   | [TRACE 11:20:30 AM] [NestPlayback] FINALLY BLOCK — cleaning up session 1 | state={"active":false,"sessionId":1,"file":null,"chunk":null,"lightsPrompt":false,"trigger":"lights","msSinceStop":5343,"msSinceManualStop":null,"msSinceStart":null}
+0|unical   | [Nest Playback] Resumed audio preparation
+0|unical   | [Cat Lights] Silk force-stopped + Fire Stick + Samsung TV turn-off sent
+0|unical   | [Cat Lights] Cleared promptPending (session 0 still current)
+0|unical   | [Cat Lights] Stopped: playback:CPPA122, Module 10 - Introduction.pdf, echoSpeakers, tv
+0|unical   | 11:20:30 AM [express] POST /api/webhook/cat-lights 200 in 9876ms :: {"action":"stopped","reason":"Light turned off","stoppedItems":["playback:CPPA122, Module 10 - Introduction.pdf","echoSpeakers","tv"]}
+0|unical   | [AudioPrep] Generating chunk 5/15 for CFNF400, Module 12 - Learning Objectives.pdf (1462 chars)
+0|unical   | Generating OpenAI TTS for 1336 chars, file: prep-232-chunk-4
+0|unical   | [Cat Lights] TV turn-off retry sent (2nd attempt + SLEEP key)
+0|unical   | OpenAI TTS completed in 16580ms, 796293 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-232-chunk-4-1775575247395.mp3
+0|unical   | [AudioPrep] Generating chunk 6/15 for CFNF400, Module 12 - Learning Objectives.pdf (1477 chars)
+0|unical   | Generating OpenAI TTS for 924 chars, file: prep-232-chunk-5
+0|unical   | 11:20:52 AM [express] GET /api/news 200 in 1680ms :: [{"title":"NASA releases stunning new ‘Earthset’ image taken during historic lunar flyby","source":"CNN","link":"https://news.google.com/rss/articles/CBMiggFBVV95cUxPaDYyOW9mbnljNVI0dmI2b2xtQ0VQX1FIbGdVWUhQbTlvbTlSdzR4bmk0MU5fQWVpT2ZaNXMySzV0RUxMTEQ3WTBWRkRrTmFNM2ZFRTBIWGF0X0hoZUpjdWZVd2VzRFVGVndrTEpROGJwNFk2dGNoNHNWdFQ0R0pzS09B?oc=5","publishedAt":"2026-04-07T13:11:40.000Z"},{"title":"Poilievre strikes more measured note in new Conservative advertising push","source":"CTV","link":"https://news.google.com/rss/articles/CBMirgFBVV95cUxQV2ltTkFTNm1lV0c2aFlhNkVINDlzZnVYaXgtNVpqdWFNdDhqSkdGa1lBMVFRcWVhOVl5ZlFUQ1NaWFFWcVgzekNlN2RsVXJXNndIT0F1bVVwb2dialpoMlF3TkE5VkZnSmhPN1NhWS1uTm5NaE0tNWpDMUJZeGFRRVlpOU1fRHktSGowWEVZaWNSU3pHTkRFU3g3akRReTFGaHI0Y1dfVllSVldYOWc?oc=5","publishedAt":"2026-04-06T22:23:58.000Z"},{"title":"Advance voting in 3 federal byelections comes to a close Monday","source":"Global","link":"https://globalnews.ca/news/11766516/federal-byelections-advance-voting-ends/","publishedAt":"2026-04-06T19:17:43.000Z"},{"title":"Iran live updates: Trump threatens 'a whole civilization will die tonight'","source":"ABC News","link":"https://abcnews.com/International/live-updates/iran-live-updates-casualties-reported-missile-strikes-israel/?id=131757074","publishedAt":"2026-04-07T15:16:43.000Z"},{"title":"Groups warn of risk that Trump ‘will keep or destroy’ presidential records","source":"MSNBC","link":"https://www.ms.now/deadline-white-house/deadline-legal-blog/groups-warn-of-risk-that-trump-will-keep-or-destroy-presidential-records","publishedAt":"2026-04-07T15:16:46.000Z"},{"title":"‘Vile on every level’: Tucker Carlson rips Donald Trump over Easter Sunday ‘f-word’ post","source":"Politico","link":"https://www.politico.com/news/2026/04/07/tucker-carlson-rips-donald-trump-easter-iran-truth-social-post-00861281","publishedAt":"2026-04-07T09:31:52.000Z"},{"title":"White House wracked with 'high anxiety' over upcoming Trump book: report","source":"Raw Story","link":"https://www.rawstory.com/trump-new-york-times-2676674458/","publishedAt":"2026-04-07T15:15:06.000Z"},{"title":"Trump says a 'whole civilization will die tonight' as deadline for Iran to reopen Strait of Hormuz looms","source":"CBC","link":"https://www.cbc.ca/news/world/livestory/u-s-israel-iran-war-trump-deadline-9.7154523?cmp=rss","publishedAt":"2026-01-09T17:00:37.000Z"},{"title":"DeSantis urges Florida lawmakers to ban cousin marriages, links practice to 'stealth jihad'","source":"Fox News","link":"https://www.foxnews.com/politics/desantis-calls-florida-ban-cousin-marriages-calling-stealth-jihad","publishedAt":"2026-04-07T15:02:14.000Z"},{"title":"Wireless Festival cancelled after Kanye West blocked from coming to UK","source":"BBC","link":"https://www.bbc.com/news/articles/c4gxk3kxjr0o?at_medium=RSS&amp;at_campaign=rss","publishedAt":"2026-04-07T14:29:20.000Z"},{"title":"US has struck Iranian military targets on Kharg Island. Here’s what we know about it","source":"CNN","link":"https://news.google.com/rss/articles/CBMiiAFBVV95cUxNTWk0bVpseU1tNW9rall3SzNkX3ctZmUxQzJ1SFk5YWFPbVBmMnZmNzcxVnY3c1A4SnpSRWp0VmdtcURYTVZCcU5yQ1Bma204OGhNS1djNlFuR2wyeWpnb28zU00wakRjeWZMeEVnb0h5bzlaaVoyTlFZT0pTb3hybHFQU0Z3R3U0?oc=5","publishedAt":"2026-04-07T12:57:10.000Z"},{"title":"Trump warns a ‘whole civilization will die tonight’ if a deal with Iran isn’t reached","source":"CTV","link":"https://news.google.com/rss/articles/CBMi0wFBVV95cUxOMHEyLVBDeTY4QlZDdmN1YVBsSFNWUHd0NEJ0LUpLTXBISm44V0oxV0pzU1hlSGp0T19ZcERzMDFlZV80alBmekdTMnNDeHp0cEEyUWY5MEZOdDBicmxrUW94d0N4YjNHNEkybTI2czZlaTZ3UkRPcFNsZ3FxNnRJWUZXMDMwZ1VoTk9mSEhlMklqcmxEdzdlNHQwVlVDSnNtalVOeC1BR1JmbkVuWTROd0dFbVdwYkYyek9qZzlkMl9DR1NXUWFLWXMwYW9OQ3FpQlVj?oc=5","publishedAt":"2026-04-07T13:58:21.000Z"},{"title":"‘Completely unacceptable’: Investigations finds DND ignored records requests","source":"Global","link":"https://globalnews.ca/news/11765912/completely-unacceptable-investigations-finds-dnd-ignored-records-requests/","publishedAt":"2026-04-06T13:41:41.000Z"},{"title":"ICE arrests newlywed wife of Army soldier at military base","source":"ABC News","link":"https://abcnews.com/US/ice-arrests-newlywed-wife-army-soldier-military-base/story?id=131780087","publishedAt":"2026-04-07T10:07:37.000Z"},{"title":"Jamie Raskin demands Justice Department turn over details on Michael Flynn settlement","source":"MSNBC","link":"https://www.ms.now/rachel-maddow-show/maddowblog/jamie-raskin-demands-justice-department-turn-over-details-on-michael-flynn-settlement","publishedAt":"2026-04-07T15:15:06.000Z"},{"title":"Mamdani’s investigation nominee faces questions on independence","source":"Politico","link":"https://www.politico.com/newsletters/new-york-playbook-pm/2026/04/06/mamdanis-investigation-nominee-faces-questions-on-independence-00860814","publishedAt":"2026-04-06T21:41:25.000Z"},{"title":"Trump blindsides JD Vance by forcing him to learn about major Iran update from reporters","source":"Raw Story","link":"https://www.rawstory.com/trump-blindsides-vance-by-forcing-him-to-learn-about-major-iran-update-from-reporters/","publishedAt":"2026-04-07T14:56:35.000Z"},{"title":"House prices dropping in Canada's most expensive cities, but still out of reach for many","source":"CBC","link":"https://www.cbc.ca/news/canada/housing-prices-canada-millennials-gen-z-9.7152116?cmp=rss","publishedAt":"2025-09-08T09:01:00.000Z"},{"title":"Trump warns 'whole civilization will die tonight,' as Iranian official urges human chains around power plants","source":"Fox News","link":"https://www.foxnews.com/politics/trump-warns-whole-civilization-die-tonight-iranian-official-urges-human-chains-around-power-plants","publishedAt":"2026-04-07T14:55:43.000Z"},{"title":"Plan 2 student loan interest rates capped at 6% in England","source":"BBC","link":"https://www.bbc.com/news/articles/crr1e5zqdyko?at_medium=RSS&amp;at_campaign=rss","publishedAt":"2026-04-07T11:21:16.000Z"},{"title":"Liberals will try to expand their majority on the Wisconsin Supreme Court in a Tuesday election","source":"CNN","link":"https://news.google.com/rss/articles/CBMifEFVX3lxTE5VRDl2RzNrWEhEWkVlOC1hQUp3QzVGbTBvTW96MUZGdU0zUTZGLW5SaEd0czV0Y1Q1ZGVBWFZpWnMxOXVuWG1sNTVwdHBUdXhBY2ZERW5oWTBhMy1WZThCUFE1bTNDd1NRRXktUG50WHU5bUItcWY5T1RGejA?oc=5","publishedAt":"2026-04-07T10:00:55.000Z"},{"title":"Winnipeg couple falsely accused of exporting cannabis","source":"CTV","link":"https://news.google.com/rss/articles/CBMipgFBVV95cUxQWFZoT2UxaGR5YXRnRUx2SS1MamluVXlGLV84d1R0V0lhbWxCZlZNa09GU1lncDhQRVJKYll2TzZyQTF1ODd1cERJOUtNMjZST1hYYkc5bVIzVUNYallVOTJnRTk1NHlsWDNtc2E4VEZWaXlUdjVCLWJFN2NaZ2R5S2N4RERtQ0UtWFdxbGZtdTc3Zk9fWWtrdHVvakVrbWJWSmJOQnpn?oc=5","publishedAt":"2026-04-06T23:08:04.000Z"},{"title":"Are Canadians open to joining the EU? Here’s what a poll found","source":"Global","link":"https://globalnews.ca/news/11765942/poll-openness-canada-to-european-union/","publishedAt":"2026-04-06T13:06:27.000Z"},{"title":"Team Trump leans into religious messaging, claims God supports U.S. war in Iran","source":"MSNBC","link":"https://www.ms.now/rachel-maddow-show/maddowblog/team-trump-leans-into-religious-messaging-claims-god-supports-u-s-war-in-iran","publishedAt":"2026-04-07T14:49:47.000Z"},{"title":"Wes Moore criticizes Trump for talking about Medicare cuts","source":"Politico","link":"https://www.politico.com/news/2026/04/05/wes-moore-trump-medicare-cuts-00859272","publishedAt":"2026-04-05T15:38:47.000Z"},{"title":"CNN makes GOP lawmaker squirm under pressure: 'You don't believe the president's threat?'","source":"Raw Story","link":"https://www.rawstory.com/mike-lawler-2676674346/","publishedAt":"2026-04-07T14:43:30.000Z"},{"title":"Winnipeg woman slams bank's decision not to refund her after 'dumbfounding' scam","source":"CBC","link":"https://www.cbc.ca/news/canada/manitoba/winnipeg-scam-td-bank-fraud-appeal-denied-9.7154235?cmp=rss","publishedAt":"2026-04-06T20:42:23.000Z"},{"title":"77-year-old House Dem facing younger primary challengers seeks to impeach Donald Trump","source":"Fox News","link":"https://www.foxnews.com/politics/77-year-old-house-dem-facing-younger-primary-challengers-seeks-impeach-donald-trump","publishedAt":"2026-04-07T14:29:24.000Z"}]
+0|unical   | 11:20:55 AM [express] GET /api/ha/news 200 in 1ms :: {"headlines":[{"title":"NASA releases stunning new ‘Earthset’ image taken during historic lunar flyby","source":"CNN","link":"https://news.google.com/rss/articles/CBMiggFBVV95cUxPaDYyOW9mbnljNVI0dmI2b2xtQ0VQX1FIbGdVWUhQbTlvbTlSdzR4bmk0MU5fQWVpT2ZaNXMySzV0RUxMTEQ3WTBWRkRrTmFNM2ZFRTBIWGF0X0hoZUpjdWZVd2VzRFVGVndrTEpROGJwNFk2dGNoNHNWdFQ0R0pzS09B?oc=5","publishedAt":"2026-04-07T13:11:40.000Z"},{"title":"Poilievre strikes more measured note in new Conservative advertising push","source":"CTV","link":"https://news.google.com/rss/articles/CBMirgFBVV95cUxQV2ltTkFTNm1lV0c2aFlhNkVINDlzZnVYaXgtNVpqdWFNdDhqSkdGa1lBMVFRcWVhOVl5ZlFUQ1NaWFFWcVgzekNlN2RsVXJXNndIT0F1bVVwb2dialpoMlF3TkE5VkZnSmhPN1NhWS1uTm5NaE0tNWpDMUJZeGFRRVlpOU1fRHktSGowWEVZaWNSU3pHTkRFU3g3akRReTFGaHI0Y1dfVllSVldYOWc?oc=5","publishedAt":"2026-04-06T22:23:58.000Z"},{"title":"Advance voting in 3 federal byelections comes to a close Monday","source":"Global","link":"https://globalnews.ca/news/11766516/federal-byelections-advance-voting-ends/","publishedAt":"2026-04-06T19:17:43.000Z"},{"title":"Iran live updates: Trump threatens 'a whole civilization will die tonight'","source":"ABC News","link":"https://abcnews.com/International/live-updates/iran-live-updates-casualties-reported-missile-strikes-israel/?id=131757074","publishedAt":"2026-04-07T15:16:43.000Z"},{"title":"Groups warn of risk that Trump ‘will keep or destroy’ presidential records","source":"MSNBC","link":"https://www.ms.now/deadline-white-house/deadline-legal-blog/groups-warn-of-risk-that-trump-will-keep-or-destroy-presidential-records","publishedAt":"2026-04-07T15:16:46.000Z"},{"title":"‘Vile on every level’: Tucker Carlson rips Donald Trump over Easter Sunday ‘f-word’ post","source":"Politico","link":"https://www.politico.com/news/2026/04/07/tucker-carlson-rips-donald-trump-easter-iran-truth-social-post-00861281","publishedAt":"2026-04-07T09:31:52.000Z"},{"title":"White House wracked with 'high anxiety' over upcoming Trump book: report","source":"Raw Story","link":"https://www.rawstory.com/trump-new-york-times-2676674458/","publishedAt":"2026-04-07T15:15:06.000Z"},{"title":"Trump says a 'whole civilization will die tonight' as deadline for Iran to reopen Strait of Hormuz looms","source":"CBC","link":"https://www.cbc.ca/news/world/livestory/u-s-israel-iran-war-trump-deadline-9.7154523?cmp=rss","publishedAt":"2026-01-09T17:00:37.000Z"},{"title":"DeSantis urges Florida lawmakers to ban cousin marriages, links practice to 'stealth jihad'","source":"Fox News","link":"https://www.foxnews.com/politics/desantis-calls-florida-ban-cousin-marriages-calling-stealth-jihad","publishedAt":"2026-04-07T15:02:14.000Z"},{"title":"Wireless Festival cancelled after Kanye West blocked from coming to UK","source":"BBC","link":"https://www.bbc.com/news/articles/c4gxk3kxjr0o?at_medium=RSS&amp;at_campaign=rss","publishedAt":"2026-04-07T14:29:20.000Z"},{"title":"US has struck Iranian military targets on Kharg Island. Here’s what we know about it","source":"CNN","link":"https://news.google.com/rss/articles/CBMiiAFBVV95cUxNTWk0bVpseU1tNW9rall3SzNkX3ctZmUxQzJ1SFk5YWFPbVBmMnZmNzcxVnY3c1A4SnpSRWp0VmdtcURYTVZCcU5yQ1Bma204OGhNS1djNlFuR2wyeWpnb28zU00wakRjeWZMeEVnb0h5bzlaaVoyTlFZT0pTb3hybHFQU0Z3R3U0?oc=5","publishedAt":"2026-04-07T12:57:10.000Z"},{"title":"Trump warns a ‘whole civilization will die tonight’ if a deal with Iran isn’t reached","source":"CTV","link":"https://news.google.com/rss/articles/CBMi0wFBVV95cUxOMHEyLVBDeTY4QlZDdmN1YVBsSFNWUHd0NEJ0LUpLTXBISm44V0oxV0pzU1hlSGp0T19ZcERzMDFlZV80alBmekdTMnNDeHp0cEEyUWY5MEZOdDBicmxrUW94d0N4YjNHNEkybTI2czZlaTZ3UkRPcFNsZ3FxNnRJWUZXMDMwZ1VoTk9mSEhlMklqcmxEdzdlNHQwVlVDSnNtalVOeC1BR1JmbkVuWTROd0dFbVdwYkYyek9qZzlkMl9DR1NXUWFLWXMwYW9OQ3FpQlVj?oc=5","publishedAt":"2026-04-07T13:58:21.000Z"},{"title":"‘Completely unacceptable’: Investigations finds DND ignored records requests","source":"Global","link":"https://globalnews.ca/news/11765912/completely-unacceptable-investigations-finds-dnd-ignored-records-requests/","publishedAt":"2026-04-06T13:41:41.000Z"},{"title":"ICE arrests newlywed wife of Army soldier at military base","source":"ABC News","link":"https://abcnews.com/US/ice-arrests-newlywed-wife-army-soldier-military-base/story?id=131780087","publishedAt":"2026-04-07T10:07:37.000Z"},{"title":"Jamie Raskin demands Justice Department turn over details on Michael Flynn settlement","source":"MSNBC","link":"https://www.ms.now/rachel-maddow-show/maddowblog/jamie-raskin-demands-justice-department-turn-over-details-on-michael-flynn-settlement","publishedAt":"2026-04-07T15:15:06.000Z"},{"title":"Mamdani’s investigation nominee faces questions on independence","source":"Politico","link":"https://www.politico.com/newsletters/new-york-playbook-pm/2026/04/06/mamdanis-investigation-nominee-faces-questions-on-independence-00860814","publishedAt":"2026-04-06T21:41:25.000Z"},{"title":"Trump blindsides JD Vance by forcing him to learn about major Iran update from reporters","source":"Raw Story","link":"https://www.rawstory.com/trump-blindsides-vance-by-forcing-him-to-learn-about-major-iran-update-from-reporters/","publishedAt":"2026-04-07T14:56:35.000Z"},{"title":"House prices dropping in Canada's most expensive cities, but still out of reach for many","source":"CBC","link":"https://www.cbc.ca/news/canada/housing-prices-canada-millennials-gen-z-9.7152116?cmp=rss","publishedAt":"2025-09-08T09:01:00.000Z"},{"title":"Trump warns 'whole civilization will die tonight,' as Iranian official urges human chains around power plants","source":"Fox News","link":"https://www.foxnews.com/politics/trump-warns-whole-civilization-die-tonight-iranian-official-urges-human-chains-around-power-plants","publishedAt":"2026-04-07T14:55:43.000Z"},{"title":"Plan 2 student loan interest rates capped at 6% in England","source":"BBC","link":"https://www.bbc.com/news/articles/crr1e5zqdyko?at_medium=RSS&amp;at_campaign=rss","publishedAt":"2026-04-07T11:21:16.000Z"},{"title":"Liberals will try to expand their majority on the Wisconsin Supreme Court in a Tuesday election","source":"CNN","link":"https://news.google.com/rss/articles/CBMifEFVX3lxTE5VRDl2RzNrWEhEWkVlOC1hQUp3QzVGbTBvTW96MUZGdU0zUTZGLW5SaEd0czV0Y1Q1ZGVBWFZpWnMxOXVuWG1sNTVwdHBUdXhBY2ZERW5oWTBhMy1WZThCUFE1bTNDd1NRRXktUG50WHU5bUItcWY5T1RGejA?oc=5","publishedAt":"2026-04-07T10:00:55.000Z"},{"title":"Winnipeg couple falsely accused of exporting cannabis","source":"CTV","link":"https://news.google.com/rss/articles/CBMipgFBVV95cUxQWFZoT2UxaGR5YXRnRUx2SS1MamluVXlGLV84d1R0V0lhbWxCZlZNa09GU1lncDhQRVJKYll2TzZyQTF1ODd1cERJOUtNMjZST1hYYkc5bVIzVUNYallVOTJnRTk1NHlsWDNtc2E4VEZWaXlUdjVCLWJFN2NaZ2R5S2N4RERtQ0UtWFdxbGZtdTc3Zk9fWWtrdHVvakVrbWJWSmJOQnpn?oc=5","publishedAt":"2026-04-06T23:08:04.000Z"},{"title":"Are Canadians open to joining the EU? Here’s what a poll found","source":"Global","link":"https://globalnews.ca/news/11765942/poll-openness-canada-to-european-union/","publishedAt":"2026-04-06T13:06:27.000Z"},{"title":"Team Trump leans into religious messaging, claims God supports U.S. war in Iran","source":"MSNBC","link":"https://www.ms.now/rachel-maddow-show/maddowblog/team-trump-leans-into-religious-messaging-claims-god-supports-u-s-war-in-iran","publishedAt":"2026-04-07T14:49:47.000Z"},{"title":"Wes Moore criticizes Trump for talking about Medicare cuts","source":"Politico","link":"https://www.politico.com/news/2026/04/05/wes-moore-trump-medicare-cuts-00859272","publishedAt":"2026-04-05T15:38:47.000Z"},{"title":"CNN makes GOP lawmaker squirm under pressure: 'You don't believe the president's threat?'","source":"Raw Story","link":"https://www.rawstory.com/mike-lawler-2676674346/","publishedAt":"2026-04-07T14:43:30.000Z"},{"title":"Winnipeg woman slams bank's decision not to refund her after 'dumbfounding' scam","source":"CBC","link":"https://www.cbc.ca/news/canada/manitoba/winnipeg-scam-td-bank-fraud-appeal-denied-9.7154235?cmp=rss","publishedAt":"2026-04-06T20:42:23.000Z"},{"title":"77-year-old House Dem facing younger primary challengers seeks to impeach Donald Trump","source":"Fox News","link":"https://www.foxnews.com/politics/77-year-old-house-dem-facing-younger-primary-challengers-seeks-impeach-donald-trump","publishedAt":"2026-04-07T14:29:24.000Z"}]}
+0|unical   | OpenAI TTS completed in 12203ms, 552573 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-232-chunk-5-1775575260406.mp3
+0|unical   | [AudioPrep] Generating chunk 7/15 for CFNF400, Module 12 - Learning Objectives.pdf (1388 chars)
+0|unical   | Generating OpenAI TTS for 1328 chars, file: prep-232-chunk-6
+0|unical   | OpenAI TTS completed in 17752ms, 813981 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-232-chunk-6-1775575278965.mp3
+0|unical   | [AudioPrep] Generating chunk 8/15 for CFNF400, Module 12 - Learning Objectives.pdf (1314 chars)
+0|unical   | Generating OpenAI TTS for 1314 chars, file: prep-232-chunk-7
+0|unical   | OpenAI TTS completed in 16580ms, 822957 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-232-chunk-7-1775575296350.mp3
+0|unical   | [AudioPrep] Generating chunk 9/15 for CFNF400, Module 12 - Learning Objectives.pdf (1403 chars)
+0|unical   | Generating OpenAI TTS for 1055 chars, file: prep-232-chunk-8
+0|unical   | 11:21:40 AM [express] GET /api/health 200 in 1ms :: {"status":"ok","uptime":267,"ha":{"connected":true,"lastSuccessAt":"2026-04-07T15:21:22.483Z","lastFailureAt":null,"consecutiveFailures":0,"totalChecks":5,"totalFailures":0,"lastError":null,"downSince":null,"commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-07T15:21:40.901Z"}
+0|unical   | OpenAI TTS completed in 14833ms, 678165 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-232-chunk-8-1775575311988.mp3
+0|unical   | [AudioPrep] Generating chunk 10/15 for CFNF400, Module 12 - Learning Objectives.pdf (1451 chars)
+0|unical   | Generating OpenAI TTS for 1451 chars, file: prep-232-chunk-9
+0|unical   | OpenAI TTS completed in 18487ms, 896085 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-232-chunk-9-1775575331282.mp3
+0|unical   | [AudioPrep] Generating chunk 11/15 for CFNF400, Module 12 - Learning Objectives.pdf (1401 chars)
+0|unical   | Generating OpenAI TTS for 1401 chars, file: prep-232-chunk-10
+0|unical   | OpenAI TTS completed in 18660ms, 873645 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-232-chunk-10-1775575350748.mp3
+0|unical   | [AudioPrep] Generating chunk 12/15 for CFNF400, Module 12 - Learning Objectives.pdf (1478 chars)
+0|unical   | Generating OpenAI TTS for 1335 chars, file: prep-232-chunk-11
+0|unical   | OpenAI TTS completed in 17857ms, 831717 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-232-chunk-11-1775575369412.mp3
+0|unical   | [AudioPrep] Generating chunk 13/15 for CFNF400, Module 12 - Learning Objectives.pdf (1488 chars)
+0|unical   | Generating OpenAI TTS for 1409 chars, file: prep-232-chunk-12
+0|unical   | OpenAI TTS completed in 17731ms, 839421 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-232-chunk-12-1775575387949.mp3
+0|unical   | [AudioPrep] Generating chunk 14/15 for CFNF400, Module 12 - Learning Objectives.pdf (1380 chars)
+0|unical   | Generating OpenAI TTS for 1301 chars, file: prep-232-chunk-13
+0|unical   | OpenAI TTS completed in 16977ms, 788805 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-232-chunk-13-1775575405730.mp3
+0|unical   | [AudioPrep] Generating chunk 15/15 for CFNF400, Module 12 - Learning Objectives.pdf (1378 chars)
+0|unical   | Generating OpenAI TTS for 1235 chars, file: prep-232-chunk-14
+
+byhomeyyz@raspberrypi:~/Home-View $
