@@ -1717,6 +1717,62 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
     );
   };
 
+  const renderUngradedRow = (task: Task) => {
+    const TypeIcon = TASK_TYPE_OPTIONS.find((t) => t.value === task.type)?.icon || FileText;
+    const overdue = !task.isCompleted && isOverdue(task.dueDate);
+    return (
+      <div
+        key={task.id}
+        className={`flex items-center px-1.5 py-1.5 rounded-md border transition-all ${
+          task.isCompleted ? "bg-white/5 border-white/5" :
+          overdue ? "bg-red-500/10 border-red-500/20" :
+          "bg-white/5 border-white/10 hover:bg-white/8"
+        }`}
+        data-testid={`ungraded-row-${task.id}`}
+      >
+        <button
+          onClick={(e) => { e.stopPropagation(); toggleTaskMutation.mutate({ id: task.id, isCompleted: !task.isCompleted, _task: task }); }}
+          className={`flex-shrink-0 w-4 h-4 rounded-sm border-2 flex items-center justify-center transition-colors ${
+            task.isCompleted ? "bg-green-500 border-green-500" : "border-white/30 hover:border-white/50"
+          }`}
+          style={{ marginRight: '10px' }}
+          data-testid={`button-toggle-ungraded-${task.id}`}
+        >
+          {task.isCompleted && <Check className="h-3 w-3 text-white" />}
+        </button>
+        <div className="flex-1 min-w-0">
+          <div
+            className={`text-[10px] font-medium truncate flex items-center gap-1 cursor-pointer hover:underline ${task.isCompleted ? "line-through text-white/50" : "text-white"}`}
+            onClick={(e) => { e.stopPropagation(); e.preventDefault(); if (expandedTaskId === task.id) { setExpandedTaskId(null); setEditTaskFields(null); } else { setExpandedTaskId(task.id); const d = task.dueDate ? new Date(task.dueDate) : null; setEditTaskFields({ title: task.title || '', type: task.type || 'other', dueDate: d ? `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` : '', dueTime: d ? `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}` : '', timezone: (task as any).timezone || 'America/Toronto', description: task.description || '', gradeWeight: task.gradeWeight?.toString() || '', gradeTotal: task.gradeTotal?.toString() || '', gradeValue: task.gradeValue?.toString() || '', reminder1: task.reminder1 ?? 30, reminder2: task.reminder2 ?? 120, reminder3: task.reminder3 ?? null, reminder4: task.reminder4 ?? null, hideFromSummary: task.hideFromSummary ?? false }); } }}
+            data-testid={`link-edit-ungraded-${task.id}`}
+          >
+            <TypeIcon className="h-3 w-3 flex-shrink-0 text-white/40" />
+            {task.title}
+          </div>
+          <div className="flex items-center gap-2 text-[8px] text-white">
+            <span className={overdue ? "text-red-400" : ""}>
+              {formatDate(task.dueDate)} {formatTime(task.dueDate)}
+            </span>
+            <span className="capitalize">{task.type}</span>
+          </div>
+        </div>
+        <label className="flex items-center cursor-pointer flex-shrink-0 ml-2" title="Mark as gradable" data-testid={`toggle-gradable-${task.id}`}>
+          <div className="relative" onClick={() => updateTaskMutation.mutate({ id: task.id, data: { excludeFromGpa: !task.excludeFromGpa }, _task: task })}>
+            <div className={`w-6 h-3.5 rounded-full transition-colors ${task.excludeFromGpa ? 'bg-red-500/60' : 'bg-green-500/60'}`} />
+            <div className={`absolute top-0.5 w-2.5 h-2.5 rounded-full bg-white transition-transform ${task.excludeFromGpa ? 'left-0.5' : 'left-3'}`} />
+          </div>
+        </label>
+        <button
+          onClick={(e) => { e.stopPropagation(); deleteTaskMutation.mutate({ id: task.id, _task: task }); }}
+          className="flex-shrink-0 text-white hover:text-red-400 transition-colors p-0.5 ml-2"
+          data-testid={`button-delete-ungraded-${task.id}`}
+        >
+          <Trash2 className="h-[15px] w-[15px]" />
+        </button>
+      </div>
+    );
+  };
+
   const handleDialogDragStart = (e: React.MouseEvent | React.TouchEvent) => {
     const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
     const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
@@ -3639,7 +3695,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
 
             <div className="flex flex-col overflow-y-auto" style={{ gap: '5px', maxHeight: 'none', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent' }} data-testid="assignments-list">
               {allGroups.map(groupName => {
-                const tasks = groupedTasks[groupName] || [];
+                const tasks = (groupedTasks[groupName] || []).filter(t => !t.excludeFromGpa && t.type !== 'discussion');
+                if (tasks.length === 0) return null;
                 const isCollapsed = collapsedGroups.has(groupName);
                 const groupWeight = tasks.reduce((s, t) => s + (t.gradeWeight || 0), 0);
                 const groupValue = tasks.reduce((s, t) => s + (t.gradeValue || 0), 0);
@@ -3667,7 +3724,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 );
               })}
 
-              {ungroupedTasks.map(task => (
+              {ungroupedTasks.filter(t => !t.excludeFromGpa && t.type !== 'discussion').map(task => (
                 <div key={`ungrouped-${task.id}`} style={{ padding: '0 4px' }}>
                   {renderAssignmentRow(task, null)}
                 </div>
@@ -3703,6 +3760,22 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               </div>
             )}
 
+          {(() => {
+            const ungradedAll = courseTasks.filter(t => t.excludeFromGpa || t.type === 'discussion');
+            if (ungradedAll.length === 0) return null;
+            return (
+              <div className="mt-3" data-testid="ungraded-section">
+                <div className="flex items-center gap-1.5 px-1 mb-1.5">
+                  <h3 className="text-[10px] font-semibold text-white/60 uppercase tracking-wide">Ungraded</h3>
+                  <span className="text-[9px] text-white/40">({ungradedAll.length})</span>
+                </div>
+                <div className="flex flex-col" style={{ gap: '4px' }}>
+                  {ungradedAll.map(task => renderUngradedRow(task))}
+                </div>
+              </div>
+            );
+          })()}
+
           </>)}
 
           <div className="border-t border-white/30 mt-4" />
@@ -3737,7 +3810,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     const isCurrentWeek = weekNum === currentModuleWeek;
                     if (files.length === 0) {
                       return (
-                        <div key={weekNum} className={`flex items-center gap-2 px-2 py-1.5 rounded ${isCurrentWeek ? 'bg-white/[0.08] border-2 border-white/30' : 'bg-white/[0.03] border border-white/[0.06]'}`} data-testid={`module-week-${weekNum}`}>
+                        <div key={weekNum} className={`flex items-center gap-2 px-2 py-1.5 rounded ${isCurrentWeek ? 'bg-white/[0.08] border-2 border-white' : 'bg-white/[0.03] border border-white/[0.06]'}`} data-testid={`module-week-${weekNum}`}>
                           <div className="flex items-center justify-center rounded" style={{ width: '16px', height: '16px', flexShrink: 0, background: 'transparent', border: '1.5px solid rgba(255,255,255,0.35)' }} />
                           <span className={`text-[12px] flex-1 ${isCurrentWeek ? 'text-white font-medium' : 'text-white/50'}`}>Week {weekNum}</span>
                           {isCurrentWeek && <span className="text-[9px] text-white font-semibold uppercase mr-1 bg-white/20 px-1.5 py-0.5 rounded">Current</span>}
@@ -3755,7 +3828,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                       const offset = circumference - (progress / 100) * circumference;
                       const progressColor = progress >= 80 ? '#22c55e' : progress > 0 ? '#f97316' : '#ef4444';
                       const fileNameRaw = (file.displayName || file.originalName || '').replace(/\.pdf$/i, '');
-                      const courseCode = course?.name?.split(' - ')[0]?.trim() || '';
+                      const courseCode = courseInfo?.courseCode?.trim() || courseInfo?.courseName?.split(' - ')[0]?.trim() || '';
                       const fileName = courseCode ? fileNameRaw.replace(new RegExp(`^${courseCode}[,\\s]*`, 'i'), '').replace(/^[,\\s]+/, '') : fileNameRaw;
                       const chunksPerDay = file.totalChunks > 0 ? Math.ceil(file.totalChunks / 7) : 0;
                       const weekDates = getWeekDates(weekNum, semesterStart, readingWeekStart);
@@ -3767,7 +3840,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                       const actualListened = file.listened ? file.totalChunks : checkedSet.size;
                       const diff = actualListened - expectedByToday;
                       return (
-                        <div key={file.id} className={`rounded ${isCurrentWeek ? 'bg-white/[0.08] border-2 border-white/30' : 'bg-white/[0.04] border border-white/[0.08] hover:border-white/15'} transition-colors`} data-testid={`module-week-${weekNum}-file-${file.id}`}>
+                        <div key={file.id} className={`rounded ${isCurrentWeek ? 'bg-white/[0.08] border-2 border-white' : 'bg-white/[0.04] border border-white/[0.08] hover:border-white/15'} transition-colors`} data-testid={`module-week-${weekNum}-file-${file.id}`}>
                           <div className="flex items-center gap-2 px-2 py-2">
                             <div
                               className={`flex items-center justify-center rounded transition-colors ${isEditingInfo ? 'cursor-pointer hover:border-white/80' : ''}`}

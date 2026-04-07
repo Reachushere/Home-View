@@ -1073,6 +1073,9 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
   app.post(api.tasks.create.path, async (req, res) => {
     try {
       const input = api.tasks.create.input.parse(req.body);
+      if (input.type === 'discussion') {
+        input.excludeFromGpa = true;
+      }
       if (!input.startDate && input.dueDate) {
         const due = new Date(input.dueDate);
         const now = new Date();
