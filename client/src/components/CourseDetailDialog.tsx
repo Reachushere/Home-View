@@ -371,6 +371,18 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
   const [weekUploadingState, setWeekUploadingState] = useState<Record<string, boolean>>({});
   const [courseWeekCalendarOpen, setCourseWeekCalendarOpen] = useState<number | null>(null);
   const [courseWeekCalMonth, setCourseWeekCalMonth] = useState(new Date());
+  const weekCalendarRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (courseWeekCalendarOpen === null) return;
+    const handler = (e: MouseEvent) => {
+      if (weekCalendarRef.current && !weekCalendarRef.current.contains(e.target as Node)) {
+        setCourseWeekCalendarOpen(null);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [courseWeekCalendarOpen]);
 
   const handleWeekFileUpload = useCallback(async (weekNum: number, uploadType: 'module' | 'reading') => {
     const input = document.createElement('input');
@@ -3365,6 +3377,15 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   )}
                 </div>
 
+                <div className="flex items-center gap-2 px-2 py-1 mb-0.5 border-b border-white/10">
+                  <div className="flex-shrink-0 w-5" />
+                  <div className="flex-1 min-w-0 text-[8px] text-white/40 font-semibold uppercase tracking-wider">Week / Dates</div>
+                  <div className="flex-shrink-0 w-[72px] text-[8px] text-white/40 font-semibold uppercase tracking-wider text-center">Reading</div>
+                  <div className="flex-shrink-0 w-[72px] text-[8px] text-white/40 font-semibold uppercase tracking-wider text-center">Module</div>
+                  <div className="flex-shrink-0 w-20 text-[8px] text-white/40 font-semibold uppercase tracking-wider text-center">Label</div>
+                  <div className="w-20 text-[8px] text-white/40 font-semibold uppercase tracking-wider text-center">Notes</div>
+                </div>
+
                 {Array.from({ length: LAST_WEEK - FIRST_WEEK + 1 }, (_, i) => i + FIRST_WEEK).map((weekNum) => {
                   const weekDates = getWeekDates(weekNum, semesterStart, readingWeekStart);
                   const weekStart = new Date(weekDates.start);
@@ -3445,7 +3466,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                           <span className="truncate">{edit.courseWeekLabel || 'Set week'}</span>
                         </button>
                         {courseWeekCalendarOpen === weekNum && (
-                          <div className="absolute right-0 top-6 z-50 bg-gray-900 border border-white/25 rounded-lg p-2 shadow-xl" style={{ width: '200px' }} onClick={(e) => e.stopPropagation()}>
+                          <div ref={weekCalendarRef} className="absolute right-0 top-6 z-50 bg-gray-900 border border-white/25 rounded-lg p-2 shadow-xl" style={{ width: '200px' }} onClick={(e) => e.stopPropagation()}>
                             <div className="flex items-center justify-between mb-1">
                               <button onClick={() => setCourseWeekCalMonth(new Date(courseWeekCalMonth.getFullYear(), courseWeekCalMonth.getMonth() - 1, 1))} className="text-white/50 hover:text-white p-0.5"><ChevronLeft className="h-3 w-3" /></button>
                               <span className="text-[9px] text-white font-medium">{courseWeekCalMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
