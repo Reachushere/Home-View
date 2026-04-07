@@ -28269,19 +28269,11 @@ export default function Dashboard() {
               }
               const bd = barsData[barIdx];
               if (!bd) return;
-              const scrollContainer = calendarScrollRef.current;
-              const contentDiv = scrollContainer?.querySelector('[data-calendar-content]') as HTMLElement | null;
-              if (!contentDiv) { /* fallback: always show */ }
-              const barData = countdownBarsDataRef.current[barIdx];
-              const overlayRect2 = overlayEl.getBoundingClientRect();
-              const barGap2 = 18;
-              const barScreenTop = overlayRect2.top + barIdx * barGap2;
-              const barScreenBot = barScreenTop + barGap2;
-              const allEls = contentDiv ? contentDiv.querySelectorAll('[data-testid^="time-task-"], [data-testid^="gcal-event-"]') : document.querySelectorAll('[data-testid^="time-task-"], [data-testid^="gcal-event-"]');
+              const allEls = document.querySelectorAll('[data-testid^="time-task-"], [data-testid^="gcal-event-"]');
               let intersects = false;
               for (const el of allEls) {
                 const r = el.getBoundingClientRect();
-                if (r.height > 0 && barScreenBot >= r.top && barScreenTop <= r.bottom) { intersects = true; break; }
+                if (r.height > 0 && wrapperRect.bottom >= r.top && wrapperRect.top <= r.bottom) { intersects = true; break; }
               }
               if (!intersects) {
                 const tip = document.getElementById('cbar-tooltip');
