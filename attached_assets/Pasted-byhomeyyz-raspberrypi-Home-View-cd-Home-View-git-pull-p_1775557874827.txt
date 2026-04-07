@@ -1,0 +1,39 @@
+byhomeyyz@raspberrypi:~/Home-View $ cd ~/Home-View && git pull && pm2 restart all --update-env
+remote: Enumerating objects: 42, done.
+remote: Counting objects: 100% (42/42), done.
+remote: Compressing objects: 100% (7/7), done.
+remote: Total 38 (delta 31), reused 38 (delta 31), pack-reused 0 (from 0)
+Unpacking objects: 100% (38/38), 183.54 KiB | 1.28 MiB/s, done.
+From https://github.com/Reachushere/Home-View
+   5e36106b3..841faa5ee  main       -> origin/main
+Updating 5e36106b3..841faa5ee
+Fast-forward
+ ...yhomeyyz-raspberrypi-Home-View-cd-Home-View-git-pull-p_1775557040086.txt |  95 ++++++++++
+ ...yhomeyyz-raspberrypi-Home-View-pm2-logs-unical-lines-2_1775557411626.txt |  60 +++++++
+ ...yhomeyyz-raspberrypi-Home-View-pm2-logs-unical-lines-5_1775557472779.txt | 341 ++++++++++++++++++++++++++++++++++++
+ ...homeyyz-raspberrypi-Home-View-cd-Home-View-git-pull-pm_1775557195346.txt |  86 +++++++++
+ ...homeyyz-raspberrypi-Home-View-pm2-logs-unical-lines-20_1775557271006.txt |  38 ++++
+ attached_assets/image_1775557019868.png                                     | Bin 0 -> 45026 bytes
+ attached_assets/image_1775557647024.png                                     | Bin 0 -> 64325 bytes
+ attached_assets/image_1775557687136.png                                     | Bin 0 -> 63851 bytes
+ attached_assets/image_1775557765833.png                                     | Bin 0 -> 27984 bytes
+ server/routes.ts                                                            |  46 ++++-
+ 10 files changed, 663 insertions(+), 3 deletions(-)
+ create mode 100644 attached_assets/Pasted-byhomeyyz-raspberrypi-Home-View-cd-Home-View-git-pull-p_1775557040086.txt
+ create mode 100644 attached_assets/Pasted-byhomeyyz-raspberrypi-Home-View-pm2-logs-unical-lines-2_1775557411626.txt
+ create mode 100644 attached_assets/Pasted-byhomeyyz-raspberrypi-Home-View-pm2-logs-unical-lines-5_1775557472779.txt
+ create mode 100644 attached_assets/Pasted-yhomeyyz-raspberrypi-Home-View-cd-Home-View-git-pull-pm_1775557195346.txt
+ create mode 100644 attached_assets/Pasted-yhomeyyz-raspberrypi-Home-View-pm2-logs-unical-lines-20_1775557271006.txt
+ create mode 100644 attached_assets/image_1775557019868.png
+ create mode 100644 attached_assets/image_1775557647024.png
+ create mode 100644 attached_assets/image_1775557687136.png
+ create mode 100644 attached_assets/image_1775557765833.png
+[PM2] Applying action restartProcessId on app [all](ids: [ 0 ])
+[PM2] [unical](0) ✓
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+├────┼────────────────────┼──────────┼──────┼───────────┼──────────┼──────────┤
+│ 0  │ unical             │ fork     │ 117… │ online    │ 0%       │ 21.8mb   │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+byhomeyyz@raspberrypi:~/Home-View $ curl -X POST http://localhost:5000/api/files/pre-extract
+{"success":true,"message":"Extracting 60 files in background","queued":60}byhomeyyz@raspberrypi:~/Home-View $
