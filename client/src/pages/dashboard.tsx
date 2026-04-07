@@ -25986,7 +25986,7 @@ export default function Dashboard() {
           
           
           {/* Calendar wrapper - leaves space for honeycombs on right */}
-          <div ref={calendarWrapperRef} style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction - 2}px` : ''})`, height: 'calc(100% - 18px)', marginTop: '18px', marginLeft: '12px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 - 2 - 2 - 2 : 0}px`, display: desktopShowCalendar ? 'flex' : 'none', flexDirection: 'column' }} className="relative overflow-visible">
+          <div ref={calendarWrapperRef} style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction - 2}px` : ''})`, height: 'calc(100% - 35px)', marginTop: '35px', marginLeft: '12px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 - 2 - 2 - 2 : 0}px`, display: desktopShowCalendar ? 'flex' : 'none', flexDirection: 'column' }} className="relative overflow-visible">
           
           {/* Glass effect backing box - resizes with calendar */}
           <div 
@@ -26180,14 +26180,14 @@ export default function Dashboard() {
                 });
               }}
               className="absolute cursor-pointer hover:opacity-80 transition-opacity"
-              style={{ left: '-14px', top: '-13px', zIndex: 60, background: 'none', border: 'none', padding: 0 }}
+              style={{ left: '-14px', top: '-3px', zIndex: 60, background: 'none', border: 'none', padding: 0 }}
               data-testid="button-calendar-settings-cog"
               title="Calendar Settings"
             >
               <Settings className="h-[17px] w-[17px] text-white/70 hover:text-white" />
             </button>
             <div
-              style={{ position: 'absolute', left: '9px', top: '-30px', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto' }}
+              style={{ position: 'absolute', left: '9px', top: '-20px', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto' }}
               data-testid="calendar-top-resize-handle"
             >
               <div style={{ width: '191px', height: '14px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
@@ -30345,7 +30345,7 @@ export default function Dashboard() {
           {/* Date navigation tab above glass box */}
           <div
             className="absolute z-[60]"
-            style={{ top: '-30px', right: '7px', left: '10px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', height: '15px', pointerEvents: 'auto', opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.2s ease' }}
+            style={{ top: '-20px', right: '7px', left: '10px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', height: '15px', pointerEvents: 'auto', opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.2s ease' }}
             data-testid="date-nav-tab"
           >
             <div style={{ width: '191px', height: '15px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)', padding: '0 4px' }}>
@@ -30367,7 +30367,7 @@ export default function Dashboard() {
           <div
             onClick={(e) => { e.stopPropagation(); const next = !timelineSyncCalendar; setTimelineSyncCalendar(next); localStorage.setItem('timelineSyncCalendar', String(next)); fetch('/api/ui-settings/timelineSyncCalendar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: next }) }).catch(() => {}); }}
             className="absolute z-[71]"
-            style={{ top: '-13px', left: '1px', display: 'flex', alignItems: 'center', gap: '3px', cursor: 'pointer', padding: '1px 4px 1px 2px', borderRadius: '4px 4px 0 0' }}
+            style={{ top: '-3px', left: '1px', display: 'flex', alignItems: 'center', gap: '3px', cursor: 'pointer', padding: '1px 4px 1px 2px', borderRadius: '4px 4px 0 0' }}
             data-testid="timeline-sync-toggle-container"
           >
             <div
