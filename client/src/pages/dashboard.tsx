@@ -28688,8 +28688,8 @@ export default function Dashboard() {
                                 onTouchStart={(e) => handleTouchStart(e, task.id, task.title)}
                                 onTouchEnd={handleTouchEnd}
                                 onTouchMove={handleTouchMove}
-                                onMouseEnter={(e) => { if (totalItems > 1) { const el = e.currentTarget as HTMLElement; el.style.width = 'calc(100% - 4px)'; el.style.zIndex = '55'; el.style.boxShadow = '0 4px 16px rgba(0,0,0,0.25)'; } }}
-                                onMouseLeave={(e) => { if (totalItems > 1) { const el = e.currentTarget as HTMLElement; const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); el.style.width = hasNextDueBox ? `calc(${columnWidth / 2}% - 4px)` : `calc(${columnWidth}% - 4px)`; el.style.zIndex = selectedTaskId === task.id ? '50' : (draggedTask?.id === task.id ? '45' : '43'); el.style.boxShadow = ''; } }}
+                                onMouseEnter={(e) => { if (totalItems > 1) { const el = e.currentTarget as HTMLElement; el.style.zIndex = '55'; el.style.boxShadow = '0 4px 16px rgba(0,0,0,0.25)'; } }}
+                                onMouseLeave={(e) => { if (totalItems > 1) { const el = e.currentTarget as HTMLElement; el.style.zIndex = selectedTaskId === task.id ? '50' : (draggedTask?.id === task.id ? '45' : '43'); el.style.boxShadow = ''; } }}
                                 className={`absolute shadow-sm cursor-grab active:cursor-grabbing rounded overflow-visible ${
                                   draggedTask?.id === task.id ? "opacity-50" : ""
                                 } ${
