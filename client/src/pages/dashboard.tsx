@@ -30805,7 +30805,7 @@ export default function Dashboard() {
                       const dayTasks = allTasks.filter(t => !t.isCompleted && isSameDayET(new Date(t.dueDate), day));
                       const monthDayStr = format(day, "yyyy-MM-dd");
                       const monthDayShift = localShiftMap[monthDayStr];
-                      const cellBg = monthDayShift === 'day' ? 'rgba(255,140,0,0.35)' : monthDayShift === 'night' ? 'rgba(180,100,200,0.2)' : isCurrentMonth ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.55)';
+                      const cellBg = monthDayShift === 'day' ? 'rgba(255,160,40,0.9)' : monthDayShift === 'night' ? 'rgba(180,100,200,0.2)' : isCurrentMonth ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.55)';
                       
                       return (
                         <div
