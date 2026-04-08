@@ -1,0 +1,1509 @@
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs --lines 500 --nostream
+[TAILING] Tailing last 500 lines for [all] processes (change the value with --lines option)
+/home/byhomeyyz/.pm2/pm2.log last 500 lines:
+PM2        | 2026-04-07T11:08:17: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:08:21: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:08:21: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:08:21: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:08:24: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:08:24: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:08:24: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:08:28: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:08:28: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:08:28: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:08:32: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:08:32: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:08:32: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:08:36: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:08:36: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:08:36: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:08:40: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:08:40: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:08:40: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:08:44: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:08:44: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:08:44: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:08:49: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:08:49: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:08:49: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:08:55: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:08:55: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:08:55: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:09:00: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:09:00: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:09:00: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:09:05: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:09:05: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:09:05: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:09:10: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:09:10: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:09:10: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:09:14: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T11:09:14: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T11:09:14: PM2 log: pid=631024 msg=process killed
+PM2        | 2026-04-07T11:10:05: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:10:05: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:10:09: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:10:09: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:10:09: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:10:13: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:10:13: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:10:13: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:10:17: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:10:17: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:10:17: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:10:21: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:10:21: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:10:21: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:10:25: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:10:25: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:10:25: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:10:29: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:10:29: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:10:29: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:10:33: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:10:33: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:10:33: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:10:37: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:10:37: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:10:37: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:10:41: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:10:41: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:10:41: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:10:44: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:10:44: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:10:44: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:10:48: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:10:48: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:10:48: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:10:52: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:10:52: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:10:52: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:10:56: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:10:56: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:10:56: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:11:00: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:11:00: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:11:00: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:11:04: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:11:04: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:11:04: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:11:08: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:11:08: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:11:08: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:11:11: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:11:11: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:11:11: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:11:15: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:11:15: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:11:15: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:11:19: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:11:19: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:11:19: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:11:23: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:11:23: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:11:23: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:11:27: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:11:27: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:11:27: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:11:31: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:11:31: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:11:31: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:11:35: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:11:35: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:11:35: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:11:39: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:11:39: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:11:39: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:11:42: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:11:42: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:11:42: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:11:46: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:11:46: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:11:46: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:11:50: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:11:50: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:11:50: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:11:54: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:11:54: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:11:54: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:11:58: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:11:58: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:11:58: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:12:02: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:12:02: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:12:02: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:12:06: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:12:06: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:12:06: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:12:09: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:12:09: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:12:09: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:12:13: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:12:13: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:12:13: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:12:17: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:12:17: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:12:17: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:12:21: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:12:21: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:12:21: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:12:25: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:12:25: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:12:25: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:12:29: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:12:29: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:12:29: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:12:32: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:12:32: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:12:32: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:12:36: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:12:36: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:12:36: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:12:40: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:12:40: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:12:40: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:12:44: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:12:44: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:12:44: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:12:48: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:12:48: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:12:48: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:12:52: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:12:52: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:12:52: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:12:56: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:12:56: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:12:56: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:12:59: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:12:59: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:12:59: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:13:03: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:13:03: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:13:03: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:13:07: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:13:07: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:13:07: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:13:11: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:13:11: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:13:11: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:13:15: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:13:15: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:13:15: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:13:19: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:13:19: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:13:19: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:13:23: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:13:23: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:13:23: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:13:26: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:13:26: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:13:26: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:13:30: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:13:30: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:13:30: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:13:34: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:13:34: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:13:34: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:13:38: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:13:38: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:13:38: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:13:42: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:13:42: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:13:42: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:13:47: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:13:47: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:13:47: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:13:50: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:13:50: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:13:50: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:13:55: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:13:55: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:13:55: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:13:58: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:13:58: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:13:58: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:14:02: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:14:02: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:14:02: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:14:06: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:14:06: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:14:06: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:14:10: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:14:10: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:14:10: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:14:14: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:14:14: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:14:14: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:14:17: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:14:17: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:14:17: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:14:21: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:14:21: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:14:21: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:14:25: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:14:25: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:14:25: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:14:29: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:14:29: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:14:29: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:14:33: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:14:33: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:14:33: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:14:37: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:14:37: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:14:37: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:14:41: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:14:41: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:14:41: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:14:44: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:14:44: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:14:44: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:14:48: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:14:48: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:14:48: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:14:52: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:14:52: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:14:52: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:14:56: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:14:56: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:14:56: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:00: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:00: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:00: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:04: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:04: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:04: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:08: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:08: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:08: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:12: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:12: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:12: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:15: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:15: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:15: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:19: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:19: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:19: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:23: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:23: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:23: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:27: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:27: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:27: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:31: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:31: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:31: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:35: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:35: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:35: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:38: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:38: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:38: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:42: PM2 log: App [unical:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:42: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:15:42: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:15:44: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T11:15:44: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T11:15:44: PM2 log: pid=634571 msg=process killed
+PM2        | 2026-04-07T11:17:07: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:17:07: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:28:36: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T11:28:36: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T11:28:36: PM2 log: pid=634801 msg=process killed
+PM2        | 2026-04-07T11:30:29: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:30:29: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T11:51:41: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T11:51:42: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-07T11:51:42: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-07T11:51:42: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-07T11:51:42: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-07T11:51:42: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-07T11:51:42: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-07T11:51:42: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-07T11:51:42: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-07T11:51:42: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-07T11:51:42: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-07T11:51:43: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-07T11:51:43: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-07T11:51:43: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-07T11:51:43: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-07T11:51:43: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-07T11:51:43: PM2 log: Process with pid 635816 still alive after 1600ms, sending it SIGKILL now...
+PM2        | 2026-04-07T11:51:43: PM2 log: App [unical:0] exited with code [0] via signal [SIGKILL]
+PM2        | 2026-04-07T11:51:43: PM2 log: pid=635816 msg=process killed
+PM2        | 2026-04-07T11:51:43: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T11:51:43: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T12:07:45: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T12:07:45: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T12:07:45: PM2 log: pid=636211 msg=process killed
+PM2        | 2026-04-07T12:07:45: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T12:07:45: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T12:27:34: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T12:27:34: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T12:27:34: PM2 log: pid=636572 msg=process killed
+PM2        | 2026-04-07T12:27:34: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T12:27:34: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T12:39:33: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T12:39:33: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T12:39:33: PM2 log: pid=637572 msg=process killed
+PM2        | 2026-04-07T12:39:33: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T12:39:33: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T12:55:10: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T12:55:11: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T12:55:11: PM2 log: pid=637881 msg=process killed
+PM2        | 2026-04-07T12:55:11: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T12:55:11: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T13:01:31: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T13:01:32: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T13:01:32: PM2 log: pid=638255 msg=process killed
+PM2        | 2026-04-07T13:01:32: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T13:01:32: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T13:13:34: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T13:13:34: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T13:13:34: PM2 log: pid=638459 msg=process killed
+PM2        | 2026-04-07T13:13:34: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T13:13:34: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T13:34:37: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T13:34:37: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T13:34:38: PM2 log: pid=638739 msg=process killed
+PM2        | 2026-04-07T13:34:38: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T13:34:38: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T13:39:16: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T13:39:16: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T13:39:16: PM2 log: pid=639102 msg=process killed
+PM2        | 2026-04-07T13:39:16: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T13:39:16: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T13:48:42: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T13:48:42: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T13:48:42: PM2 log: pid=639295 msg=process killed
+PM2        | 2026-04-07T13:48:42: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T13:48:42: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T14:33:32: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T14:33:32: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T14:33:32: PM2 log: pid=639563 msg=process killed
+PM2        | 2026-04-07T14:33:32: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T14:33:32: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T14:44:56: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T14:44:56: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T14:44:56: PM2 log: pid=640084 msg=process killed
+PM2        | 2026-04-07T14:44:56: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T14:44:56: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T15:15:28: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T15:15:28: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T15:15:28: PM2 log: pid=640354 msg=process killed
+PM2        | 2026-04-07T15:15:28: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T15:15:28: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T17:18:24: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T17:18:24: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T17:18:24: PM2 log: pid=640858 msg=process killed
+PM2        | 2026-04-07T17:18:24: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T17:18:24: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T19:04:30: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T19:04:30: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T19:04:30: PM2 log: pid=642262 msg=process killed
+PM2        | 2026-04-07T19:04:30: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T19:04:30: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T19:58:13: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T19:58:13: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T19:58:13: PM2 log: pid=643624 msg=process killed
+PM2        | 2026-04-07T19:58:13: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T19:58:13: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T23:20:17: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T23:20:17: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T23:20:17: PM2 log: pid=644428 msg=process killed
+PM2        | 2026-04-07T23:20:17: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T23:20:17: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T23:25:55: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T23:25:55: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T23:25:55: PM2 log: pid=647075 msg=process killed
+PM2        | 2026-04-07T23:25:55: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T23:25:55: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T23:28:46: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T23:28:46: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T23:28:46: PM2 log: pid=647377 msg=process killed
+PM2        | 2026-04-07T23:28:46: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T23:28:46: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T23:37:15: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T23:37:15: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T23:37:16: PM2 log: pid=647547 msg=process killed
+PM2        | 2026-04-07T23:37:16: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T23:37:16: PM2 log: App [unical:0] online
+PM2        | 2026-04-08T00:16:43: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-08T00:16:43: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-08T00:16:43: PM2 log: pid=647791 msg=process killed
+PM2        | 2026-04-08T00:16:43: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-08T00:16:43: PM2 log: App [unical:0] online
+PM2        | 2026-04-08T00:27:39: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-08T00:27:39: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-08T00:27:39: PM2 log: pid=648513 msg=process killed
+PM2        | 2026-04-08T00:27:39: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-08T00:27:39: PM2 log: App [unical:0] online
+PM2        | 2026-04-08T00:30:29: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-08T00:30:29: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-08T00:30:29: PM2 log: pid=648765 msg=process killed
+PM2        | 2026-04-08T00:30:29: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-08T00:30:29: PM2 log: App [unical:0] online
+PM2        | 2026-04-08T00:46:25: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-08T00:46:25: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-08T00:46:25: PM2 log: pid=648913 msg=process killed
+PM2        | 2026-04-08T00:46:25: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-08T00:46:25: PM2 log: App [unical:0] online
+PM2        | 2026-04-08T01:03:59: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-08T01:03:59: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-08T01:03:59: PM2 log: pid=649212 msg=process killed
+PM2        | 2026-04-08T01:03:59: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-08T01:03:59: PM2 log: App [unical:0] online
+PM2        | 2026-04-08T01:11:40: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-08T01:11:40: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-08T01:11:40: PM2 log: pid=649524 msg=process killed
+PM2        | 2026-04-08T01:11:40: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-08T01:11:40: PM2 log: App [unical:0] online
+PM2        | 2026-04-08T01:13:18: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-08T01:13:18: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-08T01:13:18: PM2 log: pid=649764 msg=process killed
+PM2        | 2026-04-08T01:13:18: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-08T01:13:18: PM2 log: App [unical:0] online
+PM2        | 2026-04-08T01:15:11: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-08T01:15:11: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-08T01:15:11: PM2 log: pid=649903 msg=process killed
+PM2        | 2026-04-08T01:15:15: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-08T01:15:15: PM2 log: App [unical:0] online
+PM2        | 2026-04-08T01:22:39: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:41: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:41: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:41: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:41: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:41: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:41: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:41: PM2 log: Process with pid 650030 still alive after 1600ms, sending it SIGKILL now...
+PM2        | 2026-04-08T01:22:41: PM2 log: App [unical:0] exited with code [0] via signal [SIGKILL]
+PM2        | 2026-04-08T01:22:41: PM2 log: pid=650030 msg=process killed
+PM2        | 2026-04-08T01:22:41: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-08T01:22:41: PM2 log: App [unical:0] online
+PM2        | 2026-04-08T01:24:07: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-08T01:24:07: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-08T01:24:07: PM2 log: pid=650299 msg=process killed
+PM2        | 2026-04-08T01:24:07: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-08T01:24:07: PM2 log: App [unical:0] online
+PM2        | 2026-04-08T01:29:52: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-08T01:29:52: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-08T01:29:52: PM2 log: pid=650463 msg=process killed
+PM2        | 2026-04-08T01:29:52: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-08T01:29:52: PM2 log: App [unical:0] online
+
+/home/byhomeyyz/.pm2/logs/unical-out.log last 500 lines:
+0|unical   | Generating Edge TTS for 1449 chars, file: prep-224-chunk-2
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 922ms, 551520 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-224-chunk-2-1775625984313.mp3
+0|unical   | [AudioPrep] Generating chunk 4/7 for Let’s empower municipalities, too often the little siblings of federalism.pdf (1454 chars)
+0|unical   | Generating Edge TTS for 1454 chars, file: prep-224-chunk-3
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 976ms, 563040 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-224-chunk-3-1775625986094.mp3
+0|unical   | [AudioPrep] Generating chunk 5/7 for Let’s empower municipalities, too often the little siblings of federalism.pdf (1433 chars)
+0|unical   | Generating Edge TTS for 1433 chars, file: prep-224-chunk-4
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 822ms, 563040 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-224-chunk-4-1775625987721.mp3
+0|unical   | [AudioPrep] Generating chunk 6/7 for Let’s empower municipalities, too often the little siblings of federalism.pdf (1434 chars)
+0|unical   | Generating Edge TTS for 1434 chars, file: prep-224-chunk-5
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 1119ms, 567072 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-224-chunk-5-1775625989647.mp3
+0|unical   | [AudioPrep] Generating chunk 7/7 for Let’s empower municipalities, too often the little siblings of federalism.pdf (437 chars)
+0|unical   | Generating Edge TTS for 437 chars, file: prep-224-chunk-6
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 422ms, 160992 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-224-chunk-6-1775625990875.mp3
+0|unical   | [AudioPrep] ===== Completed Let’s empower municipalities, too often the little siblings of federalism.pdf: 7 chunks in 12s =====
+0|unical   | [AudioPrep] ===== Preparing file 225: Municipal Priorities for 2020 and Beyond_ Part One - StrategyCorp.pdf =====
+0|unical   | [ExtractText] Read 180293 bytes from local file: 1775479415538-Municipal_Priorities_for_2020_and_Beyond__Part_One_-_StrategyCorp.pdf
+0|unical   | [ExtractText] Extracted 10741 chars from Municipal Priorities for 2020 and Beyond_ Part One - StrategyCorp.pdf
+0|unical   | cleanTextForTTS input length: 10741
+0|unical   | After URL/timestamp/citation cleanup: 10496
+0|unical   | After JSTOR cleanup: 10496
+0|unical   | After French filter: 10420
+0|unical   | Final cleaned length: 10366
+0|unical   | [ExtractText] Cached 10366 chars for file 225
+0|unical   | [AudioPrep] Municipal Priorities for 2020 and Beyond_ Part One - StrategyCorp.pdf: 10366 chars → 8 chunks
+0|unical   | [AudioPrep] Generating chunk 1/8 for Municipal Priorities for 2020 and Beyond_ Part One - StrategyCorp.pdf (1498 chars)
+0|unical   | Generating Edge TTS for 1498 chars, file: prep-225-chunk-0
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 883ms, 572976 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-225-chunk-0-1775625992710.mp3
+0|unical   | [AudioPrep] Generating chunk 2/8 for Municipal Priorities for 2020 and Beyond_ Part One - StrategyCorp.pdf (1427 chars)
+0|unical   | Generating Edge TTS for 1427 chars, file: prep-225-chunk-1
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 741ms, 545328 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-225-chunk-1-1775625994255.mp3
+0|unical   | [AudioPrep] Generating chunk 3/8 for Municipal Priorities for 2020 and Beyond_ Part One - StrategyCorp.pdf (720 chars)
+0|unical   | Generating Edge TTS for 588 chars, file: prep-225-chunk-2
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 537ms, 219024 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-225-chunk-2-1775625995596.mp3
+0|unical   | [AudioPrep] Generating chunk 4/8 for Municipal Priorities for 2020 and Beyond_ Part One - StrategyCorp.pdf (1373 chars)
+0|unical   | Generating Edge TTS for 1373 chars, file: prep-225-chunk-3
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 857ms, 527904 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-225-chunk-3-1775625997257.mp3
+0|unical   | [AudioPrep] Generating chunk 5/8 for Municipal Priorities for 2020 and Beyond_ Part One - StrategyCorp.pdf (1277 chars)
+0|unical   | Generating Edge TTS for 1277 chars, file: prep-225-chunk-4
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 815ms, 495072 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-225-chunk-4-1775625998877.mp3
+0|unical   | [AudioPrep] Generating chunk 6/8 for Municipal Priorities for 2020 and Beyond_ Part One - StrategyCorp.pdf (1421 chars)
+0|unical   | Generating Edge TTS for 1421 chars, file: prep-225-chunk-5
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 853ms, 526608 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-225-chunk-5-1775626000536.mp3
+0|unical   | [AudioPrep] Generating chunk 7/8 for Municipal Priorities for 2020 and Beyond_ Part One - StrategyCorp.pdf (1273 chars)
+0|unical   | Generating Edge TTS for 1156 chars, file: prep-225-chunk-6
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 631ms, 428400 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-225-chunk-6-1775626001973.mp3
+0|unical   | [AudioPrep] Generating chunk 8/8 for Municipal Priorities for 2020 and Beyond_ Part One - StrategyCorp.pdf (1370 chars)
+0|unical   | Generating Edge TTS for 1370 chars, file: prep-225-chunk-7
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 1244ms, 574704 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-225-chunk-7-1775626004022.mp3
+0|unical   | [AudioPrep] ===== Completed Municipal Priorities for 2020 and Beyond_ Part One - StrategyCorp.pdf: 8 chunks in 13s =====
+0|unical   | [AudioPrep] ===== Preparing file 226: Municipal Priorities for 2020 and Beyond_ Part Two - StrategyCorp.pdf =====
+0|unical   | [ExtractText] Read 140661 bytes from local file: 1775479415693-Municipal_Priorities_for_2020_and_Beyond__Part_Two_-_StrategyCorp.pdf
+0|unical   | [ExtractText] Extracted 11396 chars from Municipal Priorities for 2020 and Beyond_ Part Two - StrategyCorp.pdf
+0|unical   | cleanTextForTTS input length: 11396
+0|unical   | After URL/timestamp/citation cleanup: 11396
+0|unical   | After JSTOR cleanup: 11396
+0|unical   | After French filter: 11354
+0|unical   | Final cleaned length: 11315
+0|unical   | [ExtractText] Cached 11315 chars for file 226
+0|unical   | [AudioPrep] Municipal Priorities for 2020 and Beyond_ Part Two - StrategyCorp.pdf: 11315 chars → 8 chunks
+0|unical   | [AudioPrep] Generating chunk 1/8 for Municipal Priorities for 2020 and Beyond_ Part Two - StrategyCorp.pdf (1435 chars)
+0|unical   | Generating Edge TTS for 1354 chars, file: prep-226-chunk-0
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 915ms, 503136 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-226-chunk-0-1775626005851.mp3
+0|unical   | [AudioPrep] Generating chunk 2/8 for Municipal Priorities for 2020 and Beyond_ Part Two - StrategyCorp.pdf (1414 chars)
+0|unical   | Generating Edge TTS for 1414 chars, file: prep-226-chunk-1
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 893ms, 542592 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-226-chunk-1-1775626007547.mp3
+0|unical   | [AudioPrep] Generating chunk 3/8 for Municipal Priorities for 2020 and Beyond_ Part Two - StrategyCorp.pdf (1420 chars)
+0|unical   | Generating Edge TTS for 1420 chars, file: prep-226-chunk-2
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 943ms, 546912 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-226-chunk-2-1775626009293.mp3
+0|unical   | [AudioPrep] Generating chunk 4/8 for Municipal Priorities for 2020 and Beyond_ Part Two - StrategyCorp.pdf (1428 chars)
+0|unical   | Generating Edge TTS for 1428 chars, file: prep-226-chunk-3
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 766ms, 520416 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-226-chunk-3-1775626010865.mp3
+0|unical   | [AudioPrep] Generating chunk 5/8 for Municipal Priorities for 2020 and Beyond_ Part Two - StrategyCorp.pdf (1401 chars)
+0|unical   | Generating Edge TTS for 1401 chars, file: prep-226-chunk-4
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 873ms, 531504 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-226-chunk-4-1775626012544.mp3
+0|unical   | [AudioPrep] Generating chunk 6/8 for Municipal Priorities for 2020 and Beyond_ Part Two - StrategyCorp.pdf (1405 chars)
+0|unical   | Generating Edge TTS for 1405 chars, file: prep-226-chunk-5
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 737ms, 521136 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-226-chunk-5-1775626014087.mp3
+0|unical   | [AudioPrep] Generating chunk 7/8 for Municipal Priorities for 2020 and Beyond_ Part Two - StrategyCorp.pdf (1380 chars)
+0|unical   | Generating Edge TTS for 1380 chars, file: prep-226-chunk-6
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 11984ms, 525456 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-226-chunk-6-1775626026876.mp3
+0|unical   | [AudioPrep] Generating chunk 8/8 for Municipal Priorities for 2020 and Beyond_ Part Two - StrategyCorp.pdf (1425 chars)
+0|unical   | Generating Edge TTS for 1425 chars, file: prep-226-chunk-7
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 884ms, 561456 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-226-chunk-7-1775626028564.mp3
+0|unical   | [AudioPrep] ===== Completed Municipal Priorities for 2020 and Beyond_ Part Two - StrategyCorp.pdf: 8 chunks in 25s =====
+0|unical   | [AudioPrep] ===== Preparing file 227: out.pdf =====
+0|unical   | [ExtractText] Read 246983 bytes from local file: 1775479415911-out.pdf
+0|unical   | [ExtractText] Extracted 7890 chars from out.pdf
+0|unical   | cleanTextForTTS input length: 7890
+0|unical   | After URL/timestamp/citation cleanup: 7885
+0|unical   | After JSTOR cleanup: 7885
+0|unical   | After French filter: 7837
+0|unical   | Final cleaned length: 7803
+0|unical   | [ExtractText] Cached 7803 chars for file 227
+0|unical   | [AudioPrep] out.pdf: 7803 chars → 6 chunks
+0|unical   | [AudioPrep] Generating chunk 1/6 for out.pdf (1487 chars)
+0|unical   | Generating Edge TTS for 1487 chars, file: prep-227-chunk-0
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 927ms, 618192 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-227-chunk-0-1775626030442.mp3
+0|unical   | [AudioPrep] Generating chunk 2/6 for out.pdf (1484 chars)
+0|unical   | Generating Edge TTS for 1484 chars, file: prep-227-chunk-1
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 12044ms, 566784 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-227-chunk-1-1775626043290.mp3
+0|unical   | [AudioPrep] Generating chunk 3/6 for out.pdf (1260 chars)
+0|unical   | Generating Edge TTS for 1260 chars, file: prep-227-chunk-2
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 914ms, 495504 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-227-chunk-2-1775626045010.mp3
+0|unical   | [AudioPrep] Generating chunk 4/6 for out.pdf (1490 chars)
+0|unical   | Generating Edge TTS for 1490 chars, file: prep-227-chunk-3
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 12090ms, 574560 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-227-chunk-3-1775626057908.mp3
+0|unical   | [AudioPrep] Generating chunk 5/6 for out.pdf (1468 chars)
+0|unical   | Generating Edge TTS for 1388 chars, file: prep-227-chunk-4
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 778ms, 527184 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-227-chunk-4-1775626059492.mp3
+0|unical   | [AudioPrep] Generating chunk 6/6 for out.pdf (609 chars)
+0|unical   | Generating Edge TTS for 609 chars, file: prep-227-chunk-5
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 553ms, 226800 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-227-chunk-5-1775626060850.mp3
+0|unical   | [AudioPrep] ===== Completed out.pdf: 6 chunks in 32s =====
+0|unical   | [AudioPrep] ===== Preparing file 228: PUBLIC OPINION RESEARCH REPORT.pdf =====
+0|unical   | [ExtractText] Read 542701 bytes from local file: 1775479416081-PUBLIC_OPINION_RESEARCH_REPORT.pdf
+0|unical   | [ExtractText] Extracted 5472 chars from PUBLIC OPINION RESEARCH REPORT.pdf
+0|unical   | cleanTextForTTS input length: 5472
+0|unical   | After URL/timestamp/citation cleanup: 5472
+0|unical   | After JSTOR cleanup: 5472
+0|unical   | After French filter: 5312
+0|unical   | Final cleaned length: 0
+0|unical   | [AudioPrep] No usable text extracted from PUBLIC OPINION RESEARCH REPORT.pdf — skipping
+0|unical   | [AudioPrep] ===== Preparing file 229: CFNF400, Module 11 - Learning Objectives.pdf =====
+0|unical   | [ExtractText] Read 383263 bytes from local file: 1775479417594-CFNF400__Module_11_-_Learning_Objectives.pdf
+0|unical   | [ExtractText] Extracted 30203 chars from CFNF400, Module 11 - Learning Objectives.pdf
+0|unical   | cleanTextForTTS input length: 30203
+0|unical   | After URL/timestamp/citation cleanup: 28237
+0|unical   | After JSTOR cleanup: 28237
+0|unical   | After French filter: 28211
+0|unical   | Final cleaned length: 28177
+0|unical   | [ExtractText] Cached 28177 chars for file 229
+0|unical   | [AudioPrep] CFNF400, Module 11 - Learning Objectives.pdf: 28177 chars → 21 chunks
+0|unical   | [AudioPrep] Generating chunk 1/21 for CFNF400, Module 11 - Learning Objectives.pdf (1327 chars)
+0|unical   | Generating Edge TTS for 1262 chars, file: prep-229-chunk-0
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 689ms, 470016 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-229-chunk-0-1775626062677.mp3
+0|unical   | [AudioPrep] Generating chunk 2/21 for CFNF400, Module 11 - Learning Objectives.pdf (1267 chars)
+0|unical   | Generating Edge TTS for 1267 chars, file: prep-229-chunk-1
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 749ms, 478368 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-229-chunk-1-1775626064230.mp3
+0|unical   | [AudioPrep] Generating chunk 3/21 for CFNF400, Module 11 - Learning Objectives.pdf (1304 chars)
+0|unical   | Generating Edge TTS for 1250 chars, file: prep-229-chunk-2
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 12009ms, 485712 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-229-chunk-2-1775626077043.mp3
+0|unical   | [AudioPrep] Generating chunk 4/21 for CFNF400, Module 11 - Learning Objectives.pdf (1342 chars)
+0|unical   | Generating Edge TTS for 1342 chars, file: prep-229-chunk-3
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 968ms, 537408 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-229-chunk-3-1775626078817.mp3
+0|unical   | [AudioPrep] Generating chunk 5/21 for CFNF400, Module 11 - Learning Objectives.pdf (1176 chars)
+0|unical   | Generating Edge TTS for 1176 chars, file: prep-229-chunk-4
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 665ms, 420192 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-229-chunk-4-1775626080287.mp3
+0|unical   | [AudioPrep] Generating chunk 6/21 for CFNF400, Module 11 - Learning Objectives.pdf (1500 chars)
+0|unical   | Generating Edge TTS for 1500 chars, file: prep-229-chunk-5
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 898ms, 537840 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-229-chunk-5-1775626081991.mp3
+0|unical   | [AudioPrep] Generating chunk 7/21 for CFNF400, Module 11 - Learning Objectives.pdf (1472 chars)
+0|unical   | Generating Edge TTS for 1472 chars, file: prep-229-chunk-6
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 946ms, 572400 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-229-chunk-6-1775626083743.mp3
+0|unical   | [AudioPrep] Generating chunk 8/21 for CFNF400, Module 11 - Learning Objectives.pdf (1467 chars)
+0|unical   | Generating Edge TTS for 1467 chars, file: prep-229-chunk-7
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 941ms, 579168 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-229-chunk-7-1775626085488.mp3
+0|unical   | [AudioPrep] Generating chunk 9/21 for CFNF400, Module 11 - Learning Objectives.pdf (1486 chars)
+0|unical   | Generating Edge TTS for 1486 chars, file: prep-229-chunk-8
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 1181ms, 580608 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-229-chunk-8-1775626087474.mp3
+0|unical   | [AudioPrep] Generating chunk 10/21 for CFNF400, Module 11 - Learning Objectives.pdf (1369 chars)
+0|unical   | Generating Edge TTS for 1369 chars, file: prep-229-chunk-9
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 773ms, 516240 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-229-chunk-9-1775626089052.mp3
+0|unical   | [AudioPrep] Generating chunk 11/21 for CFNF400, Module 11 - Learning Objectives.pdf (1431 chars)
+0|unical   | Generating Edge TTS for 1431 chars, file: prep-229-chunk-10
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 772ms, 528192 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-229-chunk-10-1775626090629.mp3
+0|unical   | [AudioPrep] Generating chunk 12/21 for CFNF400, Module 11 - Learning Objectives.pdf (1362 chars)
+0|unical   | Generating Edge TTS for 1362 chars, file: prep-229-chunk-11
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 938ms, 478656 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-229-chunk-11-1775626092375.mp3
+0|unical   | [AudioPrep] Generating chunk 13/21 for CFNF400, Module 11 - Learning Objectives.pdf (1474 chars)
+0|unical   | Generating Edge TTS for 1474 chars, file: prep-229-chunk-12
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 841ms, 534384 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-229-chunk-12-1775626094022.mp3
+0|unical   | [AudioPrep] Generating chunk 14/21 for CFNF400, Module 11 - Learning Objectives.pdf (1116 chars)
+0|unical   | Generating Edge TTS for 1041 chars, file: prep-229-chunk-13
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 914ms, 382896 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-229-chunk-13-1775626095740.mp3
+0|unical   | [AudioPrep] Generating chunk 15/21 for CFNF400, Module 11 - Learning Objectives.pdf (1375 chars)
+0|unical   | Generating Edge TTS for 1248 chars, file: prep-229-chunk-14
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 864ms, 484560 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-229-chunk-14-1775626097408.mp3
+0|unical   | [AudioPrep] Generating chunk 16/21 for CFNF400, Module 11 - Learning Objectives.pdf (438 chars)
+0|unical   | Generating Edge TTS for 438 chars, file: prep-229-chunk-15
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 619ms, 161568 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-229-chunk-15-1775626098832.mp3
+0|unical   | [AudioPrep] Generating chunk 17/21 for CFNF400, Module 11 - Learning Objectives.pdf (1774 chars)
+0|unical   | Generating Edge TTS for 565 chars, file: prep-229-chunk-16
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 621ms, 220608 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-229-chunk-16-1775626100258.mp3
+0|unical   | [AudioPrep] Generating chunk 18/21 for CFNF400, Module 11 - Learning Objectives.pdf (1436 chars)
+0|unical   | Generating Edge TTS for 1436 chars, file: prep-229-chunk-17
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 1095ms, 610704 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-229-chunk-17-1775626102159.mp3
+0|unical   | [AudioPrep] Generating chunk 19/21 for CFNF400, Module 11 - Learning Objectives.pdf (1481 chars)
+0|unical   | Generating Edge TTS for 1481 chars, file: prep-229-chunk-18
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 1074ms, 741888 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-229-chunk-18-1775626104038.mp3
+0|unical   | [AudioPrep] Generating chunk 20/21 for CFNF400, Module 11 - Learning Objectives.pdf (1477 chars)
+0|unical   | Generating Edge TTS for 1422 chars, file: prep-229-chunk-19
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 12225ms, 805392 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-229-chunk-19-1775626117069.mp3
+0|unical   | [AudioPrep] Generating chunk 21/21 for CFNF400, Module 11 - Learning Objectives.pdf (1083 chars)
+0|unical   | Generating Edge TTS for 1028 chars, file: prep-229-chunk-20
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 3001ms, 532080 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-229-chunk-20-1775626120875.mp3
+0|unical   | [AudioPrep] ===== Completed CFNF400, Module 11 - Learning Objectives.pdf: 21 chunks in 60s =====
+0|unical   | [AudioPrep] ===== Preparing file 230: Units 3,14 - 3,16.pdf =====
+0|unical   | [ExtractText] Read 9821103 bytes from local file: 1775479419945-Units_3_14_-_3_16.pdf
+0|unical   | [ExtractText] Extracted 48 chars from Units 3,14 - 3,16.pdf
+0|unical   | cleanTextForTTS input length: 48
+0|unical   | After URL/timestamp/citation cleanup: 48
+0|unical   | After JSTOR cleanup: 48
+0|unical   | After French filter: 1
+0|unical   | Final cleaned length: 0
+0|unical   | [AudioPrep] No usable text extracted from Units 3,14 - 3,16.pdf — skipping
+0|unical   | [AudioPrep] ===== Preparing file 214: 156CBEBA.pdf =====
+0|unical   | [ExtractText] Read 157835 bytes from local file: 1775479407046-156CBEBA.pdf
+0|unical   | [ExtractText] Extracted 57098 chars from 156CBEBA.pdf
+0|unical   | cleanTextForTTS input length: 57098
+0|unical   | After URL/timestamp/citation cleanup: 55012
+0|unical   | After JSTOR cleanup: 55009
+0|unical   | After French filter: 54912
+0|unical   | Final cleaned length: 54673
+0|unical   | [ExtractText] Cached 54673 chars for file 214
+0|unical   | [AudioPrep] 156CBEBA.pdf: 54673 chars → 40 chunks
+0|unical   | [AudioPrep] Generating chunk 1/40 for 156CBEBA.pdf (1312 chars)
+0|unical   | Generating Edge TTS for 1312 chars, file: prep-214-chunk-0
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 831ms, 502128 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-0-1775626122854.mp3
+0|unical   | [AudioPrep] Generating chunk 2/40 for 156CBEBA.pdf (1451 chars)
+0|unical   | Generating Edge TTS for 1451 chars, file: prep-214-chunk-1
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 919ms, 548640 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-1-1775626124580.mp3
+0|unical   | [AudioPrep] Generating chunk 3/40 for 156CBEBA.pdf (1348 chars)
+0|unical   | Generating Edge TTS for 1348 chars, file: prep-214-chunk-2
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 1007ms, 525888 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-2-1775626126393.mp3
+0|unical   | [AudioPrep] Generating chunk 4/40 for 156CBEBA.pdf (1328 chars)
+0|unical   | Generating Edge TTS for 1328 chars, file: prep-214-chunk-3
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 772ms, 519984 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-3-1775626127971.mp3
+0|unical   | [AudioPrep] Generating chunk 5/40 for 156CBEBA.pdf (1377 chars)
+0|unical   | Generating Edge TTS for 1377 chars, file: prep-214-chunk-4
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 658ms, 517824 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-4-1775626129434.mp3
+0|unical   | [AudioPrep] Generating chunk 6/40 for 156CBEBA.pdf (1360 chars)
+0|unical   | Generating Edge TTS for 1360 chars, file: prep-214-chunk-5
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 990ms, 559728 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-5-1775626131228.mp3
+0|unical   | [AudioPrep] Generating chunk 7/40 for 156CBEBA.pdf (1315 chars)
+0|unical   | Generating Edge TTS for 1315 chars, file: prep-214-chunk-6
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 901ms, 514800 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-6-1775626132936.mp3
+0|unical   | [AudioPrep] Generating chunk 8/40 for 156CBEBA.pdf (1471 chars)
+0|unical   | Generating Edge TTS for 1471 chars, file: prep-214-chunk-7
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 881ms, 543312 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-7-1775626134623.mp3
+0|unical   | [AudioPrep] Generating chunk 9/40 for 156CBEBA.pdf (1433 chars)
+0|unical   | Generating Edge TTS for 1433 chars, file: prep-214-chunk-8
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 936ms, 602928 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-8-1775626136364.mp3
+0|unical   | [AudioPrep] Generating chunk 10/40 for 156CBEBA.pdf (1324 chars)
+0|unical   | Generating Edge TTS for 1324 chars, file: prep-214-chunk-9
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 1076ms, 541008 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-9-1775626138245.mp3
+0|unical   | [AudioPrep] Generating chunk 11/40 for 156CBEBA.pdf (1404 chars)
+0|unical   | Generating Edge TTS for 1404 chars, file: prep-214-chunk-10
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 861ms, 547200 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-10-1775626139915.mp3
+0|unical   | [AudioPrep] Generating chunk 12/40 for 156CBEBA.pdf (1454 chars)
+0|unical   | Generating Edge TTS for 1358 chars, file: prep-214-chunk-11
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 989ms, 560160 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-11-1775626141709.mp3
+0|unical   | [AudioPrep] Generating chunk 13/40 for 156CBEBA.pdf (1433 chars)
+0|unical   | Generating Edge TTS for 1433 chars, file: prep-214-chunk-12
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 907ms, 540864 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-12-1775626143435.mp3
+0|unical   | [AudioPrep] Generating chunk 14/40 for 156CBEBA.pdf (1268 chars)
+0|unical   | Generating Edge TTS for 1268 chars, file: prep-214-chunk-13
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 703ms, 474048 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-13-1775626144949.mp3
+0|unical   | [AudioPrep] Generating chunk 15/40 for 156CBEBA.pdf (1293 chars)
+0|unical   | Generating Edge TTS for 1293 chars, file: prep-214-chunk-14
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 911ms, 541440 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-14-1775626146672.mp3
+0|unical   | [AudioPrep] Generating chunk 16/40 for 156CBEBA.pdf (1479 chars)
+0|unical   | Generating Edge TTS for 1479 chars, file: prep-214-chunk-15
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 789ms, 547056 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-15-1775626148267.mp3
+0|unical   | [AudioPrep] Generating chunk 17/40 for 156CBEBA.pdf (1413 chars)
+0|unical   | Generating Edge TTS for 1413 chars, file: prep-214-chunk-16
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 1111ms, 549216 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-16-1775626150185.mp3
+0|unical   | [AudioPrep] Generating chunk 18/40 for 156CBEBA.pdf (1335 chars)
+0|unical   | Generating Edge TTS for 1335 chars, file: prep-214-chunk-17
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 1081ms, 551664 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-17-1775626152076.mp3
+0|unical   | [AudioPrep] Generating chunk 19/40 for 156CBEBA.pdf (1460 chars)
+0|unical   | Generating Edge TTS for 1460 chars, file: prep-214-chunk-18
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 1000ms, 565200 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-18-1775626153884.mp3
+0|unical   | [AudioPrep] Generating chunk 20/40 for 156CBEBA.pdf (1451 chars)
+0|unical   | Generating Edge TTS for 1451 chars, file: prep-214-chunk-19
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 12156ms, 561024 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-19-1775626166844.mp3
+0|unical   | [AudioPrep] Generating chunk 21/40 for 156CBEBA.pdf (1498 chars)
+0|unical   | Generating Edge TTS for 1498 chars, file: prep-214-chunk-20
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 1214ms, 618192 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-20-1775626168862.mp3
+0|unical   | [AudioPrep] Generating chunk 22/40 for 156CBEBA.pdf (1482 chars)
+0|unical   | Generating Edge TTS for 1482 chars, file: prep-214-chunk-21
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 874ms, 564192 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-21-1775626170542.mp3
+0|unical   | [AudioPrep] Generating chunk 23/40 for 156CBEBA.pdf (1388 chars)
+0|unical   | Generating Edge TTS for 1388 chars, file: prep-214-chunk-22
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 1133ms, 574128 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-22-1775626172481.mp3
+0|unical   | [AudioPrep] Generating chunk 24/40 for 156CBEBA.pdf (1323 chars)
+0|unical   | Generating Edge TTS for 1323 chars, file: prep-214-chunk-23
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 748ms, 481104 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-23-1775626174041.mp3
+0|unical   | [AudioPrep] Generating chunk 25/40 for 156CBEBA.pdf (1304 chars)
+0|unical   | Generating Edge TTS for 1304 chars, file: prep-214-chunk-24
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 842ms, 499968 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-24-1775626175691.mp3
+0|unical   | [AudioPrep] Generating chunk 26/40 for 156CBEBA.pdf (1357 chars)
+0|unical   | Generating Edge TTS for 1357 chars, file: prep-214-chunk-25
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 1016ms, 528768 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-25-1775626177518.mp3
+0|unical   | [AudioPrep] Generating chunk 27/40 for 156CBEBA.pdf (1357 chars)
+0|unical   | Generating Edge TTS for 1357 chars, file: prep-214-chunk-26
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 856ms, 515376 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-26-1775626179184.mp3
+0|unical   | [AudioPrep] Generating chunk 28/40 for 156CBEBA.pdf (1199 chars)
+0|unical   | Generating Edge TTS for 1199 chars, file: prep-214-chunk-27
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 1003ms, 462528 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-27-1775626180991.mp3
+0|unical   | [AudioPrep] Generating chunk 29/40 for 156CBEBA.pdf (1182 chars)
+0|unical   | Generating Edge TTS for 1182 chars, file: prep-214-chunk-28
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 1041ms, 477936 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-28-1775626182838.mp3
+0|unical   | [AudioPrep] Generating chunk 30/40 for 156CBEBA.pdf (1247 chars)
+0|unical   | Generating Edge TTS for 1247 chars, file: prep-214-chunk-29
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 970ms, 520416 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-29-1775626184614.mp3
+0|unical   | [AudioPrep] Generating chunk 31/40 for 156CBEBA.pdf (1479 chars)
+0|unical   | Generating Edge TTS for 1479 chars, file: prep-214-chunk-30
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 1038ms, 557712 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-30-1775626186457.mp3
+0|unical   | [AudioPrep] Generating chunk 32/40 for 156CBEBA.pdf (1476 chars)
+0|unical   | Generating Edge TTS for 1476 chars, file: prep-214-chunk-31
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 858ms, 583920 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-31-1775626188119.mp3
+0|unical   | [AudioPrep] Generating chunk 33/40 for 156CBEBA.pdf (1440 chars)
+0|unical   | Generating Edge TTS for 1440 chars, file: prep-214-chunk-32
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 1132ms, 773856 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-32-1775626190059.mp3
+0|unical   | [AudioPrep] Generating chunk 34/40 for 156CBEBA.pdf (1493 chars)
+0|unical   | Generating Edge TTS for 1493 chars, file: prep-214-chunk-33
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 1087ms, 772128 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-33-1775626191953.mp3
+0|unical   | [AudioPrep] Generating chunk 35/40 for 156CBEBA.pdf (1494 chars)
+0|unical   | Generating Edge TTS for 1494 chars, file: prep-214-chunk-34
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | [Server] Received SIGINT, shutting down gracefully...
+0|unical   | [Server] HTTP server closed, port 5000 released
+0|unical   |
+0|unical   | > rest-express@1.0.0 dev
+0|unical   | > NODE_ENV=development tsx server/index.ts
+0|unical   |
+0|unical   | [Raw Story] Monitor DISABLED in development (only runs in production)
+0|unical   | [Email Router] Unified email intake ready at POST /api/webhook/email
+0|unical   | [Gmail Ticker] Webhook endpoint ready at POST /api/webhook/ticker
+0|unical   | === [Alexa Scheduler] Started (checking every 30 seconds) ===
+0|unical   | === [OneDrive Monitor] Folder rename sync started (checking every 30 seconds) ===
+0|unical   | [Course Priority] Loaded from disk: {"w2026:CPPA122":1,"w2026:CFNF400":2,"w2026:CASL101":3,"ss2026:CECN210":1,"ss2026:CPHL110":2,"ss2026:CHIS105":3}
+0|unical   | [Startup] Reset MODULE_READING_CONFIRMED and MODULE_READING_PENDING booleans
+0|unical   | [Startup] Auto-synced 125 CRCU shifts
+0|unical   | [Startup] Cooldown timer started (60s)
+
+/home/byhomeyyz/.pm2/logs/unical-error.log last 500 lines:
+0|unical   |     'content-type': 'application/json',
+0|unical   |     'content-encoding': 'gzip',
+0|unical   |     vary: 'Accept-Encoding',
+0|unical   |     'strict-transport-security': 'max-age=31536000',
+0|unical   |     'request-id': '760ed3c4-2857-4b9b-9a52-82b54450833e',
+0|unical   |     'client-request-id': 'b0aae625-1239-1b6f-a354-dd599f50bc99',
+0|unical   |     'x-ms-ags-diagnostic': '{"ServerInfo":{"DataCenter":"North Central US","Slice":"E","Ring":"4","ScaleUnit":"004","RoleInstance":"CH01EPF0000C163"}}',
+0|unical   |     splogid: '3ddb07a2-2023-c000-9ebf-54d5514aa2f6',
+0|unical   |     date: 'Wed, 08 Apr 2026 05:18:21 GMT'
+0|unical   |   }
+0|unical   | }
+0|unical   | Error listing OneDrive items: GraphError: The resource could not be found.
+0|unical   |     at new GraphError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphError.ts:63:3)
+0|unical   |     at Function.GraphErrorHandler.constructErrorFromResponse (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:77:18)
+0|unical   |     at Function.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:104:31)
+0|unical   |     at step (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:196:27)
+0|unical   |     at Object.next (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:177:57)
+0|unical   |     at /home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:170:75
+0|unical   |     at new Promise (<anonymous>)
+0|unical   |     at Object.__awaiter (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:166:16)
+0|unical   |     at Function.GraphErrorHandler.getError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:101:65)
+0|unical   |     at GraphRequest.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphRequest.ts:391:55)
+0|unical   |     at step (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:196:27)
+0|unical   |     at Object.throw (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:177:57)
+0|unical   |     at rejected (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:168:69)
+0|unical   |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5) {
+0|unical   |   statusCode: 404,
+0|unical   |   code: 'itemNotFound',
+0|unical   |   requestId: '083ec84b-46db-4727-9c4d-9d9f89d784f5',
+0|unical   |   date: 2026-04-08T09:18:21.000Z,
+0|unical   |   body: '{"code":"itemNotFound","message":"The resource could not be found.","innerError":{"date":"2026-04-08T05:18:21","request-id":"083ec84b-46db-4727-9c4d-9d9f89d784f5","client-request-id":"dff1e099-ac35-6d76-f5e8-2c6cc971bd5c"}}',
+0|unical   |   headers: Headers {
+0|unical   |     'cache-control': 'no-store, no-cache, max-age=0, private',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'content-type': 'application/json',
+0|unical   |     'content-encoding': 'gzip',
+0|unical   |     vary: 'Accept-Encoding',
+0|unical   |     'strict-transport-security': 'max-age=31536000',
+0|unical   |     'request-id': '083ec84b-46db-4727-9c4d-9d9f89d784f5',
+0|unical   |     'client-request-id': 'dff1e099-ac35-6d76-f5e8-2c6cc971bd5c',
+0|unical   |     'x-ms-ags-diagnostic': '{"ServerInfo":{"DataCenter":"North Central US","Slice":"E","Ring":"4","ScaleUnit":"004","RoleInstance":"CH01EPF0000C163"}}',
+0|unical   |     splogid: '3ddb07a2-503d-c000-725b-945c3e40f7bb',
+0|unical   |     date: 'Wed, 08 Apr 2026 05:18:21 GMT'
+0|unical   |   }
+0|unical   | }
+0|unical   | Error listing OneDrive items: GraphError: The resource could not be found.
+0|unical   |     at new GraphError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphError.ts:63:3)
+0|unical   |     at Function.GraphErrorHandler.constructErrorFromResponse (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:77:18)
+0|unical   |     at Function.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:104:31)
+0|unical   |     at step (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:196:27)
+0|unical   |     at Object.next (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:177:57)
+0|unical   |     at /home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:170:75
+0|unical   |     at new Promise (<anonymous>)
+0|unical   |     at Object.__awaiter (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:166:16)
+0|unical   |     at Function.GraphErrorHandler.getError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:101:65)
+0|unical   |     at GraphRequest.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphRequest.ts:391:55)
+0|unical   |     at step (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:196:27)
+0|unical   |     at Object.throw (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:177:57)
+0|unical   |     at rejected (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:168:69)
+0|unical   |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5) {
+0|unical   |   statusCode: 404,
+0|unical   |   code: 'itemNotFound',
+0|unical   |   requestId: 'a5407c46-4fa1-45fd-aa8c-a398b1632ead',
+0|unical   |   date: 2026-04-08T09:18:22.000Z,
+0|unical   |   body: '{"code":"itemNotFound","message":"The resource could not be found.","innerError":{"date":"2026-04-08T05:18:22","request-id":"a5407c46-4fa1-45fd-aa8c-a398b1632ead","client-request-id":"d3c7d260-09c2-4708-cb18-0e1bef6a0841"}}',
+0|unical   |   headers: Headers {
+0|unical   |     'cache-control': 'no-store, no-cache, max-age=0, private',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'content-type': 'application/json',
+0|unical   |     'content-encoding': 'gzip',
+0|unical   |     vary: 'Accept-Encoding',
+0|unical   |     'strict-transport-security': 'max-age=31536000',
+0|unical   |     'request-id': 'a5407c46-4fa1-45fd-aa8c-a398b1632ead',
+0|unical   |     'client-request-id': 'd3c7d260-09c2-4708-cb18-0e1bef6a0841',
+0|unical   |     'x-ms-ags-diagnostic': '{"ServerInfo":{"DataCenter":"North Central US","Slice":"E","Ring":"4","ScaleUnit":"004","RoleInstance":"CH01EPF0000C163"}}',
+0|unical   |     splogid: '3ddb07a2-3053-c000-725b-9dc8deb5a13d',
+0|unical   |     date: 'Wed, 08 Apr 2026 05:18:21 GMT'
+0|unical   |   }
+0|unical   | }
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | Error listing OneDrive items: GraphError: The resource could not be found.
+0|unical   |     at new GraphError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphError.ts:63:3)
+0|unical   |     at Function.GraphErrorHandler.constructErrorFromResponse (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:77:18)
+0|unical   |     at Function.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:104:31)
+0|unical   |     at step (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:196:27)
+0|unical   |     at Object.next (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:177:57)
+0|unical   |     at /home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:170:75
+0|unical   |     at new Promise (<anonymous>)
+0|unical   |     at Object.__awaiter (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:166:16)
+0|unical   |     at Function.GraphErrorHandler.getError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:101:65)
+0|unical   |     at GraphRequest.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphRequest.ts:391:55)
+0|unical   |     at step (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:196:27)
+0|unical   |     at Object.throw (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:177:57)
+0|unical   |     at rejected (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:168:69)
+0|unical   |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5) {
+0|unical   |   statusCode: 404,
+0|unical   |   code: 'itemNotFound',
+0|unical   |   requestId: '30a7c650-2066-41ea-927e-2fee5ac505a4',
+0|unical   |   date: 2026-04-08T09:19:07.000Z,
+0|unical   |   body: '{"code":"itemNotFound","message":"The resource could not be found.","innerError":{"date":"2026-04-08T05:19:07","request-id":"30a7c650-2066-41ea-927e-2fee5ac505a4","client-request-id":"732364c5-776f-5442-d303-f5ba5875c0d9"}}',
+0|unical   |   headers: Headers {
+0|unical   |     'cache-control': 'no-store, no-cache, max-age=0, private',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'content-type': 'application/json',
+0|unical   |     'content-encoding': 'gzip',
+0|unical   |     vary: 'Accept-Encoding',
+0|unical   |     'strict-transport-security': 'max-age=31536000',
+0|unical   |     'request-id': '30a7c650-2066-41ea-927e-2fee5ac505a4',
+0|unical   |     'client-request-id': '732364c5-776f-5442-d303-f5ba5875c0d9',
+0|unical   |     'x-ms-ags-diagnostic': '{"ServerInfo":{"DataCenter":"North Central US","Slice":"E","Ring":"4","ScaleUnit":"004","RoleInstance":"CH01EPF0000C163"}}',
+0|unical   |     splogid: '48db07a2-6079-c000-9ebf-5606c8de0474',
+0|unical   |     date: 'Wed, 08 Apr 2026 05:19:07 GMT'
+0|unical   |   }
+0|unical   | }
+0|unical   | Error listing OneDrive items: GraphError: The resource could not be found.
+0|unical   |     at new GraphError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphError.ts:63:3)
+0|unical   |     at Function.GraphErrorHandler.constructErrorFromResponse (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:77:18)
+0|unical   |     at Function.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:104:31)
+0|unical   |     at step (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:196:27)
+0|unical   |     at Object.next (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:177:57)
+0|unical   |     at /home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:170:75
+0|unical   |     at new Promise (<anonymous>)
+0|unical   |     at Object.__awaiter (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:166:16)
+0|unical   |     at Function.GraphErrorHandler.getError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:101:65)
+0|unical   |     at GraphRequest.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphRequest.ts:391:55)
+0|unical   |     at step (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:196:27)
+0|unical   |     at Object.throw (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:177:57)
+0|unical   |     at rejected (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:168:69)
+0|unical   |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5) {
+0|unical   |   statusCode: 404,
+0|unical   |   code: 'itemNotFound',
+0|unical   |   requestId: '6dbd5724-92b9-4caa-b711-e5fb4181a772',
+0|unical   |   date: 2026-04-08T09:19:08.000Z,
+0|unical   |   body: '{"code":"itemNotFound","message":"The resource could not be found.","innerError":{"date":"2026-04-08T05:19:08","request-id":"6dbd5724-92b9-4caa-b711-e5fb4181a772","client-request-id":"e8b22161-1e3d-ed65-a82d-eedaf78bd874"}}',
+0|unical   |   headers: Headers {
+0|unical   |     'cache-control': 'no-store, no-cache, max-age=0, private',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'content-type': 'application/json',
+0|unical   |     'content-encoding': 'gzip',
+0|unical   |     vary: 'Accept-Encoding',
+0|unical   |     'strict-transport-security': 'max-age=31536000',
+0|unical   |     'request-id': '6dbd5724-92b9-4caa-b711-e5fb4181a772',
+0|unical   |     'client-request-id': 'e8b22161-1e3d-ed65-a82d-eedaf78bd874',
+0|unical   |     'x-ms-ags-diagnostic': '{"ServerInfo":{"DataCenter":"North Central US","Slice":"E","Ring":"4","ScaleUnit":"004","RoleInstance":"CH01EPF0000C163"}}',
+0|unical   |     splogid: '48db07a2-6093-c000-725b-9474f3527b8f',
+0|unical   |     date: 'Wed, 08 Apr 2026 05:19:07 GMT'
+0|unical   |   }
+0|unical   | }
+0|unical   | Error listing OneDrive items: GraphError: The resource could not be found.
+0|unical   |     at new GraphError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphError.ts:63:3)
+0|unical   |     at Function.GraphErrorHandler.constructErrorFromResponse (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:77:18)
+0|unical   |     at Function.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:104:31)
+0|unical   |     at step (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:196:27)
+0|unical   |     at Object.next (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:177:57)
+0|unical   |     at /home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:170:75
+0|unical   |     at new Promise (<anonymous>)
+0|unical   |     at Object.__awaiter (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:166:16)
+0|unical   |     at Function.GraphErrorHandler.getError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:101:65)
+0|unical   |     at GraphRequest.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphRequest.ts:391:55)
+0|unical   |     at step (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:196:27)
+0|unical   |     at Object.throw (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:177:57)
+0|unical   |     at rejected (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:168:69)
+0|unical   |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5) {
+0|unical   |   statusCode: 404,
+0|unical   |   code: 'itemNotFound',
+0|unical   |   requestId: '851d493a-e554-4a7a-b455-7bc94047ed7a',
+0|unical   |   date: 2026-04-08T09:19:08.000Z,
+0|unical   |   body: '{"code":"itemNotFound","message":"The resource could not be found.","innerError":{"date":"2026-04-08T05:19:08","request-id":"851d493a-e554-4a7a-b455-7bc94047ed7a","client-request-id":"0c2c599b-1aa4-7333-3b2a-749961a59c48"}}',
+0|unical   |   headers: Headers {
+0|unical   |     'cache-control': 'no-store, no-cache, max-age=0, private',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'content-type': 'application/json',
+0|unical   |     'content-encoding': 'gzip',
+0|unical   |     vary: 'Accept-Encoding',
+0|unical   |     'strict-transport-security': 'max-age=31536000',
+0|unical   |     'request-id': '851d493a-e554-4a7a-b455-7bc94047ed7a',
+0|unical   |     'client-request-id': '0c2c599b-1aa4-7333-3b2a-749961a59c48',
+0|unical   |     'x-ms-ags-diagnostic': '{"ServerInfo":{"DataCenter":"North Central US","Slice":"E","Ring":"4","ScaleUnit":"004","RoleInstance":"CH01EPF0000C163"}}',
+0|unical   |     splogid: '48db07a2-b0aa-c000-725b-921f5ec1b140',
+0|unical   |     date: 'Wed, 08 Apr 2026 05:19:08 GMT'
+0|unical   |   }
+0|unical   | }
+0|unical   | Error listing OneDrive items: GraphError: The resource could not be found.
+0|unical   |     at new GraphError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphError.ts:63:3)
+0|unical   |     at Function.GraphErrorHandler.constructErrorFromResponse (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:77:18)
+0|unical   |     at Function.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:104:31)
+0|unical   |     at step (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:196:27)
+0|unical   |     at Object.next (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:177:57)
+0|unical   |     at /home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:170:75
+0|unical   |     at new Promise (<anonymous>)
+0|unical   |     at Object.__awaiter (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:166:16)
+0|unical   |     at Function.GraphErrorHandler.getError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:101:65)
+0|unical   |     at GraphRequest.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphRequest.ts:391:55)
+0|unical   |     at step (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:196:27)
+0|unical   |     at Object.throw (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:177:57)
+0|unical   |     at rejected (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:168:69)
+0|unical   |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5) {
+0|unical   |   statusCode: 404,
+0|unical   |   code: 'itemNotFound',
+0|unical   |   requestId: '23c1837f-36ad-4057-836c-e0649deae5ef',
+0|unical   |   date: 2026-04-08T09:19:09.000Z,
+0|unical   |   body: '{"code":"itemNotFound","message":"The resource could not be found.","innerError":{"date":"2026-04-08T05:19:09","request-id":"23c1837f-36ad-4057-836c-e0649deae5ef","client-request-id":"9a894dbe-c301-b286-1bc0-ef664fec48a4"}}',
+0|unical   |   headers: Headers {
+0|unical   |     'cache-control': 'no-store, no-cache, max-age=0, private',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'content-type': 'application/json',
+0|unical   |     'content-encoding': 'gzip',
+0|unical   |     vary: 'Accept-Encoding',
+0|unical   |     'strict-transport-security': 'max-age=31536000',
+0|unical   |     'request-id': '23c1837f-36ad-4057-836c-e0649deae5ef',
+0|unical   |     'client-request-id': '9a894dbe-c301-b286-1bc0-ef664fec48a4',
+0|unical   |     'x-ms-ags-diagnostic': '{"ServerInfo":{"DataCenter":"North Central US","Slice":"E","Ring":"4","ScaleUnit":"004","RoleInstance":"CH01EPF0000C163"}}',
+0|unical   |     splogid: '48db07a2-20c3-c000-725b-93082aac49c2',
+0|unical   |     date: 'Wed, 08 Apr 2026 05:19:08 GMT'
+0|unical   |   }
+0|unical   | }
+0|unical   | Error listing OneDrive items: GraphError: The resource could not be found.
+0|unical   |     at new GraphError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphError.ts:63:3)
+0|unical   |     at Function.GraphErrorHandler.constructErrorFromResponse (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:77:18)
+0|unical   |     at Function.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:104:31)
+0|unical   |     at step (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:196:27)
+0|unical   |     at Object.next (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:177:57)
+0|unical   |     at /home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:170:75
+0|unical   |     at new Promise (<anonymous>)
+0|unical   |     at Object.__awaiter (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:166:16)
+0|unical   |     at Function.GraphErrorHandler.getError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:101:65)
+0|unical   |     at GraphRequest.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphRequest.ts:391:55)
+0|unical   |     at step (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:196:27)
+0|unical   |     at Object.throw (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:177:57)
+0|unical   |     at rejected (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:168:69)
+0|unical   |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5) {
+0|unical   |   statusCode: 404,
+0|unical   |   code: 'itemNotFound',
+0|unical   |   requestId: 'df3dffbf-6221-4379-9d0b-e87bec0992bd',
+0|unical   |   date: 2026-04-08T09:19:09.000Z,
+0|unical   |   body: '{"code":"itemNotFound","message":"The resource could not be found.","innerError":{"date":"2026-04-08T05:19:09","request-id":"df3dffbf-6221-4379-9d0b-e87bec0992bd","client-request-id":"a02d7837-e0dc-ceb2-d022-37fded5e1875"}}',
+0|unical   |   headers: Headers {
+0|unical   |     'cache-control': 'no-store, no-cache, max-age=0, private',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'content-type': 'application/json',
+0|unical   |     'content-encoding': 'gzip',
+0|unical   |     vary: 'Accept-Encoding',
+0|unical   |     'strict-transport-security': 'max-age=31536000',
+0|unical   |     'request-id': 'df3dffbf-6221-4379-9d0b-e87bec0992bd',
+0|unical   |     'client-request-id': 'a02d7837-e0dc-ceb2-d022-37fded5e1875',
+0|unical   |     'x-ms-ags-diagnostic': '{"ServerInfo":{"DataCenter":"North Central US","Slice":"E","Ring":"4","ScaleUnit":"004","RoleInstance":"CH01EPF0000C163"}}',
+0|unical   |     splogid: '48db07a2-d0d9-c000-725b-9514d21719f1',
+0|unical   |     date: 'Wed, 08 Apr 2026 05:19:08 GMT'
+0|unical   |   }
+0|unical   | }
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [AudioPrep] Failed to generate chunk 28 for 26929898.pdf: ENOENT: no such file or directory, open '/home/byhomeyyz/Home-View/dist/public/tts-audio/prep-215-chunk-27-1775625706477.mp3'
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | npm warn Unknown builtin config "globalignorefile". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Gmail] Error fetching D2L announcements: Gmail API error 403: {
+0|unical   |   "error": {
+0|unical   |     "code": 403,
+0|unical   |     "message": "Gmail API has not been used in project 690968796215 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/gmail.googleapis.com/overview?project=690968796215 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.",
+0|unical   |     "errors": [
+0|unical   |       {
+0|unical   |         "message": "Gmail API has not been used in project 690968796215 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/gmail.googleapis.com/overview?project=690968796215 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.",
+0|unical   |         "domain": "usageLimits",
+0|unical   |         "reason": "accessNotConfigured",
+0|unical   |         "extendedHelp": "https://console.developers.google.com"
+0|unical   |       }
+0|unical   |     ],
+0|unical   |     "status": "PERMISSION_DENIED",
+0|unical   |     "details": [
+0|unical   |       {
+0|unical   |         "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+0|unical   |         "reason": "SERVICE_DISABLED",
+0|unical   |         "domain": "googleapis.com",
+0|unical   |         "metadata": {
+0|unical   |           "service": "gmail.googleapis.com",
+0|unical   |           "activationUrl": "https://console.developers.google.com/apis/api/gmail.googleapis.com/overview?project=690968796215",
+0|unical   |           "consumer": "projects/690968796215",
+0|unical   |           "serviceTitle": "Gmail API",
+0|unical   |           "containerInfo": "690968796215"
+0|unical   |         }
+0|unical   |       },
+0|unical   |       {
+0|unical   |         "@type": "type.googleapis.com/google.rpc.LocalizedMessage",
+0|unical   |         "locale": "en-US",
+0|unical   |         "message": "Gmail API has not been used in project 690968796215 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/gmail.googleapis.com/overview?project=690968796215 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."
+0|unical   |       },
+0|unical   |       {
+0|unical   |         "@type": "type.googleapis.com/google.rpc.Help",
+0|unical   |         "links": [
+0|unical   |           {
+0|unical   |             "description": "Google developers console API activation",
+0|unical   |             "url": "https://console.developers.google.com/apis/api/gmail.googleapis.com/overview?project=690968796215"
+0|unical   |           }
+0|unical   |         ]
+0|unical   |       }
+0|unical   |     ]
+0|unical   |   }
+0|unical   | }
+0|unical   |
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [AudioPrep] Failed to generate chunk 6 for AUMA-UP42-ResPapr-CommEngageLocalComm.Jones_.Oct11.pdf: ENOENT: no such file or directory, open '/home/byhomeyyz/Home-View/dist/public/tts-audio/prep-216-chunk-5-1775625810810.mp3'
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | npm warn Unknown builtin config "globalignorefile". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Gmail] Error fetching D2L announcements: Gmail API error 403: {
+0|unical   |   "error": {
+0|unical   |     "code": 403,
+0|unical   |     "message": "Gmail API has not been used in project 690968796215 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/gmail.googleapis.com/overview?project=690968796215 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.",
+0|unical   |     "errors": [
+0|unical   |       {
+0|unical   |         "message": "Gmail API has not been used in project 690968796215 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/gmail.googleapis.com/overview?project=690968796215 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.",
+0|unical   |         "domain": "usageLimits",
+0|unical   |         "reason": "accessNotConfigured",
+0|unical   |         "extendedHelp": "https://console.developers.google.com"
+0|unical   |       }
+0|unical   |     ],
+0|unical   |     "status": "PERMISSION_DENIED",
+0|unical   |     "details": [
+0|unical   |       {
+0|unical   |         "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+0|unical   |         "reason": "SERVICE_DISABLED",
+0|unical   |         "domain": "googleapis.com",
+0|unical   |         "metadata": {
+0|unical   |           "consumer": "projects/690968796215",
+0|unical   |           "activationUrl": "https://console.developers.google.com/apis/api/gmail.googleapis.com/overview?project=690968796215",
+0|unical   |           "serviceTitle": "Gmail API",
+0|unical   |           "containerInfo": "690968796215",
+0|unical   |           "service": "gmail.googleapis.com"
+0|unical   |         }
+0|unical   |       },
+0|unical   |       {
+0|unical   |         "@type": "type.googleapis.com/google.rpc.LocalizedMessage",
+0|unical   |         "locale": "en-US",
+0|unical   |         "message": "Gmail API has not been used in project 690968796215 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/gmail.googleapis.com/overview?project=690968796215 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."
+0|unical   |       },
+0|unical   |       {
+0|unical   |         "@type": "type.googleapis.com/google.rpc.Help",
+0|unical   |         "links": [
+0|unical   |           {
+0|unical   |             "description": "Google developers console API activation",
+0|unical   |             "url": "https://console.developers.google.com/apis/api/gmail.googleapis.com/overview?project=690968796215"
+0|unical   |           }
+0|unical   |         ]
+0|unical   |       }
+0|unical   |     ]
+0|unical   |   }
+0|unical   | }
+0|unical   |
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | npm warn Unknown builtin config "globalignorefile". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+
+byhomeyyz@raspberrypi:~/Home-View $
