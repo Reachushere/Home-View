@@ -11124,16 +11124,25 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   let catLightsLateConfirmFile: any = null;
   let catLightsLateConfirmWeek: number | null = null;
   let catLightsLateConfirmExpiry: number = 0;
-  let coursePlayPriority: Record<string, number> = {};
+  const DEFAULT_COURSE_PRIORITY: Record<string, number> = {
+    'CPPA122': 1, 'CPPA101': 1, 'CPPA102': 1, 'CPPA120': 1, 'CPPA121': 1, 'CPPA124': 1, 'CPPA125': 1,
+    'CFNF400': 2,
+    'CASL101': 3,
+    'CECN210': 1, 'CPHL110': 2, 'CHIS105': 3,
+  };
+  let coursePlayPriority: Record<string, number> = { ...DEFAULT_COURSE_PRIORITY };
   const COURSE_PRIORITY_FILE = path.join(process.cwd(), 'persistent-uploads', 'course-play-priority.json');
   try {
     const fs = await import('fs');
     if (fs.existsSync(COURSE_PRIORITY_FILE)) {
-      coursePlayPriority = JSON.parse(fs.readFileSync(COURSE_PRIORITY_FILE, 'utf-8'));
-      console.log(`[Course Priority] Loaded from disk: ${JSON.stringify(coursePlayPriority)}`);
+      const diskPriority = JSON.parse(fs.readFileSync(COURSE_PRIORITY_FILE, 'utf-8'));
+      coursePlayPriority = { ...DEFAULT_COURSE_PRIORITY, ...diskPriority };
+      console.log(`[Course Priority] Loaded from disk (merged with defaults): ${JSON.stringify(coursePlayPriority)}`);
+    } else {
+      console.log(`[Course Priority] Using defaults: ${JSON.stringify(coursePlayPriority)}`);
     }
   } catch (e: any) {
-    console.log(`[Course Priority] Could not load from disk: ${e.message}`);
+    console.log(`[Course Priority] Could not load from disk: ${e.message} — using defaults`);
   }
   const CAT_LIGHTS_PROMPT_COOLDOWN_MS = 3 * 60 * 1000;
   let catLightsBypassCooldown = false;
@@ -12171,9 +12180,11 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
     const confirmTTSPromise = confirmationTTS ? (async () => {
       try {
+        console.log(`${logPrefix} Confirm TTS text: "${confirmationTTS}"`);
         try {
           await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }, 'Nest Pre-Confirm Vol');
         } catch (e: any) { console.warn(`${logPrefix} Pre-confirm volume set error (non-fatal): ${e.message}`); }
+        await new Promise(r => setTimeout(r, 2000));
         let confirmPlayed = false;
         try {
           const confirmPath = await generateAndSaveTTSAudio(confirmationTTS, `confirm-${Date.now()}`);
@@ -15171,7 +15182,7 @@ document.body.removeChild(a);
         }).catch(() => {});
 
         try {
-          const pauseText = "Paused. Say resume to continue, or I'll stop in 10 minutes.";
+          const pauseText = "Paused. Say re-zoom to continue, or I'll stop in 10 minutes.";
           const pausePath = await generateAndSaveTTSAudio(pauseText, `vc-pause-${Date.now()}`);
           await playOnNestSpeaker(`${appUrl}${pausePath}`, 2, pauseText);
         } catch {}
@@ -15712,8 +15723,8 @@ document.body.removeChild(a);
   });
 
   app.post("/api/course-play-priority", (req, res) => {
-    coursePlayPriority = req.body || {};
-    console.log(`[Course Priority] Updated: ${JSON.stringify(coursePlayPriority)}`);
+    coursePlayPriority = { ...DEFAULT_COURSE_PRIORITY, ...(req.body || {}) };
+    console.log(`[Course Priority] Updated (merged with defaults): ${JSON.stringify(coursePlayPriority)}`);
     try {
       const fs = require('fs');
       fs.mkdirSync(path.dirname(COURSE_PRIORITY_FILE), { recursive: true });
