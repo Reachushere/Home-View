@@ -4224,7 +4224,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   </div>
                   <div className="flex-shrink-0 flex justify-center" style={{ width: '14px', marginLeft: '4px', marginRight: '4px', overflow: 'visible' }}>
                   </div>
-                  <div className={`flex-1 min-w-0 ${hdrCls('title')}`} style={{ marginLeft: isEditingInfo ? '36px' : '36px' }} onClick={() => toggleSort('title')} data-testid="sort-title">Graded Assignments<SortIcon field="title" />
+                  <div className={`flex-1 min-w-0 ${hdrCls('title')}`} style={{ marginLeft: isEditingInfo ? '36px' : '36px' }} onClick={() => toggleSort('title')} data-testid="sort-title">Assignments (Graded)<SortIcon field="title" />
                   </div>
                   <div className="flex items-end flex-shrink-0 text-white" style={{ gap: '10px', position: 'relative', left: isEditingInfo ? '-24px' : '-15px' }}>
                     <span className={`w-[33px] text-center leading-tight ${hdrCls('score')}`} onClick={() => toggleSort('score')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'relative', left: isEditingInfo ? '-5px' : '-5px' }} data-testid="sort-score">
@@ -4339,8 +4339,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
 
             {ungradedCourseTasks.length > 0 && (
               <>
-                <div className="flex items-center px-1.5 py-1 text-[8px] font-bold text-white/60" style={{ margin: '12px 4px 0 4px' }} data-testid="ungraded-section-header">
-                  <span className="flex-1">Ungraded Assignments</span>
+                <div className="flex items-center px-1.5 py-1 text-[8px] font-bold text-white" style={{ margin: '12px 4px 0 4px' }} data-testid="ungraded-section-header">
+                  <span className="flex-1">Assignments (Ungraded)</span>
                   <span className="text-[7px] text-white/30">{ungradedCourseTasks.length} items</span>
                 </div>
                 <div className="flex flex-col" style={{ gap: '3px', padding: '0 4px' }} data-testid="ungraded-assignments-list">
