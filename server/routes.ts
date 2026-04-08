@@ -12753,7 +12753,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           const playPromise = playOnNestSpeaker(`${appUrl}${audioPath}`);
           if (catWashPlaybackState) {
             chunkPlayMediaSentAt = Date.now();
-            catWashPlaybackState.chunkStartedAt = new Date(chunkPlayMediaSentAt + 1500);
+            catWashPlaybackState.chunkStartedAt = new Date(chunkPlayMediaSentAt + 500);
             catWashPlaybackState.wordIndex = 0;
           }
           startWordAdvancement();
@@ -12763,7 +12763,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
             chunkPlaying = true;
             consecutivePlayFailures = 0;
             if (catWashPlaybackState) {
-              catWashPlaybackState.chunkStartedAt = new Date(chunkPlayMediaSentAt + 1500);
+              catWashPlaybackState.chunkStartedAt = new Date(chunkPlayMediaSentAt + 500);
             }
           } else if (playResult.success && !playResult.actuallyPlaying) {
             console.warn(`[Nest Playback] Nest state unconfirmed for chunk ${i + 1} — trying HA Cloud TTS fallback`);
