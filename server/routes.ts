@@ -12198,13 +12198,16 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       try {
         console.log(`${logPrefix} Confirm TTS text: "${confirmationTTS}"`);
         try {
+          await haServiceCallSafe('media_player/turn_on', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Pre-Confirm Wake');
+        } catch (e: any) { console.warn(`${logPrefix} Pre-confirm wake error (non-fatal): ${e.message}`); }
+        try {
           await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }, 'Nest Pre-Confirm Vol');
         } catch (e: any) { console.warn(`${logPrefix} Pre-confirm volume set error (non-fatal): ${e.message}`); }
-        await new Promise(r => setTimeout(r, 2000));
+        await new Promise(r => setTimeout(r, 3000));
         let confirmPlayed = false;
         try {
           await haServiceCallSafe('media_player/media_stop', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Pre-Confirm Stop');
-          await new Promise(r => setTimeout(r, 1500));
+          await new Promise(r => setTimeout(r, 2000));
           await haServiceCall('tts/speak', {
             entity_id: HA_CLOUD_TTS_ENTITY,
             media_player_entity_id: NEST_SPEAKER_ENTITY,
