@@ -28206,7 +28206,7 @@ export default function Dashboard() {
                       <div 
                         key={dayIdx} 
                         className="relative pt-0.5"
-                        style={{ backgroundColor: cellBgColor, padding: isDayToday ? '2px 1px 2px 3px' : '2px 1px 2px 1px', borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                        style={{ backgroundColor: cellBgColor, padding: isDayToday ? '2px 1px 2px 3px' : '2px 1px 2px 1px', borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, borderLeft: day.getDay() === 6 ? '3px solid #000' : '1.5px dotted rgba(0,0,0,0.25)', minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
                           e.preventDefault();
@@ -28220,7 +28220,6 @@ export default function Dashboard() {
                           handleCourseRowDrop(e, course.name, day);
                         }}
                       >
-                        <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', borderLeft: day.getDay() === 6 ? '3px solid #000' : '1.5px dotted rgba(0,0,0,0.25)', zIndex: 5, pointerEvents: 'none' }} />
                         {isDayToday && (() => {
                           const cCode2 = course.name;
                           const nextTask = (allTasks || []).filter(t => {
@@ -28784,10 +28783,9 @@ export default function Dashboard() {
                         <div
                           key={dayIdx}
                           className="relative flex flex-col gap-0.5 pt-0.5 course-cell-scroll"
-                          style={{ flex: `${gridSizes.dayColumnWidths[dayIdx]} 0 0%`, backgroundColor: otherCellBg, padding: isOtherToday ? '2px 1px 2px 3px' : '2px 1px 2px 1px', borderBottom: isOtherToday ? '1px dotted #666' : `1.5px dotted ${otherRowColors.borderColor}`, overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'thin', maxHeight: `${otherRowHeight}px` }}
+                          style={{ flex: `${gridSizes.dayColumnWidths[dayIdx]} 0 0%`, backgroundColor: otherCellBg, padding: isOtherToday ? '2px 1px 2px 3px' : '2px 1px 2px 1px', borderBottom: isOtherToday ? '1px dotted #666' : `1.5px dotted ${otherRowColors.borderColor}`, borderLeft: day.getDay() === 6 ? '3px solid #000' : '1.5px dotted rgba(0,0,0,0.25)', overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'thin', maxHeight: `${otherRowHeight}px` }}
                           data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
                         >
-                          <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '0px', borderLeft: day.getDay() === 6 ? '3px solid #000' : '1.5px dotted rgba(0,0,0,0.25)', zIndex: 5, pointerEvents: 'none' }} />
                           {dayOtherTasks.map(task => {
                             const tomorrow = addDays(stableToday, 1);
                             const isDueToday = !task.isCompleted && isSameDayET(new Date(task.dueDate), stableToday);
