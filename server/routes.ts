@@ -14474,12 +14474,8 @@ document.body.removeChild(a);
         console.warn(`[Cat Wash Stop Webhook] Failed to stop Echo speakers: ${e.message}`);
       }
 
-      await Promise.allSettled([
-        haServiceCallSafe('media_player/turn_off', { entity_id: FIRE_STICK_ADB_ENTITY }, 'Stop TV FireStick'),
-        haServiceCallSafe('media_player/turn_off', { entity_id: CAT_TV_ENTITY }, 'Stop TV Samsung'),
-      ]);
       stopped.push("tv");
-      console.log(`[Cat Wash Stop Webhook] Fire Stick + Samsung TV turn-off sent`);
+      console.log(`[Cat Wash Stop Webhook] TV shutdown handled by stopNestPlaybackWithGoodbye (sequenced)`);
 
       catWashPlaybackTrigger = null;
       console.log(`[Cat Wash Stop Webhook] Stopped: ${stopped.join(', ') || 'nothing was playing'}`);
