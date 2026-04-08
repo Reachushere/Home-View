@@ -30808,7 +30808,7 @@ export default function Dashboard() {
                       const dayTasks = allTasks.filter(t => !t.isCompleted && isSameDayET(new Date(t.dueDate), day));
                       const monthDayStr = format(day, "yyyy-MM-dd");
                       const monthDayShift = localShiftMap[monthDayStr];
-                      const cellBg = monthDayShift === 'day' ? 'rgba(200,180,50,0.25)' : monthDayShift === 'night' ? 'rgba(180,100,200,0.2)' : isCurrentMonth ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.45)';
+                      const cellBg = monthDayShift === 'day' ? 'rgba(200,180,50,0.25)' : monthDayShift === 'night' ? 'rgba(180,100,200,0.2)' : isCurrentMonth ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.05)';
                       
                       return (
                         <div
@@ -30834,7 +30834,7 @@ export default function Dashboard() {
                         >
                           {monthDayShift === 'day' && <SunIcon className="absolute top-0.5 right-0.5 h-3 w-3 text-yellow-500" fill="currentColor" strokeWidth={1.5} />}
                           {monthDayShift === 'night' && <MoonIcon className="absolute top-0.5 right-0.5 h-3 w-3 text-purple-400" fill="currentColor" strokeWidth={1.5} />}
-                          <div className="text-xs font-bold mb-0.5" style={{ color: isToday ? '#5979CC' : isCurrentMonth ? 'rgba(0,0,0,0.8)' : 'rgba(0,0,0,0.35)' }}>
+                          <div className="text-xs font-bold mb-0.5" style={{ color: isToday ? '#fff' : isCurrentMonth ? '#fff' : 'rgba(255,255,255,0.5)' }}>
                             {isToday && <span style={{ background: '#5979CC', color: '#fff', borderRadius: '50%', width: '16px', height: '16px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' }}>{format(day, "d")}</span>}
                             {!isToday && format(day, "d")}
                           </div>
@@ -30848,7 +30848,7 @@ export default function Dashboard() {
                                   className="text-[7px] px-1 py-0.5 rounded truncate"
                                   style={{
                                     backgroundColor: colors?.bg || (task.type === 'other' ? otherRowColors.taskBgColor : 'rgba(255,255,255,0.15)'),
-                                    color: colors?.text || '#fff',
+                                    color: '#000',
                                     borderLeft: `2px solid ${colors?.border || (task.type === 'other' ? otherRowColors.borderColor : 'rgba(255,255,255,0.4)')}`
                                   }}
                                   title={task.title}
