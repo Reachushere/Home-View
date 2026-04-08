@@ -1,0 +1,36 @@
+byhomeyyz@raspberrypi:~ $ pm2 logs --lines 1000 --nostream 2>&1 | grep -i "Confirm\|FileOrder\|CoursePri\|Cat Lights.*Found\|Cloud TTS\|pause\|500" | tail -40
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:41: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:41: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:41: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:41: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:41: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:41: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:41: PM2 log: Process with pid 650030 still alive after 1600ms, sending it SIGKILL now...
+PM2        | 2026-04-08T01:22:41: PM2 log: pid=650030 msg=process killed
+PM2        | 2026-04-08T05:04:34: PM2 log: pid=655002 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T05:04:34: PM2 log: pid=655002 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T05:04:34: PM2 log: pid=655002 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T05:04:34: PM2 log: pid=655002 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T05:04:34: PM2 log: pid=655002 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T05:04:34: PM2 log: pid=655002 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T05:04:34: PM2 log: pid=655002 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T05:04:34: PM2 log: pid=655002 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T05:04:34: PM2 log: pid=655002 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T05:04:35: PM2 log: pid=655002 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T05:04:35: PM2 log: pid=655002 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T05:04:35: PM2 log: pid=655002 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T05:04:35: PM2 log: pid=655002 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T05:04:35: PM2 log: pid=655002 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T05:04:35: PM2 log: pid=655002 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T05:04:35: PM2 log: Process with pid 655002 still alive after 1600ms, sending it SIGKILL now...
+PM2        | 2026-04-08T05:04:35: PM2 log: pid=655002 msg=process killed
+byhomeyyz@raspberrypi:~ $
