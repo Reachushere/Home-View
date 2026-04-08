@@ -12427,13 +12427,15 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     }
   }
 
+  const NEST_CLOUD_TTS_VOICE = "GuyNeural";
+
   async function nestCloudTTSPlay(text: string): Promise<{ success: boolean; actuallyPlaying: boolean }> {
     const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
     try {
       const ttsResp = await fetch(`${haUrl}/api/services/tts/speak`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ entity_id: HA_CLOUD_TTS_ENTITY, media_player_entity_id: NEST_SPEAKER_ENTITY, message: text.substring(0, 3500) })
+        body: JSON.stringify({ entity_id: HA_CLOUD_TTS_ENTITY, media_player_entity_id: NEST_SPEAKER_ENTITY, message: text.substring(0, 3500), language: "en-US", options: { voice: NEST_CLOUD_TTS_VOICE } })
       });
       if (!ttsResp.ok) {
         console.error(`[Nest] tts/speak failed: ${ttsResp.status}`);

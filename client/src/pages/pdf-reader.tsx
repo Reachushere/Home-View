@@ -3079,7 +3079,7 @@ export default function PDFReaderPage() {
               </div>
 
               <div className="shrink-0 flex items-center justify-center" style={{ width: '80px' }}>
-                {file && file.lastChunkIndex > 0 && !isPlaying && !isPaused ? (
+                {file && file.lastChunkIndex > 0 && !isPlaying && !isPaused && !(catWashFollow && followState?.active) && !(catWashFollow && catWashPaused) ? (
                   <button
                     className="w-16 h-16 flex flex-col items-center justify-center rounded-full shrink-0"
                     style={{ outline: `2px solid ${waveColor}66`, outlineOffset: '3px', background: `${waveColor}22` }}
