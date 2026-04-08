@@ -29213,6 +29213,11 @@ export default function Dashboard() {
                             })(),
                             borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined,
                             paddingLeft: `${(isToday ? 4 : 2) + DAY_COL_LEFT_REDUCTION}px`,
+                            zIndex: (() => {
+                              const ce = getConflictExtraHeight(hour);
+                              if (ce > 0 && (hourTasks.length > 0 || continuingTasks.length > 0 || visibleCalendarEvents.length > 0)) return 54;
+                              return undefined;
+                            })(),
                           }}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
                           onDragOver={(e) => handleDragOver(e, day, hour)}
