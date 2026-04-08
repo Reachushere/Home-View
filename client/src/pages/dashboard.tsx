@@ -33128,7 +33128,7 @@ export default function Dashboard() {
                                   onClick={() => setEditingTask(task)}
                                   data-testid={`task-link-today-${task.id}`}
                                   data-upcoming-task-name
-                                  style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'flex', alignItems: 'center', gap: '3px', color: daysUntil <= 2 ? '#facc15' : '#ffffff' }}
+                                  style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'flex', alignItems: 'center', gap: '3px', color: daysUntil <= 2 ? '#FFFF00' : '#ffffff' }}
                                 >
                                   {task.type === 'class' && <img src={teacherIconPath} alt="" style={{ width: '11px', height: '11px', objectFit: 'contain', opacity: 0.85, flexShrink: 0, filter: 'invert(1)' }} />}
                                   <span className="truncate">{(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title.replace(/[\[\]]/g, ''); })() : (() => { const t = task.title.replace(/[\[\]]/g, ''); if (/^(Reading|Module)$/i.test(t.trim())) { const cc = task.courseName?.split(' - ')[0]?.toUpperCase() || ''; return `${cc} ${t.trim()}`; } return t; })()}</span>
@@ -33317,7 +33317,7 @@ export default function Dashboard() {
                                               onClick={() => setEditingTask(task)}
                                               data-testid={`task-link-tomorrow-${task.id}`}
                                               data-upcoming-task-name
-                                              style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'flex', alignItems: 'center', gap: '3px', color: daysUntil <= 2 ? '#facc15' : '#ffffff' }}
+                                              style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'flex', alignItems: 'center', gap: '3px', color: daysUntil <= 2 ? '#FFFF00' : '#ffffff' }}
                                             >
                                               {task.type === 'class' && <img src={teacherIconPath} alt="" style={{ width: '11px', height: '11px', objectFit: 'contain', opacity: 0.85, flexShrink: 0, filter: 'invert(1)' }} />}
                                               <span className="truncate">{(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title.replace(/[\[\]]/g, ''); })() : (() => { const t = task.title.replace(/[\[\]]/g, ''); if (/^(Reading|Module)$/i.test(t.trim())) { const cc = task.courseName?.split(' - ')[0]?.toUpperCase() || ''; return `${cc} ${t.trim()}`; } return t; })()}</span>
@@ -33350,8 +33350,8 @@ export default function Dashboard() {
                                           )}
                                         </div>
                                         <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px', marginLeft: '-3px', position: 'relative', left: '-14px' }}>
-                                          <span className="text-[8px]" style={{ color: daysUntil <= 2 ? '#facc15' : '#ffffff', lineHeight: 1, letterSpacing: '0.3px' }}>Due In</span>
-                                          <span className="text-[8px] font-medium" style={{ color: daysUntil <= 2 ? '#facc15' : '#ffffff', lineHeight: 1 }}>{daysUntil} days</span>
+                                          <span className="text-[8px]" style={{ color: daysUntil <= 2 ? '#FFFF00' : '#ffffff', lineHeight: 1, letterSpacing: '0.3px' }}>Due In</span>
+                                          <span className="text-[8px] font-medium" style={{ color: daysUntil <= 2 ? '#FFFF00' : '#ffffff', lineHeight: 1 }}>{daysUntil} days</span>
 
                                         </div>
                                         
@@ -33497,7 +33497,7 @@ export default function Dashboard() {
                                               onClick={() => setEditingTask(task)}
                                               data-testid={`task-link-week-${task.id}`}
                                               data-upcoming-task-name
-                                              style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'flex', alignItems: 'center', gap: '3px', color: daysUntil <= 2 ? '#facc15' : '#ffffff' }}
+                                              style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'flex', alignItems: 'center', gap: '3px', color: daysUntil <= 2 ? '#FFFF00' : '#ffffff' }}
                                             >
                                               {task.type === 'class' && <img src={teacherIconPath} alt="" style={{ width: '11px', height: '11px', objectFit: 'contain', opacity: 0.85, flexShrink: 0, filter: 'invert(1)' }} />}
                                               <span className="truncate">{(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title.replace(/[\[\]]/g, ''); })() : (() => { const t = task.title.replace(/[\[\]]/g, ''); if (/^(Reading|Module)$/i.test(t.trim())) { const cc = task.courseName?.split(' - ')[0]?.toUpperCase() || ''; return `${cc} ${t.trim()}`; } return t; })()}</span>
@@ -33530,8 +33530,8 @@ export default function Dashboard() {
                                           )}
                                         </div>
                                         <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px', marginLeft: '-3px', position: 'relative', left: '-14px' }}>
-                                          <span className="text-[8px]" style={{ color: daysUntil <= 2 ? '#facc15' : '#ffffff', lineHeight: 1, letterSpacing: '0.3px' }}>Due In</span>
-                                          <span className="text-[8px] font-medium" style={{ color: daysUntil <= 2 ? '#facc15' : '#ffffff', lineHeight: 1 }}>{daysUntil} days</span>
+                                          <span className="text-[8px]" style={{ color: daysUntil <= 2 ? '#FFFF00' : '#ffffff', lineHeight: 1, letterSpacing: '0.3px' }}>Due In</span>
+                                          <span className="text-[8px] font-medium" style={{ color: daysUntil <= 2 ? '#FFFF00' : '#ffffff', lineHeight: 1 }}>{daysUntil} days</span>
 
                                         </div>
                                         
@@ -33695,7 +33695,7 @@ export default function Dashboard() {
                                               onClick={() => setEditingTask(task)}
                                               data-testid={`upcoming-2w-task-${task.id}`}
                                               data-upcoming-task-name
-                                              style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'flex', alignItems: 'center', gap: '3px', color: daysUntil <= 2 ? '#facc15' : '#ffffff' }}
+                                              style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'flex', alignItems: 'center', gap: '3px', color: daysUntil <= 2 ? '#FFFF00' : '#ffffff' }}
                                             >
                                               {task.type === 'class' && <img src={teacherIconPath} alt="" style={{ width: '11px', height: '11px', objectFit: 'contain', opacity: 0.85, flexShrink: 0, filter: 'invert(1)' }} />}
                                               <span className="truncate">{(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title.replace(/[\[\]]/g, ''); })() : (() => { const t = task.title.replace(/[\[\]]/g, ''); if (/^(Reading|Module)$/i.test(t.trim())) { const cc = task.courseName?.split(' - ')[0]?.toUpperCase() || ''; return `${cc} ${t.trim()}`; } return t; })()}</span>
@@ -33706,8 +33706,8 @@ export default function Dashboard() {
                                           </div>
                                         </div>
                                         <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px', marginLeft: '-3px', position: 'relative', left: '-14px' }}>
-                                          <span className="text-[8px]" style={{ color: daysUntil <= 2 ? '#facc15' : '#ffffff', lineHeight: 1, letterSpacing: '0.3px' }}>Due In</span>
-                                          <span className="text-[8px] font-medium" style={{ color: daysUntil <= 2 ? '#facc15' : '#ffffff', lineHeight: 1 }}>{daysUntil} days</span>
+                                          <span className="text-[8px]" style={{ color: daysUntil <= 2 ? '#FFFF00' : '#ffffff', lineHeight: 1, letterSpacing: '0.3px' }}>Due In</span>
+                                          <span className="text-[8px] font-medium" style={{ color: daysUntil <= 2 ? '#FFFF00' : '#ffffff', lineHeight: 1 }}>{daysUntil} days</span>
 
                                         </div>
                                         
@@ -33930,7 +33930,7 @@ export default function Dashboard() {
                                               onClick={() => setEditingTask(task)}
                                               data-testid={`task-link-beyond-${task.id}`}
                                               data-upcoming-task-name
-                                              style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'flex', alignItems: 'center', gap: '3px', color: daysUntil <= 2 ? '#facc15' : '#ffffff' }}
+                                              style={{ textAlign: 'left', fontWeight: task.type === 'class' ? 700 : 400, display: 'flex', alignItems: 'center', gap: '3px', color: daysUntil <= 2 ? '#FFFF00' : '#ffffff' }}
                                             >
                                               {task.type === 'class' && <img src={teacherIconPath} alt="" style={{ width: '11px', height: '11px', objectFit: 'contain', opacity: 0.85, flexShrink: 0, filter: 'invert(1)' }} />}
                                               <span className="truncate">{(task.type === 'discussion' || /discussion/i.test(task.title)) ? `${(() => { const wk = task.dueDate && semStart ? getWeekNumber(new Date(task.dueDate), semStart, readingWeekStart) : (task.weekNumber || 0); const nowWk = semStart ? getWeekNumber(new Date(), semStart, readingWeekStart) : 0; return wk === nowWk ? "This Wk's" : `Wk ${wk}`; })()} ${task.title.replace(/^Weekly\s+/i, '')}` : task.type === 'class' ? (() => { const cc = task.courseName?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const prefix = dm === 'virtual' ? 'Virtual ' : dm === 'online' ? 'Online ' : ''; return prefix + task.title.replace(/[\[\]]/g, ''); })() : (() => { const t = task.title.replace(/[\[\]]/g, ''); if (/^(Reading|Module)$/i.test(t.trim())) { const cc = task.courseName?.split(' - ')[0]?.toUpperCase() || ''; return `${cc} ${t.trim()}`; } return t; })()}</span>
@@ -33941,8 +33941,8 @@ export default function Dashboard() {
                                           </div>
                                         </div>
                                         <div style={{ width: '56px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px', marginLeft: '-3px', position: 'relative', left: '-14px' }}>
-                                          <span className="text-[8px]" style={{ color: daysUntil <= 2 ? '#facc15' : '#ffffff', lineHeight: 1, letterSpacing: '0.3px' }}>Due In</span>
-                                          <span className="text-[8px] font-medium" style={{ color: daysUntil <= 2 ? '#facc15' : '#ffffff', lineHeight: 1 }}>{daysUntil} days</span>
+                                          <span className="text-[8px]" style={{ color: daysUntil <= 2 ? '#FFFF00' : '#ffffff', lineHeight: 1, letterSpacing: '0.3px' }}>Due In</span>
+                                          <span className="text-[8px] font-medium" style={{ color: daysUntil <= 2 ? '#FFFF00' : '#ffffff', lineHeight: 1 }}>{daysUntil} days</span>
                                         </div>
                                       </div>
                                     </div>
