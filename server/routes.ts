@@ -12017,28 +12017,28 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         await new Promise(r => setTimeout(r, 1500));
         let confirmPlayed = false;
         try {
-          await haServiceCall('tts/speak', {
-            entity_id: HA_CLOUD_TTS_ENTITY,
-            media_player_entity_id: NEST_SPEAKER_ENTITY,
-            message: confirmationTTS
-          }, 'Confirm HA Cloud TTS Nest');
-          confirmPlayed = true;
-          console.log(`${logPrefix} Confirm TTS played via HA Cloud TTS on Nest speaker (primary)`);
+          const confirmPath = await generateAndSaveTTSAudio(confirmationTTS, `confirm-${Date.now()}`);
+          const nestResult = await playOnNestSpeaker(`${appUrl}${confirmPath}`);
+          if (nestResult.success) {
+            confirmPlayed = true;
+            console.log(`${logPrefix} Confirm TTS played on Nest speaker via generated audio (actuallyPlaying=${nestResult.actuallyPlaying})`);
+          } else {
+            console.warn(`${logPrefix} Nest speaker generated audio failed — trying tts/speak`);
+          }
         } catch (e: any) {
-          console.warn(`${logPrefix} HA Cloud TTS on Nest failed: ${e.message} — trying generated audio`);
+          console.warn(`${logPrefix} Nest speaker confirm failed: ${e.message} — trying tts/speak`);
         }
         if (!confirmPlayed) {
           try {
-            const confirmPath = await generateAndSaveTTSAudio(confirmationTTS, `confirm-${Date.now()}`);
-            const nestResult = await playOnNestSpeaker(`${appUrl}${confirmPath}`);
-            if (nestResult.success && nestResult.actuallyPlaying) {
-              confirmPlayed = true;
-              console.log(`${logPrefix} Confirm TTS played on Nest speaker via generated audio`);
-            } else {
-              console.warn(`${logPrefix} Nest speaker generated audio not confirmed playing — trying HA Voice`);
-            }
+            await haServiceCall('tts/speak', {
+              entity_id: HA_CLOUD_TTS_ENTITY,
+              media_player_entity_id: NEST_SPEAKER_ENTITY,
+              message: confirmationTTS
+            }, 'Confirm HA Cloud TTS Nest');
+            confirmPlayed = true;
+            console.log(`${logPrefix} Confirm TTS played via HA Cloud TTS on Nest speaker (fallback)`);
           } catch (e: any) {
-            console.warn(`${logPrefix} Nest speaker confirm failed: ${e.message} — falling back to HA Voice`);
+            console.warn(`${logPrefix} HA Cloud TTS on Nest failed: ${e.message} — trying HA Voice`);
           }
         }
         if (!confirmPlayed) {
@@ -12306,7 +12306,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     }
   }
 
-  async function playOnNestSpeaker(audioUrl: string, maxRetries: number = 2): Promise<{ success: boolean; actuallyPlaying: boolean }> {
+  async function playOnNestSpeaker(audioUrl: string, maxRetries: number = 2): Promise<{ success: boolean; actuallyPlaying: boolean; playMediaSentAt: number }> {
     const fullUrl = audioUrl.startsWith('http') ? audioUrl : `${DEPLOYED_APP_URL}${audioUrl}`;
     console.log(`[Nest] Playing audio: ${fullUrl}`);
 
@@ -12331,13 +12331,14 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       console.log(`[Nest] HA upload error: ${e.message}, falling back to direct URL`);
     }
 
+    const playMediaSentAt = Date.now();
     try {
       await haServiceCall('media_player/play_media', {
         entity_id: NEST_SPEAKER_ENTITY, media_content_id: mediaContentId, media_content_type: mediaContentType
       }, 'Nest Play Direct');
     } catch (e: any) {
       console.error(`[Nest] play_media failed: ${e.message}`);
-      return { success: false, actuallyPlaying: false };
+      return { success: false, actuallyPlaying: false, playMediaSentAt };
     }
     for (let check = 0; check <= maxRetries; check++) {
       await new Promise(r => setTimeout(r, check === 0 ? 4000 : 3000));
@@ -12345,23 +12346,23 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         const { state: speakerState } = await getNestMediaState();
         console.log(`[Nest] Speaker state check ${check + 1}: ${speakerState}`);
         if (speakerState === 'playing' || speakerState === 'buffering') {
-          return { success: true, actuallyPlaying: true };
+          return { success: true, actuallyPlaying: true, playMediaSentAt };
         }
         if (speakerState === 'unknown') {
           console.log(`[Nest] State is "unknown" — assuming play_media succeeded`);
-          return { success: true, actuallyPlaying: false };
+          return { success: true, actuallyPlaying: false, playMediaSentAt };
         }
         if (check === maxRetries) {
           console.log(`[Nest] State "${speakerState}" after ${maxRetries + 1} checks — play_media was sent, assuming it played`);
-          return { success: true, actuallyPlaying: false };
+          return { success: true, actuallyPlaying: false, playMediaSentAt };
         }
         console.log(`[Nest] State "${speakerState}" — rechecking...`);
       } catch (e: any) {
         console.warn(`[Nest] State check error: ${e.message} — assuming play_media succeeded`);
-        return { success: true, actuallyPlaying: false };
+        return { success: true, actuallyPlaying: false, playMediaSentAt };
       }
     }
-    return { success: true, actuallyPlaying: false };
+    return { success: true, actuallyPlaying: false, playMediaSentAt };
   }
 
   async function playChunkViaHACloudTTS(chunkText: string, sessionId: number, speakerEntity: string = CAT_WR_HA_VOICE_ENTITY): Promise<boolean> {
@@ -12742,7 +12743,9 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           }
 
           let chunkPlaying = false;
+          let chunkPlayMediaSentAt = Date.now();
           const playResult = await playOnNestSpeaker(`${appUrl}${audioPath}`);
+          chunkPlayMediaSentAt = playResult.playMediaSentAt;
           if (playResult.success && playResult.actuallyPlaying) {
             chunkPlaying = true;
             consecutivePlayFailures = 0;
@@ -12876,7 +12879,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
             continue;
           }
           if (catWashPlaybackState) {
-            catWashPlaybackState.chunkStartedAt = new Date(Date.now() + 500);
+            catWashPlaybackState.chunkStartedAt = new Date(chunkPlayMediaSentAt + 2000);
             catWashPlaybackState.wordIndex = 0;
           }
           startWordAdvancement();
@@ -13226,22 +13229,34 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
     let goodbyePlayed = false;
     try {
-      await haServiceCallSafe('media_player/turn_on', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Pre-Wake for Goodbye');
       await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }, 'Nest Pre-Goodbye Vol');
-      await new Promise(r => setTimeout(r, 1000));
-      await haServiceCall('tts/speak', {
-        entity_id: HA_CLOUD_TTS_ENTITY,
-        media_player_entity_id: NEST_SPEAKER_ENTITY,
-        message: goodbyeText
-      }, 'Goodbye TTS Nest');
-      goodbyePlayed = true;
-      console.log(`[Nest Stop] Goodbye TTS played on Nest speaker (primary)`);
+      await new Promise(r => setTimeout(r, 2500));
+      const goodbyePath = await generateAndSaveTTSAudio(goodbyeText, `goodbye-${Date.now()}`);
+      const nestResult = await playOnNestSpeaker(`${appUrl}${goodbyePath}`);
+      if (nestResult.success) {
+        goodbyePlayed = true;
+        console.log(`[Nest Stop] Goodbye TTS played on Nest speaker via generated audio (actuallyPlaying=${nestResult.actuallyPlaying})`);
+      } else {
+        console.warn(`[Nest Stop] Nest generated audio failed — trying tts/speak`);
+      }
     } catch (e: any) {
-      console.warn(`[Nest Stop] Goodbye on Nest failed: ${e.message} — trying HA Voice`);
+      console.warn(`[Nest Stop] Goodbye on Nest failed: ${e.message} — trying tts/speak`);
     }
     if (!goodbyePlayed) {
       try {
-        await haServiceCallSafe('media_player/turn_on', { entity_id: CAT_WR_HA_VOICE_ENTITY }, 'HA Voice Pre-Wake for Goodbye');
+        await haServiceCall('tts/speak', {
+          entity_id: HA_CLOUD_TTS_ENTITY,
+          media_player_entity_id: NEST_SPEAKER_ENTITY,
+          message: goodbyeText
+        }, 'Goodbye TTS Nest tts/speak');
+        goodbyePlayed = true;
+        console.log(`[Nest Stop] Goodbye TTS played via tts/speak on Nest (fallback 1)`);
+      } catch (e: any) {
+        console.warn(`[Nest Stop] tts/speak on Nest failed: ${e.message} — trying HA Voice`);
+      }
+    }
+    if (!goodbyePlayed) {
+      try {
         await haServiceCallSafe('media_player/volume_set', { entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.50 }, 'HA Voice Pre-Goodbye Vol');
         await new Promise(r => setTimeout(r, 1000));
         await haServiceCall('tts/speak', {
@@ -13257,7 +13272,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     }
     if (goodbyePlayed) {
       const wordCount = goodbyeText.split(/\s+/).length;
-      await new Promise(r => setTimeout(r, Math.max(3000, (wordCount / 175) * 60 * 1000)));
+      await new Promise(r => setTimeout(r, Math.max(3500, (wordCount / 175) * 60 * 1000)));
     }
 
     await Promise.allSettled([
@@ -13284,14 +13299,14 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       setTabletCommand({ action: 'stop_playback', keepOpen, timestamp: stopTimestamp }, true, 'tv'),
     ]);
 
-    catWashTrace('TV', `TURN OFF — Fire Stick sleep first, then Samsung TV (reason=${reason})`);
+    catWashTrace('TV', `TURN OFF — Samsung TV first, then Fire Stick (reason=${reason})`);
     await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'am force-stop com.amazon.cloud9' }, 'Nest Stop Silk');
     await new Promise(r => setTimeout(r, 500));
-    await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_SLEEP' }, 'Nest Stop FireStick SLEEP');
-    console.log(`[Nest Stop] Fire Stick Silk stopped + SLEEP sent — waiting 4s for CEC to settle`);
-    await new Promise(r => setTimeout(r, 4000));
     await haServiceCallSafe('media_player/turn_off', { entity_id: CAT_TV_ENTITY }, 'Nest Stop Samsung TV');
-    console.log(`[Nest Stop] Samsung TV turn-off sent (after Fire Stick CEC settled)`);
+    console.log(`[Nest Stop] Samsung TV turn-off sent first`);
+    await new Promise(r => setTimeout(r, 2000));
+    await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_SLEEP' }, 'Nest Stop FireStick SLEEP');
+    console.log(`[Nest Stop] Fire Stick SLEEP sent after Samsung TV off`);
     catWashTrace('StopWithGoodbye', `EXIT reason=${reason}`);
   }
 
@@ -14075,12 +14090,12 @@ document.body.removeChild(a);
         }
         await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'am force-stop com.amazon.cloud9' }, 'Stop Silk on FireStick');
         await new Promise(r => setTimeout(r, 500));
-        await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_SLEEP' }, 'FireStick SLEEP');
-        console.log(`[Cat Lights] Fire Stick Silk stopped + SLEEP sent — waiting 4s for CEC to settle`);
-        await new Promise(r => setTimeout(r, 4000));
         await haServiceCallSafe('media_player/turn_off', { entity_id: CAT_TV_ENTITY }, 'Stop TV Samsung');
+        console.log(`[Cat Lights] Samsung TV turn-off sent first`);
+        await new Promise(r => setTimeout(r, 2000));
+        await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_SLEEP' }, 'FireStick SLEEP');
         stopped.push("tv");
-        console.log(`[Cat Lights] Samsung TV turn-off sent (after Fire Stick CEC settled)`);
+        console.log(`[Cat Lights] Fire Stick SLEEP sent after Samsung TV off`);
         if (catLightsPromptSession === offSession) {
           catLightsPromptPending = false;
           console.log(`[Cat Lights] Cleared promptPending (session ${offSession} still current)`);
