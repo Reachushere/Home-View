@@ -10047,6 +10047,10 @@ export default function Dashboard() {
     const saved = localStorage.getItem('tabBounceEnabled');
     return saved !== null ? JSON.parse(saved) : true;
   });
+  const [showCountdownBars, setShowCountdownBars] = useState<boolean>(() => {
+    const saved = localStorage.getItem('showCountdownBars');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
   const [selectedSecondaryCalendar, setSelectedSecondaryCalendar] = useState<string>("");
   const [shiftScheduleOpen, setShiftScheduleOpen] = useState(false);
   const [weekVariantsOpen, setWeekVariantsOpen] = useState(false);
@@ -26270,6 +26274,24 @@ export default function Dashboard() {
                   </div>
                 </div>
 
+                <div className="border rounded-lg p-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-[10px] font-medium">Countdown Bars</Label>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={showCountdownBars}
+                      onChange={(e) => {
+                        setShowCountdownBars(e.target.checked);
+                        localStorage.setItem('showCountdownBars', JSON.stringify(e.target.checked));
+                      }}
+                      className="h-4 w-4 accent-blue-500"
+                      data-testid="toggle-countdown-bars"
+                    />
+                  </div>
+                </div>
+
                 <div className="border rounded-lg p-3 space-y-2">
                   <Label className="text-[10px] font-medium">School Week</Label>
                   <div className="flex gap-[6px]">
@@ -28639,6 +28661,7 @@ export default function Dashboard() {
                   })()}
                   {(() => {
                     const courseCodeNorm = courseName.trim().replace(/\s/g, '').toUpperCase();
+                    if (!showCountdownBars) return null;
                     const courseBars = countdownBarsByRow.byCourse[courseCodeNorm] || countdownBarsByRow.byCourse[courseName] || [];
                     if (courseBars.length === 0) return null;
                     const todayDow = stableToday.getDay();
@@ -28857,6 +28880,7 @@ export default function Dashboard() {
                       );
                     })}
                     {(() => {
+                      if (!showCountdownBars) return null;
                       const otherBars = countdownBarsByRow.other;
                       if (otherBars.length === 0) return null;
                       const todayDow = stableToday.getDay();
