@@ -30560,8 +30560,41 @@ export default function Dashboard() {
           {/* Set Default checkbox — below calendar */}
           <button
             className="cursor-pointer select-none hover:opacity-80 transition-opacity"
-            style={{ position: 'absolute', right: '0px', bottom: '-15px', display: 'flex', alignItems: 'center', gap: '4px', zIndex: 60, background: 'none', border: 'none', padding: 0, pointerEvents: 'auto' }}
-            onClick={() => {
+            style={{ position: 'absolute', right: '0px', bottom: '-15px', display: 'flex', alignItems: 'center', gap: '4px', zIndex: 60, background: 'none', border: 'none', padding: '4px 6px', pointerEvents: 'auto', WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const doSave = () => {
+                localStorage.setItem('calendarHeight', String(calendarHeight));
+                localStorage.setItem('calendarReduction', String(calendarReduction));
+                localStorage.setItem('gridSizes', JSON.stringify(gridSizes));
+                localStorage.setItem('hwGroupBarWidth', String(hwGroupBarWidth));
+                setCalendarReductionUserSet(true);
+                const screenWidth = window.screen.width;
+                const screenHeight = window.screen.height;
+                const pixelRatio = window.devicePixelRatio || 1;
+                const deviceId = `device_${screenWidth}x${screenHeight}@${pixelRatio}`;
+                localStorage.setItem(`calendarHeight_${deviceId}`, String(calendarHeight));
+                localStorage.setItem(`calendarReduction_${deviceId}`, String(calendarReduction));
+                localStorage.setItem(`gridSizes_${deviceId}`, JSON.stringify(gridSizes));
+                localStorage.setItem(`hwGroupBarWidth_${deviceId}`, String(hwGroupBarWidth));
+                fetch('/api/degree-tracking/bulk', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ calendarHeight, calendarReduction, gridSizes, hwGroupBarWidth }),
+                }).catch(() => {});
+                fetch('/api/ui-settings/hwGroupBarWidth', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ value: hwGroupBarWidth }),
+                }).catch(() => {});
+                toast({ title: "Saved", description: "Calendar size saved as default" });
+              };
+              doSave();
+            }}
+            onTouchEnd={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
               localStorage.setItem('calendarHeight', String(calendarHeight));
               localStorage.setItem('calendarReduction', String(calendarReduction));
               localStorage.setItem('gridSizes', JSON.stringify(gridSizes));
