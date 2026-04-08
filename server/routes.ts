@@ -11602,7 +11602,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     await setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: lightsNavTimestamp }, true, 'master');
     console.log(`${logPrefix} tablet-nav set for master — tablet picks up via polling`);
 
-    // Direct push to tablet via browser_mod + notify (in case tablet page isn't actively polling)
+    // Direct push to tablet via browser_mod + ADB + notify (in case tablet page isn't actively polling)
     (async () => {
       try {
         const tabletBrowserIds = ['browser_mod_0da8b0a7_fd42ec2e'];
@@ -11610,20 +11610,46 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         const opened = await openUrlOnFireDevice(haUrl, tabletBrowserIds, readerUrl, 'tablet_cat_wall');
         console.log(`${logPrefix} browser_mod direct push: ${opened ? 'SUCCESS' : 'FAILED (tablet browser not connected)'}`);
         if (!opened) {
-          const notifyServices = ['mobile_app_tablet_cat', 'mobile_app_fire_tablet_cat', 'mobile_app_tablet_cat_wall'];
-          for (const svc of notifyServices) {
+          const tabletEntity = 'media_player.tablet_cat';
+          let adbLaunched = false;
+          try {
+            await haServiceCall('androidtv/adb_command', { entity_id: tabletEntity, command: 'input keyevent KEYCODE_WAKEUP' }, `${logPrefix} Tablet Wake`);
+            await new Promise(r => setTimeout(r, 1500));
+          } catch (e: any) {
+            console.log(`${logPrefix} Tablet ADB wake failed (non-fatal): ${e.message}`);
+          }
+          const browsers = [
+            { pkg: 'com.amazon.cloud9', name: 'Silk' },
+            { pkg: 'com.android.chrome', name: 'Chrome' },
+            { pkg: 'de.ozerov.fully', name: 'Fully Kiosk' },
+          ];
+          for (const browser of browsers) {
             try {
-              const resp = await fetch(`${haUrl}/api/services/notify/${svc}`, {
-                method: 'POST',
-                headers: haHeaders,
-                body: JSON.stringify({ message: "command_webview", data: { url: tabletUrl } }),
-              });
-              if (resp.ok) {
-                console.log(`${logPrefix} notify/${svc} command_webview: SUCCESS`);
-                break;
-              }
+              const cmd = `am start -a android.intent.action.VIEW -d '${readerUrl}' ${browser.pkg}`;
+              await haServiceCall('androidtv/adb_command', { entity_id: tabletEntity, command: cmd }, `${logPrefix} Tablet Launch ${browser.name}`);
+              console.log(`${logPrefix} Tablet ADB ${browser.name} launch: SUCCESS`);
+              adbLaunched = true;
+              break;
             } catch (e: any) {
-              console.log(`${logPrefix} notify/${svc} command_webview: ${e.message}`);
+              console.log(`${logPrefix} Tablet ADB ${browser.name} launch failed: ${e.message}`);
+            }
+          }
+          if (!adbLaunched) {
+            const notifyServices = ['mobile_app_tablet_cat', 'mobile_app_fire_tablet_cat', 'mobile_app_tablet_cat_wall'];
+            for (const svc of notifyServices) {
+              try {
+                const resp = await fetch(`${haUrl}/api/services/notify/${svc}`, {
+                  method: 'POST',
+                  headers: haHeaders,
+                  body: JSON.stringify({ message: "command_webview", data: { url: tabletUrl } }),
+                });
+                if (resp.ok) {
+                  console.log(`${logPrefix} notify/${svc} command_webview: SUCCESS`);
+                  break;
+                }
+              } catch (e: any) {
+                console.log(`${logPrefix} notify/${svc} command_webview: ${e.message}`);
+              }
             }
           }
         }
@@ -11982,8 +12008,13 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const confirmTTSPromise = confirmationTTS ? (async () => {
       try {
         try {
+          await haServiceCallSafe('media_player/turn_on', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Pre-Wake for Confirm');
+          console.log(`${logPrefix} Nest speaker pre-wake sent`);
+        } catch (e: any) { console.warn(`${logPrefix} Nest pre-wake error (non-fatal): ${e.message}`); }
+        try {
           await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }, 'Nest Pre-Confirm Vol');
         } catch (e: any) { console.warn(`${logPrefix} Pre-confirm volume set error (non-fatal): ${e.message}`); }
+        await new Promise(r => setTimeout(r, 1500));
         let confirmPlayed = false;
         try {
           await haServiceCall('tts/speak', {
@@ -12012,6 +12043,9 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         }
         if (!confirmPlayed) {
           try {
+            await haServiceCallSafe('media_player/turn_on', { entity_id: CAT_WR_HA_VOICE_ENTITY }, 'HA Voice Pre-Wake for Confirm');
+            await haServiceCallSafe('media_player/volume_set', { entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.50 }, 'HA Voice Pre-Confirm Vol');
+            await new Promise(r => setTimeout(r, 1000));
             await haServiceCall('tts/speak', {
               entity_id: HA_CLOUD_TTS_ENTITY,
               media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
@@ -12275,6 +12309,10 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   async function playOnNestSpeaker(audioUrl: string, maxRetries: number = 2): Promise<{ success: boolean; actuallyPlaying: boolean }> {
     const fullUrl = audioUrl.startsWith('http') ? audioUrl : `${DEPLOYED_APP_URL}${audioUrl}`;
     console.log(`[Nest] Playing audio: ${fullUrl}`);
+
+    try {
+      await haServiceCallSafe('media_player/turn_on', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Pre-Wake for Play');
+    } catch {}
 
     let mediaContentId = fullUrl;
     let mediaContentType = "audio/mpeg";
@@ -13217,25 +13255,27 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       setTabletCommand({ action: 'stop_playback', keepOpen, timestamp: stopTimestamp }, true, 'tv'),
     ]);
 
-    catWashTrace('TV', `TURN OFF — Fire Stick + Samsung TV (reason=${reason})`);
+    catWashTrace('TV', `TURN OFF — Fire Stick first, then Samsung TV (reason=${reason})`);
     await Promise.allSettled([
       haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'am force-stop com.amazon.cloud9' }, 'Nest Stop Silk'),
-      haServiceCallSafe('media_player/turn_off', { entity_id: FIRE_STICK_ADB_ENTITY }, 'Nest Stop FireStick'),
-      haServiceCallSafe('media_player/turn_off', { entity_id: CAT_TV_ENTITY }, 'Nest Stop Samsung TV'),
+      haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_SLEEP' }, 'Nest Stop FireStick SLEEP'),
     ]);
-    console.log(`[Nest Stop] Fire Stick + Samsung TV turn-off sent (attempt 1)`);
+    await new Promise(r => setTimeout(r, 1000));
+    await haServiceCallSafe('media_player/turn_off', { entity_id: FIRE_STICK_ADB_ENTITY }, 'Nest Stop FireStick');
+    console.log(`[Nest Stop] Fire Stick SLEEP + turn_off sent — waiting for CEC to settle`);
+    await new Promise(r => setTimeout(r, 3000));
+    await haServiceCallSafe('media_player/turn_off', { entity_id: CAT_TV_ENTITY }, 'Nest Stop Samsung TV');
+    console.log(`[Nest Stop] Samsung TV turn-off sent (after Fire Stick settled)`);
     setTimeout(async () => {
       try {
-        await Promise.allSettled([
-          haServiceCallSafe('media_player/turn_off', { entity_id: FIRE_STICK_ADB_ENTITY }, 'Nest Stop FireStick retry'),
-          haServiceCallSafe('media_player/turn_off', { entity_id: CAT_TV_ENTITY }, 'Nest Stop Samsung TV retry'),
-          haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_SLEEP' }, 'Nest Stop FireStick SLEEP'),
-        ]);
-        console.log(`[Nest Stop] TV turn-off retry sent (attempt 2 + SLEEP key)`);
+        await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_SLEEP' }, 'Nest Stop FireStick SLEEP retry');
+        await new Promise(r => setTimeout(r, 2000));
+        await haServiceCallSafe('media_player/turn_off', { entity_id: CAT_TV_ENTITY }, 'Nest Stop Samsung TV retry');
+        console.log(`[Nest Stop] TV turn-off retry sent (attempt 2 — sequenced)`);
       } catch (e: any) {
         console.warn(`[Nest Stop] TV turn-off retry failed: ${e.message}`);
       }
-    }, 3000);
+    }, 5000);
     catWashTrace('StopWithGoodbye', `EXIT reason=${reason}`);
   }
 
@@ -14018,23 +14058,25 @@ document.body.removeChild(a);
         }
         await Promise.allSettled([
           haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'am force-stop com.amazon.cloud9' }, 'Stop Silk on FireStick'),
-          haServiceCallSafe('media_player/turn_off', { entity_id: FIRE_STICK_ADB_ENTITY }, 'Stop TV FireStick'),
-          haServiceCallSafe('media_player/turn_off', { entity_id: CAT_TV_ENTITY }, 'Stop TV Samsung'),
+          haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_SLEEP' }, 'FireStick SLEEP'),
         ]);
+        await new Promise(r => setTimeout(r, 1000));
+        await haServiceCallSafe('media_player/turn_off', { entity_id: FIRE_STICK_ADB_ENTITY }, 'Stop TV FireStick');
+        console.log(`[Cat Lights] Fire Stick SLEEP + turn_off sent — waiting for CEC to settle`);
+        await new Promise(r => setTimeout(r, 3000));
+        await haServiceCallSafe('media_player/turn_off', { entity_id: CAT_TV_ENTITY }, 'Stop TV Samsung');
         stopped.push("tv");
-        console.log(`[Cat Lights] Silk force-stopped + Fire Stick + Samsung TV turn-off sent`);
+        console.log(`[Cat Lights] Samsung TV turn-off sent (after Fire Stick settled)`);
         setTimeout(async () => {
           try {
-            await Promise.allSettled([
-              haServiceCallSafe('media_player/turn_off', { entity_id: FIRE_STICK_ADB_ENTITY }, 'Stop TV FireStick retry'),
-              haServiceCallSafe('media_player/turn_off', { entity_id: CAT_TV_ENTITY }, 'Stop TV Samsung retry'),
-              haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_SLEEP' }, 'FireStick SLEEP'),
-            ]);
-            console.log(`[Cat Lights] TV turn-off retry sent (2nd attempt + SLEEP key)`);
+            await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_SLEEP' }, 'FireStick SLEEP retry');
+            await new Promise(r => setTimeout(r, 2000));
+            await haServiceCallSafe('media_player/turn_off', { entity_id: CAT_TV_ENTITY }, 'Stop TV Samsung retry');
+            console.log(`[Cat Lights] TV turn-off retry sent (2nd attempt — sequenced)`);
           } catch (e: any) {
             console.warn(`[Cat Lights] TV turn-off retry failed (non-fatal): ${e.message}`);
           }
-        }, 3000);
+        }, 5000);
         if (catLightsPromptSession === offSession) {
           catLightsPromptPending = false;
           console.log(`[Cat Lights] Cleared promptPending (session ${offSession} still current)`);
@@ -14169,10 +14211,15 @@ document.body.removeChild(a);
       const immediatePromptPromise = (async () => {
         try {
           await Promise.allSettled([
+            haServiceCallSafe('media_player/turn_on', { entity_id: CAT_WR_HA_VOICE_ENTITY }, 'Cat Lights HA Voice Pre-Wake'),
+            haServiceCallSafe('media_player/turn_on', { entity_id: NEST_SPEAKER_ENTITY }, 'Cat Lights Nest Pre-Wake'),
             haServiceCallSafe('media_player/volume_set', { entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.50 }, 'Cat Lights HA Vol'),
+            haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.35 }, 'Cat Lights Nest Vol'),
             haServiceCallSafe('input_boolean/turn_off', { entity_id: MODULE_READING_CONFIRMED }, 'Cat Lights Bool'),
             haServiceCallSafe('input_boolean/turn_on', { entity_id: MODULE_READING_PENDING }, 'Cat Lights Bool'),
           ]);
+          console.log(`[Cat Lights] Pre-wake sent to HA Voice + Nest speaker`);
+          await new Promise(r => setTimeout(r, 1500));
           let ackPlayed = false;
           try {
             await haServiceCall('tts/speak', {
