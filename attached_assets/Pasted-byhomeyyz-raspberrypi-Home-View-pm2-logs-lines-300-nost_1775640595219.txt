@@ -1,0 +1,42 @@
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs --lines 300 --nostream 2>&1 | grep -v "GET /api/cat-wash/progress\|GET /api/automation-cooldown\|GET /api/health\|GET /api/version\|GET /api/tablet-nav\|GET /api/files" | tail -40
+0|unical   |     at trimPrefix (/home/byhomeyyz/Home-View/node_modules/router/index.js:342:13)
+0|unical   |     at /home/byhomeyyz/Home-View/node_modules/router/index.js:297:9
+0|unical   |     at processParams (/home/byhomeyyz/Home-View/node_modules/router/index.js:582:12)
+0|unical   |     at next (/home/byhomeyyz/Home-View/node_modules/router/index.js:291:5)
+0|unical   |     at cookieParser (/home/byhomeyyz/Home-View/node_modules/cookie-parser/index.js:57:14)
+0|unical   |     at Layer.handleRequest (/home/byhomeyyz/Home-View/node_modules/router/lib/layer.js:152:17)
+0|unical   |     at trimPrefix (/home/byhomeyyz/Home-View/node_modules/router/index.js:342:13)
+0|unical   |     at /home/byhomeyyz/Home-View/node_modules/router/index.js:297:9
+0|unical   |     at processParams (/home/byhomeyyz/Home-View/node_modules/router/index.js:582:12)
+0|unical   |     at next (/home/byhomeyyz/Home-View/node_modules/router/index.js:291:5)
+0|unical   |     at Function.handle (/home/byhomeyyz/Home-View/node_modules/router/index.js:186:3)
+0|unical   |     at Function.handle (/home/byhomeyyz/Home-View/node_modules/express/lib/application.js:177:15)
+0|unical   |     at Server.app (/home/byhomeyyz/Home-View/node_modules/express/lib/express.js:38:9)
+0|unical   |     at Server.emit (node:events:524:28)
+0|unical   | Failed to fetch primary account events: Error: Google Calendar not connected - run connect_google.js on the Pi
+0|unical   |     at getAccessToken (/home/byhomeyyz/Home-View/server/googleCalendar.ts:61:11)
+0|unical   |     at getGoogleCalendarClient (/home/byhomeyyz/Home-View/server/googleCalendar.ts:86:29)
+0|unical   |     at listEvents (/home/byhomeyyz/Home-View/server/googleCalendar.ts:578:26)
+0|unical   |     at <anonymous> (/home/byhomeyyz/Home-View/server/routes.ts:18690:31)
+0|unical   |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | Error fetching OneDrive week counts: Error: OneDrive not connected — visit /api/onedrive/auth to connect
+0|unical   |     at getAccessToken (/home/byhomeyyz/Home-View/server/onedrive.ts:171:11)
+0|unical   |     at getOneDriveClient (/home/byhomeyyz/Home-View/server/onedrive.ts:195:29)
+0|unical   |     at <anonymous> (/home/byhomeyyz/Home-View/server/routes.ts:4357:28)
+0|unical   | [OneDrive Monitor] Error checking folder renames: OneDrive not connected — visit /api/onedrive/auth to connect
+0|unical   | [OneDrive Monitor] Error checking folder renames: OneDrive not connected — visit /api/onedrive/auth to connect
+0|unical   | [OneDrive Monitor] Error checking folder renames: OneDrive not connected — visit /api/onedrive/auth to connect
+0|unical   | [OneDrive Monitor] Error checking folder renames: OneDrive not connected — visit /api/onedrive/auth to connect
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [OneDrive Monitor] Error checking folder renames: OneDrive not connected — visit /api/onedrive/auth to connect
+0|unical   | [OneDrive Monitor] Error checking folder renames: OneDrive not connected — visit /api/onedrive/auth to connect
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [OneDrive Monitor] Error checking folder renames: OneDrive not connected — visit /api/onedrive/auth to connect
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [OneDrive Monitor] Error checking folder renames: OneDrive not connected — visit /api/onedrive/auth to connect
+0|unical   | [OneDrive Monitor] Error checking folder renames: OneDrive not connected — visit /api/onedrive/auth to connect
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+
+byhomeyyz@raspberrypi:~/Home-View $

@@ -12155,7 +12155,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         let confirmPlayed = false;
         try {
           const confirmPath = await generateAndSaveTTSAudio(confirmationTTS, `confirm-${Date.now()}`);
-          const nestResult = await playOnNestSpeaker(`${appUrl}${confirmPath}`);
+          const nestResult = await playOnNestSpeaker(`${appUrl}${confirmPath}`, 2, confirmationTTS);
           if (nestResult.success) {
             confirmPlayed = true;
             console.log(`${logPrefix} Confirm TTS played on Nest speaker via OpenAI/Edge TTS (actuallyPlaying=${nestResult.actuallyPlaying})`);
@@ -12306,7 +12306,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
                 const appUrl = DEPLOYED_APP_URL;
                 const goodbyePath = await generateAndSaveTTSAudio(goodbyeText, `nest-goodbye-tb-${Date.now()}`, "echo");
                 await new Promise(r => setTimeout(r, 500));
-                await playOnNestSpeaker(`${appUrl}${goodbyePath}`);
+                await playOnNestSpeaker(`${appUrl}${goodbyePath}`, 2, goodbyeText);
               } catch (e: any) {
                 console.log(`[Toothbrush] Error stopping orphaned Nest playback: ${e.message}`);
               }
@@ -12418,40 +12418,65 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       }
       const result = await uploadResp.json() as any;
       const mediaId = result.media_content_id || `media-source://media_source/local/./${fileName}`;
-      console.log(`[HA Upload] Uploaded ${fileName} (${Math.round(audioBuffer.length / 1024)}KB) → ${mediaId}`);
-      return mediaId;
+      const cloudUrl = `${haUrl}/media/local/${fileName}`;
+      console.log(`[HA Upload] Uploaded ${fileName} (${Math.round(audioBuffer.length / 1024)}KB) → cloud: ${cloudUrl}`);
+      return cloudUrl;
     } catch (e: any) {
       console.error(`[HA Upload] Error: ${e.message}`);
       return null;
     }
   }
 
-  async function playOnNestSpeaker(audioUrl: string, maxRetries: number = 2): Promise<{ success: boolean; actuallyPlaying: boolean }> {
-    const localPath = audioUrl.startsWith('http') ? audioUrl.replace(DEPLOYED_APP_URL, '') : audioUrl;
-    const directUrl = audioUrl.startsWith('http') ? audioUrl : `${DEPLOYED_APP_URL}${audioUrl}`;
-    console.log(`[Nest] Playing audio — attempting HA upload first: ${localPath}`);
+  async function nestCloudTTSPlay(text: string): Promise<{ success: boolean; actuallyPlaying: boolean }> {
+    const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+    try {
+      const ttsResp = await fetch(`${haUrl}/api/services/tts/speak`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entity_id: HA_CLOUD_TTS_ENTITY, media_player_entity_id: NEST_SPEAKER_ENTITY, message: text.substring(0, 3500) })
+      });
+      if (!ttsResp.ok) {
+        console.error(`[Nest] tts/speak failed: ${ttsResp.status}`);
+        return { success: false, actuallyPlaying: false };
+      }
+      const ttsData = await ttsResp.json() as any[];
+      const nestEntry = ttsData?.find((e: any) => e.entity_id === NEST_SPEAKER_ENTITY);
+      const localTtsUrl = nestEntry?.attributes?.media_content_id || '';
+      if (!localTtsUrl) {
+        console.error(`[Nest] No TTS proxy URL in response`);
+        return { success: false, actuallyPlaying: false };
+      }
+      const cloudTtsUrl = localTtsUrl.replace(/http:\/\/homeassistant\.local:\d+/, haUrl);
+      console.log(`[Nest] Cloud TTS URL: ${cloudTtsUrl}`);
+      await new Promise(r => setTimeout(r, 500));
+      await haServiceCallSafe('media_player/media_stop', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Post-TTS Stop');
+      await new Promise(r => setTimeout(r, 300));
+      await haServiceCall('media_player/play_media', {
+        entity_id: NEST_SPEAKER_ENTITY, media_content_id: cloudTtsUrl, media_content_type: "music"
+      }, 'Nest Cloud Play');
+      return { success: true, actuallyPlaying: true };
+    } catch (e: any) {
+      console.error(`[Nest] Cloud TTS play failed: ${e.message}`);
+      return { success: false, actuallyPlaying: false };
+    }
+  }
+
+  async function playOnNestSpeaker(audioUrl: string, maxRetries: number = 2, ttsText?: string): Promise<{ success: boolean; actuallyPlaying: boolean }> {
+    console.log(`[Nest] Playing audio via Cloud TTS proxy${ttsText ? ` (${ttsText.length} chars)` : ''}`);
     try {
       await haServiceCallSafe('media_player/media_stop', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Pre-Stop');
     } catch {}
     try {
       await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }, 'Nest Pre-Volume');
     } catch {}
-    let playUrl = directUrl;
-    try {
-      const haMediaId = await uploadAudioToHA(localPath);
-      if (haMediaId) {
-        playUrl = haMediaId;
-        console.log(`[Nest] Using HA media: ${haMediaId}`);
-      } else {
-        console.log(`[Nest] HA upload returned null — using direct URL: ${directUrl}`);
-      }
-    } catch (e: any) {
-      console.warn(`[Nest] HA upload error: ${e.message} — using direct URL: ${directUrl}`);
+    if (ttsText && ttsText.length > 0) {
+      return nestCloudTTSPlay(ttsText);
     }
+    const fullUrl = audioUrl.startsWith('http') ? audioUrl : `${DEPLOYED_APP_URL}${audioUrl}`;
     try {
       await haServiceCall('media_player/play_media', {
-        entity_id: NEST_SPEAKER_ENTITY, media_content_id: playUrl, media_content_type: "music"
-      }, 'Nest Play');
+        entity_id: NEST_SPEAKER_ENTITY, media_content_id: fullUrl, media_content_type: "music"
+      }, 'Nest Play Direct');
     } catch (e: any) {
       console.error(`[Nest] play_media failed: ${e.message}`);
       return { success: false, actuallyPlaying: false };
@@ -12827,8 +12852,9 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
         if (chunksPlayedSinceLastPrompt >= ATTENTION_INTERVAL) {
           console.log(`[Nest Playback] Attention prompt after ${chunksPlayedSinceLastPrompt} chunks`);
-          const promptPath = await generateAndSaveTTSAudio("Bryn, are you paying attention?", `nest-attention-${Date.now()}`, voice);
-          await playOnNestSpeaker(`${appUrl}${promptPath}`);
+          const attentionText = "Bryn, are you paying attention?";
+          const promptPath = await generateAndSaveTTSAudio(attentionText, `nest-attention-${Date.now()}`, voice);
+          await playOnNestSpeaker(`${appUrl}${promptPath}`, 2, attentionText);
           await new Promise(r => setTimeout(r, 4000));
           chunksPlayedSinceLastPrompt = 0;
         }
@@ -12875,7 +12901,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           }
 
           let chunkPlaying = false;
-          const playResult = await playOnNestSpeaker(`${appUrl}${audioPath}`);
+          const cleanedChunkForTTS = cleanTextForTTS(chunkText);
+          const playResult = await playOnNestSpeaker(`${appUrl}${audioPath}`, 2, cleanedChunkForTTS);
           if (playResult.success) {
             chunkPlaying = true;
             consecutivePlayFailures = 0;
@@ -13057,7 +13084,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           const transitionText = `${completedFileDesc} is complete. Now playing ${nextFileDesc}.`;
           console.log(`[Nest Playback] Transition: "${transitionText}"`);
           const transitionPath = await generateAndSaveTTSAudio(transitionText, `nest-transition-${Date.now()}`, voice);
-          await playOnNestSpeaker(`${appUrl}${transitionPath}`);
+          await playOnNestSpeaker(`${appUrl}${transitionPath}`, 2, transitionText);
           await new Promise(r => setTimeout(r, 6000));
 
           const nextText = await extractFileText(nextFile);
@@ -13099,8 +13126,9 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           }
         }
 
-        const completionPath = await generateAndSaveTTSAudio("All readings for this week are complete. Great job Bryn.", `nest-complete-${Date.now()}`, voice);
-        await playOnNestSpeaker(`${appUrl}${completionPath}`);
+        const completionText = "All readings for this week are complete. Great job Bryn.";
+        const completionPath = await generateAndSaveTTSAudio(completionText, `nest-complete-${Date.now()}`, voice);
+        await playOnNestSpeaker(`${appUrl}${completionPath}`, 2, completionText);
         await clearPlaybackSession();
         console.log(`[Nest Playback] All readings complete — cleared persisted session`);
       }
@@ -13343,7 +13371,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }, 'Nest Pre-Goodbye Vol');
       await new Promise(r => setTimeout(r, 2500));
       const goodbyePath = await generateAndSaveTTSAudio(goodbyeText, `goodbye-${Date.now()}`);
-      const nestResult = await playOnNestSpeaker(`${appUrl}${goodbyePath}`);
+      const nestResult = await playOnNestSpeaker(`${appUrl}${goodbyePath}`, 2, goodbyeText);
       if (nestResult.success) {
         goodbyePlayed = true;
         console.log(`[Nest Stop] Goodbye TTS played on Nest speaker via generated audio (actuallyPlaying=${nestResult.actuallyPlaying})`);
@@ -14372,8 +14400,9 @@ document.body.removeChild(a);
           }
           if (!ackPlayed) {
             try {
-              const ackPath = await generateAndSaveTTSAudio("One moment, checking your readings.", `cat-lights-ack-${Date.now()}`);
-              const ackResult = await playOnNestSpeaker(`${DEPLOYED_APP_URL}${ackPath}`);
+              const ackText = "One moment, checking your readings.";
+              const ackPath = await generateAndSaveTTSAudio(ackText, `cat-lights-ack-${Date.now()}`);
+              const ackResult = await playOnNestSpeaker(`${DEPLOYED_APP_URL}${ackPath}`, 2, ackText);
               if (ackResult.success) {
                 ackPlayed = true;
                 console.log(`[Cat Lights] Quick acknowledgment played on Nest speaker (fallback)`);
@@ -14461,7 +14490,7 @@ document.body.removeChild(a);
           try {
             await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.35 }, 'Cat Lights Nest Vol');
             const audioPath = await generateAndSaveTTSAudio(ttsMessage, `cat-lights-prompt-${Date.now()}`);
-            const nestResult = await playOnNestSpeaker(`${DEPLOYED_APP_URL}${audioPath}`);
+            const nestResult = await playOnNestSpeaker(`${DEPLOYED_APP_URL}${audioPath}`, 2, ttsMessage);
             if (nestResult.success) {
               ttsPlayed = true;
               console.log(`[Cat Lights] TTS prompt played on Nest speaker (fallback)`);
@@ -14925,8 +14954,9 @@ document.body.removeChild(a);
 
       const appUrl = DEPLOYED_APP_URL;
       try {
-        const stopConfirmPath = await generateAndSaveTTSAudio("Stop received.", `cat-wash-stop-confirm-${Date.now()}`);
-        await playOnNestSpeaker(`${appUrl}${stopConfirmPath}`);
+        const stopConfirmText = "Stop received.";
+        const stopConfirmPath = await generateAndSaveTTSAudio(stopConfirmText, `cat-wash-stop-confirm-${Date.now()}`);
+        await playOnNestSpeaker(`${appUrl}${stopConfirmPath}`, 2, stopConfirmText);
         console.log(`[Cat Wash Stop] Played "Stop received" on Nest`);
       } catch (e2: any) {
         console.log(`[Cat Wash Stop] Stop confirm TTS error: ${e2.message}`);
@@ -14986,8 +15016,9 @@ document.body.removeChild(a);
         if (!catWashPlaybackActive || !catWashPlaybackState) {
           console.log(`[Voice Command] Pause requested but no active playback`);
           try {
-            const noPlayPath = await generateAndSaveTTSAudio("Nothing is playing right now.", `vc-no-play-${Date.now()}`);
-            await playOnNestSpeaker(`${appUrl}${noPlayPath}`);
+            const noPlayText = "Nothing is playing right now.";
+            const noPlayPath = await generateAndSaveTTSAudio(noPlayText, `vc-no-play-${Date.now()}`);
+            await playOnNestSpeaker(`${appUrl}${noPlayPath}`, 2, noPlayText);
           } catch {}
           return res.json({ action: "ignored", reason: "No active playback" });
         }
@@ -15042,8 +15073,9 @@ document.body.removeChild(a);
           } catch {}
 
           try {
-            const timeoutPath = await generateAndSaveTTSAudio("Pause timed out. Playback has been stopped. Your progress has been saved.", `vc-timeout-${Date.now()}`);
-            await playOnNestSpeaker(`${appUrl}${timeoutPath}`);
+            const timeoutText = "Pause timed out. Playback has been stopped. Your progress has been saved.";
+            const timeoutPath = await generateAndSaveTTSAudio(timeoutText, `vc-timeout-${Date.now()}`);
+            await playOnNestSpeaker(`${appUrl}${timeoutPath}`, 2, timeoutText);
           } catch {}
         }, PAUSE_TIMEOUT_MS);
 
@@ -15067,8 +15099,9 @@ document.body.removeChild(a);
         }).catch(() => {});
 
         try {
-          const pausePath = await generateAndSaveTTSAudio("Paused. Say resume to continue, or I'll stop in 10 minutes.", `vc-pause-${Date.now()}`);
-          await playOnNestSpeaker(`${appUrl}${pausePath}`);
+          const pauseText = "Paused. Say resume to continue, or I'll stop in 10 minutes.";
+          const pausePath = await generateAndSaveTTSAudio(pauseText, `vc-pause-${Date.now()}`);
+          await playOnNestSpeaker(`${appUrl}${pausePath}`, 2, pauseText);
         } catch {}
 
         return res.json({ action: "paused", file: fileName, chunk: chunkIndex });
@@ -15077,8 +15110,9 @@ document.body.removeChild(a);
         if (!voiceCommandPauseState_) {
           console.log(`[Voice Command] Resume requested but nothing is paused`);
           try {
-            const noPausePath = await generateAndSaveTTSAudio("Nothing is paused right now.", `vc-no-pause-${Date.now()}`);
-            await playOnNestSpeaker(`${appUrl}${noPausePath}`);
+            const noPauseText = "Nothing is paused right now.";
+            const noPausePath = await generateAndSaveTTSAudio(noPauseText, `vc-no-pause-${Date.now()}`);
+            await playOnNestSpeaker(`${appUrl}${noPausePath}`, 2, noPauseText);
           } catch {}
           return res.json({ action: "ignored", reason: "Nothing paused" });
         }
@@ -15091,8 +15125,9 @@ document.body.removeChild(a);
         if (!file) {
           console.log(`[Voice Command] File ${fileId} not found`);
           try {
-            const notFoundPath = await generateAndSaveTTSAudio("The file could not be found.", `vc-notfound-${Date.now()}`);
-            await playOnNestSpeaker(`${appUrl}${notFoundPath}`);
+            const notFoundText = "The file could not be found.";
+            const notFoundPath = await generateAndSaveTTSAudio(notFoundText, `vc-notfound-${Date.now()}`);
+            await playOnNestSpeaker(`${appUrl}${notFoundPath}`, 2, notFoundText);
           } catch {}
           return res.json({ action: "error", reason: "File not found" });
         }
@@ -15126,8 +15161,9 @@ document.body.removeChild(a);
         if (!catWashPlaybackActive && !wasPaused) {
           console.log(`[Voice Command] Stop requested but nothing is playing or paused`);
           try {
-            const noPlayPath = await generateAndSaveTTSAudio("Nothing is playing.", `vc-nostop-${Date.now()}`);
-            await playOnNestSpeaker(`${appUrl}${noPlayPath}`);
+            const noStopText = "Nothing is playing.";
+            const noPlayPath = await generateAndSaveTTSAudio(noStopText, `vc-nostop-${Date.now()}`);
+            await playOnNestSpeaker(`${appUrl}${noPlayPath}`, 2, noStopText);
           } catch {}
           return res.json({ action: "ignored", reason: "Nothing playing or paused" });
         }
@@ -15155,8 +15191,9 @@ document.body.removeChild(a);
           } catch {}
 
           try {
-            const stopPath = await generateAndSaveTTSAudio("Stopped. Your progress has been saved. See you next time Bryn.", `vc-stop-${Date.now()}`);
-            await playOnNestSpeaker(`${appUrl}${stopPath}`);
+            const stoppedText = "Stopped. Your progress has been saved. See you next time Bryn.";
+            const stopPath = await generateAndSaveTTSAudio(stoppedText, `vc-stop-${Date.now()}`);
+            await playOnNestSpeaker(`${appUrl}${stopPath}`, 2, stoppedText);
           } catch {}
         }
 
@@ -15196,8 +15233,9 @@ document.body.removeChild(a);
         if (!targetFileId) {
           console.log(`[Voice Command] Restart requested but no active/paused playback`);
           try {
-            const noPath = await generateAndSaveTTSAudio("Nothing is playing to restart.", `vc-norestart-${Date.now()}`);
-            await playOnNestSpeaker(`${appUrl}${noPath}`);
+            const noRestartText = "Nothing is playing to restart.";
+            const noPath = await generateAndSaveTTSAudio(noRestartText, `vc-norestart-${Date.now()}`);
+            await playOnNestSpeaker(`${appUrl}${noPath}`, 2, noRestartText);
           } catch {}
           return res.json({ action: "ignored", reason: "Nothing to restart" });
         }
@@ -15259,8 +15297,9 @@ document.body.removeChild(a);
         if (!targetFileId) {
           console.log(`[Voice Command] Reset requested but no active/paused playback`);
           try {
-            const noPath = await generateAndSaveTTSAudio("Nothing is playing to reset.", `vc-noreset-${Date.now()}`);
-            await playOnNestSpeaker(`${appUrl}${noPath}`);
+            const noResetText = "Nothing is playing to reset.";
+            const noPath = await generateAndSaveTTSAudio(noResetText, `vc-noreset-${Date.now()}`);
+            await playOnNestSpeaker(`${appUrl}${noPath}`, 2, noResetText);
           } catch {}
           return res.json({ action: "ignored", reason: "Nothing to reset" });
         }
@@ -15323,8 +15362,9 @@ document.body.removeChild(a);
         if (!currentFileId) {
           console.log(`[Voice Command] Skip requested but no active/paused playback`);
           try {
-            const noPath = await generateAndSaveTTSAudio("Nothing is playing to skip.", `vc-noskip-${Date.now()}`);
-            await playOnNestSpeaker(`${appUrl}${noPath}`);
+            const noSkipText = "Nothing is playing to skip.";
+            const noPath = await generateAndSaveTTSAudio(noSkipText, `vc-noskip-${Date.now()}`);
+            await playOnNestSpeaker(`${appUrl}${noPath}`, 2, noSkipText);
           } catch {}
           return res.json({ action: "ignored", reason: "Nothing to skip" });
         }
@@ -15366,8 +15406,9 @@ document.body.removeChild(a);
           } catch {}
 
           try {
-            const donePath = await generateAndSaveTTSAudio("Skipped. No more readings for this week. Great work Bryn!", `vc-skipdone-${Date.now()}`);
-            await playOnNestSpeaker(`${appUrl}${donePath}`);
+            const skipDoneText = "Skipped. No more readings for this week. Great work Bryn!";
+            const donePath = await generateAndSaveTTSAudio(skipDoneText, `vc-skipdone-${Date.now()}`);
+            await playOnNestSpeaker(`${appUrl}${donePath}`, 2, skipDoneText);
           } catch {}
 
           return res.json({ action: "skipped_and_done", skippedFile: currentFileName });
@@ -15428,8 +15469,9 @@ document.body.removeChild(a);
         } catch {}
 
         try {
-          const clearPath = await generateAndSaveTTSAudio("Player cleared. Ready for a new session.", `vc-clear-${Date.now()}`);
-          await playOnNestSpeaker(`${appUrl}${clearPath}`);
+          const clearText = "Player cleared. Ready for a new session.";
+          const clearPath = await generateAndSaveTTSAudio(clearText, `vc-clear-${Date.now()}`);
+          await playOnNestSpeaker(`${appUrl}${clearPath}`, 2, clearText);
         } catch {}
 
         return res.json({ action: "cleared" });
@@ -18053,8 +18095,9 @@ document.body.removeChild(a);
   app.post("/api/media/attention-prompt", async (req, res) => {
     try {
       const appUrl = DEPLOYED_APP_URL;
-      const promptPath = await generateAndSaveTTSAudio("Bryn, are you paying attention?", `attention-prompt-${Date.now()}`, "echo");
-      await playOnNestSpeaker(`${appUrl}${promptPath}`);
+      const attPromptText = "Bryn, are you paying attention?";
+      const promptPath = await generateAndSaveTTSAudio(attPromptText, `attention-prompt-${Date.now()}`, "echo");
+      await playOnNestSpeaker(`${appUrl}${promptPath}`, 2, attPromptText);
       console.log(`[Attention Prompt] Played on Nest speaker`);
       res.json({ ok: true });
     } catch (error: any) {
