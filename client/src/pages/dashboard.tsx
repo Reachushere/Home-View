@@ -29733,6 +29733,11 @@ export default function Dashboard() {
                   const startHourConflictExtra = getConflictExtraHeight(startHour);
                   topPx += startHourConflictExtra + (startMin / 60) * (startHourHeight - startHourConflictExtra);
                   
+                  const multiCourseCode = task.courseName?.split(' ')[0]?.toUpperCase() || '';
+                  if (multiCourseCode === 'CASL101' && oi.col > 0) {
+                    topPx += 10;
+                  }
+                  
                   let heightPx = 0;
                   heightPx += ((60 - startMin) / 60) * (startHourHeight - startHourConflictExtra);
                   for (let h = startHour + 1; h < endHour; h++) {
