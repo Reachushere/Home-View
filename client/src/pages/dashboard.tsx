@@ -30844,7 +30844,7 @@ export default function Dashboard() {
                                   key={task.id}
                                   className="text-[7px] px-1 py-0.5 rounded truncate"
                                   style={{
-                                    backgroundColor: colors?.bg || (task.type === 'other' ? otherRowColors.taskBgColor : 'rgba(255,255,255,0.15)'),
+                                    backgroundColor: '#ffffff',
                                     color: '#000',
                                     borderLeft: `2px solid ${colors?.border || (task.type === 'other' ? otherRowColors.borderColor : 'rgba(255,255,255,0.4)')}`
                                   }}
