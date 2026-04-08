@@ -11802,8 +11802,18 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     });
 
     const picked = withMeta[0];
-    console.log(`[FileOrder] ${allEligible.length} unlistened files (${eligible.length} eligible, modulesBlock=${hasAnyUnlistenedModule}), picking: ${picked.file.originalName} (course=${picked.coursePriority}, week=${picked.weekNum})`);
-    console.log(`[FileOrder] ALL candidates sorted: ${withMeta.map(w => `${w.file.originalName}(pri=${w.coursePriority},w=${w.weekNum},mod=${w.isModule},folder=${w.file.folder})`).join(' | ')}`);
+    console.log(`[FileOrder] ${allEligible.length} unlistened files (${eligible.length} eligible, modulesBlock=${hasAnyUnlistenedModule}), picking: ${picked.file.originalName} (course=${picked.coursePriority}, week=${picked.weekNum}, id=${picked.file.id})`);
+    console.log(`[FileOrder] ALL candidates sorted: ${withMeta.map(w => `${w.file.originalName}(pri=${w.coursePriority},w=${w.weekNum},mod=${w.isModule},folder=${w.file.folder},id=${w.file.id},listened=${w.file.listened})`).join(' | ')}`);
+    if (picked.coursePriority > 1) {
+      const higherPriFiles = allForWeek.filter((f: any) => {
+        const folder = (f.folder || '').toLowerCase();
+        const name = (f.originalName || '').toLowerCase();
+        return folder.includes('cppa') || name.includes('cppa');
+      });
+      if (higherPriFiles.length > 0) {
+        console.log(`[FileOrder] WARNING: CPPA files exist for week ${currentWeekNumber} but were not picked! ${higherPriFiles.map((f: any) => `${f.originalName}(listened=${f.listened},id=${f.id})`).join(' | ')}`);
+      }
+    }
     return picked.file;
   }
 
@@ -12198,17 +12208,6 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           if (nestResult.success) {
             confirmPlayed = true;
             console.log(`${logPrefix} Confirm TTS played on Nest speaker via Edge TTS (actuallyPlaying=${nestResult.actuallyPlaying})`);
-            await new Promise(r => setTimeout(r, 2500));
-            try {
-              const { state: midCheckState } = await getNestMediaState();
-              console.log(`${logPrefix} Confirm TTS mid-play check: Nest state=${midCheckState}`);
-              if (midCheckState !== 'playing' && midCheckState !== 'buffering') {
-                console.warn(`${logPrefix} Nest stopped playing confirm TTS early (state=${midCheckState}) — replaying via Cloud TTS on HA Voice`);
-                confirmPlayed = false;
-              }
-            } catch (e: any) {
-              console.warn(`${logPrefix} Confirm mid-check failed: ${e.message}`);
-            }
           } else {
             console.warn(`${logPrefix} Nest speaker confirm failed — falling back to HA Voice`);
           }
@@ -12219,12 +12218,13 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           try {
             await haServiceCall('tts/speak', {
               entity_id: HA_CLOUD_TTS_ENTITY,
-              media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
+              media_player_entity_id: NEST_SPEAKER_ENTITY,
               message: confirmationTTS
-            }, 'Confirm HA Cloud TTS');
-            console.log(`${logPrefix} Confirm TTS played via HA Cloud TTS on HA Voice speaker (fallback)`);
+            }, 'Confirm HA Cloud TTS on Nest');
+            confirmPlayed = true;
+            console.log(`${logPrefix} Confirm TTS played via HA Cloud TTS on Nest speaker (fallback)`);
           } catch (e: any) {
-            console.warn(`${logPrefix} HA Voice confirm also failed: ${e.message}`);
+            console.warn(`${logPrefix} Nest Cloud TTS confirm also failed: ${e.message}`);
           }
         }
         const confirmWordCount = confirmationTTS.split(/\s+/).length;
@@ -14569,7 +14569,10 @@ document.body.removeChild(a);
       const fileDesc = describeFileForTTS(nextFile, currentWeekNumber);
       console.log(`[Cat Lights] Found next file: ${fileDesc} — ${fileName} (id=${nextFile.id})`);
 
-      const ttsMessage = `Would you like to play ${fileDesc}?`;
+      const nowHour = new Date().toLocaleString('en-US', { timeZone: 'America/Toronto', hour: 'numeric', hour12: false });
+      const hourNum = parseInt(nowHour, 10);
+      const greeting = hourNum < 12 ? 'Good morning Bryn.' : 'Good afternoon Bryn.';
+      const ttsMessage = `${greeting} Would you like to play ${fileDesc}?`;
       console.log(`[Cat Lights] Sending TTS prompt: "${ttsMessage}"`);
       try {
         await haServiceCallSafe('media_player/volume_set', { entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.50 }, 'Cat Lights HA Vol');
