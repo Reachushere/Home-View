@@ -3470,7 +3470,10 @@ export default function Dashboard() {
   const [automationsLoading, setAutomationsLoading] = useState(false);
   const [expandedAutomation, setExpandedAutomation] = useState<number | null>(null);
   const [automationPullStatus, setAutomationPullStatus] = useState<Record<number, 'idle' | 'pulling' | 'success' | 'error'>>({});
-  const [showAutomationsFlyout, setShowAutomationsFlyout] = useState(false);
+  const [btWizardOpen, setBtWizardOpen] = useState(false);
+  const [btWizardStep, setBtWizardStep] = useState(0);
+  const [btScanResult, setBtScanResult] = useState<any>(null);
+  const [btScanLoading, setBtScanLoading] = useState(false);
   const [healthFolderBrowse, setHealthFolderBrowse] = useState<{ semId: number; courseIdx: number; field: 'module' | 'reading' } | null>(null);
   const [healthBrowsePath, setHealthBrowsePath] = useState('/School/1. TMU/Courses');
   const [healthBrowseItems, setHealthBrowseItems] = useState<Array<{ name: string; type: string; path: string }>>([]);
@@ -22936,7 +22939,7 @@ export default function Dashboard() {
 
           {/* System Health Dialog */}
           <Dialog open={isSystemHealthOpen && desktopIsFull} onOpenChange={(open) => { setIsSystemHealthOpen(open); if (!open) { setHealthFolderBrowse(null); } }}>
-            <DialogContent className="sys-health-root text-[11px] text-white [&_*:not(input)]:text-white p-0 [&>button.absolute]:hidden" style={{ top: 'calc(50% - 30px)', maxWidth: healthTab === 'folders' ? '640px' : '440px', maxHeight: '80vh', display: 'flex', flexDirection: 'column', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, transition: 'max-width 0.2s ease', overflow: 'hidden' }}>
+            <DialogContent className="sys-health-root text-[11px] text-white [&_*:not(input)]:text-white p-0 [&>button.absolute]:hidden" style={{ top: 'calc(50% - 30px)', maxWidth: '820px', maxHeight: '80vh', display: 'flex', flexDirection: 'column', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, transition: 'max-width 0.2s ease', overflow: 'hidden' }}>
               <div className="flex items-center px-4 py-3 border-b border-white/40" style={{ flexShrink: 0, margin: 0, backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                 <div className="flex items-center gap-2">
                   <Activity className="h-3 w-3 text-white" />
@@ -22967,8 +22970,7 @@ export default function Dashboard() {
                 >Folder Links</button>
                 <button
                   onClick={() => {
-                    setIsSystemHealthOpen(false);
-                    setShowAutomationsFlyout(true);
+                    setHealthTab('automations');
                     if (automationsData.length === 0 && !automationsLoading) {
                       setAutomationsLoading(true);
                       fetch('/api/automations-reference').then(r => r.json()).then(data => {
@@ -22978,7 +22980,7 @@ export default function Dashboard() {
                     }
                   }}
                   className="text-[10px] font-medium py-2 px-3 transition-colors"
-                  style={{ color: 'rgba(255,255,255,0.45)', borderBottom: '2px solid transparent' }}
+                  style={{ color: healthTab === 'automations' ? '#fff' : 'rgba(255,255,255,0.45)', borderBottom: healthTab === 'automations' ? '2px solid #60a5fa' : '2px solid transparent' }}
                   data-testid="health-tab-automations"
                 >Automations</button>
               </div>
@@ -23009,6 +23011,7 @@ export default function Dashboard() {
                         weather: 'Weather API',
                         reminderScheduler: 'Reminders',
                         email: 'Email Service',
+                        bluetooth: 'Bluetooth',
                       };
                       const icons: Record<string, string> = {
                         server: '🖥️',
@@ -23020,11 +23023,12 @@ export default function Dashboard() {
                         weather: '🌤️',
                         reminderScheduler: '⏰',
                         email: '✉️',
+                        bluetooth: '📶',
                       };
                       const statusColor = check.status === 'ok' ? '#22c55e' : check.status === 'degraded' ? '#eab308' : check.status === 'unconfigured' ? '#6b7280' : '#ef4444';
                       const statusLabel = check.status === 'ok' ? 'OK' : check.status === 'degraded' ? 'Degraded' : check.status === 'unconfigured' ? 'N/A' : 'Down';
                       return (
-                        <div key={key} className="flex items-center gap-2 py-1.5 px-2 rounded" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }} data-testid={`health-row-${key}`}>
+                        <div key={key} className="flex items-center gap-2 py-1.5 px-2 rounded" style={{ backgroundColor: 'rgba(255,255,255,0.05)', cursor: key === 'bluetooth' ? 'pointer' : 'default' }} onClick={() => { if (key === 'bluetooth') { setBtWizardOpen(true); setBtWizardStep(0); setBtScanResult(null); } }} data-testid={`health-row-${key}`}>
                           <span style={{ fontSize: '14px', width: '20px', textAlign: 'center' }}>{icons[key] || '📦'}</span>
                           <span className="text-[11px] font-medium flex-1" style={{ minWidth: '90px' }}>{labels[key] || key}</span>
                           <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.6)', flex: 2, textAlign: 'left' }}>{check.message}</span>
@@ -23032,6 +23036,7 @@ export default function Dashboard() {
                             <div style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: statusColor, boxShadow: `0 0 4px ${statusColor}`, flexShrink: 0 }} />
                             <span className="text-[9px] font-semibold" style={{ color: statusColor }}>{statusLabel}</span>
                           </div>
+                          {key === 'bluetooth' && <span className="text-[8px] text-white/30 ml-1">›</span>}
                         </div>
                       );
                     })}
@@ -23171,6 +23176,138 @@ export default function Dashboard() {
                   </div>
                 )}
               </div>
+              ) : healthTab === 'automations' ? (
+              <div className="px-4 py-3" style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent' }}>
+                {automationsLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-5 w-5 animate-spin text-white/60" />
+                    <span className="ml-2 text-white/60 text-[11px]">Loading automations...</span>
+                  </div>
+                ) : automationsData.length === 0 ? (
+                  <div className="text-center text-white/40 py-8 text-[11px]">No automations reference found</div>
+                ) : (
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2 mb-2 pb-2 border-b border-white/20">
+                      <Zap className="h-3 w-3 text-amber-400" />
+                      <span className="text-[11px] font-semibold text-white">{automationsData.length} Automations</span>
+                      <span className="text-[9px] text-white/40 ml-auto">HA_Automations_Reference.md</span>
+                    </div>
+                    {automationsData.map((auto: any) => {
+                      const isExpanded = expandedAutomation === auto.id;
+                      const pullStatus = automationPullStatus[auto.id] || 'idle';
+                      const categoryColor = auto.title.toLowerCase().includes('cat washroom') || auto.title.toLowerCase().includes('cat ') ? '#a78bfa'
+                        : auto.title.toLowerCase().includes('kitchen') ? '#f59e0b'
+                        : auto.title.toLowerCase().includes('spotify') ? '#1db954'
+                        : auto.title.toLowerCase().includes('voice') ? '#60a5fa'
+                        : auto.title.toLowerCase().includes('toothbrush') ? '#f472b6'
+                        : auto.title.toLowerCase().includes('ticker') ? '#34d399'
+                        : auto.title.toLowerCase().includes('partner') ? '#fb923c'
+                        : auto.title.toLowerCase().includes('alexa') ? '#38bdf8'
+                        : '#94a3b8';
+                      return (
+                        <div key={auto.id} data-testid={`automation-item-${auto.id}`}>
+                          <button
+                            onClick={() => setExpandedAutomation(isExpanded ? null : auto.id)}
+                            className="w-full text-left flex items-center gap-2 py-2 px-2 rounded-md transition-colors"
+                            style={{ background: isExpanded ? 'rgba(255,255,255,0.08)' : 'transparent', cursor: 'pointer', border: 'none' }}
+                            data-testid={`automation-toggle-${auto.id}`}
+                          >
+                            <div style={{ width: '4px', height: '20px', borderRadius: '2px', background: categoryColor, flexShrink: 0 }} />
+                            <span className="text-[10px] font-bold" style={{ color: categoryColor, minWidth: '20px' }}>#{auto.id}</span>
+                            <span className="text-[10px] font-medium flex-1" style={{ color: '#fff' }}>{auto.title}</span>
+                            {auto.webhookEndpoint && (
+                              <span className="text-[8px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(96,165,250,0.2)', color: '#93c5fd', fontFamily: 'monospace', flexShrink: 0 }}>
+                                {auto.webhookEndpoint.replace('/api/webhook/', '')}
+                              </span>
+                            )}
+                            <ChevronDown className="h-3 w-3 text-white/40 transition-transform" style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)', flexShrink: 0 }} />
+                          </button>
+                          {isExpanded && (
+                            <div className="mt-1 mb-2 rounded-lg" style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden' }}>
+                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', minHeight: '200px' }}>
+                                <div style={{ borderRight: '1px solid rgba(255,255,255,0.08)', padding: '12px', overflowY: 'auto', maxHeight: '400px' }}>
+                                  <div className="flex items-center gap-1.5 mb-2">
+                                    <FileText className="h-3 w-3 text-white/50" />
+                                    <span className="text-[9px] font-semibold text-white/70">REFERENCE DOC</span>
+                                  </div>
+                                  <div className="text-[10px] text-white/80 mb-3" style={{ lineHeight: '1.5' }}>
+                                    {auto.summary}
+                                  </div>
+                                  {auto.haYaml && (
+                                    <div className="mb-3">
+                                      <span className="text-[8px] font-semibold text-amber-400/80 mb-1 block">HA YAML</span>
+                                      <pre className="text-[8px] p-2 rounded" style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.06)', whiteSpace: 'pre-wrap', wordBreak: 'break-word', color: '#e2e8f0', fontFamily: "'SF Mono', 'Fira Code', monospace', monospace", lineHeight: '1.6', maxHeight: '150px', overflowY: 'auto' }}>{auto.haYaml}</pre>
+                                    </div>
+                                  )}
+                                  {auto.appFlows.length > 0 && auto.appFlows.map((flow: string, fi: number) => (
+                                    <div key={fi} className="mb-2">
+                                      <span className="text-[8px] font-semibold text-blue-400/80 mb-1 block">APP FLOW{auto.appFlows.length > 1 ? ` ${fi + 1}` : ''}</span>
+                                      <pre className="text-[8px] p-2 rounded" style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.06)', whiteSpace: 'pre-wrap', wordBreak: 'break-word', color: '#e2e8f0', fontFamily: "'SF Mono', 'Fira Code', monospace", lineHeight: '1.6', maxHeight: '200px', overflowY: 'auto' }}>{flow}</pre>
+                                    </div>
+                                  ))}
+                                </div>
+                                <div style={{ padding: '12px', display: 'flex', flexDirection: 'column' }}>
+                                  <div className="flex items-center gap-1.5 mb-3">
+                                    <RefreshCw className="h-3 w-3 text-white/50" />
+                                    <span className="text-[9px] font-semibold text-white/70">LIVE STATUS</span>
+                                  </div>
+                                  {auto.webhookEndpoint && (
+                                    <div className="mb-3 p-2 rounded" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                                      <span className="text-[8px] text-white/50 block mb-1">Endpoint</span>
+                                      <code className="text-[9px]" style={{ color: '#93c5fd', fontFamily: "'SF Mono', 'Fira Code', monospace" }}>POST {auto.webhookEndpoint}</code>
+                                    </div>
+                                  )}
+                                  <button
+                                    onClick={async () => {
+                                      setAutomationPullStatus(prev => ({ ...prev, [auto.id]: 'pulling' }));
+                                      try {
+                                        const resp = await fetch('/api/automations-reference');
+                                        const data = await resp.json();
+                                        const updated = data.automations?.find((a: any) => a.id === auto.id);
+                                        if (updated) {
+                                          setAutomationsData(prev => prev.map(a => a.id === auto.id ? updated : a));
+                                        }
+                                        setAutomationPullStatus(prev => ({ ...prev, [auto.id]: 'success' }));
+                                        setTimeout(() => setAutomationPullStatus(prev => ({ ...prev, [auto.id]: 'idle' })), 2000);
+                                      } catch {
+                                        setAutomationPullStatus(prev => ({ ...prev, [auto.id]: 'error' }));
+                                        setTimeout(() => setAutomationPullStatus(prev => ({ ...prev, [auto.id]: 'idle' })), 3000);
+                                      }
+                                    }}
+                                    disabled={pullStatus === 'pulling'}
+                                    className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-md text-[10px] font-medium transition-colors mb-3"
+                                    style={{
+                                      background: pullStatus === 'success' ? 'rgba(34,197,94,0.2)' : pullStatus === 'error' ? 'rgba(239,68,68,0.2)' : 'rgba(96,165,250,0.15)',
+                                      border: `1px solid ${pullStatus === 'success' ? 'rgba(34,197,94,0.4)' : pullStatus === 'error' ? 'rgba(239,68,68,0.4)' : 'rgba(96,165,250,0.3)'}`,
+                                      color: pullStatus === 'success' ? '#4ade80' : pullStatus === 'error' ? '#f87171' : '#93c5fd',
+                                      cursor: pullStatus === 'pulling' ? 'wait' : 'pointer',
+                                    }}
+                                    data-testid={`automation-pull-${auto.id}`}
+                                  >
+                                    {pullStatus === 'pulling' ? (
+                                      <><Loader2 className="h-3 w-3 animate-spin" /> Pulling...</>
+                                    ) : pullStatus === 'success' ? (
+                                      <><Check className="h-3 w-3" /> Up to date</>
+                                    ) : pullStatus === 'error' ? (
+                                      <><X className="h-3 w-3" /> Pull failed</>
+                                    ) : (
+                                      <><RefreshCw className="h-3 w-3" /> Pull Latest</>
+                                    )}
+                                  </button>
+                                  <div className="flex-1 rounded p-2" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', overflowY: 'auto', maxHeight: '280px' }}>
+                                    <span className="text-[8px] font-semibold text-white/50 block mb-2">FULL REFERENCE</span>
+                                    <pre className="text-[8px]" style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', color: '#cbd5e1', fontFamily: "'SF Mono', 'Fira Code', monospace", lineHeight: '1.5' }}>{auto.body}</pre>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
               ) : null}
               {healthFolderBrowse && (
                 <div className="fixed inset-0 z-[10005] flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.5)' }}>
@@ -23273,157 +23410,299 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
 
-          {showAutomationsFlyout && createPortal(
-            <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 100100 }} onClick={() => setShowAutomationsFlyout(false)} data-testid="automations-flyout-overlay">
-              <div className="absolute inset-0 bg-black/50" />
-              <div className="relative w-[860px] max-h-[85vh] rounded-lg flex flex-col" onClick={e => e.stopPropagation()} style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
+          {btWizardOpen && createPortal(
+            <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 100200 }} onClick={() => setBtWizardOpen(false)} data-testid="bt-wizard-overlay">
+              <div className="absolute inset-0 bg-black/60" />
+              <div className="relative w-[600px] max-h-[80vh] rounded-lg flex flex-col text-white text-[11px]" onClick={e => e.stopPropagation()} style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
                 <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 rounded-t-lg shrink-0" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                   <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => { setShowAutomationsFlyout(false); setIsSystemHealthOpen(true); }}
-                      className="flex items-center gap-1 text-white/60 hover:text-white transition-colors mr-1"
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px' }}
-                      data-testid="button-back-to-health"
-                    >
-                      <ChevronDown className="h-3.5 w-3.5" style={{ transform: 'rotate(90deg)' }} />
-                    </button>
-                    <Zap className="h-4 w-4 text-amber-400" />
-                    <span className="text-white font-semibold text-[13px]">Automations</span>
-                    <span className="text-[10px] text-white/50 ml-1">HA_Automations_Reference.md</span>
+                    <span style={{ fontSize: '16px' }}>📶</span>
+                    <span className="text-white font-semibold text-[13px]">Bluetooth Storm Troubleshooter</span>
                   </div>
-                  <button onClick={() => setShowAutomationsFlyout(false)} className="text-white/60 hover:text-white transition-colors" data-testid="button-close-automations-flyout">
+                  <button onClick={() => setBtWizardOpen(false)} className="text-white/60 hover:text-white transition-colors" data-testid="button-close-bt-wizard">
                     <X className="h-4 w-4" />
                   </button>
                 </div>
-                <div className="overflow-y-auto flex-1 min-h-0 px-4 py-3" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent' }}>
-                  {automationsLoading ? (
-                    <div className="flex items-center justify-center py-8">
-                      <Loader2 className="h-5 w-5 animate-spin text-white/60" />
-                      <span className="ml-2 text-white/60 text-[11px]">Loading automations...</span>
-                    </div>
-                  ) : automationsData.length === 0 ? (
-                    <div className="text-center text-white/40 py-8 text-[11px]">No automations reference found</div>
-                  ) : (
-                    <div className="flex flex-col gap-1">
-                      <div className="flex items-center gap-2 mb-2 pb-2 border-b border-white/20">
-                        <Zap className="h-3 w-3 text-amber-400" />
-                        <span className="text-[11px] font-semibold text-white">{automationsData.length} Automations</span>
+                <div className="overflow-y-auto flex-1 min-h-0 px-5 py-4" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent' }}>
+                  <div className="flex items-center gap-2 mb-4">
+                    {[0, 1, 2, 3].map(s => (
+                      <div key={s} className="flex items-center gap-1">
+                        <div style={{ width: '22px', height: '22px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700, background: btWizardStep >= s ? 'rgba(96,165,250,0.4)' : 'rgba(255,255,255,0.1)', border: btWizardStep >= s ? '1.5px solid rgba(96,165,250,0.7)' : '1.5px solid rgba(255,255,255,0.15)', color: btWizardStep >= s ? '#93c5fd' : 'rgba(255,255,255,0.3)' }}>{s + 1}</div>
+                        {s < 3 && <div style={{ width: '30px', height: '1px', background: btWizardStep > s ? 'rgba(96,165,250,0.5)' : 'rgba(255,255,255,0.1)' }} />}
                       </div>
-                      {automationsData.map((auto: any) => {
-                        const isExpanded = expandedAutomation === auto.id;
-                        const pullStatus = automationPullStatus[auto.id] || 'idle';
-                        const categoryColor = auto.title.toLowerCase().includes('cat washroom') || auto.title.toLowerCase().includes('cat ') ? '#a78bfa'
-                          : auto.title.toLowerCase().includes('kitchen') ? '#f59e0b'
-                          : auto.title.toLowerCase().includes('spotify') ? '#1db954'
-                          : auto.title.toLowerCase().includes('voice') ? '#60a5fa'
-                          : auto.title.toLowerCase().includes('toothbrush') ? '#f472b6'
-                          : auto.title.toLowerCase().includes('ticker') ? '#34d399'
-                          : auto.title.toLowerCase().includes('partner') ? '#fb923c'
-                          : auto.title.toLowerCase().includes('alexa') ? '#38bdf8'
-                          : '#94a3b8';
-                        return (
-                          <div key={auto.id} data-testid={`automation-item-${auto.id}`}>
-                            <button
-                              onClick={() => setExpandedAutomation(isExpanded ? null : auto.id)}
-                              className="w-full text-left flex items-center gap-2 py-2 px-2 rounded-md transition-colors"
-                              style={{ background: isExpanded ? 'rgba(255,255,255,0.08)' : 'transparent', cursor: 'pointer', border: 'none' }}
-                              data-testid={`automation-toggle-${auto.id}`}
-                            >
-                              <div style={{ width: '4px', height: '20px', borderRadius: '2px', background: categoryColor, flexShrink: 0 }} />
-                              <span className="text-[10px] font-bold" style={{ color: categoryColor, minWidth: '20px' }}>#{auto.id}</span>
-                              <span className="text-[10px] font-medium flex-1" style={{ color: '#fff' }}>{auto.title}</span>
-                              {auto.webhookEndpoint && (
-                                <span className="text-[8px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(96,165,250,0.2)', color: '#93c5fd', fontFamily: 'monospace', flexShrink: 0 }}>
-                                  {auto.webhookEndpoint.replace('/api/webhook/', '')}
-                                </span>
-                              )}
-                              <ChevronDown className="h-3 w-3 text-white/40 transition-transform" style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)', flexShrink: 0 }} />
-                            </button>
-                            {isExpanded && (
-                              <div className="mt-1 mb-2 rounded-lg" style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden' }}>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', minHeight: '200px' }}>
-                                  <div style={{ borderRight: '1px solid rgba(255,255,255,0.08)', padding: '12px', overflowY: 'auto', maxHeight: '400px' }}>
-                                    <div className="flex items-center gap-1.5 mb-2">
-                                      <FileText className="h-3 w-3 text-white/50" />
-                                      <span className="text-[9px] font-semibold text-white/70">REFERENCE DOC</span>
+                    ))}
+                    <span className="text-[9px] text-white/40 ml-2">
+                      {btWizardStep === 0 ? 'Overview' : btWizardStep === 1 ? 'Scan Devices' : btWizardStep === 2 ? 'Storm Analysis' : 'Fix Actions'}
+                    </span>
+                  </div>
+
+                  {btWizardStep === 0 && (
+                    <div className="flex flex-col gap-3">
+                      <div className="rounded-lg p-4" style={{ background: 'rgba(96,165,250,0.1)', border: '1px solid rgba(96,165,250,0.25)' }}>
+                        <h3 className="text-[12px] font-semibold mb-2" style={{ color: '#93c5fd' }}>What is a Bluetooth Storm?</h3>
+                        <p className="text-[10px] text-white/70 leading-[1.6]">
+                          A Bluetooth storm happens when a nearby device sends an excessive number of advertisement packets per second. This floods your Pi's Bluetooth adapter and can cause audio dropouts, speaker disconnects, and high CPU usage. Common culprits include smart home sensors, fitness trackers, and malfunctioning IoT devices.
+                        </p>
+                      </div>
+                      <div className="rounded-lg p-4" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        <h3 className="text-[12px] font-semibold mb-2">Symptoms</h3>
+                        <div className="flex flex-col gap-1.5">
+                          {['Echo speakers randomly disconnect or skip audio', 'Bluetooth audio stutters or has gaps', 'High CPU usage from bluetoothd process', 'Cat washroom reading playback fails mid-chunk', 'Nest speaker stays "idle" after commands'].map((s, i) => (
+                            <div key={i} className="flex items-start gap-2">
+                              <span className="text-amber-400 text-[10px] mt-[1px]">⚠</span>
+                              <span className="text-[10px] text-white/70">{s}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="rounded-lg p-3" style={{ background: 'rgba(168,139,250,0.1)', border: '1px solid rgba(168,139,250,0.25)' }}>
+                        <p className="text-[10px] text-white/60">This wizard will scan your Pi's Bluetooth environment, identify storm sources, and offer actions to fix them.</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {btWizardStep === 1 && (
+                    <div className="flex flex-col gap-3">
+                      {!btScanResult && !btScanLoading && (
+                        <div className="text-center py-6">
+                          <p className="text-[11px] text-white/60 mb-4">Click below to scan for Bluetooth devices and check for storm activity on your Pi.</p>
+                          <button
+                            onClick={() => {
+                              setBtScanLoading(true);
+                              fetch('/api/bt-scan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'scan' }) })
+                                .then(r => r.json())
+                                .then(data => { setBtScanResult(data); setBtScanLoading(false); })
+                                .catch(() => { setBtScanResult({ error: 'Scan failed — is the Pi reachable?', devices: [] }); setBtScanLoading(false); });
+                            }}
+                            className="px-6 py-2.5 rounded-lg text-[11px] font-medium"
+                            style={{ background: 'rgba(96,165,250,0.3)', border: '1px solid rgba(96,165,250,0.5)', color: '#93c5fd', cursor: 'pointer' }}
+                            data-testid="button-bt-scan"
+                          >📡 Run Bluetooth Scan</button>
+                        </div>
+                      )}
+                      {btScanLoading && (
+                        <div className="flex flex-col items-center justify-center py-8 gap-3">
+                          <Loader2 className="h-6 w-6 animate-spin text-blue-400" />
+                          <p className="text-[11px] text-white/60">Scanning Bluetooth environment...</p>
+                          <p className="text-[9px] text-white/30">This may take up to 10 seconds</p>
+                        </div>
+                      )}
+                      {btScanResult && (
+                        <div className="flex flex-col gap-3">
+                          {btScanResult.error && (
+                            <div className="rounded-lg p-3" style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)' }}>
+                              <p className="text-[10px] text-red-300">{btScanResult.error}</p>
+                            </div>
+                          )}
+                          {btScanResult.hciInfo && (
+                            <div className="rounded-lg p-3" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                              <span className="text-[9px] font-semibold text-white/50 block mb-1">ADAPTER INFO</span>
+                              <pre className="text-[9px] text-white/60" style={{ fontFamily: "'SF Mono', monospace", whiteSpace: 'pre-wrap' }}>{btScanResult.hciInfo}</pre>
+                            </div>
+                          )}
+                          <div className="rounded-lg p-3" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-[10px] font-semibold">{btScanResult.devices?.length || 0} Devices Found</span>
+                              <span className="text-[9px] text-white/40">{btScanResult.stormAlertCount || 0} storm alerts (30min)</span>
+                            </div>
+                            {(btScanResult.devices || []).length === 0 ? (
+                              <p className="text-[10px] text-white/40 py-2">No devices detected. Bluetooth may be off or no devices nearby.</p>
+                            ) : (
+                              <div className="flex flex-col gap-1">
+                                {(btScanResult.devices || []).sort((a: any, b: any) => (b.stormAlerts || 0) - (a.stormAlerts || 0)).map((dev: any, i: number) => (
+                                  <div key={i} className="flex items-center gap-2 py-1.5 px-2 rounded" style={{ background: dev.stormAlerts > 0 ? 'rgba(239,68,68,0.1)' : 'rgba(255,255,255,0.03)', border: dev.stormAlerts > 0 ? '1px solid rgba(239,68,68,0.25)' : '1px solid rgba(255,255,255,0.06)' }}>
+                                    <span className="text-[10px]">{dev.stormAlerts > 0 ? '🔴' : dev.type === 'paired' ? '🔗' : '📱'}</span>
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                      <div className="text-[10px] font-medium truncate">{dev.name}</div>
+                                      <div className="text-[8px] text-white/30" style={{ fontFamily: 'monospace' }}>{dev.mac} · {dev.type}</div>
                                     </div>
-                                    <div className="text-[10px] text-white/80 mb-3" style={{ lineHeight: '1.5' }}>
-                                      {auto.summary}
-                                    </div>
-                                    {auto.haYaml && (
-                                      <div className="mb-3">
-                                        <span className="text-[8px] font-semibold text-amber-400/80 mb-1 block">HA YAML</span>
-                                        <pre className="text-[8px] p-2 rounded" style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.06)', whiteSpace: 'pre-wrap', wordBreak: 'break-word', color: '#e2e8f0', fontFamily: "'SF Mono', 'Fira Code', monospace', monospace", lineHeight: '1.6', maxHeight: '150px', overflowY: 'auto' }}>{auto.haYaml}</pre>
+                                    {dev.stormAlerts > 0 && (
+                                      <div className="flex items-center gap-1">
+                                        <span className="text-[8px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(239,68,68,0.2)', color: '#f87171' }}>
+                                          {dev.stormAlerts} alerts · {dev.lastStormCount} ads/window
+                                        </span>
                                       </div>
                                     )}
-                                    {auto.appFlows.length > 0 && auto.appFlows.map((flow: string, fi: number) => (
-                                      <div key={fi} className="mb-2">
-                                        <span className="text-[8px] font-semibold text-blue-400/80 mb-1 block">APP FLOW{auto.appFlows.length > 1 ? ` ${fi + 1}` : ''}</span>
-                                        <pre className="text-[8px] p-2 rounded" style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.06)', whiteSpace: 'pre-wrap', wordBreak: 'break-word', color: '#e2e8f0', fontFamily: "'SF Mono', 'Fira Code', monospace", lineHeight: '1.6', maxHeight: '200px', overflowY: 'auto' }}>{flow}</pre>
-                                      </div>
-                                    ))}
                                   </div>
-                                  <div style={{ padding: '12px', display: 'flex', flexDirection: 'column' }}>
-                                    <div className="flex items-center gap-1.5 mb-3">
-                                      <RefreshCw className="h-3 w-3 text-white/50" />
-                                      <span className="text-[9px] font-semibold text-white/70">LIVE STATUS</span>
-                                    </div>
-                                    {auto.webhookEndpoint && (
-                                      <div className="mb-3 p-2 rounded" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                                        <span className="text-[8px] text-white/50 block mb-1">Endpoint</span>
-                                        <code className="text-[9px]" style={{ color: '#93c5fd', fontFamily: "'SF Mono', 'Fira Code', monospace" }}>POST {auto.webhookEndpoint}</code>
-                                      </div>
-                                    )}
-                                    <button
-                                      onClick={async () => {
-                                        setAutomationPullStatus(prev => ({ ...prev, [auto.id]: 'pulling' }));
-                                        try {
-                                          const resp = await fetch('/api/automations-reference');
-                                          const data = await resp.json();
-                                          const updated = data.automations?.find((a: any) => a.id === auto.id);
-                                          if (updated) {
-                                            setAutomationsData(prev => prev.map(a => a.id === auto.id ? updated : a));
-                                          }
-                                          setAutomationPullStatus(prev => ({ ...prev, [auto.id]: 'success' }));
-                                          setTimeout(() => setAutomationPullStatus(prev => ({ ...prev, [auto.id]: 'idle' })), 2000);
-                                        } catch {
-                                          setAutomationPullStatus(prev => ({ ...prev, [auto.id]: 'error' }));
-                                          setTimeout(() => setAutomationPullStatus(prev => ({ ...prev, [auto.id]: 'idle' })), 3000);
-                                        }
-                                      }}
-                                      disabled={pullStatus === 'pulling'}
-                                      className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-md text-[10px] font-medium transition-colors mb-3"
-                                      style={{
-                                        background: pullStatus === 'success' ? 'rgba(34,197,94,0.2)' : pullStatus === 'error' ? 'rgba(239,68,68,0.2)' : 'rgba(96,165,250,0.15)',
-                                        border: `1px solid ${pullStatus === 'success' ? 'rgba(34,197,94,0.4)' : pullStatus === 'error' ? 'rgba(239,68,68,0.4)' : 'rgba(96,165,250,0.3)'}`,
-                                        color: pullStatus === 'success' ? '#4ade80' : pullStatus === 'error' ? '#f87171' : '#93c5fd',
-                                        cursor: pullStatus === 'pulling' ? 'wait' : 'pointer',
-                                      }}
-                                      data-testid={`automation-pull-${auto.id}`}
-                                    >
-                                      {pullStatus === 'pulling' ? (
-                                        <><Loader2 className="h-3 w-3 animate-spin" /> Pulling...</>
-                                      ) : pullStatus === 'success' ? (
-                                        <><Check className="h-3 w-3" /> Up to date</>
-                                      ) : pullStatus === 'error' ? (
-                                        <><X className="h-3 w-3" /> Pull failed</>
-                                      ) : (
-                                        <><RefreshCw className="h-3 w-3" /> Pull Latest</>
-                                      )}
-                                    </button>
-                                    <div className="flex-1 rounded p-2" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', overflowY: 'auto', maxHeight: '280px' }}>
-                                      <span className="text-[8px] font-semibold text-white/50 block mb-2">FULL REFERENCE</span>
-                                      <pre className="text-[8px]" style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', color: '#cbd5e1', fontFamily: "'SF Mono', 'Fira Code', monospace", lineHeight: '1.5' }}>{auto.body}</pre>
-                                    </div>
-                                  </div>
-                                </div>
+                                ))}
                               </div>
                             )}
                           </div>
-                        );
-                      })}
+                          <button
+                            onClick={() => { setBtScanResult(null); }}
+                            className="text-[10px] text-white/50 hover:text-white/80 underline self-end"
+                            data-testid="button-bt-rescan"
+                          >Re-scan</button>
+                        </div>
+                      )}
                     </div>
                   )}
+
+                  {btWizardStep === 2 && (
+                    <div className="flex flex-col gap-3">
+                      <div className="rounded-lg p-4" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        <h3 className="text-[12px] font-semibold mb-3">Storm Alert History</h3>
+                        {(() => {
+                          const stormDevices = (btScanResult?.devices || []).filter((d: any) => d.stormAlerts > 0);
+                          if (stormDevices.length === 0) {
+                            return <p className="text-[10px] text-white/40 py-2">No storm activity detected. Your Bluetooth environment looks clean.</p>;
+                          }
+                          return (
+                            <div className="flex flex-col gap-2">
+                              {stormDevices.sort((a: any, b: any) => b.lastStormCount - a.lastStormCount).map((dev: any, i: number) => (
+                                <div key={i} className="rounded p-3" style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)' }}>
+                                  <div className="flex items-center justify-between mb-1">
+                                    <span className="text-[11px] font-semibold" style={{ color: '#f87171' }}>🔴 {dev.name}</span>
+                                    <span className="text-[8px] text-white/30" style={{ fontFamily: 'monospace' }}>{dev.mac}</span>
+                                  </div>
+                                  <div className="flex gap-4 mt-1">
+                                    <div>
+                                      <span className="text-[8px] text-white/40 block">Alerts</span>
+                                      <span className="text-[12px] font-bold" style={{ color: '#f87171' }}>{dev.stormAlerts}</span>
+                                    </div>
+                                    <div>
+                                      <span className="text-[8px] text-white/40 block">Ads/Window</span>
+                                      <span className="text-[12px] font-bold" style={{ color: '#fbbf24' }}>{dev.lastStormCount}</span>
+                                    </div>
+                                    <div>
+                                      <span className="text-[8px] text-white/40 block">Severity</span>
+                                      <span className="text-[10px] font-semibold" style={{ color: dev.lastStormCount > 500 ? '#ef4444' : dev.lastStormCount > 100 ? '#f59e0b' : '#22c55e' }}>
+                                        {dev.lastStormCount > 500 ? 'Critical' : dev.lastStormCount > 100 ? 'High' : 'Low'}
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <p className="text-[9px] text-white/50 mt-2">
+                                    {dev.lastStormCount > 500
+                                      ? 'This device is flooding your Bluetooth adapter. Blocking it or moving it away is recommended.'
+                                      : dev.lastStormCount > 100
+                                      ? 'This device is sending more advertisements than normal. Monitor and block if issues persist.'
+                                      : 'Minor storm activity. Likely not causing issues.'}
+                                  </p>
+                                </div>
+                              ))}
+                            </div>
+                          );
+                        })()}
+                      </div>
+                      {!btScanResult && (
+                        <div className="rounded-lg p-3" style={{ background: 'rgba(168,139,250,0.1)', border: '1px solid rgba(168,139,250,0.25)' }}>
+                          <p className="text-[10px] text-white/60">Run a scan in Step 2 first to see storm analysis here.</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {btWizardStep === 3 && (
+                    <div className="flex flex-col gap-3">
+                      <div className="rounded-lg p-4" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        <h3 className="text-[12px] font-semibold mb-3">Available Actions</h3>
+                        <div className="flex flex-col gap-2">
+                          <button
+                            onClick={() => {
+                              fetch('/api/bt-scan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'restart-bluetooth' }) })
+                                .then(r => r.json())
+                                .then(() => alert('Bluetooth service restarted'))
+                                .catch(() => alert('Failed to restart Bluetooth'));
+                            }}
+                            className="flex items-center gap-3 p-3 rounded-lg text-left transition-colors"
+                            style={{ background: 'rgba(96,165,250,0.1)', border: '1px solid rgba(96,165,250,0.25)', cursor: 'pointer' }}
+                            data-testid="button-bt-restart"
+                          >
+                            <RefreshCw className="h-4 w-4 text-blue-400 shrink-0" />
+                            <div>
+                              <div className="text-[11px] font-medium" style={{ color: '#93c5fd' }}>Restart Bluetooth Service</div>
+                              <div className="text-[9px] text-white/50 mt-0.5">Restarts bluetoothd and resets the HCI adapter. This clears any stuck connections.</div>
+                            </div>
+                          </button>
+
+                          {(btScanResult?.devices || []).filter((d: any) => d.stormAlerts > 0).map((dev: any, i: number) => (
+                            <button
+                              key={i}
+                              onClick={() => {
+                                if (confirm(`Block ${dev.name} (${dev.mac})? This will prevent it from connecting to your Pi.`)) {
+                                  fetch('/api/bt-scan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'block-device', mac: dev.mac }) })
+                                    .then(r => r.json())
+                                    .then(() => alert(`Blocked ${dev.name}`))
+                                    .catch(() => alert('Failed to block device'));
+                                }
+                              }}
+                              className="flex items-center gap-3 p-3 rounded-lg text-left transition-colors"
+                              style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', cursor: 'pointer' }}
+                              data-testid={`button-bt-block-${i}`}
+                            >
+                              <AlertTriangle className="h-4 w-4 text-red-400 shrink-0" />
+                              <div>
+                                <div className="text-[11px] font-medium" style={{ color: '#f87171' }}>Block {dev.name}</div>
+                                <div className="text-[9px] text-white/50 mt-0.5">{dev.mac} · {dev.stormAlerts} storm alerts · {dev.lastStormCount} ads/window</div>
+                              </div>
+                            </button>
+                          ))}
+
+                          <button
+                            onClick={() => {
+                              fetch('/api/bt-scan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'clear-alerts' }) })
+                                .then(r => r.json())
+                                .then(() => { setBtScanResult((prev: any) => prev ? { ...prev, stormAlertCount: 0, devices: (prev.devices || []).map((d: any) => ({ ...d, stormAlerts: 0, lastStormCount: 0 })) } : prev); alert('Storm alerts cleared'); })
+                                .catch(() => alert('Failed to clear alerts'));
+                            }}
+                            className="flex items-center gap-3 p-3 rounded-lg text-left transition-colors"
+                            style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', cursor: 'pointer' }}
+                            data-testid="button-bt-clear-alerts"
+                          >
+                            <Check className="h-4 w-4 text-green-400 shrink-0" />
+                            <div>
+                              <div className="text-[11px] font-medium" style={{ color: '#4ade80' }}>Clear All Storm Alerts</div>
+                              <div className="text-[9px] text-white/50 mt-0.5">Resets the storm alert history. Use after resolving the issue.</div>
+                            </div>
+                          </button>
+                        </div>
+                      </div>
+                      <div className="rounded-lg p-3" style={{ background: 'rgba(168,139,250,0.08)', border: '1px solid rgba(168,139,250,0.2)' }}>
+                        <h3 className="text-[10px] font-semibold mb-1.5" style={{ color: '#a78bfa' }}>Pi Terminal Commands</h3>
+                        <div className="flex flex-col gap-1">
+                          {[
+                            { cmd: 'sudo hcitool lescan --duplicates', desc: 'Watch BLE advertisements live' },
+                            { cmd: 'bluetoothctl devices', desc: 'List known/paired devices' },
+                            { cmd: 'sudo btmon', desc: 'Full Bluetooth packet monitor' },
+                            { cmd: 'sudo systemctl restart bluetooth', desc: 'Restart Bluetooth daemon' },
+                          ].map((item, i) => (
+                            <div key={i} className="flex items-start gap-2 py-1">
+                              <code className="text-[8px] px-1.5 py-0.5 rounded shrink-0" style={{ background: 'rgba(0,0,0,0.3)', color: '#c4b5fd', fontFamily: "'SF Mono', monospace" }}>{item.cmd}</code>
+                              <span className="text-[8px] text-white/40 mt-[2px]">{item.desc}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div className="flex items-center justify-between px-5 py-3 border-t border-white/10 shrink-0">
+                  <button
+                    onClick={() => setBtWizardStep(Math.max(0, btWizardStep - 1))}
+                    disabled={btWizardStep === 0}
+                    className="text-[10px] font-medium px-4 py-1.5 rounded-md transition-colors"
+                    style={{ background: btWizardStep === 0 ? 'transparent' : 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: btWizardStep === 0 ? 'rgba(255,255,255,0.2)' : '#fff', cursor: btWizardStep === 0 ? 'default' : 'pointer' }}
+                    data-testid="button-bt-prev"
+                  >Back</button>
+                  <button
+                    onClick={() => {
+                      if (btWizardStep < 3) {
+                        setBtWizardStep(btWizardStep + 1);
+                        if (btWizardStep === 0 && !btScanResult && !btScanLoading) {
+                          setBtScanLoading(true);
+                          fetch('/api/bt-scan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'scan' }) })
+                            .then(r => r.json())
+                            .then(data => { setBtScanResult(data); setBtScanLoading(false); })
+                            .catch(() => { setBtScanResult({ error: 'Scan failed', devices: [] }); setBtScanLoading(false); });
+                        }
+                      } else {
+                        setBtWizardOpen(false);
+                      }
+                    }}
+                    className="text-[10px] font-medium px-4 py-1.5 rounded-md transition-colors"
+                    style={{ background: btWizardStep === 3 ? 'rgba(34,197,94,0.3)' : 'rgba(96,165,250,0.3)', border: `1px solid ${btWizardStep === 3 ? 'rgba(34,197,94,0.5)' : 'rgba(96,165,250,0.5)'}`, color: btWizardStep === 3 ? '#4ade80' : '#93c5fd', cursor: 'pointer' }}
+                    data-testid="button-bt-next"
+                  >{btWizardStep === 3 ? 'Done' : 'Next →'}</button>
                 </div>
               </div>
             </div>,

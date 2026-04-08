@@ -10535,6 +10535,86 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     res.json(btStormAlerts.slice(-50));
   });
 
+  app.post("/api/bt-scan", async (req, res) => {
+    const { action } = req.body;
+    try {
+      if (action === 'scan') {
+        const { execSync } = await import("child_process");
+        let btDevices: any[] = [];
+        try {
+          const hcitoolOutput = execSync('timeout 8 hcitool scan --flush 2>/dev/null || echo "SCAN_FAILED"', { encoding: 'utf-8', timeout: 12000 });
+          if (!hcitoolOutput.includes('SCAN_FAILED')) {
+            const lines = hcitoolOutput.trim().split('\n').slice(1);
+            btDevices = lines.filter(l => l.trim()).map(l => {
+              const parts = l.trim().split(/\s+/);
+              const mac = parts[0];
+              const name = parts.slice(1).join(' ') || 'Unknown';
+              return { mac, name, type: 'classic' };
+            });
+          }
+        } catch {}
+        let bleDevices: any[] = [];
+        try {
+          const lescanOutput = execSync('timeout 5 hcitool lescan --duplicates 2>/dev/null & sleep 4 && kill %1 2>/dev/null; hcitool lecc --list 2>/dev/null || echo ""', { encoding: 'utf-8', timeout: 8000 });
+          const bleLines = lescanOutput.trim().split('\n').filter(l => l.match(/([0-9A-F]{2}:){5}[0-9A-F]{2}/i));
+          bleDevices = bleLines.map(l => {
+            const parts = l.trim().split(/\s+/);
+            const mac = parts[0];
+            const name = parts.slice(1).join(' ') || 'Unknown BLE';
+            return { mac, name, type: 'ble' };
+          });
+        } catch {}
+        let hciInfo = '';
+        try { hciInfo = execSync('hciconfig hci0 2>/dev/null || echo "No adapter"', { encoding: 'utf-8', timeout: 3000 }); } catch {}
+        let btctlDevices: any[] = [];
+        try {
+          const btctlOutput = execSync('bluetoothctl devices 2>/dev/null || echo ""', { encoding: 'utf-8', timeout: 3000 });
+          btctlOutput.trim().split('\n').filter(l => l.startsWith('Device')).forEach(l => {
+            const parts = l.replace('Device ', '').split(' ');
+            const mac = parts[0];
+            const name = parts.slice(1).join(' ');
+            btctlDevices.push({ mac, name, type: 'paired' });
+          });
+        } catch {}
+        const allDevices = [...btctlDevices];
+        btDevices.forEach(d => { if (!allDevices.find(a => a.mac === d.mac)) allDevices.push(d); });
+        bleDevices.forEach(d => { if (!allDevices.find(a => a.mac === d.mac)) allDevices.push(d); });
+        const stormDevices = btStormAlerts.filter(a => a.receivedAt > Date.now() - 30 * 60 * 1000);
+        const stormMacs = [...new Set(stormDevices.map(a => a.mac))];
+        allDevices.forEach(d => {
+          const stormHits = stormDevices.filter(a => a.mac === d.mac);
+          (d as any).stormAlerts = stormHits.length;
+          (d as any).lastStormCount = stormHits.length > 0 ? stormHits[stormHits.length - 1].count : 0;
+        });
+        stormMacs.forEach(mac => {
+          if (!allDevices.find(d => d.mac === mac)) {
+            const latest = stormDevices.filter(a => a.mac === mac).pop();
+            allDevices.push({ mac, name: latest?.name || 'Unknown', type: 'storm-only', stormAlerts: stormDevices.filter(a => a.mac === mac).length, lastStormCount: latest?.count || 0 });
+          }
+        });
+        res.json({ devices: allDevices, hciInfo: hciInfo.trim(), stormAlertCount: stormDevices.length, scannedAt: new Date().toISOString() });
+      } else if (action === 'restart-bluetooth') {
+        const { execSync } = await import("child_process");
+        try { execSync('sudo systemctl restart bluetooth 2>/dev/null', { timeout: 10000 }); } catch {}
+        try { execSync('sudo hciconfig hci0 reset 2>/dev/null', { timeout: 5000 }); } catch {}
+        res.json({ success: true, message: 'Bluetooth service restarted' });
+      } else if (action === 'block-device') {
+        const { mac } = req.body;
+        if (!mac) return res.status(400).json({ error: 'MAC address required' });
+        const { execSync } = await import("child_process");
+        try { execSync(`bluetoothctl block ${mac} 2>/dev/null`, { timeout: 5000 }); } catch {}
+        res.json({ success: true, message: `Blocked ${mac}` });
+      } else if (action === 'clear-alerts') {
+        btStormAlerts.length = 0;
+        res.json({ success: true, message: 'Storm alerts cleared' });
+      } else {
+        res.status(400).json({ error: 'Unknown action' });
+      }
+    } catch (e: any) {
+      res.json({ error: e.message || 'BT scan failed', devices: [], hciInfo: '', stormAlertCount: 0 });
+    }
+  });
+
   app.get("/api/system-health", async (_req, res) => {
     const uptimeSeconds = Math.round((Date.now() - SERVER_START_TIME) / 1000);
     const checks: Record<string, { status: 'ok' | 'degraded' | 'down' | 'unconfigured'; message: string; details?: any }> = {};
@@ -10604,6 +10684,24 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       checks.email = { status: 'ok', message: 'Module loaded' };
     } catch (e: any) {
       checks.email = { status: 'down', message: e.message || 'Module failed' };
+    }
+
+    const recentWindow = Date.now() - 5 * 60 * 1000;
+    const recentBtAlerts = btStormAlerts.filter(a => a.receivedAt > recentWindow);
+    const uniqueDevices = new Set(recentBtAlerts.map(a => a.mac));
+    if (recentBtAlerts.length === 0) {
+      checks.bluetooth = { status: 'ok', message: 'No storms detected', details: { recentAlerts: 0, devices: 0, alerts: [] } };
+    } else {
+      const topDevices = [...uniqueDevices].map(mac => {
+        const devAlerts = recentBtAlerts.filter(a => a.mac === mac);
+        const latest = devAlerts[devAlerts.length - 1];
+        return { mac, name: latest.name, count: latest.count, alerts: devAlerts.length };
+      }).sort((a, b) => b.count - a.count).slice(0, 10);
+      checks.bluetooth = {
+        status: recentBtAlerts.length > 10 ? 'down' : 'degraded',
+        message: `${recentBtAlerts.length} storm alert${recentBtAlerts.length !== 1 ? 's' : ''} (${uniqueDevices.size} device${uniqueDevices.size !== 1 ? 's' : ''})`,
+        details: { recentAlerts: recentBtAlerts.length, devices: uniqueDevices.size, topDevices, allAlerts: recentBtAlerts.slice(-20) }
+      };
     }
 
     const overallDown = Object.values(checks).filter(c => c.status === 'down').length;
