@@ -5459,13 +5459,16 @@ export default function Dashboard() {
     const calendarWrapper = document.querySelector('[data-testid="calendar-scroll-container"]') as HTMLElement | null;
     const rightEdge = calendarWrapper ? calendarWrapper.getBoundingClientRect().right : window.innerWidth - 10;
 
-    const calendarGrid = document.querySelector('[data-testid="calendar-scroll-container"]');
     let filteredTaskEl: HTMLElement | null = null;
-    if (calendarGrid) {
-      const droppable = calendarGrid.querySelector(`[data-testid="droppable-task-${taskId}"]`) as HTMLElement | null;
-      if (droppable) {
-        const r = droppable.getBoundingClientRect();
-        if (r.width > 0 && r.height > 0) filteredTaskEl = droppable;
+    const allCandidates = document.querySelectorAll(`[data-testid$="-${taskId}"]`);
+    for (const el of allCandidates) {
+      const tid = el.getAttribute('data-testid') || '';
+      if (tid.startsWith('countdown-bar-') || tid.startsWith('checkbox-') || tid.startsWith('att-link-') || tid.startsWith('zoom-icon-') || tid.startsWith('pdf-icon-') || tid.startsWith('countdown-nub-') || tid.startsWith('countdown-next-') || tid.startsWith('countdown-prep-') || tid.startsWith('homework-countdown-nub-')) continue;
+      if (tid.startsWith('task-link-today-') || tid.startsWith('task-link-tomorrow-') || tid.startsWith('task-link-week-') || tid.startsWith('task-link-beyond-')) continue;
+      if (el === sourceEl) continue;
+      if (tid.includes('droppable-') || tid === `task-link-${taskId}`) {
+        const r = (el as HTMLElement).getBoundingClientRect();
+        if (r.width > 0 && r.height > 0) { filteredTaskEl = el as HTMLElement; break; }
       }
     }
 
