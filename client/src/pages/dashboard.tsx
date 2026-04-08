@@ -29586,6 +29586,32 @@ export default function Dashboard() {
                               setEditingTask(allCellTasks[0]);
                               return;
                             }
+
+                            const cellCalEvents = visibleCalendarEvents || [];
+                            if (cellCalEvents.length > 0) {
+                              e.stopPropagation();
+                              const ev = cellCalEvents[0];
+                              const matchingTask = allTasks.find(t => t.calendarEventId === ev.id || t.secondAccountCalendarEventId === ev.id || t.prepCalendarEventId === ev.id || t.secondAccountPrepEventId === ev.id);
+                              if (matchingTask) {
+                                setEditingTask(matchingTask);
+                                return;
+                              }
+                              const evTitleNorm = (ev.title || '').trim().toLowerCase().replace(/^\[[^\]]*\]\s*/, '');
+                              const evDay = ev.startDate ? new Date(ev.startDate).toISOString().substring(0, 10) : '';
+                              const titleMatch = allTasks.find(t => {
+                                const tTitle = (t.title || '').trim().toLowerCase().replace(/^\[[^\]]*\]\s*/, '');
+                                const tDay = t.dueDate ? new Date(t.dueDate).toISOString().substring(0, 10) : '';
+                                return tTitle === evTitleNorm && tDay === evDay;
+                              });
+                              if (titleMatch) {
+                                setEditingTask(titleMatch);
+                                return;
+                              }
+                              if (ev.htmlLink) {
+                                window.open(ev.htmlLink, '_blank');
+                              }
+                              return;
+                            }
                             
                             const rect = e.currentTarget.getBoundingClientRect();
                             const clickY = e.clientY - rect.top;
