@@ -30734,7 +30734,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="relative" style={{ height: 'calc(100% - 10px)', marginTop: '6px' }}>
+          <div className="relative" style={{ height: 'calc(100% - 6px)', marginTop: '6px' }}>
             <button
               onClick={() => {
                 startTransition(() => {
