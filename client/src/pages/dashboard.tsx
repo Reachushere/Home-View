@@ -29157,18 +29157,19 @@ export default function Dashboard() {
                               const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
                               const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
                               const needsPulse = isNotStarted && cd.daysLeft <= 2 && !t.isCompleted;
+                              const needsShimmer = cd.daysLeft <= 2;
                               const labelText = (t.title || '').replace(/\[[^\]]*\]\s*/g, '').trim();
                               const dueDate = t.dueDate ? format(new Date(t.dueDate), 'MMM d') : '';
                               const tooltipText = `${labelText} — due in ${cd.daysLeft}d (${dueDate})${isNotStarted ? ' — not started' : ''}`;
                               return (
                                 <div key={`cbar-cr-${t.id}`} className="countdown-bar-wrapper" style={{ height: `${barGap}px`, flexShrink: 0, pointerEvents: 'auto', cursor: 'pointer' }} title={tooltipText} data-testid={`countdown-bar-cr-${t.id}`} onMouseEnter={() => setHoveredCountdownTaskIdDebounced(t.id)} onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)} onDoubleClick={(e) => { e.stopPropagation(); const taskToEdit = allTasks.find(at => at.id === t.id) || t; setEditingTask(taskToEdit); }}>
                                   <div style={{ paddingTop: '2px', height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
-                                    <div style={{ width: '10px', minWidth: '10px', height: `${barH}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
+                                    <div className={needsShimmer ? 'countdown-bar-shimmer-left' : ''} style={{ width: '10px', minWidth: '10px', height: `${barH}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
                                     <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
                                       <span style={{ fontSize: '9px', fontWeight: 500, color: barColor, letterSpacing: '-0.2px', lineHeight: '10px' }}>{cd.daysLeft}<span style={{ letterSpacing: '0.5px' }}> </span>d</span>
                                     </div>
                                     <span style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(0,0,0,0.85)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flexShrink: 1, minWidth: 0, paddingLeft: '1px', paddingRight: '3px', lineHeight: '10px' }}>{labelText}</span>
-                                    <div className={needsPulse ? 'countdown-bar-pulse' : ''} style={{ flex: 1, height: `${barH}px`, background: barColor, opacity: 0.85, borderRadius: '0 2px 2px 0', minWidth: '4px', boxShadow: needsPulse ? `0 0 3px ${barColor}` : undefined }} />
+                                    <div className={needsPulse ? 'countdown-bar-pulse' : needsShimmer ? 'countdown-bar-shimmer-right' : ''} style={{ flex: 1, height: `${barH}px`, background: barColor, opacity: 0.85, borderRadius: '0 2px 2px 0', minWidth: '4px', boxShadow: needsPulse ? `0 0 3px ${barColor}` : undefined }} />
                                   </div>
                                 </div>
                               );
@@ -29378,18 +29379,19 @@ export default function Dashboard() {
                                 const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
                                 const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
                                 const needsPulse = isNotStarted && cd.daysLeft <= 2 && !t.isCompleted;
+                                const needsShimmer = cd.daysLeft <= 2;
                                 const labelText = (t.title || '').replace(/\[[^\]]*\]\s*/g, '').trim();
                                 const dueDate = t.dueDate ? format(new Date(t.dueDate), 'MMM d') : '';
                                 const tooltipText = `${labelText} — due in ${cd.daysLeft}d (${dueDate})${isNotStarted ? ' — not started' : ''}`;
                                 return (
                                   <div key={`cbar-or-${t.id}`} className="countdown-bar-wrapper" style={{ height: `${barGap}px`, flexShrink: 0, pointerEvents: 'auto', cursor: 'pointer' }} title={tooltipText} data-testid={`countdown-bar-or-${t.id}`} onMouseEnter={() => setHoveredCountdownTaskIdDebounced(t.id)} onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)} onDoubleClick={(e) => { e.stopPropagation(); const taskToEdit = allTasks.find(at => at.id === t.id) || t; setEditingTask(taskToEdit); }}>
                                     <div style={{ paddingTop: '2px', height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
-                                      <div style={{ width: '10px', minWidth: '10px', height: `${barH}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
+                                      <div className={needsShimmer ? 'countdown-bar-shimmer-left' : ''} style={{ width: '10px', minWidth: '10px', height: `${barH}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
                                       <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
                                         <span style={{ fontSize: '9px', fontWeight: 500, color: barColor, letterSpacing: '-0.2px', lineHeight: '10px' }}>{cd.daysLeft}<span style={{ letterSpacing: '0.5px' }}> </span>d</span>
                                       </div>
                                       <span style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(0,0,0,0.85)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flexShrink: 1, minWidth: 0, paddingLeft: '1px', paddingRight: '3px', lineHeight: '10px' }}>{labelText}</span>
-                                      <div className={needsPulse ? 'countdown-bar-pulse' : ''} style={{ flex: 1, height: `${barH}px`, background: barColor, opacity: 0.85, borderRadius: '0 2px 2px 0', minWidth: '4px', boxShadow: needsPulse ? `0 0 3px ${barColor}` : undefined }} />
+                                      <div className={needsPulse ? 'countdown-bar-pulse' : needsShimmer ? 'countdown-bar-shimmer-right' : ''} style={{ flex: 1, height: `${barH}px`, background: barColor, opacity: 0.85, borderRadius: '0 2px 2px 0', minWidth: '4px', boxShadow: needsPulse ? `0 0 3px ${barColor}` : undefined }} />
                                     </div>
                                   </div>
                                 );
