@@ -13312,13 +13312,13 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     ]);
 
     catWashTrace('TV', `TURN OFF — Samsung TV first, then Fire Stick (reason=${reason})`);
-    await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'am force-stop com.amazon.cloud9' }, 'Nest Stop Silk');
-    await new Promise(r => setTimeout(r, 500));
     await haServiceCallSafe('media_player/turn_off', { entity_id: CAT_TV_ENTITY }, 'Nest Stop Samsung TV');
     console.log(`[Nest Stop] Samsung TV turn-off sent first`);
     await new Promise(r => setTimeout(r, 2000));
+    await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'am force-stop com.amazon.cloud9' }, 'Nest Stop Silk');
+    await new Promise(r => setTimeout(r, 500));
     await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_SLEEP' }, 'Nest Stop FireStick SLEEP');
-    console.log(`[Nest Stop] Fire Stick SLEEP sent after Samsung TV off`);
+    console.log(`[Nest Stop] Fire Stick force-stop + SLEEP sent after Samsung TV off`);
     catWashTrace('StopWithGoodbye', `EXIT reason=${reason}`);
   }
 
@@ -14626,7 +14626,7 @@ document.body.removeChild(a);
           await fetch(`http://localhost:${process.env.PORT || 5000}/api/webhook/cat-wash-stop`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ trigger: 'knob_press', keepOpen: true }),
+            body: JSON.stringify({ trigger: 'knob_press', keepOpen: false }),
           });
         } catch (e: any) {
           console.error(`[Cat Knob] Error calling stop: ${e.message}`);
