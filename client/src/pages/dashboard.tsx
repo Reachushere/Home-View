@@ -30813,8 +30813,8 @@ export default function Dashboard() {
                           className="p-1 relative cursor-pointer hover:brightness-125"
                           style={{
                             backgroundColor: cellBg,
-                            borderRight: '1px solid rgba(0,0,0,0.08)',
-                            borderBottom: '1px solid rgba(0,0,0,0.08)',
+                            borderRight: '1px solid rgba(0,0,0,0.6)',
+                            borderBottom: '1px solid rgba(0,0,0,0.6)',
                             overflow: 'hidden'
                           }}
                           onClick={() => {
