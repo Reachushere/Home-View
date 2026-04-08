@@ -11778,15 +11778,11 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
     const everywhereActive = isSpotifyPlayingOnEverywhere();
     if (everywhereActive) {
-      console.log(`[Speakers] Everywhere group is playing Spotify — only stopping Nest speaker + HA Voice + media group, preserving cat washroom Echos`);
+      console.log(`[Speakers] Everywhere group is playing Spotify — only stopping Nest speaker + media group, preserving cat washroom Echos`);
       await Promise.allSettled([
         fetch(`${haUrl}/api/services/media_player/media_stop`, {
           method: 'POST', headers: haHeaders,
           body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY }),
-        }),
-        fetch(`${haUrl}/api/services/media_player/media_stop`, {
-          method: 'POST', headers: haHeaders,
-          body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY }),
         }),
         fetch(`${haUrl}/api/services/media_player/media_stop`, {
           method: 'POST', headers: haHeaders,
@@ -11805,10 +11801,6 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         }),
         fetch(`${haUrl}/api/services/media_player/media_stop`, {
           method: 'POST', headers: haHeaders,
-          body: JSON.stringify({ entity_id: CAT_WR_HA_VOICE_ENTITY }),
-        }),
-        fetch(`${haUrl}/api/services/media_player/media_stop`, {
-          method: 'POST', headers: haHeaders,
           body: JSON.stringify({ entity_id: CAT_ECHO_ENTITIES }),
         }),
         fetch(`${haUrl}/api/services/media_player/media_stop`, {
@@ -11824,7 +11816,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           body: JSON.stringify({ entity_id: CAT_WR_MEDIA_GROUP }),
         }),
       ]);
-      console.log(`[Speakers] Stopped Nest + HA Voice + cat washroom Echos + media group (stop + pause)`);
+      console.log(`[Speakers] Stopped Nest + cat washroom Echos + media group (stop + pause)`);
     }
   }
 
@@ -11895,63 +11887,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
     const lightsNavTimestamp = Date.now();
     await setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: lightsNavTimestamp }, true, 'master');
-    console.log(`${logPrefix} tablet-nav set for master — tablet picks up via polling`);
-
-    // Direct push to tablet via browser_mod + ADB + notify (in case tablet page isn't actively polling)
-    (async () => {
-      try {
-        const tabletBrowserIds = ['browser_mod_0da8b0a7_fd42ec2e'];
-        const tabletUrl = `${appUrl}/tablet?target=${encodeURIComponent(readerUrl)}&auth=${authParam}`;
-        const opened = await openUrlOnFireDevice(haUrl, tabletBrowserIds, readerUrl, 'tablet_cat_wall');
-        console.log(`${logPrefix} browser_mod direct push: ${opened ? 'SUCCESS' : 'FAILED (tablet browser not connected)'}`);
-        if (!opened) {
-          const tabletEntity = 'media_player.tablet_cat';
-          let adbLaunched = false;
-          try {
-            await haServiceCall('androidtv/adb_command', { entity_id: tabletEntity, command: 'input keyevent KEYCODE_WAKEUP' }, `${logPrefix} Tablet Wake`);
-            await new Promise(r => setTimeout(r, 1500));
-          } catch (e: any) {
-            console.log(`${logPrefix} Tablet ADB wake failed (non-fatal): ${e.message}`);
-          }
-          const browsers = [
-            { pkg: 'com.amazon.cloud9', name: 'Silk' },
-            { pkg: 'com.android.chrome', name: 'Chrome' },
-            { pkg: 'de.ozerov.fully', name: 'Fully Kiosk' },
-          ];
-          for (const browser of browsers) {
-            try {
-              const cmd = `am start -a android.intent.action.VIEW -d '${readerUrl}' ${browser.pkg}`;
-              await haServiceCall('androidtv/adb_command', { entity_id: tabletEntity, command: cmd }, `${logPrefix} Tablet Launch ${browser.name}`);
-              console.log(`${logPrefix} Tablet ADB ${browser.name} launch: SUCCESS`);
-              adbLaunched = true;
-              break;
-            } catch (e: any) {
-              console.log(`${logPrefix} Tablet ADB ${browser.name} launch failed: ${e.message}`);
-            }
-          }
-          if (!adbLaunched) {
-            const notifyServices = ['mobile_app_tablet_cat', 'mobile_app_fire_tablet_cat', 'mobile_app_tablet_cat_wall'];
-            for (const svc of notifyServices) {
-              try {
-                const resp = await fetch(`${haUrl}/api/services/notify/${svc}`, {
-                  method: 'POST',
-                  headers: haHeaders,
-                  body: JSON.stringify({ message: "command_webview", data: { url: tabletUrl } }),
-                });
-                if (resp.ok) {
-                  console.log(`${logPrefix} notify/${svc} command_webview: SUCCESS`);
-                  break;
-                }
-              } catch (e: any) {
-                console.log(`${logPrefix} notify/${svc} command_webview: ${e.message}`);
-              }
-            }
-          }
-        }
-      } catch (e: any) {
-        console.log(`${logPrefix} Tablet direct push error (non-fatal): ${e.message}`);
-      }
-    })();
+    console.log(`${logPrefix} tablet-nav set for master (TV nav deferred until Silk launches)`);
 
     const textExtractionPromise = extractFileText(fileToPlay);
 
@@ -12020,99 +11956,9 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
     const tabletSetupPromise = (async () => {
       try {
-        console.log(`${logPrefix} ====== TABLET SETUP START ======`);
-        const tabletEntity = 'media_player.tablet_cat';
+        console.log(`${logPrefix} ====== TABLET SETUP START (tablet-nav polling) ======`);
         await setTabletCommand({ action: 'navigate', url: readerUrl, timestamp: Date.now() }, true, 'master');
-        console.log(`${logPrefix} tablet-nav set for master — polling fallback ready`);
-
-        // Direct push via browser_mod + notify
-        const tabletBrowserIds = ['browser_mod_0da8b0a7_fd42ec2e'];
-        const tabletPushUrl = `${appUrl}/tablet?target=${encodeURIComponent(readerUrl)}&auth=${authParam}`;
-        const browserOpened = await openUrlOnFireDevice(haUrl, tabletBrowserIds, readerUrl, 'tablet_cat_wall');
-        console.log(`${logPrefix} browser_mod direct push: ${browserOpened ? 'SUCCESS' : 'FAILED'}`);
-        if (!browserOpened) {
-          const notifyServices = ['mobile_app_tablet_cat', 'mobile_app_fire_tablet_cat', 'mobile_app_tablet_cat_wall'];
-          for (const svc of notifyServices) {
-            try {
-              const resp = await fetch(`${haUrl}/api/services/notify/${svc}`, {
-                method: 'POST',
-                headers: haHeaders,
-                body: JSON.stringify({ message: "command_webview", data: { url: tabletPushUrl } }),
-              });
-              if (resp.ok) {
-                console.log(`${logPrefix} notify/${svc} command_webview: SUCCESS`);
-                break;
-              }
-            } catch (e: any) {
-              console.log(`${logPrefix} notify/${svc} command_webview: ${e.message}`);
-            }
-          }
-        }
-
-        await new Promise(r => setTimeout(r, 1500));
-
-        try {
-          await haServiceCallSafe('androidtv/adb_command', { entity_id: tabletEntity, command: 'input keyevent KEYCODE_WAKEUP' }, `${logPrefix} Tablet WAKEUP`);
-          console.log(`${logPrefix} Tablet WAKEUP sent`);
-        } catch (e: any) {
-          console.warn(`${logPrefix} Tablet WAKEUP failed (non-fatal): ${e.message}`);
-        }
-
-        await new Promise(r => setTimeout(r, 2000));
-
-        let browserLaunched = false;
-        const browsers = [
-          { pkg: 'com.android.chrome', name: 'Chrome' },
-          { pkg: 'org.mozilla.firefox', name: 'Firefox' },
-          { pkg: 'com.amazon.cloud9', name: 'Silk' },
-          { pkg: 'de.ozerov.fully', name: 'Fully Kiosk' },
-        ];
-        for (const browser of browsers) {
-          try {
-            const cmd = `am start -a android.intent.action.VIEW -d '${readerUrl}' ${browser.pkg}`;
-            await haServiceCall('androidtv/adb_command', { entity_id: tabletEntity, command: cmd }, `${logPrefix} Tablet Launch ${browser.name}`);
-            console.log(`${logPrefix} Tablet browser launched via ADB: ${browser.name}`);
-            browserLaunched = true;
-            break;
-          } catch (e: any) {
-            console.log(`${logPrefix} Tablet ADB ${browser.name} launch failed: ${e.message}`);
-          }
-        }
-
-        if (!browserLaunched) {
-          try {
-            const genericCmd = `am start -a android.intent.action.VIEW -d '${readerUrl}'`;
-            await haServiceCall('androidtv/adb_command', { entity_id: tabletEntity, command: genericCmd }, `${logPrefix} Tablet Launch Default Browser`);
-            console.log(`${logPrefix} Tablet browser launched via ADB: default handler`);
-            browserLaunched = true;
-          } catch (e: any) {
-            console.warn(`${logPrefix} Tablet default browser launch failed: ${e.message}`);
-          }
-        }
-
-        if (!browserLaunched) {
-          const notifyServices = ['mobile_app_tablet_cat', 'mobile_app_fire_tablet_cat', 'mobile_app_tablet_cat_wall'];
-          for (const svc of notifyServices) {
-            try {
-              const resp = await fetch(`${haUrl}/api/services/notify/${svc}`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: "command_webview", data: { url: readerUrl } }),
-              });
-              if (resp.ok) {
-                console.log(`${logPrefix} Tablet navigate via notify/${svc} command_webview: OK`);
-                browserLaunched = true;
-                break;
-              }
-            } catch (e: any) {
-              console.log(`${logPrefix} notify/${svc} failed: ${e.message}`);
-            }
-          }
-        }
-
-        if (!browserLaunched) {
-          console.warn(`${logPrefix} All tablet navigation methods failed — relying on polling`);
-        }
+        console.log(`${logPrefix} tablet-nav set for master — tablet will navigate via polling`);
         console.log(`${logPrefix} ====== TABLET SETUP COMPLETE ======`);
       } catch (e: any) {
         console.error(`${logPrefix} Tablet setup error: ${e.message}`);
@@ -12255,12 +12101,13 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         }
 
         let silkLaunched = false;
-        const tvWrapperUrl = `${appUrl}/api/cat-wash/tv-follow?_cb=${Date.now()}`;
         for (let silkAttempt = 1; silkAttempt <= 3; silkAttempt++) {
           try {
-            const silkCmd = `am start --activity-clear-task -a android.intent.action.VIEW -d '${tvWrapperUrl}' com.amazon.cloud9`;
+            const silkCmd = tvFollowUrl
+              ? `am start --activity-clear-task -a android.intent.action.VIEW -d "${tvFollowUrl}" com.amazon.cloud9`
+              : 'monkey -p com.amazon.cloud9 -c android.intent.category.LAUNCHER 1';
             await haServiceCall('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: silkCmd }, `FireStick Launch Silk ${silkAttempt}`);
-            console.log(`${logPrefix} Silk launched with wrapper URL (attempt ${silkAttempt})`);
+            console.log(`${logPrefix} Silk launched with URL (attempt ${silkAttempt})`);
             silkLaunched = true;
             break;
           } catch (e: any) {
@@ -12303,57 +12150,29 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const confirmTTSPromise = confirmationTTS ? (async () => {
       try {
         try {
-          await haServiceCallSafe('media_player/turn_on', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Pre-Wake for Confirm');
-          console.log(`${logPrefix} Nest speaker pre-wake sent`);
-        } catch (e: any) { console.warn(`${logPrefix} Nest pre-wake error (non-fatal): ${e.message}`); }
-        await new Promise(r => setTimeout(r, 1000));
-        try {
           await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }, 'Nest Pre-Confirm Vol');
         } catch (e: any) { console.warn(`${logPrefix} Pre-confirm volume set error (non-fatal): ${e.message}`); }
-        try {
-          await haServiceCallSafe('media_player/media_stop', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Pre-Confirm Stop');
-        } catch (e: any) {}
-        await new Promise(r => setTimeout(r, 2000));
         let confirmPlayed = false;
         try {
           const confirmPath = await generateAndSaveTTSAudio(confirmationTTS, `confirm-${Date.now()}`);
           const nestResult = await playOnNestSpeaker(`${appUrl}${confirmPath}`);
-          if (nestResult.success && nestResult.actuallyPlaying) {
+          if (nestResult.success) {
             confirmPlayed = true;
-            console.log(`${logPrefix} Confirm TTS confirmed playing on Nest speaker via generated audio`);
-          } else if (nestResult.success) {
-            console.warn(`${logPrefix} Nest play_media sent but state not confirmed playing — trying tts/speak`);
+            console.log(`${logPrefix} Confirm TTS played on Nest speaker via OpenAI/Edge TTS (actuallyPlaying=${nestResult.actuallyPlaying})`);
           } else {
-            console.warn(`${logPrefix} Nest speaker generated audio failed — trying tts/speak`);
+            console.warn(`${logPrefix} Nest speaker confirm failed — falling back to HA Voice`);
           }
         } catch (e: any) {
-          console.warn(`${logPrefix} Nest speaker confirm failed: ${e.message} — trying tts/speak`);
+          console.warn(`${logPrefix} Nest speaker confirm failed: ${e.message} — falling back to HA Voice`);
         }
         if (!confirmPlayed) {
           try {
-            await haServiceCall('tts/speak', {
-              entity_id: HA_CLOUD_TTS_ENTITY,
-              media_player_entity_id: NEST_SPEAKER_ENTITY,
-              message: confirmationTTS
-            }, 'Confirm TTS speak Nest');
-            confirmPlayed = true;
-            console.log(`${logPrefix} Confirm TTS played via tts/speak on Nest speaker`);
-          } catch (e: any) {
-            console.warn(`${logPrefix} tts/speak on Nest failed: ${e.message} — trying HA Voice`);
-          }
-        }
-        if (!confirmPlayed) {
-          try {
-            await haServiceCallSafe('media_player/turn_on', { entity_id: CAT_WR_HA_VOICE_ENTITY }, 'HA Voice Pre-Wake for Confirm');
-            await haServiceCallSafe('media_player/volume_set', { entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.50 }, 'HA Voice Pre-Confirm Vol');
-            await new Promise(r => setTimeout(r, 1000));
             await haServiceCall('tts/speak', {
               entity_id: HA_CLOUD_TTS_ENTITY,
               media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
               message: confirmationTTS
-            }, 'Confirm HA Cloud TTS HA Voice');
-            confirmPlayed = true;
-            console.log(`${logPrefix} Confirm TTS played via HA Cloud TTS on HA Voice speaker (final fallback)`);
+            }, 'Confirm HA Cloud TTS');
+            console.log(`${logPrefix} Confirm TTS played via HA Cloud TTS on HA Voice speaker (fallback)`);
           } catch (e: any) {
             console.warn(`${logPrefix} HA Voice confirm also failed: ${e.message}`);
           }
@@ -12607,73 +12426,40 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     }
   }
 
-  async function playOnNestSpeaker(audioUrl: string, maxRetries: number = 2): Promise<{ success: boolean; actuallyPlaying: boolean; playMediaSentAt: number }> {
+  async function playOnNestSpeaker(audioUrl: string, maxRetries: number = 2): Promise<{ success: boolean; actuallyPlaying: boolean }> {
     const fullUrl = audioUrl.startsWith('http') ? audioUrl : `${DEPLOYED_APP_URL}${audioUrl}`;
     console.log(`[Nest] Playing audio: ${fullUrl}`);
-
-    try {
-      await haServiceCall('media_player/media_stop', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Pre-Stop');
-    } catch (e: any) {
-      console.log(`[Nest] Pre-stop failed (non-fatal): ${e.message}`);
-    }
-
-    try {
-      await haServiceCall('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }, 'Nest Pre-Volume');
-    } catch (e: any) {
-      console.log(`[Nest] Volume set failed (non-fatal): ${e.message}`);
-    }
-
-    await new Promise(r => setTimeout(r, 300));
-
-    let mediaContentId = fullUrl;
-    let mediaContentType = "audio/mpeg";
-
-    const audioPathLocal = audioUrl.startsWith('http') ? new URL(audioUrl).pathname : audioUrl;
-    try {
-      const haMediaId = await uploadAudioToHA(audioPathLocal);
-      if (haMediaId) {
-        mediaContentId = haMediaId;
-        mediaContentType = "music";
-        console.log(`[Nest] Using HA media source: ${mediaContentId}`);
-      } else {
-        console.log(`[Nest] HA upload failed, falling back to direct URL: ${fullUrl}`);
-      }
-    } catch (e: any) {
-      console.log(`[Nest] HA upload error: ${e.message}, falling back to direct URL`);
-    }
-
-    const playMediaSentAt = Date.now();
     try {
       await haServiceCall('media_player/play_media', {
-        entity_id: NEST_SPEAKER_ENTITY, media_content_id: mediaContentId, media_content_type: mediaContentType
+        entity_id: NEST_SPEAKER_ENTITY, media_content_id: fullUrl, media_content_type: "music"
       }, 'Nest Play Direct');
     } catch (e: any) {
       console.error(`[Nest] play_media failed: ${e.message}`);
-      return { success: false, actuallyPlaying: false, playMediaSentAt };
+      return { success: false, actuallyPlaying: false };
     }
     for (let check = 0; check <= maxRetries; check++) {
-      await new Promise(r => setTimeout(r, check === 0 ? 3000 : 2500));
+      await new Promise(r => setTimeout(r, check === 0 ? 4000 : 3000));
       try {
         const { state: speakerState } = await getNestMediaState();
         console.log(`[Nest] Speaker state check ${check + 1}: ${speakerState}`);
         if (speakerState === 'playing' || speakerState === 'buffering') {
-          return { success: true, actuallyPlaying: true, playMediaSentAt };
+          return { success: true, actuallyPlaying: true };
         }
         if (speakerState === 'unknown') {
           console.log(`[Nest] State is "unknown" — assuming play_media succeeded`);
-          return { success: true, actuallyPlaying: false, playMediaSentAt };
+          return { success: true, actuallyPlaying: false };
         }
         if (check === maxRetries) {
           console.log(`[Nest] State "${speakerState}" after ${maxRetries + 1} checks — play_media was sent, assuming it played`);
-          return { success: true, actuallyPlaying: false, playMediaSentAt };
+          return { success: true, actuallyPlaying: false };
         }
         console.log(`[Nest] State "${speakerState}" — rechecking...`);
       } catch (e: any) {
         console.warn(`[Nest] State check error: ${e.message} — assuming play_media succeeded`);
-        return { success: true, actuallyPlaying: false, playMediaSentAt };
+        return { success: true, actuallyPlaying: false };
       }
     }
-    return { success: true, actuallyPlaying: false, playMediaSentAt };
+    return { success: true, actuallyPlaying: false };
   }
 
   async function playChunkViaHACloudTTS(chunkText: string, sessionId: number, speakerEntity: string = CAT_WR_HA_VOICE_ENTITY): Promise<boolean> {
@@ -12872,8 +12658,14 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
     try {
       if (chunks.length === 0) {
-        console.log(`[Nest Playback] No chunks for "${fileName}" (id=${fileId}) — text extraction failed, skipping without marking listened`);
+        console.log(`[Nest Playback] No chunks for "${fileName}" (id=${fileId}) — text extraction failed, marking listened and skipping`);
         await clearPlaybackSession();
+        try {
+          await storage.updateFile(fileId, { listened: true });
+          console.log(`[Nest Playback] Marked file ${fileId} as listened (extraction failed)`);
+        } catch (e: any) {
+          console.error(`[Nest Playback] Failed to mark file ${fileId} listened: ${e.message}`);
+        }
         try {
           const allFiles = await storage.getFiles();
           const semesterSettings = await storage.getActiveSemesterSettings();
@@ -12881,7 +12673,20 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
           const currentWeekNumber = getWeekNumber(torontoDate(), semStart, rwStart);
 
-          const nextFile = await findNextFileByPriority(allFiles, currentWeekNumber, fileId);
+          const unlistenedFiles = allFiles.filter((f: any) => {
+            if (f.listened || f.id === fileId) return false;
+            const weekMatch = f.folder?.match(/week-(\d+)/i);
+            if (weekMatch) return parseInt(weekMatch[1], 10) === currentWeekNumber;
+            return false;
+          });
+
+          const isModule = (f: any) => f.folder?.toLowerCase().includes('module') || f.originalName?.toLowerCase().includes('module');
+          const isCPPA = (f: any) => f.folder?.toLowerCase().includes('cppa') || f.originalName?.toLowerCase().includes('cppa');
+          const cppaModules = unlistenedFiles.filter((f: any) => isCPPA(f) && isModule(f));
+          const otherFiles = unlistenedFiles.filter((f: any) => !(isCPPA(f) && isModule(f)));
+          const orderedFiles = [...cppaModules, ...otherFiles];
+
+          const nextFile = orderedFiles.length > 0 ? orderedFiles[0] : null;
           if (nextFile) {
             console.log(`[Nest Playback] Skipping to next file: ${nextFile.displayName || nextFile.originalName} (id=${nextFile.id})`);
             const nextText = await extractFileText(nextFile);
@@ -12916,7 +12721,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
             }
             console.log(`[Nest Playback] Next file also has no extractable text, stopping`);
           } else {
-            console.log(`[Nest Playback] No more unlistened files for weeks 1-${currentWeekNumber}`);
+            console.log(`[Nest Playback] No more unlistened files for week ${currentWeekNumber}`);
           }
         } catch (e: any) {
           console.error(`[Nest Playback] Error finding next file: ${e.message}`);
@@ -12980,15 +12785,12 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           continue;
         }
 
-        stopWordAdvancement();
         if (catWashPlaybackState) {
           catWashPlaybackState.chunkIndex = i;
           const chunkText = chunks[i] || '';
           const cleanedChunkText = cleanTextForTTS(chunkText);
           catWashPlaybackState.currentWords = cleanedChunkText.split(/\s+/).filter((w: string) => w.length > 0);
           catWashPlaybackState.wordIndex = 0;
-          catWashPlaybackState.chunkStartedAt = new Date(Date.now() + 60000);
-          catWashPlaybackState.estimatedChunkDuration = 60000;
         }
 
         if (i > startChunk) {
@@ -13054,51 +12856,16 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           }
 
           let chunkPlaying = false;
-          let chunkPlayMediaSentAt = Date.now();
-          const playPromise = playOnNestSpeaker(`${appUrl}${audioPath}`);
-          if (catWashPlaybackState) {
-            chunkPlayMediaSentAt = Date.now();
-            catWashPlaybackState.chunkStartedAt = new Date(chunkPlayMediaSentAt + 500);
-            catWashPlaybackState.wordIndex = 0;
-          }
-          startWordAdvancement();
-          const playResult = await playPromise;
-          chunkPlayMediaSentAt = playResult.playMediaSentAt;
-          if (playResult.success && playResult.actuallyPlaying) {
+          const playResult = await playOnNestSpeaker(`${appUrl}${audioPath}`);
+          if (playResult.success) {
             chunkPlaying = true;
             consecutivePlayFailures = 0;
-            if (catWashPlaybackState) {
-              catWashPlaybackState.chunkStartedAt = new Date(chunkPlayMediaSentAt + 500);
-            }
-          } else if (playResult.success && !playResult.actuallyPlaying) {
-            console.warn(`[Nest Playback] Nest state unconfirmed for chunk ${i + 1} — trying HA Cloud TTS fallback`);
-            const haCloudPlayed = await playChunkViaHACloudTTS(chunkText, sessionId, NEST_SPEAKER_ENTITY);
-            if (haCloudPlayed) {
-              chunkPlaying = true;
-              consecutivePlayFailures = 0;
-              console.log(`[Nest Playback] Chunk ${i + 1} played via HA Cloud TTS on Nest (fallback)`);
-            } else {
-              const haVoicePlayed = await playChunkViaHACloudTTS(chunkText, sessionId, CAT_WR_HA_VOICE_ENTITY);
-              if (haVoicePlayed) {
-                chunkPlaying = true;
-                consecutivePlayFailures = 0;
-                console.log(`[Nest Playback] Chunk ${i + 1} played via HA Cloud TTS on HA Voice (2nd fallback)`);
-              } else {
-                consecutivePlayFailures++;
-                console.error(`[Nest Playback] Chunk ${i + 1} all playback methods FAILED (${consecutivePlayFailures}/${MAX_PLAY_FAILURES})`);
-              }
+            if (!playResult.actuallyPlaying) {
+              console.log(`[Nest Playback] Nest state unconfirmed for chunk ${i + 1} — trusting play_media succeeded`);
             }
           } else {
-            console.warn(`[Nest Playback] Nest play_media failed for chunk ${i + 1} — trying HA Cloud TTS fallback`);
-            const haCloudPlayed = await playChunkViaHACloudTTS(chunkText, sessionId, NEST_SPEAKER_ENTITY);
-            if (haCloudPlayed) {
-              chunkPlaying = true;
-              consecutivePlayFailures = 0;
-              console.log(`[Nest Playback] Chunk ${i + 1} played via HA Cloud TTS on Nest (fallback after play_media fail)`);
-            } else {
-              consecutivePlayFailures++;
-              console.error(`[Nest Playback] Chunk ${i + 1} play_media + HA Cloud TTS both FAILED (${consecutivePlayFailures}/${MAX_PLAY_FAILURES})`);
-            }
+            consecutivePlayFailures++;
+            console.error(`[Nest Playback] Chunk ${i + 1} play_media FAILED (${consecutivePlayFailures}/${MAX_PLAY_FAILURES})`);
           }
           if (consecutivePlayFailures >= MAX_PLAY_FAILURES) {
             if (!haHealth.connected) {
@@ -13196,10 +12963,14 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
             break;
           }
           if (!chunkPlaying) {
-            stopWordAdvancement();
             await new Promise(r => setTimeout(r, 3000));
             continue;
           }
+          if (catWashPlaybackState) {
+            catWashPlaybackState.chunkStartedAt = new Date(Date.now() + 500);
+            catWashPlaybackState.wordIndex = 0;
+          }
+          startWordAdvancement();
           console.log(`[Nest Playback] Playing chunk ${i + 1}, ~${Math.round(estimatedMs / 1000)}s`);
 
           const nextIdx = i + 1;
