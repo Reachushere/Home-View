@@ -29386,12 +29386,18 @@ export default function Dashboard() {
                         }
                         return '';
                       })() : '';
+                      const allDayMatchingTask = allTasks.find(t => t.calendarEventId === event.id || t.secondAccountCalendarEventId === event.id || t.prepCalendarEventId === event.id || t.secondAccountPrepEventId === event.id);
                       return (
-                        <a
+                        <div
                           key={event.id}
-                          href={event.htmlLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (allDayMatchingTask) {
+                              setEditingTask(allDayMatchingTask);
+                            } else {
+                              window.open(event.htmlLink, '_blank');
+                            }
+                          }}
                           className={`flex items-center text-[8px] py-0.5 rounded border cursor-pointer hover:opacity-80 w-full min-w-0 overflow-hidden ${isPrepEvent ? 'gap-0 px-0' : 'gap-1 px-1 bg-gray-200 dark:bg-gray-700 text-black dark:text-white border-gray-500'}`}
                           style={isPrepEvent ? { backgroundColor: prepCourseColor ? `${prepCourseColor}20` : 'rgba(255,255,255,0.1)', borderColor: prepCourseColor || 'rgba(255,255,255,0.3)' } : undefined}
                           data-testid={`all-day-gcal-${event.id}`}
@@ -29407,7 +29413,7 @@ export default function Dashboard() {
                               <span className="truncate font-bold flex-1 min-w-0">{displayTitle}</span>
                             </>
                           )}
-                        </a>
+                        </div>
                       );
                     })}
                     {/* Projects with target date on this day */}
@@ -29951,7 +29957,7 @@ export default function Dashboard() {
                             return (
                             <div
                               key={event.id}
-                              className={`absolute rounded hover:opacity-90 shadow-sm overflow-hidden`}
+                              className={`absolute rounded hover:opacity-90 shadow-sm overflow-hidden cursor-pointer`}
                               style={{
                                 top: `${calTopOffset}px`,
                                 left: stackInConflict ? '2px' : `calc(${(hourTasks.length + eventIdx) * columnWidth}% + 2px)`,
@@ -29963,6 +29969,16 @@ export default function Dashboard() {
                                 display: 'flex',
                                 flexDirection: 'column',
                               }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                const matchingTask = allTasks.find(t => t.calendarEventId === event.id || t.secondAccountCalendarEventId === event.id || t.prepCalendarEventId === event.id || t.secondAccountPrepEventId === event.id);
+                                if (matchingTask) {
+                                  setEditingTask(matchingTask);
+                                }
+                              }}
+                              onMouseDown={(e) => e.stopPropagation()}
+                              onMouseUp={(e) => e.stopPropagation()}
                               data-testid={`gcal-event-${event.id}`}
                             >
                               <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, borderBottom: '1px solid rgba(0,0,0,0.15)', borderRadius: '2px 2px 0 0', overflow: 'hidden', minHeight: '16px' }}>
