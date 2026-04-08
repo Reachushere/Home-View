@@ -11543,6 +11543,11 @@ export default function Dashboard() {
       if (t.isCompleted) continue;
       if (isCASL101Finished(t)) continue;
       if (!t.dueDate) continue;
+      if (!t.courseName && /^\[.+?\]/.test(t.title)) {
+        const cleanTitle = t.title.replace(/^\[.*?\]\s*/, '').toLowerCase().trim();
+        const isDuplicateOfReal = allTasks.some(other => other.id !== t.id && other.courseName && other.title.toLowerCase().trim() === cleanTitle && other.dueDate && new Date(other.dueDate).toDateString() === new Date(t.dueDate!).toDateString());
+        if (isDuplicateOfReal) continue;
+      }
       const dueDate = new Date(t.dueDate);
       const isMidnightUTC = dueDate.getUTCHours() === 0 && dueDate.getUTCMinutes() === 0 && !t.eventStartTime;
       const key = isMidnightUTC
@@ -11814,6 +11819,11 @@ export default function Dashboard() {
       if (t.isCompleted) return false;
       if (isCASL101Finished(t)) return false;
       if (t.eventStartTime) return false;
+      if (!t.courseName && /^\[.+?\]/.test(t.title)) {
+        const cleanTitle = t.title.replace(/^\[.*?\]\s*/, '').toLowerCase().trim();
+        const isDuplicateOfReal = allTasks.some(other => other.id !== t.id && other.courseName && other.title.toLowerCase().trim() === cleanTitle && other.dueDate && new Date(other.dueDate).toDateString() === new Date(t.dueDate!).toDateString());
+        if (isDuplicateOfReal) return false;
+      }
       if (t.type !== 'other') {
         const taskCourseCode = t.courseName?.split(' - ')[0]?.trim().toUpperCase();
         if (taskCourseCode && activeCourseNames.some(ac => taskCourseCode.startsWith(ac))) return false;

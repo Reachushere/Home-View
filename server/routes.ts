@@ -11266,17 +11266,23 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       }
       if (keyCode === codeWithNum && (priority as number) > 0) {
         if (keySuffix) {
-          if (keySuffix === abSuffix) return priority as number;
+          if (keySuffix === abSuffix) {
+            console.log(`[CoursePri] ${codeWithNum} matched key="${key}" → priority ${priority} (suffix=${keySuffix})`);
+            return priority as number;
+          }
         } else {
+          console.log(`[CoursePri] ${codeWithNum} matched key="${key}" → priority ${priority}`);
           return priority as number;
         }
       }
     }
 
-    if (PROF_REQD_COURSES.has(codeWithNum)) return 100;
-    if (LIBERAL_CODES.has(codeWithNum)) return 200;
-    if (OPEN_ELECTIVE_CODES.has(codeWithNum)) return 300;
-    return 999;
+    let fallbackPri = 999;
+    if (PROF_REQD_COURSES.has(codeWithNum)) fallbackPri = 100;
+    else if (LIBERAL_CODES.has(codeWithNum)) fallbackPri = 200;
+    else if (OPEN_ELECTIVE_CODES.has(codeWithNum)) fallbackPri = 300;
+    console.log(`[CoursePri] ${codeWithNum} no priority key match → fallback ${fallbackPri} (keys: ${Object.keys(coursePlayPriority).join(',')})`);
+    return fallbackPri;
   }
 
   function buildCourseFolderName(code: string, name: string): string {
@@ -11727,6 +11733,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   }, 15000);
 
   async function findNextFileByPriority(allFiles: any[], currentWeekNumber: number, excludeFileId?: number): Promise<any | null> {
+    console.log(`[FileOrder] Searching ${allFiles.length} total files for week ${currentWeekNumber} (priorities: ${JSON.stringify(coursePlayPriority)})`);
     const allEligible = allFiles.filter((f: any) => {
       if (f.listened) return false;
       if (excludeFileId && f.id === excludeFileId) return false;
@@ -11734,7 +11741,15 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       return weekMatch && parseInt(weekMatch[1], 10) === currentWeekNumber;
     });
     if (allEligible.length === 0) {
-      console.log(`[FileOrder] No unlistened files found for week ${currentWeekNumber}`);
+      const weekFolders = allFiles.filter((f: any) => !f.listened).map((f: any) => f.folder).filter(Boolean);
+      const weekNums = [...new Set(weekFolders.map((folder: string) => folder.match(/week-(\d+)/i)?.[1]).filter(Boolean))].sort();
+      console.log(`[FileOrder] No unlistened files found for week ${currentWeekNumber}. Available weeks with unlistened files: [${weekNums.join(', ')}]`);
+      const cppaFiles = allFiles.filter((f: any) => (f.folder || '').toLowerCase().includes('cppa') || (f.originalName || '').toLowerCase().includes('cppa'));
+      if (cppaFiles.length > 0) {
+        console.log(`[FileOrder] CPPA files in DB: ${cppaFiles.map((f: any) => `${f.originalName} (folder=${f.folder}, listened=${f.listened})`).join(' | ')}`);
+      } else {
+        console.log(`[FileOrder] No CPPA files found in database at all`);
+      }
       return null;
     }
 
@@ -12370,6 +12385,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     }
   }
 
+  const NABU_CASA_URL = "https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa";
+
   async function uploadAudioToHA(audioPath: string): Promise<string | null> {
     const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
     try {
@@ -12382,7 +12399,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         return null;
       }
       const audioBuffer = fsMod.readFileSync(diskPath);
-      if (audioBuffer.length < 10000) {
+      if (audioBuffer.length < 100) {
         console.error(`[HA Upload] Audio file too small (${audioBuffer.length} bytes), likely corrupted: ${diskPath}`);
         return null;
       }
@@ -12418,8 +12435,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       }
       const result = await uploadResp.json() as any;
       const mediaId = result.media_content_id || `media-source://media_source/local/./${fileName}`;
-      const cloudUrl = `${haUrl}/media/local/${fileName}`;
-      console.log(`[HA Upload] Uploaded ${fileName} (${Math.round(audioBuffer.length / 1024)}KB) → cloud: ${cloudUrl}`);
+      const cloudUrl = `${NABU_CASA_URL}/media/local/${fileName}`;
+      console.log(`[HA Upload] Uploaded ${fileName} (${Math.round(audioBuffer.length / 1024)}KB) → Nabu Casa URL: ${cloudUrl}`);
       return cloudUrl;
     } catch (e: any) {
       console.error(`[HA Upload] Error: ${e.message}`);
@@ -12464,23 +12481,53 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   }
 
   async function playOnNestSpeaker(audioUrl: string, maxRetries: number = 2, ttsText?: string): Promise<{ success: boolean; actuallyPlaying: boolean }> {
-    console.log(`[Nest] Playing audio via Cloud TTS proxy${ttsText ? ` (${ttsText.length} chars)` : ''}`);
+    console.log(`[Nest] Playing audio${ttsText ? ` (${ttsText.length} chars)` : ''} via Edge TTS → HA upload`);
     try {
       await haServiceCallSafe('media_player/media_stop', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Pre-Stop');
     } catch {}
     try {
       await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }, 'Nest Pre-Volume');
     } catch {}
-    if (ttsText && ttsText.length > 0) {
+
+    let playUrl: string | null = null;
+
+    let localAudioPath = audioUrl;
+    if (audioUrl.startsWith('http')) {
+      try {
+        const urlObj = new URL(audioUrl);
+        localAudioPath = urlObj.pathname;
+      } catch {
+        localAudioPath = audioUrl;
+      }
+    }
+
+    if (localAudioPath.startsWith('/tts-audio/') || localAudioPath.startsWith('/prepared-audio/')) {
+      playUrl = await uploadAudioToHA(localAudioPath);
+      if (playUrl) {
+        console.log(`[Nest] Using HA-uploaded Edge TTS audio: ${playUrl}`);
+      }
+    }
+
+    if (!playUrl && ttsText && ttsText.length > 0) {
+      console.log(`[Nest] HA upload failed — falling back to Cloud TTS`);
       return nestCloudTTSPlay(ttsText);
     }
-    const fullUrl = audioUrl.startsWith('http') ? audioUrl : `${DEPLOYED_APP_URL}${audioUrl}`;
+
+    if (!playUrl) {
+      const fullUrl = audioUrl.startsWith('http') ? audioUrl : `${DEPLOYED_APP_URL}${audioUrl}`;
+      playUrl = fullUrl;
+    }
+
     try {
       await haServiceCall('media_player/play_media', {
-        entity_id: NEST_SPEAKER_ENTITY, media_content_id: fullUrl, media_content_type: "music"
-      }, 'Nest Play Direct');
+        entity_id: NEST_SPEAKER_ENTITY, media_content_id: playUrl, media_content_type: "music"
+      }, 'Nest Play Edge TTS');
     } catch (e: any) {
       console.error(`[Nest] play_media failed: ${e.message}`);
+      if (ttsText && ttsText.length > 0) {
+        console.log(`[Nest] Falling back to Cloud TTS after play_media failure`);
+        return nestCloudTTSPlay(ttsText);
+      }
       return { success: false, actuallyPlaying: false };
     }
     for (let check = 0; check <= maxRetries; check++) {
@@ -12496,6 +12543,10 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           return { success: true, actuallyPlaying: false };
         }
         if (check === maxRetries) {
+          if (ttsText && ttsText.length > 0) {
+            console.log(`[Nest] State "${speakerState}" after ${maxRetries + 1} checks — trying Cloud TTS fallback`);
+            return nestCloudTTSPlay(ttsText);
+          }
           console.log(`[Nest] State "${speakerState}" after ${maxRetries + 1} checks — play_media was sent, assuming it played`);
           return { success: true, actuallyPlaying: false };
         }
