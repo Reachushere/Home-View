@@ -5424,8 +5424,6 @@ export default function Dashboard() {
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   
   const hoveredCountdownTaskIdRef = useRef<number | null>(null);
-  const hoverLineTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   const showCountdownHoverLine = useCallback((taskId: number) => {
     const existing = document.getElementById('countdown-hover-line-overlay');
     if (existing) {
@@ -5591,13 +5589,12 @@ export default function Dashboard() {
   }, []);
 
   const setHoveredCountdownTaskIdDebounced = useCallback((id: number | null) => {
-    if (id === hoveredCountdownTaskIdRef.current) return;
+    if (hoveredCountdownTaskIdRef.current === id) return;
     hoveredCountdownTaskIdRef.current = id;
-    if (hoverLineTimerRef.current) { clearTimeout(hoverLineTimerRef.current); hoverLineTimerRef.current = null; }
     if (id !== null) {
-      hoverLineTimerRef.current = setTimeout(() => { showCountdownHoverLine(id); }, 60);
+      showCountdownHoverLine(id);
     } else {
-      hoverLineTimerRef.current = setTimeout(() => { hideCountdownHoverLine(); }, 100);
+      hideCountdownHoverLine();
     }
   }, [showCountdownHoverLine, hideCountdownHoverLine]);
 
