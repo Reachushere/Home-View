@@ -232,6 +232,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   if (req.path === "/api/news" || req.path === "/api/weather" || req.path === "/api/pollen" || req.path === "/api/weather-alerts") return next();
   if (req.path.startsWith("/api/webhook/") || req.path === "/api/announcements/webhook") return next();
   if (req.path === "/api/client-error") return next();
+  if (req.path === "/api/test-nest-speaker") return next();
   if (req.path === "/api/onedrive/auth" || req.path === "/api/onedrive/status") return next();
   if (req.path === "/api/export" || req.path === "/api/import" || req.path === "/api/cleanup-duplicates") return next();
   if (req.path === "/api/shift-schedule" && req.method === "POST") return next();
