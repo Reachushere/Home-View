@@ -4929,9 +4929,6 @@ export default function Dashboard() {
       return sem.courses.some(code => !aasSentStatus[code] && !aasSentStatus[code.replace(/^([A-Z]+)(\d)/, '$1 $2')]);
     });
     if (!hasUncheckedStartedAas) return;
-    const initialDelay = setTimeout(() => playBoingSound(), 500);
-    const interval = setInterval(() => playBoingSound(), 10000);
-    return () => { clearTimeout(initialDelay); clearInterval(interval); };
   }, [isSchoolCoursesDialogOpen, aasSentStatus, playBoingSound]);
 
   // Get the display timezone (travel if set, otherwise home)
