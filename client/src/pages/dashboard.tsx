@@ -5429,7 +5429,8 @@ export default function Dashboard() {
     if (existing) existing.remove();
 
     const barEl = document.querySelector(`[data-testid="countdown-bar-cr-${taskId}"], [data-testid="countdown-bar-or-${taskId}"]`) as HTMLElement | null;
-    if (!barEl) return;
+    if (!barEl) { console.log(`[HoverLine] No bar element found for task ${taskId}`); return; }
+    console.log(`[HoverLine] Showing for task ${taskId}`);
 
     const calendarWrapper = document.querySelector('[data-testid="calendar-scroll-container"]') as HTMLElement | null;
     const rightEdge = calendarWrapper ? calendarWrapper.getBoundingClientRect().right : window.innerWidth - 10;
@@ -5448,7 +5449,12 @@ export default function Dashboard() {
     const barRect = barEl.getBoundingClientRect();
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.id = 'countdown-hover-line-overlay';
-    svg.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:9999';
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    svg.setAttribute('width', String(vw));
+    svg.setAttribute('height', String(vh));
+    svg.setAttribute('viewBox', `0 0 ${vw} ${vh}`);
+    svg.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:99990';
 
     if (!filteredTaskEl) {
       const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
