@@ -27794,8 +27794,8 @@ export default function Dashboard() {
                           }
                           return (
                             <>
-                              <span className="font-[785] text-center">{displayCodeLabel}</span>
-                              {words.map((word, i) => <span key={i} className="text-center">{word}</span>)}
+                              <span className="font-[785] text-center" style={{ whiteSpace: 'nowrap' }}>{displayCodeLabel}</span>
+                              {words.map((word, i) => <span key={i} className="text-center" style={{ whiteSpace: 'nowrap' }}>{word}</span>)}
                             </>
                           );
                         })()}
@@ -28047,8 +28047,8 @@ export default function Dashboard() {
                       }
                       return (
                         <>
-                          <span className="font-[785] text-center">{displayCodeLabel}</span>
-                          {words.map((word, i) => <span key={i} className="text-center">{word}</span>)}
+                          <span className="font-[785] text-center" style={{ whiteSpace: 'nowrap' }}>{displayCodeLabel}</span>
+                          {words.map((word, i) => <span key={i} className="text-center" style={{ whiteSpace: 'nowrap' }}>{word}</span>)}
                         </>
                       );
                     })()}
