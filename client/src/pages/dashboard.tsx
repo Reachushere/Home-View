@@ -26681,7 +26681,8 @@ export default function Dashboard() {
               border: '1px solid rgba(255,255,255,0.5)',
               borderTop: '1px solid rgba(255,255,255,0.7)',
               borderBottom: '1px solid rgba(255,255,255,0.15)',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)'
+              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+              outline: '3px solid blue'
             }}
           />
 
@@ -30664,7 +30665,7 @@ export default function Dashboard() {
         </div>
         ) : (
         <div className="mb-[0px] mt-[0px] relative flex gap-4 transition-opacity duration-300" style={{ height: calendarHeight - 12 - d2lTickerHeight, flexShrink: 0, order: 1, paddingTop: `${10 + d2lTickerHeight}px` }}>
-          <div className="relative overflow-visible" style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction - 2}px` : ''})`, height: 'calc(100% - 18px)', marginTop: '18px', marginLeft: '12px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 - 2 - 2 - 2 : 0}px`, display: 'flex', flexDirection: 'column' as const }}>
+          <div ref={calendarWrapperRef} className="relative overflow-visible" style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction - 2}px` : ''})`, height: 'calc(100% - 18px)', marginTop: '18px', marginLeft: '12px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 - 2 - 2 - 2 : 0}px`, display: 'flex', flexDirection: 'column' as const }}>
           {/* Glass effect backing box - same as main calendar */}
           <div 
             className="absolute pointer-events-none"
@@ -30678,7 +30679,8 @@ export default function Dashboard() {
               border: '1px solid rgba(255,255,255,0.5)',
               borderTop: '1px solid rgba(255,255,255,0.7)',
               borderBottom: '1px solid rgba(255,255,255,0.15)',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)'
+              boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)',
+              outline: '3px solid red'
             }}
           />
 
@@ -30737,7 +30739,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="relative" style={{ height: '100%', marginTop: '0px' }}>
+          <div className="relative" style={{ height: 'calc(100% - 2px)', marginTop: '-2px' }}>
             <div className="overflow-hidden h-full" style={{ borderRadius: '8px', border: '1px solid rgba(255,255,255,0.3)' }}>
             <div className="p-0 h-full flex flex-col" style={{ overflow: 'hidden' }}>
               {/* Month Header */}
