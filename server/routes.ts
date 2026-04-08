@@ -9004,6 +9004,141 @@ async function pollStatus(timeout){
     }
   });
 
+  app.get("/api/test-nest-speaker", async (_req, res) => {
+    const results: any = { timestamp: new Date().toISOString(), tests: {} };
+    const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+
+    try {
+      const stateResp = await fetch(`${haUrl}/api/states/${NEST_SPEAKER_ENTITY}`, {
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` },
+      });
+      if (stateResp.ok) {
+        const stateData = await stateResp.json() as any;
+        results.tests.initialState = {
+          state: stateData.state,
+          media_title: stateData.attributes?.media_title,
+          media_content_type: stateData.attributes?.media_content_type,
+          volume: stateData.attributes?.volume_level,
+          source: stateData.attributes?.source,
+          friendly_name: stateData.attributes?.friendly_name,
+        };
+        console.log(`[Nest Diag] Initial state: ${JSON.stringify(results.tests.initialState)}`);
+      } else {
+        results.tests.initialState = { error: `HTTP ${stateResp.status}` };
+      }
+    } catch (e: any) {
+      results.tests.initialState = { error: e.message };
+    }
+
+    try {
+      const turnOnResp = await fetch(`${haUrl}/api/services/media_player/turn_on`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entity_id: NEST_SPEAKER_ENTITY }),
+      });
+      results.tests.turnOn = { status: turnOnResp.status, ok: turnOnResp.ok };
+      console.log(`[Nest Diag] turn_on: ${turnOnResp.status}`);
+    } catch (e: any) {
+      results.tests.turnOn = { error: e.message };
+    }
+
+    try {
+      const ttsResp = await fetch(`${haUrl}/api/services/tts/speak`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          entity_id: HA_CLOUD_TTS_ENTITY,
+          media_player_entity_id: NEST_SPEAKER_ENTITY,
+          message: "Nest speaker test. One two three."
+        }),
+      });
+      const ttsStatus = ttsResp.status;
+      const ttsBody = await ttsResp.text();
+      results.tests.ttsSpeak = { status: ttsStatus, ok: ttsResp.ok, bodyLength: ttsBody.length, bodyPreview: ttsBody.substring(0, 200) };
+      console.log(`[Nest Diag] tts/speak: ${ttsStatus} body=${ttsBody.substring(0, 200)}`);
+    } catch (e: any) {
+      results.tests.ttsSpeak = { error: e.message };
+    }
+
+    await new Promise(r => setTimeout(r, 3000));
+
+    try {
+      const stateResp2 = await fetch(`${haUrl}/api/states/${NEST_SPEAKER_ENTITY}`, {
+        headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` },
+      });
+      if (stateResp2.ok) {
+        const stateData2 = await stateResp2.json() as any;
+        results.tests.stateAfterTTS = {
+          state: stateData2.state,
+          media_title: stateData2.attributes?.media_title,
+          media_content_type: stateData2.attributes?.media_content_type,
+          volume: stateData2.attributes?.volume_level,
+        };
+        console.log(`[Nest Diag] State after TTS: ${JSON.stringify(results.tests.stateAfterTTS)}`);
+      }
+    } catch (e: any) {
+      results.tests.stateAfterTTS = { error: e.message };
+    }
+
+    try {
+      const testAudioPath = await generateAndSaveTTSAudio("Play media test. Four five six.", `nest-diag-${Date.now()}`, 'en-CA-LiamNeural');
+      results.tests.audioGenerated = { path: testAudioPath };
+      console.log(`[Nest Diag] Generated test audio: ${testAudioPath}`);
+
+      const pathMod = await import("path");
+      const fsMod = await import("fs");
+      const diskPath = pathMod.join(process.cwd(), 'dist', 'public', testAudioPath);
+      const exists = fsMod.existsSync(diskPath);
+      const fileSize = exists ? fsMod.statSync(diskPath).size : 0;
+      results.tests.audioFile = { diskPath, exists, fileSize };
+      console.log(`[Nest Diag] Audio file: exists=${exists} size=${fileSize}`);
+
+      if (exists) {
+        const haMediaId = await uploadAudioToHA(testAudioPath);
+        results.tests.haUpload = { mediaId: haMediaId };
+        console.log(`[Nest Diag] HA upload result: ${haMediaId}`);
+
+        if (haMediaId) {
+          const playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              entity_id: NEST_SPEAKER_ENTITY,
+              media_content_id: haMediaId,
+              media_content_type: "music",
+            }),
+          });
+          const playBody = await playResp.text();
+          results.tests.playMediaHA = { status: playResp.status, ok: playResp.ok, bodyPreview: playBody.substring(0, 200) };
+          console.log(`[Nest Diag] play_media (HA source): ${playResp.status} body=${playBody.substring(0, 200)}`);
+        }
+
+        const directUrl = `${DEPLOYED_APP_URL}${testAudioPath}`;
+        results.tests.directUrl = directUrl;
+
+        await new Promise(r => setTimeout(r, 5000));
+
+        const stateResp3 = await fetch(`${haUrl}/api/states/${NEST_SPEAKER_ENTITY}`, {
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` },
+        });
+        if (stateResp3.ok) {
+          const stateData3 = await stateResp3.json() as any;
+          results.tests.stateAfterPlayMedia = {
+            state: stateData3.state,
+            media_title: stateData3.attributes?.media_title,
+            media_content_type: stateData3.attributes?.media_content_type,
+          };
+          console.log(`[Nest Diag] State after play_media: ${JSON.stringify(results.tests.stateAfterPlayMedia)}`);
+        }
+      }
+    } catch (e: any) {
+      results.tests.playMediaTest = { error: e.message };
+    }
+
+    console.log(`[Nest Diag] FULL RESULTS: ${JSON.stringify(results, null, 2)}`);
+    res.json(results);
+  });
+
   // POST /api/ha-push/reminder - Send a push notification reminder for a specific task via Home Assistant
   app.post("/api/ha-push/reminder", async (req, res) => {
     try {

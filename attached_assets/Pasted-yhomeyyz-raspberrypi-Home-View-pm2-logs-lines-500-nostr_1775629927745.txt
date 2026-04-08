@@ -1,0 +1,32 @@
+yhomeyyz@raspberrypi:~/Home-View $ pm2 logs --lines 500 --nostream | grep -i "chunk\|Nest Playback\|HA Cloud\|play_media\|word\|advance\|FAILED\|fallback" | grep -v "AudioPrep\|prep-\|progress" | tail -30
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 2 failed: Timed out
+0|unical   | [Edge TTS] Attempt 3 failed: Timed out
+0|unical   | [TTS] Edge TTS failed: undefined — falling back to local TTS
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Heartbeat] Failed to send heartbeat to HA: fetch failed
+0|unical   | Error checking partner status: TypeError: fetch failed
+0|unical   | [HA Health] ✗ Connection LOST: fetch failed
+0|unical   | [Heartbeat] Failed to send heartbeat to HA: fetch failed
+0|unical   | 2:31:57 AM [express] GET /api/health 200 in 1ms :: {"status":"ok","uptime":2656,"ha":{"connected":false,"lastSuccessAt":"2026-04-08T06:30:50.869Z","lastFailureAt":"2026-04-08T06:31:50.751Z","consecutiveFailures":1,"totalChecks":45,"totalFailures":2,"lastError":"fetch failed","downSince":"2026-04-08T06:31:50.751Z","commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-08T06:31:57.420Z"}
+byhomeyyz@raspberrypi:~/Home-View $
