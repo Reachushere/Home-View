@@ -29213,11 +29213,6 @@ export default function Dashboard() {
                             })(),
                             borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined,
                             paddingLeft: `${(isToday ? 4 : 2) + DAY_COL_LEFT_REDUCTION}px`,
-                            zIndex: (() => {
-                              const ce = getConflictExtraHeight(hour);
-                              if (ce > 0 && (hourTasks.length > 0 || continuingTasks.length > 0 || visibleCalendarEvents.length > 0)) return 54;
-                              return undefined;
-                            })(),
                           }}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
                           onDragOver={(e) => handleDragOver(e, day, hour)}
@@ -29665,7 +29660,8 @@ export default function Dashboard() {
                   );
                 })}
                 
-                {/* Multi-hour tasks overlay - rendered as single absolute positioned elements */}
+                {/* Multi-hour tasks overlay layer - positioned above grid rows */}
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 50, pointerEvents: 'none' }}>
                 {(() => {
                   const allMultiHour = getMultiHourTasksForWeek().filter(item => {
                     if (item.endHour === item.startHour + 1) {
@@ -29960,6 +29956,7 @@ export default function Dashboard() {
                   );
                 })()}
 
+                </div>
                 
             </div>
           </div>
