@@ -15611,7 +15611,7 @@ export default function Dashboard() {
           {/* Grab handle - left of pill, centered vertically */}
           <div
             className="cursor-grab active:cursor-grabbing"
-            style={{ position: 'relative', zIndex: 1, flexShrink: 0, width: '14px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: topPillUndocked ? 0.8 : 0.5, marginLeft: '4px', marginRight: '-2px' }}
+            style={{ position: 'relative', zIndex: 1, flexShrink: 0, width: '14px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: topPillUndocked ? 0.8 : 0.5, marginLeft: '12px', marginRight: '-2px' }}
             onMouseDown={handleTopPillGrabStart}
             onTouchStart={handleTopPillGrabStart}
             title="Drag to undock"
