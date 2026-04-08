@@ -563,11 +563,6 @@ button[role="combobox"] > span {
   filter: none;
 }
 
-[data-testid^="time-task-"]:hover,
-[data-testid^="multi-hour-task-"]:hover {
-  filter: brightness(1.15);
-}
-
 [data-testid^="time-task-"],
 [data-testid^="multi-hour-task-"] {
   -webkit-font-smoothing: antialiased;

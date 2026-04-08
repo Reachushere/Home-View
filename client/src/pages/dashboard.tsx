@@ -30020,8 +30020,6 @@ export default function Dashboard() {
                                 onTouchEnd={handleTouchEnd}
                                 onTouchMove={handleTouchMove}
                                 title={(task.title || '').replace(/\[[^\]]*\]\s*/g, '').trim() + (task.dueDate ? ` — ${format(new Date(task.dueDate), 'MMM d, h:mm a')}` : '')}
-                                onMouseEnter={undefined}
-                                onMouseLeave={undefined}
                                 className={`absolute shadow-sm cursor-grab active:cursor-grabbing rounded overflow-visible ${
                                   draggedTask?.id === task.id ? "opacity-50" : ""
                                 } ${
@@ -30364,8 +30362,6 @@ export default function Dashboard() {
                       onDragStart={(e) => handleDragStart(e, task)}
                       onDragEnd={handleDragEnd}
                       title={(task.title || '').replace(/\[[^\]]*\]\s*/g, '').trim() + (task.dueDate ? ` — ${format(new Date(task.dueDate), 'MMM d, h:mm a')}` : '')}
-                      onMouseEnter={undefined}
-                      onMouseLeave={undefined}
                       onClick={(e) => {
                         e.stopPropagation();
                         setSelectedTaskId(task.id);
