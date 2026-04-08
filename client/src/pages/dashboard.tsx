@@ -30738,6 +30738,21 @@ export default function Dashboard() {
           </div>
 
           <div className="relative" style={{ height: 'calc(100% - 2px)', marginTop: '-2px' }}>
+            <button
+              onClick={() => {
+                startTransition(() => {
+                  setOriginalColorSettings({...colorSettings});
+                  setOriginalBlinkSettings({...blinkSettings});
+                  setIsSettingsDialogOpen(true);
+                });
+              }}
+              className="absolute cursor-pointer hover:opacity-80 transition-opacity"
+              style={{ left: '-15px', top: '-12px', zIndex: 60, background: 'none', border: 'none', padding: 0 }}
+              data-testid="button-calendar-settings-cog-month"
+              title="Calendar Settings"
+            >
+              <Settings className="h-[17px] w-[17px] text-white/70 hover:text-white" />
+            </button>
             <div className="overflow-hidden h-full" style={{ borderRadius: '8px', border: '1px solid rgba(255,255,255,0.3)' }}>
             <div className="p-0 h-full flex flex-col" style={{ overflow: 'hidden' }}>
               {/* Month Header */}
