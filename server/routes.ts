@@ -14100,14 +14100,17 @@ document.body.removeChild(a);
         } catch (e: any) {
           console.warn(`[Cat Lights] Failed to stop Echo speakers: ${e.message}`);
         }
-        await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'am force-stop com.amazon.cloud9' }, 'Stop Silk on FireStick');
-        await new Promise(r => setTimeout(r, 500));
-        await haServiceCallSafe('media_player/turn_off', { entity_id: CAT_TV_ENTITY }, 'Stop TV Samsung');
-        console.log(`[Cat Lights] Samsung TV turn-off sent first`);
-        await new Promise(r => setTimeout(r, 2000));
-        await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_SLEEP' }, 'FireStick SLEEP');
-        stopped.push("tv");
-        console.log(`[Cat Lights] Fire Stick SLEEP sent after Samsung TV off`);
+        const lightsOffStopTs = Date.now();
+        const wasPlaybackActive = stopped.some(s => s.startsWith('playback:'));
+        await Promise.all([
+          setTabletCommand({ action: 'stop_playback', goodbyeText: '', timestamp: lightsOffStopTs }, true, 'master'),
+          setTabletCommand({ action: 'stop_playback', timestamp: lightsOffStopTs }, true, 'tv'),
+        ]);
+        console.log(`[Cat Lights] Tablet stop commands sent (ts=${lightsOffStopTs})`);
+        stopped.push("tablet");
+        if (!wasPlaybackActive) {
+          console.log(`[Cat Lights] No playback was active — skipping Fire Stick/Samsung TV shutdown (avoids CEC wake)`);
+        }
         if (catLightsPromptSession === offSession) {
           catLightsPromptPending = false;
           console.log(`[Cat Lights] Cleared promptPending (session ${offSession} still current)`);
