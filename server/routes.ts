@@ -14055,6 +14055,7 @@ document.body.removeChild(a);
       if (lightState === 'off') {
         catWashTrace('CatLights', 'LIGHT OFF — stopping all playback');
         console.log("[Cat Lights] Light off — stopping all playback and saving progress");
+        lastPlaybackStoppedAt = Date.now();
         const offSession = catLightsPromptSession;
         const stopped: string[] = [];
         if (catWashPlaybackActive) {
@@ -14072,27 +14073,14 @@ document.body.removeChild(a);
         } catch (e: any) {
           console.warn(`[Cat Lights] Failed to stop Echo speakers: ${e.message}`);
         }
-        await Promise.allSettled([
-          haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'am force-stop com.amazon.cloud9' }, 'Stop Silk on FireStick'),
-          haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_SLEEP' }, 'FireStick SLEEP'),
-        ]);
-        await new Promise(r => setTimeout(r, 1000));
-        await haServiceCallSafe('media_player/turn_off', { entity_id: FIRE_STICK_ADB_ENTITY }, 'Stop TV FireStick');
-        console.log(`[Cat Lights] Fire Stick SLEEP + turn_off sent — waiting for CEC to settle`);
-        await new Promise(r => setTimeout(r, 3000));
+        await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'am force-stop com.amazon.cloud9' }, 'Stop Silk on FireStick');
+        await new Promise(r => setTimeout(r, 500));
+        await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_SLEEP' }, 'FireStick SLEEP');
+        console.log(`[Cat Lights] Fire Stick Silk stopped + SLEEP sent — waiting 4s for CEC to settle`);
+        await new Promise(r => setTimeout(r, 4000));
         await haServiceCallSafe('media_player/turn_off', { entity_id: CAT_TV_ENTITY }, 'Stop TV Samsung');
         stopped.push("tv");
-        console.log(`[Cat Lights] Samsung TV turn-off sent (after Fire Stick settled)`);
-        setTimeout(async () => {
-          try {
-            await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_SLEEP' }, 'FireStick SLEEP retry');
-            await new Promise(r => setTimeout(r, 2000));
-            await haServiceCallSafe('media_player/turn_off', { entity_id: CAT_TV_ENTITY }, 'Stop TV Samsung retry');
-            console.log(`[Cat Lights] TV turn-off retry sent (2nd attempt — sequenced)`);
-          } catch (e: any) {
-            console.warn(`[Cat Lights] TV turn-off retry failed (non-fatal): ${e.message}`);
-          }
-        }, 5000);
+        console.log(`[Cat Lights] Samsung TV turn-off sent (after Fire Stick CEC settled)`);
         if (catLightsPromptSession === offSession) {
           catLightsPromptPending = false;
           console.log(`[Cat Lights] Cleared promptPending (session ${offSession} still current)`);
