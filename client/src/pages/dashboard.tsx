@@ -29405,14 +29405,22 @@ export default function Dashboard() {
                               const hasCourseGrad = gradColors && gradColors.start !== '#6b7280';
                               const taskBg = cMatch?.taskBgColor || (colors?.bg) || (hasCourseGrad ? gradColors.start : '');
                               if (!taskBg) return false;
+                              let r = 0, g = 0, b = 0, matched = false;
                               const hexMatch = taskBg.match(/#([0-9a-fA-F]{6})/);
                               if (hexMatch) {
-                                const hex = hexMatch[1];
-                                const r = parseInt(hex.substring(0, 2), 16);
-                                const g = parseInt(hex.substring(2, 4), 16);
-                                const b = parseInt(hex.substring(4, 6), 16);
-                                return (r * 299 + g * 587 + b * 114) / 1000 < 160;
+                                r = parseInt(hexMatch[1].substring(0, 2), 16);
+                                g = parseInt(hexMatch[1].substring(2, 4), 16);
+                                b = parseInt(hexMatch[1].substring(4, 6), 16);
+                                matched = true;
                               }
+                              if (!matched) {
+                                const rgbMatch = taskBg.match(/rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+                                if (rgbMatch) {
+                                  r = parseInt(rgbMatch[1]); g = parseInt(rgbMatch[2]); b = parseInt(rgbMatch[3]);
+                                  matched = true;
+                                }
+                              }
+                              if (matched) return (r * 299 + g * 587 + b * 114) / 1000 < 160;
                               return false;
                             })();
                             
@@ -29751,15 +29759,26 @@ export default function Dashboard() {
                   const isDarkBg = (() => {
                     if (task.isCompleted) return false;
                     const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode);
-                    const taskBg = cMatch?.taskBgColor || (colors?.bg) || '';
+                    const gradColors = courseCode ? getCourseGradientColors(courseCode) : null;
+                    const hasCourseGrad = gradColors && gradColors.start !== '#6b7280';
+                    const taskBg = cMatch?.taskBgColor || (colors?.bg) || (hasCourseGrad ? gradColors.start : '');
                     if (!taskBg) return false;
-                    const hex = taskBg.replace('#', '');
-                    if (hex.length === 6) {
-                      const r = parseInt(hex.substring(0, 2), 16);
-                      const g = parseInt(hex.substring(2, 4), 16);
-                      const b = parseInt(hex.substring(4, 6), 16);
-                      return (r * 299 + g * 587 + b * 114) / 1000 < 160;
+                    let r = 0, g = 0, b = 0, matched = false;
+                    const hexMatch = taskBg.match(/#([0-9a-fA-F]{6})/);
+                    if (hexMatch) {
+                      r = parseInt(hexMatch[1].substring(0, 2), 16);
+                      g = parseInt(hexMatch[1].substring(2, 4), 16);
+                      b = parseInt(hexMatch[1].substring(4, 6), 16);
+                      matched = true;
                     }
+                    if (!matched) {
+                      const rgbMatch = taskBg.match(/rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+                      if (rgbMatch) {
+                        r = parseInt(rgbMatch[1]); g = parseInt(rgbMatch[2]); b = parseInt(rgbMatch[3]);
+                        matched = true;
+                      }
+                    }
+                    if (matched) return (r * 299 + g * 587 + b * 114) / 1000 < 160;
                     return false;
                   })();
                   
