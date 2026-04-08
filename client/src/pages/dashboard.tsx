@@ -23279,6 +23279,14 @@ export default function Dashboard() {
               <div className="relative w-[860px] max-h-[85vh] rounded-lg flex flex-col" onClick={e => e.stopPropagation()} style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
                 <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 rounded-t-lg shrink-0" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                   <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => { setShowAutomationsFlyout(false); setIsSystemHealthOpen(true); }}
+                      className="flex items-center gap-1 text-white/60 hover:text-white transition-colors mr-1"
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px' }}
+                      data-testid="button-back-to-health"
+                    >
+                      <ChevronDown className="h-3.5 w-3.5" style={{ transform: 'rotate(90deg)' }} />
+                    </button>
                     <Zap className="h-4 w-4 text-amber-400" />
                     <span className="text-white font-semibold text-[13px]">Automations</span>
                     <span className="text-[10px] text-white/50 ml-1">HA_Automations_Reference.md</span>
