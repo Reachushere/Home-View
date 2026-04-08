@@ -18761,7 +18761,32 @@ document.body.removeChild(a);
 
       const externalEvents = allEvents.filter(event => event.id && !syncedEventIds.has(event.id));
 
-      const formattedEvents = externalEvents.map(event => {
+      const stripCoursePrefix = (t: string) => t.replace(/^\[[^\]]*\]\s*/, '').replace(/^[A-Z]{2,5}\d{3}[A-Z]?\s*[-–]\s*/i, '').trim().toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, ' ').trim();
+      const taskTitleDayKeys = new Set<string>();
+      for (const t of tasks) {
+        const tTitle = stripCoursePrefix(t.title || '');
+        if (!tTitle) continue;
+        try {
+          const tDay = new Date(t.dueDate).toISOString().substring(0, 10);
+          taskTitleDayKeys.add(`${tTitle}||${tDay}`);
+        } catch {}
+      }
+
+      const filteredExternal = externalEvents.filter(event => {
+        const evTitle = stripCoursePrefix(event.summary || '');
+        if (!evTitle) return true;
+        const evStart = event.start?.dateTime || event.start?.date || '';
+        try {
+          const evDay = new Date(evStart).toISOString().substring(0, 10);
+          if (taskTitleDayKeys.has(`${evTitle}||${evDay}`)) {
+            console.log(`[Calendar Dedup] Filtered GCal event "${event.summary}" on ${evDay} — matches existing task`);
+            return false;
+          }
+        } catch {}
+        return true;
+      });
+
+      const formattedEvents = filteredExternal.map(event => {
         const isAllDay = !event.start?.dateTime;
         let startDate = event.start?.dateTime || event.start?.date;
         let endDate = event.end?.dateTime || event.end?.date;
@@ -18914,9 +18939,10 @@ document.body.removeChild(a);
         }
       }
 
+      const stripCoursePrefixW = (t: string) => t.replace(/^\[[^\]]*\]\s*/, '').replace(/^[A-Z]{2,5}\d{3}[A-Z]?\s*[-–]\s*/i, '').trim().toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, ' ').trim();
       const taskTitleDateKeys = new Set<string>();
       for (const t of tasks) {
-        const titleNorm = (t.title || '').trim().toLowerCase().replace(/^\[[^\]]*\]\s*/, '');
+        const titleNorm = stripCoursePrefixW(t.title || '');
         const dayKey = t.dueDate ? new Date(t.dueDate).toISOString().substring(0, 10) : '';
         if (titleNorm && dayKey) taskTitleDateKeys.add(`${titleNorm}||${dayKey}`);
       }
@@ -18924,11 +18950,14 @@ document.body.removeChild(a);
       const externalEvents = allEvents.filter(event => {
         if (!event.id) return false;
         if (syncedEventIds.has(event.id)) return false;
-        const evTitle = (event.summary || '').trim().toLowerCase().replace(/^\[[^\]]*\]\s*/, '');
+        const evTitle = stripCoursePrefixW(event.summary || '');
         const evStart = event.start?.dateTime || event.start?.date || '';
         let evDay = '';
         try { evDay = new Date(evStart).toISOString().substring(0, 10); } catch {}
-        if (evTitle && evDay && taskTitleDateKeys.has(`${evTitle}||${evDay}`)) return false;
+        if (evTitle && evDay && taskTitleDateKeys.has(`${evTitle}||${evDay}`)) {
+          console.log(`[CalSync Dedup] Filtered GCal event "${event.summary}" on ${evDay} — matches existing task by title`);
+          return false;
+        }
         return true;
       });
       
