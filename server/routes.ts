@@ -18769,15 +18769,30 @@ document.body.removeChild(a);
         };
       });
 
+      const normalizeStartU = (s: string) => {
+        if (!s) return '';
+        try { return new Date(s).toISOString().substring(0, 16); } catch { return s.substring(0, 16); }
+      };
+      const normalizeDayU = (s: string) => {
+        if (!s) return '';
+        try { return new Date(s).toISOString().substring(0, 10); } catch { return s.substring(0, 10); }
+      };
+
       const seen = new Set<string>();
+      const seenTitleDay = new Set<string>();
       const dedupedEvents = formattedEvents.filter(e => {
-        const key = `${e.title}||${e.startDate}`;
-        if (seen.has(key)) return false;
-        seen.add(key);
+        const normStart = normalizeStartU(e.startDate);
+        const normDay = normalizeDayU(e.startDate);
+        const titleNorm = (e.title || '').trim().toLowerCase();
+        const exactKey = `${titleNorm}||${normStart}`;
+        if (seen.has(exactKey)) return false;
+        seen.add(exactKey);
+        const dayKey = `${titleNorm}||${normDay}`;
+        if (seenTitleDay.has(dayKey)) return false;
+        seenTitleDay.add(dayKey);
         return true;
       });
 
-      // Further deduplicate: collapse events that match the same course + similar task type at the same time
       const courseTaskSeen2 = new Set<string>();
       const finalEvents2 = dedupedEvents.filter(e => {
         const titleMatch = e.title.match(/^\[([A-Z]{2,5}\d{3}[A-Z]?\s*-\s*[^\]]+)\]\s*(.*)/i);
@@ -18785,7 +18800,7 @@ document.body.removeChild(a);
           const courseId = titleMatch[1].split('-')[0].trim().toUpperCase().replace(/\s/g, '');
           const taskPart = titleMatch[2].trim().toLowerCase();
           const normalizedType = taskPart.includes('module') ? 'module' : taskPart.includes('reading') ? 'reading' : taskPart;
-          const startKey = e.startDate ? e.startDate.substring(0, 16) : '';
+          const startKey = normalizeStartU(e.startDate);
           const dedupeKey = `${courseId}||${normalizedType}||${startKey}`;
           if (courseTaskSeen2.has(dedupeKey)) return false;
           courseTaskSeen2.add(dedupeKey);
@@ -18885,8 +18900,23 @@ document.body.removeChild(a);
         }
       }
 
-      // Filter out events that are already synced from this app
-      const externalEvents = allEvents.filter(event => event.id && !syncedEventIds.has(event.id));
+      const taskTitleDateKeys = new Set<string>();
+      for (const t of tasks) {
+        const titleNorm = (t.title || '').trim().toLowerCase().replace(/^\[[^\]]*\]\s*/, '');
+        const dayKey = t.dueDate ? new Date(t.dueDate).toISOString().substring(0, 10) : '';
+        if (titleNorm && dayKey) taskTitleDateKeys.add(`${titleNorm}||${dayKey}`);
+      }
+
+      const externalEvents = allEvents.filter(event => {
+        if (!event.id) return false;
+        if (syncedEventIds.has(event.id)) return false;
+        const evTitle = (event.summary || '').trim().toLowerCase().replace(/^\[[^\]]*\]\s*/, '');
+        const evStart = event.start?.dateTime || event.start?.date || '';
+        let evDay = '';
+        try { evDay = new Date(evStart).toISOString().substring(0, 10); } catch {}
+        if (evTitle && evDay && taskTitleDateKeys.has(`${evTitle}||${evDay}`)) return false;
+        return true;
+      });
       
       // Transform to a simpler format
       const formattedEvents = externalEvents.map(event => {
@@ -18913,16 +18943,30 @@ document.body.removeChild(a);
         };
       });
       
-      // Deduplicate events by title + startDate to prevent duplicates from multiple accounts
+      const normalizeStart = (s: string) => {
+        if (!s) return '';
+        try { return new Date(s).toISOString().substring(0, 16); } catch { return s.substring(0, 16); }
+      };
+      const normalizeDay = (s: string) => {
+        if (!s) return '';
+        try { return new Date(s).toISOString().substring(0, 10); } catch { return s.substring(0, 10); }
+      };
+
       const seen = new Set<string>();
+      const seenTitleDay = new Set<string>();
       const dedupedEvents = formattedEvents.filter(e => {
-        const key = `${e.title}||${e.startDate}`;
-        if (seen.has(key)) return false;
-        seen.add(key);
+        const normStart = normalizeStart(e.startDate);
+        const normDay = normalizeDay(e.startDate);
+        const titleNorm = (e.title || '').trim().toLowerCase();
+        const exactKey = `${titleNorm}||${normStart}`;
+        if (seen.has(exactKey)) return false;
+        seen.add(exactKey);
+        const dayKey = `${titleNorm}||${normDay}`;
+        if (seenTitleDay.has(dayKey)) return false;
+        seenTitleDay.add(dayKey);
         return true;
       });
 
-      // Further deduplicate: collapse events that match the same course + similar task type at the same time
       const courseTaskSeen = new Set<string>();
       const finalEvents = dedupedEvents.filter(e => {
         const titleMatch = e.title.match(/^\[([A-Z]{2,5}\d{3}[A-Z]?\s*-\s*[^\]]+)\]\s*(.*)/i);
@@ -18930,7 +18974,7 @@ document.body.removeChild(a);
           const courseId = titleMatch[1].split('-')[0].trim().toUpperCase().replace(/\s/g, '');
           const taskPart = titleMatch[2].trim().toLowerCase();
           const normalizedType = taskPart.includes('module') ? 'module' : taskPart.includes('reading') ? 'reading' : taskPart;
-          const startKey = e.startDate ? e.startDate.substring(0, 16) : '';
+          const startKey = normalizeStart(e.startDate);
           const dedupeKey = `${courseId}||${normalizedType}||${startKey}`;
           if (courseTaskSeen.has(dedupeKey)) return false;
           courseTaskSeen.add(dedupeKey);
