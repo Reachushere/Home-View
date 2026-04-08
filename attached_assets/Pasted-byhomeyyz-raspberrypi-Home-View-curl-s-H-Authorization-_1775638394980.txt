@@ -1,0 +1,26 @@
+byhomeyyz@raspberrypi:~/Home-View $ curl -s -H "Authorization: Bearer $HOME_ASSISTANT_TOKEN" "https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa/api/states" | python3 -c "import sys,json; [print(e['entity_id']) for e in json.load(sys.stdin) if 'automation' in e['entity_id'] and ('cat' in e['entity_id'].lower() or 'light' in e['entity_id'].lower() or 'wash' in e['entity_id'].lower())]"byhomeyyz@raspberrypi:~/Home-View $ curl -s -H "Authorization: Bearer $HOME_ASSISTANT_TOKEN" "https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa/api/states" | python3 -c "import sys,json; [print(e['entity_id']) for e in json.load(sys.stdin) if 'automation' in e['entity_id'] and ('cat' in e['entity_id'].lower() or 'light' in e['entity_id'].lower() or 'wash' in e['entity_id'].lower())]"
+automation.air_purifier_cat_to_nest_50
+  File "<string>", line 1
+    import sys,json; [print(e['entity_id']) for e in json.load(sys.stdin) if 'automation' in e['entity_id'] and ('cat' in e['entity_id'].lower() or 'light' in e['entity_id'].lower() or 'wash' in e['entity_id'].lower())]byhomeyyz@raspberrypi:~/Home-View
+                                                                                                                                                                                                                           ^^^^^^^^^
+SyntaxError: invalid syntax
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import sys,json; [print(e['entity_id']) for e in json.load(sys.stdin) if 'automation' in e['entity_id'] and ('cat' in e['entity_id'].lower() or 'light' in e['entity_id'].lower() or 'wash' in e['entity_id'].lower())]
+                                                     ~~~~~~~~~^^^^^^^^^^^
+  File "/usr/lib/python3.13/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+        cls=cls, object_hook=object_hook,
+        parse_float=parse_float, parse_int=parse_int,
+        parse_constant=parse_constant, object_pairs_hook=object_pairs_hook, **kw)
+  File "/usr/lib/python3.13/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/usr/lib/python3.13/json/decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/json/decoder.py", line 363, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+-bash: automation.air_purifier_cat_to_nest_50: command not found
+byhomeyyz@raspberrypi:~/Home-View $
