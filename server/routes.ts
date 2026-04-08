@@ -12430,6 +12430,12 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const fullUrl = audioUrl.startsWith('http') ? audioUrl : `${DEPLOYED_APP_URL}${audioUrl}`;
     console.log(`[Nest] Playing audio: ${fullUrl}`);
     try {
+      await haServiceCallSafe('media_player/media_stop', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Pre-Stop');
+    } catch {}
+    try {
+      await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }, 'Nest Pre-Volume');
+    } catch {}
+    try {
       await haServiceCall('media_player/play_media', {
         entity_id: NEST_SPEAKER_ENTITY, media_content_id: fullUrl, media_content_type: "music"
       }, 'Nest Play Direct');
