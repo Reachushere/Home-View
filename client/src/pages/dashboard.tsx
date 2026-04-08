@@ -5431,7 +5431,7 @@ export default function Dashboard() {
       existing.remove();
     }
 
-    let sourceEl = document.querySelector(`[data-testid="countdown-bar-cr-${taskId}"], [data-testid="countdown-bar-or-${taskId}"]`) as HTMLElement | null;
+    let sourceEl = document.querySelector(`[data-testid="countdown-bar-cr-${taskId}"], [data-testid="countdown-bar-or-${taskId}"], [data-testid="countdown-next-bar-${taskId}"]`) as HTMLElement | null;
     if (!sourceEl) {
       const hoveredCandidates = document.querySelectorAll(`[data-testid$="-${taskId}"]`);
       for (const el of hoveredCandidates) {
@@ -28793,6 +28793,8 @@ export default function Dashboard() {
                           return (
                             <div 
                               style={{ position: 'absolute', top: 0, left: '-1px', right: '-1px', height: '16px', background: badgeGrad.start, zIndex: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', cursor: 'pointer' }}
+                              onMouseEnter={() => setHoveredCountdownTaskIdDebounced(nextTask.id)}
+                              onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 const taskEl = document.querySelector(`[data-testid="droppable-task-${nextTask.id}"], [data-testid="task-link-${nextTask.id}"]`) as HTMLElement | null;
