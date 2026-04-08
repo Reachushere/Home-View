@@ -22967,6 +22967,7 @@ export default function Dashboard() {
                 >Folder Links</button>
                 <button
                   onClick={() => {
+                    setIsSystemHealthOpen(false);
                     setShowAutomationsFlyout(true);
                     if (automationsData.length === 0 && !automationsLoading) {
                       setAutomationsLoading(true);
