@@ -12612,8 +12612,18 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     console.log(`[Nest] Playing audio: ${fullUrl}`);
 
     try {
-      await haServiceCallSafe('media_player/turn_on', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Pre-Wake for Play');
-    } catch {}
+      await haServiceCall('media_player/media_stop', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Pre-Stop');
+    } catch (e: any) {
+      console.log(`[Nest] Pre-stop failed (non-fatal): ${e.message}`);
+    }
+
+    try {
+      await haServiceCall('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }, 'Nest Pre-Volume');
+    } catch (e: any) {
+      console.log(`[Nest] Volume set failed (non-fatal): ${e.message}`);
+    }
+
+    await new Promise(r => setTimeout(r, 300));
 
     let mediaContentId = fullUrl;
     let mediaContentType = "audio/mpeg";
@@ -12642,7 +12652,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       return { success: false, actuallyPlaying: false, playMediaSentAt };
     }
     for (let check = 0; check <= maxRetries; check++) {
-      await new Promise(r => setTimeout(r, check === 0 ? 4000 : 3000));
+      await new Promise(r => setTimeout(r, check === 0 ? 3000 : 2500));
       try {
         const { state: speakerState } = await getNestMediaState();
         console.log(`[Nest] Speaker state check ${check + 1}: ${speakerState}`);

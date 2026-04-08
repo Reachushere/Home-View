@@ -49,7 +49,7 @@ POST /api/webhook/cat-lights
 ├── IF CPPA playback is active:
 │   └── stopNestPlaybackWithGoodbye('light_off')
 │       ├── Save current chunk index to database
-│       ├── media_player/media_stop → media_player.nestaudio6787
+│       ├── media_player/media_stop → media_player.bathroom_speaker
 │       │   Stops the Nest speaker audio
 │       ├── media_player/turn_off → media_player.fire_tv_172_24_0_88
 │       │   Turns off the Fire Stick
@@ -60,7 +60,7 @@ POST /api/webhook/cat-lights
 │   └── stopTTSSession() — kills the chunk-by-chunk reading
 │
 ├── stopAllCatWashroomSpeakers()
-│   ├── media_player/media_stop → media_player.nestaudio6787
+│   ├── media_player/media_stop → media_player.bathroom_speaker
 │   │   Stops Nest speaker (CHUM FM or anything else)
 │   ├── media_player/media_stop → [echo_cat_left, echo_cat_right, echo_cat_middle]
 │   │   Stops all 3 cat washroom Echo speakers
@@ -86,7 +86,7 @@ POST /api/webhook/cat-lights
 │
 ├── ★ STOP any leftover media (CHUM FM, etc):
 │   └── stopAllCatWashroomSpeakers()
-│       ├── media_player/media_stop → media_player.nestaudio6787
+│       ├── media_player/media_stop → media_player.bathroom_speaker
 │       ├── media_player/media_stop → [all 3 Echo speakers]
 │       └── media_player/media_stop → media_player.cat_washroom_media_group
 │
@@ -112,14 +112,14 @@ POST /api/webhook/cat-lights
 │
 ├── Set speaker volumes for prompt:
 │   ├── media_player/volume_set → media_player.home_assistant_voice_097c38 @ 0.85
-│   └── media_player/volume_set → media_player.nestaudio6787 @ 0.85
+│   └── media_player/volume_set → media_player.bathroom_speaker @ 0.85
 │
 ├── Generate TTS audio (Edge TTS, voice: en-US-AndrewMultilingualNeural)
 │
 ├── Play TTS prompt (with fallback chain):
 │   ├── TRY 1: media_player/play_media → media_player.home_assistant_voice_097c38
 │   │   Plays on HA Voice ESPHome device
-│   ├── TRY 2: media_player/play_media → media_player.nestaudio6787
+│   ├── TRY 2: media_player/play_media → media_player.bathroom_speaker
 │   │   Falls back to Nest speaker
 │   └── TRY 3: tts/speak → tts.home_assistant_cloud → HA Voice device
 │       Last resort: HA Cloud TTS (Nabu Casa)
@@ -247,14 +247,14 @@ startConfirmedPlaybackFlow(file, logPrefix, voice='echo', confirmationTTS)
 │   └── CONFIRMATION TTS:
 │       ├── Generate TTS: "Okay, I will now play [file description]."
 │       ├── playOnNestSpeaker(audioUrl)
-│       │   ├── media_player/media_stop → media_player.nestaudio6787
-│       │   ├── media_player/volume_set → media_player.nestaudio6787 @ 0.75
-│       │   └── media_player/play_media → media_player.nestaudio6787
+│       │   ├── media_player/media_stop → media_player.bathroom_speaker
+│       │   ├── media_player/volume_set → media_player.bathroom_speaker @ 0.75
+│       │   └── media_player/play_media → media_player.bathroom_speaker
 │       └── Wait for estimated TTS duration (word count / 140 wpm)
 │
 ├── Set volume for playback:
 │   ├── media_player/volume_set → media_player.home_assistant_voice_097c38 @ 0.75
-│   └── media_player/volume_set → media_player.nestaudio6787 @ 0.75
+│   └── media_player/volume_set → media_player.bathroom_speaker @ 0.75
 │
 ├── Extract text from PDF file
 ├── Split into chunks (2000 chars each)
@@ -265,9 +265,9 @@ startConfirmedPlaybackFlow(file, logPrefix, voice='echo', confirmationTTS)
     ├── Check if session is still valid (not cancelled, not stale)
     ├── Generate or use pre-prepared TTS audio for chunk
     ├── playOnNestSpeaker(audioUrl)
-    │   ├── media_player/media_stop → media_player.nestaudio6787
-    │   ├── media_player/volume_set → media_player.nestaudio6787 @ 0.75
-    │   └── media_player/play_media → media_player.nestaudio6787
+    │   ├── media_player/media_stop → media_player.bathroom_speaker
+    │   ├── media_player/volume_set → media_player.bathroom_speaker @ 0.75
+    │   └── media_player/play_media → media_player.bathroom_speaker
     ├── Wait for estimated chunk duration (word count / 175 wpm + 1s buffer)
     ├── Poll Nest speaker state to confirm playback finished
     ├── Update database: lastChunkIndex, checkedChunks
@@ -308,14 +308,14 @@ POST /api/webhook/cat-knob-press
 │   └── Internally calls POST /api/webhook/cat-wash-stop
 │       ├── stopNestPlaybackWithGoodbye('knob_press')
 │       │   ├── Save chunk progress to database
-│       │   ├── media_player/media_stop → media_player.nestaudio6787
+│       │   ├── media_player/media_stop → media_player.bathroom_speaker
 │       │   ├── media_player/turn_off → media_player.fire_tv_172_24_0_88
 │       │   └── media_player/turn_off → media_player.tv_cat_wr
 │       └── Stop TTS session if active
 │
 ├── ELSE (no CPPA playing — just stop everything):
 │   └── stopAllCatWashroomSpeakers()
-│       ├── media_player/media_stop → media_player.nestaudio6787
+│       ├── media_player/media_stop → media_player.bathroom_speaker
 │       ├── media_player/media_stop → [echo_cat_left, echo_cat_right, echo_cat_middle]
 │       └── media_player/media_stop → media_player.cat_washroom_media_group
 │
@@ -393,7 +393,7 @@ POST /api/webhook/cat-volume
 Body: { direction: "up" | "down", speed: "normal" | "fast" }
 │
 ├── Query state of cat washroom speakers:
-│   ├── GET /api/states/media_player.nestaudio6787
+│   ├── GET /api/states/media_player.bathroom_speaker
 │   └── GET /api/states/media_player.cat_washroom_media_group
 │
 ├── Find which are currently "playing", "paused", or "buffering"
@@ -431,7 +431,7 @@ startToothbrushPolling() — Started whenever CPPA playback begins
 │   └── Internally triggers cat-wash-stop logic
 │       ├── stopNestPlaybackWithGoodbye('toothbrush')
 │       │   ├── Save progress to database
-│       │   ├── media_player/media_stop → media_player.nestaudio6787
+│       │   ├── media_player/media_stop → media_player.bathroom_speaker
 │       │   ├── media_player/turn_off → Fire Stick
 │       │   └── media_player/turn_off → Samsung TV
 │       └── Play goodbye TTS: "Stopping playback. Your progress has been saved."
@@ -447,7 +447,7 @@ Body: { trigger: "toothbrush" }
 ├── IF CPPA playback active:
 │   └── stopNestPlaybackWithGoodbye('toothbrush')
 │       ├── Save chunk progress
-│       ├── media_player/media_stop → media_player.nestaudio6787
+│       ├── media_player/media_stop → media_player.bathroom_speaker
 │       ├── media_player/turn_off → media_player.fire_tv_172_24_0_88
 │       └── media_player/turn_off → media_player.tv_cat_wr
 │
@@ -506,7 +506,7 @@ Body: { command: "pause" }
 │   └── TTS: "Nothing is playing right now."
 │
 ├── Save current chunk progress to database
-├── Stop Nest speaker: media_player/media_stop → media_player.nestaudio6787
+├── Stop Nest speaker: media_player/media_stop → media_player.bathroom_speaker
 ├── Stop word advancement (text highlighting on tablet)
 ├── Set playback state to inactive
 ├── Stop toothbrush polling
@@ -689,13 +689,13 @@ rest_command:
     content_type: "application/json"
     headers:
       x-webhook-secret: "[YOUR_SITE_PASSWORD]"
-    payload: '{"entity_id": "media_player.nestaudio6787"}'
+    payload: '{"entity_id": "media_player.bathroom_speaker"}'
 ```
 
 ### App Side
 ```
 POST /api/webhook/play-urgent-pdf
-Body: { entity_id: "media_player.nestaudio6787" }  (optional, defaults to Nest)
+Body: { entity_id: "media_player.bathroom_speaker" }  (optional, defaults to Nest)
 │
 ├── Authenticate via x-webhook-secret header
 │
@@ -703,7 +703,7 @@ Body: { entity_id: "media_player.nestaudio6787" }  (optional, defaults to Nest)
 │   Allowed: Nest, HA Voice, Kitchen Echo, all 3 cat Echos,
 │            Closet Echo, LR Couch Echo, Hallway Echo,
 │            King L/R/TV Echos, Kitchen Cupboards/Fridge/Hutch/Island/Studio Echos, LR Hub Echo
-│   Default: media_player.nestaudio6787 (Nest speaker)
+│   Default: media_player.bathroom_speaker (Nest speaker)
 │
 ├── Get current semester week
 ├── Find all unlistened files, ordered by priority:
