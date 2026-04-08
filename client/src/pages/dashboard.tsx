@@ -30740,7 +30740,7 @@ export default function Dashboard() {
           {/* Date navigation tab - month mode (matches main page tab) */}
           <div
             className="absolute z-[60]"
-            style={{ top: '-24px', right: '7px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', height: '15px', pointerEvents: 'auto', opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.2s ease' }}
+            style={{ top: '-24px', right: '207px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', height: '15px', pointerEvents: 'auto', opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.2s ease' }}
             data-testid="date-nav-tab-month"
           >
             <div style={{ width: '225px', height: '15px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)', padding: '0 2px' }}>
