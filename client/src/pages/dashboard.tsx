@@ -31385,7 +31385,7 @@ export default function Dashboard() {
           {cooldownSeconds !== null && (
             <div
               className="absolute z-[70]"
-              style={{ top: '-20px', left: '50%', transform: 'translateX(-50%)', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.2s ease' }}
+              style={{ top: '-45px', left: 'calc(50% + 75px)', transform: 'translateX(-50%)', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.2s ease' }}
               data-testid="cooldown-timer"
             >
               <div style={{ background: 'rgba(0,0,0,0.75)', borderRadius: '10px', padding: '2px 10px', display: 'flex', alignItems: 'center', gap: '5px', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.2)' }}>
