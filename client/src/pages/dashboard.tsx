@@ -5424,7 +5424,13 @@ export default function Dashboard() {
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   
   const hoveredCountdownTaskIdRef = useRef<number | null>(null);
+  const hoverLineTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hoverLineActiveIdRef = useRef<number | null>(null);
+
   const showCountdownHoverLine = useCallback((taskId: number) => {
+    if (hoverLineActiveIdRef.current === taskId) return;
+    hoverLineActiveIdRef.current = taskId;
+
     const existing = document.getElementById('countdown-hover-line-overlay');
     if (existing) existing.remove();
 
@@ -5440,17 +5446,14 @@ export default function Dashboard() {
     const sourceRect = sourceEl.getBoundingClientRect();
     if (sourceRect.width === 0 && sourceRect.height === 0) return;
 
-    const barColorEl = sourceEl.querySelector('[style*="background"]') as HTMLElement | null;
     let barColor = '';
-    if (barColorEl) {
-      const bg = barColorEl.style.background || barColorEl.style.backgroundColor;
-      if (bg && bg !== 'transparent') barColor = bg;
-    }
-    if (!barColor) {
-      const allBarDivs = sourceEl.querySelectorAll('div');
-      for (const d of allBarDivs) {
-        const bg = (d as HTMLElement).style.background || (d as HTMLElement).style.backgroundColor;
-        if (bg && bg !== 'transparent' && !bg.includes('gradient')) { barColor = bg; break; }
+    const allBarDivs = sourceEl.querySelectorAll('div');
+    for (const d of allBarDivs) {
+      const htmlD = d as HTMLElement;
+      const bg = htmlD.style.background || htmlD.style.backgroundColor;
+      if (bg && bg !== 'transparent' && !bg.includes('gradient') && bg !== 'rgba(0, 0, 0, 0)') {
+        barColor = bg;
+        break;
       }
     }
     if (!barColor) barColor = '#22c55e';
@@ -5485,58 +5488,94 @@ export default function Dashboard() {
     }
 
     const taskRect = filteredTaskEl.getBoundingClientRect();
-
     const isBarSource = sourceEl.getAttribute('data-testid')?.startsWith('countdown-bar-');
-    const startX = sourceRect.right;
-    const startY = sourceRect.top + sourceRect.height / 2;
-    const edgeX = rightEdge - 4;
-    const taskLeftX = taskRect.left - 3;
-    const taskMidY = taskRect.top + taskRect.height / 2;
 
-    const makeLine = (x1: number, y1: number, x2: number, y2: number) => {
-      const line = document.createElement('div');
-      const len = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
-      const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
-      line.style.cssText = `position:absolute;left:${x1}px;top:${y1}px;width:${len}px;height:0;border-top:${barThickness}px solid ${barColor};opacity:0.85;transform-origin:0 0;transform:rotate(${angle}deg)`;
-      return line;
+    const makeSeg = (x1: number, y1: number, x2: number, y2: number) => {
+      const seg = document.createElement('div');
+      if (Math.abs(y1 - y2) < 1) {
+        const left = Math.min(x1, x2);
+        const w = Math.abs(x2 - x1);
+        seg.style.cssText = `position:absolute;left:${left}px;top:${y1 - barThickness / 2}px;width:${w}px;height:${barThickness}px;background:${barColor};opacity:0.85;border-radius:1px`;
+      } else if (Math.abs(x1 - x2) < 1) {
+        const top = Math.min(y1, y2);
+        const h = Math.abs(y2 - y1);
+        seg.style.cssText = `position:absolute;left:${x1 - barThickness / 2}px;top:${top}px;width:${barThickness}px;height:${h}px;background:${barColor};opacity:0.85;border-radius:1px`;
+      } else {
+        const len = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+        const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
+        seg.style.cssText = `position:absolute;left:${x1}px;top:${y1}px;width:${len}px;height:0;border-top:${barThickness}px solid ${barColor};opacity:0.85;transform-origin:0 0;transform:rotate(${angle}deg)`;
+      }
+      return seg;
     };
 
     if (isBarSource) {
-      const calendarScrollEl = document.querySelector('[data-testid="calendar-scroll-container"]') as HTMLElement | null;
-      const calendarRect = calendarScrollEl ? calendarScrollEl.getBoundingClientRect() : { left: 0, top: 0, right: window.innerWidth, bottom: window.innerHeight };
+      const startX = sourceRect.right;
+      const startY = sourceRect.top + sourceRect.height / 2;
+      const taskMidY = taskRect.top + taskRect.height / 2;
+      const taskLeftX = taskRect.left - 3;
 
-      const taskEls = calendarScrollEl ? calendarScrollEl.querySelectorAll('[data-testid^="task-"]') : [];
-      const obstacles: DOMRect[] = [];
-      for (const te of taskEls) {
+      const calendarScrollEl = calendarWrapper;
+      const calendarTop = calendarScrollEl ? calendarScrollEl.getBoundingClientRect().top : 0;
+
+      const allTaskEls = calendarScrollEl ? calendarScrollEl.querySelectorAll('[data-testid^="task-"]') : [];
+      const obstacles: { left: number; right: number; top: number; bottom: number }[] = [];
+      for (const te of allTaskEls) {
         if (te === filteredTaskEl) continue;
         const r = te.getBoundingClientRect();
-        if (r.width > 0 && r.height > 0 && r.left < edgeX && r.right > taskLeftX) {
-          obstacles.push(r);
+        if (r.width > 0 && r.height > 0) {
+          obstacles.push({ left: r.left, right: r.right, top: r.top, bottom: r.bottom });
         }
       }
 
-      const cornerX = edgeX;
-      let cornerY = taskMidY;
+      const pad = 4;
+      const hitsObstacle = (x1: number, y1: number, x2: number, y2: number) => {
+        const minX = Math.min(x1, x2) - 1;
+        const maxX = Math.max(x1, x2) + 1;
+        const minY = Math.min(y1, y2) - 1;
+        const maxY = Math.max(y1, y2) + 1;
+        return obstacles.some(o =>
+          maxX > o.left - pad && minX < o.right + pad &&
+          maxY > o.top - pad && minY < o.bottom + pad
+        );
+      };
 
-      const directPathBlocked = obstacles.some(o =>
-        startY >= o.top - 2 && startY <= o.bottom + 2 && o.left < edgeX && o.right > startX
-      );
+      const turnX = rightEdge - 6;
 
-      if (directPathBlocked || Math.abs(startY - taskMidY) < 4) {
-        let bestY = taskRect.top - 6;
-        const isBlocked = (y: number) => obstacles.some(o => y >= o.top - 3 && y <= o.bottom + 3);
-        if (isBlocked(bestY)) {
-          for (let tryY = taskRect.top - 10; tryY >= calendarRect.top; tryY -= 5) {
-            if (!isBlocked(tryY)) { bestY = tryY; break; }
+      const candidateYs: number[] = [];
+      for (let y = taskRect.top - 8; y >= calendarTop; y -= 4) {
+        candidateYs.push(y);
+      }
+      for (let y = taskRect.bottom + 8; y <= taskRect.bottom + 200; y += 4) {
+        candidateYs.push(y);
+      }
+
+      let routeY = taskRect.top - 8;
+      let foundClear = false;
+      for (const cy of candidateYs) {
+        const leg1Hit = hitsObstacle(startX, startY, turnX, startY);
+        const leg2Hit = hitsObstacle(turnX, startY, turnX, cy);
+        const leg3Hit = hitsObstacle(turnX, cy, taskLeftX, cy);
+        const leg4Hit = hitsObstacle(taskLeftX, cy, taskLeftX, taskMidY);
+        if (!leg1Hit && !leg2Hit && !leg3Hit && !leg4Hit) {
+          routeY = cy;
+          foundClear = true;
+          break;
+        }
+      }
+      if (!foundClear) {
+        for (const cy of candidateYs) {
+          const leg3Hit = hitsObstacle(turnX, cy, taskLeftX, cy);
+          if (!leg3Hit) {
+            routeY = cy;
+            break;
           }
         }
-        cornerY = bestY;
       }
 
-      container.appendChild(makeLine(startX, startY, cornerX, startY));
-      container.appendChild(makeLine(cornerX, startY, cornerX, cornerY));
-      container.appendChild(makeLine(cornerX, cornerY, taskLeftX, cornerY));
-      container.appendChild(makeLine(taskLeftX, cornerY, taskLeftX, taskMidY));
+      container.appendChild(makeSeg(startX, startY, turnX, startY));
+      container.appendChild(makeSeg(turnX, startY, turnX, routeY));
+      container.appendChild(makeSeg(turnX, routeY, taskLeftX, routeY));
+      container.appendChild(makeSeg(taskLeftX, routeY, taskLeftX, taskMidY));
     }
 
     const highlight = document.createElement('div');
@@ -5547,17 +5586,19 @@ export default function Dashboard() {
   }, []);
 
   const hideCountdownHoverLine = useCallback(() => {
+    hoverLineActiveIdRef.current = null;
     const existing = document.getElementById('countdown-hover-line-overlay');
     if (existing) existing.remove();
   }, []);
 
   const setHoveredCountdownTaskIdDebounced = useCallback((id: number | null) => {
-    if (hoveredCountdownTaskIdRef.current === id) return;
+    if (id === hoveredCountdownTaskIdRef.current) return;
     hoveredCountdownTaskIdRef.current = id;
+    if (hoverLineTimerRef.current) { clearTimeout(hoverLineTimerRef.current); hoverLineTimerRef.current = null; }
     if (id !== null) {
-      showCountdownHoverLine(id);
+      hoverLineTimerRef.current = setTimeout(() => { showCountdownHoverLine(id); }, 60);
     } else {
-      hideCountdownHoverLine();
+      hoverLineTimerRef.current = setTimeout(() => { hideCountdownHoverLine(); }, 100);
     }
   }, [showCountdownHoverLine, hideCountdownHoverLine]);
 
