@@ -28752,7 +28752,7 @@ export default function Dashboard() {
                     {gridSizes.moduleColumnWidth > 0 && (
                       <div style={{ position: 'absolute', left: `${gridSizes.timeColumnWidth}px`, top: 0, bottom: 0, width: `${gridSizes.moduleColumnWidth + 9}px`, backgroundColor: otherRowColors.courseRowColor || otherRowColors.cellBg, zIndex: 50 }} />
                     )}
-                    <div className="flex min-w-0 relative" style={{ overflow: 'hidden', marginLeft: `${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px`, height: '100%' }}>
+                    <div className="flex min-w-0 relative" style={{ overflow: 'hidden', marginLeft: `${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px`, height: '100%', backgroundColor: dimColor(otherRowColors.courseRowColor || otherRowColors.cellBg, 0.375) }}>
                     {weekDays.map((day, dayIdx) => {
                       const cellDate = startOfDayET(day);
                       const isOtherToday = isSameDayET(day, stableToday);
