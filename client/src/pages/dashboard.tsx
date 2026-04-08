@@ -5440,42 +5440,44 @@ export default function Dashboard() {
     const barEl = document.querySelector(`[data-testid="countdown-bar-cr-${hoveredCountdownTaskId}"], [data-testid="countdown-bar-or-${hoveredCountdownTaskId}"]`) as HTMLElement | null;
     if (!barEl) return;
 
-    const taskSelectors = [
-      `[data-testid="course-module-task-static-${hoveredCountdownTaskId}"]`,
-      `[data-testid="course-fullweek-task-today-${hoveredCountdownTaskId}"]`,
-      `[data-testid="day-detail-task-${hoveredCountdownTaskId}"]`,
-      `[data-testid="other-task-${hoveredCountdownTaskId}"]`,
-      `[data-testid="all-day-task-${hoveredCountdownTaskId}"]`,
-      `[data-testid="time-task-${hoveredCountdownTaskId}"]`,
-      `[data-testid="multi-hour-task-${hoveredCountdownTaskId}"]`,
-      `[data-testid="task-link-today-${hoveredCountdownTaskId}"]`,
-      `[data-testid="task-link-tomorrow-${hoveredCountdownTaskId}"]`,
-      `[data-testid="task-link-week-${hoveredCountdownTaskId}"]`,
-      `[data-testid="upcoming-2w-task-${hoveredCountdownTaskId}"]`,
-      `[data-testid="task-link-beyond-${hoveredCountdownTaskId}"]`,
-      `[data-testid="droppable-task-${hoveredCountdownTaskId}"]`,
-    ].join(', ');
-    const taskEl = document.querySelector(taskSelectors) as HTMLElement | null;
-    if (!taskEl) {
+    const allCandidates = document.querySelectorAll(`[data-testid$="-${hoveredCountdownTaskId}"]`);
+    let filteredTaskEl: HTMLElement | null = null;
+    for (const el of allCandidates) {
+      const tid = el.getAttribute('data-testid') || '';
+      if (tid.startsWith('countdown-bar-') || tid.startsWith('checkbox-') || tid.startsWith('att-link-') || tid.startsWith('zoom-icon-') || tid.startsWith('pdf-icon-')) continue;
+      if (tid.includes('task-') || tid.includes('droppable-')) {
+        filteredTaskEl = el as HTMLElement;
+        break;
+      }
+    }
+    if (!filteredTaskEl) {
       const barRect = barEl.getBoundingClientRect();
       const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       svg.id = 'countdown-hover-line-overlay';
       svg.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:9999';
+      const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      bg.setAttribute('x', String(barRect.right + 6));
+      bg.setAttribute('y', String(barRect.top - 2));
+      bg.setAttribute('width', '145');
+      bg.setAttribute('height', '16');
+      bg.setAttribute('rx', '3');
+      bg.setAttribute('fill', 'rgba(30,30,30,0.85)');
+      svg.appendChild(bg);
       const notFoundText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      notFoundText.setAttribute('x', String(barRect.left + barRect.width / 2));
-      notFoundText.setAttribute('y', String(barRect.top - 8));
-      notFoundText.setAttribute('text-anchor', 'middle');
-      notFoundText.setAttribute('fill', 'rgba(59,130,246,0.9)');
-      notFoundText.setAttribute('font-size', '11');
-      notFoundText.setAttribute('font-weight', '600');
-      notFoundText.textContent = 'Task not visible in current view';
+      notFoundText.setAttribute('x', String(barRect.right + 10));
+      notFoundText.setAttribute('y', String(barRect.top + 10));
+      notFoundText.setAttribute('text-anchor', 'start');
+      notFoundText.setAttribute('fill', '#93c5fd');
+      notFoundText.setAttribute('font-size', '10');
+      notFoundText.setAttribute('font-weight', '500');
+      notFoundText.textContent = 'Not in current week view';
       svg.appendChild(notFoundText);
       document.body.appendChild(svg);
       return () => { const el = document.getElementById('countdown-hover-line-overlay'); if (el) el.remove(); };
     }
 
     const barRect = barEl.getBoundingClientRect();
-    const taskRect = taskEl.getBoundingClientRect();
+    const taskRect = filteredTaskEl.getBoundingClientRect();
 
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.id = 'countdown-hover-line-overlay';
