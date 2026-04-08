@@ -1,0 +1,106 @@
+REFERENCE DOC
+When you turn on the cat washroom lights, the system checks if you have unlistened school readings for this week. If yes, it asks via voice: "Would you like to play [reading name]?" and waits for your answer. If you confirm, it starts reading the material aloud on the Nest speaker while displaying the text on your tablet and TV. If you don't confirm within 23 seconds, it plays CHUM FM 104.5 instead. When you turn the lights OFF, everything stops and your progress is saved.
+HA YAML
+rest_command:
+  cat_lights_webhook:                                    # Name you call from HA automations
+    url: "http://172.24.1.204:5000/api/webhook/cat-lights"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+APP FLOW 1
+POST /api/webhook/cat-lights
+│
+├── Query light.cat_lights state from HA → "off"
+│
+├── IF CPPA playback is active:
+│   └── stopNestPlaybackWithGoodbye('light_off')
+│       ├── Save current chunk index to database
+│       ├── media_player/media_stop → media_player.nestaudio6787
+│       │   Stops the Nest speaker audio
+│       ├── media_player/turn_off → media_player.fire_tv_172_24_0_88
+│       │   Turns off the Fire Stick
+│       └── media_player/turn_off → media_player.tv_cat_wr
+│           Turns off the Samsung TV
+│
+├── IF TTS session is active:
+│   └── stopTTSSession() — kills the chunk-by-chunk reading
+│
+├── stopAllCatWashroomSpeakers()
+│   ├── media_player/media_stop → media_player.nestaudio6787
+│   │   Stops Nest speaker (CHUM FM or anything else)
+│   ├── media_player/media_stop → [echo_cat_left, echo_cat_right, echo_cat_middle]
+│   │   Stops all 3 cat washroom Echo speakers
+│   └── media_player/media_stop → media_player.cat_washroom_media_group
+│       Stops the entire cat washroom speaker group
+│
+├── Reset state flags:
+│   catLightsPromptPending = false
+│   catWashPlaybackTrigger = null
+│
+└── Response: { action: "stopped", stoppedItems: [...] }
+APP FLOW 2
+POST /api/webhook/cat-lights
+│
+├── Query light.cat_lights state from HA → "on"
+│
+├── GUARD: Server startup cooldown (skip if server just restarted)
+├── GUARD: Skip if playback already active
+├── GUARD: Skip if another prompt is already pending
+│
+├── ★ STOP any leftover media (CHUM FM, etc):
+│   └── stopAllCatWashroomSpeakers()
+│       ├── media_player/media_stop → media_player.nestaudio6787
+│       ├── media_player/media_stop → [all 3 Echo speakers]
+│       └── media_player/media_stop → media_player.cat_washroom_media_group
+│
+├── Look up active semester settings from database
+├── Calculate current week number (accounts for reading week)
+├── Find next unlistened CPPA file for this week
+│   ├── Check database cache first
+│   └── If not cached → sync from OneDrive, then check again
+│
+├── IF no unlistened files found:
+│   └── playChumFmRadio()
+│       └── media_player/play_media → media_player.cat_washroom_media_group
+│           content_type: "custom"
+│           content_id: "play 104.5 chum fm"
+│       └── DONE (no prompt needed)
+│
+├── Prepare TTS prompt:
+│   message = "Would you like to play [file description]?"
+│
+├── Set HA booleans:
+│   ├── input_boolean/turn_off → input_boolean.module_reading_confirmed
+│   └── input_boolean/turn_on → input_boolean.module_reading_pending
+│
+├── Set speaker volumes for prompt:
+│   ├── media_player/volume_set → media_player.home_assistant_voice_097c38 @ 0.85
+│   └── media_player/volume_set → media_player.nestaudio6787 @ 0.85
+│
+├── Generate TTS audio (Edge TTS, voice: en-US-AndrewMultilingualNeural)
+│
+├── Play TTS prompt (with fallback chain):
+│   ├── TRY 1: media_player/play_media → media_player.home_assistant_voice_097c38
+│   │   Plays on HA Voice ESPHome device
+│   ├── TRY 2: media_player/play_media → media_player.nestaudio6787
+│   │   Falls back to Nest speaker
+│   └── TRY 3: tts/speak → tts.home_assistant_cloud → HA Voice device
+│       Last resort: HA Cloud TTS (Nabu Casa)
+│
+├── Wait 2 seconds (let prompt finish)
+│
+├── WAIT FOR CONFIRMATION (up to 23 seconds):
+│   ├── Poll input_boolean.module_reading_confirmed every 1.5s
+│   └── OR receive POST /api/webhook/cat-lights-confirm
+│
+├── Reset booleans:
+│   ├── input_boolean/turn_off → input_boolean.module_reading_pending
+│   └── input_boolean/turn_off → input_boolean.module_reading_confirmed
+│
+├── IF NOT CONFIRMED (23s timeout):
+│   └── playChumFmRadio()
+│       └── media_player/play_media → media_player.cat_washroom_media_group
+│           Plays CHUM FM 104.5
+│
+└── IF CONFIRMED:
+    └── startConfirmedPlaybackFlow() — See AUTOMATION 3
