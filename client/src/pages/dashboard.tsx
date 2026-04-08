@@ -3758,6 +3758,7 @@ export default function Dashboard() {
     } catch { return {}; }
   });
   const [semStartDialogKey, setSemStartDialogKey] = useState<string | null>(null);
+  const [bulkSyncLoaded, setBulkSyncLoaded] = useState(false);
   const [weeklyPlanningOpen, setWeeklyPlanningOpen] = useState(false);
   const [greyClassifyOpen, setGreyClassifyOpen] = useState(false);
   const [greyClassifySelections, setGreyClassifySelections] = useState<Record<number, string>>({});
@@ -3823,6 +3824,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (authLevel !== '5747') return;
+    if (!bulkSyncLoaded) return;
     const now = new Date();
     const nowStr = now.toISOString();
     for (const sem of SEMESTER_COURSE_DEFS) {
@@ -3850,7 +3852,7 @@ export default function Dashboard() {
         break;
       }
     }
-  }, [semesterEndConfirmed, semesterStartConfirmed, semEndDialogDismissUntil]);
+  }, [semesterEndConfirmed, semesterStartConfirmed, semEndDialogDismissUntil, bulkSyncLoaded]);
 
   const CERTIFICATE_TYPE_OPTIONS = [
     { group: 'Certificate 1', options: [
@@ -5851,7 +5853,9 @@ export default function Dashboard() {
             return merged;
           });
         }
+        setBulkSyncLoaded(true);
       })
+      .catch(() => { setBulkSyncLoaded(true); })
       .then(() => {
         const syncKeys = [
           'coursesData', 'schoolData', 'colorSettings', 'blinkSettings',
