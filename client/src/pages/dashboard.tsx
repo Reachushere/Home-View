@@ -30653,16 +30653,6 @@ export default function Dashboard() {
                 localStorage.setItem(`calendarReduction_${deviceId}`, String(calendarReduction));
                 localStorage.setItem(`gridSizes_${deviceId}`, JSON.stringify(gridSizes));
                 localStorage.setItem(`hwGroupBarWidth_${deviceId}`, String(hwGroupBarWidth));
-                fetch('/api/degree-tracking/bulk', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ calendarHeight, calendarReduction, gridSizes, hwGroupBarWidth }),
-                }).catch(() => {});
-                fetch('/api/ui-settings/hwGroupBarWidth', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ value: hwGroupBarWidth }),
-                }).catch(() => {});
                 toast({ title: "Saved", description: "Calendar size saved as default" });
               };
               doSave();
@@ -30683,16 +30673,6 @@ export default function Dashboard() {
               localStorage.setItem(`calendarReduction_${deviceId}`, String(calendarReduction));
               localStorage.setItem(`gridSizes_${deviceId}`, JSON.stringify(gridSizes));
               localStorage.setItem(`hwGroupBarWidth_${deviceId}`, String(hwGroupBarWidth));
-              fetch('/api/degree-tracking/bulk', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ calendarHeight, calendarReduction, gridSizes, hwGroupBarWidth }),
-              }).catch(() => {});
-              fetch('/api/ui-settings/hwGroupBarWidth', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ value: hwGroupBarWidth }),
-              }).catch(() => {});
               toast({ title: "Saved", description: "Calendar size saved as default" });
             }}
             data-testid="button-set-default-size"
