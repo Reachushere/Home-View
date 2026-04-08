@@ -29142,7 +29142,7 @@ export default function Dashboard() {
                   <div 
                     key={hour} 
                     className={`grid relative group/row flex-shrink-0`}
-                    style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${rowHeight}px`, minHeight: `${rowHeight}px`, overflow: 'visible', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '12px' : undefined, borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '12px' : undefined, backgroundColor: '#faf8f5' }}
+                    style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${rowHeight}px`, minHeight: `${rowHeight}px`, overflow: 'visible', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '12px' : undefined, borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '12px' : undefined, backgroundColor: '#faf8f5', zIndex: getConflictExtraHeight(hour) > 0 ? 53 : undefined }}
                   >
                     <div className={`text-[10px] font-medium tracking-wide flex items-center justify-center relative ${isCurrentHour && blinkSettings.todayColumnBlink ? "animate-today-time-cell" : ""}`} style={{ backgroundColor: isCurrentHour && blinkSettings.todayColumnBlink ? undefined : (isCurrentHour ? colorSettings.todayCurrentHourCellBackground : colorSettings.headerBar), color: 'white', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '8px' : undefined, borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined, borderBottom: hourIdx < timeSlots.length - 1 ? '1px dotted rgba(255,255,255,0.25)' : undefined, animationDelay: isCurrentHour && blinkSettings.todayColumnBlink ? `-${Date.now() % 7000}ms` : undefined }}>
                       {hour === 0 || hour === 24 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
@@ -29406,10 +29406,13 @@ export default function Dashboard() {
                             const isDarkBg = (() => {
                               if (task.isCompleted) return false;
                               const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode);
-                              const taskBg = cMatch?.taskBgColor || (colors?.bg) || '';
+                              const gradColors = courseCode ? getCourseGradientColors(courseCode) : null;
+                              const hasCourseGrad = gradColors && gradColors.start !== '#6b7280';
+                              const taskBg = cMatch?.taskBgColor || (colors?.bg) || (hasCourseGrad ? gradColors.start : '');
                               if (!taskBg) return false;
-                              const hex = taskBg.replace('#', '');
-                              if (hex.length === 6) {
+                              const hexMatch = taskBg.match(/#([0-9a-fA-F]{6})/);
+                              if (hexMatch) {
+                                const hex = hexMatch[1];
                                 const r = parseInt(hex.substring(0, 2), 16);
                                 const g = parseInt(hex.substring(2, 4), 16);
                                 const b = parseInt(hex.substring(4, 6), 16);
