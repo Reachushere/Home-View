@@ -1,0 +1,183 @@
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs --lines 200 --nostream 2>&1 | grep -iE "Pre-Stop|Pre-Volume|chunk|Nest|play_media|fallback|failed|webhook|cat.lights"
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:41: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:41: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:41: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:41: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:41: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:41: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:36: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:37: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:37: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:37: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:37: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:37: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:37: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:37: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:37: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:37: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:37: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:38: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:38: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:38: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:38: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:16: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:16: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:16: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:17: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:17: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:17: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:17: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:17: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:17: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:17: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:17: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:17: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:17: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:18: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:18: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:50: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:50: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:51: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:51: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:51: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:51: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:51: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:51: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:51: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:51: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:51: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:51: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:52: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:52: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:52: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+0|unical   | [AudioPrep] Generating chunk 35/46 for 62263157-c416-47a7-8207-8eab759500b8.pdf (1429 chars)
+0|unical   | Generating Edge TTS for 1429 chars, file: prep-191-chunk-34
+0|unical   | TTS audio saved locally: /tts-audio/prep-191-chunk-34-1775635933886.mp3
+0|unical   | [AudioPrep] Generating chunk 36/46 for 62263157-c416-47a7-8207-8eab759500b8.pdf (1327 chars)
+0|unical   | Generating Edge TTS for 1327 chars, file: prep-191-chunk-35
+0|unical   | TTS audio saved locally: /tts-audio/prep-191-chunk-35-1775635935712.mp3
+0|unical   | [AudioPrep] Generating chunk 37/46 for 62263157-c416-47a7-8207-8eab759500b8.pdf (1383 chars)
+0|unical   | Generating Edge TTS for 1383 chars, file: prep-191-chunk-36
+0|unical   | TTS audio saved locally: /tts-audio/prep-191-chunk-36-1775635937310.mp3
+0|unical   | [AudioPrep] Generating chunk 38/46 for 62263157-c416-47a7-8207-8eab759500b8.pdf (1364 chars)
+0|unical   | Generating Edge TTS for 1364 chars, file: prep-191-chunk-37
+0|unical   | TTS audio saved locally: /tts-audio/prep-191-chunk-37-1775635938942.mp3
+0|unical   | [AudioPrep] Generating chunk 39/46 for 62263157-c416-47a7-8207-8eab759500b8.pdf (1489 chars)
+0|unical   | Generating Edge TTS for 1489 chars, file: prep-191-chunk-38
+0|unical   | TTS audio saved locally: /tts-audio/prep-191-chunk-38-1775635940759.mp3
+0|unical   | [AudioPrep] Generating chunk 40/46 for 62263157-c416-47a7-8207-8eab759500b8.pdf (1408 chars)
+0|unical   | Generating Edge TTS for 1408 chars, file: prep-191-chunk-39
+0|unical   | TTS audio saved locally: /tts-audio/prep-191-chunk-39-1775635942380.mp3
+0|unical   | [AudioPrep] Generating chunk 41/46 for 62263157-c416-47a7-8207-8eab759500b8.pdf (1461 chars)
+0|unical   | Generating Edge TTS for 1461 chars, file: prep-191-chunk-40
+0|unical   | TTS audio saved locally: /tts-audio/prep-191-chunk-40-1775635944536.mp3
+0|unical   | [AudioPrep] Generating chunk 42/46 for 62263157-c416-47a7-8207-8eab759500b8.pdf (1478 chars)
+0|unical   | Generating Edge TTS for 1478 chars, file: prep-191-chunk-41
+0|unical   | TTS audio saved locally: /tts-audio/prep-191-chunk-41-1775635946299.mp3
+0|unical   | [AudioPrep] Generating chunk 43/46 for 62263157-c416-47a7-8207-8eab759500b8.pdf (1366 chars)
+0|unical   | Generating Edge TTS for 1171 chars, file: prep-191-chunk-42
+0|unical   | TTS audio saved locally: /tts-audio/prep-191-chunk-42-1775635959089.mp3
+0|unical   | [AudioPrep] Generating chunk 44/46 for 62263157-c416-47a7-8207-8eab759500b8.pdf (1419 chars)
+0|unical   | Generating Edge TTS for 1419 chars, file: prep-191-chunk-43
+0|unical   | TTS audio saved locally: /tts-audio/prep-191-chunk-43-1775635960970.mp3
+0|unical   | [AudioPrep] Generating chunk 45/46 for 62263157-c416-47a7-8207-8eab759500b8.pdf (1431 chars)
+0|unical   | Generating Edge TTS for 1431 chars, file: prep-191-chunk-44
+0|unical   | TTS audio saved locally: /tts-audio/prep-191-chunk-44-1775635962653.mp3
+0|unical   | [AudioPrep] Generating chunk 46/46 for 62263157-c416-47a7-8207-8eab759500b8.pdf (744 chars)
+0|unical   | Generating Edge TTS for 744 chars, file: prep-191-chunk-45
+0|unical   | TTS audio saved locally: /tts-audio/prep-191-chunk-45-1775635964126.mp3
+0|unical   | [AudioPrep] ===== Completed 62263157-c416-47a7-8207-8eab759500b8.pdf: 46 chunks in 130s =====
+0|unical   | [AudioPrep] Municipal 101 _ AMO.pdf: 5320 chars → 4 chunks
+0|unical   | [AudioPrep] Generating chunk 1/4 for Municipal 101 _ AMO.pdf (1402 chars)
+0|unical   | Generating Edge TTS for 1402 chars, file: prep-193-chunk-0
+0|unical   | TTS audio saved locally: /tts-audio/prep-193-chunk-0-1775635982236.mp3
+0|unical   | [AudioPrep] Generating chunk 2/4 for Municipal 101 _ AMO.pdf (1453 chars)
+0|unical   | Generating Edge TTS for 1396 chars, file: prep-193-chunk-1
+0|unical   | TTS audio saved locally: /tts-audio/prep-193-chunk-1-1775635984007.mp3
+0|unical   | [AudioPrep] Generating chunk 3/4 for Municipal 101 _ AMO.pdf (1482 chars)
+0|unical   | Generating Edge TTS for 1482 chars, file: prep-193-chunk-2
+0|unical   | TTS audio saved locally: /tts-audio/prep-193-chunk-2-1775635987019.mp3
+0|unical   | [AudioPrep] Generating chunk 4/4 for Municipal 101 _ AMO.pdf (980 chars)
+0|unical   | Generating Edge TTS for 980 chars, file: prep-193-chunk-3
+0|unical   | TTS audio saved locally: /tts-audio/prep-193-chunk-3-1775635989197.mp3
+0|unical   | [AudioPrep] ===== Completed Municipal 101 _ AMO.pdf: 4 chunks in 20s =====
+0|unical   | [AudioPrep] CPPA122, Module 7 - Introduction.pdf: 67849 chars → 49 chunks
+0|unical   | [AudioPrep] Generating chunk 1/49 for CPPA122, Module 7 - Introduction.pdf (1453 chars)
+0|unical   | Generating Edge TTS for 1453 chars, file: prep-132-chunk-0
+0|unical   | TTS audio saved locally: /tts-audio/prep-132-chunk-0-1775635992223.mp3
+0|unical   | [AudioPrep] Generating chunk 2/49 for CPPA122, Module 7 - Introduction.pdf (1417 chars)
+0|unical   | Generating Edge TTS for 1360 chars, file: prep-132-chunk-1
+0|unical   | TTS audio saved locally: /tts-audio/prep-132-chunk-1-1775635993907.mp3
+0|unical   | [AudioPrep] Generating chunk 3/49 for CPPA122, Module 7 - Introduction.pdf (1499 chars)
+0|unical   | Generating Edge TTS for 1499 chars, file: prep-132-chunk-2
+0|unical   | TTS audio saved locally: /tts-audio/prep-132-chunk-2-1775635995516.mp3
+0|unical   | [AudioPrep] Generating chunk 4/49 for CPPA122, Module 7 - Introduction.pdf (1476 chars)
+0|unical   | Generating Edge TTS for 1476 chars, file: prep-132-chunk-3
+0|unical   | TTS audio saved locally: /tts-audio/prep-132-chunk-3-1775635997148.mp3
+0|unical   | [AudioPrep] Generating chunk 5/49 for CPPA122, Module 7 - Introduction.pdf (1372 chars)
+0|unical   | Generating Edge TTS for 1372 chars, file: prep-132-chunk-4
+0|unical   | TTS audio saved locally: /tts-audio/prep-132-chunk-4-1775636010019.mp3
+0|unical   | [AudioPrep] Generating chunk 6/49 for CPPA122, Module 7 - Introduction.pdf (1244 chars)
+0|unical   | Generating Edge TTS for 1244 chars, file: prep-132-chunk-5
+0|unical   | TTS audio saved locally: /tts-audio/prep-132-chunk-5-1775636022873.mp3
+0|unical   | [AudioPrep] Generating chunk 7/49 for CPPA122, Module 7 - Introduction.pdf (1417 chars)
+0|unical   | Generating Edge TTS for 1417 chars, file: prep-132-chunk-6
+0|unical   | TTS audio saved locally: /tts-audio/prep-132-chunk-6-1775636024749.mp3
+0|unical   | [AudioPrep] Generating chunk 8/49 for CPPA122, Module 7 - Introduction.pdf (1416 chars)
+0|unical   | Generating Edge TTS for 1362 chars, file: prep-132-chunk-7
+0|unical   | TTS audio saved locally: /tts-audio/prep-132-chunk-7-1775636037810.mp3
+0|unical   | [AudioPrep] Generating chunk 9/49 for CPPA122, Module 7 - Introduction.pdf (1396 chars)
+0|unical   | Generating Edge TTS for 1396 chars, file: prep-132-chunk-8
+0|unical   | TTS audio saved locally: /tts-audio/prep-132-chunk-8-1775636050747.mp3
+0|unical   | [AudioPrep] Generating chunk 10/49 for CPPA122, Module 7 - Introduction.pdf (1248 chars)
+0|unical   | Generating Edge TTS for 1196 chars, file: prep-132-chunk-9
+0|unical   | TTS audio saved locally: /tts-audio/prep-132-chunk-9-1775636052498.mp3
+0|unical   | [AudioPrep] Generating chunk 11/49 for CPPA122, Module 7 - Introduction.pdf (1420 chars)
+0|unical   | Generating Edge TTS for 1420 chars, file: prep-132-chunk-10
+0|unical   | TTS audio saved locally: /tts-audio/prep-132-chunk-10-1775636054300.mp3
+0|unical   | [AudioPrep] Generating chunk 12/49 for CPPA122, Module 7 - Introduction.pdf (1499 chars)
+0|unical   | Generating Edge TTS for 1499 chars, file: prep-132-chunk-11
+0|unical   | TTS audio saved locally: /tts-audio/prep-132-chunk-11-1775636055943.mp3
+0|unical   | [AudioPrep] Generating chunk 13/49 for CPPA122, Module 7 - Introduction.pdf (588 chars)
+0|unical   | Generating Edge TTS for 532 chars, file: prep-132-chunk-12
+0|unical   | TTS audio saved locally: /tts-audio/prep-132-chunk-12-1775636057345.mp3
+0|unical   | [AudioPrep] Generating chunk 14/49 for CPPA122, Module 7 - Introduction.pdf (1497 chars)
+0|unical   | Generating Edge TTS for 1497 chars, file: prep-132-chunk-13
+0|unical   | TTS audio saved locally: /tts-audio/prep-132-chunk-13-1775636059366.mp3
+0|unical   | [AudioPrep] Generating chunk 15/49 for CPPA122, Module 7 - Introduction.pdf (1400 chars)
+0|unical   | Generating Edge TTS for 1400 chars, file: prep-132-chunk-14
+0|unical   | TTS audio saved locally: /tts-audio/prep-132-chunk-14-1775636061133.mp3
+0|unical   | [AudioPrep] Generating chunk 16/49 for CPPA122, Module 7 - Introduction.pdf (1409 chars)
+0|unical   | Generating Edge TTS for 1409 chars, file: prep-132-chunk-15
+0|unical   | TTS audio saved locally: /tts-audio/prep-132-chunk-15-1775636062909.mp3
+0|unical   | [AudioPrep] Generating chunk 17/49 for CPPA122, Module 7 - Introduction.pdf (1353 chars)
+0|unical   | Generating Edge TTS for 1353 chars, file: prep-132-chunk-16
+0|unical   | TTS audio saved locally: /tts-audio/prep-132-chunk-16-1775636064533.mp3
+0|unical   | [AudioPrep] Generating chunk 18/49 for CPPA122, Module 7 - Introduction.pdf (1214 chars)
+0|unical   | Generating Edge TTS for 1214 chars, file: prep-132-chunk-17
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 2 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: AggregateError
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+byhomeyyz@raspberrypi:~/Home-View $
