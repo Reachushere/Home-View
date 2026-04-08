@@ -12750,11 +12750,21 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
           let chunkPlaying = false;
           let chunkPlayMediaSentAt = Date.now();
-          const playResult = await playOnNestSpeaker(`${appUrl}${audioPath}`);
+          const playPromise = playOnNestSpeaker(`${appUrl}${audioPath}`);
+          if (catWashPlaybackState) {
+            chunkPlayMediaSentAt = Date.now();
+            catWashPlaybackState.chunkStartedAt = new Date(chunkPlayMediaSentAt + 1500);
+            catWashPlaybackState.wordIndex = 0;
+          }
+          startWordAdvancement();
+          const playResult = await playPromise;
           chunkPlayMediaSentAt = playResult.playMediaSentAt;
           if (playResult.success && playResult.actuallyPlaying) {
             chunkPlaying = true;
             consecutivePlayFailures = 0;
+            if (catWashPlaybackState) {
+              catWashPlaybackState.chunkStartedAt = new Date(chunkPlayMediaSentAt + 1500);
+            }
           } else if (playResult.success && !playResult.actuallyPlaying) {
             console.warn(`[Nest Playback] Nest state unconfirmed for chunk ${i + 1} — trying HA Cloud TTS fallback`);
             const haCloudPlayed = await playChunkViaHACloudTTS(chunkText, sessionId, NEST_SPEAKER_ENTITY);
@@ -12881,14 +12891,10 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
             break;
           }
           if (!chunkPlaying) {
+            stopWordAdvancement();
             await new Promise(r => setTimeout(r, 3000));
             continue;
           }
-          if (catWashPlaybackState) {
-            catWashPlaybackState.chunkStartedAt = new Date(chunkPlayMediaSentAt + 2000);
-            catWashPlaybackState.wordIndex = 0;
-          }
-          startWordAdvancement();
           console.log(`[Nest Playback] Playing chunk ${i + 1}, ~${Math.round(estimatedMs / 1000)}s`);
 
           const nextIdx = i + 1;
