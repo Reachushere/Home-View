@@ -448,6 +448,24 @@ export async function updateOneDriveFileContent(itemId: string, content: string)
   }
 }
 
+export async function moveOneDriveItem(itemId: string, destinationFolderId: string): Promise<void> {
+  const client = await getOneDriveClient();
+  await client.api(`/me/drive/items/${itemId}`).patch({
+    parentReference: { id: destinationFolderId }
+  });
+}
+
+export async function getOneDriveItemId(path: string): Promise<string | null> {
+  const client = await getOneDriveClient();
+  try {
+    const encodedPath = encodeURIComponent(path).replace(/%2F/g, '/');
+    const item = await client.api(`/me/drive/root:${encodedPath}`).get();
+    return item?.id || null;
+  } catch {
+    return null;
+  }
+}
+
 export async function deleteOneDriveItem(itemId: string): Promise<void> {
   const client = await getOneDriveClient();
   try {

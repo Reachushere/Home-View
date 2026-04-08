@@ -3850,9 +3850,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 
       try {
         const semChildren = await listOneDriveFolderChildren(semBasePath);
-        const matchingFolder = (semChildren || []).find((f: any) =>
+        const matchingFolders = (semChildren || []).filter((f: any) =>
           f.folder && f.name.toUpperCase().startsWith(courseCode.toUpperCase())
         );
+        const matchingFolder = matchingFolders.length > 1
+          ? matchingFolders.sort((a: any, b: any) => a.name.length - b.name.length)[0]
+          : matchingFolders[0];
         if (matchingFolder) {
           courseFolderPath = `${semBasePath}/${matchingFolder.name}`;
         }
@@ -6052,6 +6055,99 @@ async function pollStatus(timeout){
     } catch (err: any) {
       console.error("Error creating semester folders:", err);
       res.status(500).json({ error: err.message || "Failed to create semester folders" });
+    }
+  });
+
+  app.post("/api/onedrive/cleanup-duplicate-folders", async (req, res) => {
+    try {
+      const { listOneDriveFolderChildren, moveOneDriveItem, getOneDriveItemId, deleteOneDriveItem } = await import("./onedrive");
+      const semester = await storage.getActiveSemesterSettings();
+      if (!semester) return res.json({ message: "No active semester" });
+
+      const year = semester.semesterYear || new Date().getFullYear();
+      const semType = getSemesterTypeFolder(semester.semesterType);
+      const semBasePath = `/School/1. TMU/Courses/${year}/${semType}`;
+      const semChildren = await listOneDriveFolderChildren(semBasePath);
+      const folders = (semChildren || []).filter((f: any) => f.folder);
+
+      const courseCodesInSem: string[] = [];
+      for (let i = 1; i <= 7; i++) {
+        const code = semester[`course${i}Code` as keyof typeof semester];
+        if (code) courseCodesInSem.push(String(code).toUpperCase());
+      }
+
+      const cleaned: string[] = [];
+      for (const courseCode of courseCodesInSem) {
+        const matching = folders.filter((f: any) => f.name.toUpperCase().startsWith(courseCode));
+        if (matching.length <= 1) continue;
+
+        const sorted = matching.sort((a: any, b: any) => a.name.length - b.name.length);
+        const correctFolder = sorted[0];
+        const duplicates = sorted.slice(1);
+
+        for (const dup of duplicates) {
+          const dupChildren = await listOneDriveFolderChildren(`${semBasePath}/${dup.name}`);
+          for (const child of dupChildren) {
+            const correctFolderChildren = await listOneDriveFolderChildren(`${semBasePath}/${correctFolder.name}`);
+            const existsInCorrect = correctFolderChildren.some((c: any) => c.name === child.name);
+
+            if (child.folder && existsInCorrect) {
+              const subChildren = await listOneDriveFolderChildren(`${semBasePath}/${dup.name}/${child.name}`);
+              if (subChildren.length === 0) {
+                try {
+                  await deleteOneDriveItem(child.id);
+                  cleaned.push(`Deleted empty subfolder: ${dup.name}/${child.name}`);
+                } catch (e: any) {
+                  cleaned.push(`Failed to delete empty subfolder ${child.name}: ${e.message}`);
+                }
+              } else {
+                const correctSubId = await getOneDriveItemId(`${semBasePath}/${correctFolder.name}/${child.name}`);
+                if (correctSubId) {
+                  for (const subChild of subChildren) {
+                    try {
+                      await moveOneDriveItem(subChild.id, correctSubId);
+                      cleaned.push(`Moved ${dup.name}/${child.name}/${subChild.name} -> ${correctFolder.name}/${child.name}/`);
+                    } catch (e: any) {
+                      cleaned.push(`Failed to move ${subChild.name}: ${e.message}`);
+                    }
+                  }
+                }
+              }
+            } else if (child.folder && !existsInCorrect) {
+              try {
+                await moveOneDriveItem(child.id, correctFolder.id);
+                cleaned.push(`Moved folder ${dup.name}/${child.name} -> ${correctFolder.name}/`);
+              } catch (e: any) {
+                cleaned.push(`Failed to move folder ${child.name}: ${e.message}`);
+              }
+            } else {
+              try {
+                await moveOneDriveItem(child.id, correctFolder.id);
+                cleaned.push(`Moved ${dup.name}/${child.name} -> ${correctFolder.name}/`);
+              } catch (e: any) {
+                cleaned.push(`Failed to move ${child.name}: ${e.message}`);
+              }
+            }
+          }
+
+          const remainingChildren = await listOneDriveFolderChildren(`${semBasePath}/${dup.name}`);
+          if (remainingChildren.length === 0) {
+            try {
+              await deleteOneDriveItem(dup.id);
+              cleaned.push(`Deleted empty duplicate folder: ${dup.name}`);
+            } catch (e: any) {
+              cleaned.push(`Failed to delete ${dup.name}: ${e.message}`);
+            }
+          } else {
+            cleaned.push(`Duplicate folder ${dup.name} still has ${remainingChildren.length} items`);
+          }
+        }
+      }
+
+      res.json({ cleaned });
+    } catch (error: any) {
+      console.error("Cleanup duplicate folders error:", error);
+      res.status(500).json({ error: error.message });
     }
   });
 
