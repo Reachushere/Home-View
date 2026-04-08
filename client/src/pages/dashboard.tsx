@@ -28970,7 +28970,7 @@ export default function Dashboard() {
                           data-testid={`all-day-task-${task.id}`}
                         >
                           <div
-                            className={`group flex items-center gap-1 text-[9px] px-1 py-0.5 rounded border w-full min-w-0 cursor-pointer ${
+                            className={`group flex items-center gap-1 text-[10px] px-1 py-0.5 rounded border w-full min-w-0 cursor-pointer ${
                               ""
                             } ${task.isCompleted ? "text-gray-400" : ""}`}
                             style={{
