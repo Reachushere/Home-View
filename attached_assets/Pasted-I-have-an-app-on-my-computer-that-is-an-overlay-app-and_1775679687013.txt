@@ -1,0 +1,151 @@
+I have an app on my computer that is an overlay app and can automatically record zoom meetings as it records my screen. How can I set that up to automatically open and record whenever I have a zoom meeting? I input the zoom link for my classes here into the calendar when I selct virtual course as the class type, so is there a way to just click that link and have it open and then also have the screen recording app open to record it? it is called AnyMp4 Screen Recorder
+
+8 minutes ago
+
+Show less
+
+Planning custom protocol integration (16 seconds)
+This is a great idea. Since your app is a web app running in the browser, it can't directly launch desktop programs. But there's a clean way to make this work using a custom URL protocol handler on your Windows PC. Here's the plan:
+
+How it would work:
+
+I set up a small .bat script on your PC that opens both the Zoom link AND AnyMp4 Screen Recorder
+We register a custom protocol (like unical://) on your Windows PC so the browser knows to call that script
+I update the app so when you click a Zoom link, it uses that protocol — launching both Zoom and the recorder automatically
+What you'd need to do on your PC (one-time setup):
+
+Step 1 — Create a file called zoom-recorder.bat somewhere permanent (like C:\Scripts\). It would contain:
+
+@echo off
+start "" "%~1"
+start "" "C:\Path\To\AnyMp4 Screen Recorder\AnyMp4Screen.exe"
+
+(You'd replace the path with wherever AnyMp4 is installed)
+
+Step 2 — Register the custom protocol by saving a .reg file and running it. This tells Windows: "when the browser opens a unical:// link, run my script."
+
+Step 3 — I update the Zoom link in your app to use unical:// instead of opening the Zoom URL directly.
+
+Before I build anything, I need to know a couple things:
+
+Where is AnyMp4 Screen Recorder installed on your computer? For example, something like C:\Program Files\AnyMP4 Studio\AnyMP4 Screen Recorder. You can right-click the app shortcut, go to Properties, and check the Target path.
+
+"C:\Program Files\AnyMP4 Studio\AnyMP4 Screen Recorder\AnyMP4 Screen Recorder.exe"
+
+Got it — "C:\Program Files\AnyMP4 Studio\AnyMP4 Screen Recorder\AnyMP4 Screen Recorder.exe". Here's the full setup:
+
+Here's what you need to do on your Windows PC (one-time setup):
+
+Step 1 — Create the launch script
+
+Create a folder C:\Scripts\ and save this as C:\Scripts\zoom-recorder.bat:
+
+@echo off
+:: Extract the Zoom URL from the argument
+set "URL=%~1"
+:: Launch AnyMP4 Screen Recorder
+start "" "C:\Program Files\AnyMP4 Studio\AnyMP4 Screen Recorder\AnyMP4 Screen Recorder.exe"
+:: Wait 2 seconds for it to open
+timeout /t 2 /nobreak >nul
+:: Open the Zoom link in default browser (which launches Zoom)
+start "" "%URL%"
+
+Step 2 — Register the custom protocol
+
+Save this as register-unical.reg anywhere on your desktop, then double-click it and confirm:
+
+Windows Registry Editor Version 5.00
+[HKEY_CURRENT_USER\Software\Classes\unical]
+@="URL:UniCal Protocol"
+"URL Protocol"=""
+[HKEY_CURRENT_USER\Software\Classes\unical\shell]
+[HKEY_CURRENT_USER\Software\Classes\unical\shell\open]
+[HKEY_CURRENT_USER\Software\Classes\unical\shell\open\command]
+@="\"C:\\Scripts\\zoom-recorder.bat\" \"%1\""
+
+Step 3 — I'll update the app
+
+Now let me add a "Launch with Recorder" option to Zoom links in your app. When you click the Zoom camera icon for virtual classes, it will use the unical:// protocol to open both Zoom and AnyMP4 simultaneously.
+
+
+Ran rg
+Now let me check where the Zoom links are stored — the course settings likely have a Zoom URL field:
+
+
+3 actions
+Now let me check where the Zoom icon is clicked to open the link. Currently it's just an <img> with no click handler — it's just a visual indicator. Let me see how the Zoom link is used:
+
+
+Ran rg
+The Zoom icon currently has no click handler — it's just a visual indicator. Let me make it clickable and add the unical:// protocol option. I'll make the Zoom icon open both Zoom and AnyMP4 when clicked:
+
+
+Ran sed
+Now I need to make the Zoom icons clickable with the unical:// protocol. I need to get the course's Zoom link and pass it. Let me check how courseDeliveryModes is built and if there's a parallel map for Zoom links:
+
+
+2 actions
+I need a courseZoomLinks map similar to courseDeliveryModes. Let me add one:
+
+
+Edited client/src/pages/dashboard.tsx
+Now let me make the Zoom icons clickable. When clicked, they'll use the unical:// protocol (which opens both Zoom and AnyMP4). I'll update the three Zoom icon locations:
+
+
+Edited client/src/pages/dashboard.tsx
+Now let me also update the other two Zoom icon locations:
+
+
+4 actions
+Now let me commit and push:
+
+
+2 actions
+Pushed — commit 4e3777522.
+
+Here's a summary of everything done:
+
+Zoom + Screen Recorder (new feature):
+Now when you click the Zoom camera icon on any virtual class task, it will:
+
+Try to open unical:// protocol (which launches AnyMP4 Screen Recorder + the Zoom link via your batch script)
+Also opens the Zoom link directly as a fallback
+One-time setup on your Windows PC:
+
+Step 1 — Create C:\Scripts\zoom-recorder.bat:
+
+@echo off
+set "URL=%~1"
+set "URL=%URL:unical://=%"
+start "" "C:\Program Files\AnyMP4 Studio\AnyMP4 Screen Recorder\AnyMP4 Screen Recorder.exe"
+timeout /t 2 /nobreak >nul
+start "" "%URL%"
+
+Step 2 — Save this as register-unical.reg on your desktop, then double-click it:
+
+Windows Registry Editor Version 5.00
+[HKEY_CURRENT_USER\Software\Classes\unical]
+@="URL:UniCal Protocol"
+"URL Protocol"=""
+[HKEY_CURRENT_USER\Software\Classes\unical\shell]
+[HKEY_CURRENT_USER\Software\Classes\unical\shell\open]
+[HKEY_CURRENT_USER\Software\Classes\unical\shell\open\command]
+@="\"C:\\Scripts\\zoom-recorder.bat\" \"%1\""
+
+After that, clicking any Zoom icon in your calendar will automatically open both apps.
+
+
+The pi's response was:
+
+byhomeyyz@raspberrypi:~/Home-View $ @echo off
+set "URL=%~1"
+set "URL=%URL:unical://=%"
+start "" "C:\Program Files\AnyMP4 Studio\AnyMP4 Screen Recorder\AnyMP4 Screen Recorder.exe"
+timeout /t 2 /nobreak >nul
+start "" "%URL%"
+-bash: @echo: command not found
+-bash: start: command not found
+timeout: invalid time interval ‘/t’
+Try 'timeout --help' for more information.
+-bash: start: command not found
+byhomeyyz@raspberrypi:~/Home-View $
