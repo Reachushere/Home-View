@@ -30663,8 +30663,7 @@ export default function Dashboard() {
           </div>
         </div>
         ) : (
-        <div className="mb-[0px] mt-[0px] relative flex gap-4 transition-opacity duration-300" style={{ height: calendarHeight - 12 - d2lTickerHeight, flexShrink: 0, order: 1, paddingTop: `${10 + d2lTickerHeight}px` }}>
-          <div className="relative overflow-visible" style={{ width: '100%' }}>
+        <div className="relative overflow-visible" style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction - 2}px` : ''})`, height: 'calc(100% - 18px)', marginTop: '18px', marginLeft: '12px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 - 2 - 2 - 2 : 0}px`, flexShrink: 0, order: 1, display: 'flex', flexDirection: 'column' as const }}>
           {/* Glass effect backing box - same as main calendar */}
           <div 
             className="absolute pointer-events-none"
@@ -30841,7 +30840,6 @@ export default function Dashboard() {
                 );
               })()}
             </div>
-          </div>
           </div>
           </div>
         </div>
