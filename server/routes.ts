@@ -13237,6 +13237,12 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       console.error(`[Nest Stop] Error playing goodbye: ${e.message}`);
     }
 
+    await Promise.allSettled([
+      stopNestSpeaker(),
+      haServiceCallSafe('media_player/media_stop', { entity_id: CAT_WR_HA_VOICE_ENTITY }, 'Post-goodbye stop HA Voice'),
+    ]);
+    console.log(`[Nest Stop] Post-goodbye stop sent to Nest + HA Voice`);
+
     catWashPlaybackActive = false;
     catWashPlaybackStartedAt = null;
     catWashPlaybackState = null;
