@@ -1,0 +1,49 @@
+byhomeyyz@raspberrypi:~/Home-View $ curl -s --max-time 30 http://172.24.1.204:5000/api/test-nest-speaker | python3 -m json.tool
+{
+    "timestamp": "2026-04-08T06:49:17.668Z",
+    "tests": {
+        "initialState": {
+            "state": "idle",
+            "media_content_type": "music",
+            "volume": 0.3499999940395355,
+            "friendly_name": "Bathroom speaker"
+        },
+        "turnOn": {
+            "status": 200,
+            "ok": true
+        },
+        "ttsSpeak": {
+            "status": 200,
+            "ok": true,
+            "bodyLength": 771,
+            "bodyPreview": "[{\"entity_id\":\"media_player.bathroom_speaker\",\"state\":\"idle\",\"attributes\":{\"volume_level\":0.3499999940395355,\"is_volume_muted\":false,\"media_content_id\":\"http://homeassistant.local:8123/api/tts_proxy/Q"
+        },
+        "stateAfterTTS": {
+            "state": "idle",
+            "media_content_type": "music",
+            "volume": 0.3499999940395355
+        },
+        "audioGenerated": {
+            "path": "/tts-audio/nest-diag-1775630962662-1775630962946.mp3"
+        },
+        "audioFile": {
+            "diskPath": "/home/byhomeyyz/Home-View/dist/public/tts-audio/nest-diag-1775630962662-1775630962946.mp3",
+            "exists": true,
+            "fileSize": 17568
+        },
+        "haUpload": {
+            "mediaId": "media-source://media_source/local/./tts_1775630962954.mp3"
+        },
+        "playMediaHA": {
+            "status": 200,
+            "ok": true,
+            "bodyPreview": "[{\"entity_id\":\"media_player.bathroom_speaker\",\"state\":\"idle\",\"attributes\":{\"volume_level\":0.3499999940395355,\"is_volume_muted\":false,\"media_content_id\":\"http://homeassistant.local:8123/media/local/tts"
+        },
+        "directUrl": "http://172.24.1.204:5000/tts-audio/nest-diag-1775630962662-1775630962946.mp3",
+        "stateAfterPlayMedia": {
+            "state": "idle",
+            "media_content_type": "music"
+        }
+    }
+}
+byhomeyyz@raspberrypi:~/Home-View $
