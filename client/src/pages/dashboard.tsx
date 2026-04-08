@@ -29245,6 +29245,8 @@ export default function Dashboard() {
                                   zIndex: 6,
                                 }}
                                 title={task.title}
+                                onClick={(e) => { e.stopPropagation(); setEditingTask(task); }}
+                                onDoubleClick={(e) => { e.stopPropagation(); setEditingTask(task); }}
                                 data-testid={`other-task-${task.id}`}
                               >
                                 <Checkbox
