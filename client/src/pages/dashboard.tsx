@@ -29404,10 +29404,24 @@ export default function Dashboard() {
                             e.stopPropagation();
                             if (allDayMatchingTask) {
                               setEditingTask(allDayMatchingTask);
-                            } else {
+                              return;
+                            }
+                            const evTitleNorm = (event.title || '').trim().toLowerCase().replace(/^\[[^\]]*\]\s*/, '');
+                            const evDay = event.startDate ? new Date(event.startDate).toISOString().substring(0, 10) : '';
+                            const titleMatch = allTasks.find(t => {
+                              const tTitle = (t.title || '').trim().toLowerCase().replace(/^\[[^\]]*\]\s*/, '');
+                              const tDay = t.dueDate ? new Date(t.dueDate).toISOString().substring(0, 10) : '';
+                              return tTitle === evTitleNorm && tDay === evDay;
+                            });
+                            if (titleMatch) {
+                              setEditingTask(titleMatch);
+                              return;
+                            }
+                            if (event.htmlLink) {
                               window.open(event.htmlLink, '_blank');
                             }
                           }}
+                          onDoubleClick={(e) => { e.stopPropagation(); e.preventDefault(); }}
                           className={`flex items-center text-[8px] py-0.5 rounded border cursor-pointer hover:opacity-80 w-full min-w-0 overflow-hidden ${isPrepEvent ? 'gap-0 px-0' : 'gap-1 px-1 bg-gray-200 dark:bg-gray-700 text-black dark:text-white border-gray-500'}`}
                           style={isPrepEvent ? { backgroundColor: prepCourseColor ? `${prepCourseColor}20` : 'rgba(255,255,255,0.1)', borderColor: prepCourseColor || 'rgba(255,255,255,0.3)' } : undefined}
                           data-testid={`all-day-gcal-${event.id}`}
@@ -29985,8 +29999,24 @@ export default function Dashboard() {
                                 const matchingTask = allTasks.find(t => t.calendarEventId === event.id || t.secondAccountCalendarEventId === event.id || t.prepCalendarEventId === event.id || t.secondAccountPrepEventId === event.id);
                                 if (matchingTask) {
                                   setEditingTask(matchingTask);
+                                  return;
+                                }
+                                const evTitleNorm = (event.title || '').trim().toLowerCase().replace(/^\[[^\]]*\]\s*/, '');
+                                const evDay = event.startDate ? new Date(event.startDate).toISOString().substring(0, 10) : '';
+                                const titleMatch = allTasks.find(t => {
+                                  const tTitle = (t.title || '').trim().toLowerCase().replace(/^\[[^\]]*\]\s*/, '');
+                                  const tDay = t.dueDate ? new Date(t.dueDate).toISOString().substring(0, 10) : '';
+                                  return tTitle === evTitleNorm && tDay === evDay;
+                                });
+                                if (titleMatch) {
+                                  setEditingTask(titleMatch);
+                                  return;
+                                }
+                                if (event.htmlLink) {
+                                  window.open(event.htmlLink, '_blank');
                                 }
                               }}
+                              onDoubleClick={(e) => { e.stopPropagation(); e.preventDefault(); }}
                               onMouseDown={(e) => e.stopPropagation()}
                               onMouseUp={(e) => e.stopPropagation()}
                               data-testid={`gcal-event-${event.id}`}
