@@ -11136,8 +11136,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const fs = await import('fs');
     if (fs.existsSync(COURSE_PRIORITY_FILE)) {
       const diskPriority = JSON.parse(fs.readFileSync(COURSE_PRIORITY_FILE, 'utf-8'));
-      coursePlayPriority = { ...DEFAULT_COURSE_PRIORITY, ...diskPriority };
-      console.log(`[Course Priority] Loaded from disk (merged with defaults): ${JSON.stringify(coursePlayPriority)}`);
+      coursePlayPriority = { ...diskPriority, ...DEFAULT_COURSE_PRIORITY };
+      console.log(`[Course Priority] Loaded from disk (defaults override): ${JSON.stringify(coursePlayPriority)}`);
     } else {
       console.log(`[Course Priority] Using defaults: ${JSON.stringify(coursePlayPriority)}`);
     }
@@ -11266,6 +11266,12 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     if (!codeWithNum) return 999;
 
     const abSuffix = (await isInSpringSummerHalfA()) ? 'A' : 'B';
+    const plainKey = codeWithNum;
+    if (plainKey in DEFAULT_COURSE_PRIORITY) {
+      const pri = DEFAULT_COURSE_PRIORITY[plainKey];
+      console.log(`[CoursePri] ${codeWithNum} matched DEFAULT key="${plainKey}" → priority ${pri}`);
+      return pri;
+    }
     for (const [key, priority] of Object.entries(coursePlayPriority)) {
       const parts = key.split(':');
       let keyCode: string;
@@ -12191,7 +12197,18 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           const nestResult = await playOnNestSpeaker(`${appUrl}${confirmPath}`, 2, confirmationTTS);
           if (nestResult.success) {
             confirmPlayed = true;
-            console.log(`${logPrefix} Confirm TTS played on Nest speaker via OpenAI/Edge TTS (actuallyPlaying=${nestResult.actuallyPlaying})`);
+            console.log(`${logPrefix} Confirm TTS played on Nest speaker via Edge TTS (actuallyPlaying=${nestResult.actuallyPlaying})`);
+            await new Promise(r => setTimeout(r, 2500));
+            try {
+              const { state: midCheckState } = await getNestMediaState();
+              console.log(`${logPrefix} Confirm TTS mid-play check: Nest state=${midCheckState}`);
+              if (midCheckState !== 'playing' && midCheckState !== 'buffering') {
+                console.warn(`${logPrefix} Nest stopped playing confirm TTS early (state=${midCheckState}) — replaying via Cloud TTS on HA Voice`);
+                confirmPlayed = false;
+              }
+            } catch (e: any) {
+              console.warn(`${logPrefix} Confirm mid-check failed: ${e.message}`);
+            }
           } else {
             console.warn(`${logPrefix} Nest speaker confirm failed — falling back to HA Voice`);
           }
@@ -12211,7 +12228,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           }
         }
         const confirmWordCount = confirmationTTS.split(/\s+/).length;
-        const confirmWaitMs = Math.max(4000, (confirmWordCount / 140) * 60 * 1000 + 1500);
+        const confirmWaitMs = Math.max(5000, (confirmWordCount / 140) * 60 * 1000 + 2000);
         console.log(`${logPrefix} Confirm TTS playing, waiting ${Math.round(confirmWaitMs / 1000)}s`);
         await new Promise(r => setTimeout(r, confirmWaitMs));
         console.log(`${logPrefix} Confirm TTS finished`);
