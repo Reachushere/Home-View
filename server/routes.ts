@@ -7484,7 +7484,7 @@ async function pollStatus(timeout){
               results.dueEvents.updated++;
             }
           } else {
-            const summary = `${task.courseName ? `[${task.courseName}] ` : ''}${task.title}`;
+            const summary = `${task.courseName ? `${task.courseName} - ` : ''}${task.title}`;
             const dateStr = formatLocalDate(new Date(task.dueDate));
             const existingId = await findExistingEventBySummary(summary, dateStr);
             if (existingId) {

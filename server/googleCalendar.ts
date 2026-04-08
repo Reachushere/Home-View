@@ -109,7 +109,7 @@ export async function createCalendarEvent(task: {
   // Check if this is an all-day task (midnight or 11 PM)
   const isAllDay = hour === 0 || hour === 23;
   
-  const summary = `${task.courseName ? `[${task.courseName}] ` : ''}${task.title}`;
+  const summary = `${task.courseName ? `${task.courseName} - ` : ''}${task.title}`;
   
   const checkDateStr = dueDate.toISOString().split('T')[0];
   const existingEventId = await findExistingEventBySummary(summary, checkDateStr);
@@ -118,16 +118,17 @@ export async function createCalendarEvent(task: {
     return { id: existingEventId };
   }
   if (task.courseName) {
-    const coursePrefix = `[${task.courseName}]`;
+    const coursePrefix = `${task.courseName} - `;
+    const oldCoursePrefix = `[${task.courseName}]`;
     const titleWords = task.title.toLowerCase().replace(/[^a-z0-9\s&]/g, '').trim().split(/\s+/).filter(w => w.length > 2);
     try {
       const checkCal = await getGoogleCalendarClient();
       const tMin = new Date(checkDateStr + 'T00:00:00-05:00').toISOString();
       const tMax = new Date(checkDateStr + 'T23:59:59-05:00').toISOString();
-      const resp = await checkCal.events.list({ calendarId: 'primary', timeMin: tMin, timeMax: tMax, q: coursePrefix.substring(0, 50), singleEvents: true, maxResults: 30 });
+      const resp = await checkCal.events.list({ calendarId: 'primary', timeMin: tMin, timeMax: tMax, q: task.courseName!.substring(0, 50), singleEvents: true, maxResults: 30 });
       const similar = (resp.data.items || []).find(e => {
-        if (!e.summary?.startsWith(coursePrefix)) return false;
-        const existingTitle = e.summary.replace(coursePrefix, '').trim().toLowerCase().replace(/[^a-z0-9\s&]/g, '').trim();
+        if (!e.summary?.startsWith(coursePrefix) && !e.summary?.startsWith(oldCoursePrefix)) return false;
+        const existingTitle = e.summary.replace(coursePrefix, '').replace(oldCoursePrefix, '').trim().toLowerCase().replace(/[^a-z0-9\s&]/g, '').trim();
         return titleWords.some(w => existingTitle.includes(w));
       });
       if (similar?.id) {
@@ -214,7 +215,7 @@ export async function createEventInCalendar(calendarId: string, task: {
   const hour = dueDate.getHours();
   const isAllDay = hour === 0 || hour === 23;
   
-  const summary = `${task.courseName ? `[${task.courseName}] ` : ''}${task.title}`;
+  const summary = `${task.courseName ? `${task.courseName} - ` : ''}${task.title}`;
   
   let event: any;
   
@@ -291,7 +292,7 @@ export async function updateCalendarEvent(eventId: string, task: {
   const dueDate = new Date(task.dueDate);
   const isAllDay = isAllDayEvent(dueDate);
   
-  const summary = `${task.courseName ? `[${task.courseName}] ` : ''}${task.title}`;
+  const summary = `${task.courseName ? `${task.courseName} - ` : ''}${task.title}`;
   
   let existingEvent;
   try {
@@ -411,7 +412,7 @@ export async function createPrepCalendarEvent(task: {
   const dueDate = new Date(task.dueDate);
   const isAllDay = isAllDayEvent(startDate);
   
-  const summary = `[PREP] ${task.courseName ? `[${task.courseName}] ` : ''}${task.title}`;
+  const summary = `PREP ${task.courseName ? `${task.courseName} - ` : ''}${task.title}`;
   const description = `Start preparing for: ${task.title}\nDue: ${dueDate.toLocaleDateString()}\n\n${task.description || ''}`;
   
   let event: any;
@@ -468,7 +469,7 @@ export async function updatePrepCalendarEvent(eventId: string, task: {
   const dueDate = new Date(task.dueDate);
   const isAllDay = isAllDayEvent(startDate);
   
-  const summary = `[PREP] ${task.courseName ? `[${task.courseName}] ` : ''}${task.title}`;
+  const summary = `PREP ${task.courseName ? `${task.courseName} - ` : ''}${task.title}`;
   const description = `Start preparing for: ${task.title}\nDue: ${dueDate.toLocaleDateString()}\n\n${task.description || ''}`;
   
   let existingEvent;
@@ -819,6 +820,13 @@ export async function syncGoogleEventsToReview(): Promise<{ added: number; skipp
     const bracketMatch = summary.match(/^\[([A-Z]{4}\d{3})\s*-/i);
     if (bracketMatch) {
       const code = bracketMatch[1].toUpperCase();
+      if (courseCodeSet.has(code)) {
+        return { isClass: true, courseCode: code, courseName: `${code} - ${courseNameMap.get(code) || ''}` };
+      }
+    }
+    const dashMatch = summary.match(/^([A-Z]{4}\d{3})\s*-\s/i);
+    if (dashMatch) {
+      const code = dashMatch[1].toUpperCase();
       if (courseCodeSet.has(code)) {
         return { isClass: true, courseCode: code, courseName: `${code} - ${courseNameMap.get(code) || ''}` };
       }

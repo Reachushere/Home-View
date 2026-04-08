@@ -239,51 +239,54 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 const typeColors: Record<string, string> = {
+  class: "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400",
   reading: "bg-blue-500/20 text-blue-600 dark:text-blue-400",
   module: "bg-purple-500/20 text-purple-600 dark:text-purple-400",
   essay: "bg-orange-500/20 text-orange-600 dark:text-orange-400",
   project: "bg-green-500/20 text-green-600 dark:text-green-400",
-  discussion: "bg-pink-500/20 text-pink-600 dark:text-pink-400",
-  poll: "bg-cyan-500/20 text-cyan-600 dark:text-cyan-400",
+  discussion: "bg-cyan-500/20 text-cyan-600 dark:text-cyan-400",
+  poll: "bg-pink-500/20 text-pink-600 dark:text-pink-400",
   exam: "bg-red-500/20 text-red-600 dark:text-red-400",
-  quiz: "bg-amber-500/20 text-amber-600 dark:text-amber-400",
-  reminder: "bg-teal-500/20 text-teal-600 dark:text-teal-400",
-  scholarship: "bg-yellow-500/20 text-yellow-600 dark:text-yellow-400",
+  quiz: "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400",
+  reminder: "bg-indigo-500/20 text-indigo-600 dark:text-indigo-400",
+  meeting: "bg-yellow-500/20 text-yellow-600 dark:text-yellow-400",
+  scholarship: "bg-gray-400/20 text-gray-500 dark:text-gray-400",
   medical: "bg-red-500/20 text-red-600 dark:text-red-400",
+  other: "bg-yellow-600/20 text-yellow-600 dark:text-yellow-400",
 };
 
 const calendarTypeIconColors: Record<string, string> = {
   class: '#6d28d9',
-  reading: '#2563eb',
-  module: '#7c3aed',
-  essay: '#ea580c',
-  project: '#16a34a',
-  discussion: '#db2777',
-  poll: '#0891b2',
-  exam: '#dc2626',
-  quiz: '#d97706',
-  reminder: '#0d9488',
-  meeting: '#6366f1',
-  scholarship: '#ca8a04',
-  medical: '#dc2626',
-  other: '#6b7280',
+  reading: '#3882ff',
+  module: '#b478dc',
+  essay: '#ffb41e',
+  project: '#ff6432',
+  discussion: '#00d2f0',
+  poll: '#ff46a0',
+  exam: '#dc1e1e',
+  quiz: '#10c878',
+  reminder: '#5064dc',
+  meeting: '#ca8a04',
+  scholarship: '#a0aab4',
+  medical: '#dc3c3c',
+  other: '#b4a028',
 };
 
 const calendarTypeBarColors: Record<string, string> = {
-  class: 'rgb(0,190,160)',
+  class: 'rgb(34,180,90)',
   reading: 'rgb(56,130,255)',
-  module: 'rgb(16,200,120)',
+  module: 'rgb(180,120,220)',
   essay: 'rgb(255,180,30)',
-  project: 'rgb(255,60,60)',
-  discussion: 'rgb(160,80,255)',
+  project: 'rgb(255,100,50)',
+  discussion: 'rgb(0,210,240)',
   poll: 'rgb(255,70,160)',
   exam: 'rgb(220,30,30)',
-  quiz: 'rgb(180,160,40)',
-  reminder: 'rgb(0,210,240)',
-  meeting: 'rgb(80,80,240)',
-  scholarship: 'rgb(202,138,4)',
+  quiz: 'rgb(16,200,120)',
+  reminder: 'rgb(80,100,220)',
+  meeting: 'rgb(202,138,4)',
+  scholarship: 'rgb(160,170,180)',
   medical: 'rgb(220,60,60)',
-  other: 'rgb(120,130,140)',
+  other: 'rgb(180,160,40)',
   partnerShifts: 'rgb(100,100,180)',
 };
 
@@ -11666,7 +11669,7 @@ export default function Dashboard() {
       const eventEndDate = new Date(e.endDate);
       if (eventEndDate < now) return false;
       if (!isSameDayET(eventDate, day) || getETHours(eventDate) !== hour) return false;
-      const titleClean = e.title.replace(/^\[PREP\]\s*/, '').replace(/^\[.*?\]\s*/g, '').toLowerCase().trim();
+      const titleClean = e.title.replace(/^\[PREP\]\s*/, '').replace(/^PREP\s+/, '').replace(/^\[.*?\]\s*/g, '').toLowerCase().trim();
       const isDupOfExistingTask = dayTasks.some(t => {
         if (t.calendarEventId === e.id || t.secondAccountCalendarEventId === e.id || t.prepCalendarEventId === e.id || t.secondAccountPrepEventId === e.id) return true;
         const taskTitle = t.title.replace(/^\[.*?\]\s*/g, '').toLowerCase().trim();
@@ -11729,7 +11732,7 @@ export default function Dashboard() {
         if (!isSameDayET(eventDate, day) || getETHours(eventDate) !== h) return false;
         if (new Date(e.endDate) < new Date()) return false;
         if (dismissedCalendarEvents.has(e.id)) return false;
-        const titleClean = e.title.replace(/^\[PREP\]\s*/, '').replace(/^\[.*?\]\s*/g, '').toLowerCase().trim();
+        const titleClean = e.title.replace(/^\[PREP\]\s*/, '').replace(/^PREP\s+/, '').replace(/^\[.*?\]\s*/g, '').toLowerCase().trim();
         const isDup = dayTasks.some(t => {
           if (t.calendarEventId === e.id || t.secondAccountCalendarEventId === e.id || t.prepCalendarEventId === e.id || t.secondAccountPrepEventId === e.id) return true;
           const taskTitle = t.title.replace(/^\[.*?\]\s*/g, '').toLowerCase().trim();
@@ -11790,7 +11793,7 @@ export default function Dashboard() {
       const eventDayStart = new Date(yr, mo - 1, dy);
       if (eventDayStart < todayStart) return false;
       if (!isSameDayET(eventDate, day)) return false;
-      const titleClean = e.title.replace(/^\[PREP\]\s*/, '').replace(/^\[.*?\]\s*/g, '').toLowerCase().trim();
+      const titleClean = e.title.replace(/^\[PREP\]\s*/, '').replace(/^PREP\s+/, '').replace(/^\[.*?\]\s*/g, '').toLowerCase().trim();
       const isDupOfExistingTask = dayTasks.some(t => {
         if (t.calendarEventId === e.id || t.secondAccountCalendarEventId === e.id || t.prepCalendarEventId === e.id || t.secondAccountPrepEventId === e.id) return true;
         const taskTitle = t.title.replace(/^\[.*?\]\s*/g, '').toLowerCase().trim();
@@ -29371,8 +29374,8 @@ export default function Dashboard() {
                     })}
                     {/* All-day Google Calendar events */}
                     {allDayEvents.map(event => {
-                      const isPrepEvent = event.title.startsWith('[PREP]');
-                      const displayTitle = isPrepEvent ? event.title.replace(/^\[PREP\]\s*/, '') : event.title;
+                      const isPrepEvent = event.title.startsWith('[PREP]') || event.title.startsWith('PREP ');
+                      const displayTitle = isPrepEvent ? event.title.replace(/^\[PREP\]\s*/, '').replace(/^PREP\s+/, '').replace(/^\[([^\]]+)\]\s*/, '$1 - ') : event.title.replace(/^\[([^\]]+)\]\s*/, '$1 - ');
                       const prepCourseColor = isPrepEvent ? (() => {
                         const matchingTask = allTasks.find(t => t.prepCalendarEventId === event.id || t.secondAccountPrepEventId === event.id);
                         if (matchingTask?.courseName) return getCourseColor(matchingTask.courseName);
@@ -29859,14 +29862,24 @@ export default function Dashboard() {
                                 {/* Type bar with glass effect */}
                                 {(() => {
                                   const hasCourseLink = !!(task.courseName || (courseCode && dynamicCourseColors[courseCode]));
-                                  const effectiveType = hasCourseLink ? (task.type || 'class') : 'other';
+                                  const effectiveType = task.type || (hasCourseLink ? 'class' : 'other');
                                   const typeBarColor = calendarTypeBarColors[effectiveType] || calendarTypeBarColors.other;
                                   const TIcon = effectiveType === 'class' ? null : (iconMap[effectiveType] || null);
+                                  const wizardTypeColors: Record<string, string> = {
+                                    reading: 'rgb(56,130,255)', module: 'rgb(180,120,220)', essay: 'rgb(255,180,30)',
+                                    project: 'rgb(255,100,50)', discussion: 'rgb(0,210,240)', poll: 'rgb(255,70,160)',
+                                    exam: 'rgb(220,30,30)', quiz: 'rgb(16,200,120)', reminder: 'rgb(80,100,220)',
+                                    meeting: 'rgb(202,138,4)', scholarship: 'rgb(160,170,180)', medical: 'rgb(220,60,60)',
+                                    other: 'rgb(180,160,40)',
+                                  };
                                   const moduleBoxColor = (() => {
-                                    const cMatch2 = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode.toUpperCase());
-                                    if (cMatch2?.color) return cMatch2.color;
-                                    const gradColors2 = courseCode ? getCourseGradientColors(courseCode) : null;
-                                    return cMatch2?.colorEnd || (gradColors2?.end || otherRowColors.labelEnd);
+                                    if (hasCourseLink) {
+                                      const cMatch2 = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode.toUpperCase());
+                                      if (cMatch2?.color) return cMatch2.color;
+                                      const gradColors2 = courseCode ? getCourseGradientColors(courseCode) : null;
+                                      return cMatch2?.colorEnd || (gradColors2?.end || otherRowColors.labelEnd);
+                                    }
+                                    return wizardTypeColors[effectiveType] || otherRowColors.labelEnd;
                                   })();
                                   return (
                                     <div style={{
@@ -29959,7 +29972,7 @@ export default function Dashboard() {
                                 </div>
                                 <div style={{ background: gcalColor, padding: '2px 4px', display: 'flex', alignItems: 'center', flex: 1, minWidth: 0 }}>
                                   <span style={{ fontSize: '9px', fontWeight: 500, color: 'white', letterSpacing: '0.3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
-                                    {event.title}
+                                    {event.title.replace(/^\[PREP\]\s*/, 'PREP ').replace(/\[([^\]]+)\]/g, '$1')}
                                   </span>
                                 </div>
                               </div>
@@ -30190,13 +30203,23 @@ export default function Dashboard() {
                       {/* Type bar with icon-only color strip + module-colored title area */}
                       {(() => {
                         const hasCourseLink = !!(task.courseName || (courseCode && dynamicCourseColors[courseCode]));
-                        const effectiveType = hasCourseLink ? (task.type || 'class') : 'other';
+                        const effectiveType = task.type || (hasCourseLink ? 'class' : 'other');
                         const typeBarColor = calendarTypeBarColors[effectiveType] || calendarTypeBarColors.other;
                         const TIcon = effectiveType === 'class' ? null : (iconMap[effectiveType] || null);
                         const cMatchBar = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode);
+                        const wizardTypeColors2: Record<string, string> = {
+                          reading: 'rgb(56,130,255)', module: 'rgb(180,120,220)', essay: 'rgb(255,180,30)',
+                          project: 'rgb(255,100,50)', discussion: 'rgb(0,210,240)', poll: 'rgb(255,70,160)',
+                          exam: 'rgb(220,30,30)', quiz: 'rgb(16,200,120)', reminder: 'rgb(80,100,220)',
+                          meeting: 'rgb(202,138,4)', scholarship: 'rgb(160,170,180)', medical: 'rgb(220,60,60)',
+                          other: 'rgb(180,160,40)',
+                        };
                         const moduleBoxColor = (() => {
-                          if (cMatchBar?.color) return cMatchBar.color;
-                          return colors?.bg || typeBarColor;
+                          if (hasCourseLink) {
+                            if (cMatchBar?.color) return cMatchBar.color;
+                            return colors?.bg || typeBarColor;
+                          }
+                          return wizardTypeColors2[effectiveType] || typeBarColor;
                         })();
                         return (
                           <div style={{
