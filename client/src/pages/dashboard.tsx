@@ -27788,17 +27788,8 @@ export default function Dashboard() {
                           const displayCodeLabel = isTBDLabel ? 'TBD' : code;
                           const words = fullName.trim() ? fullName.trim().split(/\s+/) : [];
                           if (words.length === 0 && displayCodeLabel.length > 6) {
-                            const label = displayCodeLabel;
-                            const ucBoundaries = [];
-                            for (let ci = 1; ci < label.length; ci++) {
-                              if (label[ci] >= 'A' && label[ci] <= 'Z' && label[ci - 1] >= 'a' && label[ci - 1] <= 'z') ucBoundaries.push(ci);
-                            }
-                            const splitAt = ucBoundaries.length > 0 ? ucBoundaries.reduce((best, b) => Math.abs(b - label.length / 2) < Math.abs(best - label.length / 2) ? b : best) : Math.ceil(label.length / 2);
                             return (
-                              <>
-                                <span className="font-[785] text-center" style={{ lineHeight: 1.2 }}>{label.slice(0, splitAt)}</span>
-                                <span className="font-[785] text-center" style={{ lineHeight: 1.2 }}>{label.slice(splitAt)}</span>
-                              </>
+                              <span className="font-[785] text-center" style={{ lineHeight: 1.2, whiteSpace: 'nowrap' }}>{displayCodeLabel}</span>
                             );
                           }
                           return (
@@ -28050,17 +28041,8 @@ export default function Dashboard() {
                       const displayCodeLabel = isTBDLabel ? 'TBD' : code;
                       const words = fullName.trim() ? fullName.trim().split(/\s+/) : [];
                       if (words.length === 0 && displayCodeLabel.length > 6) {
-                        const label = displayCodeLabel;
-                        const ucBoundaries: number[] = [];
-                        for (let ci = 1; ci < label.length; ci++) {
-                          if (label[ci] >= 'A' && label[ci] <= 'Z' && label[ci - 1] >= 'a' && label[ci - 1] <= 'z') ucBoundaries.push(ci);
-                        }
-                        const splitAt = ucBoundaries.length > 0 ? ucBoundaries.reduce((best, b) => Math.abs(b - label.length / 2) < Math.abs(best - label.length / 2) ? b : best) : Math.ceil(label.length / 2);
                         return (
-                          <>
-                            <span className="font-[785] text-center" style={{ lineHeight: 1.2 }}>{label.slice(0, splitAt)}</span>
-                            <span className="font-[785] text-center" style={{ lineHeight: 1.2 }}>{label.slice(splitAt)}</span>
-                          </>
+                          <span className="font-[785] text-center" style={{ lineHeight: 1.2, whiteSpace: 'nowrap' }}>{displayCodeLabel}</span>
                         );
                       }
                       return (
