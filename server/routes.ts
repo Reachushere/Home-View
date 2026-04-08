@@ -10048,7 +10048,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   });
 
   let SERVER_START_TIME = 0;
-  const SERVER_STARTUP_COOLDOWN_MS = 60 * 1000;
+  const SERVER_STARTUP_COOLDOWN_MS = 30 * 1000;
   app.once('mount', () => { SERVER_START_TIME = Date.now(); });
   setTimeout(() => { if (SERVER_START_TIME === 0) { SERVER_START_TIME = Date.now(); } console.log(`[Startup] Cooldown timer started (${SERVER_STARTUP_COOLDOWN_MS / 1000}s)`); }, 3000);
 
@@ -14084,7 +14084,7 @@ document.body.removeChild(a);
       if (lightState === 'off') {
         catWashTrace('CatLights', 'LIGHT OFF — stopping all playback');
         console.log("[Cat Lights] Light off — stopping all playback and saving progress");
-        lastPlaybackStoppedAt = Date.now();
+        const wasActuallyPlaying = catWashPlaybackActive;
         const offSession = catLightsPromptSession;
         const stopped: string[] = [];
         if (catWashPlaybackActive) {
@@ -14121,6 +14121,12 @@ document.body.removeChild(a);
         }
         catWashPlaybackTrigger = null;
         await clearPlaybackSession();
+        if (wasActuallyPlaying) {
+          lastPlaybackStoppedAt = Date.now();
+          console.log(`[Cat Lights] lastPlaybackStoppedAt set (playback was active)`);
+        } else {
+          console.log(`[Cat Lights] lastPlaybackStoppedAt NOT set (no playback was active)`);
+        }
         console.log(`[Cat Lights] Stopped: ${stopped.join(', ') || 'nothing was playing'}`);
         return res.json({ action: "stopped", reason: "Light turned off", stoppedItems: stopped });
       }

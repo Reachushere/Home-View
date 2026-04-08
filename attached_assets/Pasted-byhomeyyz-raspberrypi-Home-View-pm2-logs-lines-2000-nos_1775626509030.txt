@@ -1,0 +1,61 @@
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs --lines 2000 --nostream | grep -i "Cat Knob\|Cat Wash Stop\|Cat Lights\|Nest\|HA Voice\|confirm\|abort\|playback\|catWashPlaybackActive"
+0|unical   | [Cat Lights HA Voice Pre-Wake] fetch attempt 1/3 failed: HTTP 500: 500 Internal Server Error
+0|unical   | [Cat Lights HA Voice Pre-Wake] fetch attempt 2/3 failed: HTTP 500: 500 Internal Server Error
+0|unical   | [HA Safe] Cat Lights HA Voice Pre-Wake media_player/turn_on failed: [Cat Lights HA Voice Pre-Wake] All 3 fetch attempts failed: HTTP 500: 500 Internal Server Error
+0|unical   | [Cat Lights HA Voice Pre-Wake [Replayed]] fetch attempt 1/3 failed: HTTP 500: 500 Internal Server Error
+0|unical   | [Cat Lights HA Voice Pre-Wake [Replayed]] fetch attempt 2/3 failed: HTTP 500: 500 Internal Server Error
+0|unical   | [HA Queue] Replay failed (attempt 2): Cat Lights HA Voice Pre-Wake media_player/turn_on — moved to back of queue
+0|unical   | [Cat Lights HA Voice Pre-Wake [Replayed]] fetch attempt 1/3 failed: HTTP 500: 500 Internal Server Error
+0|unical   | [Cat Lights HA Voice Pre-Wake [Replayed]] fetch attempt 2/3 failed: HTTP 500: 500 Internal Server Error
+0|unical   | [Nest Pre-Confirm Stop] fetch attempt 1/3 failed: HTTP 500: 500 Internal Server Error
+0|unical   | [Nest Pre-Confirm Stop] fetch attempt 2/3 failed: HTTP 500: 500 Internal Server Error
+0|unical   | [HA Queue] Giving up on: Cat Lights HA Voice Pre-Wake media_player/turn_on after 3 attempts
+0|unical   | [HA Safe] Nest Pre-Confirm Stop media_player/media_stop failed: [Nest Pre-Confirm Stop] All 3 fetch attempts failed: HTTP 500: 500 Internal Server Error
+0|unical   | [Nest Pre-Confirm Stop [Replayed]] fetch attempt 1/3 failed: HTTP 500: 500 Internal Server Error
+0|unical   | [Cat Lights] Nest play_media sent but state not confirmed playing — trying tts/speak
+0|unical   | [Nest Playback] Nest state unconfirmed for chunk 1 — trying HA Cloud TTS fallback
+0|unical   | [Nest Playback] Chunk 1 all playback methods FAILED (1/3)
+0|unical   | [Cat Lights] ====== WEBHOOK TRIGGERED ======
+0|unical   | [Cat Lights] Timestamp: 4/8/2026, 1:33:53 AM
+0|unical   | [Cat Lights] Request body: {"state":"on"}
+0|unical   | [Cat Lights] Ignoring — server started 39s ago (cooldown: 60s)
+0|unical   | [Cat Lights] ====== WEBHOOK TRIGGERED ======
+0|unical   | [Cat Lights] Timestamp: 4/8/2026, 1:34:08 AM
+0|unical   | [Cat Lights] Request body: {"state":"off"}
+0|unical   | [Cat Lights] Ignoring — server started 55s ago (cooldown: 60s)
+0|unical   | [Cat Lights] ====== WEBHOOK TRIGGERED ======
+0|unical   | [Cat Lights] Timestamp: 4/8/2026, 1:34:13 AM
+0|unical   | [Cat Lights] Request body: {"state":"on"}
+0|unical   | [Cat Lights] Ignoring — server started 60s ago (cooldown: 60s)
+0|unical   | [Cat Lights] ====== WEBHOOK TRIGGERED ======
+0|unical   | [Cat Lights] Timestamp: 4/8/2026, 1:34:28 AM
+0|unical   | [Cat Lights] Request body: {"state":"off"}
+0|unical   | [Cat Lights] Body parsing: state="off", action="", rawToState=undefined, trigger="none"
+0|unical   | [Cat Lights] Using body state directly: off
+0|unical   | [Cat Lights] Light state: off (body state: off)
+0|unical   | [Cat Lights] Architecture: server-side TTS → Google Nest speaker (media_player.play_media)
+0|unical   | [TRACE 1:34:28 AM] [CatLights] LIGHT OFF — stopping all playback | state={"active":false,"sessionId":0,"file":null,"chunk":null,"lightsPrompt":false,"trigger":null,"msSinceStop":null,"msSinceManualStop":null,"msSinceStart":null}
+0|unical   | [Cat Lights] Light off — stopping all playback and saving progress
+0|unical   | [Speakers] Stopped Nest + HA Voice + cat washroom Echos + media group (stop + pause)
+0|unical   | [Tablet Nav DB] SET master: wrote {"action":"stop_playback","goodbyeText":"","timestamp":1775626468951}, verify rows=1
+0|unical   | [Tablet Nav DB] SET tv: wrote {"action":"stop_playback","timestamp":1775626468951}, verify rows=1
+0|unical   | [Tablet Nav DB] SET master: wrote {"action":"stop_playback","goodbyeText":"","timestamp":1775626468951}, verify rows=1
+0|unical   | [Tablet Nav] Command SET for master: stop_playback url=none ts=1775626468951 pending=["master","tv"]
+0|unical   | [Tablet Nav DB] SET tv: wrote {"action":"stop_playback","timestamp":1775626468951}, verify rows=1
+0|unical   | [Tablet Nav] Command SET for tv: stop_playback url=none ts=1775626468951 pending=["master","tv"]
+0|unical   | [Cat Lights] Tablet stop commands sent (ts=1775626468951)
+0|unical   | [Cat Lights] No playback was active — skipping Fire Stick/Samsung TV shutdown (avoids CEC wake)
+0|unical   | [Cat Lights] Cleared promptPending (session 0 still current)
+0|unical   | [Cat Lights] Stopped: echoSpeakers, tablet
+0|unical   | [Tablet Nav GET] master FOUND from memory: action=stop_playback age=332ms
+0|unical   | 1:34:29 AM [express] GET /api/tablet-nav 200 in 1ms :: {"action":"stop_playback","goodbyeText":"","timestamp":1775626468951}
+0|unical   | [DEBUG-BEACON] tablet-nav:cmd-received: {"action":"stop_playback","cmdTs":1775626468951,"lastTs":1775625970134,"age":621}
+0|unical   | [Cat Lights] ====== WEBHOOK TRIGGERED ======
+0|unical   | [Cat Lights] Timestamp: 4/8/2026, 1:34:33 AM
+0|unical   | [Cat Lights] Request body: {"state":"on"}
+0|unical   | [Cat Lights] Body parsing: state="on", action="", rawToState=undefined, trigger="none"
+0|unical   | [Cat Lights] Using body state directly: on
+0|unical   | [Cat Lights] Light state: on (body state: on)
+0|unical   | [Cat Lights] Architecture: server-side TTS → Google Nest speaker (media_player.play_media)
+0|unical   | [Cat Lights] Playback was stopped 5s ago — skipping prompt (60s cooldown)
+byhomeyyz@raspberrypi:~/Home-View $
