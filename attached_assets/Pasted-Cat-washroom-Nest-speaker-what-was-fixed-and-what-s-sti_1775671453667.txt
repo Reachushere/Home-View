@@ -1,0 +1,20 @@
+Cat washroom Nest speaker — what was fixed and what's still broken:
+
+Background: The cat washroom has a reading system that plays course module readings aloud on a Nest speaker when the bathroom light turns on. It also displays text on a Fire tablet and Samsung TV. The Nest speaker stopped working — it would show "idle" and never actually play audio.
+
+Root cause found: The Nest speaker is on a different VLAN than the Pi (172.24.1.204:5000) and Home Assistant (homeassistant.local:8123). The Nest can't reach either local address. But it CAN reach Nabu Casa cloud URLs (https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa).
+
+Fix deployed: All Nest speaker playback now goes through HA Cloud TTS via Nabu Casa. The flow is: call tts/speak to generate audio, get the tts_proxy URL from the response, convert homeassistant.local:8123 to the Nabu Casa cloud URL, stop the Nest (since tts/speak tried the unreachable local URL), then play the cloud URL via play_media. This is confirmed working — the Nest showed "playing" state.
+
+Two remaining issues:
+
+1. Wrong course selected — reads CFNF instead of CPPA. CPPA122 is a professional required course (priority 100) and should be picked before CFNF400 (liberal studies, priority 200). Need to check on the Pi: curl http://localhost:5000/api/course-play-priority to see if there's a manual override, and check whether all CPPA week 12 files are already marked as listened.
+
+2. Voice sounds different. The Nest now uses HA Cloud TTS voice instead of the Edge TTS voice I prefer. Edge TTS audio is generated on the Pi, but the Nest can't reach the Pi due to the VLAN issue, and uploading to HA's media directory returned 500 errors through the cloud proxy. Need to find a way to either serve Edge TTS audio through a Nest-accessible URL, or configure HA Cloud TTS with a better-sounding voice.
+
+and the tablet is not showing the right button and i want the nest to give me a confirmation.. but i can deal with taht tomorrow thanks
+
+3. Tablet not showing the right button. Need to investigate what button is wrong/missing on the Fire tablet reader interface.
+
+4. Nest should give a confirmation prompt. Want the Nest to speak a confirmation before starting playback (e.g., "Ready to play CPPA Module 12?") — need to verify this is working with the new Cloud TTS approach.
+
