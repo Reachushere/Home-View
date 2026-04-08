@@ -5473,7 +5473,7 @@ export default function Dashboard() {
         continue;
       }
       if (el === sourceEl) continue;
-      if (tid.includes('droppable-') || tid === `task-link-${taskId}`) {
+      if (tid.includes('droppable-') || tid === `task-link-${taskId}` || tid === `calendar-task-${taskId}`) {
         const r = (el as HTMLElement).getBoundingClientRect();
         if (r.width > 0 && r.height > 0) { filteredTaskEl = el as HTMLElement; break; }
       }
@@ -28797,7 +28797,7 @@ export default function Dashboard() {
                               onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                               onClick={(e) => {
                                 e.stopPropagation();
-                                const taskEl = document.querySelector(`[data-testid="droppable-task-${nextTask.id}"], [data-testid="task-link-${nextTask.id}"]`) as HTMLElement | null;
+                                const taskEl = document.querySelector(`[data-testid="calendar-task-${nextTask.id}"], [data-testid="droppable-task-${nextTask.id}"], [data-testid="task-link-${nextTask.id}"]`) as HTMLElement | null;
                                 if (taskEl) {
                                   taskEl.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
                                   taskEl.style.outline = '3px solid #facc15';
@@ -28940,7 +28940,7 @@ export default function Dashboard() {
                           const hasLeftConnector = hasPrepDays || (spanInfo && !isSpanFirst);
                           const hasRightConnector = spanInfo && !isSpanLast;
                           return (
-                            <div key={task.id} className="relative w-full min-w-0">
+                            <div key={task.id} className="relative w-full min-w-0" data-testid={`calendar-task-${task.id}`}>
                             {hasLeftConnector && (
                               <div style={{ position: 'absolute', left: '-5px', top: '50%', transform: 'translateY(-50%)', width: '5px', height: '1px', backgroundColor: course.darkColor, zIndex: 2 }} />
                             )}
