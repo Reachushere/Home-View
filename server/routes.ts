@@ -12200,11 +12200,11 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         try {
           await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }, 'Nest Pre-Confirm Vol');
         } catch (e: any) { console.warn(`${logPrefix} Pre-confirm volume set error (non-fatal): ${e.message}`); }
-        await new Promise(r => setTimeout(r, 1500));
+        await new Promise(r => setTimeout(r, 2000));
         let confirmPlayed = false;
         try {
           await haServiceCallSafe('media_player/media_stop', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Pre-Confirm Stop');
-          await new Promise(r => setTimeout(r, 500));
+          await new Promise(r => setTimeout(r, 1500));
           await haServiceCall('tts/speak', {
             entity_id: HA_CLOUD_TTS_ENTITY,
             media_player_entity_id: NEST_SPEAKER_ENTITY,
@@ -12253,6 +12253,15 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     startNestChunkPlayback(fileToPlay.id, fileName, fileChunks, resumeFromChunk, currentSession, voice, preGeneratedChunk0Path);
   }
 
+  const TTS_COURSE_NAMES: Record<string, string> = {
+    'CPPA122': 'Local Politics',
+    'CFNF400': 'Human Sexuality',
+    'CASL101': 'Sign Language',
+    'CECN210': 'Economics',
+    'CPHL110': 'Philosophy',
+    'CHIS105': 'History',
+  };
+
   function describeFileForTTS(file: any, weekNumber: number): string {
     const folder = (file.folder || '').toLowerCase();
     const origName = (file.originalName || '').toLowerCase();
@@ -12260,11 +12269,11 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const combinedName = `${origName} ${dispName}`;
     const codeMatch = folder.match(/([a-z]{3,5}\s?\d{3})/i) || combinedName.match(/([a-z]{3,5}\s?\d{3})/i);
     const courseCode = codeMatch ? codeMatch[1].toUpperCase().replace(/\s/g, '') : '';
-    const shortCode = courseCode.length >= 4 ? courseCode.substring(0, 4) : courseCode;
+    const spokenName = TTS_COURSE_NAMES[courseCode] || '';
     const isModule = folder.includes('module') || origName.includes('module') || dispName.includes('module');
     const fileType = isModule ? 'Module' : 'Reading';
-    if (shortCode) {
-      return `your ${shortCode} ${fileType} for week ${weekNumber}`;
+    if (spokenName) {
+      return `your ${spokenName} ${fileType} for week ${weekNumber}`;
     }
     return `your ${fileType} for week ${weekNumber}`;
   }
