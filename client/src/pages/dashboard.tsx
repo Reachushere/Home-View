@@ -28778,7 +28778,7 @@ export default function Dashboard() {
                             return (
                               <div
                                 key={task.id}
-                                className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer w-full min-w-0 ${isUnackedReminder ? "animate-reminder-pulse" : ""}`}
+                                className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 rounded border cursor-pointer w-full min-w-0 ${isUnackedReminder ? "animate-reminder-pulse" : ""}`}
                                 style={{
                                   backgroundColor: isUnackedReminder ? 'rgba(220, 38, 38, 0.25)' : otherRowColors.taskBgColor,
                                   borderColor: isUnackedReminder ? 'rgba(220, 38, 38, 0.6)' : otherRowColors.borderColor,
@@ -28798,8 +28798,8 @@ export default function Dashboard() {
                                 />
                                 <span
                                   onClick={() => setEditingTask(task)}
-                                  className={`truncate cursor-pointer hover:opacity-80 pl-1 flex-1 min-w-0 ${task.isCompleted ? "line-through" : ""}`}
-                                  style={{ fontWeight: 400, color: 'black', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textShadow: 'none', WebkitTextStroke: '0', letterSpacing: '0.1px' }}
+                                  className={`cursor-pointer hover:opacity-80 pl-1 flex-1 min-w-0 ${task.isCompleted ? "line-through" : ""}`}
+                                  style={{ fontWeight: 400, color: 'black', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textShadow: 'none', WebkitTextStroke: '0', letterSpacing: '0.1px', wordBreak: 'break-word', lineHeight: 1.2 }}
                                 >
                                   {(task.title || '').replace(/[\[\]]/g, '')}
                                 </span>
@@ -29717,18 +29717,15 @@ export default function Dashboard() {
                   topPx += startHourConflictExtra + (startMin / 60) * (startHourHeight - startHourConflictExtra);
                   
                   let heightPx = 0;
-                  const startHourBuffer = getMultiHourOverlayBuffer(startHour);
-                  heightPx += ((60 - startMin) / 60) * (startHourHeight - startHourConflictExtra - startHourBuffer);
+                  heightPx += ((60 - startMin) / 60) * (startHourHeight - startHourConflictExtra);
                   for (let h = startHour + 1; h < endHour; h++) {
                     const hExtra = getConflictExtraHeight(h);
-                    const hBuffer = getMultiHourOverlayBuffer(h);
-                    heightPx += getEffectiveRowHeight(h) - hExtra - hBuffer;
+                    heightPx += getEffectiveRowHeight(h) - hExtra;
                   }
                   if (endHour > startHour) {
                     const endHourHeight = getEffectiveRowHeight(endHour);
                     const endHourExtra = getConflictExtraHeight(endHour);
-                    const endHourBuffer = getMultiHourOverlayBuffer(endHour);
-                    heightPx += (endMin / 60) * (endHourHeight - endHourExtra - endHourBuffer);
+                    heightPx += (endMin / 60) * (endHourHeight - endHourExtra);
                   }
                   
                   const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || (task.title?.match(/^\[([^\]\s]+)/)?.[1]?.toUpperCase() || (() => { const t = (task.title || '').toUpperCase(); const alpha = t.match(/^([A-Z]+)/)?.[1]; if (!alpha) return ''; return Object.keys(dynamicCourseColors).find(k => k.startsWith(alpha) && k.length > alpha.length) || ''; })());
@@ -30664,7 +30661,7 @@ export default function Dashboard() {
         </div>
         ) : (
         <div className="mb-[0px] mt-[0px] relative flex gap-4 transition-opacity duration-300" style={{ height: calendarHeight - 12 - d2lTickerHeight, flexShrink: 0, order: 1, paddingTop: `${10 + d2lTickerHeight}px` }}>
-          <div ref={calendarWrapperRef} className="relative overflow-visible" style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction - 2}px` : ''})`, height: 'calc(100% - 18px)', marginTop: '18px', marginLeft: '12px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 - 2 - 2 - 2 : 0}px`, display: 'flex', flexDirection: 'column' as const }}>
+          <div ref={calendarWrapperRef} className="relative overflow-visible" style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction - 2}px` : ''})`, height: 'calc(100% - 24px)', marginTop: '24px', marginLeft: '12px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 - 2 - 2 - 2 : 0}px`, display: 'flex', flexDirection: 'column' as const }}>
           {/* Glass effect backing box - same as main calendar */}
           <div 
             className="absolute pointer-events-none"
@@ -30737,7 +30734,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="relative" style={{ height: 'calc(100% - 10px)', marginTop: '3px' }}>
+          <div className="relative" style={{ height: 'calc(100% - 10px)', marginTop: '6px' }}>
             <button
               onClick={() => {
                 startTransition(() => {
@@ -30808,7 +30805,7 @@ export default function Dashboard() {
                       const dayTasks = allTasks.filter(t => !t.isCompleted && isSameDayET(new Date(t.dueDate), day));
                       const monthDayStr = format(day, "yyyy-MM-dd");
                       const monthDayShift = localShiftMap[monthDayStr];
-                      const cellBg = monthDayShift === 'day' ? 'rgba(200,180,50,0.25)' : monthDayShift === 'night' ? 'rgba(180,100,200,0.2)' : isCurrentMonth ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.05)';
+                      const cellBg = monthDayShift === 'day' ? 'rgba(255,140,0,0.35)' : monthDayShift === 'night' ? 'rgba(180,100,200,0.2)' : isCurrentMonth ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.55)';
                       
                       return (
                         <div
@@ -30834,7 +30831,7 @@ export default function Dashboard() {
                         >
                           {monthDayShift === 'day' && <SunIcon className="absolute top-0.5 right-0.5 h-3 w-3 text-yellow-500" fill="currentColor" strokeWidth={1.5} />}
                           {monthDayShift === 'night' && <MoonIcon className="absolute top-0.5 right-0.5 h-3 w-3 text-purple-400" fill="currentColor" strokeWidth={1.5} />}
-                          <div className="text-xs font-bold mb-0.5" style={{ color: isToday ? '#fff' : isCurrentMonth ? '#fff' : 'rgba(255,255,255,0.5)' }}>
+                          <div className="text-xs font-bold mb-0.5" style={{ color: isToday ? '#fff' : monthDayShift === 'night' ? '#fff' : isCurrentMonth ? '#333' : 'rgba(0,0,0,0.4)' }}>
                             {isToday && <span style={{ background: '#5979CC', color: '#fff', borderRadius: '50%', width: '16px', height: '16px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' }}>{format(day, "d")}</span>}
                             {!isToday && format(day, "d")}
                           </div>
@@ -30858,7 +30855,7 @@ export default function Dashboard() {
                               );
                             })}
                             {dayTasks.length > 3 && (
-                              <div className="text-[7px] text-center" style={{ color: 'rgba(0,0,0,0.4)' }}>+{dayTasks.length - 3} more</div>
+                              <div className="text-[7px] text-center" style={{ color: 'rgba(0,0,0,0.5)' }}>+{dayTasks.length - 3} more</div>
                             )}
                           </div>
                         </div>
