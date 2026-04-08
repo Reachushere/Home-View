@@ -5459,15 +5459,13 @@ export default function Dashboard() {
     const calendarWrapper = document.querySelector('[data-testid="calendar-scroll-container"]') as HTMLElement | null;
     const rightEdge = calendarWrapper ? calendarWrapper.getBoundingClientRect().right : window.innerWidth - 10;
 
-    const allCandidates = document.querySelectorAll(`[data-testid$="-${taskId}"]`);
+    const calendarGrid = document.querySelector('[data-testid="calendar-scroll-container"]');
     let filteredTaskEl: HTMLElement | null = null;
-    for (const el of allCandidates) {
-      const tid = el.getAttribute('data-testid') || '';
-      if (tid.startsWith('countdown-bar-') || tid.startsWith('checkbox-') || tid.startsWith('att-link-') || tid.startsWith('zoom-icon-') || tid.startsWith('pdf-icon-') || tid.startsWith('countdown-nub-') || tid.startsWith('countdown-next-') || tid.startsWith('countdown-prep-')) continue;
-      if (el === sourceEl) continue;
-      if (tid.includes('task-') || tid.includes('droppable-')) {
-        filteredTaskEl = el as HTMLElement;
-        break;
+    if (calendarGrid) {
+      const droppable = calendarGrid.querySelector(`[data-testid="droppable-task-${taskId}"]`) as HTMLElement | null;
+      if (droppable) {
+        const r = droppable.getBoundingClientRect();
+        if (r.width > 0 && r.height > 0) filteredTaskEl = droppable;
       }
     }
 
@@ -29209,7 +29207,7 @@ export default function Dashboard() {
                       <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 4 }}>
                         <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, top: 0, overflowY: 'auto', overflowX: 'hidden', pointerEvents: 'none', scrollbarWidth: 'none' as any }}>
                           <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', minHeight: '100%' }}>
-                            {courseBars.filter(cd => cd.daysLeft > 0).map((cd, idx) => {
+                            {courseBars.filter(cd => cd.daysLeft > 0 && weekDays.some(wd => isSameDayET(wd, startOfDayET(new Date(cd.task.dueDate))))).map((cd, idx) => {
                               const t = cd.task;
                               const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
                               const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
@@ -29431,7 +29429,7 @@ export default function Dashboard() {
                         <div style={{ position: 'absolute', left: 0, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 4 }}>
                           <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, top: 0, overflowY: 'auto', overflowX: 'hidden', pointerEvents: 'none', scrollbarWidth: 'none' as any }}>
                             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', minHeight: '100%' }}>
-                              {otherBars.filter(cd => cd.daysLeft > 0).map((cd, idx) => {
+                              {otherBars.filter(cd => cd.daysLeft > 0 && weekDays.some(wd => isSameDayET(wd, startOfDayET(new Date(cd.task.dueDate))))).map((cd, idx) => {
                                 const t = cd.task;
                                 const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
                                 const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
