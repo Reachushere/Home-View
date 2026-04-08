@@ -30029,8 +30029,8 @@ export default function Dashboard() {
                                 onTouchEnd={handleTouchEnd}
                                 onTouchMove={handleTouchMove}
                                 title={(task.title || '').replace(/\[[^\]]*\]\s*/g, '').trim() + (task.dueDate ? ` — ${format(new Date(task.dueDate), 'MMM d, h:mm a')}` : '')}
-                                onMouseEnter={(e) => { if (totalItems > 1) { const el = e.currentTarget as HTMLElement; el.style.zIndex = '58'; el.style.boxShadow = '0 4px 16px rgba(0,0,0,0.35)'; } }}
-                                onMouseLeave={(e) => { if (totalItems > 1) { const el = e.currentTarget as HTMLElement; el.style.zIndex = selectedTaskId === task.id ? '57' : (draggedTask?.id === task.id ? '56' : '54'); el.style.boxShadow = ''; } }}
+                                onMouseEnter={undefined}
+                                onMouseLeave={undefined}
                                 className={`absolute shadow-sm cursor-grab active:cursor-grabbing rounded overflow-visible ${
                                   draggedTask?.id === task.id ? "opacity-50" : ""
                                 } ${
@@ -30373,8 +30373,8 @@ export default function Dashboard() {
                       onDragStart={(e) => handleDragStart(e, task)}
                       onDragEnd={handleDragEnd}
                       title={(task.title || '').replace(/\[[^\]]*\]\s*/g, '').trim() + (task.dueDate ? ` — ${format(new Date(task.dueDate), 'MMM d, h:mm a')}` : '')}
-                      onMouseEnter={(e) => { if (oi.totalCols > 1) { const el = e.currentTarget as HTMLElement; el.style.zIndex = '60'; el.style.boxShadow = '0 4px 16px rgba(0,0,0,0.35)'; } }}
-                      onMouseLeave={(e) => { if (oi.totalCols > 1) { const el = e.currentTarget as HTMLElement; el.style.zIndex = selectedTaskId === task.id ? '55' : (draggedTask?.id === task.id ? '53' : String(51 + oi.col)); el.style.boxShadow = ''; } }}
+                      onMouseEnter={undefined}
+                      onMouseLeave={undefined}
                       onClick={(e) => {
                         e.stopPropagation();
                         setSelectedTaskId(task.id);

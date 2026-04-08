@@ -566,12 +566,10 @@ button[role="combobox"] > span {
 [data-testid^="time-task-"]:hover,
 [data-testid^="multi-hour-task-"]:hover {
   filter: brightness(1.15);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
 }
 
 [data-testid^="time-task-"],
 [data-testid^="multi-hour-task-"] {
-  transition: filter 0.15s ease, box-shadow 0.15s ease;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: geometricPrecision;
