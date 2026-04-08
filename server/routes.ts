@@ -12427,17 +12427,30 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   }
 
   async function playOnNestSpeaker(audioUrl: string, maxRetries: number = 2): Promise<{ success: boolean; actuallyPlaying: boolean }> {
-    const fullUrl = audioUrl.startsWith('http') ? audioUrl : `${DEPLOYED_APP_URL}${audioUrl}`;
-    console.log(`[Nest] Playing audio: ${fullUrl}`);
+    const localPath = audioUrl.startsWith('http') ? audioUrl.replace(DEPLOYED_APP_URL, '') : audioUrl;
+    const directUrl = audioUrl.startsWith('http') ? audioUrl : `${DEPLOYED_APP_URL}${audioUrl}`;
+    console.log(`[Nest] Playing audio — attempting HA upload first: ${localPath}`);
     try {
       await haServiceCallSafe('media_player/media_stop', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Pre-Stop');
     } catch {}
     try {
       await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }, 'Nest Pre-Volume');
     } catch {}
+    let playUrl = directUrl;
+    try {
+      const haMediaId = await uploadAudioToHA(localPath);
+      if (haMediaId) {
+        playUrl = haMediaId;
+        console.log(`[Nest] Using HA media: ${haMediaId}`);
+      } else {
+        console.log(`[Nest] HA upload returned null — using direct URL: ${directUrl}`);
+      }
+    } catch (e: any) {
+      console.warn(`[Nest] HA upload error: ${e.message} — using direct URL: ${directUrl}`);
+    }
     try {
       await haServiceCall('media_player/play_media', {
-        entity_id: NEST_SPEAKER_ENTITY, media_content_id: fullUrl, media_content_type: "music"
+        entity_id: NEST_SPEAKER_ENTITY, media_content_id: playUrl, media_content_type: "music"
       }, 'Nest Play');
     } catch (e: any) {
       console.error(`[Nest] play_media failed: ${e.message}`);
