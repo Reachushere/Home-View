@@ -29008,7 +29008,7 @@ export default function Dashboard() {
                               const dueDate = t.dueDate ? format(new Date(t.dueDate), 'MMM d') : '';
                               const tooltipText = `${labelText} — due in ${cd.daysLeft}d (${dueDate})${isNotStarted ? ' — not started' : ''}`;
                               return (
-                                <div key={`cbar-cr-${t.id}`} className="countdown-bar-wrapper" style={{ height: `${barGap}px`, flexShrink: 0, pointerEvents: 'auto', cursor: 'pointer' }} title={tooltipText} data-testid={`countdown-bar-cr-${t.id}`} onDoubleClick={(e) => { e.stopPropagation(); const taskToEdit = allTasks.find(at => at.id === t.id) || t; setEditingTask(taskToEdit); }}>
+                                <div key={`cbar-cr-${t.id}`} className="countdown-bar-wrapper" style={{ height: `${barGap}px`, flexShrink: 0, pointerEvents: 'auto', cursor: 'pointer' }} title={tooltipText} data-testid={`countdown-bar-cr-${t.id}`} onMouseEnter={() => setHoveredCountdownTaskIdDebounced(t.id)} onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)} onDoubleClick={(e) => { e.stopPropagation(); const taskToEdit = allTasks.find(at => at.id === t.id) || t; setEditingTask(taskToEdit); }}>
                                   <div style={{ paddingTop: '2px', height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
                                     <div style={{ width: '10px', minWidth: '10px', height: `${barH}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
                                     <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
@@ -29227,7 +29227,7 @@ export default function Dashboard() {
                                 const dueDate = t.dueDate ? format(new Date(t.dueDate), 'MMM d') : '';
                                 const tooltipText = `${labelText} — due in ${cd.daysLeft}d (${dueDate})${isNotStarted ? ' — not started' : ''}`;
                                 return (
-                                  <div key={`cbar-or-${t.id}`} className="countdown-bar-wrapper" style={{ height: `${barGap}px`, flexShrink: 0, pointerEvents: 'auto', cursor: 'pointer' }} title={tooltipText} data-testid={`countdown-bar-or-${t.id}`} onDoubleClick={(e) => { e.stopPropagation(); const taskToEdit = allTasks.find(at => at.id === t.id) || t; setEditingTask(taskToEdit); }}>
+                                  <div key={`cbar-or-${t.id}`} className="countdown-bar-wrapper" style={{ height: `${barGap}px`, flexShrink: 0, pointerEvents: 'auto', cursor: 'pointer' }} title={tooltipText} data-testid={`countdown-bar-or-${t.id}`} onMouseEnter={() => setHoveredCountdownTaskIdDebounced(t.id)} onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)} onDoubleClick={(e) => { e.stopPropagation(); const taskToEdit = allTasks.find(at => at.id === t.id) || t; setEditingTask(taskToEdit); }}>
                                     <div style={{ paddingTop: '2px', height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
                                       <div style={{ width: '10px', minWidth: '10px', height: `${barH}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
                                       <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
