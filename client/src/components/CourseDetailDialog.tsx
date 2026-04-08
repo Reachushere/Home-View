@@ -4339,9 +4339,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
 
             {ungradedCourseTasks.length > 0 && (
               <>
-                <div className="flex items-center px-1.5 py-1 text-[8px] font-bold text-white" style={{ margin: '12px 4px 0 4px' }} data-testid="ungraded-section-header">
+                <div className="flex items-center px-1.5 py-1.5 text-[11px] font-medium text-white uppercase" style={{ margin: '12px 4px 0 4px' }} data-testid="ungraded-section-header">
                   <span className="flex-1">Assignments (Ungraded)</span>
-                  <span className="text-[7px] text-white/30">{ungradedCourseTasks.length} items</span>
+                  <span className="text-[9px] text-white">{ungradedCourseTasks.length} items</span>
                 </div>
                 <div className="flex flex-col" style={{ gap: '3px', padding: '0 4px' }} data-testid="ungraded-assignments-list">
                   {sortedUngradedTasks.map(task => renderUngradedAssignmentRow(task))}
