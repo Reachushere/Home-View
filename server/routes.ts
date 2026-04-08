@@ -13224,17 +13224,40 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
     console.log(`[Nest Stop] Reason: ${reason}. Goodbye: "${goodbyeText}"`);
 
+    let goodbyePlayed = false;
     try {
-      await new Promise(r => setTimeout(r, 500));
+      await haServiceCallSafe('media_player/turn_on', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Pre-Wake for Goodbye');
+      await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }, 'Nest Pre-Goodbye Vol');
+      await new Promise(r => setTimeout(r, 1000));
       await haServiceCall('tts/speak', {
         entity_id: HA_CLOUD_TTS_ENTITY,
-        media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
+        media_player_entity_id: NEST_SPEAKER_ENTITY,
         message: goodbyeText
-      }, 'Goodbye TTS');
+      }, 'Goodbye TTS Nest');
+      goodbyePlayed = true;
+      console.log(`[Nest Stop] Goodbye TTS played on Nest speaker (primary)`);
+    } catch (e: any) {
+      console.warn(`[Nest Stop] Goodbye on Nest failed: ${e.message} — trying HA Voice`);
+    }
+    if (!goodbyePlayed) {
+      try {
+        await haServiceCallSafe('media_player/turn_on', { entity_id: CAT_WR_HA_VOICE_ENTITY }, 'HA Voice Pre-Wake for Goodbye');
+        await haServiceCallSafe('media_player/volume_set', { entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.50 }, 'HA Voice Pre-Goodbye Vol');
+        await new Promise(r => setTimeout(r, 1000));
+        await haServiceCall('tts/speak', {
+          entity_id: HA_CLOUD_TTS_ENTITY,
+          media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
+          message: goodbyeText
+        }, 'Goodbye TTS HA Voice');
+        goodbyePlayed = true;
+        console.log(`[Nest Stop] Goodbye TTS played on HA Voice (fallback)`);
+      } catch (e: any) {
+        console.error(`[Nest Stop] Goodbye on HA Voice also failed: ${e.message}`);
+      }
+    }
+    if (goodbyePlayed) {
       const wordCount = goodbyeText.split(/\s+/).length;
       await new Promise(r => setTimeout(r, Math.max(3000, (wordCount / 175) * 60 * 1000)));
-    } catch (e: any) {
-      console.error(`[Nest Stop] Error playing goodbye: ${e.message}`);
     }
 
     await Promise.allSettled([
@@ -13261,27 +13284,14 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       setTabletCommand({ action: 'stop_playback', keepOpen, timestamp: stopTimestamp }, true, 'tv'),
     ]);
 
-    catWashTrace('TV', `TURN OFF — Fire Stick first, then Samsung TV (reason=${reason})`);
-    await Promise.allSettled([
-      haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'am force-stop com.amazon.cloud9' }, 'Nest Stop Silk'),
-      haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_SLEEP' }, 'Nest Stop FireStick SLEEP'),
-    ]);
-    await new Promise(r => setTimeout(r, 1000));
-    await haServiceCallSafe('media_player/turn_off', { entity_id: FIRE_STICK_ADB_ENTITY }, 'Nest Stop FireStick');
-    console.log(`[Nest Stop] Fire Stick SLEEP + turn_off sent — waiting for CEC to settle`);
-    await new Promise(r => setTimeout(r, 3000));
+    catWashTrace('TV', `TURN OFF — Fire Stick sleep first, then Samsung TV (reason=${reason})`);
+    await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'am force-stop com.amazon.cloud9' }, 'Nest Stop Silk');
+    await new Promise(r => setTimeout(r, 500));
+    await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_SLEEP' }, 'Nest Stop FireStick SLEEP');
+    console.log(`[Nest Stop] Fire Stick Silk stopped + SLEEP sent — waiting 4s for CEC to settle`);
+    await new Promise(r => setTimeout(r, 4000));
     await haServiceCallSafe('media_player/turn_off', { entity_id: CAT_TV_ENTITY }, 'Nest Stop Samsung TV');
-    console.log(`[Nest Stop] Samsung TV turn-off sent (after Fire Stick settled)`);
-    setTimeout(async () => {
-      try {
-        await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_SLEEP' }, 'Nest Stop FireStick SLEEP retry');
-        await new Promise(r => setTimeout(r, 2000));
-        await haServiceCallSafe('media_player/turn_off', { entity_id: CAT_TV_ENTITY }, 'Nest Stop Samsung TV retry');
-        console.log(`[Nest Stop] TV turn-off retry sent (attempt 2 — sequenced)`);
-      } catch (e: any) {
-        console.warn(`[Nest Stop] TV turn-off retry failed: ${e.message}`);
-      }
-    }, 5000);
+    console.log(`[Nest Stop] Samsung TV turn-off sent (after Fire Stick CEC settled)`);
     catWashTrace('StopWithGoodbye', `EXIT reason=${reason}`);
   }
 
