@@ -5428,9 +5428,17 @@ export default function Dashboard() {
     const existing = document.getElementById('countdown-hover-line-overlay');
     if (existing) existing.remove();
 
-    const barEl = document.querySelector(`[data-testid="countdown-bar-cr-${taskId}"], [data-testid="countdown-bar-or-${taskId}"]`) as HTMLElement | null;
-    if (!barEl) { console.log(`[HoverLine] No bar element found for task ${taskId}`); return; }
-    console.log(`[HoverLine] Showing for task ${taskId}`);
+    let sourceEl = document.querySelector(`[data-testid="countdown-bar-cr-${taskId}"], [data-testid="countdown-bar-or-${taskId}"]`) as HTMLElement | null;
+    if (!sourceEl) {
+      const hoveredCandidates = document.querySelectorAll(`[data-testid$="-${taskId}"]`);
+      for (const el of hoveredCandidates) {
+        const htmlEl = el as HTMLElement;
+        if (htmlEl.matches(':hover')) { sourceEl = htmlEl; break; }
+      }
+    }
+    if (!sourceEl) return;
+    const sourceRect = sourceEl.getBoundingClientRect();
+    if (sourceRect.width === 0 && sourceRect.height === 0) return;
 
     const calendarWrapper = document.querySelector('[data-testid="calendar-scroll-container"]') as HTMLElement | null;
     const rightEdge = calendarWrapper ? calendarWrapper.getBoundingClientRect().right : window.innerWidth - 10;
@@ -5439,21 +5447,21 @@ export default function Dashboard() {
     let filteredTaskEl: HTMLElement | null = null;
     for (const el of allCandidates) {
       const tid = el.getAttribute('data-testid') || '';
-      if (tid.startsWith('countdown-bar-') || tid.startsWith('checkbox-') || tid.startsWith('att-link-') || tid.startsWith('zoom-icon-') || tid.startsWith('pdf-icon-') || tid.startsWith('countdown-nub-')) continue;
+      if (tid.startsWith('countdown-bar-') || tid.startsWith('checkbox-') || tid.startsWith('att-link-') || tid.startsWith('zoom-icon-') || tid.startsWith('pdf-icon-') || tid.startsWith('countdown-nub-') || tid.startsWith('countdown-next-') || tid.startsWith('countdown-prep-')) continue;
+      if (el === sourceEl) continue;
       if (tid.includes('task-') || tid.includes('droppable-')) {
         filteredTaskEl = el as HTMLElement;
         break;
       }
     }
 
-    const barRect = barEl.getBoundingClientRect();
     const container = document.createElement('div');
     container.id = 'countdown-hover-line-overlay';
     container.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:99990';
 
     if (!filteredTaskEl) {
       const label = document.createElement('div');
-      label.style.cssText = `position:absolute;left:${barRect.right + 6}px;top:${barRect.top - 2}px;background:rgba(30,30,30,0.85);color:#93c5fd;font-size:10px;font-weight:500;padding:2px 6px;border-radius:3px;white-space:nowrap`;
+      label.style.cssText = `position:absolute;left:${sourceRect.right + 6}px;top:${sourceRect.top - 2}px;background:rgba(30,30,30,0.85);color:#93c5fd;font-size:10px;font-weight:500;padding:2px 6px;border-radius:3px;white-space:nowrap`;
       label.textContent = 'Not in current week view';
       container.appendChild(label);
       document.body.appendChild(container);
@@ -5461,10 +5469,11 @@ export default function Dashboard() {
     }
 
     const taskRect = filteredTaskEl.getBoundingClientRect();
-    const lineColor = 'rgba(59,130,246,0.45)';
+    const lineColor = 'rgba(96,165,250,0.6)';
 
-    const startX = barRect.right;
-    const startY = barRect.top + barRect.height / 2;
+    const isBarSource = sourceEl.getAttribute('data-testid')?.startsWith('countdown-bar-');
+    const startX = sourceRect.right;
+    const startY = sourceRect.top + sourceRect.height / 2;
     const edgeX = rightEdge - 4;
     const taskLeftX = taskRect.left - 3;
     const taskMidY = taskRect.top + taskRect.height / 2;
@@ -5474,17 +5483,19 @@ export default function Dashboard() {
       const line = document.createElement('div');
       const len = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
       const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
-      line.style.cssText = `position:absolute;left:${x1}px;top:${y1}px;width:${len}px;height:0;border-top:2px dashed ${lineColor};transform-origin:0 0;transform:rotate(${angle}deg);opacity:0.7`;
+      line.style.cssText = `position:absolute;left:${x1}px;top:${y1}px;width:${len}px;height:0;border-top:2px dashed ${lineColor};transform-origin:0 0;transform:rotate(${angle}deg)`;
       return line;
     };
 
-    container.appendChild(makeLine(startX, startY, edgeX, startY));
-    container.appendChild(makeLine(edgeX, startY, edgeX, aboveTaskY));
-    container.appendChild(makeLine(edgeX, aboveTaskY, taskLeftX, aboveTaskY));
-    container.appendChild(makeLine(taskLeftX, aboveTaskY, taskLeftX, taskMidY));
+    if (isBarSource) {
+      container.appendChild(makeLine(startX, startY, edgeX, startY));
+      container.appendChild(makeLine(edgeX, startY, edgeX, aboveTaskY));
+      container.appendChild(makeLine(edgeX, aboveTaskY, taskLeftX, aboveTaskY));
+      container.appendChild(makeLine(taskLeftX, aboveTaskY, taskLeftX, taskMidY));
+    }
 
     const highlight = document.createElement('div');
-    highlight.style.cssText = `position:absolute;left:${taskRect.left - 2}px;top:${taskRect.top - 2}px;width:${taskRect.width + 4}px;height:${taskRect.height + 4}px;border:2px solid rgba(59,130,246,0.5);border-radius:4px;pointer-events:none`;
+    highlight.style.cssText = `position:absolute;left:${taskRect.left - 2}px;top:${taskRect.top - 2}px;width:${taskRect.width + 4}px;height:${taskRect.height + 4}px;border:2px solid rgba(96,165,250,0.55);border-radius:4px`;
     container.appendChild(highlight);
 
     document.body.appendChild(container);
@@ -30010,7 +30021,7 @@ export default function Dashboard() {
                                     left: (() => { if (stackInConflict) return '2px'; const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); return hasNextDueBox ? `calc(${taskIdx * columnWidth / 2}% + 2px)` : `calc(${taskIdx * columnWidth}% + 2px)`; })(),
                                     width: (() => { if (stackInConflict) return 'calc(100% - 4px)'; const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); return hasNextDueBox ? `calc(${columnWidth / 2}% - 4px)` : `calc(${columnWidth}% - 4px)`; })(),
                                     minHeight: `${taskHeight}px`,
-                                    zIndex: selectedTaskId === task.id ? 57 : (draggedTask?.id === task.id ? 56 : 54),
+                                    zIndex: selectedTaskId === task.id ? 57 : (draggedTask?.id === task.id ? 56 : 54 + taskIdx),
                                     background: bgGradient,
                                     border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1.5px solid ${borderColor}`,
                                     transformOrigin: 'center center',
@@ -30031,7 +30042,7 @@ export default function Dashboard() {
                                   const daysLeft = Math.max(0, Math.ceil((dueDateObj.getTime() - nowCd.getTime()) / (1000 * 60 * 60 * 24)));
                                   const cdBarColor = task.countdownBarColor || (daysLeft <= 1 ? '#ef4444' : daysLeft === 2 ? '#f97316' : daysLeft <= 4 ? '#f59e0b' : '#22c55e');
                                   return (
-                                    <div style={{ position: 'absolute', left: '-5px', top: '2px', bottom: '2px', width: '5px', background: cdBarColor, borderRadius: '2px 0 0 2px', zIndex: 1, opacity: 0.9 }} data-testid={`countdown-nub-${task.id}`} />
+                                    <div style={{ position: 'absolute', left: '-5px', top: '2px', bottom: '2px', width: '5px', background: cdBarColor, borderRadius: '2px 0 0 2px', zIndex: 1, opacity: 0.9, pointerEvents: 'none' }} data-testid={`countdown-nub-${task.id}`} />
                                   );
                                 })()}
                                 {/* Type bar with glass effect */}
@@ -30396,7 +30407,7 @@ export default function Dashboard() {
                         const daysLeft = Math.max(0, Math.ceil((dueDateObj.getTime() - nowCd.getTime()) / (1000 * 60 * 60 * 24)));
                         const cdBarColor = task.countdownBarColor || (daysLeft <= 1 ? '#ef4444' : daysLeft === 2 ? '#f97316' : daysLeft <= 4 ? '#f59e0b' : '#22c55e');
                         return (
-                          <div style={{ position: 'absolute', left: '-5px', top: '2px', bottom: '2px', width: '5px', background: cdBarColor, borderRadius: '2px 0 0 2px', zIndex: 1, opacity: 0.9 }} data-testid={`countdown-nub-${task.id}`} />
+                          <div style={{ position: 'absolute', left: '-5px', top: '2px', bottom: '2px', width: '5px', background: cdBarColor, borderRadius: '2px 0 0 2px', zIndex: 1, opacity: 0.9, pointerEvents: 'none' }} data-testid={`countdown-nub-${task.id}`} />
                         );
                       })()}
                       {/* Type bar with icon-only color strip + module-colored title area */}
@@ -31708,7 +31719,7 @@ export default function Dashboard() {
                   const daysLeft = Math.max(0, Math.ceil((dueDateObj.getTime() - nowCd.getTime()) / (1000 * 60 * 60 * 24)));
                   const cdBarColor = task.countdownBarColor || (daysLeft <= 1 ? '#ef4444' : daysLeft === 2 ? '#f97316' : daysLeft <= 4 ? '#f59e0b' : '#22c55e');
                   return (
-                    <div style={{ position: 'absolute', left: '-5px', top: '1px', bottom: '1px', width: '4px', background: cdBarColor, borderRadius: '2px 0 0 2px', zIndex: 1, opacity: 0.9 }} data-testid={`homework-countdown-nub-${task.id}`} />
+                    <div style={{ position: 'absolute', left: '-5px', top: '1px', bottom: '1px', width: '4px', background: cdBarColor, borderRadius: '2px 0 0 2px', zIndex: 1, opacity: 0.9, pointerEvents: 'none' }} data-testid={`homework-countdown-nub-${task.id}`} />
                   );
                 })()}
                 <div style={{ display: 'flex', alignItems: 'center', marginLeft: '-17px', gap: '0px', width: 'calc(100% + 17px)' }}>

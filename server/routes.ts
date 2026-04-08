@@ -12200,35 +12200,39 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         try {
           await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }, 'Nest Pre-Confirm Vol');
         } catch (e: any) { console.warn(`${logPrefix} Pre-confirm volume set error (non-fatal): ${e.message}`); }
-        await new Promise(r => setTimeout(r, 2000));
+        await new Promise(r => setTimeout(r, 1500));
         let confirmPlayed = false;
         try {
-          const confirmPath = await generateAndSaveTTSAudio(confirmationTTS, `confirm-${Date.now()}`);
-          const nestResult = await playOnNestSpeaker(`${appUrl}${confirmPath}`, 2, confirmationTTS);
-          if (nestResult.success) {
-            confirmPlayed = true;
-            console.log(`${logPrefix} Confirm TTS played on Nest speaker via Edge TTS (actuallyPlaying=${nestResult.actuallyPlaying})`);
-          } else {
-            console.warn(`${logPrefix} Nest speaker confirm failed — falling back to HA Voice`);
-          }
+          await haServiceCallSafe('media_player/media_stop', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Pre-Confirm Stop');
+          await new Promise(r => setTimeout(r, 500));
+          await haServiceCall('tts/speak', {
+            entity_id: HA_CLOUD_TTS_ENTITY,
+            media_player_entity_id: NEST_SPEAKER_ENTITY,
+            message: confirmationTTS,
+            language: "en-US",
+            options: { voice: NEST_CLOUD_TTS_VOICE }
+          }, 'Confirm Cloud TTS on Nest');
+          confirmPlayed = true;
+          console.log(`${logPrefix} Confirm TTS played via HA Cloud TTS on Nest speaker (primary)`);
         } catch (e: any) {
-          console.warn(`${logPrefix} Nest speaker confirm failed: ${e.message} — falling back to HA Voice`);
+          console.warn(`${logPrefix} Nest Cloud TTS confirm failed: ${e.message} — falling back to Edge TTS`);
         }
         if (!confirmPlayed) {
           try {
-            await haServiceCall('tts/speak', {
-              entity_id: HA_CLOUD_TTS_ENTITY,
-              media_player_entity_id: NEST_SPEAKER_ENTITY,
-              message: confirmationTTS
-            }, 'Confirm HA Cloud TTS on Nest');
-            confirmPlayed = true;
-            console.log(`${logPrefix} Confirm TTS played via HA Cloud TTS on Nest speaker (fallback)`);
+            const confirmPath = await generateAndSaveTTSAudio(confirmationTTS, `confirm-${Date.now()}`);
+            const nestResult = await playOnNestSpeaker(`${appUrl}${confirmPath}`, 2, confirmationTTS);
+            if (nestResult.success) {
+              confirmPlayed = true;
+              console.log(`${logPrefix} Confirm TTS played on Nest speaker via Edge TTS fallback (actuallyPlaying=${nestResult.actuallyPlaying})`);
+            } else {
+              console.warn(`${logPrefix} Nest speaker Edge TTS confirm also failed`);
+            }
           } catch (e: any) {
-            console.warn(`${logPrefix} Nest Cloud TTS confirm also failed: ${e.message}`);
+            console.warn(`${logPrefix} Nest speaker Edge TTS confirm failed: ${e.message}`);
           }
         }
         const confirmWordCount = confirmationTTS.split(/\s+/).length;
-        const confirmWaitMs = Math.max(5000, (confirmWordCount / 140) * 60 * 1000 + 2000);
+        const confirmWaitMs = Math.max(6000, (confirmWordCount / 140) * 60 * 1000 + 3000);
         console.log(`${logPrefix} Confirm TTS playing, waiting ${Math.round(confirmWaitMs / 1000)}s`);
         await new Promise(r => setTimeout(r, confirmWaitMs));
         console.log(`${logPrefix} Confirm TTS finished`);
@@ -14130,8 +14134,23 @@ document.body.removeChild(a);
         const allFilesAfter = await storage.getFiles();
         nextFile = await findNextFileByPriority(allFilesAfter, currentWeekNumber);
       } else {
-        console.log(`[Shower Button] Using cached file — syncing OneDrive in background`);
-        syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Shower Button]').catch(e => console.log(`[Shower Button] Background sync error: ${e.message}`));
+        const cachedPri = await getCoursePriorityForFile(nextFile);
+        if (cachedPri > 1) {
+          console.log(`[Shower Button] Cached file has priority ${cachedPri} — syncing OneDrive first to check for higher-priority files`);
+          await syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Shower Button]');
+          const allFilesAfter = await storage.getFiles();
+          const betterFile = await findNextFileByPriority(allFilesAfter, currentWeekNumber);
+          if (betterFile) {
+            const betterPri = await getCoursePriorityForFile(betterFile);
+            if (betterPri < cachedPri) {
+              console.log(`[Shower Button] Found higher-priority file after sync: priority ${betterPri} (was ${cachedPri})`);
+              nextFile = betterFile;
+            }
+          }
+        } else {
+          console.log(`[Shower Button] Using cached priority-1 file — syncing OneDrive in background`);
+          syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Shower Button]').catch(e => console.log(`[Shower Button] Background sync error: ${e.message}`));
+        }
       }
 
       if (!nextFile) {
@@ -14540,8 +14559,23 @@ document.body.removeChild(a);
         const allFilesAfter = await storage.getFiles();
         nextFile = await findNextFileByPriority(allFilesAfter, currentWeekNumber);
       } else {
-        console.log(`[Cat Lights] Using cached file — syncing OneDrive in background`);
-        syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Cat Lights]').catch(e => console.log(`[Cat Lights] Background sync error: ${e.message}`));
+        const cachedPri = await getCoursePriorityForFile(nextFile);
+        if (cachedPri > 1) {
+          console.log(`[Cat Lights] Cached file has priority ${cachedPri} — syncing OneDrive first to check for higher-priority files`);
+          await syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Cat Lights]');
+          const allFilesAfter = await storage.getFiles();
+          const betterFile = await findNextFileByPriority(allFilesAfter, currentWeekNumber);
+          if (betterFile) {
+            const betterPri = await getCoursePriorityForFile(betterFile);
+            if (betterPri < cachedPri) {
+              console.log(`[Cat Lights] Found higher-priority file after sync: priority ${betterPri} (was ${cachedPri})`);
+              nextFile = betterFile;
+            }
+          }
+        } else {
+          console.log(`[Cat Lights] Using cached priority-1 file — syncing OneDrive in background`);
+          syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Cat Lights]').catch(e => console.log(`[Cat Lights] Background sync error: ${e.message}`));
+        }
       }
 
       await Promise.allSettled([immediatePromptPromise, earlyDeviceWakePromise]);

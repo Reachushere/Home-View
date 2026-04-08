@@ -2168,7 +2168,6 @@ input[type="date"]::-webkit-datetime-edit-year-field {
   }
 }
 
-[data-testid^="time-slot-"]:hover,
 [data-testid^="course-row-"]:hover,
 [data-testid^="other-row-"]:hover {
   filter: brightness(0.92);
