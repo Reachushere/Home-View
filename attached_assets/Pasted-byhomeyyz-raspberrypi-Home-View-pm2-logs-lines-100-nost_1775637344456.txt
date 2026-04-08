@@ -1,0 +1,218 @@
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs --lines 100 --nostream
+[TAILING] Tailing last 100 lines for [all] processes (change the value with --lines option)
+/home/byhomeyyz/.pm2/pm2.log last 100 lines:
+PM2        | 2026-04-08T01:47:35: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-08T01:47:35: PM2 log: App [unical:0] online
+PM2        | 2026-04-08T02:37:16: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-08T02:37:16: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:16: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:16: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:17: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:17: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:17: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:17: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:17: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:17: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:17: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:17: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:17: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:17: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:18: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:18: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:18: PM2 log: Process with pid 651305 still alive after 1600ms, sending it SIGKILL now...
+PM2        | 2026-04-08T02:37:18: PM2 log: App [unical:0] exited with code [0] via signal [SIGKILL]
+PM2        | 2026-04-08T02:37:18: PM2 log: pid=651305 msg=process killed
+PM2        | 2026-04-08T02:37:18: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-08T02:37:18: PM2 log: App [unical:0] online
+PM2        | 2026-04-08T02:40:34: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-08T02:40:34: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-08T02:40:34: PM2 log: pid=652018 msg=process killed
+PM2        | 2026-04-08T02:40:34: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-08T02:40:34: PM2 log: App [unical:0] online
+PM2        | 2026-04-08T02:44:14: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-08T02:44:14: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-08T02:44:14: PM2 log: pid=652189 msg=process killed
+PM2        | 2026-04-08T02:44:14: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-08T02:44:14: PM2 log: App [unical:0] online
+PM2        | 2026-04-08T02:48:00: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-08T02:48:00: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-08T02:48:00: PM2 log: pid=652418 msg=process killed
+PM2        | 2026-04-08T02:48:00: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-08T02:48:00: PM2 log: App [unical:0] online
+PM2        | 2026-04-08T02:48:55: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-08T02:48:55: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-08T02:48:55: PM2 log: pid=652552 msg=process killed
+PM2        | 2026-04-08T02:48:58: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-08T02:48:58: PM2 log: App [unical:0] online
+PM2        | 2026-04-08T03:27:50: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-08T03:27:50: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:50: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:51: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:51: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:51: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:51: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:51: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:51: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:51: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:51: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:51: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:51: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:52: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:52: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:52: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:52: PM2 log: Process with pid 652650 still alive after 1600ms, sending it SIGKILL now...
+PM2        | 2026-04-08T03:27:52: PM2 log: App [unical:0] exited with code [0] via signal [SIGKILL]
+PM2        | 2026-04-08T03:27:52: PM2 log: pid=652650 msg=process killed
+PM2        | 2026-04-08T03:27:52: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-08T03:27:52: PM2 log: App [unical:0] online
+PM2        | 2026-04-08T03:33:31: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-08T03:33:31: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-08T03:33:31: PM2 log: pid=653313 msg=process killed
+PM2        | 2026-04-08T03:33:31: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-08T03:33:31: PM2 log: App [unical:0] online
+PM2        | 2026-04-08T04:03:53: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-08T04:03:54: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-08T04:03:54: PM2 log: pid=653538 msg=process killed
+PM2        | 2026-04-08T04:03:54: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-08T04:03:54: PM2 log: App [unical:0] online
+PM2        | 2026-04-08T04:15:06: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-08T04:15:06: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-08T04:15:06: PM2 log: pid=654017 msg=process killed
+PM2        | 2026-04-08T04:15:09: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-08T04:15:09: PM2 log: App [unical:0] online
+PM2        | 2026-04-08T04:17:24: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-08T04:17:24: PM2 log: pid=654283 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T04:17:24: PM2 log: pid=654283 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T04:17:24: PM2 log: pid=654283 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T04:17:24: PM2 log: pid=654283 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T04:17:24: PM2 log: pid=654283 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T04:17:24: PM2 log: pid=654283 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T04:17:24: PM2 log: pid=654283 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T04:17:24: PM2 log: pid=654283 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T04:17:24: PM2 log: pid=654283 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T04:17:25: PM2 log: pid=654283 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T04:17:25: PM2 log: pid=654283 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T04:17:25: PM2 log: pid=654283 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T04:17:25: PM2 log: pid=654283 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T04:17:25: PM2 log: pid=654283 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T04:17:25: PM2 log: pid=654283 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T04:17:25: PM2 log: Process with pid 654283 still alive after 1600ms, sending it SIGKILL now...
+PM2        | 2026-04-08T04:17:25: PM2 log: App [unical:0] exited with code [0] via signal [SIGKILL]
+PM2        | 2026-04-08T04:17:25: PM2 log: pid=654283 msg=process killed
+PM2        | 2026-04-08T04:17:29: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-08T04:17:29: PM2 log: App [unical:0] online
+
+/home/byhomeyyz/.pm2/logs/unical-error.log last 100 lines:
+0|unical   |     at Function.GraphErrorHandler.constructErrorFromResponse (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:77:18)
+0|unical   |     at Function.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:104:31)
+0|unical   |     at step (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:196:27)
+0|unical   |     at Object.next (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:177:57)
+0|unical   |     at /home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:170:75
+0|unical   |     at new Promise (<anonymous>)
+0|unical   |     at Object.__awaiter (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:166:16)
+0|unical   |     at Function.GraphErrorHandler.getError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:101:65)
+0|unical   |     at GraphRequest.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphRequest.ts:391:55)
+0|unical   |     at step (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:196:27)
+0|unical   |     at Object.throw (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:177:57)
+0|unical   |     at rejected (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:168:69)
+0|unical   |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5) {
+0|unical   |   statusCode: 404,
+0|unical   |   code: 'itemNotFound',
+0|unical   |   requestId: '4c6ecccd-ab73-40ac-b26c-dbe32ca906d7',
+0|unical   |   date: 2026-04-08T12:34:50.000Z,
+0|unical   |   body: '{"code":"itemNotFound","message":"The resource could not be found.","innerError":{"date":"2026-04-08T08:34:50","request-id":"4c6ecccd-ab73-40ac-b26c-dbe32ca906d7","client-request-id":"26121a9b-b108-ec49-6583-9cb79fd2a4f2"}}',
+0|unical   |   headers: Headers {
+0|unical   |     'cache-control': 'no-store, no-cache, max-age=0, private',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'content-type': 'application/json',
+0|unical   |     'content-encoding': 'gzip',
+0|unical   |     vary: 'Accept-Encoding',
+0|unical   |     'strict-transport-security': 'max-age=31536000',
+0|unical   |     'request-id': '4c6ecccd-ab73-40ac-b26c-dbe32ca906d7',
+0|unical   |     'client-request-id': '26121a9b-b108-ec49-6583-9cb79fd2a4f2',
+0|unical   |     'x-ms-ags-diagnostic': '{"ServerInfo":{"DataCenter":"North Central US","Slice":"E","Ring":"4","ScaleUnit":"001","RoleInstance":"CH01EPF0003539D"}}',
+0|unical   |     splogid: '7be607a2-d051-c000-725b-9ad465647da9',
+0|unical   |     date: 'Wed, 08 Apr 2026 08:34:50 GMT'
+0|unical   |   }
+0|unical   | }
+0|unical   | Error listing OneDrive items: GraphError: The resource could not be found.
+0|unical   |     at new GraphError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphError.ts:63:3)
+0|unical   |     at Function.GraphErrorHandler.constructErrorFromResponse (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:77:18)
+0|unical   |     at Function.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:104:31)
+0|unical   |     at step (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:196:27)
+0|unical   |     at Object.next (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:177:57)
+0|unical   |     at /home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:170:75
+0|unical   |     at new Promise (<anonymous>)
+0|unical   |     at Object.__awaiter (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:166:16)
+0|unical   |     at Function.GraphErrorHandler.getError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:101:65)
+0|unical   |     at GraphRequest.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphRequest.ts:391:55)
+0|unical   |     at step (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:196:27)
+0|unical   |     at Object.throw (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:177:57)
+0|unical   |     at rejected (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:168:69)
+0|unical   |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5) {
+0|unical   |   statusCode: 404,
+0|unical   |   code: 'itemNotFound',
+0|unical   |   requestId: '2830887d-0fba-480a-b562-6b9bf5a48058',
+0|unical   |   date: 2026-04-08T12:34:51.000Z,
+0|unical   |   body: '{"code":"itemNotFound","message":"The resource could not be found.","innerError":{"date":"2026-04-08T08:34:51","request-id":"2830887d-0fba-480a-b562-6b9bf5a48058","client-request-id":"2ce9f0e6-8ae4-db16-06f3-2d126829a88e"}}',
+0|unical   |   headers: Headers {
+0|unical   |     'cache-control': 'no-store, no-cache, max-age=0, private',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'content-type': 'application/json',
+0|unical   |     'content-encoding': 'gzip',
+0|unical   |     vary: 'Accept-Encoding',
+0|unical   |     'strict-transport-security': 'max-age=31536000',
+0|unical   |     'request-id': '2830887d-0fba-480a-b562-6b9bf5a48058',
+0|unical   |     'client-request-id': '2ce9f0e6-8ae4-db16-06f3-2d126829a88e',
+0|unical   |     'x-ms-ags-diagnostic': '{"ServerInfo":{"DataCenter":"North Central US","Slice":"E","Ring":"4","ScaleUnit":"001","RoleInstance":"CH01EPF0003539D"}}',
+0|unical   |     splogid: '7be607a2-407f-c000-725b-9b49348eb3d4',
+0|unical   |     date: 'Wed, 08 Apr 2026 08:34:50 GMT'
+0|unical   |   }
+0|unical   | }
+0|unical   | Error listing OneDrive items: GraphError: The resource could not be found.
+0|unical   |     at new GraphError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphError.ts:63:3)
+0|unical   |     at Function.GraphErrorHandler.constructErrorFromResponse (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:77:18)
+0|unical   |     at Function.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:104:31)
+0|unical   |     at step (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:196:27)
+0|unical   |     at Object.next (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:177:57)
+0|unical   |     at /home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:170:75
+0|unical   |     at new Promise (<anonymous>)
+0|unical   |     at Object.__awaiter (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:166:16)
+0|unical   |     at Function.GraphErrorHandler.getError (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphErrorHandler.ts:101:65)
+0|unical   |     at GraphRequest.<anonymous> (/home/byhomeyyz/Home-View/node_modules/@microsoft/microsoft-graph-client/src/GraphRequest.ts:391:55)
+0|unical   |     at step (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:196:27)
+0|unical   |     at Object.throw (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:177:57)
+0|unical   |     at rejected (/home/byhomeyyz/Home-View/node_modules/tslib/tslib.js:168:69)
+0|unical   |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5) {
+0|unical   |   statusCode: 404,
+0|unical   |   code: 'itemNotFound',
+0|unical   |   requestId: '14a7a8f9-ccb1-4977-99a2-d5f2bed39832',
+0|unical   |   date: 2026-04-08T12:34:51.000Z,
+0|unical   |   body: '{"code":"itemNotFound","message":"The resource could not be found.","innerError":{"date":"2026-04-08T08:34:51","request-id":"14a7a8f9-ccb1-4977-99a2-d5f2bed39832","client-request-id":"a9344dc9-bed2-85fa-94d3-81c7a1589a87"}}',
+0|unical   |   headers: Headers {
+0|unical   |     'cache-control': 'no-store, no-cache, max-age=0, private',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'content-type': 'application/json',
+0|unical   |     'content-encoding': 'gzip',
+0|unical   |     vary: 'Accept-Encoding',
+0|unical   |     'strict-transport-security': 'max-age=31536000',
+0|unical   |     'request-id': '14a7a8f9-ccb1-4977-99a2-d5f2bed39832',
+0|unical   |     'client-request-id': 'a9344dc9-bed2-85fa-94d3-81c7a1589a87',
+0|unical   |     'x-ms-ags-diagnostic': '{"ServerInfo":{"DataCenter":"North Central US","Slice":"E","Ring":"4","ScaleUnit":"001","RoleInstance":"CH01EPF0003539D"}}',
+0|unical   |     splogid: '7be607a2-e09e-c000-9ebf-59a454b3d3f7',
+0|unical   |     date: 'Wed, 08 Apr 2026 08:34:51 GMT'
+0|unical   |   }
+0|unical   | }
+
+/home/byhomeyyz/.pm2/logs/unical-out.log last 100 lines:
+0|unical   | elp","reinforce","your","learning","and","prepare","you","for","the","upcoming","course","exam.","Topics","and","Learning","Objectives","Topics","Course","review","Readings","Reading","Please","Note:","You","can","access","all","non-textbook","readings","through","the","One-Stop","Course","Readings","in","the","Table","of","Contents","in","your","D2L","Brightspace","course.","Required","There","is","no","required","course","reading","this","week.","Course","Review","We","have","covered","a","lot","of","material","over","the","past","11","weeks!","Perhaps","the","most","important","message","is","that","local","government","and","politics","is","important","to","our","well-being","and","quality","of","life.","Here","is","a","brief","summary,","week","by","week,","of","our","progress","in","learning","about","local","politics","and","government","in","Canada.","Municipalities","are","corporations","established","by","provinces","to","provide","local","representation","and","local","services.","They","have","powers","set","out","in","provincial","legislation","and","are","important","as","representative",":","Week","1","described","the","municipal","position","within","a","federal","system","where","powers","are","divided","between","the","national","and","provincial","territorial","governments.","levels","of","government","and","as","service","providers.","We","reviewed","the","institutional","approach,","community","power,","social","movements,","political","economy,","and","public","choice","theories","and","have","applied","these","theories","in","our","discussions","to","help","us","understand","the","complexity","of","municipal","issues."],"wordIndex":0,"volumeChange":null}
+0|unical   | 4:35:07 AM [express] GET /api/cat-wash/progress 200 in 1ms :: {"active":true,"fileId":231,"fileName":"CPPA122, Module 12 - Introduction.pdf","chunkIndex":0,"totalChunks":13,"chunkText":"This final module of the course gives you an opportunity to review the main course content and to reflect on the key themes that have emerged over the past 11 weeks. The goal is to help reinforce your learning and prepare you for the upcoming course exam. Topics and Learning Objectives Topics Course review Readings Reading Please Note: You can access all non-textbook readings through the One-Stop Course Readings in the Table of Contents in your D2L Brightspace course. Required There is no required course reading this week. Course Review We have covered a lot of material over the past 11 weeks! Perhaps the most important message is that local government and politics is important to our well-being and quality of life. Here is a brief summary, week by week, of our progress in learning about local politics and government in Canada. Municipalities are corporations established by provinces to provide local representation and local services. They have powers set out in provincial legislation and are important as representative : Week 1 described the municipal position within a federal system where powers are divided between the national and provincial territorial governments. levels of government and as service providers. We reviewed the institutional approach, community power, social movements, political economy, and public choice theories and have applied these theories in our discussions to help us understand the complexity of municipal issues.","words":["This","final","module","of","the","course","gives","you","an","opportunity","to","review","the","main","course","content","and","to","reflect","on","the","key","themes","that","have","emerged","over","the","past","11","weeks.","The","goal","is","to","help","reinforce","your","learning","and","prepare","you","for","the","upcoming","course","exam.","Topics","and","Learning","Objectives","Topics","Course","review","Readings","Reading","Please","Note:","You","can","access","all","non-textbook","readings","through","the","One-Stop","Course","Readings","in","the","Table","of","Contents","in","your","D2L","Brightspace","course.","Required","There","is","no","required","course","reading","this","week.","Course","Review","We","have","covered","a","lot","of","material","over","the","past","11","weeks!","Perhaps","the","most","important","message","is","that","local","government","and","politics","is","important","to","our","well-being","and","quality","of","life.","Here","is","a","brief","summary,","week","by","week,","of","our","progress","in","learning","about","local","politics","and","government","in","Canada.","Municipalities","are","corporations","established","by","provinces","to","provide","local","representation","and","local","services.","They","have","powers","set","out","in","provincial","legislation","and","are","important","as","representative",":","Week","1","described","the","municipal","position","within","a","federal","system","where","powers","are","divided","between","the","national","and","provincial","territorial","governments.","levels","of","government","and","as","service","providers.","We","reviewed","the","institutional","approach,","community","power,","social","movements,","political","economy,","and","public","choice","theories","and","have","applied","these","theories","in","our","discussions","to","help","us","understand","the","complexity","of","municipal","issues."],"wordIndex":1,"volumeChange":null}
+0|unical   | 4:35:07 AM [express] GET /api/cat-wash/progress 200 in 1ms :: {"active":true,"fileId":231,"fileName":"CPPA122, Module 12 - Introduction.pdf","chunkIndex":0,"totalChunks":13,"chunkText":"This final module of the course gives you an opportunity to review the main course content and to reflect on the key themes that have emerged over the past 11 weeks. The goal is to help reinforce your learning and prepare you for the upcoming course exam. Topics and Learning Objectives Topics Course review Readings Reading Please Note: You can access all non-textbook readings through the One-Stop Course Readings in the Table of Contents in your D2L Brightspace course. Required There is no required course reading this week. Course Review We have covered a lot of material over the past 11 weeks! Perhaps the most important message is that local government and politics is important to our well-being and quality of life. Here is a brief summary, week by week, of our progress in learning about local politics and government in Canada. Municipalities are corporations established by provinces to provide local representation and local services. They have powers set out in provincial legislation and are important as representative : Week 1 described the municipal position within a federal system where powers are divided between the national and provincial territorial governments. levels of government and as service providers. We reviewed the institutional approach, community power, social movements, political economy, and public choice theories and have applied these theories in our discussions to help us understand the complexity of municipal issues.","words":["This","final","module","of","the","course","gives","you","an","opportunity","to","review","the","main","course","content","and","to","reflect","on","the","key","themes","that","have","emerged","over","the","past","11","weeks.","The","goal","is","to","help","reinforce","your","learning","and","prepare","you","for","the","upcoming","course","exam.","Topics","and","Learning","Objectives","Topics","Course","review","Readings","Reading","Please","Note:","You","can","access","all","non-textbook","readings","through","the","One-Stop","Course","Readings","in","the","Table","of","Contents","in","your","D2L","Brightspace","course.","Required","There","is","no","required","course","reading","this","week.","Course","Review","We","have","covered","a","lot","of","material","over","the","past","11","weeks!","Perhaps","the","most","important","message","is","that","local","government","and","politics","is","important","to","our","well-being","and","quality","of","life.","Here","is","a","brief","summary,","week","by","week,","of","our","progress","in","learning","about","local","politics","and","government","in","Canada.","Municipalities","are","corporations","established","by","provinces","to","provide","local","representation","and","local","services.","They","have","powers","set","out","in","provincial","legislation","and","are","important","as","representative",":","Week","1","described","the","municipal","position","within","a","federal","system","where","powers","are","divided","between","the","national","and","provincial","territorial","governments.","levels","of","government","and","as","service","providers.","We","reviewed","the","institutional","approach,","community","power,","social","movements,","political","economy,","and","public","choice","theories","and","have","applied","these","theories","in","our","discussions","to","help","us","understand","the","complexity","of","municipal","issues."],"wordIndex":2,"volumeChange":null}
+0|unical   | 4:35:07 AM [express] GET /api/cat-wash/progress 200 in 1ms :: {"active":true,"fileId":231,"fileName":"CPPA122, Module 12 - Introduction.pdf","chunkIndex":0,"totalChunks":13,"chunkText":"This final module of the course gives you an opportunity to review the main course content and to reflect on the key themes that have emerged over the past 11 weeks. The goal is to help reinforce your learning and prepare you for the upcoming course exam. Topics and Learning Objectives Topics Course review Readings Reading Please Note: You can access all non-textbook readings through the One-Stop Course Readings in the Table of Contents in your D2L Brightspace course. Required There is no required course reading this week. Course Review We have covered a lot of material over the past 11 weeks! Perhaps the most important message is that local government and politics is important to our well-being and quality of life. Here is a brief summary, week by week, of our progress in learning about local politics and government in Canada. Municipalities are corporations established by provinces to provide local representation and local services. They have powers set out in provincial legislation and are important as representative : Week 1 described the municipal position within a federal system where powers are divided between the national and provincial territorial governments. levels of government and as service providers. We reviewed the institutional approach, community power, social movements, political economy, and public choice theories and have applied these theories in our discussions to help us understand the complexity of municipal issues.","words":["This","final","module","of","the","course","gives","you","an","opportunity","to","review","the","main","course","content","and","to","reflect","on","the","key","themes","that","have","emerged","over","the","past","11","weeks.","The","goal","is","to","help","reinforce","your","learning","and","prepare","you","for","the","upcoming","course","exam.","Topics","and","Learning","Objectives","Topics","Course","review","Readings","Reading","Please","Note:","You","can","access","all","non-textbook","readings","through","the","One-Stop","Course","Readings","in","the","Table","of","Contents","in","your","D2L","Brightspace","course.","Required","There","is","no","required","course","reading","this","week.","Course","Review","We","have","covered","a","lot","of","material","over","the","past","11","weeks!","Perhaps","the","most","important","message","is","that","local","government","and","politics","is","important","to","our","well-being","and","quality","of","life.","Here","is","a","brief","summary,","week","by","week,","of","our","progress","in","learning","about","local","politics","and","government","in","Canada.","Municipalities","are","corporations","established","by","provinces","to","provide","local","representation","and","local","services.","They","have","powers","set","out","in","provincial","legislation","and","are","important","as","representative",":","Week","1","described","the","municipal","position","within","a","federal","system","where","powers","are","divided","between","the","national","and","provincial","territorial","governments.","levels","of","government","and","as","service","providers.","We","reviewed","the","institutional","approach,","community","power,","social","movements,","political","economy,","and","public","choice","theories","and","have","applied","these","theories","in","our","discussions","to","help","us","understand","the","complexity","of","municipal","issues."],"wordIndex":3,"volumeChange":null}
+0|unical   | [Toothbrush] Poll #20: state="charging" (playbackActive=true, nestPlaying=false)
+0|unical   | [Tablet Nav DB] GET master: no rows found
+0|unical   | 4:35:07 AM [express] GET /api/tablet-nav 200 in 2ms :: {"action":null}
+0|unical   | 4:35:07 AM [express] GET /api/cat-wash/progress 200 in 1ms :: {"active":true,"fileId":231,"fileName":"CPPA122, Module 12 - Introduction.pdf","chunkIndex":0,"totalChunks":13,"chunkText":"This final module of the course gives you an opportunity to review the main course content and to reflect on the key themes that have emerged over the past 11 weeks. The goal is to help reinforce your learning and prepare you for the upcoming course exam. Topics and Learning Objectives Topics Course review Readings Reading Please Note: You can access all non-textbook readings through the One-Stop Course Readings in the Table of Contents in your D2L Brightspace course. Required There is no required course reading this week. Course Review We have covered a lot of material over the past 11 weeks! Perhaps the most important message is that local government and politics is important to our well-being and quality of life. Here is a brief summary, week by week, of our progress in learning about local politics and government in Canada. Municipalities are corporations established by provinces to provide local representation and local services. They have powers set out in provincial legislation and are important as representative : Week 1 described the municipal position within a federal system where powers are divided between the national and provincial territorial governments. levels of government and as service providers. We reviewed the institutional approach, community power, social movements, political economy, and public choice theories and have applied these theories in our discussions to help us understand the complexity of municipal issues.","words":["This","final","module","of","the","course","gives","you","an","opportunity","to","review","the","main","course","content","and","to","reflect","on","the","key","themes","that","have","emerged","over","the","past","11","weeks.","The","goal","is","to","help","reinforce","your","learning","and","prepare","you","for","the","upcoming","course","exam.","Topics","and","Learning","Objectives","Topics","Course","review","Readings","Reading","Please","Note:","You","can","access","all","non-textbook","readings","through","the","One-Stop","Course","Readings","in","the","Table","of","Contents","in","your","D2L","Brightspace","course.","Required","There","is","no","required","course","reading","this","week.","Course","Review","We","have","covered","a","lot","of","material","over","the","past","11","weeks!","Perhaps","the","most","important","message","is","that","local","government","and","politics","is","important","to","our","well-being","and","quality","of","life.","Here","is","a","brief","summary,","week","by","week,","of","our","progress","in","learning","about","local","politics","and","government","in","Canada.","Municipalities","are","corporations","established","by","provinces","to","provide","local","representation","and","local","services.","They","have","powers","set","out","in","provincial","legislation","and","are","important","as","representative",":","Week","1","described","the","municipal","position","within","a","federal","system","where","powers","are","divided","between","the","national","and","provincial","territorial","governments.","levels","of","government","and","as","service","providers.","We","reviewed","the","institutional","approach,","community","power,","social","movements,","political","economy,","and","public","choice","theories","and","have","applied","these","theories","in","our","discussions","to","help","us","understand","the","complexity","of","municipal","issues."],"wordIndex":4,"volumeChange":null}
+0|unical   | 4:35:08 AM [express] GET /api/cat-wash/progress 200 in 1ms :: {"active":true,"fileId":231,"fileName":"CPPA122, Module 12 - Introduction.pdf","chunkIndex":0,"totalChunks":13,"chunkText":"This final module of the course gives you an opportunity to review the main course content and to reflect on the key themes that have emerged over the past 11 weeks. The goal is to help reinforce your learning and prepare you for the upcoming course exam. Topics and Learning Objectives Topics Course review Readings Reading Please Note: You can access all non-textbook readings through the One-Stop Course Readings in the Table of Contents in your D2L Brightspace course. Required There is no required course reading this week. Course Review We have covered a lot of material over the past 11 weeks! Perhaps the most important message is that local government and politics is important to our well-being and quality of life. Here is a brief summary, week by week, of our progress in learning about local politics and government in Canada. Municipalities are corporations established by provinces to provide local representation and local services. They have powers set out in provincial legislation and are important as representative : Week 1 described the municipal position within a federal system where powers are divided between the national and provincial territorial governments. levels of government and as service providers. We reviewed the institutional approach, community power, social movements, political economy, and public choice theories and have applied these theories in our discussions to help us understand the complexity of municipal issues.","words":["This","final","module","of","the","course","gives","you","an","opportunity","to","review","the","main","course","content","and","to","reflect","on","the","key","themes","that","have","emerged","over","the","past","11","weeks.","The","goal","is","to","help","reinforce","your","learning","and","prepare","you","for","the","upcoming","course","exam.","Topics","and","Learning","Objectives","Topics","Course","review","Readings","Reading","Please","Note:","You","can","access","all","non-textbook","readings","through","the","One-Stop","Course","Readings","in","the","Table","of","Contents","in","your","D2L","Brightspace","course.","Required","There","is","no","required","course","reading","this","week.","Course","Review","We","have","covered","a","lot","of","material","over","the","past","11","weeks!","Perhaps","the","most","important","message","is","that","local","government","and","politics","is","important","to","our","well-being","and","quality","of","life.","Here","is","a","brief","summary,","week","by","week,","of","our","progress","in","learning","about","local","politics","and","government","in","Canada.","Municipalities","are","corporations","established","by","provinces","to","provide","local","representation","and","local","services.","They","have","powers","set","out","in","provincial","legislation","and","are","important","as","representative",":","Week","1","described","the","municipal","position","within","a","federal","system","where","powers","are","divided","between","the","national","and","provincial","territorial","governments.","levels","of","government","and","as","service","providers.","We","reviewed","the","institutional","approach,","community","power,","social","movements,","political","economy,","and","public","choice","theories","and","have","applied","these","theories","in","our","discussions","to","help","us","understand","the","complexity","of","municipal","issues."],"wordIndex":4,"volumeChange":null}
+
+byhomeyyz@raspberrypi:~/Home-View $
