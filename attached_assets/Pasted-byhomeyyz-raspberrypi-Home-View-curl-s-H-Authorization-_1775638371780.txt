@@ -1,0 +1,77 @@
+byhomeyyz@raspberrypi:~/Home-View $ curl -s -H "Authorization: Bearer $HOME_ASSISTANT_TOKEN" "https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa/api/config" | python3 -c "import sys,json; print(json.dumps(json.load(sys.stdin).get('components',[]),indent=2))" 2>/dev/null | head -5
+[
+  "camera",
+  "roborock.switch",
+  "stream",
+  "tuya.button",
+byhomeyyz@raspberrypi:~/Home-View $ curl -s -H "Authorization: Bearer $HOME_ASSISTANT_TOKEN" "https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa/api/states" | python3 -c "import sys,json; [print(e['entity_id']) for e in json.load(sys.stdin) if 'automation' in e['entity_id'] and ('cat' in e['entity_id'].lower() or 'light' in e['entity_id'].lower() or 'wash' in e['entity_id'].lower())]"
+automation.air_purifier_cat_to_nest_50
+automation.cat_water_beacon_is_low_announcement
+automation.button_press_calm_my_cat
+automation.low_battery_level_detection_notification_for_all_battery_sensors
+automation.volume_cat
+automation.button_press_kitchen_4_2_traffic_light_toggle
+automation.button_press_kitchen_ring_lights
+automation.cat_food_low_beacon_announcement
+automation.cat_temp_above_24_fan_on
+automation.turn_washer_helper_off_at_restart
+automation.wash_complete_notification_skip_on_restart
+automation.switch_queen_lights_on
+automation.switch_queen_lights_off
+automation.cat_no_presence_3_minutes_turns_off_air_freshener
+automation.cat_shower_main_turns_black_fan_on
+automation.cat_shower_main_off_turns_off_black_fan
+automation.pug_washroom_music_on
+automation.pug_washroom_off
+automation.cat_spa_music
+automation.cat_fan_on_after_26_degrees
+automation.wednesday_wash_floors_reminder
+automation.tasks_due_notification
+automation.play_chumfm_in_cat_washroom
+automation.show_pug_washroom_popup
+automation.show_cat_washroom
+automation.camera_snapshot_ai_notification_on_motion
+automation.cat_mirror_down2
+automation.cat_mirror_stop2
+automation.cat_mirror_up2
+automation.cat_door_closed_announcement
+automation.motion_cat_wr_no_motion
+automation.kitchen_lights_turn_motion_light_on
+automation.kitchen_lights_turn_motion_light_off
+automation.wash_complete_announcement
+automation.motion_cat_cupboard_no_motion
+automation.motion_cat_cupboard_detects
+automation.volume_cat_low
+automation.volume_cat_down_lowest
+automation.volume_cat_mute
+automation.volume_cat_unmute_2
+automation.volume_cat_high
+automation.volume_cat_highest
+automation.button_cat_3_showers
+automation.button_cat_litter_reset
+automation.button_press_cat_main_shower
+automation.cat_smoke
+automation.cat_litter_motion_triggers_vacuum
+automation.king_cabinet_lights_on
+automation.king_cabinet_l_lights_off
+automation.king_cabinet_r_lights_on
+automation.king_cabinet_r_lights_off
+automation.cat_lights_off_turns_humidifier_off
+automation.button_press_cat_fans
+automation.pug_lights_off_turn_on_hallway_air_freshener
+automation.washer_dryer_door_turns_on_hallway_air_freshener
+automation.button_cat_air_freshener_on_20_seconds
+automation.cat_food_motion_opens_food_lid
+automation.cat_water_rascal_announcement
+automation.cat_med_reminder_light_off
+automation.stop_light_web_cam_on
+automation.stop_light_web_cam_off_green
+automation.bed_occupied_turns_down_cat_volume
+automation.rascal_cat_food_low
+automation.cat_food_lr_low
+automation.motion_lr_cat_water_detects
+automation.motion_lr_cat_water_no_detect
+automation.unical_cat_lights_start_playback
+automation.cat_washroom_knob_volume_playback
+automation.motion_cat_wr_detects
+automation.stop_chum_fm_when_bathroom_lights_turn_off
