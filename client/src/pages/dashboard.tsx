@@ -30846,7 +30846,11 @@ export default function Dashboard() {
                                   style={{
                                     backgroundColor: '#ffffff',
                                     color: '#000',
-                                    borderLeft: `2px solid ${colors?.border || (task.type === 'other' ? otherRowColors.borderColor : 'rgba(255,255,255,0.4)')}`
+                                    borderLeft: `2px solid ${colors?.border || (task.type === 'other' ? otherRowColors.borderColor : 'rgba(255,255,255,0.4)')}`,
+                                    WebkitFontSmoothing: 'antialiased',
+                                    MozOsxFontSmoothing: 'grayscale',
+                                    textRendering: 'geometricPrecision',
+                                    fontWeight: 500
                                   }}
                                   title={task.title}
                                 >
