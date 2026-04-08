@@ -5447,42 +5447,21 @@ export default function Dashboard() {
     }
 
     const barRect = barEl.getBoundingClientRect();
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.id = 'countdown-hover-line-overlay';
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    svg.setAttribute('width', String(vw));
-    svg.setAttribute('height', String(vh));
-    svg.setAttribute('viewBox', `0 0 ${vw} ${vh}`);
-    svg.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:99990';
+    const container = document.createElement('div');
+    container.id = 'countdown-hover-line-overlay';
+    container.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:99990';
 
     if (!filteredTaskEl) {
-      const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-      bg.setAttribute('x', String(barRect.right + 6));
-      bg.setAttribute('y', String(barRect.top - 2));
-      bg.setAttribute('width', '145');
-      bg.setAttribute('height', '16');
-      bg.setAttribute('rx', '3');
-      bg.setAttribute('fill', 'rgba(30,30,30,0.85)');
-      svg.appendChild(bg);
-      const notFoundText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      notFoundText.setAttribute('x', String(barRect.right + 10));
-      notFoundText.setAttribute('y', String(barRect.top + 10));
-      notFoundText.setAttribute('text-anchor', 'start');
-      notFoundText.setAttribute('fill', '#93c5fd');
-      notFoundText.setAttribute('font-size', '10');
-      notFoundText.setAttribute('font-weight', '500');
-      notFoundText.textContent = 'Not in current week view';
-      svg.appendChild(notFoundText);
-      document.body.appendChild(svg);
+      const label = document.createElement('div');
+      label.style.cssText = `position:absolute;left:${barRect.right + 6}px;top:${barRect.top - 2}px;background:rgba(30,30,30,0.85);color:#93c5fd;font-size:10px;font-weight:500;padding:2px 6px;border-radius:3px;white-space:nowrap`;
+      label.textContent = 'Not in current week view';
+      container.appendChild(label);
+      document.body.appendChild(container);
       return;
     }
 
     const taskRect = filteredTaskEl.getBoundingClientRect();
-    const barColor = barEl.querySelector('[style*="background"]')?.getAttribute('style')?.match(/background:\s*([^;]+)/)?.[1] || 'rgba(59,130,246,0.5)';
     const lineColor = 'rgba(59,130,246,0.45)';
-    const lineWidth = 2;
-    const r = 6;
 
     const startX = barRect.right;
     const startY = barRect.top + barRect.height / 2;
@@ -5491,38 +5470,24 @@ export default function Dashboard() {
     const taskMidY = taskRect.top + taskRect.height / 2;
     const aboveTaskY = taskRect.top - 8;
 
-    const pathD = [
-      `M ${startX} ${startY}`,
-      `L ${edgeX - r} ${startY}`,
-      `Q ${edgeX} ${startY} ${edgeX} ${startY + r}`,
-      `L ${edgeX} ${aboveTaskY - r}`,
-      `Q ${edgeX} ${aboveTaskY} ${edgeX - r} ${aboveTaskY}`,
-      `L ${taskLeftX + r} ${aboveTaskY}`,
-      `Q ${taskLeftX} ${aboveTaskY} ${taskLeftX} ${aboveTaskY + r}`,
-      `L ${taskLeftX} ${taskMidY}`,
-    ].join(' ');
+    const makeLine = (x1: number, y1: number, x2: number, y2: number) => {
+      const line = document.createElement('div');
+      const len = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+      const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
+      line.style.cssText = `position:absolute;left:${x1}px;top:${y1}px;width:${len}px;height:0;border-top:2px dashed ${lineColor};transform-origin:0 0;transform:rotate(${angle}deg);opacity:0.7`;
+      return line;
+    };
 
-    const lanePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    lanePath.setAttribute('d', pathD);
-    lanePath.setAttribute('stroke', lineColor);
-    lanePath.setAttribute('stroke-width', String(lineWidth));
-    lanePath.setAttribute('fill', 'none');
-    lanePath.setAttribute('stroke-dasharray', '4,3');
-    lanePath.setAttribute('opacity', '0.7');
-    svg.appendChild(lanePath);
+    container.appendChild(makeLine(startX, startY, edgeX, startY));
+    container.appendChild(makeLine(edgeX, startY, edgeX, aboveTaskY));
+    container.appendChild(makeLine(edgeX, aboveTaskY, taskLeftX, aboveTaskY));
+    container.appendChild(makeLine(taskLeftX, aboveTaskY, taskLeftX, taskMidY));
 
-    const highlightTask = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    highlightTask.setAttribute('x', String(taskRect.left - 2));
-    highlightTask.setAttribute('y', String(taskRect.top - 2));
-    highlightTask.setAttribute('width', String(taskRect.width + 4));
-    highlightTask.setAttribute('height', String(taskRect.height + 4));
-    highlightTask.setAttribute('rx', '4');
-    highlightTask.setAttribute('fill', 'none');
-    highlightTask.setAttribute('stroke', 'rgba(59,130,246,0.5)');
-    highlightTask.setAttribute('stroke-width', '2');
-    svg.appendChild(highlightTask);
+    const highlight = document.createElement('div');
+    highlight.style.cssText = `position:absolute;left:${taskRect.left - 2}px;top:${taskRect.top - 2}px;width:${taskRect.width + 4}px;height:${taskRect.height + 4}px;border:2px solid rgba(59,130,246,0.5);border-radius:4px;pointer-events:none`;
+    container.appendChild(highlight);
 
-    document.body.appendChild(svg);
+    document.body.appendChild(container);
   }, []);
 
   const hideCountdownHoverLine = useCallback(() => {
@@ -31330,7 +31295,7 @@ export default function Dashboard() {
           {/* Date navigation tab - month mode (matches main page tab) */}
           <div
             className="fixed z-[60]"
-            style={{ top: `${(calendarBorderTop || (calendarTop + 15)) - 15}px`, right: `${calendarRight - calendarReduction + 9}px`, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', height: '15px', pointerEvents: 'auto', opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.2s ease' }}
+            style={{ top: `${(calendarBorderTop || (calendarTop + 15)) - 15}px`, right: `${calendarRight - calendarReduction + 9 + 25}px`, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', height: '15px', pointerEvents: 'auto', opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.2s ease' }}
             data-testid="date-nav-tab-month"
           >
             <div style={{ width: '225px', height: '15px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)', padding: '0 2px' }}>
