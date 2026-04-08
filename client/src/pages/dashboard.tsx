@@ -31177,8 +31177,8 @@ export default function Dashboard() {
 
           {/* Date navigation tab - month mode (matches main page tab) */}
           <div
-            className="absolute z-[60]"
-            style={{ top: '-24px', right: '-388px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', height: '15px', pointerEvents: 'auto', opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.2s ease' }}
+            className="fixed z-[60]"
+            style={{ top: `${(calendarBorderTop || (calendarTop + 15)) - 14}px`, right: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 - 2 - 2 - 2 + 12 - 45 : 55}px`, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', height: '15px', pointerEvents: 'auto', opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.2s ease' }}
             data-testid="date-nav-tab-month"
           >
             <div style={{ width: '225px', height: '15px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)', padding: '0 2px' }}>
