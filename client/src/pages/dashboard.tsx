@@ -28791,7 +28791,33 @@ export default function Dashboard() {
                           const daysUntil = differenceInCalendarDays(new Date(nextTask.dueDate), new Date());
                           const badgeGrad = getCourseGradientColors(cCode2);
                           return (
-                            <div style={{ position: 'absolute', top: 0, left: '-1px', right: '-1px', height: '16px', background: badgeGrad.start, zIndex: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                            <div 
+                              style={{ position: 'absolute', top: 0, left: '-1px', right: '-1px', height: '16px', background: badgeGrad.start, zIndex: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', cursor: 'pointer' }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const taskEl = document.querySelector(`[data-testid="droppable-task-${nextTask.id}"], [data-testid="task-link-${nextTask.id}"]`) as HTMLElement | null;
+                                if (taskEl) {
+                                  taskEl.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+                                  taskEl.style.outline = '3px solid #facc15';
+                                  taskEl.style.outlineOffset = '2px';
+                                  taskEl.style.transition = 'outline 0.3s ease';
+                                  setTimeout(() => { taskEl.style.outline = ''; taskEl.style.outlineOffset = ''; }, 2500);
+                                } else {
+                                  const taskDate = new Date(nextTask.dueDate);
+                                  const hwEl = document.querySelector(`[data-testid="task-link-today-${nextTask.id}"], [data-testid="task-link-tomorrow-${nextTask.id}"], [data-testid="task-link-week-${nextTask.id}"], [data-testid="task-link-beyond-${nextTask.id}"]`) as HTMLElement | null;
+                                  if (hwEl) {
+                                    hwEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    hwEl.style.outline = '3px solid #facc15';
+                                    hwEl.style.outlineOffset = '2px';
+                                    hwEl.style.transition = 'outline 0.3s ease';
+                                    setTimeout(() => { hwEl.style.outline = ''; hwEl.style.outlineOffset = ''; }, 2500);
+                                  } else {
+                                    toast({ title: nextTask.title, description: `Due ${format(taskDate, 'MMM d')} (${daysUntil}d)` });
+                                  }
+                                }
+                              }}
+                              data-testid={`countdown-next-bar-${nextTask.id}`}
+                            >
                               <span style={{ fontSize: '10px', color: '#ffffff', whiteSpace: 'nowrap', fontWeight: 500, lineHeight: '15px' }}>Next Task Due In: <span style={{ color: '#ffffff', fontWeight: 700, fontSize: '10px' }}>{daysUntil}d</span></span>
                             </div>
                           );
