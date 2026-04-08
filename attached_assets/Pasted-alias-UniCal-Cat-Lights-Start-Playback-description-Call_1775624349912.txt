@@ -1,0 +1,97 @@
+alias: "UniCal: Cat Lights - Start Playback"
+description: >-
+  Calls webhook when cat washroom lights turn on or off, passing the correct
+  state. Also turns off lights automatically after no motion.
+triggers:
+  - entity_id: light.cat_lights
+    trigger: state
+    to: "on"
+    id: lights_on
+  - entity_id: light.cat_lights
+    trigger: state
+    to: "off"
+    id: lights_off
+  - type: no_motion
+    device_id: fb4553e7f382c6854255fd2730b3d4f6
+    entity_id: 1ce97c9ca41e09826ac376f311997d8b
+    domain: binary_sensor
+    trigger: device
+    for:
+      hours: 0
+      minutes: 10
+      seconds: 0
+    id: no_motion
+conditions: []
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: lights_on
+        sequence:
+          - action: rest_command.cat_lights_webhook
+            data:
+              state: "on"
+      - conditions:
+          - condition: trigger
+            id: lights_off
+        sequence:
+          - action: rest_command.cat_lights_webhook
+            data:
+              state: "off"
+      - conditions:
+          - condition: trigger
+            id: no_motion
+          - type: is_no_motion
+            condition: device
+            device_id: 2c73871d69722f7316ef217879b2837d
+            entity_id: 99fa93fd9e3c440526063e00f0f24212
+            domain: binary_sensor
+            for:
+              hours: 0
+              minutes: 5
+              seconds: 0
+        sequence:
+          - action: light.turn_off
+            data: {}
+            target:
+              entity_id: light.cat_lights
+          - action: scene.turn_on
+            target:
+              entity_id: scene.air_purifier_cat2_off
+            data: {}
+            enabled: false
+          - if:
+              - type: is_temperature
+                condition: device
+                device_id: 5b38094988f7d39cd39d2dd15cfdc9d2
+                entity_id: 80cc29de7e61626888067015849dea87
+                domain: sensor
+                below: 26
+            then:
+              - type: turn_off
+                device_id: 81c2bdbd25311a069076180f4789f1a9
+                entity_id: 94f87920692b0062b4700b2cb1790a0e
+                domain: light
+              - device_id: 935e462bb030745ac11e2c65b5fda4e7
+                domain: select
+                entity_id: c16752f1a7c89b6e68fa7c0d321e7bed
+                type: select_option
+                option: "Off"
+                enabled: false
+            else:
+              - type: turn_on
+                device_id: 81c2bdbd25311a069076180f4789f1a9
+                entity_id: 94f87920692b0062b4700b2cb1790a0e
+                domain: light
+          - device_id: cf2ee997aed66d06e8733a0d366849f2
+            domain: number
+            entity_id: e744f7786e0d4037372f27dd81cb1502
+            type: set_value
+            value: 0
+          - action: input_boolean.turn_off
+            target:
+              entity_id: input_boolean.light_group_cat
+            data: {}
+mode: queued
+max_exceeded: silent
+max: 10
