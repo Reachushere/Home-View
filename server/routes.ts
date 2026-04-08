@@ -15245,7 +15245,30 @@ document.body.removeChild(a);
         }).catch(() => {});
 
         try {
-          const pauseText = "Paused. Say re-zoom to continue, or I'll stop in 10 minutes.";
+          let noMotionMinutes = 10;
+          try {
+            const automResp = await fetch(`${haUrl}/api/states/automation.motion_cat_wr_no_motion`, { headers: haHeaders });
+            if (automResp.ok) {
+              const automData = await automResp.json();
+              const triggers = automData?.attributes?.trigger || automData?.attributes?.triggers || [];
+              for (const trig of (Array.isArray(triggers) ? triggers : [])) {
+                const dur = trig?.for || trig?.duration;
+                if (dur) {
+                  if (typeof dur === 'object' && dur.minutes !== undefined) {
+                    noMotionMinutes = parseInt(dur.minutes, 10) || noMotionMinutes;
+                  } else if (typeof dur === 'string') {
+                    const mm = dur.match(/(\d+):(\d+):(\d+)/);
+                    if (mm) noMotionMinutes = parseInt(mm[2], 10) || noMotionMinutes;
+                  }
+                  break;
+                }
+              }
+              console.log(`${logPrefix} Fetched no-motion automation duration: ${noMotionMinutes} minutes`);
+            }
+          } catch (e: any) {
+            console.warn(`${logPrefix} Could not fetch no-motion automation duration: ${e.message}`);
+          }
+          const pauseText = `Paused. Say re-zoom to continue, or I'll stop in ${noMotionMinutes} minutes.`;
           const pausePath = await generateAndSaveTTSAudio(pauseText, `vc-pause-${Date.now()}`);
           await playOnNestSpeaker(`${appUrl}${pausePath}`, 2, pauseText);
         } catch {}
