@@ -5445,9 +5445,34 @@ export default function Dashboard() {
       `[data-testid="course-fullweek-task-today-${hoveredCountdownTaskId}"]`,
       `[data-testid="day-detail-task-${hoveredCountdownTaskId}"]`,
       `[data-testid="other-task-${hoveredCountdownTaskId}"]`,
+      `[data-testid="all-day-task-${hoveredCountdownTaskId}"]`,
+      `[data-testid="time-task-${hoveredCountdownTaskId}"]`,
+      `[data-testid="multi-hour-task-${hoveredCountdownTaskId}"]`,
+      `[data-testid="task-link-today-${hoveredCountdownTaskId}"]`,
+      `[data-testid="task-link-tomorrow-${hoveredCountdownTaskId}"]`,
+      `[data-testid="task-link-week-${hoveredCountdownTaskId}"]`,
+      `[data-testid="upcoming-2w-task-${hoveredCountdownTaskId}"]`,
+      `[data-testid="task-link-beyond-${hoveredCountdownTaskId}"]`,
+      `[data-testid="droppable-task-${hoveredCountdownTaskId}"]`,
     ].join(', ');
     const taskEl = document.querySelector(taskSelectors) as HTMLElement | null;
-    if (!taskEl) return;
+    if (!taskEl) {
+      const barRect = barEl.getBoundingClientRect();
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.id = 'countdown-hover-line-overlay';
+      svg.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:9999';
+      const notFoundText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      notFoundText.setAttribute('x', String(barRect.left + barRect.width / 2));
+      notFoundText.setAttribute('y', String(barRect.top - 8));
+      notFoundText.setAttribute('text-anchor', 'middle');
+      notFoundText.setAttribute('fill', 'rgba(59,130,246,0.9)');
+      notFoundText.setAttribute('font-size', '11');
+      notFoundText.setAttribute('font-weight', '600');
+      notFoundText.textContent = 'Task not visible in current view';
+      svg.appendChild(notFoundText);
+      document.body.appendChild(svg);
+      return () => { const el = document.getElementById('countdown-hover-line-overlay'); if (el) el.remove(); };
+    }
 
     const barRect = barEl.getBoundingClientRect();
     const taskRect = taskEl.getBoundingClientRect();
