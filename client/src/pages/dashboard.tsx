@@ -26423,7 +26423,7 @@ export default function Dashboard() {
                           const exportRes = await fetch("/api/export");
                           const exportData = await exportRes.json();
                           
-                          const importRes = await fetch("https://home-view--bkh416.replit.app/api/import", {
+                          const importRes = await fetch("/api/import", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify(exportData),
@@ -26431,9 +26431,8 @@ export default function Dashboard() {
                           const result = await importRes.json();
                           
                           if (result.success) {
-                            // Clean up duplicates and sync file names
                             try {
-                              await fetch("https://home-view--bkh416.replit.app/api/cleanup-duplicates", { method: "POST" });
+                              await fetch("/api/cleanup-duplicates", { method: "POST" });
                             } catch (e) {
                               // Cleanup is optional
                             }
@@ -26463,7 +26462,7 @@ export default function Dashboard() {
                         try {
                           toast({ title: "Pulling...", description: "Getting data from production." });
                           
-                          const exportRes = await fetch("https://home-view--bkh416.replit.app/api/export");
+                          const exportRes = await fetch("/api/export");
                           if (!exportRes.ok) {
                             toast({ title: "Pull failed", description: `Export failed: ${exportRes.status}`, variant: "destructive" });
                             return;
@@ -28993,53 +28992,36 @@ export default function Dashboard() {
                     const readingFiles = weeklyFiles.filter(f => f.folder === `week-${selectedWeek}-${courseCodeLower}-reading`);
                     const calcFileProgress = (files: WeeklyFile[], folderKey: string) => {
                       const fc = fileCounts[folderKey];
-                      const fcPct = (fc && fc.total > 0) ? (fc.partialProgress != null ? Math.min(100, Math.round(fc.partialProgress / fc.total)) : (fc.listened > 0 ? Math.round((fc.listened / fc.total) * 100) : 0)) : -1;
-                      const fcHasFiles = fc && fc.total > 0;
-                      if (files.length === 0) {
-                        if (fcHasFiles) {
-                          return { percent: Math.max(0, fcPct), hasFiles: true };
+                      const totalFiles = Math.max(files.length, fc?.total || 0);
+                      if (totalFiles === 0) return { percent: 0, hasFiles: false };
+                      const listenedFromDb = fc?.listened || 0;
+                      const listenedFromFiles = files.filter(f => f.listened).length;
+                      const listenedCount = Math.max(listenedFromDb, listenedFromFiles);
+                      if (listenedCount >= totalFiles) return { percent: 100, hasFiles: true };
+                      let partialExtra = 0;
+                      const unlistenedFiles = files.filter(f => !f.listened);
+                      for (const f of unlistenedFiles) {
+                        const isCurrentFile = previewFile && f.id === previewFile.id;
+                        const liveChecked = isCurrentFile ? checkedChunksRef.current : null;
+                        const liveTotal = isCurrentFile ? (ttsChunksRef.current.length || totalChunks) : 0;
+                        let filePct = 0;
+                        if (liveChecked && liveChecked.size > 0 && liveTotal > 0) {
+                          filePct = Math.round((liveChecked.size / liveTotal) * 100);
+                        } else if (f.checkedChunks && f.checkedChunks !== 'null' && f.checkedChunks !== '[]' && f.totalChunks && f.totalChunks > 0) {
+                          try {
+                            const checked = JSON.parse(f.checkedChunks);
+                            if (Array.isArray(checked) && checked.length > 0) filePct = Math.round((checked.length / f.totalChunks) * 100);
+                          } catch {}
+                        } else if (isCurrentFile && isPlaying && totalChunks > 0) {
+                          filePct = Math.round(((currentChunkIndex + 1) / totalChunks) * 100);
+                        } else if (f.totalChunks && f.totalChunks > 0 && f.lastChunkIndex != null && f.lastChunkIndex > 0) {
+                          filePct = Math.round((f.lastChunkIndex / f.totalChunks) * 100);
                         }
-                        return { percent: 0, hasFiles: false };
+                        partialExtra += Math.min(filePct, 99);
                       }
-                      const preparedFiles = files.filter(f => f.listened || (f.totalChunks && f.totalChunks > 0));
-                      if (preparedFiles.length === 0 && fcPct <= 0) {
-                        return { percent: 0, hasFiles: false };
-                      }
-                      let totalProgress = 0;
-                      const countableFiles = preparedFiles.length > 0 ? preparedFiles : files;
-                      const capUnlistened = (pct: number) => Math.min(pct, 99);
-                      for (const f of countableFiles) {
-                        if (f.listened) {
-                          totalProgress += 100;
-                        } else {
-                          const isCurrentFile = previewFile && f.id === previewFile.id;
-                          const liveChecked = isCurrentFile ? checkedChunksRef.current : null;
-                          const liveTotal = isCurrentFile ? (ttsChunksRef.current.length || totalChunks) : 0;
-                          if (liveChecked && liveChecked.size > 0 && liveTotal > 0) {
-                            totalProgress += capUnlistened(Math.round((liveChecked.size / liveTotal) * 100));
-                          } else if (f.checkedChunks && f.checkedChunks !== 'null' && f.checkedChunks !== '[]' && f.totalChunks && f.totalChunks > 0) {
-                            try {
-                              const checked = JSON.parse(f.checkedChunks);
-                              if (Array.isArray(checked) && checked.length > 0) {
-                                totalProgress += capUnlistened(Math.round((checked.length / f.totalChunks) * 100));
-                              } else if (f.lastChunkIndex != null && f.lastChunkIndex > 0) {
-                                totalProgress += capUnlistened(Math.round((f.lastChunkIndex / f.totalChunks) * 100));
-                              }
-                            } catch {
-                              if (f.lastChunkIndex != null && f.lastChunkIndex > 0) {
-                                totalProgress += capUnlistened(Math.round((f.lastChunkIndex / f.totalChunks) * 100));
-                              }
-                            }
-                          } else if (isCurrentFile && isPlaying && totalChunks > 0) {
-                            totalProgress += capUnlistened(Math.round(((currentChunkIndex + 1) / totalChunks) * 100));
-                          } else if (f.totalChunks && f.totalChunks > 0 && f.lastChunkIndex != null && f.lastChunkIndex >= 0) {
-                            totalProgress += capUnlistened(Math.round((f.lastChunkIndex / f.totalChunks) * 100));
-                          }
-                        }
-                      }
-                      const allListened = countableFiles.every(f => f.listened);
-                      const filesPct = Math.min(allListened ? 100 : 99, Math.round(totalProgress / countableFiles.length));
-                      return { percent: Math.max(filesPct, fcPct >= 0 ? Math.min(fcPct, allListened ? 100 : 99) : 0), hasFiles: preparedFiles.length > 0 };
+                      const basePct = Math.round((listenedCount / totalFiles) * 100);
+                      const partialPct = unlistenedFiles.length > 0 ? Math.round(partialExtra / totalFiles) : 0;
+                      return { percent: Math.min(basePct + partialPct, 99), hasFiles: true };
                     };
                     const getProgressColor = (percent: number) => {
                       if (percent === 100) return '#22c55e';
@@ -31643,29 +31625,26 @@ export default function Dashboard() {
             const rFiles = weeklyFiles.filter(f => f.folder === readingFolderKey);
             const calc = (files: typeof weeklyFiles, folderKey: string) => {
               const fc = fileCounts[folderKey];
-              const fcPct = (fc && fc.total > 0) ? (fc.partialProgress != null ? Math.min(100, Math.round(fc.partialProgress / fc.total)) : (fc.listened > 0 ? Math.round((fc.listened / fc.total) * 100) : 0)) : -1;
-              const fcHasFiles = fc && fc.total > 0;
-              if (files.length === 0) {
-                if (fcHasFiles) return { percent: Math.max(0, fcPct), hasFiles: true };
-                return { percent: 0, hasFiles: false };
-              }
-              var prepared = files.filter(function(f) { return f.listened || (f.totalChunks && f.totalChunks > 0); });
-              if (prepared.length === 0 && fcPct <= 0) {
-                return { percent: 0, hasFiles: false };
-              }
-              var countable = prepared.length > 0 ? prepared : files;
-              var totalProgress = 0;
-              for (var fi = 0; fi < countable.length; fi++) {
-                var f = countable[fi];
-                if (f.listened) { totalProgress += 100; }
-                else if (f.checkedChunks && f.checkedChunks !== 'null' && f.checkedChunks !== '[]' && f.totalChunks && f.totalChunks > 0) {
-                  try { var checked = JSON.parse(f.checkedChunks); if (Array.isArray(checked) && checked.length > 0) { totalProgress += Math.round((checked.length / f.totalChunks) * 100); } else if (f.lastChunkIndex != null && f.lastChunkIndex > 0) { totalProgress += Math.round((f.lastChunkIndex / f.totalChunks) * 100); } } catch { if (f.lastChunkIndex != null && f.lastChunkIndex > 0) totalProgress += Math.round((f.lastChunkIndex / f.totalChunks) * 100); }
+              const totalFiles = Math.max(files.length, fc?.total || 0);
+              if (totalFiles === 0) return { percent: 0, hasFiles: false };
+              const listenedFromDb = fc?.listened || 0;
+              const listenedFromFiles = files.filter(f => f.listened).length;
+              const listenedCount = Math.max(listenedFromDb, listenedFromFiles);
+              if (listenedCount >= totalFiles) return { percent: 100, hasFiles: true };
+              let partialExtra = 0;
+              const unlistenedFiles = files.filter(f => !f.listened);
+              for (const f of unlistenedFiles) {
+                let filePct = 0;
+                if (f.checkedChunks && f.checkedChunks !== 'null' && f.checkedChunks !== '[]' && f.totalChunks && f.totalChunks > 0) {
+                  try { const checked = JSON.parse(f.checkedChunks); if (Array.isArray(checked) && checked.length > 0) filePct = Math.round((checked.length / f.totalChunks) * 100); } catch {}
                 } else if (f.totalChunks && f.totalChunks > 0 && f.lastChunkIndex != null && f.lastChunkIndex > 0) {
-                  totalProgress += Math.round((f.lastChunkIndex / f.totalChunks) * 100);
+                  filePct = Math.round((f.lastChunkIndex / f.totalChunks) * 100);
                 }
+                partialExtra += Math.min(filePct, 99);
               }
-              var filesPct = Math.min(100, Math.round(totalProgress / countable.length));
-              return { percent: Math.max(filesPct, fcPct >= 0 ? fcPct : 0), hasFiles: prepared.length > 0 };
+              const basePct = Math.round((listenedCount / totalFiles) * 100);
+              const partialPct = unlistenedFiles.length > 0 ? Math.round(partialExtra / totalFiles) : 0;
+              return { percent: Math.min(basePct + partialPct, 99), hasFiles: true };
             };
             const getFileProgressColor = (percent: number) => percent === 100 ? '#22c55e' : percent > 0 ? '#f97316' : '#ef4444';
             const moduleP = calc(mFiles, moduleFolderKey);
@@ -31896,17 +31875,19 @@ export default function Dashboard() {
                       const rFiles = weeklyFiles.filter(f => f.folder === rKey);
                       const calcPct = (files: typeof weeklyFiles, folderKey: string) => {
                         const fc = fileCounts[folderKey];
-                        const fcPct = (fc && fc.total > 0) ? (fc.partialProgress != null ? Math.min(100, Math.round(fc.partialProgress / fc.total)) : (fc.listened > 0 ? Math.round((fc.listened / fc.total) * 100) : 0)) : -1;
-                        if (files.length === 0) return fcPct >= 0 ? fcPct : 0;
-                        let tp = 0;
-                        for (const f of files) {
-                          if (f.listened) { tp += 100; }
-                          else if (f.checkedChunks && f.checkedChunks !== 'null' && f.checkedChunks !== '[]' && f.totalChunks && f.totalChunks > 0) {
-                            try { const ck = JSON.parse(f.checkedChunks); if (Array.isArray(ck) && ck.length > 0) tp += Math.round((ck.length / f.totalChunks) * 100); else if (f.lastChunkIndex && f.lastChunkIndex > 0) tp += Math.round((f.lastChunkIndex / f.totalChunks) * 100); } catch { if (f.lastChunkIndex && f.lastChunkIndex > 0) tp += Math.round((f.lastChunkIndex / f.totalChunks) * 100); }
-                          } else if (f.totalChunks && f.totalChunks > 0 && f.lastChunkIndex && f.lastChunkIndex > 0) { tp += Math.round((f.lastChunkIndex / f.totalChunks) * 100); }
+                        const totalFiles = Math.max(files.length, fc?.total || 0);
+                        if (totalFiles === 0) return 0;
+                        const listenedCount = Math.max(fc?.listened || 0, files.filter(f => f.listened).length);
+                        if (listenedCount >= totalFiles) return 100;
+                        let partialExtra = 0;
+                        for (const f of files.filter(f => !f.listened)) {
+                          let fp = 0;
+                          if (f.checkedChunks && f.checkedChunks !== 'null' && f.checkedChunks !== '[]' && f.totalChunks && f.totalChunks > 0) {
+                            try { const ck = JSON.parse(f.checkedChunks); if (Array.isArray(ck) && ck.length > 0) fp = Math.round((ck.length / f.totalChunks) * 100); } catch {}
+                          } else if (f.totalChunks && f.totalChunks > 0 && f.lastChunkIndex && f.lastChunkIndex > 0) { fp = Math.round((f.lastChunkIndex / f.totalChunks) * 100); }
+                          partialExtra += Math.min(fp, 99);
                         }
-                        const fp = Math.min(100, Math.round(tp / files.length));
-                        return Math.max(fp, fcPct >= 0 ? fcPct : 0);
+                        return Math.min(Math.round((listenedCount / totalFiles) * 100) + (files.length > 0 ? Math.round(partialExtra / totalFiles) : 0), 99);
                       };
                       const mPct = calcPct(mFiles, mKey);
                       const rPct = calcPct(rFiles, rKey);

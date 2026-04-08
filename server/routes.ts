@@ -107,7 +107,7 @@ async function getPdfParser() {
 
 // ===== CENTRALIZED CONFIGURATION =====
 // Change these values in ONE place if URLs or devices change.
-const DEPLOYED_APP_URL = process.env.DEPLOYED_APP_URL || "https://home-view--bkh416.replit.app";
+const DEPLOYED_APP_URL = process.env.DEPLOYED_APP_URL || (process.env.REPL_ID ? `https://${process.env.REPL_SLUG}--${process.env.REPL_OWNER}.repl.co` : "http://localhost:5000");
 const HOME_ASSISTANT_URL = process.env.HOME_ASSISTANT_URL_OVERRIDE || "https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa";
 const tokenFromEnv = process.env.HOME_ASSISTANT_TOKEN || "";
 const urlFromEnv = process.env.HOME_ASSISTANT_URL || "";
