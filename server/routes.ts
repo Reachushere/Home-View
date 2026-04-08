@@ -13216,14 +13216,18 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       nestPlaybackAbort = null;
     }
 
+    let fileName = catWashPlaybackState?.fileName || '';
+    const savedFileId = catWashPlaybackState?.fileId;
+    const savedChunk = catWashPlaybackState?.chunkIndex || 0;
+
+    catWashPlaybackActive = false;
+    stopWordAdvancement();
+    console.log(`[Nest Stop] catWashPlaybackActive set to FALSE immediately (before goodbye)`);
+
     await Promise.allSettled([
       stopNestSpeaker(),
       haServiceCallSafe('media_player/media_stop', { entity_id: CAT_WR_HA_VOICE_ENTITY }, 'Stop HA Voice'),
     ]);
-
-    let fileName = catWashPlaybackState?.fileName || '';
-    const savedFileId = catWashPlaybackState?.fileId;
-    const savedChunk = catWashPlaybackState?.chunkIndex || 0;
 
     if (savedFileId && savedChunk > 0) {
       try {
@@ -13293,7 +13297,6 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     ]);
     console.log(`[Nest Stop] Post-goodbye stop sent to Nest + HA Voice`);
 
-    catWashPlaybackActive = false;
     catWashPlaybackStartedAt = null;
     catWashPlaybackState = null;
     nestPlaybackAbort = null;
@@ -13301,7 +13304,6 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     currentTabletReaderUrl = null;
     lastPlaybackStoppedAt = Date.now();
     stopToothbrushPolling();
-    stopWordAdvancement();
     await clearPlaybackSession();
     console.log(`[Nest Stop] Cleared persisted playback session`);
 
