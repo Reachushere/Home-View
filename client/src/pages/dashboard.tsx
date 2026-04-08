@@ -5424,37 +5424,33 @@ export default function Dashboard() {
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   
   const hoveredCountdownTaskIdRef = useRef<number | null>(null);
-  const [hoveredCountdownTaskId, setHoveredCountdownTaskId] = useState<number | null>(null);
-  const setHoveredCountdownTaskIdDebounced = useCallback((id: number | null) => {
-    if (hoveredCountdownTaskIdRef.current === id) return;
-    hoveredCountdownTaskIdRef.current = id;
-    setHoveredCountdownTaskId(id);
-  }, []);
+  const showCountdownHoverLine = useCallback((taskId: number) => {
+    const existing = document.getElementById('countdown-hover-line-overlay');
+    if (existing) existing.remove();
 
-  useEffect(() => {
-    const existingOverlay = document.getElementById('countdown-hover-line-overlay');
-    if (existingOverlay) existingOverlay.remove();
-
-    if (!hoveredCountdownTaskId) return;
-
-    const barEl = document.querySelector(`[data-testid="countdown-bar-cr-${hoveredCountdownTaskId}"], [data-testid="countdown-bar-or-${hoveredCountdownTaskId}"]`) as HTMLElement | null;
+    const barEl = document.querySelector(`[data-testid="countdown-bar-cr-${taskId}"], [data-testid="countdown-bar-or-${taskId}"]`) as HTMLElement | null;
     if (!barEl) return;
 
-    const allCandidates = document.querySelectorAll(`[data-testid$="-${hoveredCountdownTaskId}"]`);
+    const calendarWrapper = document.querySelector('[data-testid="calendar-scroll-container"]') as HTMLElement | null;
+    const rightEdge = calendarWrapper ? calendarWrapper.getBoundingClientRect().right : window.innerWidth - 10;
+
+    const allCandidates = document.querySelectorAll(`[data-testid$="-${taskId}"]`);
     let filteredTaskEl: HTMLElement | null = null;
     for (const el of allCandidates) {
       const tid = el.getAttribute('data-testid') || '';
-      if (tid.startsWith('countdown-bar-') || tid.startsWith('checkbox-') || tid.startsWith('att-link-') || tid.startsWith('zoom-icon-') || tid.startsWith('pdf-icon-')) continue;
+      if (tid.startsWith('countdown-bar-') || tid.startsWith('checkbox-') || tid.startsWith('att-link-') || tid.startsWith('zoom-icon-') || tid.startsWith('pdf-icon-') || tid.startsWith('countdown-nub-')) continue;
       if (tid.includes('task-') || tid.includes('droppable-')) {
         filteredTaskEl = el as HTMLElement;
         break;
       }
     }
+
+    const barRect = barEl.getBoundingClientRect();
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.id = 'countdown-hover-line-overlay';
+    svg.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:9999';
+
     if (!filteredTaskEl) {
-      const barRect = barEl.getBoundingClientRect();
-      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      svg.id = 'countdown-hover-line-overlay';
-      svg.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:9999';
       const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
       bg.setAttribute('x', String(barRect.right + 6));
       bg.setAttribute('y', String(barRect.top - 2));
@@ -5473,75 +5469,70 @@ export default function Dashboard() {
       notFoundText.textContent = 'Not in current week view';
       svg.appendChild(notFoundText);
       document.body.appendChild(svg);
-      return () => { const el = document.getElementById('countdown-hover-line-overlay'); if (el) el.remove(); };
+      return;
     }
 
-    const barRect = barEl.getBoundingClientRect();
     const taskRect = filteredTaskEl.getBoundingClientRect();
+    const barColor = barEl.querySelector('[style*="background"]')?.getAttribute('style')?.match(/background:\s*([^;]+)/)?.[1] || 'rgba(59,130,246,0.5)';
+    const lineColor = 'rgba(59,130,246,0.45)';
+    const lineWidth = 2;
+    const r = 6;
 
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.id = 'countdown-hover-line-overlay';
-    svg.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:9999';
+    const startX = barRect.right;
+    const startY = barRect.top + barRect.height / 2;
+    const edgeX = rightEdge - 4;
+    const taskLeftX = taskRect.left - 3;
+    const taskMidY = taskRect.top + taskRect.height / 2;
+    const aboveTaskY = taskRect.top - 8;
 
-    const x1 = barRect.left + barRect.width / 2;
-    const y1 = barRect.top;
-    const x2 = taskRect.left + taskRect.width / 2;
-    const y2 = taskRect.top + taskRect.height / 2;
-
-    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-    const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
-    marker.setAttribute('id', 'countdown-arrow');
-    marker.setAttribute('markerWidth', '8');
-    marker.setAttribute('markerHeight', '6');
-    marker.setAttribute('refX', '8');
-    marker.setAttribute('refY', '3');
-    marker.setAttribute('orient', 'auto');
-    const arrowPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    arrowPath.setAttribute('d', 'M0,0 L8,3 L0,6 Z');
-    arrowPath.setAttribute('fill', 'rgba(59,130,246,0.65)');
-    marker.appendChild(arrowPath);
-    defs.appendChild(marker);
-    svg.appendChild(defs);
-
-    const r = 8;
-    const goingUp = y2 < y1;
-    const midY = goingUp ? Math.min(y1 - 15, y2 - 15) : y1 - 15;
-    const pathD = `M ${x1} ${y1} L ${x1} ${midY + r} Q ${x1} ${midY} ${x1 + (x2 > x1 ? r : -r)} ${midY} L ${x2 - (x2 > x1 ? r : -r)} ${midY} Q ${x2} ${midY} ${x2} ${midY + (goingUp ? -r : r)} L ${x2} ${y2}`;
+    const pathD = [
+      `M ${startX} ${startY}`,
+      `L ${edgeX - r} ${startY}`,
+      `Q ${edgeX} ${startY} ${edgeX} ${startY + r}`,
+      `L ${edgeX} ${aboveTaskY - r}`,
+      `Q ${edgeX} ${aboveTaskY} ${edgeX - r} ${aboveTaskY}`,
+      `L ${taskLeftX + r} ${aboveTaskY}`,
+      `Q ${taskLeftX} ${aboveTaskY} ${taskLeftX} ${aboveTaskY + r}`,
+      `L ${taskLeftX} ${taskMidY}`,
+    ].join(' ');
 
     const lanePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     lanePath.setAttribute('d', pathD);
-    lanePath.setAttribute('stroke', 'rgba(59,130,246,0.5)');
-    lanePath.setAttribute('stroke-width', '1.5');
+    lanePath.setAttribute('stroke', lineColor);
+    lanePath.setAttribute('stroke-width', String(lineWidth));
     lanePath.setAttribute('fill', 'none');
-    lanePath.setAttribute('stroke-dasharray', '5,3');
-    lanePath.setAttribute('marker-end', 'url(#countdown-arrow)');
+    lanePath.setAttribute('stroke-dasharray', '4,3');
+    lanePath.setAttribute('opacity', '0.7');
     svg.appendChild(lanePath);
 
-    const dotStart = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    dotStart.setAttribute('cx', String(x1));
-    dotStart.setAttribute('cy', String(y1));
-    dotStart.setAttribute('r', '3');
-    dotStart.setAttribute('fill', 'rgba(59,130,246,0.7)');
-    svg.appendChild(dotStart);
-
     const highlightTask = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    highlightTask.setAttribute('x', String(taskRect.left - 1));
-    highlightTask.setAttribute('y', String(taskRect.top - 1));
-    highlightTask.setAttribute('width', String(taskRect.width + 2));
-    highlightTask.setAttribute('height', String(taskRect.height + 2));
-    highlightTask.setAttribute('rx', '3');
+    highlightTask.setAttribute('x', String(taskRect.left - 2));
+    highlightTask.setAttribute('y', String(taskRect.top - 2));
+    highlightTask.setAttribute('width', String(taskRect.width + 4));
+    highlightTask.setAttribute('height', String(taskRect.height + 4));
+    highlightTask.setAttribute('rx', '4');
     highlightTask.setAttribute('fill', 'none');
     highlightTask.setAttribute('stroke', 'rgba(59,130,246,0.5)');
-    highlightTask.setAttribute('stroke-width', '1.5');
+    highlightTask.setAttribute('stroke-width', '2');
     svg.appendChild(highlightTask);
 
     document.body.appendChild(svg);
+  }, []);
 
-    return () => {
-      const el = document.getElementById('countdown-hover-line-overlay');
-      if (el) el.remove();
-    };
-  }, [hoveredCountdownTaskId]);
+  const hideCountdownHoverLine = useCallback(() => {
+    const existing = document.getElementById('countdown-hover-line-overlay');
+    if (existing) existing.remove();
+  }, []);
+
+  const setHoveredCountdownTaskIdDebounced = useCallback((id: number | null) => {
+    if (hoveredCountdownTaskIdRef.current === id) return;
+    hoveredCountdownTaskIdRef.current = id;
+    if (id !== null) {
+      showCountdownHoverLine(id);
+    } else {
+      hideCountdownHoverLine();
+    }
+  }, [showCountdownHoverLine, hideCountdownHoverLine]);
 
   // Pomodoro Timer State
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -29636,7 +29627,7 @@ export default function Dashboard() {
               
                           {/* Time Slots - Scrollable area */}
             <div style={{ position: 'relative', flex: '1 1 0%', overflow: 'hidden', borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px' }}>
-            <div ref={calendarScrollRef} className="overflow-y-auto" style={{ height: '100%', scrollbarWidth: 'none' }} onScroll={(e) => {
+            <div ref={calendarScrollRef} data-testid="calendar-scroll-container" className="overflow-y-auto" style={{ height: '100%', scrollbarWidth: 'none' }} onScroll={(e) => {
               const st = (e.target as HTMLDivElement).scrollTop;
               calScrollTopRef.current = st;
             }}>
