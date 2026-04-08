@@ -13,6 +13,7 @@ html, body {
   padding: 0 !important;
   width: 100% !important;
   overscroll-behavior: none !important;
+  color-scheme: light !important;
 }
 
 #root {
