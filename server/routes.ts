@@ -11734,19 +11734,23 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
   async function findNextFileByPriority(allFiles: any[], currentWeekNumber: number, excludeFileId?: number): Promise<any | null> {
     console.log(`[FileOrder] Searching ${allFiles.length} total files for week ${currentWeekNumber} (priorities: ${JSON.stringify(coursePlayPriority)})`);
-    const allEligible = allFiles.filter((f: any) => {
-      if (f.listened) return false;
+    const allForWeek = allFiles.filter((f: any) => {
       if (excludeFileId && f.id === excludeFileId) return false;
       const weekMatch = f.folder?.match(/week-(\d+)/i);
       return weekMatch && parseInt(weekMatch[1], 10) === currentWeekNumber;
     });
+    const allEligible = allForWeek.filter((f: any) => !f.listened);
+    const listenedForWeek = allForWeek.filter((f: any) => f.listened);
+    if (listenedForWeek.length > 0) {
+      console.log(`[FileOrder] Week ${currentWeekNumber} already-listened files: ${listenedForWeek.map((f: any) => `${f.originalName}(folder=${f.folder})`).join(' | ')}`);
+    }
     if (allEligible.length === 0) {
       const weekFolders = allFiles.filter((f: any) => !f.listened).map((f: any) => f.folder).filter(Boolean);
       const weekNums = [...new Set(weekFolders.map((folder: string) => folder.match(/week-(\d+)/i)?.[1]).filter(Boolean))].sort();
       console.log(`[FileOrder] No unlistened files found for week ${currentWeekNumber}. Available weeks with unlistened files: [${weekNums.join(', ')}]`);
       const cppaFiles = allFiles.filter((f: any) => (f.folder || '').toLowerCase().includes('cppa') || (f.originalName || '').toLowerCase().includes('cppa'));
       if (cppaFiles.length > 0) {
-        console.log(`[FileOrder] CPPA files in DB: ${cppaFiles.map((f: any) => `${f.originalName} (folder=${f.folder}, listened=${f.listened})`).join(' | ')}`);
+        console.log(`[FileOrder] CPPA files in DB: ${cppaFiles.map((f: any) => `${f.originalName} (folder=${f.folder}, listened=${f.listened}, week=${f.folder?.match(/week-(\\d+)/i)?.[1] || '?'})`).join(' | ')}`);
       } else {
         console.log(`[FileOrder] No CPPA files found in database at all`);
       }
@@ -11781,7 +11785,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
     const picked = withMeta[0];
     console.log(`[FileOrder] ${allEligible.length} unlistened files (${eligible.length} eligible, modulesBlock=${hasAnyUnlistenedModule}), picking: ${picked.file.originalName} (course=${picked.coursePriority}, week=${picked.weekNum})`);
-    console.log(`[FileOrder] Top candidates: ${withMeta.slice(0, 5).map(w => `${w.file.originalName}(p=${w.coursePriority},w=${w.weekNum})`).join(' → ')}`);
+    console.log(`[FileOrder] ALL candidates sorted: ${withMeta.map(w => `${w.file.originalName}(pri=${w.coursePriority},w=${w.weekNum},mod=${w.isModule},folder=${w.file.folder})`).join(' | ')}`);
     return picked.file;
   }
 
@@ -12490,6 +12494,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     } catch {}
 
     let playUrl: string | null = null;
+    let usedHAUpload = false;
 
     let localAudioPath = audioUrl;
     if (audioUrl.startsWith('http')) {
@@ -12504,6 +12509,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     if (localAudioPath.startsWith('/tts-audio/') || localAudioPath.startsWith('/prepared-audio/')) {
       playUrl = await uploadAudioToHA(localAudioPath);
       if (playUrl) {
+        usedHAUpload = true;
         console.log(`[Nest] Using HA-uploaded Edge TTS audio: ${playUrl}`);
       }
     }
@@ -12530,6 +12536,20 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       }
       return { success: false, actuallyPlaying: false };
     }
+
+    if (usedHAUpload) {
+      console.log(`[Nest] HA upload succeeded + play_media sent — trusting Edge TTS playback (NO Cloud TTS fallback)`);
+      await new Promise(r => setTimeout(r, 3000));
+      try {
+        const { state: speakerState } = await getNestMediaState();
+        console.log(`[Nest] Quick state check after HA upload play: ${speakerState}`);
+        if (speakerState === 'playing' || speakerState === 'buffering') {
+          return { success: true, actuallyPlaying: true };
+        }
+      } catch {}
+      return { success: true, actuallyPlaying: false };
+    }
+
     for (let check = 0; check <= maxRetries; check++) {
       await new Promise(r => setTimeout(r, check === 0 ? 4000 : 3000));
       try {
@@ -12543,10 +12563,6 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           return { success: true, actuallyPlaying: false };
         }
         if (check === maxRetries) {
-          if (ttsText && ttsText.length > 0) {
-            console.log(`[Nest] State "${speakerState}" after ${maxRetries + 1} checks — trying Cloud TTS fallback`);
-            return nestCloudTTSPlay(ttsText);
-          }
           console.log(`[Nest] State "${speakerState}" after ${maxRetries + 1} checks — play_media was sent, assuming it played`);
           return { success: true, actuallyPlaying: false };
         }
