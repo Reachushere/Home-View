@@ -29472,8 +29472,8 @@ export default function Dashboard() {
                                 onTouchEnd={handleTouchEnd}
                                 onTouchMove={handleTouchMove}
                                 title={(task.title || '').replace(/\[[^\]]*\]\s*/g, '').trim() + (task.dueDate ? ` — ${format(new Date(task.dueDate), 'MMM d, h:mm a')}` : '')}
-                                onMouseEnter={(e) => { if (totalItems > 1) { const el = e.currentTarget as HTMLElement; el.style.zIndex = '55'; el.style.boxShadow = '0 4px 16px rgba(0,0,0,0.35)'; } }}
-                                onMouseLeave={(e) => { if (totalItems > 1) { const el = e.currentTarget as HTMLElement; el.style.zIndex = selectedTaskId === task.id ? '55' : (draggedTask?.id === task.id ? '53' : '43'); el.style.boxShadow = ''; } }}
+                                onMouseEnter={(e) => { if (totalItems > 1) { const el = e.currentTarget as HTMLElement; el.style.zIndex = '58'; el.style.boxShadow = '0 4px 16px rgba(0,0,0,0.35)'; } }}
+                                onMouseLeave={(e) => { if (totalItems > 1) { const el = e.currentTarget as HTMLElement; el.style.zIndex = selectedTaskId === task.id ? '57' : (draggedTask?.id === task.id ? '56' : '54'); el.style.boxShadow = ''; } }}
                                 className={`absolute shadow-sm cursor-grab active:cursor-grabbing rounded overflow-visible ${
                                   draggedTask?.id === task.id ? "opacity-50" : ""
                                 } ${
@@ -29493,7 +29493,7 @@ export default function Dashboard() {
                                     left: (() => { if (stackInConflict) return '2px'; const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); return hasNextDueBox ? `calc(${taskIdx * columnWidth / 2}% + 2px)` : `calc(${taskIdx * columnWidth}% + 2px)`; })(),
                                     width: (() => { if (stackInConflict) return 'calc(100% - 4px)'; const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); return hasNextDueBox ? `calc(${columnWidth / 2}% - 4px)` : `calc(${columnWidth}% - 4px)`; })(),
                                     minHeight: `${taskHeight}px`,
-                                    zIndex: selectedTaskId === task.id ? 55 : (draggedTask?.id === task.id ? 53 : 43),
+                                    zIndex: selectedTaskId === task.id ? 57 : (draggedTask?.id === task.id ? 56 : 54),
                                     background: bgGradient,
                                     border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1.5px solid ${borderColor}`,
                                     transformOrigin: 'center center',
