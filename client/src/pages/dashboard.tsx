@@ -5484,7 +5484,7 @@ export default function Dashboard() {
     svg.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:9999';
 
     const x1 = barRect.left + barRect.width / 2;
-    const y1 = barRect.top + barRect.height / 2;
+    const y1 = barRect.top;
     const x2 = taskRect.left + taskRect.width / 2;
     const y2 = taskRect.top + taskRect.height / 2;
 
@@ -5498,57 +5498,41 @@ export default function Dashboard() {
     marker.setAttribute('orient', 'auto');
     const arrowPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     arrowPath.setAttribute('d', 'M0,0 L8,3 L0,6 Z');
-    arrowPath.setAttribute('fill', 'rgba(59,130,246,0.8)');
+    arrowPath.setAttribute('fill', 'rgba(59,130,246,0.65)');
     marker.appendChild(arrowPath);
     defs.appendChild(marker);
     svg.appendChild(defs);
 
-    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', String(x1));
-    line.setAttribute('y1', String(y1));
-    line.setAttribute('x2', String(x2));
-    line.setAttribute('y2', String(y2));
-    line.setAttribute('stroke', 'rgba(59,130,246,0.7)');
-    line.setAttribute('stroke-width', '2');
-    line.setAttribute('stroke-dasharray', '6,4');
-    line.setAttribute('marker-end', 'url(#countdown-arrow)');
-    svg.appendChild(line);
+    const r = 8;
+    const goingUp = y2 < y1;
+    const midY = goingUp ? Math.min(y1 - 15, y2 - 15) : y1 - 15;
+    const pathD = `M ${x1} ${y1} L ${x1} ${midY + r} Q ${x1} ${midY} ${x1 + (x2 > x1 ? r : -r)} ${midY} L ${x2 - (x2 > x1 ? r : -r)} ${midY} Q ${x2} ${midY} ${x2} ${midY + (goingUp ? -r : r)} L ${x2} ${y2}`;
 
-    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    circle.setAttribute('cx', String(x2));
-    circle.setAttribute('cy', String(y2));
-    circle.setAttribute('r', '6');
-    circle.setAttribute('fill', 'none');
-    circle.setAttribute('stroke', 'rgba(59,130,246,0.8)');
-    circle.setAttribute('stroke-width', '2');
-    const anim = document.createElementNS('http://www.w3.org/2000/svg', 'animate');
-    anim.setAttribute('attributeName', 'r');
-    anim.setAttribute('values', '6;10;6');
-    anim.setAttribute('dur', '1.5s');
-    anim.setAttribute('repeatCount', 'indefinite');
-    circle.appendChild(anim);
-    svg.appendChild(circle);
+    const lanePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    lanePath.setAttribute('d', pathD);
+    lanePath.setAttribute('stroke', 'rgba(59,130,246,0.5)');
+    lanePath.setAttribute('stroke-width', '1.5');
+    lanePath.setAttribute('fill', 'none');
+    lanePath.setAttribute('stroke-dasharray', '5,3');
+    lanePath.setAttribute('marker-end', 'url(#countdown-arrow)');
+    svg.appendChild(lanePath);
 
-    const highlightBar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    highlightBar.setAttribute('x', String(barRect.left - 2));
-    highlightBar.setAttribute('y', String(barRect.top - 1));
-    highlightBar.setAttribute('width', String(barRect.width + 4));
-    highlightBar.setAttribute('height', String(barRect.height + 2));
-    highlightBar.setAttribute('rx', '3');
-    highlightBar.setAttribute('fill', 'rgba(59,130,246,0.1)');
-    highlightBar.setAttribute('stroke', 'rgba(59,130,246,0.5)');
-    highlightBar.setAttribute('stroke-width', '1');
-    svg.appendChild(highlightBar);
+    const dotStart = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    dotStart.setAttribute('cx', String(x1));
+    dotStart.setAttribute('cy', String(y1));
+    dotStart.setAttribute('r', '3');
+    dotStart.setAttribute('fill', 'rgba(59,130,246,0.7)');
+    svg.appendChild(dotStart);
 
     const highlightTask = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    highlightTask.setAttribute('x', String(taskRect.left - 2));
-    highlightTask.setAttribute('y', String(taskRect.top - 2));
-    highlightTask.setAttribute('width', String(taskRect.width + 4));
-    highlightTask.setAttribute('height', String(taskRect.height + 4));
-    highlightTask.setAttribute('rx', '4');
-    highlightTask.setAttribute('fill', 'rgba(59,130,246,0.1)');
-    highlightTask.setAttribute('stroke', 'rgba(59,130,246,0.6)');
-    highlightTask.setAttribute('stroke-width', '2');
+    highlightTask.setAttribute('x', String(taskRect.left - 1));
+    highlightTask.setAttribute('y', String(taskRect.top - 1));
+    highlightTask.setAttribute('width', String(taskRect.width + 2));
+    highlightTask.setAttribute('height', String(taskRect.height + 2));
+    highlightTask.setAttribute('rx', '3');
+    highlightTask.setAttribute('fill', 'none');
+    highlightTask.setAttribute('stroke', 'rgba(59,130,246,0.5)');
+    highlightTask.setAttribute('stroke-width', '1.5');
     svg.appendChild(highlightTask);
 
     document.body.appendChild(svg);
