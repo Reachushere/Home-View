@@ -1,0 +1,165 @@
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs --lines 200 --nostream | grep -i "Nest\|HA Voice\|chunk\|FAILED\|tts/speak\|confirm\|play_media\|fallback"
+PM2        | 2026-04-07T11:51:43: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-07T11:51:43: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-07T11:51:43: PM2 log: pid=635816 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:41: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:41: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:41: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:41: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:41: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:41: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:36: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:37: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:37: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:37: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:37: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:37: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:37: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:37: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:37: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:37: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:37: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:38: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:38: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:38: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:38: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-22-1775626752524.mp3
+0|unical   | [AudioPrep] Generating chunk 24/40 for 156CBEBA.pdf (1323 chars)
+0|unical   | Generating Edge TTS for 1323 chars, file: prep-214-chunk-23
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-23-1775626754121.mp3
+0|unical   | [AudioPrep] Generating chunk 25/40 for 156CBEBA.pdf (1304 chars)
+0|unical   | Generating Edge TTS for 1304 chars, file: prep-214-chunk-24
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-24-1775626767127.mp3
+0|unical   | [AudioPrep] Generating chunk 26/40 for 156CBEBA.pdf (1357 chars)
+0|unical   | Generating Edge TTS for 1357 chars, file: prep-214-chunk-25
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-25-1775626768776.mp3
+0|unical   | [AudioPrep] Generating chunk 27/40 for 156CBEBA.pdf (1357 chars)
+0|unical   | Generating Edge TTS for 1357 chars, file: prep-214-chunk-26
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-26-1775626770858.mp3
+0|unical   | [AudioPrep] Generating chunk 28/40 for 156CBEBA.pdf (1199 chars)
+0|unical   | Generating Edge TTS for 1199 chars, file: prep-214-chunk-27
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-27-1775626783687.mp3
+0|unical   | [AudioPrep] Generating chunk 29/40 for 156CBEBA.pdf (1182 chars)
+0|unical   | Generating Edge TTS for 1182 chars, file: prep-214-chunk-28
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-28-1775626785936.mp3
+0|unical   | [AudioPrep] Generating chunk 30/40 for 156CBEBA.pdf (1247 chars)
+0|unical   | Generating Edge TTS for 1247 chars, file: prep-214-chunk-29
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-29-1775626787871.mp3
+0|unical   | [AudioPrep] Generating chunk 31/40 for 156CBEBA.pdf (1479 chars)
+0|unical   | Generating Edge TTS for 1479 chars, file: prep-214-chunk-30
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-30-1775626790104.mp3
+0|unical   | [AudioPrep] Generating chunk 32/40 for 156CBEBA.pdf (1476 chars)
+0|unical   | Generating Edge TTS for 1476 chars, file: prep-214-chunk-31
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-31-1775626791833.mp3
+0|unical   | [AudioPrep] Generating chunk 33/40 for 156CBEBA.pdf (1440 chars)
+0|unical   | Generating Edge TTS for 1440 chars, file: prep-214-chunk-32
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-32-1775626793666.mp3
+0|unical   | [AudioPrep] Generating chunk 34/40 for 156CBEBA.pdf (1493 chars)
+0|unical   | Generating Edge TTS for 1493 chars, file: prep-214-chunk-33
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-33-1775626795434.mp3
+0|unical   | [AudioPrep] Generating chunk 35/40 for 156CBEBA.pdf (1494 chars)
+0|unical   | Generating Edge TTS for 1494 chars, file: prep-214-chunk-34
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-34-1775626797245.mp3
+0|unical   | [AudioPrep] Generating chunk 36/40 for 156CBEBA.pdf (1489 chars)
+0|unical   | Generating Edge TTS for 1489 chars, file: prep-214-chunk-35
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-35-1775626799101.mp3
+0|unical   | [AudioPrep] Generating chunk 37/40 for 156CBEBA.pdf (1486 chars)
+0|unical   | Generating Edge TTS for 1486 chars, file: prep-214-chunk-36
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-36-1775626801160.mp3
+0|unical   | [AudioPrep] Generating chunk 38/40 for 156CBEBA.pdf (1456 chars)
+0|unical   | Generating Edge TTS for 1456 chars, file: prep-214-chunk-37
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-37-1775626803151.mp3
+0|unical   | [AudioPrep] Generating chunk 39/40 for 156CBEBA.pdf (1417 chars)
+0|unical   | Generating Edge TTS for 1417 chars, file: prep-214-chunk-38
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-38-1775626804916.mp3
+0|unical   | [AudioPrep] Generating chunk 40/40 for 156CBEBA.pdf (358 chars)
+0|unical   | Generating Edge TTS for 358 chars, file: prep-214-chunk-39
+0|unical   | TTS audio saved locally: /tts-audio/prep-214-chunk-39-1775626806192.mp3
+0|unical   | [AudioPrep] ===== Completed 156CBEBA.pdf: 40 chunks in 127s =====
+0|unical   | [AudioPrep] 26929898.pdf: 58276 chars → 42 chunks
+0|unical   | [AudioPrep] Generating chunk 1/42 for 26929898.pdf (1318 chars)
+0|unical   | Generating Edge TTS for 1318 chars, file: prep-215-chunk-0
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-0-1775626807794.mp3
+0|unical   | [AudioPrep] Generating chunk 2/42 for 26929898.pdf (1316 chars)
+0|unical   | Generating Edge TTS for 1256 chars, file: prep-215-chunk-1
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-1-1775626809516.mp3
+0|unical   | [AudioPrep] Generating chunk 3/42 for 26929898.pdf (1396 chars)
+0|unical   | Generating Edge TTS for 1301 chars, file: prep-215-chunk-2
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-2-1775626811164.mp3
+0|unical   | [AudioPrep] Generating chunk 4/42 for 26929898.pdf (1293 chars)
+0|unical   | Generating Edge TTS for 1293 chars, file: prep-215-chunk-3
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-3-1775626824292.mp3
+0|unical   | [AudioPrep] Generating chunk 5/42 for 26929898.pdf (1494 chars)
+0|unical   | Generating Edge TTS for 1364 chars, file: prep-215-chunk-4
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-4-1775626825892.mp3
+0|unical   | [AudioPrep] Generating chunk 6/42 for 26929898.pdf (1483 chars)
+0|unical   | Generating Edge TTS for 1483 chars, file: prep-215-chunk-5
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-5-1775626827792.mp3
+0|unical   | [AudioPrep] Generating chunk 7/42 for 26929898.pdf (1488 chars)
+0|unical   | Generating Edge TTS for 1488 chars, file: prep-215-chunk-6
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-6-1775626829550.mp3
+0|unical   | [AudioPrep] Generating chunk 8/42 for 26929898.pdf (1261 chars)
+0|unical   | Generating Edge TTS for 1261 chars, file: prep-215-chunk-7
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-7-1775626831052.mp3
+0|unical   | [AudioPrep] Generating chunk 9/42 for 26929898.pdf (1484 chars)
+0|unical   | Generating Edge TTS for 1259 chars, file: prep-215-chunk-8
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-8-1775626832674.mp3
+0|unical   | [AudioPrep] Generating chunk 10/42 for 26929898.pdf (1352 chars)
+0|unical   | Generating Edge TTS for 1278 chars, file: prep-215-chunk-9
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-9-1775626834252.mp3
+0|unical   | [AudioPrep] Generating chunk 11/42 for 26929898.pdf (1368 chars)
+0|unical   | Generating Edge TTS for 1296 chars, file: prep-215-chunk-10
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-10-1775626835957.mp3
+0|unical   | [AudioPrep] Generating chunk 12/42 for 26929898.pdf (1492 chars)
+0|unical   | Generating Edge TTS for 1492 chars, file: prep-215-chunk-11
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-11-1775626837981.mp3
+0|unical   | [AudioPrep] Generating chunk 13/42 for 26929898.pdf (1443 chars)
+0|unical   | Generating Edge TTS for 1443 chars, file: prep-215-chunk-12
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-12-1775626839664.mp3
+0|unical   | [AudioPrep] Generating chunk 14/42 for 26929898.pdf (1493 chars)
+0|unical   | Generating Edge TTS for 1493 chars, file: prep-215-chunk-13
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-13-1775626841358.mp3
+0|unical   | [AudioPrep] Generating chunk 15/42 for 26929898.pdf (1437 chars)
+0|unical   | Generating Edge TTS for 1381 chars, file: prep-215-chunk-14
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-14-1775626843043.mp3
+0|unical   | [AudioPrep] Generating chunk 16/42 for 26929898.pdf (1377 chars)
+0|unical   | Generating Edge TTS for 1377 chars, file: prep-215-chunk-15
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-15-1775626844848.mp3
+0|unical   | [AudioPrep] Generating chunk 17/42 for 26929898.pdf (1493 chars)
+0|unical   | Generating Edge TTS for 1493 chars, file: prep-215-chunk-16
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-16-1775626846326.mp3
+0|unical   | [AudioPrep] Generating chunk 18/42 for 26929898.pdf (1304 chars)
+0|unical   | Generating Edge TTS for 1304 chars, file: prep-215-chunk-17
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-17-1775626848209.mp3
+0|unical   | [AudioPrep] Generating chunk 19/42 for 26929898.pdf (1421 chars)
+0|unical   | Generating Edge TTS for 1421 chars, file: prep-215-chunk-18
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-18-1775626850047.mp3
+0|unical   | [AudioPrep] Generating chunk 20/42 for 26929898.pdf (1434 chars)
+0|unical   | Generating Edge TTS for 1434 chars, file: prep-215-chunk-19
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-19-1775626851721.mp3
+0|unical   | [AudioPrep] Generating chunk 21/42 for 26929898.pdf (1466 chars)
+0|unical   | Generating Edge TTS for 1466 chars, file: prep-215-chunk-20
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-20-1775626853595.mp3
+0|unical   | [AudioPrep] Generating chunk 22/42 for 26929898.pdf (1363 chars)
+0|unical   | Generating Edge TTS for 1363 chars, file: prep-215-chunk-21
+0|unical   | TTS audio saved locally: /tts-audio/prep-215-chunk-21-1775626855183.mp3
+byhomeyyz@raspberrypi:~/Home-View $
