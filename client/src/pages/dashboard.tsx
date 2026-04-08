@@ -7803,6 +7803,31 @@ export default function Dashboard() {
     return map;
   }, [allSemesterSettings, deliveryModeVersion]);
 
+  const courseZoomLinks = useMemo(() => {
+    const map: Record<string, string> = {};
+    try {
+      const cd = localStorage.getItem('certCourseData');
+      if (cd) {
+        const sd = JSON.parse(cd);
+        for (const [key, val] of Object.entries(sd)) {
+          if ((val as any)?.zoomLink) {
+            map[key.replace(/\s/g, '')] = (val as any).zoomLink;
+          }
+        }
+      }
+    } catch {}
+    if (allSemesterSettings) {
+      for (const sem of allSemesterSettings) {
+        for (let i = 1; i <= 3; i++) {
+          const code = ((sem as any)[`course${i}Code`] || '').replace(/\s/g, '');
+          const link = (sem as any)[`course${i}ZoomLink`] || '';
+          if (code && link) map[code] = link;
+        }
+      }
+    }
+    return map;
+  }, [allSemesterSettings]);
+
   useEffect(() => {
     if (!semesterSettings) return;
     const dbColors: Record<number, { color?: string; colorEnd?: string; colorStops?: string }> = {};
@@ -28867,7 +28892,7 @@ export default function Dashboard() {
                               )}
                               </div>
                               <div style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', display: 'flex', alignItems: 'center', gap: '2px', zIndex: 2 }}>
-                                {(() => { const cc = task.courseName?.split(' - ')[0]?.trim().replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; return dm === 'virtual' ? <img src={zoomCamPath} alt="Zoom" style={{ width: '14px', height: '14px', objectFit: 'contain', animation: 'none', borderRadius: '50%' }} data-testid={`zoom-icon-task-${task.id}`} /> : null; })()}
+                                {(() => { const cc = task.courseName?.split(' - ')[0]?.trim().replace(/\s/g, '') || ''; const dm = courseDeliveryModes[cc] || ''; const zl = courseZoomLinks[cc] || ''; return dm === 'virtual' ? <img src={zoomCamPath} alt="Zoom" style={{ width: '14px', height: '14px', objectFit: 'contain', animation: 'none', borderRadius: '50%', cursor: zl ? 'pointer' : 'default' }} data-testid={`zoom-icon-task-${task.id}`} onClick={zl ? (e) => { e.stopPropagation(); e.preventDefault(); window.open(`unical://${encodeURIComponent(zl)}`, '_self'); setTimeout(() => window.open(zl, '_blank'), 300); } : undefined} title={zl ? 'Click to open Zoom + Screen Recorder' : 'Virtual class'} /> : null; })()}
                                 {dueModulePdfUrl && (
                                   <img
                                     src={pdfIconPath}
@@ -30108,7 +30133,7 @@ export default function Dashboard() {
                                       {task.eventStartTime && task.eventEndTime ? `${formatTimeTo12Hour(task.eventStartTime)} - ${formatTimeTo12Hour(task.eventEndTime)}` : (() => { const d = new Date(task.dueDate); const m = d.getMinutes(); if (m === 59) { const rd = new Date(d); rd.setMinutes(0); rd.setHours(rd.getHours() + 1); return format(rd, "h:mm a"); } return format(d, "h:mm a"); })()}
                                     </span>
                                   </div>
-                                  {(() => { const dm = courseDeliveryModes[courseCode] || ''; return dm === 'virtual' ? <img src={zoomCamPath} alt="Zoom" style={{ width: '14px', height: '14px', objectFit: 'contain', borderRadius: '50%', flexShrink: 0 }} data-testid={`zoom-icon-time-${task.id}`} /> : null; })()}
+                                  {(() => { const dm = courseDeliveryModes[courseCode] || ''; const zl = courseZoomLinks[courseCode] || ''; return dm === 'virtual' ? <img src={zoomCamPath} alt="Zoom" style={{ width: '14px', height: '14px', objectFit: 'contain', borderRadius: '50%', flexShrink: 0, cursor: zl ? 'pointer' : 'default' }} data-testid={`zoom-icon-time-${task.id}`} onClick={zl ? (e) => { e.stopPropagation(); e.preventDefault(); window.open(`unical://${encodeURIComponent(zl)}`, '_self'); setTimeout(() => window.open(zl, '_blank'), 300); } : undefined} title={zl ? 'Click to open Zoom + Screen Recorder' : 'Virtual class'} /> : null; })()}
                                 </div>
                               </div>
                             );
@@ -30490,7 +30515,7 @@ export default function Dashboard() {
                             {task.eventStartTime && task.eventEndTime ? `${formatTimeTo12Hour(task.eventStartTime)} - ${formatTimeTo12Hour(task.eventEndTime)}` : (() => { const d = new Date(task.dueDate); const m = d.getMinutes(); if (m === 59) { const rd = new Date(d); rd.setMinutes(0); rd.setHours(rd.getHours() + 1); return format(rd, "h:mm a"); } return format(d, "h:mm a"); })()}
                           </div>
                         </div>
-                        {(() => { const dm = courseDeliveryModes[courseCode] || ''; return dm === 'virtual' ? <img src={zoomCamPath} alt="Zoom" style={{ width: '14px', height: '14px', objectFit: 'contain', borderRadius: '50%', flexShrink: 0 }} data-testid={`zoom-icon-multi-${task.id}`} /> : null; })()}
+                        {(() => { const dm = courseDeliveryModes[courseCode] || ''; const zl = courseZoomLinks[courseCode] || ''; return dm === 'virtual' ? <img src={zoomCamPath} alt="Zoom" style={{ width: '14px', height: '14px', objectFit: 'contain', borderRadius: '50%', flexShrink: 0, cursor: zl ? 'pointer' : 'default' }} data-testid={`zoom-icon-multi-${task.id}`} onClick={zl ? (e) => { e.stopPropagation(); e.preventDefault(); window.open(`unical://${encodeURIComponent(zl)}`, '_self'); setTimeout(() => window.open(zl, '_blank'), 300); } : undefined} title={zl ? 'Click to open Zoom + Screen Recorder' : 'Virtual class'} /> : null; })()}
                       </div>
                     </div>
                   );
