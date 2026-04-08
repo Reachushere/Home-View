@@ -12011,17 +12011,23 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           await haServiceCallSafe('media_player/turn_on', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Pre-Wake for Confirm');
           console.log(`${logPrefix} Nest speaker pre-wake sent`);
         } catch (e: any) { console.warn(`${logPrefix} Nest pre-wake error (non-fatal): ${e.message}`); }
+        await new Promise(r => setTimeout(r, 1000));
         try {
           await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }, 'Nest Pre-Confirm Vol');
         } catch (e: any) { console.warn(`${logPrefix} Pre-confirm volume set error (non-fatal): ${e.message}`); }
-        await new Promise(r => setTimeout(r, 1500));
+        try {
+          await haServiceCallSafe('media_player/media_stop', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Pre-Confirm Stop');
+        } catch (e: any) {}
+        await new Promise(r => setTimeout(r, 2000));
         let confirmPlayed = false;
         try {
           const confirmPath = await generateAndSaveTTSAudio(confirmationTTS, `confirm-${Date.now()}`);
           const nestResult = await playOnNestSpeaker(`${appUrl}${confirmPath}`);
-          if (nestResult.success) {
+          if (nestResult.success && nestResult.actuallyPlaying) {
             confirmPlayed = true;
-            console.log(`${logPrefix} Confirm TTS played on Nest speaker via generated audio (actuallyPlaying=${nestResult.actuallyPlaying})`);
+            console.log(`${logPrefix} Confirm TTS confirmed playing on Nest speaker via generated audio`);
+          } else if (nestResult.success) {
+            console.warn(`${logPrefix} Nest play_media sent but state not confirmed playing — trying tts/speak`);
           } else {
             console.warn(`${logPrefix} Nest speaker generated audio failed — trying tts/speak`);
           }
@@ -12034,11 +12040,11 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
               entity_id: HA_CLOUD_TTS_ENTITY,
               media_player_entity_id: NEST_SPEAKER_ENTITY,
               message: confirmationTTS
-            }, 'Confirm HA Cloud TTS Nest');
+            }, 'Confirm TTS speak Nest');
             confirmPlayed = true;
-            console.log(`${logPrefix} Confirm TTS played via HA Cloud TTS on Nest speaker (fallback)`);
+            console.log(`${logPrefix} Confirm TTS played via tts/speak on Nest speaker`);
           } catch (e: any) {
-            console.warn(`${logPrefix} HA Cloud TTS on Nest failed: ${e.message} — trying HA Voice`);
+            console.warn(`${logPrefix} tts/speak on Nest failed: ${e.message} — trying HA Voice`);
           }
         }
         if (!confirmPlayed) {
