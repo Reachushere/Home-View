@@ -10540,70 +10540,132 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     try {
       if (action === 'scan') {
         const { execSync } = await import("child_process");
-        let btDevices: any[] = [];
+        const allDevices: any[] = [];
+        let adapterInfo = '';
+        let scanSource = 'local';
+
+        let hasLocalBt = false;
         try {
-          const hcitoolOutput = execSync('timeout 8 hcitool scan --flush 2>/dev/null || echo "SCAN_FAILED"', { encoding: 'utf-8', timeout: 12000 });
-          if (!hcitoolOutput.includes('SCAN_FAILED')) {
-            const lines = hcitoolOutput.trim().split('\n').slice(1);
-            btDevices = lines.filter(l => l.trim()).map(l => {
-              const parts = l.trim().split(/\s+/);
+          const hciTest = execSync('hciconfig hci0 2>/dev/null', { encoding: 'utf-8', timeout: 3000 });
+          hasLocalBt = hciTest.includes('hci0');
+          adapterInfo = hciTest.trim();
+        } catch { adapterInfo = 'No local adapter detected'; }
+
+        if (hasLocalBt) {
+          try {
+            const pairedOutput = execSync('bluetoothctl devices 2>/dev/null || echo ""', { encoding: 'utf-8', timeout: 5000 });
+            pairedOutput.trim().split('\n').filter(l => l.startsWith('Device')).forEach(l => {
+              const parts = l.replace('Device ', '').split(' ');
               const mac = parts[0];
-              const name = parts.slice(1).join(' ') || 'Unknown';
-              return { mac, name, type: 'classic' };
+              const name = parts.slice(1).join(' ');
+              if (mac && mac.includes(':')) allDevices.push({ mac: mac.toUpperCase(), name, type: 'paired' });
             });
+          } catch {}
+
+          try {
+            const connectedOutput = execSync('bluetoothctl devices Connected 2>/dev/null || echo ""', { encoding: 'utf-8', timeout: 3000 });
+            const connectedMacs = new Set<string>();
+            connectedOutput.trim().split('\n').filter(l => l.startsWith('Device')).forEach(l => {
+              connectedMacs.add(l.replace('Device ', '').split(' ')[0].toUpperCase());
+            });
+            allDevices.forEach(d => { if (connectedMacs.has(d.mac)) d.connected = true; });
+          } catch {}
+
+          try {
+            const scanOutput = execSync('timeout 6 hcitool scan --flush 2>/dev/null || echo ""', { encoding: 'utf-8', timeout: 10000 });
+            scanOutput.trim().split('\n').slice(1).filter(l => l.trim()).forEach(l => {
+              const parts = l.trim().split(/\s+/);
+              const mac = parts[0]?.toUpperCase();
+              const name = parts.slice(1).join(' ') || 'Unknown';
+              if (mac && mac.includes(':') && !allDevices.find(d => d.mac === mac)) {
+                allDevices.push({ mac, name, type: 'classic' });
+              }
+            });
+          } catch {}
+
+          try {
+            execSync('timeout 4 stdbuf -oL hcitool lescan --duplicates 2>/dev/null > /tmp/bt_lescan.txt & BGPID=$!; sleep 3; kill $BGPID 2>/dev/null; wait $BGPID 2>/dev/null; true', { encoding: 'utf-8', timeout: 8000 });
+            const leOutput = execSync('cat /tmp/bt_lescan.txt 2>/dev/null || echo ""', { encoding: 'utf-8', timeout: 3000 });
+            const leMacs = new Map<string, { name: string; count: number }>();
+            leOutput.trim().split('\n').forEach(l => {
+              const match = l.match(/([0-9A-Fa-f]{2}(?::[0-9A-Fa-f]{2}){5})\s*(.*)/);
+              if (match) {
+                const mac = match[1].toUpperCase();
+                const name = match[2]?.trim() || 'Unknown BLE';
+                const existing = leMacs.get(mac);
+                if (existing) { existing.count++; if (name !== '(unknown)' && name !== 'Unknown BLE') existing.name = name; }
+                else leMacs.set(mac, { name, count: 1 });
+              }
+            });
+            leMacs.forEach((val, mac) => {
+              const existing = allDevices.find(d => d.mac === mac);
+              if (existing) { existing.bleAdvCount = val.count; existing.type = existing.type + '+ble'; }
+              else allDevices.push({ mac, name: val.name, type: 'ble', bleAdvCount: val.count });
+            });
+            execSync('rm -f /tmp/bt_lescan.txt 2>/dev/null', { timeout: 1000 });
+          } catch {}
+
+          try {
+            const infoOutput = execSync('hciconfig hci0 2>/dev/null', { encoding: 'utf-8', timeout: 3000 });
+            adapterInfo = infoOutput.trim();
+            const statsOutput = execSync('hciconfig hci0 -a 2>/dev/null | grep -E "RX|TX|Packet" || echo ""', { encoding: 'utf-8', timeout: 3000 });
+            if (statsOutput.trim()) adapterInfo += '\n' + statsOutput.trim();
+          } catch {}
+        } else {
+          scanSource = 'ha';
+          const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+          try {
+            const statesResp = await fetch(`${haUrl}/api/states`, {
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+              signal: AbortSignal.timeout(10000),
+            });
+            const states = await statesResp.json();
+            const seen = new Set<string>();
+            (states as any[]).forEach((s: any) => {
+              const eid = s.entity_id || '';
+              const isBt = eid.includes('bluetooth') || eid.includes('_ble_') || eid.includes('_bt_') ||
+                s.attributes?.source_type === 'bluetooth' || s.attributes?.source_type === 'bluetooth_le';
+              if (!isBt) return;
+              const mac = s.attributes?.mac_address || s.attributes?.mac || eid;
+              const key = mac.toUpperCase();
+              if (seen.has(key)) return;
+              seen.add(key);
+              allDevices.push({ mac: key, name: s.attributes?.friendly_name || eid, type: 'ha_bt', state: s.state, entityId: eid });
+            });
+            adapterInfo = `Source: Home Assistant (no local adapter)\n${allDevices.length} BT entities found`;
+          } catch (e: any) {
+            adapterInfo = `No local adapter & HA query failed: ${e.message}`;
           }
-        } catch {}
-        let bleDevices: any[] = [];
-        try {
-          const lescanOutput = execSync('timeout 5 hcitool lescan --duplicates 2>/dev/null & sleep 4 && kill %1 2>/dev/null; hcitool lecc --list 2>/dev/null || echo ""', { encoding: 'utf-8', timeout: 8000 });
-          const bleLines = lescanOutput.trim().split('\n').filter(l => l.match(/([0-9A-F]{2}:){5}[0-9A-F]{2}/i));
-          bleDevices = bleLines.map(l => {
-            const parts = l.trim().split(/\s+/);
-            const mac = parts[0];
-            const name = parts.slice(1).join(' ') || 'Unknown BLE';
-            return { mac, name, type: 'ble' };
-          });
-        } catch {}
-        let hciInfo = '';
-        try { hciInfo = execSync('hciconfig hci0 2>/dev/null || echo "No adapter"', { encoding: 'utf-8', timeout: 3000 }); } catch {}
-        let btctlDevices: any[] = [];
-        try {
-          const btctlOutput = execSync('bluetoothctl devices 2>/dev/null || echo ""', { encoding: 'utf-8', timeout: 3000 });
-          btctlOutput.trim().split('\n').filter(l => l.startsWith('Device')).forEach(l => {
-            const parts = l.replace('Device ', '').split(' ');
-            const mac = parts[0];
-            const name = parts.slice(1).join(' ');
-            btctlDevices.push({ mac, name, type: 'paired' });
-          });
-        } catch {}
-        const allDevices = [...btctlDevices];
-        btDevices.forEach(d => { if (!allDevices.find(a => a.mac === d.mac)) allDevices.push(d); });
-        bleDevices.forEach(d => { if (!allDevices.find(a => a.mac === d.mac)) allDevices.push(d); });
+        }
+
         const stormDevices = btStormAlerts.filter(a => a.receivedAt > Date.now() - 30 * 60 * 1000);
         const stormMacs = [...new Set(stormDevices.map(a => a.mac))];
         allDevices.forEach(d => {
-          const stormHits = stormDevices.filter(a => a.mac === d.mac);
-          (d as any).stormAlerts = stormHits.length;
-          (d as any).lastStormCount = stormHits.length > 0 ? stormHits[stormHits.length - 1].count : 0;
+          const stormHits = stormDevices.filter(a => a.mac.toUpperCase() === (d.mac || '').toUpperCase());
+          d.stormAlerts = stormHits.length;
+          d.lastStormCount = stormHits.length > 0 ? stormHits[stormHits.length - 1].count : 0;
         });
         stormMacs.forEach(mac => {
-          if (!allDevices.find(d => d.mac === mac)) {
+          if (!allDevices.find(d => (d.mac || '').toUpperCase() === mac.toUpperCase())) {
             const latest = stormDevices.filter(a => a.mac === mac).pop();
             allDevices.push({ mac, name: latest?.name || 'Unknown', type: 'storm-only', stormAlerts: stormDevices.filter(a => a.mac === mac).length, lastStormCount: latest?.count || 0 });
           }
         });
-        res.json({ devices: allDevices, hciInfo: hciInfo.trim(), stormAlertCount: stormDevices.length, scannedAt: new Date().toISOString() });
+
+        res.json({ devices: allDevices, hciInfo: adapterInfo, stormAlertCount: stormDevices.length, scanSource, scannedAt: new Date().toISOString() });
       } else if (action === 'restart-bluetooth') {
         const { execSync } = await import("child_process");
-        try { execSync('sudo systemctl restart bluetooth 2>/dev/null', { timeout: 10000 }); } catch {}
-        try { execSync('sudo hciconfig hci0 reset 2>/dev/null', { timeout: 5000 }); } catch {}
-        res.json({ success: true, message: 'Bluetooth service restarted' });
+        let msg = '';
+        try { execSync('sudo systemctl restart bluetooth 2>&1', { encoding: 'utf-8', timeout: 10000 }); msg += 'bluetooth service restarted. '; } catch (e: any) { msg += `bluetooth restart: ${e.message?.slice(0, 80)}. `; }
+        try { execSync('sudo hciconfig hci0 reset 2>&1', { encoding: 'utf-8', timeout: 5000 }); msg += 'HCI adapter reset. '; } catch (e: any) { msg += `hci reset: ${e.message?.slice(0, 80)}. `; }
+        res.json({ success: true, message: msg || 'Bluetooth restart attempted' });
       } else if (action === 'block-device') {
         const { mac } = req.body;
         if (!mac) return res.status(400).json({ error: 'MAC address required' });
         const { execSync } = await import("child_process");
-        try { execSync(`bluetoothctl block ${mac} 2>/dev/null`, { timeout: 5000 }); } catch {}
-        res.json({ success: true, message: `Blocked ${mac}` });
+        let msg = '';
+        try { msg = execSync(`bluetoothctl block ${mac} 2>&1`, { encoding: 'utf-8', timeout: 5000 }); } catch (e: any) { msg = e.message?.slice(0, 120) || 'block failed'; }
+        res.json({ success: true, message: `Block ${mac}: ${msg.trim()}` });
       } else if (action === 'clear-alerts') {
         btStormAlerts.length = 0;
         res.json({ success: true, message: 'Storm alerts cleared' });
