@@ -1,0 +1,121 @@
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs --lines 300 --nostream 2>&1 | grep -iE "Pre-Stop|Pre-Volume|Nest|chunk|play_media|fallback|failed"
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:40: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:41: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:41: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:41: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:41: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:41: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:22:41: PM2 log: pid=650030 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:36: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:37: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:37: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:37: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:37: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:37: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:37: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:37: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:37: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:37: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:37: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:38: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:38: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:38: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T01:37:38: PM2 log: pid=650842 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:16: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:16: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:16: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:17: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:17: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:17: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:17: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:17: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:17: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:17: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:17: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:17: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:17: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:18: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T02:37:18: PM2 log: pid=651305 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:50: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:50: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:51: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:51: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:51: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:51: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:51: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:51: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:51: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:51: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:51: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:51: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:52: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:52: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T03:27:52: PM2 log: pid=652650 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T04:17:24: PM2 log: pid=654283 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T04:17:24: PM2 log: pid=654283 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T04:17:24: PM2 log: pid=654283 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T04:17:24: PM2 log: pid=654283 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T04:17:24: PM2 log: pid=654283 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T04:17:24: PM2 log: pid=654283 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T04:17:24: PM2 log: pid=654283 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T04:17:24: PM2 log: pid=654283 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T04:17:24: PM2 log: pid=654283 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T04:17:25: PM2 log: pid=654283 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T04:17:25: PM2 log: pid=654283 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T04:17:25: PM2 log: pid=654283 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T04:17:25: PM2 log: pid=654283 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T04:17:25: PM2 log: pid=654283 msg=failed to kill - retrying in 100ms
+PM2        | 2026-04-08T04:17:25: PM2 log: pid=654283 msg=failed to kill - retrying in 100ms
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   | [Cat Lights HA Voice Pre-Wake] fetch attempt 2/3 failed: HTTP 500: 500 Internal Server Error
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   | [HA Safe] Cat Lights HA Voice Pre-Wake media_player/turn_on failed: [Cat Lights HA Voice Pre-Wake] All 3 fetch attempts failed: HTTP 500: 500 Internal Server Error
+0|unical   | [Cat Lights HA Voice Pre-Wake [Replayed]] fetch attempt 1/3 failed: HTTP 500: 500 Internal Server Error
+0|unical   | [Cat Lights HA Voice Pre-Wake [Replayed]] fetch attempt 2/3 failed: HTTP 500: 500 Internal Server Error
+0|unical   | [HA Queue] Replay failed (attempt 2): Cat Lights HA Voice Pre-Wake media_player/turn_on — moved to back of queue
+0|unical   | [Cat Lights HA Voice Pre-Wake [Replayed]] fetch attempt 1/3 failed: HTTP 500: 500 Internal Server Error
+0|unical   | [Nest Pre-Stop] fetch attempt 1/3 failed: HTTP 500: 500 Internal Server Error
+0|unical   | [Cat Lights HA Voice Pre-Wake [Replayed]] fetch attempt 2/3 failed: HTTP 500: 500 Internal Server Error
+0|unical   | [Nest Pre-Stop] fetch attempt 2/3 failed: HTTP 500: 500 Internal Server Error
+0|unical   | [HA Safe] Nest Pre-Stop media_player/media_stop failed: [Nest Pre-Stop] All 3 fetch attempts failed: HTTP 500: 500 Internal Server Error
+0|unical   | [Nest Pre-Stop [Replayed]] fetch attempt 1/3 failed: HTTP 500: 500 Internal Server Error
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   |     'transfer-encoding': 'chunked',
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | TTS audio saved locally: /tts-audio/prep-229-chunk-4-1775636429346.mp3
+0|unical   | [AudioPrep] Generating chunk 6/21 for CFNF400, Module 11 - Learning Objectives.pdf (1500 chars)
+0|unical   | Generating Edge TTS for 1500 chars, file: prep-229-chunk-5
+0|unical   | [Nest Stop] Fire Stick force-stop + SLEEP sent after Samsung TV off
+0|unical   | [TRACE 4:20:31 AM] [StopWithGoodbye] EXIT reason=knob_press | state={"active":false,"sessionId":1,"file":null,"chunk":null,"lightsPrompt":false,"trigger":"lights","msSinceStop":6672,"msSinceManualStop":null,"msSinceStart":null}
+0|unical   | [Speakers] Stopped Nest + cat washroom Echos + media group (stop + pause)
+0|unical   | [Cat Wash Stop Webhook] TV shutdown handled by stopNestPlaybackWithGoodbye (sequenced)
+0|unical   | TTS audio saved locally: /tts-audio/prep-229-chunk-5-1775636431454.mp3
+0|unical   | [AudioPrep] Generating chunk 7/21 for CFNF400, Module 11 - Learning Objectives.pdf (1472 chars)
+0|unical   | Generating Edge TTS for 1472 chars, file: prep-229-chunk-6
+0|unical   | [TRACE 4:20:44 AM] [CatLights] WEBHOOK RECEIVED | state={"active":false,"sessionId":1,"file":null,"chunk":null,"lightsPrompt":false,"trigger":null,"msSinceStop":20276,"msSinceManualStop":null,"msSinceStart":null} | {"body":{"state":"off"}}
+0|unical   | [TRACE 4:20:44 AM] [CatLights] STATE RESOLVED: off | state={"active":false,"sessionId":1,"file":null,"chun":null,"lightsPrompt":false,"trigger":null,"msSinceStop":20277,"msSinceManualStop":null,"msSinceStart":null} | {"bodyState":"off","bodyAction":"","method":"body"}
+0|unical   | [Cat Lights] Architecture: server-side TTS → Google Nest speaker (media_player.play_media)
+0|unical   | [TRACE 4:20:44 AM] [CatLights] LIGHT OFF — stopping all playback | state={"active":false,"sessionId":1,"file":null,"chunk":null,"lightsPrompt":false,"trigger":null,"msSinceStop":20278,"msSinceManualStop":null,"msSinceStart":null}
+0|unical   | [Speakers] Stopped Nest + cat washroom Echos + media group (stop + pause)
+0|unical   | TTS audio saved locally: /tts-audio/prep-229-chunk-6-1775636446327.mp3
+0|unical   | [AudioPrep] Generating chunk 8/21 for CFNF400, Module 11 - Learning Objectives.pdf (1467 chars)
+0|unical   | Generating Edge TTS for 1467 chars, file: prep-229-chunk-7
+0|unical   | TTS audio saved locally: /tts-audio/prep-229-chunk-7-1775636448349.mp3
+0|unical   | [AudioPrep] Generating chunk 9/21 for CFNF400, Module 11 - Learning Objectives.pdf (1486 chars)
+0|unical   | Generating Edge TTS for 1486 chars, file: prep-229-chunk-8
+0|unical   | TTS audio saved locally: /tts-audio/prep-229-chunk-8-1775636450141.mp3
+0|unical   | [AudioPrep] Generating chunk 10/21 for CFNF400, Module 11 - Learning Objectives.pdf (1369 chars)
+0|unical   | Generating Edge TTS for 1369 chars, file: prep-229-chunk-9
+byhomeyyz@raspberrypi:~/Home-View $
