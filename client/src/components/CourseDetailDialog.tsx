@@ -3959,7 +3959,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             >
               <div className="flex items-center gap-2">
                 <ClipboardList className="h-3.5 w-3.5 text-white/70" />
-                <h3 className="text-[11px] font-medium text-white uppercase">Assignments</h3>
+                <h3 className="text-[11px] font-medium text-white uppercase">Assignments (Graded)</h3>
                 <span className="text-[9px] text-white">
                   {completedCount}/{courseTasks.length} done
                   {totalWeight > 0 && <span className="text-[11px] font-medium" style={{ color: totalWeight > 100 ? '#ef4444' : totalWeight < 100 ? '#f97316' : 'white' }}> · {totalWeight.toFixed(2)}% weight</span>}
