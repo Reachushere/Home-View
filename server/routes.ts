@@ -842,18 +842,21 @@ export async function registerRoutes(
 
   await initTTSFallbackStatus();
 
-  if (HOME_ASSISTANT_URL && HOME_ASSISTANT_TOKEN) {
-    const haUrlStartup = HOME_ASSISTANT_URL.replace(/\/$/, '');
-    const haHeadersStartup = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
-    Promise.allSettled([
-      fetch(`${haUrlStartup}/api/services/input_boolean/turn_off`, { method: 'POST', headers: haHeadersStartup, body: JSON.stringify({ entity_id: MODULE_READING_CONFIRMED }) }),
-      fetch(`${haUrlStartup}/api/services/input_boolean/turn_off`, { method: 'POST', headers: haHeadersStartup, body: JSON.stringify({ entity_id: MODULE_READING_PENDING }) }),
-    ]).then(() => {
-      console.log(`[Startup] Reset MODULE_READING_CONFIRMED and MODULE_READING_PENDING booleans`);
-    }).catch(() => {});
-  }
-
   const serverPort = process.env.PORT || 5000;
+
+  setTimeout(async () => {
+    if (HOME_ASSISTANT_URL && HOME_ASSISTANT_TOKEN) {
+      const haUrlStartup = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      const haHeadersStartup = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
+      try {
+        await Promise.allSettled([
+          fetch(`${haUrlStartup}/api/services/input_boolean/turn_off`, { method: 'POST', headers: haHeadersStartup, body: JSON.stringify({ entity_id: MODULE_READING_CONFIRMED }) }),
+          fetch(`${haUrlStartup}/api/services/input_boolean/turn_off`, { method: 'POST', headers: haHeadersStartup, body: JSON.stringify({ entity_id: MODULE_READING_PENDING }) }),
+        ]);
+        console.log(`[Startup] Reset MODULE_READING_CONFIRMED and MODULE_READING_PENDING booleans`);
+      } catch {}
+    }
+  }, 30000);
 
   setTimeout(async () => {
     try {
@@ -865,7 +868,7 @@ export async function registerRoutes(
     } catch (e: any) {
       console.log(`[Startup] Error checking Nest state: ${e.message}`);
     }
-  }, 10000);
+  }, 45000);
 
   (async () => {
     try {
@@ -10326,10 +10329,10 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         body: JSON.stringify({
           title: "Study Dashboard Online",
           message: `Dashboard started at ${startTime}`,
-          data: { push: { sound: "default" } },
+          data: { push: { sound: "" } },
         }),
       });
-      console.log(`[Startup] Sent startup push notification`);
+      console.log(`[Startup] Sent startup push notification (silent)`);
     } catch (e: any) {
       console.warn(`[Startup] Failed to send startup notification: ${e.message}`);
     }
@@ -10388,7 +10391,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     haHeartbeatInterval = setInterval(() => {
       sendHAHeartbeat();
     }, HA_HEARTBEAT_INTERVAL_MS);
-  }, 10000);
+  }, 30000);
 
   app.get("/api/export-backup", async (_req, res) => {
     try {
