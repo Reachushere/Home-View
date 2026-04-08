@@ -30858,7 +30858,7 @@ export default function Dashboard() {
                               return (
                                 <div
                                   key={task.id}
-                                  className="text-[7px] px-1 py-0.5 rounded truncate"
+                                  className="text-[9px] px-1 py-0.5 rounded truncate"
                                   style={{
                                     backgroundColor: '#ffffff',
                                     color: '#000',
@@ -30875,7 +30875,7 @@ export default function Dashboard() {
                               );
                             })}
                             {dayTasks.length > 3 && (
-                              <div className="text-[7px] text-center" style={{ color: 'rgba(0,0,0,0.5)' }}>+{dayTasks.length - 3} more</div>
+                              <div className="text-[9px] text-center" style={{ color: 'rgba(0,0,0,0.5)' }}>+{dayTasks.length - 3} more</div>
                             )}
                           </div>
                         </div>
