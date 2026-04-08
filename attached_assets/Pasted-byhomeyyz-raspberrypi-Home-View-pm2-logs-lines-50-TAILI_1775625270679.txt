@@ -1,0 +1,160 @@
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs --lines 50
+[TAILING] Tailing last 50 lines for [all] processes (change the value with --lines option)
+/home/byhomeyyz/.pm2/pm2.log last 50 lines:
+PM2        | 2026-04-07T23:25:55: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T23:25:55: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T23:25:55: PM2 log: pid=647075 msg=process killed
+PM2        | 2026-04-07T23:25:55: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T23:25:55: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T23:28:46: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T23:28:46: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T23:28:46: PM2 log: pid=647377 msg=process killed
+PM2        | 2026-04-07T23:28:46: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T23:28:46: PM2 log: App [unical:0] online
+PM2        | 2026-04-07T23:37:15: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-07T23:37:15: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-07T23:37:16: PM2 log: pid=647547 msg=process killed
+PM2        | 2026-04-07T23:37:16: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-07T23:37:16: PM2 log: App [unical:0] online
+PM2        | 2026-04-08T00:16:43: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-08T00:16:43: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-08T00:16:43: PM2 log: pid=647791 msg=process killed
+PM2        | 2026-04-08T00:16:43: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-08T00:16:43: PM2 log: App [unical:0] online
+PM2        | 2026-04-08T00:27:39: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-08T00:27:39: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-08T00:27:39: PM2 log: pid=648513 msg=process killed
+PM2        | 2026-04-08T00:27:39: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-08T00:27:39: PM2 log: App [unical:0] online
+PM2        | 2026-04-08T00:30:29: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-08T00:30:29: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-08T00:30:29: PM2 log: pid=648765 msg=process killed
+PM2        | 2026-04-08T00:30:29: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-08T00:30:29: PM2 log: App [unical:0] online
+PM2        | 2026-04-08T00:46:25: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-08T00:46:25: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-08T00:46:25: PM2 log: pid=648913 msg=process killed
+PM2        | 2026-04-08T00:46:25: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-08T00:46:25: PM2 log: App [unical:0] online
+PM2        | 2026-04-08T01:03:59: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-08T01:03:59: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-08T01:03:59: PM2 log: pid=649212 msg=process killed
+PM2        | 2026-04-08T01:03:59: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-08T01:03:59: PM2 log: App [unical:0] online
+PM2        | 2026-04-08T01:11:40: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-08T01:11:40: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-08T01:11:40: PM2 log: pid=649524 msg=process killed
+PM2        | 2026-04-08T01:11:40: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-08T01:11:40: PM2 log: App [unical:0] online
+PM2        | 2026-04-08T01:13:18: PM2 log: Stopping app:unical id:0
+PM2        | 2026-04-08T01:13:18: PM2 log: App [unical:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-08T01:13:18: PM2 log: pid=649764 msg=process killed
+PM2        | 2026-04-08T01:13:18: PM2 log: App [unical:0] starting in -fork mode-
+PM2        | 2026-04-08T01:13:18: PM2 log: App [unical:0] online
+
+/home/byhomeyyz/.pm2/logs/unical-out.log last 50 lines:
+0|unical   | [AudioPrep] Queued file 160 for preparation (queue size: 57)
+0|unical   | [AudioPrep] Queued file 161 for preparation (queue size: 58)
+0|unical   | [AudioPrep] Queued file 180 for preparation (queue size: 59)
+0|unical   | [AudioPrep] Queued file 182 for preparation (queue size: 60)
+0|unical   | [AudioPrep] Queued file 185 for preparation (queue size: 61)
+0|unical   | [AudioPrep] Queued file 189 for preparation (queue size: 62)
+0|unical   | [AudioPrep] Queued file 199 for preparation (queue size: 63)
+0|unical   | [AudioPrep] Queued file 213 for preparation (queue size: 64)
+0|unical   | [AudioPrep] Queued file 220 for preparation (queue size: 65)
+0|unical   | [AudioPrep] Queued file 231 for preparation (queue size: 66)
+0|unical   | Edge TTS completed in 12200ms, 525888 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-231-chunk-3-1775625237006.mp3
+0|unical   | [AudioPrep] Generating chunk 5/13 for CPPA122, Module 12 - Introduction.pdf (1425 chars)
+0|unical   | Generating Edge TTS for 1425 chars, file: prep-231-chunk-4
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 850ms, 525168 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-231-chunk-4-1775625238662.mp3
+0|unical   | [AudioPrep] Generating chunk 6/13 for CPPA122, Module 12 - Introduction.pdf (1494 chars)
+0|unical   | Generating Edge TTS for 1494 chars, file: prep-231-chunk-5
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 892ms, 567360 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-231-chunk-5-1775625240360.mp3
+0|unical   | [AudioPrep] Generating chunk 7/13 for CPPA122, Module 12 - Introduction.pdf (1426 chars)
+0|unical   | Generating Edge TTS for 1426 chars, file: prep-231-chunk-6
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 983ms, 502128 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-231-chunk-6-1775625242149.mp3
+0|unical   | [AudioPrep] Generating chunk 8/13 for CPPA122, Module 12 - Introduction.pdf (1451 chars)
+0|unical   | Generating Edge TTS for 1451 chars, file: prep-231-chunk-7
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 927ms, 540432 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-231-chunk-7-1775625243884.mp3
+0|unical   | [AudioPrep] Generating chunk 9/13 for CPPA122, Module 12 - Introduction.pdf (1386 chars)
+0|unical   | Generating Edge TTS for 1386 chars, file: prep-231-chunk-8
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 12188ms, 549936 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-231-chunk-8-1775625256878.mp3
+0|unical   | [AudioPrep] Generating chunk 10/13 for CPPA122, Module 12 - Introduction.pdf (1291 chars)
+0|unical   | Generating Edge TTS for 1291 chars, file: prep-231-chunk-9
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 892ms, 498816 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-231-chunk-9-1775625258579.mp3
+0|unical   | [AudioPrep] Generating chunk 11/13 for CPPA122, Module 12 - Introduction.pdf (1399 chars)
+0|unical   | Generating Edge TTS for 1399 chars, file: prep-231-chunk-10
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+0|unical   | Edge TTS completed in 798ms, 480672 bytes
+0|unical   | TTS audio saved locally: /tts-audio/prep-231-chunk-10-1775625260185.mp3
+0|unical   | [AudioPrep] Generating chunk 12/13 for CPPA122, Module 12 - Introduction.pdf (1448 chars)
+0|unical   | Generating Edge TTS for 1448 chars, file: prep-231-chunk-11
+0|unical   | [TTS] Using Edge TTS (free, no charges)
+
+/home/byhomeyyz/.pm2/logs/unical-error.log last 50 lines:
+0|unical   |     "status": "PERMISSION_DENIED",
+0|unical   |     "details": [
+0|unical   |       {
+0|unical   |         "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+0|unical   |         "reason": "SERVICE_DISABLED",
+0|unical   |         "domain": "googleapis.com",
+0|unical   |         "metadata": {
+0|unical   |           "activationUrl": "https://console.developers.google.com/apis/api/gmail.googleapis.com/overview?project=690968796215",
+0|unical   |           "serviceTitle": "Gmail API",
+0|unical   |           "containerInfo": "690968796215",
+0|unical   |           "service": "gmail.googleapis.com",
+0|unical   |           "consumer": "projects/690968796215"
+0|unical   |         }
+0|unical   |       },
+0|unical   |       {
+0|unical   |         "@type": "type.googleapis.com/google.rpc.LocalizedMessage",
+0|unical   |         "locale": "en-US",
+0|unical   |         "message": "Gmail API has not been used in project 690968796215 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/gmail.googleapis.com/overview?project=690968796215 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."
+0|unical   |       },
+0|unical   |       {
+0|unical   |         "@type": "type.googleapis.com/google.rpc.Help",
+0|unical   |         "links": [
+0|unical   |           {
+0|unical   |             "description": "Google developers console API activation",
+0|unical   |             "url": "https://console.developers.google.com/apis/api/gmail.googleapis.com/overview?project=690968796215"
+0|unical   |           }
+0|unical   |         ]
+0|unical   |       }
+0|unical   |     ]
+0|unical   |   }
+0|unical   | }
+0|unical   |
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Edge TTS] Attempt 1 failed: Timed out
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+0|unical   | [Server] Port 5000 in use, retrying in 3s...
+
+0|unical  | [Server] Port 5000 in use, retrying in 3s...
+0|unical  | [Server] Port 5000 in use, retrying in 3s...
