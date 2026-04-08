@@ -11676,25 +11676,36 @@ export default function Dashboard() {
   
   const tasksByDateKey = useMemo(() => {
     const map = new Map<string, Task[]>();
+    const seenByDateTitle = new Map<string, number>();
+    const withCourse: Task[] = [];
+    const withoutCourse: Task[] = [];
     for (const t of allTasks) {
       if (t.isCompleted) continue;
       if (isCASL101Finished(t)) continue;
       if (!t.dueDate) continue;
-      if (!t.courseName && /^\[.+?\]/.test(t.title)) {
-        const cleanTitle = t.title.replace(/^\[.*?\]\s*/, '').toLowerCase().trim();
-        const isDuplicateOfReal = allTasks.some(other => other.id !== t.id && other.courseName && other.title.toLowerCase().trim() === cleanTitle && other.dueDate && new Date(other.dueDate).toDateString() === new Date(t.dueDate!).toDateString());
-        if (isDuplicateOfReal) continue;
-      }
-      const dueDate = new Date(t.dueDate);
+      if (t.courseName) withCourse.push(t); else withoutCourse.push(t);
+    }
+    const addToMap = (t: Task) => {
+      const dueDate = new Date(t.dueDate!);
       const isMidnightUTC = dueDate.getUTCHours() === 0 && dueDate.getUTCMinutes() === 0 && !t.eventStartTime;
       const key = isMidnightUTC
-        ? (() => {
-            const prev = new Date(dueDate.getTime() - 1);
-            return _etDateKey(prev);
-          })()
+        ? (() => { const prev = new Date(dueDate.getTime() - 1); return _etDateKey(prev); })()
         : _etDateKey(dueDate);
       const arr = map.get(key);
       if (arr) arr.push(t); else map.set(key, [t]);
+    };
+    for (const t of withCourse) {
+      const normTitle = (t.title || '').replace(/^\[.*?\]\s*/, '').toLowerCase().trim();
+      const dateKey = _etDateKey(new Date(t.dueDate!));
+      seenByDateTitle.set(`${dateKey}:::${normTitle}`, t.id);
+      addToMap(t);
+    }
+    for (const t of withoutCourse) {
+      const normTitle = (t.title || '').replace(/^\[.*?\]\s*/, '').toLowerCase().trim();
+      const dateKey = _etDateKey(new Date(t.dueDate!));
+      if (seenByDateTitle.has(`${dateKey}:::${normTitle}`)) continue;
+      seenByDateTitle.set(`${dateKey}:::${normTitle}`, t.id);
+      addToMap(t);
     }
     return map;
   }, [allTasks]);
@@ -18974,13 +18985,20 @@ export default function Dashboard() {
         const detailDateStr = format(detailDate, 'EEEE, MMMM d, yyyy');
         const detailDateKey = format(detailDate, 'yyyy-MM-dd');
         const isDetailToday = isSameDayET(detailDate, new Date());
-        const dayTasks = allTasks.filter(t => {
+        const dayTasksRaw = allTasks.filter(t => {
           if (!t.dueDate) return false;
           return isSameDayET(new Date(t.dueDate), detailDate);
         }).sort((a, b) => {
           const da = a.dueDate ? new Date(a.dueDate).getTime() : 0;
           const db = b.dueDate ? new Date(b.dueDate).getTime() : 0;
           return da - db;
+        });
+        const seenDayTitles = new Set<string>();
+        const dayTasks = dayTasksRaw.filter(t => {
+          const normTitle = (t.title || '').replace(/^\[.*?\]\s*/, '').toLowerCase().trim();
+          if (seenDayTitles.has(normTitle)) return false;
+          seenDayTitles.add(normTitle);
+          return true;
         });
         const getTaskCourseColor = (courseName: string | null | undefined) => {
           if (!courseName) return '#6b7280';
