@@ -5425,14 +5425,13 @@ export default function Dashboard() {
   
   const hoveredCountdownTaskIdRef = useRef<number | null>(null);
   const hoverLineTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const hoverLineActiveIdRef = useRef<number | null>(null);
 
   const showCountdownHoverLine = useCallback((taskId: number) => {
-    if (hoverLineActiveIdRef.current === taskId) return;
-    hoverLineActiveIdRef.current = taskId;
-
     const existing = document.getElementById('countdown-hover-line-overlay');
-    if (existing) existing.remove();
+    if (existing) {
+      if (existing.dataset.taskId === String(taskId)) return;
+      existing.remove();
+    }
 
     let sourceEl = document.querySelector(`[data-testid="countdown-bar-cr-${taskId}"], [data-testid="countdown-bar-or-${taskId}"]`) as HTMLElement | null;
     if (!sourceEl) {
@@ -5476,6 +5475,7 @@ export default function Dashboard() {
 
     const container = document.createElement('div');
     container.id = 'countdown-hover-line-overlay';
+    container.dataset.taskId = String(taskId);
     container.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:99990';
 
     if (!filteredTaskEl) {
@@ -5586,7 +5586,6 @@ export default function Dashboard() {
   }, []);
 
   const hideCountdownHoverLine = useCallback(() => {
-    hoverLineActiveIdRef.current = null;
     const existing = document.getElementById('countdown-hover-line-overlay');
     if (existing) existing.remove();
   }, []);
