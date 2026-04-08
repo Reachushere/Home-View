@@ -1647,7 +1647,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               <div className={`w-6 h-3.5 rounded-full transition-colors ${task.excludeFromGpa ? 'bg-white/20' : 'bg-green-500/60'}`} />
               <div className={`absolute top-0.5 w-2.5 h-2.5 rounded-full bg-white transition-transform ${task.excludeFromGpa ? 'left-0.5' : 'left-3'}`} />
             </div>
-            <span className={`text-[7px] ${task.excludeFromGpa ? 'text-white/40' : 'text-green-400'}`}>{task.excludeFromGpa ? 'Ungraded' : 'Graded'}</span>
           </label>
           <button
             onClick={(e) => {
@@ -1895,7 +1894,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               <div className={`w-6 h-3.5 rounded-full transition-colors ${task.type === 'discussion' ? 'bg-white/10' : 'bg-white/20'}`} />
               <div className={`absolute top-0.5 left-0.5 w-2.5 h-2.5 rounded-full bg-white transition-transform`} />
             </div>
-            <span className="text-[7px] text-white/40">Ungraded</span>
           </label>
           <button
             onClick={(e) => { e.stopPropagation(); deleteTaskMutation.mutate({ id: task.id, _task: task }); }}
