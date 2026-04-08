@@ -24293,10 +24293,10 @@ export default function Dashboard() {
                                     const summerLabel = (ss?.summerStartDate || ss?.summerEndDate) ? `${fmtD(ss.summerStartDate || '')} – ${fmtD(ss.summerEndDate || '')}` : 'Set dates';
                                     return (
                                       <>
-                                        <span className="text-[10px] whitespace-nowrap px-1.5 py-0.5 rounded border cursor-pointer hover:bg-white/15 transition-colors" style={{ color: '#ffffff', background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)', marginRight: '2px' }} onClick={(e) => { e.stopPropagation(); setSemDatePickerKey(sem.key); setSemDatePickerHalf('spring'); }} data-testid={`dates-pill-spring-${sem.key}`}>
+                                        <span className="text-[8px] whitespace-nowrap px-1 py-0.5 rounded border cursor-pointer hover:bg-white/15 transition-colors" style={{ color: '#ffffff', background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)', marginRight: '2px' }} onClick={(e) => { e.stopPropagation(); setSemDatePickerKey(sem.key); setSemDatePickerHalf('spring'); }} data-testid={`dates-pill-spring-${sem.key}`}>
                                           <span style={{ fontWeight: 700 }}>Spring:</span> {springLabel}
                                         </span>
-                                        <span className="text-[10px] whitespace-nowrap px-1.5 py-0.5 rounded border cursor-pointer hover:bg-white/15 transition-colors" style={{ color: '#ffffff', background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)', marginRight: '3px' }} onClick={(e) => { e.stopPropagation(); setSemDatePickerKey(sem.key); setSemDatePickerHalf('summer'); }} data-testid={`dates-pill-summer-${sem.key}`}>
+                                        <span className="text-[8px] whitespace-nowrap px-1 py-0.5 rounded border cursor-pointer hover:bg-white/15 transition-colors" style={{ color: '#ffffff', background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)', marginRight: '3px' }} onClick={(e) => { e.stopPropagation(); setSemDatePickerKey(sem.key); setSemDatePickerHalf('summer'); }} data-testid={`dates-pill-summer-${sem.key}`}>
                                           <span style={{ fontWeight: 700 }}>Summer:</span> {summerLabel}
                                         </span>
                                       </>
