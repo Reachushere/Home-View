@@ -5440,6 +5440,22 @@ export default function Dashboard() {
     const sourceRect = sourceEl.getBoundingClientRect();
     if (sourceRect.width === 0 && sourceRect.height === 0) return;
 
+    const barColorEl = sourceEl.querySelector('[style*="background"]') as HTMLElement | null;
+    let barColor = '';
+    if (barColorEl) {
+      const bg = barColorEl.style.background || barColorEl.style.backgroundColor;
+      if (bg && bg !== 'transparent') barColor = bg;
+    }
+    if (!barColor) {
+      const allBarDivs = sourceEl.querySelectorAll('div');
+      for (const d of allBarDivs) {
+        const bg = (d as HTMLElement).style.background || (d as HTMLElement).style.backgroundColor;
+        if (bg && bg !== 'transparent' && !bg.includes('gradient')) { barColor = bg; break; }
+      }
+    }
+    if (!barColor) barColor = '#22c55e';
+    const barThickness = 3;
+
     const calendarWrapper = document.querySelector('[data-testid="calendar-scroll-container"]') as HTMLElement | null;
     const rightEdge = calendarWrapper ? calendarWrapper.getBoundingClientRect().right : window.innerWidth - 10;
 
@@ -5469,7 +5485,6 @@ export default function Dashboard() {
     }
 
     const taskRect = filteredTaskEl.getBoundingClientRect();
-    const lineColor = 'rgba(96,165,250,0.6)';
 
     const isBarSource = sourceEl.getAttribute('data-testid')?.startsWith('countdown-bar-');
     const startX = sourceRect.right;
@@ -5477,25 +5492,55 @@ export default function Dashboard() {
     const edgeX = rightEdge - 4;
     const taskLeftX = taskRect.left - 3;
     const taskMidY = taskRect.top + taskRect.height / 2;
-    const aboveTaskY = taskRect.top - 8;
 
     const makeLine = (x1: number, y1: number, x2: number, y2: number) => {
       const line = document.createElement('div');
       const len = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
       const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
-      line.style.cssText = `position:absolute;left:${x1}px;top:${y1}px;width:${len}px;height:0;border-top:2px dashed ${lineColor};transform-origin:0 0;transform:rotate(${angle}deg)`;
+      line.style.cssText = `position:absolute;left:${x1}px;top:${y1}px;width:${len}px;height:0;border-top:${barThickness}px solid ${barColor};opacity:0.85;transform-origin:0 0;transform:rotate(${angle}deg)`;
       return line;
     };
 
     if (isBarSource) {
-      container.appendChild(makeLine(startX, startY, edgeX, startY));
-      container.appendChild(makeLine(edgeX, startY, edgeX, aboveTaskY));
-      container.appendChild(makeLine(edgeX, aboveTaskY, taskLeftX, aboveTaskY));
-      container.appendChild(makeLine(taskLeftX, aboveTaskY, taskLeftX, taskMidY));
+      const calendarScrollEl = document.querySelector('[data-testid="calendar-scroll-container"]') as HTMLElement | null;
+      const calendarRect = calendarScrollEl ? calendarScrollEl.getBoundingClientRect() : { left: 0, top: 0, right: window.innerWidth, bottom: window.innerHeight };
+
+      const taskEls = calendarScrollEl ? calendarScrollEl.querySelectorAll('[data-testid^="task-"]') : [];
+      const obstacles: DOMRect[] = [];
+      for (const te of taskEls) {
+        if (te === filteredTaskEl) continue;
+        const r = te.getBoundingClientRect();
+        if (r.width > 0 && r.height > 0 && r.left < edgeX && r.right > taskLeftX) {
+          obstacles.push(r);
+        }
+      }
+
+      const cornerX = edgeX;
+      let cornerY = taskMidY;
+
+      const directPathBlocked = obstacles.some(o =>
+        startY >= o.top - 2 && startY <= o.bottom + 2 && o.left < edgeX && o.right > startX
+      );
+
+      if (directPathBlocked || Math.abs(startY - taskMidY) < 4) {
+        let bestY = taskRect.top - 6;
+        const isBlocked = (y: number) => obstacles.some(o => y >= o.top - 3 && y <= o.bottom + 3);
+        if (isBlocked(bestY)) {
+          for (let tryY = taskRect.top - 10; tryY >= calendarRect.top; tryY -= 5) {
+            if (!isBlocked(tryY)) { bestY = tryY; break; }
+          }
+        }
+        cornerY = bestY;
+      }
+
+      container.appendChild(makeLine(startX, startY, cornerX, startY));
+      container.appendChild(makeLine(cornerX, startY, cornerX, cornerY));
+      container.appendChild(makeLine(cornerX, cornerY, taskLeftX, cornerY));
+      container.appendChild(makeLine(taskLeftX, cornerY, taskLeftX, taskMidY));
     }
 
     const highlight = document.createElement('div');
-    highlight.style.cssText = `position:absolute;left:${taskRect.left - 2}px;top:${taskRect.top - 2}px;width:${taskRect.width + 4}px;height:${taskRect.height + 4}px;border:2px solid rgba(96,165,250,0.55);border-radius:4px`;
+    highlight.style.cssText = `position:absolute;left:${taskRect.left - 2}px;top:${taskRect.top - 2}px;width:${taskRect.width + 4}px;height:${taskRect.height + 4}px;border:2px solid ${barColor};opacity:0.7;border-radius:4px`;
     container.appendChild(highlight);
 
     document.body.appendChild(container);
