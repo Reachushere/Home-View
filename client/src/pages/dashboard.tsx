@@ -37730,20 +37730,20 @@ function ProfileForm({
           />
         </div>
       </div>
-      <div className="space-y-0">
-        <Label htmlFor="address" className="text-[10px]">Address</Label>
-        <Input 
-          id="address" 
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-          placeholder="e.g. 123 Main Street, Apt 4"
-          className="bg-white !text-black !text-[10px] h-8"
-          style={{ fontSize: '10px', color: 'black' }}
-          data-testid="input-profile-address"
-        />
-      </div>
       <div className="flex gap-[6px]">
-        <div className="space-y-0 w-1/2">
+        <div className="space-y-0 flex-1">
+          <Label htmlFor="address" className="text-[10px]">Address</Label>
+          <Input 
+            id="address" 
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            placeholder="e.g. 123 Main Street, Apt 4"
+            className="bg-white !text-black !text-[10px] h-8"
+            style={{ fontSize: '10px', color: 'black' }}
+            data-testid="input-profile-address"
+          />
+        </div>
+        <div className="space-y-0" style={{ width: '28%', flexShrink: 0 }}>
           <Label htmlFor="location" className="text-[10px]">City</Label>
           <select
             value={location}
@@ -37757,7 +37757,7 @@ function ProfileForm({
             ))}
           </select>
         </div>
-        <div className="space-y-0 w-1/2">
+        <div className="space-y-0" style={{ width: '22%', flexShrink: 0 }}>
           <Label htmlFor="provinceState" className="text-[10px]">{regionLabel}</Label>
           <select
             value={provinceState}
