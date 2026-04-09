@@ -4082,13 +4082,7 @@ export default function Dashboard() {
       if (response.ok) {
         const counts = await response.json();
         
-        setFileCounts(counts);
-        const legacyCounts: Record<string, number> = {};
-        for (const [key, value] of Object.entries(counts)) {
-          legacyCounts[key] = (value as { total: number }).total;
-        }
-        setOneDriveFileCounts(legacyCounts);
-        
+        let finalCounts = counts;
         try {
           const odController = new AbortController();
           const odTimeout = setTimeout(() => odController.abort(), 10000);
@@ -4106,18 +4100,19 @@ export default function Dashboard() {
                 merged[key] = { ...existing, total: odVal.total, unlistened: odVal.total - existing.listened };
               }
             }
-            setFileCounts(merged);
-            const mergedLegacy: Record<string, number> = {};
-            for (const [key, value] of Object.entries(merged)) {
-              mergedLegacy[key] = (value as { total: number }).total;
-            }
-            setOneDriveFileCounts(mergedLegacy);
+            finalCounts = merged;
           }
         } catch (odError) {
           if ((odError as any)?.name !== 'AbortError') {
             console.error('Error fetching OneDrive week counts:', odError);
           }
         }
+        setFileCounts(finalCounts);
+        const legacyCounts: Record<string, number> = {};
+        for (const [key, value] of Object.entries(finalCounts)) {
+          legacyCounts[key] = (value as { total: number }).total;
+        }
+        setOneDriveFileCounts(legacyCounts);
       } else if (retryCount < 2) {
         setTimeout(() => refreshFileCounts(retryCount + 1), 1500);
       }
