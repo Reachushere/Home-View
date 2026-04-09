@@ -27821,7 +27821,7 @@ export default function Dashboard() {
                             const todayDate = startOfDayET(new Date());
                             const dayDate = startOfDayET(day);
                             const diffDays = Math.round((dayDate.getTime() - todayDate.getTime()) / (1000 * 60 * 60 * 24));
-                            if (diffDays < 1 || diffDays > 14) return null;
+                            if (diffDays < 2 || diffDays > 14) return null;
                             const dailyEntry = weatherData.daily.find(d => d.date === format(day, 'yyyy-MM-dd'));
                             if (!dailyEntry || dailyEntry.weatherCode === undefined) return null;
                             const wc = dailyEntry.weatherCode;
