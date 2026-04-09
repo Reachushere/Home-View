@@ -3301,7 +3301,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   </Button>
                 </div>
 
-                <div className="border border-white rounded-lg p-2" style={{ background: 'rgba(255,255,255,0.08)', marginBottom: '5px' }}>
+                <div className="border border-white rounded-lg p-2" style={{ background: 'rgba(255,255,255,0.08)', marginBottom: '4px' }}>
                   <button
                     className="flex items-center gap-1.5 text-[9px] font-medium text-white hover:text-white/80 transition-colors w-full"
                     onClick={() => setShowWeekCalendar(!showWeekCalendar)}
@@ -3551,7 +3551,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   )}
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 {Array.from({ length: LAST_WEEK - FIRST_WEEK + 1 }, (_, i) => i + FIRST_WEEK).map((weekNum) => {
                   const weekDates = getWeekDates(weekNum, semesterStart, readingWeekStart);
                   const weekStart = new Date(weekDates.start);
