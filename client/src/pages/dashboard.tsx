@@ -29158,7 +29158,7 @@ export default function Dashboard() {
                           const badgeGrad = getCourseGradientColors(cCode2);
                           return (
                             <div 
-                              style={{ position: 'absolute', top: 0, left: '3px', right: '-1px', height: '16px', background: badgeGrad.start, zIndex: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', cursor: 'pointer' }}
+                              style={{ position: 'absolute', top: 0, left: '7px', right: '-1px', height: '16px', background: badgeGrad.start, zIndex: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', cursor: 'pointer' }}
                               onMouseEnter={() => setHoveredCountdownTaskIdDebounced(nextTask.id)}
                               onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                               onClick={(e) => {
