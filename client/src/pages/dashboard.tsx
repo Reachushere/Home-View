@@ -27469,7 +27469,7 @@ export default function Dashboard() {
                   <div key={idx} className="flex items-center justify-center overflow-hidden relative" style={{ opacity: isPast ? 0.5 : 1 }} data-testid={`weather-above-${dateStr}`}>
                     {showForecastWeather && fwSkyBg && (
                       <div className="absolute inset-0 z-0" style={{ background: fwSkyBg, overflow: 'hidden', pointerEvents: 'none', opacity: isTodayForecast ? 1 : isNextWeekDay ? 0.35 : 1 }}>
-                        {isTodayForecast && fwEffectsHtml && <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }} dangerouslySetInnerHTML={{ __html: fwEffectsHtml }} />}
+                        {fwEffectsHtml && <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }} dangerouslySetInnerHTML={{ __html: fwEffectsHtml }} />}
                       </div>
                     )}
                     {isTodayForecast && weatherAlerts.length > 0 && (
@@ -32503,87 +32503,6 @@ export default function Dashboard() {
           })()}
           <div className="absolute inset-0 rounded-[12px] pointer-events-none" style={{ zIndex: 2, border: '0.5px solid rgba(255,255,255,0.5)', borderTop: '0.5px solid rgba(255,255,255,0.7)' }} />
           <div className="absolute inset-0 rounded-[12px] overflow-hidden flex flex-col" style={{ pointerEvents: 'auto', zIndex: 1 }}>
-          {/* Weather Overlay */}
-          {weatherData && (() => {
-            const wc = weatherData.code;
-            const isSnow = wc >= 71 && wc <= 77;
-            const isRain = (wc >= 51 && wc <= 67) || (wc >= 80 && wc <= 82);
-            const isDrizzle = wc >= 51 && wc <= 57;
-            const isThunder = wc >= 95 && wc <= 99;
-            const isFog = wc >= 45 && wc <= 48;
-            const isOvercast = wc === 3;
-            const isCloudy = wc >= 2 && wc <= 3;
-            const isPartlyCloudy = wc === 1 || wc === 2;
-            const isClear = wc === 0;
-            const isFreezingRain = wc >= 66 && wc <= 67;
-            const isSleet = wc >= 85 && wc <= 86;
-            const particleCount = isSnow ? (wc >= 75 ? 55 : wc >= 73 ? 35 : 20)
-              : isRain ? (wc >= 65 || wc >= 82 ? 60 : isDrizzle ? 18 : 35)
-              : isSleet ? 30 : isFreezingRain ? 40 : 0;
-            const showParticles = particleCount > 0;
-
-            return (
-              <div className="absolute overflow-hidden pointer-events-none" style={{ zIndex: 45, borderRadius: '12px 12px 0 0', top: 0, left: 0, right: 0, height: '48px' }}>
-                {isFog && (
-                  <div className="absolute inset-0" style={{ background: 'rgba(200,200,210,0.15)', backdropFilter: 'blur(1px)' }} />
-                )}
-                {isThunder && (
-                  <div className="absolute inset-0 weather-sheet-lightning" />
-                )}
-                {showParticles && weatherParticles.slice(0, particleCount).map((p, i) => {
-                  const size = isSnow ? (2 + p.sizeFactor * 3) : isSleet ? (1.5 + p.sizeFactor * 2) : (1 + p.sizeFactor * 1.5);
-                  const duration = isSnow ? (3 + p.durationFactor * 4) : isRain ? (0.6 + p.durationFactor * 0.8) : (1 + p.durationFactor * 1.5);
-                  const drift = isSnow ? (p.driftFactor * 30 - 15) : 0;
-                  const opacity = isSnow ? (0.5 + p.opacityFactor * 0.5) : isRain ? (0.3 + p.opacityFactor * 0.4) : 0.5;
-                  const windAngle = isRain ? 8 : isSleet ? 5 : 0;
-
-                  return (
-                    <div
-                      key={i}
-                      style={{
-                        position: 'absolute',
-                        left: `${p.left}%`,
-                        top: '-8px',
-                        width: `${isSnow ? size : Math.max(1, size * 0.5)}px`,
-                        height: `${isSnow ? size : size * (isRain ? 8 : 4)}px`,
-                        borderRadius: isSnow ? '50%' : '1px',
-                        background: isSnow ? 'white' : isFreezingRain ? 'rgba(180,210,255,0.7)' : 'rgba(170,195,220,0.6)',
-                        opacity,
-                        animation: `weatherFall ${duration}s linear ${p.delay}s infinite`,
-                        transform: `translateX(${drift}px) rotate(${windAngle}deg)`,
-                      }}
-                    />
-                  );
-                })}
-                {(isClear || isPartlyCloudy) && weatherData.isDay && (
-                  <div className="absolute" style={{
-                    top: '-2px', right: '8px', width: '18px', height: '18px',
-                    borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,220,80,0.9) 0%, rgba(255,200,50,0.4) 50%, transparent 70%)',
-                    boxShadow: '0 0 12px rgba(255,200,50,0.4)',
-                    zIndex: 1,
-                  }} />
-                )}
-                {isOvercast && (
-                  <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(120,130,150,0.2) 0%, rgba(100,110,130,0.1) 100%)' }} />
-                )}
-                {(isCloudy || isPartlyCloudy) && (
-                  <>
-                    <div className="weather-cloud" style={{ top: '4px', left: '5%', width: isOvercast ? '65px' : '45px', height: isOvercast ? '20px' : '15px', opacity: isOvercast ? 0.6 : isCloudy ? 0.25 : 0.15 }} />
-                    <div className="weather-cloud" style={{ top: '16px', left: '40%', width: isOvercast ? '55px' : '38px', height: isOvercast ? '18px' : '13px', opacity: isOvercast ? 0.5 : isCloudy ? 0.2 : 0.12, animationDelay: '2s' }} />
-                    <div className="weather-cloud" style={{ top: '8px', left: '68%', width: isOvercast ? '50px' : '35px', height: isOvercast ? '16px' : '12px', opacity: isOvercast ? 0.45 : isCloudy ? 0.18 : 0.1, animationDelay: '4s' }} />
-                    {isOvercast && (
-                      <>
-                        <div className="weather-cloud" style={{ top: '26px', left: '20%', width: '58px', height: '17px', opacity: 0.4, animationDelay: '1s' }} />
-                        <div className="weather-cloud" style={{ top: '34px', left: '55%', width: '48px', height: '15px', opacity: 0.35, animationDelay: '5s' }} />
-                        <div className="weather-cloud" style={{ top: '42px', left: '8%', width: '52px', height: '16px', opacity: 0.3, animationDelay: '3s' }} />
-                        <div className="weather-cloud" style={{ top: '50px', left: '75%', width: '40px', height: '13px', opacity: 0.25, animationDelay: '6s' }} />
-                      </>
-                    )}
-                  </>
-                )}
-              </div>
-            );
-          })()}
           <div style={{ padding: '0 8px', height: courseRowRects.length > 0 ? `${courseRowRects[0].top - (calendarBorderTop || (calendarTop + 15)) - 1}px` : '45px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 46, overflow: 'hidden', marginBottom: '0px', boxShadow: '0 3px 6px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3)' }}>
             <div style={{ position: 'absolute', top: '21px', left: '25px', right: '8px', height: '0.5px', backgroundColor: 'rgba(255,255,255,0.3)', zIndex: 2 }} />
             <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: '6px', bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap', zIndex: 2 }}>Homework Progress</span>
