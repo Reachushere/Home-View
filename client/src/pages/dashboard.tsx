@@ -5595,7 +5595,18 @@ export default function Dashboard() {
       container.appendChild(highlight);
     }
 
-    document.body.appendChild(container);
+    const calBorderEl = document.querySelector('[data-testid="calendar-scroll-container"]')?.closest('.shadow-lg') as HTMLElement | null;
+    const calParent = calBorderEl?.parentElement as HTMLElement | null;
+    if (calParent) {
+      if (!calParent.style.position || calParent.style.position === 'static') {
+        calParent.style.position = 'relative';
+      }
+      calParent.appendChild(container);
+    } else if (calBorderEl) {
+      calBorderEl.appendChild(container);
+    } else {
+      document.body.appendChild(container);
+    }
   }, []);
 
   const hideCountdownHoverLine = useCallback(() => {
