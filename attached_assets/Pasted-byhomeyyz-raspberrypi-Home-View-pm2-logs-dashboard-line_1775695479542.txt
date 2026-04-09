@@ -1,0 +1,27 @@
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs dashboard --lines 10 --nostream
+[TAILING] Tailing last 10 lines for [dashboard] process (change the value with --lines option)
+/home/byhomeyyz/.pm2/logs/dashboard-error.log last 10 lines:
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | Error fetching events from third account calendar: Error: Google OAuth credentials not configured for third account
+0|dashboar |     at cAe (/home/byhomeyyz/Home-View/dist/index.cjs:330:8537)
+0|dashboar |     at NVo (/home/byhomeyyz/Home-View/dist/index.cjs:330:9523)
+0|dashboar |     at x6 (/home/byhomeyyz/Home-View/dist/index.cjs:330:10010)
+0|dashboar |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+0|dashboar |     at async I6 (/home/byhomeyyz/Home-View/dist/index.cjs:330:10813)
+0|dashboar |     at async /home/byhomeyyz/Home-View/dist/index.cjs:836:3334
+
+/home/byhomeyyz/.pm2/logs/dashboard-out.log last 10 lines:
+0|dashboar | [Monitor Sync] OneDrive folder not found for Fall 2027 — tried: Fall
+0|dashboar | [Monitor Sync] OneDrive folder not found for Winter 2028 — tried: Winter
+0|dashboar | [Monitor Sync] OneDrive folder not found for Spring/Summer 2028 — tried: Spring & Summer, Spring_Summer, Spring Summer, Spring-Summer
+0|dashboar | [Monitor Sync] OneDrive folder not found for Fall 2028 — tried: Fall
+0|dashboar | [Monitor Sync] OneDrive folder not found for Winter 2029 — tried: Winter
+0|dashboar | [Monitor Sync] OneDrive folder not found for Spring/Summer 2029 — tried: Spring & Summer, Spring_Summer, Spring Summer, Spring-Summer
+0|dashboar | [Monitor Sync] OneDrive folder not found for Fall 2029 — tried: Fall
+0|dashboar | 8:44:35 PM [express] POST /api/files/monitor-sync 200 in 28ms :: {"success":true,"totalSynced":0,"synced":[]}
+0|dashboar | 8:44:35 PM [express] GET /api/automation-cooldown 200 in 1ms :: {"active":true,"remaining":23,"reason":"startup"}
+0|dashboar | 8:44:36 PM [express] GET /api/health 200 in 1ms :: {"status":"ok","uptime":8,"ha":{"connected":true,"lastSuccessAt":null,"lastFailureAt":null,"consecutiveFailures":0,"totalChecks":0,"totalFailures":0,"lastError":null,"downSince":null,"commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-09T00:44:36.368Z"}
+
+byhomeyyz@raspberrypi:~/Home-View $
