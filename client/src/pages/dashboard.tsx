@@ -5644,7 +5644,7 @@ export default function Dashboard() {
 
       const routeY = bestRoute?.routeY ?? taskRect.top - 8;
       const finalTurnX = bestRoute?.turnX ?? taskLeftX + 4;
-      const downX = taskLeftX - 10;
+      const downX = taskLeftX - 20;
       const half = barThickness / 2;
 
       const clampedEndY = Math.min(taskMidY, viewportH - 20);
