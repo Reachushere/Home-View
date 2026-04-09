@@ -43,6 +43,7 @@ import {
   ChevronUp,
   AlertTriangle,
   Undo2,
+  RotateCcw,
 } from "lucide-react";
 import zoomLogoPath from "@assets/Zoom2_1773776262533.png";
 import wifiLogoPath from "@assets/Wifi_1773656687145.png";
@@ -3274,7 +3275,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   </Button>
                 </div>
 
-                <div className="mb-3 border border-white rounded-lg p-2" style={{ background: 'rgba(255,255,255,0.08)' }}>
+                <div className="border border-white rounded-lg p-2" style={{ background: 'rgba(255,255,255,0.08)', marginBottom: '5px' }}>
                   <button
                     className="flex items-center gap-1.5 text-[9px] font-medium text-white hover:text-white/80 transition-colors w-full"
                     onClick={() => setShowWeekCalendar(!showWeekCalendar)}
@@ -3524,6 +3525,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   )}
                 </div>
 
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                 {Array.from({ length: LAST_WEEK - FIRST_WEEK + 1 }, (_, i) => i + FIRST_WEEK).map((weekNum) => {
                   const weekDates = getWeekDates(weekNum, semesterStart, readingWeekStart);
                   const weekStart = new Date(weekDates.start);
@@ -3780,6 +3782,21 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                                         );
                                       })}
                                       <span className="text-[8px] text-white ml-1 self-center">{checked.size}/{file.totalChunks}</span>
+                                      <button
+                                        className="ml-auto self-center flex-shrink-0 text-white/40 hover:text-white/80 transition-colors"
+                                        onClick={async (e) => {
+                                          e.stopPropagation();
+                                          try {
+                                            await apiRequest("PATCH", `/api/files/${file.id}`, { listened: false, lastChunkIndex: 0, checkedChunks: '[]' });
+                                            queryClient.invalidateQueries({ queryKey: ["/api/files"] });
+                                            toast({ title: "Module reset", description: "Progress cleared — returned to priority order." });
+                                          } catch { toast({ title: "Failed to reset module", variant: "destructive" }); }
+                                        }}
+                                        title="Reset module progress to zero"
+                                        data-testid={`button-reset-module-${file.id}`}
+                                      >
+                                        <RotateCcw className="h-3 w-3" />
+                                      </button>
                                     </div>
                                   );
                                 })()}
@@ -3821,6 +3838,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   );
                 })}
 
+                </div>
                 {extraWeeks.map((weekNum) => {
                   const lastRegularWeek = LAST_WEEK;
                   const lastWeekDates = getWeekDates(lastRegularWeek, semesterStart, readingWeekStart);
