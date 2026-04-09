@@ -14358,7 +14358,7 @@ document.body.removeChild(a);
 
       res.json({ action: "playing", file: { id: nextFile.id, name: fileName }, currentWeek: currentWeekNumber });
 
-      const confirmTTS = `Okay, I will now play ${fileDesc}.`;
+      const confirmTTS = `Okay Bryn, I will now play your ${fileDesc}.`;
 
       catWashPlaybackTrigger = 'button';
       await startConfirmedPlaybackFlow(nextFile, '[Shower Button]', 'echo', confirmTTS);
@@ -14421,7 +14421,7 @@ document.body.removeChild(a);
       }
 
       const fileDesc = describeFileForTTS(freshFile, lateWeek || 1);
-      const confirmTTS = `Okay, I will now play ${fileDesc}.`;
+      const confirmTTS = `Okay Bryn, I will now play your ${fileDesc}.`;
       catWashPlaybackTrigger = 'lights';
       catLightsPromptPending = false;
       await startConfirmedPlaybackFlow(freshFile, '[Cat Lights Late]', 'echo', confirmTTS);
@@ -14921,7 +14921,7 @@ document.body.removeChild(a);
         console.log(`[Cat Lights] Confirmation received — starting playback`);
         catLightsPromptPending = false;
 
-        const confirmTTS = `Okay, I will now play ${fileDesc}.`;
+        const confirmTTS = `Okay Bryn, I will now play your ${fileDesc}.`;
         catWashPlaybackTrigger = 'lights';
         await startConfirmedPlaybackFlow(nextFile, '[Cat Lights]', 'echo', confirmTTS);
         return;
@@ -15452,7 +15452,7 @@ document.body.removeChild(a);
           } catch (e: any) {
             console.warn(`${logPrefix} Could not fetch no-motion automation duration: ${e.message}`);
           }
-          const pauseText = `Paused. Say re-zoom to continue, or I'll stop in ${noMotionMinutes} minutes.`;
+          const pauseText = `Stop received.`;
           console.log(`[Voice Command] Pause TTS text: "${pauseText}"`);
           let pausePlayed = false;
           try {
