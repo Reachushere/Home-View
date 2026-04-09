@@ -37764,18 +37764,18 @@ function ProfileForm({
           </div>
           <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoSelect} data-testid="input-profile-photo" />
         </div>
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-0.5">
+          {(firstName || lastName) && (
+            <span className="text-[16px] font-bold text-black" data-testid="text-profile-fullname">{firstName} {lastName}</span>
+          )}
           <span className="text-[10px] text-white/70">Profile Photo</span>
           <span className="text-[9px] text-white/40">{isUploadingPhoto ? 'Uploading...' : 'Click to change'}</span>
           {profilePhotoUrl && (
             <button type="button" className="text-[9px] text-red-400 hover:text-red-300 text-left" onClick={(e) => { e.stopPropagation(); onProfilePhotoChange(null); }} data-testid="button-remove-profile-photo">Remove photo</button>
           )}
         </div>
-        <div className="ml-auto self-start flex flex-col items-center" style={{ marginRight: '60px' }}>
-          {(firstName || lastName) && (
-            <span className="text-[16px] font-bold text-black" data-testid="text-profile-fullname">{firstName} {lastName}</span>
-          )}
-          <img src={tmuLogo} alt="School Logo" className="mt-1" style={{ height: '28px', objectFit: 'contain' }} data-testid="img-profile-school-logo" />
+        <div className="ml-auto self-start" style={{ marginTop: '-15px' }}>
+          <img src={tmuLogo} alt="School Logo" style={{ height: '28px', objectFit: 'contain' }} data-testid="img-profile-school-logo" />
         </div>
       </div>
       <div className="flex gap-[6px]" style={{ marginTop: '-1px' }}>
