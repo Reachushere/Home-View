@@ -27453,7 +27453,7 @@ export default function Dashboard() {
             </Button>
           </div>
           
-          <div className="grid w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), height: '16px', marginTop: '-3px' }}>
+          <div className="grid w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), height: '16px', marginTop: '-3px', paddingRight: '6px' }}>
               <div style={{ minWidth: 0 }} />
               {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0 }} />}
               {weekDays.map((day, idx) => {
@@ -27641,7 +27641,7 @@ export default function Dashboard() {
             <div ref={calendarContentRef} className="p-0 flex-1 flex flex-col overflow-hidden relative z-20" style={{ borderRadius: '8px' }} onClick={() => setSelectedTaskId(null)}>
             
             {/* Day Headers - Fixed, not scrollable */}
-            <div data-calendar-grid="true" className="grid z-[44] h-[60px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), borderBottom: '1px solid #666' }}>
+            <div data-calendar-grid="true" className="grid z-[44] h-[60px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), borderBottom: '1px solid #666', paddingRight: '6px' }}>
               <div className="flex items-center justify-center relative" style={{ backgroundColor: colorSettings.headerBar }}>
                 <img src={unicalLogo} alt="Uni-Cal" className="rounded" style={{ height: '34px', width: '34px', marginLeft: '3px' }} />
                 {/* Time column resize handle - right edge */}
@@ -28741,7 +28741,7 @@ export default function Dashboard() {
                 }
                 
                 return (
-                <div key={course.name} ref={el => { courseRowRefs.current[courseIdx] = el; }} className="grid w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${maxCourseRowHeight}px`, maxHeight: `${maxCourseRowHeight}px`, overflow: 'hidden' }}>
+                <div key={course.name} ref={el => { courseRowRefs.current[courseIdx] = el; }} className="grid w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${maxCourseRowHeight}px`, maxHeight: `${maxCourseRowHeight}px`, overflow: 'hidden', paddingRight: '6px' }}>
                   <div className="px-2 py-0.5 text-[8px] font-medium tracking-normal flex flex-col items-center justify-center relative leading-tight cursor-pointer hover:brightness-110" onClick={() => { if (selectedCertCourse) return; const code = courseData.name.split(' - ')[0]?.trim(); const cName = courseData.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code })); }} style={{ background: course.label, borderBottom: `1.5px dotted ${courseData.color}dd`, overflow: 'hidden', minWidth: 0, color: course.fontColor || 'white', wordBreak: 'normal', overflowWrap: 'normal', textAlign: 'center' }} data-testid={`course-row-label-${course.name}`}>
                     {(() => {
                       const code = course.name.split(' - ')[0];
@@ -29468,7 +29468,7 @@ export default function Dashboard() {
                 const baseOtherRowHeight = Math.max(57, gridSizes.otherRowHeight || 57);
                 const otherRowHeight = baseOtherRowHeight + missingRows * courseRowH;
                 return (
-                  <div ref={otherRowRef} className="w-full flex-shrink-0 relative z-[43] group/otherrow" style={{ height: `${otherRowHeight}px`, overflow: 'hidden' }}>
+                  <div ref={otherRowRef} className="w-full flex-shrink-0 relative z-[43] group/otherrow" style={{ height: `${otherRowHeight}px`, overflow: 'hidden', paddingRight: '6px' }}>
                     <div className="px-1 py-0.5 text-[8px] font-[785] tracking-wide flex items-center justify-center text-white/80 cursor-pointer hover:brightness-110" onClick={() => setOtherRowEditOpen(true)} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${gridSizes.timeColumnWidth}px`, zIndex: 50, background: (() => { const stops = otherRowColors.labelStops ? (() => { try { return JSON.parse(otherRowColors.labelStops); } catch { return []; } })() : []; const allStops = [{ position: 0, color: otherRowColors.labelStart }, ...stops, { position: 100, color: otherRowColors.labelEnd }]; return `linear-gradient(180deg, ${allStops.map((s: any) => `${s.color} ${s.position}%`).join(', ')})`; })(), borderBottom: `1px dotted ${otherRowColors.borderColor || '#999'}`, overflow: 'hidden' }} data-testid="other-row-label">
                       OTHER
                       <div style={{ position: 'absolute', top: '1px', right: '1px', zIndex: 2 }} onClick={(e) => { e.stopPropagation(); setOtherRowEditOpen(true); }} data-testid="pencil-edit-other-row"><Pencil className="w-[9px] h-[9px] text-white" strokeWidth={3} /></div>
@@ -29863,7 +29863,7 @@ export default function Dashboard() {
               
                           {/* Time Slots - Scrollable area */}
             <div style={{ position: 'relative', flex: '1 1 0%', overflow: 'hidden', borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px' }}>
-            <div ref={calendarScrollRef} data-testid="calendar-scroll-container" className="overflow-y-auto" style={{ height: '100%', scrollbarWidth: 'thin', scrollbarColor: 'rgba(0,0,0,0.15) transparent', overflowY: 'overlay' as any }} onScroll={(e) => {
+            <div ref={calendarScrollRef} data-testid="calendar-scroll-container" className="overflow-y-auto" style={{ height: '100%', scrollbarWidth: 'thin', scrollbarColor: 'rgba(0,0,0,0.15) transparent' }} onScroll={(e) => {
               const st = (e.target as HTMLDivElement).scrollTop;
               calScrollTopRef.current = st;
             }}>
