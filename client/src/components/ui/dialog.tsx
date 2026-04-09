@@ -29,14 +29,13 @@ const DialogOverlay = React.forwardRef<
 ))
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
 
-const DialogContent = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & { overlayClassName?: string }
->(({ className, children, overlayClassName, ...props }, ref) => (
+function DialogContentInner({ className, children, overlayClassName, forwardedRef, ...props }: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & { overlayClassName?: string; forwardedRef: React.Ref<React.ElementRef<typeof DialogPrimitive.Content>> }) {
+  const noPadding = className?.includes('p-0');
+  return (
   <DialogPortal>
     <DialogOverlay className={overlayClassName} />
     <DialogPrimitive.Content
-      ref={ref}
+      ref={forwardedRef}
       className={cn(
         "fixed left-[50%] top-[50%] z-[10001] flex flex-col w-full max-w-lg max-h-[85vh] translate-x-[-50%] translate-y-[-50%] border border-white/20 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg text-white",
         className
@@ -47,7 +46,7 @@ const DialogContent = React.forwardRef<
       }}
       {...props}
     >
-      <div className="flex-1 min-h-0 overflow-y-auto p-6 pb-0 [&:has(+[data-dialog-footer])]:pb-2">
+      <div className={cn("flex-1 min-h-0 overflow-y-auto [&:has(+[data-dialog-footer])]:pb-2", noPadding ? '' : 'p-6 pb-0')}>
         {React.Children.map(children, child => {
           if (React.isValidElement(child) && (child as any).type?.displayName === 'DialogFooter') return null;
           return child;
@@ -66,6 +65,14 @@ const DialogContent = React.forwardRef<
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>
   </DialogPortal>
+  );
+}
+
+const DialogContent = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & { overlayClassName?: string }
+>(({ ...props }, ref) => (
+  <DialogContentInner {...props} forwardedRef={ref} />
 ))
 DialogContent.displayName = DialogPrimitive.Content.displayName
 
