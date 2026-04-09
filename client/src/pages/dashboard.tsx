@@ -5992,7 +5992,7 @@ export default function Dashboard() {
         }
         if (data.blinkSettings) {
           setBlinkSettings(prev => {
-            const merged = { ...prev, ...data.blinkSettings };
+            const merged = { ...data.blinkSettings, ...prev };
             localStorage.setItem('blinkSettings', JSON.stringify(merged));
             return merged;
           });
