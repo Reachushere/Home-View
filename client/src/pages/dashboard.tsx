@@ -4830,6 +4830,9 @@ export default function Dashboard() {
   const saturdayGridCol = (gridSizes.moduleColumnWidth > 0 ? 2 : 1) + lastSchoolDayIndex + 1 + 1;
 
   const DAY_COL_LEFT_REDUCTION = 10;
+  const SCROLLBAR_DAY_PADDING = [3, 4, 5, 6, 7, 8, 0];
+  const getDayPaddingRight = (dayIdx: number) => SCROLLBAR_DAY_PADDING[dayIdx] || 0;
+
   const getGridTemplateColumns = () => {
     const allDays = gridSizes.dayColumnWidths.map(w => `${w}fr`).join(' ');
     if (gridSizes.moduleColumnWidth > 0) {
@@ -28607,7 +28610,7 @@ export default function Dashboard() {
                                 return (
                                   <div 
                                     key={dayIdx}
-                                    style={{ backgroundColor: cellBg }}
+                                    style={{ backgroundColor: cellBg, paddingRight: `${getDayPaddingRight(dayIdx)}px` }}
                                   />
                                 );
                               }
@@ -28618,7 +28621,7 @@ export default function Dashboard() {
                                 return (
                                   <div 
                                     key={dayIdx}
-                                    style={{ backgroundColor: cellBg }}
+                                    style={{ backgroundColor: cellBg, paddingRight: `${getDayPaddingRight(dayIdx)}px` }}
                                   />
                                 );
                               }
@@ -28646,7 +28649,7 @@ export default function Dashboard() {
                                   ? `border ${borderColor} rounded`
                                   : `border-l border-t border-b ${borderColor} rounded-l`;
                                 return (
-                                  <div key={dayIdx} className="flex items-center" style={{ backgroundColor: cellBg }}>
+                                  <div key={dayIdx} className="flex items-center" style={{ backgroundColor: cellBg, paddingRight: `${getDayPaddingRight(dayIdx)}px` }}>
                                     <div 
                                       className={`flex-1 flex items-center gap-1 text-[8px] px-0.5 ml-0 ${isFriday ? 'mr-0.5' : ''} ${todayBorderClass} ${
                                         shouldBlink ? "animate-blink" : ""
@@ -28684,7 +28687,7 @@ export default function Dashboard() {
                                 ? `border-t border-b border-r ${borderColor} rounded-r`
                                 : `border-t border-b ${borderColor}`;
                               return (
-                                <div key={dayIdx} className="flex items-center" style={{ backgroundColor: cellBg }}>
+                                <div key={dayIdx} className="flex items-center" style={{ backgroundColor: cellBg, paddingRight: `${getDayPaddingRight(dayIdx)}px` }}>
                                   <div 
                                     className={`w-full ${bgOnly} ${contBorderClass} ${
                                       shouldBlink ? "animate-blink" : ""
@@ -28922,7 +28925,7 @@ export default function Dashboard() {
                       <div 
                         key={dayIdx} 
                         className="relative pt-0.5"
-                        style={{ backgroundColor: cellBgColor, padding: isDayToday ? '2px 1px 2px 3px' : '2px 1px 2px 1px', borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, borderLeft: day.getDay() === 6 ? 'none' : '1.5px dotted rgba(0,0,0,0.25)', minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                        style={{ backgroundColor: cellBgColor, padding: isDayToday ? `2px ${getDayPaddingRight(dayIdx) + 1}px 2px 3px` : `2px ${getDayPaddingRight(dayIdx) + 1}px 2px 1px`, borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, borderLeft: day.getDay() === 6 ? 'none' : '1.5px dotted rgba(0,0,0,0.25)', minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
                           e.preventDefault();
@@ -29512,7 +29515,7 @@ export default function Dashboard() {
                         <div
                           key={dayIdx}
                           className="relative flex flex-col gap-0.5 pt-0.5 course-cell-scroll"
-                          style={{ flex: `${gridSizes.dayColumnWidths[dayIdx]} 0 0%`, backgroundColor: otherCellBg, padding: isOtherToday ? '2px 1px 2px 3px' : '2px 1px 2px 1px', borderBottom: isOtherToday ? '1px dotted #666' : `1.5px dotted ${otherRowColors.borderColor}`, borderLeft: day.getDay() === 6 ? 'none' : '1.5px dotted rgba(0,0,0,0.25)', overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'thin', maxHeight: `${otherRowHeight}px` }}
+                          style={{ flex: `${gridSizes.dayColumnWidths[dayIdx]} 0 0%`, backgroundColor: otherCellBg, padding: isOtherToday ? `2px ${getDayPaddingRight(dayIdx) + 1}px 2px 3px` : `2px ${getDayPaddingRight(dayIdx) + 1}px 2px 1px`, borderBottom: isOtherToday ? '1px dotted #666' : `1.5px dotted ${otherRowColors.borderColor}`, borderLeft: day.getDay() === 6 ? 'none' : '1.5px dotted rgba(0,0,0,0.25)', overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'thin', maxHeight: `${otherRowHeight}px` }}
                           data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
                         >
                           {dayOtherTasks.map(task => {
