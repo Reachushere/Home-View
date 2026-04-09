@@ -15399,14 +15399,12 @@ document.body.removeChild(a);
           }
           const pauseText = `Paused. Say re-zoom to continue, or I'll stop in ${noMotionMinutes} minutes.`;
           console.log(`[Voice Command] Pause TTS text: "${pauseText}"`);
-          await new Promise(r => setTimeout(r, 3000));
-          try {
-            await haServiceCallSafe('media_player/turn_on', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Pre-Pause Wake');
-          } catch (e: any) { console.warn(`[Voice Command] Pre-pause wake error (non-fatal): ${e.message}`); }
-          await new Promise(r => setTimeout(r, 1000));
           let pausePlayed = false;
           try {
-            const pausePath = await generateAndSaveTTSAudio(pauseText, `vc-pause-${Date.now()}`);
+            const [pausePath] = await Promise.all([
+              generateAndSaveTTSAudio(pauseText, `vc-pause-${Date.now()}`),
+              haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }, 'Nest Pre-Pause Vol').catch(() => {}),
+            ]);
             const pauseResult = await playOnNestSpeaker(`${appUrl}${pausePath}`, 2, pauseText);
             if (pauseResult.success) {
               pausePlayed = true;
