@@ -29863,7 +29863,7 @@ export default function Dashboard() {
               
                           {/* Time Slots - Scrollable area */}
             <div style={{ position: 'relative', flex: '1 1 0%', overflow: 'hidden', borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px' }}>
-            <div ref={calendarScrollRef} data-testid="calendar-scroll-container" className="overflow-y-auto" style={{ height: '100%', scrollbarWidth: 'none', scrollbarColor: 'rgba(0,0,0,0.15) transparent' }} onScroll={(e) => {
+            <div ref={calendarScrollRef} data-testid="calendar-scroll-container" className="overflow-y-auto" style={{ height: '100%', scrollbarWidth: 'thin', scrollbarColor: 'rgba(0,0,0,0.15) transparent', overflowY: 'overlay' as any }} onScroll={(e) => {
               const st = (e.target as HTMLDivElement).scrollTop;
               calScrollTopRef.current = st;
             }}>
