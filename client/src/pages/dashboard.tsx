@@ -17456,7 +17456,7 @@ export default function Dashboard() {
                         const courseCode = cn.split(' - ')[0]?.replace(/\s+/g, '') || cn;
                         const courseLongName = cn.split(' - ')[1] || '';
                         const nameWords = courseLongName.trim().split(/\s+/);
-                        return (<>{courseCode && <span style={{ marginBottom: '-2px' }}>{courseCode}</span>}{nameWords.map((w: string, wi: number) => (<span key={wi} style={{ fontSize: '7px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: '1', whiteSpace: 'nowrap' }}>{w}</span>))}</>);
+                        return (<>{courseCode && <span style={{ marginBottom: '-2px' }}>{courseCode}</span>}<span style={{ fontSize: '7px', fontWeight: 400, letterSpacing: '0.3px', lineHeight: '1.15', whiteSpace: 'normal', wordBreak: 'normal', overflowWrap: 'anywhere', hyphens: 'auto', textAlign: 'center' } as any}>{courseLongName.trim()}</span></>);
                       })()}</span>
                       </span>
                       <span className="text-[15px] font-normal" style={{ color: isTodayTask ? '#FFFF00' : 'rgba(255,255,255,0.9)', letterSpacing: '0.2px' }}>{a.courseName === 'Custom' ? (a.body || a.snippet || '') : (a.subject || '').replace(/^\s*\[[^\]]*\]\s*/g, '')}</span>
@@ -28790,25 +28790,23 @@ export default function Dashboard() {
                             const fontSize = totalLen > 25 ? '7px' : totalLen > 18 ? '8px' : '9px';
                             return (
                               <>
-                                {displayWords.map((word: string, i: number) => <span key={i} className={i === 0 ? "font-[785] text-center" : "text-center"} style={{ whiteSpace: 'nowrap', fontSize, wordBreak: 'break-word', overflowWrap: 'break-word' }}>{word}</span>)}
+                                <span className="font-[785] text-center" style={{ wordBreak: 'normal', overflowWrap: 'anywhere', hyphens: 'auto', whiteSpace: 'normal', lineHeight: 1.15, fontSize } as any}>{displayWords.join(' ')}</span>
                               </>
                             );
                           }
                           const words = fullName.trim() ? fullName.trim().split(/\s+/) : [];
                           const codeIsName = code.trim().toLowerCase() === fullName.trim().toLowerCase();
                           if (codeIsName) {
-                            const nameWords = fullName.trim().split(/\s+/);
                             return (
                               <>
-                                {nameWords.map((word, i) => <span key={i} className={i === 0 ? "font-[785] text-center" : "text-center"} style={{ whiteSpace: 'nowrap' }}>{word}</span>)}
+                                <span className="font-[785] text-center" style={{ wordBreak: 'normal', overflowWrap: 'anywhere', hyphens: 'auto', whiteSpace: 'normal', lineHeight: 1.15 } as any}>{fullName.trim()}</span>
                               </>
                             );
                           }
                           if (words.length === 0 && displayCodeLabel.includes(' ')) {
-                            const codeWords = displayCodeLabel.trim().split(/\s+/);
                             return (
                               <>
-                                {codeWords.map((word: string, i: number) => <span key={i} className={i === 0 ? "font-[785] text-center" : "text-center"} style={{ whiteSpace: 'nowrap' }}>{word}</span>)}
+                                <span className="font-[785] text-center" style={{ wordBreak: 'normal', overflowWrap: 'anywhere', hyphens: 'auto', whiteSpace: 'normal', lineHeight: 1.15 } as any}>{displayCodeLabel}</span>
                               </>
                             );
                           }
@@ -28820,7 +28818,7 @@ export default function Dashboard() {
                           return (
                             <>
                               <span className="font-[785] text-center" style={{ whiteSpace: 'nowrap' }}>{displayCodeLabel}</span>
-                              {words.map((word, i) => <span key={i} className="text-center" style={{ whiteSpace: 'nowrap' }}>{word}</span>)}
+                              <span className="text-center" style={{ wordBreak: 'normal', overflowWrap: 'anywhere', hyphens: 'auto', whiteSpace: 'normal', lineHeight: 1.15 } as any}>{words.join(' ')}</span>
                             </>
                           );
                         })()}
@@ -29056,25 +29054,23 @@ export default function Dashboard() {
                         const fontSize = totalLen > 25 ? '7px' : totalLen > 18 ? '8px' : '9px';
                         return (
                           <>
-                            {displayWords.map((word: string, i: number) => <span key={i} className={i === 0 ? "font-[785] text-center" : "text-center"} style={{ whiteSpace: 'nowrap', fontSize, wordBreak: 'break-word', overflowWrap: 'break-word' }}>{word}</span>)}
+                            <span className="font-[785] text-center" style={{ wordBreak: 'normal', overflowWrap: 'anywhere', hyphens: 'auto', whiteSpace: 'normal', lineHeight: 1.15, fontSize } as any}>{displayWords.join(' ')}</span>
                           </>
                         );
                       }
                       const words = fullName.trim() ? fullName.trim().split(/\s+/) : [];
                       const codeIsName = code.trim().toLowerCase() === fullName.trim().toLowerCase();
                       if (codeIsName) {
-                        const nameWords = fullName.trim().split(/\s+/);
                         return (
                           <>
-                            {nameWords.map((word, i) => <span key={i} className={i === 0 ? "font-[785] text-center" : "text-center"} style={{ whiteSpace: 'nowrap' }}>{word}</span>)}
+                            <span className="font-[785] text-center" style={{ wordBreak: 'normal', overflowWrap: 'anywhere', hyphens: 'auto', whiteSpace: 'normal', lineHeight: 1.15 } as any}>{fullName.trim()}</span>
                           </>
                         );
                       }
                       if (words.length === 0 && displayCodeLabel.includes(' ')) {
-                        const codeWords = displayCodeLabel.trim().split(/\s+/);
                         return (
                           <>
-                            {codeWords.map((word: string, i: number) => <span key={i} className={i === 0 ? "font-[785] text-center" : "text-center"} style={{ whiteSpace: 'nowrap' }}>{word}</span>)}
+                            <span className="font-[785] text-center" style={{ wordBreak: 'normal', overflowWrap: 'anywhere', hyphens: 'auto', whiteSpace: 'normal', lineHeight: 1.15 } as any}>{displayCodeLabel}</span>
                           </>
                         );
                       }
@@ -29086,7 +29082,7 @@ export default function Dashboard() {
                       return (
                         <>
                           <span className="font-[785] text-center" style={{ whiteSpace: 'nowrap' }}>{displayCodeLabel}</span>
-                          {words.map((word, i) => <span key={i} className="text-center" style={{ whiteSpace: 'nowrap' }}>{word}</span>)}
+                          <span className="text-center" style={{ wordBreak: 'normal', overflowWrap: 'anywhere', hyphens: 'auto', whiteSpace: 'normal', lineHeight: 1.15 } as any}>{words.join(' ')}</span>
                         </>
                       );
                     })()}
