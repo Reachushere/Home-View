@@ -37525,11 +37525,13 @@ function ProfileForm({
   const [studentNumber, setStudentNumber] = useState(() => localStorage.getItem('studentNumber') || '');
   const [osapPassword, setOsapPassword] = useState(() => localStorage.getItem('osapPassword') || '');
   const [showOsapPassword, setShowOsapPassword] = useState(false);
+  const [ouacUsername, setOuacUsername] = useState(() => localStorage.getItem('ouacUsername') || '');
 
   useEffect(() => {
     fetch('/api/ui-settings/osapNumber').then(r => r.json()).then(d => { if (d.value) setOsapNumber(d.value); }).catch(() => {});
     fetch('/api/ui-settings/studentNumber').then(r => r.json()).then(d => { if (d.value) setStudentNumber(d.value); }).catch(() => {});
     fetch('/api/ui-settings/osapPassword').then(r => r.json()).then(d => { if (d.value) setOsapPassword(d.value); }).catch(() => {});
+    fetch('/api/ui-settings/ouacUsername').then(r => r.json()).then(d => { if (d.value) setOuacUsername(d.value); }).catch(() => {});
   }, []);
 
   const [schoolName, setSchoolName] = useState(schoolData.schoolName || 'Toronto Metropolitan University');
@@ -37949,6 +37951,19 @@ function ProfileForm({
               {showOsapPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
             </button>
           </div>
+        </div>
+        <div className="space-y-0 w-1/2">
+          <Label htmlFor="ouacUsername" className="text-[10px]">OUAC Username</Label>
+          <Input
+            id="ouacUsername"
+            value={ouacUsername}
+            onChange={(e) => { setOuacUsername(e.target.value); }}
+            onBlur={() => { localStorage.setItem('ouacUsername', ouacUsername); fetch('/api/ui-settings/ouacUsername', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: ouacUsername }) }).catch(() => {}); }}
+            placeholder="Enter OUAC username"
+            className="bg-white !text-black !text-[10px] h-8"
+            style={{ fontSize: '10px', color: 'black' }}
+            data-testid="input-profile-ouac-username"
+          />
         </div>
       </div>
 
