@@ -37805,7 +37805,7 @@ function ProfileForm({
         </div>
       </div>
       <div className="flex gap-[6px]">
-        <div className="space-y-0 flex-1">
+        <div className="space-y-0 w-1/2">
           <Label htmlFor="address" className="text-[10px]">Address</Label>
           <Input 
             id="address" 
@@ -37817,7 +37817,7 @@ function ProfileForm({
             data-testid="input-profile-address"
           />
         </div>
-        <div className="space-y-0" style={{ width: '28%', flexShrink: 0 }}>
+        <div className="space-y-0 flex-1">
           <Label htmlFor="location" className="text-[10px]">City</Label>
           <select
             value={location}
@@ -37831,7 +37831,7 @@ function ProfileForm({
             ))}
           </select>
         </div>
-        <div className="space-y-0" style={{ width: '22%', flexShrink: 0 }}>
+        <div className="space-y-0" style={{ width: '18%', flexShrink: 0 }}>
           <Label htmlFor="provinceState" className="text-[10px]">{regionLabel}</Label>
           <select
             value={provinceState}
