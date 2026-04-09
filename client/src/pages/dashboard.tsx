@@ -211,6 +211,8 @@ import {
   Tag,
   Zap,
   Printer,
+  DollarSign,
+  TreePine,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import { useAccessMode } from "@/components/access-gate";
@@ -235,6 +237,11 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   class: GraduationCap,
   scholarship: Award,
   medical: Activity,
+  school: GraduationCap,
+  household: Home,
+  financial: DollarSign,
+  personal: User,
+  outside: TreePine,
   other: MoreHorizontal,
 };
 
@@ -252,6 +259,11 @@ const typeColors: Record<string, string> = {
   meeting: "bg-yellow-500/20 text-yellow-600 dark:text-yellow-400",
   scholarship: "bg-gray-400/20 text-gray-500 dark:text-gray-400",
   medical: "bg-red-500/20 text-red-600 dark:text-red-400",
+  school: "bg-blue-700/20 text-blue-700 dark:text-blue-400",
+  household: "bg-amber-500/20 text-amber-600 dark:text-amber-400",
+  financial: "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400",
+  personal: "bg-violet-500/20 text-violet-600 dark:text-violet-400",
+  outside: "bg-green-500/20 text-green-600 dark:text-green-400",
   other: "bg-yellow-600/20 text-yellow-600 dark:text-yellow-400",
 };
 
@@ -269,6 +281,11 @@ const calendarTypeIconColors: Record<string, string> = {
   meeting: '#ca8a04',
   scholarship: '#a0aab4',
   medical: '#dc3c3c',
+  school: '#004c9c',
+  household: '#f59e0b',
+  financial: '#10b981',
+  personal: '#8b5cf6',
+  outside: '#22c55e',
   other: '#b4a028',
 };
 
@@ -286,6 +303,11 @@ const calendarTypeBarColors: Record<string, string> = {
   meeting: 'rgb(202,138,4)',
   scholarship: 'rgb(160,170,180)',
   medical: 'rgb(220,60,60)',
+  school: 'rgb(0,76,156)',
+  household: 'rgb(245,158,11)',
+  financial: 'rgb(16,185,129)',
+  personal: 'rgb(139,92,246)',
+  outside: 'rgb(34,197,94)',
   other: 'rgb(180,160,40)',
   partnerShifts: 'rgb(100,100,180)',
 };
@@ -13837,7 +13859,7 @@ export default function Dashboard() {
         const todayStart = new Date(`${todayStr}T00:00:00`);
         const greyTasks = (allTasksRaw || []).filter((t: any) => t.type === 'other' && !t.isCompleted && new Date(t.dueDate) >= todayStart).sort((a: any, b: any) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
         const typeOptions = ["module", "reading", "essay", "discussion", "poll", "quiz", "exam", "project", "reminder", "meeting", "other"] as const;
-        const typeColorMap: Record<string, string> = { module: 'rgba(16,200,120,0.35)', reading: 'rgba(56,130,255,0.35)', essay: 'rgba(255,180,30,0.35)', discussion: 'rgba(180,120,220,0.35)', poll: 'rgba(255,70,160,0.35)', quiz: 'rgba(180,160,40,0.35)', exam: 'rgba(220,30,30,0.4)', project: 'rgba(255,100,50,0.35)', reminder: 'rgba(0,210,240,0.35)', meeting: 'rgba(50,50,180,0.35)', other: 'rgba(160,170,180,0.25)' };
+        const typeColorMap: Record<string, string> = { module: 'rgba(16,200,120,0.35)', reading: 'rgba(56,130,255,0.35)', essay: 'rgba(255,180,30,0.35)', discussion: 'rgba(180,120,220,0.35)', poll: 'rgba(255,70,160,0.35)', quiz: 'rgba(180,160,40,0.35)', exam: 'rgba(220,30,30,0.4)', project: 'rgba(255,100,50,0.35)', reminder: 'rgba(0,210,240,0.35)', meeting: 'rgba(50,50,180,0.35)', school: 'rgba(0,76,156,0.35)', household: 'rgba(245,158,11,0.35)', financial: 'rgba(16,185,129,0.35)', personal: 'rgba(139,92,246,0.35)', outside: 'rgba(34,197,94,0.35)', other: 'rgba(160,170,180,0.25)' };
         const handleSaveClassify = async () => {
           const entries = Object.entries(greyClassifySelections);
           for (const [idStr, newType] of entries) {
@@ -30219,6 +30241,8 @@ export default function Dashboard() {
                                     project: 'rgb(255,100,50)', discussion: 'rgb(0,210,240)', poll: 'rgb(255,70,160)',
                                     exam: 'rgb(220,30,30)', quiz: 'rgb(16,200,120)', reminder: 'rgb(80,100,220)',
                                     meeting: 'rgb(202,138,4)', scholarship: 'rgb(160,170,180)', medical: 'rgb(220,60,60)',
+                                    school: 'rgb(0,76,156)', household: 'rgb(245,158,11)', financial: 'rgb(16,185,129)',
+                                    personal: 'rgb(139,92,246)', outside: 'rgb(34,197,94)',
                                     other: 'rgb(180,160,40)',
                                   };
                                   const moduleBoxColor = (() => {
@@ -30585,6 +30609,8 @@ export default function Dashboard() {
                           project: 'rgb(255,100,50)', discussion: 'rgb(0,210,240)', poll: 'rgb(255,70,160)',
                           exam: 'rgb(220,30,30)', quiz: 'rgb(16,200,120)', reminder: 'rgb(80,100,220)',
                           meeting: 'rgb(202,138,4)', scholarship: 'rgb(160,170,180)', medical: 'rgb(220,60,60)',
+                          school: 'rgb(0,76,156)', household: 'rgb(245,158,11)', financial: 'rgb(16,185,129)',
+                          personal: 'rgb(139,92,246)', outside: 'rgb(34,197,94)',
                           other: 'rgb(180,160,40)',
                         };
                         const moduleBoxColor = (() => {

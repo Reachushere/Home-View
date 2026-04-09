@@ -16,6 +16,11 @@ export const TASK_TYPES = [
   "meeting",
   "scholarship",
   "medical",
+  "school",
+  "household",
+  "financial",
+  "personal",
+  "outside",
   "other"
 ] as const;
 
