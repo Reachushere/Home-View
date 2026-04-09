@@ -3491,6 +3491,7 @@ export default function Dashboard() {
   
   // Profile state
   const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
+  const [isProfileDirty, setIsProfileDirty] = useState(false);
   const [isSystemHealthOpen, setIsSystemHealthOpen] = useState(false);
   const [systemHealthData, setSystemHealthData] = useState<any>(null);
   const [systemHealthLoading, setSystemHealthLoading] = useState(false);
@@ -24430,7 +24431,7 @@ export default function Dashboard() {
             , document.body);
           })()}
 
-          <Dialog open={isProfileDialogOpen} onOpenChange={(open) => { if (!open) { setProfileData(prev => { try { const saved = localStorage.getItem('profileData'); return saved ? { postalCode: '', location: '', phoneNumber: '', email: '', address: '', country: '', provinceState: '', emergencyContactName: '', emergencyContactPhone: '', allergies: '', ...JSON.parse(saved) } : prev; } catch { return prev; } }); } setIsProfileDialogOpen(open); }}>
+          <Dialog open={isProfileDialogOpen} onOpenChange={(open) => { if (!open) { setProfileData(prev => { try { const saved = localStorage.getItem('profileData'); return saved ? { postalCode: '', location: '', phoneNumber: '', email: '', address: '', country: '', provinceState: '', emergencyContactName: '', emergencyContactPhone: '', allergies: '', ...JSON.parse(saved) } : prev; } catch { return prev; } }); setIsProfileDirty(false); } setIsProfileDialogOpen(open); }}>
             <DialogContent className="max-w-md text-[11px] text-white [&_*:not(input)]:text-white [&_label]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden flex flex-col" style={{ top: 'calc(55% - 90px)', maxHeight: '90vh', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
               {/* Header bar matching flyouts */}
               <div className="flex items-center px-4 py-3 border-b border-white/40 rounded-t-lg shrink-0" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
@@ -24464,11 +24465,12 @@ export default function Dashboard() {
                     localStorage.setItem('schoolSettings', JSON.stringify(updated));
                     saveSchool(updated as any);
                   }}
+                  onDirtyChange={setIsProfileDirty}
                 />
               </div>
               <div className="flex justify-end gap-2 px-4 py-[10px] border-t border-white/40 shrink-0 rounded-b-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, ${colorSettings.headerBar}bb 0%, ${colorSettings.headerBar}cc 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15), 0 -2px 8px rgba(0,0,0,0.08)' }}>
                 <button onClick={() => { setProfileData(prev => { try { const saved = localStorage.getItem('profileData'); return saved ? { postalCode: '', location: '', phoneNumber: '', email: '', address: '', country: '', provinceState: '', emergencyContactName: '', emergencyContactPhone: '', allergies: '', ...JSON.parse(saved) } : prev; } catch { return prev; } }); setIsProfileDialogOpen(false); }} className="px-5 py-[5px] rounded text-[11px] font-medium text-white/80 hover:text-white transition-colors" style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)' }} data-testid="button-close-profile">Close</button>
-                <button onClick={() => { const form = document.querySelector('[data-testid="input-profile-firstname"]')?.closest('form'); if (form) form.requestSubmit(); }} className="px-5 py-[5px] rounded text-[11px] font-medium text-white hover:text-white transition-colors" style={{ background: 'rgba(255,255,255,0.18)', border: '1px solid rgba(255,255,255,0.4)', boxShadow: '0 0 6px rgba(255,255,255,0.4), 0 0 12px rgba(255,255,255,0.2)' }} data-testid="button-save-profile">Save Profile</button>
+                <button onClick={() => { if (!isProfileDirty) return; const form = document.querySelector('[data-testid="input-profile-firstname"]')?.closest('form'); if (form) form.requestSubmit(); }} className="px-5 py-[5px] rounded text-[11px] font-medium transition-colors" style={isProfileDirty ? { background: 'rgba(255,255,255,0.18)', border: '1px solid rgba(255,255,255,0.4)', boxShadow: '0 0 6px rgba(255,255,255,0.4), 0 0 12px rgba(255,255,255,0.2)', color: 'white', cursor: 'pointer' } : { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.35)', cursor: 'default' }} data-testid="button-save-profile">Save Profile</button>
               </div>
             </DialogContent>
           </Dialog>
@@ -37485,7 +37487,8 @@ function ProfileForm({
   profilePhotoUrl,
   onProfilePhotoChange,
   schoolData,
-  onSchoolSave
+  onSchoolSave,
+  onDirtyChange
 }: { 
   profileData: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string; address: string; country: string; provinceState: string; emergencyContactName: string; emergencyContactPhone: string; allergies: string };
   timezones: { value: string; label: string }[];
@@ -37495,6 +37498,7 @@ function ProfileForm({
   onProfilePhotoChange: (url: string | null) => void;
   schoolData: { schoolLogo: string | null; schoolName: string };
   onSchoolSave: (data: { schoolLogo: string | null; schoolName: string }) => void;
+  onDirtyChange?: (dirty: boolean) => void;
 }) {
   const [firstName, setFirstName] = useState(profileData.firstName);
   const [lastName, setLastName] = useState(profileData.lastName);
@@ -37524,6 +37528,11 @@ function ProfileForm({
   const [showOsapPassword, setShowOsapPassword] = useState(false);
   const [ouacUsername, setOuacUsername] = useState(() => localStorage.getItem('ouacUsername') || '');
   const [oenNumber, setOenNumber] = useState(() => localStorage.getItem('oenNumber') || '');
+
+  useEffect(() => {
+    const dirty = firstName !== profileData.firstName || lastName !== profileData.lastName || birthdate !== profileData.birthdate || timezone !== profileData.timezone || (isTraveling ? travelTimezone : null) !== profileData.travelTimezone || postalCode !== (profileData.postalCode || '') || location !== (profileData.location || '') || phoneNumber !== (profileData.phoneNumber || '') || email !== (profileData.email || '') || address !== (profileData.address || '') || country !== (profileData.country || '') || provinceState !== (profileData.provinceState || '') || emergencyContactName !== (profileData.emergencyContactName || '') || emergencyContactPhone !== (profileData.emergencyContactPhone || '') || allergies !== (profileData.allergies || '');
+    onDirtyChange?.(dirty);
+  }, [firstName, lastName, birthdate, timezone, travelTimezone, isTraveling, postalCode, location, phoneNumber, email, address, country, provinceState, emergencyContactName, emergencyContactPhone, allergies]);
 
   useEffect(() => {
     fetch('/api/ui-settings/osapNumber').then(r => r.json()).then(d => { if (d.value) setOsapNumber(d.value); }).catch(() => {});
@@ -37931,7 +37940,7 @@ function ProfileForm({
       </div>
       <div className="flex gap-[6px]" style={{ marginTop: '2px' }}>
         <div className="space-y-0 w-1/3">
-          <Label htmlFor="osapNumber" className="text-[10px]">OSAP Access Number</Label>
+          <Label htmlFor="osapNumber" className="text-[10px]">OSAP Access Number (OAN)</Label>
           <Input
             id="osapNumber"
             value={osapNumber}
