@@ -5606,6 +5606,7 @@ export default function Dashboard() {
       hoverLineTimerRef.current = null;
     }
     if (id !== null) {
+      if (!showHoverBars) return;
       if (hoveredCountdownTaskIdRef.current === id) return;
       hoveredCountdownTaskIdRef.current = id;
       showCountdownHoverLine(id);
@@ -5616,7 +5617,7 @@ export default function Dashboard() {
         hoverLineTimerRef.current = null;
       }, 80);
     }
-  }, [showCountdownHoverLine, hideCountdownHoverLine]);
+  }, [showCountdownHoverLine, hideCountdownHoverLine, showHoverBars]);
 
   // Pomodoro Timer State
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -10271,6 +10272,10 @@ export default function Dashboard() {
   });
   const [showCountdownBars, setShowCountdownBars] = useState<boolean>(() => {
     const saved = localStorage.getItem('showCountdownBars');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+  const [showHoverBars, setShowHoverBars] = useState<boolean>(() => {
+    const saved = localStorage.getItem('showHoverBars');
     return saved !== null ? JSON.parse(saved) : true;
   });
   const [selectedSecondaryCalendar, setSelectedSecondaryCalendar] = useState<string>("");
@@ -26874,6 +26879,24 @@ export default function Dashboard() {
                       }}
                       className="h-4 w-4 accent-blue-500"
                       data-testid="toggle-countdown-bars"
+                    />
+                  </div>
+                </div>
+
+                <div className="border rounded-lg p-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-[10px] font-medium">Hover Bars</Label>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={showHoverBars}
+                      onChange={(e) => {
+                        setShowHoverBars(e.target.checked);
+                        localStorage.setItem('showHoverBars', JSON.stringify(e.target.checked));
+                      }}
+                      className="h-4 w-4 accent-blue-500"
+                      data-testid="toggle-hover-bars"
                     />
                   </div>
                 </div>
