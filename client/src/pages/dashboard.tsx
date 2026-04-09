@@ -30309,7 +30309,7 @@ export default function Dashboard() {
                           {isToday && isCurrentHour && (
                             <div className="absolute z-[4] pointer-events-none" style={{
                               top: 0,
-                              left: '2px',
+                              left: '6px',
                               right: '2px',
                               bottom: 0,
                               border: '2px solid rgba(59, 130, 246, 0.6)',
@@ -30415,13 +30415,13 @@ export default function Dashboard() {
                                     </div>
                                   </div>
                                 )}
-                                <div className="absolute z-[3] pointer-events-none" style={{ top: '2px', bottom: '2px', left: (hourTasks.length > 0 || continuingTasks.length > 0) ? 'calc(50% + 8px)' : missedCount > 0 ? `${6 + gridSizes.timeSlotHeight + 4}px` : '6px', right: '22px', display: 'flex', gap: '4px' }} data-testid="hours-until-next-task">
+                                <div className="absolute z-[3] pointer-events-none" style={{ top: '2px', bottom: '2px', left: (hourTasks.length > 0 || continuingTasks.length > 0) ? 'calc(50% + 4px)' : missedCount > 0 ? `${2 + gridSizes.timeSlotHeight + 4}px` : '2px', right: '7px', display: 'flex', gap: '4px' }} data-testid="hours-until-next-task">
                                   {(() => {
                                     const courseCode = nextSchoolTask?.courseName?.split(' - ')[0]?.trim() || '';
                                     const gradColors = getCourseGradientColors(courseCode);
                                     return (
                                       <div style={{ flex: 1, position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 8px 0 4px' }}>
-                                        <span style={{ zIndex: 1, fontSize: '9px', color: 'rgba(255,255,255,0.9)', fontWeight: 400, lineHeight: 1.1, textAlign: 'left' }}>Next<br/>Task<br/>Due In</span>
+                                        <span style={{ zIndex: 1, fontSize: '7px', color: 'rgba(255,255,255,0.9)', fontWeight: 400, lineHeight: 1.1, textAlign: 'left' }}>Next<br/>Task<br/>Due In</span>
                                         <span style={{ zIndex: 1, fontSize: '20px', color: 'white', fontWeight: 900, lineHeight: 1, flexShrink: 0 }}>{displayTime}<span style={{ fontSize: '10px', fontWeight: 600, marginLeft: '2px' }}>{hoursUntil !== null && hoursUntil < 1 ? 'min' : 'hrs'}</span></span>
                                       </div>
                                     );
