@@ -37521,6 +37521,16 @@ function ProfileForm({
   const [emergencyContactName, setEmergencyContactName] = useState(profileData.emergencyContactName || '');
   const [emergencyContactPhone, setEmergencyContactPhone] = useState(profileData.emergencyContactPhone || '');
   const [allergies, setAllergies] = useState(profileData.allergies || '');
+  const [osapNumber, setOsapNumber] = useState(() => localStorage.getItem('osapNumber') || '');
+  const [studentNumber, setStudentNumber] = useState(() => localStorage.getItem('studentNumber') || '');
+  const [osapSaved, setOsapSaved] = useState(false);
+  const [studentSaved, setStudentSaved] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/ui-settings/osapNumber').then(r => r.json()).then(d => { if (d.value) setOsapNumber(d.value); }).catch(() => {});
+    fetch('/api/ui-settings/studentNumber').then(r => r.json()).then(d => { if (d.value) setStudentNumber(d.value); }).catch(() => {});
+  }, []);
+
   const [schoolName, setSchoolName] = useState(schoolData.schoolName || 'Toronto Metropolitan University');
   const [customSchoolName, setCustomSchoolName] = useState('');
   const [schoolLogoPreview, setSchoolLogoPreview] = useState<string | null>(schoolData.schoolLogo);
@@ -37841,7 +37851,7 @@ function ProfileForm({
             value={birthdate}
             onChange={(e) => setBirthdate(e.target.value)}
             className="bg-white !text-black !text-[10px] h-8"
-            style={{ fontSize: '10px', color: 'black' }}
+            style={{ fontSize: '10px', color: 'black', colorScheme: 'light' }}
             data-testid="input-profile-birthdate"
           />
         </div>
@@ -37883,6 +37893,69 @@ function ProfileForm({
             style={{ fontSize: '10px', color: 'black' }}
             data-testid="input-profile-emergency-phone"
           />
+        </div>
+      </div>
+
+      <div className="flex gap-[6px]" style={{ marginTop: '6px' }}>
+        <div className="space-y-0 w-1/2">
+          <Label htmlFor="studentNumber" className="text-[10px]">Student Number</Label>
+          <div className="flex gap-1">
+            <Input
+              id="studentNumber"
+              value={studentNumber}
+              onChange={(e) => { setStudentNumber(e.target.value); setStudentSaved(false); }}
+              placeholder="e.g. 501234567"
+              className="bg-white !text-black !text-[10px] h-8 flex-1"
+              style={{ fontSize: '10px', color: 'black' }}
+              data-testid="input-profile-student-number"
+            />
+            <button
+              type="button"
+              className="h-8 px-2 rounded border border-white/50 text-white text-[9px] hover:bg-white/10 transition-colors flex-shrink-0"
+              style={{ boxShadow: studentSaved ? '0 0 6px rgba(34,197,94,0.6)' : 'none' }}
+              onClick={() => {
+                localStorage.setItem('studentNumber', studentNumber);
+                fetch('/api/ui-settings/studentNumber', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: studentNumber }) }).catch(() => {});
+                setStudentSaved(true);
+                setTimeout(() => setStudentSaved(false), 2000);
+              }}
+              data-testid="button-save-student-number"
+            >
+              {studentSaved ? 'Saved' : 'Save'}
+            </button>
+          </div>
+          {studentNumber && studentSaved && <span className="text-[9px] text-green-400" data-testid="text-student-number-display">{studentNumber}</span>}
+          {studentNumber && !studentSaved && <span className="text-[9px] text-white/50" data-testid="text-student-number-display">{studentNumber}</span>}
+        </div>
+        <div className="space-y-0 w-1/2">
+          <Label htmlFor="osapNumber" className="text-[10px]">OSAP Number</Label>
+          <div className="flex gap-1">
+            <Input
+              id="osapNumber"
+              value={osapNumber}
+              onChange={(e) => { setOsapNumber(e.target.value); setOsapSaved(false); }}
+              placeholder="e.g. 1234567890"
+              className="bg-white !text-black !text-[10px] h-8 flex-1"
+              style={{ fontSize: '10px', color: 'black' }}
+              data-testid="input-profile-osap-number"
+            />
+            <button
+              type="button"
+              className="h-8 px-2 rounded border border-white/50 text-white text-[9px] hover:bg-white/10 transition-colors flex-shrink-0"
+              style={{ boxShadow: osapSaved ? '0 0 6px rgba(34,197,94,0.6)' : 'none' }}
+              onClick={() => {
+                localStorage.setItem('osapNumber', osapNumber);
+                fetch('/api/ui-settings/osapNumber', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: osapNumber }) }).catch(() => {});
+                setOsapSaved(true);
+                setTimeout(() => setOsapSaved(false), 2000);
+              }}
+              data-testid="button-save-osap-number"
+            >
+              {osapSaved ? 'Saved' : 'Save'}
+            </button>
+          </div>
+          {osapNumber && osapSaved && <span className="text-[9px] text-green-400" data-testid="text-osap-number-display">{osapNumber}</span>}
+          {osapNumber && !osapSaved && <span className="text-[9px] text-white/50" data-testid="text-osap-number-display">{osapNumber}</span>}
         </div>
       </div>
 
