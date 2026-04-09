@@ -14519,9 +14519,15 @@ document.body.removeChild(a);
       if (lightState === 'off') {
         catWashTrace('CatLights', 'LIGHT OFF — stopping all playback');
         console.log("[Cat Lights] Light off — stopping all playback and saving progress");
-        const wasActuallyPlaying = catWashPlaybackActive;
+        const wasActuallyPlaying = catWashPlaybackActive || !!voiceCommandPauseState_;
         const offSession = catLightsPromptSession;
         const stopped: string[] = [];
+        if (voiceCommandPauseState_) {
+          console.log(`[Cat Lights] Clearing paused playback state (file: ${voiceCommandPauseState_.fileName})`);
+          stopped.push(`paused:${voiceCommandPauseState_.fileName}`);
+          clearTimeout(voiceCommandPauseState_.autoStopTimer);
+          voiceCommandPauseState_ = null;
+        }
         if (catWashPlaybackActive) {
           stopped.push(`playback:${catWashPlaybackState?.fileName || ''}`);
           await stopNestPlaybackWithGoodbye('light_off');
@@ -14538,7 +14544,7 @@ document.body.removeChild(a);
           console.warn(`[Cat Lights] Failed to stop Echo speakers: ${e.message}`);
         }
         const lightsOffStopTs = Date.now();
-        const wasPlaybackActive = stopped.some(s => s.startsWith('playback:'));
+        const wasPlaybackActive = stopped.some(s => s.startsWith('playback:') || s.startsWith('paused:'));
         await Promise.all([
           setTabletCommand({ action: 'stop_playback', goodbyeText: '', timestamp: lightsOffStopTs }, true, 'master'),
           setTabletCommand({ action: 'stop_playback', timestamp: lightsOffStopTs }, true, 'tv'),
@@ -14556,9 +14562,9 @@ document.body.removeChild(a);
         }
         catWashPlaybackTrigger = null;
         await clearPlaybackSession();
-        if (wasActuallyPlaying) {
+        if (wasActuallyPlaying || wasPlaybackActive) {
           lastPlaybackStoppedAt = Date.now();
-          console.log(`[Cat Lights] lastPlaybackStoppedAt set (playback was active)`);
+          console.log(`[Cat Lights] lastPlaybackStoppedAt set (playback was active or paused)`);
         } else {
           console.log(`[Cat Lights] lastPlaybackStoppedAt NOT set (no playback was active)`);
         }
