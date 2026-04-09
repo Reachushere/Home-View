@@ -37773,7 +37773,7 @@ function ProfileForm({
         </div>
         <div className="ml-auto self-start flex flex-col items-center" style={{ marginRight: '60px' }}>
           {(firstName || lastName) && (
-            <span className="text-[16px] font-semibold text-black" data-testid="text-profile-fullname">{firstName} {lastName}</span>
+            <span className="text-[16px] font-bold text-black" data-testid="text-profile-fullname">{firstName} {lastName}</span>
           )}
           <img src={tmuLogo} alt="School Logo" className="mt-1" style={{ height: '28px', objectFit: 'contain' }} data-testid="img-profile-school-logo" />
         </div>
