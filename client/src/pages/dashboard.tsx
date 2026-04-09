@@ -5647,14 +5647,21 @@ export default function Dashboard() {
       const downX = taskLeftX - 10;
       const half = barThickness / 2;
 
+      const clampedEndY = Math.min(taskMidY, viewportH - 20);
+
       container.appendChild(makeSeg(startX, startY, finalTurnX + half, startY));
       container.appendChild(makeSeg(finalTurnX, startY - half, finalTurnX, routeY + half));
       container.appendChild(makeSeg(finalTurnX - half, routeY, downX + half, routeY));
-      container.appendChild(makeSeg(downX, routeY - half, downX, taskMidY));
+      container.appendChild(makeSeg(downX, routeY - half, downX, clampedEndY));
 
       if (taskOffScreenRight) {
         const arrowEl = document.createElement('div');
         arrowEl.style.cssText = `position:absolute;left:${viewportW - 18}px;top:${routeY - 5}px;width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:8px solid ${barColor};opacity:0.8`;
+        container.appendChild(arrowEl);
+      }
+      if (taskOffScreenBottom) {
+        const arrowEl = document.createElement('div');
+        arrowEl.style.cssText = `position:absolute;left:${downX - 5}px;top:${viewportH - 20}px;width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:8px solid ${barColor};opacity:0.8`;
         container.appendChild(arrowEl);
       }
     }
