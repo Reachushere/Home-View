@@ -3816,6 +3816,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                                       <span className="text-[8px] text-white ml-1 self-center">{checked.size}/{file.totalChunks}</span>
                                       <button
                                         className="ml-auto self-center flex-shrink-0 text-white/40 hover:text-white/80 transition-colors"
+                                        style={{ marginRight: '-4px' }}
                                         onClick={async (e) => {
                                           e.stopPropagation();
                                           try {
@@ -3827,8 +3828,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                                         title="Reset module progress to zero"
                                         data-testid={`button-reset-module-${file.id}`}
                                       >
-                                        <RotateCcw className="h-3 w-3" />
-                                        <span className="text-[8px]">Reset</span>
+                                        <RotateCcw className="h-3.5 w-3.5" />
+                                        <span className="text-[8px] text-white">Reset</span>
                                       </button>
                                     </div>
                                   );
