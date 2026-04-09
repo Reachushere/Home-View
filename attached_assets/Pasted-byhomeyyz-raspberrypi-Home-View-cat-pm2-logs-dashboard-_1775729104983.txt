@@ -1,0 +1,102 @@
+byhomeyyz@raspberrypi:~/Home-View $ cat ~/.pm2/logs/dashboard-out.log | tail -100
+TTS audio saved locally: /tts-audio/prep-181-chunk-3-1775729067914.mp3
+[AudioPrep] Generating chunk 5/12 for A Citizen's Guide to Government.pdf (1423 chars)
+Generating Edge TTS for 1423 chars, file: prep-181-chunk-4
+[TTS] Using Edge TTS (free, no charges)
+Edge TTS completed in 1221ms, 497664 bytes
+TTS audio saved locally: /tts-audio/prep-181-chunk-4-1775729069936.mp3
+[AudioPrep] Generating chunk 6/12 for A Citizen's Guide to Government.pdf (1294 chars)
+Generating Edge TTS for 1294 chars, file: prep-181-chunk-5
+[TTS] Using Edge TTS (free, no charges)
+Edge TTS completed in 1028ms, 439344 bytes
+TTS audio saved locally: /tts-audio/prep-181-chunk-5-1775729071766.mp3
+[AudioPrep] Generating chunk 7/12 for A Citizen's Guide to Government.pdf (1450 chars)
+Generating Edge TTS for 1376 chars, file: prep-181-chunk-6
+[TTS] Using Edge TTS (free, no charges)
+Edge TTS completed in 995ms, 473328 bytes
+TTS audio saved locally: /tts-audio/prep-181-chunk-6-1775729073562.mp3
+[AudioPrep] Generating chunk 8/12 for A Citizen's Guide to Government.pdf (1472 chars)
+Generating Edge TTS for 1472 chars, file: prep-181-chunk-7
+[TTS] Using Edge TTS (free, no charges)
+Edge TTS completed in 1126ms, 585216 bytes
+TTS audio saved locally: /tts-audio/prep-181-chunk-7-1775729075490.mp3
+[AudioPrep] Generating chunk 9/12 for A Citizen's Guide to Government.pdf (1344 chars)
+Generating Edge TTS for 1344 chars, file: prep-181-chunk-8
+[TTS] Using Edge TTS (free, no charges)
+Edge TTS completed in 826ms, 478800 bytes
+TTS audio saved locally: /tts-audio/prep-181-chunk-8-1775729077117.mp3
+[AudioPrep] Generating chunk 10/12 for A Citizen's Guide to Government.pdf (1222 chars)
+Generating Edge TTS for 1222 chars, file: prep-181-chunk-9
+[TTS] Using Edge TTS (free, no charges)
+Edge TTS completed in 916ms, 448416 bytes
+TTS audio saved locally: /tts-audio/prep-181-chunk-9-1775729078850.mp3
+[AudioPrep] Generating chunk 11/12 for A Citizen's Guide to Government.pdf (1331 chars)
+Generating Edge TTS for 1331 chars, file: prep-181-chunk-10
+[TTS] Using Edge TTS (free, no charges)
+Edge TTS completed in 751ms, 501984 bytes
+TTS audio saved locally: /tts-audio/prep-181-chunk-10-1775729080403.mp3
+[AudioPrep] Generating chunk 12/12 for A Citizen's Guide to Government.pdf (961 chars)
+Generating Edge TTS for 961 chars, file: prep-181-chunk-11
+[TTS] Using Edge TTS (free, no charges)
+Edge TTS completed in 617ms, 373392 bytes
+TTS audio saved locally: /tts-audio/prep-181-chunk-11-1775729081821.mp3
+[AudioPrep] ===== Completed A Citizen's Guide to Government.pdf: 12 chunks in 21s =====
+[AudioPrep] ===== Preparing file 182: CPPA122, Module 2 - Introduction.pdf =====
+[ExtractText] Read 292550 bytes from local file: 1775479341738-CPPA122__Module_2_-_Introduction.pdf
+[ExtractText] Extracted 39796 chars from CPPA122, Module 2 - Introduction.pdf
+cleanTextForTTS input length: 39796
+After URL/timestamp/citation cleanup: 38781
+After JSTOR cleanup: 38781
+After French filter: 38556
+Final cleaned length: 38354
+[ExtractText] Cached 38354 chars for file 182
+[AudioPrep] CPPA122, Module 2 - Introduction.pdf: 38354 chars → 28 chunks
+[AudioPrep] Generating chunk 1/28 for CPPA122, Module 2 - Introduction.pdf (1031 chars)
+Generating Edge TTS for 1031 chars, file: prep-182-chunk-0
+[TTS] Using Edge TTS (free, no charges)
+Edge TTS completed in 813ms, 389664 bytes
+TTS audio saved locally: /tts-audio/prep-182-chunk-0-1775729083683.mp3
+[AudioPrep] Generating chunk 2/28 for CPPA122, Module 2 - Introduction.pdf (1437 chars)
+Generating Edge TTS for 1437 chars, file: prep-182-chunk-1
+[TTS] Using Edge TTS (free, no charges)
+Edge TTS completed in 965ms, 567936 bytes
+TTS audio saved locally: /tts-audio/prep-182-chunk-1-1775729085449.mp3
+[AudioPrep] Generating chunk 3/28 for CPPA122, Module 2 - Introduction.pdf (1477 chars)
+Generating Edge TTS for 1354 chars, file: prep-182-chunk-2
+[TTS] Using Edge TTS (free, no charges)
+Edge TTS completed in 1172ms, 501984 bytes
+TTS audio saved locally: /tts-audio/prep-182-chunk-2-1775729087423.mp3
+[AudioPrep] Generating chunk 4/28 for CPPA122, Module 2 - Introduction.pdf (1215 chars)
+Generating Edge TTS for 1215 chars, file: prep-182-chunk-3
+[TTS] Using Edge TTS (free, no charges)
+Edge TTS completed in 736ms, 469440 bytes
+TTS audio saved locally: /tts-audio/prep-182-chunk-3-1775729088960.mp3
+[AudioPrep] Generating chunk 5/28 for CPPA122, Module 2 - Introduction.pdf (1471 chars)
+Generating Edge TTS for 1471 chars, file: prep-182-chunk-4
+[TTS] Using Edge TTS (free, no charges)
+Edge TTS completed in 1035ms, 508176 bytes
+TTS audio saved locally: /tts-audio/prep-182-chunk-4-1775729090796.mp3
+[AudioPrep] Generating chunk 6/28 for CPPA122, Module 2 - Introduction.pdf (1274 chars)
+Generating Edge TTS for 1274 chars, file: prep-182-chunk-5
+[TTS] Using Edge TTS (free, no charges)
+Edge TTS completed in 976ms, 487296 bytes
+TTS audio saved locally: /tts-audio/prep-182-chunk-5-1775729092574.mp3
+[AudioPrep] Generating chunk 7/28 for CPPA122, Module 2 - Introduction.pdf (1459 chars)
+Generating Edge TTS for 1459 chars, file: prep-182-chunk-6
+[TTS] Using Edge TTS (free, no charges)
+Edge TTS completed in 962ms, 542304 bytes
+TTS audio saved locally: /tts-audio/prep-182-chunk-6-1775729094338.mp3
+[AudioPrep] Generating chunk 8/28 for CPPA122, Module 2 - Introduction.pdf (1455 chars)
+Generating Edge TTS for 1455 chars, file: prep-182-chunk-7
+[TTS] Using Edge TTS (free, no charges)
+Edge TTS completed in 937ms, 530784 bytes
+TTS audio saved locally: /tts-audio/prep-182-chunk-7-1775729096075.mp3
+[AudioPrep] Generating chunk 9/28 for CPPA122, Module 2 - Introduction.pdf (1371 chars)
+Generating Edge TTS for 1371 chars, file: prep-182-chunk-8
+[TTS] Using Edge TTS (free, no charges)
+Edge TTS completed in 939ms, 504144 bytes
+TTS audio saved locally: /tts-audio/prep-182-chunk-8-1775729097817.mp3
+[AudioPrep] Generating chunk 10/28 for CPPA122, Module 2 - Introduction.pdf (1498 chars)
+Generating Edge TTS for 1445 chars, file: prep-182-chunk-9
+[TTS] Using Edge TTS (free, no charges)
+byhomeyyz@raspberrypi:~/Home-View $
