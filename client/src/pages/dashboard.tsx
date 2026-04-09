@@ -5514,12 +5514,28 @@ export default function Dashboard() {
     container.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:99990';
 
     if (!filteredTaskEl) {
-      const label = document.createElement('div');
-      label.style.cssText = `position:absolute;left:${sourceRect.right + 6}px;top:${sourceRect.top - 2}px;background:rgba(30,30,30,0.85);color:#93c5fd;font-size:10px;font-weight:500;padding:2px 6px;border-radius:3px;white-space:nowrap`;
-      label.textContent = 'Not in current week view';
-      container.appendChild(label);
-      document.body.appendChild(container);
-      return;
+      const taskData = (window as any).__allTasksCache?.find((t: any) => t.id === taskId);
+      const taskDueDate = taskData?.dueDate ? new Date(taskData.dueDate) : null;
+      let dayColEl: HTMLElement | null = null;
+      if (taskDueDate) {
+        const dueDateStr = `${taskDueDate.getFullYear()}-${String(taskDueDate.getMonth()+1).padStart(2,'0')}-${String(taskDueDate.getDate()).padStart(2,'0')}`;
+        dayColEl = document.querySelector(`[data-cal-date="${dueDateStr}"]`) as HTMLElement | null;
+        if (!dayColEl) {
+          const etDate = new Date(taskDueDate.toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+          const etStr = `${etDate.getFullYear()}-${String(etDate.getMonth()+1).padStart(2,'0')}-${String(etDate.getDate()).padStart(2,'0')}`;
+          dayColEl = document.querySelector(`[data-cal-date="${etStr}"]`) as HTMLElement | null;
+        }
+      }
+      if (dayColEl) {
+        filteredTaskEl = dayColEl;
+      } else {
+        const label = document.createElement('div');
+        label.style.cssText = `position:absolute;left:${sourceRect.right + 6}px;top:${sourceRect.top - 2}px;background:rgba(30,30,30,0.85);color:#93c5fd;font-size:10px;font-weight:500;padding:2px 6px;border-radius:3px;white-space:nowrap`;
+        label.textContent = 'Not in calendar view';
+        container.appendChild(label);
+        document.body.appendChild(container);
+        return;
+      }
     }
 
     const taskRect = filteredTaskEl.getBoundingClientRect();
@@ -7201,6 +7217,8 @@ export default function Dashboard() {
       return true;
     }));
   }, [allTasksRaw, authLevel]);
+
+  useEffect(() => { (window as any).__allTasksCache = allTasksRaw; }, [allTasksRaw]);
 
   const hasUnackedReminders = allTasks.some((t: any) => t.type === 'reminder' && t.isAcknowledged === false && !t.isCompleted);
 
