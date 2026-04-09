@@ -38012,19 +38012,6 @@ function ProfileForm({
           />
         </div>
         <div className="space-y-0 w-1/3">
-          <Label htmlFor="oenNumber" className="text-[10px]">OEN</Label>
-          <Input
-            id="oenNumber"
-            value={oenNumber}
-            onChange={(e) => { setOenNumber(e.target.value); }}
-            onBlur={() => { localStorage.setItem('oenNumber', oenNumber); fetch('/api/ui-settings/oenNumber', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: oenNumber }) }).catch(() => {}); }}
-            placeholder="e.g. 123456789"
-            className="bg-white !text-black !text-[10px] h-8"
-            style={{ fontSize: '10px', color: 'black' }}
-            data-testid="input-profile-oen"
-          />
-        </div>
-        <div className="space-y-0 w-1/3">
           <Label htmlFor="osapPassword" className="text-[10px]">OSAP Password</Label>
           <div className="relative">
             <Input
@@ -38050,6 +38037,19 @@ function ProfileForm({
               {showOsapPassword ? <EyeOff className="w-3.5 h-3.5" style={{ color: 'inherit' }} /> : <Eye className="w-3.5 h-3.5" style={{ color: 'inherit' }} />}
             </button>
           </div>
+        </div>
+        <div className="space-y-0 w-1/3">
+          <Label htmlFor="oenNumber" className="text-[10px]">OEN</Label>
+          <Input
+            id="oenNumber"
+            value={oenNumber}
+            onChange={(e) => { setOenNumber(e.target.value); }}
+            onBlur={() => { localStorage.setItem('oenNumber', oenNumber); fetch('/api/ui-settings/oenNumber', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: oenNumber }) }).catch(() => {}); }}
+            placeholder="e.g. 123456789"
+            className="bg-white !text-black !text-[10px] h-8"
+            style={{ fontSize: '10px', color: 'black' }}
+            data-testid="input-profile-oen"
+          />
         </div>
       </div>
 
