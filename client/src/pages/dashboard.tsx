@@ -5485,9 +5485,6 @@ export default function Dashboard() {
         if (r.width > 0 && r.height > 0) filteredTaskEl = calEl;
       }
     }
-    if (!filteredTaskEl && homeworkTimelineEl) {
-      filteredTaskEl = homeworkTimelineEl;
-    }
 
     const container = document.createElement('div');
     container.id = 'countdown-hover-line-overlay';
@@ -5606,13 +5603,22 @@ export default function Dashboard() {
     if (existing) existing.remove();
   }, []);
 
+  const hoverLineTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const setHoveredCountdownTaskIdDebounced = useCallback((id: number | null) => {
-    if (hoveredCountdownTaskIdRef.current === id) return;
-    hoveredCountdownTaskIdRef.current = id;
+    if (hoverLineTimerRef.current) {
+      clearTimeout(hoverLineTimerRef.current);
+      hoverLineTimerRef.current = null;
+    }
     if (id !== null) {
+      if (hoveredCountdownTaskIdRef.current === id) return;
+      hoveredCountdownTaskIdRef.current = id;
       showCountdownHoverLine(id);
     } else {
-      hideCountdownHoverLine();
+      hoverLineTimerRef.current = setTimeout(() => {
+        hoveredCountdownTaskIdRef.current = null;
+        hideCountdownHoverLine();
+        hoverLineTimerRef.current = null;
+      }, 80);
     }
   }, [showCountdownHoverLine, hideCountdownHoverLine]);
 
@@ -11787,6 +11793,18 @@ export default function Dashboard() {
       const arr = map.get(key);
       if (arr) arr.push(t); else map.set(key, [t]);
     };
+    const completedTitles = new Set<string>();
+    for (const t of allTasks) {
+      if (!t.isCompleted || !t.dueDate) continue;
+      const normTitle = (t.title || '').replace(/^\[.*?\]\s*/, '').toLowerCase().trim();
+      const dateKey = _etDateKey(new Date(t.dueDate));
+      completedTitles.add(`${dateKey}:::${normTitle}`);
+      const dueDate = new Date(t.dueDate);
+      if (dueDate.getUTCHours() === 0 && dueDate.getUTCMinutes() === 0) {
+        const prevKey = _etDateKey(new Date(dueDate.getTime() - 1));
+        completedTitles.add(`${prevKey}:::${normTitle}`);
+      }
+    }
     for (const t of withCourse) {
       const normTitle = (t.title || '').replace(/^\[.*?\]\s*/, '').toLowerCase().trim();
       const dateKey = _etDateKey(new Date(t.dueDate!));
@@ -11796,7 +11814,10 @@ export default function Dashboard() {
     for (const t of withoutCourse) {
       const normTitle = (t.title || '').replace(/^\[.*?\]\s*/, '').toLowerCase().trim();
       const dateKey = _etDateKey(new Date(t.dueDate!));
+      const dueDate = new Date(t.dueDate!);
+      const altDateKey = (dueDate.getUTCHours() === 0 && dueDate.getUTCMinutes() === 0) ? _etDateKey(new Date(dueDate.getTime() - 1)) : dateKey;
       if (seenByDateTitle.has(`${dateKey}:::${normTitle}`)) continue;
+      if (completedTitles.has(`${dateKey}:::${normTitle}`) || completedTitles.has(`${altDateKey}:::${normTitle}`)) continue;
       seenByDateTitle.set(`${dateKey}:::${normTitle}`, t.id);
       addToMap(t);
     }
