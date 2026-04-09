@@ -27711,6 +27711,17 @@ export default function Dashboard() {
             >
               {calendarView === "month" ? "Week View" : "Month View"}
             </Button>
+            <div style={{ width: '1px', height: '12px', background: 'rgba(255,255,255,0.5)', marginLeft: '6px', marginBottom: '5px' }} />
+            <Button
+              variant="ghost"
+              className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white/60 border-0 leading-tight"
+              onClick={() => {
+                (document.body.style as any).zoom = '1';
+              }}
+              data-testid="button-zoom-100"
+            >
+              Zoom 100%
+            </Button>
           </div>
           
           <div className="grid w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), height: '16px', marginTop: '-3px' }}>
