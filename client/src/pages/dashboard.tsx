@@ -5610,9 +5610,9 @@ export default function Dashboard() {
 
       const candidateYs: number[] = [];
       const searchMinY = Math.max(calendarTop, 0);
-      const searchMaxY = viewportH;
+      const maxRouteBelow = Math.min(taskRect.bottom + 60, viewportH);
       for (let y = taskRect.top - 8; y >= searchMinY; y -= 4) candidateYs.push(y);
-      for (let y = taskRect.bottom + 8; y <= searchMaxY; y += 4) candidateYs.push(y);
+      for (let y = taskRect.bottom + 8; y <= maxRouteBelow; y += 4) candidateYs.push(y);
       candidateYs.push(startY);
 
       let bestRoute: { routeY: number; turnX: number; score: number } | null = null;
