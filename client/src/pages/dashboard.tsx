@@ -5574,6 +5574,7 @@ export default function Dashboard() {
 
       const calendarScrollEl = calendarWrapper;
       const calendarTop = calendarScrollEl ? calendarScrollEl.getBoundingClientRect().top : 0;
+      const calendarBotY = calendarScrollEl ? calendarScrollEl.getBoundingClientRect().bottom : viewportH;
 
       const obstacleSelectors = [
         '[data-testid^="time-task-"]', '[data-testid^="multi-hour-task-"]',
@@ -5610,7 +5611,7 @@ export default function Dashboard() {
 
       const candidateYs: number[] = [];
       const searchMinY = Math.max(calendarTop, 0);
-      const maxRouteBelow = Math.min(taskRect.bottom + 60, viewportH);
+      const maxRouteBelow = Math.min(taskRect.bottom + 60, calendarBotY);
       for (let y = taskRect.top - 8; y >= searchMinY; y -= 4) candidateYs.push(y);
       for (let y = taskRect.bottom + 8; y <= maxRouteBelow; y += 4) candidateYs.push(y);
       candidateYs.push(startY);
@@ -5647,7 +5648,7 @@ export default function Dashboard() {
       const downX = taskLeftX - 10;
       const half = barThickness / 2;
 
-      const clampedEndY = Math.min(taskMidY, viewportH - 20);
+      const clampedEndY = Math.min(taskMidY, calendarBotY - 5);
 
       container.appendChild(makeSeg(startX, startY, finalTurnX, startY));
       container.appendChild(makeSeg(finalTurnX, startY, finalTurnX, routeY + half));
@@ -5661,7 +5662,7 @@ export default function Dashboard() {
       }
       if (taskOffScreenBottom) {
         const arrowEl = document.createElement('div');
-        arrowEl.style.cssText = `position:absolute;left:${downX - 5}px;top:${viewportH - 20}px;width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:8px solid ${barColor};opacity:0.8`;
+        arrowEl.style.cssText = `position:absolute;left:${downX - 5}px;top:${Math.min(viewportH, calendarBotY) - 20}px;width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:8px solid ${barColor};opacity:0.8`;
         container.appendChild(arrowEl);
       }
     }
