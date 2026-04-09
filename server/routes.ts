@@ -17542,6 +17542,8 @@ document.body.removeChild(a);
 
       console.log(`[Sync] Course-week sync: ${courseCode} week ${weekNumber}, path: ${coursePath}`);
       const weekFolders = await listOneDriveItems(coursePath);
+      const weekFolderNames = weekFolders.filter((f: any) => f.type === 'folder').map((f: any) => f.name);
+      console.log(`[Sync] Found ${weekFolderNames.length} week folders in ${coursePath}: ${weekFolderNames.join(', ')}`);
       let weekFolder = weekFolders.find((f: any) =>
         f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${weekNumber}`)
       );
@@ -17565,14 +17567,17 @@ document.body.removeChild(a);
           const folderEnd = new Date(yr, m2, d2);
           if (folderStart <= viewEnd && folderEnd >= viewStart) {
             weekFolder = f;
-            console.log(`[Sync] Week ${weekNumber} not found, matched by date range: ${f.name}`);
+            console.log(`[Sync] Week ${weekNumber} not found by number, matched by date range: ${f.name}`);
             break;
           }
         }
       }
       if (!weekFolder) {
-        return res.json({ success: true, synced: [], message: `No Week ${weekNumber} folder found in ${coursePath}` });
+        const msg = `No Week ${weekNumber} folder found in ${coursePath}. Available folders: ${weekFolderNames.join(', ') || 'none'}`;
+        console.log(`[Sync] ${msg}`);
+        return res.json({ success: true, synced: [], message: msg });
       }
+      console.log(`[Sync] Using week folder: ${weekFolder.name}`);
 
       const existingFiles = await storage.getFiles();
       const existingFileKeys = new Set(existingFiles.map((f: any) => `${f.originalName}|||${f.folder}`));
@@ -17580,32 +17585,46 @@ document.body.removeChild(a);
       const weekContents = await listOneDriveItems(weekFolder.path);
       const syncedFiles: any[] = [];
       let skippedExisting = 0;
+      const debugSubfolders: string[] = [];
+      const debugAllFiles: string[] = [];
 
       for (const subfolder of weekContents) {
-        if (subfolder.type !== 'folder') continue;
+        if (subfolder.type !== 'folder') {
+          if (subfolder.type === 'file') debugAllFiles.push(`[root] ${subfolder.name}`);
+          continue;
+        }
         const subName = subfolder.name.toLowerCase();
+        debugSubfolders.push(subfolder.name);
         let type: string | null = null;
         if (subName.includes('module')) type = 'module';
         else if (subName.includes('reading')) type = 'reading';
-        if (!type) continue;
+        if (!type) {
+          console.log(`[Sync] Skipping subfolder "${subfolder.name}" (not module/reading)`);
+          continue;
+        }
 
         const folderName = `week-${weekNumber}-${courseCode.toLowerCase()}-${type}`;
         const subFiles = await listOneDriveItems(subfolder.path);
+        console.log(`[Sync] Subfolder "${subfolder.name}" (type=${type}): ${subFiles.length} items, folderKey="${folderName}"`);
 
         for (const file of subFiles) {
-          if (file.type !== 'file' || !file.name.toLowerCase().endsWith('.pdf')) continue;
+          debugAllFiles.push(`[${type}] ${file.name} (${file.type})`);
+          if (file.type !== 'file' || !file.name.toLowerCase().endsWith('.pdf')) {
+            console.log(`[Sync] Skipping non-PDF: ${file.name} (type=${file.type})`);
+            continue;
+          }
           const fileKey = `${file.name}|||${folderName}`;
-          if (existingFileKeys.has(fileKey)) { skippedExisting++; continue; }
+          if (existingFileKeys.has(fileKey)) { skippedExisting++; console.log(`[Sync] Already exists: ${file.name} in ${folderName}`); continue; }
 
           try {
             const downloadResponse = await fetch(file.downloadUrl);
-            if (!downloadResponse.ok) continue;
+            if (!downloadResponse.ok) { console.log(`[Sync] Download failed for ${file.name}: ${downloadResponse.status}`); continue; }
             const fileBuffer = Buffer.from(await downloadResponse.arrayBuffer());
             const uploadUrl = await objectStorage.getObjectEntityUploadURL();
             const uploadResponse = await fetch(uploadUrl, {
               method: 'PUT', body: fileBuffer, headers: { 'Content-Type': 'application/pdf' }
             });
-            if (!uploadResponse.ok) continue;
+            if (!uploadResponse.ok) { console.log(`[Sync] Upload failed for ${file.name}: ${uploadResponse.status}`); continue; }
             const objectPath = objectStorage.normalizeObjectEntityPath(uploadUrl);
             const newFile = await storage.createFile({
               originalName: file.name, displayName: file.name, objectPath,
@@ -17630,7 +17649,8 @@ document.body.removeChild(a);
         }
       }
 
-      res.json({ success: true, totalSynced: syncedFiles.length, synced: syncedFiles, skippedExisting });
+      console.log(`[Sync] Result: ${syncedFiles.length} synced, ${skippedExisting} skipped. Subfolders: ${debugSubfolders.join(', ') || 'none'}. Files found: ${debugAllFiles.join('; ') || 'none'}`);
+      res.json({ success: true, totalSynced: syncedFiles.length, synced: syncedFiles, skippedExisting, debug: { coursePath, weekFolder: weekFolder.name, subfolders: debugSubfolders, allFiles: debugAllFiles } });
     } catch (error: any) {
       console.error("Error in course-week sync:", error);
       res.status(500).json({ error: error.message });
