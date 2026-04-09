@@ -28735,6 +28735,15 @@ export default function Dashboard() {
                             );
                           }
                           const words = fullName.trim() ? fullName.trim().split(/\s+/) : [];
+                          const codeIsName = code.trim().toLowerCase() === fullName.trim().toLowerCase();
+                          if (codeIsName) {
+                            const nameWords = fullName.trim().split(/\s+/);
+                            return (
+                              <>
+                                {nameWords.map((word, i) => <span key={i} className={i === 0 ? "font-[785] text-center" : "text-center"} style={{ whiteSpace: 'nowrap' }}>{word}</span>)}
+                              </>
+                            );
+                          }
                           if (words.length === 0 && displayCodeLabel.length > 6) {
                             return (
                               <span className="font-[785] text-center" style={{ lineHeight: 1.2, whiteSpace: 'nowrap' }}>{displayCodeLabel}</span>
@@ -28984,6 +28993,15 @@ export default function Dashboard() {
                         );
                       }
                       const words = fullName.trim() ? fullName.trim().split(/\s+/) : [];
+                      const codeIsName = code.trim().toLowerCase() === fullName.trim().toLowerCase();
+                      if (codeIsName) {
+                        const nameWords = fullName.trim().split(/\s+/);
+                        return (
+                          <>
+                            {nameWords.map((word, i) => <span key={i} className={i === 0 ? "font-[785] text-center" : "text-center"} style={{ whiteSpace: 'nowrap' }}>{word}</span>)}
+                          </>
+                        );
+                      }
                       if (words.length === 0 && displayCodeLabel.length > 6) {
                         return (
                           <span className="font-[785] text-center" style={{ lineHeight: 1.2, whiteSpace: 'nowrap' }}>{displayCodeLabel}</span>

@@ -4553,16 +4553,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       for (const file of files) {
         if (!file.folder) continue;
         
-        const folderMatch = file.folder.match(/^week-(\d+)-([a-z0-9]+)-(module|reading|other)$/i);
+        const folderMatch = file.folder.match(/^week-(\d+)-(.+)-(module|reading|other)$/i);
         if (!folderMatch) continue;
         
         const folderKey = file.folder.toLowerCase();
         if (!counts[folderKey]) {
           counts[folderKey] = { total: 0, listened: 0, unlistened: 0, partialProgress: 0 };
         }
-        
-        const isPrepared = file.listened || (file.totalChunks && file.totalChunks > 0);
-        if (!isPrepared) continue;
         
         counts[folderKey].total++;
         if (file.listened) {
@@ -17441,12 +17438,12 @@ document.body.removeChild(a);
 
       let courseIdx = 0;
       if (semester) {
-        let lookupCode = courseCode.toUpperCase();
+        let lookupCode = courseCode.toUpperCase().replace(/\s/g, '');
         const tdbMatch = lookupCode.match(/^TBD_SLOT(\d+)$/);
         if (tdbMatch) lookupCode = `TBD${tdbMatch[1]}`;
         for (let i = 1; i <= 3; i++) {
           const dbCode = ((semester as any)[`course${i}Code`] || '').toUpperCase().replace(/\s/g, '');
-          if (dbCode === lookupCode || dbCode === courseCode.toUpperCase()) { courseIdx = i; break; }
+          if (dbCode === lookupCode || dbCode === courseCode.toUpperCase().replace(/\s/g, '')) { courseIdx = i; break; }
         }
       }
       const overrideModule = courseIdx ? (semester as any)[`course${courseIdx}ModuleFolder`] : '';
