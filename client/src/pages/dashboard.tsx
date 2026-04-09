@@ -37523,12 +37523,14 @@ function ProfileForm({
   const [osapPassword, setOsapPassword] = useState(() => localStorage.getItem('osapPassword') || '');
   const [showOsapPassword, setShowOsapPassword] = useState(false);
   const [ouacUsername, setOuacUsername] = useState(() => localStorage.getItem('ouacUsername') || '');
+  const [oenNumber, setOenNumber] = useState(() => localStorage.getItem('oenNumber') || '');
 
   useEffect(() => {
     fetch('/api/ui-settings/osapNumber').then(r => r.json()).then(d => { if (d.value) setOsapNumber(d.value); }).catch(() => {});
     fetch('/api/ui-settings/studentNumber').then(r => r.json()).then(d => { if (d.value) setStudentNumber(d.value); }).catch(() => {});
     fetch('/api/ui-settings/osapPassword').then(r => r.json()).then(d => { if (d.value) setOsapPassword(d.value); }).catch(() => {});
     fetch('/api/ui-settings/ouacUsername').then(r => r.json()).then(d => { if (d.value) setOuacUsername(d.value); }).catch(() => {});
+    fetch('/api/ui-settings/oenNumber').then(r => r.json()).then(d => { if (d.value) setOenNumber(d.value); }).catch(() => {});
   }, []);
 
   const [schoolName, setSchoolName] = useState(schoolData.schoolName || 'Toronto Metropolitan University');
@@ -37960,6 +37962,19 @@ function ProfileForm({
             className="bg-white !text-black !text-[10px] h-8"
             style={{ fontSize: '10px', color: 'black' }}
             data-testid="input-profile-ouac-username"
+          />
+        </div>
+        <div className="space-y-0 w-1/3">
+          <Label htmlFor="oenNumber" className="text-[10px]">OEN</Label>
+          <Input
+            id="oenNumber"
+            value={oenNumber}
+            onChange={(e) => { setOenNumber(e.target.value); }}
+            onBlur={() => { localStorage.setItem('oenNumber', oenNumber); fetch('/api/ui-settings/oenNumber', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: oenNumber }) }).catch(() => {}); }}
+            placeholder="e.g. 123456789"
+            className="bg-white !text-black !text-[10px] h-8"
+            style={{ fontSize: '10px', color: 'black' }}
+            data-testid="input-profile-oen"
           />
         </div>
       </div>
