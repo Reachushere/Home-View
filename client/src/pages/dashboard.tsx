@@ -28607,7 +28607,7 @@ export default function Dashboard() {
                     const courseIdxInSem = courses.indexOf(sc);
                     const semPalette = semDefaultPalettes[semKey] || [{ start: '#6b7280', end: '#9ca3af' }];
                     const defaultPair = semPalette[courseIdxInSem >= 0 ? courseIdxInSem % semPalette.length : 0] || { start: '#6b7280', end: '#9ca3af' };
-                    const displayCode = isTBDSlot ? codeNorm : actualCodeNorm;
+                    const displayCode = isTBDSlot ? codeNorm : sc.code;
                     const semDisplayName = semPrefix && semSettings ? (semSettings as any)[`${semPrefix}DisplayName`] : '';
                     allDisplayCourses.push({
                       name: fullName ? `${displayCode} - ${fullName}` : displayCode,
