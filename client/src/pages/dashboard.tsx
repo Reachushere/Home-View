@@ -11721,15 +11721,13 @@ export default function Dashboard() {
     const el = calendarScrollRef.current;
     if (!el) return;
     const handler = (e: WheelEvent) => {
-      if (e.ctrlKey || e.metaKey) {
-        e.preventDefault();
-        e.stopPropagation();
-        const delta = e.deltaY > 0 ? -0.1 : 0.1;
-        const prev = calendarZoomRef.current;
-        const next = Math.round(Math.max(0.3, Math.min(2.5, prev + delta)) * 100) / 100;
-        calendarZoomRef.current = next;
-        setCalendarZoom(next);
-      }
+      e.preventDefault();
+      e.stopPropagation();
+      const delta = e.deltaY > 0 ? -0.05 : 0.05;
+      const prev = calendarZoomRef.current;
+      const next = Math.round(Math.max(0.3, Math.min(2.5, prev + delta)) * 100) / 100;
+      calendarZoomRef.current = next;
+      setCalendarZoom(next);
     };
     el.addEventListener('wheel', handler, { passive: false });
     return () => el.removeEventListener('wheel', handler);
