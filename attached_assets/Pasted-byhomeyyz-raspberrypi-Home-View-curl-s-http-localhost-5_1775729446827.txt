@@ -1,0 +1,58 @@
+byhomeyyz@raspberrypi:~/Home-View $ curl -s http://localhost:5000/api/semester-settings | head -5
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1024" />
+byhomeyyz@raspberrypi:~/Home-View $ cat ~/.pm2/logs/dashboard-error.log | tail -50
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3716',
+  routine: 'errorMissingColumn'
+}
+Internal Server Error: Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:655:11)
+    at xa.set.xa.header (/home/byhomeyyz/Home-View/dist/index.cjs:38:6837)
+    at xa.send (/home/byhomeyyz/Home-View/dist/index.cjs:38:3265)
+    at xa.json (/home/byhomeyyz/Home-View/dist/index.cjs:38:4113)
+    at u.json (/home/byhomeyyz/Home-View/dist/index.cjs:1697:6014)
+    at /home/byhomeyyz/Home-View/dist/index.cjs:759:26285
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:655:11)
+    at xa.set.xa.header (/home/byhomeyyz/Home-View/dist/index.cjs:38:6837)
+    at xa.send (/home/byhomeyyz/Home-View/dist/index.cjs:38:3265)
+    at xa.json (/home/byhomeyyz/Home-View/dist/index.cjs:38:4113)
+    at u.json (/home/byhomeyyz/Home-View/dist/index.cjs:1697:6014)
+    at /home/byhomeyyz/Home-View/dist/index.cjs:759:26285
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+[Cat Lights HA Voice Pre-Wake] fetch attempt 1/3 failed: HTTP 500: 500 Internal Server Error
+
+Server got itself in trouble — retrying in 1500ms
+[Cat Lights HA Voice Pre-Wake] fetch attempt 2/3 failed: HTTP 500: 500 Internal Server Error
+
+Server got itself in trouble — retrying in 3000ms
+[HA Safe] Cat Lights HA Voice Pre-Wake media_player/turn_on failed: [Cat Lights HA Voice Pre-Wake] All 3 fetch attempts failed: HTTP 500: 500 Internal Server Error
+
+Server got itself in trouble — queuing for retry
+[OneDrive Monitor] Error checking folder renames: column "course1_display_name" does not exist
+[Edge TTS] Attempt 1 failed: Timed out
+[Cat Lights HA Voice Pre-Wake [Replayed]] fetch attempt 1/3 failed: HTTP 500: 500 Internal Server Error
+
+Server got itself in trouble — retrying in 1500ms
+[Cat Lights HA Voice Pre-Wake [Replayed]] fetch attempt 2/3 failed: HTTP 500: 500 Internal Server Error
+
+Server got itself in trouble — retrying in 3000ms
+[HA Queue] Replay failed (attempt 2): Cat Lights HA Voice Pre-Wake media_player/turn_on — moved to back of queue
+[OneDrive Monitor] Error checking folder renames: column "course1_display_name" does not exist
+[Edge TTS] Attempt 1 failed: Timed out
+byhomeyyz@raspberrypi:~/Home-View $
