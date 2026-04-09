@@ -7,3 +7,4 @@ vite.config.ts.*
 .cache
 .local
 .spotify-token.json
+.env
