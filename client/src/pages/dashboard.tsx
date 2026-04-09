@@ -37899,7 +37899,7 @@ function ProfileForm({
       </div>
 
       <div className="flex gap-[6px]" style={{ marginTop: '6px' }}>
-        <div className="space-y-0 w-1/3">
+        <div className="space-y-0 w-1/2">
           <Label htmlFor="studentNumber" className="text-[10px]">Student Number</Label>
           <Input
             id="studentNumber"
@@ -37912,6 +37912,21 @@ function ProfileForm({
             data-testid="input-profile-student-number"
           />
         </div>
+        <div className="space-y-0 w-1/2">
+          <Label htmlFor="ouacUsername" className="text-[10px]">OUAC Username</Label>
+          <Input
+            id="ouacUsername"
+            value={ouacUsername}
+            onChange={(e) => { setOuacUsername(e.target.value); }}
+            onBlur={() => { localStorage.setItem('ouacUsername', ouacUsername); fetch('/api/ui-settings/ouacUsername', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: ouacUsername }) }).catch(() => {}); }}
+            placeholder="Enter OUAC username"
+            className="bg-white !text-black !text-[10px] h-8"
+            style={{ fontSize: '10px', color: 'black' }}
+            data-testid="input-profile-ouac-username"
+          />
+        </div>
+      </div>
+      <div className="flex gap-[6px]" style={{ marginTop: '2px' }}>
         <div className="space-y-0 w-1/3">
           <Label htmlFor="osapNumber" className="text-[10px]">OSAP Access Number</Label>
           <Input
@@ -37923,6 +37938,19 @@ function ProfileForm({
             className="bg-white !text-black !text-[10px] h-8"
             style={{ fontSize: '10px', color: 'black' }}
             data-testid="input-profile-osap-number"
+          />
+        </div>
+        <div className="space-y-0 w-1/3">
+          <Label htmlFor="oenNumber" className="text-[10px]">OEN</Label>
+          <Input
+            id="oenNumber"
+            value={oenNumber}
+            onChange={(e) => { setOenNumber(e.target.value); }}
+            onBlur={() => { localStorage.setItem('oenNumber', oenNumber); fetch('/api/ui-settings/oenNumber', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: oenNumber }) }).catch(() => {}); }}
+            placeholder="e.g. 123456789"
+            className="bg-white !text-black !text-[10px] h-8"
+            style={{ fontSize: '10px', color: 'black' }}
+            data-testid="input-profile-oen"
           />
         </div>
         <div className="space-y-0 w-1/3">
@@ -37951,34 +37979,6 @@ function ProfileForm({
               {showOsapPassword ? <EyeOff className="w-3.5 h-3.5" style={{ color: 'inherit' }} /> : <Eye className="w-3.5 h-3.5" style={{ color: 'inherit' }} />}
             </button>
           </div>
-        </div>
-      </div>
-      <div className="flex gap-[6px]" style={{ marginTop: '2px' }}>
-        <div className="space-y-0 w-1/3">
-          <Label htmlFor="ouacUsername" className="text-[10px]">OUAC Username</Label>
-          <Input
-            id="ouacUsername"
-            value={ouacUsername}
-            onChange={(e) => { setOuacUsername(e.target.value); }}
-            onBlur={() => { localStorage.setItem('ouacUsername', ouacUsername); fetch('/api/ui-settings/ouacUsername', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: ouacUsername }) }).catch(() => {}); }}
-            placeholder="Enter OUAC username"
-            className="bg-white !text-black !text-[10px] h-8"
-            style={{ fontSize: '10px', color: 'black' }}
-            data-testid="input-profile-ouac-username"
-          />
-        </div>
-        <div className="space-y-0 w-1/3">
-          <Label htmlFor="oenNumber" className="text-[10px]">OEN</Label>
-          <Input
-            id="oenNumber"
-            value={oenNumber}
-            onChange={(e) => { setOenNumber(e.target.value); }}
-            onBlur={() => { localStorage.setItem('oenNumber', oenNumber); fetch('/api/ui-settings/oenNumber', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: oenNumber }) }).catch(() => {}); }}
-            placeholder="e.g. 123456789"
-            className="bg-white !text-black !text-[10px] h-8"
-            style={{ fontSize: '10px', color: 'black' }}
-            data-testid="input-profile-oen"
-          />
         </div>
       </div>
 
