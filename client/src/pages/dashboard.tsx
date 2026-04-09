@@ -37766,7 +37766,7 @@ function ProfileForm({
         </div>
         <div className="flex flex-col gap-0.5">
           {(firstName || lastName) && (
-            <span className="text-[16px] font-bold text-black" data-testid="text-profile-fullname">{firstName} {lastName}</span>
+            <span className="text-[16px] text-black" style={{ fontWeight: 800 }} data-testid="text-profile-fullname">{firstName} {lastName}</span>
           )}
           <span className="text-[10px] text-white/70">Profile Photo</span>
           <span className="text-[9px] text-white/40">{isUploadingPhoto ? 'Uploading...' : 'Click to change'}</span>
