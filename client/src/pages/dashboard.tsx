@@ -28795,6 +28795,14 @@ export default function Dashboard() {
                               </>
                             );
                           }
+                          if (words.length === 0 && displayCodeLabel.includes(' ')) {
+                            const codeWords = displayCodeLabel.trim().split(/\s+/);
+                            return (
+                              <>
+                                {codeWords.map((word: string, i: number) => <span key={i} className={i === 0 ? "font-[785] text-center" : "text-center"} style={{ whiteSpace: 'nowrap' }}>{word}</span>)}
+                              </>
+                            );
+                          }
                           if (words.length === 0 && displayCodeLabel.length > 6) {
                             return (
                               <span className="font-[785] text-center" style={{ lineHeight: 1.2, whiteSpace: 'nowrap' }}>{displayCodeLabel}</span>
@@ -29050,6 +29058,14 @@ export default function Dashboard() {
                         return (
                           <>
                             {nameWords.map((word, i) => <span key={i} className={i === 0 ? "font-[785] text-center" : "text-center"} style={{ whiteSpace: 'nowrap' }}>{word}</span>)}
+                          </>
+                        );
+                      }
+                      if (words.length === 0 && displayCodeLabel.includes(' ')) {
+                        const codeWords = displayCodeLabel.trim().split(/\s+/);
+                        return (
+                          <>
+                            {codeWords.map((word: string, i: number) => <span key={i} className={i === 0 ? "font-[785] text-center" : "text-center"} style={{ whiteSpace: 'nowrap' }}>{word}</span>)}
                           </>
                         );
                       }
