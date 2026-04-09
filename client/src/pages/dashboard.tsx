@@ -28454,7 +28454,7 @@ export default function Dashboard() {
                           if (customDisplay) {
                             const displayWords = customDisplay.trim().split(/\s+/);
                             const totalLen = customDisplay.length;
-                            const fontSize = totalLen > 20 ? '6px' : totalLen > 14 ? '7px' : '8px';
+                            const fontSize = totalLen > 25 ? '7px' : totalLen > 18 ? '8px' : '9px';
                             return (
                               <>
                                 {displayWords.map((word: string, i: number) => <span key={i} className={i === 0 ? "font-[785] text-center" : "text-center"} style={{ whiteSpace: 'nowrap', fontSize, wordBreak: 'break-word', overflowWrap: 'break-word' }}>{word}</span>)}
@@ -28702,7 +28702,7 @@ export default function Dashboard() {
                       if (customDisplay) {
                         const displayWords = customDisplay.trim().split(/\s+/);
                         const totalLen = customDisplay.length;
-                        const fontSize = totalLen > 20 ? '6px' : totalLen > 14 ? '7px' : '8px';
+                        const fontSize = totalLen > 25 ? '7px' : totalLen > 18 ? '8px' : '9px';
                         return (
                           <>
                             {displayWords.map((word: string, i: number) => <span key={i} className={i === 0 ? "font-[785] text-center" : "text-center"} style={{ whiteSpace: 'nowrap', fontSize, wordBreak: 'break-word', overflowWrap: 'break-word' }}>{word}</span>)}
