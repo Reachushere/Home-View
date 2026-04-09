@@ -12335,33 +12335,33 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         } catch (e: any) { console.warn(`${logPrefix} Pre-confirm volume set error (non-fatal): ${e.message}`); }
         await new Promise(r => setTimeout(r, 3000));
         let confirmPlayed = false;
+        await haServiceCallSafe('media_player/media_stop', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Pre-Confirm Stop');
+        await new Promise(r => setTimeout(r, 1500));
         try {
-          await haServiceCallSafe('media_player/media_stop', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Pre-Confirm Stop');
-          await new Promise(r => setTimeout(r, 2000));
-          await haServiceCall('tts/speak', {
-            entity_id: HA_CLOUD_TTS_ENTITY,
-            media_player_entity_id: NEST_SPEAKER_ENTITY,
-            message: confirmationTTS,
-            language: "en-US",
-            options: { voice: NEST_CLOUD_TTS_VOICE }
-          }, 'Confirm Cloud TTS on Nest');
-          confirmPlayed = true;
-          console.log(`${logPrefix} Confirm TTS played via HA Cloud TTS on Nest speaker (primary)`);
+          const confirmPath = await generateAndSaveTTSAudio(confirmationTTS, `confirm-${Date.now()}`);
+          const nestResult = await playOnNestSpeaker(`${appUrl}${confirmPath}`, 2, confirmationTTS);
+          if (nestResult.success) {
+            confirmPlayed = true;
+            console.log(`${logPrefix} Confirm TTS played on Nest speaker via generated audio (primary) (actuallyPlaying=${nestResult.actuallyPlaying})`);
+          } else {
+            console.warn(`${logPrefix} Nest speaker generated audio confirm failed — falling back to HA Cloud TTS`);
+          }
         } catch (e: any) {
-          console.warn(`${logPrefix} Nest Cloud TTS confirm failed: ${e.message} — falling back to Edge TTS`);
+          console.warn(`${logPrefix} Nest speaker generated audio confirm failed: ${e.message} — falling back to HA Cloud TTS`);
         }
         if (!confirmPlayed) {
           try {
-            const confirmPath = await generateAndSaveTTSAudio(confirmationTTS, `confirm-${Date.now()}`);
-            const nestResult = await playOnNestSpeaker(`${appUrl}${confirmPath}`, 2, confirmationTTS);
-            if (nestResult.success) {
-              confirmPlayed = true;
-              console.log(`${logPrefix} Confirm TTS played on Nest speaker via Edge TTS fallback (actuallyPlaying=${nestResult.actuallyPlaying})`);
-            } else {
-              console.warn(`${logPrefix} Nest speaker Edge TTS confirm also failed`);
-            }
+            await haServiceCall('tts/speak', {
+              entity_id: HA_CLOUD_TTS_ENTITY,
+              media_player_entity_id: NEST_SPEAKER_ENTITY,
+              message: confirmationTTS,
+              language: "en-US",
+              options: { voice: NEST_CLOUD_TTS_VOICE }
+            }, 'Confirm Cloud TTS on Nest (fallback)');
+            confirmPlayed = true;
+            console.log(`${logPrefix} Confirm TTS played via HA Cloud TTS on Nest speaker (fallback)`);
           } catch (e: any) {
-            console.warn(`${logPrefix} Nest speaker Edge TTS confirm failed: ${e.message}`);
+            console.warn(`${logPrefix} HA Cloud TTS confirm fallback also failed: ${e.message}`);
           }
         }
         const confirmWordCount = confirmationTTS.split(/\s+/).length;
@@ -15406,22 +15406,31 @@ document.body.removeChild(a);
           await new Promise(r => setTimeout(r, 1000));
           let pausePlayed = false;
           try {
-            await haServiceCall('tts/speak', {
-              entity_id: HA_CLOUD_TTS_ENTITY,
-              media_player_entity_id: NEST_SPEAKER_ENTITY,
-              message: pauseText,
-              language: "en-US",
-              options: { voice: NEST_CLOUD_TTS_VOICE }
-            }, 'Pause Cloud TTS on Nest');
-            pausePlayed = true;
-            console.log(`[Voice Command] Pause TTS played via HA Cloud TTS on Nest speaker`);
-          } catch (e: any) {
-            console.warn(`[Voice Command] Pause Cloud TTS failed: ${e.message} — falling back to Edge TTS`);
-          }
-          if (!pausePlayed) {
             const pausePath = await generateAndSaveTTSAudio(pauseText, `vc-pause-${Date.now()}`);
             const pauseResult = await playOnNestSpeaker(`${appUrl}${pausePath}`, 2, pauseText);
-            console.log(`[Voice Command] Pause TTS via Edge TTS: success=${pauseResult.success}, playing=${pauseResult.actuallyPlaying}`);
+            if (pauseResult.success) {
+              pausePlayed = true;
+              console.log(`[Voice Command] Pause TTS played on Nest via generated audio (primary) (actuallyPlaying=${pauseResult.actuallyPlaying})`);
+            } else {
+              console.warn(`[Voice Command] Pause generated audio failed — falling back to HA Cloud TTS`);
+            }
+          } catch (e: any) {
+            console.warn(`[Voice Command] Pause generated audio failed: ${e.message} — falling back to HA Cloud TTS`);
+          }
+          if (!pausePlayed) {
+            try {
+              await haServiceCall('tts/speak', {
+                entity_id: HA_CLOUD_TTS_ENTITY,
+                media_player_entity_id: NEST_SPEAKER_ENTITY,
+                message: pauseText,
+                language: "en-US",
+                options: { voice: NEST_CLOUD_TTS_VOICE }
+              }, 'Pause Cloud TTS on Nest (fallback)');
+              pausePlayed = true;
+              console.log(`[Voice Command] Pause TTS played via HA Cloud TTS on Nest speaker (fallback)`);
+            } catch (e: any) {
+              console.warn(`[Voice Command] Pause HA Cloud TTS fallback also failed: ${e.message}`);
+            }
           }
         } catch (e: any) {
           console.error(`[Voice Command] Pause TTS error: ${e.message}`);
