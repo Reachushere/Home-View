@@ -4429,46 +4429,36 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         'w2029': { type: 'winter', year: '2029', folder: 'Winter' },
       };
 
-      let semester: any = null;
-      let year: string;
-      let semFolder: string;
+      const allSemesters = await storage.getAllSemesterSettings();
+      const semKeysParam = semKeyParam ? [semKeyParam] : (req.query.semKeys as string || '').split(',').filter(Boolean);
 
-      if (semKeyParam && semKeyToDb[semKeyParam]) {
-        const mapping = semKeyToDb[semKeyParam];
-        year = mapping.year;
-        semFolder = mapping.folder;
-        const allSemesters = await storage.getAllSemesterSettings();
-        semester = allSemesters.find((s: any) => {
-          const semYear = s.semesterName?.match(/\d{4}/)?.[0] || '';
-          return s.semesterType === mapping.type && semYear === mapping.year;
-        }) || null;
-      } else {
-        semester = await storage.getActiveSemesterSettings();
-        year = semester?.semesterStartDate ? String(new Date(semester.semesterStartDate).getFullYear()) : String(new Date().getFullYear());
-        semFolder = getSemesterTypeFolder(semester?.semesterType);
+      const semestersToCheck: Array<{ semester: any; year: string; semFolder: string }> = [];
+
+      if (semKeysParam.length > 0) {
+        for (const sk of semKeysParam) {
+          const mapping = semKeyToDb[sk];
+          if (!mapping) continue;
+          const sem = allSemesters.find((s: any) => {
+            const semYear = s.semesterName?.match(/\d{4}/)?.[0] || '';
+            return s.semesterType === mapping.type && semYear === mapping.year;
+          });
+          if (sem) semestersToCheck.push({ semester: sem, year: mapping.year, semFolder: mapping.folder });
+        }
+      }
+      if (semestersToCheck.length === 0) {
+        const activeSem = await storage.getActiveSemesterSettings();
+        if (activeSem) {
+          const yr = activeSem.semesterStartDate ? String(new Date(activeSem.semesterStartDate).getFullYear()) : String(new Date().getFullYear());
+          semestersToCheck.push({ semester: activeSem, year: yr, semFolder: getSemesterTypeFolder(activeSem.semesterType) });
+        }
       }
 
-      const basePath = `/School/1. TMU/Courses/${year}/${semFolder}`;
-      const courses: string[] = [];
-      if (semester?.course1Code) courses.push(semester.course1Code);
-      if (semester?.course2Code) courses.push(semester.course2Code);
-      if (semester?.course3Code) courses.push(semester.course3Code);
-      if (courses.length === 0) return res.json({});
+      if (semestersToCheck.length === 0) return res.json({});
       const counts: Record<string, { total: number; listened: number; unlistened: number }> = {};
 
-      // Get list of course folders from OneDrive
       const { getOneDriveClient } = await import("./onedrive");
       const client = await getOneDriveClient();
-      
-      let baseFolders: any[] = [];
-      try {
-        const baseResp = await client.api(`/me/drive/root:${basePath}:/children`).get();
-        baseFolders = baseResp.value || [];
-      } catch (e) {
-        return res.json(counts);
-      }
 
-      // Check files from database first to get listened status
       const dbFiles = await storage.getFiles();
       const dbListened = new Set<string>();
       for (const f of dbFiles) {
@@ -4477,16 +4467,45 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         }
       }
 
-      // Process each course in parallel
-      await Promise.all(courses.map(async (courseCode) => {
-        const courseId = courseCode.toLowerCase();
-        try {
-          const matchedFolder = baseFolders.find((f: any) => 
-            f.folder && f.name.toUpperCase().startsWith(courseCode)
-          );
-          if (!matchedFolder) return;
+      const baseFolderCache: Record<string, any[]> = {};
 
-          const coursePath = `${basePath}/${matchedFolder.name}`;
+      await Promise.all(semestersToCheck.map(async ({ semester, year, semFolder }) => {
+        const basePath = `/School/1. TMU/Courses/${year}/${semFolder}`;
+        let baseFolders = baseFolderCache[basePath];
+        if (!baseFolders) {
+          try {
+            const baseResp = await client.api(`/me/drive/root:${basePath}:/children`).get();
+            baseFolders = baseResp.value || [];
+            baseFolderCache[basePath] = baseFolders;
+          } catch (e) {
+            return;
+          }
+        }
+
+        const courseEntries: Array<{ code: string; idx: number }> = [];
+        if (semester?.course1Code) courseEntries.push({ code: semester.course1Code, idx: 1 });
+        if (semester?.course2Code) courseEntries.push({ code: semester.course2Code, idx: 2 });
+        if (semester?.course3Code) courseEntries.push({ code: semester.course3Code, idx: 3 });
+
+        await Promise.all(courseEntries.map(async ({ code: courseCode, idx: courseIdx }) => {
+          const courseId = courseCode.toLowerCase();
+          try {
+            const overrideModule = semester ? (semester as any)[`course${courseIdx}ModuleFolder`] || '' : '';
+            const overrideReading = semester ? (semester as any)[`course${courseIdx}ReadingFolder`] || '' : '';
+            let coursePath: string | null = null;
+            if (overrideModule) {
+              coursePath = overrideModule;
+            } else if (overrideReading) {
+              coursePath = overrideReading;
+            }
+            if (!coursePath) {
+              const searchCode = courseCode.toUpperCase().replace(/\s/g, '');
+              const matchedFolder = baseFolders.find((f: any) => 
+                f.folder && f.name.toUpperCase().replace(/\s/g, '').startsWith(searchCode)
+              );
+              if (!matchedFolder) return;
+              coursePath = `${basePath}/${matchedFolder.name}`;
+            }
           const courseResp = await client.api(`/me/drive/root:${coursePath}:/children`).get();
           const courseFolders = courseResp.value || [];
           
@@ -4560,9 +4579,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
             }
             counts[key] = { total: files.length, listened, unlistened };
           }
-        } catch (e) {
-          // Skip course on error
-        }
+          } catch (e) {
+            // Skip course on error
+          }
+        }));
       }));
 
       res.json(counts);

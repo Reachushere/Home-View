@@ -4086,7 +4086,8 @@ export default function Dashboard() {
         try {
           const odController = new AbortController();
           const odTimeout = setTimeout(() => odController.abort(), 10000);
-          const odResponse = await fetch(`/api/onedrive/week-counts/${selectedWeek}`, { signal: odController.signal });
+          const semKeysParam = activeSemKeysRef.current.length > 0 ? `?semKeys=${activeSemKeysRef.current.join(',')}` : '';
+          const odResponse = await fetch(`/api/onedrive/week-counts/${selectedWeek}${semKeysParam}`, { signal: odController.signal });
           clearTimeout(odTimeout);
           if (odResponse.ok) {
             const odCounts = await odResponse.json();
@@ -7833,6 +7834,7 @@ export default function Dashboard() {
   });
   const allSemesterSettingsRef = useRef(allSemesterSettings);
   allSemesterSettingsRef.current = allSemesterSettings;
+  const activeSemKeysRef = useRef<string[]>([]);
 
   useEffect(() => {
     if (!semesterSettings) return;
@@ -28625,6 +28627,7 @@ export default function Dashboard() {
                     });
                   }
                 }
+                activeSemKeysRef.current = [...new Set(allDisplayCourses.map(c => c._semKey).filter(Boolean))];
                 const filteredCourses = [...allDisplayCourses].sort((a, b) => {
                   const getCode = (c: any) => c.name.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '') || '';
                   const getSemKey = (c: any) => c._semKey || '';
