@@ -17312,6 +17312,124 @@ document.body.removeChild(a);
     }
   });
 
+  app.post("/api/onedrive/sync-course-week", async (req, res) => {
+    try {
+      const { courseCode, weekNumber } = req.body;
+      if (!courseCode || !weekNumber) {
+        return res.status(400).json({ error: "courseCode and weekNumber required" });
+      }
+      const { listOneDriveItems } = await import("./onedrive");
+      const { ObjectStorageService } = await import("./replit_integrations/object_storage");
+      const objectStorage = new ObjectStorageService();
+
+      const activeSemester = await storage.getActiveSemesterSettings();
+      const allSemesters = await storage.getAllSemesterSettings();
+      const semester = activeSemester || allSemesters[0];
+      if (!semester) {
+        return res.json({ success: true, synced: [], message: "No semester configured" });
+      }
+      const semesterTypeMap: Record<string, string> = { winter: 'Winter', fall: 'Fall', spring_summer: 'Spring_Summer' };
+      const semesterFolder = semesterTypeMap[semester.semesterType] || semester.semesterType;
+      const year = semester.semesterName?.match(/\d{4}/)?.[0] || '2026';
+      const basePath = `/School/1. TMU/Courses/${year}/${semesterFolder}`;
+
+      let courseIdx = 0;
+      for (let i = 1; i <= 3; i++) {
+        if ((semester as any)[`course${i}Code`]?.toUpperCase() === courseCode.toUpperCase()) { courseIdx = i; break; }
+      }
+      const overrideModule = courseIdx ? (semester as any)[`course${courseIdx}ModuleFolder`] : '';
+      const overrideReading = courseIdx ? (semester as any)[`course${courseIdx}ReadingFolder`] : '';
+
+      const baseFolders = await listOneDriveItems(basePath);
+      let coursePath: string | null = null;
+      if (overrideModule) {
+        const parts = overrideModule.split('/');
+        coursePath = parts.slice(0, -1).join('/');
+      } else if (overrideReading) {
+        const parts = overrideReading.split('/');
+        coursePath = parts.slice(0, -1).join('/');
+      }
+      if (!coursePath) {
+        const matchedFolder = baseFolders.find((f: any) =>
+          f.type === 'folder' && f.name.toUpperCase().startsWith(courseCode.toUpperCase())
+        );
+        if (!matchedFolder) {
+          return res.json({ success: true, synced: [], message: `No OneDrive folder for ${courseCode}` });
+        }
+        coursePath = matchedFolder.path;
+      }
+
+      console.log(`[Sync] Course-week sync: ${courseCode} week ${weekNumber}, path: ${coursePath}`);
+      const weekFolders = await listOneDriveItems(coursePath);
+      const weekFolder = weekFolders.find((f: any) =>
+        f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${weekNumber}`)
+      );
+      if (!weekFolder) {
+        return res.json({ success: true, synced: [], message: `No Week ${weekNumber} folder found` });
+      }
+
+      const existingFiles = await storage.getFiles();
+      const existingFileKeys = new Set(existingFiles.map((f: any) => `${f.originalName}|||${f.folder}`));
+
+      const weekContents = await listOneDriveItems(weekFolder.path);
+      const syncedFiles: any[] = [];
+
+      for (const subfolder of weekContents) {
+        if (subfolder.type !== 'folder') continue;
+        const subName = subfolder.name.toLowerCase();
+        let type: string | null = null;
+        if (subName.includes('module')) type = 'module';
+        else if (subName.includes('reading')) type = 'reading';
+        if (!type) continue;
+
+        const folderName = `week-${weekNumber}-${courseCode.toLowerCase()}-${type}`;
+        const subFiles = await listOneDriveItems(subfolder.path);
+
+        for (const file of subFiles) {
+          if (file.type !== 'file' || !file.name.toLowerCase().endsWith('.pdf')) continue;
+          const fileKey = `${file.name}|||${folderName}`;
+          if (existingFileKeys.has(fileKey)) continue;
+
+          try {
+            const downloadResponse = await fetch(file.downloadUrl);
+            if (!downloadResponse.ok) continue;
+            const fileBuffer = Buffer.from(await downloadResponse.arrayBuffer());
+            const uploadUrl = await objectStorage.getObjectEntityUploadURL();
+            const uploadResponse = await fetch(uploadUrl, {
+              method: 'PUT', body: fileBuffer, headers: { 'Content-Type': 'application/pdf' }
+            });
+            if (!uploadResponse.ok) continue;
+            const objectPath = objectStorage.normalizeObjectEntityPath(uploadUrl);
+            const newFile = await storage.createFile({
+              originalName: file.name, displayName: file.name, objectPath,
+              contentType: 'application/pdf', size: file.size, folder: folderName, listened: false
+            });
+            existingFileKeys.add(fileKey);
+
+            let totalChunks = 0;
+            try {
+              const extractedText = await extractFileText({ ...newFile, objectPath });
+              if (extractedText) {
+                totalChunks = Math.ceil(extractedText.length / CHUNK_SIZE);
+                await storage.updateFile(newFile.id, { totalChunks, extractedText });
+              }
+            } catch {}
+
+            syncedFiles.push({ name: file.name, folder: folderName, week: weekNumber });
+            console.log(`[Sync] New file: ${file.name} -> ${folderName} (${totalChunks} chunks)`);
+          } catch (e: any) {
+            console.error(`[Sync] File error ${file.name}: ${e.message}`);
+          }
+        }
+      }
+
+      res.json({ success: true, totalSynced: syncedFiles.length, synced: syncedFiles });
+    } catch (error: any) {
+      console.error("Error in course-week sync:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // POST /api/shower/sync-onedrive - Auto-sync module/reading files from OneDrive for all weeks
   app.post("/api/shower/sync-onedrive", async (req, res) => {
     try {
