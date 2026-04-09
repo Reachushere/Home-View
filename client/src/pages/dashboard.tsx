@@ -5478,7 +5478,16 @@ export default function Dashboard() {
         if (r.width > 0 && r.height > 0) { filteredTaskEl = el as HTMLElement; break; }
       }
     }
-    
+    if (!filteredTaskEl) {
+      const calEl = document.querySelector(`[data-testid="calendar-task-${taskId}"]`) as HTMLElement | null;
+      if (calEl) {
+        const r = calEl.getBoundingClientRect();
+        if (r.width > 0 && r.height > 0) filteredTaskEl = calEl;
+      }
+    }
+    if (!filteredTaskEl && homeworkTimelineEl) {
+      filteredTaskEl = homeworkTimelineEl;
+    }
 
     const container = document.createElement('div');
     container.id = 'countdown-hover-line-overlay';
