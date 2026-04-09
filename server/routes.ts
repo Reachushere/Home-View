@@ -4482,6 +4482,17 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
           }
         }
 
+        let semRelativeWeek = weekNum;
+        if (semester?.semesterStartDate && req.query.weekStartDate) {
+          const semStart = new Date(semester.semesterStartDate);
+          const viewStart = new Date(req.query.weekStartDate as string);
+          const sat = new Date(semStart);
+          sat.setDate(sat.getDate() - ((sat.getDay() + 1) % 7));
+          const diffMs = viewStart.getTime() - sat.getTime();
+          const computed = Math.floor(diffMs / (7 * 86400000)) + 1;
+          if (computed >= 1 && computed <= 52) semRelativeWeek = computed;
+        }
+
         const courseEntries: Array<{ code: string; idx: number }> = [];
         if (semester?.course1Code) courseEntries.push({ code: semester.course1Code, idx: 1 });
         if (semester?.course2Code) courseEntries.push({ code: semester.course2Code, idx: 2 });
@@ -4510,7 +4521,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
           const courseFolders = courseResp.value || [];
           
           let weekFolder = courseFolders.find((f: any) => 
-            f.folder && f.name.toLowerCase().startsWith(`week ${weekNum}`)
+            f.folder && f.name.toLowerCase().startsWith(`week ${semRelativeWeek}`)
           );
           if (!weekFolder) {
             let viewStart: Date | null = null;
@@ -4522,7 +4533,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
               const semStart = new Date(semester.semesterStartDate);
               const sat = new Date(semStart);
               sat.setDate(sat.getDate() - ((sat.getDay() + 1) % 7));
-              viewStart = new Date(sat.getTime() + (weekNum - 1) * 7 * 86400000);
+              viewStart = new Date(sat.getTime() + (semRelativeWeek - 1) * 7 * 86400000);
               viewEnd = new Date(viewStart.getTime() + 6 * 86400000);
             }
             if (viewStart && viewEnd) {
@@ -17540,12 +17551,26 @@ document.body.removeChild(a);
         coursePath = matchedFolder.path;
       }
 
-      console.log(`[Sync] Course-week sync: ${courseCode} week ${weekNumber}, path: ${coursePath}`);
+      let semesterRelativeWeek = weekNumber;
+      if (semester?.semesterStartDate && req.body.weekStartDate) {
+        const semStart = new Date(semester.semesterStartDate);
+        const viewStart = new Date(req.body.weekStartDate);
+        const sat = new Date(semStart);
+        sat.setDate(sat.getDate() - ((sat.getDay() + 1) % 7));
+        const diffMs = viewStart.getTime() - sat.getTime();
+        const computedWeek = Math.floor(diffMs / (7 * 86400000)) + 1;
+        if (computedWeek >= 1 && computedWeek <= 52) {
+          console.log(`[Sync] Computed semester-relative week: ${computedWeek} (from semStart=${semStart.toISOString()}, viewStart=${viewStart.toISOString()}, original weekNumber=${weekNumber})`);
+          semesterRelativeWeek = computedWeek;
+        }
+      }
+
+      console.log(`[Sync] Course-week sync: ${courseCode} week ${semesterRelativeWeek} (original: ${weekNumber}), path: ${coursePath}`);
       const weekFolders = await listOneDriveItems(coursePath);
       const weekFolderNames = weekFolders.filter((f: any) => f.type === 'folder').map((f: any) => f.name);
       console.log(`[Sync] Found ${weekFolderNames.length} week folders in ${coursePath}: ${weekFolderNames.join(', ')}`);
       let weekFolder = weekFolders.find((f: any) =>
-        f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${weekNumber}`)
+        f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${semesterRelativeWeek}`)
       );
       if (!weekFolder && req.body.weekStartDate) {
         const viewStart = new Date(req.body.weekStartDate);
@@ -17567,13 +17592,13 @@ document.body.removeChild(a);
           const folderEnd = new Date(yr, m2, d2);
           if (folderStart <= viewEnd && folderEnd >= viewStart) {
             weekFolder = f;
-            console.log(`[Sync] Week ${weekNumber} not found by number, matched by date range: ${f.name}`);
+            console.log(`[Sync] Week ${semesterRelativeWeek} not found by number, matched by date range: ${f.name}`);
             break;
           }
         }
       }
       if (!weekFolder) {
-        const msg = `No Week ${weekNumber} folder found in ${coursePath}. Available folders: ${weekFolderNames.join(', ') || 'none'}`;
+        const msg = `No Week ${semesterRelativeWeek} folder found in ${coursePath}. Available folders: ${weekFolderNames.join(', ') || 'none'}`;
         console.log(`[Sync] ${msg}`);
         return res.json({ success: true, synced: [], message: msg });
       }

@@ -4086,8 +4086,11 @@ export default function Dashboard() {
         try {
           const odController = new AbortController();
           const odTimeout = setTimeout(() => odController.abort(), 10000);
-          const semKeysParam = activeSemKeysRef.current.length > 0 ? `?semKeys=${activeSemKeysRef.current.join(',')}` : '';
-          const odResponse = await fetch(`/api/onedrive/week-counts/${selectedWeek}${semKeysParam}`, { signal: odController.signal });
+          const semKeysParam = activeSemKeysRef.current.length > 0 ? `semKeys=${activeSemKeysRef.current.join(',')}` : '';
+          const wsdParam = weekStartDateRef.current ? `weekStartDate=${weekStartDateRef.current}` : '';
+          const wedParam = weekEndDateRef.current ? `weekEndDate=${weekEndDateRef.current}` : '';
+          const qParams = [semKeysParam, wsdParam, wedParam].filter(Boolean).join('&');
+          const odResponse = await fetch(`/api/onedrive/week-counts/${selectedWeek}${qParams ? '?' + qParams : ''}`, { signal: odController.signal });
           clearTimeout(odTimeout);
           if (odResponse.ok) {
             const odCounts = await odResponse.json();
@@ -7849,6 +7852,8 @@ export default function Dashboard() {
   const allSemesterSettingsRef = useRef(allSemesterSettings);
   allSemesterSettingsRef.current = allSemesterSettings;
   const activeSemKeysRef = useRef<string[]>([]);
+  const weekStartDateRef = useRef<string>('');
+  const weekEndDateRef = useRef<string>('');
 
   useEffect(() => {
     if (!semesterSettings) return;
@@ -11612,6 +11617,8 @@ export default function Dashboard() {
   }, [selectedWeek, selectedWeekInfo, semesterSettings]);
   const weekStartDate = selectedWeekInfo ? parseAsLocalDate(selectedWeekInfo.startDate) : computedWeekDates ? new Date(computedWeekDates.start.getFullYear(), computedWeekDates.start.getMonth(), computedWeekDates.start.getDate(), 12) : new Date(2026, 0, 17, 12);
   const weekEndDate = selectedWeekInfo ? parseAsLocalDate(selectedWeekInfo.endDate) : computedWeekDates ? new Date(computedWeekDates.end.getFullYear(), computedWeekDates.end.getMonth(), computedWeekDates.end.getDate(), 12) : new Date(2026, 0, 23, 12);
+  weekStartDateRef.current = weekStartDate.toISOString();
+  weekEndDateRef.current = weekEndDate.toISOString();
   
   // Generate weekdays for the weekly view
   // School week runs Saturday to Friday, but we display Sunday-Saturday visually
