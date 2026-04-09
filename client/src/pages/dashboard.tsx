@@ -5603,6 +5603,10 @@ export default function Dashboard() {
     if (existing) existing.remove();
   }, []);
 
+  const [showHoverBars, setShowHoverBars] = useState<boolean>(() => {
+    const saved = localStorage.getItem('showHoverBars');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
   const hoverLineTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const setHoveredCountdownTaskIdDebounced = useCallback((id: number | null) => {
     if (hoverLineTimerRef.current) {
@@ -10276,10 +10280,6 @@ export default function Dashboard() {
   });
   const [showCountdownBars, setShowCountdownBars] = useState<boolean>(() => {
     const saved = localStorage.getItem('showCountdownBars');
-    return saved !== null ? JSON.parse(saved) : true;
-  });
-  const [showHoverBars, setShowHoverBars] = useState<boolean>(() => {
-    const saved = localStorage.getItem('showHoverBars');
     return saved !== null ? JSON.parse(saved) : true;
   });
   const [selectedSecondaryCalendar, setSelectedSecondaryCalendar] = useState<string>("");
