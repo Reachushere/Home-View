@@ -20113,7 +20113,7 @@ export default function Dashboard() {
           {isQuickAddOpen && desktopIsFull && (
             <div className="fixed inset-0 z-[10003] flex items-center justify-center" onClick={handleQuickAddClose}>
               <div 
-                className="rounded-xl w-[680px] max-w-[95vw] max-h-[95vh] overflow-hidden flex flex-col text-white shadow-2xl"
+                className="rounded-xl w-[612px] max-w-[95vw] max-h-[95vh] overflow-hidden flex flex-col text-white shadow-2xl"
                 style={{
                   fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
                   background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
@@ -20212,9 +20212,9 @@ export default function Dashboard() {
                       <div className="grid grid-cols-2 gap-2">
                         <button
                           className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 text-white flex items-center gap-1.5"
-                          style={{ background: 'rgba(34,180,90,0.25)', border: '1px solid rgba(34,180,90,0.55)' }}
-                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(34,180,90,0.35)'; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(34,180,90,0.25)'; }}
+                          style={{ background: 'rgba(34,180,90,0.35)', border: '1px solid rgba(34,180,90,0.7)' }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(34,180,90,0.45)'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(34,180,90,0.35)'; }}
                           onClick={(e) => { e.stopPropagation(); setIsQuickAddOpen(false); setTimeout(() => setIsNewCourseWizardOpen(true), 50); }}
                           data-testid="quick-add-type-course"
                         >
@@ -20224,18 +20224,18 @@ export default function Dashboard() {
                         {(["module", "reading", "essay", "discussion", "poll", "quiz", "exam", "other", "reminder", "meeting", "scholarship", "project"] as const).map(type => {
                           const TypeIcon = iconMap[type] || FileText;
                           const typeColors: Record<string, { bg: string; border: string; hover: string }> = {
-                            reading: { bg: 'rgba(56,130,255,0.25)', border: 'rgba(56,130,255,0.55)', hover: 'rgba(56,130,255,0.35)' },
-                            module: { bg: 'rgba(180,120,220,0.25)', border: 'rgba(180,120,220,0.55)', hover: 'rgba(180,120,220,0.35)' },
-                            essay: { bg: 'rgba(255,180,30,0.25)', border: 'rgba(255,180,30,0.55)', hover: 'rgba(255,180,30,0.35)' },
-                            project: { bg: 'rgba(255,100,50,0.25)', border: 'rgba(255,100,50,0.55)', hover: 'rgba(255,100,50,0.35)' },
-                            discussion: { bg: 'rgba(0,210,240,0.25)', border: 'rgba(0,210,240,0.55)', hover: 'rgba(0,210,240,0.35)' },
-                            poll: { bg: 'rgba(255,70,160,0.25)', border: 'rgba(255,70,160,0.55)', hover: 'rgba(255,70,160,0.35)' },
-                            exam: { bg: 'rgba(220,30,30,0.3)', border: 'rgba(220,30,30,0.6)', hover: 'rgba(220,30,30,0.4)' },
-                            quiz: { bg: 'rgba(16,200,120,0.25)', border: 'rgba(16,200,120,0.55)', hover: 'rgba(16,200,120,0.35)' },
-                            reminder: { bg: 'rgba(80,100,220,0.3)', border: 'rgba(100,120,240,0.6)', hover: 'rgba(80,100,220,0.4)' },
-                            meeting: { bg: 'rgba(202,138,4,0.25)', border: 'rgba(202,138,4,0.55)', hover: 'rgba(202,138,4,0.35)' },
-                            scholarship: { bg: 'rgba(160,170,180,0.2)', border: 'rgba(160,170,180,0.5)', hover: 'rgba(160,170,180,0.3)' },
-                            other: { bg: 'rgba(180,160,40,0.25)', border: 'rgba(180,160,40,0.55)', hover: 'rgba(180,160,40,0.35)' },
+                            reading: { bg: 'rgba(56,130,255,0.35)', border: 'rgba(56,130,255,0.7)', hover: 'rgba(56,130,255,0.45)' },
+                            module: { bg: 'rgba(180,120,220,0.35)', border: 'rgba(180,120,220,0.7)', hover: 'rgba(180,120,220,0.45)' },
+                            essay: { bg: 'rgba(255,180,30,0.35)', border: 'rgba(255,180,30,0.7)', hover: 'rgba(255,180,30,0.45)' },
+                            project: { bg: 'rgba(255,100,50,0.35)', border: 'rgba(255,100,50,0.7)', hover: 'rgba(255,100,50,0.45)' },
+                            discussion: { bg: 'rgba(0,210,240,0.35)', border: 'rgba(0,210,240,0.7)', hover: 'rgba(0,210,240,0.45)' },
+                            poll: { bg: 'rgba(255,70,160,0.35)', border: 'rgba(255,70,160,0.7)', hover: 'rgba(255,70,160,0.45)' },
+                            exam: { bg: 'rgba(220,30,30,0.4)', border: 'rgba(220,30,30,0.7)', hover: 'rgba(220,30,30,0.5)' },
+                            quiz: { bg: 'rgba(16,200,120,0.35)', border: 'rgba(16,200,120,0.7)', hover: 'rgba(16,200,120,0.45)' },
+                            reminder: { bg: 'rgba(80,100,220,0.4)', border: 'rgba(100,120,240,0.7)', hover: 'rgba(80,100,220,0.5)' },
+                            meeting: { bg: 'rgba(202,138,4,0.35)', border: 'rgba(202,138,4,0.7)', hover: 'rgba(202,138,4,0.45)' },
+                            scholarship: { bg: 'rgba(160,170,180,0.3)', border: 'rgba(160,170,180,0.65)', hover: 'rgba(160,170,180,0.4)' },
+                            other: { bg: 'rgba(180,160,40,0.35)', border: 'rgba(180,160,40,0.7)', hover: 'rgba(180,160,40,0.45)' },
                           };
                           const tc = typeColors[type] || { bg: 'rgba(255,255,255,0.05)', border: 'rgba(255,255,255,0.1)', hover: 'rgba(255,255,255,0.2)' };
                           const isSelected = quickAddData.type === type;
@@ -20259,9 +20259,9 @@ export default function Dashboard() {
                         })}
                         <button
                           className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 text-white flex items-center gap-1.5"
-                          style={{ background: 'rgba(220,60,60,0.2)', border: '1px solid rgba(220,60,60,0.5)' }}
-                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(220,60,60,0.3)'; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(220,60,60,0.2)'; }}
+                          style={{ background: 'rgba(220,60,60,0.35)', border: '1px solid rgba(220,60,60,0.7)' }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(220,60,60,0.45)'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(220,60,60,0.35)'; }}
                           onClick={(e) => { e.stopPropagation(); setIsQuickAddOpen(false); setTimeout(() => setIsMedicalWizardOpen(true), 50); }}
                           data-testid="quick-add-type-medical"
                         >
@@ -20270,9 +20270,9 @@ export default function Dashboard() {
                         </button>
                         <button
                           className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 text-white flex items-center gap-1.5"
-                          style={{ background: 'rgba(0,180,170,0.2)', border: '1px solid rgba(0,180,170,0.5)' }}
-                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,180,170,0.3)'; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(0,180,170,0.2)'; }}
+                          style={{ background: 'rgba(0,180,170,0.35)', border: '1px solid rgba(0,180,170,0.7)' }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,180,170,0.45)'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(0,180,170,0.35)'; }}
                           onClick={(e) => { e.stopPropagation(); setIsQuickAddOpen(false); setTimeout(() => { setPartnerWizardStep(0); setPartnerWizardDates([]); setPartnerWizardShiftType('day'); setPartnerWizardOpen(true); }, 50); }}
                           data-testid="quick-add-type-partner-shifts"
                         >
@@ -20281,9 +20281,9 @@ export default function Dashboard() {
                         </button>
                         <button
                           className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 text-white flex items-center gap-1.5"
-                          style={{ background: 'rgba(180,130,70,0.25)', border: '1px solid rgba(180,130,70,0.55)' }}
-                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(180,130,70,0.35)'; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(180,130,70,0.25)'; }}
+                          style={{ background: 'rgba(180,130,70,0.35)', border: '1px solid rgba(180,130,70,0.7)' }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(180,130,70,0.45)'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(180,130,70,0.35)'; }}
                           onClick={(e) => { e.stopPropagation(); setIsQuickAddOpen(false); setTimeout(() => { setEditingProject(null); setProjectWizardStep(0); setProjectWizardData({ name: '', description: '', color: '#6366F1', status: 'planning', targetDate: '', priority: 'medium' }); setProjectDialogOpen(true); }, 50); }}
                           data-testid="quick-add-type-project-wizard"
                         >
@@ -20296,12 +20296,12 @@ export default function Dashboard() {
                           <p className="text-white/50 text-[10px] text-center mb-2">Label (optional)</p>
                           <div className="grid grid-cols-3 gap-1.5">
                             {([
-                              { key: 'school' as const, label: 'School', icon: '🎓', bg: 'rgba(0,76,156,0.2)', border: 'rgba(0,76,156,0.5)', hover: 'rgba(0,76,156,0.3)' },
-                              { key: 'household' as const, label: 'Household', icon: '🏠', bg: 'rgba(245,158,11,0.2)', border: 'rgba(245,158,11,0.5)', hover: 'rgba(245,158,11,0.3)' },
-                              { key: 'financial' as const, label: 'Financial', icon: '💰', bg: 'rgba(16,185,129,0.2)', border: 'rgba(16,185,129,0.5)', hover: 'rgba(16,185,129,0.3)' },
-                              { key: 'personal' as const, label: 'Personal', icon: '👤', bg: 'rgba(139,92,246,0.2)', border: 'rgba(139,92,246,0.5)', hover: 'rgba(139,92,246,0.3)' },
-                              { key: 'outside' as const, label: 'Outside', icon: '🌿', bg: 'rgba(34,197,94,0.2)', border: 'rgba(34,197,94,0.5)', hover: 'rgba(34,197,94,0.3)' },
-                              { key: 'other' as const, label: 'Other', icon: '📌', bg: 'rgba(160,170,180,0.15)', border: 'rgba(160,170,180,0.4)', hover: 'rgba(160,170,180,0.25)' },
+                              { key: 'school' as const, label: 'School', icon: '🎓', bg: 'rgba(0,76,156,0.35)', border: 'rgba(0,76,156,0.7)', hover: 'rgba(0,76,156,0.45)' },
+                              { key: 'household' as const, label: 'Household', icon: '🏠', bg: 'rgba(245,158,11,0.35)', border: 'rgba(245,158,11,0.7)', hover: 'rgba(245,158,11,0.45)' },
+                              { key: 'financial' as const, label: 'Financial', icon: '💰', bg: 'rgba(16,185,129,0.35)', border: 'rgba(16,185,129,0.7)', hover: 'rgba(16,185,129,0.45)' },
+                              { key: 'personal' as const, label: 'Personal', icon: '👤', bg: 'rgba(139,92,246,0.35)', border: 'rgba(139,92,246,0.7)', hover: 'rgba(139,92,246,0.45)' },
+                              { key: 'outside' as const, label: 'Outside', icon: '🌿', bg: 'rgba(34,197,94,0.35)', border: 'rgba(34,197,94,0.7)', hover: 'rgba(34,197,94,0.45)' },
+                              { key: 'other' as const, label: 'Other', icon: '📌', bg: 'rgba(160,170,180,0.3)', border: 'rgba(160,170,180,0.65)', hover: 'rgba(160,170,180,0.4)' },
                             ]).map(lbl => (
                               <button
                                 key={lbl.key}
