@@ -4360,9 +4360,42 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       const weekNum = parseInt(req.params.weekNum);
       if (isNaN(weekNum)) return res.status(400).json({ error: "Invalid week number" });
 
-      const semester = await storage.getActiveSemesterSettings();
-      const year = semester?.semesterStartDate ? new Date(semester.semesterStartDate).getFullYear() : new Date().getFullYear();
-      const semFolder = getSemesterTypeFolder(semester?.semesterType);
+      const semKeyParam = req.query.semKey as string | undefined;
+      const semKeyToDb: Record<string, { type: string; year: string; folder: string }> = {
+        'w2025': { type: 'winter', year: '2025', folder: 'Winter' },
+        'ss2025': { type: 'spring_summer', year: '2025', folder: 'Spring & Summer' },
+        'f2025': { type: 'fall', year: '2025', folder: 'Fall' },
+        'w2026': { type: 'winter', year: '2026', folder: 'Winter' },
+        'ss2026': { type: 'spring_summer', year: '2026', folder: 'Spring & Summer' },
+        'f2026': { type: 'fall', year: '2026', folder: 'Fall' },
+        'w2027': { type: 'winter', year: '2027', folder: 'Winter' },
+        'ss2027': { type: 'spring_summer', year: '2027', folder: 'Spring & Summer' },
+        'f2027': { type: 'fall', year: '2027', folder: 'Fall' },
+        'w2028': { type: 'winter', year: '2028', folder: 'Winter' },
+        'ss2028': { type: 'spring_summer', year: '2028', folder: 'Spring & Summer' },
+        'f2028': { type: 'fall', year: '2028', folder: 'Fall' },
+        'w2029': { type: 'winter', year: '2029', folder: 'Winter' },
+      };
+
+      let semester: any = null;
+      let year: string;
+      let semFolder: string;
+
+      if (semKeyParam && semKeyToDb[semKeyParam]) {
+        const mapping = semKeyToDb[semKeyParam];
+        year = mapping.year;
+        semFolder = mapping.folder;
+        const allSemesters = await storage.getAllSemesterSettings();
+        semester = allSemesters.find((s: any) => {
+          const semYear = s.semesterName?.match(/\d{4}/)?.[0] || '';
+          return s.semesterType === mapping.type && semYear === mapping.year;
+        }) || null;
+      } else {
+        semester = await storage.getActiveSemesterSettings();
+        year = semester?.semesterStartDate ? String(new Date(semester.semesterStartDate).getFullYear()) : String(new Date().getFullYear());
+        semFolder = getSemesterTypeFolder(semester?.semesterType);
+      }
+
       const basePath = `/School/1. TMU/Courses/${year}/${semFolder}`;
       const courses: string[] = [];
       if (semester?.course1Code) courses.push(semester.course1Code);
@@ -4405,9 +4438,44 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
           const courseResp = await client.api(`/me/drive/root:${coursePath}:/children`).get();
           const courseFolders = courseResp.value || [];
           
-          const weekFolder = courseFolders.find((f: any) => 
+          let weekFolder = courseFolders.find((f: any) => 
             f.folder && f.name.toLowerCase().startsWith(`week ${weekNum}`)
           );
+          if (!weekFolder) {
+            let viewStart: Date | null = null;
+            let viewEnd: Date | null = null;
+            if (req.query.weekStartDate) {
+              viewStart = new Date(req.query.weekStartDate as string);
+              viewEnd = req.query.weekEndDate ? new Date(req.query.weekEndDate as string) : new Date(viewStart.getTime() + 6 * 86400000);
+            } else if (semester?.semesterStartDate) {
+              const semStart = new Date(semester.semesterStartDate);
+              const sat = new Date(semStart);
+              sat.setDate(sat.getDate() - ((sat.getDay() + 1) % 7));
+              viewStart = new Date(sat.getTime() + (weekNum - 1) * 7 * 86400000);
+              viewEnd = new Date(viewStart.getTime() + 6 * 86400000);
+            }
+            if (viewStart && viewEnd) {
+              for (const f of courseFolders) {
+                if (!f.folder) continue;
+                const dateMatch = f.name.match(/(\w+)\s+(\d+)\s*-\s*(?:(\w+)\s+)?(\d+)/);
+                if (!dateMatch) continue;
+                const months: Record<string, number> = { jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11 };
+                const m1 = months[dateMatch[1].toLowerCase()];
+                if (m1 === undefined) continue;
+                const d1 = parseInt(dateMatch[2]);
+                const m2 = dateMatch[3] ? months[dateMatch[3].toLowerCase()] : m1;
+                const d2 = parseInt(dateMatch[4]);
+                if (m2 === undefined) continue;
+                const yr = viewStart!.getFullYear();
+                const folderStart = new Date(yr, m1, d1);
+                const folderEnd = new Date(yr, m2, d2);
+                if (folderStart <= viewEnd! && folderEnd >= viewStart!) {
+                  weekFolder = f;
+                  break;
+                }
+              }
+            }
+          }
           if (!weekFolder) return;
 
           const weekPath = `${coursePath}/${weekFolder.name}`;
@@ -17392,11 +17460,35 @@ document.body.removeChild(a);
 
       console.log(`[Sync] Course-week sync: ${courseCode} week ${weekNumber}, path: ${coursePath}`);
       const weekFolders = await listOneDriveItems(coursePath);
-      const weekFolder = weekFolders.find((f: any) =>
+      let weekFolder = weekFolders.find((f: any) =>
         f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${weekNumber}`)
       );
+      if (!weekFolder && req.body.weekStartDate) {
+        const viewStart = new Date(req.body.weekStartDate);
+        const viewEnd = req.body.weekEndDate ? new Date(req.body.weekEndDate) : new Date(viewStart.getTime() + 6 * 86400000);
+        for (const f of weekFolders) {
+          if (f.type !== 'folder') continue;
+          const dateMatch = f.name.match(/(\w+)\s+(\d+)\s*-\s*(?:(\w+)\s+)?(\d+)/);
+          if (!dateMatch) continue;
+          const months: Record<string, number> = { jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11 };
+          const m1 = months[dateMatch[1].toLowerCase()];
+          if (m1 === undefined) continue;
+          const d1 = parseInt(dateMatch[2]);
+          const m2 = dateMatch[3] ? months[dateMatch[3].toLowerCase()] : m1;
+          const d2 = parseInt(dateMatch[4]);
+          if (m2 === undefined) continue;
+          const yr = viewStart.getFullYear();
+          const folderStart = new Date(yr, m1, d1);
+          const folderEnd = new Date(yr, m2, d2);
+          if (folderStart <= viewEnd && folderEnd >= viewStart) {
+            weekFolder = f;
+            console.log(`[Sync] Week ${weekNumber} not found, matched by date range: ${f.name}`);
+            break;
+          }
+        }
+      }
       if (!weekFolder) {
-        return res.json({ success: true, synced: [], message: `No Week ${weekNumber} folder found` });
+        return res.json({ success: true, synced: [], message: `No Week ${weekNumber} folder found in ${coursePath}` });
       }
 
       const existingFiles = await storage.getFiles();
