@@ -4830,8 +4830,7 @@ export default function Dashboard() {
   const saturdayGridCol = (gridSizes.moduleColumnWidth > 0 ? 2 : 1) + lastSchoolDayIndex + 1 + 1;
 
   const DAY_COL_LEFT_REDUCTION = 10;
-  const SCROLLBAR_DAY_PADDING = [3, 4, 5, 6, 7, 8, 0];
-  const getDayPaddingRight = (dayIdx: number) => SCROLLBAR_DAY_PADDING[dayIdx] || 0;
+  const SCROLLBAR_WIDTH = 8;
 
   const getGridTemplateColumns = () => {
     const allDays = gridSizes.dayColumnWidths.map(w => `${w}fr`).join(' ');
@@ -27458,7 +27457,7 @@ export default function Dashboard() {
             </Button>
           </div>
           
-          <div className="grid w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), height: '16px', marginTop: '-3px' }}>
+          <div className="grid w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), height: '16px', marginTop: '-3px', paddingRight: `${SCROLLBAR_WIDTH}px` }}>
               <div style={{ minWidth: 0 }} />
               {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0 }} />}
               {weekDays.map((day, idx) => {
@@ -27646,7 +27645,7 @@ export default function Dashboard() {
             <div ref={calendarContentRef} className="p-0 flex-1 flex flex-col overflow-hidden relative z-20" style={{ borderRadius: '8px' }} onClick={() => setSelectedTaskId(null)}>
             
             {/* Day Headers - Fixed, not scrollable */}
-            <div data-calendar-grid="true" className="grid z-[44] h-[60px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), borderBottom: '1px solid #666' }}>
+            <div data-calendar-grid="true" className="grid z-[44] h-[60px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), borderBottom: '1px solid #666', paddingRight: `${SCROLLBAR_WIDTH}px` }}>
               <div className="flex items-center justify-center relative" style={{ backgroundColor: colorSettings.headerBar }}>
                 <img src={unicalLogo} alt="Uni-Cal" className="rounded" style={{ height: '34px', width: '34px', marginLeft: '3px' }} />
                 {/* Time column resize handle - right edge */}
@@ -28514,7 +28513,7 @@ export default function Dashboard() {
                 // If there are full-week tasks, render them using grid column spanning
                 if (hasFullWeekTasks) {
                   return (
-                    <div key={course.name} className="w-full flex-shrink-0 flex" style={{ borderBottom: `1.5px dotted ${courseData.color}dd` }}>
+                    <div key={course.name} className="w-full flex-shrink-0 flex" style={{ borderBottom: `1.5px dotted ${courseData.color}dd`, paddingRight: `${SCROLLBAR_WIDTH}px` }}>
                       <div className="px-2 py-0.5 text-[8px] font-medium tracking-normal flex flex-col items-center justify-center leading-tight cursor-pointer hover:brightness-110 flex-shrink-0" onClick={async () => { const code = courseData.name.split(' - ')[0]?.trim(); if (syncingCourseLabel) return; setSyncResult(null); setSyncingCourseLabel(code); try { const resp = await fetch('/api/onedrive/sync-course-week', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ courseCode: code, weekNumber: selectedWeek }) }); const data = await resp.json(); queryClient.invalidateQueries({ queryKey: ['/api/files'] }); queryClient.invalidateQueries({ queryKey: ['/api/files/counts'] }); const count = data?.synced?.length || 0; setSyncResult({ code, count }); setTimeout(() => setSyncResult(prev => prev?.code === code ? null : prev), 3000); } catch (e) { console.error('Sync failed:', e); setSyncResult({ code, count: -1 }); setTimeout(() => setSyncResult(prev => prev?.code === code ? null : prev), 3000); } finally { setSyncingCourseLabel(null); } }} style={{ background: course.label, overflow: 'hidden', minWidth: 0, width: `${gridSizes.timeColumnWidth}px`, position: 'relative', color: course.fontColor || 'white', wordBreak: 'normal', overflowWrap: 'normal', textAlign: 'center' }} data-testid={`course-row-label-${course.name}`}>
                         {(() => {
                           const code = course.name.split(' - ')[0];
@@ -28610,7 +28609,7 @@ export default function Dashboard() {
                                 return (
                                   <div 
                                     key={dayIdx}
-                                    style={{ backgroundColor: cellBg, paddingRight: `${getDayPaddingRight(dayIdx)}px` }}
+                                    style={{ backgroundColor: cellBg }}
                                   />
                                 );
                               }
@@ -28621,7 +28620,7 @@ export default function Dashboard() {
                                 return (
                                   <div 
                                     key={dayIdx}
-                                    style={{ backgroundColor: cellBg, paddingRight: `${getDayPaddingRight(dayIdx)}px` }}
+                                    style={{ backgroundColor: cellBg }}
                                   />
                                 );
                               }
@@ -28649,7 +28648,7 @@ export default function Dashboard() {
                                   ? `border ${borderColor} rounded`
                                   : `border-l border-t border-b ${borderColor} rounded-l`;
                                 return (
-                                  <div key={dayIdx} className="flex items-center" style={{ backgroundColor: cellBg, paddingRight: `${getDayPaddingRight(dayIdx)}px` }}>
+                                  <div key={dayIdx} className="flex items-center" style={{ backgroundColor: cellBg }}>
                                     <div 
                                       className={`flex-1 flex items-center gap-1 text-[8px] px-0.5 ml-0 ${isFriday ? 'mr-0.5' : ''} ${todayBorderClass} ${
                                         shouldBlink ? "animate-blink" : ""
@@ -28687,7 +28686,7 @@ export default function Dashboard() {
                                 ? `border-t border-b border-r ${borderColor} rounded-r`
                                 : `border-t border-b ${borderColor}`;
                               return (
-                                <div key={dayIdx} className="flex items-center" style={{ backgroundColor: cellBg, paddingRight: `${getDayPaddingRight(dayIdx)}px` }}>
+                                <div key={dayIdx} className="flex items-center" style={{ backgroundColor: cellBg }}>
                                   <div 
                                     className={`w-full ${bgOnly} ${contBorderClass} ${
                                       shouldBlink ? "animate-blink" : ""
@@ -28747,7 +28746,7 @@ export default function Dashboard() {
                 }
                 
                 return (
-                <div key={course.name} ref={el => { courseRowRefs.current[courseIdx] = el; }} className="grid w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${maxCourseRowHeight}px`, maxHeight: `${maxCourseRowHeight}px`, overflow: 'hidden' }}>
+                <div key={course.name} ref={el => { courseRowRefs.current[courseIdx] = el; }} className="grid w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${maxCourseRowHeight}px`, maxHeight: `${maxCourseRowHeight}px`, overflow: 'hidden', paddingRight: `${SCROLLBAR_WIDTH}px` }}>
                   <div className="px-2 py-0.5 text-[8px] font-medium tracking-normal flex flex-col items-center justify-center relative leading-tight cursor-pointer hover:brightness-110" onClick={async () => { const code = courseData.name.split(' - ')[0]?.trim(); if (syncingCourseLabel) return; setSyncResult(null); setSyncingCourseLabel(code); try { const resp = await fetch('/api/onedrive/sync-course-week', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ courseCode: code, weekNumber: selectedWeek }) }); const data = await resp.json(); queryClient.invalidateQueries({ queryKey: ['/api/files'] }); queryClient.invalidateQueries({ queryKey: ['/api/files/counts'] }); const count = data?.synced?.length || 0; setSyncResult({ code, count }); setTimeout(() => setSyncResult(prev => prev?.code === code ? null : prev), 3000); } catch (e: any) { console.error('Sync failed:', e); setSyncResult({ code, count: -1 }); setTimeout(() => setSyncResult(prev => prev?.code === code ? null : prev), 3000); } finally { setSyncingCourseLabel(null); } }} style={{ background: course.label, borderBottom: `1.5px dotted ${courseData.color}dd`, overflow: 'hidden', minWidth: 0, color: course.fontColor || 'white', wordBreak: 'normal', overflowWrap: 'normal', textAlign: 'center' }} data-testid={`course-row-label-${course.name}`}>
                     {(() => {
                       const code = course.name.split(' - ')[0];
@@ -28925,7 +28924,7 @@ export default function Dashboard() {
                       <div 
                         key={dayIdx} 
                         className="relative pt-0.5"
-                        style={{ backgroundColor: cellBgColor, padding: isDayToday ? `2px ${getDayPaddingRight(dayIdx) + 1}px 2px 3px` : `2px ${getDayPaddingRight(dayIdx) + 1}px 2px 1px`, borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, borderLeft: day.getDay() === 6 ? 'none' : '1.5px dotted rgba(0,0,0,0.25)', minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                        style={{ backgroundColor: cellBgColor, padding: isDayToday ? '2px 1px 2px 3px' : '2px 1px 2px 1px', borderBottom: isDayToday ? '1px dotted #666' : `1.5px dotted ${courseData.color}dd`, borderLeft: day.getDay() === 6 ? 'none' : '1.5px dotted rgba(0,0,0,0.25)', minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
                           e.preventDefault();
@@ -29483,7 +29482,7 @@ export default function Dashboard() {
                     {gridSizes.moduleColumnWidth > 0 && (
                       <div style={{ position: 'absolute', left: `${gridSizes.timeColumnWidth}px`, top: 0, bottom: 0, width: `${gridSizes.moduleColumnWidth + 9}px`, backgroundColor: otherRowColors.courseRowColor || otherRowColors.cellBg, zIndex: 50 }} />
                     )}
-                    <div className="flex min-w-0 relative" style={{ overflow: 'hidden', marginLeft: `${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px`, height: '100%', backgroundColor: dimColor(otherRowColors.courseRowColor || otherRowColors.cellBg, 0.375) }}>
+                    <div className="flex min-w-0 relative" style={{ overflow: 'hidden', marginLeft: `${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px`, paddingRight: `${SCROLLBAR_WIDTH}px`, height: '100%', backgroundColor: dimColor(otherRowColors.courseRowColor || otherRowColors.cellBg, 0.375) }}>
                     {weekDays.map((day, dayIdx) => {
                       const cellDate = startOfDayET(day);
                       const isOtherToday = isSameDayET(day, stableToday);
@@ -29515,7 +29514,7 @@ export default function Dashboard() {
                         <div
                           key={dayIdx}
                           className="relative flex flex-col gap-0.5 pt-0.5 course-cell-scroll"
-                          style={{ flex: `${gridSizes.dayColumnWidths[dayIdx]} 0 0%`, backgroundColor: otherCellBg, padding: isOtherToday ? `2px ${getDayPaddingRight(dayIdx) + 1}px 2px 3px` : `2px ${getDayPaddingRight(dayIdx) + 1}px 2px 1px`, borderBottom: isOtherToday ? '1px dotted #666' : `1.5px dotted ${otherRowColors.borderColor}`, borderLeft: day.getDay() === 6 ? 'none' : '1.5px dotted rgba(0,0,0,0.25)', overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'thin', maxHeight: `${otherRowHeight}px` }}
+                          style={{ flex: `${gridSizes.dayColumnWidths[dayIdx]} 0 0%`, backgroundColor: otherCellBg, padding: isOtherToday ? '2px 1px 2px 3px' : '2px 1px 2px 1px', borderBottom: isOtherToday ? '1px dotted #666' : `1.5px dotted ${otherRowColors.borderColor}`, borderLeft: day.getDay() === 6 ? 'none' : '1.5px dotted rgba(0,0,0,0.25)', overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'thin', maxHeight: `${otherRowHeight}px` }}
                           data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
                         >
                           {dayOtherTasks.map(task => {
