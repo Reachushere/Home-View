@@ -42,7 +42,11 @@ const allowlist = [
 ];
 
 async function buildAll() {
-  await rm("dist", { recursive: true, force: true });
+  try { await rm("dist", { recursive: true, force: true }); } catch (e) {
+    console.log("Warning: could not fully clean dist/", e);
+    const { execSync } = await import("child_process");
+    try { execSync("rm -rf dist", { stdio: "inherit" }); } catch {}
+  }
 
   console.log("building client...");
   await viteBuild();
