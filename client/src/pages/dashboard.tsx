@@ -27444,47 +27444,19 @@ export default function Dashboard() {
                 const fwEffectsHtml = showForecastWeather ? (() => {
                   const wc = effectiveWCode!;
                   if (wc >= 95) {
-                    const drops = Array.from({ length: 20 }, (_, i) => {
-                      const left = (i * 17 + 3 + (i % 3) * 7) % 100;
-                      const delay = ((i * 0.07) % 0.6).toFixed(2);
-                      const h = 8 + (i % 3) * 3;
-                      return `<div style="position:absolute;left:${left}%;top:-4px;width:2px;height:${h}px;background:rgba(100,180,255,0.95);animation:fwRainDrop 0.35s ${delay}s linear infinite;border-radius:0 0 2px 2px;box-shadow:0 0 3px rgba(100,180,255,0.5)"></div>`;
-                    }).join('');
-                    return drops;
+                    return `<div style="position:absolute;inset:0;background:repeating-linear-gradient(100deg,transparent,transparent 4px,rgba(130,195,255,0.4) 4px,rgba(130,195,255,0.4) 5px);animation:fwRainSheet 0.25s linear infinite"></div><div style="position:absolute;inset:0;background:repeating-linear-gradient(95deg,transparent,transparent 7px,rgba(180,215,255,0.3) 7px,rgba(180,215,255,0.3) 8px);animation:fwRainSheet 0.35s 0.1s linear infinite"></div>`;
                   }
                   if (wc >= 71 && wc <= 77) {
-                    return Array.from({ length: 18 }, (_, i) => {
-                      const left = (i * 19 + 3 + (i % 3) * 5) % 100;
-                      const delay = ((i * 0.15) % 2.5).toFixed(2);
-                      const size = 3 + (i % 3);
-                      const drift = (i % 2 === 0) ? 'fwSnowFallLeft' : 'fwSnowFallRight';
-                      return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(220,235,255,1);border-radius:50%;animation:${drift} ${1.8 + (i % 3) * 0.4}s ${delay}s linear infinite;box-shadow:0 0 4px rgba(200,220,255,0.8)"></div>`;
-                    }).join('');
+                    return `<div style="position:absolute;inset:0;background:radial-gradient(1.5px 1.5px at 10% 20%,rgba(220,235,255,0.9) 50%,transparent 100%),radial-gradient(2px 2px at 30% 60%,rgba(200,225,255,0.8) 50%,transparent 100%),radial-gradient(1.5px 1.5px at 55% 35%,rgba(230,240,255,0.9) 50%,transparent 100%),radial-gradient(2px 2px at 75% 75%,rgba(210,230,255,0.8) 50%,transparent 100%),radial-gradient(1.5px 1.5px at 90% 15%,rgba(220,235,255,0.85) 50%,transparent 100%),radial-gradient(2px 2px at 45% 85%,rgba(200,225,255,0.75) 50%,transparent 100%);background-size:100% 100%;animation:fwSnowDrift 2s ease-in-out infinite alternate"></div>`;
                   }
                   if (wc >= 85 && wc <= 86) {
-                    return Array.from({ length: 22 }, (_, i) => {
-                      const left = (i * 17 + 2 + (i % 4) * 5) % 100;
-                      const delay = ((i * 0.12) % 2).toFixed(2);
-                      const size = 3 + (i % 3);
-                      const drift = (i % 2 === 0) ? 'fwSnowFallLeft' : 'fwSnowFallRight';
-                      return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(220,235,255,1);border-radius:50%;animation:${drift} ${1.4 + (i % 3) * 0.3}s ${delay}s linear infinite;box-shadow:0 0 5px rgba(200,220,255,0.9)"></div>`;
-                    }).join('');
+                    return `<div style="position:absolute;inset:0;background:radial-gradient(2px 2px at 8% 15%,rgba(230,240,255,0.95) 50%,transparent 100%),radial-gradient(2.5px 2.5px at 22% 55%,rgba(210,230,255,0.9) 50%,transparent 100%),radial-gradient(2px 2px at 38% 30%,rgba(240,245,255,0.9) 50%,transparent 100%),radial-gradient(2.5px 2.5px at 52% 70%,rgba(220,235,255,0.85) 50%,transparent 100%),radial-gradient(2px 2px at 68% 20%,rgba(230,240,255,0.9) 50%,transparent 100%),radial-gradient(2.5px 2.5px at 82% 60%,rgba(210,230,255,0.85) 50%,transparent 100%),radial-gradient(2px 2px at 95% 40%,rgba(240,245,255,0.9) 50%,transparent 100%);background-size:100% 100%;animation:fwSnowDrift 1.5s ease-in-out infinite alternate"></div>`;
                   }
                   if ((wc >= 61 && wc <= 67) || (wc >= 80 && wc <= 82)) {
-                    return Array.from({ length: 16 }, (_, i) => {
-                      const left = (i * 19 + 5 + (i % 3) * 7) % 100;
-                      const delay = ((i * 0.09) % 1).toFixed(2);
-                      const h = 6 + (i % 3) * 2;
-                      return `<div style="position:absolute;left:${left}%;top:-4px;width:1.5px;height:${h}px;background:rgba(90,170,255,0.9);animation:fwRainDrop 0.5s ${delay}s linear infinite;border-radius:0 0 1px 1px;box-shadow:0 0 2px rgba(90,170,255,0.4)"></div>`;
-                    }).join('');
+                    return `<div style="position:absolute;inset:0;background:repeating-linear-gradient(100deg,transparent,transparent 6px,rgba(110,180,255,0.35) 6px,rgba(110,180,255,0.35) 7px);animation:fwRainSheet 0.4s linear infinite"></div><div style="position:absolute;inset:0;background:repeating-linear-gradient(95deg,transparent,transparent 9px,rgba(150,200,255,0.25) 9px,rgba(150,200,255,0.25) 10px);animation:fwRainSheet 0.55s 0.15s linear infinite"></div>`;
                   }
                   if (wc >= 51 && wc <= 55) {
-                    return Array.from({ length: 12 }, (_, i) => {
-                      const left = (i * 23 + 3 + (i % 3) * 7) % 100;
-                      const delay = ((i * 0.12) % 1.2).toFixed(2);
-                      const h = 5 + (i % 2) * 2;
-                      return `<div style="position:absolute;left:${left}%;top:-3px;width:1.5px;height:${h}px;background:rgba(90,175,255,0.85);animation:fwRainDrop 0.8s ${delay}s linear infinite;border-radius:0 0 1px 1px;box-shadow:0 0 2px rgba(90,175,255,0.3)"></div>`;
-                    }).join('');
+                    return `<div style="position:absolute;inset:0;background:repeating-linear-gradient(100deg,transparent,transparent 10px,rgba(120,185,255,0.3) 10px,rgba(120,185,255,0.3) 11px);animation:fwRainSheet 0.6s linear infinite"></div>`;
                   }
                   return '';
                 })() : '';
@@ -27492,7 +27464,7 @@ export default function Dashboard() {
                   <div key={idx} className="flex items-center justify-center overflow-hidden relative" style={{ opacity: isPast ? 0.5 : 1 }} data-testid={`weather-above-${dateStr}`}>
                     {showForecastWeather && fwSkyBg && (
                       <div className="absolute inset-0 z-0" style={{ background: fwSkyBg, overflow: 'hidden', pointerEvents: 'none', opacity: isTodayForecast ? 1 : isNextWeekDay ? 0.35 : 1 }}>
-                        {fwEffectsHtml && <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', opacity: isNextWeekDay ? 0.7 : 1 }} dangerouslySetInnerHTML={{ __html: fwEffectsHtml }} />}
+                        {isTodayForecast && fwEffectsHtml && <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }} dangerouslySetInnerHTML={{ __html: fwEffectsHtml }} />}
                       </div>
                     )}
                     {isTodayForecast && weatherAlerts.length > 0 && (
@@ -27823,9 +27795,8 @@ export default function Dashboard() {
                                   @keyframes twinkle { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
                                   @keyframes rainDrop { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(50px); opacity: 0; } }
                                   @keyframes snowFall { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 15% { opacity: 1; } 100% { transform: translateY(50px) rotate(180deg); opacity: 0; } }
-                                  @keyframes fwRainDrop { 0% { transform: translateY(-2px); opacity: 0; } 10% { opacity: 1; } 100% { transform: translateY(70px); opacity: 0.3; } }
-                                  @keyframes fwSnowFallLeft { 0% { transform: translate(0,-2px) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 100% { transform: translate(-8px,65px) rotate(270deg); opacity: 0; } }
-                                  @keyframes fwSnowFallRight { 0% { transform: translate(0,-2px) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 100% { transform: translate(8px,65px) rotate(-270deg); opacity: 0; } }
+                                  @keyframes fwRainSheet { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
+                                  @keyframes fwSnowDrift { 0% { transform: translate(-3px, -2px); } 100% { transform: translate(3px, 2px); } }
                                   @keyframes fogDrift { 0% { transform: translateX(-5px); } 100% { transform: translateX(5px); } }
                                   @keyframes lightningFlash { 0%,89%,91%,93%,100% { opacity: 0; } 90% { opacity: 1; } 92% { opacity: 0.6; } }
                                 `}</style>
