@@ -3710,7 +3710,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                           Module
                         </button>
                         {weekFiles.length > 0 && (
-                          <span className="text-[8px] text-white ml-auto">{weekFiles.length} file{weekFiles.length !== 1 ? 's' : ''}</span>
+                          <span className="text-[10px] text-white ml-auto">{weekFiles.length} file{weekFiles.length !== 1 ? 's' : ''}</span>
                         )}
                       </div>
 
@@ -3967,7 +3967,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                           Module
                         </button>
                         {weekFiles.length > 0 && (
-                          <span className="text-[8px] text-white ml-auto">{weekFiles.length} file{weekFiles.length !== 1 ? 's' : ''}</span>
+                          <span className="text-[10px] text-white ml-auto">{weekFiles.length} file{weekFiles.length !== 1 ? 's' : ''}</span>
                         )}
                       </div>
                     </div>
