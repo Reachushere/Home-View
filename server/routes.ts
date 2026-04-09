@@ -135,6 +135,22 @@ const CAT_ECHO_ENTITIES = [
 const SPOTIFYPLUS_ENTITY = "media_player.spotifyplus_byhomeyyz";
 const EVERYWHERE_GROUP_ENTITY = "media_player.byhome";
 
+const NABU_CASA_URL = "https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa";
+
+interface AutomationLogEntry {
+  ts: string;
+  tag: string;
+  msg: string;
+  data?: any;
+}
+const automationLog: AutomationLogEntry[] = [];
+function aLog(tag: string, msg: string, data?: any) {
+  const entry: AutomationLogEntry = { ts: new Date().toISOString(), tag, msg, ...(data !== undefined ? { data } : {}) };
+  automationLog.push(entry);
+  if (automationLog.length > 500) automationLog.shift();
+  console.log(`[${tag}] ${msg}${data ? ' ' + JSON.stringify(data) : ''}`);
+}
+
 async function haFetch(url: string, options: RequestInit = {}, maxRetries = 3, label = 'HA'): Promise<Response> {
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     let timer: ReturnType<typeof setTimeout> | null = null;
@@ -713,14 +729,9 @@ async function sendNextChunk() {
     
     if (isNonAlexa) {
       const audioPath = await generateAndSaveTTSAudio(nextChunk, `tts-chunk-${Date.now()}`, "echo");
-      console.log(`[TTS] Non-Alexa: Generated audio at ${audioPath}, playing on ${targetEntity}`);
-      
-      let playUrl: string | null = await uploadAudioToHA(audioPath);
-      if (!playUrl) {
-        console.log(`[TTS] HA upload failed, falling back to direct URL`);
-        playUrl = `${DEPLOYED_APP_URL}${audioPath}`;
-      }
-      console.log(`[TTS] Non-Alexa: Playing via ${playUrl}`);
+      const appUrl = DEPLOYED_APP_URL;
+      const fullAudioUrl = `${appUrl}${audioPath}`;
+      aLog('TTS-Chunk', `Non-Alexa: Generated audio at ${audioPath}, playing on ${targetEntity}`, { fullAudioUrl, appUrl, targetEntity });
       
       response = await fetch(`${haUrl}/api/services/media_player/play_media`, {
         method: 'POST',
@@ -730,7 +741,7 @@ async function sendNextChunk() {
         },
         body: JSON.stringify({
           entity_id: targetEntity,
-          media_content_id: playUrl,
+          media_content_id: fullAudioUrl,
           media_content_type: "music",
         }),
       });
@@ -8253,21 +8264,16 @@ async function pollStatus(timeout){
 
       if (isNonAlexa) {
         const audioPath = await generateAndSaveTTSAudio(cleanedText, `speaker-tts-${Date.now()}`);
-        console.log(`[TTS Speaker] Non-Alexa: Generated audio at ${audioPath}, playing on ${entityId} via play_media`);
-
-        let speakerPlayUrl: string | null = await uploadAudioToHA(audioPath);
-        if (!speakerPlayUrl) {
-          console.log(`[TTS Speaker] HA upload failed, falling back to direct URL`);
-          speakerPlayUrl = `${DEPLOYED_APP_URL}${audioPath}`;
-        }
-        console.log(`[TTS Speaker] Non-Alexa: Playing via ${speakerPlayUrl}`);
+        const appUrl = DEPLOYED_APP_URL;
+        const fullAudioUrl = `${appUrl}${audioPath}`;
+        aLog('TTS-Speaker', `Non-Alexa: Generated audio at ${audioPath}, playing on ${entityId}`, { fullAudioUrl, appUrl, entityId });
 
         playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({
             entity_id: entityId,
-            media_content_id: speakerPlayUrl,
+            media_content_id: fullAudioUrl,
             media_content_type: "music",
           }),
         });
@@ -9150,6 +9156,107 @@ async function pollStatus(timeout){
 
     console.log(`[Nest Diag] FULL RESULTS: ${JSON.stringify(results, null, 2)}`);
     res.json(results);
+  });
+
+  app.get("/api/automation-log", async (req, res) => {
+    const limit = Math.min(Number(req.query.limit) || 100, 500);
+    const tag = req.query.tag as string | undefined;
+    const since = req.query.since as string | undefined;
+    let entries = automationLog.slice(-limit);
+    if (tag) entries = entries.filter(e => e.tag.toLowerCase().includes(tag.toLowerCase()));
+    if (since) entries = entries.filter(e => e.ts >= since);
+    res.json({
+      total: automationLog.length,
+      returned: entries.length,
+      config: {
+        DEPLOYED_APP_URL,
+        HOME_ASSISTANT_URL,
+        NEST_SPEAKER_ENTITY,
+        CAT_WR_HA_VOICE_ENTITY,
+        HA_CLOUD_TTS_ENTITY,
+        NON_ALEXA_ENTITIES,
+        hasToken: !!HOME_ASSISTANT_TOKEN,
+        tokenPrefix: HOME_ASSISTANT_TOKEN ? HOME_ASSISTANT_TOKEN.substring(0, 8) + '...' : 'NONE',
+      },
+      entries,
+    });
+  });
+
+  app.get("/api/automation-diag", async (_req, res) => {
+    const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+    const diag: any = {
+      timestamp: new Date().toISOString(),
+      config: {
+        DEPLOYED_APP_URL,
+        HOME_ASSISTANT_URL,
+        NABU_CASA_URL,
+        NEST_SPEAKER_ENTITY,
+        CAT_WR_HA_VOICE_ENTITY,
+        HA_CLOUD_TTS_ENTITY,
+        NEST_CLOUD_TTS_VOICE: "GuyNeural",
+        NON_ALEXA_ENTITIES,
+        hasToken: !!HOME_ASSISTANT_TOKEN,
+      },
+      speakers: {},
+      ttsEntities: {},
+      recentLog: automationLog.slice(-20),
+    };
+
+    try {
+      for (const entity of [NEST_SPEAKER_ENTITY, CAT_WR_HA_VOICE_ENTITY, ...CAT_ECHO_ENTITIES]) {
+        try {
+          const resp = await fetch(`${haUrl}/api/states/${entity}`, {
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` },
+          });
+          if (resp.ok) {
+            const data = await resp.json() as any;
+            diag.speakers[entity] = {
+              state: data.state,
+              volume: data.attributes?.volume_level,
+              media_title: data.attributes?.media_title,
+              friendly_name: data.attributes?.friendly_name,
+              source: data.attributes?.source,
+            };
+          } else {
+            diag.speakers[entity] = { error: `HTTP ${resp.status}` };
+          }
+        } catch (e: any) {
+          diag.speakers[entity] = { error: e.message };
+        }
+      }
+
+      try {
+        const resp = await fetch(`${haUrl}/api/states/${HA_CLOUD_TTS_ENTITY}`, {
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` },
+        });
+        if (resp.ok) {
+          const data = await resp.json() as any;
+          diag.ttsEntities[HA_CLOUD_TTS_ENTITY] = {
+            state: data.state,
+            attributes: data.attributes,
+          };
+        } else {
+          diag.ttsEntities[HA_CLOUD_TTS_ENTITY] = { error: `HTTP ${resp.status}` };
+        }
+      } catch (e: any) {
+        diag.ttsEntities[HA_CLOUD_TTS_ENTITY] = { error: e.message };
+      }
+
+      try {
+        const resp = await fetch(`${haUrl}/api/services`, {
+          headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` },
+        });
+        if (resp.ok) {
+          const services = await resp.json() as any[];
+          const ttsServices = services.find((s: any) => s.domain === 'tts');
+          diag.availableTTSServices = ttsServices ? Object.keys(ttsServices.services || {}) : [];
+        }
+      } catch {}
+    } catch (e: any) {
+      diag.error = e.message;
+    }
+
+    res.json(diag);
   });
 
   // POST /api/ha-push/reminder - Send a push notification reminder for a specific task via Home Assistant
@@ -11812,8 +11919,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     });
 
     const picked = withMeta[0];
-    console.log(`[FileOrder] ${allEligible.length} unlistened files (${eligible.length} eligible, modulesBlock=${hasAnyUnlistenedModule}), picking: ${picked.file.originalName} (course=${picked.coursePriority}, week=${picked.weekNum}, id=${picked.file.id})`);
-    console.log(`[FileOrder] ALL candidates sorted: ${withMeta.map(w => `${w.file.originalName}(pri=${w.coursePriority},w=${w.weekNum},mod=${w.isModule},folder=${w.file.folder},id=${w.file.id},listened=${w.file.listened})`).join(' | ')}`);
+    aLog('FileOrder', `${allEligible.length} unlistened files (${eligible.length} eligible, modulesBlock=${hasAnyUnlistenedModule}), picking: ${picked.file.originalName} (course=${picked.coursePriority}, week=${picked.weekNum}, id=${picked.file.id})`);
+    aLog('FileOrder', `ALL candidates sorted: ${withMeta.map(w => `${w.file.originalName}(pri=${w.coursePriority},w=${w.weekNum},mod=${w.isModule},folder=${w.file.folder},id=${w.file.id},listened=${w.file.listened})`).join(' | ')}`);
     if (picked.coursePriority > 1) {
       const higherPriFiles = allForWeek.filter((f: any) => {
         const folder = (f.folder || '').toLowerCase();
@@ -12446,10 +12553,9 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     }
   }
 
-  const NABU_CASA_URL = "https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa";
-
   async function uploadAudioToHA(audioPath: string): Promise<string | null> {
     const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+    aLog('HA-Upload', `Uploading audio: ${audioPath}`);
     try {
       const pathMod = await import("path");
       const localPath = audioPath.startsWith('/') ? audioPath : `/${audioPath}`;
@@ -12497,7 +12603,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       const result = await uploadResp.json() as any;
       const mediaId = result.media_content_id || `media-source://media_source/local/./${fileName}`;
       const cloudUrl = `${NABU_CASA_URL}/media/local/${fileName}`;
-      console.log(`[HA Upload] Uploaded ${fileName} (${Math.round(audioBuffer.length / 1024)}KB) → Nabu Casa URL: ${cloudUrl}`);
+      aLog('HA-Upload', `Uploaded ${fileName} (${Math.round(audioBuffer.length / 1024)}KB) → Nabu Casa URL: ${cloudUrl}`);
       return cloudUrl;
     } catch (e: any) {
       console.error(`[HA Upload] Error: ${e.message}`);
@@ -12509,6 +12615,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
   async function nestCloudTTSPlay(text: string): Promise<{ success: boolean; actuallyPlaying: boolean }> {
     const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+    aLog('Nest-CloudTTS', `Calling tts/speak with entity=${HA_CLOUD_TTS_ENTITY}, voice=${NEST_CLOUD_TTS_VOICE}, textLen=${text.length}`);
     try {
       const ttsResp = await fetch(`${haUrl}/api/services/tts/speak`, {
         method: 'POST',
@@ -12516,7 +12623,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         body: JSON.stringify({ entity_id: HA_CLOUD_TTS_ENTITY, media_player_entity_id: NEST_SPEAKER_ENTITY, message: text.substring(0, 3500), language: "en-US", options: { voice: NEST_CLOUD_TTS_VOICE } })
       });
       if (!ttsResp.ok) {
-        console.error(`[Nest] tts/speak failed: ${ttsResp.status}`);
+        const errBody = await ttsResp.text().catch(() => '');
+        aLog('Nest-CloudTTS', `tts/speak FAILED: ${ttsResp.status}`, { errBody: errBody.substring(0, 300) });
         return { success: false, actuallyPlaying: false };
       }
       const ttsData = await ttsResp.json() as any[];
@@ -12542,7 +12650,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   }
 
   async function playOnNestSpeaker(audioUrl: string, maxRetries: number = 2, ttsText?: string): Promise<{ success: boolean; actuallyPlaying: boolean }> {
-    console.log(`[Nest] Playing audio${ttsText ? ` (${ttsText.length} chars)` : ''} via Edge TTS → HA upload`);
+    aLog('Nest-Play', `Playing audio${ttsText ? ` (${ttsText.length} chars)` : ''} via Edge TTS → HA upload`, { audioUrl, maxRetries, hasTtsText: !!ttsText });
     try {
       await haServiceCallSafe('media_player/media_stop', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Pre-Stop');
     } catch {}
