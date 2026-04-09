@@ -5628,8 +5628,9 @@ export default function Dashboard() {
         for (const cy of candidateYs) {
           const leg1 = hitsObstacle(startX, startY, tX, startY);
           const leg2 = hitsObstacle(tX, startY, tX, cy);
-          const leg3 = hitsObstacle(tX, cy, taskLeftX, cy);
-          const leg4 = hitsObstacle(taskLeftX, cy, taskLeftX, taskMidY);
+          const dX = taskLeftX - 10;
+          const leg3 = hitsObstacle(tX, cy, dX, cy);
+          const leg4 = hitsObstacle(dX, cy, dX, taskMidY);
           const hits = (leg1 ? 1 : 0) + (leg2 ? 1 : 0) + (leg3 ? 1 : 0) + (leg4 ? 1 : 0);
           const dist = Math.abs(cy - taskMidY) + Math.abs(tX - taskLeftX);
           const score = hits * 10000 + dist;
@@ -5643,11 +5644,13 @@ export default function Dashboard() {
 
       const routeY = bestRoute?.routeY ?? taskRect.top - 8;
       const finalTurnX = bestRoute?.turnX ?? taskLeftX + 4;
+      const downX = taskLeftX - 10;
+      const half = barThickness / 2;
 
-      container.appendChild(makeSeg(startX, startY, finalTurnX, startY));
-      container.appendChild(makeSeg(finalTurnX, startY, finalTurnX, routeY));
-      container.appendChild(makeSeg(finalTurnX, routeY, taskLeftX, routeY));
-      container.appendChild(makeSeg(taskLeftX, routeY, taskLeftX, taskMidY));
+      container.appendChild(makeSeg(startX, startY, finalTurnX + half, startY));
+      container.appendChild(makeSeg(finalTurnX, startY - half, finalTurnX, routeY + half));
+      container.appendChild(makeSeg(finalTurnX - half, routeY, downX + half, routeY));
+      container.appendChild(makeSeg(downX, routeY - half, downX, taskMidY));
 
       if (taskOffScreenRight) {
         const arrowEl = document.createElement('div');
