@@ -29176,7 +29176,7 @@ export default function Dashboard() {
                           const badgeGrad = getCourseGradientColors(cCode2);
                           return (
                             <div 
-                              style={{ position: 'absolute', top: 0, left: '7px', right: '-1px', height: '16px', background: badgeGrad.start, zIndex: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', cursor: 'pointer' }}
+                              style={{ position: 'absolute', top: 0, left: '0px', right: '-1px', height: '16px', background: badgeGrad.start, zIndex: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', cursor: 'pointer' }}
                               onMouseEnter={() => setHoveredCountdownTaskIdDebounced(nextTask.id)}
                               onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                               onClick={(e) => {
@@ -30179,6 +30179,7 @@ export default function Dashboard() {
                           style={{
                             borderLeft: isSameDayET(day, new Date()) ? 'none' : day.getDay() === 6 ? 'none' : '1.5px dotted rgba(0,0,0,0.25)',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined,
+                            overflow: 'hidden',
                             backgroundColor: (() => {
                               if (isToday || isCurrentHour) return '#e4ecf5';
                               if (isNightShiftSleepHour) return nightSleepColor;
@@ -30362,7 +30363,7 @@ export default function Dashboard() {
                                     </div>
                                   </div>
                                 )}
-                                <div className="absolute z-[3] pointer-events-none" style={{ top: '2px', bottom: '2px', left: (hourTasks.length > 0 || continuingTasks.length > 0) ? 'calc(50% + 8px)' : `${gridSizes.timeSlotHeight + 57}px`, right: '26px', display: 'flex', gap: '4px' }} data-testid="hours-until-next-task">
+                                <div className="absolute z-[3] pointer-events-none" style={{ top: '2px', bottom: '2px', left: (hourTasks.length > 0 || continuingTasks.length > 0) ? 'calc(50% + 8px)' : '6px', right: '22px', display: 'flex', gap: '4px' }} data-testid="hours-until-next-task">
                                   {(() => {
                                     const courseCode = nextSchoolTask?.courseName?.split(' - ')[0]?.trim() || '';
                                     const gradColors = getCourseGradientColors(courseCode);
