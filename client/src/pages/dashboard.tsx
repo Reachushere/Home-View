@@ -30826,7 +30826,7 @@ export default function Dashboard() {
           {/* Set Default checkbox — below calendar */}
           <button
             className="cursor-pointer select-none hover:opacity-80 transition-opacity"
-            style={{ position: 'absolute', right: '0px', bottom: '-15px', display: 'flex', alignItems: 'center', gap: '4px', zIndex: 60, background: 'none', border: 'none', padding: '4px 6px', pointerEvents: 'auto', WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
+            style={{ position: 'absolute', right: '0px', bottom: '-19px', display: 'flex', alignItems: 'center', gap: '4px', zIndex: 60, background: 'none', border: 'none', padding: '4px 6px', pointerEvents: 'auto', WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
