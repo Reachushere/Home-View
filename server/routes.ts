@@ -4457,7 +4457,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
             if (viewStart && viewEnd) {
               for (const f of courseFolders) {
                 if (!f.folder) continue;
-                const dateMatch = f.name.match(/(\w+)\s+(\d+)\s*-\s*(?:(\w+)\s+)?(\d+)/);
+                const stripped = f.name.replace(/^week\s+\d+\s*[-–—]\s*/i, '');
+                const dateMatch = stripped.match(/(\w+)\s+(\d+)\s*[-–—]\s*(?:(\w+)\s+)?(\d+)/);
                 if (!dateMatch) continue;
                 const months: Record<string, number> = { jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11 };
                 const m1 = months[dateMatch[1].toLowerCase()];
@@ -17468,7 +17469,8 @@ document.body.removeChild(a);
         const viewEnd = req.body.weekEndDate ? new Date(req.body.weekEndDate) : new Date(viewStart.getTime() + 6 * 86400000);
         for (const f of weekFolders) {
           if (f.type !== 'folder') continue;
-          const dateMatch = f.name.match(/(\w+)\s+(\d+)\s*-\s*(?:(\w+)\s+)?(\d+)/);
+          const stripped = f.name.replace(/^week\s+\d+\s*[-–—]\s*/i, '');
+          const dateMatch = stripped.match(/(\w+)\s+(\d+)\s*[-–—]\s*(?:(\w+)\s+)?(\d+)/);
           if (!dateMatch) continue;
           const months: Record<string, number> = { jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11 };
           const m1 = months[dateMatch[1].toLowerCase()];
