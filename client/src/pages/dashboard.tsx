@@ -38028,13 +38028,13 @@ function ProfileForm({
             <button
               type="button"
               className="absolute right-1 top-1/2 -translate-y-1/2 p-1 transition-colors"
-              style={{ color: 'rgba(0,0,0,0.45)' }}
-              onMouseEnter={(e) => { e.currentTarget.style.color = 'rgba(0,0,0,0.75)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(0,0,0,0.45)'; }}
+              style={{ color: 'rgba(0,0,0,0.55)' }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = 'rgba(0,0,0,0.85)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(0,0,0,0.55)'; }}
               onClick={() => setShowOsapPassword(prev => !prev)}
               data-testid="button-toggle-osap-password"
             >
-              {showOsapPassword ? <EyeOff className="w-3.5 h-3.5" style={{ color: 'inherit' }} /> : <Eye className="w-3.5 h-3.5" style={{ color: 'inherit' }} />}
+              {showOsapPassword ? <EyeOff className="w-4 h-4" style={{ color: 'inherit' }} /> : <Eye className="w-4 h-4" style={{ color: 'inherit' }} />}
             </button>
           </div>
         </div>
