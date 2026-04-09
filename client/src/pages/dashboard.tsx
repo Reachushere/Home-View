@@ -24466,8 +24466,9 @@ export default function Dashboard() {
                   }}
                 />
               </div>
-              <div className="flex justify-end px-4 py-[10px] border-t border-white/40 shrink-0 rounded-b-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, ${colorSettings.headerBar}bb 0%, ${colorSettings.headerBar}cc 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15), 0 -2px 8px rgba(0,0,0,0.08)' }}>
+              <div className="flex justify-between px-4 py-[10px] border-t border-white/40 shrink-0 rounded-b-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, ${colorSettings.headerBar}bb 0%, ${colorSettings.headerBar}cc 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15), 0 -2px 8px rgba(0,0,0,0.08)' }}>
                 <button onClick={() => setIsProfileDialogOpen(false)} className="px-5 py-[5px] rounded text-[11px] font-medium text-white/80 hover:text-white transition-colors" style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)' }} data-testid="button-close-profile">Close</button>
+                <button onClick={() => { const form = document.querySelector('[data-testid="input-profile-firstname"]')?.closest('form'); if (form) form.requestSubmit(); }} className="px-5 py-[5px] rounded text-[11px] font-medium text-white hover:text-white transition-colors" style={{ background: 'rgba(255,255,255,0.18)', border: '1px solid rgba(255,255,255,0.4)', boxShadow: '0 0 6px rgba(255,255,255,0.4), 0 0 12px rgba(255,255,255,0.2)' }} data-testid="button-save-profile">Save Profile</button>
               </div>
             </DialogContent>
           </Dialog>
@@ -38007,20 +38008,6 @@ function ProfileForm({
         </div>
       </div>
 
-      <div className="flex justify-end" style={{ marginTop: '22px' }}>
-        <Button 
-          type="submit" 
-          variant="outline"
-          className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-opacity duration-200 h-8 px-6" 
-          style={{
-            boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
-            fontSize: '12px'
-          }}
-          data-testid="button-save-profile"
-        >
-          Save Profile
-        </Button>
-      </div>
     </form>
   );
 }
