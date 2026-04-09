@@ -2534,6 +2534,20 @@ input[type="date"]::-webkit-datetime-edit-year-field {
   animation: alertBarShimmer 6s ease-in-out infinite;
 }
 
+.shift-bar-shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.45) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shiftBarShimmer 3s ease-in-out infinite;
+}
+
+@keyframes shiftBarShimmer {
+  0% { background-position: -200% 0; opacity: 0; }
+  15% { opacity: 1; }
+  50% { background-position: 200% 0; opacity: 1; }
+  65% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
 @keyframes countdownBarPulse {
   0%, 100% { opacity: 0.8; }
   50% { opacity: 1; }

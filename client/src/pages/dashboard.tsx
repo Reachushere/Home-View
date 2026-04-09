@@ -27636,10 +27636,20 @@ export default function Dashboard() {
                       />
                     )}
                     {!isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && shiftForDay === 'day' && (
-                      <div className="absolute top-0 left-0 right-0" style={{ height: '5px', backgroundColor: sleepDisabledDays.has(shiftDateStr) ? 'rgba(255, 178, 50, 0.3)' : 'rgba(255, 178, 50, 0.85)', zIndex: 15 }} />
+                      <div className="absolute top-0 left-0 right-0" style={{ height: '5px', zIndex: 15, overflow: 'hidden' }}>
+                        <div style={{ position: 'absolute', inset: 0, backgroundColor: sleepDisabledDays.has(shiftDateStr) ? 'rgba(255, 178, 50, 0.3)' : 'rgba(255, 178, 50, 0.85)' }} />
+                        {!sleepDisabledDays.has(shiftDateStr) && (isSameDayET(day, new Date()) || isSameDayET(day, addDays(new Date(), 1))) && (
+                          <div className="shift-bar-shimmer" style={{ position: 'absolute', inset: 0 }} />
+                        )}
+                      </div>
                     )}
                     {!isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && shiftForDay === 'night' && (
-                      <div className="absolute bottom-0 left-0 right-0" style={{ height: '5px', backgroundColor: sleepDisabledDays.has(shiftDateStr) ? 'rgba(168, 85, 247, 0.3)' : 'rgba(168, 85, 247, 0.85)', zIndex: 15 }} />
+                      <div className="absolute bottom-0 left-0 right-0" style={{ height: '5px', zIndex: 15, overflow: 'hidden' }}>
+                        <div style={{ position: 'absolute', inset: 0, backgroundColor: sleepDisabledDays.has(shiftDateStr) ? 'rgba(168, 85, 247, 0.3)' : 'rgba(168, 85, 247, 0.85)' }} />
+                        {!sleepDisabledDays.has(shiftDateStr) && (isSameDayET(day, new Date()) || isSameDayET(day, addDays(new Date(), 1))) && (
+                          <div className="shift-bar-shimmer" style={{ position: 'absolute', inset: 0 }} />
+                        )}
+                      </div>
                     )}
                     {(() => {
                       const hasShiftBar = !isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && (shiftForDay === 'day' || shiftForDay === 'night');
