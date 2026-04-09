@@ -6671,6 +6671,7 @@ export default function Dashboard() {
     let zoomLink = '';
     let moduleFolder = '';
     let readingFolder = '';
+    let displayName = '';
     let professor = matchedCourse?.professor || '';
     let professorEmail = matchedCourse?.professorEmail || '';
     let color = matchedCourse?.color || '#6366F1';
@@ -6702,6 +6703,7 @@ export default function Dashboard() {
           courseType = (sem as any)[`${prefix}CourseType`] || '';
           moduleFolder = (sem as any)[`${prefix}ModuleFolder`] || '';
           readingFolder = (sem as any)[`${prefix}ReadingFolder`] || '';
+          displayName = (sem as any)[`${prefix}DisplayName`] || '';
           if (!professor) professor = (sem as any)[`${prefix}Professor`] || '';
           if (!professorEmail) professorEmail = (sem as any)[`${prefix}ProfessorEmail`] || '';
           const semType = (sem as any).semesterType || '';
@@ -6791,6 +6793,7 @@ export default function Dashboard() {
       year,
       moduleFolder,
       readingFolder,
+      displayName,
     };
   };
 
@@ -18588,6 +18591,7 @@ export default function Dashboard() {
                       if ((updates as any).springSummerTerm !== undefined) payload[`${prefix}SpringSummerTerm`] = (updates as any).springSummerTerm;
                       if ((updates as any).moduleFolder !== undefined) payload[`${prefix}ModuleFolder`] = (updates as any).moduleFolder;
                       if ((updates as any).readingFolder !== undefined) payload[`${prefix}ReadingFolder`] = (updates as any).readingFolder;
+                      if ((updates as any).displayName !== undefined) payload[`${prefix}DisplayName`] = (updates as any).displayName;
                       if (updates.semesterTerm && updates.year && !(updates as any).startDate) {
                         const dates = computeSemesterDates(updates.semesterTerm, updates.year);
                         if (dates.startDate) {

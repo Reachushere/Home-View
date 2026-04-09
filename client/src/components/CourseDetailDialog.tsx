@@ -106,12 +106,13 @@ interface CourseInfo {
   year?: string;
   moduleFolder?: string;
   readingFolder?: string;
+  displayName?: string;
 }
 
 interface CourseDetailDialogProps {
   courseInfo: CourseInfo;
   onClose: () => void;
-  onSaveCourseInfo?: (updates: { courseCode?: string; courseName?: string; professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; classTime2?: string; classEndTime2?: string; zoomLink?: string; semesterTerm?: string; year?: string; startDate?: string; endDate?: string; color?: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; courseFontColor?: string; semesterKey?: string; courseRank?: number; springSummerTerm?: string; moduleFolder?: string; readingFolder?: string }) => void;
+  onSaveCourseInfo?: (updates: { courseCode?: string; courseName?: string; professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; classTime2?: string; classEndTime2?: string; zoomLink?: string; semesterTerm?: string; year?: string; startDate?: string; endDate?: string; color?: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; courseFontColor?: string; semesterKey?: string; courseRank?: number; springSummerTerm?: string; moduleFolder?: string; readingFolder?: string; displayName?: string }) => void;
   onLiveColorChange?: (updates: { color?: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; courseFontColor?: string }) => void;
   onGradeCalculated?: (grade: string, percent: string) => void;
   onDeleteCourse?: () => void;
@@ -587,6 +588,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
     springSummerTerm: courseSpSuTerm || 'full',
     moduleFolder: courseInfo.moduleFolder || '',
     readingFolder: courseInfo.readingFolder || '',
+    displayName: courseInfo.displayName || '',
   });
   const [moduleFolderValid, setModuleFolderValid] = useState<boolean | null>(null);
   const [readingFolderValid, setReadingFolderValid] = useState<boolean | null>(null);
@@ -2316,7 +2318,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                         data-testid="button-delete-syllabus"
                       />
                 </div>
-                <div className="grid grid-cols-[1fr_2fr] gap-2 mb-2">
+                <div className="grid grid-cols-[1fr_1.5fr_1fr] gap-2 mb-2">
                   <div>
                     <label className="text-white text-[9px] mb-0.5 block font-semibold">Course Code</label>
                     <input className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1.5 placeholder:text-white/25 uppercase" value={editInfo.courseCode} onChange={(e) => setEditInfo({...editInfo, courseCode: e.target.value.toUpperCase()})} placeholder="CPPA122" data-testid="input-edit-course-code" />
@@ -2324,6 +2326,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   <div>
                     <label className="text-white text-[9px] mb-0.5 block font-semibold">Course Name</label>
                     <input className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1.5 placeholder:text-white/25" value={editInfo.courseName} onChange={(e) => setEditInfo({...editInfo, courseName: e.target.value})} placeholder="Local Politics" data-testid="input-edit-course-name" />
+                  </div>
+                  <div>
+                    <label className="text-white text-[9px] mb-0.5 block font-semibold">Display Name</label>
+                    <input className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1.5 placeholder:text-white/25" value={editInfo.displayName} onChange={(e) => setEditInfo({...editInfo, displayName: e.target.value})} placeholder="Cal label" data-testid="input-edit-display-name" />
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-2">
