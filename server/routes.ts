@@ -17438,11 +17438,9 @@ document.body.removeChild(a);
       const baseFolders = await listOneDriveItems(basePath);
       let coursePath: string | null = null;
       if (overrideModule) {
-        const parts = overrideModule.split('/');
-        coursePath = parts.slice(0, -1).join('/');
+        coursePath = overrideModule;
       } else if (overrideReading) {
-        const parts = overrideReading.split('/');
-        coursePath = parts.slice(0, -1).join('/');
+        coursePath = overrideReading;
       }
       if (!coursePath) {
         let searchCode = courseCode.toUpperCase();
