@@ -37969,7 +37969,7 @@ function ProfileForm({
         </div>
       </div>
 
-      <div className="flex gap-[6px]" style={{ marginTop: '6px' }}>
+      <div className="flex gap-[6px]" style={{ marginTop: '12px' }}>
         <div className="space-y-0 w-1/2">
           <Label htmlFor="studentNumber" className="text-[10px]">Student Number</Label>
           <Input
@@ -37997,7 +37997,7 @@ function ProfileForm({
           />
         </div>
       </div>
-      <div className="flex gap-[6px]" style={{ marginTop: '2px' }}>
+      <div className="flex gap-[6px]" style={{ marginTop: '12px' }}>
         <div className="space-y-0 w-1/3">
           <Label htmlFor="osapNumber" className="text-[10px]">OSAP Access Number (OAN)</Label>
           <Input
