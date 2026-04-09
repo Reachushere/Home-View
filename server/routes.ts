@@ -15391,9 +15391,34 @@ document.body.removeChild(a);
             console.warn(`${logPrefix} Could not fetch no-motion automation duration: ${e.message}`);
           }
           const pauseText = `Paused. Say re-zoom to continue, or I'll stop in ${noMotionMinutes} minutes.`;
-          const pausePath = await generateAndSaveTTSAudio(pauseText, `vc-pause-${Date.now()}`);
-          await playOnNestSpeaker(`${appUrl}${pausePath}`, 2, pauseText);
-        } catch {}
+          console.log(`[Voice Command] Pause TTS text: "${pauseText}"`);
+          await new Promise(r => setTimeout(r, 3000));
+          try {
+            await haServiceCallSafe('media_player/turn_on', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Pre-Pause Wake');
+          } catch (e: any) { console.warn(`[Voice Command] Pre-pause wake error (non-fatal): ${e.message}`); }
+          await new Promise(r => setTimeout(r, 1000));
+          let pausePlayed = false;
+          try {
+            await haServiceCall('tts/speak', {
+              entity_id: HA_CLOUD_TTS_ENTITY,
+              media_player_entity_id: NEST_SPEAKER_ENTITY,
+              message: pauseText,
+              language: "en-US",
+              options: { voice: NEST_CLOUD_TTS_VOICE }
+            }, 'Pause Cloud TTS on Nest');
+            pausePlayed = true;
+            console.log(`[Voice Command] Pause TTS played via HA Cloud TTS on Nest speaker`);
+          } catch (e: any) {
+            console.warn(`[Voice Command] Pause Cloud TTS failed: ${e.message} — falling back to Edge TTS`);
+          }
+          if (!pausePlayed) {
+            const pausePath = await generateAndSaveTTSAudio(pauseText, `vc-pause-${Date.now()}`);
+            const pauseResult = await playOnNestSpeaker(`${appUrl}${pausePath}`, 2, pauseText);
+            console.log(`[Voice Command] Pause TTS via Edge TTS: success=${pauseResult.success}, playing=${pauseResult.actuallyPlaying}`);
+          }
+        } catch (e: any) {
+          console.error(`[Voice Command] Pause TTS error: ${e.message}`);
+        }
 
         return res.json({ action: "paused", file: fileName, chunk: chunkIndex });
 
