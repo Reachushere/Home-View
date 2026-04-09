@@ -5644,12 +5644,12 @@ export default function Dashboard() {
 
       const routeY = bestRoute?.routeY ?? taskRect.top - 8;
       const finalTurnX = bestRoute?.turnX ?? taskLeftX + 4;
-      const downX = taskLeftX - 20;
+      const downX = taskLeftX - 10;
       const half = barThickness / 2;
 
       const clampedEndY = Math.min(taskMidY, viewportH - 20);
 
-      container.appendChild(makeSeg(startX, startY, finalTurnX, startY));
+      container.appendChild(makeSeg(startX, startY, finalTurnX + half, startY));
       container.appendChild(makeSeg(finalTurnX, startY - half, finalTurnX, routeY + half));
       container.appendChild(makeSeg(finalTurnX - half, routeY, downX + half, routeY));
       container.appendChild(makeSeg(downX, routeY - half, downX, clampedEndY));
