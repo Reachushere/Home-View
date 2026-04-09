@@ -24632,17 +24632,31 @@ export default function Dashboard() {
                     SEMESTERS AND CLASSES
                   </h2>
                 </div>
-                <div
-                  className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    startTransition(() => setIsSchoolCoursesDialogOpen(false));
-                    setTimeout(() => startTransition(() => setIsSettingsPanelOpen(true)), 100);
-                  }}
-                  data-testid="button-courses-degree-tracking"
-                >
-                  <span className="text-white text-[11px] font-medium" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>DEGREE TRACKING</span>
-                  <ChevronRight className="text-white/80" style={{ width: '14px', height: '14px' }} />
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-1.5" data-testid="toggle-d2l-ticker">
+                    <span className="text-white/70 text-[10px] font-medium" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>D2L Ticker</span>
+                    <input
+                      type="checkbox"
+                      checked={d2lTickerEnabled}
+                      onChange={(e) => {
+                        setD2lTickerEnabled(e.target.checked);
+                        localStorage.setItem('d2lTickerEnabled', JSON.stringify(e.target.checked));
+                      }}
+                      className="h-3.5 w-3.5 accent-blue-500 cursor-pointer"
+                    />
+                  </div>
+                  <div
+                    className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      startTransition(() => setIsSchoolCoursesDialogOpen(false));
+                      setTimeout(() => startTransition(() => setIsSettingsPanelOpen(true)), 100);
+                    }}
+                    data-testid="button-courses-degree-tracking"
+                  >
+                    <span className="text-white text-[11px] font-medium" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>DEGREE TRACKING</span>
+                    <ChevronRight className="text-white/80" style={{ width: '14px', height: '14px' }} />
+                  </div>
                 </div>
               </div>
               <div ref={coursesScrollRef} className="flex-1 overflow-y-auto px-4 py-3" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent', color: 'white' }} onScroll={(e) => { setCoursesScrolled((e.target as HTMLDivElement).scrollTop > 100); }}>
@@ -27109,23 +27123,6 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                <div className="border rounded-lg p-3">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label className="text-[10px] font-medium">D2L Ticker</Label>
-                    </div>
-                    <input
-                      type="checkbox"
-                      checked={d2lTickerEnabled}
-                      onChange={(e) => {
-                        setD2lTickerEnabled(e.target.checked);
-                        localStorage.setItem('d2lTickerEnabled', JSON.stringify(e.target.checked));
-                      }}
-                      className="h-4 w-4 accent-blue-500"
-                      data-testid="toggle-d2l-ticker"
-                    />
-                  </div>
-                </div>
 
                 <div className="border rounded-lg p-3">
                   <div className="flex items-center justify-between">
