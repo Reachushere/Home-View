@@ -33204,7 +33204,7 @@ export default function Dashboard() {
                   left: 0,
                   width: `${effectiveDividerPct}%`,
                   height: `${lastBottom - firstTop}px`,
-                  background: '#ffffff',
+                  background: '#1a1a2e',
                   zIndex: 44,
                   borderRadius: '6px',
                 }} />
@@ -33229,7 +33229,7 @@ export default function Dashboard() {
                     top: `${offsetFromUpcoming}px`,
                     left: 0,
                     width: `${effectiveDividerPct}%`,
-                    height: `${rowHeight}px`,
+                    height: `${rowHeight + 1}px`,
                     background: 'transparent',
                     zIndex: 45,
                     display: 'flex',
