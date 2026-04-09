@@ -11708,7 +11708,11 @@ export default function Dashboard() {
     return [...todayTaskTickerItems, ...thisWeekAnnouncements];
   }, [thisWeekAnnouncements, todayTaskTickerItems]);
 
-  const d2lTickerHeight = 38;
+  const [d2lTickerEnabled, setD2lTickerEnabled] = useState<boolean>(() => {
+    const saved = localStorage.getItem('d2lTickerEnabled');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+  const d2lTickerHeight = d2lTickerEnabled ? 38 : 0;
 
   // Time slots for the day view - always show all 24 hours
   const isTravelMode = !!(schoolData.isTravelling || profileData.travelTimezone);
@@ -17301,15 +17305,35 @@ export default function Dashboard() {
       </div>
 
       {/* D2L Announcement Ticker - fixed at very top of page, matches bottom news ticker style */}
-      {weatherAlerts.length > 0 && (
+      {d2lTickerEnabled && weatherAlerts.length > 0 && (
         <>
           <div className="alert-bar-shimmer" style={{ position: 'fixed', top: '37px', left: 0, width: 'calc(50% - 70px - 52px)', height: '3px', backgroundColor: '#ff0000', zIndex: 112, pointerEvents: 'none' }} />
           <div className="alert-bar-shimmer" style={{ position: 'fixed', top: '37px', left: 'calc(50% + 63px + 35px)', right: 0, height: '3px', backgroundColor: '#ff0000', zIndex: 112, pointerEvents: 'none', animationDelay: '0.3s' }} />
         </>
       )}
-      <div className="fixed left-0 right-0 overflow-hidden flex" style={{ top: 0, height: '38px', zIndex: 111, backgroundColor: '#000000', background: 'linear-gradient(90deg, #000000 0%, #14141e 50%, #000000 100%)', borderBottom: '1px solid rgba(255,255,255,0.15)' }} data-testid="announcement-ticker">
-        <div className="flex-shrink-0 flex items-center justify-center cursor-pointer" style={{ height: '38px', width: 'auto' }} onClick={() => setTickerDialogOpen(true)} data-testid="button-ticker-manage">
+      {!d2lTickerEnabled && (
+        <button
+          onClick={() => { setD2lTickerEnabled(true); localStorage.setItem('d2lTickerEnabled', 'true'); }}
+          className="fixed flex items-center justify-center hover:bg-white/10 transition-colors rounded-br"
+          style={{ top: 0, left: 0, width: '28px', height: '28px', zIndex: 111, background: 'rgba(0,0,0,0.6)', border: 'none', cursor: 'pointer' }}
+          data-testid="button-show-d2l-ticker"
+          title="Show D2L ticker"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '14px', height: '14px' }}><polyline points="6 9 12 15 18 9" /></svg>
+        </button>
+      )}
+      <div className="fixed left-0 right-0 overflow-hidden flex" style={{ top: 0, height: '38px', zIndex: 111, backgroundColor: '#000000', background: 'linear-gradient(90deg, #000000 0%, #14141e 50%, #000000 100%)', borderBottom: '1px solid rgba(255,255,255,0.15)', display: d2lTickerEnabled ? 'flex' : 'none' }} data-testid="announcement-ticker">
+        <div className="flex-shrink-0 flex items-center justify-center cursor-pointer" style={{ height: '38px', width: 'auto', position: 'relative' }} onClick={() => setTickerDialogOpen(true)} data-testid="button-ticker-manage">
           <img src={d2lTickerLabel} alt="D2L" style={{ height: '38px', width: 'auto', objectFit: 'contain' }} />
+          <button
+            onClick={(e) => { e.stopPropagation(); setD2lTickerEnabled(false); localStorage.setItem('d2lTickerEnabled', 'false'); }}
+            className="absolute flex items-center justify-center hover:bg-white/20 transition-colors rounded"
+            style={{ top: '2px', left: '2px', width: '18px', height: '18px', background: 'rgba(0,0,0,0.5)', border: 'none', cursor: 'pointer', zIndex: 1 }}
+            data-testid="button-hide-d2l-ticker"
+            title="Hide D2L ticker"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '10px', height: '10px' }}><polyline points="6 15 12 9 18 15" /></svg>
+          </button>
         </div>
         <div className="flex-1 overflow-hidden relative h-full">
           {tickerWithTodayTasks.length > 0 ? (
@@ -27086,6 +27110,24 @@ export default function Dashboard() {
                       }}
                       className="h-4 w-4 accent-blue-500"
                       data-testid="toggle-show-allday-row"
+                    />
+                  </div>
+                </div>
+
+                <div className="border rounded-lg p-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-[10px] font-medium">D2L Ticker</Label>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={d2lTickerEnabled}
+                      onChange={(e) => {
+                        setD2lTickerEnabled(e.target.checked);
+                        localStorage.setItem('d2lTickerEnabled', JSON.stringify(e.target.checked));
+                      }}
+                      className="h-4 w-4 accent-blue-500"
+                      data-testid="toggle-d2l-ticker"
                     />
                   </div>
                 </div>
