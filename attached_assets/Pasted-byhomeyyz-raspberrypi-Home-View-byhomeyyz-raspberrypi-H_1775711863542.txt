@@ -1,0 +1,43 @@
+byhomeyyz@raspberrypi:~/Home-View $ byhomeyyz@raspberrypi:~/Home-View $ cd ~/Home-View && git pull origin main && npm run build && fuser -k 5000/tcp; sleep 2 && pm2 delete dashboard; pm2 start dist/index.cjs --name dashboard --cwd /home/byhomeyyz/Home-View --node-args="-r /home/byhomeyyz/Home-View/preload.cjs" && pm2 save
+remote: Enumerating objects: 202, done.
+remote: Counting objects: 100% (202/202), done.
+remote: Compressing objects: 100% (31/31), done.
+remote: Total 190 (delta 164), reused 185 (delta 159), pack-reused 0 (from 0)
+Receiving objects: 100% (190/190), 1006.62 KiB | 6.75 MiB/s, done.
+Resolving deltas: 100% (164/164), completed with 12 local objects.
+From https://github.com/Reachushere/Home-View
+ * branch                main       -> FETCH_HEAD
+   d47ebc1e4..08005ae0a  main       -> origin/main
+Updating d47ebc1e4..08005ae0a
+Fast-forward
+ attached_assets/image_1775708031642.png      | Bin 0 -> 28539 bytes
+ attached_assets/image_1775708514009.png      | Bin 0 -> 12222 bytes
+ attached_assets/image_1775708685058.png      | Bin 0 -> 27336 bytes
+ attached_assets/image_1775709018388.png      | Bin 0 -> 67961 bytes
+ attached_assets/image_1775709057887.png      | Bin 0 -> 21875 bytes
+ attached_assets/image_1775709312415.png      | Bin 0 -> 89737 bytes
+ attached_assets/image_1775709403875.png      | Bin 0 -> 11846 bytes
+ attached_assets/image_1775709500304.png      | Bin 0 -> 66609 bytes
+ attached_assets/image_1775709654659.png      | Bin 0 -> 4505 bytes
+ attached_assets/image_1775709714981.png      | Bin 0 -> 65026 bytes
+ attached_assets/image_1775709734552.png      | Bin 0 -> 23765 bytes
+ attached_assets/image_1775709759127.png      | Bin 0 -> 32055 bytes
+ attached_assets/image_1775709917433.png      | Bin 0 -> 64090 bytes
+ attached_assets/image_1775709993579.png      | Bin 0 -> 65145 bytes
+ attached_assets/image_1775710122569.png      | Bin 0 -> 26189 bytes
+ attached_assets/image_1775710370767.png      | Bin 0 -> 47134 bytes
+ attached_assets/image_1775710455225.png      | Bin 0 -> 25953 bytes
+ attached_assets/image_1775710502618.png      | Bin 0 -> 52931 bytes
+ attached_assets/image_1775710634611.png      | Bin 0 -> 164323 bytes
+ attached_assets/image_1775710799694.png      | Bin 0 -> 130812 bytes
+ attached_assets/image_1775710853133.png      | Bin 0 -> 23477 bytes
+ client/src/components/CourseDetailDialog.tsx |  65 +++++++++++--
+ client/src/pages/dashboard.tsx               | 342 ++++++++++++++++++++++++++++++++++++++++++-------------------------
+ server/routes.ts                             |   9 +-
+ shared/schema.ts                             |   5 +
+ 25 files changed, 285 insertions(+), 136 deletions(-)
+ create mode 100644 attached_assets/image_1775708031642.png
+ create mode 100644 attached_assets/image_1775708514009.png
+byhomeyyz@raspberrypi:~/Home-View $e/byhomeyyz/Home-View/dist/index.cjs───────┘he next major version of npm. See `npm he
+-bash: byhomeyyz@raspberrypi:~/Home-View: No such file or directory
+[PM2][ERROR] Process or Namespace dashboard not
