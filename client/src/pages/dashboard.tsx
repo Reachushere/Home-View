@@ -5534,11 +5534,6 @@ export default function Dashboard() {
         filteredTaskEl = dayColEl;
         (filteredTaskEl as any).__isDayColFallback = true;
       } else {
-        const label = document.createElement('div');
-        label.style.cssText = `position:absolute;left:${sourceRect.right + 6}px;top:${sourceRect.top - 2}px;background:rgba(30,30,30,0.85);color:#93c5fd;font-size:10px;font-weight:500;padding:2px 6px;border-radius:3px;white-space:nowrap`;
-        label.textContent = 'Not in calendar view';
-        container.appendChild(label);
-        document.body.appendChild(container);
         return;
       }
     }
@@ -5574,105 +5569,14 @@ export default function Dashboard() {
     const clampedTaskMidY = Math.min(taskRect.top + effectiveTaskH / 2, viewportH - 10);
 
     if (isBarSource) {
-      const startX = sourceRect.right;
-      const startY = sourceRect.top + sourceRect.height / 2;
-      const taskMidY = clampedTaskMidY;
-      const taskLeftX = clampedTaskLeftX;
-
       const calendarScrollEl = calendarWrapper;
-      const calendarTop = calendarScrollEl ? calendarScrollEl.getBoundingClientRect().top : 0;
       const calendarBotY = calendarScrollEl ? calendarScrollEl.getBoundingClientRect().bottom : viewportH;
+      const taskLeftX = taskRect.left;
+      const taskMidY = taskRect.top + (isDayColFallback ? Math.min(taskRect.height, 40) / 2 : taskRect.height / 2);
+      const endY = taskMidY > calendarBotY ? calendarBotY - 2 : taskMidY;
+      const startY = sourceRect.top + sourceRect.height / 2;
 
-      const obstacleSelectors = [
-        '[data-testid^="time-task-"]', '[data-testid^="multi-hour-task-"]',
-        '[data-testid^="calendar-task-"]', '[data-testid^="other-task-"]',
-        '[data-testid^="course-module-task-"]', '[data-testid^="course-fullweek-task-"]',
-        '[data-testid^="all-day-task-"]', '[data-testid^="droppable-task-"]',
-        '[data-testid^="task-link-"]', '[data-testid^="other-project-"]',
-        '[data-testid^="gcal-event-"]',
-      ];
-      const obstacles: { left: number; right: number; top: number; bottom: number }[] = [];
-      const searchRoot = calendarScrollEl || document.body;
-      for (const sel of obstacleSelectors) {
-        const els = searchRoot.querySelectorAll(sel);
-        for (const te of els) {
-          if (te === filteredTaskEl) continue;
-          const r = te.getBoundingClientRect();
-          if (r.width > 0 && r.height > 0) {
-            obstacles.push({ left: r.left, right: r.right, top: r.top, bottom: r.bottom });
-          }
-        }
-      }
-
-      const pad = 4;
-      const hitsObstacle = (x1: number, y1: number, x2: number, y2: number) => {
-        const minX = Math.min(x1, x2) - 1;
-        const maxX = Math.max(x1, x2) + 1;
-        const minY = Math.min(y1, y2) - 1;
-        const maxY = Math.max(y1, y2) + 1;
-        return obstacles.some(o =>
-          maxX > o.left - pad && minX < o.right + pad &&
-          maxY > o.top - pad && minY < o.bottom + pad
-        );
-      };
-
-      const candidateYs: number[] = [];
-      const searchMinY = Math.max(calendarTop, 0);
-      const effectiveBottom = isDayColFallback ? taskRect.top + effectiveTaskH : taskRect.bottom;
-      const maxRouteBelow = Math.min(effectiveBottom + 60, calendarBotY);
-      for (let y = taskRect.top - 8; y >= searchMinY; y -= 4) candidateYs.push(y);
-      for (let y = effectiveBottom + 8; y <= maxRouteBelow; y += 4) candidateYs.push(y);
-      candidateYs.push(startY);
-
-      let bestRoute: { routeY: number; turnX: number; score: number } | null = null;
-
-      const turnXOptions = [
-        taskLeftX + 4,
-        Math.max(startX + 10, taskLeftX - 20),
-        Math.min(taskRect.right + 10, viewportW - 15),
-        Math.min(rightEdge - 6, viewportW - 15),
-      ];
-
-      for (const tX of turnXOptions) {
-        for (const cy of candidateYs) {
-          const leg1 = hitsObstacle(startX, startY, tX, startY);
-          const leg2 = hitsObstacle(tX, startY, tX, cy);
-          const dX = taskLeftX - 10;
-          const leg3 = hitsObstacle(tX, cy, dX, cy);
-          const leg4 = hitsObstacle(dX, cy, dX, taskMidY);
-          const hits = (leg1 ? 1 : 0) + (leg2 ? 1 : 0) + (leg3 ? 1 : 0) + (leg4 ? 1 : 0);
-          const dist = Math.abs(cy - taskMidY) + Math.abs(tX - taskLeftX);
-          const score = hits * 10000 + dist;
-          if (!bestRoute || score < bestRoute.score) {
-            bestRoute = { routeY: cy, turnX: tX, score };
-            if (hits === 0) break;
-          }
-        }
-        if (bestRoute && bestRoute.score < 10000) break;
-      }
-
-      const routeY = bestRoute?.routeY ?? taskRect.top - 8;
-      const finalTurnX = bestRoute?.turnX ?? taskLeftX + 4;
-      const downX = taskLeftX - 10;
-      const half = barThickness / 2;
-
-      const clampedEndY = Math.min(taskMidY, calendarBotY - 5);
-
-      container.appendChild(makeSeg(startX, startY, finalTurnX, startY));
-      container.appendChild(makeSeg(finalTurnX, startY, finalTurnX, routeY + half));
-      container.appendChild(makeSeg(finalTurnX - half, routeY, downX + half, routeY));
-      container.appendChild(makeSeg(downX, routeY - half, downX, clampedEndY));
-
-      if (taskOffScreenRight) {
-        const arrowEl = document.createElement('div');
-        arrowEl.style.cssText = `position:absolute;left:${viewportW - 18}px;top:${routeY - 5}px;width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:8px solid ${barColor};opacity:0.8`;
-        container.appendChild(arrowEl);
-      }
-      if (taskOffScreenBottom) {
-        const arrowEl = document.createElement('div');
-        arrowEl.style.cssText = `position:absolute;left:${downX - 5}px;top:${Math.min(viewportH, calendarBotY) - 20}px;width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:8px solid ${barColor};opacity:0.8`;
-        container.appendChild(arrowEl);
-      }
+      container.appendChild(makeSeg(taskLeftX, startY, taskLeftX, endY));
     }
 
     const hlLeft = Math.max(0, taskRect.left - 2);
