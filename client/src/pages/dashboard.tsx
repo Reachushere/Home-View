@@ -4503,12 +4503,16 @@ export default function Dashboard() {
       : columnIndex === -2
         ? gridSizes.moduleColumnWidth
         : gridSizes.dayColumnWidths[columnIndex];
+    const nextIdx = columnIndex + 1;
+    const startWidthNext = columnIndex >= 0 && nextIdx < gridSizes.dayColumnWidths.length
+      ? gridSizes.dayColumnWidths[nextIdx] : undefined;
     setColumnResizing({
       isResizing: true,
       columnIndex,
       startX: clientX,
-      startWidth
-    });
+      startWidth,
+      ...(startWidthNext !== undefined ? { startWidthNext } : {})
+    } as any);
   };
   
   // Handle row resize
@@ -4608,7 +4612,17 @@ export default function Dashboard() {
         } else {
           const newWidths = [...gridSizes.dayColumnWidths];
           const newProportion = Math.max(0.5, columnResizing.startWidth + delta / 100);
-          newWidths[columnResizing.columnIndex] = newProportion;
+          const nextIdx = columnResizing.columnIndex + 1;
+          if (nextIdx < newWidths.length) {
+            const oldProportion = columnResizing.startWidth;
+            const diff = newProportion - oldProportion;
+            const nextOriginal = (columnResizing as any).startWidthNext ?? newWidths[nextIdx];
+            const nextNew = Math.max(0.5, nextOriginal - diff);
+            newWidths[columnResizing.columnIndex] = newProportion;
+            newWidths[nextIdx] = nextNew;
+          } else {
+            newWidths[columnResizing.columnIndex] = newProportion;
+          }
           setGridSizes(prev => ({ ...prev, dayColumnWidths: newWidths }));
         }
       }
@@ -27902,7 +27916,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`flex flex-col items-center justify-center h-full relative`}
-                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'visible' } : day.getDay() === 6 ? { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)' } : { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', borderLeft: '1.5px dotted rgba(255,255,255,0.35)' }}
+                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'hidden', minWidth: 0 } : day.getDay() === 6 ? { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', overflow: 'hidden', minWidth: 0 } : { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', borderLeft: '1.5px dotted rgba(255,255,255,0.35)', overflow: 'hidden', minWidth: 0 }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     
@@ -28473,6 +28487,7 @@ export default function Dashboard() {
                         style={{ zIndex: 9999 }}
                         onMouseDown={(e) => { e.stopPropagation(); handleColumnResizeStart(e, idx); }}
                         onTouchStart={(e) => { e.stopPropagation(); handleColumnResizeStart(e, idx); }}
+                        onDoubleClick={(e) => { e.stopPropagation(); setGridSizes(prev => ({ ...prev, dayColumnWidths: [1, 1, 1, 1, 1, 1, 1] })); }}
                         data-testid={`day-column-resize-handle-${idx}`}
                       />
                     )}
@@ -30216,6 +30231,7 @@ export default function Dashboard() {
                             borderLeft: isSameDayET(day, new Date()) ? 'none' : day.getDay() === 6 ? 'none' : '1.5px dotted rgba(0,0,0,0.25)',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined,
                             overflow: 'hidden',
+                            minWidth: 0,
                             backgroundColor: (() => {
                               if (isToday || isCurrentHour) return '#e4ecf5';
                               if (isNightShiftSleepHour) return nightSleepColor;
