@@ -3489,6 +3489,29 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
+  app.post("/api/reset-course-week-files", async (req, res) => {
+    try {
+      const { courseCode, weekNumber } = req.body;
+      if (!courseCode || !weekNumber) {
+        return res.status(400).json({ error: "courseCode and weekNumber required" });
+      }
+      const allFiles = await storage.getFiles();
+      const folderPrefix = `week-${weekNumber}-${courseCode.toLowerCase()}-`;
+      let resetCount = 0;
+      for (const file of allFiles) {
+        if (file.folder && file.folder.startsWith(folderPrefix)) {
+          await storage.updateFile(file.id, { listened: false, lastChunkIndex: 0, checkedChunks: '' });
+          resetCount++;
+        }
+      }
+      console.log(`[Course Reset] Reset ${resetCount} files for ${courseCode} week ${weekNumber}`);
+      res.json({ success: true, resetCount });
+    } catch (err) {
+      console.error("Error resetting course week files:", err);
+      res.status(500).json({ error: "Failed to reset course week files" });
+    }
+  });
+
   app.get("/api/notepad/notes", async (_req, res) => {
     try {
       const notes = await db.select().from(notepadNotes).orderBy(notepadNotes.sortOrder);
