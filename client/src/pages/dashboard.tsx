@@ -5547,15 +5547,15 @@ export default function Dashboard() {
       if (Math.abs(y1 - y2) < 1) {
         const left = Math.min(x1, x2);
         const w = Math.abs(x2 - x1);
-        seg.style.cssText = `position:absolute;left:${left}px;top:${y1 - barThickness / 2}px;width:${w}px;height:${barThickness}px;background:${barColor};border-radius:1px`;
+        seg.style.cssText = `position:fixed;left:${left}px;top:${y1 - barThickness / 2}px;width:${w}px;height:${barThickness}px;background:${barColor};border-radius:1px;z-index:2147483647;pointer-events:none`;
       } else if (Math.abs(x1 - x2) < 1) {
         const top = Math.min(y1, y2);
         const h = Math.abs(y2 - y1);
-        seg.style.cssText = `position:absolute;left:${x1 - barThickness / 2}px;top:${top}px;width:${barThickness}px;height:${h}px;background:${barColor};border-radius:1px`;
+        seg.style.cssText = `position:fixed;left:${x1 - barThickness / 2}px;top:${top}px;width:${barThickness}px;height:${h}px;background:${barColor};border-radius:1px;z-index:2147483647;pointer-events:none`;
       } else {
         const len = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
         const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
-        seg.style.cssText = `position:absolute;left:${x1}px;top:${y1}px;width:${len}px;height:0;border-top:${barThickness}px solid ${barColor};transform-origin:0 0;transform:rotate(${angle}deg)`;
+        seg.style.cssText = `position:fixed;left:${x1}px;top:${y1}px;width:${len}px;height:0;border-top:${barThickness}px solid ${barColor};transform-origin:0 0;transform:rotate(${angle}deg);z-index:2147483647;pointer-events:none`;
       }
       return seg;
     };
@@ -5591,7 +5591,7 @@ export default function Dashboard() {
     const hlH = Math.max(0, hlBottom - hlTop);
     if (hlW > 0 && hlH > 0 && !taskOffScreenRight) {
       const highlight = document.createElement('div');
-      highlight.style.cssText = `position:absolute;left:${hlLeft}px;top:${hlTop}px;width:${hlW}px;height:${hlH}px;border:2px solid ${barColor};opacity:0.7;border-radius:4px`;
+      highlight.style.cssText = `position:fixed;left:${hlLeft}px;top:${hlTop}px;width:${hlW}px;height:${hlH}px;border:2px solid ${barColor};opacity:0.7;border-radius:4px;z-index:2147483647;pointer-events:none`;
       container.appendChild(highlight);
     }
 
