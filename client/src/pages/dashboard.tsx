@@ -2120,6 +2120,12 @@ export default function Dashboard() {
   const [isKeyContactsOpen, setIsKeyContactsOpen] = useState(false);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const [isNotepadOpen, setIsNotepadOpen] = useState(false);
+  const [isMobileNotepadOpen, setIsMobileNotepadOpen] = useState(false);
+  const [mobileNotepadText, setMobileNotepadText] = useState('');
+  const [mobileNotepadImages, setMobileNotepadImages] = useState<{file: File; preview: string}[]>([]);
+  const [mobileNotepadSaving, setMobileNotepadSaving] = useState(false);
+  const [mobileNotepadGroup, setMobileNotepadGroup] = useState('');
+  const [mobileNotepadTitle, setMobileNotepadTitle] = useState('');
   const [isMonthlyReportOpen, setIsMonthlyReportOpen] = useState(false);
   const [monthlyReportFields, setMonthlyReportFields] = useState(() => {
     const saved = localStorage.getItem('monthlyReportFields');
@@ -13160,6 +13166,23 @@ export default function Dashboard() {
             </button>
           )}
 
+          {isFull && (
+            <button
+              onClick={() => {
+                setMobileNotepadText('');
+                setMobileNotepadImages([]);
+                setMobileNotepadGroup('');
+                setMobileNotepadTitle('');
+                setIsMobileNotepadOpen(true);
+              }}
+              data-testid="mobile-button-notepad"
+              style={{...mobileBtnStyle(btnSize), display: 'flex', flexDirection: 'column', gap: '2px'}}
+            >
+              <StickyNote style={{ height: `${iconSize * 0.7}px`, width: `${iconSize * 0.7}px` }} />
+              <span style={{ fontSize: '7px', fontWeight: 600, fontFamily: "system-ui, -apple-system, sans-serif", lineHeight: 1 }}>Note</span>
+            </button>
+          )}
+
           {hasPartnerWizard && (
             <button
               onClick={() => { setPartnerWizardStep(0); setPartnerWizardDates([]); setPartnerWizardShiftType('day'); setPartnerWizardOpen(true); }}
@@ -13473,6 +13496,212 @@ export default function Dashboard() {
                 {MOBILE_SETTINGS_PAGES.map((_, i) => (
                   <div key={i} onClick={() => setMobileSettingsPage(i)} style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: i === mobileSettingsPage ? '#ffffff' : 'rgba(255,255,255,0.25)', cursor: 'pointer', transition: 'background-color 0.2s' }} />
                 ))}
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
+
+        {isMobileNotepadOpen && createPortal(
+          <div
+            onClick={() => setIsMobileNotepadOpen(false)}
+            style={{
+              position: 'fixed', inset: 0, zIndex: 9999,
+              background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
+            data-testid="mobile-notepad-dialog"
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                width: '92vw', maxWidth: '440px', maxHeight: '88vh',
+                background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
+                border: '1.5px solid rgba(255,255,255,0.35)', borderRadius: '16px',
+                boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25)',
+                display: 'flex', flexDirection: 'column', overflow: 'hidden',
+              }}
+            >
+              <div style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px',
+                borderBottom: '1px solid rgba(255,255,255,0.2)',
+                background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`,
+                backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)',
+                borderRadius: '16px 16px 0 0',
+              }}>
+                <span style={{ color: '#fff', fontSize: '14px', fontWeight: 600, fontFamily: "system-ui, -apple-system, sans-serif" }}>
+                  Quick Note
+                </span>
+                <button onClick={() => setIsMobileNotepadOpen(false)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', fontSize: '18px', padding: '4px' }} data-testid="mobile-notepad-close">✕</button>
+              </div>
+
+              <div style={{ flex: 1, overflow: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div>
+                  <label style={{ color: 'rgba(255,255,255,0.6)', fontSize: '11px', fontWeight: 600, fontFamily: "system-ui, -apple-system, sans-serif", display: 'block', marginBottom: '4px' }}>Title</label>
+                  <input
+                    type="text"
+                    value={mobileNotepadTitle}
+                    onChange={(e) => setMobileNotepadTitle(e.target.value)}
+                    placeholder="Note title..."
+                    style={{
+                      width: '100%', padding: '10px 12px', borderRadius: '8px',
+                      background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
+                      color: '#fff', fontSize: '14px', fontFamily: "system-ui, -apple-system, sans-serif",
+                      outline: 'none',
+                    }}
+                    data-testid="mobile-notepad-title"
+                  />
+                </div>
+
+                <div>
+                  <label style={{ color: 'rgba(255,255,255,0.6)', fontSize: '11px', fontWeight: 600, fontFamily: "system-ui, -apple-system, sans-serif", display: 'block', marginBottom: '4px' }}>Group (optional)</label>
+                  <input
+                    type="text"
+                    value={mobileNotepadGroup}
+                    onChange={(e) => setMobileNotepadGroup(e.target.value)}
+                    placeholder="e.g. School, Personal..."
+                    style={{
+                      width: '100%', padding: '10px 12px', borderRadius: '8px',
+                      background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
+                      color: '#fff', fontSize: '14px', fontFamily: "system-ui, -apple-system, sans-serif",
+                      outline: 'none',
+                    }}
+                    data-testid="mobile-notepad-group"
+                  />
+                </div>
+
+                <div>
+                  <label style={{ color: 'rgba(255,255,255,0.6)', fontSize: '11px', fontWeight: 600, fontFamily: "system-ui, -apple-system, sans-serif", display: 'block', marginBottom: '4px' }}>Text</label>
+                  <textarea
+                    value={mobileNotepadText}
+                    onChange={(e) => setMobileNotepadText(e.target.value)}
+                    placeholder="Type your note here..."
+                    rows={5}
+                    style={{
+                      width: '100%', padding: '10px 12px', borderRadius: '8px',
+                      background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
+                      color: '#fff', fontSize: '14px', fontFamily: "system-ui, -apple-system, sans-serif",
+                      outline: 'none', resize: 'vertical', minHeight: '100px',
+                    }}
+                    data-testid="mobile-notepad-text"
+                  />
+                </div>
+
+                <div>
+                  <label style={{ color: 'rgba(255,255,255,0.6)', fontSize: '11px', fontWeight: 600, fontFamily: "system-ui, -apple-system, sans-serif", display: 'block', marginBottom: '6px' }}>Images</label>
+                  <label
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                      padding: '12px', borderRadius: '8px', cursor: 'pointer',
+                      border: '2px dashed rgba(255,255,255,0.25)', background: 'rgba(255,255,255,0.05)',
+                      color: 'rgba(255,255,255,0.6)', fontSize: '13px', fontFamily: "system-ui, -apple-system, sans-serif",
+                    }}
+                    data-testid="mobile-notepad-upload-area"
+                  >
+                    <Upload style={{ height: '18px', width: '18px' }} />
+                    <span>Tap to upload images</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      style={{ display: 'none' }}
+                      onChange={(e) => {
+                        const files = Array.from(e.target.files || []);
+                        const newImages = files.map(f => ({ file: f, preview: URL.createObjectURL(f) }));
+                        setMobileNotepadImages(prev => [...prev, ...newImages]);
+                        e.target.value = '';
+                      }}
+                      data-testid="mobile-notepad-file-input"
+                    />
+                  </label>
+
+                  {mobileNotepadImages.length > 0 && (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '10px' }}>
+                      {mobileNotepadImages.map((img, idx) => (
+                        <div key={idx} style={{ position: 'relative', width: '72px', height: '72px', borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.2)' }}>
+                          <img src={img.preview} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          <button
+                            onClick={() => {
+                              URL.revokeObjectURL(img.preview);
+                              setMobileNotepadImages(prev => prev.filter((_, i) => i !== idx));
+                            }}
+                            style={{
+                              position: 'absolute', top: '2px', right: '2px',
+                              width: '20px', height: '20px', borderRadius: '50%',
+                              background: 'rgba(0,0,0,0.7)', border: 'none', color: '#fff',
+                              fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            }}
+                            data-testid={`mobile-notepad-remove-image-${idx}`}
+                          >✕</button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 16px', borderTop: '1px solid rgba(255,255,255,0.15)', gap: '10px' }}>
+                <button
+                  onClick={() => setIsMobileNotepadOpen(false)}
+                  style={{
+                    flex: 1, height: '40px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.3)',
+                    background: 'transparent', color: 'rgba(255,255,255,0.7)', fontSize: '13px', fontWeight: 500,
+                    cursor: 'pointer', fontFamily: "system-ui, -apple-system, sans-serif",
+                  }}
+                  data-testid="mobile-notepad-cancel"
+                >Cancel</button>
+                <button
+                  disabled={mobileNotepadSaving || (!mobileNotepadText.trim() && mobileNotepadImages.length === 0)}
+                  onClick={async () => {
+                    setMobileNotepadSaving(true);
+                    try {
+                      let htmlContent = '';
+                      if (mobileNotepadText.trim()) {
+                        htmlContent += mobileNotepadText.trim().split('\n').map(line => `<p>${line || '&nbsp;'}</p>`).join('');
+                      }
+                      for (const img of mobileNotepadImages) {
+                        const reader = new FileReader();
+                        const base64 = await new Promise<string>((resolve) => {
+                          reader.onload = () => resolve(reader.result as string);
+                          reader.readAsDataURL(img.file);
+                        });
+                        htmlContent += `<p><img src="${base64}" alt="${img.file.name}" style="max-width:100%;border-radius:8px;margin:8px 0;" /></p>`;
+                      }
+                      const resp = await fetch('/api/notepad/notes', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          title: mobileNotepadTitle.trim() || `Note ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })}`,
+                          content: htmlContent,
+                          groupName: mobileNotepadGroup.trim() || null,
+                          sortOrder: 0,
+                        }),
+                      });
+                      if (!resp.ok) throw new Error('Failed to save note');
+                      toast({ title: "Note saved", description: "Your note has been added to the notepad." });
+                      mobileNotepadImages.forEach(img => URL.revokeObjectURL(img.preview));
+                      setMobileNotepadText('');
+                      setMobileNotepadImages([]);
+                      setMobileNotepadTitle('');
+                      setMobileNotepadGroup('');
+                      setIsMobileNotepadOpen(false);
+                      queryClient.invalidateQueries({ queryKey: ['/api/notepad/notes'] });
+                    } catch (err: any) {
+                      toast({ title: "Error", description: err.message || "Failed to save note", variant: "destructive" });
+                    } finally {
+                      setMobileNotepadSaving(false);
+                    }
+                  }}
+                  style={{
+                    flex: 1, height: '40px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.5)',
+                    background: mobileNotepadSaving || (!mobileNotepadText.trim() && mobileNotepadImages.length === 0) ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.15)',
+                    color: mobileNotepadSaving || (!mobileNotepadText.trim() && mobileNotepadImages.length === 0) ? 'rgba(255,255,255,0.3)' : '#fff',
+                    fontSize: '13px', fontWeight: 600,
+                    cursor: mobileNotepadSaving ? 'wait' : 'pointer', fontFamily: "system-ui, -apple-system, sans-serif",
+                    boxShadow: mobileNotepadSaving || (!mobileNotepadText.trim() && mobileNotepadImages.length === 0) ? 'none' : '0 0 6px rgba(255,255,255,0.4), 0 0 12px rgba(255,255,255,0.2)',
+                  }}
+                  data-testid="mobile-notepad-save"
+                >{mobileNotepadSaving ? 'Saving...' : 'Save Note'}</button>
               </div>
             </div>
           </div>,
