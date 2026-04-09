@@ -24432,7 +24432,7 @@ export default function Dashboard() {
           })()}
 
           <Dialog open={isProfileDialogOpen} onOpenChange={(open) => { if (!open) { setProfileData(prev => { try { const saved = localStorage.getItem('profileData'); return saved ? { postalCode: '', location: '', phoneNumber: '', email: '', address: '', country: '', provinceState: '', emergencyContactName: '', emergencyContactPhone: '', allergies: '', ...JSON.parse(saved) } : prev; } catch { return prev; } }); setIsProfileDirty(false); } setIsProfileDialogOpen(open); }}>
-            <DialogContent className="max-w-md text-[11px] text-white [&_*:not(input)]:text-white [&_label]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden flex flex-col" style={{ top: 'calc(55% - 90px)', maxHeight: '90vh', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
+            <DialogContent className="text-[11px] text-white [&_*:not(input)]:text-white [&_label]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden flex flex-col" style={{ top: 'calc(55% - 90px)', maxHeight: '90vh', maxWidth: '56rem', width: '56rem', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
               {/* Header bar matching flyouts */}
               <div className="flex items-center px-4 py-3 border-b border-white/40 rounded-t-lg shrink-0" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                 <div className="flex items-center gap-2">
@@ -37653,8 +37653,46 @@ function ProfileForm({
     }
   };
   
+  const [transcripts, setTranscripts] = useState<{ id: string; name: string; contentType: string; size: number; uploadedAt: string }[]>([]);
+  const [isUploadingTranscript, setIsUploadingTranscript] = useState(false);
+  const transcriptInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    fetch('/api/transcripts').then(r => r.json()).then(data => { if (Array.isArray(data)) setTranscripts(data); }).catch(() => {});
+  }, []);
+
+  const handleTranscriptUpload = async (file: File) => {
+    setIsUploadingTranscript(true);
+    try {
+      const resp = await fetch('/api/transcripts/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': file.type || 'application/octet-stream', 'X-File-Name': file.name },
+        body: file,
+      });
+      const data = await resp.json();
+      if (data.success && data.transcript) {
+        setTranscripts(prev => [...prev, data.transcript]);
+      }
+    } catch (e) {
+      console.error('Transcript upload failed:', e);
+    } finally {
+      setIsUploadingTranscript(false);
+    }
+  };
+
+  const handleDeleteTranscript = async (id: string) => {
+    try {
+      await fetch(`/api/transcripts/${id}`, { method: 'DELETE' });
+      setTranscripts(prev => prev.filter(t => t.id !== id));
+    } catch (e) {
+      console.error('Transcript delete failed:', e);
+    }
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-3 text-[10px]">
+    <form onSubmit={handleSubmit} className="text-[10px]">
+      <div className="flex gap-5">
+      <div className="flex-1 space-y-3 min-w-0">
       {cropImageSrc && (
         <div className="rounded-lg overflow-hidden bg-black/50 p-3 space-y-3">
           <span className="text-[10px] text-white/70">Move and zoom to crop your photo</span>
@@ -38037,7 +38075,27 @@ function ProfileForm({
           </div>
         </div>
       </div>
-
+      </div>
+      <div className="space-y-2" style={{ width: '220px', flexShrink: 0 }}>
+        <div className="rounded-lg p-3 space-y-2" style={{ border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.06)', minHeight: '200px' }}>
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-medium text-white">Transcripts</span>
+            <button type="button" onClick={() => transcriptInputRef.current?.click()} className="px-2 py-1 rounded text-[9px] font-medium text-white/80 hover:text-white transition-colors" style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)' }} data-testid="button-upload-transcript">{isUploadingTranscript ? 'Uploading...' : 'Upload'}</button>
+          </div>
+          <input ref={transcriptInputRef} type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" className="hidden" onChange={(e) => { const file = e.target.files?.[0]; if (file) handleTranscriptUpload(file); if (transcriptInputRef.current) transcriptInputRef.current.value = ''; }} data-testid="input-transcript-file" />
+          <div className="space-y-1" style={{ maxHeight: '300px', overflowY: 'auto' }}>
+            {transcripts.length === 0 && <span className="text-[9px] text-white/40 block text-center py-4">No transcripts uploaded</span>}
+            {transcripts.map((t) => (
+              <div key={t.id} className="flex items-center gap-1.5 rounded px-2 py-1.5 hover:bg-white/10 transition-colors group" style={{ border: '1px solid rgba(255,255,255,0.1)' }}>
+                <FileText className="h-3 w-3 text-white/60 shrink-0" />
+                <a href={`/api/transcripts/${t.id}/download`} target="_blank" rel="noopener noreferrer" className="text-[9px] text-white/80 hover:text-white truncate flex-1 min-w-0 cursor-pointer" title={t.name} data-testid={`link-transcript-${t.id}`}>{t.name}</a>
+                <button type="button" onClick={() => handleDeleteTranscript(t.id)} className="opacity-0 group-hover:opacity-100 text-red-400/70 hover:text-red-400 transition-all shrink-0" data-testid={`button-delete-transcript-${t.id}`}><X className="h-3 w-3" /></button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      </div>
     </form>
   );
 }

@@ -9732,6 +9732,120 @@ async function pollStatus(timeout){
   // Register object storage routes for file uploads
   registerObjectStorageRoutes(app);
 
+  app.post("/api/transcripts/upload", async (req, res) => {
+    try {
+      const chunks: Buffer[] = [];
+      req.on('data', (chunk: Buffer) => chunks.push(chunk));
+      await new Promise<void>((resolve, reject) => {
+        req.on('end', resolve);
+        req.on('error', reject);
+      });
+      const fileBuffer = Buffer.concat(chunks);
+      const fileName = (req.headers['x-file-name'] as string) || 'transcript.pdf';
+      const contentType = (req.headers['content-type'] as string) || 'application/octet-stream';
+
+      const { ObjectStorageService } = await import("./replit_integrations/object_storage");
+      const objectStorageService = new ObjectStorageService();
+      const privateDir = process.env.PRIVATE_OBJECT_DIR;
+      if (!privateDir) throw new Error("PRIVATE_OBJECT_DIR not set");
+
+      const { randomUUID } = await import("crypto");
+      const objectId = randomUUID();
+      const fullPath = `${privateDir}/transcripts/${objectId}`;
+      const pathParts = fullPath.replace(/^\//, '').split('/');
+      const bucketName = pathParts[0];
+      const objectName = pathParts.slice(1).join('/');
+
+      const bucket = objectStorageClient.bucket(bucketName);
+      const file = bucket.file(objectName);
+      await new Promise<void>((resolve, reject) => {
+        const stream = file.createWriteStream({ contentType, resumable: false });
+        stream.on('finish', resolve);
+        stream.on('error', reject);
+        stream.end(fileBuffer);
+      });
+
+      const existingRaw = await storage.getUiSetting('transcripts');
+      let transcripts: any[] = [];
+      try { transcripts = existingRaw ? JSON.parse(existingRaw) : []; } catch {}
+      const entry = { id: objectId, name: fileName, contentType, size: fileBuffer.length, uploadedAt: new Date().toISOString() };
+      transcripts.push(entry);
+      await storage.setUiSetting('transcripts', JSON.stringify(transcripts));
+
+      console.log(`[Transcript] Upload success: ${fileName} -> transcripts/${objectId} (${fileBuffer.length} bytes)`);
+      res.json({ success: true, transcript: entry });
+    } catch (error: any) {
+      console.error("[Transcript] Upload error:", error);
+      res.status(500).json({ error: error.message || "Failed to upload transcript" });
+    }
+  });
+
+  app.get("/api/transcripts", async (_req, res) => {
+    try {
+      const raw = await storage.getUiSetting('transcripts');
+      const transcripts = raw ? JSON.parse(raw) : [];
+      res.json(transcripts);
+    } catch (error: any) {
+      res.json([]);
+    }
+  });
+
+  app.delete("/api/transcripts/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const existingRaw = await storage.getUiSetting('transcripts');
+      let transcripts: any[] = [];
+      try { transcripts = existingRaw ? JSON.parse(existingRaw) : []; } catch {}
+      transcripts = transcripts.filter(t => t.id !== id);
+      await storage.setUiSetting('transcripts', JSON.stringify(transcripts));
+
+      try {
+        const privateDir = process.env.PRIVATE_OBJECT_DIR;
+        if (privateDir) {
+          const fullPath = `${privateDir}/transcripts/${id}`;
+          const pathParts = fullPath.replace(/^\//, '').split('/');
+          const bucketName = pathParts[0];
+          const objectName = pathParts.slice(1).join('/');
+          const bucket = objectStorageClient.bucket(bucketName);
+          await bucket.file(objectName).delete().catch(() => {});
+        }
+      } catch {}
+
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message || "Failed to delete transcript" });
+    }
+  });
+
+  app.get("/api/transcripts/:id/download", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const existingRaw = await storage.getUiSetting('transcripts');
+      const transcripts: any[] = existingRaw ? JSON.parse(existingRaw) : [];
+      const entry = transcripts.find(t => t.id === id);
+      if (!entry) return res.status(404).json({ error: "Transcript not found" });
+
+      const privateDir = process.env.PRIVATE_OBJECT_DIR;
+      if (!privateDir) throw new Error("PRIVATE_OBJECT_DIR not set");
+
+      const fullPath = `${privateDir}/transcripts/${id}`;
+      const pathParts = fullPath.replace(/^\//, '').split('/');
+      const bucketName = pathParts[0];
+      const objectName = pathParts.slice(1).join('/');
+
+      const bucket = objectStorageClient.bucket(bucketName);
+      const file = bucket.file(objectName);
+      const [buffer] = await file.download();
+
+      res.setHeader('Content-Type', entry.contentType || 'application/octet-stream');
+      res.setHeader('Content-Disposition', `inline; filename="${entry.name}"`);
+      res.send(buffer);
+    } catch (error: any) {
+      console.error("[Transcript] Download error:", error);
+      res.status(500).json({ error: error.message || "Failed to download transcript" });
+    }
+  });
+
   app.post("/api/uploads/direct", async (req, res) => {
     try {
       const chunks: Buffer[] = [];
