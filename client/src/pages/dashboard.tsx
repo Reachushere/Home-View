@@ -27906,7 +27906,6 @@ export default function Dashboard() {
                             return (
                               <>
                                 <div className="absolute left-0 right-0 bottom-0 z-[5]" style={{ top: 0, background: skyBg, overflow: 'hidden', pointerEvents: 'none', opacity: isNextSchoolWeek ? 0.2 : 0.85 }}>
-                                  <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', opacity: isNextSchoolWeek ? 0.25 : 1 }} dangerouslySetInnerHTML={{ __html: forecastEffectsHtml }} />
                                 </div>
                               </>
                             );
