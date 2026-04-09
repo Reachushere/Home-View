@@ -1,4 +1,26 @@
-import 'dotenv/config';
+import fs from 'fs';
+import path from 'path';
+
+const envPath = path.resolve(process.cwd(), '.env');
+if (fs.existsSync(envPath)) {
+  const envContent = fs.readFileSync(envPath, 'utf-8');
+  for (const line of envContent.split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const eqIdx = trimmed.indexOf('=');
+    if (eqIdx === -1) continue;
+    const key = trimmed.substring(0, eqIdx).trim();
+    const value = trimmed.substring(eqIdx + 1).trim();
+    if (!process.env[key]) {
+      process.env[key] = value;
+    }
+  }
+  console.log(`[ENV] Loaded .env from ${envPath} (keys: ${envContent.split('\n').filter(l => l.trim() && !l.startsWith('#') && l.includes('=')).map(l => l.split('=')[0]).join(', ')})`);
+} else {
+  console.log(`[ENV] No .env file found at ${envPath}`);
+}
+
+try { require('dotenv/config'); } catch {}
 process.env.TZ = 'America/Toronto';
 
 import express, { type Request, Response, NextFunction } from "express";
