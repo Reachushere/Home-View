@@ -12416,21 +12416,30 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       }
     })();
 
+    const confirmAudioPromise = confirmationTTS
+      ? generateAndSaveTTSAudio(confirmationTTS, `confirm-${Date.now()}`).catch(e => { console.warn(`${logPrefix} Confirm TTS gen failed: ${e.message}`); return null as string | null; })
+      : Promise.resolve(null as string | null);
+
     const confirmTTSPromise = confirmationTTS ? (async () => {
       try {
         console.log(`${logPrefix} Confirm TTS text: "${confirmationTTS}"`);
-        await haServiceCallSafe('media_player/volume_set', { entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.50 }, 'HA Voice Pre-Confirm Vol').catch(() => {});
+        const [confirmPath] = await Promise.all([
+          confirmAudioPromise,
+          haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }, 'Nest Pre-Confirm Vol').catch(() => {}),
+        ]);
         let confirmPlayed = false;
-        try {
-          await haServiceCall('tts/speak', {
-            entity_id: HA_CLOUD_TTS_ENTITY,
-            media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
-            message: confirmationTTS,
-          }, 'Confirm Cloud TTS on HA Voice');
-          confirmPlayed = true;
-          console.log(`${logPrefix} Confirm TTS played via HA Cloud TTS on HA Voice speaker (primary)`);
-        } catch (e: any) {
-          console.warn(`${logPrefix} HA Cloud TTS confirm on HA Voice failed: ${e.message} — trying Nest fallback`);
+        if (confirmPath) {
+          try {
+            const nestResult = await playOnNestSpeaker(`${appUrl}${confirmPath}`, 2, confirmationTTS);
+            if (nestResult.success) {
+              confirmPlayed = true;
+              console.log(`${logPrefix} Confirm TTS played on Nest speaker via generated audio (primary) (actuallyPlaying=${nestResult.actuallyPlaying})`);
+            } else {
+              console.warn(`${logPrefix} Nest speaker generated audio confirm failed — falling back to HA Cloud TTS`);
+            }
+          } catch (e: any) {
+            console.warn(`${logPrefix} Nest speaker generated audio confirm failed: ${e.message} — falling back to HA Cloud TTS`);
+          }
         }
         if (!confirmPlayed) {
           try {
@@ -15470,16 +15479,19 @@ document.body.removeChild(a);
           console.log(`[Voice Command] Pause TTS text: "${pauseText}"`);
           let pausePlayed = false;
           try {
-            await haServiceCallSafe('media_player/volume_set', { entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.50 }, 'HA Voice Pre-Pause Vol').catch(() => {});
-            await haServiceCall('tts/speak', {
-              entity_id: HA_CLOUD_TTS_ENTITY,
-              media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
-              message: pauseText,
-            }, 'Pause Cloud TTS on HA Voice');
-            pausePlayed = true;
-            console.log(`[Voice Command] Pause TTS played via HA Cloud TTS on HA Voice speaker (primary)`);
+            const [pausePath] = await Promise.all([
+              generateAndSaveTTSAudio(pauseText, `vc-pause-${Date.now()}`),
+              haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }, 'Nest Pre-Pause Vol').catch(() => {}),
+            ]);
+            const pauseResult = await playOnNestSpeaker(`${appUrl}${pausePath}`, 2, pauseText);
+            if (pauseResult.success) {
+              pausePlayed = true;
+              console.log(`[Voice Command] Pause TTS played on Nest via generated audio (primary) (actuallyPlaying=${pauseResult.actuallyPlaying})`);
+            } else {
+              console.warn(`[Voice Command] Pause generated audio failed — falling back to HA Cloud TTS`);
+            }
           } catch (e: any) {
-            console.warn(`[Voice Command] Pause HA Cloud TTS on HA Voice failed: ${e.message} — trying Nest fallback`);
+            console.warn(`[Voice Command] Pause generated audio failed: ${e.message} — falling back to HA Cloud TTS`);
           }
           if (!pausePlayed) {
             try {
