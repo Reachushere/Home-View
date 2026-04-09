@@ -12324,30 +12324,30 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       }
     })();
 
+    const confirmAudioPromise = confirmationTTS
+      ? generateAndSaveTTSAudio(confirmationTTS, `confirm-${Date.now()}`).catch(e => { console.warn(`${logPrefix} Confirm TTS gen failed: ${e.message}`); return null as string | null; })
+      : Promise.resolve(null as string | null);
+
     const confirmTTSPromise = confirmationTTS ? (async () => {
       try {
         console.log(`${logPrefix} Confirm TTS text: "${confirmationTTS}"`);
-        try {
-          await haServiceCallSafe('media_player/turn_on', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Pre-Confirm Wake');
-        } catch (e: any) { console.warn(`${logPrefix} Pre-confirm wake error (non-fatal): ${e.message}`); }
-        try {
-          await haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }, 'Nest Pre-Confirm Vol');
-        } catch (e: any) { console.warn(`${logPrefix} Pre-confirm volume set error (non-fatal): ${e.message}`); }
-        await new Promise(r => setTimeout(r, 3000));
+        const [confirmPath] = await Promise.all([
+          confirmAudioPromise,
+          haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }, 'Nest Pre-Confirm Vol').catch(() => {}),
+        ]);
         let confirmPlayed = false;
-        await haServiceCallSafe('media_player/media_stop', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Pre-Confirm Stop');
-        await new Promise(r => setTimeout(r, 1500));
-        try {
-          const confirmPath = await generateAndSaveTTSAudio(confirmationTTS, `confirm-${Date.now()}`);
-          const nestResult = await playOnNestSpeaker(`${appUrl}${confirmPath}`, 2, confirmationTTS);
-          if (nestResult.success) {
-            confirmPlayed = true;
-            console.log(`${logPrefix} Confirm TTS played on Nest speaker via generated audio (primary) (actuallyPlaying=${nestResult.actuallyPlaying})`);
-          } else {
-            console.warn(`${logPrefix} Nest speaker generated audio confirm failed — falling back to HA Cloud TTS`);
+        if (confirmPath) {
+          try {
+            const nestResult = await playOnNestSpeaker(`${appUrl}${confirmPath}`, 2, confirmationTTS);
+            if (nestResult.success) {
+              confirmPlayed = true;
+              console.log(`${logPrefix} Confirm TTS played on Nest speaker via generated audio (primary) (actuallyPlaying=${nestResult.actuallyPlaying})`);
+            } else {
+              console.warn(`${logPrefix} Nest speaker generated audio confirm failed — falling back to HA Cloud TTS`);
+            }
+          } catch (e: any) {
+            console.warn(`${logPrefix} Nest speaker generated audio confirm failed: ${e.message} — falling back to HA Cloud TTS`);
           }
-        } catch (e: any) {
-          console.warn(`${logPrefix} Nest speaker generated audio confirm failed: ${e.message} — falling back to HA Cloud TTS`);
         }
         if (!confirmPlayed) {
           try {
@@ -12365,13 +12365,13 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           }
         }
         const confirmWordCount = confirmationTTS.split(/\s+/).length;
-        const confirmWaitMs = Math.max(6000, (confirmWordCount / 140) * 60 * 1000 + 3000);
+        const confirmWaitMs = Math.max(4000, (confirmWordCount / 160) * 60 * 1000 + 2000);
         console.log(`${logPrefix} Confirm TTS playing, waiting ${Math.round(confirmWaitMs / 1000)}s`);
         await new Promise(r => setTimeout(r, confirmWaitMs));
         console.log(`${logPrefix} Confirm TTS finished`);
       } catch (e: any) {
         console.error(`${logPrefix} Confirm TTS error: ${e.message}`);
-        await new Promise(r => setTimeout(r, 5000));
+        await new Promise(r => setTimeout(r, 3000));
       }
     })() : Promise.resolve();
 
