@@ -27486,7 +27486,7 @@ export default function Dashboard() {
                 return (
                   <div key={idx} className="flex items-center justify-center overflow-hidden relative" style={{ opacity: isPast ? 0.5 : 1 }} data-testid={`weather-above-${dateStr}`}>
                     {showForecastWeather && fwSkyBg && (
-                      <div className="absolute inset-0 z-0" style={{ background: fwSkyBg, overflow: 'hidden', pointerEvents: 'none', opacity: isTodayForecast ? 1 : isNextWeekDay ? 0.08 : 1 }}>
+                      <div className="absolute inset-0 z-0" style={{ background: fwSkyBg, overflow: 'hidden', pointerEvents: 'none', opacity: isTodayForecast ? 1 : isNextWeekDay ? 0.35 : 1 }}>
                         {fwEffectsHtml && <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', opacity: isNextWeekDay ? 0.3 : 1 }} dangerouslySetInnerHTML={{ __html: fwEffectsHtml }} />}
                       </div>
                     )}
