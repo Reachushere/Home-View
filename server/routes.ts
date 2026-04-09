@@ -713,9 +713,14 @@ async function sendNextChunk() {
     
     if (isNonAlexa) {
       const audioPath = await generateAndSaveTTSAudio(nextChunk, `tts-chunk-${Date.now()}`, "echo");
-      const appUrl = DEPLOYED_APP_URL;
-      const fullAudioUrl = `${appUrl}${audioPath}`;
       console.log(`[TTS] Non-Alexa: Generated audio at ${audioPath}, playing on ${targetEntity}`);
+      
+      let playUrl: string | null = await uploadAudioToHA(audioPath);
+      if (!playUrl) {
+        console.log(`[TTS] HA upload failed, falling back to direct URL`);
+        playUrl = `${DEPLOYED_APP_URL}${audioPath}`;
+      }
+      console.log(`[TTS] Non-Alexa: Playing via ${playUrl}`);
       
       response = await fetch(`${haUrl}/api/services/media_player/play_media`, {
         method: 'POST',
@@ -725,7 +730,7 @@ async function sendNextChunk() {
         },
         body: JSON.stringify({
           entity_id: targetEntity,
-          media_content_id: fullAudioUrl,
+          media_content_id: playUrl,
           media_content_type: "music",
         }),
       });
@@ -8248,16 +8253,21 @@ async function pollStatus(timeout){
 
       if (isNonAlexa) {
         const audioPath = await generateAndSaveTTSAudio(cleanedText, `speaker-tts-${Date.now()}`);
-        const appUrl = DEPLOYED_APP_URL;
-        const fullAudioUrl = `${appUrl}${audioPath}`;
         console.log(`[TTS Speaker] Non-Alexa: Generated audio at ${audioPath}, playing on ${entityId} via play_media`);
+
+        let speakerPlayUrl: string | null = await uploadAudioToHA(audioPath);
+        if (!speakerPlayUrl) {
+          console.log(`[TTS Speaker] HA upload failed, falling back to direct URL`);
+          speakerPlayUrl = `${DEPLOYED_APP_URL}${audioPath}`;
+        }
+        console.log(`[TTS Speaker] Non-Alexa: Playing via ${speakerPlayUrl}`);
 
         playResp = await fetch(`${haUrl}/api/services/media_player/play_media`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({
             entity_id: entityId,
-            media_content_id: fullAudioUrl,
+            media_content_id: speakerPlayUrl,
             media_content_type: "music",
           }),
         });
