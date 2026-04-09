@@ -38533,7 +38533,7 @@ function CoursesForm({
                   )}
                   {deliveryMode && (
                     <span className="flex items-center gap-1">
-                      {deliveryMode === 'virtual' ? <Radio className="h-2.5 w-2.5" /> : <Cloud className="h-2.5 w-2.5" />}
+                      {deliveryMode === 'virtual' ? (() => { const cc = currentCode.replace(/\s/g, ''); const zl = courseZoomLinks[cc] || ''; return <img src={zoomCamPath} alt="Zoom" style={{ width: '12px', height: '12px', objectFit: 'contain', borderRadius: '50%', cursor: zl ? 'pointer' : 'default' }} onClick={zl ? (e: React.MouseEvent) => { e.stopPropagation(); e.preventDefault(); window.open(zl, '_blank'); try { const f = document.createElement('iframe'); f.style.display = 'none'; f.src = `unical://${encodeURIComponent(zl)}`; document.body.appendChild(f); setTimeout(() => f.remove(), 2000); } catch {} } : undefined} title={zl ? 'Click to open Zoom + Screen Recorder' : 'Virtual class'} data-testid={`zoom-icon-settings-${realIndex}`} />; })() : <Cloud className="h-2.5 w-2.5" />}
                       {deliveryMode === 'virtual' ? 'Virtual' : 'Online'}
                     </span>
                   )}
