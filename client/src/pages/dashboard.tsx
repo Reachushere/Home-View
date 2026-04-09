@@ -5515,7 +5515,7 @@ export default function Dashboard() {
     const container = document.createElement('div');
     container.id = 'countdown-hover-line-overlay';
     container.dataset.taskId = String(taskId);
-    container.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:200';
+    container.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:9999';
 
     if (!filteredTaskEl) {
       const taskData = (window as any).__allTasksCache?.find((t: any) => t.id === taskId);
@@ -5547,15 +5547,15 @@ export default function Dashboard() {
       if (Math.abs(y1 - y2) < 1) {
         const left = Math.min(x1, x2);
         const w = Math.abs(x2 - x1);
-        seg.style.cssText = `position:fixed;left:${left}px;top:${y1 - barThickness / 2}px;width:${w}px;height:${barThickness}px;background:${barColor};border-radius:1px;z-index:200;pointer-events:none`;
+        seg.style.cssText = `position:fixed;left:${left}px;top:${y1 - barThickness / 2}px;width:${w}px;height:${barThickness}px;background:${barColor};border-radius:1px;z-index:9999;pointer-events:none`;
       } else if (Math.abs(x1 - x2) < 1) {
         const top = Math.min(y1, y2);
         const h = Math.abs(y2 - y1);
-        seg.style.cssText = `position:fixed;left:${x1 - barThickness / 2}px;top:${top}px;width:${barThickness}px;height:${h}px;background:${barColor};border-radius:1px;z-index:200;pointer-events:none`;
+        seg.style.cssText = `position:fixed;left:${x1 - barThickness / 2}px;top:${top}px;width:${barThickness}px;height:${h}px;background:${barColor};border-radius:1px;z-index:9999;pointer-events:none`;
       } else {
         const len = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
         const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
-        seg.style.cssText = `position:fixed;left:${x1}px;top:${y1}px;width:${len}px;height:0;border-top:${barThickness}px solid ${barColor};transform-origin:0 0;transform:rotate(${angle}deg);z-index:200;pointer-events:none`;
+        seg.style.cssText = `position:fixed;left:${x1}px;top:${y1}px;width:${len}px;height:0;border-top:${barThickness}px solid ${barColor};transform-origin:0 0;transform:rotate(${angle}deg);z-index:9999;pointer-events:none`;
       }
       return seg;
     };
@@ -5591,22 +5591,11 @@ export default function Dashboard() {
     const hlH = Math.max(0, hlBottom - hlTop);
     if (hlW > 0 && hlH > 0 && !taskOffScreenRight) {
       const highlight = document.createElement('div');
-      highlight.style.cssText = `position:fixed;left:${hlLeft}px;top:${hlTop}px;width:${hlW}px;height:${hlH}px;border:2px solid ${barColor};opacity:0.7;border-radius:4px;z-index:200;pointer-events:none`;
+      highlight.style.cssText = `position:fixed;left:${hlLeft}px;top:${hlTop}px;width:${hlW}px;height:${hlH}px;border:2px solid ${barColor};opacity:0.7;border-radius:4px;z-index:9999;pointer-events:none`;
       container.appendChild(highlight);
     }
 
-    const calBorderEl = document.querySelector('[data-testid="calendar-scroll-container"]')?.closest('.shadow-lg') as HTMLElement | null;
-    const calParent = calBorderEl?.parentElement as HTMLElement | null;
-    if (calParent) {
-      if (!calParent.style.position || calParent.style.position === 'static') {
-        calParent.style.position = 'relative';
-      }
-      calParent.appendChild(container);
-    } else if (calBorderEl) {
-      calBorderEl.appendChild(container);
-    } else {
-      document.body.appendChild(container);
-    }
+    document.body.appendChild(container);
   }, []);
 
   const hideCountdownHoverLine = useCallback(() => {
@@ -28205,7 +28194,7 @@ export default function Dashboard() {
                   'ss2026:CPHL110': { startDate: '2026-05-05', endDate: '2026-06-20' },
                   'ss2026:CHIS105': { startDate: '2026-06-23', endDate: '2026-08-07' },
                 };
-                const allDisplayCourses: Array<{ name: string; color: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; courseFontColor?: string; professor: string; professorEmail?: string; _semKey: string }> = [];
+                const allDisplayCourses: Array<{ name: string; color: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; courseFontColor?: string; professor: string; professorEmail?: string; _semKey: string; displayName?: string }> = [];
                 const semKeyOrder = ['w2026', 'ss2026', 'f2026', 'w2027', 'ss2027', 'f2027', 'w2028', 'ss2028', 'f2028', 'w2029'];
                 for (const semKey of semKeyOrder) {
                   if (semesterEndConfirmed[semKey]) continue;
@@ -28310,6 +28299,7 @@ export default function Dashboard() {
                     const semPalette = semDefaultPalettes[semKey] || [{ start: '#6b7280', end: '#9ca3af' }];
                     const defaultPair = semPalette[courseIdxInSem >= 0 ? courseIdxInSem % semPalette.length : 0] || { start: '#6b7280', end: '#9ca3af' };
                     const displayCode = isTBDSlot ? codeNorm : actualCodeNorm;
+                    const semDisplayName = semPrefix && semSettings ? (semSettings as any)[`${semPrefix}DisplayName`] : '';
                     allDisplayCourses.push({
                       name: fullName ? `${displayCode} - ${fullName}` : displayCode,
                       color: semColor || matchedCourse?.color || defaultPair.start,
@@ -28322,6 +28312,7 @@ export default function Dashboard() {
                       professor: matchedCourse?.professor || '',
                       professorEmail: matchedCourse?.professorEmail || '',
                       _semKey: semKey,
+                      displayName: semDisplayName || '',
                     });
                   }
                 }
@@ -28451,6 +28442,17 @@ export default function Dashboard() {
                           const fullName = course.name.split(' - ').slice(1).join(' - ');
                           const isTBDLabel = code.startsWith('TBD_SLOT') || code === 'TBD';
                           const displayCodeLabel = isTBDLabel ? 'TBD' : code;
+                          const customDisplay = (courseData as any).displayName;
+                          if (customDisplay) {
+                            const displayWords = customDisplay.trim().split(/\s+/);
+                            const totalLen = customDisplay.length;
+                            const fontSize = totalLen > 20 ? '6px' : totalLen > 14 ? '7px' : '8px';
+                            return (
+                              <>
+                                {displayWords.map((word: string, i: number) => <span key={i} className={i === 0 ? "font-[785] text-center" : "text-center"} style={{ whiteSpace: 'nowrap', fontSize, wordBreak: 'break-word', overflowWrap: 'break-word' }}>{word}</span>)}
+                              </>
+                            );
+                          }
                           const words = fullName.trim() ? fullName.trim().split(/\s+/) : [];
                           if (words.length === 0 && displayCodeLabel.length > 6) {
                             return (
@@ -28682,29 +28684,19 @@ export default function Dashboard() {
                     {(() => {
                       const code = course.name.split(' - ')[0];
                       const fullName = course.name.split(' - ').slice(1).join(' - ');
-                      if (code === 'CPPA122') {
-                        return <span className="text-center"><span className="font-[785]">CPPA122</span> Local Politics and Government</span>;
-                      }
-                      if (code === 'CFNF400') {
-                        return (
-                          <>
-                            <span className="font-[785]">CFNF400</span>
-                            <span>Human</span>
-                            <span>Sexuality</span>
-                          </>
-                        );
-                      }
-                      if (code === 'CASL101') {
-                        return (
-                          <>
-                            <span className="text-center font-[785]">CASL101</span>
-                            <span className="text-center">American Sign</span>
-                            <span className="text-center">Language</span>
-                          </>
-                        );
-                      }
                       const isTBDLabel = code.startsWith('TBD_SLOT') || code === 'TBD';
                       const displayCodeLabel = isTBDLabel ? 'TBD' : code;
+                      const customDisplay = (courseData as any).displayName;
+                      if (customDisplay) {
+                        const displayWords = customDisplay.trim().split(/\s+/);
+                        const totalLen = customDisplay.length;
+                        const fontSize = totalLen > 20 ? '6px' : totalLen > 14 ? '7px' : '8px';
+                        return (
+                          <>
+                            {displayWords.map((word: string, i: number) => <span key={i} className={i === 0 ? "font-[785] text-center" : "text-center"} style={{ whiteSpace: 'nowrap', fontSize, wordBreak: 'break-word', overflowWrap: 'break-word' }}>{word}</span>)}
+                          </>
+                        );
+                      }
                       const words = fullName.trim() ? fullName.trim().split(/\s+/) : [];
                       if (words.length === 0 && displayCodeLabel.length > 6) {
                         return (
@@ -38446,6 +38438,17 @@ function CoursesForm({
                       className="block w-full text-[10px] px-1.5 py-0.5 rounded border border-white/20 bg-white/10 text-white"
                       placeholder="Local Politics"
                       data-testid={`input-course-name-${realIndex}`}
+                    />
+                  </div>
+                  <div className="flex-shrink-0" style={{ width: '90px' }}>
+                    <label className="text-[8px] text-white/40 uppercase tracking-wider">Display Name</label>
+                    <input
+                      type="text"
+                      value={(() => { const prefix = `course${realIndex + 1}`; return (semesterSettings as any)?.[`${prefix}DisplayName`] || ''; })()}
+                      onChange={(e) => { const v = e.target.value; const prefix = `course${realIndex + 1}`; onSaveSemesterSchedule({ [`${prefix}DisplayName`]: v || null }); }}
+                      className="block w-full text-[10px] px-1.5 py-0.5 rounded border border-white/20 bg-white/10 text-white"
+                      placeholder="Row label"
+                      data-testid={`input-course-display-name-${realIndex}`}
                     />
                   </div>
                 </div>
