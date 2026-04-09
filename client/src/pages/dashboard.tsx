@@ -27551,15 +27551,15 @@ export default function Dashboard() {
                 return (
                   <div key={idx} className="flex items-center justify-center overflow-hidden relative" style={{ opacity: isPast ? 0.5 : 1 }} data-testid={`weather-above-${dateStr}`}>
                     {showForecastWeather && fwSkyBg && (
-                      <div className="absolute inset-0 z-0" style={{ background: fwSkyBg, overflow: 'hidden', pointerEvents: 'none', opacity: isTodayForecast ? 1 : isNextWeekDay ? 0.85 : 0.35 }}>
-                        {fwEffectsHtml && <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', opacity: isNextWeekDay ? 1 : 0.3 }} dangerouslySetInnerHTML={{ __html: fwEffectsHtml }} />}
+                      <div className="absolute inset-0 z-0" style={{ background: fwSkyBg, overflow: 'hidden', pointerEvents: 'none', opacity: isTodayForecast ? 1 : isNextWeekDay ? 0.35 : 0.85 }}>
+                        {fwEffectsHtml && <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', opacity: isNextWeekDay ? 0.3 : 1 }} dangerouslySetInnerHTML={{ __html: fwEffectsHtml }} />}
                       </div>
                     )}
                     {isTodayForecast && weatherAlerts.length > 0 && (
                       <div className="absolute inset-0 weather-alert-box-pulse" style={{ backgroundColor: 'rgb(255,0,0)', left: '-1px', right: '-2px' }} />
                     )}
                     {dayForecast && (
-                      <span className="text-white/90 whitespace-nowrap leading-none font-medium relative z-10 inline-flex items-center gap-[2px]" style={{ letterSpacing: '-0.2px', marginTop: '-1px', fontSize: '11px', opacity: isNextWeekDay ? 1 : 0.5 }}>
+                      <span className="text-white/90 whitespace-nowrap leading-none font-medium relative z-10 inline-flex items-center gap-[2px]" style={{ letterSpacing: '-0.2px', marginTop: '-1px', fontSize: '11px', opacity: isNextWeekDay ? 0.5 : 1 }}>
                         <span>{afterSunrise ? `${Math.round(weatherData!.temp)}°` : `${Math.round(dayForecast.high)}°/${Math.round(dayForecast.low)}°`}</span>
                         {desc && <span style={{ fontSize: '11px', fontWeight: 500, opacity: 0.8, lineHeight: 1 }}>{desc}</span>}
                       </span>
