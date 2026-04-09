@@ -5515,7 +5515,7 @@ export default function Dashboard() {
     const container = document.createElement('div');
     container.id = 'countdown-hover-line-overlay';
     container.dataset.taskId = String(taskId);
-    container.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:2147483647';
+    container.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:200';
 
     if (!filteredTaskEl) {
       const taskData = (window as any).__allTasksCache?.find((t: any) => t.id === taskId);
@@ -5547,15 +5547,15 @@ export default function Dashboard() {
       if (Math.abs(y1 - y2) < 1) {
         const left = Math.min(x1, x2);
         const w = Math.abs(x2 - x1);
-        seg.style.cssText = `position:fixed;left:${left}px;top:${y1 - barThickness / 2}px;width:${w}px;height:${barThickness}px;background:${barColor};border-radius:1px;z-index:2147483647;pointer-events:none`;
+        seg.style.cssText = `position:fixed;left:${left}px;top:${y1 - barThickness / 2}px;width:${w}px;height:${barThickness}px;background:${barColor};border-radius:1px;z-index:200;pointer-events:none`;
       } else if (Math.abs(x1 - x2) < 1) {
         const top = Math.min(y1, y2);
         const h = Math.abs(y2 - y1);
-        seg.style.cssText = `position:fixed;left:${x1 - barThickness / 2}px;top:${top}px;width:${barThickness}px;height:${h}px;background:${barColor};border-radius:1px;z-index:2147483647;pointer-events:none`;
+        seg.style.cssText = `position:fixed;left:${x1 - barThickness / 2}px;top:${top}px;width:${barThickness}px;height:${h}px;background:${barColor};border-radius:1px;z-index:200;pointer-events:none`;
       } else {
         const len = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
         const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
-        seg.style.cssText = `position:fixed;left:${x1}px;top:${y1}px;width:${len}px;height:0;border-top:${barThickness}px solid ${barColor};transform-origin:0 0;transform:rotate(${angle}deg);z-index:2147483647;pointer-events:none`;
+        seg.style.cssText = `position:fixed;left:${x1}px;top:${y1}px;width:${len}px;height:0;border-top:${barThickness}px solid ${barColor};transform-origin:0 0;transform:rotate(${angle}deg);z-index:200;pointer-events:none`;
       }
       return seg;
     };
@@ -5591,11 +5591,16 @@ export default function Dashboard() {
     const hlH = Math.max(0, hlBottom - hlTop);
     if (hlW > 0 && hlH > 0 && !taskOffScreenRight) {
       const highlight = document.createElement('div');
-      highlight.style.cssText = `position:fixed;left:${hlLeft}px;top:${hlTop}px;width:${hlW}px;height:${hlH}px;border:2px solid ${barColor};opacity:0.7;border-radius:4px;z-index:2147483647;pointer-events:none`;
+      highlight.style.cssText = `position:fixed;left:${hlLeft}px;top:${hlTop}px;width:${hlW}px;height:${hlH}px;border:2px solid ${barColor};opacity:0.7;border-radius:4px;z-index:200;pointer-events:none`;
       container.appendChild(highlight);
     }
 
-    document.body.appendChild(container);
+    const calBorderEl = document.querySelector('[data-testid="calendar-scroll-container"]')?.closest('.shadow-lg') as HTMLElement | null;
+    if (calBorderEl) {
+      calBorderEl.appendChild(container);
+    } else {
+      document.body.appendChild(container);
+    }
   }, []);
 
   const hideCountdownHoverLine = useCallback(() => {
@@ -30055,7 +30060,7 @@ export default function Dashboard() {
                                     </div>
                                   </div>
                                 )}
-                                <div className="absolute z-[3] pointer-events-none" style={{ top: '2px', bottom: '2px', left: (hourTasks.length > 0 || continuingTasks.length > 0) ? '50%' : `${gridSizes.timeSlotHeight + 25}px`, right: '26px', display: 'flex', gap: '4px' }} data-testid="hours-until-next-task">
+                                <div className="absolute z-[3] pointer-events-none" style={{ top: '2px', bottom: '2px', left: (hourTasks.length > 0 || continuingTasks.length > 0) ? '50%' : `${gridSizes.timeSlotHeight + 45}px`, right: '26px', display: 'flex', gap: '4px' }} data-testid="hours-until-next-task">
                                   {(() => {
                                     const courseCode = nextSchoolTask?.courseName?.split(' - ')[0]?.trim() || '';
                                     const gradColors = getCourseGradientColors(courseCode);
