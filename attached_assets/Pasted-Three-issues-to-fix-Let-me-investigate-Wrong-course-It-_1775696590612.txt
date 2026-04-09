@@ -1,0 +1,257 @@
+Three issues to fix. Let me investigate:
+
+Wrong course — It's playing Human Sexuality instead of Local Politics (priority ordering issue)
+No Nest confirmation — TTS not playing again
+No pause message on stop — The pause TTS didn't trigger
+Let me check the logs and the code:
+
+Checked console and system logs
+The logs here are from Replit (preparing audio), not the Pi. Let me check the priority ordering and the pause/stop issue. The user hasn't deployed the latest code yet — the code with the pronunciation fix hasn't been pushed/deployed. But the priority issue is separate — CPPA122 should be priority 1 (played first), not CFNF400. Let me check:
+
+
+2 actions
+The priorities look correct: CPPA122=1, CFNF400=2. But the user said it asked for Human Sexuality modules. Let me check if there are unlistened CPPA122 modules for week 12:
+
+
+Ran sed
+The priority ordering is right in code. The issue is likely that on the Pi, the code hasn't been updated yet — it's still running the old version with shortCode (CFNF). But wait, the user said "last time it asked CFNF, this time it asked Human Sexuality" — so they did deploy the pronunciation fix. The question is why it's picking CFNF400 instead of CPPA122.
+
+This could mean all
+
+It played the course material
+
+3 hours ago
+Got it — so the automation worked and played the material, but it picked CFNF400 (Human Sexuality) instead of CPPA122 (Local Politics). That means all CPPA122 modules for the current week are probably already marked as listened, so the system correctly moved to the next priority course.
+
+Can you run this on the Pi to confirm what's unlistened for week 12?
+
+pm2 logs --lines 300 --nostream 2>&1 | grep -i "FileOrder\|CoursePri\|Cat Lights.*Found\|Shower.*Found" | tail -20
+
+
+Worked for 37 seconds
+And it didn't give me a confirmation
+
+3 hours ago
+
+1 message & 1 action
+PS C:\Users\Bryn Kai-Hendricks> pm2 logs --lines 300 --nostream 2>&1 | grep -i "Confirm TTS|FileOrder|CoursePri|Cat Lights.*Found|Shower.*Found|Cloud TTS|confirm.*failed|confirm.*played|500|Voice Command|pause" | tail -30
+pm2 : The term 'pm2' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the
+spelling of the name, or if a path was included, verify that the path is correct and try again.
+At line:1 char:1
+
+pm2 logs --lines 300 --nostream 2>&1 | grep -i "Confirm TTS|FileOrde ...
+  + CategoryInfo          : ObjectNotFound: (pm2:String) [], CommandNotFoundException
+  + FullyQualifiedErrorId : CommandNotFoundException
+
+PS C:\Users\Bryn Kai-Hendricks>
+
+
+Show more
+3 hours ago
+That's your Windows PC — you need to run it on the Pi. SSH into the Pi first:
+
+ssh byhomeyyz@raspberrypi
+
+Then run:
+
+pm2 logs --lines 300 --nostream 2>&1 | grep -i "Confirm TTS\|FileOrder\|CoursePri\|Cat Lights.*Found\|Cloud TTS\|confirm.*failed\|confirm.*played\|500\|pause" | tail -30
+
+I am on my pi
+
+3 hours ago
+Run this on your Pi:
+
+pm2 logs --lines 300 --nostream 2>&1 | grep -i "Confirm TTS\|FileOrder\|CoursePri\|Cat Lights.*Found\|Cloud TTS\|confirm.*failed\|confirm.*played\|500\|pause" | tail -30
+
+how do i switch back to my pi? it keeps showing c:\
+
+3 hours ago
+You're in PowerShell on your Windows PC. Type exit to close the current session, then open a new terminal and SSH into your Pi:
+
+ssh byhomeyyz@raspberrypi
+
+Once you see the byhomeyyz@raspberrypi:~$ prompt, then run the log command.
+
+byhomeyyz@raspberrypi:~ $ pm2 logs --lines 300 --nostream 2>&1 | grep -i "Confirm TTS|FileOrder|CoursePri|Cat Lights.*Found|Cloud TTS|confirm.*failed|confirm.*played|500|pause" | tail -30
+byhomeyyz@raspberrypi:~ $
+
+3 hours ago
+No output means the logs rotated already. Let me try getting more lines:
+
+pm2 logs --lines 1000 --nostream 2>&1 | grep -i "Confirm\|FileOrder\|CoursePri\|Cat Lights.*Found\|Cloud TTS\|pause\|500" | tail -40
+
+
+Pasted-byhomeyyz-raspberrypi-pm2-logs-lines-1000-nostream-2-1-_1775686562999.txt
+3 hours ago
+The app logs already rotated past the playback event. The PM2 logs only show process management entries. Let me check the actual log file directly:
+
+cat ~/.pm2/logs/unical-out.log | grep -i "Confirm\|FileOrder\|CoursePri\|Cat Lights.*Found\|Cloud TTS\|pause" | tail -30
+
+
+Checkpoint made
+3 hours ago
+
+Attached Image
+Its not doing anything
+
+3 hours ago
+The log file is probably very large and the grep is still searching. Press Ctrl+C to cancel it, then try this faster approach:
+
+tail -5000 ~/.pm2/logs/unical-out.log | grep -i "Confirm\|FileOrder\|CoursePri\|Cat Lights.*Found\|pause" | tail -30
+
+
+Checkpoint made
+3 hours ago
+
+Pasted-se-custom-value-false-multiple-false-target-entity-inte_1775686639491.txt
+3 hours ago
+
+4 messages & 4 actions
+Fix the course order issue first
+
+3 hours ago
+
+10 messages & 11 actions
+
+Master App Guide — Complete Reference Your academic task management dashboard: everything in one place. Generated: March 28, 2026 Combines: Self-Hosting Guide, Integration & OAuth Guide, Troubleshooting Guide, Split Routes Guide, Web Dev/Python/Bash/Grep Beginner Guide, HA YAML Reference, Cat Washroom Study Reading System Flows, Missing Pieces Guide, and all current source code. --- # Table of Contents ## Part 1: Programming Fundamentals (Start Here If You're New) 1. What Is Programming? 2. HTML — The Structure of Web Pages 3. CSS — Making Things Look Good 4. JavaScript — Making Things Interactive 5. TypeScript — JavaScript With Safety Rails 6. React — Building User Interfaces 7. Node.js & Express — The Server Side 8. PostgreSQL & Drizzle — Databases 9. Python — General Purpose Programming 10. Bash — Talking to Your Computer 11. Grep — Searching Through Files 12. How All These Technologies Work Together ## Part 2: Understanding Your App 13. App Architecture Overview 14. What Connects to What 15. File Structure — Where Things Live 16. The Database — What's Stored Where ## Part 3: Self-Hosting Setup (Raspberry Pi) 17. Can I Run This on My Home Assistant Laptop? 18. Equipment to Buy 19. Step 1: Flash the Operating System 20. Step 2: First Boot 21. Step 3: Install System Dependencies 22. Step 4: Set Up the Database 23. Step 5: Create the App Directory 24. Step 6: Get the Code Out of Replit 25. Step 7: Set Up Environment Variables 26. Step 8: Setting Up OAuth Credentials (The Hard Part) 27. Step 9: Initialize the Database 28. Step 10: Build and Test 29. Step 11: Set Up Auto-Start (systemd Service) 30. Step 12: Set Up Log Rotation 31. Step 13: Update Home Assistant Webhooks 32. Step 14: Update Google Apps Script 33. Step 15: Touchscreen Setup
+Does this tell you anything?
+
+3 hours ago
+
+2 messages & 2 actions
+
+Checkpoint made
+3 hours ago
+
+Worked for 3 minutes
+byhomeyyz@raspberrypi:~ $ curl -s http://localhost:5000/api/files | node -e "const c=[];process.stdin.on('data',d=>c.push(d));process.stdin.on('end',()=>{const f=JSON.parse(Buffer.concat(c).toString()).filter(x=>(x.folder||'').includes('week-12'));f.forEach(x=>console.log('listened='+x.listened+' folder='+x.folder+' name='+x.originalName))})"
+<anonymous_script>:1
+
+SyntaxError: Unexpected end of JSON input
+at JSON.parse (<anonymous>)
+at Socket.<anonymous> ([eval]:1:91)
+at Socket.emit (node:events:536:35)
+at endReadableNT (node:internal/streams/readable:1698:12)
+at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+
+Node.js v20.20.2
+byhomeyyz@raspberrypi:~ $
+
+
+Show more
+3 hours ago
+The API might need auth. Try this instead:
+
+curl -s "http://localhost:5000/api/files?auth=5747" | node -e "const c=[];process.stdin.on('data',d=>c.push(d));process.stdin.on('end',()=>{const f=JSON.parse(Buffer.concat(c).toString()).filter(x=>(x.folder||'').includes('week-12'));f.forEach(x=>console.log('listened='+x.listened+' folder='+x.folder+' name='+x.originalName))})"
+
+byhomeyyz@raspberrypi:~ $ curl -s "http://localhost:5000/api/files?auth=5747" | node -e "const c=[];process.stdin.on('data',d=>c.push(d));process.stdin.on('end',()=>{const f=JSON.parse(Buffer.concat(c).toString()).filter(x=>(x.folder||'').includes('week-12'));f.forEach(x=>console.log('listened='+x.listened+' folder='+x.folder+' name='+x.originalName))})"
+<anonymous_script>:1
+
+SyntaxError: Unexpected end of JSON input
+at JSON.parse (<anonymous>)
+at Socket.<anonymous> ([eval]:1:91)
+at Socket.emit (node:events:536:35)
+at endReadableNT (node:internal/streams/readable:1698:12)
+at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+
+Node.js v20.20.2
+byhomeyyz@raspberrypi:~ $
+
+
+Show more
+3 hours ago
+The API is returning empty or HTML (maybe a login redirect). Let me try querying the Pi's database directly:
+
+cd ~/Home-View && node -e "const {Pool}=require('pg');const p=new Pool({connectionString:process.env.DATABASE_URL});p.query(\"SELECT id,original_name,folder,listened FROM files WHERE folder LIKE '%week-12%' ORDER BY folder\").then(r=>{r.rows.forEach(x=>console.log('listened='+x.listened+' folder='+x.folder+' name='+x.original_name));p.end()})"
+
+byhomeyyz@raspberrypi:~ $ cd ~/Home-View && node -e "const {Pool}=require('pg');const p=new Pool({connectionString:process.env.DATABASE_URL});p.query("SELECT id,original_name,folder,listened FROM files WHERE folder LIKE '%week-12%' ORDER BY folder").then(r=>{r.rows.forEach(x=>console.log('listened='+x.listened+' folder='+x.folder+' name='+x.original_name));p.end()})"
+/home/byhomeyyz/Home-View/node_modules/pg-pool/index.js:45
+Error.captureStackTrace(err)
+^
+
+Error: SASL: SCRAM-SERVER-FIRST-MESSAGE: client password must be a string
+at /home/byhomeyyz/Home-View/node_modules/pg-pool/index.js:45:11
+at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+Node.js v20.20.2
+byhomeyyz@raspberrypi:~/Home-View $
+
+
+Show more
+3 hours ago
+The DATABASE_URL env var isn't loaded. Try this:
+
+source ~/.bashrc && cd ~/Home-View && psql -U byhomeyyz -d unical -c "SELECT id, original_name, folder, listened FROM files WHERE folder LIKE '%week-12%' ORDER BY folder;"
+
+byhomeyyz@raspberrypi:~/Home-View $ source ~/.bashrc && cd /Home-View && psql -U byhomeyyz -d unical -c "SELECT id, original_name, folder, listened FROM files WHERE folder LIKE '%week-12%' ORDER BY folder;"
+psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: FATAL: role "byhomeyyz" does not exist
+byhomeyyz@raspberrypi:/Home-View $
+
+3 hours ago
+Try with the postgres user:
+
+sudo -u postgres psql -d unical -c "SELECT id, original_name, folder, listened FROM files WHERE folder LIKE '%week-12%' ORDER BY folder;"
+
+byhomeyyz@raspberrypi:/Home-View $ sudo -u postgres psql -d unical -c "SELECT id, original_name, folder, listened FROM files WHERE folder LIKE '%week-12%' ORDER BY folder;"
+psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: FATAL: database "unical" does not exist
+byhomeyyz@raspberrypi:/Home-View $
+
+3 hours ago
+Let me find the right database name:
+
+sudo -u postgres psql -c "\l" | grep -i uni
+
+byhomeyyz@raspberrypi:/Home-View $ sudo -u postgres psql -c "\l" | grep -i uni
+byhomeyyz@raspberrypi:/Home-View $
+
+3 hours ago
+
+1 message & 1 action
+                                                    List of databases
+ Name     |   Owner   | Encoding | Locale Provider |   Collate   |    Ctype    | Locale | ICU Rules |    Access privileges
+
+--------------+-----------+----------+-----------------+-------------+-------------+--------+-----------+-------------------------
+dashboard_db | dashboard | UTF8 | libc | en_US.UTF-8 | en_US.UTF-8 | | | =Tc/dashboard +
+| | | | | | | | dashboard=CTc/dashboard
+postgres | postgres | UTF8 | libc | en_US.UTF-8 | en_US.UTF-8 | | |
+template0 | postgres | UTF8 | libc | en_US.UTF-8 | en_US.UTF-8 | | | =c/postgres +
+| | | | | | | | postgres=CTc/postgres
+template1 | postgres | UTF8 | libc | en_US.UTF-8 | en_US.UTF-8 | | | =c/postgres +
+| | | | | | | | postgres=CTc/postgres
+(4 rows)
+
+(END)
+
+
+Show more
+3 hours ago
+The database is dashboard_db with user dashboard. Try this:
+
+sudo -u postgres psql -d dashboard_db -c "SELECT id, original_name, folder, listened FROM files WHERE folder LIKE '%week-12%' ORDER BY folder;"
+
+byhomeyyz@raspberrypi:~/Home-View $ sudo -u postgres psql -d dashboard_db -c "SELECT id, original_name, folder, listened FROM files WHERE folder LIKE '%week-12%' ORDER BY folder;"
+id | original_name | folder | listened
+-----+----------------------------------------------+------------------------+----------
+232 | CFNF400, Module 12 - Learning Objectives.pdf | week-12-cfnf400-module | f
+231 | CPPA122, Module 12 - Introduction.pdf | week-12-cppa122-module | t
+(2 rows)
+
+byhomeyyz@raspberrypi:~/Home-View $
+
+
+Show more
+3 hours ago
+
+1 message & 1 action
+ok but it still isn't playing cppa
+
+3 hours ago
+
+Show less
+
+Analyzing CPPA listening status logic (9 seconds)
+It sounds like CPPA122 Module 12 got marked as listened when you didn't actually listen to it. Let me check when the code marks files as listened — it might be marking them too early.
+
+
+4 actions
+Well on the progerss circle in the homework box it still says 0%

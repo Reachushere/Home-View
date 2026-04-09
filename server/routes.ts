@@ -11867,10 +11867,16 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     }
   }, 15000);
 
+  const extractionFailedFileIds = new Set<number>();
+
   async function findNextFileByPriority(allFiles: any[], currentWeekNumber: number, excludeFileId?: number): Promise<any | null> {
     console.log(`[FileOrder] Searching ${allFiles.length} total files for week ${currentWeekNumber} (priorities: ${JSON.stringify(coursePlayPriority)})`);
+    if (extractionFailedFileIds.size > 0) {
+      console.log(`[FileOrder] Skipping ${extractionFailedFileIds.size} extraction-failed file IDs: [${[...extractionFailedFileIds].join(', ')}]`);
+    }
     const allForWeek = allFiles.filter((f: any) => {
       if (excludeFileId && f.id === excludeFileId) return false;
+      if (extractionFailedFileIds.has(f.id)) return false;
       const weekMatch = f.folder?.match(/week-(\d+)/i);
       return weekMatch && parseInt(weekMatch[1], 10) === currentWeekNumber;
     });
@@ -12936,14 +12942,9 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
     try {
       if (chunks.length === 0) {
-        console.log(`[Nest Playback] No chunks for "${fileName}" (id=${fileId}) — text extraction failed, marking listened and skipping`);
+        aLog('Nest-Playback', `No chunks for "${fileName}" (id=${fileId}) — text extraction failed, NOT marking listened (will retry later)`);
+        extractionFailedFileIds.add(fileId);
         await clearPlaybackSession();
-        try {
-          await storage.updateFile(fileId, { listened: true });
-          console.log(`[Nest Playback] Marked file ${fileId} as listened (extraction failed)`);
-        } catch (e: any) {
-          console.error(`[Nest Playback] Failed to mark file ${fileId} listened: ${e.message}`);
-        }
         try {
           const allFiles = await storage.getFiles();
           const semesterSettings = await storage.getActiveSemesterSettings();
@@ -12952,7 +12953,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           const currentWeekNumber = getWeekNumber(torontoDate(), semStart, rwStart);
 
           const unlistenedFiles = allFiles.filter((f: any) => {
-            if (f.listened || f.id === fileId) return false;
+            if (f.listened || f.id === fileId || extractionFailedFileIds.has(f.id)) return false;
             const weekMatch = f.folder?.match(/week-(\d+)/i);
             if (weekMatch) return parseInt(weekMatch[1], 10) === currentWeekNumber;
             return false;
@@ -13770,12 +13771,12 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const allPartialIds = new Set(weekPartials.map((f: any) => f.id));
 
     const unlistenedFiles = allFiles.filter((f: any) => {
-      if (f.listened || f.id === excludeFileId) return false;
+      if (f.listened || f.id === excludeFileId || extractionFailedFileIds.has(f.id)) return false;
       if (allPartialIds.has(f.id)) return false;
       return getFileWeek(f) === w;
     });
 
-    const allWeekUnlistened = allFiles.filter((f: any) => !f.listened && f.id !== excludeFileId && getFileWeek(f) === w);
+    const allWeekUnlistened = allFiles.filter((f: any) => !f.listened && f.id !== excludeFileId && !extractionFailedFileIds.has(f.id) && getFileWeek(f) === w);
 
     if (allWeekUnlistened.length === 0 && weekPartials.length === 0) {
       console.log(`[CatWashFile] No unlistened files found in week ${weekNumber}`);
