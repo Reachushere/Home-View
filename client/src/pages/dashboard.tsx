@@ -11677,6 +11677,26 @@ export default function Dashboard() {
   const calStart = 0;
   const timeSlots = Array.from({ length: 24 }, (_, i) => i);
   const calendarScrollRef = useRef<HTMLDivElement>(null);
+  const [calendarZoom, setCalendarZoom] = useState(1);
+  const calendarZoomRef = useRef(1);
+  useEffect(() => { calendarZoomRef.current = calendarZoom; }, [calendarZoom]);
+  useEffect(() => {
+    const el = calendarScrollRef.current;
+    if (!el) return;
+    const handler = (e: WheelEvent) => {
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        const delta = e.deltaY > 0 ? -0.1 : 0.1;
+        const prev = calendarZoomRef.current;
+        const next = Math.round(Math.max(0.3, Math.min(2.5, prev + delta)) * 100) / 100;
+        calendarZoomRef.current = next;
+        setCalendarZoom(next);
+      }
+    };
+    el.addEventListener('wheel', handler, { passive: false });
+    return () => el.removeEventListener('wheel', handler);
+  }, []);
   const calScrollTopRef = useRef(0);
   const calendarContentRef = useRef<HTMLDivElement>(null);
 
@@ -11993,7 +12013,8 @@ export default function Dashboard() {
   };
 
   const getEffectiveRowHeight = (h: number) => {
-    return (gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight) + getConflictExtraHeight(h) + getMultiHourOverlayBuffer(h);
+    const base = (gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight) * calendarZoom;
+    return base + getConflictExtraHeight(h) + getMultiHourOverlayBuffer(h);
   };
 
   // Get all-day Google Calendar events for a day (only conflicting events)
@@ -29710,7 +29731,7 @@ export default function Dashboard() {
               
                           {/* Time Slots - Scrollable area */}
             <div style={{ position: 'relative', flex: '1 1 0%', overflow: 'hidden', borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px' }}>
-            <div ref={calendarScrollRef} data-testid="calendar-scroll-container" className="overflow-y-auto" style={{ height: '100%', scrollbarWidth: 'none' }} onScroll={(e) => {
+            <div ref={calendarScrollRef} data-testid="calendar-scroll-container" className="overflow-y-auto" style={{ height: '100%', scrollbarWidth: 'thin', scrollbarColor: 'rgba(0,0,0,0.15) transparent' }} onScroll={(e) => {
               const st = (e.target as HTMLDivElement).scrollTop;
               calScrollTopRef.current = st;
             }}>
