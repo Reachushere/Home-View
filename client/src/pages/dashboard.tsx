@@ -29511,13 +29511,13 @@ export default function Dashboard() {
                                 <span
                                   onClick={() => setEditingTask(task)}
                                   className={`cursor-pointer hover:opacity-80 pl-1 flex-1 min-w-0 ${task.isCompleted ? "line-through" : ""}`}
-                                  style={{ fontWeight: 400, color: 'black', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textShadow: 'none', WebkitTextStroke: '0', letterSpacing: '0.1px', wordBreak: 'break-word', lineHeight: 1.2 }}
+                                  style={{ fontWeight: 400, color: 'white', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textShadow: 'none', WebkitTextStroke: '0', letterSpacing: '0.1px', wordBreak: 'break-word', lineHeight: 1.2 }}
                                 >
                                   {(task.title || '').replace(/[\[\]]/g, '')}
                                 </span>
                                 {task.referenceLink && (
                                   <a href={task.referenceLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0" title={task.referenceLink} data-testid={`link-icon-other-${task.id}`}>
-                                    <ExternalLink className="h-2.5 w-2.5 text-black/60 hover:text-black" />
+                                    <ExternalLink className="h-2.5 w-2.5 text-white/60 hover:text-white" />
                                   </a>
                                 )}
                               </div>
@@ -29544,7 +29544,7 @@ export default function Dashboard() {
                                 data-testid={`other-project-${proj.id}`}
                               >
                                 <FolderKanban className="h-3 w-3 shrink-0" style={{ color: proj.color || '#6b7280' }} />
-                                <span className="truncate cursor-pointer hover:opacity-80 pl-1 flex-1 min-w-0" style={{ fontWeight: 400, color: 'black', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textShadow: 'none', WebkitTextStroke: '0', letterSpacing: '0.1px' }}>{proj.name}</span>
+                                <span className="truncate cursor-pointer hover:opacity-80 pl-1 flex-1 min-w-0" style={{ fontWeight: 400, color: 'white', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textShadow: 'none', WebkitTextStroke: '0', letterSpacing: '0.1px' }}>{proj.name}</span>
                               </div>
                             );
                           })}
@@ -30146,9 +30146,10 @@ export default function Dashboard() {
                               const gradColors = courseCode ? getCourseGradientColors(courseCode) : null;
                               const hasCourseGrad = gradColors && gradColors.start !== '#6b7280';
                               const taskBg = cMatch?.taskBgColor || (colors?.bg) || (hasCourseGrad ? gradColors.start : '');
-                              if (!taskBg) return false;
+                              const bgToCheck = taskBg || otherRowColors.labelStart;
+                              if (!bgToCheck) return true;
                               let r = 0, g = 0, b = 0, matched = false;
-                              const hexMatch = taskBg.match(/#([0-9a-fA-F]{6})/);
+                              const hexMatch = bgToCheck.match(/#([0-9a-fA-F]{6})/);
                               if (hexMatch) {
                                 r = parseInt(hexMatch[1].substring(0, 2), 16);
                                 g = parseInt(hexMatch[1].substring(2, 4), 16);
@@ -30156,14 +30157,14 @@ export default function Dashboard() {
                                 matched = true;
                               }
                               if (!matched) {
-                                const rgbMatch = taskBg.match(/rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+                                const rgbMatch = bgToCheck.match(/rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
                                 if (rgbMatch) {
                                   r = parseInt(rgbMatch[1]); g = parseInt(rgbMatch[2]); b = parseInt(rgbMatch[3]);
                                   matched = true;
                                 }
                               }
                               if (matched) return (r * 299 + g * 587 + b * 114) / 1000 < 160;
-                              return false;
+                              return !taskBg;
                             })();
                             
                             const conflictExtra = getConflictExtraHeight(hour);
@@ -30542,9 +30543,10 @@ export default function Dashboard() {
                     const gradColors = courseCode ? getCourseGradientColors(courseCode) : null;
                     const hasCourseGrad = gradColors && gradColors.start !== '#6b7280';
                     const taskBg = cMatch?.taskBgColor || (colors?.bg) || (hasCourseGrad ? gradColors.start : '');
-                    if (!taskBg) return false;
+                    const bgToCheck = taskBg || otherRowColors.labelStart;
+                    if (!bgToCheck) return true;
                     let r = 0, g = 0, b = 0, matched = false;
-                    const hexMatch = taskBg.match(/#([0-9a-fA-F]{6})/);
+                    const hexMatch = bgToCheck.match(/#([0-9a-fA-F]{6})/);
                     if (hexMatch) {
                       r = parseInt(hexMatch[1].substring(0, 2), 16);
                       g = parseInt(hexMatch[1].substring(2, 4), 16);
@@ -30552,14 +30554,14 @@ export default function Dashboard() {
                       matched = true;
                     }
                     if (!matched) {
-                      const rgbMatch = taskBg.match(/rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+                      const rgbMatch = bgToCheck.match(/rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
                       if (rgbMatch) {
                         r = parseInt(rgbMatch[1]); g = parseInt(rgbMatch[2]); b = parseInt(rgbMatch[3]);
                         matched = true;
                       }
                     }
                     if (matched) return (r * 299 + g * 587 + b * 114) / 1000 < 160;
-                    return false;
+                    return !taskBg;
                   })();
                   
                   return (
