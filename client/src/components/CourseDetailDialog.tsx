@@ -337,7 +337,20 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
 
   const courseCodeClean = courseInfo.courseCode?.replace(/\s/g, '').toUpperCase() || '';
   const [moduleDueDay, setModuleDueDay] = useState<string>(() => {
-    try { return localStorage.getItem(`moduleDeadline_${courseCodeClean}_day`) || ''; } catch { return ''; }
+    try {
+      const saved = localStorage.getItem(`moduleDeadline_${courseCodeClean}_day`);
+      if (saved) return saved;
+      const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const modTask = allTasks.find(t => {
+        const tCode = (t.courseName || '').split(' - ')[0]?.replace(/\s/g, '').toUpperCase();
+        return tCode === courseCodeClean.toUpperCase() && t.type === 'module' && t.dueDate;
+      });
+      if (modTask) {
+        const d = new Date(modTask.dueDate);
+        return dayNames[d.getUTCDay()] || '';
+      }
+      return '';
+    } catch { return ''; }
   });
   const [moduleDueTime, setModuleDueTime] = useState<string>(() => {
     try { return localStorage.getItem(`moduleDeadline_${courseCodeClean}_time`) || '23:59'; } catch { return '23:59'; }
@@ -346,7 +359,20 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
     try { return localStorage.getItem(`discussionEnabled_${courseCodeClean}`) === 'true'; } catch { return false; }
   });
   const [discussionDueDay, setDiscussionDueDay] = useState<string>(() => {
-    try { return localStorage.getItem(`discussionDeadline_${courseCodeClean}_day`) || ''; } catch { return ''; }
+    try {
+      const saved = localStorage.getItem(`discussionDeadline_${courseCodeClean}_day`);
+      if (saved) return saved;
+      const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const discTask = allTasks.find(t => {
+        const tCode = (t.courseName || '').split(' - ')[0]?.replace(/\s/g, '').toUpperCase();
+        return tCode === courseCodeClean.toUpperCase() && t.type === 'discussion' && t.dueDate;
+      });
+      if (discTask) {
+        const d = new Date(discTask.dueDate);
+        return dayNames[d.getUTCDay()] || '';
+      }
+      return '';
+    } catch { return ''; }
   });
   const [discussionDueTime, setDiscussionDueTime] = useState<string>(() => {
     try { return localStorage.getItem(`discussionDeadline_${courseCodeClean}_time`) || '23:59'; } catch { return '23:59'; }
@@ -450,8 +476,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
   }, [courseCodeClean]);
 
   const generateWeeklyDeadlines = useCallback(async () => {
-    if (!moduleDueDay) {
-      toast({ title: 'Select a module due day first', variant: 'destructive' });
+    if (!moduleDueDay && !(discussionEnabled && discussionDueDay)) {
+      toast({ title: 'Select a due day first', variant: 'destructive' });
       return;
     }
     setGeneratingDeadlines(true);
@@ -3237,12 +3263,12 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                       <Button
                         size="sm"
                         onClick={generateWeeklyDeadlines}
-                        disabled={!moduleDueDay || generatingDeadlines}
+                        disabled={(!moduleDueDay && !(discussionEnabled && discussionDueDay)) || generatingDeadlines}
                         className="h-7 px-4 text-[11px] font-semibold bg-green-600 hover:bg-green-700 text-white border border-green-400 disabled:opacity-40 shadow-md"
                         data-testid="button-generate-deadlines"
                       >
                         {generatingDeadlines ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : <Calendar className="h-3.5 w-3.5 mr-1.5" />}
-                        Generate Tasks for All Weeks
+                        {hasGenerated ? 'Update Tasks for All Weeks' : 'Generate Tasks for All Weeks'}
                       </Button>
                       {hasGenerated && (
                         <Button
