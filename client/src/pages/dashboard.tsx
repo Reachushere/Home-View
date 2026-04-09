@@ -30062,7 +30062,7 @@ export default function Dashboard() {
                                     </div>
                                   </div>
                                 )}
-                                <div className="absolute z-[3] pointer-events-none" style={{ top: '2px', bottom: '2px', left: (hourTasks.length > 0 || continuingTasks.length > 0) ? '50%' : `${gridSizes.timeSlotHeight + 10}px`, right: '26px', display: 'flex', gap: '4px' }} data-testid="hours-until-next-task">
+                                <div className="absolute z-[3] pointer-events-none" style={{ top: '2px', bottom: '2px', left: (hourTasks.length > 0 || continuingTasks.length > 0) ? '50%' : `${gridSizes.timeSlotHeight + 15}px`, right: '26px', display: 'flex', gap: '4px' }} data-testid="hours-until-next-task">
                                   {(() => {
                                     const courseCode = nextSchoolTask?.courseName?.split(' - ')[0]?.trim() || '';
                                     const gradColors = getCourseGradientColors(courseCode);
