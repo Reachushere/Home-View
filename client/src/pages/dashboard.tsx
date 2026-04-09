@@ -5568,21 +5568,25 @@ export default function Dashboard() {
     const effectiveTaskH = isDayColFallback ? Math.min(taskRect.height, 40) : taskRect.height;
     const clampedTaskMidY = Math.min(taskRect.top + effectiveTaskH / 2, viewportH - 10);
 
+    const calendarBorderEl = document.querySelector('[data-testid="calendar-scroll-container"]')?.closest('.shadow-lg') as HTMLElement | null;
+    const calBounds = calendarBorderEl ? calendarBorderEl.getBoundingClientRect() : null;
+    const calTopY = calBounds ? calBounds.top : 0;
+    const calBotY = calBounds ? calBounds.bottom : viewportH;
+
     if (isBarSource) {
-      const calendarScrollEl = calendarWrapper;
-      const calendarBotY = calendarScrollEl ? calendarScrollEl.getBoundingClientRect().bottom : viewportH;
       const taskLeftX = taskRect.left;
       const taskMidY = taskRect.top + (isDayColFallback ? Math.min(taskRect.height, 40) / 2 : taskRect.height / 2);
-      const endY = taskMidY > calendarBotY ? calendarBotY - 2 : taskMidY;
-      const startY = sourceRect.top + sourceRect.height / 2;
+      const rawStartY = sourceRect.top + sourceRect.height / 2;
+      const startY = Math.max(calTopY, Math.min(calBotY, rawStartY));
+      const endY = Math.max(calTopY, Math.min(calBotY, taskMidY));
 
       container.appendChild(makeSeg(taskLeftX, startY, taskLeftX, endY));
     }
 
     const hlLeft = Math.max(0, taskRect.left - 2);
-    const hlTop = Math.max(0, taskRect.top - 2);
+    const hlTop = Math.max(calTopY, taskRect.top - 2);
     const hlRight = Math.min(viewportW, taskRect.right + 2);
-    const hlBottom = isDayColFallback ? Math.min(viewportH, taskRect.top + effectiveTaskH + 2) : Math.min(viewportH, taskRect.bottom + 2);
+    const hlBottom = isDayColFallback ? Math.min(calBotY, taskRect.top + effectiveTaskH + 2) : Math.min(calBotY, taskRect.bottom + 2);
     const hlW = Math.max(0, hlRight - hlLeft);
     const hlH = Math.max(0, hlBottom - hlTop);
     if (hlW > 0 && hlH > 0 && !taskOffScreenRight) {
