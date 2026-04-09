@@ -14381,7 +14381,7 @@ document.body.removeChild(a);
 
       res.json({ action: "playing", file: { id: nextFile.id, name: fileName }, currentWeek: currentWeekNumber });
 
-      const confirmTTS = `Okay Bryn, I will now play your ${fileDesc}.`;
+      const confirmTTS = `Okay, I will now play ${fileDesc}.`;
 
       catWashPlaybackTrigger = 'button';
       await startConfirmedPlaybackFlow(nextFile, '[Shower Button]', 'echo', confirmTTS);
@@ -14444,7 +14444,7 @@ document.body.removeChild(a);
       }
 
       const fileDesc = describeFileForTTS(freshFile, lateWeek || 1);
-      const confirmTTS = `Okay Bryn, I will now play your ${fileDesc}.`;
+      const confirmTTS = `Okay, I will now play ${fileDesc}.`;
       catWashPlaybackTrigger = 'lights';
       catLightsPromptPending = false;
       await startConfirmedPlaybackFlow(freshFile, '[Cat Lights Late]', 'echo', confirmTTS);
@@ -14542,15 +14542,9 @@ document.body.removeChild(a);
       if (lightState === 'off') {
         catWashTrace('CatLights', 'LIGHT OFF — stopping all playback');
         console.log("[Cat Lights] Light off — stopping all playback and saving progress");
-        const wasActuallyPlaying = catWashPlaybackActive || !!voiceCommandPauseState_;
+        const wasActuallyPlaying = catWashPlaybackActive;
         const offSession = catLightsPromptSession;
         const stopped: string[] = [];
-        if (voiceCommandPauseState_) {
-          console.log(`[Cat Lights] Clearing paused playback state (file: ${voiceCommandPauseState_.fileName})`);
-          stopped.push(`paused:${voiceCommandPauseState_.fileName}`);
-          clearTimeout(voiceCommandPauseState_.autoStopTimer);
-          voiceCommandPauseState_ = null;
-        }
         if (catWashPlaybackActive) {
           stopped.push(`playback:${catWashPlaybackState?.fileName || ''}`);
           await stopNestPlaybackWithGoodbye('light_off');
@@ -14567,7 +14561,7 @@ document.body.removeChild(a);
           console.warn(`[Cat Lights] Failed to stop Echo speakers: ${e.message}`);
         }
         const lightsOffStopTs = Date.now();
-        const wasPlaybackActive = stopped.some(s => s.startsWith('playback:') || s.startsWith('paused:'));
+        const wasPlaybackActive = stopped.some(s => s.startsWith('playback:'));
         await Promise.all([
           setTabletCommand({ action: 'stop_playback', goodbyeText: '', timestamp: lightsOffStopTs }, true, 'master'),
           setTabletCommand({ action: 'stop_playback', timestamp: lightsOffStopTs }, true, 'tv'),
@@ -14585,9 +14579,9 @@ document.body.removeChild(a);
         }
         catWashPlaybackTrigger = null;
         await clearPlaybackSession();
-        if (wasActuallyPlaying || wasPlaybackActive) {
+        if (wasActuallyPlaying) {
           lastPlaybackStoppedAt = Date.now();
-          console.log(`[Cat Lights] lastPlaybackStoppedAt set (playback was active or paused)`);
+          console.log(`[Cat Lights] lastPlaybackStoppedAt set (playback was active)`);
         } else {
           console.log(`[Cat Lights] lastPlaybackStoppedAt NOT set (no playback was active)`);
         }
@@ -14950,7 +14944,7 @@ document.body.removeChild(a);
         console.log(`[Cat Lights] Confirmation received — starting playback`);
         catLightsPromptPending = false;
 
-        const confirmTTS = `Okay Bryn, I will now play your ${fileDesc}.`;
+        const confirmTTS = `Okay, I will now play ${fileDesc}.`;
         catWashPlaybackTrigger = 'lights';
         await startConfirmedPlaybackFlow(nextFile, '[Cat Lights]', 'echo', confirmTTS);
         return;
@@ -15481,7 +15475,7 @@ document.body.removeChild(a);
           } catch (e: any) {
             console.warn(`${logPrefix} Could not fetch no-motion automation duration: ${e.message}`);
           }
-          const pauseText = `Stop received.`;
+          const pauseText = `Paused. Say re-zoom to continue, or I'll stop in ${noMotionMinutes} minutes.`;
           console.log(`[Voice Command] Pause TTS text: "${pauseText}"`);
           let pausePlayed = false;
           try {
