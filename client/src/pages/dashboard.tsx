@@ -5508,6 +5508,12 @@ export default function Dashboard() {
     if (!barColor) barColor = '#22c55e';
     const barThickness = 3;
 
+    const calendarBorderEl = document.querySelector('[data-testid="calendar-scroll-container"]')?.closest('.shadow-lg') as HTMLElement | null;
+    if (!calendarBorderEl) return;
+    const calRect = calendarBorderEl.getBoundingClientRect();
+    const oX = calRect.left;
+    const oY = calRect.top;
+
     const calendarWrapper = document.querySelector('[data-testid="calendar-scroll-container"]') as HTMLElement | null;
     const rightEdge = calendarWrapper ? calendarWrapper.getBoundingClientRect().right : window.innerWidth - 10;
 
@@ -5541,7 +5547,7 @@ export default function Dashboard() {
     const container = document.createElement('div');
     container.id = 'countdown-hover-line-overlay';
     container.dataset.taskId = String(taskId);
-    container.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:9999';
+    container.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:200;overflow:visible';
 
     if (!filteredTaskEl) {
       const taskData = (window as any).__allTasksCache?.find((t: any) => t.id === taskId);
@@ -5569,19 +5575,20 @@ export default function Dashboard() {
     const isBarSource = sourceEl.getAttribute('data-testid')?.startsWith('countdown-bar-');
 
     const makeSeg = (x1: number, y1: number, x2: number, y2: number) => {
+      const ax1 = x1 - oX, ay1 = y1 - oY, ax2 = x2 - oX, ay2 = y2 - oY;
       const seg = document.createElement('div');
-      if (Math.abs(y1 - y2) < 1) {
-        const left = Math.min(x1, x2);
-        const w = Math.abs(x2 - x1);
-        seg.style.cssText = `position:fixed;left:${left}px;top:${y1 - barThickness / 2}px;width:${w}px;height:${barThickness}px;background:${barColor};border-radius:1px;z-index:9999;pointer-events:none`;
-      } else if (Math.abs(x1 - x2) < 1) {
-        const top = Math.min(y1, y2);
-        const h = Math.abs(y2 - y1);
-        seg.style.cssText = `position:fixed;left:${x1 - barThickness / 2}px;top:${top}px;width:${barThickness}px;height:${h}px;background:${barColor};border-radius:1px;z-index:9999;pointer-events:none`;
+      if (Math.abs(ay1 - ay2) < 1) {
+        const left = Math.min(ax1, ax2);
+        const w = Math.abs(ax2 - ax1);
+        seg.style.cssText = `position:absolute;left:${left}px;top:${ay1 - barThickness / 2}px;width:${w}px;height:${barThickness}px;background:${barColor};border-radius:1px;pointer-events:none`;
+      } else if (Math.abs(ax1 - ax2) < 1) {
+        const top = Math.min(ay1, ay2);
+        const h = Math.abs(ay2 - ay1);
+        seg.style.cssText = `position:absolute;left:${ax1 - barThickness / 2}px;top:${top}px;width:${barThickness}px;height:${h}px;background:${barColor};border-radius:1px;pointer-events:none`;
       } else {
-        const len = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
-        const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
-        seg.style.cssText = `position:fixed;left:${x1}px;top:${y1}px;width:${len}px;height:0;border-top:${barThickness}px solid ${barColor};transform-origin:0 0;transform:rotate(${angle}deg);z-index:9999;pointer-events:none`;
+        const len = Math.sqrt((ax2 - ax1) ** 2 + (ay2 - ay1) ** 2);
+        const angle = Math.atan2(ay2 - ay1, ax2 - ax1) * (180 / Math.PI);
+        seg.style.cssText = `position:absolute;left:${ax1}px;top:${ay1}px;width:${len}px;height:0;border-top:${barThickness}px solid ${barColor};transform-origin:0 0;transform:rotate(${angle}deg);pointer-events:none`;
       }
       return seg;
     };
@@ -5594,10 +5601,8 @@ export default function Dashboard() {
     const effectiveTaskH = isDayColFallback ? Math.min(taskRect.height, 40) : taskRect.height;
     const clampedTaskMidY = Math.min(taskRect.top + effectiveTaskH / 2, viewportH - 10);
 
-    const calendarBorderEl = document.querySelector('[data-testid="calendar-scroll-container"]')?.closest('.shadow-lg') as HTMLElement | null;
-    const calBounds = calendarBorderEl ? calendarBorderEl.getBoundingClientRect() : null;
-    const calTopY = calBounds ? calBounds.top : 0;
-    const calBotY = calBounds ? calBounds.bottom : viewportH;
+    const calTopY = calRect.top;
+    const calBotY = calRect.bottom;
 
     if (isBarSource) {
       const taskLeftX = taskRect.left;
@@ -5618,12 +5623,12 @@ export default function Dashboard() {
       const hlH = Math.max(0, hlBottom - hlTop);
       if (hlW > 0 && hlH > 0 && !taskOffScreenRight) {
         const highlight = document.createElement('div');
-        highlight.style.cssText = `position:fixed;left:${hlLeft}px;top:${hlTop}px;width:${hlW}px;height:${hlH}px;border:2px solid ${barColor};opacity:0.7;border-radius:4px;z-index:9999;pointer-events:none`;
+        highlight.style.cssText = `position:absolute;left:${hlLeft - oX}px;top:${hlTop - oY}px;width:${hlW}px;height:${hlH}px;border:2px solid ${barColor};opacity:0.7;border-radius:4px;pointer-events:none`;
         container.appendChild(highlight);
       }
     }
 
-    document.body.appendChild(container);
+    calendarBorderEl.appendChild(container);
   }, []);
 
   const hideCountdownHoverLine = useCallback(() => {
