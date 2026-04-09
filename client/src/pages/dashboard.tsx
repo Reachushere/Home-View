@@ -27444,41 +27444,46 @@ export default function Dashboard() {
                 const fwEffectsHtml = showForecastWeather ? (() => {
                   const wc = effectiveWCode!;
                   if (wc >= 95) {
-                    const drops = Array.from({ length: 8 }, (_, i) => {
-                      const left = (i * 37 + 13) % 100;
-                      const delay = ((i * 0.13) % 0.8).toFixed(2);
-                      return `<div style="position:absolute;left:${left}%;top:-2px;width:1px;height:5px;background:rgba(80,160,255,0.9);animation:rainDrop 0.4s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                    const drops = Array.from({ length: 20 }, (_, i) => {
+                      const left = (i * 17 + 3 + (i % 3) * 7) % 100;
+                      const delay = ((i * 0.07) % 0.6).toFixed(2);
+                      const h = 8 + (i % 3) * 3;
+                      return `<div style="position:absolute;left:${left}%;top:-4px;width:2px;height:${h}px;background:rgba(100,180,255,0.95);animation:fwRainDrop 0.35s ${delay}s linear infinite;border-radius:0 0 2px 2px;box-shadow:0 0 3px rgba(100,180,255,0.5)"></div>`;
                     }).join('');
                     return drops;
                   }
                   if (wc >= 71 && wc <= 77) {
-                    return Array.from({ length: 8 }, (_, i) => {
-                      const left = (i * 23 + 5) % 100;
-                      const delay = ((i * 0.2) % 2).toFixed(2);
-                      const size = 2 + (i % 2);
-                      return `<div style="position:absolute;left:${left}%;top:-2px;width:${size}px;height:${size}px;background:rgba(200,225,255,1);border-radius:50%;animation:snowFall 2s ${delay}s linear infinite"></div>`;
+                    return Array.from({ length: 18 }, (_, i) => {
+                      const left = (i * 19 + 3 + (i % 3) * 5) % 100;
+                      const delay = ((i * 0.15) % 2.5).toFixed(2);
+                      const size = 3 + (i % 3);
+                      const drift = (i % 2 === 0) ? 'fwSnowFallLeft' : 'fwSnowFallRight';
+                      return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(220,235,255,1);border-radius:50%;animation:${drift} ${1.8 + (i % 3) * 0.4}s ${delay}s linear infinite;box-shadow:0 0 4px rgba(200,220,255,0.8)"></div>`;
                     }).join('');
                   }
                   if (wc >= 85 && wc <= 86) {
-                    return Array.from({ length: 10 }, (_, i) => {
-                      const left = (i * 23 + 5) % 100;
-                      const delay = ((i * 0.2) % 2).toFixed(2);
-                      const size = 2 + (i % 2);
-                      return `<div style="position:absolute;left:${left}%;top:-2px;width:${size}px;height:${size}px;background:rgba(200,225,255,1);border-radius:50%;animation:snowFall ${1.5 + (i % 2)}s ${delay}s linear infinite"></div>`;
+                    return Array.from({ length: 22 }, (_, i) => {
+                      const left = (i * 17 + 2 + (i % 4) * 5) % 100;
+                      const delay = ((i * 0.12) % 2).toFixed(2);
+                      const size = 3 + (i % 3);
+                      const drift = (i % 2 === 0) ? 'fwSnowFallLeft' : 'fwSnowFallRight';
+                      return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(220,235,255,1);border-radius:50%;animation:${drift} ${1.4 + (i % 3) * 0.3}s ${delay}s linear infinite;box-shadow:0 0 5px rgba(200,220,255,0.9)"></div>`;
                     }).join('');
                   }
                   if ((wc >= 61 && wc <= 67) || (wc >= 80 && wc <= 82)) {
-                    return Array.from({ length: 8 }, (_, i) => {
-                      const left = (i * 23 + 5) % 100;
-                      const delay = ((i * 0.14) % 1.2).toFixed(2);
-                      return `<div style="position:absolute;left:${left}%;top:-2px;width:1px;height:5px;background:rgba(70,160,255,0.85);animation:rainDrop 0.6s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                    return Array.from({ length: 16 }, (_, i) => {
+                      const left = (i * 19 + 5 + (i % 3) * 7) % 100;
+                      const delay = ((i * 0.09) % 1).toFixed(2);
+                      const h = 6 + (i % 3) * 2;
+                      return `<div style="position:absolute;left:${left}%;top:-4px;width:1.5px;height:${h}px;background:rgba(90,170,255,0.9);animation:fwRainDrop 0.5s ${delay}s linear infinite;border-radius:0 0 1px 1px;box-shadow:0 0 2px rgba(90,170,255,0.4)"></div>`;
                     }).join('');
                   }
                   if (wc >= 51 && wc <= 55) {
-                    return Array.from({ length: 6 }, (_, i) => {
-                      const left = (i * 29 + 7) % 100;
-                      const delay = ((i * 0.17) % 1.2).toFixed(2);
-                      return `<div style="position:absolute;left:${left}%;top:-2px;width:1px;height:4px;background:rgba(80,170,255,0.8);animation:rainDrop 1s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                    return Array.from({ length: 12 }, (_, i) => {
+                      const left = (i * 23 + 3 + (i % 3) * 7) % 100;
+                      const delay = ((i * 0.12) % 1.2).toFixed(2);
+                      const h = 5 + (i % 2) * 2;
+                      return `<div style="position:absolute;left:${left}%;top:-3px;width:1.5px;height:${h}px;background:rgba(90,175,255,0.85);animation:fwRainDrop 0.8s ${delay}s linear infinite;border-radius:0 0 1px 1px;box-shadow:0 0 2px rgba(90,175,255,0.3)"></div>`;
                     }).join('');
                   }
                   return '';
@@ -27487,7 +27492,7 @@ export default function Dashboard() {
                   <div key={idx} className="flex items-center justify-center overflow-hidden relative" style={{ opacity: isPast ? 0.5 : 1 }} data-testid={`weather-above-${dateStr}`}>
                     {showForecastWeather && fwSkyBg && (
                       <div className="absolute inset-0 z-0" style={{ background: fwSkyBg, overflow: 'hidden', pointerEvents: 'none', opacity: isTodayForecast ? 1 : isNextWeekDay ? 0.35 : 1 }}>
-                        {fwEffectsHtml && <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', opacity: isNextWeekDay ? 0.3 : 1 }} dangerouslySetInnerHTML={{ __html: fwEffectsHtml }} />}
+                        {fwEffectsHtml && <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', opacity: isNextWeekDay ? 0.7 : 1 }} dangerouslySetInnerHTML={{ __html: fwEffectsHtml }} />}
                       </div>
                     )}
                     {isTodayForecast && weatherAlerts.length > 0 && (
@@ -27808,6 +27813,9 @@ export default function Dashboard() {
                                   @keyframes twinkle { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
                                   @keyframes rainDrop { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(50px); opacity: 0; } }
                                   @keyframes snowFall { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 15% { opacity: 1; } 100% { transform: translateY(50px) rotate(180deg); opacity: 0; } }
+                                  @keyframes fwRainDrop { 0% { transform: translateY(-2px); opacity: 0; } 10% { opacity: 1; } 100% { transform: translateY(70px); opacity: 0.3; } }
+                                  @keyframes fwSnowFallLeft { 0% { transform: translate(0,-2px) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 100% { transform: translate(-8px,65px) rotate(270deg); opacity: 0; } }
+                                  @keyframes fwSnowFallRight { 0% { transform: translate(0,-2px) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 100% { transform: translate(8px,65px) rotate(-270deg); opacity: 0; } }
                                   @keyframes fogDrift { 0% { transform: translateX(-5px); } 100% { transform: translateX(5px); } }
                                   @keyframes lightningFlash { 0%,89%,91%,93%,100% { opacity: 0; } 90% { opacity: 1; } 92% { opacity: 0.6; } }
                                 `}</style>
