@@ -8371,7 +8371,8 @@ export default function Dashboard() {
           }
         }
         if (audio.duration && audio.duration > 0 && chunkWordCount > 0) {
-          const progress = audio.currentTime / audio.duration;
+          const leadTime = 0.35;
+          const progress = Math.min((audio.currentTime + leadTime) / audio.duration, 1);
           const estimatedWordIdx = Math.min(
             Math.floor(progress * chunkWordCount),
             chunkWordCount - 1

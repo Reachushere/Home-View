@@ -8535,7 +8535,7 @@ async function pollStatus(timeout){
   });
 
   // POST /api/pomodoro/pause
-  app.post("/api/pomodoro/pause", (_req, res) => {
+  app.post("/api/pomodoro/pause", async (_req, res) => {
     if (pomodoroState.running && pomodoroState.startedAt) {
       const elapsed = Math.floor((Date.now() - pomodoroState.startedAt) / 1000);
       pomodoroState.pausedRemaining = Math.max(0, pomodoroState.duration - elapsed);
@@ -8543,6 +8543,13 @@ async function pollStatus(timeout){
     pomodoroState.running = false;
     pomodoroState.startedAt = null;
     clearPomodoroTimeout();
+    const remaining = pomodoroState.pausedRemaining ?? 0;
+    const mins = Math.floor(remaining / 60);
+    const secs = remaining % 60;
+    const timeStr = mins > 0 ? `${mins} minute${mins !== 1 ? 's' : ''}${secs > 0 ? ` and ${secs} second${secs !== 1 ? 's' : ''}` : ''}` : `${secs} second${secs !== 1 ? 's' : ''}`;
+    try {
+      await sendEchoVoiceAnnouncement(`Pomodoro paused. ${timeStr} remaining.`);
+    } catch (e) { console.error("Pomodoro pause announcement error:", e); }
     res.json({ message: "Pomodoro paused", remaining: pomodoroState.pausedRemaining });
   });
 
