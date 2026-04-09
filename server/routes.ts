@@ -15427,6 +15427,20 @@ document.body.removeChild(a);
         catWashPlaybackState = null;
         stopToothbrushPolling();
 
+        try {
+          await fetch(`${haUrl}/api/services/media_player/turn_off`, {
+            method: 'POST', headers: haHeaders,
+            body: JSON.stringify({ entity_id: FIRE_STICK_ADB_ENTITY }),
+          });
+          await fetch(`${haUrl}/api/services/media_player/turn_off`, {
+            method: 'POST', headers: haHeaders,
+            body: JSON.stringify({ entity_id: CAT_TV_ENTITY }),
+          });
+          console.log(`[Voice Command] TV turned off on pause`);
+        } catch (e: any) {
+          console.warn(`[Voice Command] Failed to turn off TV on pause: ${e.message}`);
+        }
+
         const PAUSE_TIMEOUT_MS = 10 * 60 * 1000;
         clearVoiceCommandPause_();
         const autoStopTimer = setTimeout(async () => {

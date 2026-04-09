@@ -5175,9 +5175,13 @@ export default function Dashboard() {
       'CPPA122': '#AACD9F',
       'CFNF400': '#FFC3C6',
     };
-    const course = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode.toUpperCase());
     const upperCode = courseCode.toUpperCase();
-    if (readingEndOverrides[upperCode]) return { start: course?.color || '#6b7280', end: readingEndOverrides[upperCode] };
+    const normCode = upperCode.replace(/\s/g, '');
+    const course = coursesData.courses.find(c => {
+      const cCode = c.name?.split(' - ')[0]?.toUpperCase() || '';
+      return cCode === upperCode || cCode.replace(/\s/g, '') === normCode;
+    });
+    if (readingEndOverrides[upperCode] || readingEndOverrides[normCode]) return { start: course?.color || '#6b7280', end: readingEndOverrides[upperCode] || readingEndOverrides[normCode] };
     if (course?.colorEnd) return { start: course.color, end: course.colorEnd };
     if (course) {
       const rgb = hexToRgb(course.color);
@@ -5226,7 +5230,7 @@ export default function Dashboard() {
       const midR = Math.round((rgb.r + endRgb.r) / 2);
       const midG = Math.round((rgb.g + endRgb.g) / 2);
       const midB = Math.round((rgb.b + endRgb.b) / 2);
-      colors[courseCode] = {
+      const entry = {
         hex,
         hexEnd,
         bg: hexEnd || `rgb(${endRgb.r}, ${endRgb.g}, ${endRgb.b})`,
@@ -5238,6 +5242,9 @@ export default function Dashboard() {
         prepBorder: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.4)`,
         prepText: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.8)`
       };
+      colors[courseCode] = entry;
+      const normCode = courseCode.replace(/\s/g, '');
+      if (normCode !== courseCode) colors[normCode] = entry;
     });
     
     return colors;
@@ -28989,7 +28996,7 @@ export default function Dashboard() {
                   }
                   return false;
                 });
-                const isMainCourse = allKnownCodes.includes(courseName);
+                const isMainCourse = allKnownCodes.includes(courseName) || allKnownCodes.includes(courseName.replace(/\s/g, ''));
                 if (courseTaskCount === 0 && !courseHasProjects && !isMainCourse) {
                   return null;
                 }
@@ -29507,8 +29514,8 @@ export default function Dashboard() {
                     })();
                     const hasNoData = false;
                     const courseMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode);
-                    const courseHexColor = courseMatch?.color || '#6b7280';
-                    const courseHexColorEnd = courseMatch?.colorEnd;
+                    const courseHexColor = courseData.color || courseMatch?.color || '#6b7280';
+                    const courseHexColorEnd = courseData.colorEnd || courseMatch?.colorEnd;
                     const moduleFolderCount = fileCounts[moduleFolderKey];
                     const readingFolderCount = fileCounts[readingFolderKey];
                     const moduleUnread = moduleFolderCount?.unlistened || 0;
