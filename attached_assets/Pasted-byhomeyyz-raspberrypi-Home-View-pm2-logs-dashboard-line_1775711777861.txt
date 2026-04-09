@@ -1,0 +1,47 @@
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs dashboard --lines 50 | grep -i "nest\|tts\|announce\|speak\|voice"
+0|dashboar | Edge TTS completed in 778ms, 484992 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-199-chunk-43-1775711756459.mp3
+0|dashboar | Generating Edge TTS for 1446 chars, file: prep-199-chunk-44
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | Edge TTS completed in 1002ms, 582480 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-199-chunk-44-1775711758262.mp3
+0|dashboar | Generating Edge TTS for 1361 chars, file: prep-199-chunk-45
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | Edge TTS completed in 858ms, 527760 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-199-chunk-45-1775711759920.mp3
+0|dashboar | Generating Edge TTS for 1290 chars, file: prep-199-chunk-46
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | Edge TTS completed in 923ms, 486000 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-199-chunk-46-1775711761644.mp3
+0|dashboar | Generating Edge TTS for 1486 chars, file: prep-199-chunk-47
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | Edge TTS completed in 895ms, 538272 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-199-chunk-47-1775711763341.mp3
+0|dashboar | Generating Edge TTS for 1311 chars, file: prep-199-chunk-48
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | Edge TTS completed in 865ms, 508464 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-199-chunk-48-1775711765007.mp3
+0|dashboar | Generating Edge TTS for 1396 chars, file: prep-199-chunk-49
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | Edge TTS completed in 768ms, 510336 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-199-chunk-49-1775711766576.mp3
+0|dashboar | Generating Edge TTS for 1421 chars, file: prep-199-chunk-50
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | Edge TTS completed in 869ms, 517536 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-199-chunk-50-1775711768246.mp3
+0|dashboar | Generating Edge TTS for 1493 chars, file: prep-199-chunk-51
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | Edge TTS completed in 1024ms, 747504 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-199-chunk-51-1775711770071.mp3
+0|dashboar | Generating Edge TTS for 1465 chars, file: prep-199-chunk-52
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | Edge TTS completed in 2095ms, 723888 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-199-chunk-52-1775711772967.mp3
+0|dashboar | Generating Edge TTS for 1463 chars, file: prep-199-chunk-53
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | [Gmail] Error fetching D2L announcements: Gmail not connected - run connect_google.js on the Pi
+0|dashboar | [Edge TTS] Attempt 1 failed: Timed out
+0|dashboar | [Edge TTS] Attempt 1 failed: Timed out
+0|dashboar | [Edge TTS] Attempt 1 failed: Timed out
+0|dashboard  | Edge TTS completed in 1116ms, 723024 bytes
+0|dashboard  | TTS audio saved locally: /tts-audio/pre
