@@ -37656,9 +37656,14 @@ function ProfileForm({
   const [transcripts, setTranscripts] = useState<{ id: string; name: string; contentType: string; size: number; uploadedAt: string }[]>([]);
   const [isUploadingTranscript, setIsUploadingTranscript] = useState(false);
   const transcriptInputRef = useRef<HTMLInputElement>(null);
+  const [importantLinks, setImportantLinks] = useState<{ id: string; label: string; url: string }[]>([]);
+  const [newLinkLabel, setNewLinkLabel] = useState('');
+  const [newLinkUrl, setNewLinkUrl] = useState('');
+  const [isAddingLink, setIsAddingLink] = useState(false);
 
   useEffect(() => {
     fetch('/api/transcripts').then(r => r.json()).then(data => { if (Array.isArray(data)) setTranscripts(data); }).catch(() => {});
+    fetch('/api/ui-settings/importantLinks').then(r => r.json()).then(d => { if (d.value) { try { setImportantLinks(JSON.parse(d.value)); } catch {} } }).catch(() => {});
   }, []);
 
   const handleTranscriptUpload = async (file: File) => {
@@ -37687,6 +37692,22 @@ function ProfileForm({
     } catch (e) {
       console.error('Transcript delete failed:', e);
     }
+  };
+
+  const saveImportantLinks = (links: { id: string; label: string; url: string }[]) => {
+    setImportantLinks(links);
+    fetch('/api/ui-settings/importantLinks', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: JSON.stringify(links) }) }).catch(() => {});
+  };
+
+  const handleAddLink = () => {
+    if (!newLinkLabel.trim() || !newLinkUrl.trim()) return;
+    let url = newLinkUrl.trim();
+    if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+    const link = { id: Date.now().toString(), label: newLinkLabel.trim(), url };
+    saveImportantLinks([...importantLinks, link]);
+    setNewLinkLabel('');
+    setNewLinkUrl('');
+    setIsAddingLink(false);
   };
 
   return (
@@ -38077,19 +38098,45 @@ function ProfileForm({
       </div>
       </div>
       <div className="space-y-2" style={{ width: '220px', flexShrink: 0 }}>
-        <div className="rounded-lg p-3 space-y-2" style={{ border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.06)', minHeight: '200px' }}>
+        <div className="rounded-lg p-3 space-y-2" style={{ border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.06)' }}>
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-medium text-white">Transcripts</span>
             <button type="button" onClick={() => transcriptInputRef.current?.click()} className="px-2 py-1 rounded text-[9px] font-medium text-white/80 hover:text-white transition-colors" style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)' }} data-testid="button-upload-transcript">{isUploadingTranscript ? 'Uploading...' : 'Upload'}</button>
           </div>
           <input ref={transcriptInputRef} type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" className="hidden" onChange={(e) => { const file = e.target.files?.[0]; if (file) handleTranscriptUpload(file); if (transcriptInputRef.current) transcriptInputRef.current.value = ''; }} data-testid="input-transcript-file" />
-          <div className="space-y-1" style={{ maxHeight: '300px', overflowY: 'auto' }}>
-            {transcripts.length === 0 && <span className="text-[9px] text-white/40 block text-center py-4">No transcripts uploaded</span>}
+          <div className="space-y-1" style={{ maxHeight: '140px', overflowY: 'auto' }}>
+            {transcripts.length === 0 && <span className="text-[9px] text-white/40 block text-center py-3">No transcripts uploaded</span>}
             {transcripts.map((t) => (
               <div key={t.id} className="flex items-center gap-1.5 rounded px-2 py-1.5 hover:bg-white/10 transition-colors group" style={{ border: '1px solid rgba(255,255,255,0.1)' }}>
                 <FileText className="h-3 w-3 text-white/60 shrink-0" />
                 <a href={`/api/transcripts/${t.id}/download`} target="_blank" rel="noopener noreferrer" className="text-[9px] text-white/80 hover:text-white truncate flex-1 min-w-0 cursor-pointer" title={t.name} data-testid={`link-transcript-${t.id}`}>{t.name}</a>
                 <button type="button" onClick={() => handleDeleteTranscript(t.id)} className="opacity-0 group-hover:opacity-100 text-red-400/70 hover:text-red-400 transition-all shrink-0" data-testid={`button-delete-transcript-${t.id}`}><X className="h-3 w-3" /></button>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="rounded-lg p-3 space-y-2" style={{ border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.06)' }}>
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-medium text-white">Important Links</span>
+            <button type="button" onClick={() => setIsAddingLink(true)} className="px-2 py-1 rounded text-[9px] font-medium text-white/80 hover:text-white transition-colors" style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)' }} data-testid="button-add-link">Add</button>
+          </div>
+          {isAddingLink && (
+            <div className="space-y-1.5 p-2 rounded" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)' }}>
+              <Input value={newLinkLabel} onChange={(e) => setNewLinkLabel(e.target.value)} placeholder="Label (e.g. My D2L)" className="bg-white !text-black !text-[9px] h-6" style={{ fontSize: '9px', color: 'black' }} data-testid="input-link-label" />
+              <Input value={newLinkUrl} onChange={(e) => setNewLinkUrl(e.target.value)} placeholder="URL (e.g. d2l.torontomu.ca)" className="bg-white !text-black !text-[9px] h-6" style={{ fontSize: '9px', color: 'black' }} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddLink(); } }} data-testid="input-link-url" />
+              <div className="flex gap-1.5 justify-end">
+                <button type="button" onClick={() => { setIsAddingLink(false); setNewLinkLabel(''); setNewLinkUrl(''); }} className="px-2 py-0.5 rounded text-[8px] text-white/60 hover:text-white transition-colors" data-testid="button-cancel-link">Cancel</button>
+                <button type="button" onClick={handleAddLink} className="px-2 py-0.5 rounded text-[8px] text-white/80 hover:text-white transition-colors" style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.2)' }} data-testid="button-save-link">Save</button>
+              </div>
+            </div>
+          )}
+          <div className="space-y-1" style={{ maxHeight: '140px', overflowY: 'auto' }}>
+            {importantLinks.length === 0 && !isAddingLink && <span className="text-[9px] text-white/40 block text-center py-3">No links added</span>}
+            {importantLinks.map((link) => (
+              <div key={link.id} className="flex items-center gap-1.5 rounded px-2 py-1.5 hover:bg-white/10 transition-colors group" style={{ border: '1px solid rgba(255,255,255,0.1)' }}>
+                <ExternalLink className="h-3 w-3 text-white/60 shrink-0" />
+                <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-[9px] text-white/80 hover:text-white truncate flex-1 min-w-0 cursor-pointer" title={link.url} data-testid={`link-important-${link.id}`}>{link.label}</a>
+                <button type="button" onClick={() => saveImportantLinks(importantLinks.filter(l => l.id !== link.id))} className="opacity-0 group-hover:opacity-100 text-red-400/70 hover:text-red-400 transition-all shrink-0" data-testid={`button-delete-link-${link.id}`}><X className="h-3 w-3" /></button>
               </div>
             ))}
           </div>
