@@ -37774,7 +37774,7 @@ function ProfileForm({
             <button type="button" className="text-[9px] text-red-400 hover:text-red-300 text-left" onClick={(e) => { e.stopPropagation(); onProfilePhotoChange(null); }} data-testid="button-remove-profile-photo">Remove photo</button>
           )}
         </div>
-        <div className="ml-auto self-start" style={{ marginTop: '-15px' }}>
+        <div className="ml-auto self-start">
           <img src={tmuLogo} alt="School Logo" style={{ height: '28px', objectFit: 'contain' }} data-testid="img-profile-school-logo" />
         </div>
       </div>
