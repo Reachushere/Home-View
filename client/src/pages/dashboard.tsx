@@ -37776,6 +37776,18 @@ function ProfileForm({
         </div>
       </div>
       <div className="flex gap-[6px]">
+        <div className="space-y-0" style={{ width: 'calc(20% - 3px)', flexShrink: 0 }}>
+          <Label htmlFor="postalCode" className="text-[10px]">Postal Code</Label>
+          <Input 
+            id="postalCode" 
+            value={postalCode}
+            onChange={(e) => setPostalCode(e.target.value.toUpperCase())}
+            placeholder="M5V 2T6"
+            className="bg-white !text-black !text-[10px] h-8"
+            style={{ fontSize: '10px', color: 'black' }}
+            data-testid="input-profile-postalcode"
+          />
+        </div>
         <div className="space-y-0" style={{ width: 'calc(30% - 6px)', flexShrink: 0 }}>
           <Label htmlFor="country" className="text-[10px]">Country</Label>
           <select
@@ -37789,18 +37801,6 @@ function ProfileForm({
               <option key={c.value} value={c.value}>{c.label}</option>
             ))}
           </select>
-        </div>
-        <div className="space-y-0" style={{ width: 'calc(20% - 3px)', flexShrink: 0 }}>
-          <Label htmlFor="postalCode" className="text-[10px]">Postal Code</Label>
-          <Input 
-            id="postalCode" 
-            value={postalCode}
-            onChange={(e) => setPostalCode(e.target.value.toUpperCase())}
-            placeholder="M5V 2T6"
-            className="bg-white !text-black !text-[10px] h-8"
-            style={{ fontSize: '10px', color: 'black' }}
-            data-testid="input-profile-postalcode"
-          />
         </div>
         <div className="space-y-0 flex-1">
           <Label htmlFor="timezone" className="text-[10px]">Home Time Zone</Label>
