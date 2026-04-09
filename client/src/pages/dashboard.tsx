@@ -12253,7 +12253,21 @@ export default function Dashboard() {
         <div className="fixed inset-0 flex items-start justify-center pt-[50px]" style={{ zIndex: 10010, backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={(e) => { if (e.target === e.currentTarget) setTickerDialogOpen(false); }} data-testid="ticker-dialog-overlay">
           <div className="sm:rounded-lg shadow-2xl w-[500px] max-w-[95vw] max-h-[500px] flex flex-col overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }} data-testid="ticker-dialog">
             <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
-              <span className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>TICKER ITEMS</span>
+              <div className="flex items-center gap-3">
+                <span className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>TICKER ITEMS</span>
+                <div className="flex items-center gap-1.5" data-testid="toggle-d2l-ticker">
+                  <span className="text-white/60 text-[9px] font-medium">Ticker</span>
+                  <input
+                    type="checkbox"
+                    checked={d2lTickerEnabled}
+                    onChange={(e) => {
+                      setD2lTickerEnabled(e.target.checked);
+                      localStorage.setItem('d2lTickerEnabled', JSON.stringify(e.target.checked));
+                    }}
+                    className="h-3 w-3 accent-blue-500 cursor-pointer"
+                  />
+                </div>
+              </div>
               <div className="flex items-center gap-1 shrink-0" style={{ marginRight: '28px' }}>
                 {['B', 'Y', 'G'].map(label => (
                   <span key={label} style={{ width: '20px', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: 'rgba(255,255,255,0.6)', fontFamily: "system-ui, -apple-system, sans-serif" }}>{label}</span>
@@ -24632,31 +24646,17 @@ export default function Dashboard() {
                     SEMESTERS AND CLASSES
                   </h2>
                 </div>
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-1.5" data-testid="toggle-d2l-ticker">
-                    <span className="text-white/70 text-[10px] font-medium" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>D2L Ticker</span>
-                    <input
-                      type="checkbox"
-                      checked={d2lTickerEnabled}
-                      onChange={(e) => {
-                        setD2lTickerEnabled(e.target.checked);
-                        localStorage.setItem('d2lTickerEnabled', JSON.stringify(e.target.checked));
-                      }}
-                      className="h-3.5 w-3.5 accent-blue-500 cursor-pointer"
-                    />
-                  </div>
-                  <div
-                    className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      startTransition(() => setIsSchoolCoursesDialogOpen(false));
-                      setTimeout(() => startTransition(() => setIsSettingsPanelOpen(true)), 100);
-                    }}
-                    data-testid="button-courses-degree-tracking"
-                  >
-                    <span className="text-white text-[11px] font-medium" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>DEGREE TRACKING</span>
-                    <ChevronRight className="text-white/80" style={{ width: '14px', height: '14px' }} />
-                  </div>
+                <div
+                  className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    startTransition(() => setIsSchoolCoursesDialogOpen(false));
+                    setTimeout(() => startTransition(() => setIsSettingsPanelOpen(true)), 100);
+                  }}
+                  data-testid="button-courses-degree-tracking"
+                >
+                  <span className="text-white text-[11px] font-medium" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>DEGREE TRACKING</span>
+                  <ChevronRight className="text-white/80" style={{ width: '14px', height: '14px' }} />
                 </div>
               </div>
               <div ref={coursesScrollRef} className="flex-1 overflow-y-auto px-4 py-3" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent', color: 'white' }} onScroll={(e) => { setCoursesScrolled((e.target as HTMLDivElement).scrollTop > 100); }}>
