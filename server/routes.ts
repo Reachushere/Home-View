@@ -17559,6 +17559,7 @@ document.body.removeChild(a);
 
       const weekContents = await listOneDriveItems(weekFolder.path);
       const syncedFiles: any[] = [];
+      let skippedExisting = 0;
 
       for (const subfolder of weekContents) {
         if (subfolder.type !== 'folder') continue;
@@ -17574,7 +17575,7 @@ document.body.removeChild(a);
         for (const file of subFiles) {
           if (file.type !== 'file' || !file.name.toLowerCase().endsWith('.pdf')) continue;
           const fileKey = `${file.name}|||${folderName}`;
-          if (existingFileKeys.has(fileKey)) continue;
+          if (existingFileKeys.has(fileKey)) { skippedExisting++; continue; }
 
           try {
             const downloadResponse = await fetch(file.downloadUrl);
@@ -17609,7 +17610,7 @@ document.body.removeChild(a);
         }
       }
 
-      res.json({ success: true, totalSynced: syncedFiles.length, synced: syncedFiles });
+      res.json({ success: true, totalSynced: syncedFiles.length, synced: syncedFiles, skippedExisting });
     } catch (error: any) {
       console.error("Error in course-week sync:", error);
       res.status(500).json({ error: error.message });
