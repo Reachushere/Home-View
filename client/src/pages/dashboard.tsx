@@ -5528,6 +5528,7 @@ export default function Dashboard() {
       }
       if (dayColEl) {
         filteredTaskEl = dayColEl;
+        (filteredTaskEl as any).__isDayColFallback = true;
       } else {
         const label = document.createElement('div');
         label.style.cssText = `position:absolute;left:${sourceRect.right + 6}px;top:${sourceRect.top - 2}px;background:rgba(30,30,30,0.85);color:#93c5fd;font-size:10px;font-weight:500;padding:2px 6px;border-radius:3px;white-space:nowrap`;
@@ -5539,6 +5540,7 @@ export default function Dashboard() {
     }
 
     const taskRect = filteredTaskEl.getBoundingClientRect();
+    const isDayColFallback = !!(filteredTaskEl as any).__isDayColFallback;
     const isBarSource = sourceEl.getAttribute('data-testid')?.startsWith('countdown-bar-');
 
     const makeSeg = (x1: number, y1: number, x2: number, y2: number) => {
@@ -5564,7 +5566,8 @@ export default function Dashboard() {
     const taskOffScreenRight = taskRect.left > viewportW - 10;
     const taskOffScreenBottom = taskRect.top > viewportH - 10;
     const clampedTaskLeftX = Math.min(taskRect.left - 3, viewportW - 20);
-    const clampedTaskMidY = Math.min(taskRect.top + taskRect.height / 2, viewportH - 10);
+    const effectiveTaskH = isDayColFallback ? Math.min(taskRect.height, 40) : taskRect.height;
+    const clampedTaskMidY = Math.min(taskRect.top + effectiveTaskH / 2, viewportH - 10);
 
     if (isBarSource) {
       const startX = sourceRect.right;
@@ -5611,9 +5614,10 @@ export default function Dashboard() {
 
       const candidateYs: number[] = [];
       const searchMinY = Math.max(calendarTop, 0);
-      const maxRouteBelow = Math.min(taskRect.bottom + 60, calendarBotY);
+      const effectiveBottom = isDayColFallback ? taskRect.top + effectiveTaskH : taskRect.bottom;
+      const maxRouteBelow = Math.min(effectiveBottom + 60, calendarBotY);
       for (let y = taskRect.top - 8; y >= searchMinY; y -= 4) candidateYs.push(y);
-      for (let y = taskRect.bottom + 8; y <= maxRouteBelow; y += 4) candidateYs.push(y);
+      for (let y = effectiveBottom + 8; y <= maxRouteBelow; y += 4) candidateYs.push(y);
       candidateYs.push(startY);
 
       let bestRoute: { routeY: number; turnX: number; score: number } | null = null;
@@ -5670,7 +5674,7 @@ export default function Dashboard() {
     const hlLeft = Math.max(0, taskRect.left - 2);
     const hlTop = Math.max(0, taskRect.top - 2);
     const hlRight = Math.min(viewportW, taskRect.right + 2);
-    const hlBottom = Math.min(viewportH, taskRect.bottom + 2);
+    const hlBottom = isDayColFallback ? Math.min(viewportH, taskRect.top + effectiveTaskH + 2) : Math.min(viewportH, taskRect.bottom + 2);
     const hlW = Math.max(0, hlRight - hlLeft);
     const hlH = Math.max(0, hlBottom - hlTop);
     if (hlW > 0 && hlH > 0 && !taskOffScreenRight) {
