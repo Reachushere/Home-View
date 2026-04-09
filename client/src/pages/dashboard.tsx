@@ -5575,13 +5575,24 @@ export default function Dashboard() {
       const calendarScrollEl = calendarWrapper;
       const calendarTop = calendarScrollEl ? calendarScrollEl.getBoundingClientRect().top : 0;
 
-      const allTaskEls = calendarScrollEl ? calendarScrollEl.querySelectorAll('[data-testid^="task-"]') : [];
+      const obstacleSelectors = [
+        '[data-testid^="time-task-"]', '[data-testid^="multi-hour-task-"]',
+        '[data-testid^="calendar-task-"]', '[data-testid^="other-task-"]',
+        '[data-testid^="course-module-task-"]', '[data-testid^="course-fullweek-task-"]',
+        '[data-testid^="all-day-task-"]', '[data-testid^="droppable-task-"]',
+        '[data-testid^="task-link-"]', '[data-testid^="other-project-"]',
+        '[data-testid^="gcal-event-"]',
+      ];
       const obstacles: { left: number; right: number; top: number; bottom: number }[] = [];
-      for (const te of allTaskEls) {
-        if (te === filteredTaskEl) continue;
-        const r = te.getBoundingClientRect();
-        if (r.width > 0 && r.height > 0) {
-          obstacles.push({ left: r.left, right: r.right, top: r.top, bottom: r.bottom });
+      const searchRoot = calendarScrollEl || document.body;
+      for (const sel of obstacleSelectors) {
+        const els = searchRoot.querySelectorAll(sel);
+        for (const te of els) {
+          if (te === filteredTaskEl) continue;
+          const r = te.getBoundingClientRect();
+          if (r.width > 0 && r.height > 0) {
+            obstacles.push({ left: r.left, right: r.right, top: r.top, bottom: r.bottom });
+          }
         }
       }
 
@@ -5597,42 +5608,45 @@ export default function Dashboard() {
         );
       };
 
-      const turnX = Math.min(rightEdge - 6, viewportW - 15);
-
       const candidateYs: number[] = [];
-      for (let y = taskRect.top - 8; y >= calendarTop; y -= 4) {
-        candidateYs.push(y);
-      }
-      for (let y = taskRect.bottom + 8; y <= taskRect.bottom + 200; y += 4) {
-        candidateYs.push(y);
-      }
+      const searchMinY = Math.max(calendarTop, 0);
+      const searchMaxY = viewportH;
+      for (let y = taskRect.top - 8; y >= searchMinY; y -= 4) candidateYs.push(y);
+      for (let y = taskRect.bottom + 8; y <= searchMaxY; y += 4) candidateYs.push(y);
+      candidateYs.push(startY);
 
-      let routeY = taskRect.top - 8;
-      let foundClear = false;
-      for (const cy of candidateYs) {
-        const leg1Hit = hitsObstacle(startX, startY, turnX, startY);
-        const leg2Hit = hitsObstacle(turnX, startY, turnX, cy);
-        const leg3Hit = hitsObstacle(turnX, cy, taskLeftX, cy);
-        const leg4Hit = hitsObstacle(taskLeftX, cy, taskLeftX, taskMidY);
-        if (!leg1Hit && !leg2Hit && !leg3Hit && !leg4Hit) {
-          routeY = cy;
-          foundClear = true;
-          break;
-        }
-      }
-      if (!foundClear) {
+      let bestRoute: { routeY: number; turnX: number; score: number } | null = null;
+
+      const turnXOptions = [
+        taskLeftX + 4,
+        Math.max(startX + 10, taskLeftX - 20),
+        Math.min(taskRect.right + 10, viewportW - 15),
+        Math.min(rightEdge - 6, viewportW - 15),
+      ];
+
+      for (const tX of turnXOptions) {
         for (const cy of candidateYs) {
-          const leg3Hit = hitsObstacle(turnX, cy, taskLeftX, cy);
-          if (!leg3Hit) {
-            routeY = cy;
-            break;
+          const leg1 = hitsObstacle(startX, startY, tX, startY);
+          const leg2 = hitsObstacle(tX, startY, tX, cy);
+          const leg3 = hitsObstacle(tX, cy, taskLeftX, cy);
+          const leg4 = hitsObstacle(taskLeftX, cy, taskLeftX, taskMidY);
+          const hits = (leg1 ? 1 : 0) + (leg2 ? 1 : 0) + (leg3 ? 1 : 0) + (leg4 ? 1 : 0);
+          const dist = Math.abs(cy - taskMidY) + Math.abs(tX - taskLeftX);
+          const score = hits * 10000 + dist;
+          if (!bestRoute || score < bestRoute.score) {
+            bestRoute = { routeY: cy, turnX: tX, score };
+            if (hits === 0) break;
           }
         }
+        if (bestRoute && bestRoute.score < 10000) break;
       }
 
-      container.appendChild(makeSeg(startX, startY, turnX, startY));
-      container.appendChild(makeSeg(turnX, startY, turnX, routeY));
-      container.appendChild(makeSeg(turnX, routeY, taskLeftX, routeY));
+      const routeY = bestRoute?.routeY ?? taskRect.top - 8;
+      const finalTurnX = bestRoute?.turnX ?? taskLeftX + 4;
+
+      container.appendChild(makeSeg(startX, startY, finalTurnX, startY));
+      container.appendChild(makeSeg(finalTurnX, startY, finalTurnX, routeY));
+      container.appendChild(makeSeg(finalTurnX, routeY, taskLeftX, routeY));
       container.appendChild(makeSeg(taskLeftX, routeY, taskLeftX, taskMidY));
 
       if (taskOffScreenRight) {
