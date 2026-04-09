@@ -24442,7 +24442,7 @@ export default function Dashboard() {
                   </h2>
                 </div>
               </div>
-              <div className="p-4 flex-1 overflow-hidden" style={{ paddingBottom: '20px' }}>
+              <div className="p-4 flex-1 overflow-x-hidden overflow-y-auto" style={{ paddingBottom: '20px' }}>
                 <ProfileForm 
                   key={isProfileDialogOpen ? 'open' : 'closed'}
                   profileData={profileData} 
@@ -37746,7 +37746,7 @@ function ProfileForm({
       <div className="flex items-center gap-3 pb-2 border-b border-white/20" style={{ marginTop: '-8px' }}>
         <div 
           className="relative cursor-pointer group"
-          style={{ marginTop: '-15px' }}
+          style={{ marginTop: '-15px', zIndex: 10 }}
           onClick={() => photoInputRef.current?.click()}
           data-testid="button-upload-profile-photo"
         >
