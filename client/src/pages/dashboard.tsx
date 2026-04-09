@@ -5559,11 +5559,18 @@ export default function Dashboard() {
       return seg;
     };
 
+    const viewportW = window.innerWidth;
+    const viewportH = window.innerHeight;
+    const taskOffScreenRight = taskRect.left > viewportW - 10;
+    const taskOffScreenBottom = taskRect.top > viewportH - 10;
+    const clampedTaskLeftX = Math.min(taskRect.left - 3, viewportW - 20);
+    const clampedTaskMidY = Math.min(taskRect.top + taskRect.height / 2, viewportH - 10);
+
     if (isBarSource) {
       const startX = sourceRect.right;
       const startY = sourceRect.top + sourceRect.height / 2;
-      const taskMidY = taskRect.top + taskRect.height / 2;
-      const taskLeftX = taskRect.left - 3;
+      const taskMidY = clampedTaskMidY;
+      const taskLeftX = clampedTaskLeftX;
 
       const calendarScrollEl = calendarWrapper;
       const calendarTop = calendarScrollEl ? calendarScrollEl.getBoundingClientRect().top : 0;
@@ -5590,7 +5597,7 @@ export default function Dashboard() {
         );
       };
 
-      const turnX = rightEdge - 6;
+      const turnX = Math.min(rightEdge - 6, viewportW - 15);
 
       const candidateYs: number[] = [];
       for (let y = taskRect.top - 8; y >= calendarTop; y -= 4) {
@@ -5627,11 +5634,25 @@ export default function Dashboard() {
       container.appendChild(makeSeg(turnX, startY, turnX, routeY));
       container.appendChild(makeSeg(turnX, routeY, taskLeftX, routeY));
       container.appendChild(makeSeg(taskLeftX, routeY, taskLeftX, taskMidY));
+
+      if (taskOffScreenRight) {
+        const arrowEl = document.createElement('div');
+        arrowEl.style.cssText = `position:absolute;left:${viewportW - 18}px;top:${routeY - 5}px;width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:8px solid ${barColor};opacity:0.8`;
+        container.appendChild(arrowEl);
+      }
     }
 
-    const highlight = document.createElement('div');
-    highlight.style.cssText = `position:absolute;left:${taskRect.left - 2}px;top:${taskRect.top - 2}px;width:${taskRect.width + 4}px;height:${taskRect.height + 4}px;border:2px solid ${barColor};opacity:0.7;border-radius:4px`;
-    container.appendChild(highlight);
+    const hlLeft = Math.max(0, taskRect.left - 2);
+    const hlTop = Math.max(0, taskRect.top - 2);
+    const hlRight = Math.min(viewportW, taskRect.right + 2);
+    const hlBottom = Math.min(viewportH, taskRect.bottom + 2);
+    const hlW = Math.max(0, hlRight - hlLeft);
+    const hlH = Math.max(0, hlBottom - hlTop);
+    if (hlW > 0 && hlH > 0 && !taskOffScreenRight) {
+      const highlight = document.createElement('div');
+      highlight.style.cssText = `position:absolute;left:${hlLeft}px;top:${hlTop}px;width:${hlW}px;height:${hlH}px;border:2px solid ${barColor};opacity:0.7;border-radius:4px`;
+      container.appendChild(highlight);
+    }
 
     document.body.appendChild(container);
   }, []);
