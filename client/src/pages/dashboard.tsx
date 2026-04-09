@@ -11785,7 +11785,7 @@ export default function Dashboard() {
       }
       const dueDate = new Date(t.dueDate);
       const isMidnightUTC = dueDate.getUTCHours() === 0 && dueDate.getUTCMinutes() === 0;
-      if (isMidnightUTC) return false;
+      if (isMidnightUTC) return hour === 20;
       return getETHours(dueDate) === hour;
     });
   };
