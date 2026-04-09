@@ -12640,21 +12640,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         aLog('Nest-CloudTTS', `tts/speak FAILED: ${ttsResp.status}`, { errBody: errBody.substring(0, 300) });
         return { success: false, actuallyPlaying: false };
       }
-      const ttsData = await ttsResp.json() as any[];
-      const nestEntry = ttsData?.find((e: any) => e.entity_id === NEST_SPEAKER_ENTITY);
-      const localTtsUrl = nestEntry?.attributes?.media_content_id || '';
-      if (!localTtsUrl) {
-        console.error(`[Nest] No TTS proxy URL in response`);
-        return { success: false, actuallyPlaying: false };
-      }
-      const cloudTtsUrl = localTtsUrl.replace(/http:\/\/homeassistant\.local:\d+/, haUrl);
-      console.log(`[Nest] Cloud TTS URL: ${cloudTtsUrl}`);
-      await new Promise(r => setTimeout(r, 500));
-      await haServiceCallSafe('media_player/media_stop', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Post-TTS Stop');
-      await new Promise(r => setTimeout(r, 300));
-      await haServiceCall('media_player/play_media', {
-        entity_id: NEST_SPEAKER_ENTITY, media_content_id: cloudTtsUrl, media_content_type: "music"
-      }, 'Nest Cloud Play');
+      console.log(`[Nest] Cloud TTS tts/speak sent successfully — letting it play without interruption`);
       return { success: true, actuallyPlaying: true };
     } catch (e: any) {
       console.error(`[Nest] Cloud TTS play failed: ${e.message}`);
