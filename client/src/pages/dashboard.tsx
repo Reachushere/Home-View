@@ -37849,8 +37849,8 @@ function ProfileForm({
             type="date"
             value={birthdate}
             onChange={(e) => setBirthdate(e.target.value)}
-            className="bg-white !text-black !text-[10px] h-8"
-            style={{ fontSize: '10px', color: 'black', colorScheme: 'light' }}
+            className="bg-white !text-[10px] h-8 [&]:!text-black [&::-webkit-datetime-edit]:!text-black [&::-webkit-datetime-edit-fields-wrapper]:!text-black [&::-webkit-calendar-picker-indicator]:!text-black"
+            style={{ fontSize: '10px', color: 'black', colorScheme: 'light', WebkitTextFillColor: 'black' }}
             data-testid="input-profile-birthdate"
           />
         </div>
