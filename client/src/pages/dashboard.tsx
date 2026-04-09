@@ -37928,7 +37928,7 @@ function ProfileForm({
           {studentNumber && !studentSaved && <span className="text-[9px] text-white/50" data-testid="text-student-number-display">{studentNumber}</span>}
         </div>
         <div className="space-y-0 w-1/2">
-          <Label htmlFor="osapNumber" className="text-[10px]">OSAP Number</Label>
+          <Label htmlFor="osapNumber" className="text-[10px]">OSAP Access Number</Label>
           <div className="flex gap-1">
             <Input
               id="osapNumber"
