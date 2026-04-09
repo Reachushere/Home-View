@@ -3822,6 +3822,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                                         data-testid={`button-reset-module-${file.id}`}
                                       >
                                         <RotateCcw className="h-3 w-3" />
+                                        <span className="text-[8px]">Reset</span>
                                       </button>
                                     </div>
                                   );
