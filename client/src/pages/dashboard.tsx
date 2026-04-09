@@ -37703,9 +37703,12 @@ function ProfileForm({
             <button type="button" className="text-[9px] text-red-400 hover:text-red-300 text-left" onClick={(e) => { e.stopPropagation(); onProfilePhotoChange(null); }} data-testid="button-remove-profile-photo">Remove photo</button>
           )}
         </div>
-        {(firstName || lastName) && (
-          <span className="ml-auto text-[16px] font-semibold text-black self-start" style={{ marginRight: '60px' }} data-testid="text-profile-fullname">{firstName} {lastName}</span>
-        )}
+        <div className="ml-auto self-start flex flex-col items-center" style={{ marginRight: '60px' }}>
+          {(firstName || lastName) && (
+            <span className="text-[16px] font-semibold text-black" data-testid="text-profile-fullname">{firstName} {lastName}</span>
+          )}
+          <img src={tmuLogo} alt="School Logo" className="mt-1" style={{ height: '28px', objectFit: 'contain' }} data-testid="img-profile-school-logo" />
+        </div>
       </div>
       <div className="flex gap-[6px]" style={{ marginTop: '-1px' }}>
         <div className="space-y-0 w-1/2">
