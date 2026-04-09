@@ -17312,7 +17312,7 @@ document.body.removeChild(a);
 
   app.post("/api/onedrive/sync-course-week", async (req, res) => {
     try {
-      const { courseCode, weekNumber } = req.body;
+      const { courseCode, weekNumber, semKey } = req.body;
       if (!courseCode || !weekNumber) {
         return res.status(400).json({ error: "courseCode and weekNumber required" });
       }
@@ -17320,20 +17320,56 @@ document.body.removeChild(a);
       const { ObjectStorageService } = await import("./replit_integrations/object_storage");
       const objectStorage = new ObjectStorageService();
 
-      const activeSemester = await storage.getActiveSemesterSettings();
+      const semKeyToDb: Record<string, { type: string; year: string; folder: string }> = {
+        'w2025': { type: 'winter', year: '2025', folder: 'Winter' },
+        'ss2025': { type: 'spring_summer', year: '2025', folder: 'Spring_Summer' },
+        'f2025': { type: 'fall', year: '2025', folder: 'Fall' },
+        'w2026': { type: 'winter', year: '2026', folder: 'Winter' },
+        'ss2026': { type: 'spring_summer', year: '2026', folder: 'Spring_Summer' },
+        'f2026': { type: 'fall', year: '2026', folder: 'Fall' },
+        'w2027': { type: 'winter', year: '2027', folder: 'Winter' },
+        'ss2027': { type: 'spring_summer', year: '2027', folder: 'Spring_Summer' },
+        'f2027': { type: 'fall', year: '2027', folder: 'Fall' },
+        'w2028': { type: 'winter', year: '2028', folder: 'Winter' },
+        'ss2028': { type: 'spring_summer', year: '2028', folder: 'Spring_Summer' },
+        'f2028': { type: 'fall', year: '2028', folder: 'Fall' },
+        'w2029': { type: 'winter', year: '2029', folder: 'Winter' },
+      };
+
+      let semester: any = null;
+      let year = '2026';
+      let semesterFolder = 'Winter';
       const allSemesters = await storage.getAllSemesterSettings();
-      const semester = activeSemester || allSemesters[0];
-      if (!semester) {
-        return res.json({ success: true, synced: [], message: "No semester configured" });
+
+      if (semKey && semKeyToDb[semKey]) {
+        const mapping = semKeyToDb[semKey];
+        year = mapping.year;
+        semesterFolder = mapping.folder;
+        semester = allSemesters.find((s: any) => {
+          const semYear = s.semesterName?.match(/\d{4}/)?.[0] || '';
+          return s.semesterType === mapping.type && semYear === mapping.year;
+        }) || null;
+      } else {
+        const activeSemester = await storage.getActiveSemesterSettings();
+        semester = activeSemester || allSemesters[0];
+        if (semester) {
+          const semesterTypeMap: Record<string, string> = { winter: 'Winter', fall: 'Fall', spring_summer: 'Spring_Summer' };
+          semesterFolder = semesterTypeMap[semester.semesterType] || semester.semesterType;
+          year = semester.semesterName?.match(/\d{4}/)?.[0] || '2026';
+        }
       }
-      const semesterTypeMap: Record<string, string> = { winter: 'Winter', fall: 'Fall', spring_summer: 'Spring_Summer' };
-      const semesterFolder = semesterTypeMap[semester.semesterType] || semester.semesterType;
-      const year = semester.semesterName?.match(/\d{4}/)?.[0] || '2026';
+
       const basePath = `/School/1. TMU/Courses/${year}/${semesterFolder}`;
 
       let courseIdx = 0;
-      for (let i = 1; i <= 3; i++) {
-        if ((semester as any)[`course${i}Code`]?.toUpperCase() === courseCode.toUpperCase()) { courseIdx = i; break; }
+      if (semester) {
+        let lookupCode = courseCode.toUpperCase();
+        const tdbMatch = lookupCode.match(/^TBD_SLOT(\d+)$/);
+        if (tdbMatch) lookupCode = `TBD${tdbMatch[1]}`;
+        for (let i = 1; i <= 3; i++) {
+          const dbCode = ((semester as any)[`course${i}Code`] || '').toUpperCase().replace(/\s/g, '');
+          if (dbCode === lookupCode || dbCode === courseCode.toUpperCase()) { courseIdx = i; break; }
+        }
       }
       const overrideModule = courseIdx ? (semester as any)[`course${courseIdx}ModuleFolder`] : '';
       const overrideReading = courseIdx ? (semester as any)[`course${courseIdx}ReadingFolder`] : '';
@@ -17348,11 +17384,22 @@ document.body.removeChild(a);
         coursePath = parts.slice(0, -1).join('/');
       }
       if (!coursePath) {
+        let searchCode = courseCode.toUpperCase();
+        const tdbSlotMatch = searchCode.match(/^TBD_SLOT(\d+)$/);
+        if (tdbSlotMatch) {
+          searchCode = `TBD${tdbSlotMatch[1]}`;
+        }
+        if (semester && !courseIdx) {
+          for (let i = 1; i <= 3; i++) {
+            const dbCode = ((semester as any)[`course${i}Code`] || '').toUpperCase().replace(/\s/g, '');
+            if (dbCode === searchCode) { courseIdx = i; break; }
+          }
+        }
         const matchedFolder = baseFolders.find((f: any) =>
-          f.type === 'folder' && f.name.toUpperCase().startsWith(courseCode.toUpperCase())
+          f.type === 'folder' && f.name.toUpperCase().startsWith(searchCode)
         );
         if (!matchedFolder) {
-          return res.json({ success: true, synced: [], message: `No OneDrive folder for ${courseCode}` });
+          return res.json({ success: true, synced: [], message: `No OneDrive folder for ${courseCode} (searched: ${searchCode} in ${basePath})` });
         }
         coursePath = matchedFolder.path;
       }
