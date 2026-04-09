@@ -3095,6 +3095,31 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
   });
 
   // ── Raw Story Top-3 Change Monitor ──
+  let rawStoryEmailsEnabled = true;
+  (async () => {
+    try {
+      const row = await db.select().from(appState).where(eq(appState.key, 'raw_story_emails_enabled')).limit(1);
+      if (row.length > 0) rawStoryEmailsEnabled = row[0].value === 'true';
+    } catch {}
+  })();
+
+  app.get("/api/ui-settings/rawStoryEmailsEnabled", (_req, res) => {
+    res.json({ value: rawStoryEmailsEnabled });
+  });
+  app.post("/api/ui-settings/rawStoryEmailsEnabled", async (req, res) => {
+    const val = !!req.body.value;
+    rawStoryEmailsEnabled = val;
+    try {
+      const existing = await db.select().from(appState).where(eq(appState.key, 'raw_story_emails_enabled')).limit(1);
+      if (existing.length > 0) {
+        await db.update(appState).set({ value: String(val), updatedAt: new Date() }).where(eq(appState.key, 'raw_story_emails_enabled'));
+      } else {
+        await db.insert(appState).values({ key: 'raw_story_emails_enabled', value: String(val) });
+      }
+    } catch {}
+    res.json({ success: true, value: val });
+  });
+
   let lastTopThree: string[] = [];
   let rawStoryTop3Loaded = false;
 
@@ -3202,17 +3227,21 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         `<p style="font-size:12px;color:#888;">Checked every 10 minutes. Only sent when a top-3 story changes.</p>` +
         `</div>`;
 
-      const result = await sendGmail({
-        to: 'bryn.kai-hendricks@outlook.com',
-        subject: `RAW STORY TOP 3 CHANGED — ${newStories.length} new stor${newStories.length === 1 ? 'y' : 'ies'}`,
-        htmlBody,
-        textBody,
-      });
-
-      if (result.success) {
-        console.log(`[Raw Story] Top-3 change email sent (${newStories.length} new)`);
+      if (!rawStoryEmailsEnabled) {
+        console.log(`[Raw Story] Top-3 changed (${newStories.length} new) but emails are disabled — skipping`);
       } else {
-        console.error(`[Raw Story] Failed to send: ${result.error}`);
+        const result = await sendGmail({
+          to: 'bryn.kai-hendricks@outlook.com',
+          subject: `RAW STORY TOP 3 CHANGED — ${newStories.length} new stor${newStories.length === 1 ? 'y' : 'ies'}`,
+          htmlBody,
+          textBody,
+        });
+
+        if (result.success) {
+          console.log(`[Raw Story] Top-3 change email sent (${newStories.length} new)`);
+        } else {
+          console.error(`[Raw Story] Failed to send: ${result.error}`);
+        }
       }
 
       lastTopThree = currentKeys;
@@ -13330,7 +13359,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
             continue;
           }
           if (catWashPlaybackState) {
-            catWashPlaybackState.chunkStartedAt = new Date(Date.now() + 500);
+            catWashPlaybackState.chunkStartedAt = new Date(Date.now() + 2500);
             catWashPlaybackState.wordIndex = 0;
           }
           startWordAdvancement();

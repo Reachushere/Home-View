@@ -10289,6 +10289,16 @@ export default function Dashboard() {
     const saved = localStorage.getItem('showAllDayRow');
     return saved !== null ? JSON.parse(saved) : false;
   });
+  const [rawStoryEmailsEnabled, setRawStoryEmailsEnabled] = useState<boolean>(() => {
+    const saved = localStorage.getItem('rawStoryEmailsEnabled');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+  useEffect(() => {
+    fetch('/api/ui-settings/rawStoryEmailsEnabled').then(r => r.json()).then(d => {
+      setRawStoryEmailsEnabled(d.value);
+      localStorage.setItem('rawStoryEmailsEnabled', JSON.stringify(d.value));
+    }).catch(() => {});
+  }, []);
   const [tabBounceEnabled, setTabBounceEnabled] = useState<boolean>(() => {
     const saved = localStorage.getItem('tabBounceEnabled');
     return saved !== null ? JSON.parse(saved) : true;
@@ -27123,6 +27133,25 @@ export default function Dashboard() {
                   </div>
                 </div>
 
+                <div className="border rounded-lg p-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-[10px] font-medium">Raw Story Emails</Label>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={rawStoryEmailsEnabled}
+                      onChange={(e) => {
+                        const val = e.target.checked;
+                        setRawStoryEmailsEnabled(val);
+                        localStorage.setItem('rawStoryEmailsEnabled', JSON.stringify(val));
+                        fetch('/api/ui-settings/rawStoryEmailsEnabled', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: val }) }).catch(() => {});
+                      }}
+                      className="h-4 w-4 accent-blue-500"
+                      data-testid="toggle-raw-story-emails"
+                    />
+                  </div>
+                </div>
 
                 <div className="border rounded-lg p-3">
                   <div className="flex items-center justify-between">

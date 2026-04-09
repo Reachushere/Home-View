@@ -3097,7 +3097,11 @@ export default function PDFReaderPage() {
                     style={{ outline: '2px solid rgba(255,200,50,0.5)', outlineOffset: '3px' }}
                     onClick={() => {
                       fetch("/api/webhook/voice-command", { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ command: "pause" }) })
-                        .then(() => setCatWashPaused(true))
+                        .then(r => r.json())
+                        .then((data) => {
+                          setCatWashPaused(true);
+                          toast({ title: `Paused at section ${(data.chunk ?? 0) + 1}. Tap play to resume.` });
+                        })
                         .catch(e => console.error('Failed to pause:', e));
                     }}
                     data-testid="button-pause-catwash"
