@@ -5511,7 +5511,7 @@ export default function Dashboard() {
     const container = document.createElement('div');
     container.id = 'countdown-hover-line-overlay';
     container.dataset.taskId = String(taskId);
-    container.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:99990';
+    container.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:2147483647';
 
     if (!filteredTaskEl) {
       const taskData = (window as any).__allTasksCache?.find((t: any) => t.id === taskId);
