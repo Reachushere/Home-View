@@ -5609,30 +5609,21 @@ export default function Dashboard() {
       container.appendChild(makeSeg(taskLeftX, startY, taskLeftX, endY));
     }
 
-    const hlLeft = Math.max(0, taskRect.left - 2);
-    const hlTop = Math.max(calTopY, taskRect.top - 2);
-    const hlRight = Math.min(viewportW, taskRect.right + 2);
-    const hlBottom = isDayColFallback ? Math.min(calBotY, taskRect.top + effectiveTaskH + 2) : Math.min(calBotY, taskRect.bottom + 2);
-    const hlW = Math.max(0, hlRight - hlLeft);
-    const hlH = Math.max(0, hlBottom - hlTop);
-    if (hlW > 0 && hlH > 0 && !taskOffScreenRight) {
-      const highlight = document.createElement('div');
-      highlight.style.cssText = `position:fixed;left:${hlLeft}px;top:${hlTop}px;width:${hlW}px;height:${hlH}px;border:2px solid ${barColor};opacity:0.7;border-radius:4px;z-index:9999;pointer-events:none`;
-      container.appendChild(highlight);
+    if (!isDayColFallback) {
+      const hlLeft = Math.max(0, taskRect.left - 2);
+      const hlTop = Math.max(calTopY, taskRect.top - 2);
+      const hlRight = Math.min(viewportW, taskRect.right + 2);
+      const hlBottom = Math.min(calBotY, taskRect.bottom + 2);
+      const hlW = Math.max(0, hlRight - hlLeft);
+      const hlH = Math.max(0, hlBottom - hlTop);
+      if (hlW > 0 && hlH > 0 && !taskOffScreenRight) {
+        const highlight = document.createElement('div');
+        highlight.style.cssText = `position:fixed;left:${hlLeft}px;top:${hlTop}px;width:${hlW}px;height:${hlH}px;border:2px solid ${barColor};opacity:0.7;border-radius:4px;z-index:9999;pointer-events:none`;
+        container.appendChild(highlight);
+      }
     }
 
-    const calBorderEl = document.querySelector('[data-testid="calendar-scroll-container"]')?.closest('.shadow-lg') as HTMLElement | null;
-    const calParent = calBorderEl?.parentElement as HTMLElement | null;
-    if (calParent) {
-      if (!calParent.style.position || calParent.style.position === 'static') {
-        calParent.style.position = 'relative';
-      }
-      calParent.appendChild(container);
-    } else if (calBorderEl) {
-      calBorderEl.appendChild(container);
-    } else {
-      document.body.appendChild(container);
-    }
+    document.body.appendChild(container);
   }, []);
 
   const hideCountdownHoverLine = useCallback(() => {
