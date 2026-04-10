@@ -3232,7 +3232,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
   });
 
   // ── Raw Story Top-3 Change Monitor ──
-  let rawStoryEmailsEnabled = true;
+  let rawStoryEmailsEnabled = false;
   (async () => {
     try {
       const row = await db.select().from(appState).where(eq(appState.key, 'raw_story_emails_enabled')).limit(1);
