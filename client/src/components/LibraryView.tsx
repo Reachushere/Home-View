@@ -183,19 +183,17 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
           {weekNum}
         </span>
       )}
-      {file.listened && (
-        <div style={{
-          position: 'absolute',
-          bottom: weekNum ? '22px' : '6px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '6px',
-          height: '6px',
-          backgroundColor: '#4CAF50',
-          borderRadius: '50%',
-          boxShadow: '0 0 4px rgba(76,175,80,0.5)',
-        }} />
-      )}
+      <div style={{
+        position: 'absolute',
+        bottom: weekNum ? '22px' : '6px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: '6px',
+        height: '6px',
+        backgroundColor: file.listened ? '#4CAF50' : '#e53935',
+        borderRadius: '50%',
+        boxShadow: file.listened ? '0 0 4px rgba(76,175,80,0.5)' : '0 0 4px rgba(229,57,53,0.5)',
+      }} />
     </div>
   );
 }
