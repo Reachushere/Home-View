@@ -32495,20 +32495,6 @@ export default function Dashboard() {
           data-testid="section-coming-up"
         >
           <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', border: '1.5px solid rgba(255,255,255,0.5)', pointerEvents: 'none', zIndex: 9999 }} />
-          {cooldownSeconds !== null && (
-            <div
-              className="absolute z-[70]"
-              style={{ top: '-50px', right: '7px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', pointerEvents: 'none', opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.2s ease' }}
-              data-testid="cooldown-timer"
-            >
-              <div style={{ background: 'rgba(0,0,0,0.75)', borderRadius: '10px', padding: '2px 10px', display: 'flex', alignItems: 'center', gap: '5px', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.2)' }}>
-                <span style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(255,255,255,0.7)', lineHeight: 1 }}>Cooldown</span>
-                <span style={{ fontSize: '13px', fontWeight: 700, fontFamily: 'monospace', color: '#ff9944', lineHeight: 1 }}>
-                  {cooldownFading ? '0' : `${cooldownSeconds ?? 0}`}s
-                </span>
-              </div>
-            </div>
-          )}
           {/* Date navigation tab above glass box */}
           <div
             className="absolute z-[60]"
@@ -32878,6 +32864,14 @@ export default function Dashboard() {
             <div style={{ position: 'absolute', top: '21px', left: '25px', right: '8px', height: '0.5px', backgroundColor: 'rgba(255,255,255,0.3)', zIndex: 2 }} />
             <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: '6px', bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap', zIndex: 2 }}>Homework Progress</span>
             <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: `${effectiveDividerPct}%`, bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap', paddingLeft: '6px', zIndex: 2 }}>Most Urgent Assignments</span>
+            {cooldownSeconds !== null && (
+              <div style={{ position: 'absolute', right: '8px', bottom: '2px', display: 'flex', alignItems: 'center', gap: '5px', zIndex: 3 }} data-testid="cooldown-timer">
+                <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ef4444', flexShrink: 0 }} />
+                <span style={{ fontSize: '10px', fontWeight: 600, fontFamily: 'monospace', color: '#ffffff', lineHeight: 1 }}>
+                  {cooldownFading ? '0' : `${cooldownSeconds ?? 0}`}s
+                </span>
+              </div>
+            )}
             <div style={{ position: 'absolute', top: 0, left: '14px', right: '4px', height: '21px', overflow: 'hidden', zIndex: 1, display: 'flex', alignItems: 'center', padding: '0 6px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: '11px', flexShrink: 0, whiteSpace: 'nowrap', visibility: weatherData ? 'visible' : 'hidden' }}>
                     <span className="text-[8.5px] font-medium" style={{ color: 'rgba(255,255,255,1)', whiteSpace: 'nowrap' }} data-testid="homework-weather-temp">{weatherData ? `${Math.round(weatherData.temp)}°C` : '--°C'}</span>
