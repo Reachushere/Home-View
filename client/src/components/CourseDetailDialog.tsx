@@ -4484,17 +4484,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             <Button
               variant="outline"
               onClick={() => {
-                if (isEditingInfo) {
-                  if (editInfo.deliveryMode === 'virtual' && !editInfo.zoomLink?.trim()) {
-                    toast({ title: "URL is required for virtual courses", variant: "destructive" });
-                    return;
-                  }
-                  if ((isSpringSummer || editInfo.semesterTerm?.startsWith('spring_summer')) && !editInfo.springSummerTerm) {
-                    toast({ title: "Please select a Spring/Summer term first", variant: "destructive" });
-                    return;
-                  }
-                  setIsEditingInfo(false);
-                }
                 if (onSaveCourseInfo) {
                   const semKey = semesterKeyFromTermYear(editInfo.semesterTerm, editInfo.year);
                   onSaveCourseInfo({ ...editInfo, semesterKey: semKey || undefined, courseRank: editInfo.courseRank || undefined, springSummerTerm: editInfo.springSummerTerm || undefined });
@@ -4508,10 +4497,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 }
                 onClose();
               }}
-              disabled={expandedTaskId !== null || isParsingSyllabus}
-              className={`border transition-all duration-200 h-6 w-[110px] disabled:cursor-not-allowed ${expandedTaskId === null && !isParsingSyllabus ? '!border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent' : '!border-white/10 text-white/20'}`}
+              disabled={expandedTaskId !== null || isParsingSyllabus || isEditingInfo}
+              className={`border transition-all duration-200 h-6 w-[110px] disabled:cursor-not-allowed ${expandedTaskId === null && !isParsingSyllabus && !isEditingInfo ? '!border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent' : '!border-white/10 text-white/20'}`}
               style={{
-                boxShadow: expandedTaskId === null && !isParsingSyllabus ? '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)' : 'none',
+                boxShadow: expandedTaskId === null && !isParsingSyllabus && !isEditingInfo ? '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)' : 'none',
                 fontSize: '12px'
               }}
               data-testid="button-save-course-detail"

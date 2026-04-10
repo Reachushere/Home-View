@@ -19239,6 +19239,36 @@ export default function Dashboard() {
                     fullName: newName,
                   } : prev);
                 }
+              } else {
+                const newCode = updates.courseCode || courseCode;
+                const newCourseName = updates.courseName || courseCode;
+                const newEntry = {
+                  name: `${newCode} - ${newCourseName}`,
+                  professor: updates.professor || '',
+                  professorEmail: updates.professorEmail || '',
+                  ...(updates.color ? { color: updates.color } : {}),
+                  ...(updates.colorEnd ? { colorEnd: updates.colorEnd } : {}),
+                  ...((updates as any).colorStops !== undefined ? { colorStops: (updates as any).colorStops } : {}),
+                  ...((updates as any).borderColor !== undefined ? { borderColor: (updates as any).borderColor } : {}),
+                  ...(updates.courseRowColor !== undefined ? { courseRowColor: updates.courseRowColor } : {}),
+                  ...(updates.taskBgColor !== undefined ? { taskBgColor: updates.taskBgColor } : {}),
+                  ...(updates.courseFontColor !== undefined ? { courseFontColor: updates.courseFontColor } : {}),
+                  ...(updates.moduleBoxColor !== undefined ? { moduleBoxColor: updates.moduleBoxColor } : {}),
+                  ...(updates.readingBoxColor !== undefined ? { readingBoxColor: updates.readingBoxColor } : {}),
+                };
+                updatedCourses.push(newEntry);
+                const updatedData = { courses: updatedCourses };
+                setCoursesData(updatedData);
+                localStorage.setItem('coursesData', JSON.stringify(updatedData));
+                saveDegreeToServer('coursesData', updatedData);
+                if (updates.courseCode || updates.courseName) {
+                  setSelectedCertCourse(prev => prev ? {
+                    ...prev,
+                    courseCode: updates.courseCode || prev.courseCode,
+                    courseName: updates.courseName || prev.courseName,
+                    fullName: `${newCode} - ${newCourseName}`,
+                  } : prev);
+                }
               }
               const computeSemesterDates = (term: string, yr: string) => {
                 const y = parseInt(yr);
@@ -19309,6 +19339,8 @@ export default function Dashboard() {
                       if ((updates as any).moduleFolder !== undefined) payload[`${prefix}ModuleFolder`] = (updates as any).moduleFolder;
                       if ((updates as any).readingFolder !== undefined) payload[`${prefix}ReadingFolder`] = (updates as any).readingFolder;
                       if ((updates as any).displayName !== undefined) payload[`${prefix}DisplayName`] = (updates as any).displayName;
+                      if (updates.courseName !== undefined) payload[`${prefix}Name`] = updates.courseName;
+                      if (updates.courseCode !== undefined && updates.courseCode !== courseCode) payload[`${prefix}Code`] = updates.courseCode;
                       if (updates.semesterTerm && updates.year && !(updates as any).startDate) {
                         const dates = computeSemesterDates(updates.semesterTerm, updates.year);
                         if (dates.startDate) {
@@ -29243,10 +29275,13 @@ export default function Dashboard() {
                           const isTBDLabel = rawCode.startsWith('TBD_SLOT') || rawCode === 'TBD';
                           const displayCodeLabel = isTBDLabel ? 'TBD' : rawCode;
                           const labelText = customDisplay || (rawFullName ? `${displayCodeLabel} - ${rawFullName}` : displayCodeLabel);
+                          const hasCustomDisplay = !!customDisplay;
                           const cdWords = labelText.trim().split(/\s+/);
                           const firstWord = cdWords[0] || '';
                           const restWords = cdWords.slice(1).join(' ');
-                          return (
+                          return hasCustomDisplay ? (
+                            <span className="font-[785] text-center" style={{ wordBreak: 'normal', overflowWrap: 'anywhere', hyphens: 'auto', whiteSpace: 'normal', lineHeight: 1.15 } as any}>{labelText}</span>
+                          ) : (
                             <>
                               <span className="font-[785] text-center" style={{ whiteSpace: 'nowrap' }}>{firstWord}</span>
                               {restWords && <span className="text-center" style={{ wordBreak: 'normal', overflowWrap: 'anywhere', hyphens: 'auto', whiteSpace: 'normal', lineHeight: 1.15 } as any}>{restWords}</span>}
@@ -29480,10 +29515,13 @@ export default function Dashboard() {
                       const isTBDLabel = rawCode.startsWith('TBD_SLOT') || rawCode === 'TBD';
                       const displayCodeLabel = isTBDLabel ? 'TBD' : rawCode;
                       const labelText = customDisplay || (rawFullName ? `${displayCodeLabel} - ${rawFullName}` : displayCodeLabel);
+                      const hasCustomDisplay = !!customDisplay;
                       const cdWords = labelText.trim().split(/\s+/);
                       const firstWord = cdWords[0] || '';
                       const restWords = cdWords.slice(1).join(' ');
-                      return (
+                      return hasCustomDisplay ? (
+                        <span className="font-[785] text-center" style={{ wordBreak: 'normal', overflowWrap: 'anywhere', hyphens: 'auto', whiteSpace: 'normal', lineHeight: 1.15 } as any}>{labelText}</span>
+                      ) : (
                         <>
                           <span className="font-[785] text-center" style={{ whiteSpace: 'nowrap' }}>{firstWord}</span>
                           {restWords && <span className="text-center" style={{ wordBreak: 'normal', overflowWrap: 'anywhere', hyphens: 'auto', whiteSpace: 'normal', lineHeight: 1.15 } as any}>{restWords}</span>}
