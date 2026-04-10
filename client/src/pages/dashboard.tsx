@@ -37764,7 +37764,7 @@ function ProfileForm({
         </div>
         <div className="flex flex-col gap-0.5">
           {(firstName || lastName) && (
-            <span className="text-[16px] text-black" style={{ fontWeight: 900 }} data-testid="text-profile-fullname">{firstName} {lastName}</span>
+            <span className="text-[16px] !font-black" style={{ fontWeight: 900, color: '#000000' }} data-testid="text-profile-fullname">{firstName} {lastName}</span>
           )}
           <span className="text-[10px] text-white/70">Profile Photo</span>
           <span className="text-[9px] text-white/40">{isUploadingPhoto ? 'Uploading...' : 'Click to change'}</span>
@@ -37772,7 +37772,7 @@ function ProfileForm({
             <button type="button" className="text-[9px] text-red-400 hover:text-red-300 text-left" onClick={(e) => { e.stopPropagation(); onProfilePhotoChange(null); }} data-testid="button-remove-profile-photo">Remove photo</button>
           )}
         </div>
-        <div className="ml-auto self-start" style={{ marginTop: '10px' }}>
+        <div className="ml-auto" style={{ marginTop: '20px', alignSelf: 'flex-start' }}>
           <img src={tmuLogo} alt="School Logo" style={{ height: '42px', objectFit: 'contain' }} data-testid="img-profile-school-logo" />
         </div>
       </div>
