@@ -12392,7 +12392,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const initialCleanedText = cleanTextForTTS(initialChunkText);
     const initialWords = initialCleanedText.split(/\s+/).filter((w: string) => w.length > 0);
     const initialWordCount = initialWords.length;
-    const initialEstimatedMs = Math.max(5000, (initialWordCount / 175) * 60 * 1000 + 1000);
+    const initialEstimatedMs = Math.max(5000, (initialWordCount / 210) * 60 * 1000);
 
     catWashPlaybackState = {
       fileId: fileToPlay.id,
@@ -13411,7 +13411,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
           const cleanedForEstimate = cleanTextForTTS(chunkText);
           const wordCount = cleanedForEstimate.split(/\s+/).filter((w: string) => w.length > 0).length;
-          const estimatedMs = Math.max(5000, (wordCount / 175) * 60 * 1000 + 1000);
+          const estimatedMs = Math.max(5000, (wordCount / 210) * 60 * 1000);
 
           if (catWashPlaybackState) {
             catWashPlaybackState.estimatedChunkDuration = estimatedMs;
