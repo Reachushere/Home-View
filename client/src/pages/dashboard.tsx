@@ -12419,7 +12419,7 @@ export default function Dashboard() {
   };
 
   const VERY_LONG_TASK_HOURS = 4;
-  const VERY_LONG_NARROW_FRAC = 0.22;
+  const VERY_LONG_NARROW_FRAC = 0.11;
 
   const isVeryLongMultiHour = (t: Task) => {
     if (!t.eventStartTime || !t.eventEndTime) return false;
@@ -31114,8 +31114,8 @@ export default function Dashboard() {
                                   const borderColor = task.isCompleted ? '#d1d5db' : hasCourseGrad ? gradColors.start : (typeFallbackBorder[task.type] || otherRowColors.borderColor);
                                   return {
                                     top: `${topOffset}px`,
-                                    left: (() => { if (stackInConflict) return '2px'; const overlayCols = multiHourOverlayCols.get(`${dayIdx}-${hour}`) || 0; const narrowInfo = veryLongTaskNarrowCols.get(`${dayIdx}-${hour}`); const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); if (narrowInfo && overlayCols > 0) { const narrowPct = narrowInfo.narrowFrac * 100; return `calc(${narrowPct}% + ${taskIdx * (100 - narrowPct) / totalItems}% + 2px)`; } if (overlayCols > 0) { const inlineCol = overlayCols; const totalC = overlayCols + totalItems; return `calc(${inlineCol + taskIdx} / ${totalC} * 100% + 2px)`; } return hasNextDueBox ? `calc(${taskIdx * columnWidth / 2}% + 2px)` : `calc(${taskIdx * columnWidth}% + 2px)`; })(),
-                                    width: (() => { if (stackInConflict) return 'calc(100% - 4px)'; const overlayCols = multiHourOverlayCols.get(`${dayIdx}-${hour}`) || 0; const narrowInfo = veryLongTaskNarrowCols.get(`${dayIdx}-${hour}`); const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); if (narrowInfo && overlayCols > 0) { const availPct = (1 - narrowInfo.narrowFrac) * 100; return `calc(${availPct / totalItems}% - 4px)`; } if (overlayCols > 0) { const totalC = overlayCols + totalItems; return `calc(100% / ${totalC} - 4px)`; } return hasNextDueBox ? `calc(${columnWidth / 2}% - 4px)` : `calc(${columnWidth}% - 4px)`; })(),
+                                    left: (() => { if (stackInConflict) return '2px'; const overlayCols = multiHourOverlayCols.get(`${dayIdx}-${hour}`) || 0; const narrowInfo = veryLongTaskNarrowCols.get(`${dayIdx}-${hour}`); const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); if (narrowInfo) { const narrowPct = narrowInfo.narrowFrac * 100; if (overlayCols > 0) { return `calc(${narrowPct}% + ${taskIdx * (100 - narrowPct) / totalItems}% + 2px)`; } return `calc(${taskIdx * (100 - narrowPct) / totalItems}% + 2px)`; } if (overlayCols > 0) { const inlineCol = overlayCols; const totalC = overlayCols + totalItems; return `calc(${inlineCol + taskIdx} / ${totalC} * 100% + 2px)`; } return hasNextDueBox ? `calc(${taskIdx * columnWidth / 2}% + 2px)` : `calc(${taskIdx * columnWidth}% + 2px)`; })(),
+                                    width: (() => { if (stackInConflict) return 'calc(100% - 4px)'; const overlayCols = multiHourOverlayCols.get(`${dayIdx}-${hour}`) || 0; const narrowInfo = veryLongTaskNarrowCols.get(`${dayIdx}-${hour}`); const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); if (narrowInfo) { const availPct = (1 - narrowInfo.narrowFrac) * 100; return `calc(${availPct / totalItems}% - 4px)`; } if (overlayCols > 0) { const totalC = overlayCols + totalItems; return `calc(100% / ${totalC} - 4px)`; } return hasNextDueBox ? `calc(${columnWidth / 2}% - 4px)` : `calc(${columnWidth}% - 4px)`; })(),
                                     minHeight: `${taskHeight}px`,
                                     zIndex: selectedTaskId === task.id ? 57 : (draggedTask?.id === task.id ? 56 : 54 + taskIdx),
                                     background: bgGradient,
@@ -31523,7 +31523,10 @@ export default function Dashboard() {
                         const borderColor = task.isCompleted ? '#d1d5db' : hasCourseGrad ? gradColors!.start : otherRowColors.borderColor;
                         const narrowW = `${VERY_LONG_NARROW_FRAC * 100}%`;
                         return (
-                          <div style={{ position: 'absolute', top: `${vlHeaderPx}px`, left: 0, width: narrowW, bottom: 0, background: bgGradient, border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1.5px solid ${borderColor}`, borderTop: 'none', borderRadius: '0 0 0 4px', pointerEvents: 'auto', zIndex: 0 }} />
+                          <>
+                            <div style={{ position: 'absolute', top: `${vlHeaderPx}px`, left: 0, width: narrowW, bottom: 0, background: bgGradient, border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1.5px solid ${borderColor}`, borderTop: 'none', borderRadius: '0 0 0 4px', pointerEvents: 'auto', zIndex: 0 }} />
+                            <div style={{ position: 'absolute', top: `${vlHeaderPx - 2}px`, left: 0, width: narrowW, height: '4px', background: bgGradient, pointerEvents: 'none', zIndex: 1 }} />
+                          </>
                         );
                       })()}
                       {isVeryLong && (() => {
