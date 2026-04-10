@@ -24752,7 +24752,7 @@ export default function Dashboard() {
                     { key: 'w2028', year: 2028, label: 'Winter 2028', dates: 'January 10 – April 14, 2028' },
                     { key: 'ss2028', year: 2028, label: 'Spring/Summer 2028', dates: 'May 1 – August 4, 2028' },
                     { key: 'f2028', year: 2028, label: 'Fall 2028', dates: 'September 11 – December 15, 2028' },
-                    { key: 'w2029', year: 2029, label: 'Winter 2029', dates: 'January 8 – April 13, 2029' },
+                    { key: 'w2029', year: 2029, label: 'Winter 2029', dates: 'January 15 – April 13, 2029' },
                   ];
                   const semKeyToDbType: Record<string, { type: string; year: number }> = {};
                   semesterMeta.forEach(m => {
@@ -27324,7 +27324,7 @@ export default function Dashboard() {
                         { key: 'w2028', label: 'Winter 2028', dates: 'Jan 10 – Apr 14, 2028', start: '2028-01-10', end: '2028-04-14' },
                         { key: 'ss2028', label: 'Spring/Summer 2028', dates: 'May 1 – Aug 4, 2028', start: '2028-05-01', end: '2028-08-04' },
                         { key: 'f2028', label: 'Fall 2028', dates: 'Sep 11 – Dec 15, 2028', start: '2028-09-11', end: '2028-12-15' },
-                        { key: 'w2029', label: 'Winter 2029', dates: 'Jan 8 – Apr 13, 2029', start: '2029-01-08', end: '2029-04-13' },
+                        { key: 'w2029', label: 'Winter 2029', dates: 'Jan 15 – Apr 13, 2029', start: '2029-01-15', end: '2029-04-13' },
                       ].map(sem => {
                         const now = new Date();
                         const isCurrent = now >= new Date(sem.start) && now <= new Date(sem.end);
