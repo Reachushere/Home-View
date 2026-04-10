@@ -29954,8 +29954,8 @@ export default function Dashboard() {
                     if (courseProgressDataRef.current.length <= courseIdx) {
                       courseProgressDataRef.current.length = courseIdx + 1;
                     }
-                    const moduleFileInfo = moduleFiles.map(f => `${f.originalName || f.name}${f.folder ? ` (${f.folder})` : ''}`).join('\n') || 'No files';
-                    const readingFileInfo = readingFiles.map(f => `${f.originalName || f.name}${f.folder ? ` (${f.folder})` : ''}`).join('\n') || 'No files';
+                    const moduleFileInfo = moduleFiles.map(f => `${f.originalName || f.name}${f.objectPath ? `\n  → ${f.objectPath}` : f.folder ? ` (${f.folder})` : ''}`).join('\n\n') || 'No files';
+                    const readingFileInfo = readingFiles.map(f => `${f.originalName || f.name}${f.objectPath ? `\n  → ${f.objectPath}` : f.folder ? ` (${f.folder})` : ''}`).join('\n\n') || 'No files';
                     courseProgressDataRef.current[courseIdx] = {
                       courseCode,
                       progressBg,
