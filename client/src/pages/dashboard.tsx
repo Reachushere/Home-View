@@ -29998,15 +29998,13 @@ export default function Dashboard() {
                     const oneDriveModuleFolder = semFolderMatch ? ((semFolderMatch.sem as any)[`course${semFolderMatch.slot}ModuleFolder`] || '') : '';
                     const oneDriveReadingFolder = semFolderMatch ? ((semFolderMatch.sem as any)[`course${semFolderMatch.slot}ReadingFolder`] || '') : '';
                     const courseWeekNum = (() => {
-                      if (!semFolderMatch) return selectedWeek;
-                      const sem = semFolderMatch.sem;
-                      const slot = semFolderMatch.slot;
-                      const courseStart = (sem as any)[`course${slot}StartDate`] || sem.semesterStartDate;
-                      if (!courseStart) return selectedWeek;
-                      const startD = new Date(courseStart);
+                      const semKey = (courseData as any)?._semKey;
+                      const semStartStr = semStartDates[semKey];
+                      if (!semStartStr) return selectedWeek;
+                      const semStartD = new Date(semStartStr + 'T00:00:00');
                       const weekStart = weekDays[0];
-                      if (!weekStart || isNaN(startD.getTime())) return selectedWeek;
-                      const diffMs = weekStart.getTime() - startD.getTime();
+                      if (!weekStart || isNaN(semStartD.getTime())) return selectedWeek;
+                      const diffMs = weekStart.getTime() - semStartD.getTime();
                       const diffWeeks = Math.floor(diffMs / (7 * 24 * 60 * 60 * 1000));
                       return Math.max(1, diffWeeks + 1);
                     })();
