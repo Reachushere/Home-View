@@ -25320,7 +25320,7 @@ export default function Dashboard() {
                     const grade = courseGrades[rowCertKey]?.percent || courseGrades[codeNorm]?.percent || courseGrades[semCourse.code]?.percent || profInfo.grade || '';
                     const isCurrentCourse = !!currentCourse || isCurrent(codeNorm);
                     const certType = courseCertificateTypes[semCourse.code] || courseCertificateTypes[codeNorm] || '';
-                    const displayName = (() => {
+                    const displayNameResult = (() => {
                       if (allSemesterSettings) {
                         const semKeyToDbType: Record<string, { type: string; year: number }> = {
                           'ss2025': { type: 'spring_summer', year: 2025 }, 'f2025': { type: 'fall', year: 2025 },
@@ -25344,15 +25344,17 @@ export default function Dashboard() {
                               const sc = ((thisSem as any)[`course${i}Code`] || '').replace(/\s/g, '').toUpperCase();
                               if (sc === cc) {
                                 const dbDN = (thisSem as any)[`course${i}DisplayName`];
-                                if (dbDN) return dbDN;
+                                if (dbDN) return { name: dbDN, fromDb: true };
                                 break;
                               }
                             }
                           }
                         }
                       }
-                      return semCourse.name;
+                      return { name: semCourse.name, fromDb: false };
                     })();
+                    const displayName = displayNameResult.name;
+                    const displayNameFromDb = displayNameResult.fromDb;
                     const subtitle = semCourse.fullName || '';
                     const dotColor = (() => {
                       if (currentCourse) {
@@ -25545,7 +25547,7 @@ export default function Dashboard() {
                         >
                           <MessageSquare className="w-3.5 h-3.5" strokeWidth={2.5} />
                         </button>
-                        <span className="text-[10px] truncate min-w-0 flex-1 cursor-pointer hover:underline" style={{ marginLeft: '5px' }} onClick={(e) => { e.stopPropagation(); const certKey = pastEntry?.certKey || semCourse.code; startTransition(() => setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey, semKey })); }} data-testid={`course-name-click-${semCourse.code}`}>{displayName !== semCourse.name ? <span className="font-bold">{displayName}</span> : <><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</>}</span>
+                        <span className="text-[10px] truncate min-w-0 flex-1 cursor-pointer hover:underline" style={{ marginLeft: '5px' }} onClick={(e) => { e.stopPropagation(); const certKey = pastEntry?.certKey || semCourse.code; startTransition(() => setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey, semKey })); }} data-testid={`course-name-click-${semCourse.code}`}>{displayNameFromDb ? <span className="font-bold">{displayName}</span> : <><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</>}</span>
                         <div className="flex items-center gap-1 flex-shrink-0" style={{ marginRight: '-3px' }}>
                           {(() => {
                             const profName = currentCourse?.professor || profInfo.professor;
