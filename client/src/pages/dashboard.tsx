@@ -3543,7 +3543,6 @@ export default function Dashboard() {
     }
   }, []);
   const coursesScrollRef = useRef<HTMLDivElement>(null);
-  const [coursesScrolled, setCoursesScrolled] = useState(false);
 
   type SemCourse = { code: string; name: string; fullName?: string; period: string };
   const defaultSemesterCourses: Record<string, SemCourse[]> = {
@@ -24736,7 +24735,7 @@ export default function Dashboard() {
                   <ChevronRight className="text-white/80" style={{ width: '14px', height: '14px' }} />
                 </div>
               </div>
-              <div ref={coursesScrollRef} className="flex-1 overflow-y-auto px-4 py-3" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent', color: 'white' }} onScroll={(e) => { setCoursesScrolled((e.target as HTMLDivElement).scrollTop > 100); }}>
+              <div ref={coursesScrollRef} className="flex-1 overflow-y-auto px-4 py-3" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent', color: 'white' }}>
                 <div className="shrink-0 flex items-center pb-2" style={{ marginTop: '2px' }}>
                   <Button
                     type="button"
@@ -25352,18 +25351,6 @@ export default function Dashboard() {
                   ));
                 })()}
               </div>
-              {coursesScrolled && (
-                <div style={{ position: 'absolute', right: '16px', bottom: '16px', zIndex: 10 }}>
-                  <button
-                    className="rounded-full flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity"
-                    style={{ width: '32px', height: '32px', background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.4)', backdropFilter: 'blur(8px)' }}
-                    onClick={() => coursesScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })}
-                    data-testid="button-courses-scroll-top"
-                  >
-                    <ChevronUp className="text-white" style={{ width: '18px', height: '18px' }} />
-                  </button>
-                </div>
-              )}
               
               <div className="flex items-center justify-end px-4 py-[10px] border-t border-white/40 shrink-0 rounded-b-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, ${colorSettings.headerBar}bb 0%, ${colorSettings.headerBar}cc 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15), 0 -2px 8px rgba(0,0,0,0.08)' }}>
                 <div className="flex gap-2">
