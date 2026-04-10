@@ -442,6 +442,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
         const semMonth = semesterStart ? new Date(semesterStart).getMonth() : 0;
         const semTypeHeader = semMonth >= 8 ? 'fall' : semMonth >= 4 ? 'spring_summer' : 'winter';
 
+        const spsuTerm = courseSpSuTerm || 'full';
+        const moduleFolderOverride = courseInfo.moduleFolder || '';
+        const readingFolderOverride = courseInfo.readingFolder || '';
+
         const resp = await fetch('/api/course-week-upload', {
           method: 'POST',
           headers: {
@@ -454,6 +458,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             'x-file-name': file.name,
             'x-semester-year': semYear,
             'x-semester-type': semTypeHeader,
+            'x-spsu-term': spsuTerm,
+            'x-module-folder': moduleFolderOverride,
+            'x-reading-folder': readingFolderOverride,
           },
           body: file,
         });
@@ -470,7 +477,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
       }
     };
     input.click();
-  }, [courseInfo.courseCode, courseInfo.courseName, courseInfo.fullName, semesterStart, readingWeekStart, toast]);
+  }, [courseInfo.courseCode, courseInfo.courseName, courseInfo.fullName, courseInfo.moduleFolder, courseInfo.readingFolder, semesterStart, readingWeekStart, courseSpSuTerm, toast]);
 
   const saveModuleDeadlineSettings = useCallback((field: string, value: string) => {
     const key = `${field}_${courseCodeClean}`;

@@ -1764,12 +1764,36 @@ export default function Dashboard() {
   const [hwUploadingState, setHwUploadingState] = useState<Record<string, boolean>>({});
   const [hwDragOverTarget, setHwDragOverTarget] = useState<string | null>(null);
   const semesterSettingsRef = useRef<any>(null);
-  const doHwUpload = useCallback(async (file: File, uploadType: 'module' | 'reading', courseCode: string, courseName: string, week: number, courseHexColor: string) => {
+  const doHwUpload = useCallback(async (file: File, uploadType: 'module' | 'reading', courseCode: string, courseName: string, week: number, courseHexColor: string, semKey?: string) => {
     const stateKey = `${courseCode}-${week}-${uploadType}`;
     setHwUploadingState(prev => ({ ...prev, [stateKey]: true }));
     try {
+      const semKeyToStartDate: Record<string, string> = {
+        'ss2025': '2025-05-05', 'f2025': '2025-09-08', 'w2026': '2026-01-12',
+        'ss2026': '2026-05-04', 'f2026': '2026-09-07', 'w2027': '2027-01-11',
+        'ss2027': '2027-05-03', 'f2027': '2027-09-13', 'w2028': '2028-01-10',
+        'ss2028': '2028-05-01', 'f2028': '2028-09-11', 'w2029': '2029-01-08',
+      };
       const ss = semesterSettingsRef.current;
-      const wd = getWeekDates(week, new Date(ss?.semesterStartDate || Date.now()), ss?.readingWeekStart);
+      let semStartDate: Date;
+      let rwStart: Date | null = ss?.readingWeekStart ? new Date(ss.readingWeekStart) : null;
+      if (semKey && semKeyToStartDate[semKey]) {
+        semStartDate = new Date(semKeyToStartDate[semKey] + 'T00:00:00');
+        const allSems = allSemesterSettingsRef.current;
+        if (allSems) {
+          const semKeyToType: Record<string, string> = { 'w': 'winter', 'ss': 'spring_summer', 'f': 'fall' };
+          const prefix = semKey.replace(/\d+$/, '');
+          const yearStr = semKey.replace(/^\D+/, '');
+          const matchSem = allSems.find((s: any) => {
+            const sy = s.semesterName?.match(/\d{4}/)?.[0] || '';
+            return s.semesterType === semKeyToType[prefix] && sy === yearStr;
+          });
+          if (matchSem?.readingWeekStart) rwStart = new Date(matchSem.readingWeekStart);
+        }
+      } else {
+        semStartDate = new Date(ss?.semesterStartDate || Date.now());
+      }
+      const wd = getWeekDates(week, semStartDate, rwStart);
       const ws = new Date(wd.start);
       const we = new Date(wd.end);
       const mos = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -1777,6 +1801,41 @@ export default function Dashboard() {
       const s2 = ws.getMonth() === we.getMonth() ? `${we.getDate()}` : `${mos[we.getMonth()]} ${we.getDate()}`;
       const dr = `${s1}-${s2}`;
       const codeClean = courseCode.replace(/\s/g, '');
+
+      let semYear = '';
+      let semTypeHeader = '';
+      let spsuTerm = '';
+      let moduleFolderOverride = '';
+      let readingFolderOverride = '';
+      if (semKey) {
+        const yearStr = semKey.replace(/^\D+/, '');
+        semYear = yearStr;
+        const prefix = semKey.replace(/\d+$/, '');
+        semTypeHeader = prefix === 'ss' ? 'spring_summer' : prefix === 'f' ? 'fall' : 'winter';
+        const allSems = allSemesterSettingsRef.current;
+        if (allSems) {
+          const semKeyToType: Record<string, string> = { 'w': 'winter', 'ss': 'spring_summer', 'f': 'fall' };
+          const matchSem = allSems.find((s: any) => {
+            const sy = s.semesterName?.match(/\d{4}/)?.[0] || '';
+            return s.semesterType === semKeyToType[prefix] && sy === yearStr;
+          });
+          if (matchSem) {
+            const cc = codeClean.toUpperCase();
+            for (let i = 1; i <= 3; i++) {
+              const dbCode = ((matchSem as any)[`course${i}Code`] || '').replace(/\s/g, '').toUpperCase();
+              const tdbMatch = cc.match(/^TBD_SLOT(\d+)$/);
+              const lookupCode = tdbMatch ? `TBD${tdbMatch[1]}` : cc;
+              if (dbCode === lookupCode || dbCode === cc) {
+                spsuTerm = ((matchSem as any)[`course${i}SpringSummerTerm`] || 'full').toLowerCase();
+                moduleFolderOverride = (matchSem as any)[`course${i}ModuleFolder`] || '';
+                readingFolderOverride = (matchSem as any)[`course${i}ReadingFolder`] || '';
+                break;
+              }
+            }
+          }
+        }
+      }
+
       const resp = await fetch('/api/course-week-upload', {
         method: 'POST',
         headers: {
@@ -1787,6 +1846,11 @@ export default function Dashboard() {
           'x-upload-type': uploadType,
           'x-week-date-range': dr,
           'x-file-name': file.name,
+          'x-semester-year': semYear,
+          'x-semester-type': semTypeHeader,
+          'x-spsu-term': spsuTerm,
+          'x-module-folder': moduleFolderOverride,
+          'x-reading-folder': readingFolderOverride,
         },
         body: file,
       });
@@ -29751,12 +29815,12 @@ export default function Dashboard() {
                         input.onchange = async (ev) => {
                           const file = (ev.target as HTMLInputElement).files?.[0];
                           if (!file) return;
-                          await doHwUpload(file, uploadType, courseCode, course?.name || '', selectedWeek, courseHexColor);
+                          await doHwUpload(file, uploadType, courseCode, course?.name || '', selectedWeek, courseHexColor, courseData._semKey);
                         };
                         input.click();
                       },
                       handleFileDrop: (uploadType: 'module' | 'reading', file: File) => {
-                        doHwUpload(file, uploadType, courseCode, course?.name || '', selectedWeek, courseHexColor);
+                        doHwUpload(file, uploadType, courseCode, course?.name || '', selectedWeek, courseHexColor, courseData._semKey);
                       },
                     };
                     return null;

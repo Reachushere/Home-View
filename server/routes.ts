@@ -18139,6 +18139,9 @@ document.body.removeChild(a);
 
       const clientYear = (req.headers['x-semester-year'] as string || '').trim();
       const clientSemType = (req.headers['x-semester-type'] as string || '').trim();
+      const clientSpSuTerm = (req.headers['x-spsu-term'] as string || '').trim().toLowerCase();
+      const clientModuleFolder = (req.headers['x-module-folder'] as string || '').trim();
+      const clientReadingFolder = (req.headers['x-reading-folder'] as string || '').trim();
 
       let year: number;
       let semType: string;
@@ -18153,19 +18156,44 @@ document.body.removeChild(a);
       }
 
       const codeClean = courseCode.replace(/\s/g, '');
-      const courseFolderName = buildCourseFolderName(codeClean, courseName || '');
+      let oneDriveCode = codeClean;
+      const tdbSlotMatch = oneDriveCode.match(/^TBD_SLOT(\d+)$/i);
+      if (tdbSlotMatch) oneDriveCode = `TBD${tdbSlotMatch[1]}`;
+      const courseFolderName = buildCourseFolderName(oneDriveCode, courseName || '');
       const weekFolderName = `Week ${weekNum} - ${weekDateRange}`;
       const subFolder = uploadType === 'module' ? 'Module' : 'Reading';
-      const oneDrivePath = `/School/1. TMU/Courses/${year}/${semType}/${courseFolderName}/${weekFolderName}/${subFolder}`;
+
+      const overridePath = uploadType === 'module' ? clientModuleFolder : clientReadingFolder;
+      let oneDrivePath: string;
+
+      if (overridePath) {
+        oneDrivePath = `${overridePath}/${weekFolderName}/${subFolder}`;
+      } else {
+        const isSpSu = (clientSemType || '').includes('spring') || (clientSemType || '').includes('summer');
+        let termFolder = '';
+        if (isSpSu) {
+          const termMap: Record<string, string> = {
+            'full': 'Full',
+            'first_half': 'Spring - First Half',
+            'second_half': 'Summer - Second Half',
+          };
+          termFolder = termMap[clientSpSuTerm] || 'Full';
+        }
+        const baseSemPath = `/School/1. TMU/Courses/${year}/${semType}`;
+        const courseDirBase = termFolder ? `${baseSemPath}/${termFolder}` : baseSemPath;
+        oneDrivePath = `${courseDirBase}/${courseFolderName}/${weekFolderName}/${subFolder}`;
+      }
 
       console.log(`[CourseUpload] Uploading ${fileName} to OneDrive: ${oneDrivePath}`);
 
       const { uploadOneDriveFile, createOneDriveFolder } = await import("./onedrive");
       
-      const basePath = `/School/1. TMU/Courses/${year}/${semType}`;
-      await createOneDriveFolder(basePath, courseFolderName);
-      await createOneDriveFolder(`${basePath}/${courseFolderName}`, weekFolderName);
-      await createOneDriveFolder(`${basePath}/${courseFolderName}/${weekFolderName}`, subFolder);
+      const pathParts = oneDrivePath.split('/').filter(Boolean);
+      for (let i = 1; i < pathParts.length; i++) {
+        const parentPath = '/' + pathParts.slice(0, i).join('/');
+        const childName = pathParts[i];
+        try { await createOneDriveFolder(parentPath, childName); } catch {}
+      }
 
       const oneDriveResult = await uploadOneDriveFile(oneDrivePath, fileName, fileBuffer, contentType);
       console.log(`[CourseUpload] OneDrive upload success: ${fileName} → ${oneDrivePath} (${fileBuffer.length} bytes)`);
