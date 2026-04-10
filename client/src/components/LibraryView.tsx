@@ -356,7 +356,7 @@ function BookPullAnimation({ file, bookColor, onComplete, onClose }: {
   );
 }
 
-export default function LibraryView({ isOpen, onClose, semesters, initialSemesterKey }: LibraryViewProps) {
+export default function LibraryView({ isOpen, onClose, semesters: semestersProp, initialSemesterKey }: LibraryViewProps) {
   const [currentSemIdx, setCurrentSemIdx] = useState(0);
   const [selectedBook, setSelectedBook] = useState<FileRecord | null>(null);
   const [selectedBookColor, setSelectedBookColor] = useState('#8B4513');
@@ -369,6 +369,34 @@ export default function LibraryView({ isOpen, onClose, semesters, initialSemeste
     queryKey: ['/api/files'],
     enabled: isOpen,
   });
+
+  const { data: semesterSettings = [] } = useQuery<any[]>({
+    queryKey: ['/api/semesters'],
+    enabled: isOpen,
+  });
+
+  const semesters = useMemo(() => {
+    if (semesterSettings.length === 0) return semestersProp;
+    return semesterSettings.map((s: any) => {
+      const st = s.semesterType || '';
+      const name = s.semesterName || '';
+      const yearMatch = name.match(/\d{4}/);
+      const year = yearMatch ? yearMatch[0] : '';
+      const key = st.startsWith('spring_summer') ? `ss${year}` : st === 'fall' ? `f${year}` : st === 'winter' ? `w${year}` : `s${s.id}`;
+      const courses: { code: string; name: string; color: string }[] = [];
+      for (let i = 1; i <= 3; i++) {
+        const code = s[`course${i}Code`] || '';
+        if (code) {
+          courses.push({
+            code,
+            name: s[`course${i}Name`] || '',
+            color: s[`course${i}Color`] || '#3b82f6',
+          });
+        }
+      }
+      return { key, label: name, courses };
+    });
+  }, [semesterSettings, semestersProp]);
 
   useEffect(() => {
     if (isOpen && initialSemesterKey && semesters.length > 0) {
@@ -399,31 +427,22 @@ export default function LibraryView({ isOpen, onClose, semesters, initialSemeste
     const semCourses = currentSemester.courses;
     const result: { course: { code: string; name: string; color: string }; files: FileRecord[] }[] = [];
 
-    const matchedCodes = new Set<string>();
-    semCourses.forEach(course => {
-      const codeNorm = course.code.replace(/\s/g, '').toLowerCase();
-      const files = courseMap.get(codeNorm);
-      if (files && files.length > 0) {
-        matchedCodes.add(codeNorm);
-        files.sort((a, b) => {
-          const weekA = parseInt(a.folder?.match(/week-(\d+)/)?.[1] || '0');
-          const weekB = parseInt(b.folder?.match(/week-(\d+)/)?.[1] || '0');
-          if (weekA !== weekB) return weekA - weekB;
-          return (a.displayName || a.originalName).localeCompare(b.displayName || b.originalName);
-        });
-        result.push({ course, files });
-      }
-    });
-
-    courseMap.forEach((files, code) => {
-      if (matchedCodes.has(code)) return;
+    const sortFiles = (files: FileRecord[]) => {
       files.sort((a, b) => {
         const weekA = parseInt(a.folder?.match(/week-(\d+)/)?.[1] || '0');
         const weekB = parseInt(b.folder?.match(/week-(\d+)/)?.[1] || '0');
         if (weekA !== weekB) return weekA - weekB;
         return (a.displayName || a.originalName).localeCompare(b.displayName || b.originalName);
       });
-      result.push({ course: { code: code.toUpperCase(), name: '', color: BOOK_COLORS[result.length % BOOK_COLORS.length] }, files });
+    };
+
+    semCourses.forEach(course => {
+      const codeNorm = course.code.replace(/\s/g, '').toLowerCase();
+      const files = courseMap.get(codeNorm);
+      if (files && files.length > 0) {
+        sortFiles(files);
+        result.push({ course, files });
+      }
     });
 
     return result;
