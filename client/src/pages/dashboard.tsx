@@ -41164,36 +41164,66 @@ function TaskForm({
 
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <Label htmlFor="eventStartTime" className="text-[11px] text-white">Start</Label>
-              <div className="flex gap-1">
-                <Input
-                  id="eventStartTime"
-                  type="time"
-                  value={formData.eventStartTime || ''}
-                  onChange={(e) => {
-                    setFormData(prev => ({ ...prev, eventStartTime: e.target.value }));
-                  }}
-                  data-testid="input-start-time"
-                  className="bg-white h-8 flex-1 font-normal !text-black"
-                  style={{ color: 'black', fontSize: '11px', colorScheme: 'light' }}
-                />
-              </div>
+              <Label className="text-[11px] text-white">Start</Label>
+              {(() => {
+                const raw = formData.eventStartTime || '';
+                const [rawH, rawM] = raw ? raw.split(':').map(Number) : [12, 0];
+                const h24 = raw ? rawH : 12;
+                const m = raw ? rawM : 0;
+                const isPM = h24 >= 12;
+                const h12 = h24 === 0 ? 12 : h24 > 12 ? h24 - 12 : h24;
+                const setStart = (hour12: number, minute: number, pm: boolean) => {
+                  let h = hour12 === 12 ? 0 : hour12;
+                  if (pm) h += 12;
+                  setFormData(prev => ({ ...prev, eventStartTime: `${String(h).padStart(2, '0')}:${String(minute).padStart(2, '0')}` }));
+                };
+                return (
+                  <div className="flex gap-0.5 items-center">
+                    <select value={h12} onChange={(e) => setStart(Number(e.target.value), m, isPM)} className="h-8 rounded-md bg-white text-black text-[11px] px-1 outline-none" style={{ width: '38px' }} data-testid="select-start-hour">
+                      {Array.from({ length: 12 }, (_, i) => i + 1).map(v => <option key={v} value={v}>{v}</option>)}
+                    </select>
+                    <span className="text-white text-[11px]">:</span>
+                    <select value={m} onChange={(e) => setStart(h12, Number(e.target.value), isPM)} className="h-8 rounded-md bg-white text-black text-[11px] px-1 outline-none" style={{ width: '38px' }} data-testid="select-start-min">
+                      {[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55].map(v => <option key={v} value={v}>{String(v).padStart(2, '0')}</option>)}
+                    </select>
+                    <select value={isPM ? 'PM' : 'AM'} onChange={(e) => setStart(h12, m, e.target.value === 'PM')} className="h-8 rounded-md bg-white text-black text-[11px] px-1 outline-none font-medium" style={{ width: '42px' }} data-testid="select-start-ampm">
+                      <option value="AM">AM</option>
+                      <option value="PM">PM</option>
+                    </select>
+                  </div>
+                );
+              })()}
             </div>
             <div>
-              <Label htmlFor="eventEndTime" className="text-[11px] text-white">End</Label>
-              <div className="flex gap-1">
-                <Input
-                  id="eventEndTime"
-                  type="time"
-                  value={formData.eventEndTime || ''}
-                  onChange={(e) => {
-                    setFormData(prev => ({ ...prev, eventEndTime: e.target.value }));
-                  }}
-                  data-testid="input-end-time"
-                  className="bg-white h-8 flex-1 font-normal !text-black"
-                  style={{ color: 'black', fontSize: '11px', colorScheme: 'light' }}
-                />
-              </div>
+              <Label className="text-[11px] text-white">End</Label>
+              {(() => {
+                const raw = formData.eventEndTime || '';
+                const [rawH, rawM] = raw ? raw.split(':').map(Number) : [12, 0];
+                const h24 = raw ? rawH : 12;
+                const m = raw ? rawM : 0;
+                const isPM = h24 >= 12;
+                const h12 = h24 === 0 ? 12 : h24 > 12 ? h24 - 12 : h24;
+                const setEnd = (hour12: number, minute: number, pm: boolean) => {
+                  let h = hour12 === 12 ? 0 : hour12;
+                  if (pm) h += 12;
+                  setFormData(prev => ({ ...prev, eventEndTime: `${String(h).padStart(2, '0')}:${String(minute).padStart(2, '0')}` }));
+                };
+                return (
+                  <div className="flex gap-0.5 items-center">
+                    <select value={h12} onChange={(e) => setEnd(Number(e.target.value), m, isPM)} className="h-8 rounded-md bg-white text-black text-[11px] px-1 outline-none" style={{ width: '38px' }} data-testid="select-end-hour">
+                      {Array.from({ length: 12 }, (_, i) => i + 1).map(v => <option key={v} value={v}>{v}</option>)}
+                    </select>
+                    <span className="text-white text-[11px]">:</span>
+                    <select value={m} onChange={(e) => setEnd(h12, Number(e.target.value), isPM)} className="h-8 rounded-md bg-white text-black text-[11px] px-1 outline-none" style={{ width: '38px' }} data-testid="select-end-min">
+                      {[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55].map(v => <option key={v} value={v}>{String(v).padStart(2, '0')}</option>)}
+                    </select>
+                    <select value={isPM ? 'PM' : 'AM'} onChange={(e) => setEnd(h12, m, e.target.value === 'PM')} className="h-8 rounded-md bg-white text-black text-[11px] px-1 outline-none font-medium" style={{ width: '42px' }} data-testid="select-end-ampm">
+                      <option value="AM">AM</option>
+                      <option value="PM">PM</option>
+                    </select>
+                  </div>
+                );
+              })()}
             </div>
             <div className="flex items-end">
               <div className="flex-1" />
