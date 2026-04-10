@@ -11613,15 +11613,16 @@ export default function Dashboard() {
   weekEndDateRef.current = weekEndDate.toISOString();
 
   const displayWeekNumber = useMemo(() => {
-    if (selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK) return selectedWeek;
     const sems = allSemesterSettingsRef.current || [];
     const midDate = new Date(weekStartDate.getTime() + 3 * 24 * 60 * 60 * 1000);
     for (const sem of sems) {
       if (!sem.semesterStartDate) continue;
       const wn = getWeekNumber(midDate, new Date(sem.semesterStartDate), sem.readingWeekStart || null);
+      if (wn === -1) return -1;
       if (wn >= 1 && wn <= 13) return wn;
     }
-    return selectedWeek;
+    if (selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK) return -1;
+    return -1;
   }, [selectedWeek, weekStartDate, allSemesterSettings]);
 
   // Generate weekdays for the weekly view
