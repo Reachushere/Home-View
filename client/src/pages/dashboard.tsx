@@ -40504,6 +40504,7 @@ function TaskForm({
     dueDate: getDefaultDate(),
     eventStartTime: task?.eventStartTime || initialStartTime || "",
     eventEndTime: task?.eventEndTime || initialEndTime || "",
+    eventEndDate: task?.eventEndDate ? new Date(task.eventEndDate).toISOString() : "",
     reminder1: task?.reminder1 ?? DEFAULT_REMINDER_1,
     reminder2: task?.reminder2 ?? DEFAULT_REMINDER_2,
     reminder3: task?.reminder3 ?? 0,
@@ -40578,12 +40579,27 @@ function TaskForm({
     return "00";
   });
 
-  const [showEndDate, setShowEndDate] = useState(false);
+  const [showEndDate, setShowEndDate] = useState(() => !!(task?.eventEndDate));
   const [isEndDatePickerOpen, setIsEndDatePickerOpen] = useState(false);
-  const [endDateValue, setEndDateValue] = useState<string>("");
-  const [tempEndDate, setTempEndDate] = useState<Date | undefined>(undefined);
-  const [tempEndHour, setTempEndHour] = useState("23");
-  const [tempEndMinute, setTempEndMinute] = useState("59");
+  const [endDateValue, setEndDateValue] = useState<string>(() => {
+    if (task?.eventEndDate) {
+      const d = new Date(task.eventEndDate);
+      return format(d, "yyyy-MM-dd'T'HH:mm");
+    }
+    return "";
+  });
+  const [tempEndDate, setTempEndDate] = useState<Date | undefined>(() => {
+    if (task?.eventEndDate) return new Date(task.eventEndDate);
+    return undefined;
+  });
+  const [tempEndHour, setTempEndHour] = useState(() => {
+    if (task?.eventEndDate) return getETHours(new Date(task.eventEndDate)).toString().padStart(2, '0');
+    return "23";
+  });
+  const [tempEndMinute, setTempEndMinute] = useState(() => {
+    if (task?.eventEndDate) return getETMinutes(new Date(task.eventEndDate)).toString().padStart(2, '0');
+    return "59";
+  });
 
   const { uploadFile, isUploading } = useUpload({
     onSuccess: (response) => {
@@ -40653,6 +40669,7 @@ function TaskForm({
         dueDate: finalDueDate.toISOString(),
         eventStartTime: data.eventStartTime || null,
         eventEndTime: data.eventEndTime || null,
+        eventEndDate: data.eventEndDate ? new Date(data.eventEndDate).toISOString() : null,
         reminder1: data.reminder1 || null,
         reminder2: data.reminder2 || null,
         reminder3: data.reminder3 || null,
@@ -40790,6 +40807,7 @@ function TaskForm({
         dueDate: finalDueDate.toISOString(),
         eventStartTime: data.eventStartTime || null,
         eventEndTime: data.eventEndTime || null,
+        eventEndDate: data.eventEndDate ? new Date(data.eventEndDate).toISOString() : null,
         reminder1: data.reminder1 || null,
         reminder2: data.reminder2 || null,
         reminder3: data.reminder3 || null,
@@ -40857,6 +40875,7 @@ function TaskForm({
         dueDate: finalDueDate.toISOString(),
         eventStartTime: data.eventStartTime || null,
         eventEndTime: data.eventEndTime || null,
+        eventEndDate: data.eventEndDate ? new Date(data.eventEndDate).toISOString() : null,
         reminder1: data.reminder1 || null,
         reminder2: data.reminder2 || null,
         reminder3: data.reminder3 || null,
@@ -41081,7 +41100,7 @@ function TaskForm({
                   if (!e.target.checked) {
                     setEndDateValue("");
                     setTempEndDate(undefined);
-                    setFormData(prev => ({ ...prev, eventEndTime: '' }));
+                    setFormData(prev => ({ ...prev, eventEndTime: '', eventEndDate: '' }));
                   }
                 }}
                 className="h-3 w-3 rounded border-gray-300"
@@ -41149,7 +41168,7 @@ function TaskForm({
                               const newDate = new Date(tempEndDate);
                               newDate.setHours(parseInt(tempEndHour), parseInt(tempEndMinute), 0, 0);
                               setEndDateValue(format(newDate, "yyyy-MM-dd'T'HH:mm"));
-                              setFormData(prev => ({ ...prev, eventEndTime: `${tempEndHour}:${tempEndMinute}` }));
+                              setFormData(prev => ({ ...prev, eventEndTime: `${tempEndHour}:${tempEndMinute}`, eventEndDate: newDate.toISOString() }));
                             }
                             setIsEndDatePickerOpen(false);
                           }}

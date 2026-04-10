@@ -365,6 +365,7 @@ export const tasks = pgTable("tasks", {
   dueDate: timestamp("due_date").notNull(),
   eventStartTime: text("event_start_time"), // Time the task/event starts (e.g., "09:00")
   eventEndTime: text("event_end_time"), // Time the task/event ends (e.g., "10:00")
+  eventEndDate: timestamp("event_end_date"), // Optional: end date for multi-day tasks/events
   reminder1: integer("reminder_1").default(30), // Default: 30 minutes before
   reminder2: integer("reminder_2").default(120), // Default: 2 hours before
   reminder3: integer("reminder_3"), // Optional additional reminder

@@ -1335,6 +1335,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
         if (taskData.startDate && typeof taskData.startDate === 'string') taskData.startDate = new Date(taskData.startDate);
         if (taskData.completedAt && typeof taskData.completedAt === 'string') taskData.completedAt = new Date(taskData.completedAt);
         if (taskData.repeatEndDate && typeof taskData.repeatEndDate === 'string') taskData.repeatEndDate = new Date(taskData.repeatEndDate);
+        if (taskData.eventEndDate && typeof taskData.eventEndDate === 'string') taskData.eventEndDate = new Date(taskData.eventEndDate);
         
         const nameAndDateKey = `${stripBrackets(t.title)}||${dueStr}`;
         const existingTask = existingMap.get(key) || existingByStrippedTitle.get(strippedKey) || existingByNameAndDate.get(nameAndDateKey);
@@ -1918,7 +1919,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
       const id = Number(req.params.id);
       const allowedFields = [
         'title', 'description', 'type', 'courseName', 'dueDate',
-        'eventStartTime', 'eventEndTime',
+        'eventStartTime', 'eventEndTime', 'eventEndDate',
         'reminder1', 'reminder2', 'reminder3', 'reminder4',
         'reminder1Methods', 'reminder2Methods', 'reminder3Methods', 'reminder4Methods',
         'reminder4DateTime',
@@ -1935,6 +1936,18 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
         if (req.body[field] !== undefined) {
           updates[field] = req.body[field];
         }
+      }
+      if (updates.eventEndDate && typeof updates.eventEndDate === 'string') {
+        updates.eventEndDate = new Date(updates.eventEndDate);
+      }
+      if (updates.dueDate && typeof updates.dueDate === 'string') {
+        updates.dueDate = new Date(updates.dueDate);
+      }
+      if (updates.startDate && typeof updates.startDate === 'string') {
+        updates.startDate = new Date(updates.startDate);
+      }
+      if (updates.repeatEndDate && typeof updates.repeatEndDate === 'string') {
+        updates.repeatEndDate = new Date(updates.repeatEndDate);
       }
       const task = await storage.updateTask(id, updates);
       if (!task) return res.status(404).json({ message: 'Task not found' });
