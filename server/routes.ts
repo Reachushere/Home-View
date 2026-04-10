@@ -4484,12 +4484,11 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 
         let semRelativeWeek = weekNum;
         if (semester?.semesterStartDate && req.query.weekStartDate) {
+          const { getWeekNumber: getWeekNum2 } = await import("../shared/schema");
           const semStart = new Date(semester.semesterStartDate);
           const viewStart = new Date(req.query.weekStartDate as string);
-          const sat = new Date(semStart);
-          sat.setDate(sat.getDate() - ((sat.getDay() + 1) % 7));
-          const diffMs = viewStart.getTime() - sat.getTime();
-          const computed = Math.floor(diffMs / (7 * 86400000)) + 1;
+          const rwStart = semester.readingWeekStart ? new Date(semester.readingWeekStart) : null;
+          const computed = getWeekNum2(viewStart, semStart, rwStart);
           if (computed >= 1 && computed <= 52) semRelativeWeek = computed;
         }
 
@@ -4530,9 +4529,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
               viewStart = new Date(req.query.weekStartDate as string);
               viewEnd = req.query.weekEndDate ? new Date(req.query.weekEndDate as string) : new Date(viewStart.getTime() + 6 * 86400000);
             } else if (semester?.semesterStartDate) {
-              const semStart = new Date(semester.semesterStartDate);
-              const sat = new Date(semStart);
-              sat.setDate(sat.getDate() - ((sat.getDay() + 1) % 7));
+              const { alignToSaturday: alignSat } = await import("../shared/schema");
+              const sat = alignSat(new Date(semester.semesterStartDate));
               viewStart = new Date(sat.getTime() + (semRelativeWeek - 1) * 7 * 86400000);
               viewEnd = new Date(viewStart.getTime() + 6 * 86400000);
             }
@@ -17667,15 +17665,16 @@ document.body.removeChild(a);
 
       let semesterRelativeWeek = weekNumber;
       if (semester?.semesterStartDate && req.body.weekStartDate) {
+        const { getWeekNumber: getWeekNum } = await import("../shared/schema");
         const semStart = new Date(semester.semesterStartDate);
         const viewStart = new Date(req.body.weekStartDate);
-        const sat = new Date(semStart);
-        sat.setDate(sat.getDate() - ((sat.getDay() + 1) % 7));
-        const diffMs = viewStart.getTime() - sat.getTime();
-        const computedWeek = Math.floor(diffMs / (7 * 86400000)) + 1;
+        const rwStart = semester.readingWeekStart ? new Date(semester.readingWeekStart) : null;
+        const computedWeek = getWeekNum(viewStart, semStart, rwStart);
         if (computedWeek >= 1 && computedWeek <= 52) {
           console.log(`[Sync] Computed semester-relative week: ${computedWeek} (from semStart=${semStart.toISOString()}, viewStart=${viewStart.toISOString()}, original weekNumber=${weekNumber})`);
           semesterRelativeWeek = computedWeek;
+        } else {
+          console.log(`[Sync] Computed week ${computedWeek} out of range, using weekNumber=${weekNumber}`);
         }
       }
 
