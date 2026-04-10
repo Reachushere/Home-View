@@ -265,24 +265,19 @@ function Bookend({ side }: { side: 'left' | 'right' }) {
   );
 }
 
-function BookPullAnimation({ file, bookColor, onComplete, onClose }: {
+function BookReader({ file, bookColor, onClose }: {
   file: FileRecord;
   bookColor: string;
-  onComplete: () => void;
   onClose: () => void;
 }) {
-  const [phase, setPhase] = useState<'pull' | 'flip' | 'open' | 'done'>('pull');
-  const title = truncateSpineTitle(file.displayName || file.originalName, 60);
+  const [phase, setPhase] = useState<'pull' | 'expand' | 'reading'>('pull');
+  const title = truncateSpineTitle(file.displayName || file.originalName, 80);
 
   useEffect(() => {
-    const t1 = setTimeout(() => setPhase('flip'), 700);
-    const t2 = setTimeout(() => setPhase('open'), 1400);
-    const t3 = setTimeout(() => {
-      setPhase('done');
-      onComplete();
-    }, 2200);
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
-  }, [onComplete]);
+    const t1 = setTimeout(() => setPhase('expand'), 600);
+    const t2 = setTimeout(() => setPhase('reading'), 1200);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, []);
 
   return (
     <div
@@ -290,118 +285,154 @@ function BookPullAnimation({ file, bookColor, onComplete, onClose }: {
         position: 'fixed',
         inset: 0,
         zIndex: 100001,
-        backgroundColor: phase === 'done' ? 'rgba(0,0,0,0.9)' : 'rgba(0,0,0,0.7)',
-        transition: 'background-color 0.5s ease',
-        perspective: '1500px',
+        backgroundColor: 'rgba(0,0,0,0.85)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        perspective: '1500px',
       }}
-      onClick={(e) => { if (e.target === e.currentTarget && phase === 'done') onClose(); }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <style>{`
-        @keyframes libraryBookPull {
-          0% { transform: translateX(-200px) rotateY(90deg) scale(0.6); opacity: 0; }
-          40% { transform: translateX(-50px) rotateY(30deg) scale(0.8); opacity: 1; }
-          100% { transform: translateX(0) rotateY(0deg) scale(1); opacity: 1; }
+        @keyframes libBookPull {
+          0% { width: 40px; height: 180px; opacity: 0; transform: rotateY(80deg); }
+          50% { width: 200px; height: 280px; opacity: 1; transform: rotateY(10deg); }
+          100% { width: 200px; height: 280px; opacity: 1; transform: rotateY(0deg); }
         }
-        @keyframes libraryBookFlip {
-          0% { transform: rotateY(0deg) scale(1); }
-          100% { transform: rotateY(0deg) scale(1.15); }
-        }
-        @keyframes libraryBookOpen {
-          0% { transform: scale(1.15); }
-          50% { transform: scale(1.3) rotateY(-10deg); }
-          100% { transform: scale(0.9); opacity: 0; }
-        }
-        @keyframes libraryPagesFan {
-          0% { transform: rotateY(0deg); opacity: 1; }
-          100% { transform: rotateY(-160deg); opacity: 0.6; }
+        @keyframes libBookExpand {
+          0% { width: 200px; height: 280px; border-radius: 4px 12px 12px 4px; }
+          100% { width: 85vw; height: 88vh; border-radius: 8px 16px 16px 8px; }
         }
       `}</style>
 
       <div style={{
-        width: '200px',
-        height: '280px',
-        transformStyle: 'preserve-3d',
-        animation: phase === 'pull' ? 'libraryBookPull 0.7s ease-out forwards'
-          : phase === 'flip' ? 'libraryBookFlip 0.7s ease-in-out forwards'
-          : phase === 'open' ? 'libraryBookOpen 0.8s ease-in forwards'
-          : 'none',
-        opacity: phase === 'done' ? 0 : 1,
+        width: phase === 'pull' ? '200px' : phase === 'expand' || phase === 'reading' ? '85vw' : '200px',
+        height: phase === 'pull' ? '280px' : phase === 'expand' || phase === 'reading' ? '88vh' : '280px',
+        backgroundColor: bookColor,
+        borderRadius: phase === 'reading' ? '8px 16px 16px 8px' : '4px 12px 12px 4px',
+        boxShadow: '0 20px 80px rgba(0,0,0,0.7), inset 0 0 30px rgba(0,0,0,0.2)',
+        position: 'relative',
+        overflow: 'hidden',
+        transition: phase === 'pull' ? 'none' : 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+        animation: phase === 'pull' ? 'libBookPull 0.6s ease-out forwards' : 'none',
+        display: 'flex',
+        flexDirection: 'column',
       }}>
         <div style={{
           position: 'absolute',
-          inset: 0,
-          backgroundColor: bookColor,
-          borderRadius: '4px 10px 10px 4px',
-          boxShadow: '0 10px 50px rgba(0,0,0,0.6), inset 0 0 20px rgba(0,0,0,0.2)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '25px',
-        }}>
-          <div style={{
-            position: 'absolute',
-            left: 0,
-            top: '8px',
-            bottom: '8px',
-            width: '14px',
-            background: `linear-gradient(90deg, ${bookColor} 0%, rgba(0,0,0,0.4) 50%, ${bookColor} 100%)`,
-            borderRadius: '4px 0 0 4px',
-          }} />
-          <div style={{
-            position: 'absolute',
-            top: '15px',
-            left: '25px',
-            right: '25px',
-            height: '2px',
-            backgroundColor: '#D4AF37',
-            opacity: 0.5,
-          }} />
-          <div style={{
-            color: '#D4AF37',
-            fontSize: '13px',
-            fontWeight: 700,
-            textAlign: 'center',
-            textTransform: 'uppercase',
-            letterSpacing: '1.5px',
-            textShadow: '0 1px 3px rgba(0,0,0,0.5)',
-            lineHeight: 1.4,
-            maxWidth: '150px',
-            wordBreak: 'break-word',
-          }}>
-            {title}
-          </div>
-          <div style={{
-            position: 'absolute',
-            bottom: '15px',
-            left: '25px',
-            right: '25px',
-            height: '2px',
-            backgroundColor: '#D4AF37',
-            opacity: 0.5,
-          }} />
-        </div>
+          left: 0,
+          top: 0,
+          bottom: 0,
+          width: phase === 'reading' ? '24px' : '14px',
+          background: `linear-gradient(90deg, ${bookColor} 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0.3) 60%, ${bookColor} 100%)`,
+          transition: 'width 0.6s ease',
+          zIndex: 2,
+        }} />
 
-        {(phase === 'flip' || phase === 'open') && (
-          <div style={{ position: 'absolute', inset: 0, transformStyle: 'preserve-3d' }}>
-            {[0, 1, 2, 3].map(i => (
-              <div key={i} style={{
-                position: 'absolute',
-                right: '4px',
-                top: '4px',
-                bottom: '4px',
-                width: '190px',
-                backgroundColor: ['#fef3c7', '#fef9c3', '#fffbeb', '#fefce8'][i],
-                borderRadius: '0 8px 8px 0',
-                transformOrigin: 'left center',
-                animation: `libraryPagesFan 0.3s ease-in-out ${i * 0.12}s forwards`,
-                boxShadow: '2px 0 4px rgba(0,0,0,0.1)',
-              }} />
-            ))}
+        {phase !== 'reading' && (
+          <div style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '30px',
+            zIndex: 1,
+          }}>
+            <div style={{
+              width: '60%',
+              height: '2px',
+              background: 'linear-gradient(90deg, transparent, #D4AF37, transparent)',
+              opacity: 0.5,
+              marginBottom: '20px',
+            }} />
+            <div style={{
+              color: '#D4AF37',
+              fontSize: phase === 'expand' ? '18px' : '13px',
+              fontWeight: 700,
+              textAlign: 'center',
+              textTransform: 'uppercase',
+              letterSpacing: '2px',
+              textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+              lineHeight: 1.4,
+              maxWidth: '80%',
+              wordBreak: 'break-word',
+              transition: 'font-size 0.6s ease',
+            }}>
+              {title}
+            </div>
+            <div style={{
+              width: '60%',
+              height: '2px',
+              background: 'linear-gradient(90deg, transparent, #D4AF37, transparent)',
+              opacity: 0.5,
+              marginTop: '20px',
+            }} />
           </div>
+        )}
+
+        {phase === 'reading' && (
+          <>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '8px 16px 8px 32px',
+              borderBottom: '1px solid rgba(255,255,255,0.1)',
+              zIndex: 3,
+              flexShrink: 0,
+            }}>
+              <div style={{
+                color: '#D4AF37',
+                fontSize: '11px',
+                fontWeight: 600,
+                letterSpacing: '1px',
+                textTransform: 'uppercase',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                maxWidth: 'calc(100% - 40px)',
+              }}>
+                {title}
+              </div>
+              <button
+                onClick={onClose}
+                style={{
+                  background: 'rgba(0,0,0,0.3)',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  borderRadius: '50%',
+                  width: '28px',
+                  height: '28px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  color: 'rgba(255,255,255,0.7)',
+                  flexShrink: 0,
+                }}
+                data-testid="button-close-book-reader"
+              >
+                <X size={14} />
+              </button>
+            </div>
+            <div style={{
+              flex: 1,
+              margin: '0 8px 8px 28px',
+              borderRadius: '4px',
+              overflow: 'hidden',
+              background: '#fff',
+            }}>
+              <iframe
+                src={`/api/files/${file.id}/download`}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  border: 'none',
+                }}
+                title={file.displayName || file.originalName}
+              />
+            </div>
+          </>
         )}
       </div>
     </div>
@@ -504,13 +535,6 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
     setAnimatingBook(file);
     setAnimatingColor(color);
   }, []);
-
-  const handleAnimationComplete = useCallback(() => {
-    if (animatingBook) {
-      window.open(`/pdf-viewer/${animatingBook.id}`, '_blank');
-      setTimeout(() => setAnimatingBook(null), 300);
-    }
-  }, [animatingBook]);
 
   const prevSem = useCallback(() => {
     setCurrentSemIdx(i => Math.max(0, i - 1));
@@ -848,10 +872,9 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       </div>
 
       {animatingBook && (
-        <BookPullAnimation
+        <BookReader
           file={animatingBook}
           bookColor={animatingColor}
-          onComplete={handleAnimationComplete}
           onClose={() => setAnimatingBook(null)}
         />
       )}
