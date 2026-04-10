@@ -28457,7 +28457,7 @@ export default function Dashboard() {
                 const hasTodayTasks = isToday && allTasks.some(t => 
                   !t.isCompleted && isSameDayET(new Date(t.dueDate), day)
                 );
-                const shiftDateStr = format(day, "yyyy-MM-dd");
+                const shiftDateStr = getETDateString(day);
                 const shiftForDay = localShiftMap[shiftDateStr];
                 return (
                   <div 
@@ -30767,11 +30767,11 @@ export default function Dashboard() {
                       const totalItems = hourTasks.length + visibleCalendarEvents.length;
                       const hasAnyTasks = totalItems > 0 || continuingTasks.length > 0;
                       const columnWidth = totalItems > 0 ? 100 / totalItems : 100;
-                      const cellDateStr = format(day, "yyyy-MM-dd");
+                      const cellDateStr = getETDateString(day);
                       const isYesterday = isSameDayET(day, subDays(new Date(), 1));
                       const cellShift = isYesterday ? undefined : localShiftMap[cellDateStr];
                       const sleepDisabledForDay = sleepDisabledDays.has(cellDateStr);
-                      const prevDayStr = format(addDays(day, -1), "yyyy-MM-dd");
+                      const prevDayStr = getETDateString(addDays(day, -1));
                       const prevDayShift = localShiftMap[prevDayStr];
                       const sleepDisabledForPrevDay = sleepDisabledDays.has(prevDayStr);
                       const isNightShiftSleepHour = !sleepDisabledForDay && cellShift === 'night' && hour >= 10 && hour <= 16;
@@ -32547,7 +32547,7 @@ export default function Dashboard() {
                       const isCurrentMonth = day.getMonth() === currentMonth.getMonth();
                       const isToday = isSameDayET(day, new Date());
                       const dayTasks = allTasks.filter(t => !t.isCompleted && isSameDayET(new Date(t.dueDate), day));
-                      const monthDayStr = format(day, "yyyy-MM-dd");
+                      const monthDayStr = getETDateString(day);
                       const monthDayShift = localShiftMap[monthDayStr];
                       const cellBg = monthDayShift === 'day' ? 'rgba(255,160,40,0.9)' : monthDayShift === 'night' ? 'rgba(180,100,200,0.2)' : isCurrentMonth ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.55)';
                       
