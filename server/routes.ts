@@ -10885,10 +10885,9 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     res.json({ results, testUrl });
   });
 
-  let SERVER_START_TIME = 0;
-  const SERVER_STARTUP_COOLDOWN_MS = 30 * 1000;
-  app.once('mount', () => { SERVER_START_TIME = Date.now(); });
-  setTimeout(() => { if (SERVER_START_TIME === 0) { SERVER_START_TIME = Date.now(); } console.log(`[Startup] Cooldown timer started (${SERVER_STARTUP_COOLDOWN_MS / 1000}s)`); }, 3000);
+  const SERVER_START_TIME = Date.now();
+  const SERVER_STARTUP_COOLDOWN_MS = 60 * 1000;
+  console.log(`[Startup] Cooldown timer started (${SERVER_STARTUP_COOLDOWN_MS / 1000}s)`);
 
   // ===== HA Connectivity Health Monitor =====
   interface HAHealthState {
