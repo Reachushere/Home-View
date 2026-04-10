@@ -11882,8 +11882,10 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       if (!code || !code.trim()) continue;
       const codeClean = code.replace(/\s/g, '');
       const modFolder = (semesterSettings as any)[`course${i}ModuleFolder`] || '';
-      if (modFolder.trim()) {
-        const courseFolderPath = modFolder.trim().replace(/\/(Module|Readings|Reading)$/i, '');
+      const readFolder = (semesterSettings as any)[`course${i}ReadingFolder`] || '';
+      const folderOverride = modFolder.trim() || readFolder.trim();
+      if (folderOverride) {
+        const courseFolderPath = folderOverride.replace(/\/(Module|Readings|Reading)$/i, '');
         courses.push({ code: codeClean, path: courseFolderPath });
       } else {
         try {
@@ -11928,7 +11930,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           if (!currentWeekFolder) continue;
           const weekContents = await listOneDriveItems(currentWeekFolder.path);
           for (const subType of ['module', 'reading']) {
-            const subFolder = weekContents.find((f: any) => f.type === 'folder' && f.name.toLowerCase() === subType);
+            const subFolder = weekContents.find((f: any) => f.type === 'folder' && f.name.toLowerCase().includes(subType));
             if (!subFolder) continue;
             const subFiles = await listOneDriveItems(subFolder.path);
             for (const file of subFiles) {
@@ -13741,7 +13743,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
                 const weekFolder = weekFolders.find((f: any) => f.type === 'folder' && f.name.match(/Week\s+(\d+)/i)?.[1] && parseInt(f.name.match(/Week\s+(\d+)/i)![1], 10) === weekNum);
                 if (weekFolder) {
                   const weekContents = await listOneDriveItems(weekFolder.path);
-                  const subFolder = weekContents.find((f: any) => f.type === 'folder' && f.name.toLowerCase() === subType);
+                  const subFolder = weekContents.find((f: any) => f.type === 'folder' && f.name.toLowerCase().includes(subType));
                   if (subFolder) {
                     const subFiles = await listOneDriveItems(subFolder.path);
                     const target = subFiles.find((sf: any) => sf.type === 'file' && sf.name === file.originalName);
