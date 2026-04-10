@@ -33575,7 +33575,38 @@ export default function Dashboard() {
 
             );
 
-            const rows = [hwBlackBg, ...rightBgs, ...courseRows];
+            const todayDividerForCourseRows = (() => {
+              const now = new Date();
+              const todayIdx = weekDays.findIndex(d => isSameDayET(d, now));
+              if (todayIdx < 0) return null;
+              const totalDayW = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0);
+              const beforeW = gridSizes.dayColumnWidths.slice(0, todayIdx).reduce((a: number, b: number) => a + b, 0);
+              const fixedW = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
+              const validRects = courseRowRects.filter((_, i) => courseProgressDataRef.current[i]);
+              if (validRects.length === 0) return null;
+              const firstTop = validRects[0].top - upcomingTop;
+              const lastRect = validRects[validRects.length - 1];
+              const totalH = (lastRect.top + lastRect.height) - validRects[0].top;
+              return (
+                <div key="today-divider-course" className="pointer-events-none" style={{ position: 'absolute', top: `${firstTop}px`, left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px - ${calScrollbarW}px))`, width: '3px', height: `${totalH}px`, backgroundColor: '#000000', zIndex: 52 }} />
+              );
+            })();
+            const satDividerForCourseRows = (() => {
+              const satIdx = weekDays.findIndex(d => d.getDay() === 6);
+              if (satIdx < 0) return null;
+              const totalDayW = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0);
+              const beforeW = gridSizes.dayColumnWidths.slice(0, satIdx).reduce((a: number, b: number) => a + b, 0);
+              const fixedW = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
+              const validRects = courseRowRects.filter((_, i) => courseProgressDataRef.current[i]);
+              if (validRects.length === 0) return null;
+              const firstTop = validRects[0].top - upcomingTop;
+              const lastRect = validRects[validRects.length - 1];
+              const totalH = (lastRect.top + lastRect.height) - validRects[0].top;
+              return (
+                <div key="sat-divider-course" className="pointer-events-none" style={{ position: 'absolute', top: `${firstTop}px`, left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px - ${calScrollbarW}px) - 1.5px)`, width: '3px', height: `${totalH}px`, backgroundColor: '#000000', zIndex: 52 }} />
+              );
+            })();
+            const rows = [hwBlackBg, ...rightBgs, ...courseRows, todayDividerForCourseRows, satDividerForCourseRows];
 
             const knownCourseCodes = ['CPPA122', 'CFNF400', 'CASL101', 'CECN210', 'CPHL110', 'CHIS105', 'CPPA235'];
             const otherProgressTasks = (allTasks || []).filter(t => {
