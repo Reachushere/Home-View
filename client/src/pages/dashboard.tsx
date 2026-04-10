@@ -6290,10 +6290,52 @@ export default function Dashboard() {
 
   const noGradeIds = new Set(['L1_PPA122']);
 
+  const getLinkedGradeKeys = useCallback((courseId: string): string[] => {
+    const linked: string[] = [];
+    const idNorm = courseId.replace(/\s/g, '').toUpperCase();
+    const idNoC = idNorm.replace(/^C(?=[A-Z]{2,})/, '');
+
+    const certEntry = certCourseMap[courseId];
+    if (certEntry) {
+      const certCode = certEntry.code.replace(/\s/g, '').toUpperCase();
+      if (certCode !== idNorm) linked.push(certCode);
+      const withC = 'C' + certCode;
+      if (withC !== idNorm) linked.push(withC);
+      for (const [ck, info] of Object.entries(certCourseMap)) {
+        if (ck === courseId) continue;
+        const mc = info.code.replace(/\s/g, '').toUpperCase();
+        if (mc === certCode) linked.push(ck);
+      }
+    } else {
+      for (const [ck, info] of Object.entries(certCourseMap)) {
+        const mc = info.code.replace(/\s/g, '').toUpperCase();
+        if (mc === idNorm || mc === idNoC || ('C' + mc) === idNorm) {
+          linked.push(ck);
+        }
+      }
+      if (idNorm !== idNoC && !linked.includes(idNoC)) linked.push(idNoC);
+      const withC = 'C' + idNorm;
+      if (withC !== idNorm && !linked.includes(withC)) linked.push(withC);
+    }
+
+    const allSemCodes = Object.values(semesterCourseAssignments).flat().map(c => c.code.replace(/\s/g, '').toUpperCase());
+    for (const sc of allSemCodes) {
+      const scNoC = sc.replace(/^C(?=[A-Z]{2,})/, '');
+      if ((sc === idNorm || scNoC === idNoC || sc === 'C' + idNoC) && sc !== idNorm) {
+        if (!linked.includes(sc)) linked.push(sc);
+      }
+    }
+
+    return [...new Set(linked)].filter(k => k !== idNorm);
+  }, [semesterCourseAssignments]);
+
   const updateGrade = (courseId: string, grade: string) => {
     if (noGradeIds.has(courseId)) return;
     setCourseGrades(prev => {
       const updated = { ...prev, [courseId]: { ...prev[courseId], grade } };
+      for (const lk of getLinkedGradeKeys(courseId)) {
+        updated[lk] = { ...updated[lk], grade };
+      }
       localStorage.setItem('courseGrades', JSON.stringify(updated));
       saveDegreeToServer('courseGrades', updated);
       return updated;
@@ -6304,6 +6346,9 @@ export default function Dashboard() {
     if (noGradeIds.has(courseId)) return;
     setCourseGrades(prev => {
       const updated = { ...prev, [courseId]: { ...prev[courseId], percent } };
+      for (const lk of getLinkedGradeKeys(courseId)) {
+        updated[lk] = { ...updated[lk], percent };
+      }
       localStorage.setItem('courseGrades', JSON.stringify(updated));
       saveDegreeToServer('courseGrades', updated);
       return updated;
