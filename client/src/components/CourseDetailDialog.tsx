@@ -2178,7 +2178,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               </>
             ) : (
               <>
-                <span className="text-[9px] text-white" style={{ position: 'relative', top: '2px', left: '5px' }}>Rank</span>
+                <span className="text-[9px] text-white" style={{ position: 'relative', top: '2px', left: '3px' }}>Rank</span>
                 <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-md" style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.4)' }}>
                   <select className="h-4 text-[10px] bg-transparent border-none text-white rounded px-0.5 outline-none cursor-pointer" style={{ WebkitAppearance: 'none', appearance: 'none', paddingRight: '12px' }} value={courseRank} onChange={(e) => {
                     const val = parseInt(e.target.value);
@@ -2199,11 +2199,12 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setIsLibraryOpen(true)}
-                    className="flex items-center gap-1 text-[11px] text-white/70 hover:text-white transition-colors"
+                    className="flex items-center justify-center text-white/80 hover:text-white transition-colors"
                     title="Open Library"
+                    style={{ padding: '2px' }}
                     data-testid="button-open-library"
                   >
-                    <Library className="w-4 h-4" style={{ color: courseInfo.colorEnd || courseInfo.color || '#3b82f6' }} />
+                    <Library className="w-[18px] h-[18px]" style={{ color: courseInfo.colorEnd || courseInfo.color || '#3b82f6' }} />
                   </button>
                   <button
                     onClick={() => setIsEditingInfo(true)}
