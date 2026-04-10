@@ -14782,6 +14782,7 @@ export default function Dashboard() {
                 value={newSemesterForm.semesterStartDate}
                 onChange={(e) => { const v = e.target.value; startTransition(() => setNewSemesterForm(prev => ({ ...prev, semesterStartDate: v }))); }}
                 required
+                className="text-black"
                 data-testid="input-semester-start"
               />
             </div>
