@@ -326,6 +326,7 @@ const courseColors: Record<string, { bg: string; border: string; text: string; d
   "CECN210": { bg: "bg-emerald-50 dark:bg-emerald-900/30", border: "border-emerald-400", text: "text-emerald-600 dark:text-emerald-300", dot: "bg-emerald-400", prepBg: "bg-emerald-50 dark:bg-emerald-900/30", prepBorder: "border-emerald-200", prepText: "text-emerald-500 dark:text-emerald-400" },
   "CPHL110": { bg: "bg-blue-50 dark:bg-blue-900/30", border: "border-blue-500", text: "text-blue-600 dark:text-blue-300", dot: "bg-blue-500", prepBg: "bg-blue-50 dark:bg-blue-900/30", prepBorder: "border-blue-300", prepText: "text-blue-500 dark:text-blue-400" },
   "CHIS105": { bg: "bg-red-50 dark:bg-red-900/30", border: "border-red-400", text: "text-red-600 dark:text-red-300", dot: "bg-red-400", prepBg: "bg-red-50 dark:bg-red-900/30", prepBorder: "border-red-200", prepText: "text-red-500 dark:text-red-400" },
+  "SCHOOL": { bg: "bg-blue-50 dark:bg-blue-900/30", border: "border-[#004C9C]", text: "text-[#004C9C] dark:text-blue-300", dot: "bg-[#004C9C]", prepBg: "bg-blue-50 dark:bg-blue-900/30", prepBorder: "border-blue-300", prepText: "text-[#004C9C] dark:text-blue-400" },
 };
 
 // Display name mapping for course row labels (defaults, overridden by localStorage)
@@ -5228,6 +5229,7 @@ export default function Dashboard() {
   };
   
   const getCourseColor = (courseName: string): string => {
+    if (courseName.toUpperCase().startsWith('SCHOOL')) return '#004C9C';
     const course = coursesData.courses.find(c => c.name && courseName.includes(c.name.split(' - ')[0]));
     return course?.color || '#6b7280';
   };
@@ -5264,6 +5266,10 @@ export default function Dashboard() {
       'CFNF400': '#FFC3C6',
     };
     const upperCode = courseCode.toUpperCase();
+    if (upperCode === 'SCHOOL') {
+      const rgb = hexToRgb('#004C9C');
+      return { start: '#004C9C', end: `rgb(${Math.min(255, rgb.r + 100)}, ${Math.min(255, rgb.g + 100)}, ${Math.min(255, rgb.b + 100)})` };
+    }
     let normCode = upperCode.replace(/\s/g, '');
     const tdbSlotMatch = normCode.match(/^TBD_SLOT(\d+)$/);
     if (tdbSlotMatch) normCode = `TBD${tdbSlotMatch[1]}`;
@@ -5350,6 +5356,20 @@ export default function Dashboard() {
       if (normCode !== courseCode) colors[normCode] = entry;
     });
     
+    const schoolHex = '#004C9C';
+    const schoolRgb = hexToRgb(schoolHex);
+    colors['SCHOOL'] = {
+      hex: schoolHex,
+      hexEnd: undefined,
+      bg: schoolHex,
+      mid: schoolHex,
+      border: schoolHex,
+      text: '#ffffff',
+      dot: schoolHex,
+      prepBg: `rgba(${schoolRgb.r}, ${schoolRgb.g}, ${schoolRgb.b}, 0.1)`,
+      prepBorder: `rgba(${schoolRgb.r}, ${schoolRgb.g}, ${schoolRgb.b}, 0.4)`,
+      prepText: `rgba(${schoolRgb.r}, ${schoolRgb.g}, ${schoolRgb.b}, 0.8)`
+    };
     return colors;
   }, [coursesData]);
   
@@ -19638,6 +19658,7 @@ export default function Dashboard() {
         const getTaskCourseColor = (courseName: string | null | undefined) => {
           if (!courseName) return '#6b7280';
           const cn = courseName.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '');
+          if (cn === 'SCHOOL') return '#004C9C';
           const course = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase()?.replace(/\s/g, '') === cn);
           return course?.color || '#6b7280';
         };
@@ -20320,6 +20341,7 @@ export default function Dashboard() {
                   
                   const getCourseColor = (courseName: string | null | undefined) => {
                     if (!courseName) return '#888888';
+                    if (courseName.toUpperCase().startsWith('SCHOOL')) return '#004C9C';
                     const course = coursesData.courses.find(c => c.name && courseName.includes(c.name.split(' - ')[0]));
                     return course?.color || '#888888';
                   };
@@ -20908,6 +20930,14 @@ export default function Dashboard() {
                           </button>
                         ));
                       })()}
+                      <button
+                        className={`px-3 py-2.5 rounded-lg text-[12px] text-left transition-opacity duration-200 ${quickAddData.courseName === 'School - Toronto Metropolitan University' ? 'bg-white/20 text-white border border-white/30' : 'bg-white/5 text-white/70 border border-white/10 hover:bg-white/20 hover:text-white'}`}
+                        style={{ borderLeft: '3px solid #004C9C' }}
+                        onClick={() => { setQuickAddData(p => ({ ...p, courseName: 'School - Toronto Metropolitan University' })); setQuickAddStep(3); }}
+                        data-testid="quick-add-course-school"
+                      >
+                        School - Toronto Metropolitan University
+                      </button>
                     </div>
                   )}
 
@@ -33450,7 +33480,7 @@ export default function Dashboard() {
                         const showTooltip = hwFileTooltip?.key === tooltipKey;
                         return (
                           <div key={item.type}
-                            onMouseEnter={(e) => { if (item.fileInfo && item.fileInfo !== 'No files') { const rect = e.currentTarget.getBoundingClientRect(); setHwFileTooltip({ key: tooltipKey, text: item.fileInfo, x: rect.left + rect.width / 2, y: rect.top }); } }}
+                            onMouseEnter={(e) => { const rect = e.currentTarget.getBoundingClientRect(); setHwFileTooltip({ key: tooltipKey, text: item.fileInfo || 'No files uploaded', x: rect.left + rect.width / 2, y: rect.top }); }}
                             onMouseLeave={() => { if (hwFileTooltip?.key === tooltipKey) setHwFileTooltip(null); }}
                             onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); e.dataTransfer.dropEffect = 'copy'; setHwDragOverTarget(dragKey); }}
                             onDragEnter={(e) => { e.preventDefault(); e.stopPropagation(); setHwDragOverTarget(dragKey); }}
@@ -33511,9 +33541,9 @@ export default function Dashboard() {
                                 </div>
                               );
                             })()}
-                            {showTooltip && hwFileTooltip && item.fileInfo && item.fileInfo !== 'No files' && createPortal(
+                            {showTooltip && hwFileTooltip && createPortal(
                               <div style={{ position: 'fixed', top: `${hwFileTooltip.y - 6}px`, left: `${hwFileTooltip.x}px`, transform: 'translate(-50%, -100%)', backgroundColor: 'rgba(0,0,0,0.92)', color: '#fff', fontSize: '9px', fontFamily: "system-ui, -apple-system, sans-serif", padding: '5px 8px', borderRadius: '5px', whiteSpace: 'pre-line', zIndex: 2147483647, pointerEvents: 'none', maxWidth: '280px', lineHeight: '1.4', boxShadow: '0 2px 8px rgba(0,0,0,0.3)', border: '0.5px solid rgba(255,255,255,0.15)', wordBreak: 'break-word' }} data-testid={`tooltip-files-${pd.courseCode.toLowerCase()}-${item.type}`}>
-                                {item.fileInfo}
+                                {hwFileTooltip.text}
                                 <div style={{ position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: '5px solid rgba(0,0,0,0.92)' }} />
                               </div>,
                               document.body
@@ -40425,6 +40455,7 @@ function TaskForm({
                     </option>
                   ));
                 })()}
+                <option value="School - Toronto Metropolitan University" style={{ fontWeight: 600 }}>School - Toronto Metropolitan University</option>
               </select>
             </div>
 
