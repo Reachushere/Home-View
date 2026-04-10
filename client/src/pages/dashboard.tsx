@@ -217,7 +217,7 @@ import {
 import { Link as RouterLink, useLocation } from "wouter";
 import { useAccessMode } from "@/components/access-gate";
 import type { Task, SemesterSettings, Subtask, Project, TaskLink } from "@shared/schema";
-import { TASK_TYPES, COURSES, getWeekNumber, getWeekDates, REMINDER_OPTIONS, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, REPEAT_TYPES, REPEAT_INTERVAL_UNITS, FIRST_WEEK, LAST_WEEK, LINK_TYPES } from "@shared/schema";
+import { TASK_TYPES, COURSES, getWeekNumber, getWeekDates, getSemesterTotalWeeks, REMINDER_OPTIONS, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, REPEAT_TYPES, REPEAT_INTERVAL_UNITS, FIRST_WEEK, LAST_WEEK, LINK_TYPES } from "@shared/schema";
 import type { CourseWeekMapping } from "@shared/schema";
 import { getUpcomingSemesterToConfirm, getNextSemesterByStartDate, FUTURE_SEMESTER_SCHEDULE, type FutureSemesterDates } from "@shared/semesterUtils";
 import { LIBERAL_STUDIES_COURSES, OPEN_ELECTIVE_COURSES, POG_COURSES, getCoursesForLevel, type ElectiveCourse } from "@shared/electiveCourses";
@@ -1161,7 +1161,7 @@ export default function Dashboard() {
   
   const [selectedWeek, setSelectedWeek] = useState<number>(() => {
     const saved = localStorage.getItem('unical_selectedWeek');
-    if (saved) { const n = parseInt(saved, 10); if (n >= 1 && n <= 13) return n; }
+    if (saved) { const n = parseInt(saved, 10); if (n >= 1 && n <= 14) return n; }
     return 12;
   });
   const [calendarWeekMode, setCalendarWeekMode] = useState<'current' | 'next'>(() => {
@@ -1715,7 +1715,7 @@ export default function Dashboard() {
           startDate: ev.startDate && ev.startDate !== ev.endDate ? new Date(ev.startDate).toISOString() : null,
           eventStartTime: startTime || null,
           eventEndTime: endTime || null,
-          weekNumber: Math.max(1, Math.min(weekNum, 13)),
+          weekNumber: Math.max(1, Math.min(weekNum, currentMaxWeek)),
           reminder1: DEFAULT_REMINDER_1,
           reminder2: DEFAULT_REMINDER_2,
           priority: 'medium',
@@ -3233,21 +3233,10 @@ export default function Dashboard() {
   };
   
   // Week folders for files flyout
-  const FLYOUT_WEEKS = [
-    { id: "week-1", name: "Week 1" },
-    { id: "week-2", name: "Week 2" },
-    { id: "week-3", name: "Week 3" },
-    { id: "week-4", name: "Week 4" },
-    { id: "week-5", name: "Week 5" },
-    { id: "week-6", name: "Week 6" },
-    { id: "week-7", name: "Week 7" },
-    { id: "week-8", name: "Week 8" },
-    { id: "week-9", name: "Week 9" },
-    { id: "week-10", name: "Week 10" },
-    { id: "week-11", name: "Week 11" },
-    { id: "week-12", name: "Week 12" },
-    { id: "week-13", name: "Week 13" },
-  ];
+  const FLYOUT_WEEKS = useMemo(() => {
+    const max = getSemesterTotalWeeks(semesterSettings?.semesterType);
+    return Array.from({ length: max }, (_, i) => ({ id: `week-${i + 1}`, name: `Week ${i + 1}` }));
+  }, [semesterSettings?.semesterType]);
   
   const FLYOUT_COURSES = [
     { id: "cppa122", name: "CPPA122", color: "text-green-400" },
@@ -10494,9 +10483,11 @@ export default function Dashboard() {
     },
   });
 
-  // Check if we're past Week 13 end date - show new semester prompt
-  const week13EndDate = weeks.find(w => w.weekNumber === LAST_WEEK)?.endDate;
-  const isPastSemester = week13EndDate ? new Date() > new Date(week13EndDate) : false;
+  const currentMaxWeek = useMemo(() => getSemesterTotalWeeks(semesterSettings?.semesterType), [semesterSettings?.semesterType]);
+
+  // Check if we're past last week end date - show new semester prompt
+  const lastWeekEndDate = weeks.find(w => w.weekNumber === currentMaxWeek)?.endDate || weeks.find(w => w.weekNumber === LAST_WEEK)?.endDate;
+  const isPastSemester = lastWeekEndDate ? new Date() > new Date(lastWeekEndDate) : false;
 
   const completeMutation = useMutation({
     mutationFn: async ({ id, isCompleted, _skipUndo }: { id: number; isCompleted: boolean; _skipUndo?: boolean }) => {
@@ -11016,7 +11007,7 @@ export default function Dashboard() {
         type: "reading",
         dueDate: dueDate.toISOString(),
         eventStartTime: `${hour.toString().padStart(2, '0')}:00`,
-        weekNumber: Math.max(2, Math.min(13, weekNum)),
+        weekNumber: Math.max(2, Math.min(currentMaxWeek, weekNum)),
         attachments: [attachmentPath],
         priority: "medium",
       });
@@ -11619,7 +11610,8 @@ export default function Dashboard() {
       if (!sem.semesterStartDate) continue;
       const wn = getWeekNumber(midDate, new Date(sem.semesterStartDate), sem.readingWeekStart || null);
       if (wn === -1) return -1;
-      if (wn >= 1 && wn <= 13) return wn;
+      const maxWeek = getSemesterTotalWeeks(sem.semesterType);
+      if (wn >= 1 && wn <= maxWeek) return wn;
     }
     if (selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK) return -1;
     return -1;
@@ -13380,7 +13372,7 @@ export default function Dashboard() {
               </span>
               <div style={{ display: 'flex', gap: '4px' }}>
                 <button onClick={() => setSelectedWeek(w => Math.max(FIRST_WEEK, w - 1))} style={{ color: '#fff', background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '4px', width: '24px', height: '22px', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} data-testid="mobile-prev-week">‹</button>
-                <button onClick={() => setSelectedWeek(w => Math.min(LAST_WEEK, w + 1))} style={{ color: '#fff', background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '4px', width: '24px', height: '22px', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} data-testid="mobile-next-week">›</button>
+                <button onClick={() => setSelectedWeek(w => Math.min(currentMaxWeek, w + 1))} style={{ color: '#fff', background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '4px', width: '24px', height: '22px', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} data-testid="mobile-next-week">›</button>
                 <button onClick={() => setCalendarView(v => v === 'week' ? 'month' : 'week')} style={{ color: '#fff', background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '6px', height: '22px', padding: '0 8px', cursor: 'pointer', fontSize: '10px', fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center' }} data-testid="mobile-toggle-view">{calendarView === 'week' ? 'Month' : 'Week'}</button>
               </div>
             </div>
@@ -18948,7 +18940,7 @@ export default function Dashboard() {
                                 while (current <= endD) {
                                   if (classDays.includes(current.getDay())) {
                                     const diffWeeks = Math.floor((current.getTime() - startD.getTime()) / (7*24*60*60*1000));
-                                    const weekNum = Math.min(Math.max(diffWeeks + 1, 1), 13);
+                                    const weekNum = Math.min(Math.max(diffWeeks + 1, 1), currentMaxWeek);
                                     const isDay2 = day2Num >= 0 && current.getDay() === day2Num;
                                     const sTime = isDay2 && updates.classTime2 ? updates.classTime2 : updates.classTime!;
                                     const eTime = isDay2 && updates.classEndTime2 ? updates.classEndTime2 : updates.classEndTime!;
@@ -22233,7 +22225,7 @@ export default function Dashboard() {
                       title: `Scholarship: ${scholarshipForm.name}`,
                       type: "other",
                       dueDate: dueDate.toISOString(),
-                      weekNumber: Math.max(2, Math.min(13, weekNum)),
+                      weekNumber: Math.max(2, Math.min(currentMaxWeek, weekNum)),
                       priority: "high",
                       description: calDescription,
                       referenceLink: scholarshipForm.applicationUrl || '',
@@ -28256,13 +28248,13 @@ export default function Dashboard() {
                                 const satDate = day;
                                 const semDefs = [
                                   { key: 'w2026', start: '2026-01-12', end: '2026-04-17', weeks: 13 },
-                                  { key: 'ss2026', start: '2026-05-04', end: '2026-08-07', weeks: 13 },
+                                  { key: 'ss2026', start: '2026-05-04', end: '2026-08-07', weeks: 14 },
                                   { key: 'f2026', start: '2026-09-07', end: '2026-12-11', weeks: 13 },
                                   { key: 'w2027', start: '2027-01-11', end: '2027-04-16', weeks: 13 },
-                                  { key: 'ss2027', start: '2027-05-03', end: '2027-08-06', weeks: 13 },
+                                  { key: 'ss2027', start: '2027-05-03', end: '2027-08-06', weeks: 14 },
                                   { key: 'f2027', start: '2027-09-13', end: '2027-12-17', weeks: 13 },
                                   { key: 'w2028', start: '2028-01-10', end: '2028-04-14', weeks: 13 },
-                                  { key: 'ss2028', start: '2028-05-01', end: '2028-08-04', weeks: 13 },
+                                  { key: 'ss2028', start: '2028-05-01', end: '2028-08-04', weeks: 14 },
                                   { key: 'f2028', start: '2028-09-11', end: '2028-12-15', weeks: 13 },
                                   { key: 'w2029', start: '2029-01-08', end: '2029-04-13', weeks: 13 },
                                 ];
@@ -28301,13 +28293,13 @@ export default function Dashboard() {
                               <span style={{ display: 'block', fontSize: 'min(9.5px, 1.4vw)', fontWeight: 400, color: (() => { const now = new Date(); const todayIdx = weekDays.findIndex(d => isSameDayET(d, now)); return todayIdx < 0 ? '#ffffff' : 'rgba(255,255,255,0.35)'; })(), lineHeight: '11px', letterSpacing: '0.5px', padding: '0 1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{(() => {
                                 const semDefs = [
                                   { key: 'w2026', start: '2026-01-12', end: '2026-04-17', weeks: 13 },
-                                  { key: 'ss2026', start: '2026-05-04', end: '2026-08-07', weeks: 13 },
+                                  { key: 'ss2026', start: '2026-05-04', end: '2026-08-07', weeks: 14 },
                                   { key: 'f2026', start: '2026-09-07', end: '2026-12-11', weeks: 13 },
                                   { key: 'w2027', start: '2027-01-11', end: '2027-04-16', weeks: 13 },
-                                  { key: 'ss2027', start: '2027-05-03', end: '2027-08-06', weeks: 13 },
+                                  { key: 'ss2027', start: '2027-05-03', end: '2027-08-06', weeks: 14 },
                                   { key: 'f2027', start: '2027-09-13', end: '2027-12-17', weeks: 13 },
                                   { key: 'w2028', start: '2028-01-10', end: '2028-04-14', weeks: 13 },
-                                  { key: 'ss2028', start: '2028-05-01', end: '2028-08-04', weeks: 13 },
+                                  { key: 'ss2028', start: '2028-05-01', end: '2028-08-04', weeks: 14 },
                                   { key: 'f2028', start: '2028-09-11', end: '2028-12-15', weeks: 13 },
                                   { key: 'w2029', start: '2029-01-08', end: '2029-04-13', weeks: 13 },
                                 ];
@@ -28336,7 +28328,7 @@ export default function Dashboard() {
                                 if (nextSem) return 'Break';
                                 const lastSem1 = semDefs[semDefs.length - 1];
                                 if (lastSem1 && dayDate > new Date(lastSem1.end + 'T23:59:59')) return 'Break';
-                                return `Week ${Math.min(selectedWeek + 1, LAST_WEEK)}`;
+                                return `Week ${Math.min(selectedWeek + 1, currentMaxWeek)}`;
                               })()}</span>
                             </div>
                           )}
@@ -28352,13 +28344,13 @@ export default function Dashboard() {
                               <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#ffffff', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{(() => {
                                 const semDefs = [
                                   { key: 'w2026', start: '2026-01-12', end: '2026-04-17', weeks: 13 },
-                                  { key: 'ss2026', start: '2026-05-04', end: '2026-08-07', weeks: 13 },
+                                  { key: 'ss2026', start: '2026-05-04', end: '2026-08-07', weeks: 14 },
                                   { key: 'f2026', start: '2026-09-07', end: '2026-12-11', weeks: 13 },
                                   { key: 'w2027', start: '2027-01-11', end: '2027-04-16', weeks: 13 },
-                                  { key: 'ss2027', start: '2027-05-03', end: '2027-08-06', weeks: 13 },
+                                  { key: 'ss2027', start: '2027-05-03', end: '2027-08-06', weeks: 14 },
                                   { key: 'f2027', start: '2027-09-13', end: '2027-12-17', weeks: 13 },
                                   { key: 'w2028', start: '2028-01-10', end: '2028-04-14', weeks: 13 },
-                                  { key: 'ss2028', start: '2028-05-01', end: '2028-08-04', weeks: 13 },
+                                  { key: 'ss2028', start: '2028-05-01', end: '2028-08-04', weeks: 14 },
                                   { key: 'f2028', start: '2028-09-11', end: '2028-12-15', weeks: 13 },
                                   { key: 'w2029', start: '2029-01-08', end: '2029-04-13', weeks: 13 },
                                 ];
@@ -28387,7 +28379,7 @@ export default function Dashboard() {
                                 if (nextSem) return 'Break';
                                 const lastSem2 = semDefs[semDefs.length - 1];
                                 if (lastSem2 && dayDate > new Date(lastSem2.end + 'T23:59:59')) return 'Break';
-                                return `Week ${Math.min(selectedWeek, LAST_WEEK)}`;
+                                return `Week ${Math.min(selectedWeek, currentMaxWeek)}`;
                               })()}</span>
                             </div>
                           )}

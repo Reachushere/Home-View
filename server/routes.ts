@@ -8,7 +8,7 @@ import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { db } from "./db";
 import { sql, eq, and, gte } from "drizzle-orm";
-import { getWeekDates, getWeekNumber, FIRST_WEEK, LAST_WEEK, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, COURSES, type RepeatType, type RepeatIntervalUnit, type InsertTask, type FileRecord, degreeTrackingData, feedbackNotes, insertFeedbackNoteSchema, appState, announcements, scheduledAlexaAnnouncements, haAutomations, notepadNotes, notepadAttachments, weatherAlertHistory as weatherAlertHistoryTable } from "@shared/schema";
+import { getWeekDates, getWeekNumber, getSemesterTotalWeeks, FIRST_WEEK, LAST_WEEK, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, COURSES, type RepeatType, type RepeatIntervalUnit, type InsertTask, type FileRecord, degreeTrackingData, feedbackNotes, insertFeedbackNoteSchema, appState, announcements, scheduledAlexaAnnouncements, haAutomations, notepadNotes, notepadAttachments, weatherAlertHistory as weatherAlertHistoryTable } from "@shared/schema";
 import { z } from "zod";
 import { LIBERAL_STUDIES_COURSES, OPEN_ELECTIVE_COURSES } from "@shared/electiveCourses";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
@@ -3993,7 +3993,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       let created = 0;
       let skipped = 0;
 
-      for (let weekNum = FIRST_WEEK; weekNum <= LAST_WEEK; weekNum++) {
+      const maxWeek = getSemesterTotalWeeks(activeSemester.semesterType);
+      for (let weekNum = FIRST_WEEK; weekNum <= maxWeek; weekNum++) {
         const weekDates = getWeekDates(weekNum, semesterStart, readingWeekStart);
         const weekStart = new Date(weekDates.start);
 
@@ -4275,7 +4276,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
             const utcTaskDate = new Date(probe.getTime() - offsetHours * 3600000);
 
             const weekNum = getWeekNumber(taskDate, undefined, activeSemester?.readingWeekStart);
-            if (weekNum >= FIRST_WEEK && weekNum <= LAST_WEEK) {
+            const classMaxWeek = getSemesterTotalWeeks(activeSemester?.semesterType);
+            if (weekNum >= FIRST_WEEK && weekNum <= classMaxWeek) {
               const dateStr = formatLocalDate(taskDate);
               const isDuplicate = existingClassTasks.some(t => {
                 if (!t.dueDate) return false;
@@ -7845,7 +7847,8 @@ async function pollStatus(timeout){
     const formatDateOnly = (d: Date) => {
       return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     };
-    for (let w = FIRST_WEEK; w <= LAST_WEEK; w++) {
+    const weeksMaxWeek = getSemesterTotalWeeks(activeSemester?.semesterType);
+    for (let w = FIRST_WEEK; w <= weeksMaxWeek; w++) {
       const { start, end } = getWeekDates(w, semesterStart, readingWeek);
       weeks.push({
         weekNumber: w,

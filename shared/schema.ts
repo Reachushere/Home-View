@@ -500,6 +500,10 @@ export function alignToSaturday(d: Date): Date {
   return date;
 }
 
+export function getSemesterTotalWeeks(semesterType?: string | null): number {
+  return semesterType === 'spring_summer' ? 14 : 13;
+}
+
 export function getWeekNumber(date: Date, customSemesterStart?: Date, readingWeekStart?: Date | null): number {
   const rawStart = new Date(customSemesterStart || SEMESTER_START);
   const startOfSemester = alignToSaturday(rawStart);

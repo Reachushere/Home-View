@@ -50,7 +50,7 @@ import wifiLogoPath from "@assets/Wifi_1773656687145.png";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useUpload } from "@/hooks/use-upload";
-import { TASK_TYPES, getWeekNumber, getWeekDates, FIRST_WEEK, LAST_WEEK, REMINDER_OPTIONS, REPEAT_TYPES, REPEAT_INTERVAL_UNITS } from "@shared/schema";
+import { TASK_TYPES, getWeekNumber, getWeekDates, getSemesterTotalWeeks, FIRST_WEEK, LAST_WEEK, REMINDER_OPTIONS, REPEAT_TYPES, REPEAT_INTERVAL_UNITS } from "@shared/schema";
 import type { Task, CourseWeekMapping } from "@shared/schema";
 
 const TASK_TYPE_OPTIONS = [
@@ -250,6 +250,7 @@ function semesterKeyFromTermYear(term?: string, year?: string): string {
 }
 
 export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLiveColorChange, onGradeCalculated, onDeleteCourse, onOpenEditTask, semesterStart, readingWeekStart, certificateName, onPushUndo, initialEditMode, courseRank, usedRanks, isSpringSummer, courseSpSuTerm, courseRankA, courseRankB, usedRanksA, usedRanksB, onRankChange, semesterSettings, allAssignmentsAdded, onAllAssignmentsAddedChange }: CourseDetailDialogProps) {
+  const maxWeek = isSpringSummer ? 14 : 13;
   const { toast } = useToast();
   const [showAddForm, setShowAddForm] = useState(false);
   const [newTask, setNewTask] = useState<NewTaskForm>(createEmptyTaskForm());
@@ -2991,7 +2992,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                           className="h-6 px-2 text-[9px] bg-white/5 hover:bg-white/10 text-white border border-white/15 rounded flex items-center gap-2 text-left"
                           data-testid={`button-week-style-${style}`}
                         >
-                          <span className="font-medium">{style === 'skip_break' ? 'Skip break number' : style === 'include_break' ? 'Count break as week' : 'Continuous 1-13'}</span>
+                          <span className="font-medium">{style === 'skip_break' ? 'Skip break number' : style === 'include_break' ? 'Count break as week' : `Continuous 1-${maxWeek}`}</span>
                         </button>
                       ))}
                     </div>
@@ -3558,7 +3559,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                {Array.from({ length: LAST_WEEK - FIRST_WEEK + 1 }, (_, i) => i + FIRST_WEEK).map((weekNum) => {
+                {Array.from({ length: maxWeek - FIRST_WEEK + 1 }, (_, i) => i + FIRST_WEEK).map((weekNum) => {
                   const weekDates = getWeekDates(weekNum, semesterStart, readingWeekStart);
                   const weekStart = new Date(weekDates.start);
                   const weekEnd = new Date(weekDates.end);
