@@ -1930,6 +1930,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
         'countdownBarDays', 'countdownBarColor', 'repeatSpanDays',
         'taskStatus', 'isCompleted', 'notes', 'taskLabel',
         'sendInvite', 'inviteEmail', 'inviteName',
+        'gradeScratchedOff',
       ];
       const updates: any = {};
       for (const field of allowedFields) {

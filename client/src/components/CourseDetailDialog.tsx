@@ -1063,21 +1063,30 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
 
   const completedCount = courseTasks.filter((t) => t.isCompleted).length;
   const totalWeight = gradedCourseTasks.reduce((s, t) => s + (t.gradeWeight || 0), 0);
+  const activeGradeTasks = useMemo(() => gradedCourseTasks.filter(t => !t.gradeScratchedOff), [gradedCourseTasks]);
+  const scratchedWeight = useMemo(() => gradedCourseTasks.filter(t => t.gradeScratchedOff).reduce((s, t) => s + (t.gradeWeight || 0), 0), [gradedCourseTasks]);
+  const activeWeight = totalWeight - scratchedWeight;
 
   const gradeCalc = useMemo(() => {
-    const gradedTasks = gradedCourseTasks.filter(t => t.gradeTotal && t.gradeValue !== null && t.gradeValue !== undefined && (t.gradeValue !== 0 || t.isCompleted));
+    const gradedTasks = activeGradeTasks.filter(t => t.gradeTotal && t.gradeValue !== null && t.gradeValue !== undefined && (t.gradeValue !== 0 || t.isCompleted));
     if (gradedTasks.length === 0) return null;
-    const sumScore = gradedTasks.reduce((s, t) => s + (t.gradeValue || 0), 0);
-    const sumTotal = gradedTasks.reduce((s, t) => s + (t.gradeTotal || 0), 0);
-    const gradedWeight = gradedTasks.reduce((s, t) => s + (t.gradeWeight || 0), 0);
-    const currentPercent = sumTotal > 0 ? (sumScore / sumTotal) * 100 : 0;
+    let weightedSum = 0;
+    let gradedWeight = 0;
+    for (const t of gradedTasks) {
+      const rawW = t.gradeWeight || 0;
+      const adjustedW = activeWeight > 0 ? (rawW / activeWeight) * totalWeight : rawW;
+      const pct = (t.gradeTotal || 0) > 0 ? ((t.gradeValue || 0) / t.gradeTotal!) * 100 : 0;
+      weightedSum += pct * adjustedW;
+      gradedWeight += adjustedW;
+    }
+    const currentPercent = gradedWeight > 0 ? weightedSum / gradedWeight : 0;
     return {
       currentPercent: Math.round(currentPercent * 100) / 100,
       currentGrade: percentToLetterGrade(currentPercent),
       gradedWeight,
       gradedCount: gradedTasks.length,
     };
-  }, [gradedCourseTasks, totalWeight]);
+  }, [activeGradeTasks, totalWeight, activeWeight]);
 
   const onGradeCalculatedRef = useRef(onGradeCalculated);
   onGradeCalculatedRef.current = onGradeCalculated;
@@ -1621,7 +1630,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
         <Plus className={`h-[14px] w-[14px] flex-shrink-0 cursor-pointer hover:opacity-70 transition-opacity ${task.isCompleted ? "text-white/50" : "text-white"}`} style={{ marginLeft: '4px', marginRight: '4px' }} onClick={(e) => { e.stopPropagation(); if (expandedTaskId === task.id) { setExpandedTaskId(null); setEditTaskFields(null); } else { setExpandedTaskId(task.id); const d = task.dueDate ? new Date(task.dueDate) : null; setEditTaskFields({ title: task.title || '', type: task.type || 'other', dueDate: d ? `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` : '', dueTime: d ? `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}` : '', timezone: (task as any).timezone || 'America/Toronto', description: task.description || '', gradeWeight: task.gradeWeight?.toString() || '', gradeTotal: task.gradeTotal?.toString() || '', gradeValue: task.gradeValue?.toString() || '', reminder1: task.reminder1 ?? 30, reminder2: task.reminder2 ?? 120, reminder3: task.reminder3 ?? null, reminder4: task.reminder4 ?? null, hideFromSummary: task.hideFromSummary ?? false }); } }} data-testid={`button-expand-${task.id}`} />
         <div className="flex-1 min-w-0" style={{ marginLeft: '36px' }}>
           <div
-            className={`text-[10px] font-medium truncate flex items-center gap-1 cursor-pointer hover:underline ${task.isCompleted ? "line-through text-white/50" : "text-white"}`}
+            className={`text-[10px] font-medium truncate flex items-center gap-1 cursor-pointer hover:underline ${task.isCompleted ? "line-through text-white/50" : task.gradeScratchedOff ? "line-through text-red-400/60" : "text-white"}`}
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
@@ -1662,7 +1671,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             <span className="capitalize">{task.type}</span>
           </div>
         </div>
-        <div className="flex items-center flex-shrink-0" style={{ gap: '10px', position: 'relative', left: '-8px' }} onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center flex-shrink-0" style={{ gap: '10px', position: 'relative', left: '-8px', opacity: task.gradeScratchedOff ? 0.35 : 1 }} onClick={(e) => e.stopPropagation()}>
           <DebouncedGradeInput
             value={task.gradeValue}
             onSave={(val) => updateGradeValueMutation.mutate({ id: task.id, gradeValue: val, _task: task })}
@@ -1685,7 +1694,16 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             {task.gradeValue !== null && task.gradeValue !== undefined && task.gradeTotal ? `${((task.gradeValue / task.gradeTotal) * 100).toFixed(2)}%` : '—'}
           </span>
         </div>
-        <div className="flex items-center flex-shrink-0" style={{ gap: '10px', marginLeft: '8px' }} onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center flex-shrink-0" style={{ gap: '6px', marginLeft: '8px' }} onClick={(e) => e.stopPropagation()}>
+          <button
+            className="flex items-center justify-center rounded transition-colors"
+            style={{ width: '18px', height: '18px', fontSize: '11px', background: task.gradeScratchedOff ? 'rgba(239,68,68,0.25)' : 'rgba(255,255,255,0.06)', border: task.gradeScratchedOff ? '1px solid rgba(239,68,68,0.5)' : '1px solid rgba(255,255,255,0.1)', color: task.gradeScratchedOff ? '#f87171' : 'rgba(255,255,255,0.3)', cursor: 'pointer', lineHeight: 1 }}
+            title={task.gradeScratchedOff ? "Scratched off — click to restore" : "Click to scratch off (exclude from grade)"}
+            onClick={() => updateTaskMutation.mutate({ id: task.id, data: { gradeScratchedOff: !task.gradeScratchedOff }, _task: task })}
+            data-testid={`toggle-scratch-${task.id}`}
+          >
+            {task.gradeScratchedOff ? '✕' : '—'}
+          </button>
           <label className="flex items-center gap-1 cursor-pointer" title={task.excludeFromGpa ? "Not gradable — click to mark as graded" : "Gradable — click to mark as ungraded"} data-testid={`toggle-gpa-${task.id}`}>
             <div className="relative" onClick={() => updateTaskMutation.mutate({ id: task.id, data: { excludeFromGpa: !task.excludeFromGpa }, _task: task })}>
               <div className={`w-6 h-3.5 rounded-full transition-colors ${task.excludeFromGpa ? 'bg-white/20' : 'bg-green-500/60'}`} />
@@ -4047,6 +4065,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 <span className="text-[9px] text-white">
                   {completedCount}/{courseTasks.length} done
                   {totalWeight > 0 && <span className="text-[11px] font-medium" style={{ color: totalWeight > 100 ? '#ef4444' : totalWeight < 100 ? '#f97316' : 'white' }}> · {totalWeight.toFixed(2)}% weight</span>}
+                  {scratchedWeight > 0 && <span className="text-[10px] text-red-400/70"> · {scratchedWeight.toFixed(2)}% scratched</span>}
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
