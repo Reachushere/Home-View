@@ -773,7 +773,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           courseBooks.map(({ course, files: courseFiles }, courseIdx) => (
             <div key={course.code} style={{ marginBottom: '0' }}>
               <div style={{
-                fontSize: '13px',
+                fontSize: '9px',
                 fontWeight: 600,
                 color: 'rgba(255,255,255,0.85)',
                 letterSpacing: '1.5px',
