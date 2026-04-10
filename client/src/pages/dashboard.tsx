@@ -6813,16 +6813,24 @@ export default function Dashboard() {
     const target = SEMKEY_TO_DB[semKey];
     if (!target) return null;
     let cc = courseCode.replace(/\s/g, '').toUpperCase();
-    const tm = cc.match(/^TBD_SLOT(\d+)$/);
-    if (tm) cc = `TBD${tm[1]}`;
+    const slotMatch = cc.match(/^TBD_SLOT(\d+)$/);
     const thisSem = allSems.find((s: any) => {
       const yr = s.semesterName?.match(/\d{4}/)?.[0];
       return s.semesterType === target.type && yr === String(target.year);
     });
     if (!thisSem) return null;
+    if (slotMatch) {
+      const directSlot = parseInt(slotMatch[1]);
+      if (directSlot >= 1 && directSlot <= 3) return { sem: thisSem, slot: directSlot };
+    }
+    const tdbNorm = cc.match(/^TBD(\d+)$/);
     for (let i = 1; i <= 3; i++) {
       const sc = ((thisSem as any)[`course${i}Code`] || '').replace(/\s/g, '').toUpperCase();
       if (sc === cc) return { sem: thisSem, slot: i };
+      if (tdbNorm) {
+        const scTdb = sc.match(/^TBD(\d+)$/);
+        if (scTdb && i === parseInt(tdbNorm[1])) return { sem: thisSem, slot: i };
+      }
     }
     return null;
   };
