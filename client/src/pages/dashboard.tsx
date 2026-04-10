@@ -11952,69 +11952,6 @@ export default function Dashboard() {
   const calStart = 0;
   const timeSlots = Array.from({ length: 24 }, (_, i) => i);
 
-  const getMultiHourTasksForWeek = () => {
-    const weekDateKeys = new Set(weekDays.map(d => _etDateKey(d)));
-    const weekTasks: Task[] = [];
-    for (const [key, tasks] of tasksByDateKey) {
-      if (weekDateKeys.has(key)) weekTasks.push(...tasks);
-    }
-    return weekTasks.filter(t => {
-      if (!t.eventStartTime || !t.eventEndTime) return false;
-      const [startHour] = t.eventStartTime.split(':').map(Number);
-      const [endHour] = t.eventEndTime.split(':').map(Number);
-      return endHour > startHour;
-    }).map(t => {
-      const dueDate = new Date(t.dueDate);
-      const dueDateKey = _etDateKey(dueDate);
-      const dayIdx = weekDays.findIndex(day => _etDateKey(day) === dueDateKey);
-      const [startHour, startMin] = t.eventStartTime!.split(':').map(Number);
-      const [endHour, endMin] = t.eventEndTime!.split(':').map(Number);
-      return { task: t, dayIdx, startHour, startMin, endHour, endMin };
-    });
-  };
-
-  const multiHourOverlayCols = useMemo(() => {
-    const map = new Map<string, number>();
-    const items = getMultiHourTasksForWeek().filter(item => {
-      if (item.endHour === item.startHour + 1) return false;
-      return true;
-    });
-    const dayGroups = new Map<number, typeof items>();
-    for (const item of items) {
-      if (!dayGroups.has(item.dayIdx)) dayGroups.set(item.dayIdx, []);
-      dayGroups.get(item.dayIdx)!.push(item);
-    }
-    for (const [dIdx, dayItems] of dayGroups) {
-      const sorted = [...dayItems].sort((a, b) => a.startHour * 60 + a.startMin - (b.startHour * 60 + b.startMin));
-      const columns: typeof items[] = [];
-      for (const item of sorted) {
-        const s = item.startHour * 60 + item.startMin;
-        let placed = false;
-        for (let c = 0; c < columns.length; c++) {
-          const last = columns[c][columns[c].length - 1];
-          if (s >= last.endHour * 60 + last.endMin) { columns[c].push(item); placed = true; break; }
-        }
-        if (!placed) columns.push([item]);
-      }
-      for (const item of sorted) {
-        const iStart = item.startHour * 60 + item.startMin;
-        const iEnd = item.endHour * 60 + item.endMin;
-        for (let h = item.startHour; h <= item.endHour; h++) {
-          const hStart = h * 60;
-          const hEnd = (h + 1) * 60;
-          if (iStart < hEnd && iEnd > hStart) {
-            let colsAtH = 0;
-            for (const col of columns) {
-              if (col.some(o => o.startHour * 60 + o.startMin < hEnd && o.endHour * 60 + o.endMin > hStart)) colsAtH++;
-            }
-            const key = `${dIdx}-${h}`;
-            map.set(key, Math.max(map.get(key) || 0, colsAtH));
-          }
-        }
-      }
-    }
-    return map;
-  }, [allTasks, weekDays]);
   const calendarScrollRef = useRef<HTMLDivElement>(null);
   const [calScrollbarW, setCalScrollbarW] = useState(0);
   const [calendarZoom, setCalendarZoom] = useState(1);
@@ -12156,6 +12093,70 @@ export default function Dashboard() {
     }
     return map;
   }, [allTasks]);
+
+  const getMultiHourTasksForWeek = () => {
+    const weekDateKeys = new Set(weekDays.map(d => _etDateKey(d)));
+    const weekTasks: Task[] = [];
+    for (const [key, tasks] of tasksByDateKey) {
+      if (weekDateKeys.has(key)) weekTasks.push(...tasks);
+    }
+    return weekTasks.filter(t => {
+      if (!t.eventStartTime || !t.eventEndTime) return false;
+      const [startHour] = t.eventStartTime.split(':').map(Number);
+      const [endHour] = t.eventEndTime.split(':').map(Number);
+      return endHour > startHour;
+    }).map(t => {
+      const dueDate = new Date(t.dueDate);
+      const dueDateKey = _etDateKey(dueDate);
+      const dayIdx = weekDays.findIndex(day => _etDateKey(day) === dueDateKey);
+      const [startHour, startMin] = t.eventStartTime!.split(':').map(Number);
+      const [endHour, endMin] = t.eventEndTime!.split(':').map(Number);
+      return { task: t, dayIdx, startHour, startMin, endHour, endMin };
+    });
+  };
+
+  const multiHourOverlayCols = useMemo(() => {
+    const map = new Map<string, number>();
+    const items = getMultiHourTasksForWeek().filter(item => {
+      if (item.endHour === item.startHour + 1) return false;
+      return true;
+    });
+    const dayGroups = new Map<number, typeof items>();
+    for (const item of items) {
+      if (!dayGroups.has(item.dayIdx)) dayGroups.set(item.dayIdx, []);
+      dayGroups.get(item.dayIdx)!.push(item);
+    }
+    for (const [dIdx, dayItems] of dayGroups) {
+      const sorted = [...dayItems].sort((a, b) => a.startHour * 60 + a.startMin - (b.startHour * 60 + b.startMin));
+      const columns: typeof items[] = [];
+      for (const item of sorted) {
+        const s = item.startHour * 60 + item.startMin;
+        let placed = false;
+        for (let c = 0; c < columns.length; c++) {
+          const last = columns[c][columns[c].length - 1];
+          if (s >= last.endHour * 60 + last.endMin) { columns[c].push(item); placed = true; break; }
+        }
+        if (!placed) columns.push([item]);
+      }
+      for (const item of sorted) {
+        const iStart = item.startHour * 60 + item.startMin;
+        const iEnd = item.endHour * 60 + item.endMin;
+        for (let h = item.startHour; h <= item.endHour; h++) {
+          const hStart = h * 60;
+          const hEnd = (h + 1) * 60;
+          if (iStart < hEnd && iEnd > hStart) {
+            let colsAtH = 0;
+            for (const col of columns) {
+              if (col.some(o => o.startHour * 60 + o.startMin < hEnd && o.endHour * 60 + o.endMin > hStart)) colsAtH++;
+            }
+            const key = `${dIdx}-${h}`;
+            map.set(key, Math.max(map.get(key) || 0, colsAtH));
+          }
+        }
+      }
+    }
+    return map;
+  }, [allTasks, weekDays]);
 
   const getTasksForHour = (day: Date, hour: number) => {
     const dayKey = _etDateKey(day);
@@ -29354,7 +29355,7 @@ export default function Dashboard() {
                 }
                 
                 return (
-                <div key={course.name} ref={el => { courseRowRefs.current[courseIdx] = el; }} className="grid w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${maxCourseRowHeight}px`, maxHeight: `${maxCourseRowHeight}px`, overflow: 'hidden', paddingRight: calScrollbarW > 0 ? `${calScrollbarW}px` : undefined }}>
+                <div key={course.name} ref={el => { courseRowRefs.current[courseIdx] = el; }} className="grid w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${maxCourseRowHeight}px`, maxHeight: `${maxCourseRowHeight}px`, overflow: 'hidden', paddingRight: calScrollbarW > 0 ? `${calScrollbarW}px` : undefined, borderBottom: '1.5px solid black' }}>
                   <div className="text-[8px] font-medium tracking-normal flex flex-col items-center relative leading-tight" style={{ background: course.label, borderBottom: '1.5px solid black', overflow: 'hidden', minWidth: 0, color: course.fontColor || 'white', wordBreak: 'normal', overflowWrap: 'normal', textAlign: 'center' }} data-testid={`course-row-label-${course.name}`}>
                     <div style={{ display: 'flex', width: '100%', height: '22px', flexShrink: 0 }}>
                       <div style={{ width: '50%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', borderRight: `1.5px solid ${labelBorderColor}`, borderBottom: `1.5px solid ${labelBorderColor}`, boxSizing: 'border-box' }} className="hover:brightness-125" onClick={async (e) => { e.stopPropagation(); const code = courseData.name.split(' - ')[0]?.trim(); if (syncingCourses.has(code)) return; setSyncResults(prev => { const n = new Map(prev); n.delete(code); return n; }); setSyncingCourses(prev => new Set(prev).add(code)); try { const resp = await fetch('/api/onedrive/sync-course-week', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ courseCode: code, weekNumber: selectedWeek, semKey: courseData._semKey, weekStartDate: weekStartDate.toISOString(), weekEndDate: weekEndDate.toISOString() }) }); const data = await resp.json(); console.log('[Sync Debug]', code, 'week', selectedWeek, data); queryClient.invalidateQueries({ queryKey: ['/api/files'] }); queryClient.invalidateQueries({ queryKey: ['/api/files/counts'] }); refreshFileCounts(); const count = data?.synced?.length || 0; const skipped = data?.skippedExisting || 0; setSyncResults(prev => new Map(prev).set(code, { count, skipped, message: data?.message })); setTimeout(() => setSyncResults(prev => { const n = new Map(prev); n.delete(code); return n; }), 5000); } catch (e2: any) { console.error('Sync failed:', e2); setSyncResults(prev => new Map(prev).set(code, { count: -1 })); setTimeout(() => setSyncResults(prev => { const n = new Map(prev); n.delete(code); return n; }), 3000); } finally { setSyncingCourses(prev => { const n = new Set(prev); n.delete(code); return n; }); } }} data-testid={`btn-sync-${course.name}`}><svg viewBox="0 0 24 24" fill="none" stroke={labelIconColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '18px', height: '18px' }}><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" /></svg></div>
@@ -29543,7 +29544,7 @@ export default function Dashboard() {
                       <div 
                         key={dayIdx} 
                         className="relative pt-0.5"
-                        style={{ backgroundColor: cellBgColor, padding: '2px 1px 2px 1px', borderBottom: '1.5px solid black', borderLeft: (day.getDay() === 6 || isDayToday) ? 'none' : '1.5px dotted rgba(0,0,0,0.25)', minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }}
+                        style={{ backgroundColor: cellBgColor, padding: '2px 1px 2px 1px', borderBottom: '1.5px solid black', borderLeft: (day.getDay() === 6 || isDayToday) ? '3px solid black' : '1.5px dotted rgba(0,0,0,0.25)', minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
                           e.preventDefault();
@@ -38144,7 +38145,6 @@ function ProfileForm({
           {studentNumber && (
             <span className="text-[11px] text-white" style={{ fontWeight: 600 }} data-testid="text-profile-student-number">Student Number: {studentNumber}</span>
           )}
-          <span className="text-[10px] text-white/70">Profile Photo</span>
           <span className="text-[9px] text-white/40">{isUploadingPhoto ? 'Uploading...' : 'Click to change'}</span>
           {profilePhotoUrl && (
             <button type="button" className="text-[9px] text-red-400 hover:text-red-300 text-left" onClick={(e) => { e.stopPropagation(); onProfilePhotoChange(null); }} data-testid="button-remove-profile-photo">Remove photo</button>

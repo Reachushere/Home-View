@@ -12968,8 +12968,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           }
         }
         const confirmWordCount = confirmationTTS.split(/\s+/).length;
-        const confirmWaitMs = Math.max(4000, (confirmWordCount / 160) * 60 * 1000 + 2000);
-        console.log(`${logPrefix} Confirm TTS playing, waiting ${Math.round(confirmWaitMs / 1000)}s`);
+        const confirmWaitMs = Math.max(5000, (confirmWordCount / 130) * 60 * 1000 + 3000);
+        console.log(`${logPrefix} Confirm TTS playing (${confirmWordCount} words), waiting ${Math.round(confirmWaitMs / 1000)}s`);
         await new Promise(r => setTimeout(r, confirmWaitMs));
         console.log(`${logPrefix} Confirm TTS finished`);
       } catch (e: any) {
