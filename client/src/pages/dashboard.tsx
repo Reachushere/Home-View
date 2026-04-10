@@ -6823,7 +6823,7 @@ export default function Dashboard() {
     let displayName = '';
     let professor = matchedCourse?.professor || '';
     let professorEmail = matchedCourse?.professorEmail || '';
-    let color = matchedCourse?.color || '#6366F1';
+    let color = matchedCourse?.color || '';
     let colorEnd = (matchedCourse as any)?.colorEnd || '';
     let colorStops = (matchedCourse as any)?.colorStops || '';
     let borderColor = (matchedCourse as any)?.borderColor || '';
@@ -6876,6 +6876,13 @@ export default function Dashboard() {
           moduleFolder = (sem as any)[`${prefix}ModuleFolder`] || '';
           readingFolder = (sem as any)[`${prefix}ReadingFolder`] || '';
           displayName = (sem as any)[`${prefix}DisplayName`] || '';
+          if (!color) color = (sem as any)[`${prefix}Color`] || '';
+          if (!colorEnd) colorEnd = (sem as any)[`${prefix}ColorEnd`] || '';
+          if (!colorStops) colorStops = (sem as any)[`${prefix}ColorStops`] || '';
+          if (!borderColor) borderColor = (sem as any)[`${prefix}BorderColor`] || '';
+          if (!courseRowColor) courseRowColor = (sem as any)[`${prefix}CourseRowColor`] || '';
+          if (!taskBgColor) taskBgColor = (sem as any)[`${prefix}TaskBgColor`] || '';
+          if (!courseFontColor) courseFontColor = (sem as any)[`${prefix}CourseFontColor`] || '';
           moduleBoxColor = (sem as any)[`${prefix}ModuleBoxColor`] || moduleBoxColor || '';
           readingBoxColor = (sem as any)[`${prefix}ReadingBoxColor`] || readingBoxColor || '';
           if (!professor) professor = (sem as any)[`${prefix}Professor`] || '';
@@ -19256,19 +19263,70 @@ export default function Dashboard() {
               } else {
                 const newCode = updates.courseCode || courseCode;
                 const newCourseName = updates.courseName || courseCode;
+                let existingColor = '';
+                let existingColorEnd = '';
+                let existingColorStops = '';
+                let existingBorderColor = '';
+                let existingCourseRowColor = '';
+                let existingTaskBgColor = '';
+                let existingCourseFontColor = '';
+                let existingModuleBoxColor = '';
+                let existingReadingBoxColor = '';
+                let existingProfessor = '';
+                let existingProfessorEmail = '';
+                const semKeyForLookup = selectedCertCourse?.semKey;
+                const semKeyToDbLookup: Record<string, { type: string; year: number }> = {
+                  'ss2025': { type: 'spring_summer', year: 2025 }, 'f2025': { type: 'fall', year: 2025 },
+                  'w2026': { type: 'winter', year: 2026 }, 'ss2026': { type: 'spring_summer', year: 2026 },
+                  'f2026': { type: 'fall', year: 2026 }, 'w2027': { type: 'winter', year: 2027 },
+                  'ss2027': { type: 'spring_summer', year: 2027 }, 'f2027': { type: 'fall', year: 2027 },
+                  'w2028': { type: 'winter', year: 2028 }, 'ss2028': { type: 'spring_summer', year: 2028 },
+                  'f2028': { type: 'fall', year: 2028 }, 'w2029': { type: 'winter', year: 2029 },
+                  'ss2029': { type: 'spring_summer', year: 2029 }, 'f2029': { type: 'fall', year: 2029 },
+                };
+                const lookupTarget = semKeyForLookup ? semKeyToDbLookup[semKeyForLookup] : null;
+                if (lookupTarget && allSemesterSettingsRef.current) {
+                  const thisSem = allSemesterSettingsRef.current.find((s: any) => {
+                    const yearMatch = s.semesterName?.match(/\d{4}/);
+                    const semYear = yearMatch ? parseInt(yearMatch[0]) : 0;
+                    return s.semesterType === lookupTarget.type && semYear === lookupTarget.year;
+                  });
+                  if (thisSem) {
+                    let ccLookup = courseCode.replace(/\s/g, '');
+                    const tdbMatch = ccLookup.match(/^TBD_SLOT(\d+)$/i);
+                    if (tdbMatch) ccLookup = `TBD${tdbMatch[1]}`;
+                    for (let i = 1; i <= 3; i++) {
+                      const sc = ((thisSem as any)[`course${i}Code`] || '').replace(/\s/g, '').toUpperCase();
+                      if (sc === ccLookup.toUpperCase()) {
+                        existingColor = (thisSem as any)[`course${i}Color`] || '';
+                        existingColorEnd = (thisSem as any)[`course${i}ColorEnd`] || '';
+                        existingColorStops = (thisSem as any)[`course${i}ColorStops`] || '';
+                        existingBorderColor = (thisSem as any)[`course${i}BorderColor`] || '';
+                        existingCourseRowColor = (thisSem as any)[`course${i}CourseRowColor`] || '';
+                        existingTaskBgColor = (thisSem as any)[`course${i}TaskBgColor`] || '';
+                        existingCourseFontColor = (thisSem as any)[`course${i}CourseFontColor`] || '';
+                        existingModuleBoxColor = (thisSem as any)[`course${i}ModuleBoxColor`] || '';
+                        existingReadingBoxColor = (thisSem as any)[`course${i}ReadingBoxColor`] || '';
+                        existingProfessor = (thisSem as any)[`course${i}Professor`] || '';
+                        existingProfessorEmail = (thisSem as any)[`course${i}ProfessorEmail`] || '';
+                        break;
+                      }
+                    }
+                  }
+                }
                 const newEntry = {
                   name: `${newCode} - ${newCourseName}`,
-                  professor: updates.professor || '',
-                  professorEmail: updates.professorEmail || '',
-                  ...(updates.color ? { color: updates.color } : {}),
-                  ...(updates.colorEnd ? { colorEnd: updates.colorEnd } : {}),
-                  ...((updates as any).colorStops !== undefined ? { colorStops: (updates as any).colorStops } : {}),
-                  ...((updates as any).borderColor !== undefined ? { borderColor: (updates as any).borderColor } : {}),
-                  ...(updates.courseRowColor !== undefined ? { courseRowColor: updates.courseRowColor } : {}),
-                  ...(updates.taskBgColor !== undefined ? { taskBgColor: updates.taskBgColor } : {}),
-                  ...(updates.courseFontColor !== undefined ? { courseFontColor: updates.courseFontColor } : {}),
-                  ...(updates.moduleBoxColor !== undefined ? { moduleBoxColor: updates.moduleBoxColor } : {}),
-                  ...(updates.readingBoxColor !== undefined ? { readingBoxColor: updates.readingBoxColor } : {}),
+                  professor: updates.professor || existingProfessor || '',
+                  professorEmail: updates.professorEmail || existingProfessorEmail || '',
+                  color: updates.color || existingColor || '',
+                  colorEnd: updates.colorEnd || existingColorEnd || '',
+                  colorStops: (updates as any).colorStops !== undefined ? (updates as any).colorStops : existingColorStops,
+                  borderColor: (updates as any).borderColor !== undefined ? (updates as any).borderColor : existingBorderColor,
+                  courseRowColor: updates.courseRowColor !== undefined ? updates.courseRowColor : existingCourseRowColor,
+                  taskBgColor: updates.taskBgColor !== undefined ? updates.taskBgColor : existingTaskBgColor,
+                  courseFontColor: updates.courseFontColor !== undefined ? updates.courseFontColor : existingCourseFontColor,
+                  moduleBoxColor: updates.moduleBoxColor !== undefined ? updates.moduleBoxColor : existingModuleBoxColor,
+                  readingBoxColor: updates.readingBoxColor !== undefined ? updates.readingBoxColor : existingReadingBoxColor,
                 };
                 updatedCourses.push(newEntry);
                 const updatedData = { courses: updatedCourses };
