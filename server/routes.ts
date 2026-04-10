@@ -13043,9 +13043,11 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         if (confirmPath) {
           try {
             const nestResult = await playOnNestSpeaker(`${appUrl}${confirmPath}`, 2, confirmationTTS);
-            if (nestResult.success) {
+            if (nestResult.success && nestResult.actuallyPlaying) {
               confirmPlayed = true;
-              console.log(`${logPrefix} Confirm TTS played on Nest speaker via generated audio (primary) (actuallyPlaying=${nestResult.actuallyPlaying})`);
+              console.log(`${logPrefix} Confirm TTS played on Nest speaker via generated audio (primary)`);
+            } else if (nestResult.success) {
+              console.warn(`${logPrefix} Nest speaker accepted play_media but NOT actually playing — falling back to HA Cloud TTS`);
             } else {
               console.warn(`${logPrefix} Nest speaker generated audio confirm failed — falling back to HA Cloud TTS`);
             }
@@ -16155,9 +16157,11 @@ document.body.removeChild(a);
               haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }, 'Nest Pre-Pause Vol').catch(() => {}),
             ]);
             const pauseResult = await playOnNestSpeaker(`${appUrl}${pausePath}`, 2, pauseText);
-            if (pauseResult.success) {
+            if (pauseResult.success && pauseResult.actuallyPlaying) {
               pausePlayed = true;
-              console.log(`[Voice Command] Pause TTS played on Nest via generated audio (primary) (actuallyPlaying=${pauseResult.actuallyPlaying})`);
+              console.log(`[Voice Command] Pause TTS played on Nest via generated audio (primary)`);
+            } else if (pauseResult.success) {
+              console.warn(`[Voice Command] Nest accepted pause play_media but NOT actually playing — falling back to HA Cloud TTS`);
             } else {
               console.warn(`[Voice Command] Pause generated audio failed — falling back to HA Cloud TTS`);
             }
