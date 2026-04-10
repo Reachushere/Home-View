@@ -1700,7 +1700,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
         <div className="flex items-center flex-shrink-0" style={{ gap: '6px', marginLeft: '8px' }} onClick={(e) => e.stopPropagation()}>
           <button
             className="flex items-center justify-center rounded transition-colors"
-            style={{ width: '18px', height: '18px', fontSize: '11px', background: task.gradeScratchedOff ? 'rgba(239,68,68,0.3)' : 'rgba(255,255,255,0.08)', border: task.gradeScratchedOff ? '1px solid rgba(239,68,68,0.6)' : '1px solid rgba(255,255,255,0.2)', color: task.gradeScratchedOff ? '#f87171' : 'rgba(255,255,255,0.5)', cursor: 'pointer', lineHeight: 1, position: 'relative', left: '-8px' }}
+            style={{ width: '18px', height: '18px', fontSize: '11px', background: task.gradeScratchedOff ? 'rgba(239,68,68,0.3)' : 'rgba(255,255,255,0.08)', border: task.gradeScratchedOff ? '1px solid rgba(239,68,68,0.6)' : '1px solid rgba(255,255,255,0.2)', color: task.gradeScratchedOff ? '#f87171' : 'rgba(255,255,255,0.5)', cursor: 'pointer', lineHeight: 1, marginLeft: '-4px', marginRight: '-4px' }}
             title={task.gradeScratchedOff ? "Scratched off — click to restore" : "Click to scratch off (exclude from grade)"}
             onClick={() => updateTaskMutation.mutate({ id: task.id, data: { gradeScratchedOff: !task.gradeScratchedOff }, _task: task })}
             data-testid={`toggle-scratch-${task.id}`}
@@ -4356,7 +4356,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     </span>
                   </div>
                   <div className="flex items-end flex-shrink-0" style={{ gap: '6px', marginLeft: isEditingInfo ? '-16px' : '-7px' }}>
-                    <div style={{ width: '18px', textAlign: 'center', lineHeight: '1.1', position: 'relative', left: '-8px' }}><span className="text-[8px] font-bold text-white">Scratch</span></div>
+                    <div style={{ width: '18px', textAlign: 'center', lineHeight: '1.1', marginLeft: '-4px', marginRight: '-4px' }}><span className="text-[8px] font-bold text-white">Scratch</span></div>
                     <div style={{ width: '24px', textAlign: 'center', lineHeight: '1.1' }}><span className="text-[8px] font-bold text-white">Grade<br/>Received</span></div>
                     <div style={{ width: '19px', textAlign: 'center', marginLeft: '6px' }}><span className="text-[8px] font-bold text-white">Copy</span></div>
                     <div style={{ width: '19px' }} />
@@ -4425,13 +4425,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             </div>
             {gradedCourseTasks.length > 0 && (
               <div className="flex items-center px-1.5 py-1.5 mt-1 rounded-md border border-amber-400/30 bg-amber-400/5" style={{ margin: '4px 4px 0 4px' }} data-testid="grade-totals-row">
-                <div className="flex-shrink-0" style={{ width: '14px', marginRight: '10px' }} />
-                <div className="flex-shrink-0" style={{ width: '16px', marginRight: '10px' }} />
-                <div className="flex-shrink-0" style={{ width: '15px', marginLeft: '3px', marginRight: '10px' }} />
-                <div className="flex-shrink-0" style={{ width: '14px', marginLeft: '8px', marginRight: '4px' }} />
-                <div className="flex-shrink-0" style={{ width: '19px', marginLeft: '17px', marginRight: '10px' }} />
-                <div className="flex-1 min-w-0 text-[11px] font-bold text-white" style={{ marginLeft: '25px' }}>Totals</div>
-                <div className="flex items-center flex-shrink-0" style={{ gap: '10px', position: 'relative', left: isEditingInfo ? '-17px' : '-8px' }}>
+                <div className="flex-1 min-w-0 text-[11px] font-bold text-white" style={{ marginLeft: '4px' }}>Totals</div>
+                <div className="flex items-center flex-shrink-0" style={{ gap: '10px', position: 'relative', left: '-12px' }}>
                   <span className="text-[11px] font-bold w-[33px] text-center text-amber-400" data-testid="text-sum-value">
                     {(() => { const v = gradedCourseTasks.reduce((s, t) => s + (t.gradeValue || 0), 0); return v ? v.toFixed(2) : '—'; })()}
                   </span>
@@ -4445,7 +4440,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   </span>
                   <span className="w-[33px]" />
                 </div>
-                <div className="flex items-center flex-shrink-0" style={{ gap: '10px', marginLeft: isEditingInfo ? '1px' : '8px', visibility: 'hidden' }}>
+                <div className="flex items-center flex-shrink-0" style={{ gap: '6px', marginLeft: '8px', visibility: 'hidden' }}>
+                  <div style={{ width: '18px', height: '14px', marginLeft: '-4px', marginRight: '-4px' }} />
                   <div style={{ width: '24px', height: '14px' }} />
                   <div style={{ padding: '2px', marginLeft: '6px' }}><div style={{ width: '15px', height: '15px' }} /></div>
                   <div style={{ padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
