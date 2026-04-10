@@ -169,7 +169,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
       <div
         className="fixed z-[10003] cursor-pointer"
         style={{
-          bottom: '36px',
+          bottom: '38px',
           right: printerIconRight != null ? `${printerIconRight + 22}px` : 'calc(50% + 55px)',
           display: 'flex',
           alignItems: 'center',

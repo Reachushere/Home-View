@@ -4343,8 +4343,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                       Percent<SortIcon field="percent" />
                     </span>
                   </div>
-                  <div className="flex items-end flex-shrink-0" style={{ gap: '6px', marginLeft: isEditingInfo ? '-12px' : '-3px' }}>
-                    <div style={{ width: '18px', textAlign: 'center', lineHeight: '1.1' }}><span className="text-[8px] font-bold text-red-400">Scratch</span></div>
+                  <div className="flex items-end flex-shrink-0" style={{ gap: '6px', marginLeft: isEditingInfo ? '-16px' : '-7px' }}>
+                    <div style={{ width: '18px', textAlign: 'center', lineHeight: '1.1' }}><span className="text-[8px] font-bold text-white">Scratch</span></div>
                     <div style={{ width: '24px', textAlign: 'center', lineHeight: '1.1' }}><span className="text-[8px] font-bold text-white">Grade<br/>Received</span></div>
                     <div style={{ width: '19px', textAlign: 'center', marginLeft: '6px' }}><span className="text-[8px] font-bold text-white">Copy</span></div>
                     <div style={{ width: '19px' }} />
