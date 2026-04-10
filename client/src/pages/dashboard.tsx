@@ -28690,7 +28690,7 @@ export default function Dashboard() {
                       borderColor: semBorderColor || matchedCourse?.borderColor || '',
                       courseRowColor: semCourseRowColor || matchedCourse?.courseRowColor || '',
                       taskBgColor: semTaskBgColor || matchedCourse?.taskBgColor || '',
-                      courseFontColor: semCourseFontColor || '',
+                      courseFontColor: semCourseFontColor || matchedCourse?.courseFontColor || '',
                       professor: matchedCourse?.professor || '',
                       professorEmail: matchedCourse?.professorEmail || '',
                       _semKey: semKey,
