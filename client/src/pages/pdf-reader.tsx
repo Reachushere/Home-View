@@ -1809,6 +1809,10 @@ export default function PDFReaderPage() {
     }
     setIsPaused(true);
     isPausedRef.current = true;
+    if (catWashFollow || speakerParam) {
+      fetch("/api/webhook/voice-command", { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ command: "pause" }) })
+        .catch(e => console.error('Failed to send pause to server:', e));
+    }
   };
 
   const resumeReading = () => {
