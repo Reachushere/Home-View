@@ -29994,8 +29994,11 @@ export default function Dashboard() {
                     if (courseProgressDataRef.current.length <= courseIdx) {
                       courseProgressDataRef.current.length = courseIdx + 1;
                     }
-                    const moduleFileInfo = moduleFiles.map(f => `${f.originalName || f.name}${f.objectPath ? `\n  → ${f.objectPath}` : f.folder ? ` (${f.folder})` : ''}`).join('\n\n') || 'No files';
-                    const readingFileInfo = readingFiles.map(f => `${f.originalName || f.name}${f.objectPath ? `\n  → ${f.objectPath}` : f.folder ? ` (${f.folder})` : ''}`).join('\n\n') || 'No files';
+                    const semFolderMatch = findSemSlot((courseData as any)._semKey, (courseData as any)._internalCode || courseCode, allSemesterSettingsRef.current);
+                    const oneDriveModuleFolder = semFolderMatch ? ((semFolderMatch.sem as any)[`course${semFolderMatch.slot}ModuleFolder`] || '') : '';
+                    const oneDriveReadingFolder = semFolderMatch ? ((semFolderMatch.sem as any)[`course${semFolderMatch.slot}ReadingFolder`] || '') : '';
+                    const moduleFileInfo = (oneDriveModuleFolder ? `📁 ${oneDriveModuleFolder}/Week ${selectedWeek}/Module\n\n` : '') + (moduleFiles.map(f => `${f.originalName || f.name}`).join('\n') || 'No files');
+                    const readingFileInfo = (oneDriveReadingFolder ? `📁 ${oneDriveReadingFolder}/Week ${selectedWeek}/Reading\n\n` : '') + (readingFiles.map(f => `${f.originalName || f.name}`).join('\n') || 'No files');
                     courseProgressDataRef.current[courseIdx] = {
                       courseCode,
                       progressBg,
