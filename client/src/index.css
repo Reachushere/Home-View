@@ -549,6 +549,27 @@ button[role="combobox"] > span {
   border-color: rgba(220, 38, 38, 0.8) !important;
 }
 
+.notepad-editor-content ul {
+  list-style-type: disc !important;
+  padding-left: 24px !important;
+  margin: 4px 0 !important;
+}
+.notepad-editor-content ol {
+  list-style-type: decimal !important;
+  padding-left: 24px !important;
+  margin: 4px 0 !important;
+}
+.notepad-editor-content li {
+  display: list-item !important;
+  margin: 2px 0 !important;
+}
+.notepad-editor-content ul ul {
+  list-style-type: circle !important;
+}
+.notepad-editor-content ul ul ul {
+  list-style-type: square !important;
+}
+
 .pill-button-hover {
   transition: filter 0.15s ease, box-shadow 0.15s ease;
 }

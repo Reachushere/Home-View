@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { X, Plus, Trash2, Bold, Italic, List, Type, Palette, Upload, Download, FileText, Image, File, Loader2, Pencil, Check, FolderPlus, ChevronDown, ChevronRight, Eraser, Search, ArrowUp, ArrowDown } from 'lucide-react';
+import { X, Plus, Trash2, Bold, Italic, List, Type, Palette, Upload, Download, FileText, Image, File, Loader2, Pencil, Check, FolderPlus, ChevronDown, ChevronRight, Eraser, Search, ArrowUp, ArrowDown, CheckSquare2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 
@@ -219,6 +219,63 @@ export default function NotepadDialog({ isOpen, onClose, colorSettings }: Notepa
     editorRef.current?.focus();
     handleEditorInput();
   };
+
+  const insertCheckbox = useCallback(() => {
+    if (!editorRef.current) return;
+    const sel = window.getSelection();
+    const checkboxHtml = `<div class="np-checkbox-item" data-checked="false" style="display:flex;align-items:flex-start;gap:6px;padding:2px 0;cursor:default;"><span class="np-cb-box" contenteditable="false" style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;min-width:16px;border:2px solid #999;border-radius:3px;cursor:pointer;margin-top:3px;flex-shrink:0;background:transparent;font-size:11px;line-height:1;color:transparent;user-select:none;">✓</span><span class="np-cb-text" style="flex:1;outline:none;">New item</span></div>`;
+    if (sel && sel.rangeCount > 0) {
+      const range = sel.getRangeAt(0);
+      range.deleteContents();
+      const temp = document.createElement('div');
+      temp.innerHTML = checkboxHtml;
+      const node = temp.firstChild!;
+      range.insertNode(node);
+      const textSpan = (node as HTMLElement).querySelector('.np-cb-text');
+      if (textSpan) {
+        const newRange = document.createRange();
+        newRange.selectNodeContents(textSpan);
+        sel.removeAllRanges();
+        sel.addRange(newRange);
+      }
+    } else {
+      editorRef.current.insertAdjacentHTML('beforeend', checkboxHtml);
+    }
+    editorRef.current.focus();
+    handleEditorInput();
+  }, [handleEditorInput]);
+
+  const handleEditorClick = useCallback((e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (!target.classList.contains('np-cb-box')) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const item = target.closest('.np-checkbox-item') as HTMLElement;
+    if (!item || !editorRef.current) return;
+    const isChecked = item.getAttribute('data-checked') === 'true';
+    const textSpan = item.querySelector('.np-cb-text') as HTMLElement;
+    if (isChecked) {
+      item.setAttribute('data-checked', 'false');
+      target.style.background = 'transparent';
+      target.style.borderColor = '#999';
+      target.style.color = 'transparent';
+      if (textSpan) {
+        textSpan.style.textDecoration = 'none';
+        textSpan.style.opacity = '1';
+      }
+    } else {
+      item.setAttribute('data-checked', 'true');
+      target.style.background = '#22c55e';
+      target.style.borderColor = '#22c55e';
+      target.style.color = '#fff';
+      if (textSpan) {
+        textSpan.style.textDecoration = 'line-through';
+        textSpan.style.opacity = '0.5';
+      }
+      editorRef.current.appendChild(item);
+    }
+    handleEditorInput();
+  }, [handleEditorInput]);
 
   const handleFileUpload = async (files: FileList | null) => {
     if (!files || !activeNoteId) return;
@@ -608,6 +665,7 @@ export default function NotepadDialog({ isOpen, onClose, colorSettings }: Notepa
             <button onClick={() => execCommand('bold')} className="p-1 rounded hover:bg-white/10 text-white/70 hover:text-white" title="Bold" data-testid="format-bold"><Bold className="h-3.5 w-3.5" /></button>
             <button onClick={() => execCommand('italic')} className="p-1 rounded hover:bg-white/10 text-white/70 hover:text-white" title="Italic" data-testid="format-italic"><Italic className="h-3.5 w-3.5" /></button>
             <button onClick={() => execCommand('insertUnorderedList')} className="p-1 rounded hover:bg-white/10 text-white/70 hover:text-white" title="Bullet List" data-testid="format-list"><List className="h-3.5 w-3.5" /></button>
+            <button onClick={insertCheckbox} className="p-1 rounded hover:bg-white/10 text-white/70 hover:text-white" title="Checkbox" data-testid="format-checkbox"><CheckSquare2 className="h-3.5 w-3.5" /></button>
             <div className="w-px h-4 bg-white/20 mx-1" />
             <div className="relative">
               <button onClick={() => { setShowFontSize(!showFontSize); setShowFontColor(false); }} className="p-1 rounded hover:bg-white/10 text-white/70 hover:text-white flex items-center gap-0.5" title="Font Size" data-testid="format-font-size"><Type className="h-3.5 w-3.5" /><span className="text-[9px]">▼</span></button>
@@ -715,7 +773,7 @@ export default function NotepadDialog({ isOpen, onClose, colorSettings }: Notepa
                 <div
                   ref={editorRef}
                   contentEditable
-                  className="flex-1 p-3 text-[13px] overflow-y-auto focus:outline-none"
+                  className="flex-1 p-3 text-[13px] overflow-y-auto focus:outline-none notepad-editor-content"
                   style={{
                     fontFamily: "'Segoe UI', 'Helvetica Neue', sans-serif",
                     lineHeight: 1.6,
@@ -725,7 +783,33 @@ export default function NotepadDialog({ isOpen, onClose, colorSettings }: Notepa
                     borderRadius: '0',
                   }}
                   onInput={handleEditorInput}
+                  onClick={handleEditorClick}
                   onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      const sel = window.getSelection();
+                      if (sel && sel.rangeCount > 0) {
+                        const node = sel.anchorNode;
+                        const cbItem = (node instanceof HTMLElement ? node : node?.parentElement)?.closest('.np-checkbox-item');
+                        if (cbItem) {
+                          e.preventDefault();
+                          const newItem = document.createElement('div');
+                          newItem.className = 'np-checkbox-item';
+                          newItem.setAttribute('data-checked', 'false');
+                          newItem.setAttribute('style', 'display:flex;align-items:flex-start;gap:6px;padding:2px 0;cursor:default;');
+                          newItem.innerHTML = `<span class="np-cb-box" contenteditable="false" style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;min-width:16px;border:2px solid #999;border-radius:3px;cursor:pointer;margin-top:3px;flex-shrink:0;background:transparent;font-size:11px;line-height:1;color:transparent;user-select:none;">✓</span><span class="np-cb-text" style="flex:1;outline:none;"></span>`;
+                          cbItem.after(newItem);
+                          const textSpan = newItem.querySelector('.np-cb-text');
+                          if (textSpan) {
+                            const range = document.createRange();
+                            range.setStart(textSpan, 0);
+                            range.collapse(true);
+                            sel.removeAllRanges();
+                            sel.addRange(range);
+                          }
+                          handleEditorInput();
+                        }
+                      }
+                    }
                     if ((e.metaKey || e.ctrlKey) && e.key === 'b') { e.preventDefault(); execCommand('bold'); }
                     if ((e.metaKey || e.ctrlKey) && e.key === 'i') { e.preventDefault(); execCommand('italic'); }
                     if ((e.metaKey || e.ctrlKey) && e.key === 's') { e.preventDefault(); handleManualSave(); }
