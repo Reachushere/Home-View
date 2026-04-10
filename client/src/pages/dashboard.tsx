@@ -37712,8 +37712,6 @@ function ProfileForm({
 
   return (
     <form onSubmit={handleSubmit} className="text-[10px]">
-      <div className="flex gap-5">
-      <div className="flex-1 space-y-3 min-w-0">
       {cropImageSrc && (
         <div className="rounded-lg overflow-hidden bg-black/50 p-3 space-y-3">
           <span className="text-[10px] text-white/70">Move and zoom to crop your photo</span>
@@ -37766,7 +37764,7 @@ function ProfileForm({
         </div>
         <div className="flex flex-col gap-0.5">
           {(firstName || lastName) && (
-            <span className="text-[16px] text-black" style={{ fontWeight: 800 }} data-testid="text-profile-fullname">{firstName} {lastName}</span>
+            <span className="text-[16px] text-black" style={{ fontWeight: 900 }} data-testid="text-profile-fullname">{firstName} {lastName}</span>
           )}
           <span className="text-[10px] text-white/70">Profile Photo</span>
           <span className="text-[9px] text-white/40">{isUploadingPhoto ? 'Uploading...' : 'Click to change'}</span>
@@ -37778,6 +37776,8 @@ function ProfileForm({
           <img src={tmuLogo} alt="School Logo" style={{ height: '28px', objectFit: 'contain' }} data-testid="img-profile-school-logo" />
         </div>
       </div>
+      <div className="flex gap-5" style={{ marginTop: '12px' }}>
+      <div className="flex-1 space-y-3 min-w-0">
       <div className="flex gap-[6px]" style={{ marginTop: '-1px' }}>
         <div className="space-y-0 w-1/2">
           <Label htmlFor="firstName" className="text-[10px]">First Name</Label>
