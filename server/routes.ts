@@ -12301,11 +12301,33 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       if (!fs.existsSync(localUploadsDir)) fs.mkdirSync(localUploadsDir, { recursive: true });
       console.log(`${logPrefix}[TRACE] syncOneDriveFilesForWeek: getting semester OneDrive courses...`);
       const courses = await getSemesterOneDriveCourses(semesterSettings);
+      const isSpSuSync = (semesterSettings.semesterType || '').toLowerCase().includes('spring') || (semesterSettings.semesterType || '').toLowerCase().includes('summer');
       console.log(`${logPrefix} Syncing OneDrive for ${courses.length} courses, week ${currentWeekNumber}`);
       for (const course of courses) {
         try {
+          let folderWeek = currentWeekNumber;
+          if (isSpSuSync) {
+            for (let ci = 1; ci <= 3; ci++) {
+              const cc = ((semesterSettings as any)[`course${ci}Code`] || '').replace(/\s/g, '');
+              if (cc === course.code) {
+                const spsuTerm = ((semesterSettings as any)[`course${ci}SpringSummerTerm`] || 'full').toLowerCase();
+                if (spsuTerm === 'second_half' && currentWeekNumber > 7) {
+                  folderWeek = currentWeekNumber - 7;
+                  console.log(`${logPrefix} Second-half course ${course.code}: adjusted week ${currentWeekNumber} → folder Week ${folderWeek}`);
+                } else if (spsuTerm === 'first_half' && currentWeekNumber > 7) {
+                  folderWeek = -1;
+                  console.log(`${logPrefix} First-half course ${course.code}: week ${currentWeekNumber} > 7, course ended — skipping`);
+                } else if (spsuTerm === 'second_half' && currentWeekNumber <= 7) {
+                  folderWeek = -1;
+                  console.log(`${logPrefix} Second-half course ${course.code}: week ${currentWeekNumber} <= 7, course not started — skipping`);
+                }
+                break;
+              }
+            }
+          }
+          if (folderWeek === -1) continue;
           const weekFolders = await listOneDriveItems(course.path);
-          const currentWeekFolder = weekFolders.find((f: any) => f.type === 'folder' && f.name.match(/Week\s+(\d+)/i)?.[1] && parseInt(f.name.match(/Week\s+(\d+)/i)![1], 10) === currentWeekNumber);
+          const currentWeekFolder = weekFolders.find((f: any) => f.type === 'folder' && f.name.match(/Week\s+(\d+)/i)?.[1] && parseInt(f.name.match(/Week\s+(\d+)/i)![1], 10) === folderWeek);
           if (!currentWeekFolder) continue;
           const weekContents = await listOneDriveItems(currentWeekFolder.path);
           for (const subType of ['module', 'reading']) {
@@ -18223,12 +18245,24 @@ document.body.removeChild(a);
         }
       }
 
-      console.log(`[Sync] Course-week sync: ${courseCode} week ${semesterRelativeWeek} (original: ${weekNumber}), path: ${coursePath}`);
+      let folderWeekNum = semesterRelativeWeek;
+      const isSpSu = (semester?.semesterType || '').toLowerCase().includes('spring') || (semester?.semesterType || '').toLowerCase().includes('summer');
+      if (isSpSu && courseIdx) {
+        const spsuTerm = ((semester as any)[`course${courseIdx}SpringSummerTerm`] || 'full').toLowerCase();
+        if (spsuTerm === 'second_half' && semesterRelativeWeek > 7) {
+          folderWeekNum = semesterRelativeWeek - 7;
+          console.log(`[Sync] Second-half course: adjusted week ${semesterRelativeWeek} → folder Week ${folderWeekNum}`);
+        } else if (spsuTerm === 'first_half' && semesterRelativeWeek > 7) {
+          console.log(`[Sync] First-half course in week ${semesterRelativeWeek} (>7) — course has ended, skipping`);
+          return res.json({ success: true, synced: [], message: `First-half course has ended (week ${semesterRelativeWeek})` });
+        }
+      }
+      console.log(`[Sync] Course-week sync: ${courseCode} week ${folderWeekNum} (semester week: ${semesterRelativeWeek}, original: ${weekNumber}), path: ${coursePath}`);
       const weekFolders = await listOneDriveItems(coursePath);
       const weekFolderNames = weekFolders.filter((f: any) => f.type === 'folder').map((f: any) => f.name);
       console.log(`[Sync] Found ${weekFolderNames.length} week folders in ${coursePath}: ${weekFolderNames.join(', ')}`);
       let weekFolder = weekFolders.find((f: any) =>
-        f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${semesterRelativeWeek}`)
+        f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${folderWeekNum}`)
       );
       if (!weekFolder && req.body.weekStartDate) {
         const viewStart = new Date(req.body.weekStartDate);
@@ -18261,7 +18295,7 @@ document.body.removeChild(a);
           console.log(`[Sync] No week folders found, but Module/Readings exist directly in ${coursePath} — syncing flat structure`);
           weekFolder = { name: '(flat)', path: coursePath, type: 'folder' };
         } else {
-          const msg = `No Week ${semesterRelativeWeek} folder found in ${coursePath}. Available folders: ${weekFolderNames.join(', ') || 'none'}`;
+          const msg = `No Week ${folderWeekNum} folder found in ${coursePath}. Available folders: ${weekFolderNames.join(', ') || 'none'}`;
           console.log(`[Sync] ${msg}`);
           return res.json({ success: true, synced: [], message: msg });
         }
@@ -18292,7 +18326,7 @@ document.body.removeChild(a);
           continue;
         }
 
-        const folderName = `week-${weekNumber}-${courseCode.toLowerCase()}-${type}`;
+        const folderName = `week-${semesterRelativeWeek}-${courseCode.toLowerCase()}-${type}`;
         const subFiles = await listOneDriveItems(subfolder.path);
         console.log(`[Sync] Subfolder "${subfolder.name}" (type=${type}): ${subFiles.length} items, folderKey="${folderName}"`);
 

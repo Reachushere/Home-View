@@ -30027,8 +30027,23 @@ export default function Dashboard() {
                       const diffWeeks = Math.floor(diffMs / (7 * 24 * 60 * 60 * 1000));
                       return Math.max(1, diffWeeks + 1);
                     })();
-                    const moduleFileInfo = (oneDriveModuleFolder ? `📁 ${oneDriveModuleFolder}/Week ${courseWeekNum}/Module\n\n` : '') + (moduleFiles.map(f => `${f.originalName || f.name}`).join('\n') || 'No files');
-                    const readingFileInfo = (oneDriveReadingFolder ? `📁 ${oneDriveReadingFolder}/Week ${courseWeekNum}/Reading\n\n` : '') + (readingFiles.map(f => `${f.originalName || f.name}`).join('\n') || 'No files');
+                    const folderWeekNum = (() => {
+                      if (!semFolderMatch) return courseWeekNum;
+                      const spsuTerm = ((semFolderMatch.sem as any)[`course${semFolderMatch.slot}SpringSummerTerm`] || 'full').toLowerCase();
+                      if (spsuTerm === 'second_half' && courseWeekNum > 7) return courseWeekNum - 7;
+                      return courseWeekNum;
+                    })();
+                    const weekSeasonLabel = (() => {
+                      if (!semFolderMatch) return '';
+                      const semKey = (courseData as any)?._semKey;
+                      if (!semKey?.startsWith('ss')) return '';
+                      const spsuTerm = ((semFolderMatch.sem as any)[`course${semFolderMatch.slot}SpringSummerTerm`] || 'full').toLowerCase();
+                      if (spsuTerm === 'first_half') return ' - Spring';
+                      if (spsuTerm === 'second_half') return ' - Summer';
+                      return '';
+                    })();
+                    const moduleFileInfo = (oneDriveModuleFolder ? `📁 ${oneDriveModuleFolder}/Week ${folderWeekNum}${weekSeasonLabel}/Module\n\n` : '') + (moduleFiles.map(f => `${f.originalName || f.name}`).join('\n') || 'No files');
+                    const readingFileInfo = (oneDriveReadingFolder ? `📁 ${oneDriveReadingFolder}/Week ${folderWeekNum}${weekSeasonLabel}/Reading\n\n` : '') + (readingFiles.map(f => `${f.originalName || f.name}`).join('\n') || 'No files');
                     courseProgressDataRef.current[courseIdx] = {
                       courseCode,
                       progressBg,
