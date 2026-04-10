@@ -6875,8 +6875,8 @@ export default function Dashboard() {
           moduleFolder = (sem as any)[`${prefix}ModuleFolder`] || '';
           readingFolder = (sem as any)[`${prefix}ReadingFolder`] || '';
           displayName = (sem as any)[`${prefix}DisplayName`] || '';
-          if (!moduleBoxColor) moduleBoxColor = (sem as any)[`${prefix}ModuleBoxColor`] || '';
-          if (!readingBoxColor) readingBoxColor = (sem as any)[`${prefix}ReadingBoxColor`] || '';
+          moduleBoxColor = (sem as any)[`${prefix}ModuleBoxColor`] || moduleBoxColor || '';
+          readingBoxColor = (sem as any)[`${prefix}ReadingBoxColor`] || readingBoxColor || '';
           if (!professor) professor = (sem as any)[`${prefix}Professor`] || '';
           if (!professorEmail) professorEmail = (sem as any)[`${prefix}ProfessorEmail`] || '';
           const semType = (sem as any).semesterType || '';
@@ -29000,7 +29000,7 @@ export default function Dashboard() {
                       : semEndDate;
                     if (currentWeekEnd < courseStart || currentWeekStart > courseEndRaw) continue;
                     const isTBDSlot = codeNorm.startsWith('TBD_SLOT') || codeNorm.startsWith('TBD');
-                    const actualCodeNorm = isTBDSlot ? 'TBD' : codeNorm;
+                    const actualCodeNorm = isTBDSlot ? (codeNorm.startsWith('TBD_SLOT') ? `TBD${codeNorm.replace('TBD_SLOT', '')}` : codeNorm) : codeNorm;
                     if (!isTBDSlot && allDisplayCourses.some(c => c.name.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '') === codeNorm)) continue;
                     if (isTBDSlot && allDisplayCourses.some(c => (c as any)._internalCode === codeNorm && (c as any)._semKey === semKey)) continue;
                     const matchedCourse = coursesData.courses.find(c => {

@@ -2083,7 +2083,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px', color: (editInfo.courseFontColor || courseInfo.courseFontColor) || 'white' }}
                 data-testid="text-course-title"
               >
-                {courseInfo.courseCode} — {courseInfo.courseName}
+                {courseInfo.displayName || `${courseInfo.courseCode} — ${courseInfo.courseName}`}
               </h2>
             </div>
           </div>
