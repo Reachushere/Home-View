@@ -30388,9 +30388,26 @@ export default function Dashboard() {
                     const widthFrac = frSpan / totalFr;
                     const barH = 3;
                     const barGap = 14;
+                    const barDayIndices: number[] = [];
+                    for (let i = todayDow + 1; i <= Math.min(todayDow + 2, dws.length - 1); i++) barDayIndices.push(i);
+                    let maxTasksInBarCols = 0;
+                    const courseCodeForTaskCount = courseName.trim().replace(/\s/g, '').toUpperCase();
+                    for (const dayIdx of barDayIndices) {
+                      if (dayIdx >= 0 && dayIdx < weekDays.length) {
+                        const dayDate = weekDays[dayIdx];
+                        const tasksInCell = (allTasks || []).filter(t => {
+                          const taskCourse = t.courseName?.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '') || '';
+                          if (taskCourse !== courseCodeForTaskCount) return false;
+                          if (!t.dueDate) return false;
+                          return isSameDayET(startOfDayET(new Date(t.dueDate)), dayDate);
+                        });
+                        maxTasksInBarCols = Math.max(maxTasksInBarCols, tasksInCell.length);
+                      }
+                    }
+                    const taskOffset = maxTasksInBarCols * 15;
                     return (
                       <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 30 }}>
-                        <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, top: 0, overflowY: 'auto', overflowX: 'hidden', pointerEvents: 'none', scrollbarWidth: 'none' as any }}>
+                        <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, top: `${taskOffset}px`, overflowY: 'auto', overflowX: 'hidden', pointerEvents: 'none', scrollbarWidth: 'none' as any }}>
                           <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', minHeight: '100%' }}>
                             {courseBars.filter(cd => cd.daysLeft > 0 && weekDays.some(wd => isSameDayET(wd, startOfDayET(new Date(cd.task.dueDate))))).map((cd, idx) => {
                               const t = cd.task;
@@ -30613,9 +30630,24 @@ export default function Dashboard() {
                       const widthFrac = frSpan / totalFr;
                       const barH = 3;
                       const barGap = 14;
+                      const otherBarDayIndices: number[] = [];
+                      for (let i = todayDow + 1; i <= Math.min(todayDow + 2, dws.length - 1); i++) otherBarDayIndices.push(i);
+                      let maxOtherTasksInBarCols = 0;
+                      for (const dayIdx of otherBarDayIndices) {
+                        if (dayIdx >= 0 && dayIdx < weekDays.length) {
+                          const dayDate = weekDays[dayIdx];
+                          const tasksInCell = (allTasks || []).filter(t => {
+                            if (t.courseName) return false;
+                            if (!t.dueDate) return false;
+                            return isSameDayET(startOfDayET(new Date(t.dueDate)), dayDate);
+                          });
+                          maxOtherTasksInBarCols = Math.max(maxOtherTasksInBarCols, tasksInCell.length);
+                        }
+                      }
+                      const otherTaskOffset = maxOtherTasksInBarCols * 15;
                       return (
                         <div style={{ position: 'absolute', left: 0, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 30 }}>
-                          <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, top: 0, overflowY: 'auto', overflowX: 'hidden', pointerEvents: 'none', scrollbarWidth: 'none' as any }}>
+                          <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, top: `${otherTaskOffset}px`, overflowY: 'auto', overflowX: 'hidden', pointerEvents: 'none', scrollbarWidth: 'none' as any }}>
                             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', minHeight: '100%' }}>
                               {otherBars.filter(cd => cd.daysLeft > 0 && weekDays.some(wd => isSameDayET(wd, startOfDayET(new Date(cd.task.dueDate))))).map((cd, idx) => {
                                 const t = cd.task;
