@@ -37762,7 +37762,7 @@ function ProfileForm({
           </div>
           <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoSelect} data-testid="input-profile-photo" />
         </div>
-        <div className="flex flex-col gap-0.5">
+        <div className="flex flex-col gap-0.5" style={{ marginTop: '4px' }}>
           {(firstName || lastName) && (
             <span className="text-[16px] !font-black" style={{ fontWeight: 900, color: '#000000' }} data-testid="text-profile-fullname">{firstName} {lastName}</span>
           )}
