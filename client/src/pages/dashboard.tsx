@@ -20415,7 +20415,7 @@ export default function Dashboard() {
       <div
         className={`fixed z-[10002] cursor-pointer side-tab-hover-left${tabBounceEnabled ? ' left-tab-bounce' : ''}`}
         style={{
-          left: '-10px',
+          left: '-5px',
           top: '50vh',
           transform: 'translateY(-50%)',
           pointerEvents: 'auto',
