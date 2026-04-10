@@ -1697,7 +1697,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
         <div className="flex items-center flex-shrink-0" style={{ gap: '6px', marginLeft: '8px' }} onClick={(e) => e.stopPropagation()}>
           <button
             className="flex items-center justify-center rounded transition-colors"
-            style={{ width: '18px', height: '18px', fontSize: '11px', background: task.gradeScratchedOff ? 'rgba(239,68,68,0.3)' : 'rgba(255,255,255,0.08)', border: task.gradeScratchedOff ? '1px solid rgba(239,68,68,0.6)' : '1px solid rgba(255,255,255,0.2)', color: task.gradeScratchedOff ? '#f87171' : 'rgba(255,255,255,0.5)', cursor: 'pointer', lineHeight: 1 }}
+            style={{ width: '18px', height: '18px', fontSize: '11px', background: task.gradeScratchedOff ? 'rgba(239,68,68,0.3)' : 'rgba(255,255,255,0.08)', border: task.gradeScratchedOff ? '1px solid rgba(239,68,68,0.6)' : '1px solid rgba(255,255,255,0.2)', color: task.gradeScratchedOff ? '#f87171' : 'rgba(255,255,255,0.5)', cursor: 'pointer', lineHeight: 1, position: 'relative', left: '-4px' }}
             title={task.gradeScratchedOff ? "Scratched off — click to restore" : "Click to scratch off (exclude from grade)"}
             onClick={() => updateTaskMutation.mutate({ id: task.id, data: { gradeScratchedOff: !task.gradeScratchedOff }, _task: task })}
             data-testid={`toggle-scratch-${task.id}`}
@@ -4344,7 +4344,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     </span>
                   </div>
                   <div className="flex items-end flex-shrink-0" style={{ gap: '6px', marginLeft: isEditingInfo ? '-16px' : '-7px' }}>
-                    <div style={{ width: '18px', textAlign: 'center', lineHeight: '1.1' }}><span className="text-[8px] font-bold text-white">Scratch</span></div>
+                    <div style={{ width: '18px', textAlign: 'center', lineHeight: '1.1', position: 'relative', left: '-4px' }}><span className="text-[8px] font-bold text-white">Scratch</span></div>
                     <div style={{ width: '24px', textAlign: 'center', lineHeight: '1.1' }}><span className="text-[8px] font-bold text-white">Grade<br/>Received</span></div>
                     <div style={{ width: '19px', textAlign: 'center', marginLeft: '6px' }}><span className="text-[8px] font-bold text-white">Copy</span></div>
                     <div style={{ width: '19px' }} />
