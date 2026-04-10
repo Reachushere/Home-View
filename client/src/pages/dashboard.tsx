@@ -1477,7 +1477,8 @@ export default function Dashboard() {
       if (hour < 9) return;
       const localDismiss = localStorage.getItem('morning_review_dismiss_until');
       if (localDismiss && Date.now() < Number(localDismiss)) return;
-      if (sessionStorage.getItem('morning_review_shown_this_session') === 'true') return;
+      const shownAt = sessionStorage.getItem('morning_review_shown_this_session');
+      if (shownAt && (Date.now() - Number(shownAt)) < 4 * 60 * 60 * 1000) return;
       try {
         const dismissRes = await fetch('/api/morning-review/dismiss-until');
         if (dismissRes.ok) {
@@ -11951,6 +11952,27 @@ export default function Dashboard() {
   const calStart = 0;
   const timeSlots = Array.from({ length: 24 }, (_, i) => i);
 
+  const getMultiHourTasksForWeek = () => {
+    const weekDateKeys = new Set(weekDays.map(d => _etDateKey(d)));
+    const weekTasks: Task[] = [];
+    for (const [key, tasks] of tasksByDateKey) {
+      if (weekDateKeys.has(key)) weekTasks.push(...tasks);
+    }
+    return weekTasks.filter(t => {
+      if (!t.eventStartTime || !t.eventEndTime) return false;
+      const [startHour] = t.eventStartTime.split(':').map(Number);
+      const [endHour] = t.eventEndTime.split(':').map(Number);
+      return endHour > startHour;
+    }).map(t => {
+      const dueDate = new Date(t.dueDate);
+      const dueDateKey = _etDateKey(dueDate);
+      const dayIdx = weekDays.findIndex(day => _etDateKey(day) === dueDateKey);
+      const [startHour, startMin] = t.eventStartTime!.split(':').map(Number);
+      const [endHour, endMin] = t.eventEndTime!.split(':').map(Number);
+      return { task: t, dayIdx, startHour, startMin, endHour, endMin };
+    });
+  };
+
   const multiHourOverlayCols = useMemo(() => {
     const map = new Map<string, number>();
     const items = getMultiHourTasksForWeek().filter(item => {
@@ -12164,31 +12186,6 @@ export default function Dashboard() {
       return startsBeforeThisHour && endsAtOrAfterThisHour;
     });
   };
-  
-  const getMultiHourTasksForWeek = () => {
-    const weekDateKeys = new Set(weekDays.map(d => _etDateKey(d)));
-    const weekTasks: Task[] = [];
-    for (const [key, tasks] of tasksByDateKey) {
-      if (weekDateKeys.has(key)) weekTasks.push(...tasks);
-    }
-    return weekTasks.filter(t => {
-      if (!t.eventStartTime || !t.eventEndTime) return false;
-      const [startHour] = t.eventStartTime.split(':').map(Number);
-      const [endHour] = t.eventEndTime.split(':').map(Number);
-      return endHour > startHour;
-    }).map(t => {
-      const dueDate = new Date(t.dueDate);
-      const dueDateKey = _etDateKey(dueDate);
-      const dayIdx = weekDays.findIndex(day => _etDateKey(day) === dueDateKey);
-      const [startHour, startMin] = t.eventStartTime!.split(':').map(Number);
-      const [endHour, endMin] = t.eventEndTime!.split(':').map(Number);
-      
-      // Return task data - actual position will be calculated at render time
-      // to properly account for prep conflict heights
-      return { task: t, dayIdx, startHour, startMin, endHour, endMin };
-    });
-  };
-  
   
   // Check if a calendar event conflicts with any task
   const eventConflictsWithTask = (event: CalendarEvent) => {
@@ -28189,10 +28186,12 @@ export default function Dashboard() {
                 <div className="absolute bottom-0 pointer-events-none" style={{ top: '0px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px - ${calScrollbarW}px))`, width: '3px', backgroundColor: '#000000', zIndex: 25 }} />
               );
             })()}
-            {/* Saturday column left border - single continuous black line */}
+            {/* Saturday column left border - single continuous black line (hidden when today IS Saturday to avoid doubling with today border) */}
             {(() => {
               const satIdx = weekDays.findIndex(d => d.getDay() === 6);
               if (satIdx < 0) return null;
+              const isTodaySat = new Date().getDay() === 6;
+              if (isTodaySat) return null;
               const totalDayW = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0);
               const beforeW = gridSizes.dayColumnWidths.slice(0, satIdx).reduce((a: number, b: number) => a + b, 0);
               const fixedW = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
@@ -29544,7 +29543,7 @@ export default function Dashboard() {
                       <div 
                         key={dayIdx} 
                         className="relative pt-0.5"
-                        style={{ backgroundColor: cellBgColor, padding: '2px 1px 2px 1px', borderBottom: '1.5px solid black', borderLeft: (day.getDay() === 6 || isDayToday) ? '3px solid black' : '1.5px dotted rgba(0,0,0,0.25)', minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }}
+                        style={{ backgroundColor: cellBgColor, padding: '2px 1px 2px 1px', borderBottom: '1.5px solid black', borderLeft: (day.getDay() === 6 || isDayToday) ? 'none' : '1.5px dotted rgba(0,0,0,0.25)', minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
                           e.preventDefault();
@@ -29558,7 +29557,7 @@ export default function Dashboard() {
                           handleCourseRowDrop(e, course.name, day);
                         }}
                       >
-                        {isDayToday && (() => {
+                        {(isDayToday ? (day.getDay() !== 6) : (day.getDay() === 0 && new Date().getDay() === 6)) && (() => {
                           const cCode2 = course.name;
                           const nextTask = (allTasks || []).filter(t => {
                             const tc = t.courseName?.split(' ')[0]?.toUpperCase() || '';
@@ -29602,7 +29601,7 @@ export default function Dashboard() {
                           );
                         })()}
                         
-                        <div className={`flex flex-col gap-0.5${cellHasScroll ? ' course-cell-scroll' : ''}`} style={{ overflowY: cellHasScroll ? 'auto' : 'hidden', overflowX: 'hidden', flex: 1, minHeight: 0, position: 'relative', zIndex: 6, ...(isDayToday ? { paddingTop: '23px' } : {}) }}>
+                        <div className={`flex flex-col gap-0.5${cellHasScroll ? ' course-cell-scroll' : ''}`} style={{ overflowY: cellHasScroll ? 'auto' : 'hidden', overflowX: 'hidden', flex: 1, minHeight: 0, position: 'relative', zIndex: 6, ...((isDayToday && day.getDay() !== 6) || (day.getDay() === 0 && new Date().getDay() === 6) ? { paddingTop: '23px' } : {}) }}>
                         {/* Course-associated projects */}
                         {allProjects.filter(proj => {
                           if (!proj.courseName) return false;
