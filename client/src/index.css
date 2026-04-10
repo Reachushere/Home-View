@@ -2134,9 +2134,20 @@ input[type="time"] {
   color: white !important;
 }
 
+input[type="date"].bg-white,
+input[type="time"].bg-white {
+  color: black !important;
+  color-scheme: light !important;
+}
+
 input[type="date"]::-webkit-calendar-picker-indicator,
 input[type="time"]::-webkit-calendar-picker-indicator {
   filter: invert(1);
+}
+
+input[type="date"].bg-white::-webkit-calendar-picker-indicator,
+input[type="time"].bg-white::-webkit-calendar-picker-indicator {
+  filter: none;
 }
 
 input[type="time"]::-webkit-datetime-edit,
@@ -2144,9 +2155,19 @@ input[type="date"]::-webkit-datetime-edit {
   color: white;
 }
 
+input[type="time"].bg-white::-webkit-datetime-edit,
+input[type="date"].bg-white::-webkit-datetime-edit {
+  color: black;
+}
+
 input[type="time"]::-webkit-datetime-edit-fields-wrapper,
 input[type="date"]::-webkit-datetime-edit-fields-wrapper {
   color: white;
+}
+
+input[type="time"].bg-white::-webkit-datetime-edit-fields-wrapper,
+input[type="date"].bg-white::-webkit-datetime-edit-fields-wrapper {
+  color: black;
 }
 
 input[type="time"]::-webkit-datetime-edit-text,
@@ -2158,6 +2179,17 @@ input[type="date"]::-webkit-datetime-edit-month-field,
 input[type="date"]::-webkit-datetime-edit-day-field,
 input[type="date"]::-webkit-datetime-edit-year-field {
   color: white;
+}
+
+input[type="time"].bg-white::-webkit-datetime-edit-text,
+input[type="time"].bg-white::-webkit-datetime-edit-hour-field,
+input[type="time"].bg-white::-webkit-datetime-edit-minute-field,
+input[type="time"].bg-white::-webkit-datetime-edit-ampm-field,
+input[type="date"].bg-white::-webkit-datetime-edit-text,
+input[type="date"].bg-white::-webkit-datetime-edit-month-field,
+input[type="date"].bg-white::-webkit-datetime-edit-day-field,
+input[type="date"].bg-white::-webkit-datetime-edit-year-field {
+  color: black;
 }
 
 @keyframes soundWave {

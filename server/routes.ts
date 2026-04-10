@@ -1916,9 +1916,26 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
   app.patch("/api/tasks/:id", async (req, res) => {
     try {
       const id = Number(req.params.id);
+      const allowedFields = [
+        'title', 'description', 'type', 'courseName', 'dueDate',
+        'eventStartTime', 'eventEndTime',
+        'reminder1', 'reminder2', 'reminder3', 'reminder4',
+        'reminder1Methods', 'reminder2Methods', 'reminder3Methods', 'reminder4Methods',
+        'reminder4DateTime',
+        'priority', 'weekNumber', 'referenceLink', 'attachments',
+        'repeatType', 'repeatInterval', 'repeatIntervalUnit', 'repeatEndDate',
+        'startDate', 'hideFromSummary', 'hideFromCountdown', 'flagged',
+        'showCountdownBar', 'showCountdownBarMain', 'showCountdownBarSummary',
+        'countdownBarDays', 'countdownBarColor', 'repeatSpanDays',
+        'taskStatus', 'isCompleted', 'notes', 'taskLabel',
+        'sendInvite', 'inviteEmail', 'inviteName',
+      ];
       const updates: any = {};
-      if (req.body.taskStatus !== undefined) updates.taskStatus = req.body.taskStatus;
-      if (req.body.startDate !== undefined) updates.startDate = req.body.startDate;
+      for (const field of allowedFields) {
+        if (req.body[field] !== undefined) {
+          updates[field] = req.body[field];
+        }
+      }
       const task = await storage.updateTask(id, updates);
       if (!task) return res.status(404).json({ message: 'Task not found' });
       res.json(task);
