@@ -25878,21 +25878,6 @@ export default function Dashboard() {
                                     onClick={(e) => { e.stopPropagation(); setSemSettingsDialogKey(sem.key); }}
                                     data-testid={`button-sem-settings-${sem.key}`}
                                   />
-                                  <svg
-                                    className="text-white/50 hover:text-white cursor-pointer transition-colors flex-shrink-0"
-                                    style={{ width: '11px', height: '11px' }}
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    onClick={(e) => { e.stopPropagation(); setSemChecklistFlyoutKey(semChecklistFlyoutKey === sem.key ? null : sem.key); }}
-                                    data-testid={`button-sem-checklist-${sem.key}`}
-                                    title="Semester Checklist"
-                                  >
-                                    <path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
-                                  </svg>
                                   <span className="text-[10px] font-bold whitespace-nowrap" style={{ color: '#ffffff', marginRight: '3px' }}>{sem.label}</span>
                                   {!sem.key.startsWith('ss') ? (
                                     <span className="text-[9px] whitespace-nowrap px-1.5 py-0.5 rounded border cursor-pointer hover:bg-white/15 transition-colors" style={{ color: '#ffffff', background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)', marginRight: '3px' }} onClick={(e) => { e.stopPropagation(); setSemDatePickerKey(sem.key); setSemDatePickerHalf('full'); }} data-testid={`dates-pill-${sem.key}`}>{(() => {
@@ -28003,6 +27988,21 @@ export default function Dashboard() {
                             <div className="flex items-center gap-1.5">
                               {isCurrent && <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />}
                               <span className={`text-white ${isCurrent ? 'font-bold' : 'font-normal'}`}>{sem.label}</span>
+                              <svg
+                                className="text-white/40 hover:text-white cursor-pointer transition-colors flex-shrink-0"
+                                style={{ width: '10px', height: '10px' }}
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                onClick={(e) => { e.stopPropagation(); setIsSettingsDialogOpen(false); setTimeout(() => setSemChecklistFlyoutKey(sem.key), 200); }}
+                                data-testid={`button-sem-checklist-settings-${sem.key}`}
+                                title="Semester Checklist"
+                              >
+                                <path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+                              </svg>
                             </div>
                             <span className="text-white/50">{sem.dates}</span>
                           </div>
