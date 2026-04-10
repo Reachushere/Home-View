@@ -2157,6 +2157,8 @@ export default function Dashboard() {
     readingUnread: number;
     moduleRemainingMin: number;
     readingRemainingMin: number;
+    moduleFileInfo: string;
+    readingFileInfo: string;
     hasNoData: boolean;
     handlePlayModule: () => void;
     handlePlayReading: () => void;
@@ -5261,7 +5263,9 @@ export default function Dashboard() {
       'CFNF400': '#FFC3C6',
     };
     const upperCode = courseCode.toUpperCase();
-    const normCode = upperCode.replace(/\s/g, '');
+    let normCode = upperCode.replace(/\s/g, '');
+    const tdbSlotMatch = normCode.match(/^TBD_SLOT(\d+)$/);
+    if (tdbSlotMatch) normCode = `TBD${tdbSlotMatch[1]}`;
     const course = coursesData.courses.find(c => {
       const cCode = c.name?.split(' - ')[0]?.toUpperCase() || '';
       return cCode === upperCode || cCode.replace(/\s/g, '') === normCode;
@@ -29801,6 +29805,8 @@ export default function Dashboard() {
                     if (courseProgressDataRef.current.length <= courseIdx) {
                       courseProgressDataRef.current.length = courseIdx + 1;
                     }
+                    const moduleFileInfo = moduleFiles.map(f => `${f.originalName || f.name}${f.folder ? ` (${f.folder})` : ''}`).join('\n') || 'No files';
+                    const readingFileInfo = readingFiles.map(f => `${f.originalName || f.name}${f.folder ? ` (${f.folder})` : ''}`).join('\n') || 'No files';
                     courseProgressDataRef.current[courseIdx] = {
                       courseCode,
                       progressBg,
@@ -29815,6 +29821,8 @@ export default function Dashboard() {
                       readingUnread,
                       moduleRemainingMin,
                       readingRemainingMin,
+                      moduleFileInfo,
+                      readingFileInfo,
                       hasNoData,
                       handlePlayModule: () => handlePlayFiles('module'),
                       handlePlayReading: () => handlePlayFiles('reading'),
@@ -33398,8 +33406,8 @@ export default function Dashboard() {
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, overflow: 'visible', gap: '0px', height: '100%' }}>
                       {[
-                        { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `play-module-${pd.courseCode.toLowerCase()}`, testUpload: `upload-module-${pd.courseCode.toLowerCase()}`, bg: pd.progressStartColor || getCourseGradientColors(pd.courseCode).start, dark: true, fontOverride: pd.courseFontColor || '#fff' },
-                        { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `upload-reading-${pd.courseCode.toLowerCase()}`, bg: getCourseGradientColors(pd.courseCode).end, dark: true, fontOverride: pd.courseFontColor || '#fff' },
+                        { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `play-module-${pd.courseCode.toLowerCase()}`, testUpload: `upload-module-${pd.courseCode.toLowerCase()}`, bg: pd.progressStartColor || getCourseGradientColors(pd.courseCode).start, dark: true, fontOverride: pd.courseFontColor || '#fff', fileInfo: pd.moduleFileInfo },
+                        { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `upload-reading-${pd.courseCode.toLowerCase()}`, bg: pd.progressEndColor || getCourseGradientColors(pd.courseCode).end, dark: true, fontOverride: pd.courseFontColor || '#fff', fileInfo: pd.readingFileInfo },
                       ].map(item => {
                         const circleSize = 34;
                         const strokeWidth = 3;
@@ -33413,6 +33421,7 @@ export default function Dashboard() {
                         const isDragOver = hwDragOverTarget === dragKey;
                         return (
                           <div key={item.type}
+                            title={item.fileInfo}
                             onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); e.dataTransfer.dropEffect = 'copy'; setHwDragOverTarget(dragKey); }}
                             onDragEnter={(e) => { e.preventDefault(); e.stopPropagation(); setHwDragOverTarget(dragKey); }}
                             onDragLeave={(e) => { e.preventDefault(); e.stopPropagation(); if (hwDragOverTarget === dragKey) setHwDragOverTarget(null); }}
@@ -34596,7 +34605,7 @@ export default function Dashboard() {
                         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, overflow: 'hidden', gap: '0px' }}>
                           {[
                             { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `float-play-module-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-module-${pd.courseCode.toLowerCase()}`, bg: pd.progressStartColor || getCourseGradientColors(pd.courseCode).start, dark: true, fontOverride: pd.courseFontColor || '#fff' },
-                            { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `float-play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-reading-${pd.courseCode.toLowerCase()}`, bg: getCourseGradientColors(pd.courseCode).end, dark: true, fontOverride: pd.courseFontColor || '#fff' },
+                            { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `float-play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-reading-${pd.courseCode.toLowerCase()}`, bg: pd.progressEndColor || getCourseGradientColors(pd.courseCode).end, dark: true, fontOverride: pd.courseFontColor || '#fff' },
                           ].map(item => {
                             const circleSize = 44;
                             const strokeWidth = 3.5;
