@@ -1,0 +1,82 @@
+For these places and wherever else is relevant:
+- The course labels that sync to the module boxes
+- The automation that plays in the bathroom
+- The system health page folder links section
+
+Every file path needs to be updated to the new file paths stated specifically stated below
+
+For each of the paths, inside this path is the folder with the week numbers, and inside the week number folders are the module and reading folders, which should be chosen according to which week it is and the priority order of playing.   The "Display Labels" below are the display names.   For all of the folders located at these paths, they need to be able to have their names changed reciprocally, so either on One Drive or in the app, and they need to update on the other side.  So if I change the name of the folder on one drive, it needs to update on the course label and in the course row on the semesters page.  It should never touch anything on the Diploma Tracking page.  Use the folder names on One Drive for the true name to ensure the display name matches.  If there is a course code and number, put that code in the code field for the course, and use the name of the course folder for the course name field and for the display name.  Do not add extra letters or anything.  Most of the course names will be TBD 1, TBD 2 or TBD 3, so you will need to differentiate them by their folder paths.  Make sure the folder paths are fixed on hover for every course.
+
+Please update these immediately to exactly what is stated below:
+
+
+
+SPRING & SUMMER 2026:
+DISPLAY NAME LABEL	PATH
+Economics		OneDrive\School\1. TMU\Courses\2026\Spring & Summer\CECN210 - Understanding Economics
+Popular Culture		OneDrive\School\1. TMU\Courses\2026\Spring & Summer\CHIS105 - Inventing Popular Culture
+Philosophy of Religion	OneDrive\School\1. TMU\Courses\2026\Spring & Summer\CPHL110 - Philosophy of Religion
+
+
+
+FALL 2026:
+DISPLAY NAME LABEL	PATH
+Theories of the State	OneDrive\School\1. TMU\Courses\2026\Fall\CPPA235 - Theories of the State
+TBD2			OneDrive\School\1. TMU\Courses\2026\Fall\TBD2
+TBD3			OneDrive\School\1. TMU\Courses\2026\Fall\TBD3
+
+
+WINTER: 2027:
+DISPLAY NAME LABEL	PATH
+TBD1			OneDrive\School\1. TMU\Courses\2027\Winter\TBD1
+TBD2			OneDrive\School\1. TMU\Courses\2027\Winter\TBD2
+TBD3			OneDrive\School\1. TMU\Courses\2027\Winter\TBD3
+
+
+
+SPRING & SUMMER 2027:
+DISPLAY NAME LABEL	PATH
+TBD1			OneDrive\School\1. TMU\Courses\2027\Spring-Summer\Full\TBD1
+TBD2			OneDrive\School\1. TMU\Courses\2027\Spring-Summer\Spring - First Half\TBD2
+TBD3			OneDrive\School\1. TMU\Courses\2027\Spring-Summer\Summer - Second Half\TBD3 	
+
+
+
+FALL 2027:
+DISPLAY NAME LABEL	PATH
+TBD1			OneDrive\School\1. TMU\Courses\2027\Fall\TBD1
+TBD2			OneDrive\School\1. TMU\Courses\2027\Fall\TBD2
+Fall3			OneDrive\School\1. TMU\Courses\2027\Fall\Fall3
+
+
+
+WINTER: 2028:
+DISPLAY NAME LABEL	PATH
+TBD1			OneDrive\School\1. TMU\Courses\2028\Winter\TBD1
+TBD2			OneDrive\School\1. TMU\Courses\2028\Winter\TBD2
+TBD3			OneDrive\School\1. TMU\Courses\2028\Winter\TBD3
+
+
+
+SPRING & SUMMER 2028:
+DISPLAY NAME LABEL	PATH
+TBD1			OneDrive\School\1. TMU\Courses\2028\Spring-Summer\TBD1
+TBD2			OneDrive\School\1. TMU\Courses\2028\Spring-Summer\TBD2
+TBD3			OneDrive\School\1. TMU\Courses\2028\Spring-Summer\TBD3
+
+
+
+FALL 2028:
+DISPLAY NAME LABEL	PATH
+TBD1			OneDrive\School\1. TMU\Courses\2028\Fall\TBD1
+TBD2			OneDrive\School\1. TMU\Courses\2028\Fall\TBD2
+TBD3			OneDrive\School\1. TMU\Courses\2028\Fall\TBD3
+
+
+
+
+WINTER: 2029:
+DISPLAY NAME LABEL	PATH
+TBD1			OneDrive\School\1. TMU\Courses\2029\Winter\TBD1
+TBD2			OneDrive\School\1. TMU\Courses\2029\Winter\TBD2
+TBD3			OneDrive\School\1. TMU\Courses\2029\Winter\TBD3
