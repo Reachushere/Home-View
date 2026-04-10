@@ -4472,16 +4472,28 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       const baseFolderCache: Record<string, any[]> = {};
 
       await Promise.all(semestersToCheck.map(async ({ semester, year, semFolder }) => {
-        const basePath = `/School/1. TMU/Courses/${year}/${semFolder}`;
+        const semFolderVariants = (() => {
+          const t = (semester?.semesterType || 'winter').toLowerCase();
+          if (t.includes('spring') || t.includes('summer')) return ['Spring & Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer'];
+          if (t.includes('fall')) return ['Fall'];
+          return ['Winter'];
+        })();
+        if (!semFolderVariants.includes(semFolder)) semFolderVariants.unshift(semFolder);
+        let basePath = `/School/1. TMU/Courses/${year}/${semFolder}`;
         let baseFolders = baseFolderCache[basePath];
         if (!baseFolders) {
-          try {
-            const baseResp = await client.api(`/me/drive/root:${basePath}:/children`).get();
-            baseFolders = baseResp.value || [];
-            baseFolderCache[basePath] = baseFolders;
-          } catch (e) {
-            return;
+          for (const variant of semFolderVariants) {
+            const tryPath = `/School/1. TMU/Courses/${year}/${variant}`;
+            if (baseFolderCache[tryPath]) { baseFolders = baseFolderCache[tryPath]; basePath = tryPath; break; }
+            try {
+              const baseResp = await client.api(`/me/drive/root:${tryPath}:/children`).get();
+              baseFolders = baseResp.value || [];
+              baseFolderCache[tryPath] = baseFolders;
+              basePath = tryPath;
+              break;
+            } catch {}
           }
+          if (!baseFolders) return;
         }
 
         let semRelativeWeek = weekNum;
@@ -17650,7 +17662,15 @@ document.body.removeChild(a);
         }
       }
 
-      const basePath = `/School/1. TMU/Courses/${year}/${semesterFolder}`;
+      const semFolderVariants = (() => {
+        const t = (semester?.semesterType || 'winter').toLowerCase();
+        if (t.includes('spring') || t.includes('summer')) return ['Spring & Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer'];
+        if (t.includes('fall')) return ['Fall'];
+        return ['Winter'];
+      })();
+      if (!semFolderVariants.includes(semesterFolder)) semFolderVariants.unshift(semesterFolder);
+
+      let basePath = `/School/1. TMU/Courses/${year}/${semesterFolder}`;
 
       let courseIdx = 0;
       if (semester) {
@@ -17666,10 +17686,18 @@ document.body.removeChild(a);
       const overrideReading = courseIdx ? (semester as any)[`course${courseIdx}ReadingFolder`] : '';
 
       let baseFolders: any[] = [];
-      try {
-        baseFolders = await listOneDriveItems(basePath);
-      } catch (baseErr: any) {
-        console.log(`[Sync] Base path not found on OneDrive: ${basePath} — ${baseErr.message}`);
+      let foundBasePath = false;
+      for (const variant of semFolderVariants) {
+        const tryPath = `/School/1. TMU/Courses/${year}/${variant}`;
+        try {
+          baseFolders = await listOneDriveItems(tryPath);
+          basePath = tryPath;
+          foundBasePath = true;
+          break;
+        } catch {}
+      }
+      if (!foundBasePath) {
+        console.log(`[Sync] Base path not found on OneDrive for any variant: ${semFolderVariants.join(', ')}`);
         return res.json({ success: true, synced: [], message: `OneDrive folder not found: ${basePath}` });
       }
       let coursePath: string | null = null;
@@ -17701,13 +17729,59 @@ document.body.removeChild(a);
             if (dbCode === searchCode) { courseIdx = i; break; }
           }
         }
-        const matchedFolder = baseFolders.find((f: any) =>
-          f.type === 'folder' && f.name.toUpperCase().startsWith(searchCode)
+        const isSpSu = (semester?.semesterType || '').toLowerCase().includes('spring') || (semester?.semesterType || '').toLowerCase().includes('summer');
+        let searchFolders = baseFolders;
+        let searchBasePath = basePath;
+        if (isSpSu) {
+          const spsuTerm = courseIdx ? ((semester as any)[`course${courseIdx}SpringSummerTerm`] || 'full').toLowerCase() : 'full';
+          const termFolderMap: Record<string, string[]> = {
+            'full': ['Full', 'Full Term'],
+            'first_half': ['Spring - First Half', 'First Half', 'Spring'],
+            'second_half': ['Summer - Second Half', 'Second Half', 'Summer'],
+          };
+          const termVariants = termFolderMap[spsuTerm] || ['Full'];
+          let termFolder: any = null;
+          for (const tv of termVariants) {
+            termFolder = baseFolders.find((f: any) => f.type === 'folder' && f.name.toLowerCase() === tv.toLowerCase());
+            if (termFolder) break;
+          }
+          if (!termFolder) {
+            for (const tv of termVariants) {
+              termFolder = baseFolders.find((f: any) => f.type === 'folder' && f.name.toLowerCase().includes(tv.toLowerCase()));
+              if (termFolder) break;
+            }
+          }
+          if (termFolder) {
+            try {
+              searchFolders = await listOneDriveItems(termFolder.path);
+              searchBasePath = termFolder.path;
+            } catch {
+              console.log(`[Sync] Could not list spring/summer term folder: ${termFolder.path}`);
+            }
+          }
+        }
+        const matchedFolder = searchFolders.find((f: any) =>
+          f.type === 'folder' && f.name.toUpperCase().replace(/\s/g, '').startsWith(searchCode)
         );
         if (!matchedFolder) {
-          return res.json({ success: true, synced: [], message: `No OneDrive folder for ${courseCode} (searched: ${searchCode} in ${basePath})` });
+          if (isSpSu) {
+            let foundInOtherTerm = false;
+            for (const bf of baseFolders) {
+              if (bf.type !== 'folder') continue;
+              try {
+                const subFolders = await listOneDriveItems(bf.path);
+                const match = subFolders.find((f: any) => f.type === 'folder' && f.name.toUpperCase().replace(/\s/g, '').startsWith(searchCode));
+                if (match) { coursePath = match.path; foundInOtherTerm = true; break; }
+              } catch {}
+            }
+            if (!foundInOtherTerm) {
+              return res.json({ success: true, synced: [], message: `No OneDrive folder for ${courseCode} (searched: ${searchCode} in ${searchBasePath})` });
+            }
+          } else {
+            return res.json({ success: true, synced: [], message: `No OneDrive folder for ${courseCode} (searched: ${searchCode} in ${basePath})` });
+          }
         }
-        coursePath = matchedFolder.path;
+        if (!coursePath) coursePath = matchedFolder!.path;
       }
 
       let semesterRelativeWeek = weekNumber;
@@ -17858,7 +17932,22 @@ document.body.removeChild(a);
       const semesterTypeMap: Record<string, string> = { winter: 'Winter', fall: 'Fall', spring_summer: 'Spring & Summer' };
       const semesterFolder = semesterTypeMap[semester.semesterType] || semester.semesterType;
       const year = semester.semesterName?.match(/\d{4}/)?.[0] || '2026';
-      const basePath = `/School/1. TMU/Courses/${year}/${semesterFolder}`;
+      const semFolderVariants = (() => {
+        const t = (semester.semesterType || 'winter').toLowerCase();
+        if (t.includes('spring') || t.includes('summer')) return ['Spring & Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer'];
+        if (t.includes('fall')) return ['Fall'];
+        return ['Winter'];
+      })();
+      if (!semFolderVariants.includes(semesterFolder)) semFolderVariants.unshift(semesterFolder);
+      let basePath = `/School/1. TMU/Courses/${year}/${semesterFolder}`;
+      for (const variant of semFolderVariants) {
+        const tryPath = `/School/1. TMU/Courses/${year}/${variant}`;
+        try {
+          await listOneDriveItems(tryPath);
+          basePath = tryPath;
+          break;
+        } catch {}
+      }
       const courseCodes = [semester.course1Code, semester.course2Code, semester.course3Code].filter(Boolean) as string[];
       const courseFolderOverrides: Record<string, { module?: string; reading?: string }> = {};
       for (let i = 1; i <= 3; i++) {
@@ -17872,7 +17961,6 @@ document.body.removeChild(a);
       }
       console.log(`[Sync] Using semester: ${semester.semesterName}, path: ${basePath}, courses: ${courseCodes.join(', ')}`);
       
-      // Get all existing files once to avoid repeated DB queries
       const existingFiles = await storage.getFiles();
       const existingFileKeys = new Set(
         existingFiles.map((f: any) => `${f.originalName}|||${f.folder}`)
