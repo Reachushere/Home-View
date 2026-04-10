@@ -18175,16 +18175,6 @@ export default function Dashboard() {
                   semAllCourses[semKey] = [...(semesterCourseAssignments[semKey] || [])];
                   semAllCourses[semKey].forEach(c => allDefCodes.add(c.code.toUpperCase().replace(/\s/g, '')));
                 }
-                const currentSemKeyForEnrich = relevantSemKeys[relevantSemKeys.length - 1] || '';
-                if (currentSemKeyForEnrich && semAllCourses[currentSemKeyForEnrich]) {
-                  coursesData.courses.filter(c => c.name.trim()).forEach(c => {
-                    const code = c.name.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '');
-                    if (code && !allDefCodes.has(code)) {
-                      semAllCourses[currentSemKeyForEnrich].push({ code });
-                      allDefCodes.add(code);
-                    }
-                  });
-                }
 
                 const getGpaValsForSem = (semKey: string) => {
                   const courses = semAllCourses[semKey] || [];
