@@ -12373,6 +12373,35 @@ export default function Dashboard() {
     return eH === sH + 1;
   };
 
+  const VERY_LONG_TASK_HOURS = 4;
+  const VERY_LONG_NARROW_FRAC = 0.22;
+
+  const isVeryLongMultiHour = (t: Task) => {
+    if (!t.eventStartTime || !t.eventEndTime) return false;
+    const [sH, sM] = t.eventStartTime.split(':').map(Number);
+    const [eH, eM] = t.eventEndTime.split(':').map(Number);
+    return (eH * 60 + eM) - (sH * 60 + sM) > VERY_LONG_TASK_HOURS * 60;
+  };
+
+  const veryLongTaskNarrowCols = useMemo(() => {
+    const map = new Map<string, { narrowFrac: number; taskIds: Set<number> }>();
+    const items = getMultiHourTasksForWeek().filter(item => {
+      const dur = (item.endHour * 60 + item.endMin) - (item.startHour * 60 + item.startMin);
+      return dur > VERY_LONG_TASK_HOURS * 60;
+    });
+    for (const item of items) {
+      for (let h = item.startHour + 1; h <= item.endHour; h++) {
+        if (h === item.startHour) continue;
+        const key = `${item.dayIdx}-${h}`;
+        const existing = map.get(key) || { narrowFrac: 0, taskIds: new Set<number>() };
+        existing.narrowFrac = Math.max(existing.narrowFrac, VERY_LONG_NARROW_FRAC);
+        existing.taskIds.add(item.task.id);
+        map.set(key, existing);
+      }
+    }
+    return map;
+  }, [allTasks, weekDays]);
+
   const getConflictExtraHeight = (h: number) => {
     const taskHeight = 32;
     let maxExtra = 0;
@@ -31061,8 +31090,8 @@ export default function Dashboard() {
                                   const borderColor = task.isCompleted ? '#d1d5db' : hasCourseGrad ? gradColors.start : (typeFallbackBorder[task.type] || otherRowColors.borderColor);
                                   return {
                                     top: `${topOffset}px`,
-                                    left: (() => { if (stackInConflict) return '2px'; const overlayCols = multiHourOverlayCols.get(`${dayIdx}-${hour}`) || 0; const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); if (overlayCols > 0) { const inlineCol = overlayCols; const totalC = overlayCols + totalItems; return `calc(${inlineCol + taskIdx} / ${totalC} * 100% + 2px)`; } return hasNextDueBox ? `calc(${taskIdx * columnWidth / 2}% + 2px)` : `calc(${taskIdx * columnWidth}% + 2px)`; })(),
-                                    width: (() => { if (stackInConflict) return 'calc(100% - 4px)'; const overlayCols = multiHourOverlayCols.get(`${dayIdx}-${hour}`) || 0; const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); if (overlayCols > 0) { const totalC = overlayCols + totalItems; return `calc(100% / ${totalC} - 4px)`; } return hasNextDueBox ? `calc(${columnWidth / 2}% - 4px)` : `calc(${columnWidth}% - 4px)`; })(),
+                                    left: (() => { if (stackInConflict) return '2px'; const overlayCols = multiHourOverlayCols.get(`${dayIdx}-${hour}`) || 0; const narrowInfo = veryLongTaskNarrowCols.get(`${dayIdx}-${hour}`); const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); if (narrowInfo && overlayCols > 0) { const narrowPct = narrowInfo.narrowFrac * 100; return `calc(${narrowPct}% + ${taskIdx * (100 - narrowPct) / totalItems}% + 2px)`; } if (overlayCols > 0) { const inlineCol = overlayCols; const totalC = overlayCols + totalItems; return `calc(${inlineCol + taskIdx} / ${totalC} * 100% + 2px)`; } return hasNextDueBox ? `calc(${taskIdx * columnWidth / 2}% + 2px)` : `calc(${taskIdx * columnWidth}% + 2px)`; })(),
+                                    width: (() => { if (stackInConflict) return 'calc(100% - 4px)'; const overlayCols = multiHourOverlayCols.get(`${dayIdx}-${hour}`) || 0; const narrowInfo = veryLongTaskNarrowCols.get(`${dayIdx}-${hour}`); const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); if (narrowInfo && overlayCols > 0) { const availPct = (1 - narrowInfo.narrowFrac) * 100; return `calc(${availPct / totalItems}% - 4px)`; } if (overlayCols > 0) { const totalC = overlayCols + totalItems; return `calc(100% / ${totalC} - 4px)`; } return hasNextDueBox ? `calc(${columnWidth / 2}% - 4px)` : `calc(${columnWidth}% - 4px)`; })(),
                                     minHeight: `${taskHeight}px`,
                                     zIndex: selectedTaskId === task.id ? 57 : (draggedTask?.id === task.id ? 56 : 54 + taskIdx),
                                     background: bgGradient,
@@ -31330,6 +31359,9 @@ export default function Dashboard() {
                   }
                   return allMultiHour.map(({ task, dayIdx, startHour, startMin, endHour, endMin }) => {
                   const oi = overlapInfo.get(task.id) || { col: 0, totalCols: 1 };
+                  const taskDurMin = (endHour * 60 + endMin) - (startHour * 60 + startMin);
+                  const isVeryLong = taskDurMin > VERY_LONG_TASK_HOURS * 60;
+                  const vlHeaderPx = 34;
                   const calendarStartHour = 0;
                   let topPx = 0;
                   for (let h = calendarStartHour; h < startHour; h++) {
@@ -31416,10 +31448,10 @@ export default function Dashboard() {
                           taskTitle: task.title
                         });
                       }}
-                      className={`absolute hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing rounded overflow-hidden border ${
+                      className={`absolute ${isVeryLong ? '' : 'hover:opacity-90 shadow-sm rounded overflow-hidden border'} cursor-grab active:cursor-grabbing ${
                         draggedTask?.id === task.id ? "opacity-50" : ""
                       } ${
-                        selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
+                        selectedTaskId === task.id && !isVeryLong ? "ring-2 ring-red-500 ring-offset-1" : ""
                       } ${
                         ""
                       }`}
@@ -31437,14 +31469,16 @@ export default function Dashboard() {
                           height: `${heightPx}px`,
                           zIndex: selectedTaskId === task.id ? 55 : (draggedTask?.id === task.id ? 53 : (51 + oi.col)),
                           transition: 'left 0.15s ease, width 0.15s ease',
-                          background: bgGradient,
-                          border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1.5px solid ${borderColor}`,
+                          background: isVeryLong ? 'transparent' : bgGradient,
+                          border: isVeryLong ? 'none' : (selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1.5px solid ${borderColor}`),
+                          overflow: isVeryLong ? 'visible' : 'hidden',
                           display: 'flex',
                           flexDirection: 'column' as const,
                           backfaceVisibility: 'hidden' as const,
                           WebkitFontSmoothing: 'antialiased',
                           textRendering: 'geometricPrecision',
-                          pointerEvents: 'auto' as const,
+                          pointerEvents: isVeryLong ? 'none' as const : 'auto' as const,
+                          borderRadius: isVeryLong ? '0' : undefined,
                         };
                       })()}
                       data-testid={`multi-hour-task-${task.id}`}
@@ -31454,7 +31488,32 @@ export default function Dashboard() {
                       data-orig-width={(() => { const sidebarPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0); const dayW = `(${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${sidebarPx}px)`; const now = new Date(); const currentHourNow = now.getHours(); const taskDay2 = weekDays[dayIdx]; const isTodayCol = isSameDayET(taskDay2, now); const taskCoversCurrentHour = startHour <= currentHourNow && (endHour > currentHourNow || (endHour === currentHourNow && endMin > 0)); const isCurrentHourOverlap = isTodayCol && taskCoversCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); const colDivisor = oi.totalCols > 1 ? oi.totalCols : (isCurrentHourOverlap ? 2 : 1); return `calc((${dayW}) / ${colDivisor} - 4px)`; })()}
                       data-hover-left={(() => { const sidebarPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0); const dayFrac = `(${gridSizes.dayColumnWidths.slice(0, dayIdx).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)})`; return `calc(${sidebarPx}px + ${dayFrac} * (100% - ${sidebarPx}px) + 2px)`; })()}
                       data-hover-width={(() => { const sidebarPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0); const dayW = `(${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${sidebarPx}px)`; return `calc(${dayW} - 4px)`; })()}
+                      data-is-very-long={isVeryLong ? 'true' : undefined}
                     >
+                      {isVeryLong && (() => {
+                        const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode);
+                        const gradColors = courseCode ? getCourseGradientColors(courseCode) : null;
+                        const hasCourseGrad = gradColors && gradColors.start !== '#6b7280';
+                        const taskBg = cMatch?.taskBgColor || (colors?.bg) || (hasCourseGrad ? `linear-gradient(180deg, ${gradColors.start}, ${gradColors.end})` : null);
+                        const bgGradient = task.isCompleted ? '#e5e7eb' : taskBg ? taskBg : `linear-gradient(180deg, ${otherRowColors.labelStart}, ${otherRowColors.labelEnd})`;
+                        const borderColor = task.isCompleted ? '#d1d5db' : hasCourseGrad ? gradColors!.start : otherRowColors.borderColor;
+                        const narrowW = `${VERY_LONG_NARROW_FRAC * 100}%`;
+                        return (
+                          <div style={{ position: 'absolute', top: `${vlHeaderPx}px`, left: 0, width: narrowW, bottom: 0, background: bgGradient, border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1.5px solid ${borderColor}`, borderTop: 'none', borderRadius: '0 0 0 4px', pointerEvents: 'auto', zIndex: 0 }} />
+                        );
+                      })()}
+                      {isVeryLong && (() => {
+                        const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode);
+                        const gradColors = courseCode ? getCourseGradientColors(courseCode) : null;
+                        const hasCourseGrad = gradColors && gradColors.start !== '#6b7280';
+                        const taskBg = cMatch?.taskBgColor || (colors?.bg) || (hasCourseGrad ? `linear-gradient(180deg, ${gradColors.start}, ${gradColors.end})` : null);
+                        const bgGradient = task.isCompleted ? '#e5e7eb' : taskBg ? taskBg : `linear-gradient(180deg, ${otherRowColors.labelStart}, ${otherRowColors.labelEnd})`;
+                        const borderColor = task.isCompleted ? '#d1d5db' : hasCourseGrad ? gradColors!.start : otherRowColors.borderColor;
+                        return (
+                          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: `${vlHeaderPx}px`, background: bgGradient, border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1.5px solid ${borderColor}`, borderRadius: '4px 4px 4px 0', overflow: 'hidden', display: 'flex', flexDirection: 'column', pointerEvents: 'auto', zIndex: 1 }} />
+                        );
+                      })()}
+                      <div style={isVeryLong ? { position: 'absolute', top: 0, left: 0, right: 0, height: `${vlHeaderPx}px`, overflow: 'hidden', display: 'flex', flexDirection: 'column', pointerEvents: 'auto', zIndex: 2, borderRadius: '4px 4px 4px 0' } : { display: 'contents' }}>
                       {task.showCountdownBarMain !== false && !task.isCompleted && oi.col === 0 && (() => {
                         const dueDateObj = new Date(task.dueDate);
                         const nowCd = new Date();
@@ -31552,6 +31611,7 @@ export default function Dashboard() {
                           </div>
                         </div>
                         {(() => { const dm = courseDeliveryModes[courseCode] || ''; const zl = courseZoomLinks[courseCode] || ''; return dm === 'virtual' ? <img src={zoomCamPath} alt="Zoom" style={{ width: '14px', height: '14px', objectFit: 'contain', borderRadius: '50%', flexShrink: 0, cursor: zl ? 'pointer' : 'default' }} data-testid={`zoom-icon-multi-${task.id}`} onClick={zl ? (e) => { e.stopPropagation(); e.preventDefault(); window.open(zl, '_blank'); try { const f = document.createElement('iframe'); f.style.display = 'none'; f.src = `unical://${encodeURIComponent(zl)}`; document.body.appendChild(f); setTimeout(() => f.remove(), 2000); } catch {} } : undefined} title={zl ? 'Click to open Zoom + Screen Recorder' : 'Virtual class'} /> : null; })()}
+                      </div>
                       </div>
                     </div>
                   );
