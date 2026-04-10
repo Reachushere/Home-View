@@ -12134,13 +12134,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       let usedOverride = false;
       if (folderOverride) {
         const courseFolderPath = folderOverride.replace(/\/(Module|Readings|Reading)$/i, '');
-        try {
-          const items = await getBaseFolders(courseFolderPath);
-          if (items.length > 0) {
-            courses.push({ code: codeClean, path: courseFolderPath });
-            usedOverride = true;
-          }
-        } catch {}
+        courses.push({ code: codeClean, path: courseFolderPath });
+        usedOverride = true;
       }
       if (!usedOverride) {
         try {
