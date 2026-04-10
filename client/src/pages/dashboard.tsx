@@ -11609,9 +11609,36 @@ export default function Dashboard() {
     if (selectedWeekInfo) return null;
     const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date(2026, 0, 10);
     const readingWeek = semesterSettings?.readingWeekStart || null;
-    const { start, end } = getWeekDates(selectedWeek, semStart, readingWeek);
-    return { start, end };
-  }, [selectedWeek, selectedWeekInfo, semesterSettings]);
+    const approx = getWeekDates(selectedWeek, semStart, readingWeek);
+    const sems = allSemesterSettingsRef.current || [];
+    if (sems.length > 0) {
+      const midDate = new Date(approx.start.getTime() + 3 * 24 * 60 * 60 * 1000);
+      for (const sem of sems) {
+        if (!sem.semesterStartDate) continue;
+        const ss = new Date(sem.semesterStartDate);
+        const rw = sem.readingWeekStart || null;
+        const wn = getWeekNumber(midDate, ss, rw);
+        const maxWeek = getSemesterTotalWeeks(sem.semesterType);
+        if (wn >= 1 && wn <= maxWeek) {
+          const corrected = getWeekDates(wn, ss, rw);
+          return { start: corrected.start, end: corrected.end };
+        }
+      }
+      const midDate2 = new Date(approx.start.getTime() + 7 * 24 * 60 * 60 * 1000);
+      for (const sem of sems) {
+        if (!sem.semesterStartDate) continue;
+        const ss = new Date(sem.semesterStartDate);
+        const rw = sem.readingWeekStart || null;
+        const wn = getWeekNumber(midDate2, ss, rw);
+        const maxWeek = getSemesterTotalWeeks(sem.semesterType);
+        if (wn === 1) {
+          const corrected = getWeekDates(1, ss, rw);
+          return { start: corrected.start, end: corrected.end };
+        }
+      }
+    }
+    return { start: approx.start, end: approx.end };
+  }, [selectedWeek, selectedWeekInfo, semesterSettings, allSemesterSettings]);
   const weekStartDate = selectedWeekInfo ? parseAsLocalDate(selectedWeekInfo.startDate) : computedWeekDates ? new Date(computedWeekDates.start.getFullYear(), computedWeekDates.start.getMonth(), computedWeekDates.start.getDate(), 12) : new Date(2026, 0, 17, 12);
   const weekEndDate = selectedWeekInfo ? parseAsLocalDate(selectedWeekInfo.endDate) : computedWeekDates ? new Date(computedWeekDates.end.getFullYear(), computedWeekDates.end.getMonth(), computedWeekDates.end.getDate(), 12) : new Date(2026, 0, 23, 12);
   weekStartDateRef.current = weekStartDate.toISOString();
@@ -29419,7 +29446,7 @@ export default function Dashboard() {
                                   }}
                                   onClick={(e) => { e.stopPropagation(); setEditingTask(task); }}
                                   onDoubleClick={(e) => { e.stopPropagation(); setEditingTask(task); }}
-                                  title={`Prep Day - ${task.title}`}
+                                  title={moduleFile ? `${task.title}\n📄 ${moduleFile.displayName || moduleFile.originalName}` : `Prep Day - ${task.title}`}
                                 >
                                   {(() => { const totalPrepDays = differenceInCalendarDays(prepDueDate, prepStartDate); const showCount = totalPrepDays > 3; const daysLeft = showCount ? differenceInCalendarDays(prepDueDate, cellDate) : 0; const prepUrgent = showCount && daysLeft <= 2; return <span className="flex flex-col items-center justify-center whitespace-nowrap font-bold shrink-0" style={{ backgroundColor: course.darkColor, color: '#ffffff', letterSpacing: showCount ? '0.5px' : '1px', padding: showCount ? '0px 3px 0 2px' : '1px 3px 0 2px', fontSize: showCount ? '7px' : '8px', WebkitTextStroke: '0', alignSelf: 'stretch', lineHeight: showCount ? '1.1' : undefined, marginTop: showCount ? '-1px' : undefined, minWidth: '30px' }}><span style={{ marginTop: showCount ? '1px' : undefined, fontFamily: "system-ui, sans-serif", fontWeight: 500 }}>PREP</span>{showCount && <span style={{ color: prepUrgent ? '#FFFF00' : '#e0e0e0', fontSize: '8px', fontWeight: 550, WebkitTextStroke: '0', letterSpacing: '0.3px', lineHeight: '1', marginTop: '0px', fontFamily: "system-ui, sans-serif" }}>{daysLeft}d</span>}</span>; })()}
                                   <span className="truncate pl-[3px] py-0.5 flex-1 min-w-0" style={{ fontSize: '9px', transform: 'translateY(1px)', color: '#000000', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", fontWeight: 500 }}>{(task.title || '').replace(/[\[\]]/g, '')}</span>
@@ -29460,7 +29487,7 @@ export default function Dashboard() {
                                 paddingRight: dueModulePdfUrl && courseDeliveryModes[task.courseName?.split(' - ')[0]?.trim().replace(/\s/g, '') || ''] === 'virtual' ? '54px' : dueModulePdfUrl ? '30px' : courseDeliveryModes[task.courseName?.split(' - ')[0]?.trim().replace(/\s/g, '') || ''] === 'virtual' ? '26px' : undefined,
                                 position: 'relative',
                               }}
-                              title={task.title}
+                              title={dueModuleFile ? `${task.title}\n📄 ${dueModuleFile.displayName || dueModuleFile.originalName}` : task.title}
                               onClick={(e) => { e.stopPropagation(); setEditingTask(task); }}
                               onDoubleClick={(e) => { e.stopPropagation(); setEditingTask(task); }}
                             >
@@ -29499,6 +29526,7 @@ export default function Dashboard() {
                                     alt="Open PDF"
                                     style={{ width: '28px', height: '28px', objectFit: 'contain', cursor: 'pointer', imageRendering: 'auto', animation: 'none' }}
                                     onClick={(e) => { e.stopPropagation(); e.preventDefault(); const url = dueModulePdfUrl; if (dueModuleFile) { window.open(`/pdf-reader/${dueModuleFile.id}`, '_blank'); } else if (url.startsWith('http')) { window.open(url, '_blank'); } else { const p = url.startsWith('/') ? url.slice(1) : encodeURIComponent(url); window.open(`/pdf-viewer/${p}`, '_blank'); } }}
+                                    title={dueModuleFile?.displayName || dueModuleFile?.originalName || ''}
                                     data-testid={`pdf-icon-task-${task.id}`}
                                   />
                                 )}
@@ -30060,6 +30088,7 @@ export default function Dashboard() {
                               borderWidth: '1.5px',
                               color: task.isCompleted ? undefined : (() => { const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase().replace(/\s/g, '') === courseCode.replace(/\s/g, '').toUpperCase()); if (cMatch?.courseFontColor) return cMatch.courseFontColor; const cbg = colors?.bg || ''; let cr=0,cg=0,cb=0,cm=false; const chm=cbg.match(/#([0-9a-fA-F]{6})/); if(chm){cr=parseInt(chm[1].substring(0,2),16);cg=parseInt(chm[1].substring(2,4),16);cb=parseInt(chm[1].substring(4,6),16);cm=true;} if(!cm){const crm=cbg.match(/rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);if(crm){cr=parseInt(crm[1]);cg=parseInt(crm[2]);cb=parseInt(crm[3]);cm=true;}} return (cm && (cr*299+cg*587+cb*114)/1000<160) ? '#ffffff' : '#000000'; })(),
                             }}
+                            title={adModuleFile ? `${task.title}\n📄 ${adModuleFile.displayName || adModuleFile.originalName}` : task.title}
                             onContextMenu={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
@@ -30103,6 +30132,7 @@ export default function Dashboard() {
                                 className="shrink-0"
                                 style={{ width: '14px', height: '14px', objectFit: 'contain', marginRight: '1px', cursor: 'pointer', imageRendering: 'auto' }}
                                 onClick={(e) => { e.stopPropagation(); window.open(adPdfFileId ? `/pdf-reader/${adPdfFileId}?autoplay=1` : `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(adPdfUrl)}&name=${encodeURIComponent(task.title)}&autoplay=1`, '_blank'); }}
+                                title={adModuleFile?.displayName || adModuleFile?.originalName || ''}
                                 data-testid={`pdf-icon-allday-${task.id}`}
                               />
                             )}
