@@ -339,6 +339,9 @@ const defaultCourseDisplayNames: Record<string, string> = {
   "CHIS105": "Popular Culture",
 };
 
+let _appTimezoneOverride: string | null = null;
+function getAppTz(): string { return _appTimezoneOverride || 'America/Toronto'; }
+
 // Helper function to get display name for course row labels (uses dynamic state)
 let _courseDisplayNames: Record<string, string> = { ...defaultCourseDisplayNames };
 const getCourseRowDisplayName = (courseName: string): string => {
@@ -429,7 +432,7 @@ function _etDateKey(date: Date): string {
   const ms = date.getTime();
   const cached = _etDateKeyCache.get(ms);
   if (cached) return cached;
-  const key = date.toLocaleDateString('en-CA', { timeZone: 'America/Toronto' });
+  const key = date.toLocaleDateString('en-CA', { timeZone: getAppTz() });
   if (_etDateKeyCache.size > 2000) _etDateKeyCache.clear();
   _etDateKeyCache.set(ms, key);
   return key;
@@ -440,7 +443,7 @@ function toET(date: Date): Date {
   const ms = date.getTime();
   const cached = _toETCache.get(ms);
   if (cached) return new Date(cached.getTime());
-  const s = date.toLocaleString('en-US', { timeZone: 'America/Toronto' });
+  const s = date.toLocaleString('en-US', { timeZone: getAppTz() });
   const result = new Date(s);
   if (_toETCache.size > 2000) _toETCache.clear();
   _toETCache.set(ms, result);
@@ -956,7 +959,7 @@ function WeatherDateGroup({ dateStr, records, defaultOpen }: { dateStr: string; 
         <div className="grid gap-[2px] pt-1 pb-2">
           {sorted.map((r: any) => {
             const t = new Date(r.recordedAt);
-            const timeStr = t.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/Toronto' });
+            const timeStr = t.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: getAppTz() });
             const tempColor = r.temperature <= 0 ? '#93c5fd' : r.temperature <= 10 ? '#60a5fa' : r.temperature <= 20 ? '#fbbf24' : r.temperature <= 30 ? '#f97316' : '#ef4444';
             return (
               <div key={r.id} className="flex items-center gap-3 text-[11px] py-[3px] px-2 rounded" style={{ background: 'rgba(255,255,255,0.05)' }} data-testid={`weather-record-${r.id}`}>
@@ -1475,7 +1478,7 @@ export default function Dashboard() {
       if (authLevel !== '5747') return;
       const params = new URLSearchParams(window.location.search);
       if (params.get('catWashFollow') || params.get('followOnly') || params.get('fullscreen')) return;
-      const eastern = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+      const eastern = new Date(new Date().toLocaleString('en-US', { timeZone: getAppTz() }));
       const hour = eastern.getHours();
       if (hour < 9) return;
       const localDismiss = localStorage.getItem('morning_review_dismiss_until');
@@ -1533,7 +1536,7 @@ export default function Dashboard() {
     const checkMonthlyReport = () => {
       if (authLevel !== '5747') return;
       const now = new Date();
-      const etStr = now.toLocaleString('en-US', { timeZone: 'America/Toronto' });
+      const etStr = now.toLocaleString('en-US', { timeZone: getAppTz() });
       const et = new Date(etStr);
       const day = et.getDate();
       const hour = et.getHours();
@@ -1612,7 +1615,7 @@ export default function Dashboard() {
     for (const item of morningReviewItems) {
       await handleAcceptReview(item.id);
     }
-    const eastern = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+    const eastern = new Date(new Date().toLocaleString('en-US', { timeZone: getAppTz() }));
     const todayStr = `${eastern.getFullYear()}-${String(eastern.getMonth()+1).padStart(2,'0')}-${String(eastern.getDate()).padStart(2,'0')}`;
     fetch('/api/morning-review/last-shown', {
       method: 'POST',
@@ -1624,7 +1627,7 @@ export default function Dashboard() {
   };
 
   const handleSkipAllForToday = () => {
-    const eastern = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+    const eastern = new Date(new Date().toLocaleString('en-US', { timeZone: getAppTz() }));
     const todayStr = `${eastern.getFullYear()}-${String(eastern.getMonth()+1).padStart(2,'0')}-${String(eastern.getDate()).padStart(2,'0')}`;
     const tomorrow9am = new Date(eastern);
     tomorrow9am.setDate(tomorrow9am.getDate() + 1);
@@ -1654,7 +1657,7 @@ export default function Dashboard() {
     for (const item of morningReviewItems) {
       await handleRejectReview(item.id);
     }
-    const eastern = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+    const eastern = new Date(new Date().toLocaleString('en-US', { timeZone: getAppTz() }));
     const todayStr = `${eastern.getFullYear()}-${String(eastern.getMonth()+1).padStart(2,'0')}-${String(eastern.getDate()).padStart(2,'0')}`;
     fetch('/api/morning-review/last-shown', {
       method: 'POST',
@@ -1680,7 +1683,7 @@ export default function Dashboard() {
     setMorningReviewItems(uncheckedItems);
     setMorningReviewLoading(false);
     if (uncheckedItems.length === 0) {
-      const eastern = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+      const eastern = new Date(new Date().toLocaleString('en-US', { timeZone: getAppTz() }));
       const todayStr = `${eastern.getFullYear()}-${String(eastern.getMonth()+1).padStart(2,'0')}-${String(eastern.getDate()).padStart(2,'0')}`;
       fetch('/api/morning-review/last-shown', {
         method: 'POST',
@@ -2733,7 +2736,7 @@ export default function Dashboard() {
             sunrise: data.daily.sunrise?.[i] ?? undefined,
             sunset: data.daily.sunset?.[i] ?? undefined,
           })) : [];
-          const nowET = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+          const nowET = new Date(new Date().toLocaleString('en-US', { timeZone: getAppTz() }));
           const todayStr = `${nowET.getFullYear()}-${String(nowET.getMonth() + 1).padStart(2, '0')}-${String(nowET.getDate()).padStart(2, '0')}`;
           const todayDaily = daily.find((d: any) => d.date === todayStr);
           const hourly = data.hourly ? data.hourly.time.map((t: string, i: number) => ({
@@ -3497,7 +3500,7 @@ export default function Dashboard() {
   
   // Calculate if it's nighttime in Toronto based on approximate sunrise/sunset
   const computeIsNighttime = useCallback(() => {
-    const torontoTime = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+    const torontoTime = new Date(new Date().toLocaleString('en-US', { timeZone: getAppTz() }));
     const hours = torontoTime.getHours();
     const minutes = torontoTime.getMinutes();
     const currentMinutes = hours * 60 + minutes;
@@ -5062,10 +5065,18 @@ export default function Dashboard() {
     if (!hasUncheckedStartedAas) return;
   }, [isSchoolCoursesDialogOpen, aasSentStatus, playBoingSound]);
 
+  const [timezoneOverride, setTimezoneOverride] = useState<boolean>(() => {
+    return localStorage.getItem('timezoneOverride') === 'true';
+  });
+  useEffect(() => {
+    localStorage.setItem('timezoneOverride', String(timezoneOverride));
+  }, [timezoneOverride]);
   // Get the display timezone (travel if set, otherwise home)
   const displayTimezone = profileData.travelTimezone || profileData.timezone;
   const displayTimezoneRef = useRef(displayTimezone);
   displayTimezoneRef.current = displayTimezone;
+  const appTimezone = timezoneOverride ? displayTimezone : 'America/Toronto';
+  _appTimezoneOverride = timezoneOverride ? displayTimezone : null;
 
   const toggleCourse = (courseId: string) => {
     setCheckedCourses(prev => {
@@ -5668,7 +5679,7 @@ export default function Dashboard() {
         const dueDateStr = `${taskDueDate.getFullYear()}-${String(taskDueDate.getMonth()+1).padStart(2,'0')}-${String(taskDueDate.getDate()).padStart(2,'0')}`;
         dayColEl = document.querySelector(`[data-cal-date="${dueDateStr}"]`) as HTMLElement | null;
         if (!dayColEl) {
-          const etDate = new Date(taskDueDate.toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+          const etDate = new Date(taskDueDate.toLocaleString('en-US', { timeZone: getAppTz() }));
           const etStr = `${etDate.getFullYear()}-${String(etDate.getMonth()+1).padStart(2,'0')}-${String(etDate.getDate()).padStart(2,'0')}`;
           dayColEl = document.querySelector(`[data-cal-date="${etStr}"]`) as HTMLElement | null;
         }
@@ -7472,7 +7483,7 @@ export default function Dashboard() {
     const promptData: { dates: string[] } = stored ? (() => { try { return JSON.parse(stored); } catch { return { dates: [] }; } })() : { dates: [] };
     if (promptData.dates.length >= 2) return;
     const now = new Date();
-    const etStr = now.toLocaleString('en-US', { timeZone: 'America/Toronto' });
+    const etStr = now.toLocaleString('en-US', { timeZone: getAppTz() });
     const et = new Date(etStr);
     const todayStr = `${et.getFullYear()}-${String(et.getMonth()+1).padStart(2,'0')}-${String(et.getDate()).padStart(2,'0')}`;
     if (promptData.dates.includes(todayStr)) return;
@@ -8225,7 +8236,7 @@ export default function Dashboard() {
   useEffect(() => {
     if (!semesterSettings || semesterChecklistShownRef.current) return;
 
-    const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+    const now = new Date(new Date().toLocaleString('en-US', { timeZone: getAppTz() }));
     const lastShownKey = `semChecklist_lastShown_${semesterSettings.id}`;
     const snoozeUntilKey = `semChecklist_snoozeUntil_${semesterSettings.id}`;
     const allDoneKey = `semChecklist_allDone_${semesterSettings.id}`;
@@ -8294,7 +8305,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!semesterSettings || pdfUploadShownRef.current) return;
-    const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+    const now = new Date(new Date().toLocaleString('en-US', { timeZone: getAppTz() }));
     const semStart = semesterSettings.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : null;
     if (!semStart) return;
     const daysUntilStart = Math.floor((semStart.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
@@ -13223,7 +13234,7 @@ export default function Dashboard() {
                           <p className="text-white text-[10px] leading-tight break-words">{ann.message}</p>
                           <div className="flex items-center gap-1.5 mt-0.5">
                             <span className="text-white/40 text-[8px]">
-                              {ann.scheduledAt ? new Date(ann.scheduledAt).toLocaleString('en-US', { timeZone: 'America/Toronto', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }) : ''}
+                              {ann.scheduledAt ? new Date(ann.scheduledAt).toLocaleString('en-US', { timeZone: getAppTz(), month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }) : ''}
                             </span>
                             {ann.repeatType && ann.repeatType !== 'none' && (
                               <span className="text-cyan-400/60 text-[8px]">
@@ -14460,7 +14471,7 @@ export default function Dashboard() {
       {/* Morning Review - Full Page Overlay */}
       {greyClassifyOpen && desktopIsFull && (() => {
         const now = new Date();
-        const etStr = now.toLocaleString('en-US', { timeZone: 'America/Toronto' });
+        const etStr = now.toLocaleString('en-US', { timeZone: getAppTz() });
         const et = new Date(etStr);
         const todayStr = `${et.getFullYear()}-${String(et.getMonth()+1).padStart(2,'0')}-${String(et.getDate()).padStart(2,'0')}`;
         const todayStart = new Date(`${todayStr}T00:00:00`);
@@ -17501,7 +17512,7 @@ export default function Dashboard() {
                   fetch('/api/google/calendar/events').catch(() => {}),
                   fetch('/api/tasks').catch(() => {}),
                   fetch('/api/announcements').catch(() => {}),
-                  fetch('/api/weather').then(r => r.json()).then(data => { if (data?.current) { const daily = data.daily ? data.daily.time.map((d: string, i: number) => ({ date: d, high: Math.round(data.daily.temperature_2m_max[i]), low: Math.round(data.daily.temperature_2m_min[i]), weatherCode: data.daily.weather_code?.[i] ?? undefined, sunrise: data.daily.sunrise?.[i] ?? undefined, sunset: data.daily.sunset?.[i] ?? undefined })) : []; const nowET = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' })); const todayStr = `${nowET.getFullYear()}-${String(nowET.getMonth() + 1).padStart(2, '0')}-${String(nowET.getDate()).padStart(2, '0')}`; const todayDaily = daily.find((d: any) => d.date === todayStr); const hourly = data.hourly ? data.hourly.time.map((t: string, i: number) => ({ time: t, temp: Math.round(data.hourly.temperature_2m[i]), weatherCode: data.hourly.weather_code[i] ?? 0 })) : []; setWeatherData({ code: data.current.weather_code, temp: data.current.temperature_2m, windSpeed: data.current.wind_speed_10m, isDay: data.current.is_day === 1, sunrise: todayDaily?.sunrise, sunset: todayDaily?.sunset, daily, hourly }); } }).catch(() => {}),
+                  fetch('/api/weather').then(r => r.json()).then(data => { if (data?.current) { const daily = data.daily ? data.daily.time.map((d: string, i: number) => ({ date: d, high: Math.round(data.daily.temperature_2m_max[i]), low: Math.round(data.daily.temperature_2m_min[i]), weatherCode: data.daily.weather_code?.[i] ?? undefined, sunrise: data.daily.sunrise?.[i] ?? undefined, sunset: data.daily.sunset?.[i] ?? undefined })) : []; const nowET = new Date(new Date().toLocaleString('en-US', { timeZone: getAppTz() })); const todayStr = `${nowET.getFullYear()}-${String(nowET.getMonth() + 1).padStart(2, '0')}-${String(nowET.getDate()).padStart(2, '0')}`; const todayDaily = daily.find((d: any) => d.date === todayStr); const hourly = data.hourly ? data.hourly.time.map((t: string, i: number) => ({ time: t, temp: Math.round(data.hourly.temperature_2m[i]), weatherCode: data.hourly.weather_code[i] ?? 0 })) : []; setWeatherData({ code: data.current.weather_code, temp: data.current.temperature_2m, windSpeed: data.current.wind_speed_10m, isDay: data.current.is_day === 1, sunrise: todayDaily?.sunrise, sunset: todayDaily?.sunset, daily, hourly }); } }).catch(() => {}),
                   fetch('/api/spotify/now-playing').catch(() => {}),
                 ]);
                 refreshFileCounts();
@@ -20090,8 +20101,8 @@ export default function Dashboard() {
         const dayForecast = weatherData?.daily?.find(f => f.date === format(d, 'yyyy-MM-dd'));
         const ssTime = dayForecast?.sunset ? new Date(dayForecast.sunset) : null;
         const srTime = dayForecast?.sunrise ? new Date(dayForecast.sunrise) : null;
-        const sunsetStr = ssTime ? new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/Toronto' }).format(ssTime) : '~7:45 PM';
-        const sunriseStr = srTime ? new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/Toronto' }).format(srTime) : '~6:50 AM';
+        const sunsetStr = ssTime ? new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: getAppTz() }).format(ssTime) : '~7:45 PM';
+        const sunriseStr = srTime ? new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: getAppTz() }).format(srTime) : '~6:50 AM';
         const planets = [
           { name: 'Venus', mag: -3.8, desc: 'Evening Star', x: 25, y: 38, color: '#fef3c7', size: 6, visible: true, direction: 'WSW', altitude: '22°', info: 'Brilliant evening star, visible ~1.5 hrs after sunset', photo: venusPhotoPath, diameter: '12,104 km', distance: '61M km from Earth', orbitalPeriod: '225 days', surfaceTemp: '462°C (hottest planet)', moons: 0, detail: 'Venus is the second planet from the Sun and Earth\'s closest neighbor. It\'s shrouded in thick sulfuric acid clouds, trapping heat in a runaway greenhouse effect. In April 2026, Venus blazes at magnitude −3.8 in the evening sky after sunset, setting about 1.5 hours after the Sun.' },
           { name: 'Jupiter', mag: -2.0, desc: 'Gas Giant', x: 38, y: 28, color: '#fde68a', size: 5, visible: true, direction: 'SW', altitude: '35°', info: 'Bright in southwest at dusk, in Gemini', photo: jupiterPhotoPath, diameter: '139,820 km', distance: '680M km from Earth', orbitalPeriod: '11.9 years', surfaceTemp: '−110°C (cloud tops)', moons: 95, detail: 'Jupiter is the largest planet in the solar system — more than 1,300 Earths could fit inside. Its Great Red Spot is a storm larger than Earth that has raged for centuries. Currently at magnitude −2.0 in Gemini, it\'s the second brightest object in the evening sky after Venus.' },
@@ -23574,7 +23585,7 @@ export default function Dashboard() {
                       onClick={() => {
                         localStorage.setItem('monthlyReportFields', JSON.stringify(monthlyReportFields));
                         const now = new Date();
-                        const etStr = now.toLocaleString('en-US', { timeZone: 'America/Toronto' });
+                        const etStr = now.toLocaleString('en-US', { timeZone: getAppTz() });
                         const et = new Date(etStr);
                         localStorage.setItem('monthlyReportDismissed', `${et.getFullYear()}-${et.getMonth()}`);
                         setIsMonthlyReportOpen(false);
@@ -24814,7 +24825,7 @@ export default function Dashboard() {
                                 <div className="flex items-center gap-2">
                                   <span className="text-[11px] font-bold" style={{ color: '#ffaa66' }}>{alert.title}</span>
                                   <span className="text-[8px]" style={{ color: 'rgba(255,255,255,0.4)' }}>
-                                    {new Date(alert.recordedAt).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'America/Toronto' })}
+                                    {new Date(alert.recordedAt).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: getAppTz() })}
                                   </span>
                                 </div>
                                 {alert.summary && <div className="text-[10px] mt-0.5" style={{ color: 'rgba(255,255,255,0.6)' }}>{alert.summary}</div>}
@@ -24834,7 +24845,7 @@ export default function Dashboard() {
                     const grouped: Record<string, any[]> = {};
                     weatherHistoryData.forEach((r: any) => {
                       const d = new Date(r.recordedAt);
-                      const key = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', timeZone: 'America/Toronto' });
+                      const key = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', timeZone: getAppTz() });
                       if (!grouped[key]) grouped[key] = [];
                       grouped[key].push(r);
                     });
@@ -24851,11 +24862,11 @@ export default function Dashboard() {
                         </div>
                         {(() => {
                           const now = new Date();
-                          const currentMonthKey = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'America/Toronto' });
+                          const currentMonthKey = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: getAppTz() });
                           const monthGroups: Record<string, { dateStr: string; records: any[] }[]> = {};
                           Object.entries(grouped).forEach(([dateStr, records]) => {
                             const d = new Date(records[0].recordedAt);
-                            const monthKey = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'America/Toronto' });
+                            const monthKey = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: getAppTz() });
                             if (!monthGroups[monthKey]) monthGroups[monthKey] = [];
                             monthGroups[monthKey].push({ dateStr, records });
                           });
@@ -24924,6 +24935,8 @@ export default function Dashboard() {
                     saveSchool(updated as any);
                   }}
                   onDirtyChange={setIsProfileDirty}
+                  timezoneOverride={timezoneOverride}
+                  onTimezoneOverrideChange={setTimezoneOverride}
                 />
               </div>
               <div className="flex justify-end gap-2 px-4 py-[10px] border-t border-white/40 shrink-0 rounded-b-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, ${colorSettings.headerBar}bb 0%, ${colorSettings.headerBar}cc 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15), 0 -2px 8px rgba(0,0,0,0.08)' }}>
@@ -35377,7 +35390,7 @@ export default function Dashboard() {
                             </button>
                             <div className="flex-1 min-w-0">
                               <p className={`text-[12px] ${isPast ? 'text-red-300' : 'text-white'}`}>{reminder.title}</p>
-                              {reminder.dueDate && <p className="text-white/40 text-[9px]">{new Date(reminder.dueDate).toLocaleString('en-US', { timeZone: 'America/Toronto', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })}</p>}
+                              {reminder.dueDate && <p className="text-white/40 text-[9px]">{new Date(reminder.dueDate).toLocaleString('en-US', { timeZone: getAppTz(), month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })}</p>}
                             </div>
                             {reminder.dueDate && (
                               <button className="text-white/30 hover:text-cyan-400 transition-colors p-1" title="Send email reminder" onClick={() => { fetch('/api/send-reminder-email', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ taskId: reminder.id, title: reminder.title, dueDate: reminder.dueDate }) }); }} data-testid={`button-email-reminder-${reminder.id}`}>
@@ -35787,7 +35800,7 @@ export default function Dashboard() {
                                 <span className="text-white/15">|</span>
                                 <span className="text-white/30">{actions.length} action(s)</span>
                               </div>
-                              {auto.lastTriggered && <p className="text-white/20 text-[9px] mb-2">Last: {new Date(auto.lastTriggered).toLocaleString('en-US', { timeZone: 'America/Toronto', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</p>}
+                              {auto.lastTriggered && <p className="text-white/20 text-[9px] mb-2">Last: {new Date(auto.lastTriggered).toLocaleString('en-US', { timeZone: getAppTz(), month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</p>}
                               <div className="flex items-center gap-1.5">
                                 <button onClick={() => triggerHaAutomationMutation.mutate(auto.id)} className="text-[10px] text-cyan-400/70 hover:text-cyan-300 transition-colors px-2 py-1 rounded border border-cyan-500/20 hover:border-cyan-500/40" data-testid={`automation-trigger-${auto.id}`}>Run Now</button>
                                 <button onClick={() => editAutomation(auto)} className="text-[10px] text-white/40 hover:text-white/70 transition-colors px-2 py-1 rounded border border-white/10 hover:border-white/20" data-testid={`automation-edit-${auto.id}`}>Edit</button>
@@ -36633,7 +36646,7 @@ export default function Dashboard() {
                   <div className="flex-1 min-w-0">
                     <span className="text-white text-[11px] block truncate">{t.title}</span>
                     <span className="text-white/40 text-[9px]">
-                      {new Date(t.dueDate).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'America/Toronto' })}
+                      {new Date(t.dueDate).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: getAppTz() })}
                       {t.eventStartTime ? ` at ${t.eventStartTime}` : ''}
                       {t.isCompleted ? ' ✓' : ''}
                     </span>
@@ -37916,7 +37929,9 @@ function ProfileForm({
   onProfilePhotoChange,
   schoolData,
   onSchoolSave,
-  onDirtyChange
+  onDirtyChange,
+  timezoneOverride,
+  onTimezoneOverrideChange
 }: { 
   profileData: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; postalCode: string; location: string; phoneNumber: string; email: string; address: string; country: string; provinceState: string; emergencyContactName: string; emergencyContactPhone: string; allergies: string };
   timezones: { value: string; label: string }[];
@@ -37927,6 +37942,8 @@ function ProfileForm({
   schoolData: { schoolLogo: string | null; schoolName: string };
   onSchoolSave: (data: { schoolLogo: string | null; schoolName: string }) => void;
   onDirtyChange?: (dirty: boolean) => void;
+  timezoneOverride?: boolean;
+  onTimezoneOverrideChange?: (val: boolean) => void;
 }) {
   const [firstName, setFirstName] = useState(profileData.firstName);
   const [lastName, setLastName] = useState(profileData.lastName);
@@ -38323,7 +38340,22 @@ function ProfileForm({
           </select>
         </div>
         <div className="space-y-0 flex-1">
-          <Label htmlFor="timezone" className="text-[10px]">Home Time Zone</Label>
+          <div className="flex items-center gap-2">
+            <Label htmlFor="timezone" className="text-[10px]">Home Time Zone</Label>
+            <button
+              type="button"
+              onClick={() => onTimezoneOverrideChange?.(!timezoneOverride)}
+              className="flex items-center gap-1 px-[6px] py-[1px] rounded-full text-[8px] font-medium transition-all"
+              style={timezoneOverride
+                ? { background: 'rgba(34,197,94,0.25)', border: '1px solid rgba(34,197,94,0.5)', color: '#4ade80' }
+                : { background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.4)' }}
+              title={timezoneOverride ? 'UTC Override ON — all times use your selected timezone' : 'UTC Override OFF — times use server default (America/Toronto)'}
+              data-testid="toggle-timezone-override"
+            >
+              <div className="w-[6px] h-[6px] rounded-full" style={{ background: timezoneOverride ? '#4ade80' : 'rgba(255,255,255,0.3)' }} />
+              UTC Override
+            </button>
+          </div>
           <select
             value={timezone}
             onChange={(e) => setTimezone(e.target.value)}
