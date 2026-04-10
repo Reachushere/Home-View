@@ -12107,7 +12107,40 @@ export default function Dashboard() {
 
   const getEffectiveRowHeight = (h: number) => {
     const base = (gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight) * calendarZoom;
-    return base + getConflictExtraHeight(h) + getMultiHourOverlayBuffer(h);
+    const extra = getConflictExtraHeight(h) + getMultiHourOverlayBuffer(h);
+    let height = base + extra;
+    let maxItems = 0;
+    for (const day of weekDays) {
+      const dayKey = _etDateKey(day);
+      const dayTasks = tasksByDateKey.get(dayKey);
+      let count = 0;
+      if (dayTasks) {
+        for (const t of dayTasks) {
+          if (t.isCompleted) continue;
+          if (t.eventStartTime) {
+            const [sH] = t.eventStartTime.split(':').map(Number);
+            if (sH === h) count++;
+          } else {
+            const d = new Date(t.dueDate);
+            const tH = d.getHours();
+            if (tH === h && isSameDayET(startOfDayET(d), startOfDayET(day))) count++;
+          }
+        }
+      }
+      const calEvts = filteredCalendarEvents.filter(e => {
+        if (e.isAllDay) return false;
+        const eDate = new Date(e.startDate);
+        if (!isSameDayET(startOfDayET(eDate), startOfDayET(day))) return false;
+        return getETHours(eDate) === h;
+      }).length;
+      const total = count + calEvts;
+      if (total > maxItems) maxItems = total;
+    }
+    if (maxItems > 0) {
+      const minNeeded = maxItems > 1 ? maxItems * 32 + 4 : 40;
+      if (height < minNeeded) height = minNeeded;
+    }
+    return height;
   };
 
   // Get all-day Google Calendar events for a day (only conflicting events)
@@ -27722,6 +27755,7 @@ export default function Dashboard() {
             >
               Zoom 100%
             </Button>
+            <span className="text-[10px] text-white/40 font-medium" style={{ marginLeft: '-2px', marginBottom: '1px' }} data-testid="current-zoom-percent">{Math.round(parseFloat((document.body.style as any).zoom || '1') * 100)}%</span>
           </div>
           
           <div className="grid w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), height: '16px', marginTop: '-3px' }}>
