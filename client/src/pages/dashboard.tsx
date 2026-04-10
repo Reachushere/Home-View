@@ -27862,7 +27862,8 @@ export default function Dashboard() {
                 <div className="absolute pointer-events-none" style={{ top: '0px', height: '60px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px))`, width: `calc((${todayW} / ${totalDayW}) * (100% - ${fixedW}px))`, zIndex: 9990 }} />
               );
             })()}
-            {/* White separator on left border of today column - spans full height from top of date cell */}
+            <div ref={calendarContentRef} className="p-0 flex-1 flex flex-col overflow-hidden relative z-20" style={{ borderRadius: '8px' }} onClick={() => setSelectedTaskId(null)}>
+            {/* Today column left border - black line inside content so bars render above it */}
             {(() => {
               const now = new Date();
               const todayIdx = weekDays.findIndex(d => isSameDayET(d, now));
@@ -27885,8 +27886,6 @@ export default function Dashboard() {
                 <div className="absolute bottom-0 pointer-events-none" style={{ top: '0px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px) - 1.5px)`, width: '3px', backgroundColor: '#000000', zIndex: 25 }} />
               );
             })()}
-            
-            <div ref={calendarContentRef} className="p-0 flex-1 flex flex-col overflow-hidden relative z-20" style={{ borderRadius: '8px' }} onClick={() => setSelectedTaskId(null)}>
             
             {/* Day Headers - Fixed, not scrollable */}
             <div data-calendar-grid="true" className="grid z-[44] h-[60px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), borderBottom: '1px solid #666' }}>
@@ -29687,7 +29686,7 @@ export default function Dashboard() {
                     const barH = 3;
                     const barGap = 14;
                     return (
-                      <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 4 }}>
+                      <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 30 }}>
                         <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, top: 0, overflowY: 'auto', overflowX: 'hidden', pointerEvents: 'none', scrollbarWidth: 'none' as any }}>
                           <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', minHeight: '100%' }}>
                             {courseBars.filter(cd => cd.daysLeft > 0 && weekDays.some(wd => isSameDayET(wd, startOfDayET(new Date(cd.task.dueDate))))).map((cd, idx) => {
@@ -29700,7 +29699,7 @@ export default function Dashboard() {
                               const dueDate = t.dueDate ? format(new Date(t.dueDate), 'MMM d') : '';
                               const tooltipText = `${labelText} — due in ${cd.daysLeft}d (${dueDate})${isNotStarted ? ' — not started' : ''}`;
                               return (
-                                <div key={`cbar-cr-${t.id}`} className="countdown-bar-wrapper" style={{ height: `${barGap}px`, flexShrink: 0, pointerEvents: 'auto', cursor: 'pointer', position: 'relative', zIndex: 5 }} title={tooltipText} data-testid={`countdown-bar-cr-${t.id}`} onMouseEnter={() => setHoveredCountdownTaskIdDebounced(t.id)} onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)} onDoubleClick={(e) => { e.stopPropagation(); const taskToEdit = allTasks.find(at => at.id === t.id) || t; setEditingTask(taskToEdit); }}>
+                                <div key={`cbar-cr-${t.id}`} className="countdown-bar-wrapper" style={{ height: `${barGap}px`, flexShrink: 0, pointerEvents: 'auto', cursor: 'pointer', position: 'relative', zIndex: 31 }} title={tooltipText} data-testid={`countdown-bar-cr-${t.id}`} onMouseEnter={() => setHoveredCountdownTaskIdDebounced(t.id)} onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)} onDoubleClick={(e) => { e.stopPropagation(); const taskToEdit = allTasks.find(at => at.id === t.id) || t; setEditingTask(taskToEdit); }}>
                                   <div style={{ paddingTop: '2px', height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
                                     <div className={needsShimmer ? 'countdown-bar-shimmer-left' : ''} style={{ width: '10px', minWidth: '10px', height: `${barH}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
                                     <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
@@ -29909,7 +29908,7 @@ export default function Dashboard() {
                       const barH = 3;
                       const barGap = 14;
                       return (
-                        <div style={{ position: 'absolute', left: 0, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 4 }}>
+                        <div style={{ position: 'absolute', left: 0, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 30 }}>
                           <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, top: 0, overflowY: 'auto', overflowX: 'hidden', pointerEvents: 'none', scrollbarWidth: 'none' as any }}>
                             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', minHeight: '100%' }}>
                               {otherBars.filter(cd => cd.daysLeft > 0 && weekDays.some(wd => isSameDayET(wd, startOfDayET(new Date(cd.task.dueDate))))).map((cd, idx) => {
@@ -29922,7 +29921,7 @@ export default function Dashboard() {
                                 const dueDate = t.dueDate ? format(new Date(t.dueDate), 'MMM d') : '';
                                 const tooltipText = `${labelText} — due in ${cd.daysLeft}d (${dueDate})${isNotStarted ? ' — not started' : ''}`;
                                 return (
-                                  <div key={`cbar-or-${t.id}`} className="countdown-bar-wrapper" style={{ height: `${barGap}px`, flexShrink: 0, pointerEvents: 'auto', cursor: 'pointer', position: 'relative', zIndex: 5 }} title={tooltipText} data-testid={`countdown-bar-or-${t.id}`} onMouseEnter={() => setHoveredCountdownTaskIdDebounced(t.id)} onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)} onDoubleClick={(e) => { e.stopPropagation(); const taskToEdit = allTasks.find(at => at.id === t.id) || t; setEditingTask(taskToEdit); }}>
+                                  <div key={`cbar-or-${t.id}`} className="countdown-bar-wrapper" style={{ height: `${barGap}px`, flexShrink: 0, pointerEvents: 'auto', cursor: 'pointer', position: 'relative', zIndex: 31 }} title={tooltipText} data-testid={`countdown-bar-or-${t.id}`} onMouseEnter={() => setHoveredCountdownTaskIdDebounced(t.id)} onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)} onDoubleClick={(e) => { e.stopPropagation(); const taskToEdit = allTasks.find(at => at.id === t.id) || t; setEditingTask(taskToEdit); }}>
                                     <div style={{ paddingTop: '2px', height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
                                       <div className={needsShimmer ? 'countdown-bar-shimmer-left' : ''} style={{ width: '10px', minWidth: '10px', height: `${barH}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
                                       <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
