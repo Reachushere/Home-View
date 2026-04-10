@@ -2,7 +2,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { NewSemesterChecklistItem } from "@shared/schema";
-import { Plus, Minus, X, GripVertical, Calendar, Bell, Trash2, Settings } from "lucide-react";
+import { Plus, Minus, X, GripVertical, Calendar, Bell, Trash2, Settings, BellRing } from "lucide-react";
 import { format } from "date-fns";
 
 const REMINDER_PRESETS = [
@@ -31,6 +31,9 @@ interface Props {
 export default function NewSemesterChecklist({ semesterKey, semesterLabel, colorSettings, onDismiss, noBackdrop }: Props) {
   const [minimized, setMinimized] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [popupDismissed, setPopupDismissed] = useState(() => {
+    return localStorage.getItem(`newSemChecklist_dismissed_${semesterKey}`) === 'true';
+  });
   const [newItemTitle, setNewItemTitle] = useState("");
   const [editingReminders, setEditingReminders] = useState<number | null>(null);
   const [editingDate, setEditingDate] = useState<number | null>(null);
@@ -558,6 +561,48 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
             Swipe left to permanently delete
           </span>
         </div>
+
+        {noBackdrop && (
+          <div
+            style={{
+              padding: '8px 16px',
+              borderTop: '1px solid rgba(255,255,255,0.08)',
+              display: 'flex', alignItems: 'center', gap: '8px',
+            }}
+            data-testid="toggle-checklist-popup"
+          >
+            <BellRing className="w-3 h-3" style={{ color: popupDismissed ? 'rgba(255,255,255,0.35)' : 'rgba(100,180,255,0.9)' }} />
+            <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', flex: 1 }}>
+              Auto-show popup
+            </span>
+            <div
+              onClick={() => {
+                const newVal = !popupDismissed;
+                setPopupDismissed(newVal);
+                if (newVal) {
+                  localStorage.setItem(`newSemChecklist_dismissed_${semesterKey}`, 'true');
+                } else {
+                  localStorage.removeItem(`newSemChecklist_dismissed_${semesterKey}`);
+                }
+              }}
+              style={{
+                width: '32px', height: '16px', borderRadius: '8px',
+                background: popupDismissed ? 'rgba(255,255,255,0.15)' : 'rgba(60,130,220,0.7)',
+                cursor: 'pointer', position: 'relative', transition: 'background 0.2s',
+                border: `1px solid ${popupDismissed ? 'rgba(255,255,255,0.2)' : 'rgba(60,130,220,0.9)'}`,
+              }}
+              data-testid="switch-checklist-popup"
+            >
+              <div style={{
+                width: '12px', height: '12px', borderRadius: '50%',
+                background: '#fff', position: 'absolute', top: '1px',
+                left: popupDismissed ? '1px' : '17px',
+                transition: 'left 0.2s',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+              }} />
+            </div>
+          </div>
+        )}
       </div>
 
       {!noBackdrop && (
