@@ -25235,7 +25235,39 @@ export default function Dashboard() {
                     const grade = courseGrades[rowCertKey]?.percent || courseGrades[codeNorm]?.percent || courseGrades[semCourse.code]?.percent || profInfo.grade || '';
                     const isCurrentCourse = !!currentCourse || isCurrent(codeNorm);
                     const certType = courseCertificateTypes[semCourse.code] || courseCertificateTypes[codeNorm] || '';
-                    const displayName = semCourse.name;
+                    const displayName = (() => {
+                      if (allSemesterSettings) {
+                        const semKeyToDbType: Record<string, { type: string; year: number }> = {
+                          'ss2025': { type: 'spring_summer', year: 2025 }, 'f2025': { type: 'fall', year: 2025 },
+                          'w2026': { type: 'winter', year: 2026 }, 'ss2026': { type: 'spring_summer', year: 2026 },
+                          'f2026': { type: 'fall', year: 2026 }, 'w2027': { type: 'winter', year: 2027 },
+                          'ss2027': { type: 'spring_summer', year: 2027 }, 'f2027': { type: 'fall', year: 2027 },
+                          'w2028': { type: 'winter', year: 2028 }, 'ss2028': { type: 'spring_summer', year: 2028 },
+                          'f2028': { type: 'fall', year: 2028 }, 'w2029': { type: 'winter', year: 2029 },
+                          'ss2029': { type: 'spring_summer', year: 2029 }, 'f2029': { type: 'fall', year: 2029 },
+                        };
+                        const dbMapping = semKeyToDbType[semKey];
+                        if (dbMapping) {
+                          const thisSem = allSemesterSettings.find((s: any) => {
+                            const yearMatch = s.semesterName?.match(/\d{4}/);
+                            const semYear = yearMatch ? parseInt(yearMatch[0]) : 0;
+                            return s.semesterType === dbMapping.type && semYear === dbMapping.year;
+                          });
+                          if (thisSem) {
+                            const cc = semCourse.code.replace(/\s/g, '').toUpperCase();
+                            for (let i = 1; i <= 3; i++) {
+                              const sc = ((thisSem as any)[`course${i}Code`] || '').replace(/\s/g, '').toUpperCase();
+                              if (sc === cc) {
+                                const dbDN = (thisSem as any)[`course${i}DisplayName`];
+                                if (dbDN) return dbDN;
+                                break;
+                              }
+                            }
+                          }
+                        }
+                      }
+                      return semCourse.name;
+                    })();
                     const subtitle = semCourse.fullName || '';
                     const dotColor = (() => {
                       if (currentCourse) {
