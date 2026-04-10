@@ -14765,8 +14765,22 @@ document.body.removeChild(a);
         ]);
         console.log(`[Cat Lights] Tablet stop commands sent (ts=${lightsOffStopTs})`);
         stopped.push("tablet");
-        if (!wasPlaybackActive) {
-          console.log(`[Cat Lights] No playback was active — skipping Fire Stick/Samsung TV shutdown (avoids CEC wake)`);
+        const wasPausedByVoice = !!voiceCommandPauseState_;
+        if (wasPausedByVoice) {
+          clearVoiceCommandPause_();
+          console.log(`[Cat Lights] Cleared voice-command pause state (lights off ends pause)`);
+        }
+        if (wasPlaybackActive || wasPausedByVoice) {
+          catWashTrace('TV', 'TURN OFF — lights off (Samsung TV first, then Fire Stick)');
+          await haServiceCallSafe('media_player/turn_off', { entity_id: CAT_TV_ENTITY }, 'Lights Off Samsung TV');
+          console.log(`[Cat Lights] Samsung TV turn-off sent`);
+          await new Promise(r => setTimeout(r, 2000));
+          await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'am force-stop com.amazon.cloud9' }, 'Lights Off Silk');
+          await new Promise(r => setTimeout(r, 500));
+          await haServiceCallSafe('androidtv/adb_command', { entity_id: FIRE_STICK_ADB_ENTITY, command: 'input keyevent KEYCODE_SLEEP' }, 'Lights Off FireStick SLEEP');
+          console.log(`[Cat Lights] Fire Stick force-stop + SLEEP sent`);
+        } else {
+          console.log(`[Cat Lights] No playback was active or paused — skipping Fire Stick/Samsung TV shutdown (avoids CEC wake)`);
         }
         if (catLightsPromptSession === offSession) {
           catLightsPromptPending = false;
@@ -15598,19 +15612,7 @@ document.body.removeChild(a);
         catWashPlaybackState = null;
         stopToothbrushPolling();
 
-        try {
-          await fetch(`${haUrl}/api/services/media_player/turn_off`, {
-            method: 'POST', headers: haHeaders,
-            body: JSON.stringify({ entity_id: FIRE_STICK_ADB_ENTITY }),
-          });
-          await fetch(`${haUrl}/api/services/media_player/turn_off`, {
-            method: 'POST', headers: haHeaders,
-            body: JSON.stringify({ entity_id: CAT_TV_ENTITY }),
-          });
-          console.log(`[Voice Command] TV turned off on pause`);
-        } catch (e: any) {
-          console.warn(`[Voice Command] Failed to turn off TV on pause: ${e.message}`);
-        }
+        console.log(`[Voice Command] TV stays on during pause — will shut off when lights turn off`);
 
         const PAUSE_TIMEOUT_MS = 10 * 60 * 1000;
         clearVoiceCommandPause_();
