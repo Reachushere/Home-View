@@ -2153,6 +2153,8 @@ export default function Dashboard() {
     courseRowColor?: string;
     taskBgColor?: string;
     courseFontColor?: string;
+    moduleBoxColor?: string;
+    readingBoxColor?: string;
     moduleP: {percent: number; hasFiles: boolean};
     readingP: {percent: number; hasFiles: boolean};
     moduleUnread: number;
@@ -4930,7 +4932,7 @@ export default function Dashboard() {
     return `${gridSizes.timeColumnWidth}px ${allDays}`;
   };
 
-  const [coursesData, setCoursesData] = useState<{ courses: Array<{ name: string; color: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; courseFontColor?: string; professor: string; professorEmail?: string }> }>(() => {
+  const [coursesData, setCoursesData] = useState<{ courses: Array<{ name: string; color: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; courseFontColor?: string; moduleBoxColor?: string; readingBoxColor?: string; professor: string; professorEmail?: string }> }>(() => {
     const defaultCourses = [
       { name: 'CPPA122 - Local Politics and Government', color: '#0F5004', colorEnd: '#47B045', professor: 'Caryl Arundel', professorEmail: 'carundel@torontomu.ca' },
       { name: 'CFNF400 - Human Sexuality', color: '#DE1864', colorEnd: '#FA67B3', professor: 'Alex McKay', professorEmail: 'a4mckay@torontomu.ca' },
@@ -5114,6 +5116,8 @@ export default function Dashboard() {
         semPayload[`${prefix}CourseRowColor`] = course.courseRowColor || null;
         semPayload[`${prefix}TaskBgColor`] = course.taskBgColor || null;
         semPayload[`${prefix}CourseFontColor`] = course.courseFontColor || null;
+        semPayload[`${prefix}ModuleBoxColor`] = (course as any).moduleBoxColor || null;
+        semPayload[`${prefix}ReadingBoxColor`] = (course as any).readingBoxColor || null;
         const parts = course.name.split(' - ');
         const code = (parts[0] || '').trim();
         const name = parts.slice(1).join(' - ').trim();
@@ -6818,6 +6822,8 @@ export default function Dashboard() {
     let courseRowColor = (matchedCourse as any)?.courseRowColor || '';
     let taskBgColor = (matchedCourse as any)?.taskBgColor || '';
     let courseFontColor = (matchedCourse as any)?.courseFontColor || '';
+    let moduleBoxColor = (matchedCourse as any)?.moduleBoxColor || '';
+    let readingBoxColor = (matchedCourse as any)?.readingBoxColor || '';
     let courseType = '';
     let semesterTerm = '';
     let year = '';
@@ -6841,6 +6847,8 @@ export default function Dashboard() {
           moduleFolder = (sem as any)[`${prefix}ModuleFolder`] || '';
           readingFolder = (sem as any)[`${prefix}ReadingFolder`] || '';
           displayName = (sem as any)[`${prefix}DisplayName`] || '';
+          if (!moduleBoxColor) moduleBoxColor = (sem as any)[`${prefix}ModuleBoxColor`] || '';
+          if (!readingBoxColor) readingBoxColor = (sem as any)[`${prefix}ReadingBoxColor`] || '';
           if (!professor) professor = (sem as any)[`${prefix}Professor`] || '';
           if (!professorEmail) professorEmail = (sem as any)[`${prefix}ProfessorEmail`] || '';
           const semType = (sem as any).semesterType || '';
@@ -6915,6 +6923,8 @@ export default function Dashboard() {
       courseRowColor,
       taskBgColor,
       courseFontColor,
+      moduleBoxColor,
+      readingBoxColor,
       deliveryMode,
       classDay,
       classDay2,
@@ -7977,6 +7987,8 @@ export default function Dashboard() {
         const semCourseRowColor = sem[`${prefix}CourseRowColor`];
         const semTaskBgColor = sem[`${prefix}TaskBgColor`];
         const semCourseFontColor = sem[`${prefix}CourseFontColor`];
+        const semModuleBoxColor = (sem as any)[`${prefix}ModuleBoxColor`];
+        const semReadingBoxColor = (sem as any)[`${prefix}ReadingBoxColor`];
         if (updated[i]) {
           const c = updated[i] as any;
           if (semColor && semColor !== c.color) { c.color = semColor; changed = true; }
@@ -7986,6 +7998,8 @@ export default function Dashboard() {
           if (semCourseRowColor !== undefined && semCourseRowColor !== null && semCourseRowColor !== c.courseRowColor) { c.courseRowColor = semCourseRowColor; changed = true; }
           if (semTaskBgColor !== undefined && semTaskBgColor !== null && semTaskBgColor !== c.taskBgColor) { c.taskBgColor = semTaskBgColor; changed = true; }
           if (semCourseFontColor !== undefined && semCourseFontColor !== null && semCourseFontColor !== c.courseFontColor) { c.courseFontColor = semCourseFontColor; changed = true; }
+          if (semModuleBoxColor !== undefined && semModuleBoxColor !== null && semModuleBoxColor !== c.moduleBoxColor) { c.moduleBoxColor = semModuleBoxColor; changed = true; }
+          if (semReadingBoxColor !== undefined && semReadingBoxColor !== null && semReadingBoxColor !== c.readingBoxColor) { c.readingBoxColor = semReadingBoxColor; changed = true; }
         }
       }
       if (changed) {
@@ -11785,6 +11799,18 @@ export default function Dashboard() {
     if (selectedWeek >= FIRST_WEEK && selectedWeek <= LAST_WEEK) return -1;
     return -1;
   }, [selectedWeek, weekStartDate, allSemesterSettings]);
+
+  const viewedSemester = useMemo(() => {
+    const sems = allSemesterSettingsRef.current || [];
+    const midDate = new Date(weekStartDate.getTime() + 3 * 24 * 60 * 60 * 1000);
+    for (const sem of sems) {
+      if (!sem.semesterStartDate) continue;
+      const wn = getWeekNumber(midDate, new Date(sem.semesterStartDate), sem.readingWeekStart || null);
+      const maxWeek = getSemesterTotalWeeks(sem.semesterType);
+      if (wn >= 1 && wn <= maxWeek) return sem;
+    }
+    return null;
+  }, [weekStartDate, allSemesterSettings]);
 
   // Generate weekdays for the weekly view
   // School week runs Saturday to Friday, but we display Sunday-Saturday visually
@@ -15986,16 +16012,25 @@ export default function Dashboard() {
       {(() => {
         const now = new Date();
         const nowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const activeSemCodes = new Set<string>();
-        for (const c of (coursesData.courses || [])) {
-          const code = c.name?.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '') || '';
-          if (code) activeSemCodes.add(code);
+        const countdownSem = viewedSemester || semesterSettings;
+        const countdownSemCodes = new Set<string>();
+        if (countdownSem) {
+          for (let i = 1; i <= 3; i++) {
+            const code = (countdownSem[`course${i}Code`] || '').trim().toUpperCase().replace(/\s/g, '');
+            if (code) countdownSemCodes.add(code);
+          }
+        }
+        if (countdownSemCodes.size === 0) {
+          for (const c of (coursesData.courses || [])) {
+            const code = c.name?.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '') || '';
+            if (code) countdownSemCodes.add(code);
+          }
         }
         const taskMatchesSem = (t: Task) => {
-          if (activeSemCodes.size === 0) return true;
+          if (countdownSemCodes.size === 0) return true;
           if (!t.courseName) return true;
           const taskCode = t.courseName.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '') || '';
-          return !taskCode || activeSemCodes.has(taskCode);
+          return !taskCode || countdownSemCodes.has(taskCode);
         };
         const upcoming = allTasks
           .filter(t => {
@@ -19014,6 +19049,8 @@ export default function Dashboard() {
                   ...(colorUpdates.courseRowColor !== undefined ? { courseRowColor: colorUpdates.courseRowColor } : {}),
                   ...(colorUpdates.taskBgColor !== undefined ? { taskBgColor: colorUpdates.taskBgColor } : {}),
                   ...(colorUpdates.courseFontColor !== undefined ? { courseFontColor: colorUpdates.courseFontColor } : {}),
+                  ...(colorUpdates.moduleBoxColor !== undefined ? { moduleBoxColor: colorUpdates.moduleBoxColor } : {}),
+                  ...(colorUpdates.readingBoxColor !== undefined ? { readingBoxColor: colorUpdates.readingBoxColor } : {}),
                 };
                 const updatedData = { courses: updatedCourses };
                 setCoursesData(updatedData);
@@ -19028,6 +19065,8 @@ export default function Dashboard() {
                 if (colorUpdates.courseRowColor !== undefined) semPayload[`${prefix}CourseRowColor`] = colorUpdates.courseRowColor || null;
                 if (colorUpdates.taskBgColor !== undefined) semPayload[`${prefix}TaskBgColor`] = colorUpdates.taskBgColor || null;
                 if (colorUpdates.courseFontColor !== undefined) semPayload[`${prefix}CourseFontColor`] = colorUpdates.courseFontColor || null;
+                if (colorUpdates.moduleBoxColor !== undefined) semPayload[`${prefix}ModuleBoxColor`] = colorUpdates.moduleBoxColor || null;
+                if (colorUpdates.readingBoxColor !== undefined) semPayload[`${prefix}ReadingBoxColor`] = colorUpdates.readingBoxColor || null;
                 if (Object.keys(semPayload).length > 0) {
                   fetch('/api/semester', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify(semPayload) })
                     .then(() => {
@@ -19062,6 +19101,8 @@ export default function Dashboard() {
                   ...(updates.courseRowColor !== undefined ? { courseRowColor: updates.courseRowColor } : {}),
                   ...(updates.taskBgColor !== undefined ? { taskBgColor: updates.taskBgColor } : {}),
                   ...(updates.courseFontColor !== undefined ? { courseFontColor: updates.courseFontColor } : {}),
+                  ...(updates.moduleBoxColor !== undefined ? { moduleBoxColor: updates.moduleBoxColor } : {}),
+                  ...(updates.readingBoxColor !== undefined ? { readingBoxColor: updates.readingBoxColor } : {}),
                 };
                 const updatedData = { courses: updatedCourses };
                 setCoursesData(updatedData);
@@ -19116,6 +19157,8 @@ export default function Dashboard() {
                       if (updates.courseRowColor !== undefined) payload[`${prefix}CourseRowColor`] = updates.courseRowColor;
                       if (updates.taskBgColor !== undefined) payload[`${prefix}TaskBgColor`] = updates.taskBgColor;
                       if (updates.courseFontColor !== undefined) payload[`${prefix}CourseFontColor`] = updates.courseFontColor;
+                      if (updates.moduleBoxColor !== undefined) payload[`${prefix}ModuleBoxColor`] = updates.moduleBoxColor;
+                      if (updates.readingBoxColor !== undefined) payload[`${prefix}ReadingBoxColor`] = updates.readingBoxColor;
                       if ((updates as any).startDate) payload[`${prefix}StartDate`] = new Date((updates as any).startDate + 'T12:00:00').toISOString();
                       if ((updates as any).endDate) payload[`${prefix}EndDate`] = new Date((updates as any).endDate + 'T12:00:00').toISOString();
                       if ((updates as any).springSummerTerm !== undefined) payload[`${prefix}SpringSummerTerm`] = (updates as any).springSummerTerm;
@@ -19327,6 +19370,8 @@ export default function Dashboard() {
                     clearPayload[`${prefix}CourseType`] = '';
                     clearPayload[`${prefix}ModuleFolder`] = '';
                     clearPayload[`${prefix}ReadingFolder`] = '';
+                    clearPayload[`${prefix}ModuleBoxColor`] = '';
+                    clearPayload[`${prefix}ReadingBoxColor`] = '';
                     apiRequest("PATCH", `/api/semesters/${sem.id}`, clearPayload).then(() => {
                       queryClient.invalidateQueries({ queryKey: ["/api/semesters"] });
                       queryClient.invalidateQueries({ queryKey: ["/api/semester"] });
@@ -28871,6 +28916,8 @@ export default function Dashboard() {
                       courseRowColor: semCourseRowColor || matchedCourse?.courseRowColor || '',
                       taskBgColor: semTaskBgColor || matchedCourse?.taskBgColor || '',
                       courseFontColor: semCourseFontColor || matchedCourse?.courseFontColor || '',
+                      moduleBoxColor: (semPrefix && semSettings ? (semSettings as any)[`${semPrefix}ModuleBoxColor`] : '') || matchedCourse?.moduleBoxColor || '',
+                      readingBoxColor: (semPrefix && semSettings ? (semSettings as any)[`${semPrefix}ReadingBoxColor`] : '') || matchedCourse?.readingBoxColor || '',
                       professor: matchedCourse?.professor || '',
                       professorEmail: matchedCourse?.professorEmail || '',
                       _semKey: semKey,
@@ -29872,6 +29919,8 @@ export default function Dashboard() {
                       courseRowColor: courseMatch?.courseRowColor || courseHexColor,
                       taskBgColor: courseMatch?.taskBgColor,
                       courseFontColor: courseMatch?.courseFontColor || '',
+                      moduleBoxColor: courseMatch?.moduleBoxColor || '',
+                      readingBoxColor: courseMatch?.readingBoxColor || '',
                       moduleP,
                       readingP,
                       moduleUnread,
@@ -33463,8 +33512,8 @@ export default function Dashboard() {
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, overflow: 'visible', gap: '0px', height: '100%' }}>
                       {[
-                        { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `play-module-${pd.courseCode.toLowerCase()}`, testUpload: `upload-module-${pd.courseCode.toLowerCase()}`, bg: pd.progressStartColor || getCourseGradientColors(pd.courseCode).start, dark: true, fontOverride: pd.courseFontColor || '#fff', fileInfo: pd.moduleFileInfo },
-                        { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `upload-reading-${pd.courseCode.toLowerCase()}`, bg: pd.progressEndColor || getCourseGradientColors(pd.courseCode).end, dark: true, fontOverride: pd.courseFontColor || '#fff', fileInfo: pd.readingFileInfo },
+                        { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `play-module-${pd.courseCode.toLowerCase()}`, testUpload: `upload-module-${pd.courseCode.toLowerCase()}`, bg: pd.moduleBoxColor || pd.progressStartColor || getCourseGradientColors(pd.courseCode).start, dark: true, fontOverride: pd.courseFontColor || '#fff', fileInfo: pd.moduleFileInfo },
+                        { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `upload-reading-${pd.courseCode.toLowerCase()}`, bg: pd.readingBoxColor || pd.progressEndColor || getCourseGradientColors(pd.courseCode).end, dark: true, fontOverride: pd.courseFontColor || '#fff', fileInfo: pd.readingFileInfo },
                       ].map(item => {
                         const circleSize = 34;
                         const strokeWidth = 3;
@@ -34702,8 +34751,8 @@ export default function Dashboard() {
                       ) : (
                         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flex: 1, overflow: 'hidden', gap: '0px' }}>
                           {[
-                            { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `float-play-module-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-module-${pd.courseCode.toLowerCase()}`, bg: pd.progressStartColor || getCourseGradientColors(pd.courseCode).start, dark: true, fontOverride: pd.courseFontColor || '#fff' },
-                            { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `float-play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-reading-${pd.courseCode.toLowerCase()}`, bg: pd.progressEndColor || getCourseGradientColors(pd.courseCode).end, dark: true, fontOverride: pd.courseFontColor || '#fff' },
+                            { type: 'module' as const, label: 'Module', p: pd.moduleP, unread: pd.moduleUnread, play: pd.handlePlayModule, upload: () => pd.handleUpload('module'), drop: (f: File) => pd.handleFileDrop('module', f), testPlay: `float-play-module-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-module-${pd.courseCode.toLowerCase()}`, bg: pd.moduleBoxColor || pd.progressStartColor || getCourseGradientColors(pd.courseCode).start, dark: true, fontOverride: pd.courseFontColor || '#fff' },
+                            { type: 'reading' as const, label: 'Reading', p: pd.readingP, unread: pd.readingUnread, play: pd.handlePlayReading, upload: () => pd.handleUpload('reading'), drop: (f: File) => pd.handleFileDrop('reading', f), testPlay: `float-play-reading-${pd.courseCode.toLowerCase()}`, testUpload: `float-upload-reading-${pd.courseCode.toLowerCase()}`, bg: pd.readingBoxColor || pd.progressEndColor || getCourseGradientColors(pd.courseCode).end, dark: true, fontOverride: pd.courseFontColor || '#fff' },
                           ].map(item => {
                             const circleSize = 44;
                             const strokeWidth = 3.5;

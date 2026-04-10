@@ -91,6 +91,8 @@ interface CourseInfo {
   courseRowColor?: string;
   taskBgColor?: string;
   courseFontColor?: string;
+  moduleBoxColor?: string;
+  readingBoxColor?: string;
   deliveryMode: string;
   classDay: string;
   classDay2?: string;
@@ -112,8 +114,8 @@ interface CourseInfo {
 interface CourseDetailDialogProps {
   courseInfo: CourseInfo;
   onClose: () => void;
-  onSaveCourseInfo?: (updates: { courseCode?: string; courseName?: string; professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; classTime2?: string; classEndTime2?: string; zoomLink?: string; semesterTerm?: string; year?: string; startDate?: string; endDate?: string; color?: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; courseFontColor?: string; semesterKey?: string; courseRank?: number; springSummerTerm?: string; moduleFolder?: string; readingFolder?: string; displayName?: string }) => void;
-  onLiveColorChange?: (updates: { color?: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; courseFontColor?: string }) => void;
+  onSaveCourseInfo?: (updates: { courseCode?: string; courseName?: string; professor?: string; professorEmail?: string; deliveryMode?: string; classDay?: string; classDay2?: string; classTime?: string; classEndTime?: string; classTime2?: string; classEndTime2?: string; zoomLink?: string; semesterTerm?: string; year?: string; startDate?: string; endDate?: string; color?: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; courseFontColor?: string; moduleBoxColor?: string; readingBoxColor?: string; semesterKey?: string; courseRank?: number; springSummerTerm?: string; moduleFolder?: string; readingFolder?: string; displayName?: string }) => void;
+  onLiveColorChange?: (updates: { color?: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; courseFontColor?: string; moduleBoxColor?: string; readingBoxColor?: string }) => void;
   onGradeCalculated?: (grade: string, percent: string) => void;
   onDeleteCourse?: () => void;
   onOpenEditTask?: (task: Task) => void;
@@ -592,6 +594,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
     courseRowColor: courseInfo.courseRowColor || '',
     taskBgColor: courseInfo.taskBgColor || '',
     courseFontColor: courseInfo.courseFontColor || '',
+    moduleBoxColor: courseInfo.moduleBoxColor || '',
+    readingBoxColor: courseInfo.readingBoxColor || '',
     courseRank: courseRank ?? 0,
     springSummerTerm: courseSpSuTerm || 'full',
     moduleFolder: courseInfo.moduleFolder || '',
@@ -2814,6 +2818,22 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                       </button>
                       <span className="text-white/60 text-[7px] mt-1">{editInfo.courseFontColor ? editInfo.courseFontColor.charAt(0).toUpperCase() + editInfo.courseFontColor.slice(1) : 'Auto'}</span>
                     </div>
+                    <div className="flex flex-col items-center gap-0.5">
+                      <label className="text-white text-[9px] mb-1">Module</label>
+                      <div className="relative" style={{ width: '20px', height: '20px' }}>
+                        <div className="w-5 h-5 rounded-sm border border-white/30" style={{ backgroundColor: editInfo.moduleBoxColor || editInfo.color }} />
+                        <input type="color" value={editInfo.moduleBoxColor || editInfo.color} onChange={(e) => setEditInfo({...editInfo, moduleBoxColor: e.target.value})} className="absolute inset-0 opacity-0 cursor-pointer" style={{ width: '20px', height: '20px' }} data-testid="input-module-box-color" />
+                      </div>
+                      <input type="text" value={editInfo.moduleBoxColor ? editInfo.moduleBoxColor.toUpperCase() : 'Auto'} onChange={e => { let v = e.target.value; if (v === '' || v === 'Auto') { setEditInfo({...editInfo, moduleBoxColor: ''}); return; } if (!v.startsWith('#')) v = '#' + v; setEditInfo({...editInfo, moduleBoxColor: v}); }} className="bg-white border border-gray-300 rounded text-black text-[8px] px-1 py-0.5 font-mono mt-1 text-center focus:outline-none focus:border-gray-400" style={{ width: '56px' }} data-testid="input-module-box-color-hex" />
+                    </div>
+                    <div className="flex flex-col items-center gap-0.5">
+                      <label className="text-white text-[9px] mb-1">Reading</label>
+                      <div className="relative" style={{ width: '20px', height: '20px' }}>
+                        <div className="w-5 h-5 rounded-sm border border-white/30" style={{ backgroundColor: editInfo.readingBoxColor || editInfo.colorEnd || editInfo.color }} />
+                        <input type="color" value={editInfo.readingBoxColor || editInfo.colorEnd || editInfo.color} onChange={(e) => setEditInfo({...editInfo, readingBoxColor: e.target.value})} className="absolute inset-0 opacity-0 cursor-pointer" style={{ width: '20px', height: '20px' }} data-testid="input-reading-box-color" />
+                      </div>
+                      <input type="text" value={editInfo.readingBoxColor ? editInfo.readingBoxColor.toUpperCase() : 'Auto'} onChange={e => { let v = e.target.value; if (v === '' || v === 'Auto') { setEditInfo({...editInfo, readingBoxColor: ''}); return; } if (!v.startsWith('#')) v = '#' + v; setEditInfo({...editInfo, readingBoxColor: v}); }} className="bg-white border border-gray-300 rounded text-black text-[8px] px-1 py-0.5 font-mono mt-1 text-center focus:outline-none focus:border-gray-400" style={{ width: '56px' }} data-testid="input-reading-box-color-hex" />
+                    </div>
                     </div>
                     );
                   })()}
@@ -4457,6 +4477,13 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             <Button
               variant="outline"
               onClick={() => {
+                if (isEditingInfo) {
+                  if (editInfo.deliveryMode === 'virtual' && !editInfo.zoomLink?.trim()) {
+                    toast({ title: "URL is required for virtual courses", variant: "destructive" });
+                    return;
+                  }
+                  setIsEditingInfo(false);
+                }
                 if (onSaveCourseInfo) {
                   const semKey = semesterKeyFromTermYear(editInfo.semesterTerm, editInfo.year);
                   onSaveCourseInfo({ ...editInfo, semesterKey: semKey || undefined, courseRank: editInfo.courseRank || undefined, springSummerTerm: editInfo.springSummerTerm || undefined });
@@ -4470,10 +4497,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 }
                 onClose();
               }}
-              disabled={expandedTaskId !== null || isEditingInfo || isParsingSyllabus}
-              className={`border transition-all duration-200 h-6 w-[110px] disabled:cursor-not-allowed ${!isEditingInfo && expandedTaskId === null && !isParsingSyllabus ? '!border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent' : '!border-white/10 text-white/20'}`}
+              disabled={expandedTaskId !== null || isParsingSyllabus}
+              className={`border transition-all duration-200 h-6 w-[110px] disabled:cursor-not-allowed ${expandedTaskId === null && !isParsingSyllabus ? '!border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent' : '!border-white/10 text-white/20'}`}
               style={{
-                boxShadow: !isEditingInfo && expandedTaskId === null ? '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)' : 'none',
+                boxShadow: expandedTaskId === null && !isParsingSyllabus ? '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)' : 'none',
                 fontSize: '12px'
               }}
               data-testid="button-save-course-detail"
