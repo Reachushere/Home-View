@@ -11757,6 +11757,7 @@ export default function Dashboard() {
   const calStart = 0;
   const timeSlots = Array.from({ length: 24 }, (_, i) => i);
   const calendarScrollRef = useRef<HTMLDivElement>(null);
+  const [calScrollbarW, setCalScrollbarW] = useState(0);
   const [calendarZoom, setCalendarZoom] = useState(1);
   const calendarZoomRef = useRef(1);
   useEffect(() => { calendarZoomRef.current = calendarZoom; }, [calendarZoom]);
@@ -11805,6 +11806,16 @@ export default function Dashboard() {
     });
   }, [calendarView, gridSizes]);
 
+
+  useEffect(() => {
+    const el = calendarScrollRef.current;
+    if (!el) return;
+    const measure = () => { setCalScrollbarW(el.offsetWidth - el.clientWidth); };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => {
     const timers = new Map<Element, ReturnType<typeof setTimeout>>();
@@ -29071,7 +29082,7 @@ export default function Dashboard() {
                 }
                 
                 return (
-                <div key={course.name} ref={el => { courseRowRefs.current[courseIdx] = el; }} className="grid w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${maxCourseRowHeight}px`, maxHeight: `${maxCourseRowHeight}px`, overflow: 'hidden' }}>
+                <div key={course.name} ref={el => { courseRowRefs.current[courseIdx] = el; }} className="grid w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${maxCourseRowHeight}px`, maxHeight: `${maxCourseRowHeight}px`, overflow: 'hidden', paddingRight: calScrollbarW > 0 ? `${calScrollbarW}px` : undefined }}>
                   <div className="text-[8px] font-medium tracking-normal flex flex-col items-center relative leading-tight" style={{ background: course.label, borderBottom: `1.5px dotted ${courseData.color}dd`, overflow: 'hidden', minWidth: 0, color: course.fontColor || 'white', wordBreak: 'normal', overflowWrap: 'normal', textAlign: 'center' }} data-testid={`course-row-label-${course.name}`}>
                     <div style={{ display: 'flex', width: '100%', height: '22px', flexShrink: 0 }}>
                       <div style={{ width: '50%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', borderRight: '1.5px solid rgba(255,255,255,0.6)', borderBottom: '1.5px solid rgba(255,255,255,0.6)', boxSizing: 'border-box' }} className="hover:brightness-125" onClick={async (e) => { e.stopPropagation(); const code = courseData.name.split(' - ')[0]?.trim(); if (syncingCourseLabel) return; setSyncResult(null); setSyncingCourseLabel(code); try { const resp = await fetch('/api/onedrive/sync-course-week', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ courseCode: code, weekNumber: selectedWeek, semKey: courseData._semKey, weekStartDate: weekStartDate.toISOString(), weekEndDate: weekEndDate.toISOString() }) }); const data = await resp.json(); console.log('[Sync Debug]', code, 'week', selectedWeek, data); queryClient.invalidateQueries({ queryKey: ['/api/files'] }); queryClient.invalidateQueries({ queryKey: ['/api/files/counts'] }); refreshFileCounts(); const count = data?.synced?.length || 0; const skipped = data?.skippedExisting || 0; setSyncResult({ code, count, skipped, message: data?.message }); setTimeout(() => setSyncResult(prev => prev?.code === code ? null : prev), 5000); } catch (e2: any) { console.error('Sync failed:', e2); setSyncResult({ code, count: -1 }); setTimeout(() => setSyncResult(prev => prev?.code === code ? null : prev), 3000); } finally { setSyncingCourseLabel(null); } }} data-testid={`btn-sync-${course.name}`}><svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '18px', height: '18px' }}><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" /></svg></div>
@@ -29810,7 +29821,7 @@ export default function Dashboard() {
                 const baseOtherRowHeight = Math.max(57, gridSizes.otherRowHeight || 57);
                 const otherRowHeight = baseOtherRowHeight + missingRows * courseRowH;
                 return (
-                  <div ref={otherRowRef} className="w-full flex-shrink-0 relative z-[43] group/otherrow" style={{ height: `${otherRowHeight}px`, overflow: 'hidden' }}>
+                  <div ref={otherRowRef} className="w-full flex-shrink-0 relative z-[43] group/otherrow" style={{ height: `${otherRowHeight}px`, overflow: 'hidden', paddingRight: calScrollbarW > 0 ? `${calScrollbarW}px` : undefined }}>
                     <div className="px-1 py-0.5 text-[8px] font-[785] tracking-wide flex items-center justify-center text-white/80 cursor-pointer hover:brightness-110" onClick={() => setOtherRowEditOpen(true)} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${gridSizes.timeColumnWidth}px`, zIndex: 50, background: (() => { const stops = otherRowColors.labelStops ? (() => { try { return JSON.parse(otherRowColors.labelStops); } catch { return []; } })() : []; const allStops = [{ position: 0, color: otherRowColors.labelStart }, ...stops, { position: 100, color: otherRowColors.labelEnd }]; return `linear-gradient(180deg, ${allStops.map((s: any) => `${s.color} ${s.position}%`).join(', ')})`; })(), borderBottom: `1px dotted ${otherRowColors.borderColor || '#999'}`, overflow: 'hidden' }} data-testid="other-row-label">
                       OTHER
                       <div style={{ position: 'absolute', bottom: '3px', right: '1px', zIndex: 2 }} onClick={(e) => { e.stopPropagation(); setOtherRowEditOpen(true); }} data-testid="pencil-edit-other-row"><Pencil className="w-[9px] h-[9px] text-white" strokeWidth={3} /></div>
