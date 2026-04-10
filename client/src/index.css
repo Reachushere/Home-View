@@ -1698,6 +1698,7 @@ button[role="combobox"] > span {
 /* Calendar overlay scrollbar - doesn't take up space */
 .calendar-scrollbar {
   overflow-y: auto;
+  overflow-x: hidden;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
 }

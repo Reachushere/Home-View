@@ -29386,7 +29386,7 @@ export default function Dashboard() {
                             return (
                               <div 
                                 key={`prep-${task.id}`}
-                                className="relative w-full"
+                                className="relative w-full overflow-hidden"
                               >
                                 {!isFirstPrepDay && (
                                   <div style={{ position: 'absolute', left: '-5px', top: '50%', transform: 'translateY(-50%)', width: '5px', height: '1px', backgroundColor: course.darkColor, zIndex: 2 }} />
@@ -29431,7 +29431,7 @@ export default function Dashboard() {
                           const hasLeftConnector = hasPrepDays || (spanInfo && !isSpanFirst);
                           const hasRightConnector = spanInfo && !isSpanLast;
                           return (
-                            <div key={task.id} className="relative w-full min-w-0" data-testid={`calendar-task-${task.id}`}>
+                            <div key={task.id} className="relative w-full min-w-0 overflow-hidden" data-testid={`calendar-task-${task.id}`}>
                             {hasLeftConnector && (
                               <div style={{ position: 'absolute', left: '-5px', top: '50%', transform: 'translateY(-50%)', width: '5px', height: '1px', backgroundColor: course.darkColor, zIndex: 2 }} />
                             )}
@@ -30229,7 +30229,7 @@ export default function Dashboard() {
                   <div 
                     key={hour} 
                     className={`grid relative group/row flex-shrink-0`}
-                    style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${rowHeight}px`, minHeight: `${rowHeight}px`, overflow: 'visible', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '12px' : undefined, borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '12px' : undefined, backgroundColor: '#faf8f5' }}
+                    style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${rowHeight}px`, minHeight: `${rowHeight}px`, overflow: 'hidden', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '12px' : undefined, borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '12px' : undefined, backgroundColor: '#faf8f5' }}
                   >
                     <div className={`text-[10px] font-medium tracking-wide flex items-center justify-center relative ${isCurrentHour && blinkSettings.todayColumnBlink ? "animate-today-time-cell" : ""}`} style={{ backgroundColor: isCurrentHour && blinkSettings.todayColumnBlink ? undefined : (isCurrentHour ? colorSettings.todayCurrentHourCellBackground : colorSettings.headerBar), color: 'white', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '8px' : undefined, borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined, borderBottom: hourIdx < timeSlots.length - 1 ? '1px dotted rgba(255,255,255,0.25)' : undefined, animationDelay: isCurrentHour && blinkSettings.todayColumnBlink ? `-${Date.now() % 7000}ms` : undefined }}>
                       {hour === 0 || hour === 24 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
@@ -30589,7 +30589,7 @@ export default function Dashboard() {
                                 onTouchEnd={handleTouchEnd}
                                 onTouchMove={handleTouchMove}
                                 title={(task.title || '').replace(/\[[^\]]*\]\s*/g, '').trim() + (task.dueDate ? ` — ${format(new Date(task.dueDate), 'MMM d, h:mm a')}` : '')}
-                                className={`absolute shadow-sm cursor-grab active:cursor-grabbing rounded overflow-visible ${
+                                className={`absolute shadow-sm cursor-grab active:cursor-grabbing rounded overflow-hidden ${
                                   draggedTask?.id === task.id ? "opacity-50" : ""
                                 } ${
                                   selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
@@ -30954,7 +30954,7 @@ export default function Dashboard() {
                           taskTitle: task.title
                         });
                       }}
-                      className={`absolute hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing rounded overflow-visible border ${
+                      className={`absolute hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing rounded overflow-hidden border ${
                         draggedTask?.id === task.id ? "opacity-50" : ""
                       } ${
                         selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
