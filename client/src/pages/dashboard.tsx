@@ -1161,9 +1161,12 @@ export default function Dashboard() {
   
   const [selectedWeek, setSelectedWeek] = useState<number>(() => {
     const saved = localStorage.getItem('unical_selectedWeek');
-    if (saved) { const n = parseInt(saved, 10); if (n >= 1 && n <= 14) return n; }
+    if (saved) { const n = parseInt(saved, 10); if (!isNaN(n) && n >= 1) return n; }
     return 12;
   });
+  useEffect(() => {
+    localStorage.setItem('unical_selectedWeek', String(selectedWeek));
+  }, [selectedWeek]);
   const [calendarWeekMode, setCalendarWeekMode] = useState<'current' | 'next'>(() => {
     const saved = localStorage.getItem('calendarWeekMode');
     return (saved === 'next') ? 'next' : 'current';
@@ -7240,6 +7243,13 @@ export default function Dashboard() {
   useEffect(() => {
     if (weeks.length > 0 && !initialWeekSetRef.current) {
       initialWeekSetRef.current = true;
+      const savedWeek = localStorage.getItem('unical_selectedWeek');
+      const savedN = savedWeek ? parseInt(savedWeek, 10) : NaN;
+      if (!isNaN(savedN) && savedN >= 1) {
+        setSelectedWeek(savedN);
+        lastAutoWeekDateRef.current = new Date().getDate();
+        return;
+      }
       const today = new Date();
       const currentWeek = findCurrentWeekFromList(weeks, today);
       if (currentWeek) {
