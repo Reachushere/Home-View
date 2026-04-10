@@ -745,7 +745,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           bottom: 0,
           overflowY: 'hidden',
           overflowX: 'hidden',
-          padding: '0 30px 10px',
+          padding: '0 20px 10px',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: courseBooks.length > 0 ? 'space-evenly' : 'center',
@@ -787,7 +787,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 {course.code} — {course.name}
               </div>
 
-              <div style={{ position: 'relative' }}>
+              <div style={{ position: 'relative', maxWidth: '100%' }}>
                 <div style={{
                   display: 'flex',
                   alignItems: 'flex-end',
@@ -796,6 +796,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                   gap: '2px',
                   overflowX: 'auto',
                   overflowY: 'hidden',
+                  maxWidth: '100%',
                 }}
                 className="library-scroll"
                 >
