@@ -10,7 +10,7 @@ import { SemesterChecklistDialog } from "@/components/SemesterChecklistDialog";
 import { Document, Page, pdfjs } from 'react-pdf';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
-import tmuLogo from "@assets/Chang-School_1768803262583.png";
+import tmuLogo from "@assets/Chang-School2_1775779674508.png";
 import unicalLogo from "@assets/ChatGPT_Image_Jan_22,_2026,_02_34_52_PM_1769110943463.png";
 import changSchoolLogo from "@assets/Chang-School2_1770607146365.png";
 import campusBg from "@assets/TMU_1769151150961.jpg";
