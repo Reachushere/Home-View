@@ -11517,7 +11517,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
   async function checkAndActivateSemester(): Promise<void> {
     try {
-      const now = new Date();
+      const now = torontoDate();
       const allSemesters = await storage.getAllSemesterSettings();
       const currentActive = allSemesters.find(s => s.isActive);
 
@@ -11553,14 +11553,14 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         await storage.updateSemesterSettings(currentActive.id, { isActive: false });
       }
       await storage.updateSemesterSettings(shouldBeActive.id, { isActive: true });
-      console.log(`[Semester Auto] Activated "${shouldBeActive.semesterName}" (ID ${shouldBeActive.id})`);
+      console.log(`[Semester Auto] ✅ Activated "${shouldBeActive.semesterName}" (ID ${shouldBeActive.id})${currentActive ? ` — was "${currentActive.semesterName}"` : ''}`);
     } catch (e: any) {
       console.error(`[Semester Auto] Error: ${e.message}`);
     }
   }
 
   checkAndActivateSemester();
-  setInterval(checkAndActivateSemester, 6 * 60 * 60 * 1000);
+  setInterval(checkAndActivateSemester, 60 * 60 * 1000);
 
   async function monitorOneDriveFolderRenames(): Promise<void> {
     try {
