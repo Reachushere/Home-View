@@ -17648,7 +17648,7 @@ export default function Dashboard() {
         <Share 
           className="text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
-          style={{ height: '18px', width: '18px', position: 'fixed', bottom: '43px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 - 17 - 7 - 2 + 3 + 2 + 8 + 2 - 28 + 5 + 3 + 1 + 25 + 9 + 6}px`, zIndex: 70 }}
+          style={{ height: '16px', width: '16px', position: 'fixed', bottom: '43px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 - 17 - 7 - 2 + 3 + 2 + 8 + 2 - 28 + 5 + 3 + 1 + 25 + 9 + 6 + 2}px`, zIndex: 70 }}
           onClick={() => { generateShareLink('4201'); setIsShareDialogOpen(true); }}
           data-testid="button-share-main"
         />
@@ -17657,7 +17657,7 @@ export default function Dashboard() {
         <Download
           className="text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
-          style={{ height: '18px', width: '18px', position: 'fixed', bottom: '43px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 - 17 - 7 - 2 + 3 + 2 + 8 + 2 - 28 + 5 + 3 + 1 + 24 + 25 + 9 + 6}px`, zIndex: 70 }}
+          style={{ height: '16px', width: '16px', position: 'fixed', bottom: '43px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 - 17 - 7 - 2 + 3 + 2 + 8 + 2 - 28 + 5 + 3 + 1 + 24 + 25 + 9 + 6 + 2}px`, zIndex: 70 }}
           onClick={() => {
             window.open('https://github.com/Reachushere/Home-View/archive/refs/heads/main.zip', '_blank');
           }}
@@ -17669,7 +17669,7 @@ export default function Dashboard() {
         <Printer
           className="text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
-          style={{ height: '18px', width: '18px', position: 'fixed', bottom: '43px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 - 17 - 7 - 2 + 3 + 2 + 8 + 2 - 28 + 5 + 3 + 1 + 48 + 25 + 9 + 6}px`, zIndex: 70 }}
+          style={{ height: '16px', width: '16px', position: 'fixed', bottom: '43px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 - 17 - 7 - 2 + 3 + 2 + 8 + 2 - 28 + 5 + 3 + 1 + 48 + 25 + 9 + 6 + 2}px`, zIndex: 70 }}
           onClick={() => {
             const printableIframe = document.querySelector('iframe[src*="pdf-reader"], iframe[src*="/files/"]') as HTMLIFrameElement | null;
             if (printableIframe && printableIframe.contentWindow) {
@@ -19361,7 +19361,7 @@ export default function Dashboard() {
       {!isTodoFlyoutOpen && (
         <div 
           className="fixed text-white/60 text-[11px] font-medium z-[70] pointer-events-none"
-          style={{ bottom: '40px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 - 17 - 7 - 2 + 3 + 2 + 8 + 2 - 28 + 5 + 3 + 1}px`, transformOrigin: 'right bottom' }}
+          style={{ bottom: '40px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 - 17 - 7 - 2 + 3 + 2 + 8 + 2 - 28 + 5 + 3 + 1 + 2}px`, transformOrigin: 'right bottom' }}
         >
           © 2026
         </div>
