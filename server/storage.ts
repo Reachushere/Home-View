@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { tasks, files, semesterSettings, secondGoogleAccount, thirdGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, stickyNotes, accessTokens, shiftSchedule, semesterChecklist, courseWeekMappings, scholarships, keyContacts, announcements, entityComments, pendingReviewItems, dismissedReviewTitles, sharedNotebookLinks, savedEmailSearches, weatherHistory, weatherAlertHistory, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type ThirdGoogleAccount, type InsertThirdGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, type StickyNote, type InsertStickyNote, type AccessToken, type InsertAccessToken, type ShiftScheduleEntry, type InsertShiftScheduleEntry, type SemesterChecklistItem, type InsertSemesterChecklistItem, type CourseWeekMapping, type InsertCourseWeekMapping, type Scholarship, type InsertScholarship, type KeyContact, type InsertKeyContact, type Announcement, type InsertAnnouncement, type EntityComment, type PendingReviewItem, type InsertPendingReviewItem, type SharedNotebookLink, type InsertSharedNotebookLink, type SavedEmailSearch, type InsertSavedEmailSearch, type WeatherHistory, type InsertWeatherHistory, type WeatherAlertHistory, type InsertWeatherAlertHistory, getWeekNumber } from "@shared/schema";
+import { tasks, files, semesterSettings, secondGoogleAccount, thirdGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, stickyNotes, accessTokens, shiftSchedule, semesterChecklist, courseWeekMappings, scholarships, keyContacts, announcements, entityComments, pendingReviewItems, dismissedReviewTitles, sharedNotebookLinks, savedEmailSearches, weatherHistory, weatherAlertHistory, newSemesterChecklist, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type ThirdGoogleAccount, type InsertThirdGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, type StickyNote, type InsertStickyNote, type AccessToken, type InsertAccessToken, type ShiftScheduleEntry, type InsertShiftScheduleEntry, type SemesterChecklistItem, type InsertSemesterChecklistItem, type CourseWeekMapping, type InsertCourseWeekMapping, type Scholarship, type InsertScholarship, type KeyContact, type InsertKeyContact, type Announcement, type InsertAnnouncement, type EntityComment, type PendingReviewItem, type InsertPendingReviewItem, type SharedNotebookLink, type InsertSharedNotebookLink, type SavedEmailSearch, type InsertSavedEmailSearch, type WeatherHistory, type InsertWeatherHistory, type WeatherAlertHistory, type InsertWeatherAlertHistory, type NewSemesterChecklistItem, type InsertNewSemesterChecklistItem, getWeekNumber } from "@shared/schema";
 import { eq, and, gte, lte, desc, or, isNull } from "drizzle-orm";
 
 export interface IStorage {
@@ -117,6 +117,10 @@ export interface IStorage {
   createWeatherRecord(data: InsertWeatherHistory): Promise<WeatherHistory>;
   getWeatherAlertHistory(from: Date, to: Date): Promise<WeatherAlertHistory[]>;
   createWeatherAlertRecord(data: InsertWeatherAlertHistory): Promise<WeatherAlertHistory>;
+  getNewSemesterChecklist(semesterKey?: string): Promise<NewSemesterChecklistItem[]>;
+  createNewSemesterChecklistItem(item: InsertNewSemesterChecklistItem): Promise<NewSemesterChecklistItem>;
+  updateNewSemesterChecklistItem(id: number, updates: Partial<NewSemesterChecklistItem>): Promise<NewSemesterChecklistItem>;
+  deleteNewSemesterChecklistItem(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -895,6 +899,26 @@ export class DatabaseStorage implements IStorage {
   async createWeatherAlertRecord(data: InsertWeatherAlertHistory): Promise<WeatherAlertHistory> {
     const [created] = await db.insert(weatherAlertHistory).values(data).returning();
     return created;
+  }
+
+  async getNewSemesterChecklist(semesterKey?: string): Promise<NewSemesterChecklistItem[]> {
+    const conditions = [eq(newSemesterChecklist.isDeleted, false)];
+    if (semesterKey) conditions.push(eq(newSemesterChecklist.semesterKey, semesterKey));
+    return await db.select().from(newSemesterChecklist).where(and(...conditions)).orderBy(newSemesterChecklist.sortOrder);
+  }
+
+  async createNewSemesterChecklistItem(item: InsertNewSemesterChecklistItem): Promise<NewSemesterChecklistItem> {
+    const [created] = await db.insert(newSemesterChecklist).values(item).returning();
+    return created;
+  }
+
+  async updateNewSemesterChecklistItem(id: number, updates: Partial<NewSemesterChecklistItem>): Promise<NewSemesterChecklistItem> {
+    const [updated] = await db.update(newSemesterChecklist).set(updates).where(eq(newSemesterChecklist.id, id)).returning();
+    return updated;
+  }
+
+  async deleteNewSemesterChecklistItem(id: number): Promise<void> {
+    await db.delete(newSemesterChecklist).where(eq(newSemesterChecklist.id, id));
   }
 }
 

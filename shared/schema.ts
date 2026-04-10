@@ -857,5 +857,25 @@ export const insertWeatherAlertHistorySchema = createInsertSchema(weatherAlertHi
 export type WeatherAlertHistory = typeof weatherAlertHistory.$inferSelect;
 export type InsertWeatherAlertHistory = z.infer<typeof insertWeatherAlertHistorySchema>;
 
+export const newSemesterChecklist = pgTable("new_semester_checklist", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  dueDate: timestamp("due_date"),
+  reminder1: integer("reminder1").default(0),
+  reminder2: integer("reminder2").default(0),
+  reminder3: integer("reminder3").default(0),
+  reminder4: integer("reminder4").default(0),
+  isCompleted: boolean("is_completed").default(false),
+  completedAt: timestamp("completed_at"),
+  isDeleted: boolean("is_deleted").default(false),
+  sortOrder: integer("sort_order").default(0),
+  semesterKey: text("semester_key"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertNewSemesterChecklistSchema = createInsertSchema(newSemesterChecklist).omit({ id: true, completedAt: true, createdAt: true });
+export type NewSemesterChecklistItem = typeof newSemesterChecklist.$inferSelect;
+export type InsertNewSemesterChecklistItem = z.infer<typeof insertNewSemesterChecklistSchema>;
+
 // Export chat models for AI integrations
 export * from "./models/chat";

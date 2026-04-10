@@ -216,6 +216,7 @@ import {
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import { useAccessMode } from "@/components/access-gate";
+import NewSemesterChecklist from "@/components/NewSemesterChecklist";
 import type { Task, SemesterSettings, Subtask, Project, TaskLink } from "@shared/schema";
 import { TASK_TYPES, COURSES, getWeekNumber, getWeekDates, getSemesterTotalWeeks, alignToSaturday, REMINDER_OPTIONS, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, REPEAT_TYPES, REPEAT_INTERVAL_UNITS, FIRST_WEEK, LAST_WEEK, LINK_TYPES } from "@shared/schema";
 import type { CourseWeekMapping } from "@shared/schema";
@@ -2207,6 +2208,10 @@ export default function Dashboard() {
     return startOfDayET(addDays(currentTime, dow === 6 ? 7 : (6 - dow)));
   }, [currentTime.getDate()]);
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
+  const [showNewSemChecklist, setShowNewSemChecklist] = useState(false);
+  const [newSemChecklistKey, setNewSemChecklistKey] = useState('');
+  const [newSemChecklistLabel, setNewSemChecklistLabel] = useState('');
+  const [semChecklistFlyoutKey, setSemChecklistFlyoutKey] = useState<string | null>(null);
   const [showWeatherHistoryPanel, setShowWeatherHistoryPanel] = useState(false);
   const [weatherHistoryData, setWeatherHistoryData] = useState<any[]>([]);
   const [weatherHistoryLoading, setWeatherHistoryLoading] = useState(false);
@@ -8098,6 +8103,41 @@ export default function Dashboard() {
     }
     return map;
   }, [allSemesterSettings, deliveryModeVersion]);
+
+  useEffect(() => {
+    if (!allSemesterSettings || allSemesterSettings.length === 0) return;
+    const now = startOfDayET(new Date());
+    const typePrefix: Record<string, string> = { winter: 'w', fall: 'f', spring_summer: 'ss' };
+    const semLabels: Record<string, string> = { winter: 'Winter', fall: 'Fall', spring_summer: 'Spring/Summer' };
+    for (const sem of allSemesterSettings) {
+      if (!sem.semesterStartDate) continue;
+      const semStart = new Date(sem.semesterStartDate);
+      const semDay = semStart.getDay();
+      let firstMonday: Date;
+      if (semDay === 1) {
+        firstMonday = semStart;
+      } else if (semDay === 0) {
+        firstMonday = addDays(semStart, 1);
+      } else {
+        firstMonday = addDays(semStart, (8 - semDay) % 7);
+      }
+      const triggerDate = addDays(firstMonday, -2);
+      const semEnd = sem.semesterEndDate ? new Date(sem.semesterEndDate) : addDays(firstMonday, 90);
+      if (now >= triggerDate && now <= semEnd) {
+        const yr = new Date(sem.semesterStartDate).getFullYear();
+        const prefix = typePrefix[sem.semesterType] || sem.semesterType?.charAt(0) || 's';
+        const semKey = `${prefix}${yr}`;
+        const dismissed = localStorage.getItem(`newSemChecklist_dismissed_${semKey}`);
+        if (!dismissed) {
+          const label = `${semLabels[sem.semesterType] || sem.semesterType || 'Semester'} ${yr}`;
+          setNewSemChecklistKey(semKey);
+          setNewSemChecklistLabel(sem.semesterName || label);
+          setShowNewSemChecklist(true);
+          break;
+        }
+      }
+    }
+  }, [allSemesterSettings]);
 
   const courseZoomLinks = useMemo(() => {
     const map: Record<string, string> = {};
@@ -20407,6 +20447,17 @@ export default function Dashboard() {
           </g>
         </svg>
       </a>
+      {showNewSemChecklist && newSemChecklistKey && (
+        <NewSemesterChecklist
+          semesterKey={newSemChecklistKey}
+          semesterLabel={newSemChecklistLabel}
+          colorSettings={colorSettings}
+          onDismiss={() => {
+            localStorage.setItem(`newSemChecklist_dismissed_${newSemChecklistKey}`, 'true');
+            setShowNewSemChecklist(false);
+          }}
+        />
+      )}
       {/* Left binder tab - Add */}
       <div
         className={`fixed z-[10002] cursor-pointer side-tab-hover-left${tabBounceEnabled ? ' left-tab-bounce' : ''}`}
@@ -25605,6 +25656,21 @@ export default function Dashboard() {
                                     onClick={(e) => { e.stopPropagation(); setSemSettingsDialogKey(sem.key); }}
                                     data-testid={`button-sem-settings-${sem.key}`}
                                   />
+                                  <svg
+                                    className="text-white/50 hover:text-white cursor-pointer transition-colors flex-shrink-0"
+                                    style={{ width: '11px', height: '11px' }}
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    onClick={(e) => { e.stopPropagation(); setSemChecklistFlyoutKey(semChecklistFlyoutKey === sem.key ? null : sem.key); }}
+                                    data-testid={`button-sem-checklist-${sem.key}`}
+                                    title="Semester Checklist"
+                                  >
+                                    <path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+                                  </svg>
                                   <span className="text-[10px] font-bold whitespace-nowrap" style={{ color: '#ffffff', marginRight: '3px' }}>{sem.label}</span>
                                   {!sem.key.startsWith('ss') ? (
                                     <span className="text-[9px] whitespace-nowrap px-1.5 py-0.5 rounded border cursor-pointer hover:bg-white/15 transition-colors" style={{ color: '#ffffff', background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)', marginRight: '3px' }} onClick={(e) => { e.stopPropagation(); setSemDatePickerKey(sem.key); setSemDatePickerHalf('full'); }} data-testid={`dates-pill-${sem.key}`}>{(() => {
@@ -35850,6 +35916,18 @@ export default function Dashboard() {
         </div>
         </>, document.body)}
 
+          {semChecklistFlyoutKey && createPortal(
+            <>
+              <div className="fixed inset-0 z-[10003] bg-black/50" onClick={() => setSemChecklistFlyoutKey(null)} />
+              <NewSemesterChecklist
+                semesterKey={semChecklistFlyoutKey}
+                semesterLabel={(() => { const m: Record<string, string> = { 'ss2025': 'Spring/Summer 2025', 'f2025': 'Fall 2025', 'w2026': 'Winter 2026', 'ss2026': 'Spring/Summer 2026', 'f2026': 'Fall 2026', 'w2027': 'Winter 2027', 'ss2027': 'Spring/Summer 2027', 'f2027': 'Fall 2027', 'w2028': 'Winter 2028', 'ss2028': 'Spring/Summer 2028', 'f2028': 'Fall 2028', 'w2029': 'Winter 2029', 'ss2029': 'Spring/Summer 2029', 'f2029': 'Fall 2029' }; return m[semChecklistFlyoutKey] || semChecklistFlyoutKey; })()}
+                colorSettings={colorSettings}
+                onDismiss={() => setSemChecklistFlyoutKey(null)}
+                noBackdrop
+              />
+            </>, document.body
+          )}
 
         {/* Projects Flyout - Burst from Left */}
         <div 

@@ -23332,6 +23332,74 @@ Keep your tone friendly and educational. Format your response clearly with numbe
     }
   });
 
+  app.get("/api/new-semester-checklist", async (req, res) => {
+    try {
+      const semesterKey = req.query.semesterKey as string | undefined;
+      const items = await storage.getNewSemesterChecklist(semesterKey);
+      res.json(items);
+    } catch (err) {
+      res.status(500).json({ error: "Failed to fetch checklist" });
+    }
+  });
+
+  app.post("/api/new-semester-checklist/carry-over", async (req, res) => {
+    try {
+      const { semesterKey } = req.body;
+      if (!semesterKey) return res.status(400).json({ error: "semesterKey required" });
+      const allItems = await storage.getNewSemesterChecklist();
+      const prevItems = allItems.filter(i => i.semesterKey !== semesterKey && !i.isDeleted && !i.isCompleted);
+      const existing = await storage.getNewSemesterChecklist(semesterKey);
+      if (existing.length > 0) return res.json({ carried: 0 });
+      let sortOrder = 1;
+      for (const item of prevItems) {
+        await storage.createNewSemesterChecklistItem({
+          title: item.title,
+          sortOrder: sortOrder++,
+          semesterKey,
+          dueDate: null,
+          reminder1: 0,
+          reminder2: 0,
+          reminder3: 0,
+          reminder4: 0,
+          isCompleted: false,
+          isDeleted: false,
+        });
+      }
+      res.json({ carried: prevItems.length });
+    } catch (err) {
+      res.status(500).json({ error: "Failed to carry over checklist items" });
+    }
+  });
+
+  app.post("/api/new-semester-checklist", async (req, res) => {
+    try {
+      const item = await storage.createNewSemesterChecklistItem(req.body);
+      res.json(item);
+    } catch (err) {
+      res.status(500).json({ error: "Failed to create checklist item" });
+    }
+  });
+
+  app.patch("/api/new-semester-checklist/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updated = await storage.updateNewSemesterChecklistItem(id, req.body);
+      res.json(updated);
+    } catch (err) {
+      res.status(500).json({ error: "Failed to update checklist item" });
+    }
+  });
+
+  app.delete("/api/new-semester-checklist/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteNewSemesterChecklistItem(id);
+      res.json({ success: true });
+    } catch (err) {
+      res.status(500).json({ error: "Failed to delete checklist item" });
+    }
+  });
+
   return httpServer;
 }
 
