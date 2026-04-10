@@ -11861,13 +11861,38 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const year = startDate.getFullYear();
     const basePath = `/School/1. TMU/Courses/${year}/${semType}`;
     const courses: Array<{ code: string; path: string }> = [];
+    let baseFolders: any[] | null = null;
     for (let i = 1; i <= 3; i++) {
       const code = (semesterSettings as any)[`course${i}Code`];
-      const name = (semesterSettings as any)[`course${i}Name`];
       if (!code || !code.trim()) continue;
       const codeClean = code.replace(/\s/g, '');
-      const folderName = name || codeClean;
-      courses.push({ code: codeClean, path: `${basePath}/${folderName}` });
+      const modFolder = (semesterSettings as any)[`course${i}ModuleFolder`] || '';
+      if (modFolder.trim()) {
+        const courseFolderPath = modFolder.trim().replace(/\/(Module|Readings|Reading)$/i, '');
+        courses.push({ code: codeClean, path: courseFolderPath });
+      } else {
+        try {
+          if (!baseFolders) {
+            const { listOneDriveItems } = await import("./onedrive");
+            baseFolders = await listOneDriveItems(basePath);
+          }
+          const searchCode = codeClean.toUpperCase();
+          const matchedFolder = baseFolders.find((f: any) =>
+            f.type === 'folder' && f.name.toUpperCase().startsWith(searchCode)
+          );
+          if (matchedFolder) {
+            courses.push({ code: codeClean, path: matchedFolder.path });
+          } else {
+            const name = (semesterSettings as any)[`course${i}Name`];
+            const folderName = name || codeClean;
+            courses.push({ code: codeClean, path: `${basePath}/${folderName}` });
+          }
+        } catch (e: any) {
+          const name = (semesterSettings as any)[`course${i}Name`];
+          const folderName = name || codeClean;
+          courses.push({ code: codeClean, path: `${basePath}/${folderName}` });
+        }
+      }
     }
     return courses;
   }
@@ -17635,12 +17660,29 @@ document.body.removeChild(a);
       const overrideModule = courseIdx ? (semester as any)[`course${courseIdx}ModuleFolder`] : '';
       const overrideReading = courseIdx ? (semester as any)[`course${courseIdx}ReadingFolder`] : '';
 
-      const baseFolders = await listOneDriveItems(basePath);
+      let baseFolders: any[] = [];
+      try {
+        baseFolders = await listOneDriveItems(basePath);
+      } catch (baseErr: any) {
+        console.log(`[Sync] Base path not found on OneDrive: ${basePath} — ${baseErr.message}`);
+        return res.json({ success: true, synced: [], message: `OneDrive folder not found: ${basePath}` });
+      }
       let coursePath: string | null = null;
       if (overrideModule) {
-        coursePath = overrideModule;
-      } else if (overrideReading) {
-        coursePath = overrideReading;
+        try {
+          await listOneDriveItems(overrideModule);
+          coursePath = overrideModule;
+        } catch {
+          console.log(`[Sync] Override module folder not found: ${overrideModule}, falling back to auto-detect`);
+        }
+      }
+      if (!coursePath && overrideReading) {
+        try {
+          await listOneDriveItems(overrideReading);
+          coursePath = overrideReading;
+        } catch {
+          console.log(`[Sync] Override reading folder not found: ${overrideReading}, falling back to auto-detect`);
+        }
       }
       if (!coursePath) {
         let searchCode = courseCode.toUpperCase();
