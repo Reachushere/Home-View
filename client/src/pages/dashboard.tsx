@@ -37826,7 +37826,7 @@ function ProfileForm({
         </div>
       </div>
       <div className="flex gap-[6px]">
-        <div className="space-y-0 w-1/2">
+        <div className="space-y-0" style={{ width: 'calc(50% - 3px)', flexShrink: 0 }}>
           <Label htmlFor="address" className="text-[10px]">Address</Label>
           <Input 
             id="address" 
