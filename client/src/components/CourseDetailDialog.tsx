@@ -4329,7 +4329,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   </div>
                   <div className={`flex-1 min-w-0 ${hdrCls('title')}`} style={{ marginLeft: isEditingInfo ? '36px' : '36px' }} onClick={() => toggleSort('title')} data-testid="sort-title">Assignments (Graded)<SortIcon field="title" />
                   </div>
-                  <div className="flex items-end flex-shrink-0 text-white" style={{ gap: '10px', position: 'relative', left: isEditingInfo ? '-24px' : '-15px' }}>
+                  <div className="flex items-end flex-shrink-0 text-white" style={{ gap: '10px', position: 'relative', left: isEditingInfo ? '-31px' : '-22px' }}>
                     <span className={`w-[33px] text-center leading-tight ${hdrCls('score')}`} onClick={() => toggleSort('score')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'relative', left: isEditingInfo ? '-5px' : '-5px' }} data-testid="sort-score">
                       Score<SortIcon field="score" />
                     </span>
@@ -4343,8 +4343,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                       Percent<SortIcon field="percent" />
                     </span>
                   </div>
-                  <div className="flex items-end flex-shrink-0" style={{ gap: '6px', marginLeft: isEditingInfo ? '-8px' : '1px' }}>
-                    <div style={{ width: '18px', textAlign: 'center', lineHeight: '1.1' }}><span className="text-[7px] font-bold text-red-400">Scratch</span></div>
+                  <div className="flex items-end flex-shrink-0" style={{ gap: '6px', marginLeft: isEditingInfo ? '-12px' : '-3px' }}>
+                    <div style={{ width: '18px', textAlign: 'center', lineHeight: '1.1' }}><span className="text-[8px] font-bold text-red-400">Scratch</span></div>
                     <div style={{ width: '24px', textAlign: 'center', lineHeight: '1.1' }}><span className="text-[8px] font-bold text-white">Grade<br/>Received</span></div>
                     <div style={{ width: '19px', textAlign: 'center', marginLeft: '6px' }}><span className="text-[8px] font-bold text-white">Copy</span></div>
                     <div style={{ width: '19px' }} />
