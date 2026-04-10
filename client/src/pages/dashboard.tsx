@@ -6798,6 +6798,35 @@ export default function Dashboard() {
     startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: name, certKey }));
   };
 
+  const SEMKEY_TO_DB: Record<string, { type: string; year: number }> = {
+    'ss2025': { type: 'spring_summer', year: 2025 }, 'f2025': { type: 'fall', year: 2025 },
+    'w2026': { type: 'winter', year: 2026 }, 'ss2026': { type: 'spring_summer', year: 2026 },
+    'f2026': { type: 'fall', year: 2026 }, 'w2027': { type: 'winter', year: 2027 },
+    'ss2027': { type: 'spring_summer', year: 2027 }, 'f2027': { type: 'fall', year: 2027 },
+    'w2028': { type: 'winter', year: 2028 }, 'ss2028': { type: 'spring_summer', year: 2028 },
+    'f2028': { type: 'fall', year: 2028 }, 'w2029': { type: 'winter', year: 2029 },
+    'ss2029': { type: 'spring_summer', year: 2029 }, 'f2029': { type: 'fall', year: 2029 },
+  };
+
+  const findSemSlot = (semKey: string | undefined, courseCode: string, allSems: any[] | undefined): { sem: any; slot: number } | null => {
+    if (!semKey || !allSems) return null;
+    const target = SEMKEY_TO_DB[semKey];
+    if (!target) return null;
+    let cc = courseCode.replace(/\s/g, '').toUpperCase();
+    const tm = cc.match(/^TBD_SLOT(\d+)$/);
+    if (tm) cc = `TBD${tm[1]}`;
+    const thisSem = allSems.find((s: any) => {
+      const yr = s.semesterName?.match(/\d{4}/)?.[0];
+      return s.semesterType === target.type && yr === String(target.year);
+    });
+    if (!thisSem) return null;
+    for (let i = 1; i <= 3; i++) {
+      const sc = ((thisSem as any)[`course${i}Code`] || '').replace(/\s/g, '').toUpperCase();
+      if (sc === cc) return { sem: thisSem, slot: i };
+    }
+    return null;
+  };
+
   const buildCourseInfoForCert = () => {
     if (!selectedCertCourse) return null;
     let { courseCode, courseName, certKey } = selectedCertCourse;
@@ -6838,96 +6867,69 @@ export default function Dashboard() {
     let semesterTerm = '';
     let year = '';
 
-    const semSearchListRaw = allSemesterSettingsRef.current || (semesterSettings ? [semesterSettings] : []);
+    const allSems = allSemesterSettingsRef.current || (semesterSettings ? [semesterSettings] : []);
     const detailSemKey = selectedCertCourse?.semKey;
-    const detailSemKeyToType: Record<string, { type: string; year: number }> = {
-      'ss2025': { type: 'spring_summer', year: 2025 }, 'f2025': { type: 'fall', year: 2025 },
-      'w2026': { type: 'winter', year: 2026 }, 'ss2026': { type: 'spring_summer', year: 2026 },
-      'f2026': { type: 'fall', year: 2026 }, 'w2027': { type: 'winter', year: 2027 },
-      'ss2027': { type: 'spring_summer', year: 2027 }, 'f2027': { type: 'fall', year: 2027 },
-      'w2028': { type: 'winter', year: 2028 }, 'ss2028': { type: 'spring_summer', year: 2028 },
-      'f2028': { type: 'fall', year: 2028 }, 'w2029': { type: 'winter', year: 2029 },
-      'ss2029': { type: 'spring_summer', year: 2029 }, 'f2029': { type: 'fall', year: 2029 },
-    };
-    const detailTarget = detailSemKey ? detailSemKeyToType[detailSemKey] : null;
-    const semSearchList = detailTarget
-      ? [...semSearchListRaw].sort((a, b) => {
-          const aM = a.semesterType === detailTarget.type && (a.semesterName?.match(/\d{4}/)?.[0] === String(detailTarget.year));
-          const bM = b.semesterType === detailTarget.type && (b.semesterName?.match(/\d{4}/)?.[0] === String(detailTarget.year));
-          return (bM ? 1 : 0) - (aM ? 1 : 0);
-        })
-      : semSearchListRaw;
-    let ccNorm = courseCode.replace(/\s/g, '');
-    const tdbM = ccNorm.match(/^TBD_SLOT(\d+)$/i);
-    if (tdbM) ccNorm = `TBD${tdbM[1]}`;
-    for (const sem of semSearchList) {
-      let foundInSem = false;
-      for (let i = 1; i <= 3; i++) {
-        const prefix = `course${i}` as const;
-        const codeField = ((sem as any)[`${prefix}Code`] || '');
-        if (codeField.replace(/\s/g, '').toUpperCase() === ccNorm.toUpperCase()) {
-          deliveryMode = (sem as any)[`${prefix}DeliveryMode`] || '';
-          classDay = (sem as any)[`${prefix}ClassDay`] || '';
-          classDay2 = (sem as any)[`${prefix}ClassDay2`] || '';
-          classTime = (sem as any)[`${prefix}ClassTime`] || '';
-          classEndTime = (sem as any)[`${prefix}ClassEndTime`] || '';
-          classTime2 = (sem as any)[`${prefix}ClassTime2`] || '';
-          classEndTime2 = (sem as any)[`${prefix}ClassEndTime2`] || '';
-          zoomLink = (sem as any)[`${prefix}ZoomLink`] || '';
-          courseType = (sem as any)[`${prefix}CourseType`] || '';
-          moduleFolder = (sem as any)[`${prefix}ModuleFolder`] || '';
-          readingFolder = (sem as any)[`${prefix}ReadingFolder`] || '';
-          displayName = (sem as any)[`${prefix}DisplayName`] || '';
-          if (!color) color = (sem as any)[`${prefix}Color`] || '';
-          if (!colorEnd) colorEnd = (sem as any)[`${prefix}ColorEnd`] || '';
-          if (!colorStops) colorStops = (sem as any)[`${prefix}ColorStops`] || '';
-          if (!borderColor) borderColor = (sem as any)[`${prefix}BorderColor`] || '';
-          if (!courseRowColor) courseRowColor = (sem as any)[`${prefix}CourseRowColor`] || '';
-          if (!taskBgColor) taskBgColor = (sem as any)[`${prefix}TaskBgColor`] || '';
-          if (!courseFontColor) courseFontColor = (sem as any)[`${prefix}CourseFontColor`] || '';
-          moduleBoxColor = (sem as any)[`${prefix}ModuleBoxColor`] || moduleBoxColor || '';
-          readingBoxColor = (sem as any)[`${prefix}ReadingBoxColor`] || readingBoxColor || '';
-          if (!professor) professor = (sem as any)[`${prefix}Professor`] || '';
-          if (!professorEmail) professorEmail = (sem as any)[`${prefix}ProfessorEmail`] || '';
-          const semType = (sem as any).semesterType || '';
-          const ssTerm = (sem as any)[`${prefix}SpringSummerTerm`] || '';
-          if (semType === 'spring_summer') {
-            semesterTerm = ssTerm === 'first_half' ? 'spring_summer_first' : ssTerm === 'second_half' ? 'spring_summer_second' : 'spring_summer_full';
-          } else if (semType === 'fall' || semType === 'winter') {
-            semesterTerm = semType;
-          }
-          const courseStartDate = (sem as any)[`${prefix}StartDate`];
-          const courseEndDate = (sem as any)[`${prefix}EndDate`];
-          const semStart = courseStartDate || (sem as any).semesterStartDate;
-          if (courseStartDate) {
-            const sdStr = typeof courseStartDate === 'string' && courseStartDate.includes('T') ? courseStartDate.split('T')[0] : '';
-            if (sdStr) {
-              startDate = sdStr;
-            } else {
-              const sd = new Date(courseStartDate);
-              startDate = `${sd.getFullYear()}-${(sd.getMonth()+1).toString().padStart(2,'0')}-${sd.getDate().toString().padStart(2,'0')}`;
-            }
-          }
-          if (courseEndDate) {
-            const edStr = typeof courseEndDate === 'string' && courseEndDate.includes('T') ? courseEndDate.split('T')[0] : '';
-            if (edStr) {
-              endDate = edStr;
-            } else {
-              const ed = new Date(courseEndDate);
-              endDate = `${ed.getFullYear()}-${(ed.getMonth()+1).toString().padStart(2,'0')}-${ed.getDate().toString().padStart(2,'0')}`;
-            }
-          }
-          const semNameYear = (sem as any).semesterName?.match(/\d{4}/)?.[0];
-          if (semNameYear) {
-            year = semNameYear;
-          } else if (semStart) {
-            year = new Date(semStart).getFullYear().toString();
-          }
-          foundInSem = true;
-          break;
+    const match = findSemSlot(detailSemKey, courseCode, allSems);
+    if (match) {
+      const { sem, slot: slotNum } = match;
+      const prefix = `course${slotNum}`;
+      deliveryMode = (sem as any)[`${prefix}DeliveryMode`] || '';
+      classDay = (sem as any)[`${prefix}ClassDay`] || '';
+      classDay2 = (sem as any)[`${prefix}ClassDay2`] || '';
+      classTime = (sem as any)[`${prefix}ClassTime`] || '';
+      classEndTime = (sem as any)[`${prefix}ClassEndTime`] || '';
+      classTime2 = (sem as any)[`${prefix}ClassTime2`] || '';
+      classEndTime2 = (sem as any)[`${prefix}ClassEndTime2`] || '';
+      zoomLink = (sem as any)[`${prefix}ZoomLink`] || '';
+      courseType = (sem as any)[`${prefix}CourseType`] || '';
+      moduleFolder = (sem as any)[`${prefix}ModuleFolder`] || '';
+      readingFolder = (sem as any)[`${prefix}ReadingFolder`] || '';
+      displayName = (sem as any)[`${prefix}DisplayName`] || '';
+      if (!color) color = (sem as any)[`${prefix}Color`] || '';
+      if (!colorEnd) colorEnd = (sem as any)[`${prefix}ColorEnd`] || '';
+      if (!colorStops) colorStops = (sem as any)[`${prefix}ColorStops`] || '';
+      if (!borderColor) borderColor = (sem as any)[`${prefix}BorderColor`] || '';
+      if (!courseRowColor) courseRowColor = (sem as any)[`${prefix}CourseRowColor`] || '';
+      if (!taskBgColor) taskBgColor = (sem as any)[`${prefix}TaskBgColor`] || '';
+      if (!courseFontColor) courseFontColor = (sem as any)[`${prefix}CourseFontColor`] || '';
+      moduleBoxColor = (sem as any)[`${prefix}ModuleBoxColor`] || moduleBoxColor || '';
+      readingBoxColor = (sem as any)[`${prefix}ReadingBoxColor`] || readingBoxColor || '';
+      if (!professor) professor = (sem as any)[`${prefix}Professor`] || '';
+      if (!professorEmail) professorEmail = (sem as any)[`${prefix}ProfessorEmail`] || '';
+      const semType = (sem as any).semesterType || '';
+      const ssTerm = (sem as any)[`${prefix}SpringSummerTerm`] || '';
+      if (semType === 'spring_summer') {
+        semesterTerm = ssTerm === 'first_half' ? 'spring_summer_first' : ssTerm === 'second_half' ? 'spring_summer_second' : 'spring_summer_full';
+      } else if (semType === 'fall' || semType === 'winter') {
+        semesterTerm = semType;
+      }
+      const courseStartDate = (sem as any)[`${prefix}StartDate`];
+      const courseEndDate = (sem as any)[`${prefix}EndDate`];
+      const semStart = courseStartDate || (sem as any).semesterStartDate;
+      if (courseStartDate) {
+        const sdStr = typeof courseStartDate === 'string' && courseStartDate.includes('T') ? courseStartDate.split('T')[0] : '';
+        if (sdStr) {
+          startDate = sdStr;
+        } else {
+          const sd = new Date(courseStartDate);
+          startDate = `${sd.getFullYear()}-${(sd.getMonth()+1).toString().padStart(2,'0')}-${sd.getDate().toString().padStart(2,'0')}`;
         }
       }
-      if (foundInSem) break;
+      if (courseEndDate) {
+        const edStr = typeof courseEndDate === 'string' && courseEndDate.includes('T') ? courseEndDate.split('T')[0] : '';
+        if (edStr) {
+          endDate = edStr;
+        } else {
+          const ed = new Date(courseEndDate);
+          endDate = `${ed.getFullYear()}-${(ed.getMonth()+1).toString().padStart(2,'0')}-${ed.getDate().toString().padStart(2,'0')}`;
+        }
+      }
+      const semNameYear = (sem as any).semesterName?.match(/\d{4}/)?.[0];
+      if (semNameYear) {
+        year = semNameYear;
+      } else if (semStart) {
+        year = new Date(semStart).getFullYear().toString();
+      }
     }
 
     const certData = localStorage.getItem('certCourseData');
@@ -19022,31 +19024,9 @@ export default function Dashboard() {
               return false;
             })()}
             courseSpSuTerm={(() => {
-              const cc = selectedCertCourse!.courseCode.replace(/\s/g, '');
-              const sk0 = selectedCertCourse?.semKey;
-              const semKeyToDbType2: Record<string, { type: string; year: number }> = {
-                'ss2025': { type: 'spring_summer', year: 2025 }, 'ss2026': { type: 'spring_summer', year: 2026 },
-                'ss2027': { type: 'spring_summer', year: 2027 }, 'ss2028': { type: 'spring_summer', year: 2028 },
-                'ss2029': { type: 'spring_summer', year: 2029 },
-              };
-              const targetSs = sk0 ? semKeyToDbType2[sk0] : null;
-              const sems = allSemesterSettingsRef.current;
-              if (sems) {
-                const sortedSems2 = targetSs
-                  ? [...sems].sort((a, b) => {
-                      const aM = a.semesterType === targetSs.type && (a.semesterName?.match(/\d{4}/)?.[0] === String(targetSs.year));
-                      const bM = b.semesterType === targetSs.type && (b.semesterName?.match(/\d{4}/)?.[0] === String(targetSs.year));
-                      return (bM ? 1 : 0) - (aM ? 1 : 0);
-                    })
-                  : sems;
-                for (const sem of sortedSems2) {
-                  for (let i = 1; i <= 3; i++) {
-                    const sc = ((sem as any)[`course${i}Code`] || '').replace(/\s/g, '');
-                    if (sc.toUpperCase() === cc.toUpperCase()) {
-                      return ((sem as any)[`course${i}SpringSummerTerm`] || 'full').toLowerCase();
-                    }
-                  }
-                }
+              const spMatch = findSemSlot(selectedCertCourse?.semKey, selectedCertCourse!.courseCode, allSemesterSettingsRef.current);
+              if (spMatch) {
+                return ((spMatch.sem as any)[`course${spMatch.slot}SpringSummerTerm`] || 'full').toLowerCase();
               }
               return 'full';
             })()}
@@ -19284,45 +19264,20 @@ export default function Dashboard() {
                 let existingReadingBoxColor = '';
                 let existingProfessor = '';
                 let existingProfessorEmail = '';
-                const semKeyForLookup = selectedCertCourse?.semKey;
-                const semKeyToDbLookup: Record<string, { type: string; year: number }> = {
-                  'ss2025': { type: 'spring_summer', year: 2025 }, 'f2025': { type: 'fall', year: 2025 },
-                  'w2026': { type: 'winter', year: 2026 }, 'ss2026': { type: 'spring_summer', year: 2026 },
-                  'f2026': { type: 'fall', year: 2026 }, 'w2027': { type: 'winter', year: 2027 },
-                  'ss2027': { type: 'spring_summer', year: 2027 }, 'f2027': { type: 'fall', year: 2027 },
-                  'w2028': { type: 'winter', year: 2028 }, 'ss2028': { type: 'spring_summer', year: 2028 },
-                  'f2028': { type: 'fall', year: 2028 }, 'w2029': { type: 'winter', year: 2029 },
-                  'ss2029': { type: 'spring_summer', year: 2029 }, 'f2029': { type: 'fall', year: 2029 },
-                };
-                const lookupTarget = semKeyForLookup ? semKeyToDbLookup[semKeyForLookup] : null;
-                if (lookupTarget && allSemesterSettingsRef.current) {
-                  const thisSem = allSemesterSettingsRef.current.find((s: any) => {
-                    const yearMatch = s.semesterName?.match(/\d{4}/);
-                    const semYear = yearMatch ? parseInt(yearMatch[0]) : 0;
-                    return s.semesterType === lookupTarget.type && semYear === lookupTarget.year;
-                  });
-                  if (thisSem) {
-                    let ccLookup = courseCode.replace(/\s/g, '');
-                    const tdbMatch = ccLookup.match(/^TBD_SLOT(\d+)$/i);
-                    if (tdbMatch) ccLookup = `TBD${tdbMatch[1]}`;
-                    for (let i = 1; i <= 3; i++) {
-                      const sc = ((thisSem as any)[`course${i}Code`] || '').replace(/\s/g, '').toUpperCase();
-                      if (sc === ccLookup.toUpperCase()) {
-                        existingColor = (thisSem as any)[`course${i}Color`] || '';
-                        existingColorEnd = (thisSem as any)[`course${i}ColorEnd`] || '';
-                        existingColorStops = (thisSem as any)[`course${i}ColorStops`] || '';
-                        existingBorderColor = (thisSem as any)[`course${i}BorderColor`] || '';
-                        existingCourseRowColor = (thisSem as any)[`course${i}CourseRowColor`] || '';
-                        existingTaskBgColor = (thisSem as any)[`course${i}TaskBgColor`] || '';
-                        existingCourseFontColor = (thisSem as any)[`course${i}CourseFontColor`] || '';
-                        existingModuleBoxColor = (thisSem as any)[`course${i}ModuleBoxColor`] || '';
-                        existingReadingBoxColor = (thisSem as any)[`course${i}ReadingBoxColor`] || '';
-                        existingProfessor = (thisSem as any)[`course${i}Professor`] || '';
-                        existingProfessorEmail = (thisSem as any)[`course${i}ProfessorEmail`] || '';
-                        break;
-                      }
-                    }
-                  }
+                const elseMatch = findSemSlot(selectedCertCourse?.semKey, courseCode, allSemesterSettingsRef.current);
+                if (elseMatch) {
+                  const ep = `course${elseMatch.slot}`;
+                  existingColor = (elseMatch.sem as any)[`${ep}Color`] || '';
+                  existingColorEnd = (elseMatch.sem as any)[`${ep}ColorEnd`] || '';
+                  existingColorStops = (elseMatch.sem as any)[`${ep}ColorStops`] || '';
+                  existingBorderColor = (elseMatch.sem as any)[`${ep}BorderColor`] || '';
+                  existingCourseRowColor = (elseMatch.sem as any)[`${ep}CourseRowColor`] || '';
+                  existingTaskBgColor = (elseMatch.sem as any)[`${ep}TaskBgColor`] || '';
+                  existingCourseFontColor = (elseMatch.sem as any)[`${ep}CourseFontColor`] || '';
+                  existingModuleBoxColor = (elseMatch.sem as any)[`${ep}ModuleBoxColor`] || '';
+                  existingReadingBoxColor = (elseMatch.sem as any)[`${ep}ReadingBoxColor`] || '';
+                  existingProfessor = (elseMatch.sem as any)[`${ep}Professor`] || '';
+                  existingProfessorEmail = (elseMatch.sem as any)[`${ep}ProfessorEmail`] || '';
                 }
                 const newEntry = {
                   name: `${newCode} - ${newCourseName}`,
@@ -19366,63 +19321,39 @@ export default function Dashboard() {
               };
               const currentSemSettings = allSemesterSettingsRef.current;
               if (currentSemSettings) {
-                let cc = courseCode.replace(/\s/g, '');
-                const tdbSlotMatch = cc.match(/^TBD_SLOT(\d+)$/i);
-                if (tdbSlotMatch) cc = `TBD${tdbSlotMatch[1]}`;
-                const ccUpper = cc.toUpperCase();
                 const courseSemKey = selectedCertCourse?.semKey;
-                const semKeyToDbTypeForSave: Record<string, { type: string; year: number }> = {
-                  'ss2025': { type: 'spring_summer', year: 2025 }, 'f2025': { type: 'fall', year: 2025 },
-                  'w2026': { type: 'winter', year: 2026 }, 'ss2026': { type: 'spring_summer', year: 2026 },
-                  'f2026': { type: 'fall', year: 2026 }, 'w2027': { type: 'winter', year: 2027 },
-                  'ss2027': { type: 'spring_summer', year: 2027 }, 'f2027': { type: 'fall', year: 2027 },
-                  'w2028': { type: 'winter', year: 2028 }, 'ss2028': { type: 'spring_summer', year: 2028 },
-                  'f2028': { type: 'fall', year: 2028 }, 'w2029': { type: 'winter', year: 2029 },
-                  'ss2029': { type: 'spring_summer', year: 2029 }, 'f2029': { type: 'fall', year: 2029 },
-                };
-                const targetDbType = courseSemKey ? semKeyToDbTypeForSave[courseSemKey] : null;
-                let found = false;
-                const sortedSems = targetDbType
-                  ? [...currentSemSettings].sort((a, b) => {
-                      const aMatch = a.semesterType === targetDbType.type && (a.semesterName?.match(/\d{4}/)?.[0] === String(targetDbType.year));
-                      const bMatch = b.semesterType === targetDbType.type && (b.semesterName?.match(/\d{4}/)?.[0] === String(targetDbType.year));
-                      return (bMatch ? 1 : 0) - (aMatch ? 1 : 0);
-                    })
-                  : currentSemSettings;
-                for (const sem of sortedSems) {
-                  for (let i = 1; i <= 3; i++) {
-                    const semCode = ((sem as any)[`course${i}Code`] || '').replace(/\s/g, '');
-                    if (semCode.toUpperCase() === ccUpper) {
-                      found = true;
-                      const prefix = `course${i}`;
-                      const payload: Record<string, any> = {};
-                      if (updates.deliveryMode !== undefined) payload[`${prefix}DeliveryMode`] = updates.deliveryMode;
-                      if (updates.classDay !== undefined) payload[`${prefix}ClassDay`] = updates.classDay;
-                      if (updates.classDay2 !== undefined) payload[`${prefix}ClassDay2`] = updates.classDay2;
-                      if (updates.classTime !== undefined) payload[`${prefix}ClassTime`] = updates.classTime;
-                      if (updates.classEndTime !== undefined) payload[`${prefix}ClassEndTime`] = updates.classEndTime;
-                      if (updates.classTime2 !== undefined) payload[`${prefix}ClassTime2`] = updates.classTime2;
-                      if (updates.classEndTime2 !== undefined) payload[`${prefix}ClassEndTime2`] = updates.classEndTime2;
-                      if (updates.zoomLink !== undefined) payload[`${prefix}ZoomLink`] = updates.zoomLink;
-                      if (updates.professor !== undefined) payload[`${prefix}Professor`] = updates.professor;
-                      if (updates.professorEmail !== undefined) payload[`${prefix}ProfessorEmail`] = updates.professorEmail;
-                      if (updates.color !== undefined) payload[`${prefix}Color`] = updates.color;
-                      if (updates.colorEnd !== undefined) payload[`${prefix}ColorEnd`] = updates.colorEnd;
-                      if ((updates as any).colorStops !== undefined) payload[`${prefix}ColorStops`] = (updates as any).colorStops;
-                      if ((updates as any).borderColor !== undefined) payload[`${prefix}BorderColor`] = (updates as any).borderColor;
-                      if (updates.courseRowColor !== undefined) payload[`${prefix}CourseRowColor`] = updates.courseRowColor;
-                      if (updates.taskBgColor !== undefined) payload[`${prefix}TaskBgColor`] = updates.taskBgColor;
-                      if (updates.courseFontColor !== undefined) payload[`${prefix}CourseFontColor`] = updates.courseFontColor;
-                      if (updates.moduleBoxColor !== undefined) payload[`${prefix}ModuleBoxColor`] = updates.moduleBoxColor;
-                      if (updates.readingBoxColor !== undefined) payload[`${prefix}ReadingBoxColor`] = updates.readingBoxColor;
-                      if ((updates as any).startDate) payload[`${prefix}StartDate`] = new Date((updates as any).startDate + 'T12:00:00').toISOString();
-                      if ((updates as any).endDate) payload[`${prefix}EndDate`] = new Date((updates as any).endDate + 'T12:00:00').toISOString();
-                      if ((updates as any).springSummerTerm !== undefined) payload[`${prefix}SpringSummerTerm`] = (updates as any).springSummerTerm;
-                      if ((updates as any).moduleFolder !== undefined) payload[`${prefix}ModuleFolder`] = (updates as any).moduleFolder;
-                      if ((updates as any).readingFolder !== undefined) payload[`${prefix}ReadingFolder`] = (updates as any).readingFolder;
-                      if ((updates as any).displayName !== undefined) payload[`${prefix}DisplayName`] = (updates as any).displayName;
-                      if (updates.courseName !== undefined) payload[`${prefix}Name`] = updates.courseName;
-                      if (updates.courseCode !== undefined && updates.courseCode !== courseCode) payload[`${prefix}Code`] = updates.courseCode;
+                const saveMatch = findSemSlot(courseSemKey, courseCode, currentSemSettings);
+                if (saveMatch) {
+                  const sem = saveMatch.sem;
+                  const prefix = `course${saveMatch.slot}`;
+                  const payload: Record<string, any> = {};
+                  if (updates.deliveryMode !== undefined) payload[`${prefix}DeliveryMode`] = updates.deliveryMode;
+                  if (updates.classDay !== undefined) payload[`${prefix}ClassDay`] = updates.classDay;
+                  if (updates.classDay2 !== undefined) payload[`${prefix}ClassDay2`] = updates.classDay2;
+                  if (updates.classTime !== undefined) payload[`${prefix}ClassTime`] = updates.classTime;
+                  if (updates.classEndTime !== undefined) payload[`${prefix}ClassEndTime`] = updates.classEndTime;
+                  if (updates.classTime2 !== undefined) payload[`${prefix}ClassTime2`] = updates.classTime2;
+                  if (updates.classEndTime2 !== undefined) payload[`${prefix}ClassEndTime2`] = updates.classEndTime2;
+                  if (updates.zoomLink !== undefined) payload[`${prefix}ZoomLink`] = updates.zoomLink;
+                  if (updates.professor !== undefined) payload[`${prefix}Professor`] = updates.professor;
+                  if (updates.professorEmail !== undefined) payload[`${prefix}ProfessorEmail`] = updates.professorEmail;
+                  if (updates.color !== undefined) payload[`${prefix}Color`] = updates.color;
+                  if (updates.colorEnd !== undefined) payload[`${prefix}ColorEnd`] = updates.colorEnd;
+                  if ((updates as any).colorStops !== undefined) payload[`${prefix}ColorStops`] = (updates as any).colorStops;
+                  if ((updates as any).borderColor !== undefined) payload[`${prefix}BorderColor`] = (updates as any).borderColor;
+                  if (updates.courseRowColor !== undefined) payload[`${prefix}CourseRowColor`] = updates.courseRowColor;
+                  if (updates.taskBgColor !== undefined) payload[`${prefix}TaskBgColor`] = updates.taskBgColor;
+                  if (updates.courseFontColor !== undefined) payload[`${prefix}CourseFontColor`] = updates.courseFontColor;
+                  if (updates.moduleBoxColor !== undefined) payload[`${prefix}ModuleBoxColor`] = updates.moduleBoxColor;
+                  if (updates.readingBoxColor !== undefined) payload[`${prefix}ReadingBoxColor`] = updates.readingBoxColor;
+                  if ((updates as any).startDate) payload[`${prefix}StartDate`] = new Date((updates as any).startDate + 'T12:00:00').toISOString();
+                  if ((updates as any).endDate) payload[`${prefix}EndDate`] = new Date((updates as any).endDate + 'T12:00:00').toISOString();
+                  if ((updates as any).springSummerTerm !== undefined) payload[`${prefix}SpringSummerTerm`] = (updates as any).springSummerTerm;
+                  if ((updates as any).moduleFolder !== undefined) payload[`${prefix}ModuleFolder`] = (updates as any).moduleFolder;
+                  if ((updates as any).readingFolder !== undefined) payload[`${prefix}ReadingFolder`] = (updates as any).readingFolder;
+                  if ((updates as any).displayName !== undefined) payload[`${prefix}DisplayName`] = (updates as any).displayName;
+                  if (updates.courseName !== undefined) payload[`${prefix}Name`] = updates.courseName;
+                  if (updates.courseCode !== undefined && updates.courseCode !== courseCode) payload[`${prefix}Code`] = updates.courseCode;
                       if (updates.semesterTerm && updates.year && !(updates as any).startDate) {
                         const dates = computeSemesterDates(updates.semesterTerm, updates.year);
                         if (dates.startDate) {
@@ -19512,10 +19443,6 @@ export default function Dashboard() {
                           }
                         });
                       }
-                      break;
-                    }
-                  }
-                  if (found) break;
                 }
               }
               if ((updates as any).courseRank !== undefined) {
@@ -25389,35 +25316,10 @@ export default function Dashboard() {
                     const isCurrentCourse = !!currentCourse || isCurrent(codeNorm);
                     const certType = courseCertificateTypes[semCourse.code] || courseCertificateTypes[codeNorm] || '';
                     const displayNameResult = (() => {
-                      if (allSemesterSettings) {
-                        const semKeyToDbType: Record<string, { type: string; year: number }> = {
-                          'ss2025': { type: 'spring_summer', year: 2025 }, 'f2025': { type: 'fall', year: 2025 },
-                          'w2026': { type: 'winter', year: 2026 }, 'ss2026': { type: 'spring_summer', year: 2026 },
-                          'f2026': { type: 'fall', year: 2026 }, 'w2027': { type: 'winter', year: 2027 },
-                          'ss2027': { type: 'spring_summer', year: 2027 }, 'f2027': { type: 'fall', year: 2027 },
-                          'w2028': { type: 'winter', year: 2028 }, 'ss2028': { type: 'spring_summer', year: 2028 },
-                          'f2028': { type: 'fall', year: 2028 }, 'w2029': { type: 'winter', year: 2029 },
-                          'ss2029': { type: 'spring_summer', year: 2029 }, 'f2029': { type: 'fall', year: 2029 },
-                        };
-                        const dbMapping = semKeyToDbType[semKey];
-                        if (dbMapping) {
-                          const thisSem = allSemesterSettings.find((s: any) => {
-                            const yearMatch = s.semesterName?.match(/\d{4}/);
-                            const semYear = yearMatch ? parseInt(yearMatch[0]) : 0;
-                            return s.semesterType === dbMapping.type && semYear === dbMapping.year;
-                          });
-                          if (thisSem) {
-                            const cc = semCourse.code.replace(/\s/g, '').toUpperCase();
-                            for (let i = 1; i <= 3; i++) {
-                              const sc = ((thisSem as any)[`course${i}Code`] || '').replace(/\s/g, '').toUpperCase();
-                              if (sc === cc) {
-                                const dbDN = (thisSem as any)[`course${i}DisplayName`];
-                                if (dbDN) return { name: dbDN, fromDb: true };
-                                break;
-                              }
-                            }
-                          }
-                        }
+                      const dnMatch = findSemSlot(semKey, semCourse.code, allSemesterSettings);
+                      if (dnMatch) {
+                        const dbDN = (dnMatch.sem as any)[`course${dnMatch.slot}DisplayName`];
+                        if (dbDN) return { name: dbDN, fromDb: true };
                       }
                       return { name: semCourse.name, fromDb: false };
                     })();
@@ -25428,60 +25330,11 @@ export default function Dashboard() {
                       if (currentCourse) {
                         return currentCourse.colorEnd ? `linear-gradient(to right, ${currentCourse.color}, ${currentCourse.colorEnd})` : currentCourse.color;
                       }
-                      const semDefaultDotColors: Record<string, string[]> = {
-                        'ss2025': ['#e67e22', '#2ecc71', '#9b59b6'],
-                        'f2025': ['#e74c3c', '#3498db', '#f1c40f'],
-                        'w2026': ['#22c55e', '#3b82f6', '#a855f7'],
-                        'ss2026': ['#f97316', '#06b6d4', '#ec4899'],
-                        'f2026': ['#dc2626', '#8b5cf6', '#14b8a6'],
-                        'w2027': ['#0ea5e9', '#f59e0b', '#d946ef'],
-                        'ss2027': ['#84cc16', '#6366f1', '#f43f5e'],
-                        'f2027': ['#f472b6', '#10b981', '#7c3aed'],
-                        'w2028': ['#eab308', '#0891b2', '#be185d'],
-                        'ss2028': ['#4ade80', '#e11d48', '#2563eb'],
-                        'f2028': ['#c084fc', '#ea580c', '#059669'],
-                        'w2029': ['#38bdf8', '#e879f9', '#65a30d'],
-                      };
-                      if (allSemesterSettings) {
-                        const semKeyToDbType: Record<string, { type: string; year: number }> = {
-                          'ss2025': { type: 'spring_summer', year: 2025 }, 'f2025': { type: 'fall', year: 2025 },
-                          'w2026': { type: 'winter', year: 2026 }, 'ss2026': { type: 'spring_summer', year: 2026 },
-                          'f2026': { type: 'fall', year: 2026 }, 'w2027': { type: 'winter', year: 2027 },
-                          'ss2027': { type: 'spring_summer', year: 2027 }, 'f2027': { type: 'fall', year: 2027 },
-                          'w2028': { type: 'winter', year: 2028 }, 'ss2028': { type: 'spring_summer', year: 2028 },
-                          'f2028': { type: 'fall', year: 2028 }, 'w2029': { type: 'winter', year: 2029 },
-                        };
-                        const dbMapping = semKeyToDbType[semKey];
-                        if (dbMapping) {
-                          const thisSem = allSemesterSettings.find((s: any) => {
-                            const yearMatch = s.semesterName?.match(/\d{4}/);
-                            const semYear = yearMatch ? parseInt(yearMatch[0]) : 0;
-                            return s.semesterType === dbMapping.type && semYear === dbMapping.year;
-                          });
-                          if (thisSem) {
-                            const cc = semCourse.code.replace(/\s/g, '').toUpperCase();
-                            const isTBDCourse = cc.startsWith('TBD');
-                            if (isTBDCourse) {
-                              const slotIdx = coursePositionInSem + 1;
-                              if (slotIdx >= 1 && slotIdx <= 3) {
-                                const c = (thisSem as any)[`course${slotIdx}Color`];
-                                const ce = (thisSem as any)[`course${slotIdx}ColorEnd`];
-                                if (c) return ce ? `linear-gradient(to right, ${c}, ${ce})` : c;
-                              }
-                            } else {
-                              for (let i = 1; i <= 3; i++) {
-                                const sc = ((thisSem as any)[`course${i}Code`] || '').replace(/\s/g, '').toUpperCase();
-                                if (sc === cc) {
-                                  const c = (thisSem as any)[`course${i}Color`];
-                                  const ce = (thisSem as any)[`course${i}ColorEnd`];
-                                  if (c) return ce ? `linear-gradient(to right, ${c}, ${ce})` : c;
-                                  const palette = semDefaultDotColors[semKey] || ['#6b7280', '#9ca3af', '#d1d5db'];
-                                  return palette[(i - 1) % palette.length];
-                                }
-                              }
-                            }
-                          }
-                        }
+                      const dcMatch = findSemSlot(semKey, semCourse.code, allSemesterSettings);
+                      if (dcMatch) {
+                        const c = (dcMatch.sem as any)[`course${dcMatch.slot}Color`];
+                        const ce = (dcMatch.sem as any)[`course${dcMatch.slot}ColorEnd`];
+                        if (c) return ce ? `linear-gradient(to right, ${c}, ${ce})` : c;
                       }
                       try {
                         const cd = localStorage.getItem('certCourseData');
@@ -25494,8 +25347,7 @@ export default function Dashboard() {
                           }
                         }
                       } catch {}
-                      const palette = semDefaultDotColors[semKey] || ['#6b7280', '#9ca3af', '#d1d5db'];
-                      return palette[coursePositionInSem % palette.length] || '#6b7280';
+                      return '#6b7280';
                     })();
                     const isSS = semKey.startsWith('ss');
                     const courseSSterm = (() => {
