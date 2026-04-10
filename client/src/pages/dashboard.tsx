@@ -24442,7 +24442,7 @@ export default function Dashboard() {
                   </h2>
                 </div>
               </div>
-              <div className="p-4 flex-1 overflow-y-auto overflow-x-hidden" style={{ position: 'relative', zIndex: 2, paddingBottom: '20px', paddingTop: '30px', marginTop: '-22px' }}>
+              <div className="p-4 flex-1 overflow-hidden" style={{ position: 'relative', zIndex: 2, paddingBottom: '20px', paddingTop: '30px', marginTop: '-22px' }}>
                 <ProfileForm 
                   key={isProfileDialogOpen ? 'open' : 'closed'}
                   profileData={profileData} 
