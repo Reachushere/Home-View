@@ -419,7 +419,7 @@ export default function LibraryView({ isOpen, onClose, semesters, initialSemeste
 
   const handleAnimationComplete = useCallback(() => {
     if (animatingBook) {
-      window.open(`/pdf-reader/${animatingBook.id}`, '_blank');
+      window.open(`/pdf-viewer/${animatingBook.id}`, '_blank');
       setTimeout(() => setAnimatingBook(null), 300);
     }
   }, [animatingBook]);
