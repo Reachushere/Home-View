@@ -188,26 +188,53 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
 function Bookend({ side }: { side: 'left' | 'right' }) {
   return (
     <div style={{
-      width: '14px',
+      width: '18px',
       height: '100%',
-      background: 'linear-gradient(90deg, #5D4037 0%, #3E2723 40%, #4E342E 70%, #3E2723 100%)',
-      borderRadius: side === 'left' ? '3px 1px 1px 3px' : '1px 3px 3px 1px',
+      background: side === 'left'
+        ? 'linear-gradient(90deg, #6D4C41 0%, #5D4037 30%, #4E342E 60%, #3E2723 100%)'
+        : 'linear-gradient(90deg, #3E2723 0%, #4E342E 40%, #5D4037 70%, #6D4C41 100%)',
+      borderRadius: side === 'left' ? '4px 1px 1px 4px' : '1px 4px 4px 1px',
       boxShadow: side === 'left'
-        ? 'inset 2px 0 4px rgba(255,255,255,0.1), -2px 0 6px rgba(0,0,0,0.3)'
-        : 'inset -2px 0 4px rgba(255,255,255,0.1), 2px 0 6px rgba(0,0,0,0.3)',
+        ? 'inset 3px 0 6px rgba(255,255,255,0.12), -3px 0 8px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.05)'
+        : 'inset -3px 0 6px rgba(255,255,255,0.12), 3px 0 8px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.05)',
       flexShrink: 0,
       position: 'relative',
+      borderTop: '1px solid rgba(255,255,255,0.06)',
+      borderBottom: '1px solid rgba(0,0,0,0.3)',
     }}>
       <div style={{
         position: 'absolute',
-        top: '50%',
+        top: '15%',
         left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: '6px',
-        height: '20px',
-        background: 'linear-gradient(180deg, #D4AF37 0%, #B8860B 50%, #D4AF37 100%)',
+        transform: 'translateX(-50%)',
+        width: '8px',
+        height: '70%',
+        background: 'linear-gradient(180deg, #D4AF37 0%, #B8860B 30%, #8B6914 50%, #B8860B 70%, #D4AF37 100%)',
         borderRadius: '2px',
-        opacity: 0.6,
+        opacity: 0.5,
+        boxShadow: '0 0 3px rgba(212,175,55,0.3)',
+      }} />
+      <div style={{
+        position: 'absolute',
+        top: '10%',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: '10px',
+        height: '2px',
+        background: '#D4AF37',
+        opacity: 0.4,
+        borderRadius: '1px',
+      }} />
+      <div style={{
+        position: 'absolute',
+        bottom: '10%',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: '10px',
+        height: '2px',
+        background: '#D4AF37',
+        opacity: 0.4,
+        borderRadius: '1px',
       }} />
     </div>
   );
@@ -510,28 +537,34 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         }
         .shelf-wood {
           background: linear-gradient(180deg,
-            #5D4037 0%,
-            #4E342E 15%,
-            #3E2723 30%,
-            #4E342E 50%,
-            #5D4037 70%,
-            #6D4C41 85%,
-            #5D4037 100%
+            #7B5B3A 0%,
+            #6D4C35 8%,
+            #5D4037 18%,
+            #4E342E 35%,
+            #5D4037 55%,
+            #6D4C41 72%,
+            #7B5B3A 88%,
+            #6D4C35 100%
           );
           box-shadow:
-            0 4px 12px rgba(0,0,0,0.5),
-            inset 0 2px 4px rgba(255,255,255,0.08),
-            inset 0 -2px 4px rgba(0,0,0,0.3);
+            0 6px 16px rgba(0,0,0,0.6),
+            0 2px 6px rgba(0,0,0,0.3),
+            inset 0 2px 4px rgba(255,255,255,0.1),
+            inset 0 -2px 6px rgba(0,0,0,0.4);
+          border-top: 1px solid rgba(255,255,255,0.06);
         }
         .shelf-front {
           background: linear-gradient(180deg,
-            #6D4C41 0%,
-            #5D4037 30%,
+            #7B5B3A 0%,
+            #6D4C41 20%,
+            #5D4037 50%,
             #4E342E 100%
           );
           box-shadow:
-            0 3px 8px rgba(0,0,0,0.4),
-            inset 0 1px 2px rgba(255,255,255,0.1);
+            0 4px 12px rgba(0,0,0,0.5),
+            0 8px 20px rgba(0,0,0,0.3),
+            inset 0 1px 3px rgba(255,255,255,0.12);
+          border-bottom: 1px solid rgba(0,0,0,0.4);
         }
         .book-spine-item:hover {
           filter: brightness(1.15);
@@ -539,8 +572,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         }
         .semester-nav-btn {
           background: rgba(93,64,55,0.6);
-          border: 1px solid rgba(212,175,55,0.3);
-          color: #D4AF37;
+          border: 1px solid rgba(255,255,255,0.25);
+          color: #ffffff;
           width: 40px;
           height: 40px;
           border-radius: 50%;
@@ -553,7 +586,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         }
         .semester-nav-btn:hover {
           background: rgba(93,64,55,0.9);
-          border-color: rgba(212,175,55,0.6);
+          border-color: rgba(255,255,255,0.5);
           transform: scale(1.1);
         }
         .semester-nav-btn:disabled {
@@ -614,7 +647,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           <div style={{
             fontSize: '22px',
             fontWeight: 700,
-            color: '#D4AF37',
+            color: '#ffffff',
             textShadow: '0 2px 8px rgba(0,0,0,0.5)',
             letterSpacing: '3px',
             textTransform: 'uppercase',
@@ -624,7 +657,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           </div>
           <div style={{
             fontSize: '12px',
-            color: 'rgba(212,175,55,0.7)',
+            color: 'rgba(255,255,255,0.7)',
             letterSpacing: '1px',
             marginTop: '2px',
             fontFamily: "'Georgia', 'Times New Roman', serif",
@@ -656,10 +689,10 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 width: '8px',
                 height: '8px',
                 borderRadius: '50%',
-                backgroundColor: idx === currentSemIdx ? '#D4AF37' : 'rgba(255,255,255,0.2)',
+                backgroundColor: idx === currentSemIdx ? '#ffffff' : 'rgba(255,255,255,0.25)',
                 cursor: 'pointer',
                 transition: 'all 0.2s',
-                boxShadow: idx === currentSemIdx ? '0 0 6px rgba(212,175,55,0.5)' : 'none',
+                boxShadow: idx === currentSemIdx ? '0 0 6px rgba(255,255,255,0.5)' : 'none',
               }}
               data-testid={`library-sem-dot-${sem.key}`}
             />
@@ -705,13 +738,13 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
               <div style={{
                 fontSize: '13px',
                 fontWeight: 600,
-                color: 'rgba(212,175,55,0.8)',
+                color: 'rgba(255,255,255,0.85)',
                 letterSpacing: '1.5px',
                 textTransform: 'uppercase',
                 marginBottom: '12px',
                 paddingLeft: '16px',
                 fontFamily: "'Georgia', 'Times New Roman', serif",
-                borderLeft: `3px solid ${course.color || '#D4AF37'}`,
+                borderLeft: `3px solid ${course.color || '#ffffff'}`,
               }}>
                 {course.code} — {course.name}
               </div>
