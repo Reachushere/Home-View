@@ -28344,7 +28344,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`flex flex-col items-center justify-center h-full relative`}
-                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'hidden', minWidth: 0 } : day.getDay() === 6 ? { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', overflow: 'hidden', minWidth: 0, ...(calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) } : { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', borderLeft: '1.5px dotted rgba(255,255,255,0.35)', overflow: 'hidden', minWidth: 0 }}
+                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'hidden', minWidth: 0, borderLeft: '3px solid black' } : day.getDay() === 6 ? { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', overflow: 'hidden', minWidth: 0, borderLeft: new Date().getDay() === 6 ? undefined : '3px solid black', ...(calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) } : { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', borderLeft: '1.5px dotted rgba(255,255,255,0.35)', overflow: 'hidden', minWidth: 0 }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     
