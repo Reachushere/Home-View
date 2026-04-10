@@ -664,8 +664,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
     setBrowsingFor(null);
   };
 
-  const ssTermLocked = isSpringSummer && isEditingInfo && !editInfo.springSummerTerm;
-  const editFieldsLocked = isEditingInfo && (!editInfo.semesterTerm || (isSpringSummer && !editInfo.springSummerTerm));
+  const editIsSpSu = isSpringSummer || editInfo.semesterTerm?.startsWith('spring_summer');
+  const ssTermLocked = editIsSpSu && isEditingInfo && !editInfo.springSummerTerm;
+  const editFieldsLocked = isEditingInfo && (!editInfo.semesterTerm || (editIsSpSu && !editInfo.springSummerTerm));
 
   useEffect(() => {
     if (onLiveColorChange && isEditingInfo) {
@@ -2233,7 +2234,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                         toast({ title: "URL is required for virtual courses", variant: "destructive" });
                         return;
                       }
-                      if (isSpringSummer && !editInfo.springSummerTerm) {
+                      if ((isSpringSummer || editInfo.semesterTerm?.startsWith('spring_summer')) && !editInfo.springSummerTerm) {
                         toast({ title: "Please select a Spring/Summer term first", variant: "destructive" });
                         return;
                       }
@@ -2362,7 +2363,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     <input type="date" className="w-full h-6 text-[10px] bg-white/10 border border-white/15 rounded px-1" style={{ color: 'white', colorScheme: 'dark' }} value={editInfo.endDate} onChange={(e) => setEditInfo({...editInfo, endDate: e.target.value})} data-testid="input-edit-end-date" />
                   </div>
                 </div>
-                {isSpringSummer && (
+                {(isSpringSummer || editInfo.semesterTerm?.startsWith('spring_summer')) && (
                   <div className="mb-2">
                     <label className="text-white text-[9px] mb-0.5 block font-semibold">Spring/Summer Term <span className="text-red-400">*</span></label>
                     <select className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1" value={editInfo.springSummerTerm} onChange={(e) => {
@@ -4480,6 +4481,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 if (isEditingInfo) {
                   if (editInfo.deliveryMode === 'virtual' && !editInfo.zoomLink?.trim()) {
                     toast({ title: "URL is required for virtual courses", variant: "destructive" });
+                    return;
+                  }
+                  if ((isSpringSummer || editInfo.semesterTerm?.startsWith('spring_summer')) && !editInfo.springSummerTerm) {
+                    toast({ title: "Please select a Spring/Summer term first", variant: "destructive" });
                     return;
                   }
                   setIsEditingInfo(false);

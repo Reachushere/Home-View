@@ -18998,6 +18998,8 @@ export default function Dashboard() {
               return used;
             })()}
             isSpringSummer={(() => {
+              const sk0 = selectedCertCourse?.semKey;
+              if (sk0) return sk0.startsWith('ss');
               const cc = selectedCertCourse!.courseCode.replace(/\s/g, '');
               for (const sk of semesterKeyOrder) {
                 if (!sk.startsWith('ss')) continue;
@@ -19008,9 +19010,23 @@ export default function Dashboard() {
             })()}
             courseSpSuTerm={(() => {
               const cc = selectedCertCourse!.courseCode.replace(/\s/g, '');
+              const sk0 = selectedCertCourse?.semKey;
+              const semKeyToDbType2: Record<string, { type: string; year: number }> = {
+                'ss2025': { type: 'spring_summer', year: 2025 }, 'ss2026': { type: 'spring_summer', year: 2026 },
+                'ss2027': { type: 'spring_summer', year: 2027 }, 'ss2028': { type: 'spring_summer', year: 2028 },
+                'ss2029': { type: 'spring_summer', year: 2029 },
+              };
+              const targetSs = sk0 ? semKeyToDbType2[sk0] : null;
               const sems = allSemesterSettingsRef.current;
               if (sems) {
-                for (const sem of sems) {
+                const sortedSems2 = targetSs
+                  ? [...sems].sort((a, b) => {
+                      const aM = a.semesterType === targetSs.type && (a.semesterName?.match(/\d{4}/)?.[0] === String(targetSs.year));
+                      const bM = b.semesterType === targetSs.type && (b.semesterName?.match(/\d{4}/)?.[0] === String(targetSs.year));
+                      return (bM ? 1 : 0) - (aM ? 1 : 0);
+                    })
+                  : sems;
+                for (const sem of sortedSems2) {
                   for (let i = 1; i <= 3; i++) {
                     const sc = ((sem as any)[`course${i}Code`] || '').replace(/\s/g, '');
                     if (sc.toUpperCase() === cc.toUpperCase()) {
