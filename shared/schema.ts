@@ -1,4 +1,4 @@
-import { pgTable, text, serial, boolean, integer, timestamp, real, doublePrecision } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, boolean, integer, timestamp, real, doublePrecision, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -730,6 +730,11 @@ export const scheduledAlexaAnnouncements = pgTable("scheduled_alexa_announcement
 export const insertScheduledAlexaAnnouncementSchema = createInsertSchema(scheduledAlexaAnnouncements).omit({ id: true });
 export type ScheduledAlexaAnnouncement = typeof scheduledAlexaAnnouncements.$inferSelect;
 export type InsertScheduledAlexaAnnouncement = z.infer<typeof insertScheduledAlexaAnnouncementSchema>;
+
+export const tabletCommands = pgTable("tablet_commands", {
+  device: text("device").primaryKey(),
+  cmd: jsonb("cmd").notNull(),
+});
 
 export const haAutomations = pgTable("ha_automations", {
   id: serial("id").primaryKey(),
