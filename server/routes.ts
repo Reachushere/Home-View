@@ -17832,9 +17832,15 @@ document.body.removeChild(a);
         }
       }
       if (!weekFolder) {
-        const msg = `No Week ${semesterRelativeWeek} folder found in ${coursePath}. Available folders: ${weekFolderNames.join(', ') || 'none'}`;
-        console.log(`[Sync] ${msg}`);
-        return res.json({ success: true, synced: [], message: msg });
+        const hasModuleOrReading = weekFolders.some((f: any) => f.type === 'folder' && (f.name.toLowerCase().includes('module') || f.name.toLowerCase().includes('reading')));
+        if (hasModuleOrReading) {
+          console.log(`[Sync] No week folders found, but Module/Readings exist directly in ${coursePath} — syncing flat structure`);
+          weekFolder = { name: '(flat)', path: coursePath, type: 'folder' };
+        } else {
+          const msg = `No Week ${semesterRelativeWeek} folder found in ${coursePath}. Available folders: ${weekFolderNames.join(', ') || 'none'}`;
+          console.log(`[Sync] ${msg}`);
+          return res.json({ success: true, synced: [], message: msg });
+        }
       }
       console.log(`[Sync] Using week folder: ${weekFolder.name}`);
 
