@@ -5504,6 +5504,7 @@ export default function Dashboard() {
     courseName: string;
     certKey: string;
     openInEdit?: boolean;
+    semKey?: string;
   } | null>(null);
   const [syncingCourses, setSyncingCourses] = useState<Set<string>>(new Set());
   const [syncResults, setSyncResults] = useState<Map<string, { count: number; skipped?: number; message?: string }>>(new Map());
@@ -6831,13 +6832,34 @@ export default function Dashboard() {
     let semesterTerm = '';
     let year = '';
 
-    const semSearchList = allSemesterSettingsRef.current || (semesterSettings ? [semesterSettings] : []);
+    const semSearchListRaw = allSemesterSettingsRef.current || (semesterSettings ? [semesterSettings] : []);
+    const detailSemKey = selectedCertCourse?.semKey;
+    const detailSemKeyToType: Record<string, { type: string; year: number }> = {
+      'ss2025': { type: 'spring_summer', year: 2025 }, 'f2025': { type: 'fall', year: 2025 },
+      'w2026': { type: 'winter', year: 2026 }, 'ss2026': { type: 'spring_summer', year: 2026 },
+      'f2026': { type: 'fall', year: 2026 }, 'w2027': { type: 'winter', year: 2027 },
+      'ss2027': { type: 'spring_summer', year: 2027 }, 'f2027': { type: 'fall', year: 2027 },
+      'w2028': { type: 'winter', year: 2028 }, 'ss2028': { type: 'spring_summer', year: 2028 },
+      'f2028': { type: 'fall', year: 2028 }, 'w2029': { type: 'winter', year: 2029 },
+      'ss2029': { type: 'spring_summer', year: 2029 }, 'f2029': { type: 'fall', year: 2029 },
+    };
+    const detailTarget = detailSemKey ? detailSemKeyToType[detailSemKey] : null;
+    const semSearchList = detailTarget
+      ? [...semSearchListRaw].sort((a, b) => {
+          const aM = a.semesterType === detailTarget.type && (a.semesterName?.match(/\d{4}/)?.[0] === String(detailTarget.year));
+          const bM = b.semesterType === detailTarget.type && (b.semesterName?.match(/\d{4}/)?.[0] === String(detailTarget.year));
+          return (bM ? 1 : 0) - (aM ? 1 : 0);
+        })
+      : semSearchListRaw;
+    let ccNorm = courseCode.replace(/\s/g, '');
+    const tdbM = ccNorm.match(/^TBD_SLOT(\d+)$/i);
+    if (tdbM) ccNorm = `TBD${tdbM[1]}`;
     for (const sem of semSearchList) {
       let foundInSem = false;
       for (let i = 1; i <= 3; i++) {
         const prefix = `course${i}` as const;
         const codeField = ((sem as any)[`${prefix}Code`] || '');
-        if (codeField.replace(/\s/g, '') === courseCode.replace(/\s/g, '')) {
+        if (codeField.replace(/\s/g, '').toUpperCase() === ccNorm.toUpperCase()) {
           deliveryMode = (sem as any)[`${prefix}DeliveryMode`] || '';
           classDay = (sem as any)[`${prefix}ClassDay`] || '';
           classDay2 = (sem as any)[`${prefix}ClassDay2`] || '';
@@ -19177,11 +19199,30 @@ export default function Dashboard() {
                 let cc = courseCode.replace(/\s/g, '');
                 const tdbSlotMatch = cc.match(/^TBD_SLOT(\d+)$/i);
                 if (tdbSlotMatch) cc = `TBD${tdbSlotMatch[1]}`;
+                const ccUpper = cc.toUpperCase();
+                const courseSemKey = selectedCertCourse?.semKey;
+                const semKeyToDbTypeForSave: Record<string, { type: string; year: number }> = {
+                  'ss2025': { type: 'spring_summer', year: 2025 }, 'f2025': { type: 'fall', year: 2025 },
+                  'w2026': { type: 'winter', year: 2026 }, 'ss2026': { type: 'spring_summer', year: 2026 },
+                  'f2026': { type: 'fall', year: 2026 }, 'w2027': { type: 'winter', year: 2027 },
+                  'ss2027': { type: 'spring_summer', year: 2027 }, 'f2027': { type: 'fall', year: 2027 },
+                  'w2028': { type: 'winter', year: 2028 }, 'ss2028': { type: 'spring_summer', year: 2028 },
+                  'f2028': { type: 'fall', year: 2028 }, 'w2029': { type: 'winter', year: 2029 },
+                  'ss2029': { type: 'spring_summer', year: 2029 }, 'f2029': { type: 'fall', year: 2029 },
+                };
+                const targetDbType = courseSemKey ? semKeyToDbTypeForSave[courseSemKey] : null;
                 let found = false;
-                for (const sem of currentSemSettings) {
+                const sortedSems = targetDbType
+                  ? [...currentSemSettings].sort((a, b) => {
+                      const aMatch = a.semesterType === targetDbType.type && (a.semesterName?.match(/\d{4}/)?.[0] === String(targetDbType.year));
+                      const bMatch = b.semesterType === targetDbType.type && (b.semesterName?.match(/\d{4}/)?.[0] === String(targetDbType.year));
+                      return (bMatch ? 1 : 0) - (aMatch ? 1 : 0);
+                    })
+                  : currentSemSettings;
+                for (const sem of sortedSems) {
                   for (let i = 1; i <= 3; i++) {
                     const semCode = ((sem as any)[`course${i}Code`] || '').replace(/\s/g, '');
-                    if (semCode === cc) {
+                    if (semCode.toUpperCase() === ccUpper) {
                       found = true;
                       const prefix = `course${i}`;
                       const payload: Record<string, any> = {};
@@ -19302,6 +19343,7 @@ export default function Dashboard() {
                       break;
                     }
                   }
+                  if (found) break;
                 }
               }
               if ((updates as any).courseRank !== undefined) {
@@ -25304,7 +25346,7 @@ export default function Dashboard() {
                         }}
                         onClick={() => {
                           const certKey = pastEntry?.certKey || semCourse.code;
-                          startTransition(() => setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey }));
+                          startTransition(() => setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey, semKey }));
                         }}
                         data-testid={`school-course-${semCourse.code}`}
                       >
@@ -25367,7 +25409,7 @@ export default function Dashboard() {
                         >
                           <MessageSquare className="w-3.5 h-3.5" strokeWidth={2.5} />
                         </button>
-                        <span className="text-[10px] truncate min-w-0 flex-1 cursor-pointer hover:underline" style={{ marginLeft: '5px' }} onClick={(e) => { e.stopPropagation(); const certKey = pastEntry?.certKey || semCourse.code; startTransition(() => setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey })); }} data-testid={`course-name-click-${semCourse.code}`}><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
+                        <span className="text-[10px] truncate min-w-0 flex-1 cursor-pointer hover:underline" style={{ marginLeft: '5px' }} onClick={(e) => { e.stopPropagation(); const certKey = pastEntry?.certKey || semCourse.code; startTransition(() => setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey, semKey })); }} data-testid={`course-name-click-${semCourse.code}`}><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
                         <div className="flex items-center gap-1 flex-shrink-0" style={{ marginRight: '-3px' }}>
                           {(() => {
                             const profName = currentCourse?.professor || profInfo.professor;
@@ -25394,7 +25436,7 @@ export default function Dashboard() {
                           onClick={(e) => {
                             e.stopPropagation();
                             const certKey = pastEntry?.certKey || semCourse.code;
-                            startTransition(() => setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey }));
+                            startTransition(() => setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey, semKey }));
                           }}
                           data-testid={`button-edit-course-${semCourse.code}`}
                         >
@@ -29150,7 +29192,7 @@ export default function Dashboard() {
                           );
                         })()}
                         {(() => { const code = courseData.name.split(' - ')[0]?.trim(); const isSyncing = syncingCourses.has(code); const sr = syncResults.get(code); if (isSyncing) return (<div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 3 }}><svg className="animate-spin" style={{ width: '20px', height: '20px', color: course.fontColor || 'white' }} viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeDasharray="31.4 31.4" /></svg></div>); if (sr) return (<div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 3, animation: 'fadeIn 0.2s ease-out' }}><span style={{ fontSize: (sr.count === 0 && sr.message) ? '7px' : '9px', fontWeight: 700, color: sr.count < 0 ? '#ff6b6b' : (sr.count === 0 && sr.message) ? '#fbbf24' : '#4ade80', textAlign: 'center', lineHeight: 1.2, textShadow: '0 1px 3px rgba(0,0,0,0.8)', overflow: 'hidden', padding: '2px' }}>{sr.count < 0 ? 'Sync failed' : sr.count === 0 && (sr.skipped || 0) > 0 ? `${sr.skipped} already synced` : sr.count === 0 && sr.message ? sr.message : `${sr.count} file${sr.count !== 1 ? 's' : ''} synced`}</span></div>); return null; })()}
-                        <div style={{ position: 'absolute', bottom: '3px', right: '1px', zIndex: 4, cursor: 'pointer' }} onClick={(e) => { e.stopPropagation(); if (selectedCertCourse) return; const cd = courseData; const code = cd.name.split(' - ')[0]?.trim(); const cName = cd.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code, openInEdit: true })); }} data-testid={`pencil-edit-course-${course.name}`}><Pencil className="w-[10px] h-[10px]" style={{ color: course.fontColor || 'white', opacity: 0.6 }} strokeWidth={2.5} /></div>
+                        <div style={{ position: 'absolute', bottom: '3px', right: '1px', zIndex: 4, cursor: 'pointer' }} onClick={(e) => { e.stopPropagation(); if (selectedCertCourse) return; const cd = courseData; const code = cd.name.split(' - ')[0]?.trim(); const cName = cd.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code, openInEdit: true, semKey: (course as any)._semKey })); }} data-testid={`pencil-edit-course-${course.name}`}><Pencil className="w-[10px] h-[10px]" style={{ color: course.fontColor || 'white', opacity: 0.6 }} strokeWidth={2.5} /></div>
                       </div>
                       <div className="flex-1 min-w-0">
                       {fullWeekTasks.map((task, taskIdx) => {
@@ -29415,7 +29457,7 @@ export default function Dashboard() {
                       );
                     })()}
                     {(() => { const code = courseData.name.split(' - ')[0]?.trim(); const isSyncing = syncingCourses.has(code); const sr = syncResults.get(code); if (isSyncing) return (<div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 3 }}><svg className="animate-spin" style={{ width: '20px', height: '20px', color: course.fontColor || 'white' }} viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeDasharray="31.4 31.4" /></svg></div>); if (sr) return (<div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 3, animation: 'fadeIn 0.2s ease-out' }}><span style={{ fontSize: (sr.count === 0 && sr.message) ? '7px' : '9px', fontWeight: 700, color: sr.count < 0 ? '#ff6b6b' : (sr.count === 0 && sr.message) ? '#fbbf24' : '#4ade80', textAlign: 'center', lineHeight: 1.2, textShadow: '0 1px 3px rgba(0,0,0,0.8)', overflow: 'hidden', padding: '2px' }}>{sr.count < 0 ? 'Sync failed' : sr.count === 0 && (sr.skipped || 0) > 0 ? `${sr.skipped} already synced` : sr.count === 0 && sr.message ? sr.message : `${sr.count} file${sr.count !== 1 ? 's' : ''} synced`}</span></div>); return null; })()}
-                    <div style={{ position: 'absolute', bottom: '3px', right: '1px', zIndex: 4, cursor: 'pointer' }} onClick={(e) => { e.stopPropagation(); if (selectedCertCourse) return; const code = courseData.name.split(' - ')[0]?.trim(); const cName = courseData.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code, openInEdit: true })); }} data-testid={`pencil-edit-course-${course.name}`}><Pencil className="w-[10px] h-[10px]" style={{ color: course.fontColor || 'white', opacity: 0.6 }} strokeWidth={2.5} /></div>
+                    <div style={{ position: 'absolute', bottom: '3px', right: '1px', zIndex: 4, cursor: 'pointer' }} onClick={(e) => { e.stopPropagation(); if (selectedCertCourse) return; const code = courseData.name.split(' - ')[0]?.trim(); const cName = courseData.name.split(' - ').slice(1).join(' - ').trim(); startTransition(() => setSelectedCertCourse({ courseCode: code, courseName: cName, certKey: code, openInEdit: true, semKey: (course as any)._semKey })); }} data-testid={`pencil-edit-course-${course.name}`}><Pencil className="w-[10px] h-[10px]" style={{ color: course.fontColor || 'white', opacity: 0.6 }} strokeWidth={2.5} /></div>
                   </div>
                   {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: course.bg, borderBottom: '1.5px solid black' }} />}
                   {(() => {
