@@ -30523,20 +30523,10 @@ export default function Dashboard() {
                             if (stackInConflict) {
                               topOffset = taskIdx * 32 + 2;
                               taskHeight = 28;
-                            } else if (task.eventStartTime) {
-                              const [, startMin] = task.eventStartTime.split(':').map(Number);
-                              if (startMin > 0) {
-                                topOffset = (startMin / 60) * rowHeight;
-                              }
-                              taskHeight = Math.max(20, rowHeight - topOffset - 2);
                             } else {
-                              const dueMin = getETMinutes(new Date(task.dueDate));
-                              if (dueMin > 0) {
-                                topOffset = (dueMin / 60) * rowHeight;
-                              }
-                              taskHeight = Math.max(20, rowHeight - topOffset - 2);
+                              topOffset = 2;
+                              taskHeight = rowHeight - 4;
                             }
-                            if (!stackInConflict) taskHeight = Math.max(20, rowHeight - topOffset - 2);
                             
                             return (
                               <div
