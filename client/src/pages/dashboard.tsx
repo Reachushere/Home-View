@@ -6693,36 +6693,62 @@ export default function Dashboard() {
 
   const CertCourseLinker = ({ id, defaultCode }: { id: string; defaultCode: string }) => {
     const [open, setOpen] = useState(false);
-    const ref = useRef<HTMLDivElement>(null);
+    const triggerRef = useRef<HTMLDivElement>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+    const [dropPos, setDropPos] = useState<{ top: number; left: number } | null>(null);
     useEffect(() => {
       if (!open) return;
-      const handler = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
-      document.addEventListener('mousedown', handler);
-      return () => document.removeEventListener('mousedown', handler);
+      const handler = (e: MouseEvent) => {
+        const target = e.target as Node;
+        if (triggerRef.current?.contains(target)) return;
+        if (dropdownRef.current?.contains(target)) return;
+        const portal = (target as HTMLElement).closest?.('[data-cert-dropdown]');
+        if (portal) return;
+        setOpen(false);
+      };
+      const timer = setTimeout(() => {
+        document.addEventListener('mousedown', handler);
+      }, 50);
+      return () => { clearTimeout(timer); document.removeEventListener('mousedown', handler); };
     }, [open]);
     const currentLink = certCourseLinks[id];
     const linkedOption = currentLink ? allSemesterCourseOptions.find(o => o.linkValue === currentLink) : null;
     const displayCode = linkedOption ? linkedOption.code.replace(/([A-Z]+)(\d+)/, '$1 $2') : defaultCode;
     const strike = shouldStrikethrough(id);
+    const handleOpen = () => {
+      if (open) { setOpen(false); return; }
+      if (triggerRef.current) {
+        const rect = triggerRef.current.getBoundingClientRect();
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const dropH = Math.min(240, allSemesterCourseOptions.length * 24 + 40);
+        const top = spaceBelow > dropH ? rect.bottom + 2 : rect.top - dropH - 2;
+        setDropPos({ top, left: rect.left });
+      }
+      setOpen(true);
+    };
     return (
-      <div className="relative" style={{ width: '100%' }} ref={ref}>
-        <div
-          className="text-[9px] cursor-pointer hover:bg-blue-50 px-0.5 py-0.5 rounded flex items-center gap-0.5"
-          style={{ textDecoration: strike ? 'line-through' : 'none', color: linkedOption ? '#2563eb' : undefined }}
-          onClick={() => setOpen(!open)}
-          data-testid={`cert-linker-${id}`}
-        >
-          <span className="truncate course-code-mono">{displayCode}</span>
-          <ChevronDown className="w-2 h-2 shrink-0 opacity-40" />
-        </div>
-        {open && (
+      <>
+        <div style={{ width: '100%' }} ref={triggerRef}>
           <div
-            className="absolute z-[10010] bg-white border border-gray-300 rounded shadow-lg"
-            style={{ top: '100%', left: '-4px', width: '180px', maxHeight: '200px', overflowY: 'auto' }}
+            className="text-[9px] cursor-pointer hover:bg-blue-50 px-0.5 py-0.5 rounded flex items-center gap-0.5"
+            style={{ textDecoration: strike ? 'line-through' : 'none', color: linkedOption ? '#1d4ed8' : '#000', fontWeight: 600 }}
+            onClick={handleOpen}
+            data-testid={`cert-linker-${id}`}
+          >
+            <span className="truncate course-code-mono">{displayCode}</span>
+            <ChevronDown className="w-3 h-3 shrink-0 text-black" />
+          </div>
+        </div>
+        {open && createPortal(
+          <div
+            ref={dropdownRef}
+            data-cert-dropdown
+            className="fixed z-[10010] bg-white border border-gray-300 rounded shadow-lg"
+            style={{ top: dropPos?.top ?? 0, left: dropPos?.left ?? 0, width: '200px', maxHeight: '240px', overflowY: 'auto' }}
           >
             {currentLink && (
               <div
-                className="px-2 py-1 text-[9px] cursor-pointer hover:bg-red-50 text-red-600 border-b border-gray-200"
+                className="px-2 py-1.5 text-[10px] cursor-pointer hover:bg-red-50 text-red-600 border-b border-gray-200 font-medium"
                 onClick={() => {
                   const updated = { ...certCourseLinks };
                   delete updated[id];
@@ -6730,7 +6756,7 @@ export default function Dashboard() {
                   setOpen(false);
                 }}
               >
-                Unlink
+                ✕ Unlink
               </div>
             )}
             {(() => {
@@ -6743,12 +6769,12 @@ export default function Dashboard() {
                 return (
                   <div key={idx}>
                     {showHeader && (
-                      <div className="px-2 py-0.5 text-[8px] font-bold bg-gray-100 text-gray-500 border-b border-gray-200 sticky top-0">
+                      <div className="px-2 py-1 text-[8px] font-bold bg-gray-100 text-gray-500 border-b border-gray-200 sticky top-0 uppercase tracking-wide">
                         {opt.semLabel}
                       </div>
                     )}
                     <div
-                      className={`px-2 py-1 text-[9px] cursor-pointer border-b border-gray-100 ${isCurrent ? 'bg-blue-100 font-bold' : isUsed ? 'bg-gray-50 text-gray-400 cursor-not-allowed' : 'hover:bg-blue-50'}`}
+                      className={`px-2 py-1.5 text-[10px] cursor-pointer border-b border-gray-100 ${isCurrent ? 'bg-blue-100 font-bold text-blue-700' : isUsed ? 'bg-gray-50 text-gray-400 cursor-not-allowed' : 'hover:bg-blue-50'}`}
                       onClick={() => {
                         if (isUsed) return;
                         const updated = { ...certCourseLinks, [id]: opt.linkValue };
@@ -6756,19 +6782,20 @@ export default function Dashboard() {
                         setOpen(false);
                       }}
                     >
-                      <span className="course-code-mono">{opt.code}</span>
-                      <span className="ml-1 text-gray-500 truncate">{opt.name}</span>
+                      <span className="course-code-mono font-semibold">{opt.code}</span>
+                      <span className="ml-1.5 text-gray-500">{opt.name}</span>
                     </div>
                   </div>
                 );
               });
             })()}
             {allSemesterCourseOptions.length === 0 && (
-              <div className="px-2 py-2 text-[9px] text-gray-400 text-center">No semester courses found</div>
+              <div className="px-2 py-3 text-[10px] text-gray-400 text-center">No semester courses found</div>
             )}
-          </div>
+          </div>,
+          document.body
         )}
-      </div>
+      </>
     );
   };
 
