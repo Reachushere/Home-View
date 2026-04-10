@@ -3836,6 +3836,17 @@ export default function Dashboard() {
       return saved ? JSON.parse(saved) : {};
     } catch { return {}; }
   });
+  const [certCourseLinks, setCertCourseLinks] = useState<Record<string, string>>(() => {
+    try {
+      const saved = localStorage.getItem('certCourseLinks');
+      return saved ? JSON.parse(saved) : {};
+    } catch { return {}; }
+  });
+  const saveCertCourseLinks = (links: Record<string, string>) => {
+    setCertCourseLinks(links);
+    localStorage.setItem('certCourseLinks', JSON.stringify(links));
+    saveDegreeToServer('certCourseLinks', links);
+  };
   const [coursePlayPriority, setCoursePlayPriority] = useState<Record<string, number>>(() => {
     try {
       const saved = localStorage.getItem('coursePlayPriority');
@@ -6148,6 +6159,13 @@ export default function Dashboard() {
         if (data.certCourseData) {
           localStorage.setItem('certCourseData', JSON.stringify(data.certCourseData));
         }
+        if (data.certCourseLinks) {
+          setCertCourseLinks(prev => {
+            const merged = { ...prev, ...data.certCourseLinks };
+            localStorage.setItem('certCourseLinks', JSON.stringify(merged));
+            return merged;
+          });
+        }
         if (data.pastCourseInfo) {
           setPastCourseInfo(prev => {
             const merged = { ...prev, ...data.pastCourseInfo };
@@ -6227,7 +6245,7 @@ export default function Dashboard() {
       .then(() => {
         const syncKeys = [
           'coursesData', 'schoolData', 'colorSettings', 'blinkSettings',
-          'semesterCourseAssignments', 'pastCourseInfo', 'certCourseData',
+          'semesterCourseAssignments', 'pastCourseInfo', 'certCourseData', 'certCourseLinks',
           'coursePlayPriority', 'courseDisplayNames', 'profileData',
           'checkedCourses', 'inProgressCourses', 'courseGrades', 'openElectives',
           'gridSizes', 'calendarHeight', 'calendarReduction', 'showAllDayRow',
@@ -6295,6 +6313,24 @@ export default function Dashboard() {
     const idNorm = courseId.replace(/\s/g, '').toUpperCase();
     const idNoC = idNorm.replace(/^C(?=[A-Z]{2,})/, '');
 
+    const explicitLink = certCourseLinks[courseId];
+    if (explicitLink) {
+      const semCode = explicitLink.split(':')[1];
+      if (semCode) {
+        const semCodeNorm = semCode.replace(/\s/g, '').toUpperCase();
+        if (semCodeNorm !== idNorm && !linked.includes(semCodeNorm)) linked.push(semCodeNorm);
+        const semNoC = semCodeNorm.replace(/^C(?=[A-Z]{2,})/, '');
+        if (semNoC !== idNorm && semNoC !== semCodeNorm && !linked.includes(semNoC)) linked.push(semNoC);
+      }
+    }
+    for (const [certId, linkVal] of Object.entries(certCourseLinks)) {
+      if (certId === courseId) continue;
+      const semCode = linkVal.split(':')[1]?.replace(/\s/g, '').toUpperCase();
+      if (semCode === idNorm || semCode === idNoC || ('C' + semCode) === idNorm) {
+        if (!linked.includes(certId)) linked.push(certId);
+      }
+    }
+
     const certEntry = certCourseMap[courseId];
     if (certEntry) {
       const certCode = certEntry.code.replace(/\s/g, '').toUpperCase();
@@ -6327,7 +6363,7 @@ export default function Dashboard() {
     }
 
     return [...new Set(linked)].filter(k => k !== idNorm);
-  }, [semesterCourseAssignments]);
+  }, [semesterCourseAssignments, certCourseLinks]);
 
   const updateGrade = (courseId: string, grade: string) => {
     if (noGradeIds.has(courseId)) return;
@@ -6629,6 +6665,111 @@ export default function Dashboard() {
   const CourseName = ({ id, children }: { id: string; children: React.ReactNode }) => {
     const strike = shouldStrikethrough(id);
     return strike ? <span style={{ textDecoration: 'line-through' }}>{children}</span> : <>{children}</>;
+  };
+
+  const allSemesterCourseOptions = useMemo(() => {
+    const options: { semKey: string; semLabel: string; code: string; name: string; linkValue: string }[] = [];
+    const semLabelMap: Record<string, string> = {
+      'ss2025': 'SS25', 'f2025': 'F25', 'w2026': 'W26', 'ss2026': 'SS26', 'f2026': 'F26',
+      'w2027': 'W27', 'ss2027': 'SS27', 'f2027': 'F27', 'w2028': 'W28', 'ss2028': 'SS28',
+      'f2028': 'F28', 'w2029': 'W29', 'ss2029': 'SS29', 'f2029': 'F29',
+    };
+    for (const semKey of semesterKeyOrder) {
+      const courses = semesterCourseAssignments[semKey] || [];
+      for (const c of courses) {
+        options.push({
+          semKey,
+          semLabel: semLabelMap[semKey] || semKey,
+          code: c.code,
+          name: c.name || c.fullName || c.code,
+          linkValue: `${semKey}:${c.code}`,
+        });
+      }
+    }
+    return options;
+  }, [semesterCourseAssignments]);
+
+  const usedLinkValues = useMemo(() => new Set(Object.values(certCourseLinks)), [certCourseLinks]);
+
+  const CertCourseLinker = ({ id, defaultCode }: { id: string; defaultCode: string }) => {
+    const [open, setOpen] = useState(false);
+    const ref = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+      if (!open) return;
+      const handler = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+      document.addEventListener('mousedown', handler);
+      return () => document.removeEventListener('mousedown', handler);
+    }, [open]);
+    const currentLink = certCourseLinks[id];
+    const linkedOption = currentLink ? allSemesterCourseOptions.find(o => o.linkValue === currentLink) : null;
+    const displayCode = linkedOption ? linkedOption.code.replace(/([A-Z]+)(\d+)/, '$1 $2') : defaultCode;
+    const strike = shouldStrikethrough(id);
+    return (
+      <div className="relative" style={{ width: '100%' }} ref={ref}>
+        <div
+          className="text-[9px] cursor-pointer hover:bg-blue-50 px-0.5 py-0.5 rounded flex items-center gap-0.5"
+          style={{ textDecoration: strike ? 'line-through' : 'none', color: linkedOption ? '#2563eb' : undefined }}
+          onClick={() => setOpen(!open)}
+          data-testid={`cert-linker-${id}`}
+        >
+          <span className="truncate course-code-mono">{displayCode}</span>
+          <ChevronDown className="w-2 h-2 shrink-0 opacity-40" />
+        </div>
+        {open && (
+          <div
+            className="absolute z-[10010] bg-white border border-gray-300 rounded shadow-lg"
+            style={{ top: '100%', left: '-4px', width: '180px', maxHeight: '200px', overflowY: 'auto' }}
+          >
+            {currentLink && (
+              <div
+                className="px-2 py-1 text-[9px] cursor-pointer hover:bg-red-50 text-red-600 border-b border-gray-200"
+                onClick={() => {
+                  const updated = { ...certCourseLinks };
+                  delete updated[id];
+                  saveCertCourseLinks(updated);
+                  setOpen(false);
+                }}
+              >
+                Unlink
+              </div>
+            )}
+            {(() => {
+              let lastSem = '';
+              return allSemesterCourseOptions.map((opt, idx) => {
+                const isUsed = usedLinkValues.has(opt.linkValue) && certCourseLinks[id] !== opt.linkValue;
+                const isCurrent = certCourseLinks[id] === opt.linkValue;
+                const showHeader = opt.semKey !== lastSem;
+                lastSem = opt.semKey;
+                return (
+                  <div key={idx}>
+                    {showHeader && (
+                      <div className="px-2 py-0.5 text-[8px] font-bold bg-gray-100 text-gray-500 border-b border-gray-200 sticky top-0">
+                        {opt.semLabel}
+                      </div>
+                    )}
+                    <div
+                      className={`px-2 py-1 text-[9px] cursor-pointer border-b border-gray-100 ${isCurrent ? 'bg-blue-100 font-bold' : isUsed ? 'bg-gray-50 text-gray-400 cursor-not-allowed' : 'hover:bg-blue-50'}`}
+                      onClick={() => {
+                        if (isUsed) return;
+                        const updated = { ...certCourseLinks, [id]: opt.linkValue };
+                        saveCertCourseLinks(updated);
+                        setOpen(false);
+                      }}
+                    >
+                      <span className="course-code-mono">{opt.code}</span>
+                      <span className="ml-1 text-gray-500 truncate">{opt.name}</span>
+                    </div>
+                  </div>
+                );
+              });
+            })()}
+            {allSemesterCourseOptions.length === 0 && (
+              <div className="px-2 py-2 text-[9px] text-gray-400 text-center">No semester courses found</div>
+            )}
+          </div>
+        )}
+      </div>
+    );
   };
 
   const renderGradeInput = (id: string) => {
@@ -17544,7 +17685,7 @@ export default function Dashboard() {
               try {
                 const syncKeys = [
                   'coursesData', 'schoolData', 'colorSettings', 'blinkSettings',
-                  'semesterCourseAssignments', 'pastCourseInfo', 'certCourseData',
+                  'semesterCourseAssignments', 'pastCourseInfo', 'certCourseData', 'certCourseLinks',
                   'coursePlayPriority', 'courseDisplayNames', 'profileData',
                   'checkedCourses', 'inProgressCourses', 'courseGrades', 'openElectives',
                   'gridSizes', 'calendarHeight', 'calendarReduction', 'showAllDayRow',
@@ -18348,7 +18489,7 @@ export default function Dashboard() {
                 ].map((c, i) => (
                   <div key={c.id} className={`flex border-b border-black ${courseRowClass(c.id)} ${isSectionAllGreen(0, 'L1') ? 'section-dim' : ''}`} style={{ backgroundColor: courseRowBg(c.id) }}>
                     <div className="w-12 px-1 py-0.5 border-r border-black text-[9px]">{c.type}</div>
-                    <div className="px-1 py-0.5 border-r border-black flex items-center course-code-mono" style={{ width: '53px', minWidth: '53px' }}><CourseName id={c.id}>{c.code}</CourseName></div>
+                    <div className="px-1 py-0.5 border-r border-black flex items-center" style={{ width: '53px', minWidth: '53px' }}><CertCourseLinker id={c.id} defaultCode={c.code} /></div>
                     <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick(c.id)} data-testid={`cert-course-${c.id}`}><span className="min-w-0 truncate"><CourseName id={c.id}>{c.name}</CourseName><StrikethroughLabel id={c.id} /></span></div>
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
                       {renderGradeInput(c.id)}
@@ -18377,7 +18518,7 @@ export default function Dashboard() {
                   return (
                   <div key={c.id} className={`flex border-b border-black ${courseRowClass(c.id)} ${isSectionAllGreen(1, 'L1') ? 'section-dim' : ''}`} style={{ backgroundColor: courseRowBg(c.id) }}>
                     <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState(c.id)}>SELECT</div>
-                    <div className="px-1 py-0.5 border-r border-black flex items-center course-code-mono" style={{ width: '53px', minWidth: '53px' }}><CourseName id={c.id}>{c.code}</CourseName></div>
+                    <div className="px-1 py-0.5 border-r border-black flex items-center" style={{ width: '53px', minWidth: '53px' }}><CertCourseLinker id={c.id} defaultCode={c.code} /></div>
                     <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick(c.id)} data-testid={`cert-course-${c.id}`}><span className="min-w-0 truncate"><CourseName id={c.id}>{c.name}</CourseName><StrikethroughLabel id={c.id} /></span></div>
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
                       {renderGradeInput(c.id)}
@@ -18397,7 +18538,7 @@ export default function Dashboard() {
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('LIBERAL')} ${isSectionAllGreen(2, 'L1') ? 'section-dim' : ''}`} style={{ backgroundColor: courseRowBg('LIBERAL') }}>
                   <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState('LIBERAL')}>SELECT</div>
-                  <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center course-code-mono" style={{ width: '53px', minWidth: '53px' }}>{getElectiveCode(openElectives['LIBERAL'] || '')}</div>
+                  <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center" style={{ width: '53px', minWidth: '53px' }}><CertCourseLinker id="LIBERAL" defaultCode={getElectiveCode(openElectives['LIBERAL'] || '')} /></div>
                   <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
                     <select className={`flex-1 min-w-0 mr-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['LIBERAL'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['LIBERAL'] || courseGrades['LIBERAL']?.grade || courseGrades['LIBERAL']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives['LIBERAL'] || ''} onChange={(e) => updateOpenElective('LIBERAL', e.target.value)} data-testid="select-pag-liberal">
                       <option value="">Select Lower Level Table A Course...</option>
@@ -18424,7 +18565,7 @@ export default function Dashboard() {
                 {['OPEN1','OPEN2'].map((cid, i) => (
                   <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)} ${isSectionAllGreen(3, 'L1') ? 'section-dim' : ''}`} style={{ backgroundColor: courseRowBg(cid) }}>
                     <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState(cid)}>SELECT</div>
-                    <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center course-code-mono" style={{ width: '53px', minWidth: '53px' }}>{getElectiveCode(openElectives[cid] || '')}</div>
+                    <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center" style={{ width: '53px', minWidth: '53px' }}><CertCourseLinker id={cid} defaultCode={getElectiveCode(openElectives[cid] || '')} /></div>
                     <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
                       <select className={`flex-1 min-w-0 mr-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-pag-open${i+1}`}>
                         <option value="">{`Select PR Elective ${i+1}...`}</option>
@@ -18481,7 +18622,7 @@ export default function Dashboard() {
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('L2_PPA211')} ${isSectionAllGreen(0, 'L2') ? 'section-dim' : ''}`} style={{ backgroundColor: courseRowBg('L2_PPA211') }}>
                   <div className="w-12 px-1 py-0.5 border-r border-black text-[9px]">Prof-Req'd</div>
-                  <div className="px-1 py-0.5 border-r border-black flex items-center course-code-mono" style={{ width: '53px', minWidth: '53px' }}><CourseName id="L2_PPA211">CPPA 211</CourseName></div>
+                  <div className="px-1 py-0.5 border-r border-black flex items-center" style={{ width: '53px', minWidth: '53px' }}><CertCourseLinker id="L2_PPA211" defaultCode="CPPA 211" /></div>
                   <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick('L2_PPA211')} data-testid="cert-course-L2_PPA211"><span className="min-w-0 truncate"><CourseName id="L2_PPA211">Public Policy</CourseName><StrikethroughLabel id="L2_PPA211" /></span></div>
                   <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
                     {renderGradeInput('L2_PPA211')}
@@ -18510,7 +18651,7 @@ export default function Dashboard() {
                   return (
                   <div key={c.id} className={`flex border-b border-black ${courseRowClass(c.id)} ${isSectionAllGreen(1, 'L2') ? 'section-dim' : ''}`} style={{ backgroundColor: courseRowBg(c.id) }}>
                     <div className="w-12 px-1 py-0.5 border-r border-black text-[9px]">{c.type}</div>
-                    <div className="px-1 py-0.5 border-r border-black flex items-center course-code-mono" style={{ width: '53px', minWidth: '53px' }}><CourseName id={c.id}>{c.code}</CourseName></div>
+                    <div className="px-1 py-0.5 border-r border-black flex items-center" style={{ width: '53px', minWidth: '53px' }}><CertCourseLinker id={c.id} defaultCode={c.code} /></div>
                     <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick(c.id)} data-testid={`cert-course-${c.id}`}><span className="min-w-0 truncate"><CourseName id={c.id}>{c.name}</CourseName><StrikethroughLabel id={c.id} /></span></div>
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
                       {renderGradeInput(c.id)}
@@ -18530,7 +18671,7 @@ export default function Dashboard() {
                 </div>
                 <div className={`flex border-b border-black ${courseRowClass('L2_LIBERAL')} ${isSectionAllGreen(2, 'L2') ? 'section-dim' : ''}`} style={{ backgroundColor: courseRowBg('L2_LIBERAL') }}>
                   <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState('L2_LIBERAL')}>SELECT</div>
-                  <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center course-code-mono" style={{ width: '53px', minWidth: '53px' }}>{getElectiveCode(openElectives['L2_LIBERAL'] || '')}</div>
+                  <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center" style={{ width: '53px', minWidth: '53px' }}><CertCourseLinker id="L2_LIBERAL" defaultCode={getElectiveCode(openElectives['L2_LIBERAL'] || '')} /></div>
                   <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
                     <select className={`flex-1 min-w-0 mr-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses['L2_LIBERAL'] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses['L2_LIBERAL'] || courseGrades['L2_LIBERAL']?.grade || courseGrades['L2_LIBERAL']?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives['L2_LIBERAL'] || ''} onChange={(e) => updateOpenElective('L2_LIBERAL', e.target.value)} data-testid="select-l2-liberal">
                       <option value="">Select Lower Level Table A Course...</option>
@@ -18566,7 +18707,7 @@ export default function Dashboard() {
                   return (
                   <div key={ecn.id} className={`flex border-b border-black ${courseRowClass(ecn.id)} ${isSectionAllGreen(3, 'L2') ? 'section-dim' : ''}`} style={{ backgroundColor: courseRowBg(ecn.id) }}>
                     <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState(ecn.id)}>SELECT</div>
-                    <div className="px-1 py-0.5 border-r border-black flex items-center course-code-mono" style={{ width: '53px', minWidth: '53px' }}><CourseName id={ecn.id}>{ecn.code}</CourseName></div>
+                    <div className="px-1 py-0.5 border-r border-black flex items-center" style={{ width: '53px', minWidth: '53px' }}><CertCourseLinker id={ecn.id} defaultCode={ecn.code} /></div>
                     <div className="flex-1 px-1 py-0.5 cursor-pointer hover:underline min-w-0 flex items-center" onClick={() => handleCertCourseClick(ecn.id)} data-testid={`cert-course-${ecn.id}`}><span className="min-w-0 truncate"><CourseName id={ecn.id}>{ecn.name}</CourseName><StrikethroughLabel id={ecn.id} /></span></div>
                     <div className="border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5" style={{ width: '54px', minWidth: '54px' }}>
                       {renderGradeInput(ecn.id)}
@@ -18585,7 +18726,7 @@ export default function Dashboard() {
                 {['L2_OPEN1','L2_OPEN2'].map((cid, i) => (
                   <div key={cid} className={`flex border-b border-black ${courseRowClass(cid)} ${isSectionAllGreen(4, 'L2') ? 'section-dim' : ''}`} style={{ backgroundColor: courseRowBg(cid) }}>
                     <div className="w-12 shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState(cid)}>SELECT</div>
-                    <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center course-code-mono" style={{ width: '53px', minWidth: '53px' }}>{getElectiveCode(openElectives[cid] || '')}</div>
+                    <div className="shrink-0 px-1 py-0.5 border-r border-black text-[9px] flex items-center" style={{ width: '53px', minWidth: '53px' }}><CertCourseLinker id={cid} defaultCode={getElectiveCode(openElectives[cid] || '')} /></div>
                     <div className="flex-1 px-1 py-0.5 flex items-center overflow-hidden min-w-0">
                       <select className={`flex-1 min-w-0 mr-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l2-open${i+1}`}>
                         <option value="">{`Select PR Elective ${i+1}...`}</option>
@@ -18652,7 +18793,7 @@ export default function Dashboard() {
                     </tr>
                     <tr className={`border-b border-black ${courseRowClass('L3_PPA333')} ${isSectionAllGreen(0, 'L3') ? 'section-dim-tr' : ''}`} style={{ backgroundColor: courseRowBg('L3_PPA333') }}>
                       <td className="px-1 py-0.5 border-r border-black align-middle text-[9px]">Prof-Req'd</td>
-                      <td className="px-1 py-0.5 border-r border-black align-middle text-[9px] course-code-mono"><CourseName id="L3_PPA333">CPPA 333</CourseName></td>
+                      <td className="px-1 py-0.5 border-r border-black align-middle text-[9px]"><CertCourseLinker id="L3_PPA333" defaultCode="CPPA 333" /></td>
                       <td className="px-1 py-0.5 align-middle text-[9px] cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L3_PPA333')} data-testid="cert-course-L3_PPA333"><div className="min-w-0 flex items-center"><span className="min-w-0 truncate"><CourseName id="L3_PPA333">Research Methods in Public Admin</CourseName><StrikethroughLabel id="L3_PPA333" /></span></div></td>
                       <td className="border-l border-black align-middle">
                         <div className="flex flex-col items-center justify-center gap-1.5 py-0.5">
@@ -18665,7 +18806,7 @@ export default function Dashboard() {
                     </tr>
                     <tr className={`border-b border-black ${courseRowClass('L3_PRACTICUM1')} ${isSectionAllGreen(0, 'L3') ? 'section-dim-tr' : ''}`} style={{ backgroundColor: courseRowBg('L3_PRACTICUM1') }}>
                       <td className="px-1 py-0.5 border-r border-black align-middle text-[9px]">Prof-Req'd</td>
-                      <td className="px-1 py-0.5 border-r border-black align-middle text-[9px] course-code-mono"><CourseName id="L3_PRACTICUM1">CPPA 51 A/B</CourseName></td>
+                      <td className="px-1 py-0.5 border-r border-black align-middle text-[9px]"><CertCourseLinker id="L3_PRACTICUM1" defaultCode="CPPA 51 A/B" /></td>
                       <td className="px-1 py-0.5 align-middle text-[9px] cursor-pointer hover:underline" onClick={() => handleCertCourseClick('L3_PRACTICUM1')} data-testid="cert-course-L3_PRACTICUM1"><div className="min-w-0 flex items-center"><span className="min-w-0 truncate"><CourseName id="L3_PRACTICUM1">Public Policy Research Paper</CourseName><StrikethroughLabel id="L3_PRACTICUM1" /></span></div></td>
                       <td className="border-l border-black align-middle">
                         <div className="flex flex-col items-center justify-center gap-1.5 py-0.5">
@@ -18701,7 +18842,7 @@ export default function Dashboard() {
                             <div className="leading-tight">SELECT<br/>EIGHT (8)<br/>not previously<br/>completed</div>
                           </td>
                         )}
-                        <td className={`px-1 py-0.5 border-r border-black align-middle text-[9px] course-code-mono`}><CourseName id={course.id}>{course.code}</CourseName></td>
+                        <td className={`px-1 py-0.5 border-r border-black align-middle text-[9px]`}><CertCourseLinker id={course.id} defaultCode={course.code} /></td>
                         <td className={`px-1 py-0.5 align-middle text-[9px] cursor-pointer hover:underline`} onClick={() => handleCertCourseClick(course.id)} data-testid={`cert-course-${course.id}`}><div className="min-w-0 flex items-center"><span className="min-w-0 truncate"><CourseName id={course.id}>{course.title}</CourseName><StrikethroughLabel id={course.id} /></span></div></td>
                         <td className="border-l border-black align-middle">
                           <div className="flex flex-col items-center justify-center gap-1.5">
@@ -18719,7 +18860,7 @@ export default function Dashboard() {
                 {['L3_POG1','L3_POG2'].map((cid, i) => (
                     <tr key={cid} className={`border-b border-black ${courseRowClass(cid)} ${isSectionAllGreen(2, 'L3') ? 'section-dim-tr' : ''}`} style={{ backgroundColor: courseRowBg(cid) }} data-testid={`cert-course-${cid}`}>
                       <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState(cid)}>SELECT</td>
-                      <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle course-code-mono">{getElectiveCode(openElectives[cid] || '')}</td>
+                      <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle"><CertCourseLinker id={cid} defaultCode={getElectiveCode(openElectives[cid] || '')} /></td>
                       <td className="px-1 py-0.5 align-middle text-[9px]">
                         <div className="flex items-center overflow-hidden min-w-0">
                           <select className={`flex-1 min-w-0 mr-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-pog-${i+1}`}>
@@ -18745,7 +18886,7 @@ export default function Dashboard() {
                 {['L3_LIBERAL1','L3_LIBERAL2','L3_LIBERAL3','L3_LIBERAL4'].map((cid, i) => (
                     <tr key={cid} className={`border-b border-black ${courseRowClass(cid)} ${isSectionAllGreen(3, 'L3') ? 'section-dim-tr' : ''}`} style={{ backgroundColor: courseRowBg(cid) }}>
                       <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState(cid)}>SELECT</td>
-                      <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle course-code-mono">{getElectiveCode(openElectives[cid] || '')}</td>
+                      <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle"><CertCourseLinker id={cid} defaultCode={getElectiveCode(openElectives[cid] || '')} /></td>
                       <td className="px-1 py-0.5 align-middle text-[9px]">
                         <div className="flex items-center overflow-hidden min-w-0">
                           <select className={`flex-1 min-w-0 mr-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-liberal-${i+1}`}>
@@ -18771,7 +18912,7 @@ export default function Dashboard() {
                 {['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6','L3_OPEN7'].map((cid, i) => (
                     <tr key={cid} className={`border-b border-black ${courseRowClass(cid)} ${isSectionAllGreen(4, 'L3') ? 'section-dim-tr' : ''}`} style={{ backgroundColor: courseRowBg(cid) }}>
                       <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle cursor-pointer hover:bg-gray-100" onClick={() => cycleTriState(cid)}>SELECT</td>
-                      <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle course-code-mono">{getElectiveCode(openElectives[cid] || '')}</td>
+                      <td className="px-1 py-0.5 border-r border-black text-[9px] align-middle"><CertCourseLinker id={cid} defaultCode={getElectiveCode(openElectives[cid] || '')} /></td>
                       <td className="px-1 py-0.5 align-middle text-[9px]">
                         <div className="flex items-center overflow-hidden min-w-0">
                           <select className={`flex-1 min-w-0 mr-0 text-[9px] px-0.5 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-emerald-50 text-emerald-700' : (inProgressCourses[cid] || courseGrades[cid]?.grade || courseGrades[cid]?.percent) ? 'bg-amber-50 text-amber-800' : 'bg-white text-black'}`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} data-testid={`select-l3-open-${i+1}`}>
