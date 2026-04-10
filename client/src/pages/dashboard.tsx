@@ -6800,7 +6800,9 @@ export default function Dashboard() {
 
   const buildCourseInfoForCert = () => {
     if (!selectedCertCourse) return null;
-    const { courseCode, courseName, certKey } = selectedCertCourse;
+    let { courseCode, courseName, certKey } = selectedCertCourse;
+    const tdbSlotNorm = courseCode.replace(/\s/g, '').match(/^TBD_SLOT(\d+)$/i);
+    if (tdbSlotNorm) courseCode = `TBD${tdbSlotNorm[1]}`;
     const fullName = `${courseCode} - ${courseName}`;
     const codeNorm = courseCode.replace(/\s/g, '');
     const matchedCourse = coursesData.courses.find(c => {
@@ -6915,7 +6917,10 @@ export default function Dashboard() {
               endDate = `${ed.getFullYear()}-${(ed.getMonth()+1).toString().padStart(2,'0')}-${ed.getDate().toString().padStart(2,'0')}`;
             }
           }
-          if (semStart) {
+          const semNameYear = (sem as any).semesterName?.match(/\d{4}/)?.[0];
+          if (semNameYear) {
+            year = semNameYear;
+          } else if (semStart) {
             year = new Date(semStart).getFullYear().toString();
           }
           foundInSem = true;
@@ -19222,12 +19227,17 @@ export default function Dashboard() {
             }}
             onSaveCourseInfo={(updates) => {
               colorSnapshotRef.current = null;
-              const courseCode = selectedCertCourse!.courseCode;
+              let courseCode = selectedCertCourse!.courseCode;
+              const tdbNorm = courseCode.replace(/\s/g, '').match(/^TBD_SLOT(\d+)$/i);
+              if (tdbNorm) courseCode = `TBD${tdbNorm[1]}`;
               const certKey = selectedCertCourse!.certKey;
               const updatedCourses = [...coursesData.courses];
               const matchIdx = updatedCourses.findIndex(c => {
                 const cCode = c.name.split(' - ')[0]?.trim().replace(/\s/g, '');
-                return cCode === courseCode.replace(/\s/g, '');
+                let cCodeNorm = cCode;
+                const cTdb = cCode.match(/^TBD_SLOT(\d+)$/i);
+                if (cTdb) cCodeNorm = `TBD${cTdb[1]}`;
+                return cCodeNorm === courseCode.replace(/\s/g, '');
               });
               if (matchIdx >= 0) {
                 const newName = (updates.courseCode || updates.courseName)

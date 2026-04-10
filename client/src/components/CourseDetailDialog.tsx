@@ -2211,6 +2211,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                         courseRowColor: courseInfo.courseRowColor || '',
                         taskBgColor: courseInfo.taskBgColor || '',
                         courseFontColor: courseInfo.courseFontColor || '',
+                        displayName: courseInfo.displayName || '',
                       });
                       if (onLiveColorChange) {
                         onLiveColorChange({
