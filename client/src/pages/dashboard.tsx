@@ -19174,7 +19174,9 @@ export default function Dashboard() {
               };
               const currentSemSettings = allSemesterSettingsRef.current;
               if (currentSemSettings) {
-                const cc = courseCode.replace(/\s/g, '');
+                let cc = courseCode.replace(/\s/g, '');
+                const tdbSlotMatch = cc.match(/^TBD_SLOT(\d+)$/i);
+                if (tdbSlotMatch) cc = `TBD${tdbSlotMatch[1]}`;
                 let found = false;
                 for (const sem of currentSemSettings) {
                   for (let i = 1; i <= 3; i++) {
@@ -19305,10 +19307,12 @@ export default function Dashboard() {
               if ((updates as any).courseRank !== undefined) {
                 let semKey = (updates as any).semesterKey || semesterKeyFromUpdates(updates);
                 if (!semKey) {
-                  const cc = courseCode.replace(/\s/g, '').toUpperCase();
+                  let cc2 = courseCode.replace(/\s/g, '').toUpperCase();
+                  const tdbMatch2 = cc2.match(/^TBD_SLOT(\d+)$/i);
+                  if (tdbMatch2) cc2 = `TBD${tdbMatch2[1]}`;
                   for (const sk of semesterKeyOrder) {
                     const courses = semesterCourseAssignments[sk] || [];
-                    if (courses.some(c => c.code.replace(/\s/g, '').toUpperCase() === cc)) { semKey = sk; break; }
+                    if (courses.some(c => c.code.replace(/\s/g, '').toUpperCase() === cc2)) { semKey = sk; break; }
                   }
                 }
                 if (semKey) {
