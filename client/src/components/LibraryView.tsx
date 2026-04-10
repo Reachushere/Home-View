@@ -364,23 +364,52 @@ export default function LibraryView({ isOpen, onClose, semesters, initialSemeste
 
   const courseBooks = useMemo(() => {
     if (!currentSemester) return [];
-    return currentSemester.courses.map(course => {
-      const courseCode = course.code.replace(/\s/g, '').toUpperCase();
-      const courseFiles = allFiles.filter(f => {
-        if (!f.folder) return false;
-        const folderUpper = f.folder.toUpperCase();
-        const codeUpper = courseCode;
-        return (folderUpper.includes(codeUpper) || folderUpper.includes(course.code.replace(/\s/g, ''))) &&
-          (folderUpper.includes('MODULE') || folderUpper.includes('READING'));
-      });
-      courseFiles.sort((a, b) => {
+    const moduleReadingFiles = allFiles.filter(f => {
+      if (!f.folder) return false;
+      const fl = f.folder.toLowerCase();
+      return (fl.includes('-module') || fl.includes('-reading')) && fl.startsWith('week-');
+    });
+
+    const courseMap = new Map<string, FileRecord[]>();
+    moduleReadingFiles.forEach(f => {
+      const match = f.folder!.match(/^week-\d+-(.+?)-(module|reading)$/i);
+      if (!match) return;
+      const code = match[1].toLowerCase();
+      if (!courseMap.has(code)) courseMap.set(code, []);
+      courseMap.get(code)!.push(f);
+    });
+
+    const semCourses = currentSemester.courses;
+    const result: { course: { code: string; name: string; color: string }; files: FileRecord[] }[] = [];
+
+    const matchedCodes = new Set<string>();
+    semCourses.forEach(course => {
+      const codeNorm = course.code.replace(/\s/g, '').toLowerCase();
+      const files = courseMap.get(codeNorm);
+      if (files && files.length > 0) {
+        matchedCodes.add(codeNorm);
+        files.sort((a, b) => {
+          const weekA = parseInt(a.folder?.match(/week-(\d+)/)?.[1] || '0');
+          const weekB = parseInt(b.folder?.match(/week-(\d+)/)?.[1] || '0');
+          if (weekA !== weekB) return weekA - weekB;
+          return (a.displayName || a.originalName).localeCompare(b.displayName || b.originalName);
+        });
+        result.push({ course, files });
+      }
+    });
+
+    courseMap.forEach((files, code) => {
+      if (matchedCodes.has(code)) return;
+      files.sort((a, b) => {
         const weekA = parseInt(a.folder?.match(/week-(\d+)/)?.[1] || '0');
         const weekB = parseInt(b.folder?.match(/week-(\d+)/)?.[1] || '0');
         if (weekA !== weekB) return weekA - weekB;
         return (a.displayName || a.originalName).localeCompare(b.displayName || b.originalName);
       });
-      return { course, files: courseFiles };
-    }).filter(cb => cb.files.length > 0);
+      result.push({ course: { code: code.toUpperCase(), name: '', color: BOOK_COLORS[result.length % BOOK_COLORS.length] }, files });
+    });
+
+    return result;
   }, [currentSemester, allFiles]);
 
   const handleBookClick = useCallback((file: FileRecord, color: string) => {
