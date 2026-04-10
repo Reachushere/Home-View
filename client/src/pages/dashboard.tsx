@@ -25531,7 +25531,7 @@ export default function Dashboard() {
                         >
                           <MessageSquare className="w-3.5 h-3.5" strokeWidth={2.5} />
                         </button>
-                        <span className="text-[10px] truncate min-w-0 flex-1 cursor-pointer hover:underline" style={{ marginLeft: '5px' }} onClick={(e) => { e.stopPropagation(); const certKey = pastEntry?.certKey || semCourse.code; startTransition(() => setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey, semKey })); }} data-testid={`course-name-click-${semCourse.code}`}><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</span>
+                        <span className="text-[10px] truncate min-w-0 flex-1 cursor-pointer hover:underline" style={{ marginLeft: '5px' }} onClick={(e) => { e.stopPropagation(); const certKey = pastEntry?.certKey || semCourse.code; startTransition(() => setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey, semKey })); }} data-testid={`course-name-click-${semCourse.code}`}>{displayName !== semCourse.name ? <span className="font-bold">{displayName}</span> : <><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</>}</span>
                         <div className="flex items-center gap-1 flex-shrink-0" style={{ marginRight: '-3px' }}>
                           {(() => {
                             const profName = currentCourse?.professor || profInfo.professor;
