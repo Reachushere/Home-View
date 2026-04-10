@@ -135,18 +135,19 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
         }} />
       )}
       {fileType && (
-        <div style={{
+        <span style={{
           position: 'absolute',
           top: '6px',
           left: '50%',
           transform: 'translateX(-50%)',
-          fontSize: '10px',
+          fontSize: '9px',
+          fontWeight: 800,
+          color: 'rgba(255,255,255,0.85)',
+          textShadow: '0 1px 2px rgba(0,0,0,0.7)',
           lineHeight: 1,
-          opacity: 0.8,
-          filter: 'drop-shadow(0 1px 1px rgba(0,0,0,0.5))',
         }}>
-          {fileType === 'module' ? '📘' : '📖'}
-        </div>
+          {fileType === 'module' ? 'M' : 'R'}
+        </span>
       )}
       <span style={{
         writingMode: 'vertical-rl',
@@ -538,7 +539,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
   if (!isOpen) return null;
 
   const courseCount = Math.max(courseBooks.length, 1);
-  const shelfHeight = Math.max(120, Math.min(220, Math.floor((window.innerHeight - 120) / courseCount) - 50));
+  const shelfHeight = Math.max(110, Math.min(200, Math.floor((window.innerHeight - 130) / courseCount) - 40));
 
   return createPortal(
     <div
