@@ -44,14 +44,27 @@ function getBookColor(index: number, courseCode: string): string {
   return BOOK_COLORS[(hash + index) % BOOK_COLORS.length];
 }
 
+function toTitleCase(str: string): string {
+  return str.replace(/\b\w+/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+}
+
 function truncateSpineTitle(name: string, maxLen: number = 28): string {
   const cleaned = name
     .replace(/\.(pdf|docx?|pptx?|xlsx?)$/i, '')
     .replace(/^(Module|Reading|Lecture|Chapter|Ch|Chap)\s*[-_]?\s*/i, '')
     .replace(/[-_]+/g, ' ')
     .trim();
-  if (cleaned.length <= maxLen) return cleaned;
-  return cleaned.substring(0, maxLen - 1) + '…';
+  const titled = toTitleCase(cleaned);
+  if (titled.length <= maxLen) return titled;
+  return titled.substring(0, maxLen - 1) + '…';
+}
+
+function getFileType(folder: string | null): 'module' | 'reading' | null {
+  if (!folder) return null;
+  const fl = folder.toLowerCase();
+  if (fl.includes('-module')) return 'module';
+  if (fl.includes('-reading')) return 'reading';
+  return null;
 }
 
 function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, shelfHeight }: {
@@ -68,8 +81,8 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   const bookHeight = shelfHeight - 8 - (index % 3) * 6;
   const title = truncateSpineTitle(file.displayName || file.originalName);
   const weekNum = file.folder?.match(/^week-(\d+)/)?.[1] || '';
+  const fileType = getFileType(file.folder);
   const patternIdx = (index + courseCode.charCodeAt(0)) % SPINE_PATTERNS.length;
-  const hasGoldAccent = index % 3 === 0;
   const hasTopBand = index % 4 === 1;
   const hasBottomBand = index % 5 === 2;
 
@@ -102,7 +115,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
       {hasTopBand && (
         <div style={{
           position: 'absolute',
-          top: '12px',
+          top: '22px',
           left: '3px',
           right: '3px',
           height: '2px',
@@ -113,7 +126,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
       {hasBottomBand && (
         <div style={{
           position: 'absolute',
-          bottom: '12px',
+          bottom: '24px',
           left: '3px',
           right: '3px',
           height: '2px',
@@ -121,18 +134,19 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
           opacity: 0.5,
         }} />
       )}
-      {hasGoldAccent && (
+      {fileType && (
         <div style={{
           position: 'absolute',
-          top: '8px',
+          top: '6px',
           left: '50%',
           transform: 'translateX(-50%)',
-          width: '10px',
-          height: '10px',
-          border: '1px solid #D4AF37',
-          borderRadius: '50%',
-          opacity: 0.7,
-        }} />
+          fontSize: '10px',
+          lineHeight: 1,
+          opacity: 0.8,
+          filter: 'drop-shadow(0 1px 1px rgba(0,0,0,0.5))',
+        }}>
+          {fileType === 'module' ? '📘' : '📖'}
+        </div>
       )}
       <span style={{
         writingMode: 'vertical-rl',
@@ -143,7 +157,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
         color: '#ffffff',
         textShadow: '0 1px 3px rgba(0,0,0,0.7)',
         letterSpacing: '0.5px',
-        maxHeight: `${bookHeight - 30}px`,
+        maxHeight: `${bookHeight - 46}px`,
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
@@ -158,10 +172,10 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
           bottom: '4px',
           left: '50%',
           transform: 'translateX(-50%)',
-          fontSize: '7px',
-          fontWeight: 700,
-          color: 'rgba(255,255,255,0.7)',
-          textShadow: '0 1px 2px rgba(0,0,0,0.6)',
+          fontSize: '14px',
+          fontWeight: 800,
+          color: 'rgba(255,255,255,0.85)',
+          textShadow: '0 1px 3px rgba(0,0,0,0.7)',
           lineHeight: 1,
           whiteSpace: 'nowrap',
         }}>
@@ -171,7 +185,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
       {file.listened && (
         <div style={{
           position: 'absolute',
-          bottom: weekNum ? '16px' : '6px',
+          bottom: weekNum ? '22px' : '6px',
           left: '50%',
           transform: 'translateX(-50%)',
           width: '6px',
@@ -188,52 +202,64 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
 function Bookend({ side }: { side: 'left' | 'right' }) {
   return (
     <div style={{
-      width: '18px',
+      width: '22px',
       height: '100%',
       background: side === 'left'
-        ? 'linear-gradient(90deg, #6D4C41 0%, #5D4037 30%, #4E342E 60%, #3E2723 100%)'
-        : 'linear-gradient(90deg, #3E2723 0%, #4E342E 40%, #5D4037 70%, #6D4C41 100%)',
-      borderRadius: side === 'left' ? '4px 1px 1px 4px' : '1px 4px 4px 1px',
+        ? 'linear-gradient(90deg, #8D6E63 0%, #6D4C41 15%, #5D4037 40%, #4E342E 70%, #3E2723 100%)'
+        : 'linear-gradient(90deg, #3E2723 0%, #4E342E 30%, #5D4037 60%, #6D4C41 85%, #8D6E63 100%)',
+      borderRadius: side === 'left' ? '5px 1px 1px 5px' : '1px 5px 5px 1px',
       boxShadow: side === 'left'
-        ? 'inset 3px 0 6px rgba(255,255,255,0.12), -3px 0 8px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.05)'
-        : 'inset -3px 0 6px rgba(255,255,255,0.12), 3px 0 8px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.05)',
+        ? 'inset 3px 0 8px rgba(255,255,255,0.15), -4px 0 12px rgba(0,0,0,0.5), inset 0 3px 6px rgba(255,255,255,0.08), inset 0 -3px 6px rgba(0,0,0,0.2)'
+        : 'inset -3px 0 8px rgba(255,255,255,0.15), 4px 0 12px rgba(0,0,0,0.5), inset 0 3px 6px rgba(255,255,255,0.08), inset 0 -3px 6px rgba(0,0,0,0.2)',
       flexShrink: 0,
       position: 'relative',
-      borderTop: '1px solid rgba(255,255,255,0.06)',
-      borderBottom: '1px solid rgba(0,0,0,0.3)',
+      borderTop: '1px solid rgba(255,255,255,0.08)',
+      borderBottom: '2px solid rgba(0,0,0,0.4)',
     }}>
       <div style={{
         position: 'absolute',
-        top: '15%',
+        top: '8%',
         left: '50%',
         transform: 'translateX(-50%)',
-        width: '8px',
-        height: '70%',
-        background: 'linear-gradient(180deg, #D4AF37 0%, #B8860B 30%, #8B6914 50%, #B8860B 70%, #D4AF37 100%)',
-        borderRadius: '2px',
+        width: '12px',
+        height: '3px',
+        background: 'linear-gradient(90deg, transparent, #D4AF37, transparent)',
         opacity: 0.5,
-        boxShadow: '0 0 3px rgba(212,175,55,0.3)',
-      }} />
-      <div style={{
-        position: 'absolute',
-        top: '10%',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        width: '10px',
-        height: '2px',
-        background: '#D4AF37',
-        opacity: 0.4,
         borderRadius: '1px',
       }} />
       <div style={{
         position: 'absolute',
-        bottom: '10%',
+        top: '12%',
         left: '50%',
         transform: 'translateX(-50%)',
         width: '10px',
-        height: '2px',
-        background: '#D4AF37',
+        height: '76%',
+        background: 'linear-gradient(180deg, #D4AF37 0%, #B8860B 20%, #8B6914 40%, #6B4F10 50%, #8B6914 60%, #B8860B 80%, #D4AF37 100%)',
+        borderRadius: '2px',
         opacity: 0.4,
+        boxShadow: 'inset 0 0 3px rgba(0,0,0,0.3), 0 0 4px rgba(212,175,55,0.2)',
+      }} />
+      <div style={{
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: '8px',
+        height: '8px',
+        border: '1px solid rgba(212,175,55,0.5)',
+        borderRadius: '1px',
+        transform: 'translate(-50%, -50%) rotate(45deg)',
+        opacity: 0.6,
+      }} />
+      <div style={{
+        position: 'absolute',
+        bottom: '8%',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: '12px',
+        height: '3px',
+        background: 'linear-gradient(90deg, transparent, #D4AF37, transparent)',
+        opacity: 0.5,
         borderRadius: '1px',
       }} />
     </div>
@@ -511,7 +537,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
 
   if (!isOpen) return null;
 
-  const shelfHeight = 220;
+  const courseCount = Math.max(courseBooks.length, 1);
+  const shelfHeight = Math.max(120, Math.min(220, Math.floor((window.innerHeight - 120) / courseCount) - 50));
 
   return createPortal(
     <div
@@ -536,35 +563,42 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             radial-gradient(ellipse 300px 200px at 80% 40%, rgba(255,160,60,0.04) 0%, transparent 60%);
         }
         .shelf-wood {
-          background: linear-gradient(180deg,
-            #7B5B3A 0%,
-            #6D4C35 8%,
-            #5D4037 18%,
-            #4E342E 35%,
-            #5D4037 55%,
-            #6D4C41 72%,
-            #7B5B3A 88%,
-            #6D4C35 100%
-          );
+          background:
+            repeating-linear-gradient(90deg, rgba(0,0,0,0.03) 0px, transparent 3px, transparent 8px, rgba(0,0,0,0.02) 12px),
+            linear-gradient(180deg,
+              #8D6E50 0%,
+              #7B5B3A 6%,
+              #6D4C35 14%,
+              #5D4037 28%,
+              #4E342E 42%,
+              #5D4037 58%,
+              #6D4C41 72%,
+              #7B5B3A 86%,
+              #8D6E50 94%,
+              #7B5B3A 100%
+            );
           box-shadow:
-            0 6px 16px rgba(0,0,0,0.6),
-            0 2px 6px rgba(0,0,0,0.3),
-            inset 0 2px 4px rgba(255,255,255,0.1),
-            inset 0 -2px 6px rgba(0,0,0,0.4);
-          border-top: 1px solid rgba(255,255,255,0.06);
+            0 6px 18px rgba(0,0,0,0.65),
+            0 2px 6px rgba(0,0,0,0.35),
+            inset 0 2px 5px rgba(255,255,255,0.12),
+            inset 0 -3px 8px rgba(0,0,0,0.45);
+          border-top: 1px solid rgba(255,255,255,0.1);
         }
         .shelf-front {
-          background: linear-gradient(180deg,
-            #7B5B3A 0%,
-            #6D4C41 20%,
-            #5D4037 50%,
-            #4E342E 100%
-          );
+          background:
+            repeating-linear-gradient(90deg, rgba(0,0,0,0.02) 0px, transparent 4px, transparent 10px),
+            linear-gradient(180deg,
+              #8D6E50 0%,
+              #7B5B3A 15%,
+              #6D4C41 35%,
+              #5D4037 60%,
+              #4E342E 100%
+            );
           box-shadow:
-            0 4px 12px rgba(0,0,0,0.5),
-            0 8px 20px rgba(0,0,0,0.3),
-            inset 0 1px 3px rgba(255,255,255,0.12);
-          border-bottom: 1px solid rgba(0,0,0,0.4);
+            0 5px 14px rgba(0,0,0,0.55),
+            0 10px 25px rgba(0,0,0,0.35),
+            inset 0 1px 4px rgba(255,255,255,0.14);
+          border-bottom: 2px solid rgba(30,15,5,0.5);
         }
         .book-spine-item:hover {
           filter: brightness(1.15);
@@ -708,9 +742,12 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           left: 0,
           right: 0,
           bottom: 0,
-          overflowY: 'auto',
+          overflowY: 'hidden',
           overflowX: 'hidden',
-          padding: '0 30px 40px',
+          padding: '0 30px 10px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: courseBooks.length > 0 ? 'space-evenly' : 'center',
         }}
         className="library-scroll"
       >
@@ -734,14 +771,14 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           </div>
         ) : (
           courseBooks.map(({ course, files: courseFiles }, courseIdx) => (
-            <div key={course.code} style={{ marginBottom: '40px' }}>
+            <div key={course.code} style={{ marginBottom: '0' }}>
               <div style={{
                 fontSize: '13px',
                 fontWeight: 600,
                 color: 'rgba(255,255,255,0.85)',
                 letterSpacing: '1.5px',
                 textTransform: 'uppercase',
-                marginBottom: '12px',
+                marginBottom: '6px',
                 paddingLeft: '16px',
                 fontFamily: "'Georgia', 'Times New Roman', serif",
                 borderLeft: `3px solid ${course.color || '#ffffff'}`,
