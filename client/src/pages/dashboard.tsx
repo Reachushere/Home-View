@@ -31142,12 +31142,20 @@ export default function Dashboard() {
                                     personal: 'rgb(139,92,246)', outside: 'rgb(34,197,94)',
                                     other: 'rgb(180,160,40)',
                                   };
+                                  const isReadingType = effectiveType === 'reading';
                                   const moduleBoxColor = (() => {
                                     if (hasCourseLink) {
                                       const cMatch2 = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode.toUpperCase());
+                                      if (isReadingType) {
+                                        if ((cMatch2 as any)?.readingBoxColor) return (cMatch2 as any).readingBoxColor;
+                                        if ((cMatch2 as any)?.colorEnd) return (cMatch2 as any).colorEnd;
+                                        const gradColors2 = courseCode ? getCourseGradientColors(courseCode) : null;
+                                        return gradColors2?.end || otherRowColors.labelEnd;
+                                      }
+                                      if ((cMatch2 as any)?.moduleBoxColor) return (cMatch2 as any).moduleBoxColor;
                                       if (cMatch2?.color) return cMatch2.color;
                                       const gradColors2 = courseCode ? getCourseGradientColors(courseCode) : null;
-                                      return cMatch2?.colorEnd || (gradColors2?.end || otherRowColors.labelEnd);
+                                      return gradColors2?.start || otherRowColors.labelEnd;
                                     }
                                     return wizardTypeColors[effectiveType] || otherRowColors.labelEnd;
                                   })();
@@ -31511,8 +31519,15 @@ export default function Dashboard() {
                           personal: 'rgb(139,92,246)', outside: 'rgb(34,197,94)',
                           other: 'rgb(180,160,40)',
                         };
+                        const isReadingType2 = effectiveType === 'reading';
                         const moduleBoxColor = (() => {
                           if (hasCourseLink) {
+                            if (isReadingType2) {
+                              if ((cMatchBar as any)?.readingBoxColor) return (cMatchBar as any).readingBoxColor;
+                              if ((cMatchBar as any)?.colorEnd) return (cMatchBar as any).colorEnd;
+                              return colors?.end || typeBarColor;
+                            }
+                            if ((cMatchBar as any)?.moduleBoxColor) return (cMatchBar as any).moduleBoxColor;
                             if (cMatchBar?.color) return cMatchBar.color;
                             return colors?.bg || typeBarColor;
                           }
