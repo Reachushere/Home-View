@@ -19140,24 +19140,63 @@ export default function Dashboard() {
                 setCoursesData(updatedData);
                 localStorage.setItem('coursesData', JSON.stringify(updatedData));
                 saveDegreeToServer('coursesData', updatedData);
-                const semPayload: Record<string, string | null> = {};
-                const prefix = `course${matchIdx + 1}`;
-                if (colorUpdates.color) semPayload[`${prefix}Color`] = colorUpdates.color;
-                if (colorUpdates.colorEnd) semPayload[`${prefix}ColorEnd`] = colorUpdates.colorEnd;
-                if (colorUpdates.colorStops !== undefined) semPayload[`${prefix}ColorStops`] = colorUpdates.colorStops || null;
-                if (colorUpdates.borderColor !== undefined) semPayload[`${prefix}BorderColor`] = colorUpdates.borderColor || null;
-                if (colorUpdates.courseRowColor !== undefined) semPayload[`${prefix}CourseRowColor`] = colorUpdates.courseRowColor || null;
-                if (colorUpdates.taskBgColor !== undefined) semPayload[`${prefix}TaskBgColor`] = colorUpdates.taskBgColor || null;
-                if (colorUpdates.courseFontColor !== undefined) semPayload[`${prefix}CourseFontColor`] = colorUpdates.courseFontColor || null;
-                if (colorUpdates.moduleBoxColor !== undefined) semPayload[`${prefix}ModuleBoxColor`] = colorUpdates.moduleBoxColor || null;
-                if (colorUpdates.readingBoxColor !== undefined) semPayload[`${prefix}ReadingBoxColor`] = colorUpdates.readingBoxColor || null;
-                if (Object.keys(semPayload).length > 0) {
-                  fetch('/api/semester', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify(semPayload) })
-                    .then(() => {
-                      queryClient.invalidateQueries({ queryKey: ["/api/semester"] });
-                      queryClient.invalidateQueries({ queryKey: ["/api/semesters"] });
-                    })
-                    .catch(() => {});
+                const currentSems = allSemesterSettingsRef.current;
+                if (currentSems) {
+                  let cc = courseCode.replace(/\s/g, '');
+                  const tdbM = cc.match(/^TBD_SLOT(\d+)$/i);
+                  if (tdbM) cc = `TBD${tdbM[1]}`;
+                  const ccUpper = cc.toUpperCase();
+                  const courseSemKey = selectedCertCourse?.semKey;
+                  const liveKeyToType: Record<string, { type: string; year: number }> = {
+                    'ss2025': { type: 'spring_summer', year: 2025 }, 'f2025': { type: 'fall', year: 2025 },
+                    'w2026': { type: 'winter', year: 2026 }, 'ss2026': { type: 'spring_summer', year: 2026 },
+                    'f2026': { type: 'fall', year: 2026 }, 'w2027': { type: 'winter', year: 2027 },
+                    'ss2027': { type: 'spring_summer', year: 2027 }, 'f2027': { type: 'fall', year: 2027 },
+                    'w2028': { type: 'winter', year: 2028 }, 'ss2028': { type: 'spring_summer', year: 2028 },
+                    'f2028': { type: 'fall', year: 2028 }, 'w2029': { type: 'winter', year: 2029 },
+                    'ss2029': { type: 'spring_summer', year: 2029 }, 'f2029': { type: 'fall', year: 2029 },
+                  };
+                  const targetType = courseSemKey ? liveKeyToType[courseSemKey] : null;
+                  const sortedSems = targetType
+                    ? [...currentSems].sort((a, b) => {
+                        const aMatch = a.semesterType === targetType.type && (a.semesterName?.match(/\d{4}/)?.[0] === String(targetType.year));
+                        const bMatch = b.semesterType === targetType.type && (b.semesterName?.match(/\d{4}/)?.[0] === String(targetType.year));
+                        return (bMatch ? 1 : 0) - (aMatch ? 1 : 0);
+                      })
+                    : currentSems;
+                  for (const sem of sortedSems) {
+                    for (let i = 1; i <= 3; i++) {
+                      const semCode = ((sem as any)[`course${i}Code`] || '').replace(/\s/g, '');
+                      if (semCode.toUpperCase() === ccUpper) {
+                        const prefix = `course${i}`;
+                        const semPayload: Record<string, string | null> = {};
+                        if (colorUpdates.color) semPayload[`${prefix}Color`] = colorUpdates.color;
+                        if (colorUpdates.colorEnd) semPayload[`${prefix}ColorEnd`] = colorUpdates.colorEnd;
+                        if (colorUpdates.colorStops !== undefined) semPayload[`${prefix}ColorStops`] = colorUpdates.colorStops || null;
+                        if (colorUpdates.borderColor !== undefined) semPayload[`${prefix}BorderColor`] = colorUpdates.borderColor || null;
+                        if (colorUpdates.courseRowColor !== undefined) semPayload[`${prefix}CourseRowColor`] = colorUpdates.courseRowColor || null;
+                        if (colorUpdates.taskBgColor !== undefined) semPayload[`${prefix}TaskBgColor`] = colorUpdates.taskBgColor || null;
+                        if (colorUpdates.courseFontColor !== undefined) semPayload[`${prefix}CourseFontColor`] = colorUpdates.courseFontColor || null;
+                        if (colorUpdates.moduleBoxColor !== undefined) semPayload[`${prefix}ModuleBoxColor`] = colorUpdates.moduleBoxColor || null;
+                        if (colorUpdates.readingBoxColor !== undefined) semPayload[`${prefix}ReadingBoxColor`] = colorUpdates.readingBoxColor || null;
+                        if (Object.keys(semPayload).length > 0) {
+                          queryClient.setQueryData(["/api/semesters"], (old: any[] | undefined) => {
+                            if (!old) return old;
+                            return old.map((s: any) => s.id === sem.id ? { ...s, ...semPayload } : s);
+                          });
+                          queryClient.setQueryData(["/api/semester"], (old: any) => {
+                            if (!old || old.id !== sem.id) return old;
+                            return { ...old, ...semPayload };
+                          });
+                          apiRequest("PATCH", `/api/semesters/${sem.id}`, semPayload).then(() => {
+                            queryClient.invalidateQueries({ queryKey: ["/api/semesters"] });
+                            queryClient.invalidateQueries({ queryKey: ["/api/semester"] });
+                          }).catch(() => {});
+                        }
+                        break;
+                      }
+                    }
+                  }
                 }
               }
             }}
@@ -29198,47 +29237,19 @@ export default function Dashboard() {
                         </div>
                         <div style={{ height: '4px', flexShrink: 0 }} />
                         {(() => {
-                          const code = course.name.split(' - ')[0];
-                          const fullName = course.name.split(' - ').slice(1).join(' - ');
-                          const isTBDLabel = code.startsWith('TBD_SLOT') || code === 'TBD';
-                          const displayCodeLabel = isTBDLabel ? 'TBD' : code;
                           const customDisplay = (courseData as any).displayName;
-                          if (customDisplay) {
-                            const cdWords = customDisplay.trim().split(/\s+/);
-                            const firstWord = cdWords[0] || '';
-                            const restWords = cdWords.slice(1).join(' ');
-                            return (
-                              <>
-                                <span className="font-[785] text-center" style={{ whiteSpace: 'nowrap' }}>{firstWord}</span>
-                                {restWords && <span className="text-center" style={{ wordBreak: 'normal', overflowWrap: 'anywhere', hyphens: 'auto', whiteSpace: 'normal', lineHeight: 1.15 } as any}>{restWords}</span>}
-                              </>
-                            );
-                          }
-                          const words = fullName.trim() ? fullName.trim().split(/\s+/) : [];
-                          const codeIsName = code.trim().toLowerCase() === fullName.trim().toLowerCase();
-                          if (codeIsName) {
-                            return (
-                              <>
-                                <span className="font-[785] text-center" style={{ wordBreak: 'normal', overflowWrap: 'anywhere', hyphens: 'auto', whiteSpace: 'normal', lineHeight: 1.15 } as any}>{fullName.trim()}</span>
-                              </>
-                            );
-                          }
-                          if (words.length === 0 && displayCodeLabel.includes(' ')) {
-                            return (
-                              <>
-                                <span className="font-[785] text-center" style={{ wordBreak: 'normal', overflowWrap: 'anywhere', hyphens: 'auto', whiteSpace: 'normal', lineHeight: 1.15 } as any}>{displayCodeLabel}</span>
-                              </>
-                            );
-                          }
-                          if (words.length === 0 && displayCodeLabel.length > 6) {
-                            return (
-                              <span className="font-[785] text-center" style={{ lineHeight: 1.2, whiteSpace: 'nowrap' }}>{displayCodeLabel}</span>
-                            );
-                          }
+                          const rawCode = courseData.name.split(' - ')[0];
+                          const rawFullName = courseData.name.split(' - ').slice(1).join(' - ');
+                          const isTBDLabel = rawCode.startsWith('TBD_SLOT') || rawCode === 'TBD';
+                          const displayCodeLabel = isTBDLabel ? 'TBD' : rawCode;
+                          const labelText = customDisplay || (rawFullName ? `${displayCodeLabel} - ${rawFullName}` : displayCodeLabel);
+                          const cdWords = labelText.trim().split(/\s+/);
+                          const firstWord = cdWords[0] || '';
+                          const restWords = cdWords.slice(1).join(' ');
                           return (
                             <>
-                              <span className="font-[785] text-center" style={{ whiteSpace: 'nowrap' }}>{displayCodeLabel}</span>
-                              <span className="text-center" style={{ wordBreak: 'normal', overflowWrap: 'anywhere', hyphens: 'auto', whiteSpace: 'normal', lineHeight: 1.15 } as any}>{words.join(' ')}</span>
+                              <span className="font-[785] text-center" style={{ whiteSpace: 'nowrap' }}>{firstWord}</span>
+                              {restWords && <span className="text-center" style={{ wordBreak: 'normal', overflowWrap: 'anywhere', hyphens: 'auto', whiteSpace: 'normal', lineHeight: 1.15 } as any}>{restWords}</span>}
                             </>
                           );
                         })()}
@@ -29463,47 +29474,19 @@ export default function Dashboard() {
                     </div>
                     <div style={{ height: '4px', flexShrink: 0 }} />
                     {(() => {
-                      const code = course.name.split(' - ')[0];
-                      const fullName = course.name.split(' - ').slice(1).join(' - ');
-                      const isTBDLabel = code.startsWith('TBD_SLOT') || code === 'TBD';
-                      const displayCodeLabel = isTBDLabel ? 'TBD' : code;
                       const customDisplay = (courseData as any).displayName;
-                      if (customDisplay) {
-                        const cdWords = customDisplay.trim().split(/\s+/);
-                        const firstWord = cdWords[0] || '';
-                        const restWords = cdWords.slice(1).join(' ');
-                        return (
-                          <>
-                            <span className="font-[785] text-center" style={{ whiteSpace: 'nowrap' }}>{firstWord}</span>
-                            {restWords && <span className="text-center" style={{ wordBreak: 'normal', overflowWrap: 'anywhere', hyphens: 'auto', whiteSpace: 'normal', lineHeight: 1.15 } as any}>{restWords}</span>}
-                          </>
-                        );
-                      }
-                      const words = fullName.trim() ? fullName.trim().split(/\s+/) : [];
-                      const codeIsName = code.trim().toLowerCase() === fullName.trim().toLowerCase();
-                      if (codeIsName) {
-                        return (
-                          <>
-                            <span className="font-[785] text-center" style={{ wordBreak: 'normal', overflowWrap: 'anywhere', hyphens: 'auto', whiteSpace: 'normal', lineHeight: 1.15 } as any}>{fullName.trim()}</span>
-                          </>
-                        );
-                      }
-                      if (words.length === 0 && displayCodeLabel.includes(' ')) {
-                        return (
-                          <>
-                            <span className="font-[785] text-center" style={{ wordBreak: 'normal', overflowWrap: 'anywhere', hyphens: 'auto', whiteSpace: 'normal', lineHeight: 1.15 } as any}>{displayCodeLabel}</span>
-                          </>
-                        );
-                      }
-                      if (words.length === 0 && displayCodeLabel.length > 6) {
-                        return (
-                          <span className="font-[785] text-center" style={{ lineHeight: 1.2, whiteSpace: 'nowrap' }}>{displayCodeLabel}</span>
-                        );
-                      }
+                      const rawCode = courseData.name.split(' - ')[0];
+                      const rawFullName = courseData.name.split(' - ').slice(1).join(' - ');
+                      const isTBDLabel = rawCode.startsWith('TBD_SLOT') || rawCode === 'TBD';
+                      const displayCodeLabel = isTBDLabel ? 'TBD' : rawCode;
+                      const labelText = customDisplay || (rawFullName ? `${displayCodeLabel} - ${rawFullName}` : displayCodeLabel);
+                      const cdWords = labelText.trim().split(/\s+/);
+                      const firstWord = cdWords[0] || '';
+                      const restWords = cdWords.slice(1).join(' ');
                       return (
                         <>
-                          <span className="font-[785] text-center" style={{ whiteSpace: 'nowrap' }}>{displayCodeLabel}</span>
-                          <span className="text-center" style={{ wordBreak: 'normal', overflowWrap: 'anywhere', hyphens: 'auto', whiteSpace: 'normal', lineHeight: 1.15 } as any}>{words.join(' ')}</span>
+                          <span className="font-[785] text-center" style={{ whiteSpace: 'nowrap' }}>{firstWord}</span>
+                          {restWords && <span className="text-center" style={{ wordBreak: 'normal', overflowWrap: 'anywhere', hyphens: 'auto', whiteSpace: 'normal', lineHeight: 1.15 } as any}>{restWords}</span>}
                         </>
                       );
                     })()}

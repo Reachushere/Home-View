@@ -11683,10 +11683,11 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
           if (foundFolder && foundFolder.name !== expectedFolderName) {
             const parts = foundFolder.name.split(' - ');
-            const hasCodeNameFormat = parts.length >= 2 && /^[A-Z]{3,5}\d{2,4}$/i.test(parts[0].trim());
+            const hasCodeNameFormat = parts.length >= 2 && /^[A-Z]{2,5}\d{1,4}$/i.test(parts[0].trim());
             const newCode = hasCodeNameFormat ? parts[0].trim() : foundFolder.name.trim();
             const newName = hasCodeNameFormat ? parts.slice(1).join(' - ').trim() : foundFolder.name.trim();
             if (!newCode) continue;
+            if (!hasCodeNameFormat && /^TBD\d*$/i.test(newCode)) continue;
 
             const updates: Record<string, string> = {};
             if (newCode !== slot.code) updates[`course${slot.idx}Code`] = newCode;
@@ -11706,8 +11707,10 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
               if (oldRead && oldRead.includes(oldFolderSuffix)) {
                 updates[readKey] = oldRead.replace(oldFolderSuffix, newFolderName);
               }
-              if (updates[`course${slot.idx}Name`]) {
-                updates[displayKey] = updates[`course${slot.idx}Name`];
+              if (updates[`course${slot.idx}Name`] || updates[`course${slot.idx}Code`]) {
+                const finalCode = updates[`course${slot.idx}Code`] || slot.code;
+                const finalName = updates[`course${slot.idx}Name`] || slot.name || 'TBD';
+                updates[displayKey] = `${finalCode} - ${finalName}`;
               }
 
               await storage.updateSemesterSettings(semester.id, updates);

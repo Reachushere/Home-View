@@ -678,9 +678,11 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
         courseRowColor: editInfo.courseRowColor,
         taskBgColor: editInfo.taskBgColor,
         courseFontColor: editInfo.courseFontColor,
+        moduleBoxColor: editInfo.moduleBoxColor,
+        readingBoxColor: editInfo.readingBoxColor,
       });
     }
-  }, [editInfo.color, editInfo.colorEnd, editInfo.colorStops, editInfo.borderColor, editInfo.courseRowColor, editInfo.taskBgColor, editInfo.courseFontColor]);
+  }, [editInfo.color, editInfo.colorEnd, editInfo.colorStops, editInfo.borderColor, editInfo.courseRowColor, editInfo.taskBgColor, editInfo.courseFontColor, editInfo.moduleBoxColor, editInfo.readingBoxColor]);
 
   const CERTIFICATE_TYPE_OPTIONS = [
     { group: 'Certificate 1', options: [
@@ -2219,6 +2221,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                           courseRowColor: courseInfo.courseRowColor || '',
                           taskBgColor: courseInfo.taskBgColor || '',
                           courseFontColor: courseInfo.courseFontColor || '',
+                          moduleBoxColor: courseInfo.moduleBoxColor || '',
+                          readingBoxColor: courseInfo.readingBoxColor || '',
                         });
                       }
                       setIsEditingInfo(false);
@@ -4463,6 +4467,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     courseRowColor: courseInfo.courseRowColor || '',
                     taskBgColor: courseInfo.taskBgColor || '',
                     courseFontColor: courseInfo.courseFontColor || '',
+                    moduleBoxColor: courseInfo.moduleBoxColor || '',
+                    readingBoxColor: courseInfo.readingBoxColor || '',
                   });
                 }
                 onClose();
