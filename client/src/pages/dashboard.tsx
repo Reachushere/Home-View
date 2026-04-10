@@ -28883,7 +28883,6 @@ export default function Dashboard() {
                         const code = ((dbSemForKey as any)[`course${ci}Code`] || '').trim();
                         if (!code) continue;
                         const codeNorm = code.replace(/\s/g, '').toUpperCase();
-                        if (assignedCourses.some(ac => ac.code?.replace(/\s/g, '').toUpperCase() === codeNorm)) continue;
                         const isTBD = codeNorm.startsWith('TBD');
                         dbCourses.push({
                           code: isTBD ? `TBD_SLOT${ci}` : code,
@@ -28895,7 +28894,7 @@ export default function Dashboard() {
                       }
                     }
                   }
-                  const courses = [...assignedCourses, ...dbCourses];
+                  const courses = dbSemForKey ? dbCourses : assignedCourses;
                   for (const sc of courses) {
                     if (!sc.code) continue;
                     const codeNorm = sc.code.replace(/\s/g, '').toUpperCase();
@@ -28910,6 +28909,7 @@ export default function Dashboard() {
                     const isTBDSlot = codeNorm.startsWith('TBD_SLOT') || codeNorm.startsWith('TBD');
                     const actualCodeNorm = isTBDSlot ? 'TBD' : codeNorm;
                     if (!isTBDSlot && allDisplayCourses.some(c => c.name.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '') === codeNorm)) continue;
+                    if (isTBDSlot && allDisplayCourses.some(c => (c as any)._internalCode === codeNorm && (c as any)._semKey === semKey)) continue;
                     const matchedCourse = coursesData.courses.find(c => {
                       const cc = c.name?.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '');
                       return cc === actualCodeNorm;
@@ -28970,6 +28970,7 @@ export default function Dashboard() {
                       professor: matchedCourse?.professor || '',
                       professorEmail: matchedCourse?.professorEmail || '',
                       _semKey: semKey,
+                      _internalCode: codeNorm,
                       displayName: semDisplayName || '',
                     });
                   }
