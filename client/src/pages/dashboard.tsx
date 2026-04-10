@@ -1401,7 +1401,7 @@ export default function Dashboard() {
         const res = await fetch('/api/automation-cooldown');
         if (res.ok) {
           const data = await res.json();
-          if (data.active && data.reason !== 'startup') {
+          if (data.active) {
             setCooldownSeconds(data.remaining);
             setCooldownFading(false);
             if (!interval) {
@@ -1410,7 +1410,7 @@ export default function Dashboard() {
                   const r2 = await fetch('/api/automation-cooldown');
                   if (r2.ok) {
                     const d2 = await r2.json();
-                    if (!d2.active || d2.reason === 'startup') {
+                    if (!d2.active) {
                       setCooldownSeconds(null);
                       setCooldownFading(false);
                       if (interval) { clearInterval(interval); interval = null; }
