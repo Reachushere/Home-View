@@ -1394,6 +1394,7 @@ export default function Dashboard() {
   const [morningReviewLoading, setMorningReviewLoading] = useState(false);
   const [cooldownSeconds, setCooldownSeconds] = useState<number | null>(null);
   const [cooldownFading, setCooldownFading] = useState(false);
+  const [cooldownFinishedAt, setCooldownFinishedAt] = useState<number | null>(null);
   useEffect(() => {
     let interval: ReturnType<typeof setInterval> | null = null;
     const check = async () => {
@@ -1404,6 +1405,7 @@ export default function Dashboard() {
           if (data.active) {
             setCooldownSeconds(data.remaining);
             setCooldownFading(false);
+            setCooldownFinishedAt(null);
             if (!interval) {
               interval = setInterval(async () => {
                 try {
@@ -1411,8 +1413,9 @@ export default function Dashboard() {
                   if (r2.ok) {
                     const d2 = await r2.json();
                     if (!d2.active) {
-                      setCooldownSeconds(null);
-                      setCooldownFading(false);
+                      setCooldownSeconds(0);
+                      setCooldownFading(true);
+                      setCooldownFinishedAt(Date.now());
                       if (interval) { clearInterval(interval); interval = null; }
                     } else {
                       setCooldownSeconds(d2.remaining);
@@ -1422,7 +1425,9 @@ export default function Dashboard() {
               }, 1000);
             }
           } else {
-            setCooldownSeconds(null);
+            if (!cooldownFinishedAt) {
+              setCooldownSeconds(null);
+            }
           }
         }
       } catch {}
@@ -1430,7 +1435,16 @@ export default function Dashboard() {
     check();
     const pollInterval = setInterval(check, 2000);
     return () => { if (interval) clearInterval(interval); clearInterval(pollInterval); };
-  }, []);
+  }, [cooldownFinishedAt]);
+  useEffect(() => {
+    if (!cooldownFinishedAt) return;
+    const timer = setTimeout(() => {
+      setCooldownSeconds(null);
+      setCooldownFading(false);
+      setCooldownFinishedAt(null);
+    }, 60000);
+    return () => clearTimeout(timer);
+  }, [cooldownFinishedAt]);
   const [processingReviewIds, setProcessingReviewIds] = useState<Set<number>>(new Set());
   const [reviewMode, setReviewMode] = useState<'all' | 'individual'>('all');
   const [reviewCheckedIds, setReviewCheckedIds] = useState<Set<number>>(new Set());
@@ -32896,9 +32910,9 @@ export default function Dashboard() {
             <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: '6px', bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap', zIndex: 2 }}>Homework Progress</span>
             <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: `${effectiveDividerPct}%`, bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap', paddingLeft: '6px', zIndex: 2 }}>Most Urgent Assignments</span>
             {cooldownSeconds !== null && (
-              <div style={{ position: 'absolute', right: '8px', bottom: '2px', display: 'flex', alignItems: 'center', gap: '5px', zIndex: 3 }} data-testid="cooldown-timer">
-                <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ef4444', flexShrink: 0 }} />
-                <span style={{ fontSize: '10px', fontWeight: 600, fontFamily: 'monospace', color: '#ffffff', lineHeight: 1 }}>
+              <div style={{ position: 'absolute', right: '8px', bottom: '2px', display: 'flex', alignItems: 'center', gap: '5px', zIndex: 3, opacity: cooldownFading ? 0.45 : 1 }} data-testid="cooldown-timer">
+                <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: cooldownFading ? '#888' : '#ef4444', flexShrink: 0 }} />
+                <span style={{ fontSize: '10px', fontWeight: 600, fontFamily: 'monospace', color: cooldownFading ? '#999' : '#ffffff', lineHeight: 1 }}>
                   {cooldownFading ? '0' : `${cooldownSeconds ?? 0}`}s
                 </span>
               </div>
