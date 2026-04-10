@@ -17791,17 +17791,6 @@ export default function Dashboard() {
           <div className="alert-bar-shimmer" style={{ position: 'fixed', top: '37px', left: 'calc(50% + 63px + 35px)', right: 0, height: '3px', backgroundColor: '#ff0000', zIndex: 112, pointerEvents: 'none', animationDelay: '0.3s' }} />
         </>
       )}
-      {!d2lTickerEnabled && (
-        <button
-          onClick={() => { setD2lTickerEnabled(true); localStorage.setItem('d2lTickerEnabled', 'true'); }}
-          className="fixed flex items-center justify-center hover:bg-white/10 transition-colors rounded-br"
-          style={{ top: 0, left: 0, width: '28px', height: '28px', zIndex: 111, background: 'rgba(0,0,0,0.6)', border: 'none', cursor: 'pointer' }}
-          data-testid="button-show-d2l-ticker"
-          title="Show D2L ticker"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '14px', height: '14px' }}><polyline points="6 9 12 15 18 9" /></svg>
-        </button>
-      )}
       <div className="fixed left-0 right-0 overflow-hidden flex" style={{ top: 0, height: '38px', zIndex: 111, backgroundColor: '#000000', background: 'linear-gradient(90deg, #000000 0%, #14141e 50%, #000000 100%)', borderBottom: '1px solid rgba(255,255,255,0.15)', display: d2lTickerEnabled ? 'flex' : 'none' }} data-testid="announcement-ticker">
         <div className="flex-shrink-0 flex items-center justify-center cursor-pointer" style={{ height: '38px', width: 'auto', position: 'relative' }} onClick={() => setTickerDialogOpen(true)} data-testid="button-ticker-manage">
           <img src={d2lTickerLabel} alt="D2L" style={{ height: '38px', width: 'auto', objectFit: 'contain' }} />
