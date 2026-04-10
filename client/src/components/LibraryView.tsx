@@ -539,7 +539,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
   if (!isOpen) return null;
 
   const courseCount = Math.max(courseBooks.length, 1);
-  const shelfHeight = Math.max(110, Math.min(200, Math.floor((window.innerHeight - 130) / courseCount) - 40));
+  const shelfHeight = Math.max(110, Math.min(200, Math.floor((window.innerHeight - 130 - (courseCount - 1) * 15) / courseCount) - 40));
 
   return createPortal(
     <div
@@ -692,7 +692,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           </div>
           <div style={{
             fontSize: '12px',
-            color: 'rgba(255,255,255,0.7)',
+            color: '#ffffff',
             letterSpacing: '1px',
             marginTop: '2px',
             fontFamily: "'Georgia', 'Times New Roman', serif",
@@ -745,7 +745,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           bottom: 0,
           overflowY: 'hidden',
           overflowX: 'hidden',
-          padding: '0 20px 10px 30px',
+          padding: '0 20px 10px 35px',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: courseBooks.length > 0 ? 'space-evenly' : 'center',
@@ -772,16 +772,16 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           </div>
         ) : (
           courseBooks.map(({ course, files: courseFiles }, courseIdx) => (
-            <div key={course.code} style={{ marginBottom: '0' }}>
+            <div key={course.code} style={{ marginBottom: courseIdx < courseBooks.length - 1 ? '15px' : '0' }}>
               <div style={{
                 fontSize: '9px',
-                fontWeight: 600,
+                fontWeight: 500,
                 color: '#ffffff',
-                letterSpacing: '1.5px',
+                letterSpacing: '0.5px',
                 textTransform: 'uppercase',
                 marginBottom: '6px',
                 paddingLeft: '16px',
-                fontFamily: "'Georgia', 'Times New Roman', serif",
+                fontFamily: "system-ui, -apple-system, sans-serif",
                 borderLeft: `3px solid ${course.color || '#ffffff'}`,
               }}>
                 {course.code} — {course.name}
