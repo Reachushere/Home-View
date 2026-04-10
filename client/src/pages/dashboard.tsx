@@ -1784,7 +1784,7 @@ export default function Dashboard() {
     try {
       const semKeyToStartDate: Record<string, string> = {
         'ss2025': '2025-05-05', 'f2025': '2025-09-08', 'w2026': '2026-01-12',
-        'ss2026': '2026-05-04', 'f2026': '2026-09-07', 'w2027': '2027-01-11',
+        'ss2026': '2026-05-04', 'f2026': '2026-09-14', 'w2027': '2027-01-11',
         'ss2027': '2027-05-03', 'f2027': '2027-09-13', 'w2028': '2028-01-10',
         'ss2028': '2028-05-01', 'f2028': '2028-09-11', 'w2029': '2029-01-15', 'ss2029': '2029-05-07', 'f2029': '2029-09-10',
       };
@@ -3686,7 +3686,7 @@ export default function Dashboard() {
     const now = new Date();
     const semStartDatesMap: Record<string, string> = {
       'ss2025': '2025-05-05', 'f2025': '2025-09-08', 'w2026': '2026-01-12',
-      'ss2026': '2026-05-04', 'f2026': '2026-09-07', 'w2027': '2027-01-11',
+      'ss2026': '2026-05-04', 'f2026': '2026-09-14', 'w2027': '2027-01-11',
       'ss2027': '2027-05-03', 'f2027': '2027-09-13', 'w2028': '2028-01-10', 'ss2028': '2028-05-01', 'f2028': '2028-09-11', 'w2029': '2029-01-15', 'ss2029': '2029-05-07', 'f2029': '2029-09-10',
     };
     const futureSems = semesterKeyOrder.filter(k => {
@@ -3721,7 +3721,7 @@ export default function Dashboard() {
     const missing: Array<{ semKey: string; semLabel: string; courseCode: string; courseName: string }> = [];
     const semStartDatesCheck: Record<string, string> = {
       'ss2025': '2025-05-05', 'f2025': '2025-09-08', 'w2026': '2026-01-12',
-      'ss2026': '2026-05-04', 'f2026': '2026-09-07', 'w2027': '2027-01-11',
+      'ss2026': '2026-05-04', 'f2026': '2026-09-14', 'w2027': '2027-01-11',
     };
     const semLabels: Record<string, string> = {
       'ss2025': 'Spring/Summer 2025', 'f2025': 'Fall 2025', 'w2026': 'Winter 2026',
@@ -5048,7 +5048,7 @@ export default function Dashboard() {
     if (!isSchoolCoursesDialogOpen) return;
     const semStartDates: Record<string, string> = {
       'ss2025': '2025-05-05', 'f2025': '2025-09-08', 'w2026': '2026-01-12',
-      'ss2026': '2026-05-04', 'f2026': '2026-09-07', 'w2027': '2027-01-11',
+      'ss2026': '2026-05-04', 'f2026': '2026-09-14', 'w2027': '2027-01-11',
       'ss2027': '2027-05-03', 'f2027': '2027-09-13', 'w2028': '2028-01-10', 'ss2028': '2028-05-01', 'f2028': '2028-09-11', 'w2029': '2029-01-15', 'ss2029': '2029-05-07', 'f2029': '2029-09-10',
     };
     const semesterDefs = [
@@ -18095,7 +18095,7 @@ export default function Dashboard() {
                   if (now >= new Date('2025-09-08') && now <= new Date('2025-12-12')) return semKeyOrder.indexOf('f2025');
                   if (now >= new Date('2026-01-12') && now <= new Date('2026-04-17')) return semKeyOrder.indexOf('w2026');
                   if (now >= new Date('2026-05-04') && now <= new Date('2026-08-07')) return semKeyOrder.indexOf('ss2026');
-                  if (now >= new Date('2026-09-07') && now <= new Date('2026-12-11')) return semKeyOrder.indexOf('f2026');
+                  if (now >= new Date('2026-09-14') && now <= new Date('2026-12-11')) return semKeyOrder.indexOf('f2026');
                   if (now >= new Date('2027-01-11') && now <= new Date('2027-04-16')) return semKeyOrder.indexOf('w2027');
                   if (now >= new Date('2027-05-03') && now <= new Date('2027-08-06')) return semKeyOrder.indexOf('ss2027');
                   if (now >= new Date('2027-09-13') && now <= new Date('2027-12-17')) return semKeyOrder.indexOf('f2027');
@@ -19650,7 +19650,7 @@ export default function Dashboard() {
               const cc = selectedCertCourse!.courseCode.replace(/\s/g, '').toUpperCase();
               const semStartDatesForDialog: Record<string, string> = {
                 'ss2025': '2025-05-05', 'f2025': '2025-09-08', 'w2026': '2026-01-12',
-                'ss2026': '2026-05-04', 'f2026': '2026-09-07', 'w2027': '2027-01-11',
+                'ss2026': '2026-05-04', 'f2026': '2026-09-14', 'w2027': '2027-01-11',
                 'ss2027': '2027-05-03', 'f2027': '2027-09-13', 'w2028': '2028-01-10', 'ss2028': '2028-05-01', 'f2028': '2028-09-11', 'w2029': '2029-01-15', 'ss2029': '2029-05-07', 'f2029': '2029-09-10',
               };
               for (const sk of semesterKeyOrder) {
@@ -25235,7 +25235,7 @@ export default function Dashboard() {
                     if (now >= new Date('2025-09-08') && now <= new Date('2025-12-12')) return 'f2025';
                     if (now >= new Date('2026-01-12') && now <= new Date('2026-04-17')) return 'w2026';
                     if (now >= new Date('2026-05-04') && now <= new Date('2026-08-07')) return 'ss2026';
-                    if (now >= new Date('2026-09-07') && now <= new Date('2026-12-11')) return 'f2026';
+                    if (now >= new Date('2026-09-14') && now <= new Date('2026-12-11')) return 'f2026';
                     if (now >= new Date('2027-01-11') && now <= new Date('2027-04-16')) return 'w2027';
                     if (now >= new Date('2027-05-03') && now <= new Date('2027-08-06')) return 'ss2027';
                     if (now >= new Date('2027-09-13') && now <= new Date('2027-12-17')) return 'f2027';
@@ -25261,7 +25261,7 @@ export default function Dashboard() {
 
                   const semStartDates: Record<string, string> = {
                     'ss2025': '2025-05-05', 'f2025': '2025-09-08', 'w2026': '2026-01-12',
-                    'ss2026': '2026-05-04', 'f2026': '2026-09-07', 'w2027': '2027-01-11',
+                    'ss2026': '2026-05-04', 'f2026': '2026-09-14', 'w2027': '2027-01-11',
                     'ss2027': '2027-05-03', 'f2027': '2027-09-13', 'w2028': '2028-01-10', 'ss2028': '2028-05-01', 'f2028': '2028-09-11', 'w2029': '2029-01-15', 'ss2029': '2029-05-07', 'f2029': '2029-09-10',
                   };
                   const hasSemStarted = (key: string) => {
@@ -25611,7 +25611,7 @@ export default function Dashboard() {
                                       const ps = perSemesterSettings[sem.key] as any;
                                       if (ps?.week1StartDate || ps?.semesterEndDate) {
                                         const fmtDate = (d: string) => { if (!d) return '?'; const dt = new Date(d + 'T12:00:00'); return dt.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); };
-                                        const semStartDatesLocal: Record<string, string> = { 'f2025': '2025-09-08', 'w2026': '2026-01-12', 'f2026': '2026-09-07', 'w2027': '2027-01-11', 'f2027': '2027-09-13', 'w2028': '2028-01-10', 'f2028': '2028-09-11', 'w2029': '2029-01-15', 'ss2029': '2029-05-07', 'f2029': '2029-09-10' };
+                                        const semStartDatesLocal: Record<string, string> = { 'f2025': '2025-09-08', 'w2026': '2026-01-12', 'f2026': '2026-09-14', 'w2027': '2027-01-11', 'f2027': '2027-09-13', 'w2028': '2028-01-10', 'f2028': '2028-09-11', 'w2029': '2029-01-15', 'ss2029': '2029-05-07', 'f2029': '2029-09-10' };
                                         const semEndDatesLocal: Record<string, string> = { 'f2025': '2025-12-12', 'w2026': '2026-04-17', 'f2026': '2026-12-11', 'w2027': '2027-04-16', 'f2027': '2027-12-17', 'w2028': '2028-04-14', 'f2028': '2028-12-15', 'w2029': '2029-04-13', 'ss2029': '2029-08-07', 'f2029': '2029-12-03' };
                                         const startStr = ps.week1StartDate || semStartDatesLocal[sem.key] || '';
                                         const endStr = ps.semesterEndDate || semEndDatesLocal[sem.key] || '';
@@ -25776,7 +25776,7 @@ export default function Dashboard() {
                 const existing = (perSemesterSettings[semKey] || {}) as any;
                 const semStartDatesLocal: Record<string, string> = {
                   'ss2025': '2025-05-05', 'f2025': '2025-09-08', 'w2026': '2026-01-12',
-                  'ss2026': '2026-05-04', 'f2026': '2026-09-07', 'w2027': '2027-01-11',
+                  'ss2026': '2026-05-04', 'f2026': '2026-09-14', 'w2027': '2027-01-11',
                   'ss2027': '2027-05-03', 'f2027': '2027-09-13', 'w2028': '2028-01-10',
                   'ss2028': '2028-05-01', 'f2028': '2028-09-11', 'w2029': '2029-01-15', 'ss2029': '2029-05-07', 'f2029': '2029-09-10',
                 };
@@ -27699,7 +27699,7 @@ export default function Dashboard() {
                         { key: 'f2025', label: 'Fall 2025', dates: 'Sep 8 – Dec 12, 2025', start: '2025-09-08', end: '2025-12-12' },
                         { key: 'w2026', label: 'Winter 2026', dates: 'Jan 12 – Apr 17, 2026', start: '2026-01-12', end: '2026-04-17' },
                         { key: 'ss2026', label: 'Spring/Summer 2026', dates: 'May 4 – Aug 7, 2026', start: '2026-05-04', end: '2026-08-07' },
-                        { key: 'f2026', label: 'Fall 2026', dates: 'Sep 7 – Dec 11, 2026', start: '2026-09-07', end: '2026-12-11' },
+                        { key: 'f2026', label: 'Fall 2026', dates: 'Sep 7 – Dec 11, 2026', start: '2026-09-14', end: '2026-12-11' },
                         { key: 'w2027', label: 'Winter 2027', dates: 'Jan 11 – Apr 16, 2027', start: '2027-01-11', end: '2027-04-16' },
                         { key: 'ss2027', label: 'Spring/Summer 2027', dates: 'May 3 – Aug 6, 2027', start: '2027-05-03', end: '2027-08-06' },
                         { key: 'f2027', label: 'Fall 2027', dates: 'Sep 13 – Dec 17, 2027', start: '2027-09-13', end: '2027-12-17' },
@@ -27869,7 +27869,7 @@ export default function Dashboard() {
                         { key: 'f2025', start: '2025-09-08', end: '2025-12-12' },
                         { key: 'w2026', start: '2026-01-12', end: '2026-04-17' },
                         { key: 'ss2026', start: '2026-05-04', end: '2026-08-07' },
-                        { key: 'f2026', start: '2026-09-07', end: '2026-12-11' },
+                        { key: 'f2026', start: '2026-09-14', end: '2026-12-11' },
                         { key: 'w2027', start: '2027-01-11', end: '2027-04-16' },
                       ];
                       for (const s of semesters) {
@@ -28666,15 +28666,17 @@ export default function Dashboard() {
                                 const satDate = day;
                                 const semDefs = [
                                   { key: 'w2026', start: '2026-01-12', end: '2026-04-17', weeks: 13 },
-                                  { key: 'ss2026', start: '2026-05-04', end: '2026-08-07', weeks: 14 },
-                                  { key: 'f2026', start: '2026-09-07', end: '2026-12-11', weeks: 13 },
-                                  { key: 'w2027', start: '2027-01-11', end: '2027-04-16', weeks: 13 },
-                                  { key: 'ss2027', start: '2027-05-03', end: '2027-08-06', weeks: 14 },
-                                  { key: 'f2027', start: '2027-09-13', end: '2027-12-17', weeks: 13 },
+                                  { key: 'ss2026', start: '2026-05-04', end: '2026-08-04', weeks: 14 },
+                                  { key: 'f2026', start: '2026-09-14', end: '2026-12-07', weeks: 13 },
+                                  { key: 'w2027', start: '2027-01-11', end: '2027-04-09', weeks: 13 },
+                                  { key: 'ss2027', start: '2027-05-03', end: '2027-08-03', weeks: 14 },
+                                  { key: 'f2027', start: '2027-09-13', end: '2027-12-06', weeks: 13 },
                                   { key: 'w2028', start: '2028-01-10', end: '2028-04-14', weeks: 13 },
-                                  { key: 'ss2028', start: '2028-05-01', end: '2028-08-04', weeks: 14 },
-                                  { key: 'f2028', start: '2028-09-11', end: '2028-12-15', weeks: 13 },
+                                  { key: 'ss2028', start: '2028-05-01', end: '2028-08-01', weeks: 14 },
+                                  { key: 'f2028', start: '2028-09-11', end: '2028-12-04', weeks: 13 },
                                   { key: 'w2029', start: '2029-01-15', end: '2029-04-13', weeks: 13 },
+                                  { key: 'ss2029', start: '2029-05-07', end: '2029-08-07', weeks: 14 },
+                                  { key: 'f2029', start: '2029-09-10', end: '2029-12-03', weeks: 13 },
                                 ];
                                 const activeSem = semDefs.find(s => satDate >= new Date(s.start + 'T00:00:00') && satDate <= new Date(s.end + 'T23:59:59'));
                                 if (activeSem) {
@@ -28711,15 +28713,17 @@ export default function Dashboard() {
                               <span style={{ display: 'block', fontSize: 'min(9.5px, 1.4vw)', fontWeight: 400, color: (() => { const now = new Date(); const todayIdx = weekDays.findIndex(d => isSameDayET(d, now)); return todayIdx < 0 ? '#ffffff' : 'rgba(255,255,255,0.35)'; })(), lineHeight: '11px', letterSpacing: '0.5px', padding: '0 1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{(() => {
                                 const semDefs = [
                                   { key: 'w2026', start: '2026-01-12', end: '2026-04-17', weeks: 13 },
-                                  { key: 'ss2026', start: '2026-05-04', end: '2026-08-07', weeks: 14 },
-                                  { key: 'f2026', start: '2026-09-07', end: '2026-12-11', weeks: 13 },
-                                  { key: 'w2027', start: '2027-01-11', end: '2027-04-16', weeks: 13 },
-                                  { key: 'ss2027', start: '2027-05-03', end: '2027-08-06', weeks: 14 },
-                                  { key: 'f2027', start: '2027-09-13', end: '2027-12-17', weeks: 13 },
+                                  { key: 'ss2026', start: '2026-05-04', end: '2026-08-04', weeks: 14 },
+                                  { key: 'f2026', start: '2026-09-14', end: '2026-12-07', weeks: 13 },
+                                  { key: 'w2027', start: '2027-01-11', end: '2027-04-09', weeks: 13 },
+                                  { key: 'ss2027', start: '2027-05-03', end: '2027-08-03', weeks: 14 },
+                                  { key: 'f2027', start: '2027-09-13', end: '2027-12-06', weeks: 13 },
                                   { key: 'w2028', start: '2028-01-10', end: '2028-04-14', weeks: 13 },
-                                  { key: 'ss2028', start: '2028-05-01', end: '2028-08-04', weeks: 14 },
-                                  { key: 'f2028', start: '2028-09-11', end: '2028-12-15', weeks: 13 },
+                                  { key: 'ss2028', start: '2028-05-01', end: '2028-08-01', weeks: 14 },
+                                  { key: 'f2028', start: '2028-09-11', end: '2028-12-04', weeks: 13 },
                                   { key: 'w2029', start: '2029-01-15', end: '2029-04-13', weeks: 13 },
+                                  { key: 'ss2029', start: '2029-05-07', end: '2029-08-07', weeks: 14 },
+                                  { key: 'f2029', start: '2029-09-10', end: '2029-12-03', weeks: 13 },
                                 ];
                                 const dayDate = new Date(day.getFullYear(), day.getMonth(), day.getDate(), 12, 0, 0);
                                 const activeSem = semDefs.find(s => dayDate >= new Date(s.start + 'T00:00:00') && dayDate <= new Date(s.end + 'T23:59:59'));
@@ -28762,15 +28766,17 @@ export default function Dashboard() {
                               <span style={{ display: 'block', fontSize: '9.5px', fontWeight: 400, color: '#ffffff', lineHeight: '11px', letterSpacing: '0.5px', padding: '0 2px' }}>{(() => {
                                 const semDefs = [
                                   { key: 'w2026', start: '2026-01-12', end: '2026-04-17', weeks: 13 },
-                                  { key: 'ss2026', start: '2026-05-04', end: '2026-08-07', weeks: 14 },
-                                  { key: 'f2026', start: '2026-09-07', end: '2026-12-11', weeks: 13 },
-                                  { key: 'w2027', start: '2027-01-11', end: '2027-04-16', weeks: 13 },
-                                  { key: 'ss2027', start: '2027-05-03', end: '2027-08-06', weeks: 14 },
-                                  { key: 'f2027', start: '2027-09-13', end: '2027-12-17', weeks: 13 },
+                                  { key: 'ss2026', start: '2026-05-04', end: '2026-08-04', weeks: 14 },
+                                  { key: 'f2026', start: '2026-09-14', end: '2026-12-07', weeks: 13 },
+                                  { key: 'w2027', start: '2027-01-11', end: '2027-04-09', weeks: 13 },
+                                  { key: 'ss2027', start: '2027-05-03', end: '2027-08-03', weeks: 14 },
+                                  { key: 'f2027', start: '2027-09-13', end: '2027-12-06', weeks: 13 },
                                   { key: 'w2028', start: '2028-01-10', end: '2028-04-14', weeks: 13 },
-                                  { key: 'ss2028', start: '2028-05-01', end: '2028-08-04', weeks: 14 },
-                                  { key: 'f2028', start: '2028-09-11', end: '2028-12-15', weeks: 13 },
+                                  { key: 'ss2028', start: '2028-05-01', end: '2028-08-01', weeks: 14 },
+                                  { key: 'f2028', start: '2028-09-11', end: '2028-12-04', weeks: 13 },
                                   { key: 'w2029', start: '2029-01-15', end: '2029-04-13', weeks: 13 },
+                                  { key: 'ss2029', start: '2029-05-07', end: '2029-08-07', weeks: 14 },
+                                  { key: 'f2029', start: '2029-09-10', end: '2029-12-03', weeks: 13 },
                                 ];
                                 const dayDate = new Date(day.getFullYear(), day.getMonth(), day.getDate(), 12, 0, 0);
                                 const activeSem = semDefs.find(s => dayDate >= new Date(s.start + 'T00:00:00') && dayDate <= new Date(s.end + 'T23:59:59'));
@@ -28933,7 +28939,7 @@ export default function Dashboard() {
                 const currentWeekEnd = weekDays[6];
                 const semStartDates: Record<string, string> = {
                   'ss2025': '2025-05-05', 'f2025': '2025-09-08', 'w2026': '2026-01-12',
-                  'ss2026': '2026-05-04', 'f2026': '2026-09-07', 'w2027': '2027-01-11',
+                  'ss2026': '2026-05-04', 'f2026': '2026-09-14', 'w2027': '2027-01-11',
                   'ss2027': '2027-05-03', 'f2027': '2027-09-13', 'w2028': '2028-01-10',
                   'ss2028': '2028-05-01', 'f2028': '2028-09-11', 'w2029': '2029-01-15', 'ss2029': '2029-05-07', 'f2029': '2029-09-10',
                 };

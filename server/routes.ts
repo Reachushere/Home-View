@@ -20,7 +20,7 @@ import { textToSpeech, initTTSFallbackStatus, clearTTSRateLimit, getTTSStatus } 
 import { sendTestEmail, sendTaskReminder, sendDailyDigest, sendTestSms, sendSmsReminder, sendTestHaPush, sendHaTaskReminder, sendEchoVoiceAnnouncement, sendCalendarInvite, type TaskReminder } from "./email";
 import { syncOutlookEventsToReview, fetchOutlookCalendarEvents, findOrCreateMailFolder, createMailRule, moveExistingEmailsToFolder, moveAllEmailsFromFolder, deleteMailRulesByName, getMailFolderId, moveEmailsNotFromDomains, getOutlookClient } from "./outlookCalendar";
 import { parseTickerCommand, extractInlineExpiry } from "./gmailTicker";
-import { sendGmail, fetchD2LAnnouncements, fetchRecentEmails } from "./gmail";
+import { sendGmail, sendGmailWithAttachment, fetchD2LAnnouncements, fetchRecentEmails } from "./gmail";
 import { getSchedulerStatus } from "./reminderScheduler";
 import { fetchTMUCalendarEvents } from "./tmuCalendar";
 import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles, createOneDriveFolder, getOneDriveFileContentAsText, getOneDriveItemByPath, createOneDriveTextFile, updateOneDriveFileContent, deleteOneDriveItem, resolveSharedNotebookUrl, getSharedNotebookSections, getPagesBySectionId, startDeviceCodeFlow, pollDeviceCodeAuth, isOneDriveConnected } from "./onedrive";
@@ -8834,6 +8834,23 @@ async function pollStatus(timeout){
     } catch (err) {
       console.error("Error sending digest:", err);
       res.status(500).json({ message: "Failed to send digest" });
+    }
+  });
+
+  app.post("/api/email/send-with-attachment", async (req, res) => {
+    try {
+      const { to, subject, htmlBody, attachments } = req.body;
+      if (!to || !subject || !htmlBody) return res.status(400).json({ error: "to, subject, htmlBody required" });
+      const parsedAttachments = (attachments || []).map((a: any) => ({
+        filename: a.filename,
+        content: Buffer.from(a.content, 'base64'),
+        mimeType: a.mimeType || 'application/octet-stream',
+      }));
+      const result = await sendGmailWithAttachment({ to, subject, htmlBody, attachments: parsedAttachments });
+      res.json(result);
+    } catch (err: any) {
+      console.error("Error sending email with attachment:", err);
+      res.status(500).json({ success: false, error: err.message });
     }
   });
 
