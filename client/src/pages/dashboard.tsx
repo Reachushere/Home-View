@@ -1494,7 +1494,7 @@ export default function Dashboard() {
           if (lastShownData.date === todayStr) return;
         }
       } catch (_) {}
-      sessionStorage.setItem('morning_review_shown_this_session', 'true');
+      sessionStorage.setItem('morning_review_shown_this_session', String(Date.now()));
       try {
         const syncRes = await fetch('/api/morning-review/sync-all', { method: 'POST' });
         if (syncRes.ok) {
@@ -1509,6 +1509,8 @@ export default function Dashboard() {
       }
     };
     checkMorningReview();
+    const morningReviewInterval = setInterval(checkMorningReview, 30 * 60 * 1000);
+    return () => clearInterval(morningReviewInterval);
   }, []);
 
   const triggerOutlookSyncAndReview = useCallback(async () => {
