@@ -37741,10 +37741,10 @@ function ProfileForm({
           </div>
         </div>
       )}
-      <div className="flex items-center gap-3 pb-2 border-b border-white/20" style={{ marginTop: '-20px' }}>
+      <div className="flex items-center gap-3 pb-2 border-b border-white/20" style={{ marginTop: '-10px' }}>
         <div 
           className="relative cursor-pointer group"
-          style={{ marginTop: '-10px', zIndex: 10 }}
+          style={{ zIndex: 10 }}
           onClick={() => photoInputRef.current?.click()}
           data-testid="button-upload-profile-photo"
         >
