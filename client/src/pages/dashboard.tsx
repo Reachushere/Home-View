@@ -33558,7 +33558,6 @@ export default function Dashboard() {
                             const daysUntil = Math.max(0, differenceInCalendarDays(tDueDate, new Date()));
                             const courseColor = getCourseColor(t.courseName);
                             const totalDays = Math.max(1, Math.min(daysUntil + 1, 42));
-                            const cols = totalDays <= 7 ? totalDays : 7;
                             const days: Date[] = [];
                             for (let di = 0; di < totalDays; di++) {
                               const dd = new Date(nowDate);
@@ -33573,22 +33572,33 @@ export default function Dashboard() {
                                 </div>
                               );
                             }
+                            const todayDowMC = toET(new Date()).getDay();
+                            const padBefore = todayDowMC;
+                            const totalWithPad = padBefore + totalDays;
+                            const numRows = Math.ceil(totalWithPad / 7);
+                            const calCells: Array<{ date: Date | null; isFirst: boolean; isDue: boolean }> = [];
+                            for (let p = 0; p < padBefore; p++) calCells.push({ date: null, isFirst: false, isDue: false });
+                            days.forEach((dd, di) => {
+                              calCells.push({ date: dd, isFirst: di === 0, isDue: differenceInDays(dd, tDue) === 0 });
+                            });
+                            while (calCells.length % 7 !== 0) calCells.push({ date: null, isFirst: false, isDue: false });
                             return (
-                              <div className="flex-shrink-0 flex items-center justify-end" style={{ marginLeft: 'auto' }}>
-                                <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 9px)`, gap: '1px' }}>
-                                  {days.map((dd, di) => {
-                                    const isFirst = di === 0;
-                                    const isDue = differenceInDays(dd, tDue) === 0;
+                              <div className="flex-shrink-0 flex flex-col items-end" style={{ marginLeft: 'auto' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 9px)', gap: '1px' }}>
+                                  {calCells.map((cell, ci) => {
+                                    if (!cell.date) {
+                                      return <div key={ci} style={{ width: '9px', height: '9px' }} />;
+                                    }
                                     return (
-                                      <div key={di} style={{
+                                      <div key={ci} style={{
                                         width: '9px', height: '9px', borderRadius: '1px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        background: isFirst ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.08)',
-                                        border: isFirst ? '1px solid rgba(255,255,255,0.5)' : '0.5px solid rgba(255,255,255,0.12)',
+                                        background: cell.isFirst ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.08)',
+                                        border: cell.isFirst ? '1px solid rgba(255,255,255,0.5)' : '0.5px solid rgba(255,255,255,0.12)',
                                       }}>
-                                        {isDue ? (
+                                        {cell.isDue ? (
                                           <span style={{ fontSize: '8px', lineHeight: 1, color: courseColor, filter: `drop-shadow(0 0 2px ${courseColor})` }}>★</span>
                                         ) : (
-                                          <span style={{ fontSize: '5px', lineHeight: 1, color: isFirst ? '#ffffff' : 'rgba(255,255,255,0.5)', fontWeight: isFirst ? 700 : 400 }}>{dd.getDate()}</span>
+                                          <span style={{ fontSize: '5px', lineHeight: 1, color: cell.isFirst ? '#ffffff' : 'rgba(255,255,255,0.5)', fontWeight: cell.isFirst ? 700 : 400 }}>{cell.date.getDate()}</span>
                                         )}
                                       </div>
                                     );
