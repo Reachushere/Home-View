@@ -38048,11 +38048,11 @@ function ProfileForm({
             />
             <button
               type="button"
-              className="absolute right-1 top-1/2 -translate-y-1/2 p-1 transition-colors !text-black/55 hover:!text-black/85"
+              className="absolute right-1 top-1/2 -translate-y-1/2 p-1 transition-colors"
               onClick={() => setShowOsapPassword(prev => !prev)}
               data-testid="button-toggle-osap-password"
             >
-              {showOsapPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              {showOsapPassword ? <EyeOff className="w-4 h-4" style={{ color: '#555', stroke: '#555' }} /> : <Eye className="w-4 h-4" style={{ color: '#555', stroke: '#555' }} />}
             </button>
           </div>
         </div>
