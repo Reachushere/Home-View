@@ -24442,7 +24442,7 @@ export default function Dashboard() {
                   </h2>
                 </div>
               </div>
-              <div className="p-4 flex-1 overflow-x-hidden overflow-y-auto" style={{ position: 'relative', zIndex: 2, paddingBottom: '20px' }}>
+              <div className="p-4 flex-1 overflow-y-auto overflow-x-hidden" style={{ position: 'relative', zIndex: 2, paddingBottom: '20px', paddingTop: '30px', marginTop: '-22px' }}>
                 <ProfileForm 
                   key={isProfileDialogOpen ? 'open' : 'closed'}
                   profileData={profileData} 
@@ -37741,10 +37741,10 @@ function ProfileForm({
           </div>
         </div>
       )}
-      <div className="flex items-center gap-3 pb-2 border-b border-white/20" style={{ marginTop: '-8px' }}>
+      <div className="flex items-center gap-3 pb-2 border-b border-white/20" style={{ marginTop: '-20px' }}>
         <div 
           className="relative cursor-pointer group"
-          style={{ marginTop: '-15px', zIndex: 10 }}
+          style={{ marginTop: '-10px', zIndex: 10 }}
           onClick={() => photoInputRef.current?.click()}
           data-testid="button-upload-profile-photo"
         >
@@ -37773,7 +37773,7 @@ function ProfileForm({
           )}
         </div>
         <div className="ml-auto self-start">
-          <img src={tmuLogo} alt="School Logo" style={{ height: '28px', objectFit: 'contain' }} data-testid="img-profile-school-logo" />
+          <img src={tmuLogo} alt="School Logo" style={{ height: '84px', objectFit: 'contain' }} data-testid="img-profile-school-logo" />
         </div>
       </div>
       <div className="flex gap-5" style={{ marginTop: '12px' }}>
