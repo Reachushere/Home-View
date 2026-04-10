@@ -29997,8 +29997,21 @@ export default function Dashboard() {
                     const semFolderMatch = findSemSlot((courseData as any)._semKey, (courseData as any)._internalCode || courseCode, allSemesterSettingsRef.current);
                     const oneDriveModuleFolder = semFolderMatch ? ((semFolderMatch.sem as any)[`course${semFolderMatch.slot}ModuleFolder`] || '') : '';
                     const oneDriveReadingFolder = semFolderMatch ? ((semFolderMatch.sem as any)[`course${semFolderMatch.slot}ReadingFolder`] || '') : '';
-                    const moduleFileInfo = (oneDriveModuleFolder ? `📁 ${oneDriveModuleFolder}/Week ${selectedWeek}/Module\n\n` : '') + (moduleFiles.map(f => `${f.originalName || f.name}`).join('\n') || 'No files');
-                    const readingFileInfo = (oneDriveReadingFolder ? `📁 ${oneDriveReadingFolder}/Week ${selectedWeek}/Reading\n\n` : '') + (readingFiles.map(f => `${f.originalName || f.name}`).join('\n') || 'No files');
+                    const courseWeekNum = (() => {
+                      if (!semFolderMatch) return selectedWeek;
+                      const sem = semFolderMatch.sem;
+                      const slot = semFolderMatch.slot;
+                      const courseStart = (sem as any)[`course${slot}StartDate`] || sem.semesterStartDate;
+                      if (!courseStart) return selectedWeek;
+                      const startD = new Date(courseStart);
+                      const weekStart = weekDays[0];
+                      if (!weekStart || isNaN(startD.getTime())) return selectedWeek;
+                      const diffMs = weekStart.getTime() - startD.getTime();
+                      const diffWeeks = Math.floor(diffMs / (7 * 24 * 60 * 60 * 1000));
+                      return Math.max(1, diffWeeks + 1);
+                    })();
+                    const moduleFileInfo = (oneDriveModuleFolder ? `📁 ${oneDriveModuleFolder}/Week ${courseWeekNum}/Module\n\n` : '') + (moduleFiles.map(f => `${f.originalName || f.name}`).join('\n') || 'No files');
+                    const readingFileInfo = (oneDriveReadingFolder ? `📁 ${oneDriveReadingFolder}/Week ${courseWeekNum}/Reading\n\n` : '') + (readingFiles.map(f => `${f.originalName || f.name}`).join('\n') || 'No files');
                     courseProgressDataRef.current[courseIdx] = {
                       courseCode,
                       progressBg,
