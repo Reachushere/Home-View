@@ -27059,7 +27059,7 @@ export default function Dashboard() {
           
           {/* Calendar Settings Dialog */}
           <Dialog open={isCalendarSettingsOpen} onOpenChange={setIsCalendarSettingsOpen}>
-            <DialogContent className={`${shiftScheduleOpen ? 'max-w-2xl' : 'max-w-md'} text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white transition-opacity duration-300`} style={{ paddingTop: '30px', paddingBottom: '30px', maxHeight: '85vh', overflowY: 'auto' }}>
+            <DialogContent className={`${shiftScheduleOpen ? 'max-w-2xl' : 'max-w-md'} text-white [&_*]:text-white [&_p]:!text-white [&_span]:!text-white [&_div]:!text-white [&_label]:!text-white [&_h1]:!text-white [&_h2]:!text-white [&_h3]:!text-white [&_h4]:!text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white transition-opacity duration-300`} style={{ paddingTop: '30px', paddingBottom: '30px', maxHeight: '85vh', overflowY: 'auto' }}>
               <DialogHeader>
                 <DialogTitle className="text-white">Calendar Settings</DialogTitle>
               </DialogHeader>
