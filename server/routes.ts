@@ -15336,6 +15336,28 @@ document.body.removeChild(a);
         }
       }
 
+      let inBreakPeriod = false;
+      try {
+        const breakCheckSem = await storage.getActiveSemesterSettings();
+        if (breakCheckSem) {
+          const breakToday = torontoDate();
+          const semEnd = breakCheckSem.semesterEndDate ? new Date(breakCheckSem.semesterEndDate) : null;
+          if (semEnd && breakToday > semEnd) {
+            inBreakPeriod = true;
+            console.log(`[Cat Lights] Between semesters (past ${breakCheckSem.semesterName} end ${semEnd.toISOString().slice(0, 10)}) — skipping prompt entirely`);
+            catLightsPromptPending = false;
+            return;
+          }
+        } else {
+          inBreakPeriod = true;
+          console.log(`[Cat Lights] No active semester — skipping prompt entirely`);
+          catLightsPromptPending = false;
+          return;
+        }
+      } catch (e: any) {
+        console.warn(`[Cat Lights] Break period check failed: ${e.message} — proceeding`);
+      }
+
       const earlyDeviceWakePromise = (async () => {
         const tabletEntity = 'media_player.tablet_cat';
         try {
