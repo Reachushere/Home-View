@@ -15018,7 +15018,7 @@ document.body.removeChild(a);
 
       const nowHour = new Date().toLocaleString('en-US', { timeZone: 'America/Toronto', hour: 'numeric', hour12: false });
       const hourNum = parseInt(nowHour, 10);
-      const greeting = hourNum < 12 ? 'Good morning Bryn.' : 'Good afternoon Bryn.';
+      const greeting = hourNum < 12 ? 'Good morning Bryn.' : hourNum < 17 ? 'Good afternoon Bryn.' : 'Good evening Bryn.';
       const ttsMessage = `${greeting} Would you like to play ${fileDesc}?`;
       console.log(`[Cat Lights] Sending TTS prompt: "${ttsMessage}"`);
       try {
