@@ -27925,7 +27925,7 @@ export default function Dashboard() {
           <div ref={calendarBorderRef} className="shadow-lg flex flex-col relative" style={{ background: 'transparent', borderRadius: '8px', overflow: 'hidden', height: 'calc(100%)', width: 'calc(100%)', marginLeft: '0px', marginTop: '-2px', isolation: 'isolate' }}>
             <div className="absolute inset-0 rounded-[8px] border border-white pointer-events-none" style={{ zIndex: 101 }} />
             {/* Progress/Saturday divider line - grey separator on left border of Saturday column, spans full height */}
-            <div className="absolute bottom-0 pointer-events-none overflow-hidden" style={{ top: '0px', zIndex: 0, left: `calc(${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px + (${gridSizes.dayColumnWidths.slice(0, lastSchoolDayIndex + 1).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px) - 1px)`, width: '3px', backgroundColor: colorSettings.headerBar }}>
+            <div className="absolute bottom-0 pointer-events-none overflow-hidden" style={{ top: '0px', zIndex: 0, left: `calc(${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px + (${gridSizes.dayColumnWidths.slice(0, lastSchoolDayIndex + 1).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px - ${calScrollbarW}px) - 1px)`, width: '3px', backgroundColor: colorSettings.headerBar }}>
             </div>
             {/* Black border around today column - always show */}
             {(() => {
@@ -27950,7 +27950,7 @@ export default function Dashboard() {
               const beforeW = gridSizes.dayColumnWidths.slice(0, todayIdx).reduce((a: number, b: number) => a + b, 0);
               const fixedW = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
               return (
-                <div className="absolute bottom-0 pointer-events-none" style={{ top: '0px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px))`, width: '3px', backgroundColor: '#000000', zIndex: 25 }} />
+                <div className="absolute bottom-0 pointer-events-none" style={{ top: '0px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px - ${calScrollbarW}px))`, width: '3px', backgroundColor: '#000000', zIndex: 25 }} />
               );
             })()}
             {/* Saturday column left border - single continuous black line */}
@@ -27961,12 +27961,12 @@ export default function Dashboard() {
               const beforeW = gridSizes.dayColumnWidths.slice(0, satIdx).reduce((a: number, b: number) => a + b, 0);
               const fixedW = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
               return (
-                <div className="absolute bottom-0 pointer-events-none" style={{ top: '0px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px - 8px) - 1.5px)`, width: '3px', backgroundColor: '#000000', zIndex: 25 }} />
+                <div className="absolute bottom-0 pointer-events-none" style={{ top: '0px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px - ${calScrollbarW}px) - 1.5px)`, width: '3px', backgroundColor: '#000000', zIndex: 25 }} />
               );
             })()}
             
             {/* Day Headers - Fixed, not scrollable */}
-            <div data-calendar-grid="true" className="grid z-[44] h-[60px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), borderBottom: '1px solid #666' }}>
+            <div data-calendar-grid="true" className="grid z-[44] h-[60px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), borderBottom: '1px solid #666', paddingRight: calScrollbarW > 0 ? `${calScrollbarW}px` : undefined }}>
               <div className="flex items-center justify-center relative" style={{ backgroundColor: colorSettings.headerBar }}>
                 <img src={unicalLogo} alt="Uni-Cal" className="rounded" style={{ height: '34px', width: '34px', marginLeft: '3px' }} />
                 {/* Time column resize handle - right edge */}
