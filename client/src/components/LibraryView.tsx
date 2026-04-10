@@ -67,6 +67,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   const spineWidth = 28 + seededRand * 12;
   const bookHeight = shelfHeight - 8 - (index % 3) * 6;
   const title = truncateSpineTitle(file.displayName || file.originalName);
+  const weekNum = file.folder?.match(/^week-(\d+)/)?.[1] || '';
   const patternIdx = (index + courseCode.charCodeAt(0)) % SPINE_PATTERNS.length;
   const hasGoldAccent = index % 3 === 0;
   const hasTopBand = index % 4 === 1;
@@ -151,10 +152,26 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
       }}>
         {title}
       </span>
+      {weekNum && (
+        <span style={{
+          position: 'absolute',
+          bottom: '4px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          fontSize: '7px',
+          fontWeight: 700,
+          color: 'rgba(255,255,255,0.7)',
+          textShadow: '0 1px 2px rgba(0,0,0,0.6)',
+          lineHeight: 1,
+          whiteSpace: 'nowrap',
+        }}>
+          {weekNum}
+        </span>
+      )}
       {file.listened && (
         <div style={{
           position: 'absolute',
-          bottom: '6px',
+          bottom: weekNum ? '16px' : '6px',
           left: '50%',
           transform: 'translateX(-50%)',
           width: '6px',
