@@ -29501,7 +29501,7 @@ export default function Dashboard() {
                       <div 
                         key={dayIdx} 
                         className="relative pt-0.5"
-                        style={{ backgroundColor: cellBgColor, padding: isDayToday ? '2px 1px 2px 3px' : '2px 1px 2px 1px', borderBottom: '1.5px solid black', borderLeft: day.getDay() === 6 ? 'none' : '1.5px dotted rgba(0,0,0,0.25)', minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                        style={{ backgroundColor: cellBgColor, padding: isDayToday ? '2px 1px 2px 3px' : '2px 1px 2px 1px', borderBottom: '1.5px solid black', borderLeft: (day.getDay() === 6 || isDayToday) ? '3px solid black' : '1.5px dotted rgba(0,0,0,0.25)', minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
                           e.preventDefault();
@@ -30058,7 +30058,7 @@ export default function Dashboard() {
                 const baseOtherRowHeight = Math.max(57, gridSizes.otherRowHeight || 57);
                 const otherRowHeight = baseOtherRowHeight + missingRows * courseRowH;
                 return (
-                  <div ref={otherRowRef} className="w-full flex-shrink-0 relative z-[43] group/otherrow" style={{ height: `${otherRowHeight}px`, overflow: 'hidden', paddingRight: calScrollbarW > 0 ? `${calScrollbarW}px` : undefined }}>
+                  <div ref={otherRowRef} className="w-full flex-shrink-0 relative z-[43] group/otherrow" style={{ height: `${otherRowHeight}px`, overflow: 'hidden' }}>
                     <div className="px-1 py-0.5 text-[8px] font-[785] tracking-wide flex items-center justify-center text-white/80 cursor-pointer hover:brightness-110" onClick={() => setOtherRowEditOpen(true)} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${gridSizes.timeColumnWidth}px`, zIndex: 50, background: (() => { const stops = otherRowColors.labelStops ? (() => { try { return JSON.parse(otherRowColors.labelStops); } catch { return []; } })() : []; const allStops = [{ position: 0, color: otherRowColors.labelStart }, ...stops, { position: 100, color: otherRowColors.labelEnd }]; return `linear-gradient(180deg, ${allStops.map((s: any) => `${s.color} ${s.position}%`).join(', ')})`; })(), borderBottom: '1.5px solid black', overflow: 'hidden' }} data-testid="other-row-label">
                       OTHER
                       <div style={{ position: 'absolute', bottom: '3px', right: '1px', zIndex: 2 }} onClick={(e) => { e.stopPropagation(); setOtherRowEditOpen(true); }} data-testid="pencil-edit-other-row"><Pencil className="w-[9px] h-[9px] text-white" strokeWidth={3} /></div>
@@ -30066,7 +30066,7 @@ export default function Dashboard() {
                     {gridSizes.moduleColumnWidth > 0 && (
                       <div style={{ position: 'absolute', left: `${gridSizes.timeColumnWidth}px`, top: 0, bottom: 0, width: `${gridSizes.moduleColumnWidth + 9}px`, backgroundColor: otherRowColors.courseRowColor || otherRowColors.cellBg, zIndex: 50 }} />
                     )}
-                    <div className="flex min-w-0 relative" style={{ overflow: 'hidden', marginLeft: `${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px`, height: '100%', backgroundColor: dimColor(otherRowColors.courseRowColor || otherRowColors.cellBg, 0.375) }}>
+                    <div className="flex min-w-0 relative" style={{ overflow: 'hidden', marginLeft: `${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px`, height: '100%', backgroundColor: dimColor(otherRowColors.courseRowColor || otherRowColors.cellBg, 0.375), paddingRight: calScrollbarW > 0 ? `${calScrollbarW}px` : undefined }}>
                     {weekDays.map((day, dayIdx) => {
                       const cellDate = startOfDayET(day);
                       const isOtherToday = isSameDayET(day, stableToday);
@@ -30098,7 +30098,7 @@ export default function Dashboard() {
                         <div
                           key={dayIdx}
                           className="relative flex flex-col gap-0.5 pt-0.5 course-cell-scroll"
-                          style={{ flex: `${gridSizes.dayColumnWidths[dayIdx]} 0 0%`, backgroundColor: otherCellBg, padding: isOtherToday ? '2px 1px 2px 3px' : '2px 1px 2px 1px', borderBottom: '1.5px solid black', borderLeft: day.getDay() === 6 ? 'none' : '1.5px dotted rgba(0,0,0,0.25)', overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'thin', maxHeight: `${otherRowHeight}px` }}
+                          style={{ flex: `${gridSizes.dayColumnWidths[dayIdx]} 0 0%`, backgroundColor: otherCellBg, padding: isOtherToday ? '2px 1px 2px 3px' : '2px 1px 2px 1px', borderBottom: '1.5px solid black', borderLeft: (day.getDay() === 6 || isOtherToday) ? '3px solid black' : '1.5px dotted rgba(0,0,0,0.25)', overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'thin', maxHeight: `${otherRowHeight}px` }}
                           data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
                         >
                           {dayOtherTasks.map(task => {
@@ -33624,38 +33624,7 @@ export default function Dashboard() {
 
             );
 
-            const todayDividerForCourseRows = (() => {
-              const now = new Date();
-              const todayIdx = weekDays.findIndex(d => isSameDayET(d, now));
-              if (todayIdx < 0) return null;
-              const totalDayW = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0);
-              const beforeW = gridSizes.dayColumnWidths.slice(0, todayIdx).reduce((a: number, b: number) => a + b, 0);
-              const fixedW = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
-              const validRects = courseRowRects.filter((_, i) => courseProgressDataRef.current[i]);
-              if (validRects.length === 0) return null;
-              const firstTop = validRects[0].top - upcomingTop;
-              const lastRect = validRects[validRects.length - 1];
-              const totalH = (lastRect.top + lastRect.height) - validRects[0].top;
-              return (
-                <div key="today-divider-course" className="pointer-events-none" style={{ position: 'absolute', top: `${firstTop}px`, left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px - ${calScrollbarW}px))`, width: '3px', height: `${totalH}px`, backgroundColor: '#000000', zIndex: 52 }} />
-              );
-            })();
-            const satDividerForCourseRows = (() => {
-              const satIdx = weekDays.findIndex(d => d.getDay() === 6);
-              if (satIdx < 0) return null;
-              const totalDayW = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0);
-              const beforeW = gridSizes.dayColumnWidths.slice(0, satIdx).reduce((a: number, b: number) => a + b, 0);
-              const fixedW = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
-              const validRects = courseRowRects.filter((_, i) => courseProgressDataRef.current[i]);
-              if (validRects.length === 0) return null;
-              const firstTop = validRects[0].top - upcomingTop;
-              const lastRect = validRects[validRects.length - 1];
-              const totalH = (lastRect.top + lastRect.height) - validRects[0].top;
-              return (
-                <div key="sat-divider-course" className="pointer-events-none" style={{ position: 'absolute', top: `${firstTop}px`, left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px - ${calScrollbarW}px) - 1.5px)`, width: '3px', height: `${totalH}px`, backgroundColor: '#000000', zIndex: 52 }} />
-              );
-            })();
-            const rows = [hwBlackBg, ...rightBgs, ...courseRows, todayDividerForCourseRows, satDividerForCourseRows];
+            const rows = [hwBlackBg, ...rightBgs, ...courseRows];
 
             const knownCourseCodes = ['CPPA122', 'CFNF400', 'CASL101', 'CECN210', 'CPHL110', 'CHIS105', 'CPPA235'];
             const otherProgressTasks = (allTasks || []).filter(t => {
