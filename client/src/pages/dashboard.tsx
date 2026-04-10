@@ -5205,6 +5205,19 @@ export default function Dashboard() {
       const rgb = hexToRgb(course.color);
       return { start: course.color, end: `rgb(${Math.min(255, rgb.r + 100)}, ${Math.min(255, rgb.g + 100)}, ${Math.min(255, rgb.b + 100)})` };
     }
+    const sems = allSemesterSettingsRef.current || [];
+    for (const sem of sems) {
+      for (let i = 1; i <= 3; i++) {
+        const sc = ((sem as any)[`course${i}Code`] || '').toUpperCase().replace(/\s/g, '');
+        if (sc === normCode) {
+          const color = (sem as any)[`course${i}Color`] || '#6b7280';
+          const colorEnd = (sem as any)[`course${i}ColorEnd`] || '';
+          if (colorEnd) return { start: color, end: colorEnd };
+          const rgb = hexToRgb(color);
+          return { start: color, end: `rgb(${Math.min(255, rgb.r + 100)}, ${Math.min(255, rgb.g + 100)}, ${Math.min(255, rgb.b + 100)})` };
+        }
+      }
+    }
     return { start: '#6b7280', end: '#9ca3af' };
   };
 
