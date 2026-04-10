@@ -17718,7 +17718,7 @@ document.body.removeChild(a);
         }
       }
       if (!coursePath) {
-        let searchCode = courseCode.toUpperCase();
+        let searchCode = courseCode.toUpperCase().replace(/\s/g, '');
         const tdbSlotMatch = searchCode.match(/^TBD_SLOT(\d+)$/);
         if (tdbSlotMatch) {
           searchCode = `TBD${tdbSlotMatch[1]}`;
