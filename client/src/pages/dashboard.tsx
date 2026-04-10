@@ -19179,6 +19179,8 @@ export default function Dashboard() {
               }
             }}
             onSaveCourseInfo={(updates) => {
+              console.log('[SAVE] updates:', JSON.stringify({ semesterTerm: updates.semesterTerm, year: updates.year, displayName: (updates as any).displayName, color: updates.color, courseCode: updates.courseCode, courseName: updates.courseName, semesterKey: (updates as any).semesterKey }));
+              console.log('[SAVE] selectedCertCourse:', JSON.stringify({ courseCode: selectedCertCourse?.courseCode, semKey: selectedCertCourse?.semKey, certKey: selectedCertCourse?.certKey }));
               colorSnapshotRef.current = null;
               let courseCode = selectedCertCourse!.courseCode;
               const tdbNorm = courseCode.replace(/\s/g, '').match(/^TBD_SLOT(\d+)$/i);
@@ -19296,6 +19298,7 @@ export default function Dashboard() {
               if (currentSemSettings) {
                 const courseSemKey = selectedCertCourse?.semKey;
                 const saveMatch = findSemSlot(courseSemKey, courseCode, currentSemSettings);
+                console.log('[SAVE] saveMatch:', saveMatch ? { semName: saveMatch.sem.semesterName, slot: saveMatch.slot, id: saveMatch.sem.id } : 'NULL', 'courseSemKey=', courseSemKey, 'courseCode=', courseCode, 'semsCount=', currentSemSettings.length);
                 if (saveMatch) {
                   const sem = saveMatch.sem;
                   const prefix = `course${saveMatch.slot}`;
@@ -19335,6 +19338,7 @@ export default function Dashboard() {
                           if (dates.springSummerTerm) payload[`${prefix}SpringSummerTerm`] = dates.springSummerTerm;
                         }
                       }
+                      console.log('[SAVE] payload for sem.id=' + sem.id + ':', JSON.stringify(payload));
                       if (Object.keys(payload).length > 0) {
                         queryClient.setQueryData(["/api/semesters"], (old: any[] | undefined) => {
                           if (!old) return old;
