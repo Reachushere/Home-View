@@ -17613,16 +17613,16 @@ document.body.removeChild(a);
 
       const semKeyToDb: Record<string, { type: string; year: string; folder: string }> = {
         'w2025': { type: 'winter', year: '2025', folder: 'Winter' },
-        'ss2025': { type: 'spring_summer', year: '2025', folder: 'Spring_Summer' },
+        'ss2025': { type: 'spring_summer', year: '2025', folder: 'Spring & Summer' },
         'f2025': { type: 'fall', year: '2025', folder: 'Fall' },
         'w2026': { type: 'winter', year: '2026', folder: 'Winter' },
-        'ss2026': { type: 'spring_summer', year: '2026', folder: 'Spring_Summer' },
+        'ss2026': { type: 'spring_summer', year: '2026', folder: 'Spring & Summer' },
         'f2026': { type: 'fall', year: '2026', folder: 'Fall' },
         'w2027': { type: 'winter', year: '2027', folder: 'Winter' },
-        'ss2027': { type: 'spring_summer', year: '2027', folder: 'Spring_Summer' },
+        'ss2027': { type: 'spring_summer', year: '2027', folder: 'Spring & Summer' },
         'f2027': { type: 'fall', year: '2027', folder: 'Fall' },
         'w2028': { type: 'winter', year: '2028', folder: 'Winter' },
-        'ss2028': { type: 'spring_summer', year: '2028', folder: 'Spring_Summer' },
+        'ss2028': { type: 'spring_summer', year: '2028', folder: 'Spring & Summer' },
         'f2028': { type: 'fall', year: '2028', folder: 'Fall' },
         'w2029': { type: 'winter', year: '2029', folder: 'Winter' },
       };
@@ -17644,7 +17644,7 @@ document.body.removeChild(a);
         const activeSemester = await storage.getActiveSemesterSettings();
         semester = activeSemester || allSemesters[0];
         if (semester) {
-          const semesterTypeMap: Record<string, string> = { winter: 'Winter', fall: 'Fall', spring_summer: 'Spring_Summer' };
+          const semesterTypeMap: Record<string, string> = { winter: 'Winter', fall: 'Fall', spring_summer: 'Spring & Summer' };
           semesterFolder = semesterTypeMap[semester.semesterType] || semester.semesterType;
           year = semester.semesterName?.match(/\d{4}/)?.[0] || '2026';
         }
@@ -17855,7 +17855,7 @@ document.body.removeChild(a);
       if (!semester) {
         return res.json({ success: true, message: 'No semester configured', synced: [] });
       }
-      const semesterTypeMap: Record<string, string> = { winter: 'Winter', fall: 'Fall', spring_summer: 'Spring_Summer' };
+      const semesterTypeMap: Record<string, string> = { winter: 'Winter', fall: 'Fall', spring_summer: 'Spring & Summer' };
       const semesterFolder = semesterTypeMap[semester.semesterType] || semester.semesterType;
       const year = semester.semesterName?.match(/\d{4}/)?.[0] || '2026';
       const basePath = `/School/1. TMU/Courses/${year}/${semesterFolder}`;
