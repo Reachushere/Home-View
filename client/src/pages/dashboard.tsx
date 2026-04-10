@@ -6885,13 +6885,13 @@ export default function Dashboard() {
       moduleFolder = (sem as any)[`${prefix}ModuleFolder`] || '';
       readingFolder = (sem as any)[`${prefix}ReadingFolder`] || '';
       displayName = (sem as any)[`${prefix}DisplayName`] || '';
-      if (!color) color = (sem as any)[`${prefix}Color`] || '';
-      if (!colorEnd) colorEnd = (sem as any)[`${prefix}ColorEnd`] || '';
-      if (!colorStops) colorStops = (sem as any)[`${prefix}ColorStops`] || '';
-      if (!borderColor) borderColor = (sem as any)[`${prefix}BorderColor`] || '';
-      if (!courseRowColor) courseRowColor = (sem as any)[`${prefix}CourseRowColor`] || '';
-      if (!taskBgColor) taskBgColor = (sem as any)[`${prefix}TaskBgColor`] || '';
-      if (!courseFontColor) courseFontColor = (sem as any)[`${prefix}CourseFontColor`] || '';
+      color = (sem as any)[`${prefix}Color`] || color || '';
+      colorEnd = (sem as any)[`${prefix}ColorEnd`] || colorEnd || '';
+      colorStops = (sem as any)[`${prefix}ColorStops`] || colorStops || '';
+      borderColor = (sem as any)[`${prefix}BorderColor`] || borderColor || '';
+      courseRowColor = (sem as any)[`${prefix}CourseRowColor`] || courseRowColor || '';
+      taskBgColor = (sem as any)[`${prefix}TaskBgColor`] || taskBgColor || '';
+      courseFontColor = (sem as any)[`${prefix}CourseFontColor`] || courseFontColor || '';
       moduleBoxColor = (sem as any)[`${prefix}ModuleBoxColor`] || moduleBoxColor || '';
       readingBoxColor = (sem as any)[`${prefix}ReadingBoxColor`] || readingBoxColor || '';
       if (!professor) professor = (sem as any)[`${prefix}Professor`] || '';
@@ -19152,55 +19152,28 @@ export default function Dashboard() {
               }
               const currentSems = allSemesterSettingsRef.current;
               if (currentSems) {
-                let cc = courseCode.replace(/\s/g, '');
-                const tdbM = cc.match(/^TBD_SLOT(\d+)$/i);
-                if (tdbM) cc = `TBD${tdbM[1]}`;
-                const ccUpper = cc.toUpperCase();
-                const courseSemKey = selectedCertCourse?.semKey;
-                const liveKeyToType: Record<string, { type: string; year: number }> = {
-                  'ss2025': { type: 'spring_summer', year: 2025 }, 'f2025': { type: 'fall', year: 2025 },
-                  'w2026': { type: 'winter', year: 2026 }, 'ss2026': { type: 'spring_summer', year: 2026 },
-                  'f2026': { type: 'fall', year: 2026 }, 'w2027': { type: 'winter', year: 2027 },
-                  'ss2027': { type: 'spring_summer', year: 2027 }, 'f2027': { type: 'fall', year: 2027 },
-                  'w2028': { type: 'winter', year: 2028 }, 'ss2028': { type: 'spring_summer', year: 2028 },
-                  'f2028': { type: 'fall', year: 2028 }, 'w2029': { type: 'winter', year: 2029 },
-                  'ss2029': { type: 'spring_summer', year: 2029 }, 'f2029': { type: 'fall', year: 2029 },
-                };
-                const targetType = courseSemKey ? liveKeyToType[courseSemKey] : null;
-                const sortedSems = targetType
-                  ? [...currentSems].sort((a, b) => {
-                      const aMatch = a.semesterType === targetType.type && (a.semesterName?.match(/\d{4}/)?.[0] === String(targetType.year));
-                      const bMatch = b.semesterType === targetType.type && (b.semesterName?.match(/\d{4}/)?.[0] === String(targetType.year));
-                      return (bMatch ? 1 : 0) - (aMatch ? 1 : 0);
-                    })
-                  : currentSems;
-                for (const sem of sortedSems) {
-                  for (let i = 1; i <= 3; i++) {
-                    const semCode = ((sem as any)[`course${i}Code`] || '').replace(/\s/g, '');
-                    if (semCode.toUpperCase() === ccUpper) {
-                      const prefix = `course${i}`;
-                      const semPayload: Record<string, string | null> = {};
-                      if (colorUpdates.color) semPayload[`${prefix}Color`] = colorUpdates.color;
-                      if (colorUpdates.colorEnd) semPayload[`${prefix}ColorEnd`] = colorUpdates.colorEnd;
-                      if (colorUpdates.colorStops !== undefined) semPayload[`${prefix}ColorStops`] = colorUpdates.colorStops || null;
-                      if (colorUpdates.borderColor !== undefined) semPayload[`${prefix}BorderColor`] = colorUpdates.borderColor || null;
-                      if (colorUpdates.courseRowColor !== undefined) semPayload[`${prefix}CourseRowColor`] = colorUpdates.courseRowColor || null;
-                      if (colorUpdates.taskBgColor !== undefined) semPayload[`${prefix}TaskBgColor`] = colorUpdates.taskBgColor || null;
-                      if (colorUpdates.courseFontColor !== undefined) semPayload[`${prefix}CourseFontColor`] = colorUpdates.courseFontColor || null;
-                      if (colorUpdates.moduleBoxColor !== undefined) semPayload[`${prefix}ModuleBoxColor`] = colorUpdates.moduleBoxColor || null;
-                      if (colorUpdates.readingBoxColor !== undefined) semPayload[`${prefix}ReadingBoxColor`] = colorUpdates.readingBoxColor || null;
-                      if (Object.keys(semPayload).length > 0) {
-                        queryClient.setQueryData(["/api/semesters"], (old: any[] | undefined) => {
-                          if (!old) return old;
-                          return old.map((s: any) => s.id === sem.id ? { ...s, ...semPayload } : s);
-                        });
-                        queryClient.setQueryData(["/api/semester"], (old: any) => {
-                          if (!old || old.id !== sem.id) return old;
-                          return { ...old, ...semPayload };
-                        });
-                      }
-                      break;
-                    }
+                const liveMatch = findSemSlot(selectedCertCourse?.semKey, courseCode, currentSems);
+                if (liveMatch) {
+                  const prefix = `course${liveMatch.slot}`;
+                  const semPayload: Record<string, string | null> = {};
+                  if (colorUpdates.color) semPayload[`${prefix}Color`] = colorUpdates.color;
+                  if (colorUpdates.colorEnd) semPayload[`${prefix}ColorEnd`] = colorUpdates.colorEnd;
+                  if (colorUpdates.colorStops !== undefined) semPayload[`${prefix}ColorStops`] = colorUpdates.colorStops || null;
+                  if (colorUpdates.borderColor !== undefined) semPayload[`${prefix}BorderColor`] = colorUpdates.borderColor || null;
+                  if (colorUpdates.courseRowColor !== undefined) semPayload[`${prefix}CourseRowColor`] = colorUpdates.courseRowColor || null;
+                  if (colorUpdates.taskBgColor !== undefined) semPayload[`${prefix}TaskBgColor`] = colorUpdates.taskBgColor || null;
+                  if (colorUpdates.courseFontColor !== undefined) semPayload[`${prefix}CourseFontColor`] = colorUpdates.courseFontColor || null;
+                  if (colorUpdates.moduleBoxColor !== undefined) semPayload[`${prefix}ModuleBoxColor`] = colorUpdates.moduleBoxColor || null;
+                  if (colorUpdates.readingBoxColor !== undefined) semPayload[`${prefix}ReadingBoxColor`] = colorUpdates.readingBoxColor || null;
+                  if (Object.keys(semPayload).length > 0) {
+                    queryClient.setQueryData(["/api/semesters"], (old: any[] | undefined) => {
+                      if (!old) return old;
+                      return old.map((s: any) => s.id === liveMatch.sem.id ? { ...s, ...semPayload } : s);
+                    });
+                    queryClient.setQueryData(["/api/semester"], (old: any) => {
+                      if (!old || old.id !== liveMatch.sem.id) return old;
+                      return { ...old, ...semPayload };
+                    });
                   }
                 }
               }
@@ -25327,14 +25300,14 @@ export default function Dashboard() {
                     const displayNameFromDb = displayNameResult.fromDb;
                     const subtitle = semCourse.fullName || '';
                     const dotColor = (() => {
-                      if (currentCourse) {
-                        return currentCourse.colorEnd ? `linear-gradient(to right, ${currentCourse.color}, ${currentCourse.colorEnd})` : currentCourse.color;
-                      }
                       const dcMatch = findSemSlot(semKey, semCourse.code, allSemesterSettings);
                       if (dcMatch) {
                         const c = (dcMatch.sem as any)[`course${dcMatch.slot}Color`];
                         const ce = (dcMatch.sem as any)[`course${dcMatch.slot}ColorEnd`];
                         if (c) return ce ? `linear-gradient(to right, ${c}, ${ce})` : c;
+                      }
+                      if (currentCourse) {
+                        return currentCourse.colorEnd ? `linear-gradient(to right, ${currentCourse.color}, ${currentCourse.colorEnd})` : currentCourse.color;
                       }
                       try {
                         const cd = localStorage.getItem('certCourseData');
