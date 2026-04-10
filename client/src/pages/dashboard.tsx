@@ -28784,10 +28784,13 @@ export default function Dashboard() {
                           const displayCodeLabel = isTBDLabel ? 'TBD' : code;
                           const customDisplay = (courseData as any).displayName;
                           if (customDisplay) {
+                            const cdWords = customDisplay.trim().split(/\s+/);
+                            const firstWord = cdWords[0] || '';
+                            const restWords = cdWords.slice(1).join(' ');
                             return (
                               <>
-                                <span className="font-[785] text-center" style={{ whiteSpace: 'nowrap' }}>{displayCodeLabel}</span>
-                                <span className="text-center" style={{ wordBreak: 'normal', overflowWrap: 'anywhere', hyphens: 'auto', whiteSpace: 'normal', lineHeight: 1.15 } as any}>{customDisplay.trim()}</span>
+                                <span className="font-[785] text-center" style={{ whiteSpace: 'nowrap' }}>{firstWord}</span>
+                                {restWords && <span className="text-center" style={{ wordBreak: 'normal', overflowWrap: 'anywhere', hyphens: 'auto', whiteSpace: 'normal', lineHeight: 1.15 } as any}>{restWords}</span>}
                               </>
                             );
                           }
@@ -29046,10 +29049,13 @@ export default function Dashboard() {
                       const displayCodeLabel = isTBDLabel ? 'TBD' : code;
                       const customDisplay = (courseData as any).displayName;
                       if (customDisplay) {
+                        const cdWords = customDisplay.trim().split(/\s+/);
+                        const firstWord = cdWords[0] || '';
+                        const restWords = cdWords.slice(1).join(' ');
                         return (
                           <>
-                            <span className="font-[785] text-center" style={{ whiteSpace: 'nowrap' }}>{displayCodeLabel}</span>
-                            <span className="text-center" style={{ wordBreak: 'normal', overflowWrap: 'anywhere', hyphens: 'auto', whiteSpace: 'normal', lineHeight: 1.15 } as any}>{customDisplay.trim()}</span>
+                            <span className="font-[785] text-center" style={{ whiteSpace: 'nowrap' }}>{firstWord}</span>
+                            {restWords && <span className="text-center" style={{ wordBreak: 'normal', overflowWrap: 'anywhere', hyphens: 'auto', whiteSpace: 'normal', lineHeight: 1.15 } as any}>{restWords}</span>}
                           </>
                         );
                       }
