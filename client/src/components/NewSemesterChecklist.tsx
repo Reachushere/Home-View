@@ -31,6 +31,16 @@ interface Props {
 
 export default function NewSemesterChecklist({ semesterKey, semesterLabel, colorSettings, onDismiss, noBackdrop, printerIconRight }: Props) {
   const [minimized, setMinimized] = useState(false);
+  const [jiggling, setJiggling] = useState(false);
+
+  useEffect(() => {
+    if (!minimized) return;
+    const interval = setInterval(() => {
+      setJiggling(true);
+      setTimeout(() => setJiggling(false), 600);
+    }, 8000);
+    return () => clearInterval(interval);
+  }, [minimized]);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [popupDismissed, setPopupDismissed] = useState(() => {
     return localStorage.getItem(`newSemChecklist_dismissed_${semesterKey}`) === 'true';
@@ -177,6 +187,17 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
         }}
         data-testid="semester-checklist-minimized"
       >
+        <style>{`
+          @keyframes checklist-jiggle {
+            0% { transform: rotate(0deg); }
+            15% { transform: rotate(-3deg); }
+            30% { transform: rotate(3deg); }
+            45% { transform: rotate(-2deg); }
+            60% { transform: rotate(2deg); }
+            75% { transform: rotate(-1deg); }
+            100% { transform: rotate(0deg); }
+          }
+        `}</style>
         <div
           onClick={() => setMinimized(false)}
           style={{
@@ -191,6 +212,8 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
             backdropFilter: 'blur(30px)',
             WebkitBackdropFilter: 'blur(30px)',
             boxShadow: headerBoxShadow,
+            animation: jiggling ? 'checklist-jiggle 0.5s ease-in-out' : 'none',
+            transformOrigin: 'center bottom',
           }}
         >
           <span style={{ fontSize: '10px', fontWeight: 600, color: '#fff', whiteSpace: 'nowrap' }}>
