@@ -20242,9 +20242,9 @@ export default function Dashboard() {
         data-testid="left-add-task-tab"
         title="Add"
       >
-        <svg width="22" height="84" viewBox="0 0 22 84" style={{ display: 'block' }}>
-          <path d="M0,0 L0,84 L6,84 Q6,75 12,75 L13,75 Q22,75 22,63 L22,21 Q22,9 13,9 L12,9 Q6,9 6,0 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
-          <text x="13" y="46" textAnchor="middle" fill="rgba(255,255,255,0.8)" fontSize="16" fontWeight="bold">+</text>
+        <svg width="19" height="84" viewBox="0 0 19 84" style={{ display: 'block' }}>
+          <path d="M0,0 L0,84 L6,84 Q6,75 12,75 L13,75 Q19,75 19,63 L19,21 Q19,9 13,9 L12,9 Q6,9 6,0 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+          <text x="12" y="46" textAnchor="middle" fill="rgba(255,255,255,0.8)" fontSize="16" fontWeight="bold">+</text>
         </svg>
       </div>
 
@@ -28068,7 +28068,7 @@ export default function Dashboard() {
                   return '';
                 })() : '';
                 return (
-                  <div key={idx} className="flex items-center justify-center overflow-hidden relative" style={{ opacity: isPast ? 0.5 : 1 }} data-testid={`weather-above-${dateStr}`}>
+                  <div key={idx} className="flex items-center justify-center overflow-hidden relative" style={{ opacity: isPast ? 0.5 : 1, ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }} data-testid={`weather-above-${dateStr}`}>
                     {showForecastWeather && fwSkyBg && (
                       <div className="absolute inset-0 z-0" style={{ background: fwSkyBg, overflow: 'hidden', pointerEvents: 'none', opacity: isTodayForecast ? 1 : isNextWeekDay ? 0.35 : 1 }}>
                         {fwEffectsHtml && <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }} dangerouslySetInnerHTML={{ __html: fwEffectsHtml }} />}
@@ -28197,7 +28197,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`flex flex-col items-center justify-center h-full relative`}
-                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'hidden', minWidth: 0 } : day.getDay() === 6 ? { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', overflow: 'hidden', minWidth: 0 } : { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', borderLeft: '1.5px dotted rgba(255,255,255,0.35)', overflow: 'hidden', minWidth: 0 }}
+                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'hidden', minWidth: 0 } : day.getDay() === 6 ? { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', overflow: 'hidden', minWidth: 0, ...(calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) } : { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', borderLeft: '1.5px dotted rgba(255,255,255,0.35)', overflow: 'hidden', minWidth: 0 }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     
@@ -29501,7 +29501,7 @@ export default function Dashboard() {
                       <div 
                         key={dayIdx} 
                         className="relative pt-0.5"
-                        style={{ backgroundColor: cellBgColor, padding: isDayToday ? '2px 1px 2px 3px' : '2px 1px 2px 1px', borderBottom: '1.5px solid black', borderLeft: (day.getDay() === 6 || isDayToday) ? '3px solid black' : '1.5px dotted rgba(0,0,0,0.25)', minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                        style={{ backgroundColor: cellBgColor, padding: isDayToday ? '2px 1px 2px 3px' : '2px 1px 2px 1px', borderBottom: '1.5px solid black', borderLeft: (day.getDay() === 6 || isDayToday) ? '3px solid black' : '1.5px dotted rgba(0,0,0,0.25)', minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
                           e.preventDefault();
@@ -30027,6 +30027,7 @@ export default function Dashboard() {
                   if (task.courseName) {
                     const taskCourseCode = task.courseName.split(' - ')[0]?.toUpperCase();
                     if (taskCourseCode && activeCourseNames.includes(taskCourseCode)) return false;
+                    if (task.eventStartTime && task.eventEndTime) return false;
                   }
                   const bracketMatch = task.title.match(/^\[([^\]]+)\]/);
                   if (bracketMatch) {
@@ -30066,7 +30067,7 @@ export default function Dashboard() {
                     {gridSizes.moduleColumnWidth > 0 && (
                       <div style={{ position: 'absolute', left: `${gridSizes.timeColumnWidth}px`, top: 0, bottom: 0, width: `${gridSizes.moduleColumnWidth + 9}px`, backgroundColor: otherRowColors.courseRowColor || otherRowColors.cellBg, zIndex: 50 }} />
                     )}
-                    <div className="flex min-w-0 relative" style={{ overflow: 'hidden', marginLeft: `${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px`, height: '100%', backgroundColor: dimColor(otherRowColors.courseRowColor || otherRowColors.cellBg, 0.375), paddingRight: calScrollbarW > 0 ? `${calScrollbarW}px` : undefined }}>
+                    <div className="min-w-0 relative" style={{ display: 'grid', gridTemplateColumns: gridSizes.dayColumnWidths.map(w => `${w}fr`).join(' '), overflow: 'hidden', marginLeft: `${gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0)}px`, height: '100%', backgroundColor: dimColor(otherRowColors.courseRowColor || otherRowColors.cellBg, 0.375), paddingRight: calScrollbarW > 0 ? `${calScrollbarW}px` : undefined }}>
                     {weekDays.map((day, dayIdx) => {
                       const cellDate = startOfDayET(day);
                       const isOtherToday = isSameDayET(day, stableToday);
@@ -30098,9 +30099,10 @@ export default function Dashboard() {
                         <div
                           key={dayIdx}
                           className="relative flex flex-col gap-0.5 pt-0.5 course-cell-scroll"
-                          style={{ flex: `${gridSizes.dayColumnWidths[dayIdx]} 0 0%`, backgroundColor: otherCellBg, padding: isOtherToday ? '2px 1px 2px 3px' : '2px 1px 2px 1px', borderBottom: '1.5px solid black', borderLeft: (day.getDay() === 6 || isOtherToday) ? '3px solid black' : '1.5px dotted rgba(0,0,0,0.25)', overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'thin', maxHeight: `${otherRowHeight}px` }}
+                          style={{ minWidth: 0, boxSizing: 'border-box', backgroundColor: otherCellBg, borderBottom: '1.5px solid black', borderLeft: (day.getDay() === 6 || isOtherToday) ? '3px solid black' : '1.5px dotted rgba(0,0,0,0.25)', overflow: 'hidden', maxHeight: `${otherRowHeight}px`, ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }}
                           data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
                         >
+                        <div className="flex flex-col gap-0.5 pt-0.5 course-cell-scroll" style={{ padding: isOtherToday ? '2px 1px 2px 0px' : '2px 1px 2px 1px', overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'thin', maxHeight: '100%', height: '100%' }}>
                           {dayOtherTasks.map(task => {
                             const tomorrow = addDays(stableToday, 1);
                             const isDueToday = !task.isCompleted && isSameDayET(new Date(task.dueDate), stableToday);
@@ -30169,6 +30171,7 @@ export default function Dashboard() {
                               </div>
                             );
                           })}
+                        </div>
                         </div>
                       );
                     })}
@@ -37018,6 +37021,34 @@ export default function Dashboard() {
                 >
                   Cancel
                 </button>
+                {(() => {
+                  const futureCount = editingTask ? allTasks.filter(t => t.id !== editingTask.id && t.title === editingTask.title && t.courseName === editingTask.courseName && !t.isCompleted && new Date(t.dueDate) > new Date(editingTask.dueDate)).length : 0;
+                  return futureCount > 0 ? (
+                    <button
+                      type="button"
+                      className="inline-flex items-center justify-center rounded-md px-4 py-1.5 text-white transition-opacity duration-200"
+                      style={{
+                        fontSize: '11px',
+                        border: '1.5px solid rgba(59,130,246,0.6)',
+                        background: 'linear-gradient(180deg, rgba(59,130,246,0.38) 0%, rgba(59,130,246,0.15) 48%, rgba(59,130,246,0.06) 52%, rgba(59,130,246,0.22) 100%)',
+                        boxShadow: 'inset 0 1px 0 rgba(59,130,246,0.4), inset 0 -1px 0 rgba(59,130,246,0.1)'
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(59,130,246,0.5) 0%, rgba(59,130,246,0.22) 48%, rgba(59,130,246,0.1) 52%, rgba(59,130,246,0.3) 100%)'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(59,130,246,0.38) 0%, rgba(59,130,246,0.15) 48%, rgba(59,130,246,0.06) 52%, rgba(59,130,246,0.22) 100%)'; }}
+                      onClick={() => {
+                        const form = document.querySelector('[data-edit-task-form]') as HTMLFormElement;
+                        if (form) {
+                          const btn = form.querySelector('[data-testid="button-update-similar"]') as HTMLButtonElement;
+                          if (btn) btn.click();
+                          else form.requestSubmit();
+                        }
+                      }}
+                      data-testid="button-update-similar-footer"
+                    >
+                      {`Update Similar (${futureCount})`}
+                    </button>
+                  ) : null;
+                })()}
                 <button
                   type="button"
                   className="inline-flex items-center justify-center rounded-md px-4 py-1.5 text-white transition-opacity duration-200"
@@ -38067,6 +38098,9 @@ function ProfileForm({
         <div className="flex flex-col gap-0.5" style={{ marginTop: '4px' }}>
           {(firstName || lastName) && (
             <span className="text-[16px]" style={{ fontWeight: 900, color: '#ffffff', textShadow: '0 0 0.5px #fff, 0 0 0.5px #fff' }} data-testid="text-profile-fullname">{firstName} {lastName}</span>
+          )}
+          {studentNumber && (
+            <span className="text-[11px] text-white" style={{ fontWeight: 600 }} data-testid="text-profile-student-number">Student Number: {studentNumber}</span>
           )}
           <span className="text-[10px] text-white/70">Profile Photo</span>
           <span className="text-[9px] text-white/40">{isUploadingPhoto ? 'Uploading...' : 'Click to change'}</span>
@@ -40391,6 +40425,65 @@ function TaskForm({
     },
   });
 
+  const futureSiblingCount = task ? allTasks.filter(t => t.id !== task.id && t.title === task.title && t.courseName === task.courseName && !t.isCompleted && new Date(t.dueDate) > new Date(task.dueDate)).length : 0;
+
+  const [updateSimilarPending, setUpdateSimilarPending] = useState(false);
+  const handleUpdateSimilar = async () => {
+    if (!task) return;
+    setUpdateSimilarPending(true);
+    try {
+      const data = formData;
+      const finalDueDate = new Date(data.dueDate);
+      let finalStartDate: Date | null = null;
+      if (data.startDate) {
+        finalStartDate = new Date(data.startDate);
+      } else if (data.prepDays > 0) {
+        finalStartDate = new Date(finalDueDate);
+        finalStartDate.setDate(finalStartDate.getDate() - data.prepDays);
+      }
+      const payload: Record<string, unknown> = {
+        title: data.title,
+        description: data.description,
+        type: data.type,
+        courseName: data.courseName,
+        dueDate: finalDueDate.toISOString(),
+        eventStartTime: data.eventStartTime || null,
+        eventEndTime: data.eventEndTime || null,
+        reminder1: data.reminder1 || null,
+        reminder2: data.reminder2 || null,
+        reminder3: data.reminder3 || null,
+        reminder4: data.reminder4 || null,
+        reminder1Methods: data.reminder1Methods || null,
+        reminder2Methods: data.reminder2Methods || null,
+        reminder3Methods: data.reminder3Methods || null,
+        reminder4Methods: data.reminder4Methods || null,
+        priority: data.priority,
+        weekNumber: data.weekNumber,
+        referenceLink: data.referenceLink,
+        attachments: data.attachments,
+        hideFromSummary: data.hideFromSummary ?? false,
+        hideFromCountdown: data.hideFromCountdown ?? false,
+        flagged: data.flagged ?? false,
+        showCountdownBar: data.showCountdownBar ?? true,
+        showCountdownBarMain: data.showCountdownBarMain ?? true,
+        showCountdownBarSummary: data.showCountdownBarSummary ?? true,
+        countdownBarDays: data.countdownBarDays ?? 0,
+        countdownBarColor: data.countdownBarColor || null,
+        startDate: finalStartDate ? finalStartDate.toISOString() : null,
+        originalTitle: task.title,
+      };
+      await apiRequest("PATCH", `/api/tasks/${task.id}/update-similar`, payload);
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/weeks"] });
+      toast({ title: "Updated", description: `Updated this task and ${futureSiblingCount} similar future task${futureSiblingCount !== 1 ? 's' : ''}.` });
+      if (onSuccess) onSuccess();
+    } catch (err: any) {
+      toast({ title: "Error", description: err?.message || "Failed to update similar tasks.", variant: "destructive" });
+    } finally {
+      setUpdateSimilarPending(false);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.dueDate && formData.type !== 'reminder' && formData.type !== 'module') {
@@ -41429,8 +41522,31 @@ function TaskForm({
         </div>
       )}
 
+      {task && futureSiblingCount > 0 && hideSubmitButton && (
+        <button type="button" onClick={handleUpdateSimilar} data-testid="button-update-similar" style={{ display: 'none' }} />
+      )}
+
       {!hideSubmitButton && (
-        <div className="flex justify-end pt-2">
+        <div className="flex justify-end gap-2 pt-2">
+          {task && futureSiblingCount > 0 && (
+            <button
+              type="button"
+              disabled={updateSimilarPending}
+              onClick={handleUpdateSimilar}
+              className="inline-flex items-center justify-center rounded-md px-4 py-1.5 text-white transition-opacity duration-200"
+              style={{
+                fontSize: '11px',
+                border: '1.5px solid rgba(59,130,246,0.6)',
+                background: 'linear-gradient(180deg, rgba(59,130,246,0.38) 0%, rgba(59,130,246,0.15) 48%, rgba(59,130,246,0.06) 52%, rgba(59,130,246,0.22) 100%)',
+                boxShadow: 'inset 0 1px 0 rgba(59,130,246,0.4), inset 0 -1px 0 rgba(59,130,246,0.1)'
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(59,130,246,0.5) 0%, rgba(59,130,246,0.22) 48%, rgba(59,130,246,0.1) 52%, rgba(59,130,246,0.3) 100%)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(59,130,246,0.38) 0%, rgba(59,130,246,0.15) 48%, rgba(59,130,246,0.06) 52%, rgba(59,130,246,0.22) 100%)'; }}
+              data-testid="button-update-similar"
+            >
+              {updateSimilarPending ? "Updating..." : `Update Similar (${futureSiblingCount})`}
+            </button>
+          )}
           <button 
             type="submit" 
             disabled={createMutation.isPending}

@@ -1857,6 +1857,52 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
     }
   });
 
+  app.patch("/api/tasks/:id/update-similar", async (req, res) => {
+    try {
+      const taskId = Number(req.params.id);
+      const task = await storage.getTask(taskId);
+      if (!task) return res.status(404).json({ message: 'Task not found' });
+
+      const fields = { ...req.body };
+      const dateFields = ['dueDate', 'startDate', 'completedAt', 'repeatEndDate'];
+      for (const key of dateFields) {
+        if (fields[key] && typeof fields[key] === 'string') fields[key] = new Date(fields[key]);
+      }
+
+      const originalTitle = fields.originalTitle || task.title;
+      delete fields.originalTitle;
+
+      await storage.updateTask(taskId, fields);
+
+      const allTasksList = await storage.getTasks();
+      const taskDueDate = new Date(task.dueDate);
+      const similarFuture = allTasksList.filter(t =>
+        t.id !== taskId &&
+        t.title === originalTitle &&
+        t.courseName === task.courseName &&
+        !t.isCompleted &&
+        new Date(t.dueDate) > taskDueDate
+      );
+
+      const fieldsForSimilar = { ...fields };
+      delete fieldsForSimilar.dueDate;
+      delete fieldsForSimilar.startDate;
+      delete fieldsForSimilar.weekNumber;
+
+      for (const sibling of similarFuture) {
+        const siblingFields = { ...fieldsForSimilar };
+        if (fields.eventStartTime) siblingFields.eventStartTime = fields.eventStartTime;
+        if (fields.eventEndTime) siblingFields.eventEndTime = fields.eventEndTime;
+        await storage.updateTask(sibling.id, siblingFields);
+      }
+
+      res.json({ updated: 1 + similarFuture.length });
+    } catch (error) {
+      console.error("Error updating similar tasks:", error);
+      res.status(500).json({ message: "Failed to update similar tasks" });
+    }
+  });
+
   // PATCH /api/tasks/:id/complete
   app.patch(api.tasks.complete.path, async (req, res) => {
     const { isCompleted } = req.body;
@@ -12167,11 +12213,14 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
   async function syncOneDriveFilesForWeek(semesterSettings: any, currentWeekNumber: number, logPrefix: string = '[Sync]'): Promise<void> {
     try {
+      console.log(`${logPrefix}[TRACE] syncOneDriveFilesForWeek: importing onedrive module...`);
       const { listOneDriveItems } = await import("./onedrive");
+      console.log(`${logPrefix}[TRACE] syncOneDriveFilesForWeek: import done, setting up dirs...`);
       const fs = await import("fs");
       const path = await import("path");
       const localUploadsDir = path.join(process.cwd(), 'persistent-uploads');
       if (!fs.existsSync(localUploadsDir)) fs.mkdirSync(localUploadsDir, { recursive: true });
+      console.log(`${logPrefix}[TRACE] syncOneDriveFilesForWeek: getting semester OneDrive courses...`);
       const courses = await getSemesterOneDriveCourses(semesterSettings);
       console.log(`${logPrefix} Syncing OneDrive for ${courses.length} courses, week ${currentWeekNumber}`);
       for (const course of courses) {
@@ -15241,8 +15290,19 @@ document.body.removeChild(a);
         }
       })();
 
+      console.log(`[Cat Lights][TRACE] Step 1: Getting today's date`);
       const today = torontoDate();
-      const semesterSettings = await storage.getActiveSemesterSettings();
+      console.log(`[Cat Lights][TRACE] Step 2: today=${today.toISOString()}, fetching semester settings...`);
+      let semesterSettings: any;
+      try {
+        semesterSettings = await storage.getActiveSemesterSettings();
+        console.log(`[Cat Lights][TRACE] Step 2b: getActiveSemesterSettings returned ${semesterSettings ? `id=${semesterSettings.id}, type=${semesterSettings.semesterType}` : 'null'}`);
+      } catch (dbErr: any) {
+        console.error(`[Cat Lights][TRACE] Step 2 FAILED — DB error getting semester settings: ${dbErr.message}`);
+        console.error(`[Cat Lights][TRACE] Full error:`, dbErr);
+        catLightsPromptPending = false;
+        return;
+      }
 
       if (!semesterSettings) {
         console.log(`[Cat Lights] No active semester — skipping prompt`);
@@ -15250,24 +15310,36 @@ document.body.removeChild(a);
         return;
       }
 
+      console.log(`[Cat Lights][TRACE] Step 3: Calculating week number`);
       let currentWeekNumber = 1;
       const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00");
       const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
       currentWeekNumber = getWeekNumber(today, semStart, rwStart);
+      console.log(`[Cat Lights][TRACE] Step 3b: weekNumber=${currentWeekNumber}`);
 
+      console.log(`[Cat Lights][TRACE] Step 4: Getting cached files`);
       const allFilesBefore = await storage.getFiles();
+      console.log(`[Cat Lights][TRACE] Step 4b: ${allFilesBefore.length} total files in DB`);
       let nextFile = await findNextFileByPriority(allFilesBefore, currentWeekNumber);
+      console.log(`[Cat Lights][TRACE] Step 4c: findNextFileByPriority returned ${nextFile ? `id=${nextFile.id} "${nextFile.originalName}"` : 'null'}`);
+
+      const syncWithTimeout = (timeout: number) => Promise.race([
+        syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Cat Lights]'),
+        new Promise<void>((_, reject) => setTimeout(() => reject(new Error('OneDrive sync timed out')), timeout))
+      ]);
 
       if (!nextFile) {
-        console.log(`[Cat Lights] No cached files found — syncing OneDrive for week ${currentWeekNumber}`);
-        await syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Cat Lights]');
+        console.log(`[Cat Lights][TRACE] Step 5a: No cached files — syncing OneDrive (30s timeout) for week ${currentWeekNumber}`);
+        try { await syncWithTimeout(30000); console.log(`[Cat Lights][TRACE] Step 5a: OneDrive sync completed`); } catch (e: any) { console.log(`[Cat Lights][TRACE] Step 5a: Sync timeout/error: ${e.message}`); }
         const allFilesAfter = await storage.getFiles();
+        console.log(`[Cat Lights][TRACE] Step 5a: ${allFilesAfter.length} files after sync`);
         nextFile = await findNextFileByPriority(allFilesAfter, currentWeekNumber);
+        console.log(`[Cat Lights][TRACE] Step 5a: After sync, nextFile=${nextFile ? `id=${nextFile.id}` : 'null'}`);
       } else {
         const cachedPri = await getCoursePriorityForFile(nextFile);
         if (cachedPri > 1) {
-          console.log(`[Cat Lights] Cached file has priority ${cachedPri} — syncing OneDrive first to check for higher-priority files`);
-          await syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Cat Lights]');
+          console.log(`[Cat Lights][TRACE] Step 5b: Cached file has priority ${cachedPri} — syncing OneDrive (25s timeout)`);
+          try { await syncWithTimeout(25000); console.log(`[Cat Lights][TRACE] Step 5b: OneDrive sync completed`); } catch (e: any) { console.log(`[Cat Lights][TRACE] Step 5b: Sync timeout/error: ${e.message}`); }
           const allFilesAfter = await storage.getFiles();
           const betterFile = await findNextFileByPriority(allFilesAfter, currentWeekNumber);
           if (betterFile) {
@@ -15278,26 +15350,32 @@ document.body.removeChild(a);
             }
           }
         } else {
-          console.log(`[Cat Lights] Using cached priority-1 file — syncing OneDrive in background`);
+          console.log(`[Cat Lights][TRACE] Step 5c: Using cached priority-1 file — syncing OneDrive in background`);
           syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Cat Lights]').catch(e => console.log(`[Cat Lights] Background sync error: ${e.message}`));
         }
       }
+      console.log(`[Cat Lights][TRACE] Step 6: File lookup complete, nextFile=${nextFile ? `id=${nextFile.id} "${nextFile.originalName}"` : 'null'}`);
 
+      console.log(`[Cat Lights][TRACE] Step 7: Waiting for immediatePromptPromise + earlyDeviceWakePromise`);
       await Promise.allSettled([immediatePromptPromise, earlyDeviceWakePromise]);
+      console.log(`[Cat Lights][TRACE] Step 7b: Promises settled`);
 
       try {
+        console.log(`[Cat Lights][TRACE] Step 8: Checking if light is still on`);
         const lightCheckResp = await fetch(`${haUrl0}/api/states/${CAT_LIGHTS_ENTITY}`, { headers: haHeaders0 });
         if (lightCheckResp.ok) {
           const lightCheckData = await lightCheckResp.json();
+          console.log(`[Cat Lights][TRACE] Step 8b: Light state=${lightCheckData?.state}`);
           if (lightCheckData?.state === 'off') {
             console.log(`[Cat Lights] Light turned off during file lookup — aborting prompt`);
             catLightsPromptPending = false;
             return;
           }
         }
-      } catch {}
+      } catch (e: any) { console.log(`[Cat Lights][TRACE] Step 8: Light check failed: ${e.message}`); }
 
       if (!nextFile) {
+        console.log(`[Cat Lights][TRACE] Step 9: No nextFile — playing CHUM FM`);
         console.log(`[Cat Lights] No unlistened files for week ${currentWeekNumber} — playing CHUM FM on Echo speakers`);
         catLightsPromptPending = false;
         await playChumFmRadio(haUrl);
@@ -15306,6 +15384,7 @@ document.body.removeChild(a);
 
       const fileName = nextFile.displayName || nextFile.originalName || 'Unknown file';
       const fileDesc = describeFileForTTS(nextFile, currentWeekNumber);
+      console.log(`[Cat Lights][TRACE] Step 9: Have file — building TTS prompt`);
       console.log(`[Cat Lights] Found next file: ${fileDesc} — ${fileName} (id=${nextFile.id})`);
 
       const nowHour = new Date().toLocaleString('en-US', { timeZone: 'America/Toronto', hour: 'numeric', hour12: false });

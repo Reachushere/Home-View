@@ -40,11 +40,15 @@ async function refreshAccessToken(refreshToken: string): Promise<{ access_token:
     scope: ONEDRIVE_SCOPES,
   });
 
+  const controller = new AbortController();
+  const fetchTimeout = setTimeout(() => controller.abort(), 15000);
   const response = await fetch('https://login.microsoftonline.com/common/oauth2/v2.0/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: params.toString(),
+    signal: controller.signal,
   });
+  clearTimeout(fetchTimeout);
 
   if (!response.ok) {
     const errorText = await response.text();
@@ -136,13 +140,16 @@ export function isOneDriveConnected(): boolean {
 
 async function getAccessToken() {
   if (cachedAccessToken && cachedTokenExpiresAt > Date.now() + 60000) {
+    console.log(`[OneDrive][TRACE] Using cached access token (expires in ${Math.round((cachedTokenExpiresAt - Date.now()) / 1000)}s)`);
     return cachedAccessToken;
   }
 
   const storedTokens = loadStoredTokens();
   if (storedTokens?.refresh_token) {
     try {
+      console.log(`[OneDrive][TRACE] Refreshing access token via stored refresh token...`);
       const result = await refreshAccessToken(storedTokens.refresh_token);
+      console.log(`[OneDrive][TRACE] Token refresh successful, expires_in=${result.expires_in}s`);
       const expiresAt = Date.now() + (result.expires_in || 3600) * 1000;
       cachedAccessToken = result.access_token;
       cachedTokenExpiresAt = expiresAt;
@@ -203,15 +210,15 @@ export async function getOneDriveClient() {
 
 // List files/folders in a directory
 export async function listOneDriveItems(path: string = '/') {
+  console.log(`[OneDrive][TRACE] listOneDriveItems called for path: ${path}`);
   const client = await getOneDriveClient();
+  console.log(`[OneDrive][TRACE] Got OneDrive client, making API call...`);
   
   try {
     let response;
     if (path === '/' || path === '') {
-      // List root folder contents
       response = await client.api('/me/drive/root/children').get();
     } else {
-      // List specific folder contents
       response = await client.api(`/me/drive/root:${path}:/children`).get();
     }
     
@@ -228,7 +235,7 @@ export async function listOneDriveItems(path: string = '/') {
         '/' + item.name
     }));
   } catch (error: any) {
-    console.error('Error listing OneDrive items:', error);
+    console.error(`[OneDrive][TRACE] listOneDriveItems FAILED for path ${path}: ${error.message}`);
     throw error;
   }
 }
