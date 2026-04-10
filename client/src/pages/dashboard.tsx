@@ -5509,6 +5509,7 @@ export default function Dashboard() {
     openInEdit?: boolean;
     semKey?: string;
   } | null>(null);
+  const colorSnapshotRef = useRef<{ coursesData: any; semestersQuery: any[] | null; semesterQuery: any } | null>(null);
   const [syncingCourses, setSyncingCourses] = useState<Set<string>>(new Set());
   const [syncResults, setSyncResults] = useState<Map<string, { count: number; skipped?: number; message?: string }>>(new Map());
   const [draggedTask, setDraggedTask] = useState<Task | null>(null);
@@ -19108,6 +19109,17 @@ export default function Dashboard() {
               setAllAssignmentsAdded(cc, val);
             }}
             onClose={() => {
+              if (colorSnapshotRef.current) {
+                setCoursesData(colorSnapshotRef.current.coursesData);
+                localStorage.setItem('coursesData', JSON.stringify(colorSnapshotRef.current.coursesData));
+                if (colorSnapshotRef.current.semestersQuery) {
+                  queryClient.setQueryData(["/api/semesters"], colorSnapshotRef.current.semestersQuery);
+                }
+                if (colorSnapshotRef.current.semesterQuery) {
+                  queryClient.setQueryData(["/api/semester"], colorSnapshotRef.current.semesterQuery);
+                }
+                colorSnapshotRef.current = null;
+              }
               startTransition(() => setSelectedCertCourse(null));
               if (isSchoolCoursesDialogOpen) {
                 // School Courses dialog is still open underneath, just go back to it
@@ -19117,6 +19129,13 @@ export default function Dashboard() {
               }
             }}
             onLiveColorChange={(colorUpdates) => {
+              if (!colorSnapshotRef.current) {
+                colorSnapshotRef.current = {
+                  coursesData: JSON.parse(JSON.stringify(coursesData)),
+                  semestersQuery: JSON.parse(JSON.stringify(queryClient.getQueryData(["/api/semesters"]) || null)),
+                  semesterQuery: JSON.parse(JSON.stringify(queryClient.getQueryData(["/api/semester"]) || null)),
+                };
+              }
               const courseCode = selectedCertCourse!.courseCode;
               const updatedCourses = [...coursesData.courses];
               const matchIdx = updatedCourses.findIndex(c => {
@@ -19195,6 +19214,7 @@ export default function Dashboard() {
               }
             }}
             onSaveCourseInfo={(updates) => {
+              colorSnapshotRef.current = null;
               const courseCode = selectedCertCourse!.courseCode;
               const certKey = selectedCertCourse!.certKey;
               const updatedCourses = [...coursesData.courses];
