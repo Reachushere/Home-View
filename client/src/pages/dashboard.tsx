@@ -18975,14 +18975,6 @@ export default function Dashboard() {
           </div>
           <div className="px-2 pb-2 flex justify-end">
                 <div className="flex items-center gap-2">
-                <button
-                  className="px-3 py-[5px] rounded text-[11px] font-medium text-white/60 hover:text-white transition-colors"
-                  style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
-                  onClick={() => setIsDialogManagerOpen(true)}
-                  data-testid="button-dialog-manager"
-                >
-                  Dialogs
-                </button>
                 <Button 
                   type="button" 
                   variant="outline"
