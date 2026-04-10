@@ -4,10 +4,12 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import LibraryView from "./LibraryView";
 import {
   Plus,
   Trash2,
   BookOpen,
+  Library,
   Video,
   Globe,
   Mail,
@@ -291,6 +293,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
       .finally(() => setCommentSaving(false));
   }, [commentTarget, commentText, toast]);
   const [isEditingInfo, setIsEditingInfo] = useState(!!initialEditMode);
+  const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [activeGradientStop, setActiveGradientStop] = useState<'start' | 'end' | number | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isParsingPdf, setIsParsingPdf] = useState(false);
@@ -2194,6 +2197,14 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           </div>
               {!isEditingInfo ? (
                 <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setIsLibraryOpen(true)}
+                    className="flex items-center gap-1 text-[11px] text-white/70 hover:text-white transition-colors"
+                    title="Open Library"
+                    data-testid="button-open-library"
+                  >
+                    <Library className="w-4 h-4" style={{ color: courseInfo.colorEnd || courseInfo.color || '#3b82f6' }} />
+                  </button>
                   <button
                     onClick={() => setIsEditingInfo(true)}
                     className="flex items-center gap-1.5 text-[11px] text-white hover:text-white transition-colors font-semibold"
@@ -4676,6 +4687,36 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           </div>
         </div>
       )}
+      <LibraryView
+        isOpen={isLibraryOpen}
+        onClose={() => setIsLibraryOpen(false)}
+        semesters={SEMESTER_OPTIONS.map(o => {
+          const coursesRaw: { name: string; color: string }[] = (() => {
+            try {
+              const saved = localStorage.getItem('coursesData');
+              if (saved) return JSON.parse(saved).courses || [];
+            } catch {}
+            return [];
+          })();
+          const semCourses = coursesRaw.filter(c => {
+            const n = c.name || '';
+            const parts = n.split(' - ');
+            if (parts.length < 2) return false;
+            const cData = (() => { try { const d = localStorage.getItem('degreeData'); if (d) { const p = JSON.parse(d); return (p.courses || []).find((dc: any) => dc.name === n); } } catch {} return null; })();
+            if (!cData) return false;
+            const sTerm = cData.semesterTerm || '';
+            const sYear = cData.year || '';
+            const sk = sTerm.startsWith('spring_summer') ? `ss${sYear}` : sTerm === 'fall' ? `f${sYear}` : sTerm === 'winter' ? `w${sYear}` : '';
+            return sk === o.key;
+          }).map(c => ({
+            code: (c.name || '').split(' - ')[0]?.trim() || '',
+            name: (c.name || '').split(' - ').slice(1).join(' - ')?.trim() || '',
+            color: c.color || '#3b82f6',
+          }));
+          return { key: o.key, label: o.label, courses: semCourses };
+        })}
+        initialSemesterKey={semesterKeyFromTermYear(courseInfo.semesterTerm, courseInfo.year)}
+      />
     </div>,
     document.body
   );
