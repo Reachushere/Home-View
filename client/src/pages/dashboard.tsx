@@ -3233,10 +3233,7 @@ export default function Dashboard() {
   };
   
   // Week folders for files flyout
-  const FLYOUT_WEEKS = useMemo(() => {
-    const max = getSemesterTotalWeeks(semesterSettings?.semesterType);
-    return Array.from({ length: max }, (_, i) => ({ id: `week-${i + 1}`, name: `Week ${i + 1}` }));
-  }, [semesterSettings?.semesterType]);
+  const FLYOUT_WEEKS = Array.from({ length: 14 }, (_, i) => ({ id: `week-${i + 1}`, name: `Week ${i + 1}` }));
   
   const FLYOUT_COURSES = [
     { id: "cppa122", name: "CPPA122", color: "text-green-400" },
@@ -27485,7 +27482,7 @@ export default function Dashboard() {
                                 localStorage.setItem('perSemesterSettings', JSON.stringify(updated));
                                 if (activeSemKey === 'w2026') saveSchool({ ...schoolData, week1StartDate: val });
                               }}
-                              onClick={(e) => (e.target as HTMLInputElement).showPicker?.()}
+                              onClick={(e) => { try { (e.target as HTMLInputElement).showPicker?.(); } catch {} }}
                               className="w-full h-7 px-2 text-[10px] rounded-md bg-white border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
                               style={{ fontSize: '10px', color: 'black', colorScheme: 'light' }}
                               data-testid="input-cal-week1-start"
@@ -27527,7 +27524,7 @@ export default function Dashboard() {
                                     apiRequest("PATCH", "/api/semester", { readingWeekStart: new Date(val).toISOString() });
                                   }
                                 }}
-                                onClick={(e) => (e.target as HTMLInputElement).showPicker?.()}
+                                onClick={(e) => { try { (e.target as HTMLInputElement).showPicker?.(); } catch {} }}
                                 className="w-full h-7 px-2 text-[10px] rounded-md bg-white border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
                                 style={{ fontSize: '10px', color: 'black', colorScheme: 'light' }}
                                 data-testid="input-cal-reading-week"
@@ -38516,7 +38513,7 @@ function SemesterSettingsFormBody({ semKey, existing, onCancel, onSave }: {
               type="date"
               value={localW1}
               onChange={(e) => setLocalW1(e.target.value)}
-              onClick={(e) => (e.target as HTMLInputElement).showPicker?.()}
+              onClick={(e) => { try { (e.target as HTMLInputElement).showPicker?.(); } catch {} }}
               className="w-full h-8 px-2 text-[10px] rounded-md bg-white border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
               style={{ fontSize: '10px', color: 'black', colorScheme: 'light' }}
               data-testid="input-sem-settings-week1"
@@ -38596,7 +38593,7 @@ function SemesterSettingsFormBody({ semKey, existing, onCancel, onSave }: {
                     type="date"
                     value={springStart}
                     onChange={(e) => setSpringStart(e.target.value)}
-                    onClick={(e) => (e.target as HTMLInputElement).showPicker?.()}
+                    onClick={(e) => { try { (e.target as HTMLInputElement).showPicker?.(); } catch {} }}
                     className="w-full h-7 px-2 text-[10px] rounded-md bg-white border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
                     style={{ fontSize: '10px', color: 'black', colorScheme: 'light' }}
                     data-testid="input-sem-spring-start"
@@ -38608,7 +38605,7 @@ function SemesterSettingsFormBody({ semKey, existing, onCancel, onSave }: {
                     type="date"
                     value={springEnd}
                     onChange={(e) => setSpringEnd(e.target.value)}
-                    onClick={(e) => (e.target as HTMLInputElement).showPicker?.()}
+                    onClick={(e) => { try { (e.target as HTMLInputElement).showPicker?.(); } catch {} }}
                     className="w-full h-7 px-2 text-[10px] rounded-md bg-white border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
                     style={{ fontSize: '10px', color: 'black', colorScheme: 'light' }}
                     data-testid="input-sem-spring-end"
@@ -38623,7 +38620,7 @@ function SemesterSettingsFormBody({ semKey, existing, onCancel, onSave }: {
                     type="date"
                     value={summerStart}
                     onChange={(e) => setSummerStart(e.target.value)}
-                    onClick={(e) => (e.target as HTMLInputElement).showPicker?.()}
+                    onClick={(e) => { try { (e.target as HTMLInputElement).showPicker?.(); } catch {} }}
                     className="w-full h-7 px-2 text-[10px] rounded-md bg-white border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
                     style={{ fontSize: '10px', color: 'black', colorScheme: 'light' }}
                     data-testid="input-sem-summer-start"
@@ -38635,7 +38632,7 @@ function SemesterSettingsFormBody({ semKey, existing, onCancel, onSave }: {
                     type="date"
                     value={summerEnd}
                     onChange={(e) => setSummerEnd(e.target.value)}
-                    onClick={(e) => (e.target as HTMLInputElement).showPicker?.()}
+                    onClick={(e) => { try { (e.target as HTMLInputElement).showPicker?.(); } catch {} }}
                     className="w-full h-7 px-2 text-[10px] rounded-md bg-white border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
                     style={{ fontSize: '10px', color: 'black', colorScheme: 'light' }}
                     data-testid="input-sem-summer-end"
@@ -38652,7 +38649,7 @@ function SemesterSettingsFormBody({ semKey, existing, onCancel, onSave }: {
               type="date"
               value={localRw}
               onChange={(e) => setLocalRw(e.target.value)}
-              onClick={(e) => (e.target as HTMLInputElement).showPicker?.()}
+              onClick={(e) => { try { (e.target as HTMLInputElement).showPicker?.(); } catch {} }}
               className="h-8 px-2 text-[10px] rounded-md bg-white border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-400 w-40 cursor-pointer"
               style={{ fontSize: '10px', color: 'black', colorScheme: 'light' }}
               data-testid="input-sem-settings-reading-week"
