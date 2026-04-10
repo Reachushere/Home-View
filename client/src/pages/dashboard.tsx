@@ -5666,8 +5666,12 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
+    const urlFs = new URLSearchParams(window.location.search).get('fullscreen');
     const isFireDevice = /\bSilk\b/i.test(navigator.userAgent) || /\bKF[A-Z]{2,4}\b/.test(navigator.userAgent);
-    if (!isFireDevice) return;
+    if (urlFs === 'true' && window.history.replaceState) {
+      window.history.replaceState({}, '', '/');
+    }
+    if (!isFireDevice && urlFs !== 'true') return;
     const enterFullscreen = () => {
       if (!document.fullscreenElement) {
         const el = document.documentElement as any;

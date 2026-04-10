@@ -741,7 +741,7 @@ export default function PDFReaderPage() {
             }
           }
           if (!data.keepOpen) {
-            window.location.href = '/';
+            window.location.href = '/?fullscreen=true';
           }
         } else if (data.action === 'go_home') {
           lastNavTimestamp.current = data.timestamp;
