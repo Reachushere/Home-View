@@ -37764,7 +37764,7 @@ function ProfileForm({
         </div>
         <div className="flex flex-col gap-0.5" style={{ marginTop: '4px' }}>
           {(firstName || lastName) && (
-            <span className="text-[16px]" style={{ fontWeight: 900, color: '#ffffff', WebkitTextStroke: '0.5px white' }} data-testid="text-profile-fullname">{firstName} {lastName}</span>
+            <span className="text-[16px]" style={{ fontWeight: 900, color: '#ffffff', textShadow: '0 0 0.5px #fff, 0 0 0.5px #fff' }} data-testid="text-profile-fullname">{firstName} {lastName}</span>
           )}
           <span className="text-[10px] text-white/70">Profile Photo</span>
           <span className="text-[9px] text-white/40">{isUploadingPhoto ? 'Uploading...' : 'Click to change'}</span>
