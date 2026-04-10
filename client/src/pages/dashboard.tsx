@@ -11950,6 +11950,49 @@ export default function Dashboard() {
   const isTravelMode = !!(schoolData.isTravelling || profileData.travelTimezone);
   const calStart = 0;
   const timeSlots = Array.from({ length: 24 }, (_, i) => i);
+
+  const multiHourOverlayCols = useMemo(() => {
+    const map = new Map<string, number>();
+    const items = getMultiHourTasksForWeek().filter(item => {
+      if (item.endHour === item.startHour + 1) return false;
+      return true;
+    });
+    const dayGroups = new Map<number, typeof items>();
+    for (const item of items) {
+      if (!dayGroups.has(item.dayIdx)) dayGroups.set(item.dayIdx, []);
+      dayGroups.get(item.dayIdx)!.push(item);
+    }
+    for (const [dIdx, dayItems] of dayGroups) {
+      const sorted = [...dayItems].sort((a, b) => a.startHour * 60 + a.startMin - (b.startHour * 60 + b.startMin));
+      const columns: typeof items[] = [];
+      for (const item of sorted) {
+        const s = item.startHour * 60 + item.startMin;
+        let placed = false;
+        for (let c = 0; c < columns.length; c++) {
+          const last = columns[c][columns[c].length - 1];
+          if (s >= last.endHour * 60 + last.endMin) { columns[c].push(item); placed = true; break; }
+        }
+        if (!placed) columns.push([item]);
+      }
+      for (const item of sorted) {
+        const iStart = item.startHour * 60 + item.startMin;
+        const iEnd = item.endHour * 60 + item.endMin;
+        for (let h = item.startHour; h <= item.endHour; h++) {
+          const hStart = h * 60;
+          const hEnd = (h + 1) * 60;
+          if (iStart < hEnd && iEnd > hStart) {
+            let colsAtH = 0;
+            for (const col of columns) {
+              if (col.some(o => o.startHour * 60 + o.startMin < hEnd && o.endHour * 60 + o.endMin > hStart)) colsAtH++;
+            }
+            const key = `${dIdx}-${h}`;
+            map.set(key, Math.max(map.get(key) || 0, colsAtH));
+          }
+        }
+      }
+    }
+    return map;
+  }, [allTasks, weekDays]);
   const calendarScrollRef = useRef<HTMLDivElement>(null);
   const [calScrollbarW, setCalScrollbarW] = useState(0);
   const [calendarZoom, setCalendarZoom] = useState(1);
@@ -30862,8 +30905,8 @@ export default function Dashboard() {
                                   const borderColor = task.isCompleted ? '#d1d5db' : hasCourseGrad ? gradColors.start : (typeFallbackBorder[task.type] || otherRowColors.borderColor);
                                   return {
                                     top: `${topOffset}px`,
-                                    left: (() => { if (stackInConflict) return '2px'; const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); return hasNextDueBox ? `calc(${taskIdx * columnWidth / 2}% + 2px)` : `calc(${taskIdx * columnWidth}% + 2px)`; })(),
-                                    width: (() => { if (stackInConflict) return 'calc(100% - 4px)'; const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); return hasNextDueBox ? `calc(${columnWidth / 2}% - 4px)` : `calc(${columnWidth}% - 4px)`; })(),
+                                    left: (() => { if (stackInConflict) return '2px'; const overlayCols = multiHourOverlayCols.get(`${dayIdx}-${hour}`) || 0; const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); if (overlayCols > 0) { const inlineCol = overlayCols; const totalC = overlayCols + totalItems; return `calc(${inlineCol + taskIdx} / ${totalC} * 100% + 2px)`; } return hasNextDueBox ? `calc(${taskIdx * columnWidth / 2}% + 2px)` : `calc(${taskIdx * columnWidth}% + 2px)`; })(),
+                                    width: (() => { if (stackInConflict) return 'calc(100% - 4px)'; const overlayCols = multiHourOverlayCols.get(`${dayIdx}-${hour}`) || 0; const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); if (overlayCols > 0) { const totalC = overlayCols + totalItems; return `calc(100% / ${totalC} - 4px)`; } return hasNextDueBox ? `calc(${columnWidth / 2}% - 4px)` : `calc(${columnWidth}% - 4px)`; })(),
                                     minHeight: `${taskHeight}px`,
                                     zIndex: selectedTaskId === task.id ? 57 : (draggedTask?.id === task.id ? 56 : 54 + taskIdx),
                                     background: bgGradient,
