@@ -37598,10 +37598,29 @@ function ProfileForm({
   const handleSchoolLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 2 * 1024 * 1024) return;
-    const reader = new FileReader();
-    reader.onload = () => { setSchoolLogoPreview(reader.result as string); };
-    reader.readAsDataURL(file);
+    if (file.size > 5 * 1024 * 1024) return;
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const maxW = 300;
+      const maxH = 150;
+      let w = img.width;
+      let h = img.height;
+      if (w > maxW || h > maxH) {
+        const ratio = Math.min(maxW / w, maxH / h);
+        w = Math.round(w * ratio);
+        h = Math.round(h * ratio);
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d')!;
+      ctx.drawImage(img, 0, 0, w, h);
+      const dataUrl = canvas.toDataURL('image/png', 0.9);
+      setSchoolLogoPreview(dataUrl);
+      URL.revokeObjectURL(url);
+    };
+    img.src = url;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
