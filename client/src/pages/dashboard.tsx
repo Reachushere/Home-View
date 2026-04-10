@@ -37773,7 +37773,7 @@ function ProfileForm({
           )}
         </div>
         <div className="ml-auto self-start">
-          <img src={tmuLogo} alt="School Logo" style={{ height: '84px', objectFit: 'contain' }} data-testid="img-profile-school-logo" />
+          <img src={tmuLogo} alt="School Logo" style={{ height: '42px', objectFit: 'contain' }} data-testid="img-profile-school-logo" />
         </div>
       </div>
       <div className="flex gap-5" style={{ marginTop: '12px' }}>
