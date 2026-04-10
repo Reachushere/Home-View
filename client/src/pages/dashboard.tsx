@@ -27657,38 +27657,38 @@ export default function Dashboard() {
             }}
           />
 
-          {/* Today View button - below glass backing, left-aligned */}
+          {/* Current button - below glass backing, left-aligned */}
           <Button
             variant="ghost"
             className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white/60 border-0 leading-tight fixed"
             data-tpo data-tpo-opacity="1"
             style={{ bottom: `${calendarBottom - 18}px`, left: `${calendarLeft + 9}px`, zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
-            onClick={() => setDayDetailDate(startOfDayET(new Date()))}
-            data-testid="button-today-view"
+            onClick={() => {
+              if (calendarView === "month") {
+                setCurrentMonth(new Date());
+              } else {
+                const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : 1;
+                setSelectedWeek(cw);
+                scrollHomeworkToWeek(cw);
+              }
+            }}
+            data-testid="button-current-view"
           >
-            Today View
+            Current
           </Button>
           <div
             className="fixed"
             data-tpo data-tpo-opacity="1"
-            style={{ bottom: `${calendarBottom - 18}px`, left: `${calendarLeft + 76}px`, zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'center', gap: '6px' }}
+            style={{ bottom: `${calendarBottom - 18}px`, left: `${calendarLeft + 60}px`, zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'center', gap: '6px' }}
           >
             <div style={{ width: '1px', height: '12px', background: 'rgba(255,255,255,0.5)', marginLeft: '6px', marginBottom: '5px' }} />
             <Button
               variant="ghost"
               className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white/60 border-0 leading-tight"
-              onClick={() => {
-                if (calendarView === "month") {
-                  setCurrentMonth(new Date());
-                } else {
-                  const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : 1;
-                  setSelectedWeek(cw);
-                  scrollHomeworkToWeek(cw);
-                }
-              }}
-              data-testid="button-current-view"
+              onClick={() => setDayDetailDate(startOfDayET(new Date()))}
+              data-testid="button-today-view"
             >
-              Current
+              Today View
             </Button>
             <div style={{ width: '1px', height: '12px', background: 'rgba(255,255,255,0.5)', marginLeft: '6px', marginBottom: '5px' }} />
             <Button
@@ -31842,32 +31842,32 @@ export default function Dashboard() {
             }}
           />
 
-          {/* Today View button */}
+          {/* Current button */}
           <Button
             variant="ghost"
             className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white/60 border-0 leading-tight fixed"
             data-tpo data-tpo-opacity="1"
             style={{ bottom: `${calendarBottom - 18}px`, left: `${calendarLeft + 9}px`, zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
-            onClick={() => setDayDetailDate(startOfDayET(new Date()))}
-            data-testid="button-today-view-month"
+            onClick={() => {
+              setCurrentMonth(new Date());
+            }}
+            data-testid="button-current-view-month"
           >
-            Today View
+            Current
           </Button>
           <div
             className="fixed"
             data-tpo data-tpo-opacity="1"
-            style={{ bottom: `${calendarBottom - 18}px`, left: `${calendarLeft + 76}px`, zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'center', gap: '6px' }}
+            style={{ bottom: `${calendarBottom - 18}px`, left: `${calendarLeft + 60}px`, zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'center', gap: '6px' }}
           >
             <div style={{ width: '1px', height: '12px', background: 'rgba(255,255,255,0.5)', marginLeft: '6px', marginBottom: '5px' }} />
             <Button
               variant="ghost"
               className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white/60 border-0 leading-tight"
-              onClick={() => {
-                setCurrentMonth(new Date());
-              }}
-              data-testid="button-current-view-month"
+              onClick={() => setDayDetailDate(startOfDayET(new Date()))}
+              data-testid="button-today-view-month"
             >
-              Current
+              Today View
             </Button>
             <div style={{ width: '1px', height: '12px', background: 'rgba(255,255,255,0.5)', marginLeft: '6px', marginBottom: '5px' }} />
             <Button
