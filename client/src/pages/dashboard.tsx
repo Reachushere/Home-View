@@ -11624,17 +11624,22 @@ export default function Dashboard() {
           return { start: corrected.start, end: corrected.end };
         }
       }
-      const midDate2 = new Date(approx.start.getTime() + 7 * 24 * 60 * 60 * 1000);
+      let nearestSem: any = null;
+      let nearestDiff = Infinity;
       for (const sem of sems) {
         if (!sem.semesterStartDate) continue;
         const ss = new Date(sem.semesterStartDate);
-        const rw = sem.readingWeekStart || null;
-        const wn = getWeekNumber(midDate2, ss, rw);
-        const maxWeek = getSemesterTotalWeeks(sem.semesterType);
-        if (wn === 1) {
-          const corrected = getWeekDates(1, ss, rw);
-          return { start: corrected.start, end: corrected.end };
+        ss.setHours(12, 0, 0, 0);
+        const diff = ss.getTime() - midDate.getTime();
+        if (diff > 0 && diff < 21 * 24 * 60 * 60 * 1000 && diff < nearestDiff) {
+          nearestDiff = diff;
+          nearestSem = sem;
         }
+      }
+      if (nearestSem) {
+        const ss = new Date(nearestSem.semesterStartDate);
+        const corrected = getWeekDates(1, ss, nearestSem.readingWeekStart || null);
+        return { start: corrected.start, end: corrected.end };
       }
     }
     return { start: approx.start, end: approx.end };
