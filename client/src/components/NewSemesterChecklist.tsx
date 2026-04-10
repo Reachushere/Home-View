@@ -26,9 +26,10 @@ interface Props {
   };
   onDismiss: () => void;
   noBackdrop?: boolean;
+  printerIconRight?: number;
 }
 
-export default function NewSemesterChecklist({ semesterKey, semesterLabel, colorSettings, onDismiss, noBackdrop }: Props) {
+export default function NewSemesterChecklist({ semesterKey, semesterLabel, colorSettings, onDismiss, noBackdrop, printerIconRight }: Props) {
   const [minimized, setMinimized] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [popupDismissed, setPopupDismissed] = useState(() => {
@@ -168,8 +169,8 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
       <div
         className="fixed z-[10003] cursor-pointer"
         style={{
-          bottom: '29px',
-          left: 'calc(50% + 55px)',
+          bottom: '34px',
+          right: printerIconRight != null ? `${printerIconRight + 22}px` : 'calc(50% + 55px)',
           display: 'flex',
           alignItems: 'center',
           gap: '4px',

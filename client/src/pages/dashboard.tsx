@@ -20677,6 +20677,7 @@ export default function Dashboard() {
             localStorage.setItem(`newSemChecklist_dismissed_${newSemChecklistKey}`, 'true');
             setShowNewSemChecklist(false);
           }}
+          printerIconRight={calendarRight - calendarReduction + 72}
         />
       )}
       {/* Left binder tab - Add */}
