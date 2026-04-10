@@ -334,6 +334,9 @@ const defaultCourseDisplayNames: Record<string, string> = {
   "CPPA122": "CPPA122-LP",
   "CFNF400": "CFNF400-HS",
   "CASL101": "CASL101 ASL",
+  "CECN210": "Economics",
+  "CPHL110": "Philosophy of Religion",
+  "CHIS105": "Popular Culture",
 };
 
 // Helper function to get display name for course row labels (uses dynamic state)

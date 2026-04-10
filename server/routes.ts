@@ -2020,15 +2020,75 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
 
       if (existing) {
         const courseSlots = [
-          { idx: 1, oldCode: existing.course1Code, oldName: existing.course1Name, newCode: updated.course1Code, newName: updated.course1Name },
-          { idx: 2, oldCode: existing.course2Code, oldName: existing.course2Name, newCode: updated.course2Code, newName: updated.course2Name },
-          { idx: 3, oldCode: existing.course3Code, oldName: existing.course3Name, newCode: updated.course3Code, newName: updated.course3Name },
+          { idx: 1, oldCode: existing.course1Code, oldName: existing.course1Name, newCode: updated.course1Code, newName: updated.course1Name,
+            oldDisplayName: (existing as any).course1DisplayName, newDisplayName: (updated as any).course1DisplayName },
+          { idx: 2, oldCode: existing.course2Code, oldName: existing.course2Name, newCode: updated.course2Code, newName: updated.course2Name,
+            oldDisplayName: (existing as any).course2DisplayName, newDisplayName: (updated as any).course2DisplayName },
+          { idx: 3, oldCode: existing.course3Code, oldName: existing.course3Name, newCode: updated.course3Code, newName: updated.course3Name,
+            oldDisplayName: (existing as any).course3DisplayName, newDisplayName: (updated as any).course3DisplayName },
         ];
         for (const slot of courseSlots) {
-          const oldDisplayName = slot.oldName === 'To Be Determined' || slot.oldName === 'TBD' ? 'To Be Determined' : (slot.oldName || 'To Be Determined');
-          const oldFolderSuffix = `${slot.oldCode || 'TBD'} - ${oldDisplayName}`;
+          const oldNameForFolder = slot.oldName === 'To Be Determined' || slot.oldName === 'TBD' ? 'To Be Determined' : (slot.oldName || 'To Be Determined');
+          const oldFolderSuffix = `${slot.oldCode || 'TBD'} - ${oldNameForFolder}`;
           const codeChanged = slot.oldCode !== slot.newCode;
           const nameChanged = slot.oldName !== slot.newName;
+          const displayNameChanged = slot.oldDisplayName !== slot.newDisplayName && slot.newDisplayName && !codeChanged && !nameChanged;
+          if (displayNameChanged && slot.newCode) {
+            const newFolderName = `${slot.newCode} - ${slot.newDisplayName}`;
+            try {
+              const { renameOneDriveFolder } = await import("./onedrive");
+              const yearMatch = existing.semesterName?.match(/\d{4}/);
+              const year = yearMatch ? yearMatch[0] : new Date().getFullYear().toString();
+              const semFolderMap: Record<string, string[]> = {
+                'fall': ['Fall'], 'winter': ['Winter'],
+                'spring_summer': ['Spring & Summer', 'Spring_Summer', 'Spring Summer', 'Spring-Summer'],
+              };
+              const folderNames = semFolderMap[existing.semesterType || ''] || [existing.semesterType || ''];
+              const springSummerSubs = ['Full', 'Spring - First Half', 'Summer - Second Half'];
+              let renamed = false;
+              for (const fn of folderNames) {
+                const basePath = `/School/1. TMU/Courses/${year}/${fn}`;
+                try {
+                  const result = await renameOneDriveFolder(`${basePath}/${oldFolderSuffix}`, newFolderName);
+                  if (result.renamed) {
+                    console.log(`[Semester] DisplayName rename OneDrive folder: ${oldFolderSuffix} -> ${newFolderName}`);
+                    renamed = true;
+                    break;
+                  }
+                } catch {}
+                if (existing.semesterType === 'spring_summer') {
+                  for (const sub of springSummerSubs) {
+                    try {
+                      const result = await renameOneDriveFolder(`${basePath}/${sub}/${oldFolderSuffix}`, newFolderName);
+                      if (result.renamed) {
+                        console.log(`[Semester] DisplayName rename OneDrive folder in ${sub}: ${oldFolderSuffix} -> ${newFolderName}`);
+                        renamed = true;
+                        break;
+                      }
+                    } catch {}
+                  }
+                  if (renamed) break;
+                }
+              }
+              if (renamed) {
+                const nameUpdate: Record<string, string> = { [`course${slot.idx}Name`]: slot.newDisplayName };
+                const modKey = `course${slot.idx}ModuleFolder`;
+                const readKey = `course${slot.idx}ReadingFolder`;
+                const oldMod = (updated as any)[modKey] as string | null;
+                const oldRead = (updated as any)[readKey] as string | null;
+                if (oldMod && oldMod.includes(oldFolderSuffix)) {
+                  nameUpdate[modKey] = oldMod.replace(oldFolderSuffix, newFolderName);
+                }
+                if (oldRead && oldRead.includes(oldFolderSuffix)) {
+                  nameUpdate[readKey] = oldRead.replace(oldFolderSuffix, newFolderName);
+                }
+                await storage.updateSemesterSettings(id, nameUpdate);
+                console.log(`[Semester] Updated courseName and folder paths for display name change: ${JSON.stringify(nameUpdate)}`);
+              }
+            } catch (e: any) {
+              console.error(`[Semester] Failed to rename OneDrive folder for display name change:`, e.message);
+            }
+          }
           if ((codeChanged || nameChanged) && slot.newCode && slot.newName) {
             const newFolderName = buildCourseFolderName(slot.newCode, slot.newName);
             try {
@@ -11532,7 +11592,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           if (!slot.code) continue;
           const isTBD = slot.code.toLowerCase().startsWith('tbd');
 
-          const expectedFolderName = `${slot.code} - ${slot.name}`;
+          const expectedFolderName = buildCourseFolderName(slot.code, slot.name || '');
 
           const subFolders: string[] = [];
           if (isSpSu && slot.term) {
@@ -11637,6 +11697,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
               const newFolderName = foundFolder.name;
               const modKey = `course${slot.idx}ModuleFolder`;
               const readKey = `course${slot.idx}ReadingFolder`;
+              const displayKey = `course${slot.idx}DisplayName`;
               const oldMod = (semester as any)[modKey] as string | null;
               const oldRead = (semester as any)[readKey] as string | null;
               if (oldMod && oldMod.includes(oldFolderSuffix)) {
@@ -11644,6 +11705,9 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
               }
               if (oldRead && oldRead.includes(oldFolderSuffix)) {
                 updates[readKey] = oldRead.replace(oldFolderSuffix, newFolderName);
+              }
+              if (updates[`course${slot.idx}Name`]) {
+                updates[displayKey] = updates[`course${slot.idx}Name`];
               }
 
               await storage.updateSemesterSettings(semester.id, updates);
@@ -12989,8 +13053,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     'CFNF400': 'Human Sexuality',
     'CASL101': 'Sign Language',
     'CECN210': 'Economics',
-    'CPHL110': 'Philosophy',
-    'CHIS105': 'History',
+    'CPHL110': 'Philosophy of Religion',
+    'CHIS105': 'Popular Culture',
   };
 
   function describeFileForTTS(file: any, weekNumber: number): string {
