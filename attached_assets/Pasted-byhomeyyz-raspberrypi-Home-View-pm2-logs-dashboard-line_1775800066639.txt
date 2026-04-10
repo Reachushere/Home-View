@@ -1,0 +1,42 @@
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs dashboard --lines 200 | grep -A2 -B2 "Cat Lights"
+0|dashboar |     at /home/byhomeyyz/Home-View/dist/index.cjs:759:27010
+0|dashboar |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+0|dashboar | [Cat Lights HA Voice Pre-Wake] fetch attempt 1/3 failed: HTTP 500: 500 Internal Server Error
+0|dashboar |
+0|dashboar | Server got itself in trouble — retrying in 1500ms
+0|dashboar | [Cat Lights HA Voice Pre-Wake] fetch attempt 2/3 failed: HTTP 500: 500 Internal Server Error
+0|dashboar |
+0|dashboar | Server got itself in trouble — retrying in 3000ms
+0|dashboar | [HA Safe] Cat Lights HA Voice Pre-Wake media_player/turn_on failed: [Cat Lights HA Voice Pre-Wake] All 3 fetch attempts failed: HTTP 500: 500 Internal Server Error
+0|dashboar |
+0|dashboar | Server got itself in trouble — queuing for retry
+0|dashboar | [OneDrive Monitor] Error checking folder renames: column "course1_course_font_color" does not exist
+0|dashboar | [Cat Lights HA Voice Pre-Wake [Replayed]] fetch attempt 1/3 failed: HTTP 500: 500 Internal Server Error
+0|dashboar |
+0|dashboar | Server got itself in trouble — retrying in 1500ms
+0|dashboar | [Cat Lights HA Voice Pre-Wake [Replayed]] fetch attempt 2/3 failed: HTTP 500: 500 Internal Server Error
+0|dashboar |
+0|dashboar | Server got itself in trouble — retrying in 3000ms
+0|dashboar | [HA Queue] Replay failed (attempt 2): Cat Lights HA Voice Pre-Wake media_player/turn_on — moved to back of queue
+0|dashboar | [Edge TTS] Attempt 1 failed: Timed out
+0|dashboar | [OneDrive Monitor] Error checking folder renames: column "course1_course_font_color" does not exist
+--
+0|dashboar | [Edge TTS] Attempt 1 failed: Timed out
+0|dashboar | [OneDrive Monitor] Error checking folder renames: column "course1_course_font_color" does not exist
+0|dashboar | [Cat Lights HA Voice Pre-Wake [Replayed]] fetch attempt 1/3 failed: HTTP 500: 500 Internal Server Error
+0|dashboar |
+0|dashboar | Server got itself in trouble — retrying in 1500ms
+0|dashboar | [Cat Lights HA Voice Pre-Wake [Replayed]] fetch attempt 2/3 failed: HTTP 500: 500 Internal Server Error
+0|dashboar |
+0|dashboar | Server got itself in trouble — retrying in 3000ms
+0|dashboar | [HA Queue] Giving up on: Cat Lights HA Voice Pre-Wake media_player/turn_on after 3 attempts
+0|dashboar | [Edge TTS] Attempt 1 failed: Timed out
+0|dashboar | [OneDrive Monitor] Error checking folder renames: column "course1_course_font_color" does not exist
+psql "$DATABASE_URL" -c "
+ALTER TABLE semester_settings ADD COLUMN IF NOT EXISTS course1_course_font_color text;
+ALTER TABLE semester_settings ADD COLUMN IF NOT EXISTS course2_course_font_color text;
+ALTER TABLE semester_settings ADD COLUMN IF NOT EXISTS course3_course_font_color text;
+ALTER TABLE semester_settings ADD COLUMN IF NOT EXISTS course1_display_name text;
+ALTER TABLE semester_settings ADD COLUMN IF NOT EXISTS course2_display_name text;
+ALTER TABLE semester_settings ADD COLUMN IF NOT EXISTS course3_display_name text;
+"

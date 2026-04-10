@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { X, Plus, Trash2, Bold, Italic, List, Type, Palette, Upload, Download, FileText, Image, File, Loader2, Pencil, Check, FolderPlus, ChevronDown, ChevronRight, Eraser } from 'lucide-react';
+import { X, Plus, Trash2, Bold, Italic, List, Type, Palette, Upload, Download, FileText, Image, File, Loader2, Pencil, Check, FolderPlus, ChevronDown, ChevronRight, Eraser, Search, ArrowUp, ArrowDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 
@@ -82,6 +82,13 @@ export default function NotepadDialog({ isOpen, onClose, colorSettings }: Notepa
   const [showGroupAssign, setShowGroupAssign] = useState<number | null>(null);
   const [newGroupName, setNewGroupName] = useState('');
   const [showNewGroupInput, setShowNewGroupInput] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<{ noteId: number; noteTitle: string; snippets: string[] }[]>([]);
+  const [currentMatchIndex, setCurrentMatchIndex] = useState(0);
+  const [totalMatches, setTotalMatches] = useState(0);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const highlightMarkIdRef = useRef(0);
 
   const { data: notes = [], isLoading } = useQuery<NotepadNote[]>({
     queryKey: ['/api/notepad/notes'],
@@ -290,6 +297,123 @@ export default function NotepadDialog({ isOpen, onClose, colorSettings }: Notepa
       queryClient.invalidateQueries({ queryKey: ['/api/notepad/notes', activeNoteId, 'attachments'] });
     },
   });
+
+  const clearSearchHighlights = useCallback(() => {
+    if (!editorRef.current) return;
+    const marks = editorRef.current.querySelectorAll('mark[data-search-highlight]');
+    marks.forEach(mark => {
+      const parent = mark.parentNode;
+      if (parent) {
+        const text = document.createTextNode(mark.textContent || '');
+        parent.replaceChild(text, mark);
+        parent.normalize();
+      }
+    });
+  }, []);
+
+  const performSearchInEditor = useCallback((query: string) => {
+    clearSearchHighlights();
+    if (!query.trim() || !editorRef.current) {
+      setTotalMatches(0);
+      setCurrentMatchIndex(0);
+      return;
+    }
+    const walker = document.createTreeWalker(editorRef.current, NodeFilter.SHOW_TEXT, null);
+    const textNodes: Text[] = [];
+    while (walker.nextNode()) textNodes.push(walker.currentNode as Text);
+    const lowerQuery = query.toLowerCase();
+    let matchCount = 0;
+    highlightMarkIdRef.current++;
+    const batchId = highlightMarkIdRef.current;
+    textNodes.forEach(node => {
+      const text = node.textContent || '';
+      const lowerText = text.toLowerCase();
+      let idx = lowerText.indexOf(lowerQuery);
+      if (idx === -1) return;
+      const frag = document.createDocumentFragment();
+      let lastIdx = 0;
+      while (idx !== -1) {
+        if (idx > lastIdx) frag.appendChild(document.createTextNode(text.slice(lastIdx, idx)));
+        const mark = document.createElement('mark');
+        mark.setAttribute('data-search-highlight', String(batchId));
+        mark.setAttribute('data-match-index', String(matchCount));
+        mark.style.backgroundColor = matchCount === 0 ? '#f59e0b' : '#fde68a';
+        mark.style.color = '#000';
+        mark.style.borderRadius = '2px';
+        mark.style.padding = '0 1px';
+        mark.textContent = text.slice(idx, idx + query.length);
+        frag.appendChild(mark);
+        matchCount++;
+        lastIdx = idx + query.length;
+        idx = lowerText.indexOf(lowerQuery, lastIdx);
+      }
+      if (lastIdx < text.length) frag.appendChild(document.createTextNode(text.slice(lastIdx)));
+      node.parentNode?.replaceChild(frag, node);
+    });
+    setTotalMatches(matchCount);
+    setCurrentMatchIndex(matchCount > 0 ? 0 : 0);
+    if (matchCount > 0) {
+      const first = editorRef.current.querySelector('mark[data-match-index="0"]');
+      first?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [clearSearchHighlights]);
+
+  const navigateMatch = useCallback((direction: 'next' | 'prev') => {
+    if (totalMatches === 0 || !editorRef.current) return;
+    const newIdx = direction === 'next'
+      ? (currentMatchIndex + 1) % totalMatches
+      : (currentMatchIndex - 1 + totalMatches) % totalMatches;
+    setCurrentMatchIndex(newIdx);
+    const marks = editorRef.current.querySelectorAll('mark[data-search-highlight]');
+    marks.forEach((m, i) => {
+      (m as HTMLElement).style.backgroundColor = i === newIdx ? '#f59e0b' : '#fde68a';
+    });
+    const target = editorRef.current.querySelector(`mark[data-match-index="${newIdx}"]`);
+    target?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, [currentMatchIndex, totalMatches]);
+
+  const searchAllNotes = useCallback((query: string) => {
+    if (!query.trim()) { setSearchResults([]); return; }
+    const lowerQ = query.toLowerCase();
+    const results: { noteId: number; noteTitle: string; snippets: string[] }[] = [];
+    notes.forEach(note => {
+      const div = document.createElement('div');
+      div.innerHTML = note.content || '';
+      const plainText = div.textContent || '';
+      const lowerPlain = plainText.toLowerCase();
+      const snippets: string[] = [];
+      let sIdx = lowerPlain.indexOf(lowerQ);
+      while (sIdx !== -1 && snippets.length < 3) {
+        const start = Math.max(0, sIdx - 30);
+        const end = Math.min(plainText.length, sIdx + query.length + 30);
+        snippets.push((start > 0 ? '...' : '') + plainText.slice(start, end) + (end < plainText.length ? '...' : ''));
+        sIdx = lowerPlain.indexOf(lowerQ, sIdx + query.length);
+      }
+      if (snippets.length > 0) results.push({ noteId: note.id, noteTitle: note.title, snippets });
+    });
+    setSearchResults(results);
+  }, [notes]);
+
+  const handleSearchChange = useCallback((query: string) => {
+    setSearchQuery(query);
+    performSearchInEditor(query);
+    searchAllNotes(query);
+  }, [performSearchInEditor, searchAllNotes]);
+
+  const closeSearch = useCallback(() => {
+    clearSearchHighlights();
+    setSearchOpen(false);
+    setSearchQuery('');
+    setSearchResults([]);
+    setTotalMatches(0);
+    setCurrentMatchIndex(0);
+  }, [clearSearchHighlights]);
+
+  useEffect(() => {
+    if (searchOpen && searchQuery) {
+      performSearchInEditor(searchQuery);
+    }
+  }, [activeNoteId]);
 
   const existingGroups = Array.from(new Set(notes.map(n => n.groupName).filter(Boolean))) as string[];
   const ungroupedNotes = notes.filter(n => !n.groupName);
@@ -505,6 +629,15 @@ export default function NotepadDialog({ isOpen, onClose, colorSettings }: Notepa
                 </div>
               )}
             </div>
+            <div className="w-px h-4 bg-white/20 mx-1" />
+            <button
+              onClick={() => { if (searchOpen) { closeSearch(); } else { setSearchOpen(true); setTimeout(() => searchInputRef.current?.focus(), 50); } }}
+              className={`p-1 rounded hover:bg-white/10 ${searchOpen ? 'text-yellow-400' : 'text-white/70 hover:text-white'}`}
+              title="Search (Ctrl+F)"
+              data-testid="button-search-notepad"
+            >
+              <Search className="h-3.5 w-3.5" />
+            </button>
             <div className="flex-1" />
             <Button
               size="sm"
@@ -517,6 +650,54 @@ export default function NotepadDialog({ isOpen, onClose, colorSettings }: Notepa
               {saving ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : null}
               Save
             </Button>
+          </div>
+        )}
+
+        {searchOpen && (
+          <div className="flex items-center gap-2 px-3 py-1.5 border-b border-white/15 flex-shrink-0" style={{ background: 'rgba(0,0,0,0.25)' }} data-testid="search-bar">
+            <Search className="h-3.5 w-3.5 text-white/40 flex-shrink-0" />
+            <input
+              ref={searchInputRef}
+              type="text"
+              value={searchQuery}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') { e.preventDefault(); navigateMatch(e.shiftKey ? 'prev' : 'next'); }
+                if (e.key === 'Escape') { e.preventDefault(); closeSearch(); }
+              }}
+              className="flex-1 bg-white/10 border border-white/20 rounded px-2 py-0.5 text-[11px] text-white outline-none focus:border-white/40 placeholder:text-white/30"
+              placeholder="Search all notes..."
+              data-testid="input-search-notepad"
+            />
+            {searchQuery && (
+              <span className="text-[10px] text-white/50 flex-shrink-0">
+                {totalMatches > 0 ? `${currentMatchIndex + 1}/${totalMatches}` : 'No matches'}
+              </span>
+            )}
+            <button onClick={() => navigateMatch('prev')} className="p-0.5 rounded hover:bg-white/10 text-white/50 hover:text-white disabled:opacity-30" disabled={totalMatches === 0} data-testid="button-search-prev"><ArrowUp className="h-3 w-3" /></button>
+            <button onClick={() => navigateMatch('next')} className="p-0.5 rounded hover:bg-white/10 text-white/50 hover:text-white disabled:opacity-30" disabled={totalMatches === 0} data-testid="button-search-next"><ArrowDown className="h-3 w-3" /></button>
+            <button onClick={closeSearch} className="p-0.5 rounded hover:bg-white/10 text-white/40 hover:text-white" data-testid="button-search-close"><X className="h-3 w-3" /></button>
+          </div>
+        )}
+
+        {searchOpen && searchQuery && searchResults.length > 0 && searchResults.some(r => r.noteId !== activeNoteId) && (
+          <div className="border-b border-white/15 flex-shrink-0 overflow-y-auto" style={{ background: 'rgba(0,0,0,0.2)', maxHeight: '100px' }} data-testid="search-results-panel">
+            <div className="px-3 py-1">
+              <span className="text-[9px] text-white/40 uppercase tracking-wider">Results in other notes</span>
+            </div>
+            {searchResults.filter(r => r.noteId !== activeNoteId).map(r => (
+              <div
+                key={r.noteId}
+                className="px-3 py-1 cursor-pointer hover:bg-white/10 transition-colors"
+                onClick={() => { setActiveNoteId(r.noteId); }}
+                data-testid={`search-result-note-${r.noteId}`}
+              >
+                <div className="text-[10px] text-white/80 font-medium">{r.noteTitle}</div>
+                {r.snippets.map((s, i) => (
+                  <div key={i} className="text-[9px] text-white/40 truncate">{s}</div>
+                ))}
+              </div>
+            ))}
           </div>
         )}
 
@@ -548,6 +729,7 @@ export default function NotepadDialog({ isOpen, onClose, colorSettings }: Notepa
                     if ((e.metaKey || e.ctrlKey) && e.key === 'b') { e.preventDefault(); execCommand('bold'); }
                     if ((e.metaKey || e.ctrlKey) && e.key === 'i') { e.preventDefault(); execCommand('italic'); }
                     if ((e.metaKey || e.ctrlKey) && e.key === 's') { e.preventDefault(); handleManualSave(); }
+                    if ((e.metaKey || e.ctrlKey) && e.key === 'f') { e.preventDefault(); setSearchOpen(true); setTimeout(() => searchInputRef.current?.focus(), 50); }
                   }}
                   data-testid="input-notepad"
                 />
