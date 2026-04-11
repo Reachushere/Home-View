@@ -168,7 +168,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   const seededRand = ((file.id * 2654435761) >>> 0) / 4294967296;
   const spineWidth = 28 + seededRand * 12;
   const bookHeight = shelfHeight - 24 - (index % 3) * 6;
-  const title = truncateSpineTitle(file.displayName || file.originalName, 28, !!file.displayName && file.displayName !== file.originalName);
+  const title = truncateSpineTitle((file.displayName || file.originalName).replace(/\.pdf$/i, ''), 28, !!file.displayName && file.displayName !== file.originalName);
   const weekNum = file.folder?.match(/^week-(\d+)/)?.[1] || '';
   const fileType = getFileType(file.folder);
   const patternIdx = (index + courseCode.charCodeAt(0)) % SPINE_PATTERNS.length;
@@ -672,7 +672,8 @@ function BookReader({ file, bookColor, onClose, pdfUrl }: {
   const pendingCommentInputRef = useRef<HTMLInputElement>(null);
   const [readerPos, setReaderPos] = useState<{ x: number; y: number } | null>(null);
   const readerDragRef = useRef<{ startX: number; startY: number; startPosX: number; startPosY: number } | null>(null);
-  const title = truncateSpineTitle(file.displayName || file.originalName, 80, !!file.displayName && file.displayName !== file.originalName);
+  const rawTitle = (file.displayName || file.originalName).replace(/\.pdf$/i, '');
+  const title = truncateSpineTitle(rawTitle, 80, !!file.displayName && file.displayName !== file.originalName);
 
   const { data: annotations = [], refetch: refetchAnnotations } = useQuery<Annotation[]>({
     queryKey: ['/api/files', file.id, 'annotations'],
@@ -2507,7 +2508,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                         }}>{r.fileFormat}</span>
                       )}
                       <span style={{ fontSize: '14px', color: '#fff', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {r.file.displayName || r.file.originalName}
+                        {(r.file.displayName || r.file.originalName).replace(/\.pdf$/i, '')}
                       </span>
                     </div>
                     <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)', marginTop: '3px' }}>
