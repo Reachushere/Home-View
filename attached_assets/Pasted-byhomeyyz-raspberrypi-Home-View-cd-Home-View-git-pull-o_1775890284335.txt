@@ -1,0 +1,37 @@
+byhomeyyz@raspberrypi:~/Home-View $ cd ~/Home-View && git pull origin main && npm run build && fuser -k 5000/tcp; sleep 2 && pm2 delete dashboard; pm2 start dist/index.cjs --name dashboard --cwd /home/byhomeyyz/Home-View --node-args="-r /home/byhomeyyz/Home-View/preload.cjs" && pm2 save
+remote: Enumerating objects: 60, done.
+remote: Counting objects: 100% (60/60), done.
+remote: Compressing objects: 100% (28/28), done.
+remote: Total 44 (delta 37), reused 22 (delta 16), pack-reused 0 (from 0)
+Unpacking objects: 100% (44/44), 350.42 KiB | 1.13 MiB/s, done.
+From https://github.com/Reachushere/Home-View
+ * branch                main       -> FETCH_HEAD
+   aba0986af..3f1903150  main       -> origin/main
+Updating d06b775e4..3f1903150
+Fast-forward
+ attached_assets/MASTER_AUTOMATIONS_GUIDE_-_APRIL_9_1775888797092.pdf        |  Bin 0 -> 263751 bytes
+ ...history-and-particularly-cross-national-comparative-hi_1775888479931.txt |   79 +++
+ ...AT-WASHROOM-READING-AUTOMATION-COMPLETE-REFERENCE-Ever_1775888777169.txt |  312 ++++++++++
+ ...yhomeyyz-raspberrypi-Home-View-pm2-logs-dashboard-line_1775888441981.txt |  888 +++++++++++++++++++++++++++
+ attached_assets/UniCal_Master_Guide_April_2026_1775888810353.md             | 1123 +++++++++++++++++++++++++++++++++++
+ client/src/App.tsx                                                          |   10 -
+ client/src/components/CourseDetailDialog.tsx                                |   60 +-
+ client/src/components/NewSemesterChecklist.tsx                              |    2 -
+ client/src/pages/dashboard.tsx                                              |  316 +++++++---
+ server/routes.ts                                                            |  831 ++++++++------------------
+ server/storage.ts                                                           |   41 +-
+ shared/schema.ts                                                            |   26 -
+ 12 files changed, 2893 insertions(+), 795 deletions(-)
+ create mode 100644 attached_assets/MASTER_AUTOMATIONS_GUIDE_-_APRIL_9_1775888797092.pdf
+ create mode 100644 attached_assets/Pasted--history-and-particularly-cross-national-comparative-hi_1775888479931.txt
+ create mode 100644 attached_assets/Pasted-CAT-WASHROOM-READING-AUTOMATION-COMPLETE-REFERENCE-Ever_1775888777169.txt
+ create mode 100644 attached_assets/Pasted-byhomeyyz-raspberrypi-Home-View-pm2-logs-dashboard-line_1775888441981.txt
+ create mode 100644 attached_assets/UniCal_Master_Guide_April_2026_1775888810353.md
+npm warn Unknown builtin config "globalignorefile". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> rest-express@1.0.0 build
+> tsx script/build.ts
+
+building client...
+vite v7.3.0 building client environment for production...
+✓ 2976 modules transformed.
