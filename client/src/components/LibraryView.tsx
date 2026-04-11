@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
-import { X, ChevronLeft, ChevronRight, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check } from 'lucide-react';
 import * as pdfjsLib from 'pdfjs-dist';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 
@@ -315,6 +315,7 @@ function BookReader({ file, bookColor, onClose }: {
   const [highlightColor, setHighlightColor] = useState(HIGHLIGHT_COLORS[0]);
   const [showAnnotations, setShowAnnotations] = useState(false);
   const [activeToolPanel, setActiveToolPanel] = useState<'none' | 'highlight' | 'comment' | 'bookmark'>('none');
+  const [saved, setSaved] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -534,6 +535,9 @@ function BookReader({ file, bookColor, onClose }: {
                 </button>
                 <button onClick={() => setShowAnnotations(!showAnnotations)} style={toolBtnStyle(showAnnotations)} title="View Annotations" data-testid="btn-annotations">
                   <BookOpen size={14} />
+                </button>
+                <button onClick={() => { refetchAnnotations().then(() => { setSaved(true); setTimeout(() => setSaved(false), 2000); }); }} style={toolBtnStyle(saved)} title="Save Changes" data-testid="btn-save-pdf">
+                  {saved ? <Check size={14} /> : <Save size={14} />}
                 </button>
                 <button onClick={() => { const a = document.createElement('a'); a.href = `/api/files/${file.id}/download`; a.download = file.originalName || 'document.pdf'; a.click(); }} style={toolBtnStyle()} title="Download PDF" data-testid="btn-download-pdf">
                   <Download size={14} />
