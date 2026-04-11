@@ -367,7 +367,6 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const groupRef = useRef<HTMLDivElement>(null);
-  const [portalPos, setPortalPos] = useState<{ left: number; bottom: number; width: number; height: number } | null>(null);
   const leaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const cancelLeave = useCallback(() => {
@@ -376,20 +375,11 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
 
   const scheduleLeave = useCallback(() => {
     cancelLeave();
-    leaveTimerRef.current = setTimeout(() => setIsHovered(false), 80);
+    leaveTimerRef.current = setTimeout(() => setIsHovered(false), 120);
   }, [cancelLeave]);
 
   const handleMouseEnter = useCallback(() => {
     cancelLeave();
-    if (groupRef.current) {
-      const rect = groupRef.current.getBoundingClientRect();
-      setPortalPos({
-        left: rect.left + rect.width / 2,
-        bottom: window.innerHeight - rect.bottom,
-        width: rect.width,
-        height: rect.height,
-      });
-    }
     setIsHovered(true);
   }, [cancelLeave]);
 
@@ -413,45 +403,86 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
           gap: '2px',
           flexShrink: 0,
           position: 'relative',
-          opacity: isHovered ? 0.15 : 1,
-          transition: 'opacity 0.15s',
         }}
       >
         {clonedChildren(false)}
       </div>
-      {isHovered && portalPos && createPortal(
+      {isHovered && createPortal(
         <div
-          onMouseEnter={cancelLeave}
           onMouseLeave={scheduleLeave}
+          onMouseEnter={cancelLeave}
           style={{
             position: 'fixed',
-            left: `${portalPos.left}px`,
-            bottom: `${portalPos.bottom}px`,
-            transform: 'translateX(-50%) scale(2)',
-            transformOrigin: 'bottom center',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 9998,
             display: 'flex',
-            alignItems: 'flex-end',
-            gap: '2px',
-            zIndex: 9999,
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'rgba(0,0,0,0.7)',
+            backdropFilter: 'blur(6px)',
+            animation: 'weekOverlayFadeIn 0.25s ease-out',
             pointerEvents: 'auto',
-            animation: 'weekGroupPopIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
           }}
+          onClick={() => setIsHovered(false)}
         >
-          {clonedChildren(true)}
-          <div style={{
-            position: 'absolute',
-            top: '-12px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            fontSize: '6px',
-            fontWeight: 700,
-            color: '#FDDC00',
-            whiteSpace: 'nowrap',
-            textShadow: '0 1px 4px rgba(0,0,0,0.8)',
-            letterSpacing: '0.5px',
-            pointerEvents: 'none',
-          }}>
-            Week {weekNum}
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              animation: 'weekBooksSlideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            }}
+          >
+            <div style={{
+              fontSize: '14px',
+              fontWeight: 700,
+              color: '#FDDC00',
+              letterSpacing: '1.5px',
+              textShadow: '0 2px 8px rgba(0,0,0,0.8)',
+              marginBottom: '16px',
+              textTransform: 'uppercase',
+            }}>
+              Week {weekNum}
+            </div>
+            <div style={{
+              display: 'flex',
+              alignItems: 'flex-end',
+              gap: '6px',
+              transform: 'scale(3)',
+              transformOrigin: 'bottom center',
+              padding: '0 20px',
+            }}>
+              {clonedChildren(true)}
+            </div>
+            <div style={{
+              width: '100%',
+              maxWidth: '90vw',
+              marginTop: '0px',
+            }}>
+              <div className="shelf-wood" style={{
+                height: '14px',
+                borderRadius: '0 0 4px 4px',
+                width: '100%',
+              }} />
+              <div className="shelf-front" style={{
+                height: '18px',
+                borderRadius: '0 0 6px 6px',
+                marginTop: '-1px',
+                width: '100%',
+              }} />
+            </div>
+            <div style={{
+              fontSize: '11px',
+              color: 'rgba(255,255,255,0.4)',
+              marginTop: '20px',
+              letterSpacing: '0.5px',
+            }}>
+              Click a book to open · Click outside to close
+            </div>
           </div>
         </div>,
         document.body

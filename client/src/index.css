@@ -276,9 +276,14 @@ button[role="combobox"] > span {
   animation: pill-nudge 18s ease-in-out infinite !important;
 }
 
-@keyframes weekGroupPopIn {
-  0% { transform: translateX(-50%) scale(1); opacity: 0.6; }
-  100% { transform: translateX(-50%) scale(2); opacity: 1; }
+@keyframes weekOverlayFadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes weekBooksSlideUp {
+  0% { transform: translateY(40px) scale(0.9); opacity: 0; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
 }
 
 @keyframes bottom-pill-container-nudge {
