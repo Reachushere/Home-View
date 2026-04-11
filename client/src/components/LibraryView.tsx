@@ -2090,24 +2090,24 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           return (
             <>
               <select value={masterSemFilter} onChange={e => setMasterSemFilter(e.target.value)} style={activeStyle(masterSemFilter)} data-testid="select-master-sem-filter">
-                <option value="all">Semester</option>
+                <option value="all">All Semesters</option>
                 {semesters.map(s => (<option key={s.key} value={s.key}>{s.label}</option>))}
               </select>
               <select value={masterCourseFilter} onChange={e => setMasterCourseFilter(e.target.value)} style={activeStyle(masterCourseFilter)} data-testid="select-master-course-filter">
-                <option value="all">Course</option>
+                <option value="all">All Courses</option>
                 {allCoursesForSearch.map(c => (<option key={c} value={c}>{c}</option>))}
               </select>
               <select value={masterWeekFilter} onChange={e => setMasterWeekFilter(e.target.value)} style={activeStyle(masterWeekFilter)} data-testid="select-master-week-filter">
-                <option value="all">Week</option>
+                <option value="all">All Weeks</option>
                 {availableWeeks.map(w => (<option key={w} value={String(w)}>Week {w}</option>))}
               </select>
               <select value={masterTypeFilter} onChange={e => setMasterTypeFilter(e.target.value as any)} style={activeStyle(masterTypeFilter)} data-testid="select-master-type-filter">
-                <option value="all">Type</option>
+                <option value="all">All Types</option>
                 <option value="module">Module</option>
                 <option value="reading">Reading</option>
               </select>
               <select value={masterFormatFilter} onChange={e => setMasterFormatFilter(e.target.value)} style={activeStyle(masterFormatFilter)} data-testid="select-master-format-filter">
-                <option value="all">Format</option>
+                <option value="all">All Formats</option>
                 {availableFormats.map(f => (<option key={f} value={f}>.{f.toUpperCase()}</option>))}
               </select>
               <select value={masterSortBy} onChange={e => setMasterSortBy(e.target.value as any)} style={{ ...filterStyle, borderColor: masterSortBy !== 'relevance' ? 'rgba(218,165,32,0.6)' : undefined, background: masterSortBy !== 'relevance' ? 'rgba(218,165,32,0.15)' : filterStyle.background }} data-testid="select-master-sort">
