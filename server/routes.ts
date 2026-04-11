@@ -12798,7 +12798,22 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     }
   }, 15000);
 
-  const extractionFailedFileIds = new Set<number>();
+  const EXTRACTION_FAILED_FILE = path.join(process.cwd(), 'persistent-uploads', 'extraction-failed-ids.json');
+  let extractionFailedFileIds = new Set<number>();
+  try {
+    if (fs.existsSync(EXTRACTION_FAILED_FILE)) {
+      const saved = JSON.parse(fs.readFileSync(EXTRACTION_FAILED_FILE, 'utf-8'));
+      extractionFailedFileIds = new Set(saved);
+      console.log(`[FileOrder] Loaded ${extractionFailedFileIds.size} extraction-failed IDs from disk: [${[...extractionFailedFileIds].join(', ')}]`);
+    }
+  } catch (e: any) {
+    console.log(`[FileOrder] Could not load extraction-failed IDs: ${e.message}`);
+  }
+  function persistExtractionFailedIds() {
+    try {
+      fs.writeFileSync(EXTRACTION_FAILED_FILE, JSON.stringify([...extractionFailedFileIds]));
+    } catch {}
+  }
 
   async function findNextFileByPriority(allFiles: any[], currentWeekNumber: number, excludeFileId?: number): Promise<any | null> {
     console.log(`[FileOrder] Searching ${allFiles.length} total files for week ${currentWeekNumber} (priorities: ${JSON.stringify(coursePlayPriority)})`);
@@ -13863,6 +13878,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       if (chunks.length === 0) {
         aLog('Nest-Playback', `No chunks for "${fileName}" (id=${fileId}) — text extraction failed, NOT marking listened (will retry later)`);
         extractionFailedFileIds.add(fileId);
+        persistExtractionFailedIds();
         await clearPlaybackSession();
         try {
           const allFiles = await storage.getFiles();
