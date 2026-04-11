@@ -31455,7 +31455,7 @@ export default function Dashboard() {
                                   const borderColor = task.isCompleted ? '#d1d5db' : hasCourseGrad ? gradColors.start : (typeFallbackBorder[task.type] || otherRowColors.borderColor);
                                   return {
                                     top: `${topOffset}px`,
-                                    left: (() => { if (stackInConflict) return '2px'; const overlayCols = multiHourOverlayCols.get(`${dayIdx}-${hour}`) || 0; const narrowInfo = veryLongTaskNarrowCols.get(`${dayIdx}-${hour}`); const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); if (narrowInfo) { const narrowPct = narrowInfo.narrowFrac * 100; if (overlayCols > 0) { return `calc(${narrowPct}% + ${taskIdx * (100 - narrowPct) / totalItems}% + 2px)`; } return `calc(${taskIdx * (100 - narrowPct) / totalItems}% + 2px)`; } if (overlayCols > 0) { const inlineCol = overlayCols; const totalC = overlayCols + totalItems; return `calc(${inlineCol + taskIdx} / ${totalC} * 100% + 2px)`; } return hasNextDueBox ? `calc(${taskIdx * columnWidth / 2}% + 2px)` : `calc(${taskIdx * columnWidth}% + 2px)`; })(),
+                                    left: (() => { if (stackInConflict) return '2px'; const overlayCols = multiHourOverlayCols.get(`${dayIdx}-${hour}`) || 0; const narrowInfo = veryLongTaskNarrowCols.get(`${dayIdx}-${hour}`); const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); if (narrowInfo) { return `calc(${taskIdx * (100 - narrowInfo.narrowFrac * 100) / totalItems}% + 2px)`; } if (overlayCols > 0) { const inlineCol = overlayCols; const totalC = overlayCols + totalItems; return `calc(${inlineCol + taskIdx} / ${totalC} * 100% + 2px)`; } return hasNextDueBox ? `calc(${taskIdx * columnWidth / 2}% + 2px)` : `calc(${taskIdx * columnWidth}% + 2px)`; })(),
                                     width: (() => { if (stackInConflict) return 'calc(100% - 4px)'; const overlayCols = multiHourOverlayCols.get(`${dayIdx}-${hour}`) || 0; const narrowInfo = veryLongTaskNarrowCols.get(`${dayIdx}-${hour}`); const currentHourNow = new Date().getHours(); const hasNextDueBox = isToday && isCurrentHour && !(currentHourNow >= 21 || currentHourNow < 6); if (narrowInfo) { const availPct = (1 - narrowInfo.narrowFrac) * 100; return `calc(${availPct / totalItems}% - 4px)`; } if (overlayCols > 0) { const totalC = overlayCols + totalItems; return `calc(100% / ${totalC} - 4px)`; } return hasNextDueBox ? `calc(${columnWidth / 2}% - 4px)` : `calc(${columnWidth}% - 4px)`; })(),
                                     minHeight: `${taskHeight}px`,
                                     zIndex: selectedTaskId === task.id ? 57 : (draggedTask?.id === task.id ? 56 : 54 + taskIdx),
@@ -31865,8 +31865,8 @@ export default function Dashboard() {
                         const narrowW = `${VERY_LONG_NARROW_FRAC * 100}%`;
                         return (
                           <>
-                            <div style={{ position: 'absolute', top: `${vlHeaderPx}px`, left: 0, width: narrowW, bottom: 0, background: bgGradient, border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1.5px solid ${borderColor}`, borderTop: 'none', borderRadius: '0 0 0 4px', pointerEvents: 'auto', zIndex: 0 }} />
-                            <div style={{ position: 'absolute', top: `${vlHeaderPx - 2}px`, left: 0, width: narrowW, height: '4px', background: bgGradient, pointerEvents: 'none', zIndex: 1 }} />
+                            <div style={{ position: 'absolute', top: `${vlHeaderPx}px`, right: 0, width: narrowW, bottom: 0, background: bgGradient, border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1.5px solid ${borderColor}`, borderTop: 'none', borderRadius: '0 0 4px 0', pointerEvents: 'auto', zIndex: 0 }} />
+                            <div style={{ position: 'absolute', top: `${vlHeaderPx - 2}px`, right: 0, width: narrowW, height: '4px', background: bgGradient, pointerEvents: 'none', zIndex: 1 }} />
                           </>
                         );
                       })()}
@@ -31878,10 +31878,12 @@ export default function Dashboard() {
                         const bgGradient = task.isCompleted ? '#e5e7eb' : taskBg ? taskBg : `linear-gradient(180deg, ${otherRowColors.labelStart}, ${otherRowColors.labelEnd})`;
                         const borderColor = task.isCompleted ? '#d1d5db' : hasCourseGrad ? gradColors!.start : otherRowColors.borderColor;
                         return (
-                          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: `${vlHeaderPx}px`, background: bgGradient, border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1.5px solid ${borderColor}`, borderRadius: '4px 4px 4px 0', overflow: 'hidden', display: 'flex', flexDirection: 'column', pointerEvents: 'auto', zIndex: 1 }} />
+                          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: `${vlHeaderPx}px`, background: bgGradient, border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1.5px solid ${borderColor}`, borderBottom: 'none', borderRadius: '4px 4px 0 4px', overflow: 'visible', display: 'flex', flexDirection: 'column', pointerEvents: 'auto', zIndex: 1 }}>
+                            <div style={{ position: 'absolute', bottom: 0, left: 0, right: `${VERY_LONG_NARROW_FRAC * 100}%`, height: '1.5px', background: borderColor, zIndex: 2 }} />
+                          </div>
                         );
                       })()}
-                      <div style={isVeryLong ? { position: 'absolute', top: 0, left: 0, right: 0, height: `${vlHeaderPx}px`, overflow: 'hidden', display: 'flex', flexDirection: 'column', pointerEvents: 'auto', zIndex: 2, borderRadius: '4px 4px 4px 0' } : { display: 'contents' }}>
+                      <div style={isVeryLong ? { position: 'absolute', top: 0, left: 0, right: 0, height: `${vlHeaderPx}px`, overflow: 'hidden', display: 'flex', flexDirection: 'column', pointerEvents: 'auto', zIndex: 2, borderRadius: '4px 4px 0 4px' } : { display: 'contents' }}>
                       {task.showCountdownBarMain !== false && !task.isCompleted && oi.col === 0 && (() => {
                         const dueDateObj = new Date(task.dueDate);
                         const nowCd = new Date();
