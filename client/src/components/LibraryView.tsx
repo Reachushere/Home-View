@@ -165,7 +165,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
 }) {
   const seededRand = ((file.id * 2654435761) >>> 0) / 4294967296;
   const spineWidth = 28 + seededRand * 12;
-  const bookHeight = shelfHeight - 14 - (index % 3) * 6;
+  const bookHeight = shelfHeight - 24 - (index % 3) * 6;
   const title = truncateSpineTitle(file.displayName || file.originalName, 28, !!file.displayName && file.displayName !== file.originalName);
   const weekNum = file.folder?.match(/^week-(\d+)/)?.[1] || '';
   const fileType = getFileType(file.folder);
@@ -299,8 +299,7 @@ function WeekSeparator({ weekNum }: { weekNum: number }) {
   return (
     <div style={{
       width: '14px',
-      height: 'calc(100% + 80px)',
-      marginBottom: '-10px',
+      height: 'calc(100% + 30px)',
       flexShrink: 0,
       position: 'relative',
       display: 'flex',
@@ -366,6 +365,8 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, children }: {
 }) {
   const [isHovered, setIsHovered] = useState(false);
 
+  const hoverY = -(shelfHeight * 0.35);
+
   return (
     <>
       {showSeparator && <WeekSeparator weekNum={weekNum} />}
@@ -377,8 +378,8 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, children }: {
           alignItems: 'flex-end',
           gap: '2px',
           flexShrink: 0,
-          transition: 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)',
-          transform: isHovered ? 'translateY(-30px) scale(1.18)' : 'translateY(0) scale(1)',
+          transition: 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+          transform: isHovered ? `translateY(${hoverY}px) scale(2)` : 'translateY(0) scale(1)',
           transformOrigin: 'bottom center',
           zIndex: isHovered ? 50 : 1,
           position: 'relative',
@@ -393,10 +394,10 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, children }: {
         {isHovered && (
           <div style={{
             position: 'absolute',
-            top: '-18px',
+            top: '-12px',
             left: '50%',
             transform: 'translateX(-50%)',
-            fontSize: '10px',
+            fontSize: '6px',
             fontWeight: 700,
             color: '#FDDC00',
             whiteSpace: 'nowrap',
@@ -415,66 +416,86 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, children }: {
 function Bookend({ side }: { side: 'left' | 'right' }) {
   return (
     <div style={{
-      width: '22px',
-      height: 'calc(100% + 110px)',
-      marginBottom: '-10px',
-      alignSelf: 'flex-end',
-      background: side === 'left'
-        ? 'linear-gradient(90deg, #005BB5 0%, #004C9B 15%, #003F87 40%, #003670 70%, #002D5C 100%)'
-        : 'linear-gradient(90deg, #002D5C 0%, #003670 30%, #003F87 60%, #004C9B 85%, #005BB5 100%)',
-      borderRadius: side === 'left' ? '5px 1px 1px 5px' : '1px 5px 5px 1px',
-      boxShadow: side === 'left'
-        ? 'inset 3px 0 8px rgba(255,255,255,0.15), -4px 0 12px rgba(0,0,0,0.5), inset 0 3px 6px rgba(255,255,255,0.08), inset 0 -3px 6px rgba(0,0,0,0.2)'
-        : 'inset -3px 0 8px rgba(255,255,255,0.15), 4px 0 12px rgba(0,0,0,0.5), inset 0 3px 6px rgba(255,255,255,0.08), inset 0 -3px 6px rgba(0,0,0,0.2)',
       flexShrink: 0,
+      alignSelf: 'flex-end',
       position: 'relative',
-      borderTop: '1px solid rgba(255,255,255,0.08)',
-      borderBottom: '2px solid rgba(0,0,0,0.4)',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: side === 'left' ? 'flex-start' : 'flex-end',
     }}>
       <div style={{
+        width: '18px',
+        height: 'calc(100% + 40px)',
         position: 'absolute',
-        top: '8%',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        width: '12px',
-        height: '3px',
-        background: 'linear-gradient(90deg, transparent, #FDDC00, transparent)',
-        opacity: 0.5,
-        borderRadius: '1px',
-      }} />
+        bottom: '8px',
+        [side === 'left' ? 'left' : 'right']: '0px',
+        background: side === 'left'
+          ? 'linear-gradient(90deg, #005BB5 0%, #004C9B 15%, #003F87 40%, #003670 70%, #002D5C 100%)'
+          : 'linear-gradient(90deg, #002D5C 0%, #003670 30%, #003F87 60%, #004C9B 85%, #005BB5 100%)',
+        borderRadius: side === 'left' ? '4px 1px 0 0' : '1px 4px 0 0',
+        boxShadow: side === 'left'
+          ? 'inset 3px 0 8px rgba(255,255,255,0.15), -3px 0 10px rgba(0,0,0,0.4)'
+          : 'inset -3px 0 8px rgba(255,255,255,0.15), 3px 0 10px rgba(0,0,0,0.4)',
+        borderTop: '1px solid rgba(255,255,255,0.1)',
+        zIndex: 2,
+      }}>
+        <div style={{
+          position: 'absolute',
+          top: '10%',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '10px',
+          height: '2px',
+          background: '#FDDC00',
+          opacity: 0.5,
+          borderRadius: '1px',
+        }} />
+        <div style={{
+          position: 'absolute',
+          top: '15%',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '8px',
+          height: '70%',
+          background: 'linear-gradient(180deg, #FDDC00 0%, #C4A800 50%, #FDDC00 100%)',
+          borderRadius: '2px',
+          opacity: 0.35,
+        }} />
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%) rotate(45deg)',
+          width: '7px',
+          height: '7px',
+          border: '1px solid rgba(253,220,0,0.5)',
+          borderRadius: '1px',
+          opacity: 0.6,
+        }} />
+        <div style={{
+          position: 'absolute',
+          bottom: '10%',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '10px',
+          height: '2px',
+          background: '#FDDC00',
+          opacity: 0.5,
+          borderRadius: '1px',
+        }} />
+      </div>
       <div style={{
-        position: 'absolute',
-        top: '12%',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        width: '10px',
-        height: '76%',
-        background: 'linear-gradient(180deg, #FDDC00 0%, #E5C800 20%, #C4A800 40%, #A08A00 50%, #C4A800 60%, #E5C800 80%, #FDDC00 100%)',
-        borderRadius: '2px',
-        opacity: 0.4,
-        boxShadow: 'inset 0 0 3px rgba(0,0,0,0.3), 0 0 4px rgba(253,220,0,0.2)',
-      }} />
-      <div style={{
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%) rotate(45deg)',
-        width: '8px',
+        width: side === 'left' ? '60px' : '60px',
         height: '8px',
-        border: '1px solid rgba(253,220,0,0.5)',
-        borderRadius: '1px',
-        opacity: 0.6,
-      }} />
-      <div style={{
-        position: 'absolute',
-        bottom: '8%',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        width: '12px',
-        height: '3px',
-        background: 'linear-gradient(90deg, transparent, #FDDC00, transparent)',
-        opacity: 0.5,
-        borderRadius: '1px',
+        background: side === 'left'
+          ? 'linear-gradient(90deg, #005BB5, #003F87 30%, #002D5C)'
+          : 'linear-gradient(90deg, #002D5C, #003F87 70%, #005BB5)',
+        borderRadius: side === 'left' ? '3px 1px 1px 3px' : '1px 3px 3px 1px',
+        boxShadow: '0 2px 6px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1)',
+        position: 'relative',
+        zIndex: 3,
+        alignSelf: 'flex-end',
+        [side === 'left' ? 'marginRight' : 'marginLeft']: '-42px',
       }} />
     </div>
   );
