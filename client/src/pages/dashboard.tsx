@@ -24497,14 +24497,14 @@ export default function Dashboard() {
                                     <div className="flex items-center gap-1 mb-2">
                                       <span className="text-[9px]" style={{ color: '#fff', width: '48px', flexShrink: 0 }}>Module:</span>
                                       <span className="text-[9px] flex-1 truncate" style={{ color: hasModFolder ? '#fff' : '#ef4444' }} title={c.modFolder || 'Not set'}>
-                                        {hasModFolder ? c.modFolder!.split('/').slice(-2).join('/') : 'Not set'}
+                                        {hasModFolder ? c.modFolder! : 'Not set'}
                                       </span>
                                       <button className="text-[9px] hover:text-white/80 transition-colors" style={{ color: '#fff', padding: '0 4px', cursor: 'pointer', background: 'none', border: 'none', flexShrink: 0 }} onClick={() => { const startPath = hasModFolder ? c.modFolder! : '/School/1. TMU/Courses'; setHealthFolderBrowse({ semId: sem.id, courseIdx: c.idx, field: 'module' }); setHealthBrowsePath(startPath); setHealthBrowseLoading(true); fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(startPath)}`).then(r => r.json()).then(items => { setHealthBrowseItems(Array.isArray(items) ? items : []); setHealthBrowseLoading(false); }).catch(() => setHealthBrowseLoading(false)); }} data-testid={`browse-module-${sem.id}-${c.idx}`}>Browse</button>
                                     </div>
                                     <div className="flex items-center gap-1 mb-2">
                                       <span className="text-[9px]" style={{ color: '#fff', width: '48px', flexShrink: 0 }}>Reading:</span>
                                       <span className="text-[9px] flex-1 truncate" style={{ color: hasReadFolder ? '#fff' : '#ef4444' }} title={c.readFolder || 'Not set'}>
-                                        {hasReadFolder ? c.readFolder!.split('/').slice(-2).join('/') : 'Not set'}
+                                        {hasReadFolder ? c.readFolder! : 'Not set'}
                                       </span>
                                       <button className="text-[9px] hover:text-white/80 transition-colors" style={{ color: '#fff', padding: '0 4px', cursor: 'pointer', background: 'none', border: 'none', flexShrink: 0 }} onClick={() => { const startPath = hasReadFolder ? c.readFolder! : '/School/1. TMU/Courses'; setHealthFolderBrowse({ semId: sem.id, courseIdx: c.idx, field: 'reading' }); setHealthBrowsePath(startPath); setHealthBrowseLoading(true); fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(startPath)}`).then(r => r.json()).then(items => { setHealthBrowseItems(Array.isArray(items) ? items : []); setHealthBrowseLoading(false); }).catch(() => setHealthBrowseLoading(false)); }} data-testid={`browse-reading-${sem.id}-${c.idx}`}>Browse</button>
                                     </div>
