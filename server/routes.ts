@@ -3450,6 +3450,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
   }
 
   async function checkRawStoryTop3() {
+    return;
     try {
       await loadLastTopThree();
 
@@ -3565,13 +3566,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
-  if (process.env.NODE_ENV === 'production' || process.env.REPL_DEPLOYMENT) {
-    setInterval(checkRawStoryTop3, 10 * 60 * 1000);
-    setTimeout(checkRawStoryTop3, 30000);
-    console.log('[Raw Story] Top-3 change monitor started (checking every 10 minutes)');
-  } else {
-    console.log('[Raw Story] Monitor DISABLED in development (only runs in production)');
-  }
+  console.log('[Raw Story] Monitor PERMANENTLY DISABLED — no emails will be sent');
 
   app.get("/api/ha/news", async (_req, res) => {
     try {
