@@ -1,10 +1,10 @@
 const fs = require('fs');
 const path = require('path');
-const CLIENT_ID = 'd3590ed6-52b3-4102-aeff-aad2292ab01c';
-const SCOPES = 'https://graph.microsoft.com/Files.ReadWrite.All https://graph.microsoft.com/User.Read offline_access';
+const CLIENT_ID = '14d82eec-204b-4c2f-b7e8-296a70dab67e';
+const SCOPES = 'Files.ReadWrite.All User.Read Notes.ReadWrite.All Mail.ReadWrite Mail.Send Calendars.ReadWrite offline_access';
 
 async function main() {
-  console.log('Starting OneDrive device code auth (Microsoft Office client)...\n');
+  console.log('Starting OneDrive device code auth...\n');
   const dcRes = await fetch('https://login.microsoftonline.com/common/oauth2/v2.0/devicecode', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -16,6 +16,7 @@ async function main() {
   console.log('========================================');
   console.log(`Go to: ${dc.verification_uri}`);
   console.log(`Enter code: ${dc.user_code}`);
+  console.log('Sign in with your Outlook account');
   console.log('========================================\n');
   console.log('Waiting for you to confirm...\n');
 
@@ -38,17 +39,16 @@ async function main() {
       });
       const data = await res.json();
       if (data.access_token) {
-        console.log(`Poll #${pollCount}: GOT TOKEN!`);
+        console.log(`\nPoll #${pollCount}: GOT TOKEN!`);
         const tokenFile = path.join(process.cwd(), '.onedrive_tokens.json');
         const tokens = {
           refresh_token: data.refresh_token,
           access_token: data.access_token,
           expires_at: Date.now() + (data.expires_in || 3600) * 1000,
-          client_id: CLIENT_ID,
         };
         fs.writeFileSync(tokenFile, JSON.stringify(tokens, null, 2));
-        console.log(`\nSuccess! Token saved to ${tokenFile}`);
-        console.log('Now restart the app: pm2 restart dashboard');
+        console.log(`Success! Token saved to ${tokenFile}`);
+        console.log('Now run: npm run build && pm2 restart dashboard');
         process.exit(0);
       }
       if (data.error === 'authorization_pending') {
