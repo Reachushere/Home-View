@@ -4917,65 +4917,52 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
           return res.status(404).json({ error: "File not found locally or in object storage" });
         }
       } else if (mediaUrl.startsWith("onedrive://")) {
-        // OneDrive file - look up the actual download URL from OneDrive
         const fileName = mediaUrl.split('/').pop() || '';
         const folderPart = mediaUrl.replace('onedrive://', '').split('/')[0] || '';
-        const parts = folderPart.split('-');
-        const weekNum = parts[1];
-        const courseCode = parts[2]?.toUpperCase();
+        const folderMatch2 = folderPart.match(/^week-(\d+)-(.+?)-(reading|module)$/i);
         
-        if (courseCode && weekNum) {
+        if (folderMatch2 && fileName) {
+          const [, globalWeekStr, courseCode, subType] = folderMatch2;
+          const globalWeek = parseInt(globalWeekStr);
           try {
-            const activeSem = await storage.getActiveSemesterSettings();
-            const semStartDate = activeSem?.semesterStartDate ? new Date(activeSem.semesterStartDate) : new Date();
-            const semYear = semStartDate.getFullYear();
-            const semFolderVariants = (() => {
-              const t = (activeSem?.semesterType || 'winter').toLowerCase();
-              if (t.includes('spring') || t.includes('summer')) return ['Spring & Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer'];
-              if (t.includes('fall')) return ['Fall'];
-              return ['Winter'];
-            })();
-            let basePath = `/School/1. TMU/Courses/${semYear}/${semFolderVariants[0]}`;
-            let baseFolders: any[] = [];
-            for (const variant of semFolderVariants) {
-              const tryPath = `/School/1. TMU/Courses/${semYear}/${variant}`;
-              try {
-                baseFolders = await listOneDriveItems(tryPath);
-                basePath = tryPath;
-                break;
-              } catch {}
-            }
-            const matchedFolder = baseFolders.find((f: any) => 
-              f.type === 'folder' && f.name.toUpperCase().startsWith(courseCode)
-            );
-            if (matchedFolder) {
-              const courseFolders = await listOneDriveItems(matchedFolder.path);
-              const weekFolder = courseFolders.find((f: any) => 
-                f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${weekNum}`)
-              );
+            const allSems = await storage.getAllSemesterSettings();
+            const sortedSems = [...allSems].sort((a, b) => {
+              const aDate = a.semesterStartDate ? new Date(a.semesterStartDate).getTime() : 0;
+              const bDate = b.semesterStartDate ? new Date(b.semesterStartDate).getTime() : 0;
+              return aDate - bDate;
+            });
+            const semIdx = Math.floor((globalWeek - 1) / 13);
+            const localWeek = ((globalWeek - 1) % 13) + 1;
+            const matchedSem = semIdx < sortedSems.length ? sortedSems[semIdx] : sortedSems[sortedSems.length - 1];
+            if (!matchedSem) throw new Error('No semester found');
+            const courses = await getSemesterOneDriveCourses(matchedSem);
+            const code = courseCode.replace(/\s/g, '').toUpperCase();
+            const matchedCourse = courses.find((c: any) => c.code.toUpperCase() === code);
+            if (matchedCourse) {
+              const weekFolders = await listOneDriveItems(matchedCourse.path);
+              const weekFolder = weekFolders.find((f: any) => {
+                const m = f.name.match(/Week\s+(\d+)/i);
+                return f.type === 'folder' && m && parseInt(m[1]) === localWeek;
+              });
               if (weekFolder) {
                 const weekContents = await listOneDriveItems(weekFolder.path);
-                const typeFolder = weekContents.find((f: any) => 
-                  f.type === 'folder' && f.name.toLowerCase().includes(folderPart.includes('reading') ? 'reading' : 'module')
-                );
+                const typeFolder = weekContents.find((f: any) => f.type === 'folder' && f.name.toLowerCase().includes(subType));
                 if (typeFolder) {
                   const files = await listOneDriveItems(typeFolder.path);
                   const matchedFile = files.find((f: any) => f.name === fileName);
                   if (matchedFile?.downloadUrl) {
+                    console.log(`[Download] OneDrive direct: ${fileName} from ${matchedCourse.code} week ${localWeek}`);
                     const pdfResponse = await fetch(matchedFile.downloadUrl);
                     if (pdfResponse.ok && pdfResponse.body) {
                       res.setHeader('Content-Type', 'application/pdf');
                       res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
                       const reader = pdfResponse.body.getReader();
-                      const pump = async () => {
-                        while (true) {
-                          const { done, value } = await reader.read();
-                          if (done) break;
-                          res.write(value);
-                        }
-                        res.end();
-                      };
-                      await pump();
+                      while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+                        res.write(value);
+                      }
+                      res.end();
                       return;
                     }
                   }
@@ -5081,6 +5068,15 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     } catch (err) {
       console.error("Error deleting annotation:", err);
       res.status(500).json({ error: "Failed to delete annotation" });
+    }
+  });
+
+  app.post("/api/library/sync", async (_req, res) => {
+    try {
+      syncAllSemesterLibraryFiles('[LibrarySync:Manual]').catch(() => {});
+      res.json({ status: 'sync started' });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
     }
   });
 
@@ -12429,6 +12425,104 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       console.log(`${logPrefix} OneDrive sync complete`);
     } catch (e: any) { console.log(`${logPrefix} OneDrive sync failed: ${e.message}`); }
   }
+
+  async function syncAllSemesterLibraryFiles(logPrefix: string = '[LibrarySync]'): Promise<void> {
+    try {
+      const { listOneDriveItems, isOneDriveConnected } = await import("./onedrive");
+      if (!isOneDriveConnected()) {
+        console.log(`${logPrefix} OneDrive not connected — skipping library sync`);
+        return;
+      }
+      const allSems = await storage.getAllSemesterSettings();
+      if (!allSems || allSems.length === 0) return;
+      const sortedSems = [...allSems].sort((a, b) => {
+        const aDate = a.semesterStartDate ? new Date(a.semesterStartDate).getTime() : 0;
+        const bDate = b.semesterStartDate ? new Date(b.semesterStartDate).getTime() : 0;
+        return aDate - bDate;
+      });
+      const existingFiles = await storage.getFiles();
+      const existingSet = new Set(existingFiles.map((f: any) => `${f.folder}::${f.originalName}`));
+      let totalSynced = 0;
+
+      for (let semIdx = 0; semIdx < sortedSems.length; semIdx++) {
+        const sem = sortedSems[semIdx];
+        const weeksPerSem = 13;
+        const globalWeekStart = semIdx * weeksPerSem + 1;
+        try {
+          const courses = await getSemesterOneDriveCourses(sem);
+          if (courses.length === 0) continue;
+          const isSpSu = (sem.semesterType || '').toLowerCase().includes('spring') || (sem.semesterType || '').toLowerCase().includes('summer');
+
+          for (const course of courses) {
+            try {
+              const weekFolders = await listOneDriveItems(course.path);
+              const weekDirs = weekFolders.filter((f: any) => f.type === 'folder' && /Week\s+\d+/i.test(f.name));
+
+              for (const weekDir of weekDirs) {
+                const weekMatch = weekDir.name.match(/Week\s+(\d+)/i);
+                if (!weekMatch) continue;
+                const folderWeekNum = parseInt(weekMatch[1], 10);
+                if (folderWeekNum < 1 || folderWeekNum > 13) continue;
+
+                let globalWeek = globalWeekStart + folderWeekNum - 1;
+                if (isSpSu) {
+                  for (let ci = 1; ci <= 3; ci++) {
+                    const cc = ((sem as any)[`course${ci}Code`] || '').replace(/\s/g, '');
+                    if (cc === course.code) {
+                      const spsuTerm = ((sem as any)[`course${ci}SpringSummerTerm`] || 'full').toLowerCase();
+                      if (spsuTerm === 'second_half') {
+                        globalWeek = globalWeekStart + folderWeekNum + 7 - 1;
+                      }
+                      break;
+                    }
+                  }
+                }
+
+                const weekContents = await listOneDriveItems(weekDir.path);
+                for (const subType of ['module', 'reading']) {
+                  const subFolder = weekContents.find((f: any) => f.type === 'folder' && f.name.toLowerCase().includes(subType));
+                  if (!subFolder) continue;
+                  const subFiles = await listOneDriveItems(subFolder.path);
+                  for (const file of subFiles) {
+                    if (file.type !== 'file' || !file.name.toLowerCase().endsWith('.pdf')) continue;
+                    const folderName = `week-${globalWeek}-${course.code.toLowerCase()}-${subType}`;
+                    const key = `${folderName}::${file.name}`;
+                    if (existingSet.has(key)) continue;
+                    const objectPath = `onedrive://${folderName}/${file.name}`;
+                    await storage.createFile({
+                      originalName: file.name,
+                      displayName: file.name,
+                      objectPath,
+                      contentType: 'application/pdf',
+                      size: file.size || 0,
+                      folder: folderName,
+                      listened: false,
+                    });
+                    existingSet.add(key);
+                    totalSynced++;
+                  }
+                }
+              }
+            } catch (e: any) {
+              console.log(`${logPrefix} Error syncing course ${course.code}: ${e.message}`);
+            }
+          }
+        } catch (e: any) {
+          console.log(`${logPrefix} Error syncing semester ${sem.semesterName || semIdx}: ${e.message}`);
+        }
+      }
+      if (totalSynced > 0) {
+        console.log(`${logPrefix} Synced ${totalSynced} new files from OneDrive across ${sortedSems.length} semesters`);
+      } else {
+        console.log(`${logPrefix} All library files up to date`);
+      }
+    } catch (e: any) {
+      console.log(`${logPrefix} Library sync failed: ${e.message}`);
+    }
+  }
+
+  setTimeout(() => { syncAllSemesterLibraryFiles('[LibrarySync:Startup]').catch(() => {}); }, 30000);
+  setInterval(() => { syncAllSemesterLibraryFiles('[LibrarySync:Periodic]').catch(() => {}); }, 30 * 60 * 1000);
 
   let audioPreparationActive = false;
   let audioPreparationPaused = false;
