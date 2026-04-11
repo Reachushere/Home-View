@@ -45,6 +45,38 @@ const textLayerCSS = `
   cursor: default;
   user-select: none;
 }
+.book-spread {
+  transform-style: preserve-3d;
+  transition: none;
+}
+.book-page {
+  background: #fff;
+  border-radius: 2px;
+}
+.book-page-left {
+  border-right: none;
+  border-radius: 4px 0 0 4px;
+}
+.book-page-right {
+  border-left: none;
+  border-radius: 0 4px 4px 0;
+}
+@keyframes flipForward {
+  0% { transform: rotateY(0deg); }
+  50% { transform: rotateY(-15deg); }
+  100% { transform: rotateY(0deg); }
+}
+@keyframes flipBackward {
+  0% { transform: rotateY(0deg); }
+  50% { transform: rotateY(15deg); }
+  100% { transform: rotateY(0deg); }
+}
+.flip-forward {
+  animation: flipForward 0.4s ease-in-out;
+}
+.flip-backward {
+  animation: flipBackward 0.4s ease-in-out;
+}
 `;
 
 interface FileRecord {
@@ -360,8 +392,11 @@ function BookReader({ file, bookColor, onClose }: {
   const [pendingComment, setPendingComment] = useState<{ x: number; y: number } | null>(null);
   const [pendingCommentText, setPendingCommentText] = useState('');
   const [expandedCommentId, setExpandedCommentId] = useState<number | null>(null);
+  const [flipDirection, setFlipDirection] = useState<'none' | 'forward' | 'backward'>('none');
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasRightRef = useRef<HTMLCanvasElement>(null);
   const textLayerRef = useRef<HTMLDivElement>(null);
+  const textLayerRightRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -416,61 +451,73 @@ function BookReader({ file, bookColor, onClose }: {
     return () => { cancelled = true; };
   }, [file.id]);
 
+  const rightPage = currentPage + 1 <= totalPages ? currentPage + 1 : null;
+  const goToSpread = useCallback((pageNum: number) => {
+    const leftPage = pageNum % 2 === 1 ? pageNum : Math.max(1, pageNum - 1);
+    setCurrentPage(leftPage);
+  }, []);
+
+  const renderPageToCanvas = useCallback(async (pdfDoc: any, pageNum: number, canvas: HTMLCanvasElement, textLayer: HTMLDivElement | null, containerW: number, containerH: number) => {
+    const page = await pdfDoc.getPage(pageNum);
+    const ctx = canvas.getContext('2d')!;
+    const halfW = (containerW / 2) - 30;
+    const vp = page.getViewport({ scale: 1 });
+    const scaleW = halfW / vp.width;
+    const scaleH = containerH / vp.height;
+    const baseScale = Math.min(scaleW, scaleH);
+    const scale = baseScale * zoom;
+    const viewport = page.getViewport({ scale });
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+    await page.render({ canvasContext: ctx, viewport }).promise;
+    if (textLayer) {
+      textLayer.innerHTML = '';
+      textLayer.style.width = `${viewport.width}px`;
+      textLayer.style.height = `${viewport.height}px`;
+      const textContent = await page.getTextContent();
+      const measureCanvas = document.createElement('canvas');
+      const measureCtx = measureCanvas.getContext('2d')!;
+      const frag = document.createDocumentFragment();
+      for (const item of textContent.items as any[]) {
+        if (!item.str || !item.transform) continue;
+        const tx = pdfjsLib.Util.transform(viewport.transform, item.transform);
+        const fontHeight = Math.hypot(tx[2], tx[3]);
+        const span = document.createElement('span');
+        span.textContent = item.str;
+        span.style.fontSize = `${fontHeight}px`;
+        span.style.fontFamily = 'sans-serif';
+        span.style.left = `${tx[4]}px`;
+        span.style.top = `${tx[5] - fontHeight}px`;
+        if (item.width > 0 && item.str.length > 0) {
+          const scaledWidth = item.width * viewport.scale;
+          measureCtx.font = `${fontHeight}px sans-serif`;
+          const measuredWidth = measureCtx.measureText(item.str).width;
+          if (measuredWidth > 0) {
+            span.style.transform = `scaleX(${scaledWidth / measuredWidth})`;
+          }
+        }
+        frag.appendChild(span);
+      }
+      textLayer.appendChild(frag);
+    }
+  }, [zoom]);
+
   useEffect(() => {
     if (!pdfDoc || !canvasRef.current || !containerRef.current || phase !== 'reading') return;
     let cancelled = false;
-    pdfDoc.getPage(currentPage).then(async (page: any) => {
+    const container = containerRef.current;
+    const containerWidth = container.clientWidth - 40;
+    const containerHeight = container.clientHeight - 60;
+    (async () => {
       if (cancelled) return;
-      const container = containerRef.current!;
-      const canvas = canvasRef.current!;
-      const ctx = canvas.getContext('2d')!;
-      const containerWidth = container.clientWidth - 40;
-      const containerHeight = container.clientHeight - 60;
-      const vp = page.getViewport({ scale: 1 });
-      const scaleW = containerWidth / vp.width;
-      const scaleH = containerHeight / vp.height;
-      const baseScale = Math.min(scaleW, scaleH);
-      const scale = baseScale * zoom;
-      const viewport = page.getViewport({ scale });
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
-      await page.render({ canvasContext: ctx, viewport }).promise;
+      await renderPageToCanvas(pdfDoc, currentPage, canvasRef.current!, textLayerRef.current, containerWidth, containerHeight);
       if (cancelled) return;
-      const textLayerDiv = textLayerRef.current;
-      if (textLayerDiv) {
-        textLayerDiv.innerHTML = '';
-        textLayerDiv.style.width = `${viewport.width}px`;
-        textLayerDiv.style.height = `${viewport.height}px`;
-        const textContent = await page.getTextContent();
-        if (cancelled) return;
-        const measureCanvas = document.createElement('canvas');
-        const measureCtx = measureCanvas.getContext('2d')!;
-        const frag = document.createDocumentFragment();
-        for (const item of textContent.items as any[]) {
-          if (!item.str || !item.transform) continue;
-          const tx = pdfjsLib.Util.transform(viewport.transform, item.transform);
-          const fontHeight = Math.hypot(tx[2], tx[3]);
-          const span = document.createElement('span');
-          span.textContent = item.str;
-          span.style.fontSize = `${fontHeight}px`;
-          span.style.fontFamily = 'sans-serif';
-          span.style.left = `${tx[4]}px`;
-          span.style.top = `${tx[5] - fontHeight}px`;
-          if (item.width > 0 && item.str.length > 0) {
-            const scaledWidth = item.width * viewport.scale;
-            measureCtx.font = `${fontHeight}px sans-serif`;
-            const measuredWidth = measureCtx.measureText(item.str).width;
-            if (measuredWidth > 0) {
-              span.style.transform = `scaleX(${scaledWidth / measuredWidth})`;
-            }
-          }
-          frag.appendChild(span);
-        }
-        textLayerDiv.appendChild(frag);
+      if (rightPage && canvasRightRef.current) {
+        await renderPageToCanvas(pdfDoc, rightPage, canvasRightRef.current, textLayerRightRef.current, containerWidth, containerHeight);
       }
-    });
+    })();
     return () => { cancelled = true; };
-  }, [pdfDoc, currentPage, phase, zoom]);
+  }, [pdfDoc, currentPage, phase, zoom, rightPage, renderPageToCanvas]);
 
   const [searching, setSearching] = useState(false);
   const handleSearch = useCallback(async () => {
@@ -495,7 +542,7 @@ function BookReader({ file, bookColor, onClose }: {
       }
       setSearchResults(results);
       setSearchCurrentIdx(0);
-      if (results.length > 0) setCurrentPage(results[0].page);
+      if (results.length > 0) goToSpread(results[0].page);
     } finally {
       setSearching(false);
     }
@@ -527,7 +574,7 @@ function BookReader({ file, bookColor, onClose }: {
     if (searchResults.length === 0) return;
     const nextIdx = (searchCurrentIdx + dir + searchResults.length) % searchResults.length;
     setSearchCurrentIdx(nextIdx);
-    setCurrentPage(searchResults[nextIdx].page);
+    goToSpread(searchResults[nextIdx].page);
   }, [searchResults, searchCurrentIdx]);
 
   const toggleBookmark = useCallback(async () => {
@@ -543,16 +590,17 @@ function BookReader({ file, bookColor, onClose }: {
   const addComment = useCallback(async (text?: string, pos?: { x: number; y: number }) => {
     const content = (text || commentText).trim();
     if (!content) return;
-    const rects = pos ? JSON.stringify(pos) : undefined;
+    const rects = pos || undefined;
     await apiRequest('POST', `/api/files/${file.id}/annotations`, { page: currentPage, type: 'comment', content, rects });
     setCommentText('');
     setPendingComment(null);
     setPendingCommentText('');
+    setShowAnnotations(true);
     refetchAnnotations();
   }, [commentText, currentPage, file.id, refetchAnnotations]);
 
   const addHighlight = useCallback(async (pos?: { x: number; y: number }) => {
-    const rects = pos ? JSON.stringify(pos) : undefined;
+    const rects = pos || undefined;
     await apiRequest('POST', `/api/files/${file.id}/annotations`, { page: currentPage, type: 'highlight', color: highlightColor, rects });
     refetchAnnotations();
   }, [currentPage, file.id, highlightColor, refetchAnnotations]);
@@ -758,7 +806,7 @@ function BookReader({ file, bookColor, onClose }: {
             <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
               <div
                 ref={containerRef}
-                style={{ flex: 1, margin: '0 0 0 28px', borderRadius: '4px 0 0 4px', overflow: 'auto', background: '#f5f5f0', display: 'flex', flexDirection: 'column', alignItems: zoom > 1 ? 'flex-start' : 'center', justifyContent: loading || !pdfDoc ? 'center' : 'flex-start', position: 'relative' }}
+                style={{ flex: 1, margin: '0 0 0 28px', borderRadius: '4px 0 0 4px', overflow: 'auto', background: '#3a3228', display: 'flex', flexDirection: 'column', alignItems: zoom > 1 ? 'flex-start' : 'center', justifyContent: loading || !pdfDoc ? 'center' : 'center', position: 'relative' }}
               >
                 <div ref={scrollRef} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '10px', minWidth: '100%' }}>
                   {loading ? (
@@ -768,9 +816,10 @@ function BookReader({ file, bookColor, onClose }: {
                       Failed to load PDF{errorMsg ? `: ${errorMsg}` : ''}
                     </div>
                   ) : (
-                    <>
+                    <div className={`book-spread ${flipDirection !== 'none' ? `flip-${flipDirection}` : ''}`} style={{ display: 'flex', gap: '0px', perspective: '2000px' }} onAnimationEnd={() => setFlipDirection('none')}>
                       <div
-                        style={{ position: 'relative', cursor: activeToolPanel === 'highlight' ? 'text' : activeToolPanel === 'comment' ? 'crosshair' : 'default' }}
+                        className="book-page book-page-left"
+                        style={{ position: 'relative', cursor: activeToolPanel === 'highlight' ? 'text' : activeToolPanel === 'comment' ? 'crosshair' : 'default', boxShadow: 'inset -8px 0 16px -6px rgba(0,0,0,0.15), 2px 2px 8px rgba(0,0,0,0.1)' }}
                         onClick={handleCanvasClick}
                       >
                         <canvas ref={canvasRef} style={{ display: 'block' }} />
@@ -925,8 +974,30 @@ function BookReader({ file, bookColor, onClose }: {
                         {pageBookmarked && (
                           <div style={{ position: 'absolute', top: 0, right: '16px', width: '20px', height: '32px', background: '#D4AF37', clipPath: 'polygon(0 0, 100% 0, 100% 100%, 50% 75%, 0 100%)', boxShadow: '0 2px 4px rgba(0,0,0,0.3)' }} />
                         )}
+                        <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: '1px', background: 'rgba(0,0,0,0.12)' }} />
                       </div>
-                    </>
+                      {rightPage ? (
+                        <div
+                          className="book-page book-page-right"
+                          style={{ position: 'relative', cursor: 'default', boxShadow: 'inset 8px 0 16px -6px rgba(0,0,0,0.15), -2px 2px 8px rgba(0,0,0,0.1)' }}
+                        >
+                          <canvas ref={canvasRightRef} style={{ display: 'block' }} />
+                          <div
+                            ref={textLayerRightRef}
+                            style={{ pointerEvents: 'auto' }}
+                            className="textLayer"
+                          />
+                          {annotations.filter(a => a.page === rightPage && a.type === 'bookmark').length > 0 && (
+                            <div style={{ position: 'absolute', top: 0, right: '16px', width: '20px', height: '32px', background: '#D4AF37', clipPath: 'polygon(0 0, 100% 0, 100% 100%, 50% 75%, 0 100%)', boxShadow: '0 2px 4px rgba(0,0,0,0.3)' }} />
+                          )}
+                          <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: '1px', background: 'rgba(0,0,0,0.12)' }} />
+                        </div>
+                      ) : (
+                        <div className="book-page book-page-right" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#e8e4dc', boxShadow: 'inset 8px 0 16px -6px rgba(0,0,0,0.15)', minWidth: '200px', minHeight: '300px' }}>
+                          <span style={{ color: '#999', fontSize: '13px', fontStyle: 'italic' }}>End of document</span>
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>
@@ -939,7 +1010,7 @@ function BookReader({ file, bookColor, onClose }: {
                     <>
                       <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '9px', fontWeight: 600, textTransform: 'uppercase', marginBottom: '4px', marginTop: '4px' }}>Bookmarks</div>
                       {bookmarks.map(b => (
-                        <div key={b.id} onClick={() => setCurrentPage(b.page)} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 6px', borderRadius: '3px', cursor: 'pointer', background: currentPage === b.page ? 'rgba(212,175,55,0.15)' : 'transparent', marginBottom: '2px' }}>
+                        <div key={b.id} onClick={() => goToSpread(b.page)} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 6px', borderRadius: '3px', cursor: 'pointer', background: (currentPage === b.page || rightPage === b.page) ? 'rgba(212,175,55,0.15)' : 'transparent', marginBottom: '2px' }}>
                           <Bookmark size={12} fill="#D4AF37" color="#D4AF37" />
                           <span style={{ color: '#fff', fontSize: '11px' }}>Page {b.page}</span>
                           <button onClick={e => { e.stopPropagation(); deleteAnnotation(b.id); }} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}>
@@ -954,7 +1025,7 @@ function BookReader({ file, bookColor, onClose }: {
                     <>
                       <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '9px', fontWeight: 600, textTransform: 'uppercase', marginBottom: '4px', marginTop: '8px' }}>Highlights</div>
                       {highlights.map(h => (
-                        <div key={h.id} onClick={() => setCurrentPage(h.page)} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 6px', borderRadius: '3px', cursor: 'pointer', background: currentPage === h.page ? 'rgba(212,175,55,0.15)' : 'transparent', marginBottom: '2px' }}>
+                        <div key={h.id} onClick={() => goToSpread(h.page)} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 6px', borderRadius: '3px', cursor: 'pointer', background: (currentPage === h.page || rightPage === h.page) ? 'rgba(212,175,55,0.15)' : 'transparent', marginBottom: '2px' }}>
                           <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: h.color || '#FFEB3B', flexShrink: 0 }} />
                           <span style={{ color: '#fff', fontSize: '11px' }}>Page {h.page}</span>
                           <button onClick={e => { e.stopPropagation(); deleteAnnotation(h.id); }} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}>
@@ -969,7 +1040,7 @@ function BookReader({ file, bookColor, onClose }: {
                     <>
                       <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '9px', fontWeight: 600, textTransform: 'uppercase', marginBottom: '4px', marginTop: '8px' }}>Comments</div>
                       {comments.map(c => (
-                        <div key={c.id} onClick={() => setCurrentPage(c.page)} style={{ padding: '4px 6px', borderRadius: '3px', cursor: 'pointer', background: currentPage === c.page ? 'rgba(212,175,55,0.15)' : 'transparent', marginBottom: '2px' }}>
+                        <div key={c.id} onClick={() => goToSpread(c.page)} style={{ padding: '4px 6px', borderRadius: '3px', cursor: 'pointer', background: (currentPage === c.page || rightPage === c.page) ? 'rgba(212,175,55,0.15)' : 'transparent', marginBottom: '2px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                             <MessageSquare size={10} color="rgba(255,255,255,0.5)" />
                             <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '9px' }}>Page {c.page}</span>
@@ -991,13 +1062,13 @@ function BookReader({ file, bookColor, onClose }: {
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', padding: '4px 32px', borderTop: '1px solid rgba(255,255,255,0.1)', zIndex: 3, flexShrink: 0 }}>
-              <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage <= 1} style={{ ...toolBtnStyle(), padding: '3px 10px', opacity: currentPage <= 1 ? 0.3 : 1, cursor: currentPage <= 1 ? 'not-allowed' : 'pointer' }} data-testid="btn-pdf-prev">
+              <button onClick={() => { setFlipDirection('backward'); setCurrentPage(p => Math.max(1, p - 2)); }} disabled={currentPage <= 1} style={{ ...toolBtnStyle(), padding: '3px 10px', opacity: currentPage <= 1 ? 0.3 : 1, cursor: currentPage <= 1 ? 'not-allowed' : 'pointer' }} data-testid="btn-pdf-prev">
                 <ChevronLeft size={14} /> <span style={{ fontSize: '11px', fontWeight: 600 }}>Prev</span>
               </button>
-              <span style={{ fontSize: '12px', color: '#ffffff', fontWeight: 700, minWidth: '50px', textAlign: 'center' }}>
-                {currentPage} / {totalPages}
+              <span style={{ fontSize: '12px', color: '#ffffff', fontWeight: 700, minWidth: '80px', textAlign: 'center' }}>
+                {currentPage}{rightPage ? `–${rightPage}` : ''} / {totalPages}
               </span>
-              <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage >= totalPages} style={{ ...toolBtnStyle(), padding: '3px 10px', opacity: currentPage >= totalPages ? 0.3 : 1, cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer' }} data-testid="btn-pdf-next">
+              <button onClick={() => { setFlipDirection('forward'); setCurrentPage(p => Math.min(totalPages, p + 2)); }} disabled={currentPage >= totalPages} style={{ ...toolBtnStyle(), padding: '3px 10px', opacity: currentPage >= totalPages ? 0.3 : 1, cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer' }} data-testid="btn-pdf-next">
                 <span style={{ fontSize: '11px', fontWeight: 600 }}>Next</span> <ChevronRight size={14} />
               </button>
             </div>

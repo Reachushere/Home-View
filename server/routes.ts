@@ -5149,7 +5149,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         type: req.body.type,
         content: req.body.content || null,
         color: req.body.color || null,
-        rects: req.body.rects ? JSON.stringify(req.body.rects) : null,
+        rects: req.body.rects ? (typeof req.body.rects === 'string' ? req.body.rects : JSON.stringify(req.body.rects)) : null,
       });
       res.json(annotation);
     } catch (err) {
