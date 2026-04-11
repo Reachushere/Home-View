@@ -5159,7 +5159,24 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
                   const folderName = `week-${folderWeekNum}-${course.code.toLowerCase()}-${subType}`;
                   const key = `${folderName}::${file.name}`;
                   if (existingSet.has(key)) continue;
-                  const objectPath = `onedrive://${folderName}/${file.name}`;
+                  let objectPath = `onedrive://${folderName}/${file.name}`;
+                  if (file.downloadUrl) {
+                    try {
+                      const fs = await import("fs");
+                      const path = await import("path");
+                      const localUploadsDir = path.join(process.cwd(), 'persistent-uploads');
+                      if (!fs.existsSync(localUploadsDir)) fs.mkdirSync(localUploadsDir, { recursive: true });
+                      const dlResp = await fetch(file.downloadUrl);
+                      if (dlResp.ok) {
+                        const buf = Buffer.from(await dlResp.arrayBuffer());
+                        const localFileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+                        fs.writeFileSync(path.join(localUploadsDir, localFileName), buf);
+                        objectPath = `/local/uploads/${localFileName}`;
+                      }
+                    } catch (dlErr: any) {
+                      console.log(`[LibrarySync:Semester] Download failed for ${file.name}: ${dlErr.message}`);
+                    }
+                  }
                   await storage.createFile({ originalName: file.name, displayName: file.name, objectPath, contentType: 'application/pdf', size: file.size || 0, folder: folderName, listened: false });
                   existingSet.add(key);
                   synced++;
@@ -12495,7 +12512,25 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
                     const folderName = `week-${folderWeekNum}-${course.code.toLowerCase()}-${subType}`;
                     const key = `${folderName}::${file.name}`;
                     if (existingSet.has(key)) continue;
-                    const objectPath = `onedrive://${folderName}/${file.name}`;
+                    let objectPath = `onedrive://${folderName}/${file.name}`;
+                    if (file.downloadUrl) {
+                      try {
+                        const fs = await import("fs");
+                        const path = await import("path");
+                        const localUploadsDir = path.join(process.cwd(), 'persistent-uploads');
+                        if (!fs.existsSync(localUploadsDir)) fs.mkdirSync(localUploadsDir, { recursive: true });
+                        const dlResp = await fetch(file.downloadUrl);
+                        if (dlResp.ok) {
+                          const buf = Buffer.from(await dlResp.arrayBuffer());
+                          const localFileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+                          const localFilePath = path.join(localUploadsDir, localFileName);
+                          fs.writeFileSync(localFilePath, buf);
+                          objectPath = `/local/uploads/${localFileName}`;
+                        }
+                      } catch (dlErr: any) {
+                        console.log(`${logPrefix} Download failed for ${file.name}, using onedrive:// ref: ${dlErr.message}`);
+                      }
+                    }
                     await storage.createFile({
                       originalName: file.name,
                       displayName: file.name,
