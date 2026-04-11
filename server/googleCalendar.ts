@@ -7,16 +7,18 @@ let connectionSettings: any;
 let gcalCachedAT: string | null = null;
 let gcalCachedExp = 0;
 
+const GOOGLE_TOKENS_FILE = '.google_tokens.json';
+
 function loadGoogleTokens() {
   try {
-    const p = path.join(process.cwd(), '.google_tokens.json');
+    const p = path.join(process.cwd(), GOOGLE_TOKENS_FILE);
     if (fs.existsSync(p)) return JSON.parse(fs.readFileSync(p, 'utf-8'));
   } catch {}
   return null;
 }
 
 function saveGoogleTokens(t: any) {
-  try { fs.writeFileSync(path.join(process.cwd(), '.google_tokens.json'), JSON.stringify(t, null, 2)); } catch {}
+  try { fs.writeFileSync(path.join(process.cwd(), GOOGLE_TOKENS_FILE), JSON.stringify(t, null, 2)); } catch {}
 }
 
 async function refreshGoogleToken(rt: string) {
@@ -27,6 +29,67 @@ async function refreshGoogleToken(rt: string) {
   const r = await fetch('https://oauth2.googleapis.com/token', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: p.toString() });
   if (!r.ok) throw new Error('Google Calendar token refresh failed: ' + await r.text());
   return r.json();
+}
+
+function getPrimaryOAuth2Client() {
+  const clientId = process.env.GOOGLE_SECOND_ACCOUNT_CLIENT_ID;
+  const clientSecret = process.env.GOOGLE_SECOND_ACCOUNT_CLIENT_SECRET;
+  if (!clientId || !clientSecret) throw new Error('Google OAuth credentials not configured');
+  const domain = process.env.REPLIT_DEV_DOMAIN || process.env.REPLIT_DOMAINS?.split(',')[0];
+  const redirectUri = domain
+    ? `https://${domain}/api/google/primary-calendar/callback`
+    : 'http://localhost:5000/api/google/primary-calendar/callback';
+  return new google.auth.OAuth2(clientId, clientSecret, redirectUri);
+}
+
+export function getPrimaryCalendarAuthUrl(): string {
+  const oauth2Client = getPrimaryOAuth2Client();
+  return oauth2Client.generateAuthUrl({
+    access_type: 'offline',
+    scope: [
+      'https://www.googleapis.com/auth/calendar',
+      'https://www.googleapis.com/auth/calendar.events',
+      'https://www.googleapis.com/auth/userinfo.email',
+    ],
+    prompt: 'consent',
+  });
+}
+
+export async function exchangePrimaryCalendarCode(code: string): Promise<{ email: string }> {
+  const oauth2Client = getPrimaryOAuth2Client();
+  const { tokens } = await oauth2Client.getToken(code);
+  if (!tokens.access_token || !tokens.refresh_token) {
+    throw new Error('Failed to get required tokens from Google');
+  }
+  oauth2Client.setCredentials(tokens);
+  const oauth2 = google.oauth2({ version: 'v2', auth: oauth2Client });
+  const userInfo = await oauth2.userinfo.get();
+  const email = userInfo.data.email || 'unknown';
+  const ea = tokens.expiry_date || (Date.now() + 3600 * 1000);
+  saveGoogleTokens({
+    refresh_token: tokens.refresh_token,
+    access_token: tokens.access_token,
+    expires_at: ea,
+    email,
+  });
+  gcalCachedAT = tokens.access_token;
+  gcalCachedExp = ea;
+  console.log(`[Google Calendar] Primary calendar connected for ${email}`);
+  return { email };
+}
+
+export function isPrimaryCalendarConnected(): boolean {
+  const stored = loadGoogleTokens();
+  return !!(stored && stored.refresh_token);
+}
+
+export function disconnectPrimaryCalendar(): void {
+  const p = path.join(process.cwd(), GOOGLE_TOKENS_FILE);
+  try { if (fs.existsSync(p)) fs.unlinkSync(p); } catch {}
+  gcalCachedAT = null;
+  gcalCachedExp = 0;
+  connectionSettings = null;
+  console.log('[Google Calendar] Primary calendar disconnected');
 }
 
 async function getAccessToken() {
