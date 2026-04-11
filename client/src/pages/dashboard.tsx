@@ -8499,7 +8499,7 @@ export default function Dashboard() {
     const lastShown = parseInt(localStorage.getItem(lastShownKey) || '0', 10);
     const hoursSinceShown = (now.getTime() - lastShown) / (1000 * 60 * 60);
 
-    if (hoursSinceShown < 8) return;
+    if (true) return;
 
     fetch('/api/semester-checklist', { credentials: 'include' })
       .then(r => r.json())
