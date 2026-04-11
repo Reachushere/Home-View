@@ -29956,7 +29956,7 @@ export default function Dashboard() {
                           const badgeGrad = getCourseGradientColors(cCode2);
                           return (
                             <div 
-                              style={{ position: 'absolute', top: 0, left: '0px', right: '-1px', height: '16px', background: badgeGrad.start, zIndex: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', cursor: 'pointer' }}
+                              style={{ position: 'absolute', top: 0, left: '0px', right: '-1px', height: '16px', background: badgeGrad.start, zIndex: 15, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', cursor: 'pointer' }}
                               onMouseEnter={() => setHoveredCountdownTaskIdDebounced(nextTask.id)}
                               onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                               onClick={(e) => {
@@ -31210,14 +31210,14 @@ export default function Dashboard() {
                             return (
                               <>
                                 {missedCount > 0 && (
-                                  <div className="absolute top-0 bottom-0 z-[3] pointer-events-none animate-due-box-blink" style={{ left: '6px', width: `${gridSizes.timeSlotHeight}px`, padding: '0px' }} data-testid="missed-tasks-indicator">
+                                  <div className="absolute top-0 bottom-0 z-[12] pointer-events-none animate-due-box-blink" style={{ left: '6px', width: `${gridSizes.timeSlotHeight}px`, padding: '0px' }} data-testid="missed-tasks-indicator">
                                     <div style={{ width: '100%', height: '100%', position: 'relative', backgroundColor: '#dc2626', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0px' }}>
                                       <span style={{ fontSize: '20px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{missedCount}</span>
                                       <span style={{ fontSize: '9px', color: 'white', fontWeight: 600, lineHeight: 1, marginTop: '2px' }}>due</span>
                                     </div>
                                   </div>
                                 )}
-                                <div className="absolute z-[3] pointer-events-none" style={{ top: '0px', bottom: '0px', left: (hourTasks.length > 0 || continuingTasks.length > 0) ? 'calc(50% + 4px)' : missedCount > 0 ? `${2 + gridSizes.timeSlotHeight + 4}px` : '2px', right: '3px', display: 'flex', gap: '4px' }} data-testid="hours-until-next-task">
+                                <div className="absolute z-[12] pointer-events-none" style={{ top: '0px', bottom: '0px', left: (hourTasks.length > 0 || continuingTasks.length > 0) ? 'calc(50% + 4px)' : missedCount > 0 ? `${2 + gridSizes.timeSlotHeight + 4}px` : '2px', right: '3px', display: 'flex', gap: '4px' }} data-testid="hours-until-next-task">
                                   {(() => {
                                     const courseCode = nextSchoolTask?.courseName?.split(' - ')[0]?.trim() || '';
                                     const gradColors = getCourseGradientColors(courseCode);
