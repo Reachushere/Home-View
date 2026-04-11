@@ -10,6 +10,16 @@ Preferred communication style: Simple, everyday language.
 Publishing preference: Always publish with mobile-ready compatibility enabled.
 Publish reminder: Every time I suggest publishing, I MUST ask the user: "Would you like me to email you a copy of the HA automation and webhook code that changed?" If they say yes, compile all relevant webhook endpoint code (from server/routes.ts) and HA automation YAML (from Self_Hosting_Guide.md) that work together for the changed automation, and email it to them via the app's email system.
 
+## CRITICAL: Agent Continuity Rule
+
+**Before ending ANY session or completing ANY task**, the agent MUST save detailed working notes to the agent scratchpad (`/api/agent-scratchpad`). This includes:
+- All pending/in-progress work and its current state
+- Any instructions the user gave that haven't been fully implemented yet
+- Specific details of what was discussed, decided, or deferred
+- Any promises made to the user about future work
+
+This is NON-NEGOTIABLE. The user has been burned by agents promising to save notes and then failing to do so. Every agent must treat scratchpad updates as mandatory, not optional.
+
 ## CRITICAL: Timezone Rule (5747-Protected)
 
 **ALL server-side date/time logic MUST use `server/timezone.ts` functions.** The timezone is locked to `America/Toronto` and requires password `5747` to change. This is NON-NEGOTIABLE.
