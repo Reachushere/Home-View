@@ -4998,7 +4998,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
           await objectStorageService.downloadObject(objectFile, res);
         } catch (objErr) {
           console.log(`[Download] Object storage failed for: ${file.originalName}, trying OneDrive fallback via folder: ${file.folder}`);
-          const folderMatch = (file.folder || '').match(/^week-(\d+)-([a-zA-Z]+\d+)-(reading|module)/i);
+          const folderMatch = (file.folder || '').match(/^week-(\d+)-(.+?)-(reading|module)$/i);
           if (folderMatch && file.originalName) {
             const [, weekNum, courseCode, folderType] = folderMatch;
             try {
@@ -5033,7 +5033,15 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
                 } catch {}
               }
               
-              const code = courseCode.toUpperCase();
+              let code = courseCode.toUpperCase();
+              const slotMatch = courseCode.match(/^tbd_slot(\d+)$/i);
+              if (slotMatch) {
+                const slotNum = parseInt(slotMatch[1]);
+                const semCourses = [matchedSem.course1Code, matchedSem.course2Code, matchedSem.course3Code].filter(Boolean);
+                if (slotNum >= 1 && slotNum <= semCourses.length) {
+                  code = (semCourses[slotNum - 1] || code).toUpperCase();
+                }
+              }
               const courseFolder = baseFolders.find((f: any) => f.type === 'folder' && f.name.toUpperCase().replace(/\s/g, '').includes(code));
               if (courseFolder) {
                 const actualWeek = wk > 13 ? ((wk - 1) % 13) + 1 : wk;
