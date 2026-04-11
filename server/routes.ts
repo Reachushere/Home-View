@@ -5092,6 +5092,35 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
           console.error("Error proxying file:", fetchErr);
           res.status(502).json({ error: "Failed to proxy file download" });
         }
+      } else if (mediaUrl.startsWith("/School/") || mediaUrl.startsWith("/school/")) {
+        try {
+          const { getOneDriveItemByPath, isOneDriveConnected } = await import("./onedrive");
+          if (!isOneDriveConnected()) {
+            return res.status(503).json({ error: "OneDrive not connected" });
+          }
+          const item = await getOneDriveItemByPath(mediaUrl);
+          const downloadUrl = item?.downloadUrl;
+          if (!downloadUrl) {
+            return res.status(404).json({ error: "Could not get OneDrive download URL for this path" });
+          }
+          const pdfResponse = await fetch(downloadUrl);
+          if (pdfResponse.ok && pdfResponse.body) {
+            res.setHeader('Content-Type', pdfResponse.headers.get('content-type') || file.contentType || 'application/pdf');
+            res.setHeader('Content-Disposition', `inline; filename="${file.originalName || 'document.pdf'}"`);
+            const reader = pdfResponse.body.getReader();
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              res.write(value);
+            }
+            res.end();
+          } else {
+            res.status(502).json({ error: "Failed to fetch file from OneDrive" });
+          }
+        } catch (odErr) {
+          console.error("Error downloading OneDrive path file:", odErr);
+          res.status(500).json({ error: "Failed to download from OneDrive" });
+        }
       } else {
         res.status(400).json({ error: "Unsupported file path format" });
       }
