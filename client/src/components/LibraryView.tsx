@@ -1103,7 +1103,7 @@ function BookReader({ file, bookColor, onClose, pdfUrl }: {
                 window.addEventListener('mouseup', onUp);
               }}
             >
-              <div style={{ color: '#ffffff', fontSize: '12px', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <div style={{ color: '#ffffff', fontSize: title.length > 40 ? '10px' : '12px', fontWeight: 700, letterSpacing: title.length > 40 ? '0.5px' : '1px', textTransform: 'uppercase', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%' }}>
                 {title}
               </div>
             </div>
