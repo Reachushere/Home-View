@@ -934,7 +934,17 @@ function BookReader({ file, bookColor, onClose }: {
                 {HIGHLIGHT_COLORS.map(c => (
                   <button key={c} onClick={() => setHighlightColor(c)} style={{ width: '18px', height: '18px', borderRadius: '50%', background: c, border: highlightColor === c ? '2px solid #fff' : '2px solid transparent', cursor: 'pointer', transition: 'border 0.15s' }} />
                 ))}
-                <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '10px', marginLeft: '4px' }}>Select text on the page to highlight it</span>
+                <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '10px', marginLeft: '4px', flex: 1 }}>Select text to highlight</span>
+                {highlights.length > 0 && (
+                  <button
+                    onClick={async () => { for (const h of highlights) { await apiRequest('DELETE', `/api/annotations/${h.id}`); } refetchAnnotations(); }}
+                    style={{ ...toolBtnStyle(), display: 'flex', alignItems: 'center', gap: '4px', padding: '2px 8px', fontSize: '9px', color: 'rgba(255,150,150,0.9)', fontWeight: 600 }}
+                    title="Clear all highlights"
+                    data-testid="btn-clear-all-highlights-toolbar"
+                  >
+                    <Trash2 size={10} /> Clear All
+                  </button>
+                )}
               </div>
             )}
 
