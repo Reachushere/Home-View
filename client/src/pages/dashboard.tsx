@@ -8325,34 +8325,38 @@ export default function Dashboard() {
     const now = startOfDayET(new Date());
     const typePrefix: Record<string, string> = { winter: 'w', fall: 'f', spring_summer: 'ss' };
     const semLabels: Record<string, string> = { winter: 'Winter', fall: 'Fall', spring_summer: 'Spring/Summer' };
-    for (const sem of allSemesterSettings) {
-      if (!sem.semesterStartDate) continue;
-      const semStart = new Date(sem.semesterStartDate);
-      const semDay = semStart.getDay();
-      let firstMonday: Date;
-      if (semDay === 1) {
-        firstMonday = semStart;
-      } else if (semDay === 0) {
-        firstMonday = addDays(semStart, 1);
-      } else {
-        firstMonday = addDays(semStart, (8 - semDay) % 7);
-      }
-      const triggerDate = addDays(firstMonday, -2);
-      const semEnd = sem.semesterEndDate ? new Date(sem.semesterEndDate) : addDays(firstMonday, 90);
-      if (now >= triggerDate && now <= semEnd) {
-        const yr = new Date(sem.semesterStartDate).getFullYear();
-        const prefix = typePrefix[sem.semesterType] || sem.semesterType?.charAt(0) || 's';
-        const semKey = `${prefix}${yr}`;
-        const dismissed = localStorage.getItem(`newSemChecklist_dismissed_${semKey}`);
-        if (!dismissed) {
-          const label = `${semLabels[sem.semesterType] || sem.semesterType || 'Semester'} ${yr}`;
-          setNewSemChecklistKey(semKey);
-          setNewSemChecklistLabel(sem.semesterName || label);
-          setShowNewSemChecklist(true);
-          break;
+    fetch('/api/new-semester-checklist/dismissed', { credentials: 'include' })
+      .then(r => r.json())
+      .then((dismissedKeys: string[]) => {
+        for (const sem of allSemesterSettings) {
+          if (!sem.semesterStartDate) continue;
+          const semStart = new Date(sem.semesterStartDate);
+          const semDay = semStart.getDay();
+          let firstMonday: Date;
+          if (semDay === 1) {
+            firstMonday = semStart;
+          } else if (semDay === 0) {
+            firstMonday = addDays(semStart, 1);
+          } else {
+            firstMonday = addDays(semStart, (8 - semDay) % 7);
+          }
+          const triggerDate = addDays(firstMonday, -2);
+          const semEnd = sem.semesterEndDate ? new Date(sem.semesterEndDate) : addDays(firstMonday, 90);
+          if (now >= triggerDate && now <= semEnd) {
+            const yr = new Date(sem.semesterStartDate).getFullYear();
+            const prefix = typePrefix[sem.semesterType] || sem.semesterType?.charAt(0) || 's';
+            const semKey = `${prefix}${yr}`;
+            if (!dismissedKeys.includes(semKey)) {
+              const label = `${semLabels[sem.semesterType] || sem.semesterType || 'Semester'} ${yr}`;
+              setNewSemChecklistKey(semKey);
+              setNewSemChecklistLabel(sem.semesterName || label);
+              setShowNewSemChecklist(true);
+              break;
+            }
+          }
         }
-      }
-    }
+      })
+      .catch(() => {});
   }, [allSemesterSettings]);
 
   const courseZoomLinks = useMemo(() => {
@@ -20720,6 +20724,7 @@ export default function Dashboard() {
           semesterLabel={newSemChecklistLabel}
           colorSettings={colorSettings}
           onDismiss={() => {
+            fetch('/api/new-semester-checklist/dismiss', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ semesterKey: newSemChecklistKey }) }).catch(() => {});
             localStorage.setItem(`newSemChecklist_dismissed_${newSemChecklistKey}`, 'true');
             setShowNewSemChecklist(false);
           }}

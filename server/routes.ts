@@ -23639,6 +23639,37 @@ Keep your tone friendly and educational. Format your response clearly with numbe
     }
   });
 
+  const DISMISSED_CHECKLIST_FILE = path.join(process.cwd(), 'persistent-uploads', 'dismissed-new-sem-checklists.json');
+  function loadDismissedChecklists(): string[] {
+    try { return JSON.parse(fs.readFileSync(DISMISSED_CHECKLIST_FILE, 'utf-8')); } catch { return []; }
+  }
+  function saveDismissedChecklists(keys: string[]) {
+    try { fs.writeFileSync(DISMISSED_CHECKLIST_FILE, JSON.stringify(keys)); } catch {}
+  }
+
+  app.get("/api/new-semester-checklist/dismissed", (_req, res) => {
+    res.json(loadDismissedChecklists());
+  });
+
+  app.post("/api/new-semester-checklist/dismiss", (req, res) => {
+    const { semesterKey } = req.body;
+    if (!semesterKey) return res.status(400).json({ error: "semesterKey required" });
+    const dismissed = loadDismissedChecklists();
+    if (!dismissed.includes(semesterKey)) {
+      dismissed.push(semesterKey);
+      saveDismissedChecklists(dismissed);
+    }
+    res.json({ success: true });
+  });
+
+  app.post("/api/new-semester-checklist/undismiss", (req, res) => {
+    const { semesterKey } = req.body;
+    if (!semesterKey) return res.status(400).json({ error: "semesterKey required" });
+    const dismissed = loadDismissedChecklists().filter(k => k !== semesterKey);
+    saveDismissedChecklists(dismissed);
+    res.json({ success: true });
+  });
+
   return httpServer;
 }
 
