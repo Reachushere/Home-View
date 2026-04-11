@@ -3,16 +3,47 @@ import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
 import { X, ChevronLeft, ChevronRight, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2, Printer } from 'lucide-react';
 import * as pdfjsLib from 'pdfjs-dist';
-import { TextLayer } from 'pdfjs-dist';
-import 'pdfjs-dist/web/pdf_viewer.css';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
 
 const textLayerCSS = `
+.textLayer {
+  position: absolute;
+  text-align: initial;
+  inset: 0;
+  overflow: hidden;
+  opacity: 1;
+  line-height: 1.0;
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
+  forced-color-adjust: none;
+  z-index: 2;
+}
+.textLayer :is(span, br) {
+  color: transparent;
+  position: absolute;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0% 0%;
+}
+.textLayer span::selection {
+  background: rgba(0, 100, 255, 0.3);
+}
+.textLayer span::-moz-selection {
+  background: rgba(0, 100, 255, 0.3);
+}
 .textLayer span.search-highlight {
-  background: rgba(255, 255, 0, 0.4) !important;
+  background: rgba(255, 255, 0, 0.45) !important;
   border-radius: 2px;
+}
+.textLayer .endOfContent {
+  display: block;
+  position: absolute;
+  inset: 100% 0 0;
+  z-index: -1;
+  cursor: default;
+  user-select: none;
 }
 `;
 
@@ -412,12 +443,30 @@ function BookReader({ file, bookColor, onClose }: {
         textLayerDiv.style.height = `${viewport.height}px`;
         const textContent = await page.getTextContent();
         if (cancelled) return;
-        const tl = new TextLayer({
-          textContentSource: textContent,
-          container: textLayerDiv,
-          viewport,
-        });
-        await tl.render();
+        const measureCanvas = document.createElement('canvas');
+        const measureCtx = measureCanvas.getContext('2d')!;
+        const frag = document.createDocumentFragment();
+        for (const item of textContent.items as any[]) {
+          if (!item.str || !item.transform) continue;
+          const tx = pdfjsLib.Util.transform(viewport.transform, item.transform);
+          const fontHeight = Math.hypot(tx[2], tx[3]);
+          const span = document.createElement('span');
+          span.textContent = item.str;
+          span.style.fontSize = `${fontHeight}px`;
+          span.style.fontFamily = 'sans-serif';
+          span.style.left = `${tx[4]}px`;
+          span.style.top = `${tx[5] - fontHeight}px`;
+          if (item.width > 0 && item.str.length > 0) {
+            const scaledWidth = item.width * viewport.scale;
+            measureCtx.font = `${fontHeight}px sans-serif`;
+            const measuredWidth = measureCtx.measureText(item.str).width;
+            if (measuredWidth > 0) {
+              span.style.transform = `scaleX(${scaledWidth / measuredWidth})`;
+            }
+          }
+          frag.appendChild(span);
+        }
+        textLayerDiv.appendChild(frag);
       }
     });
     return () => { cancelled = true; };
