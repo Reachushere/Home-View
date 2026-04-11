@@ -15273,6 +15273,11 @@ document.body.removeChild(a);
         return res.json({ action: "skipped", reason: "Prompt already pending — not interrupting" });
       }
 
+      if (extractionFailedFileIds.size > 0) {
+        console.log(`[Shower Button] Clearing ${extractionFailedFileIds.size} extraction-failed IDs for fresh retry`);
+        extractionFailedFileIds.clear();
+        persistExtractionFailedIds();
+      }
       const today = torontoDate();
       const semesterSettings = await storage.getActiveSemesterSettings();
 
@@ -15734,6 +15739,11 @@ document.body.removeChild(a);
         }
       })();
 
+      if (extractionFailedFileIds.size > 0) {
+        console.log(`[Cat Lights] Clearing ${extractionFailedFileIds.size} extraction-failed IDs for fresh retry: [${[...extractionFailedFileIds].join(', ')}]`);
+        extractionFailedFileIds.clear();
+        persistExtractionFailedIds();
+      }
       console.log(`[Cat Lights][TRACE] Step 1: Getting today's date`);
       const today = torontoDate();
       console.log(`[Cat Lights][TRACE] Step 2: today=${today.toISOString()} (${today.toLocaleString('en-US', { timeZone: 'America/Toronto' })}), fetching semester settings...`);
