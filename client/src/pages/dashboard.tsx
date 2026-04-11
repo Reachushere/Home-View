@@ -35410,6 +35410,61 @@ export default function Dashboard() {
                     { id: 'hw-ctrl-next', icon: <SkipForward className="h-3.5 w-3.5 text-white" />, label: 'Next' },
                     { id: 'hw-ctrl-forward', icon: <RotateCw className="h-3.5 w-3.5 text-white" />, label: '+15s' },
                     { id: 'hw-ctrl-stop', icon: <Square className="h-3.5 w-3.5 text-white fill-white" />, label: 'Stop' },
+                    { id: 'hw-ctrl-prev-module', icon: (() => {
+                      const moduleFiles: Array<{ file: typeof allFiles[0] }> = [];
+                      for (let w = 1; w <= 13; w++) {
+                        courseProgressDataRef.current.forEach((pd) => {
+                          if (!pd) return;
+                          const cc = pd.courseCode.toLowerCase();
+                          const wModFiles = allFiles.filter(f => f.folder === `week-${w}-${cc}-module`);
+                          wModFiles.forEach(f => moduleFiles.push({ file: f }));
+                        });
+                      }
+                      const currentUrl = bookReaderOverlay?.url || '';
+                      const cIdM = currentUrl.match(/\/pdf-reader\/(\d+)/);
+                      const cOdM = currentUrl.match(/oneDriveUrl=([^&]+)/);
+                      const cFileId = cIdM ? parseInt(cIdM[1], 10) : null;
+                      const cOdUrl = cOdM ? decodeURIComponent(cOdM[1]) : null;
+                      const cIdx = moduleFiles.findIndex(e => (cFileId && e.file.id === cFileId) || (cOdUrl && e.file.objectPath === cOdUrl));
+                      const isDisabled = !bookReaderOverlay || cIdx <= 0;
+                      return <ChevronLeft className="h-3.5 w-3.5" style={{ color: isDisabled ? 'rgba(255,255,255,0.25)' : 'white' }} />;
+                    })(), label: 'Prev Mod', onClick: () => {
+                      const iframe = document.querySelector('iframe[name="pdf-reader-frame"]') as HTMLIFrameElement;
+                      if (iframe?.contentWindow) iframe.contentWindow.postMessage({ type: 'tts-stop' }, '*');
+                      if (!bookReaderOverlay) return;
+                      const currentUrl = bookReaderOverlay.url;
+                      const currentIdMatch = currentUrl.match(/\/pdf-reader\/(\d+)/);
+                      const currentOneDriveMatch = currentUrl.match(/oneDriveUrl=([^&]+)/);
+                      const currentFileId = currentIdMatch ? parseInt(currentIdMatch[1], 10) : null;
+                      const currentOneDriveUrl = currentOneDriveMatch ? decodeURIComponent(currentOneDriveMatch[1]) : null;
+                      const moduleFiles: Array<{ file: typeof allFiles[0]; courseCode: string; color: string; weekNum: number }> = [];
+                      for (let w = 1; w <= 13; w++) {
+                        courseProgressDataRef.current.forEach((pd) => {
+                          if (!pd) return;
+                          const cc = pd.courseCode.toLowerCase();
+                          const moduleFolder = `week-${w}-${cc}-module`;
+                          const wModFiles = allFiles.filter(f => f.folder === moduleFolder);
+                          wModFiles.forEach(f => moduleFiles.push({ file: f, courseCode: pd.courseCode, color: pd.progressStartColor, weekNum: w }));
+                        });
+                      }
+                      const currentIdx = moduleFiles.findIndex(entry => {
+                        if (currentFileId && entry.file.id === currentFileId) return true;
+                        if (currentOneDriveUrl && entry.file.objectPath === currentOneDriveUrl) return true;
+                        return false;
+                      });
+                      if (currentIdx <= 0) {
+                        toast({ title: 'Already at first module', variant: 'destructive' });
+                        return;
+                      }
+                      const prevEntry = moduleFiles[currentIdx - 1];
+                      const f = prevEntry.file;
+                      const readerUrl = f.objectPath?.startsWith('http')
+                        ? `/pdf-reader/onedrive?oneDriveUrl=${encodeURIComponent(f.objectPath || '')}&name=${encodeURIComponent(f.displayName || f.originalName)}&autoplay=1`
+                        : `/pdf-reader/${f.id}?autoplay=1`;
+                      const fileName = f.displayName || f.originalName || 'Module';
+                      setBookReaderOverlay({ url: readerUrl, courseCode: prevEntry.courseCode, title: fileName, color: prevEntry.color });
+                      toast({ title: `⬅ Week ${prevEntry.weekNum} · ${prevEntry.courseCode} — ${fileName}` });
+                    }},
                     { id: 'hw-ctrl-skip-file', icon: <FastForward className="h-3.5 w-3.5 text-white" />, label: 'Skip File', onClick: () => {
                       const iframe = document.querySelector('iframe[name="pdf-reader-frame"]') as HTMLIFrameElement;
                       if (iframe?.contentWindow) iframe.contentWindow.postMessage({ type: 'tts-stop' }, '*');
@@ -35459,7 +35514,7 @@ export default function Dashboard() {
                     }},
                   ].map(btn => (
                     <div key={btn.id} className="flex flex-col items-center" style={{ width: '32px' }}>
-                      <button className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors" data-testid={btn.id} title={btn.label}>
+                      <button className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors" data-testid={btn.id} title={btn.label} onClick={(btn as any).onClick}>
                         {btn.icon}
                       </button>
                       <span style={{ fontSize: '6px', color: 'rgba(255,255,255,0.55)', lineHeight: 1, marginTop: '2px', textAlign: 'center' }}>{btn.label}</span>
