@@ -12873,17 +12873,13 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   let extractionFailedFileIds = new Set<number>();
   try {
     if (fs.existsSync(EXTRACTION_FAILED_FILE)) {
-      const saved = JSON.parse(fs.readFileSync(EXTRACTION_FAILED_FILE, 'utf-8'));
-      extractionFailedFileIds = new Set(saved);
-      console.log(`[FileOrder] Loaded ${extractionFailedFileIds.size} extraction-failed IDs from disk: [${[...extractionFailedFileIds].join(', ')}]`);
+      fs.unlinkSync(EXTRACTION_FAILED_FILE);
+      console.log(`[FileOrder] Deleted extraction-failed-ids.json from disk (no longer persisted)`);
     }
   } catch (e: any) {
-    console.log(`[FileOrder] Could not load extraction-failed IDs: ${e.message}`);
+    console.log(`[FileOrder] Could not delete extraction-failed file: ${e.message}`);
   }
   function persistExtractionFailedIds() {
-    try {
-      fs.writeFileSync(EXTRACTION_FAILED_FILE, JSON.stringify([...extractionFailedFileIds]));
-    } catch {}
   }
 
   async function findNextFileByPriority(allFiles: any[], currentWeekNumber: number, excludeFileId?: number): Promise<any | null> {
