@@ -1,0 +1,198 @@
+0|dashboard  | [TTS] Using Edge TTS (free, no charges)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 11-4 - Summer
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3561s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3561s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 11-4 - Summer/Module
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3561s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3561s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 11-4 - Summer/Reading
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3561s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [Server] Port 5000 in use, retrying in 3s...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3561s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 12-5 - Summer
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3560s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3560s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 12-5 - Summer/Module
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3560s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3560s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 12-5 - Summer/Reading
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3560s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 13-6 - Summer
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3559s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3559s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 13-6 - Summer/Module
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3559s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3559s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 13-6 - Summer/Reading
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3559s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3558s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 2 - Spring
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3558s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 2 - Spring/Module
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3558s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3558s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 2 - Spring/Reading
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3558s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3558s)
+0|dashboard  | [Server] Port 5000 in use, retrying in 3s...
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 3 - Spring
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3558s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3557s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 3 - Spring/Module
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3557s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3557s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 3 - Spring/Reading
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3557s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3557s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 4 - Spring
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3557s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 4 - Spring/Module
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3556s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3556s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 4 - Spring/Reading
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3556s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3556s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 5 - Spring
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3556s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 5 - Spring/Module
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3555s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3555s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 5 - Spring/Reading
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3555s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3555s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 6 - Spring
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3555s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [Server] Port 5000 in use, retrying in 3s...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3555s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 6 - Spring/Module
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3555s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 6 - Spring/Reading
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3554s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 7 - Spring
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3554s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3554s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 7 - Spring/Module
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3554s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3553s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 7 - Spring/Reading
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3553s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 8-1 - Summer
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3553s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3553s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 8-1 - Summer/Module
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3553s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3552s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 8-1 - Summer/Reading
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3552s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 9-2 - Summer
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3552s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3552s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 9-2 - Summer/Module
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3552s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [Server] Port 5000 in use, retrying in 3s...
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics/Week 9-2 - Summer/Reading
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3551s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [Edge TTS] Attempt 1 failed: Timed out
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3551s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CPHL110 - Philosophy of Religion
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3551s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3551s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CPHL110 - Philosophy of Religion/Week 1 - Spring
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3551s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3550s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CPHL110 - Philosophy of Religion/Week 1 - Spring/Module
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3550s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3550s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CPHL110 - Philosophy of Religion/Week 1 - Spring/Reading
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3550s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3550s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CPHL110 - Philosophy of Religion/Week 2 - Spring
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3550s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+^C
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs dashboard --lines 10
+[TAILING] Tailing last 10 lines for [dashboard] process (change the value with --lines option)
+/home/byhomeyyz/.pm2/logs/dashboard-error.log last 10 lines:
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Edge TTS] Attempt 1 failed: Timed out
+
+/home/byhomeyyz/.pm2/logs/dashboard-out.log last 10 lines:
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | Edge TTS completed in 12004ms, 507600 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-222-chunk-1-1775945070490.mp3
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CPHL110 - Philosophy of Religion/Week 2 - Spring/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3549s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3549s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CPHL110 - Philosophy of Religion/Week 2 - Spring/Reading
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3549s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+
+0|dashboard  | [AudioPrep] ===== Completed ANALYSIS_ Potential impact of tariffs on municipalities _ Alberta Municipalities.pdf: 2 chunks in 15s =====
+0|dashboard  | [AudioPrep] ===== Preparing file 223: Canadian municipalities continue leading the tariff fight - Municipal World.pdf =====
+0|dashboard  | [ExtractText] Using cached text for Canadian municipalities continue leading the tariff fight - Municipal World.pdf (11737 chars)
+0|dashboard  | [AudioPrep] Canadian municipalities continue leading the tariff fight - Municipal World.pdf: 11737 chars → 9 chunks
+0|dashboard  | [AudioPrep] Generating chunk 1/9 for Canadian municipalities continue leading the tariff fight - Municipal World.pdf (1495 chars)
+0|dashboard  | Generating Edge TTS for 1495 chars, file: prep-223-chunk-0
+0|dashboard  | [TTS] Using Edge TTS (free, no charges)
+0|dashboard  | [Server] Port 5000 in use, retrying in 3s...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3549s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CPHL110 - Philosophy of Religion/Week 3 - Spring
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3548s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3548s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CPHL110 - Philosophy of Religion/Week 3 - Spring/Module
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3548s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3548s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CPHL110 - Philosophy of Religion/Week 3 - Spring/Reading
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3548s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | Edge TTS completed in 808ms, 575424 bytes
+0|dashboard  | TTS audio saved locally: /tts-audio/prep-223-chunk-0-1775945072119.mp3
+0|dashboard  | [OneDrive][TRACE] listOn
