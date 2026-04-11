@@ -13,7 +13,7 @@ import { z } from "zod";
 import { LIBERAL_STUDIES_COURSES, OPEN_ELECTIVE_COURSES } from "@shared/electiveCourses";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
 import { objectStorageClient } from "./replit_integrations/object_storage/objectStorage";
-import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars, createPrepCalendarEvent, updatePrepCalendarEvent, createEventInCalendar, deleteEventFromCalendar, createRecurringClassEvent, findExistingEventBySummary, findAndDeleteDuplicateEvents, createYearlyScholarshipEvent, syncGoogleEventsToReview, getGoogleCalendarClient } from "./googleCalendar";
+import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars, createPrepCalendarEvent, updatePrepCalendarEvent, createEventInCalendar, deleteEventFromCalendar, createRecurringClassEvent, findExistingEventBySummary, findAndDeleteDuplicateEvents, createYearlyScholarshipEvent, syncGoogleEventsToReview, getGoogleCalendarClient, getPrimaryCalendarAuthUrl, exchangePrimaryCalendarCode, isPrimaryCalendarConnected, disconnectPrimaryCalendar } from "./googleCalendar";
 import { getSecondAccountAuthUrl, exchangeCodeForTokens, isSecondAccountConnected, disconnectSecondAccount, createEventInSecondAccount, createPrepEventInSecondAccount, deleteEventFromSecondAccount, updateEventInSecondAccount, getEventsFromSecondAccount } from "./secondGoogleAccount";
 import { getThirdAccountAuthUrl, exchangeCodeForTokensThird, isThirdAccountConnected, disconnectThirdAccount, getEventsFromThirdAccount, listThirdAccountCalendars, getEventsFromThirdAccountCalendar, createEventOnThirdAccountCalendar, deleteEventOnThirdAccountCalendar } from "./thirdGoogleAccount";
 import { textToSpeech, initTTSFallbackStatus, clearTTSRateLimit, getTTSStatus } from "./replit_integrations/audio/client";
@@ -8206,6 +8206,65 @@ async function pollStatus(timeout){
       console.error("Second account status error:", err);
       res.json({ connected: false, error: String(err) });
     }
+  });
+
+  // PRIMARY GOOGLE CALENDAR OAuth flow (for Pi self-hosting)
+  app.get("/api/google/primary-calendar/auth", async (_req, res) => {
+    try {
+      const authUrl = getPrimaryCalendarAuthUrl();
+      res.redirect(authUrl);
+    } catch (err) {
+      console.error("Primary calendar auth error:", err);
+      res.status(500).json({ error: String(err) });
+    }
+  });
+
+  app.get("/api/google/primary-calendar/callback", async (req, res) => {
+    try {
+      const code = req.query.code as string;
+      if (!code) {
+        return res.status(400).send('Missing authorization code');
+      }
+      const result = await exchangePrimaryCalendarCode(code);
+      res.send(`
+        <!DOCTYPE html>
+        <html>
+          <head><title>Success</title></head>
+          <body style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#f0f4f8;">
+            <div style="text-align:center;background:white;padding:40px;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+              <h1 style="color:#22c55e;">Primary Google Calendar Connected!</h1>
+              <p>Connected email: <strong>${result.email}</strong></p>
+              <p>Your calendar events will now show on this device.</p>
+              <p style="margin-top:20px;"><a href="/" style="color:#3b82f6;">Return to Dashboard</a></p>
+            </div>
+          </body>
+        </html>
+      `);
+    } catch (err) {
+      console.error("Primary calendar callback error:", err);
+      res.status(500).send(`
+        <!DOCTYPE html>
+        <html>
+          <body style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#fef2f2;">
+            <div style="text-align:center;background:white;padding:40px;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+              <h1 style="color:#ef4444;">Connection Failed</h1>
+              <p>${String(err)}</p>
+              <p><a href="/api/google/primary-calendar/auth">Try Again</a></p>
+            </div>
+          </body>
+        </html>
+      `);
+    }
+  });
+
+  app.get("/api/google/primary-calendar/status", async (_req, res) => {
+    const connected = isPrimaryCalendarConnected();
+    res.json({ connected });
+  });
+
+  app.post("/api/google/primary-calendar/disconnect", async (_req, res) => {
+    disconnectPrimaryCalendar();
+    res.json({ success: true });
   });
 
   // GET /api/google/second-account/auth - Start OAuth flow for second account
