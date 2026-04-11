@@ -3981,7 +3981,9 @@ export default function Dashboard() {
       const semIdx = semOrder.indexOf(sem.key);
       const prevSem = semIdx > 0 ? SEMESTER_COURSE_DEFS[semIdx - 1] : null;
       const prevEnded = !prevSem || semesterEndConfirmed[prevSem.key];
-      if (now >= fridayBefore && now <= new Date(sem.end) && !semesterStartConfirmed[sem.key] && prevEnded) {
+      const twoWeeksAfterStart = new Date(startDate);
+      twoWeeksAfterStart.setDate(twoWeeksAfterStart.getDate() + 14);
+      if (now >= fridayBefore && now <= twoWeeksAfterStart && now <= new Date(sem.end) && !semesterStartConfirmed[sem.key] && prevEnded) {
         setSemStartDialogKey(sem.key);
         break;
       }
@@ -18123,15 +18125,6 @@ export default function Dashboard() {
       <div className="fixed left-0 right-0 overflow-hidden flex" style={{ top: 0, height: '38px', zIndex: 111, backgroundColor: '#000000', background: 'linear-gradient(90deg, #000000 0%, #14141e 50%, #000000 100%)', borderBottom: '1px solid rgba(255,255,255,0.15)', display: d2lTickerEnabled ? 'flex' : 'none' }} data-testid="announcement-ticker">
         <div className="flex-shrink-0 flex items-center justify-center cursor-pointer" style={{ height: '38px', width: 'auto', position: 'relative' }} onClick={() => setTickerDialogOpen(true)} data-testid="button-ticker-manage">
           <img src={d2lTickerLabel} alt="D2L" style={{ height: '38px', width: 'auto', objectFit: 'contain' }} />
-          <button
-            onClick={(e) => { e.stopPropagation(); setD2lTickerEnabled(false); localStorage.setItem('d2lTickerEnabled', 'false'); }}
-            className="absolute flex items-center justify-center hover:bg-white/20 transition-colors rounded"
-            style={{ top: '2px', left: '2px', width: '18px', height: '18px', background: 'rgba(0,0,0,0.5)', border: 'none', cursor: 'pointer', zIndex: 1 }}
-            data-testid="button-hide-d2l-ticker"
-            title="Hide D2L ticker"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '10px', height: '10px' }}><polyline points="6 15 12 9 18 15" /></svg>
-          </button>
         </div>
         <div className="flex-1 overflow-hidden relative h-full">
           {tickerWithTodayTasks.length > 0 ? (
