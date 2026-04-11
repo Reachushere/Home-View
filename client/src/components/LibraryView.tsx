@@ -367,18 +367,38 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const groupRef = useRef<HTMLDivElement>(null);
-  const [hoverY, setHoverY] = useState(0);
+  const [portalPos, setPortalPos] = useState<{ left: number; bottom: number; width: number; height: number } | null>(null);
+  const leaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const cancelLeave = useCallback(() => {
+    if (leaveTimerRef.current) { clearTimeout(leaveTimerRef.current); leaveTimerRef.current = null; }
+  }, []);
+
+  const scheduleLeave = useCallback(() => {
+    cancelLeave();
+    leaveTimerRef.current = setTimeout(() => setIsHovered(false), 80);
+  }, [cancelLeave]);
 
   const handleMouseEnter = useCallback(() => {
-    setIsHovered(true);
+    cancelLeave();
     if (groupRef.current) {
       const rect = groupRef.current.getBoundingClientRect();
-      const groupCenter = rect.top + rect.height / 2;
-      const viewportCenter = window.innerHeight / 2;
-      const offsetToCenter = (viewportCenter - groupCenter) / 2;
-      setHoverY(offsetToCenter);
+      setPortalPos({
+        left: rect.left + rect.width / 2,
+        bottom: window.innerHeight - rect.bottom,
+        width: rect.width,
+        height: rect.height,
+      });
     }
-  }, []);
+    setIsHovered(true);
+  }, [cancelLeave]);
+
+  const clonedChildren = (hovered: boolean) => React.Children.map(children, child => {
+    if (React.isValidElement(child)) {
+      return React.cloneElement(child as React.ReactElement<any>, { isGroupHovered: hovered });
+    }
+    return child;
+  });
 
   return (
     <>
@@ -386,26 +406,38 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
       <div
         ref={groupRef}
         onMouseEnter={handleMouseEnter}
-        onMouseLeave={() => setIsHovered(false)}
+        onMouseLeave={scheduleLeave}
         style={{
           display: 'flex',
           alignItems: 'flex-end',
           gap: '2px',
           flexShrink: 0,
-          transition: 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
-          transform: isHovered ? `translateY(${hoverY}px) scale(2)` : 'translateY(0) scale(1)',
-          transformOrigin: 'bottom center',
-          zIndex: isHovered ? 50 : 1,
           position: 'relative',
+          opacity: isHovered ? 0.15 : 1,
+          transition: 'opacity 0.15s',
         }}
       >
-        {React.Children.map(children, child => {
-          if (React.isValidElement(child)) {
-            return React.cloneElement(child as React.ReactElement<any>, { isGroupHovered: isHovered });
-          }
-          return child;
-        })}
-        {isHovered && (
+        {clonedChildren(false)}
+      </div>
+      {isHovered && portalPos && createPortal(
+        <div
+          onMouseEnter={cancelLeave}
+          onMouseLeave={scheduleLeave}
+          style={{
+            position: 'fixed',
+            left: `${portalPos.left}px`,
+            bottom: `${portalPos.bottom}px`,
+            transform: 'translateX(-50%) scale(2)',
+            transformOrigin: 'bottom center',
+            display: 'flex',
+            alignItems: 'flex-end',
+            gap: '2px',
+            zIndex: 9999,
+            pointerEvents: 'auto',
+            animation: 'weekGroupPopIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+          }}
+        >
+          {clonedChildren(true)}
           <div style={{
             position: 'absolute',
             top: '-12px',
@@ -421,8 +453,9 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
           }}>
             Week {weekNum}
           </div>
-        )}
-      </div>
+        </div>,
+        document.body
+      )}
     </>
   );
 }
