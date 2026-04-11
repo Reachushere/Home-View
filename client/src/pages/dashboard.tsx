@@ -14395,15 +14395,6 @@ export default function Dashboard() {
           document.body
         )}
 
-        {isMobileLibraryOpen && (
-          <LibraryView
-            isOpen={isMobileLibraryOpen}
-            onClose={() => { setIsMobileLibraryOpen(false); setLibrarySemesterKey(undefined); }}
-            semesters={[]}
-            initialSemesterKey={librarySemesterKey}
-          />
-        )}
-
         {partnerWizardOpen && createPortal(
           <PartnerShiftWizard
             partnerWizardStep={partnerWizardStep} setPartnerWizardStep={setPartnerWizardStep}
