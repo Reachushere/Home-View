@@ -360,13 +360,15 @@ function WeekSeparator({ weekNum }: { weekNum: number }) {
   );
 }
 
-function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, totalShelves, children }: {
+function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, totalShelves, children, moduleFile, onOpenModule }: {
   weekNum: number;
   showSeparator: boolean;
   shelfHeight: number;
   shelfIndex: number;
   totalShelves: number;
   children: React.ReactNode;
+  moduleFile?: FileRecord | null;
+  onOpenModule?: (file: FileRecord) => void;
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const groupRef = useRef<HTMLDivElement>(null);
@@ -431,16 +433,46 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
               animation: `weekBooksSlide${slideDirection} 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards`,
             }}
           >
-            <div style={{
-              fontSize: '14px',
-              fontWeight: 700,
-              color: '#FDDC00',
-              letterSpacing: '1.5px',
-              textShadow: '0 2px 8px rgba(0,0,0,0.8)',
-              marginBottom: '16px',
-              textTransform: 'uppercase',
-            }}>
+            <div
+              style={{
+                fontSize: '14px',
+                fontWeight: 700,
+                color: '#FDDC00',
+                letterSpacing: '1.5px',
+                textShadow: '0 2px 8px rgba(0,0,0,0.8)',
+                marginBottom: '16px',
+                textTransform: 'uppercase',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                cursor: moduleFile && onOpenModule ? 'pointer' : 'default',
+              }}
+              onClick={(e) => {
+                if (moduleFile && onOpenModule) {
+                  e.stopPropagation();
+                  onOpenModule(moduleFile);
+                }
+              }}
+            >
               Week {weekNum}
+              {moduleFile && onOpenModule && (
+                <span style={{
+                  fontSize: '9px',
+                  padding: '2px 6px',
+                  borderRadius: '4px',
+                  border: '1px solid rgba(253,220,0,0.3)',
+                  background: 'rgba(253,220,0,0.1)',
+                  color: 'rgba(253,220,0,0.8)',
+                  fontWeight: 600,
+                  letterSpacing: '0.3px',
+                  transition: 'all 0.15s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(253,220,0,0.2)'; e.currentTarget.style.color = '#FDDC00'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(253,220,0,0.1)'; e.currentTarget.style.color = 'rgba(253,220,0,0.8)'; }}
+                >
+                  Open Module
+                </span>
+              )}
             </div>
             <div style={{
               display: 'flex',
@@ -635,6 +667,8 @@ function BookReader({ file, bookColor, onClose, pdfUrl }: {
   const scrollRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const pendingCommentInputRef = useRef<HTMLInputElement>(null);
+  const [readerPos, setReaderPos] = useState<{ x: number; y: number } | null>(null);
+  const readerDragRef = useRef<{ startX: number; startY: number; startPosX: number; startPosY: number } | null>(null);
   const title = truncateSpineTitle(file.displayName || file.originalName, 80, !!file.displayName && file.displayName !== file.originalName);
 
   const { data: annotations = [], refetch: refetchAnnotations } = useQuery<Annotation[]>({
@@ -1010,13 +1044,14 @@ function BookReader({ file, bookColor, onClose, pdfUrl }: {
       <div style={{
         width: phase === 'pull' ? '200px' : '85vw',
         height: phase === 'pull' ? '280px' : '84vh',
-        marginTop: phase === 'reading' ? '60px' : '0',
+        marginTop: phase === 'reading' && !readerPos ? '60px' : '0',
         backgroundColor: bookColor,
         borderRadius: phase === 'reading' ? '8px 16px 16px 8px' : '4px 12px 12px 4px',
         boxShadow: '0 20px 80px rgba(0,0,0,0.7), inset 0 0 30px rgba(0,0,0,0.2)',
-        position: 'relative',
+        position: readerPos ? 'fixed' : 'relative',
+        ...(readerPos ? { left: `${readerPos.x}px`, top: `${readerPos.y}px`, zIndex: 100020 } : {}),
         overflow: 'hidden',
-        transition: phase === 'pull' ? 'none' : 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+        transition: phase === 'pull' ? 'none' : readerPos ? 'none' : 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
         animation: phase === 'pull' ? 'libBookPull 0.6s ease-out forwards' : 'none',
         display: 'flex',
         flexDirection: 'column',
@@ -1044,7 +1079,27 @@ function BookReader({ file, bookColor, onClose, pdfUrl }: {
 
         {phase === 'reading' && (
           <>
-            <div style={{ padding: '8px 12px 4px 32px', zIndex: 3, flexShrink: 0 }}>
+            <div
+              style={{ padding: '8px 12px 4px 32px', zIndex: 3, flexShrink: 0, cursor: 'grab', userSelect: 'none' }}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                const rect = (e.currentTarget.closest('[style]') as HTMLElement)?.getBoundingClientRect();
+                if (!rect) return;
+                const startPosX = readerPos?.x ?? rect.left;
+                const startPosY = readerPos?.y ?? rect.top;
+                readerDragRef.current = { startX: e.clientX, startY: e.clientY, startPosX, startPosY };
+                const onMove = (ev: MouseEvent) => {
+                  if (!readerDragRef.current) return;
+                  setReaderPos({
+                    x: readerDragRef.current.startPosX + (ev.clientX - readerDragRef.current.startX),
+                    y: readerDragRef.current.startPosY + (ev.clientY - readerDragRef.current.startY),
+                  });
+                };
+                const onUp = () => { readerDragRef.current = null; window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); };
+                window.addEventListener('mousemove', onMove);
+                window.addEventListener('mouseup', onUp);
+              }}
+            >
               <div style={{ color: '#ffffff', fontSize: '12px', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {title}
               </div>
@@ -2585,8 +2640,13 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                       }
                       currentGroup.files.push({ file, fileIdx });
                     });
-                    return weekGroups.map((group, groupIdx) => (
-                      <WeekGroupWrapper key={`wg-${group.weekNum}-${groupIdx}`} weekNum={group.weekNum} showSeparator={groupIdx > 0} shelfHeight={shelfHeight} shelfIndex={courseIdx} totalShelves={courseBooks.length}>
+                    return weekGroups.map((group, groupIdx) => {
+                      const moduleFileForWeek = group.files.find(({ file }) => {
+                        const fl = (file.folder || '').toLowerCase();
+                        return fl.includes('-module');
+                      })?.file || null;
+                      return (
+                      <WeekGroupWrapper key={`wg-${group.weekNum}-${groupIdx}`} weekNum={group.weekNum} showSeparator={groupIdx > 0} shelfHeight={shelfHeight} shelfIndex={courseIdx} totalShelves={courseBooks.length} moduleFile={moduleFileForWeek} onOpenModule={(mf) => { const color = getBookColor(0, course.code, group.weekNum); handleBookClick(mf, color); }}>
                         {group.files.map(({ file, fileIdx }) => {
                           const color = getBookColor(fileIdx, course.code, group.weekNum);
                           return (
@@ -2608,7 +2668,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                           );
                         })}
                       </WeekGroupWrapper>
-                    ));
+                    );});
                   })()}
                   <Bookend side="right" />
                 </div>

@@ -28933,7 +28933,7 @@ export default function Dashboard() {
                       <div className="absolute top-0 left-0 right-0" style={{ height: '5px', zIndex: 15, overflow: 'hidden' }}>
                         <div style={{ position: 'absolute', inset: 0, backgroundColor: sleepDisabledDays.has(shiftDateStr) ? 'rgba(255, 178, 50, 0.3)' : 'rgba(255, 178, 50, 0.85)' }} />
                         {!sleepDisabledDays.has(shiftDateStr) && (isSameDayET(day, new Date()) || isSameDayET(day, addDays(new Date(), 1))) && (
-                          <div className="shift-bar-shimmer" style={{ position: 'absolute', inset: 0 }} />
+                          <div className="shift-bar-shimmer-orange" style={{ position: 'absolute', inset: 0 }} />
                         )}
                       </div>
                     )}
@@ -28941,7 +28941,7 @@ export default function Dashboard() {
                       <div className="absolute bottom-0 left-0 right-0" style={{ height: '5px', zIndex: 15, overflow: 'hidden' }}>
                         <div style={{ position: 'absolute', inset: 0, backgroundColor: sleepDisabledDays.has(shiftDateStr) ? 'rgba(168, 85, 247, 0.3)' : 'rgba(168, 85, 247, 0.85)' }} />
                         {!sleepDisabledDays.has(shiftDateStr) && (isSameDayET(day, new Date()) || isSameDayET(day, addDays(new Date(), 1))) && (
-                          <div className="shift-bar-shimmer" style={{ position: 'absolute', inset: 0 }} />
+                          <div className="shift-bar-shimmer-purple" style={{ position: 'absolute', inset: 0 }} />
                         )}
                       </div>
                     )}

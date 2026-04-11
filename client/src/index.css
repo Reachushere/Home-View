@@ -2609,6 +2609,18 @@ input[type="date"].bg-white::-webkit-datetime-edit-year-field {
   animation: shiftBarShimmer 8s ease-in-out infinite;
 }
 
+.shift-bar-shimmer-orange {
+  background: linear-gradient(90deg, transparent 0%, rgba(255,220,130,0.7) 25%, rgba(255,255,255,0.55) 50%, rgba(255,220,130,0.7) 75%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shiftBarShimmer 8s ease-in-out infinite;
+}
+
+.shift-bar-shimmer-purple {
+  background: linear-gradient(90deg, transparent 0%, rgba(200,160,255,0.7) 25%, rgba(255,255,255,0.55) 50%, rgba(200,160,255,0.7) 75%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shiftBarShimmer 8s ease-in-out infinite;
+}
+
 @keyframes shiftBarShimmer {
   0% { background-position: -200% 0; opacity: 0; }
   3% { opacity: 0.8; }
