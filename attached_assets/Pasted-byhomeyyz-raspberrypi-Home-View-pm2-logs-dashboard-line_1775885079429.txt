@@ -1,0 +1,46 @@
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs dashboard --lines 200 --nostream | grep -i "cat lights\|webhook\|cooldown\|startup\|ignored"
+0|dashboar | [Cat Lights HA Voice Pre-Wake] fetch attempt 1/3 failed: HTTP 500: 500 Internal Server Error
+0|dashboar | [Cat Lights HA Voice Pre-Wake] fetch attempt 2/3 failed: HTTP 500: 500 Internal Server Error
+0|dashboar | [HA Safe] Cat Lights HA Voice Pre-Wake media_player/turn_on failed: [Cat Lights HA Voice Pre-Wake] All 3 fetch attempts failed: HTTP 500: 500 Internal Server Error
+0|dashboar | [Cat Lights HA Voice Pre-Wake [Replayed]] fetch attempt 1/3 failed: HTTP 500: 500 Internal Server Error
+0|dashboar | [Cat Lights HA Voice Pre-Wake [Replayed]] fetch attempt 2/3 failed: HTTP 500: 500 Internal Server Error
+0|dashboar | [HA Queue] Replay failed (attempt 2): Cat Lights HA Voice Pre-Wake media_player/turn_on — moved to back of queue
+0|dashboar | [Cat Lights HA Voice Pre-Wake [Replayed]] fetch attempt 1/3 failed: HTTP 500: 500 Internal Server Error
+0|dashboar | [Cat Lights HA Voice Pre-Wake [Replayed]] fetch attempt 2/3 failed: HTTP 500: 500 Internal Server Error
+0|dashboar | [Cat Lights HA Voice Pre-Wake] fetch attempt 1/3 failed: HTTP 500: 500 Internal Server Error
+0|dashboar | [HA Queue] Giving up on: Cat Lights HA Voice Pre-Wake media_player/turn_on after 3 attempts
+0|dashboar | [Cat Lights HA Voice Pre-Wake] fetch attempt 2/3 failed: HTTP 500: 500 Internal Server Error
+0|dashboar | [HA Safe] Cat Lights HA Voice Pre-Wake media_player/turn_on failed: [Cat Lights HA Voice Pre-Wake] All 3 fetch attempts failed: HTTP 500: 500 Internal Server Error
+0|dashboar | 1:24:17 AM [express] GET /api/automation-cooldown 304 in 1ms :: {"active":false,"remaining":0,"reason":null}
+0|dashboar | 1:24:18 AM [express] GET /api/automation-cooldown 304 in 1ms :: {"active":false,"remaining":0,"reason":null}
+0|dashboar | 1:24:19 AM [express] GET /api/automation-cooldown 304 in 2ms :: {"active":false,"remaining":0,"reason":null}
+0|dashboar | 1:24:21 AM [express] GET /api/automation-cooldown 304 in 1ms :: {"active":false,"remaining":0,"reason":null}
+0|dashboar | 1:24:21 AM [express] GET /api/automation-cooldown 304 in 0ms :: {"active":false,"remaining":0,"reason":null}
+0|dashboar | 1:24:22 AM [express] GET /api/automation-cooldown 304 in 0ms :: {"active":false,"remaining":0,"reason":null}
+0|dashboar | 1:24:23 AM [express] GET /api/automation-cooldown 304 in 1ms :: {"active":false,"remaining":0,"reason":null}
+0|dashboar | 1:24:25 AM [express] GET /api/automation-cooldown 304 in 1ms :: {"active":false,"remaining":0,"reason":null}
+0|dashboar | 1:24:25 AM [express] GET /api/automation-cooldown 304 in 1ms :: {"active":false,"remaining":0,"reason":null}
+0|dashboar | 1:24:26 AM [express] GET /api/automation-cooldown 304 in 1ms :: {"active":false,"remaining":0,"reason":null}
+0|dashboar | 1:24:27 AM [express] GET /api/automation-cooldown 304 in 1ms :: {"active":false,"remaining":0,"reason":null}
+0|dashboar | 1:24:29 AM [express] GET /api/automation-cooldown 304 in 1ms :: {"active":false,"remaining":0,"reason":null}
+0|dashboar | 1:24:29 AM [express] GET /api/automation-cooldown 304 in 0ms :: {"active":false,"remaining":0,"reason":null}
+0|dashboar | [TRACE 1:24:30 AM] [CatLights] WEBHOOK RECEIVED | state={"active":false,"sessionId":0,"file":null,"chunk":null,"lightsPrompt":false,"trigger":null,"msSinceStop":null,"msSinceManualStop":null,"msSinceStart":null} | {"body":{"state":"off"}}
+0|dashboar | [Cat Lights] ====== WEBHOOK TRIGGERED ======
+0|dashboar | [Cat Lights] Timestamp: 4/11/2026, 1:24:30 AM
+0|dashboar | [Cat Lights] Request body: {"state":"off"}
+0|dashboar | [Cat Lights] Body parsing: state="off", action="", rawToState=undefined, trigger="none"
+0|dashboar | [Cat Lights] Using body state directly: off
+0|dashboar | [Cat Lights] Light state: off (body state: off)
+0|dashboar | [Cat Lights] Architecture: server-side TTS → Google Nest speaker (media_player.play_media)
+0|dashboar | [Cat Lights] Light off — stopping all playback and saving progress
+0|dashboar | 1:24:31 AM [express] GET /api/automation-cooldown 304 in 1ms :: {"active":false,"remaining":0,"reason":null}
+0|dashboar | [Cat Lights] Tablet stop commands sent (ts=1775885071098)
+0|dashboar | [Cat Lights] No playback was active or paused — skipping Fire Stick/Samsung TV shutdown (avoids CEC wake)
+0|dashboar | [Cat Lights] Cleared promptPending (session 0 still current)
+0|dashboar | [Cat Lights] lastPlaybackStoppedAt NOT set (no playback was active)
+0|dashboar | [Cat Lights] Stopped: echoSpeakers, tablet
+0|dashboar | 1:24:31 AM [express] POST /api/webhook/cat-lights 200 in 316ms :: {"action":"stopped","reason":"Light turned off","stoppedItems":["echoSpeakers","tablet"]}
+0|dashboar | 1:24:31 AM [express] GET /api/automation-cooldown 304 in 1ms :: {"active":false,"remaining":0,"reason":null}
+0|dashboar | 1:24:33 AM [express] GET /api/automation-cooldown 304 in 1ms :: {"active":false,"remaining":0,"reason":null}
+0|dashboar | 1:24:33 AM [express] GET /api/automation-cooldown 304 in 1ms :: {"active":false,"remaining":0,"reason":null}
+byhomeyyz@raspberrypi:~/Home-View $
