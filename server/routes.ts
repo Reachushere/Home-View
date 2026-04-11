@@ -3450,55 +3450,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 
   async function checkRawStoryTop3() {
     return;
-    try {
-      await loadLastTopThree();
-
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 10000);
-      const response = await fetch('https://www.rawstory.com/feed', {
-        signal: controller.signal,
-        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; UniCal/1.0)' }
-      });
-      clearTimeout(timeout);
-      const xml = await response.text();
-
-      const items = xml.split(/<item[\s>]/i).slice(1, 4);
-
-      const currentTopThree: Array<{ title: string; link: string; key: string }> = [];
-      for (const item of items) {
-        const titleMatch = item.match(/<title[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/title>/is);
-        const linkMatch = item.match(/<link[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/link>/is);
-        const title = titleMatch?.[1]?.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").trim() || '';
-        const link = linkMatch?.[1]?.trim().replace(/\?.*$/, '').replace(/\/$/, '') || '';
-        if (title && link) {
-          currentTopThree.push({ title, link, key: title.toLowerCase().replace(/[^a-z0-9]/g, '') });
-        }
-      }
-
-      if (currentTopThree.length === 0) {
-        console.log('[Raw Story] No items found in feed');
-        return;
-      }
-
-      const currentKeys = currentTopThree.map(s => s.key);
-
-      if (lastTopThree.length === 0) {
-        lastTopThree = currentKeys;
-        await saveLastTopThree();
-        console.log('[Raw Story] Initial top-3 stored (no email on first run)');
-        return;
-      }
-
-      if (JSON.stringify(currentKeys) === JSON.stringify(lastTopThree)) {
-        console.log('[Raw Story] Top-3 unchanged');
-        return;
-      }
-
-      lastTopThree = currentKeys;
-      await saveLastTopThree();
-    } catch (err: any) {
-      console.error('[Raw Story] Check failed:', err.message);
-    }
   }
 
   app.post("/api/audit/semester-courses", async (_req, res) => {
