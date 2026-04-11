@@ -1,0 +1,57 @@
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs dashboard --lines 300 --nostream | grep -E "\[Cat Lights\]|\[Nest\]|\[Playback\]|\[AudioPrep\]|\[TTS\]|\[Extract\]|Error|error"
+/home/byhomeyyz/.pm2/logs/dashboard-error.log last 300 lines:
+0|dashboar | Error fetching events from third account calendar: Error: Google OAuth credentials not configured for third account
+0|dashboar | [Gmail] Error fetching D2L announcements: Gmail not connected - run connect_google.js on the Pi
+0|dashboar | [ExtractText] Object storage download error: Object not found
+0|dashboar | [ExtractText] Object storage download error: Object not found
+0|dashboar | [ExtractText] Object storage download error: Object not found
+0|dashboar | List calendars error: Error: Google Calendar not connected - run connect_google.js on the Pi
+0|dashboar | Failed to fetch primary account events: Error: Google Calendar not connected - run connect_google.js on the Pi
+0|dashboar | Error fetching events from second account: Error: Google OAuth credentials not configured for second account
+0|dashboar | Failed to fetch primary upcoming events: Error: Google Calendar not connected - run connect_google.js on the Pi
+0|dashboar | Error fetching events from second account: Error: Google OAuth credentials not configured for second account
+0|dashboar | Error fetching events from third account calendar: Error: Google OAuth credentials not configured for third account
+0|dashboar | [Cat Lights HA Voice Pre-Wake] fetch attempt 1/3 failed: HTTP 500: 500 Internal Server Error
+0|dashboar | [Cat Lights HA Voice Pre-Wake] fetch attempt 2/3 failed: HTTP 500: 500 Internal Server Error
+0|dashboar | [HA Safe] Cat Lights HA Voice Pre-Wake media_player/turn_on failed: [Cat Lights HA Voice Pre-Wake] All 3 fetch attempts failed: HTTP 500: 500 Internal Server Error
+0|dashboar | [Cat Lights HA Voice Pre-Wake [Replayed]] fetch attempt 1/3 failed: HTTP 500: 500 Internal Server Error
+0|dashboar | [Cat Lights HA Voice Pre-Wake [Replayed]] fetch attempt 2/3 failed: HTTP 500: 500 Internal Server Error
+0|dashboar | [Cat Lights HA Voice Pre-Wake [Replayed]] fetch attempt 1/3 failed: HTTP 500: 500 Internal Server Error
+0|dashboar | [ExtractText] Object storage download error: Object not found
+0|dashboar | [Nest Pre-Stop] fetch attempt 1/3 failed: HTTP 500: 500 Internal Server Error
+0|dashboar | [Cat Lights HA Voice Pre-Wake [Replayed]] fetch attempt 2/3 failed: HTTP 500: 500 Internal Server Error
+0|dashboar | [Nest Pre-Stop] fetch attempt 2/3 failed: HTTP 500: 500 Internal Server Error
+0|dashboar | [HA Safe] Nest Pre-Stop media_player/media_stop failed: [Nest Pre-Stop] All 3 fetch attempts failed: HTTP 500: 500 Internal Server Error
+0|dashboar | [Nest Pre-Stop [Replayed]] fetch attempt 1/3 failed: HTTP 500: 500 Internal Server Error
+0|dashboar | [Cat Lights] Nest speaker accepted play_media but NOT actually playing — falling back to HA Cloud TTS
+0|dashboar | [ExtractText] Object storage download error: Object not found
+0|dashboar | Error fetching from OneDrive for text extraction: u [Error]: Resource not found for the segment 'root:onedrive'.
+0|dashboar |     at s.constructErrorFromResponse (/home/byhomeyyz/Home-View/dist/index.cjs:278:44884)
+0|dashboar |     at s.getError (/home/byhomeyyz/Home-View/dist/index.cjs:278:45165)
+0|dashboar |   body: `{"code":"BadRequest","message":"Resource not found for the segment 'root:onedrive'.","innerError":{"date":"2026-04-11T06:54:08","request-id":"991f75e4-d425-4949-8513-365b0af98359","client-request-id":"5fea0ec9-a410-c785-2ed1-b90007d537ef"}}`,
+0|dashboar | [ExtractText] Object storage download error: Object not found
+0|dashboar | 2:54:29 AM [express] GET /api/health 200 in 0ms :: {"status":"ok","uptime":146,"ha":{"connected":true,"lastSuccessAt":"2026-04-11T06:53:34.152Z","lastFailureAt":null,"consecutiveFailures":0,"totalChecks":2,"totalFailures":0,"lastError":null,"downSince":null,"commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-11T06:54:29.216Z"}
+0|dashboar | 2:54:31 AM [express] GET /api/health 200 in 1ms :: {"status":"ok","uptime":148,"ha":{"connected":true,"lastSuccessAt":"2026-04-11T06:53:34.152Z","lastFailureAt":null,"consecutiveFailures":0,"totalChecks":2,"totalFailures":0,"lastError":null,"downSince":null,"commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-11T06:54:31.447Z"}
+0|dashboar | [AudioPrep] Generating chunk 14/16 for AUMA-UP42-ResPapr-CommEngageLocalComm.Jones_.Oct11.pdf (1356 chars)
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | 2:54:39 AM [express] GET /api/health 200 in 1ms :: {"status":"ok","uptime":156,"ha":{"connected":true,"lastSuccessAt":"2026-04-11T06:54:34.343Z","lastFailureAt":null,"consecutiveFailures":0,"totalChecks":3,"totalFailures":0,"lastError":null,"downSince":null,"commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-11T06:54:39.215Z"}
+0|dashboar | 2:54:41 AM [express] GET /api/health 200 in 0ms :: {"status":"ok","uptime":158,"ha":{"connected":true,"lastSuccessAt":"2026-04-11T06:54:34.343Z","lastFailureAt":null,"consecutiveFailures":0,"totalChecks":3,"totalFailures":0,"lastError":null,"downSince":null,"commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-11T06:54:41.442Z"}
+0|dashboar | [AudioPrep] Generating chunk 15/16 for AUMA-UP42-ResPapr-CommEngageLocalComm.Jones_.Oct11.pdf (903 chars)
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | [AudioPrep] Generating chunk 16/16 for AUMA-UP42-ResPapr-CommEngageLocalComm.Jones_.Oct11.pdf (1109 chars)
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | 2:54:49 AM [express] GET /api/health 200 in 1ms :: {"status":"ok","uptime":166,"ha":{"connected":true,"lastSuccessAt":"2026-04-11T06:54:34.343Z","lastFailureAt":null,"consecutiveFailures":0,"totalChecks":3,"totalFailures":0,"lastError":null,"downSince":null,"commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-11T06:54:49.218Z"}
+0|dashboar | [AudioPrep] ===== Completed AUMA-UP42-ResPapr-CommEngageLocalComm.Jones_.Oct11.pdf: 16 chunks in 150s =====
+0|dashboar | [AudioPrep] ===== Preparing file 219: Units 3,6 - 3,13.pdf =====
+0|dashboar | [AudioPrep] No usable text extracted from Units 3,6 - 3,13.pdf — skipping
+0|dashboar | [AudioPrep] ===== Preparing file 212: Units 3,1 - 3,5.pdf =====
+0|dashboar | [AudioPrep] No usable text extracted from Units 3,1 - 3,5.pdf — skipping
+0|dashboar | [AudioPrep] ===== Preparing file 137: CherylN.CollierJonat_2024_ThePoliticsofOntarioSecondEdition.pdf =====
+0|dashboar | [AudioPrep] No usable text extracted from CherylN.CollierJonat_2024_ThePoliticsofOntarioSecondEdition.pdf — skipping
+0|dashboar | [AudioPrep] ===== Preparing file 253: Testing PDF.pdf =====
+0|dashboar | [AudioPrep] No usable text extracted from Testing PDF.pdf — skipping
+0|dashboar | 2:54:55 AM [express] GET /api/health 200 in 1ms :: {"status":"ok","uptime":173,"ha":{"connected":true,"lastSuccessAt":"2026-04-11T06:54:34.343Z","lastFailureAt":null,"consecutiveFailures":0,"totalChecks":3,"totalFailures":0,"lastError":null,"downSince":null,"commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-11T06:54:55.709Z"}
+0|dashboar | [AudioPrep] ===== Preparing file 158: Units 2,10 - 2,12.pdf =====
+0|dashboar | 2:54:59 AM [express] GET /api/health 200 in 1ms :: {"status":"ok","uptime":176,"ha":{"connected":true,"lastSuccessAt":"2026-04-11T06:54:34.343Z","lastFailureAt":null,"consecutiveFailures":0,"totalChecks":3,"totalFailures":0,"lastError":null,"downSince":null,"commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-11T06:54:59.213Z"}
+0|dashboar | 2:55:01 AM [express] GET /api/health 200 in 1ms :: {"status":"ok","uptime":178,"ha":{"connected":true,"lastSuccessAt":"2026-04-11T06:54:34.343Z","lastFailureAt":null,"consecutiveFailures":0,"totalChecks":3,"totalFailures":0,"lastError":null,"downSince":null,"commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-11T06:55:01.449Z"}
+byhomeyyz@raspberrypi:~/Home-View $
