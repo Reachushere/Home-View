@@ -24517,7 +24517,7 @@ export default function Dashboard() {
                       return (
                         <div key={sem.id} style={{ padding: '10px 12px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }} data-testid={`health-semester-${sem.id}`}>
                           <div className="flex items-center gap-2 mb-2">
-                            <span className="text-[11px] font-semibold">{sem.semesterName}</span>
+                            <span className="text-[13px] font-semibold" style={{ color: '#fff' }}>{sem.semesterName}</span>
                             {sem.isActive && <span style={{ fontSize: '8px', background: '#059669', color: '#fff', padding: '1px 6px', borderRadius: '4px', fontWeight: 600 }}>ACTIVE</span>}
                           </div>
                           {courses.map((c) => {
@@ -24537,21 +24537,21 @@ export default function Dashboard() {
                                   onClick={() => setHealthCourseExpanded(prev => ({ ...prev, [expandKey]: !prev[expandKey] }))}
                                   data-testid={`health-course-toggle-${sem.id}-${c.idx}`}
                                 >
-                                  <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.5)', transition: 'transform 0.2s', transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)', flexShrink: 0 }}>▶</span>
+                                  <span className="text-[12px]" style={{ color: 'rgba(255,255,255,0.5)', transition: 'transform 0.2s', transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)', flexShrink: 0 }}>▶</span>
                                   <div style={{ width: '16px', height: '10px', borderRadius: '3px', background: `linear-gradient(135deg, ${c.color || '#555'}, ${c.colorEnd || '#777'})`, flexShrink: 0 }} />
-                                  <span className="text-[10px] font-semibold" style={{ color: c.color || '#fff' }}>{c.code || 'TBD'}</span>
-                                  <span className="text-[10px]" style={{ color: '#fff' }}>{c.name || 'To Be Determined'}</span>
-                                  {termLabel && <span className="text-[8px]" style={{ color: '#fff', background: 'rgba(255,255,255,0.1)', padding: '0 4px', borderRadius: '3px' }}>{termLabel}</span>}
+                                  <span className="text-[12px] font-semibold" style={{ color: c.color || '#fff' }}>{c.code || 'TBD'}</span>
+                                  <span className="text-[12px]" style={{ color: '#fff' }}>{c.name || 'To Be Determined'}</span>
+                                  {termLabel && <span className="text-[10px]" style={{ color: '#fff', background: 'rgba(255,255,255,0.1)', padding: '0 4px', borderRadius: '3px' }}>{termLabel}</span>}
                                   <div className="flex items-center gap-1 ml-auto">
                                     {linked ? (
                                       <div className="flex items-center gap-1">
                                         <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: verifyState?.exists === false ? '#ef4444' : '#22c55e', boxShadow: `0 0 3px ${verifyState?.exists === false ? '#ef4444' : '#22c55e'}` }} />
-                                        <span className="text-[8px]" style={{ color: verifyState?.exists === false ? '#ef4444' : '#22c55e' }}>{verifyState?.checking ? 'Checking...' : verifyState?.exists === false ? 'Not Found' : 'Linked'}</span>
+                                        <span className="text-[10px]" style={{ color: verifyState?.exists === false ? '#ef4444' : '#22c55e' }}>{verifyState?.checking ? 'Checking...' : verifyState?.exists === false ? 'Not Found' : 'Linked'}</span>
                                       </div>
                                     ) : (
                                       <div className="flex items-center gap-1">
                                         <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#ef4444', boxShadow: '0 0 3px #ef4444' }} />
-                                        <span className="text-[8px]" style={{ color: '#ef4444' }}>Not Linked</span>
+                                        <span className="text-[10px]" style={{ color: '#ef4444' }}>Not Linked</span>
                                       </div>
                                     )}
                                   </div>
@@ -24559,25 +24559,25 @@ export default function Dashboard() {
                                 {isExpanded && (
                                   <div style={{ padding: '0 8px 8px 24px' }}>
                                     <div className="flex items-center gap-1 mb-2">
-                                      <span className="text-[9px]" style={{ color: '#fff', width: '48px', flexShrink: 0 }}>Module:</span>
-                                      <span className="text-[9px] flex-1 truncate" style={{ color: hasModFolder ? '#fff' : '#ef4444' }} title={c.modFolder || 'Not set'}>
+                                      <span className="text-[11px] font-medium" style={{ color: '#fff', width: '55px', flexShrink: 0 }}>Module:</span>
+                                      <span className="text-[11px] flex-1 truncate" style={{ color: hasModFolder ? '#fff' : '#ef4444' }} title={c.modFolder || 'Not set'}>
                                         {hasModFolder ? c.modFolder! : 'Not set'}
                                       </span>
-                                      <button className="text-[9px] hover:text-white/80 transition-colors" style={{ color: '#fff', padding: '0 4px', cursor: 'pointer', background: 'none', border: 'none', flexShrink: 0 }} onClick={() => { const startPath = hasModFolder ? c.modFolder! : '/School/1. TMU/Courses'; setHealthFolderBrowse({ semId: sem.id, courseIdx: c.idx, field: 'module' }); setHealthBrowsePath(startPath); setHealthBrowseLoading(true); fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(startPath)}`).then(r => r.json()).then(items => { setHealthBrowseItems(Array.isArray(items) ? items : []); setHealthBrowseLoading(false); }).catch(() => setHealthBrowseLoading(false)); }} data-testid={`browse-module-${sem.id}-${c.idx}`}>Browse</button>
+                                      <button className="text-[11px] hover:text-white/80 transition-colors" style={{ color: '#fff', padding: '0 4px', cursor: 'pointer', background: 'none', border: 'none', flexShrink: 0 }} onClick={() => { const startPath = hasModFolder ? c.modFolder! : '/School/1. TMU/Courses'; setHealthFolderBrowse({ semId: sem.id, courseIdx: c.idx, field: 'module' }); setHealthBrowsePath(startPath); setHealthBrowseLoading(true); fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(startPath)}`).then(r => r.json()).then(items => { setHealthBrowseItems(Array.isArray(items) ? items : []); setHealthBrowseLoading(false); }).catch(() => setHealthBrowseLoading(false)); }} data-testid={`browse-module-${sem.id}-${c.idx}`}>Browse</button>
                                     </div>
                                     <div className="flex items-center gap-1 mb-2">
-                                      <span className="text-[9px]" style={{ color: '#fff', width: '48px', flexShrink: 0 }}>Reading:</span>
-                                      <span className="text-[9px] flex-1 truncate" style={{ color: hasReadFolder ? '#fff' : '#ef4444' }} title={c.readFolder || 'Not set'}>
+                                      <span className="text-[11px] font-medium" style={{ color: '#fff', width: '55px', flexShrink: 0 }}>Reading:</span>
+                                      <span className="text-[11px] flex-1 truncate" style={{ color: hasReadFolder ? '#fff' : '#ef4444' }} title={c.readFolder || 'Not set'}>
                                         {hasReadFolder ? c.readFolder! : 'Not set'}
                                       </span>
-                                      <button className="text-[9px] hover:text-white/80 transition-colors" style={{ color: '#fff', padding: '0 4px', cursor: 'pointer', background: 'none', border: 'none', flexShrink: 0 }} onClick={() => { const startPath = hasReadFolder ? c.readFolder! : '/School/1. TMU/Courses'; setHealthFolderBrowse({ semId: sem.id, courseIdx: c.idx, field: 'reading' }); setHealthBrowsePath(startPath); setHealthBrowseLoading(true); fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(startPath)}`).then(r => r.json()).then(items => { setHealthBrowseItems(Array.isArray(items) ? items : []); setHealthBrowseLoading(false); }).catch(() => setHealthBrowseLoading(false)); }} data-testid={`browse-reading-${sem.id}-${c.idx}`}>Browse</button>
+                                      <button className="text-[11px] hover:text-white/80 transition-colors" style={{ color: '#fff', padding: '0 4px', cursor: 'pointer', background: 'none', border: 'none', flexShrink: 0 }} onClick={() => { const startPath = hasReadFolder ? c.readFolder! : '/School/1. TMU/Courses'; setHealthFolderBrowse({ semId: sem.id, courseIdx: c.idx, field: 'reading' }); setHealthBrowsePath(startPath); setHealthBrowseLoading(true); fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(startPath)}`).then(r => r.json()).then(items => { setHealthBrowseItems(Array.isArray(items) ? items : []); setHealthBrowseLoading(false); }).catch(() => setHealthBrowseLoading(false)); }} data-testid={`browse-reading-${sem.id}-${c.idx}`}>Browse</button>
                                     </div>
                                     {linked && (
-                                      <button className="text-[8px] hover:text-white/80 transition-colors mb-2" style={{ color: '#fff', cursor: 'pointer', background: 'none', border: 'none' }} onClick={() => { setHealthFolderVerify(prev => ({ ...prev, [sem.id]: { ...(prev[sem.id] || {}), [c.idx]: { checking: true, exists: null } } })); fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(c.modFolder!)}`).then(r => { if (r.ok) return r.json(); throw new Error('not found'); }).then(() => { setHealthFolderVerify(prev => ({ ...prev, [sem.id]: { ...(prev[sem.id] || {}), [c.idx]: { checking: false, exists: true } } })); }).catch(() => { setHealthFolderVerify(prev => ({ ...prev, [sem.id]: { ...(prev[sem.id] || {}), [c.idx]: { checking: false, exists: false } } })); }); }} data-testid={`verify-folder-${sem.id}-${c.idx}`}>Verify</button>
+                                      <button className="text-[10px] hover:text-white/80 transition-colors mb-2" style={{ color: '#fff', cursor: 'pointer', background: 'none', border: 'none' }} onClick={() => { setHealthFolderVerify(prev => ({ ...prev, [sem.id]: { ...(prev[sem.id] || {}), [c.idx]: { checking: true, exists: null } } })); fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(c.modFolder!)}`).then(r => { if (r.ok) return r.json(); throw new Error('not found'); }).then(() => { setHealthFolderVerify(prev => ({ ...prev, [sem.id]: { ...(prev[sem.id] || {}), [c.idx]: { checking: false, exists: true } } })); }).catch(() => { setHealthFolderVerify(prev => ({ ...prev, [sem.id]: { ...(prev[sem.id] || {}), [c.idx]: { checking: false, exists: false } } })); }); }} data-testid={`verify-folder-${sem.id}-${c.idx}`}>Verify</button>
                                     )}
                                     <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '6px' }}>
-                                      <span className="text-[9px] font-semibold" style={{ color: 'rgba(255,255,255,0.6)' }}>Weeks</span>
-                                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))', gap: '3px', marginTop: '4px' }}>
+                                      <span className="text-[12px] font-semibold" style={{ color: '#fff' }}>Weeks</span>
+                                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '4px', marginTop: '5px' }}>
                                         {Array.from({ length: 13 }, (_, i) => i + 1).map(w => {
                                           const modFolder = `week-${w}-${cc}-module`;
                                           const readFolder = `week-${w}-${cc}-reading`;
@@ -24585,11 +24585,11 @@ export default function Dashboard() {
                                           const hasReadFiles = allFiles.some(f => f.folder === readFolder);
                                           const weekLinked = hasModFiles || hasReadFiles;
                                           return (
-                                            <div key={w} className="flex items-center gap-1" style={{ padding: '2px 4px', borderRadius: '3px', background: 'rgba(255,255,255,0.03)' }} data-testid={`health-week-${sem.id}-${c.idx}-${w}`}>
-                                              <div style={{ width: '5px', height: '5px', borderRadius: '50%', backgroundColor: weekLinked ? '#22c55e' : 'rgba(255,255,255,0.15)', boxShadow: weekLinked ? '0 0 3px #22c55e' : 'none', flexShrink: 0 }} />
-                                              <span className="text-[10px] font-medium" style={{ color: '#fff' }}>W{w}</span>
-                                              {hasModFiles && <span className="text-[9px] font-medium" style={{ color: '#60a5fa' }}>M</span>}
-                                              {hasReadFiles && <span className="text-[9px] font-medium" style={{ color: '#a78bfa' }}>R</span>}
+                                            <div key={w} className="flex items-center gap-1" style={{ padding: '3px 5px', borderRadius: '3px', background: 'rgba(255,255,255,0.03)' }} data-testid={`health-week-${sem.id}-${c.idx}-${w}`}>
+                                              <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: weekLinked ? '#22c55e' : 'rgba(255,255,255,0.15)', boxShadow: weekLinked ? '0 0 3px #22c55e' : 'none', flexShrink: 0 }} />
+                                              <span className="text-[12px] font-semibold" style={{ color: '#fff' }}>W{w}</span>
+                                              {hasModFiles && <span className="text-[11px] font-semibold" style={{ color: '#60a5fa' }}>M</span>}
+                                              {hasReadFiles && <span className="text-[11px] font-semibold" style={{ color: '#a78bfa' }}>R</span>}
                                             </div>
                                           );
                                         })}
