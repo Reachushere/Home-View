@@ -1517,12 +1517,14 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
 
     semCourses.forEach((course, courseIdx) => {
       const codeNorm = course.code.replace(/\s/g, '').toLowerCase();
-      let files = courseMap.get(codeNorm) || [];
-      if (!files || files.length === 0) {
-        const slotKey = `tbd_slot${courseIdx + 1}`;
-        files = courseMap.get(slotKey) || [];
+      let files = [...(courseMap.get(codeNorm) || [])];
+      const slotKey = `tbd_slot${courseIdx + 1}`;
+      const slotFiles = courseMap.get(slotKey) || [];
+      if (slotFiles.length > 0) {
+        const existingPaths = new Set(files.map(f => f.objectPath));
+        slotFiles.forEach(f => { if (!existingPaths.has(f.objectPath)) files.push(f); });
       }
-      if (!files || files.length === 0) {
+      if (files.length === 0) {
         for (const [key, val] of courseMap.entries()) {
           if (key.replace(/[_\s]/g, '') === codeNorm.replace(/[_\s]/g, '')) {
             files = val;
