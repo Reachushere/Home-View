@@ -37,6 +37,12 @@ const textLayerCSS = `
   background: rgba(255, 255, 0, 0.45) !important;
   border-radius: 2px;
 }
+.textLayer span mark.search-mark {
+  background: rgba(255, 255, 0, 0.5);
+  color: transparent;
+  border-radius: 2px;
+  padding: 0;
+}
 .textLayer .endOfContent {
   display: block;
   position: absolute;
@@ -549,24 +555,56 @@ function BookReader({ file, bookColor, onClose }: {
   }, [pdfDoc, searchQuery]);
 
   useEffect(() => {
-    const textLayerDiv = textLayerRef.current;
-    if (!textLayerDiv || !searchQuery.trim()) return;
-    const timer = setTimeout(() => {
-      const spans = textLayerDiv.querySelectorAll('span');
+    const applyToLayer = (layerDiv: HTMLDivElement | null) => {
+      if (!layerDiv) return;
+      const spans = layerDiv.querySelectorAll('span');
+      if (!searchQuery.trim()) {
+        spans.forEach(span => {
+          const marks = span.querySelectorAll('mark.search-mark');
+          if (marks.length > 0) span.textContent = span.textContent || '';
+        });
+        return;
+      }
       const q = searchQuery.toLowerCase().trim();
       spans.forEach(span => {
-        const text = span.textContent || '';
-        if (text.toLowerCase().includes(q)) {
-          span.classList.add('search-highlight');
-        } else {
-          span.classList.remove('search-highlight');
+        const origText = span.textContent || '';
+        const lowerText = origText.toLowerCase();
+        if (!lowerText.includes(q)) {
+          const marks = span.querySelectorAll('mark.search-mark');
+          if (marks.length > 0) span.textContent = origText;
+          return;
         }
+        let html = '';
+        let idx = 0;
+        let lIdx = 0;
+        while (lIdx < lowerText.length) {
+          const pos = lowerText.indexOf(q, lIdx);
+          if (pos === -1) {
+            html += origText.slice(idx);
+            break;
+          }
+          html += origText.slice(idx, pos);
+          html += `<mark class="search-mark">${origText.slice(pos, pos + q.length)}</mark>`;
+          idx = pos + q.length;
+          lIdx = pos + q.length;
+        }
+        span.innerHTML = html;
       });
+    };
+    const timer = setTimeout(() => {
+      applyToLayer(textLayerRef.current);
+      applyToLayer(textLayerRightRef.current);
     }, 300);
     return () => {
       clearTimeout(timer);
-      const spans = textLayerDiv.querySelectorAll('span');
-      spans.forEach(span => span.classList.remove('search-highlight'));
+      [textLayerRef.current, textLayerRightRef.current].forEach(layerDiv => {
+        if (!layerDiv) return;
+        const spans = layerDiv.querySelectorAll('span');
+        spans.forEach(span => {
+          const marks = span.querySelectorAll('mark.search-mark');
+          if (marks.length > 0) span.textContent = span.textContent || '';
+        });
+      });
     };
   }, [searchQuery, currentPage, pdfDoc, zoom]);
 
@@ -599,22 +637,43 @@ function BookReader({ file, bookColor, onClose }: {
     refetchAnnotations();
   }, [commentText, currentPage, file.id, refetchAnnotations]);
 
-  const addHighlight = useCallback(async (pos?: { x: number; y: number }) => {
-    const rects = pos || undefined;
-    await apiRequest('POST', `/api/files/${file.id}/annotations`, { page: currentPage, type: 'highlight', color: highlightColor, rects });
+  const addHighlight = useCallback(async (rectData?: any) => {
+    await apiRequest('POST', `/api/files/${file.id}/annotations`, { page: currentPage, type: 'highlight', color: highlightColor, rects: rectData ? JSON.stringify(rectData) : undefined });
     refetchAnnotations();
   }, [currentPage, file.id, highlightColor, refetchAnnotations]);
 
   const handleCanvasClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (activeToolPanel !== 'highlight' && activeToolPanel !== 'comment') return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const rect = canvas.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
     if (activeToolPanel === 'highlight') {
-      addHighlight({ x, y });
-    } else if (activeToolPanel === 'comment') {
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
+        const range = sel.getRangeAt(0);
+        const pageContainer = (e.currentTarget as HTMLElement);
+        const containerRect = pageContainer.getBoundingClientRect();
+        const clientRects = range.getClientRects();
+        const normalizedRects: { x: number; y: number; w: number; h: number }[] = [];
+        for (let i = 0; i < clientRects.length; i++) {
+          const cr = clientRects[i];
+          if (cr.width < 1 || cr.height < 1) continue;
+          normalizedRects.push({
+            x: ((cr.left - containerRect.left) / containerRect.width) * 100,
+            y: ((cr.top - containerRect.top) / containerRect.height) * 100,
+            w: (cr.width / containerRect.width) * 100,
+            h: (cr.height / containerRect.height) * 100,
+          });
+        }
+        if (normalizedRects.length > 0) {
+          addHighlight({ type: 'rects', rects: normalizedRects });
+          sel.removeAllRanges();
+        }
+      }
+      return;
+    }
+    if (activeToolPanel === 'comment') {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const rect = canvas.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
       setPendingComment({ x, y });
       setPendingCommentText('');
       setTimeout(() => pendingCommentInputRef.current?.focus(), 50);
@@ -792,7 +851,7 @@ function BookReader({ file, bookColor, onClose }: {
                 {HIGHLIGHT_COLORS.map(c => (
                   <button key={c} onClick={() => setHighlightColor(c)} style={{ width: '18px', height: '18px', borderRadius: '50%', background: c, border: highlightColor === c ? '2px solid #fff' : '2px solid transparent', cursor: 'pointer', transition: 'border 0.15s' }} />
                 ))}
-                <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '10px', marginLeft: '4px' }}>Click on the page to place a highlight</span>
+                <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '10px', marginLeft: '4px' }}>Select text on the page to highlight it</span>
               </div>
             )}
 
@@ -821,19 +880,40 @@ function BookReader({ file, bookColor, onClose }: {
                         className="book-page book-page-left"
                         style={{ position: 'relative', cursor: activeToolPanel === 'highlight' ? 'text' : activeToolPanel === 'comment' ? 'crosshair' : 'default', boxShadow: 'inset -8px 0 16px -6px rgba(0,0,0,0.15), 2px 2px 8px rgba(0,0,0,0.1)' }}
                         onClick={handleCanvasClick}
+                        onMouseUp={activeToolPanel === 'highlight' ? handleCanvasClick : undefined}
                       >
                         <canvas ref={canvasRef} style={{ display: 'block' }} />
                         <div
                           ref={textLayerRef}
                           style={{
-                            pointerEvents: activeToolPanel === 'highlight' || activeToolPanel === 'comment' ? 'none' : 'auto',
+                            pointerEvents: activeToolPanel === 'comment' ? 'none' : 'auto',
                           }}
                           className="textLayer"
                         />
                         {pageHighlights.map((h) => {
-                          let pos: { x: number; y: number } | null = null;
-                          try { if (h.rects) pos = JSON.parse(h.rects); } catch {}
-                          if (!pos) return null;
+                          let parsed: any = null;
+                          try { if (h.rects) parsed = JSON.parse(h.rects); } catch {}
+                          if (!parsed) return null;
+                          const color = h.color || '#FFEB3B';
+                          if (parsed.type === 'rects' && Array.isArray(parsed.rects)) {
+                            return (
+                              <div key={h.id} className="highlight-group" style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+                                {parsed.rects.map((r: { x: number; y: number; w: number; h: number }, i: number) => (
+                                  <div key={i} style={{
+                                    position: 'absolute',
+                                    left: `${r.x}%`, top: `${r.y}%`,
+                                    width: `${r.w}%`, height: `${r.h}%`,
+                                    background: `${color}44`,
+                                    borderRadius: '1px',
+                                    pointerEvents: 'auto',
+                                    cursor: 'pointer',
+                                    mixBlendMode: 'multiply',
+                                  }} onClick={(e) => { e.stopPropagation(); deleteAnnotation(h.id); }} title="Click to remove highlight" />
+                                ))}
+                              </div>
+                            );
+                          }
+                          const pos = parsed as { x: number; y: number };
                           return (
                             <div key={h.id} style={{
                               position: 'absolute',
@@ -841,13 +921,13 @@ function BookReader({ file, bookColor, onClose }: {
                               top: `${Math.min(pos.y, 95)}%`,
                               transform: 'translate(-50%, -50%)',
                               width: '28px', height: '28px', borderRadius: '50%',
-                              background: `${h.color || '#FFEB3B'}66`,
-                              border: `2px solid ${h.color || '#FFEB3B'}`,
+                              background: `${color}66`,
+                              border: `2px solid ${color}`,
                               display: 'flex', alignItems: 'center', justifyContent: 'center',
                               cursor: 'pointer',
-                              boxShadow: `0 0 8px ${h.color || '#FFEB3B'}44`,
+                              boxShadow: `0 0 8px ${color}44`,
                             }}>
-                              <Highlighter size={12} color={h.color || '#FFEB3B'} />
+                              <Highlighter size={12} color={color} />
                               <button
                                 onClick={(e) => { e.stopPropagation(); deleteAnnotation(h.id); }}
                                 style={{
@@ -979,14 +1059,58 @@ function BookReader({ file, bookColor, onClose }: {
                       {rightPage ? (
                         <div
                           className="book-page book-page-right"
-                          style={{ position: 'relative', cursor: 'default', boxShadow: 'inset 8px 0 16px -6px rgba(0,0,0,0.15), -2px 2px 8px rgba(0,0,0,0.1)' }}
+                          style={{ position: 'relative', cursor: activeToolPanel === 'highlight' ? 'text' : 'default', boxShadow: 'inset 8px 0 16px -6px rgba(0,0,0,0.15), -2px 2px 8px rgba(0,0,0,0.1)' }}
+                          onMouseUp={activeToolPanel === 'highlight' ? (e) => {
+                            const sel = window.getSelection();
+                            if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
+                              const range = sel.getRangeAt(0);
+                              const containerRect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                              const clientRects = range.getClientRects();
+                              const normalizedRects: { x: number; y: number; w: number; h: number }[] = [];
+                              for (let i = 0; i < clientRects.length; i++) {
+                                const cr = clientRects[i];
+                                if (cr.width < 1 || cr.height < 1) continue;
+                                normalizedRects.push({
+                                  x: ((cr.left - containerRect.left) / containerRect.width) * 100,
+                                  y: ((cr.top - containerRect.top) / containerRect.height) * 100,
+                                  w: (cr.width / containerRect.width) * 100,
+                                  h: (cr.height / containerRect.height) * 100,
+                                });
+                              }
+                              if (normalizedRects.length > 0) {
+                                apiRequest('POST', `/api/files/${file.id}/annotations`, { page: rightPage, type: 'highlight', color: highlightColor, rects: JSON.stringify({ type: 'rects', rects: normalizedRects }) }).then(() => refetchAnnotations());
+                                sel.removeAllRanges();
+                              }
+                            }
+                          } : undefined}
                         >
                           <canvas ref={canvasRightRef} style={{ display: 'block' }} />
                           <div
                             ref={textLayerRightRef}
-                            style={{ pointerEvents: 'auto' }}
+                            style={{ pointerEvents: activeToolPanel === 'comment' ? 'none' : 'auto' }}
                             className="textLayer"
                           />
+                          {annotations.filter(a => a.page === rightPage && a.type === 'highlight').map((h) => {
+                            let parsed: any = null;
+                            try { if (h.rects) parsed = JSON.parse(h.rects); } catch {}
+                            if (!parsed) return null;
+                            const color = h.color || '#FFEB3B';
+                            if (parsed.type === 'rects' && Array.isArray(parsed.rects)) {
+                              return (
+                                <div key={h.id} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+                                  {parsed.rects.map((r: { x: number; y: number; w: number; h: number }, i: number) => (
+                                    <div key={i} style={{
+                                      position: 'absolute', left: `${r.x}%`, top: `${r.y}%`,
+                                      width: `${r.w}%`, height: `${r.h}%`,
+                                      background: `${color}44`, borderRadius: '1px',
+                                      pointerEvents: 'auto', cursor: 'pointer', mixBlendMode: 'multiply',
+                                    }} onClick={(e) => { e.stopPropagation(); deleteAnnotation(h.id); }} title="Click to remove highlight" />
+                                  ))}
+                                </div>
+                              );
+                            }
+                            return null;
+                          })}
                           {annotations.filter(a => a.page === rightPage && a.type === 'bookmark').length > 0 && (
                             <div style={{ position: 'absolute', top: 0, right: '16px', width: '20px', height: '32px', background: '#D4AF37', clipPath: 'polygon(0 0, 100% 0, 100% 100%, 50% 75%, 0 100%)', boxShadow: '0 2px 4px rgba(0,0,0,0.3)' }} />
                           )}
