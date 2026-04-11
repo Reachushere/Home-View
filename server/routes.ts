@@ -20016,6 +20016,136 @@ document.body.removeChild(a);
     res.json({ success: true });
   });
 
+  const LOCAL_ONEDRIVE_PATH = process.env.LOCAL_ONEDRIVE_PATH || '';
+
+  app.post("/api/files/local-sync", async (_req, res) => {
+    if (!LOCAL_ONEDRIVE_PATH) {
+      return res.json({ success: false, message: 'LOCAL_ONEDRIVE_PATH not configured' });
+    }
+    try {
+      const fs = await import("fs");
+      const path = await import("path");
+      if (!fs.existsSync(LOCAL_ONEDRIVE_PATH)) {
+        return res.json({ success: false, message: `Path not found: ${LOCAL_ONEDRIVE_PATH}` });
+      }
+      const activeSem = await storage.getActiveSemesterSettings();
+      if (!activeSem) return res.json({ success: false, message: 'No active semester' });
+      const startDate = activeSem.semesterStartDate ? new Date(activeSem.semesterStartDate) : new Date();
+      const year = startDate.getFullYear();
+      const semType = (activeSem.semesterType || '').toLowerCase();
+      const isSpSu = semType.includes('spring') || semType.includes('summer');
+      const semFolder = isSpSu ? 'Spring & Summer' : semType.includes('fall') ? 'Fall' : 'Winter';
+      const coursesBasePath = path.join(LOCAL_ONEDRIVE_PATH, 'School', '1. TMU', 'Courses', String(year), semFolder);
+      if (!fs.existsSync(coursesBasePath)) {
+        return res.json({ success: false, message: `Semester folder not found: ${coursesBasePath}` });
+      }
+      const courseConfigs: { code: string; localPath: string }[] = [];
+      for (let i = 1; i <= 3; i++) {
+        const code = (activeSem as any)[`course${i}Code`];
+        if (!code?.trim()) continue;
+        const codeClean = code.replace(/\s/g, '');
+        const courseFolders = fs.readdirSync(coursesBasePath).filter((d: string) => {
+          const norm = d.replace(/\s/g, '').toLowerCase();
+          return norm.startsWith(codeClean.toLowerCase()) && fs.statSync(path.join(coursesBasePath, d)).isDirectory();
+        });
+        if (courseFolders.length > 0) {
+          courseConfigs.push({ code: codeClean, localPath: path.join(coursesBasePath, courseFolders[0]) });
+        }
+      }
+      const existingFiles = await storage.getFiles();
+      const existingKeys = new Set(existingFiles.map(f => `${f.folder}||${f.originalName}`));
+      let synced = 0, skipped = 0, failed = 0;
+      const syncedList: string[] = [];
+      for (const course of courseConfigs) {
+        const weekDirs = fs.existsSync(course.localPath) ? fs.readdirSync(course.localPath).filter((d: string) => /^Week\s+\d+/i.test(d) && fs.statSync(path.join(course.localPath, d)).isDirectory()) : [];
+        for (const weekDir of weekDirs) {
+          const weekMatch = weekDir.match(/Week\s+(\d+)/i);
+          if (!weekMatch) continue;
+          const weekNum = parseInt(weekMatch[1]);
+          const weekPath = path.join(course.localPath, weekDir);
+          const subDirs = fs.readdirSync(weekPath).filter((d: string) => fs.statSync(path.join(weekPath, d)).isDirectory());
+          for (const subDir of subDirs) {
+            const subLower = subDir.toLowerCase();
+            let fileType = '';
+            if (subLower.includes('module')) fileType = 'module';
+            else if (subLower.includes('reading')) fileType = 'reading';
+            else continue;
+            const subPath = path.join(weekPath, subDir);
+            const pdfFiles = fs.readdirSync(subPath).filter((f: string) => /\.pdf$/i.test(f));
+            for (const pdfFile of pdfFiles) {
+              const folderName = `week-${weekNum}-${course.code.toLowerCase()}-${fileType}`;
+              const fileKey = `${folderName}||${pdfFile}`;
+              if (existingKeys.has(fileKey)) { skipped++; continue; }
+              try {
+                const pdfPath = path.join(subPath, pdfFile);
+                const buffer = fs.readFileSync(pdfPath);
+                const persistDir = path.join(process.cwd(), 'persistent-uploads');
+                if (!fs.existsSync(persistDir)) fs.mkdirSync(persistDir, { recursive: true });
+                const safeName = `${course.code}-w${weekNum}-${fileType}-${pdfFile}`.replace(/[^a-zA-Z0-9._-]/g, '_');
+                const destPath = path.join(persistDir, safeName);
+                fs.writeFileSync(destPath, buffer);
+                const objectPath = `/local/uploads/${safeName}`;
+                const newFile = await storage.createFile({
+                  originalName: pdfFile, displayName: pdfFile, objectPath,
+                  contentType: 'application/pdf', size: buffer.length, folder: folderName, listened: false,
+                });
+                existingKeys.add(fileKey);
+                let textLength = 0;
+                let totalChunks = 0;
+                try {
+                  const extractedText = await extractFileText({ ...newFile, objectPath });
+                  if (extractedText) {
+                    textLength = extractedText.length;
+                    totalChunks = Math.ceil(extractedText.length / CHUNK_SIZE);
+                    await storage.updateFile(newFile.id, { totalChunks, extractedText });
+                  }
+                } catch {}
+                synced++;
+                syncedList.push(`${course.code} W${weekNum} ${fileType}: ${pdfFile} (${totalChunks} chunks, ${textLength} chars)`);
+                console.log(`[LocalSync] New: ${pdfFile} -> ${folderName} (${totalChunks} chunks)`);
+              } catch (e: any) {
+                failed++;
+                console.error(`[LocalSync] Error: ${pdfFile}: ${e.message}`);
+              }
+            }
+          }
+        }
+      }
+      console.log(`[LocalSync] Done: ${synced} synced, ${skipped} skipped, ${failed} failed`);
+      res.json({ success: true, synced, skipped, failed, files: syncedList });
+    } catch (error: any) {
+      console.error("[LocalSync] Error:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  if (LOCAL_ONEDRIVE_PATH) {
+    const startLocalFileWatcher = async () => {
+      const fs = await import("fs");
+      const path = await import("path");
+      if (!fs.existsSync(LOCAL_ONEDRIVE_PATH)) {
+        console.log(`[LocalWatcher] Path not found, skipping: ${LOCAL_ONEDRIVE_PATH}`);
+        return;
+      }
+      console.log(`[LocalWatcher] Watching for new files in: ${LOCAL_ONEDRIVE_PATH}`);
+      const CHECK_INTERVAL = 5 * 60 * 1000;
+      const runSync = async () => {
+        try {
+          const response = await fetch(`http://localhost:${process.env.PORT || 5000}/api/files/local-sync`, { method: 'POST' });
+          const data = await response.json() as any;
+          if (data.synced > 0) {
+            console.log(`[LocalWatcher] Auto-synced ${data.synced} new files`);
+          }
+        } catch (e: any) {
+          console.error(`[LocalWatcher] Auto-sync error: ${e.message}`);
+        }
+      };
+      setTimeout(runSync, 15000);
+      setInterval(runSync, CHECK_INTERVAL);
+    };
+    startLocalFileWatcher();
+  }
+
   // POST /api/echo/tts - Send text-to-speech to Home Assistant Echo device
   app.post("/api/echo/tts", async (req, res) => {
     try {
