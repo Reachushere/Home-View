@@ -15699,11 +15699,7 @@ document.body.removeChild(a);
         console.log(`[Cat Lights][TRACE] Step 5a: ${allFilesAfter.length} files after sync`);
         nextFile = await findNextFileByPriority(allFilesAfter, currentWeekNumber);
         console.log(`[Cat Lights][TRACE] Step 5a: After sync, nextFile=${nextFile ? `id=${nextFile.id}` : 'null'}`);
-        if (!nextFile && currentWeekNumber > 1) {
-          console.log(`[Cat Lights][TRACE] Step 5a2: Trying previous week ${currentWeekNumber - 1}`);
-          nextFile = await findNextFileByPriority(allFilesAfter, currentWeekNumber - 1);
-          if (nextFile) console.log(`[Cat Lights][TRACE] Step 5a2: Found file from week ${currentWeekNumber - 1}: id=${nextFile.id}`);
-        }
+
       } else {
         console.log(`[Cat Lights][TRACE] Step 5c: Using cached file — syncing OneDrive in background only`);
         syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Cat Lights]').catch(e => console.log(`[Cat Lights] Background sync error: ${e.message}`));
