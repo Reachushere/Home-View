@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
-import { X, ChevronLeft, ChevronRight, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2, Printer, Volume2, Square, Pause, Play, RefreshCw, Pencil } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2, Printer, Volume2, Square, Pause, Play, RefreshCw, Pencil, FileText } from 'lucide-react';
 import * as pdfjsLib from 'pdfjs-dist';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 
@@ -594,10 +594,11 @@ const toolBtnStyle = (active?: boolean): React.CSSProperties => ({
   transition: 'all 0.15s ease',
 });
 
-function BookReader({ file, bookColor, onClose }: {
+function BookReader({ file, bookColor, onClose, pdfUrl }: {
   file: FileRecord;
   bookColor: string;
   onClose: () => void;
+  pdfUrl?: string;
 }) {
   const [phase, setPhase] = useState<'pull' | 'expand' | 'reading'>('pull');
   const [pdfDoc, setPdfDoc] = useState<any>(null);
@@ -655,7 +656,8 @@ function BookReader({ file, bookColor, onClose }: {
 
   useEffect(() => {
     let cancelled = false;
-    fetch(`/api/files/${file.id}/download`)
+    const fetchUrl = pdfUrl || `/api/files/${file.id}/download`;
+    fetch(fetchUrl)
       .then(r => {
         if (!r.ok) throw new Error(`Server returned ${r.status}`);
         return r.arrayBuffer();
@@ -1523,7 +1525,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
   const [currentSemIdx, setCurrentSemIdx] = useState(0);
   const [selectedBook, setSelectedBook] = useState<FileRecord | null>(null);
   const [selectedBookColor, setSelectedBookColor] = useState('#8B4513');
-  const [openReaders, setOpenReaders] = useState<{ file: FileRecord; color: string }[]>([]);
+  const [openReaders, setOpenReaders] = useState<{ file: FileRecord; color: string; pdfUrl?: string }[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [showSharePopup, setShowSharePopup] = useState(false);
@@ -1545,6 +1547,20 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
     queryKey: ['/api/files'],
     enabled: isOpen,
   });
+
+  const [syllabusPaths, setSyllabusPaths] = useState<Record<string, string>>({});
+  useEffect(() => {
+    if (!isOpen) return;
+    fetch('/api/syllabus/paths')
+      .then(r => r.json())
+      .then(data => { if (data && typeof data === 'object') setSyllabusPaths(data); })
+      .catch(() => {
+        try {
+          const saved = localStorage.getItem('courseSyllabusPaths');
+          if (saved) setSyllabusPaths(JSON.parse(saved));
+        } catch {}
+      });
+  }, [isOpen]);
 
   const preExtractTriggered = useRef(false);
   useEffect(() => {
@@ -1887,10 +1903,10 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
     return combined;
   }, [masterSearchResults, contentSearchResults, allFiles, semesters, masterSemFilter, masterWeekFilter, masterTypeFilter, masterFormatFilter]);
 
-  const handleBookClick = useCallback((file: FileRecord, color: string) => {
+  const handleBookClick = useCallback((file: FileRecord, color: string, pdfUrl?: string) => {
     setOpenReaders(prev => {
       if (prev.some(r => r.file.id === file.id)) return prev;
-      return [...prev, { file, color }];
+      return [...prev, { file, color, pdfUrl }];
     });
   }, []);
 
@@ -2482,17 +2498,63 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           courseBooks.map(({ course, files: courseFiles }, courseIdx) => (
             <div key={course.code} style={{ marginBottom: courseIdx < courseBooks.length - 1 ? '55px' : '0' }}>
               <div style={{
-                fontSize: '9px',
-                fontWeight: 500,
-                color: '#ffffff',
-                letterSpacing: '0.5px',
-                textTransform: 'uppercase',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
                 marginBottom: '6px',
                 paddingLeft: '16px',
-                fontFamily: "system-ui, -apple-system, sans-serif",
+                paddingRight: '12px',
                 borderLeft: `3px solid ${course.color || '#ffffff'}`,
               }}>
-                {course.code} — {course.name}
+                <span style={{
+                  fontSize: '9px',
+                  fontWeight: 500,
+                  color: '#ffffff',
+                  letterSpacing: '0.5px',
+                  textTransform: 'uppercase',
+                  fontFamily: "system-ui, -apple-system, sans-serif",
+                }}>
+                  {course.code} — {course.name}
+                </span>
+                {syllabusPaths[course.code] && (
+                  <button
+                    onClick={() => {
+                      const syllabusFile: FileRecord = {
+                        id: -1 * (course.code.charCodeAt(0) * 1000 + course.code.charCodeAt(1)),
+                        originalName: `${course.code} Syllabus.pdf`,
+                        displayName: `${course.code} Syllabus`,
+                        objectPath: syllabusPaths[course.code],
+                        folder: null,
+                        listened: false,
+                        contentType: 'application/pdf',
+                      };
+                      handleBookClick(syllabusFile, course.color || '#8B6914', `/api/syllabus/view?path=${encodeURIComponent(syllabusPaths[course.code])}`);
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      padding: '2px 8px',
+                      borderRadius: '4px',
+                      border: '1px solid rgba(255,255,255,0.15)',
+                      background: 'rgba(255,255,255,0.06)',
+                      color: 'rgba(255,255,255,0.7)',
+                      fontSize: '9px',
+                      fontWeight: 600,
+                      letterSpacing: '0.3px',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                      fontFamily: "system-ui, -apple-system, sans-serif",
+                      textTransform: 'uppercase',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.12)'; e.currentTarget.style.color = '#fff'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}
+                    data-testid={`btn-syllabus-${course.code}`}
+                  >
+                    <FileText size={10} />
+                    Syllabus
+                  </button>
+                )}
               </div>
 
               <div style={{ position: 'relative', maxWidth: '100%' }}>
@@ -2588,6 +2650,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             file={reader.file}
             bookColor={reader.color}
             onClose={() => setOpenReaders(prev => prev.filter(r => r.file.id !== reader.file.id))}
+            pdfUrl={reader.pdfUrl}
           />
         </div>
       ))}
