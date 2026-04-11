@@ -11104,10 +11104,27 @@ async function pollStatus(timeout){
       const fileName = (req.headers['x-file-name'] as string) || 'upload.pdf';
       const contentType = (req.headers['content-type'] as string) || 'application/octet-stream';
 
-      const { ObjectStorageService } = await import("./replit_integrations/object_storage");
-      const objectStorageService = new ObjectStorageService();
       const privateDir = process.env.PRIVATE_OBJECT_DIR;
-      if (!privateDir) throw new Error("PRIVATE_OBJECT_DIR not set");
+      if (!privateDir) {
+        const { randomUUID } = await import("crypto");
+        const fs = await import("fs");
+        const path = await import("path");
+        const objectId = randomUUID();
+        const localDir = path.join(process.cwd(), 'local-uploads');
+        if (!fs.existsSync(localDir)) fs.mkdirSync(localDir, { recursive: true });
+        const localPath = path.join(localDir, objectId);
+        fs.writeFileSync(localPath, fileBuffer);
+        const objectPath = `/local-uploads/${objectId}`;
+        const createdFile = await storage.createFile({
+          originalName: fileName,
+          displayName: fileName,
+          objectPath,
+          contentType,
+          size: fileBuffer.length,
+        });
+        console.log(`[Upload] Local file saved: ${localPath} (${fileBuffer.length} bytes)`);
+        return res.json({ objectPath, fileId: createdFile.id, fileName });
+      }
 
       const { randomUUID } = await import("crypto");
       const objectId = randomUUID();
