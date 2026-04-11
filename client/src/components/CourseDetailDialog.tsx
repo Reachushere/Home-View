@@ -298,6 +298,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isParsingPdf, setIsParsingPdf] = useState(false);
   const [isParsingSyllabus, setIsParsingSyllabus] = useState(false);
+  const [showSyllabusPdf, setShowSyllabusPdf] = useState(false);
+  const [syllabusPdfPos, setSyllabusPdfPos] = useState({ x: 100, y: 60 });
+  const [syllabusPdfSize, setSyllabusPdfSize] = useState({ w: 600, h: 700 });
+  const syllabusPdfDragRef = useRef<{ startX: number; startY: number; startPosX: number; startPosY: number } | null>(null);
   const [syllabusData, setSyllabusData] = useState<any>(null);
   const [syllabusItemStates, setSyllabusItemStates] = useState<Record<number, { accepted: boolean | null; editing: boolean; edits: any }>>({});
   const [syllabusObjectPath, setSyllabusObjectPath] = useState<string>('');
@@ -2135,9 +2139,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => {
-                  window.open(`/api/syllabus/view?path=${encodeURIComponent(syllabusObjectPath)}`, '_blank');
-                }}
+                onClick={() => setShowSyllabusPdf(true)}
                 className="px-2 py-0 text-[10px] text-white border-white/40 hover:bg-white/15 hover:text-white bg-white/10 leading-none"
                 style={{ height: '22px', minHeight: '22px', maxHeight: '22px' }}
                 data-testid="button-view-syllabus"
@@ -4692,6 +4694,136 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             </div>
           </div>
         </div>
+      )}
+      {showSyllabusPdf && syllabusObjectPath && createPortal(
+        <div
+          style={{
+            position: 'fixed',
+            left: `${syllabusPdfPos.x}px`,
+            top: `${syllabusPdfPos.y}px`,
+            width: `${syllabusPdfSize.w}px`,
+            height: `${syllabusPdfSize.h}px`,
+            zIndex: 200000,
+            borderRadius: '10px',
+            overflow: 'hidden',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.6), 0 0 1px rgba(255,255,255,0.3)',
+            display: 'flex',
+            flexDirection: 'column',
+            background: '#1a1a2e',
+          }}
+          data-testid="syllabus-pdf-viewer"
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '6px 10px',
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.05) 100%)',
+              borderBottom: '1px solid rgba(255,255,255,0.1)',
+              cursor: 'grab',
+              userSelect: 'none',
+              flexShrink: 0,
+            }}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              syllabusPdfDragRef.current = { startX: e.clientX, startY: e.clientY, startPosX: syllabusPdfPos.x, startPosY: syllabusPdfPos.y };
+              const onMove = (ev: MouseEvent) => {
+                if (!syllabusPdfDragRef.current) return;
+                setSyllabusPdfPos({
+                  x: syllabusPdfDragRef.current.startPosX + (ev.clientX - syllabusPdfDragRef.current.startX),
+                  y: syllabusPdfDragRef.current.startPosY + (ev.clientY - syllabusPdfDragRef.current.startY),
+                });
+              };
+              const onUp = () => { syllabusPdfDragRef.current = null; window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); };
+              window.addEventListener('mousemove', onMove);
+              window.addEventListener('mouseup', onUp);
+            }}
+            onTouchStart={(e) => {
+              const t = e.touches[0];
+              syllabusPdfDragRef.current = { startX: t.clientX, startY: t.clientY, startPosX: syllabusPdfPos.x, startPosY: syllabusPdfPos.y };
+              const onMove = (ev: TouchEvent) => {
+                if (!syllabusPdfDragRef.current) return;
+                const ct = ev.touches[0];
+                setSyllabusPdfPos({
+                  x: syllabusPdfDragRef.current.startPosX + (ct.clientX - syllabusPdfDragRef.current.startX),
+                  y: syllabusPdfDragRef.current.startPosY + (ct.clientY - syllabusPdfDragRef.current.startY),
+                });
+              };
+              const onUp = () => { syllabusPdfDragRef.current = null; window.removeEventListener('touchmove', onMove); window.removeEventListener('touchend', onUp); };
+              window.addEventListener('touchmove', onMove);
+              window.addEventListener('touchend', onUp);
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Paperclip style={{ width: '12px', height: '12px', color: 'rgba(255,255,255,0.6)' }} />
+              <span style={{ fontSize: '11px', fontWeight: 600, color: '#fff', letterSpacing: '0.3px' }}>
+                {courseInfo.courseCode} Syllabus
+              </span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <button
+                onClick={() => window.open(`/api/syllabus/view?path=${encodeURIComponent(syllabusObjectPath)}`, '_blank')}
+                style={{ padding: '3px', borderRadius: '4px', background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer' }}
+                onMouseEnter={e => e.currentTarget.style.color = '#fff'}
+                onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.5)'}
+                title="Open in new tab"
+                data-testid="btn-syllabus-new-tab"
+              >
+                <ExternalLink style={{ width: '12px', height: '12px' }} />
+              </button>
+              <button
+                onClick={() => setShowSyllabusPdf(false)}
+                style={{ padding: '3px', borderRadius: '4px', background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer' }}
+                onMouseEnter={e => e.currentTarget.style.color = '#fff'}
+                onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.5)'}
+                title="Close"
+                data-testid="btn-syllabus-close"
+              >
+                <X style={{ width: '14px', height: '14px' }} />
+              </button>
+            </div>
+          </div>
+          <iframe
+            src={`/api/syllabus/view?path=${encodeURIComponent(syllabusObjectPath)}`}
+            style={{ flex: 1, border: 'none', background: '#fff', width: '100%' }}
+            title="Syllabus PDF"
+          />
+          <div
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              right: 0,
+              width: '16px',
+              height: '16px',
+              cursor: 'nwse-resize',
+            }}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const startX = e.clientX;
+              const startY = e.clientY;
+              const startW = syllabusPdfSize.w;
+              const startH = syllabusPdfSize.h;
+              const onMove = (ev: MouseEvent) => {
+                setSyllabusPdfSize({
+                  w: Math.max(350, startW + (ev.clientX - startX)),
+                  h: Math.max(300, startH + (ev.clientY - startY)),
+                });
+              };
+              const onUp = () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); };
+              window.addEventListener('mousemove', onMove);
+              window.addEventListener('mouseup', onUp);
+            }}
+          >
+            <svg viewBox="0 0 16 16" style={{ width: '16px', height: '16px', opacity: 0.3 }}>
+              <line x1="14" y1="4" x2="4" y2="14" stroke="white" strokeWidth="1.5" />
+              <line x1="14" y1="8" x2="8" y2="14" stroke="white" strokeWidth="1.5" />
+              <line x1="14" y1="12" x2="12" y2="14" stroke="white" strokeWidth="1.5" />
+            </svg>
+          </div>
+        </div>,
+        document.body
       )}
       <LibraryView
         isOpen={isLibraryOpen}
