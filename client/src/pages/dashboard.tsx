@@ -31587,8 +31587,8 @@ export default function Dashboard() {
                               className={`absolute rounded hover:opacity-90 shadow-sm overflow-hidden cursor-pointer`}
                               style={{
                                 top: `${calTopOffset}px`,
-                                left: stackInConflict ? '2px' : `calc(${(hourTasks.length + eventIdx) * columnWidth}% + 2px)`,
-                                width: stackInConflict ? 'calc(100% - 4px)' : `calc(${columnWidth}% - 4px)`,
+                                left: (() => { const narrowInfo = veryLongTaskNarrowCols.get(`${dayIdx}-${hour}`); const overlayCols = multiHourOverlayCols.get(`${dayIdx}-${hour}`) || 0; if (stackInConflict) { if (narrowInfo) return `calc(${narrowInfo.narrowFrac * 100}% + 2px)`; if (overlayCols > 0) return `calc(${overlayCols} / ${overlayCols + 1} * 100% + 2px)`; return '2px'; } return `calc(${(hourTasks.length + eventIdx) * columnWidth}% + 2px)`; })(),
+                                width: (() => { const narrowInfo = veryLongTaskNarrowCols.get(`${dayIdx}-${hour}`); const overlayCols = multiHourOverlayCols.get(`${dayIdx}-${hour}`) || 0; if (stackInConflict) { if (narrowInfo) return `calc(${(1 - narrowInfo.narrowFrac) * 100}% - 4px)`; if (overlayCols > 0) return `calc(${1 / (overlayCols + 1)} * 100% - 4px)`; return 'calc(100% - 4px)'; } return `calc(${columnWidth}% - 4px)`; })(),
                                 minHeight: stackInConflict ? '28px' : undefined,
                                 zIndex: stackInConflict ? 2 : 3,
                                 border: `1.5px solid ${gcalColor}`,
