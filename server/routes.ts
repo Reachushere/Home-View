@@ -3555,7 +3555,132 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   }
 
-  app.post("/api/raw-story/test", async (_req, res) => {
+  app.post("/api/audit/semester-courses", async (_req, res) => {
+    try {
+      const PDFDocument = (await import("pdfkit")).default;
+      const allSemesters = await storage.getAllSemesterSettings();
+
+      const knownSemDefs = [
+        { key: 'w2026', type: 'winter', year: 2026, name: 'Winter 2026', start: '2026-01-12' },
+        { key: 'ss2026', type: 'spring_summer', year: 2026, name: 'Spring/Summer 2026', start: '2026-05-04' },
+        { key: 'f2026', type: 'fall', year: 2026, name: 'Fall 2026', start: '2026-09-14' },
+        { key: 'w2027', type: 'winter', year: 2027, name: 'Winter 2027', start: '2027-01-11' },
+        { key: 'ss2027', type: 'spring_summer', year: 2027, name: 'Spring/Summer 2027', start: '2027-05-03' },
+        { key: 'f2027', type: 'fall', year: 2027, name: 'Fall 2027', start: '2027-09-13' },
+        { key: 'w2028', type: 'winter', year: 2028, name: 'Winter 2028', start: '2028-01-10' },
+        { key: 'ss2028', type: 'spring_summer', year: 2028, name: 'Spring/Summer 2028', start: '2028-05-01' },
+        { key: 'f2028', type: 'fall', year: 2028, name: 'Fall 2028', start: '2028-09-11' },
+        { key: 'w2029', type: 'winter', year: 2029, name: 'Winter 2029', start: '2029-01-15' },
+        { key: 'ss2029', type: 'spring_summer', year: 2029, name: 'Spring/Summer 2029', start: '2029-05-07' },
+        { key: 'f2029', type: 'fall', year: 2029, name: 'Fall 2029', start: '2029-09-10' },
+      ];
+
+      const dbSemByKey = new Map<string, any>();
+      for (const sem of (allSemesters || [])) {
+        const t = (sem.semesterType || 'winter').toLowerCase();
+        const yr = sem.semesterStartDate ? new Date(sem.semesterStartDate).getFullYear() : 0;
+        let prefix = 'w';
+        if (t.includes('spring') || t.includes('summer')) prefix = 'ss';
+        else if (t.includes('fall')) prefix = 'f';
+        dbSemByKey.set(`${prefix}${yr}`, sem);
+      }
+
+      const auditRows: Array<{ semester: string; slotNum: number; courseCode: string; courseName: string; displayName: string; folderPath: string; term?: string }> = [];
+
+      for (const semDef of knownSemDefs) {
+        const sem = dbSemByKey.get(semDef.key);
+        const isSpSu = semDef.type.includes('spring') || semDef.type.includes('summer');
+        const semFolder = isSpSu ? 'Spring & Summer' : semDef.type.includes('fall') ? 'Fall' : 'Winter';
+        const basePath = `/School/1. TMU/Courses/${semDef.year}/${semFolder}`;
+
+        for (let i = 1; i <= 3; i++) {
+          const code = sem ? ((sem as any)[`course${i}Code`] || 'TBD' + i) : ('TBD' + i);
+          const name = sem ? ((sem as any)[`course${i}Name`] || 'TBD') : 'TBD';
+          const displayName = sem ? ((sem as any)[`course${i}DisplayName`] || '') : '';
+          const term = isSpSu && sem ? ((sem as any)[`course${i}SpringSummerTerm`] || '') : '';
+          const folderName = buildCourseFolderName(code, name);
+          let coursePath = basePath;
+          if (isSpSu && term) {
+            const tl = term.toLowerCase();
+            if (tl === 'first_half') coursePath = `${basePath}/Spring - First Half`;
+            else if (tl === 'second_half') coursePath = `${basePath}/Summer - Second Half`;
+            else coursePath = `${basePath}/Full`;
+          }
+          auditRows.push({
+            semester: semDef.name,
+            slotNum: i,
+            courseCode: code,
+            courseName: name,
+            displayName,
+            folderPath: `${coursePath}/${folderName}`,
+            term: term || undefined,
+          });
+        }
+      }
+
+      const doc = new PDFDocument({ margin: 40, size: 'LETTER' });
+      const chunks: Buffer[] = [];
+      doc.on('data', (chunk: Buffer) => chunks.push(chunk));
+
+      const pdfReady = new Promise<Buffer>((resolve) => {
+        doc.on('end', () => resolve(Buffer.concat(chunks)));
+      });
+
+      doc.fontSize(18).font('Helvetica-Bold').text('UniCal — Semester & Course Audit', { align: 'center' });
+      doc.moveDown(0.3);
+      doc.fontSize(9).font('Helvetica').fillColor('#666666').text(`Generated: ${new Date().toLocaleString('en-US', { timeZone: 'America/Toronto', dateStyle: 'full', timeStyle: 'short' })}`, { align: 'center' });
+      doc.moveDown(1);
+
+      let currentSem = '';
+      for (const row of auditRows) {
+        if (doc.y > 680) {
+          doc.addPage();
+        }
+        if (row.semester !== currentSem) {
+          if (currentSem) doc.moveDown(0.5);
+          currentSem = row.semester;
+          doc.fontSize(13).font('Helvetica-Bold').fillColor('#1a3a6e').text(row.semester);
+          doc.moveDown(0.15);
+          doc.strokeColor('#1a3a6e').lineWidth(1).moveTo(40, doc.y).lineTo(572, doc.y).stroke();
+          doc.moveDown(0.4);
+        }
+        const label = row.displayName || `${row.courseCode}${row.courseName && row.courseName !== row.courseCode ? ' - ' + row.courseName : ''}`;
+        doc.fontSize(10).font('Helvetica-Bold').fillColor('#000000').text(`  Slot ${row.slotNum}: ${label}`);
+        doc.fontSize(8.5).font('Helvetica').fillColor('#444444').text(`    Code: ${row.courseCode}    |    Name: ${row.courseName}${row.term ? '    |    Term: ' + row.term : ''}`);
+        doc.fontSize(8).font('Helvetica').fillColor('#666666').text(`    Path: ${row.folderPath}`);
+        doc.moveDown(0.4);
+      }
+
+      doc.end();
+      const pdfBuffer = await pdfReady;
+
+      const result = await sendGmailWithAttachment({
+        to: 'bryn.kai-hendricks@outlook.com',
+        subject: 'UniCal — Semester & Course Audit Report',
+        htmlBody: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
+          <h2 style="color:#1a3a6e">UniCal — Semester & Course Audit</h2>
+          <p>Attached is the full audit of all ${auditRows.length} course slots across ${knownSemDefs.length} semesters.</p>
+          <p style="color:#888;font-size:12px">Generated ${new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' })}</p>
+        </div>`,
+        attachments: [{
+          filename: 'UniCal_Course_Audit.pdf',
+          content: pdfBuffer,
+          mimeType: 'application/pdf',
+        }],
+      });
+
+      if (result.success) {
+        res.json({ success: true, courses: auditRows.length, semesters: knownSemDefs.length });
+      } else {
+        res.status(500).json({ error: result.error });
+      }
+    } catch (err: any) {
+      console.error('[Audit] Error:', err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+    app.post("/api/raw-story/test", async (_req, res) => {
     try {
       lastTopThree = [];
       rawStoryTop3Loaded = false;
@@ -12099,27 +12224,55 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   async function monitorOneDriveFolderRenames(): Promise<void> {
     try {
       const { listOneDriveFolderChildren, checkOneDriveFolderExists } = await import("./onedrive");
-      const allSemesters = await storage.getAllSemesterSettings();
-      if (!allSemesters || allSemesters.length === 0) return;
+      let allSemesters = await storage.getAllSemesterSettings();
+      if (!allSemesters) allSemesters = [];
 
-      for (const semester of allSemesters) {
-        const startDate = semester.semesterStartDate ? new Date(semester.semesterStartDate) : null;
-        if (!startDate) continue;
-        const year = startDate.getFullYear();
+      const knownSemesterDefs: Array<{ key: string; type: string; year: number; start: string; end: string; name: string }> = [
+        { key: 'w2026', type: 'winter', year: 2026, start: '2026-01-12', end: '2026-04-17', name: 'Winter 2026' },
+        { key: 'ss2026', type: 'spring_summer', year: 2026, start: '2026-05-04', end: '2026-08-04', name: 'Spring/Summer 2026' },
+        { key: 'f2026', type: 'fall', year: 2026, start: '2026-09-14', end: '2026-12-07', name: 'Fall 2026' },
+        { key: 'w2027', type: 'winter', year: 2027, start: '2027-01-11', end: '2027-04-09', name: 'Winter 2027' },
+        { key: 'ss2027', type: 'spring_summer', year: 2027, start: '2027-05-03', end: '2027-08-03', name: 'Spring/Summer 2027' },
+        { key: 'f2027', type: 'fall', year: 2027, start: '2027-09-13', end: '2027-12-06', name: 'Fall 2027' },
+        { key: 'w2028', type: 'winter', year: 2028, start: '2028-01-10', end: '2028-04-14', name: 'Winter 2028' },
+        { key: 'ss2028', type: 'spring_summer', year: 2028, start: '2028-05-01', end: '2028-08-01', name: 'Spring/Summer 2028' },
+        { key: 'f2028', type: 'fall', year: 2028, start: '2028-09-11', end: '2028-12-04', name: 'Fall 2028' },
+        { key: 'w2029', type: 'winter', year: 2029, start: '2029-01-15', end: '2029-04-13', name: 'Winter 2029' },
+        { key: 'ss2029', type: 'spring_summer', year: 2029, start: '2029-05-07', end: '2029-08-07', name: 'Spring/Summer 2029' },
+        { key: 'f2029', type: 'fall', year: 2029, start: '2029-09-10', end: '2029-12-03', name: 'Fall 2029' },
+      ];
+
+      const dbSemByKey = new Map<string, any>();
+      for (const sem of allSemesters) {
+        const t = (sem.semesterType || 'winter').toLowerCase();
+        const yr = sem.semesterStartDate ? new Date(sem.semesterStartDate).getFullYear() : 0;
+        let prefix = 'w';
+        if (t.includes('spring') || t.includes('summer')) prefix = 'ss';
+        else if (t.includes('fall')) prefix = 'f';
+        dbSemByKey.set(`${prefix}${yr}`, sem);
+      }
+
+      for (const semDef of knownSemesterDefs) {
+        let semester = dbSemByKey.get(semDef.key);
+
+        const year = semDef.year;
 
         const semTypeVariants = (() => {
-          const t = (semester.semesterType || 'winter').toLowerCase();
-          if (t.includes('spring') || t.includes('summer')) return ['Spring-Summer', 'Spring & Summer', 'Spring_Summer'];
-          if (t.includes('fall')) return ['Fall'];
+          if (semDef.type.includes('spring') || semDef.type.includes('summer')) return ['Spring-Summer', 'Spring & Summer', 'Spring_Summer'];
+          if (semDef.type.includes('fall')) return ['Fall'];
           return ['Winter'];
         })();
 
-        const isSpSu = (semester.semesterType || '').toLowerCase().includes('spring') || (semester.semesterType || '').toLowerCase().includes('summer');
+        const isSpSu = semDef.type.includes('spring') || semDef.type.includes('summer');
 
-        const courseSlots = [
+        const courseSlots = semester ? [
           { idx: 1, code: semester.course1Code, name: semester.course1Name, term: (semester as any).course1SpringSummerTerm },
           { idx: 2, code: semester.course2Code, name: semester.course2Name, term: (semester as any).course2SpringSummerTerm },
           { idx: 3, code: semester.course3Code, name: semester.course3Name, term: (semester as any).course3SpringSummerTerm },
+        ] : [
+          { idx: 1, code: 'TBD1', name: 'TBD', term: isSpSu ? 'full' : undefined },
+          { idx: 2, code: 'TBD2', name: 'TBD', term: isSpSu ? 'first_half' : undefined },
+          { idx: 3, code: 'TBD3', name: 'TBD', term: isSpSu ? 'second_half' : undefined },
         ];
 
         for (const slot of courseSlots) {
@@ -12247,8 +12400,31 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
                 updates[displayKey] = `${finalCode} - ${finalName}`;
               }
 
-              await storage.updateSemesterSettings(semester.id, updates);
-              console.log(`[OneDrive Monitor] Synced folder rename for course ${slot.idx} in ${semester.semesterName}: "${oldFolderSuffix}" → "${newFolderName}" | Updates: ${JSON.stringify(updates)}`);
+              if (semester) {
+                await storage.updateSemesterSettings(semester.id, updates);
+                console.log(`[OneDrive Monitor] Synced folder rename for course ${slot.idx} in ${semester.semesterName || semDef.name}: "${oldFolderSuffix}" → "${newFolderName}" | Updates: ${JSON.stringify(updates)}`);
+              } else {
+                const newSemSettings: any = {
+                  semesterName: semDef.name,
+                  semesterType: semDef.type,
+                  semesterStartDate: semDef.start,
+                  semesterEndDate: semDef.end,
+                  isActive: false,
+                  course1Code: 'TBD1', course1Name: 'TBD',
+                  course2Code: 'TBD2', course2Name: 'TBD',
+                  course3Code: 'TBD3', course3Name: 'TBD',
+                  ...updates,
+                };
+                if (isSpSu) {
+                  newSemSettings.course1SpringSummerTerm = 'full';
+                  newSemSettings.course2SpringSummerTerm = 'first_half';
+                  newSemSettings.course3SpringSummerTerm = 'second_half';
+                }
+                const created = await storage.createSemesterSettingsInactive(newSemSettings);
+                semester = created;
+                dbSemByKey.set(semDef.key, created);
+                console.log(`[OneDrive Monitor] Created semester record for ${semDef.name} (ID ${created.id}) and applied rename: "${oldFolderSuffix}" → "${newFolderName}" | Updates: ${JSON.stringify(updates)}`);
+              }
             }
           }
         }
