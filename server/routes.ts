@@ -937,6 +937,9 @@ export async function registerRoutes(
     try {
       const { key, value } = req.body;
       if (!key) return res.status(400).json({ error: 'key is required' });
+      if (key === 'semesterCourseAssignments') {
+        return res.json({ ok: true, skipped: 'server-managed' });
+      }
       const valueStr = typeof value === 'string' ? value : JSON.stringify(value);
       await db.insert(degreeTrackingData).values({ key, value: valueStr }).onConflictDoUpdate({ target: degreeTrackingData.key, set: { value: valueStr } });
       res.json({ ok: true });
@@ -945,12 +948,15 @@ export async function registerRoutes(
     }
   });
 
+  const serverManagedDegreeKeys = new Set(['semesterCourseAssignments']);
+
   app.post('/api/degree-tracking/bulk', async (req, res) => {
     try {
       const data = req.body;
       if (!data || typeof data !== 'object') return res.status(400).json({ error: 'Object required' });
       let saved = 0;
       for (const [key, value] of Object.entries(data)) {
+        if (serverManagedDegreeKeys.has(key)) continue;
         const valueStr = typeof value === 'string' ? value : JSON.stringify(value);
         await db.insert(degreeTrackingData).values({ key, value: valueStr }).onConflictDoUpdate({ target: degreeTrackingData.key, set: { value: valueStr } });
         saved++;
@@ -977,7 +983,13 @@ export async function registerRoutes(
         for (let ci = 1; ci <= 3; ci++) {
           const code = ((sem as any)[`course${ci}Code`] || '').trim();
           const codeNorm = code.replace(/\s/g, '').toUpperCase();
-          if (!code) continue;
+          if (!code) {
+            updates[`course${ci}Code`] = `TBD${ci}`;
+            updates[`course${ci}Name`] = 'TBD';
+            updates[`course${ci}DisplayName`] = '';
+            console.log(`[CleanupSem] ${sem.semesterName} slot ${ci}: EMPTY -> "TBD${ci}"`);
+            continue;
+          }
           if (realCourseCodes.has(codeNorm)) continue;
           if (validPattern.test(codeNorm)) continue;
           const tbdCode = `TBD${ci}`;
@@ -1007,6 +1019,7 @@ export async function registerRoutes(
         'ss2027': { type: 'spring_summer', year: 2027 }, 'f2027': { type: 'fall', year: 2027 },
         'w2028': { type: 'winter', year: 2028 }, 'ss2028': { type: 'spring_summer', year: 2028 },
         'f2028': { type: 'fall', year: 2028 }, 'w2029': { type: 'winter', year: 2029 },
+        'ss2029': { type: 'spring_summer', year: 2029 }, 'f2029': { type: 'fall', year: 2029 },
       };
 
       const rows = await db.select().from(degreeTrackingData);
