@@ -5709,6 +5709,81 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     })();
   });
 
+  app.post("/api/library/sync-document-dump", async (_req, res) => {
+    res.json({ status: 'syncing' });
+    (async () => {
+      try {
+        const { listOneDriveItems, isOneDriveConnected } = await import("./onedrive");
+        if (!isOneDriveConnected()) { console.log(`[LibrarySync:DocDump] OneDrive not connected`); return; }
+        const dumpPath = '/School/1. TMU/Courses/Document Dump';
+        let items: any[] = [];
+        try { items = await listOneDriveItems(dumpPath); } catch (e: any) {
+          console.log(`[LibrarySync:DocDump] Cannot list ${dumpPath}: ${e.message}`);
+          return;
+        }
+        const pdfFiles = items.filter((f: any) => f.type === 'file' && f.name.toLowerCase().endsWith('.pdf'));
+        console.log(`[LibrarySync:DocDump] Found ${pdfFiles.length} PDFs in Document Dump`);
+        const existingFiles = await storage.getFiles();
+        const existingSet = new Set(existingFiles.map((f: any) => `${f.folder}::${f.originalName}`));
+        let synced = 0;
+        const fs = await import("fs");
+        const pathMod = await import("path");
+        const localUploadsDir = pathMod.join(process.cwd(), 'persistent-uploads');
+        if (!fs.existsSync(localUploadsDir)) fs.mkdirSync(localUploadsDir, { recursive: true });
+        for (const file of pdfFiles) {
+          const folderName = 'week-0-documentdump-reading';
+          const key = `${folderName}::${file.name}`;
+          if (existingSet.has(key)) continue;
+          let objectPath = `onedrive://${folderName}/${file.name}`;
+          if (file.downloadUrl) {
+            try {
+              const dlResp = await fetch(file.downloadUrl);
+              if (dlResp.ok) {
+                const buf = Buffer.from(await dlResp.arrayBuffer());
+                const localFileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+                fs.writeFileSync(pathMod.join(localUploadsDir, localFileName), buf);
+                objectPath = `/local/uploads/${localFileName}`;
+              }
+            } catch (dlErr: any) {
+              console.log(`[LibrarySync:DocDump] Download failed for ${file.name}: ${dlErr.message}`);
+            }
+          }
+          await storage.createFile({ originalName: file.name, displayName: file.name, objectPath, contentType: 'application/pdf', size: file.size || 0, folder: folderName, listened: false });
+          existingSet.add(key);
+          synced++;
+        }
+        const subFolders = items.filter((f: any) => f.type === 'folder');
+        for (const sub of subFolders) {
+          try {
+            const subItems = await listOneDriveItems(sub.path);
+            const subPdfs = subItems.filter((f: any) => f.type === 'file' && f.name.toLowerCase().endsWith('.pdf'));
+            for (const file of subPdfs) {
+              const folderName = `week-0-documentdump-reading`;
+              const key = `${folderName}::${file.name}`;
+              if (existingSet.has(key)) continue;
+              let objectPath = `onedrive://${folderName}/${file.name}`;
+              if (file.downloadUrl) {
+                try {
+                  const dlResp = await fetch(file.downloadUrl);
+                  if (dlResp.ok) {
+                    const buf = Buffer.from(await dlResp.arrayBuffer());
+                    const localFileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+                    fs.writeFileSync(pathMod.join(localUploadsDir, localFileName), buf);
+                    objectPath = `/local/uploads/${localFileName}`;
+                  }
+                } catch {}
+              }
+              await storage.createFile({ originalName: file.name, displayName: file.name, objectPath, contentType: 'application/pdf', size: file.size || 0, folder: folderName, listened: false });
+              existingSet.add(key);
+              synced++;
+            }
+          } catch {}
+        }
+        console.log(`[LibrarySync:DocDump] Synced ${synced} new files from Document Dump`);
+      } catch (err: any) { console.error('[LibrarySync:DocDump] Error:', err.message); }
+    })();
+  });
+
   app.post("/api/shared-library/create", async (req, res) => {
     try {
       const { semesterKey } = req.body;

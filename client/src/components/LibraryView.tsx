@@ -1421,6 +1421,9 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           await fetch('/api/library/sync-semester', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ semesterKey: key }) });
         } catch {}
       }
+      try {
+        await fetch('/api/library/sync-document-dump', { method: 'POST' });
+      } catch {}
       setTimeout(() => refetchFiles(), 10000);
       setTimeout(() => refetchFiles(), 30000);
       setTimeout(() => refetchFiles(), 60000);
@@ -1524,14 +1527,22 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       }
     });
 
+    const dumpFiles = allFiles.filter(f => f.folder === 'week-0-documentdump-reading');
+    if (dumpFiles.length > 0) {
+      sortFiles(dumpFiles);
+      result.push({ course: { code: 'DOCS', name: 'Document Dump', color: '#D4AF37' }, files: dumpFiles });
+    }
+
     return result;
   }, [currentSemester, allFiles, semesters]);
 
   const allCoursesForSearch = useMemo(() => {
     const set = new Set<string>();
     semesters.forEach(s => s.courses.forEach(c => set.add(c.code)));
+    const hasDump = allFiles.some(f => f.folder === 'week-0-documentdump-reading');
+    if (hasDump) set.add('DOCS');
     return Array.from(set);
-  }, [semesters]);
+  }, [semesters, allFiles]);
 
   const masterSearchResults = useMemo(() => {
     if (!masterSearch.trim()) return null;
@@ -1582,6 +1593,18 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         });
       });
     });
+
+    if (masterSemFilter === 'all' && (masterCourseFilter === 'all' || masterCourseFilter === 'DOCS')) {
+      const dumpFiles = allFiles.filter(f => f.folder === 'week-0-documentdump-reading');
+      dumpFiles.forEach(f => {
+        const name = (f.displayName || f.originalName).toLowerCase();
+        const searchable = [name, 'document dump', 'docs', 'documentdump'].join(' ');
+        const allMatch = tokens.every(tok => searchable.includes(tok));
+        if (allMatch) {
+          results.push({ file: f, semLabel: 'Document Dump', semKey: 'docdump', courseCode: 'DOCS', courseName: 'Document Dump', weekNum: 0, fileType: 'reading' });
+        }
+      });
+    }
     results.sort((a, b) => {
       const semCmp = a.semLabel.localeCompare(b.semLabel);
       if (semCmp !== 0) return semCmp;
