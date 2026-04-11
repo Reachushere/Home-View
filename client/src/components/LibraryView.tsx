@@ -1594,7 +1594,6 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       if (!f.folder) return false;
       const fl = f.folder.toLowerCase();
       if (!(fl.includes('-module') || fl.includes('-reading')) || !fl.startsWith('week-')) return false;
-      if (fl.includes('tbd')) return false;
       return true;
     });
 
@@ -1614,13 +1613,21 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       const codeNorm = course.code.replace(/\s/g, '').toLowerCase();
       let files = [...(courseMap.get(codeNorm) || [])];
 
-
       if (files.length === 0) {
         for (const [key, val] of courseMap.entries()) {
           if (key.replace(/[_\s]/g, '') === codeNorm.replace(/[_\s]/g, '')) {
-            files = val;
-            if (files.length > 0) break;
+            files = [...files, ...val];
           }
+        }
+      }
+
+      const slotMatch = codeNorm.match(/^tbd(\d+)$/);
+      if (slotMatch) {
+        const slotKey = `tbd_slot${slotMatch[1]}`;
+        const slotFiles = courseMap.get(slotKey) || [];
+        if (slotFiles.length > 0) {
+          const existingIds = new Set(files.map(f => f.id));
+          files = [...files, ...slotFiles.filter(f => !existingIds.has(f.id))];
         }
       }
       if (files && files.length > 0) {
@@ -1670,7 +1677,6 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       if (!f.folder) return false;
       const fl = f.folder.toLowerCase();
       if (!(fl.includes('-module') || fl.includes('-reading')) || !fl.startsWith('week-')) return false;
-      if (fl.includes('tbd')) return false;
       return true;
     });
 
@@ -1679,10 +1685,12 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       sem.courses.forEach(course => {
         if (masterCourseFilter !== 'all' && course.code !== masterCourseFilter) return;
         const codeNorm = course.code.replace(/\s/g, '').toLowerCase();
+        const tbdSlotVariant = codeNorm.match(/^tbd(\d+)$/) ? `tbd_slot${codeNorm.match(/^tbd(\d+)$/)?.[1]}` : '';
         const matched = moduleReadingFiles.filter(f => {
           const match = f.folder!.match(/^week-(\d+)-(.+?)-(module|reading)$/i);
           if (!match) return false;
-          return match[2].toLowerCase() === codeNorm || match[2].toLowerCase().replace(/_/g, '') === codeNorm;
+          const folderCode = match[2].toLowerCase();
+          return folderCode === codeNorm || folderCode.replace(/_/g, '') === codeNorm || (tbdSlotVariant && folderCode === tbdSlotVariant);
         });
         matched.forEach(f => {
           const name = (f.displayName || f.originalName).toLowerCase();
