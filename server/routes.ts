@@ -984,18 +984,31 @@ export async function registerRoutes(
           const code = ((sem as any)[`course${ci}Code`] || '').trim();
           const codeNorm = code.replace(/\s/g, '').toUpperCase();
           if (!code) {
-            updates[`course${ci}Code`] = `TBD${ci}`;
-            updates[`course${ci}Name`] = 'TBD';
-            updates[`course${ci}DisplayName`] = '';
-            console.log(`[CleanupSem] ${sem.semesterName} slot ${ci}: EMPTY -> "TBD${ci}"`);
+            const tbdCode = `TBD${ci}`;
+            updates[`course${ci}Code`] = tbdCode;
+            updates[`course${ci}Name`] = tbdCode;
+            updates[`course${ci}DisplayName`] = tbdCode;
+            console.log(`[CleanupSem] ${sem.semesterName} slot ${ci}: EMPTY -> "${tbdCode}"`);
             continue;
           }
           if (realCourseCodes.has(codeNorm)) continue;
-          if (validPattern.test(codeNorm)) continue;
+          if (validPattern.test(codeNorm)) {
+            const dn = ((sem as any)[`course${ci}DisplayName`] || '').trim();
+            const nm = ((sem as any)[`course${ci}Name`] || '').trim();
+            if (dn && !validPattern.test(dn.replace(/\s/g, '').toUpperCase())) {
+              updates[`course${ci}DisplayName`] = code;
+              console.log(`[CleanupSem] ${sem.semesterName} slot ${ci}: fix displayName "${dn}" -> "${code}"`);
+            }
+            if (nm && nm !== code && !validPattern.test(nm.replace(/\s/g, '').toUpperCase())) {
+              updates[`course${ci}Name`] = code;
+              console.log(`[CleanupSem] ${sem.semesterName} slot ${ci}: fix name "${nm}" -> "${code}"`);
+            }
+            continue;
+          }
           const tbdCode = `TBD${ci}`;
           updates[`course${ci}Code`] = tbdCode;
-          updates[`course${ci}Name`] = 'TBD';
-          updates[`course${ci}DisplayName`] = '';
+          updates[`course${ci}Name`] = tbdCode;
+          updates[`course${ci}DisplayName`] = tbdCode;
           console.log(`[CleanupSem] ${sem.semesterName} slot ${ci}: "${code}" -> "${tbdCode}"`);
         }
         if (Object.keys(updates).length > 0) {
@@ -1059,6 +1072,15 @@ export async function registerRoutes(
         }
       }
 
+      coursesDataStored.courses = coursesDataStored.courses.filter((c: any) => {
+        const cName = (c.name || '').trim();
+        const cCode = cName.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '');
+        if (!cCode) return false;
+        if (/^TBD\d*$/.test(cCode)) return false;
+        const invalidNames = ['FALL3','NAMECHANGE','TESTING','FULL','SPRING-FIRSTHALF','SUMMER-SECONDHALF','COURSE2'];
+        if (invalidNames.includes(cCode.replace(/\s/g, '').toUpperCase())) return false;
+        return true;
+      });
       const existingCodes = new Set(coursesDataStored.courses.map((c: any) => (c.name || '').split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '')));
       for (const code of allDbCodes) {
         if (!existingCodes.has(code)) {
@@ -1091,6 +1113,10 @@ export async function registerRoutes(
       await db.insert(degreeTrackingData).values({ key: 'coursesData', value: JSON.stringify(coursesDataStored) })
         .onConflictDoUpdate({ target: degreeTrackingData.key, set: { value: JSON.stringify(coursesDataStored) } });
 
+      const f2027Data = assignments['f2027'];
+      if (f2027Data) {
+        console.log('[DegreeSync] f2027 assignments:', JSON.stringify(f2027Data));
+      }
       console.log('[DegreeSync] Synced semesterCourseAssignments and coursesData from DB semesters');
     } catch (e: any) {
       console.error('[DegreeSync] Failed to sync:', e.message);
