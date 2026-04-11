@@ -910,6 +910,70 @@ export async function registerRoutes(
     }
   })();
 
+  setTimeout(async () => {
+    try {
+      const fs = await import("fs");
+      const path = await import("path");
+      const stripBrackets = (s: string) => (s || '').replace(/\[.*?\]\s*/g, '').trim();
+      const tasksFile = path.join(process.cwd(), 'pi-import-tasks.json');
+      if (fs.existsSync(tasksFile)) {
+        const incoming = JSON.parse(fs.readFileSync(tasksFile, 'utf8'));
+        if (Array.isArray(incoming) && incoming.length > 0) {
+          const existing = await storage.getTasks({});
+          const existingKeys = new Set<string>();
+          for (const t of existing) {
+            const title = stripBrackets(t.title || '').toLowerCase();
+            const dateKey = t.dueDate ? new Date(t.dueDate).toISOString().split('T')[0] : '';
+            existingKeys.add(`${title}||${dateKey}`);
+            existingKeys.add(`${(t.title || '').toLowerCase()}||${dateKey}`);
+          }
+          let created = 0, skipped = 0;
+          for (const t of incoming) {
+            const title = stripBrackets(t.title || '').toLowerCase();
+            const dateKey = t.dueDate ? new Date(t.dueDate).toISOString().split('T')[0] : '';
+            const rawTitle = (t.title || '').toLowerCase();
+            if (existingKeys.has(`${title}||${dateKey}`) || existingKeys.has(`${rawTitle}||${dateKey}`)) {
+              skipped++;
+              continue;
+            }
+            const { id, isMissed, subtaskCount, completedSubtaskCount, calendarEventId, calendarProvider, prepCalendarEventId, secondaryCalendarEventId, secondAccountCalendarEventId, secondAccountPrepEventId, ...taskData } = t;
+            if (taskData.dueDate && typeof taskData.dueDate === 'string') taskData.dueDate = new Date(taskData.dueDate);
+            if (taskData.startDate && typeof taskData.startDate === 'string') taskData.startDate = new Date(taskData.startDate);
+            if (taskData.completedAt && typeof taskData.completedAt === 'string') taskData.completedAt = new Date(taskData.completedAt);
+            if (taskData.repeatEndDate && typeof taskData.repeatEndDate === 'string') taskData.repeatEndDate = new Date(taskData.repeatEndDate);
+            if (taskData.eventEndDate && typeof taskData.eventEndDate === 'string') taskData.eventEndDate = new Date(taskData.eventEndDate);
+            try {
+              await storage.createTask(taskData);
+              created++;
+              existingKeys.add(`${title}||${dateKey}`);
+            } catch (e: any) {
+              console.error(`[AutoImport] Failed to create task "${t.title}": ${e.message}`);
+            }
+          }
+          if (created > 0) console.log(`[AutoImport] Tasks: ${created} created, ${skipped} skipped (already exist)`);
+          else if (skipped > 0) console.log(`[AutoImport] Tasks: all ${skipped} already exist, nothing to import`);
+        }
+      }
+      const shiftsFile = path.join(process.cwd(), 'pi-import-shifts.json');
+      if (fs.existsSync(shiftsFile)) {
+        const incoming = JSON.parse(fs.readFileSync(shiftsFile, 'utf8'));
+        if (Array.isArray(incoming) && incoming.length > 0) {
+          const existingShifts = await storage.getShiftSchedule();
+          const existingDates = new Set(existingShifts.map((s: any) => s.date));
+          const newShifts = incoming.filter((s: any) => !existingDates.has(s.date)).map((s: any) => ({ date: s.date, shiftType: s.shiftType }));
+          if (newShifts.length > 0) {
+            await storage.setShiftBulk(newShifts);
+            console.log(`[AutoImport] Shifts: ${newShifts.length} new entries imported, ${incoming.length - newShifts.length} already exist`);
+          } else {
+            console.log(`[AutoImport] Shifts: all ${incoming.length} already exist, nothing to import`);
+          }
+        }
+      }
+    } catch (e: any) {
+      console.error(`[AutoImport] Error: ${e.message}`);
+    }
+  }, 5000);
+
   try {
     const fixResult = await db.execute(sql`UPDATE files SET folder = REPLACE(folder, 'casl101-other', 'casl101-module') WHERE folder LIKE '%casl101-other%'`);
     const count = (fixResult as any)?.rowCount || (fixResult as any)?.changes || 0;
