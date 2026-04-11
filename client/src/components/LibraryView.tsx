@@ -1259,6 +1259,11 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
 
   const courseBooks = useMemo(() => {
     if (!currentSemester) return [];
+    const semIdx = semesters.findIndex(s => s.key === currentSemester.key);
+    const weeksPerSem = 13;
+    const semWeekStart = semIdx >= 0 ? semIdx * weeksPerSem + 1 : 1;
+    const semWeekEnd = semWeekStart + weeksPerSem - 1;
+
     const moduleReadingFiles = allFiles.filter(f => {
       if (!f.folder) return false;
       const fl = f.folder.toLowerCase();
@@ -1267,28 +1272,46 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
 
     const courseMap = new Map<string, FileRecord[]>();
     moduleReadingFiles.forEach(f => {
-      const match = f.folder!.match(/^week-\d+-(.+?)-(module|reading)$/i);
+      const match = f.folder!.match(/^week-(\d+)-(.+?)-(module|reading)$/i);
       if (!match) return;
-      const code = match[1].toLowerCase();
+      const code = match[2].toLowerCase();
       if (!courseMap.has(code)) courseMap.set(code, []);
       courseMap.get(code)!.push(f);
     });
+
+    const getWeekNum = (f: FileRecord) => parseInt(f.folder?.match(/week-(\d+)/)?.[1] || '0');
+
+    const filterByWeekRange = (files: FileRecord[]) =>
+      files.filter(f => { const w = getWeekNum(f); return w >= semWeekStart && w <= semWeekEnd; });
 
     const semCourses = currentSemester.courses;
     const result: { course: { code: string; name: string; color: string }; files: FileRecord[] }[] = [];
 
     const sortFiles = (files: FileRecord[]) => {
       files.sort((a, b) => {
-        const weekA = parseInt(a.folder?.match(/week-(\d+)/)?.[1] || '0');
-        const weekB = parseInt(b.folder?.match(/week-(\d+)/)?.[1] || '0');
+        const weekA = getWeekNum(a);
+        const weekB = getWeekNum(b);
         if (weekA !== weekB) return weekA - weekB;
         return (a.displayName || a.originalName).localeCompare(b.displayName || b.originalName);
       });
     };
 
-    semCourses.forEach(course => {
+    semCourses.forEach((course, courseIdx) => {
       const codeNorm = course.code.replace(/\s/g, '').toLowerCase();
-      const files = courseMap.get(codeNorm);
+      let files = courseMap.get(codeNorm);
+      if (files) files = filterByWeekRange(files);
+      if (!files || files.length === 0) {
+        const slotKey = `tbd_slot${courseIdx + 1}`;
+        files = filterByWeekRange(courseMap.get(slotKey) || []);
+      }
+      if (!files || files.length === 0) {
+        for (const [key, val] of courseMap.entries()) {
+          if (key.replace(/[_\s]/g, '') === codeNorm.replace(/[_\s]/g, '')) {
+            files = filterByWeekRange(val);
+            if (files.length > 0) break;
+          }
+        }
+      }
       if (files && files.length > 0) {
         sortFiles(files);
         result.push({ course, files });
@@ -1296,7 +1319,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
     });
 
     return result;
-  }, [currentSemester, allFiles]);
+  }, [currentSemester, allFiles, semesters]);
 
   const handleBookClick = useCallback((file: FileRecord, color: string) => {
     setAnimatingBook(file);
