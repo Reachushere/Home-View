@@ -93,8 +93,10 @@ export function generateSemesterOptions(startYear: number = 2026, endYear: numbe
   const options: string[] = [];
   for (let year = startYear; year <= endYear; year++) {
     options.push(`Winter ${year}`);
-    options.push(`Spring/Summer ${year}`);
-    options.push(`Fall ${year}`);
+    if (year < endYear) {
+      options.push(`Spring/Summer ${year}`);
+      options.push(`Fall ${year}`);
+    }
   }
   return options;
 }

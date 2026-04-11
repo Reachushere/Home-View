@@ -437,8 +437,6 @@ app.use((req, res, next) => {
             { semesterName: 'Spring/Summer 2028', semesterType: 'spring_summer', semesterStartDate: new Date('2028-05-01'), semesterEndDate: new Date('2028-08-04'), course1Code: 'TBD1', course1Name: 'TBD1', course1SpringSummerTerm: 'full', course2Code: 'TBD2', course2Name: 'TBD2', course3Code: 'TBD3', course3Name: 'TBD3' },
             { semesterName: 'Fall 2028', semesterType: 'fall', semesterStartDate: new Date('2028-09-11'), semesterEndDate: new Date('2028-12-15'), course1Code: 'TBD1', course1Name: 'TBD1', course2Code: 'TBD2', course2Name: 'TBD2', course3Code: 'TBD3', course3Name: 'TBD3' },
             { semesterName: 'Winter 2029', semesterType: 'winter', semesterStartDate: new Date('2029-01-08'), semesterEndDate: new Date('2029-04-13'), course1Code: 'TBD1', course1Name: 'TBD1', course2Code: 'TBD2', course2Name: 'TBD2', course3Code: 'TBD3', course3Name: 'TBD3' },
-            { semesterName: 'Spring/Summer 2029', semesterType: 'spring_summer', semesterStartDate: new Date('2029-05-07'), semesterEndDate: new Date('2029-08-10'), course1Code: 'TBD1', course1Name: 'TBD1', course1SpringSummerTerm: 'full', course2Code: 'TBD2', course2Name: 'TBD2', course3Code: 'TBD3', course3Name: 'TBD3' },
-            { semesterName: 'Fall 2029', semesterType: 'fall', semesterStartDate: new Date('2029-09-10'), semesterEndDate: new Date('2029-12-14'), course1Code: 'TBD1', course1Name: 'TBD1', course2Code: 'TBD2', course2Name: 'TBD2', course3Code: 'TBD3', course3Name: 'TBD3' },
           ];
           const created: string[] = [];
           for (const sem of requiredSemesters) {
@@ -449,6 +447,14 @@ app.use((req, res, next) => {
           }
           if (created.length > 0) {
             console.log(`[Semesters] Created missing semesters: ${created.join(', ')}`);
+          }
+          const removeSemesters = ['Spring/Summer 2029', 'Fall 2029'];
+          for (const semName of removeSemesters) {
+            const existing = all.find((s: any) => s.semesterName === semName);
+            if (existing) {
+              await storage.deleteSemesterSettings(existing.id);
+              console.log(`[Semesters] Removed obsolete semester: ${semName}`);
+            }
           }
           const ss2026 = all.find((s: any) => s.semesterName === 'Spring/Summer 2026');
           if (ss2026 && !ss2026.course1DisplayName) {
