@@ -860,6 +860,22 @@ function BookReader({ file, bookColor, onClose }: {
                 <button onClick={() => setActiveToolPanel(activeToolPanel === 'highlight' ? 'none' : 'highlight')} style={toolBtnStyle(activeToolPanel === 'highlight')} title="Highlight" data-testid="btn-highlight">
                   <Highlighter size={14} />
                 </button>
+                {activeToolPanel === 'highlight' && (
+                  <>
+                    {HIGHLIGHT_COLORS.map(c => (
+                      <button key={c} onClick={() => setHighlightColor(c)} style={{ width: '16px', height: '16px', borderRadius: '50%', background: c, border: highlightColor === c ? '2px solid #fff' : '2px solid transparent', cursor: 'pointer', transition: 'border 0.15s', flexShrink: 0 }} />
+                    ))}
+                    <button
+                      onClick={async () => { for (const h of highlights) { await apiRequest('DELETE', `/api/annotations/${h.id}`); } refetchAnnotations(); }}
+                      disabled={highlights.length === 0}
+                      style={{ ...toolBtnStyle(), display: 'flex', alignItems: 'center', gap: '3px', padding: '2px 6px', fontSize: '8px', color: highlights.length > 0 ? 'rgba(255,150,150,0.9)' : 'rgba(255,255,255,0.25)', fontWeight: 600, cursor: highlights.length > 0 ? 'pointer' : 'not-allowed' }}
+                      title="Clear all highlights"
+                      data-testid="btn-clear-all-highlights-toolbar"
+                    >
+                      <Trash2 size={9} /> {highlights.length}
+                    </button>
+                  </>
+                )}
                 <button onClick={() => setActiveToolPanel(activeToolPanel === 'comment' ? 'none' : 'comment')} style={toolBtnStyle(activeToolPanel === 'comment')} title="Comment" data-testid="btn-comment">
                   <MessageSquare size={14} />
                 </button>
@@ -922,25 +938,6 @@ function BookReader({ file, bookColor, onClose }: {
                 {!searching && searchResults.length === 0 && searchQuery && (
                   <span style={{ color: 'rgba(255,100,100,0.8)', fontSize: '10px' }}>No results</span>
                 )}
-              </div>
-            )}
-
-            {activeToolPanel === 'highlight' && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 12px 4px 32px', borderBottom: '1px solid rgba(255,255,255,0.08)', background: 'rgba(0,0,0,0.15)', zIndex: 3, flexShrink: 0 }}>
-                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '10px' }}>Color:</span>
-                {HIGHLIGHT_COLORS.map(c => (
-                  <button key={c} onClick={() => setHighlightColor(c)} style={{ width: '18px', height: '18px', borderRadius: '50%', background: c, border: highlightColor === c ? '2px solid #fff' : '2px solid transparent', cursor: 'pointer', transition: 'border 0.15s' }} />
-                ))}
-                <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '10px', marginLeft: '4px', flex: 1 }}>Select text to highlight</span>
-                <button
-                  onClick={async () => { for (const h of highlights) { await apiRequest('DELETE', `/api/annotations/${h.id}`); } refetchAnnotations(); }}
-                  disabled={highlights.length === 0}
-                  style={{ ...toolBtnStyle(), display: 'flex', alignItems: 'center', gap: '4px', padding: '2px 8px', fontSize: '9px', color: highlights.length > 0 ? 'rgba(255,150,150,0.9)' : 'rgba(255,255,255,0.25)', fontWeight: 600, cursor: highlights.length > 0 ? 'pointer' : 'not-allowed' }}
-                  title="Clear all highlights"
-                  data-testid="btn-clear-all-highlights-toolbar"
-                >
-                  <Trash2 size={10} /> Clear All ({highlights.length})
-                </button>
               </div>
             )}
 
