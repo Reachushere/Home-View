@@ -12683,7 +12683,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   setTimeout(async () => {
     try {
       const allFiles = await storage.getFiles();
-      const voiceMigrationDone = globalThis.__voiceMigrationDone;
+      const voiceFlagFile = path.join(process.cwd(), 'persistent-uploads', '.voice-migration-done');
+      const voiceMigrationDone = fs.existsSync(voiceFlagFile);
       if (!voiceMigrationDone) {
         const filesWithPrep = allFiles.filter((f: any) => f.preparedAudioPaths);
         if (filesWithPrep.length > 0) {
@@ -12692,9 +12693,10 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
             try { await storage.updateFile(f.id, { preparedAudioPaths: null }); } catch {}
           }
         }
-        (globalThis as any).__voiceMigrationDone = true;
+        try { fs.writeFileSync(voiceFlagFile, new Date().toISOString()); } catch {}
       }
-      const citationCleanupDone = (globalThis as any).__citationCleanupDone;
+      const citationFlagFile = path.join(process.cwd(), 'persistent-uploads', '.citation-cleanup-done');
+      const citationCleanupDone = fs.existsSync(citationFlagFile);
       if (!citationCleanupDone) {
         const filesWithText = allFiles.filter((f: any) => f.extractedText);
         if (filesWithText.length > 0) {
@@ -12703,7 +12705,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
             try { await storage.updateFile(f.id, { extractedText: null, preparedAudioPaths: null }); } catch {}
           }
         }
-        (globalThis as any).__citationCleanupDone = true;
+        try { fs.writeFileSync(citationFlagFile, new Date().toISOString()); } catch {}
       }
       const unprepared = allFiles.filter((f: any) => !f.preparedAudioPaths && !f.listened);
       if (unprepared.length > 0) {
@@ -12988,7 +12990,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       }
     }
 
-    const readerUrl = `${appUrl}/pdf-reader/${fileToPlay.id}?catWashFollow=true&autoplay=false&resumeChunk=${resumeFromChunk}&voice=echo&fullscreen=true&auth=${authParam}`;
+    const readerUrl = `${appUrl}/pdf-reader/${fileToPlay.id}?catWashFollow=true&autoplay=true&resumeChunk=${resumeFromChunk}&voice=echo&fullscreen=true&auth=${authParam}`;
     const tvFollowUrl = `${appUrl}/pdf-reader/${fileToPlay.id}?catWashFollow=true&autoplay=false&resumeChunk=${resumeFromChunk}&followOnly=true&voice=echo&fullscreen=true&auth=${authParam}`;
 
     catWashSessionId++;
