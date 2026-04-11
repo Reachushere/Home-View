@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
-import { X, ChevronLeft, ChevronRight, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2, Printer } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2, Printer, Volume2, Square, Pause, Play } from 'lucide-react';
 import * as pdfjsLib from 'pdfjs-dist';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 
@@ -399,6 +399,10 @@ function BookReader({ file, bookColor, onClose }: {
   const [pendingCommentText, setPendingCommentText] = useState('');
   const [expandedCommentId, setExpandedCommentId] = useState<number | null>(null);
   const [flipDirection, setFlipDirection] = useState<'none' | 'forward' | 'backward'>('none');
+  const [ttsPlaying, setTtsPlaying] = useState(false);
+  const [ttsPaused, setTtsPaused] = useState(false);
+  const [ttsLoading, setTtsLoading] = useState(false);
+  const ttsUtterRef = useRef<SpeechSynthesisUtterance | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const canvasRightRef = useRef<HTMLCanvasElement>(null);
   const textLayerRef = useRef<HTMLDivElement>(null);
@@ -691,6 +695,62 @@ function BookReader({ file, bookColor, onClose }: {
     refetchAnnotations();
   }, [refetchAnnotations]);
 
+  const stopTts = useCallback(() => {
+    window.speechSynthesis.cancel();
+    ttsUtterRef.current = null;
+    setTtsPlaying(false);
+    setTtsPaused(false);
+  }, []);
+
+  const pauseTts = useCallback(() => {
+    if (ttsPlaying && !ttsPaused) {
+      window.speechSynthesis.pause();
+      setTtsPaused(true);
+    }
+  }, [ttsPlaying, ttsPaused]);
+
+  const resumeTts = useCallback(() => {
+    if (ttsPlaying && ttsPaused) {
+      window.speechSynthesis.resume();
+      setTtsPaused(false);
+    }
+  }, [ttsPlaying, ttsPaused]);
+
+  const startTts = useCallback(async () => {
+    stopTts();
+    setTtsLoading(true);
+    try {
+      const pagesToRead = [currentPage];
+      if (rightPage && rightPage <= totalPages) pagesToRead.push(rightPage);
+      let fullText = '';
+      for (const pn of pagesToRead) {
+        const page = await pdfDoc!.getPage(pn);
+        const tc = await page.getTextContent();
+        const text = tc.items.map((item: any) => {
+          let s = item.str || '';
+          if (item.hasEOL) s += '\n';
+          return s;
+        }).join('');
+        fullText += text + '\n\n';
+      }
+      fullText = fullText.replace(/\s+/g, ' ').trim();
+      if (!fullText) return;
+      const utter = new SpeechSynthesisUtterance(fullText);
+      utter.rate = 1.0;
+      utter.pitch = 1.0;
+      utter.onend = () => { setTtsPlaying(false); setTtsPaused(false); ttsUtterRef.current = null; };
+      utter.onerror = () => { setTtsPlaying(false); setTtsPaused(false); ttsUtterRef.current = null; };
+      ttsUtterRef.current = utter;
+      setTtsPlaying(true);
+      setTtsPaused(false);
+      window.speechSynthesis.speak(utter);
+    } finally {
+      setTtsLoading(false);
+    }
+  }, [pdfDoc, currentPage, rightPage, totalPages, stopTts]);
+
+  useEffect(() => { return () => { window.speechSynthesis.cancel(); }; }, []);
+
   useEffect(() => {
     if (searchOpen && searchInputRef.current) searchInputRef.current.focus();
   }, [searchOpen]);
@@ -805,6 +865,23 @@ function BookReader({ file, bookColor, onClose }: {
                 }} style={toolBtnStyle()} title="Print PDF" data-testid="btn-print-pdf">
                   <Printer size={14} />
                 </button>
+
+                <div style={{ width: '1px', height: '18px', background: 'rgba(255,255,255,0.15)', margin: '0 2px' }} />
+
+                {!ttsPlaying ? (
+                  <button onClick={startTts} disabled={ttsLoading || !pdfDoc} style={{ ...toolBtnStyle(), opacity: ttsLoading ? 0.5 : 1 }} title="Read aloud (current spread)" data-testid="btn-tts-play">
+                    {ttsLoading ? <span style={{ fontSize: '10px' }}>...</span> : <Volume2 size={14} />}
+                  </button>
+                ) : (
+                  <>
+                    <button onClick={ttsPaused ? resumeTts : pauseTts} style={toolBtnStyle()} title={ttsPaused ? 'Resume' : 'Pause'} data-testid="btn-tts-pause">
+                      {ttsPaused ? <Play size={14} /> : <Pause size={14} />}
+                    </button>
+                    <button onClick={stopTts} style={toolBtnStyle()} title="Stop reading" data-testid="btn-tts-stop">
+                      <Square size={12} />
+                    </button>
+                  </>
+                )}
 
                 <div style={{ width: '1px', height: '18px', background: 'rgba(255,255,255,0.15)', margin: '0 2px' }} />
 
@@ -1200,13 +1277,13 @@ function BookReader({ file, bookColor, onClose }: {
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', padding: '4px 32px', borderTop: '1px solid rgba(255,255,255,0.1)', zIndex: 3, flexShrink: 0 }}>
-              <button onClick={() => { setFlipDirection('backward'); setCurrentPage(p => Math.max(1, p - 2)); }} disabled={currentPage <= 1} style={{ ...toolBtnStyle(), padding: '3px 10px', opacity: currentPage <= 1 ? 0.3 : 1, cursor: currentPage <= 1 ? 'not-allowed' : 'pointer' }} data-testid="btn-pdf-prev">
+              <button onClick={() => { stopTts(); setFlipDirection('backward'); setCurrentPage(p => Math.max(1, p - 2)); }} disabled={currentPage <= 1} style={{ ...toolBtnStyle(), padding: '3px 10px', opacity: currentPage <= 1 ? 0.3 : 1, cursor: currentPage <= 1 ? 'not-allowed' : 'pointer' }} data-testid="btn-pdf-prev">
                 <ChevronLeft size={14} /> <span style={{ fontSize: '11px', fontWeight: 600 }}>Prev</span>
               </button>
               <span style={{ fontSize: '12px', color: '#ffffff', fontWeight: 700, minWidth: '80px', textAlign: 'center' }}>
                 {currentPage}{rightPage ? `–${rightPage}` : ''} / {totalPages}
               </span>
-              <button onClick={() => { setFlipDirection('forward'); setCurrentPage(p => Math.min(totalPages, p + 2)); }} disabled={currentPage >= totalPages} style={{ ...toolBtnStyle(), padding: '3px 10px', opacity: currentPage >= totalPages ? 0.3 : 1, cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer' }} data-testid="btn-pdf-next">
+              <button onClick={() => { stopTts(); setFlipDirection('forward'); setCurrentPage(p => Math.min(totalPages, p + 2)); }} disabled={currentPage >= totalPages} style={{ ...toolBtnStyle(), padding: '3px 10px', opacity: currentPage >= totalPages ? 0.3 : 1, cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer' }} data-testid="btn-pdf-next">
                 <span style={{ fontSize: '11px', fontWeight: 600 }}>Next</span> <ChevronRight size={14} />
               </button>
             </div>
