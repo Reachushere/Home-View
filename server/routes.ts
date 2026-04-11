@@ -10926,15 +10926,18 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
   (async () => {
     try {
+      const flagRow = await db.select().from(appState).where(eq(appState.key, 'onedrive_cleanup_done')).limit(1);
+      if (flagRow.length > 0) return;
       const allFiles = await storage.getFiles();
       const oneDriveFiles = allFiles.filter((f: any) => f.objectPath?.startsWith('onedrive://'));
       if (oneDriveFiles.length > 0) {
-        console.log(`[Startup] Removing ${oneDriveFiles.length} files with onedrive:// objectPaths (leftover from library sync — automation will re-sync with local copies)`);
+        console.log(`[Startup] One-time cleanup: removing ${oneDriveFiles.length} files with onedrive:// objectPaths (leftover from library sync — automation will re-sync with local copies)`);
         for (const f of oneDriveFiles) {
           await storage.deleteFile(f.id);
         }
         console.log(`[Startup] Cleanup complete — ${oneDriveFiles.length} onedrive:// files removed`);
       }
+      await db.insert(appState).values({ key: 'onedrive_cleanup_done', value: 'true' });
     } catch (e: any) {
       console.log(`[Startup] Error cleaning onedrive:// files: ${e.message}`);
     }
