@@ -5137,6 +5137,43 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
+  app.get("/api/files/:id/annotations", async (req, res) => {
+    try {
+      const annotations = await storage.getPdfAnnotations(Number(req.params.id));
+      res.json(annotations);
+    } catch (err) {
+      console.error("Error fetching annotations:", err);
+      res.status(500).json({ error: "Failed to fetch annotations" });
+    }
+  });
+
+  app.post("/api/files/:id/annotations", async (req, res) => {
+    try {
+      const annotation = await storage.createPdfAnnotation({
+        fileId: Number(req.params.id),
+        page: req.body.page,
+        type: req.body.type,
+        content: req.body.content || null,
+        color: req.body.color || null,
+        rects: req.body.rects ? JSON.stringify(req.body.rects) : null,
+      });
+      res.json(annotation);
+    } catch (err) {
+      console.error("Error creating annotation:", err);
+      res.status(500).json({ error: "Failed to create annotation" });
+    }
+  });
+
+  app.delete("/api/annotations/:id", async (req, res) => {
+    try {
+      await storage.deletePdfAnnotation(Number(req.params.id));
+      res.json({ success: true });
+    } catch (err) {
+      console.error("Error deleting annotation:", err);
+      res.status(500).json({ error: "Failed to delete annotation" });
+    }
+  });
+
   // GET /api/files/:id/text - Extract text content from a file (for PDF reading with highlighting)
   app.get("/api/files/:id/text", async (req, res) => {
     try {

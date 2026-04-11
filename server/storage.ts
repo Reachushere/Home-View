@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { tasks, files, semesterSettings, secondGoogleAccount, thirdGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, stickyNotes, accessTokens, shiftSchedule, semesterChecklist, courseWeekMappings, scholarships, keyContacts, announcements, entityComments, pendingReviewItems, dismissedReviewTitles, sharedNotebookLinks, savedEmailSearches, weatherHistory, weatherAlertHistory, newSemesterChecklist, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type ThirdGoogleAccount, type InsertThirdGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, type StickyNote, type InsertStickyNote, type AccessToken, type InsertAccessToken, type ShiftScheduleEntry, type InsertShiftScheduleEntry, type SemesterChecklistItem, type InsertSemesterChecklistItem, type CourseWeekMapping, type InsertCourseWeekMapping, type Scholarship, type InsertScholarship, type KeyContact, type InsertKeyContact, type Announcement, type InsertAnnouncement, type EntityComment, type PendingReviewItem, type InsertPendingReviewItem, type SharedNotebookLink, type InsertSharedNotebookLink, type SavedEmailSearch, type InsertSavedEmailSearch, type WeatherHistory, type InsertWeatherHistory, type WeatherAlertHistory, type InsertWeatherAlertHistory, type NewSemesterChecklistItem, type InsertNewSemesterChecklistItem, getWeekNumber } from "@shared/schema";
+import { tasks, files, semesterSettings, secondGoogleAccount, thirdGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, stickyNotes, accessTokens, shiftSchedule, semesterChecklist, courseWeekMappings, scholarships, keyContacts, announcements, entityComments, pendingReviewItems, dismissedReviewTitles, sharedNotebookLinks, savedEmailSearches, weatherHistory, weatherAlertHistory, newSemesterChecklist, pdfAnnotations, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type ThirdGoogleAccount, type InsertThirdGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, type StickyNote, type InsertStickyNote, type AccessToken, type InsertAccessToken, type ShiftScheduleEntry, type InsertShiftScheduleEntry, type SemesterChecklistItem, type InsertSemesterChecklistItem, type CourseWeekMapping, type InsertCourseWeekMapping, type Scholarship, type InsertScholarship, type KeyContact, type InsertKeyContact, type Announcement, type InsertAnnouncement, type EntityComment, type PendingReviewItem, type InsertPendingReviewItem, type SharedNotebookLink, type InsertSharedNotebookLink, type SavedEmailSearch, type InsertSavedEmailSearch, type WeatherHistory, type InsertWeatherHistory, type WeatherAlertHistory, type InsertWeatherAlertHistory, type NewSemesterChecklistItem, type InsertNewSemesterChecklistItem, type PdfAnnotation, type InsertPdfAnnotation, getWeekNumber } from "@shared/schema";
 import { eq, and, gte, lte, desc, or, isNull } from "drizzle-orm";
 
 export interface IStorage {
@@ -121,6 +121,9 @@ export interface IStorage {
   createNewSemesterChecklistItem(item: InsertNewSemesterChecklistItem): Promise<NewSemesterChecklistItem>;
   updateNewSemesterChecklistItem(id: number, updates: Partial<NewSemesterChecklistItem>): Promise<NewSemesterChecklistItem>;
   deleteNewSemesterChecklistItem(id: number): Promise<void>;
+  getPdfAnnotations(fileId: number): Promise<PdfAnnotation[]>;
+  createPdfAnnotation(annotation: InsertPdfAnnotation): Promise<PdfAnnotation>;
+  deletePdfAnnotation(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -919,6 +922,19 @@ export class DatabaseStorage implements IStorage {
 
   async deleteNewSemesterChecklistItem(id: number): Promise<void> {
     await db.delete(newSemesterChecklist).where(eq(newSemesterChecklist.id, id));
+  }
+
+  async getPdfAnnotations(fileId: number): Promise<PdfAnnotation[]> {
+    return await db.select().from(pdfAnnotations).where(eq(pdfAnnotations.fileId, fileId)).orderBy(pdfAnnotations.page);
+  }
+
+  async createPdfAnnotation(annotation: InsertPdfAnnotation): Promise<PdfAnnotation> {
+    const [created] = await db.insert(pdfAnnotations).values(annotation).returning();
+    return created;
+  }
+
+  async deletePdfAnnotation(id: number): Promise<void> {
+    await db.delete(pdfAnnotations).where(eq(pdfAnnotations.id, id));
   }
 }
 

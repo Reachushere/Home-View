@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
-import { X, ChevronLeft, ChevronRight, BookOpen } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2 } from 'lucide-react';
 import * as pdfjsLib from 'pdfjs-dist';
+import { apiRequest, queryClient } from '@/lib/queryClient';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
 
@@ -267,6 +268,32 @@ function Bookend({ side }: { side: 'left' | 'right' }) {
   );
 }
 
+interface Annotation {
+  id: number;
+  fileId: number;
+  page: number;
+  type: string;
+  content: string | null;
+  color: string | null;
+  rects: string | null;
+  createdAt: string | null;
+}
+
+const HIGHLIGHT_COLORS = ['#FFEB3B', '#4CAF50', '#2196F3', '#FF9800', '#E91E63'];
+
+const toolBtnStyle = (active?: boolean): React.CSSProperties => ({
+  background: active ? 'rgba(212,175,55,0.3)' : 'rgba(0,0,0,0.2)',
+  border: active ? '1px solid #D4AF37' : '1px solid rgba(255,255,255,0.15)',
+  borderRadius: '4px',
+  padding: '4px 6px',
+  cursor: 'pointer',
+  color: active ? '#D4AF37' : 'rgba(255,255,255,0.7)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  transition: 'all 0.15s ease',
+});
+
 function BookReader({ file, bookColor, onClose }: {
   file: FileRecord;
   bookColor: string;
@@ -277,17 +304,41 @@ function BookReader({ file, bookColor, onClose }: {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [zoom, setZoom] = useState(1.0);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<{ page: number; matches: number }[]>([]);
+  const [searchCurrentIdx, setSearchCurrentIdx] = useState(0);
+  const [commentOpen, setCommentOpen] = useState(false);
+  const [commentText, setCommentText] = useState('');
+  const [highlightColor, setHighlightColor] = useState(HIGHLIGHT_COLORS[0]);
+  const [showAnnotations, setShowAnnotations] = useState(false);
+  const [activeToolPanel, setActiveToolPanel] = useState<'none' | 'highlight' | 'comment' | 'bookmark'>('none');
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const title = truncateSpineTitle(file.displayName || file.originalName, 80);
+
+  const { data: annotations = [], refetch: refetchAnnotations } = useQuery<Annotation[]>({
+    queryKey: ['/api/files', file.id, 'annotations'],
+    queryFn: () => fetch(`/api/files/${file.id}/annotations`).then(r => r.json()),
+    enabled: phase === 'reading',
+  });
+
+  const bookmarks = useMemo(() => annotations.filter(a => a.type === 'bookmark'), [annotations]);
+  const comments = useMemo(() => annotations.filter(a => a.type === 'comment'), [annotations]);
+  const highlights = useMemo(() => annotations.filter(a => a.type === 'highlight'), [annotations]);
+  const pageBookmarked = useMemo(() => bookmarks.some(b => b.page === currentPage), [bookmarks, currentPage]);
+  const pageComments = useMemo(() => comments.filter(c => c.page === currentPage), [comments, currentPage]);
+  const pageHighlights = useMemo(() => highlights.filter(h => h.page === currentPage), [highlights, currentPage]);
 
   useEffect(() => {
     const t1 = setTimeout(() => setPhase('expand'), 600);
     const t2 = setTimeout(() => setPhase('reading'), 1200);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
-
-  const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
     let cancelled = false;
@@ -326,19 +377,74 @@ function BookReader({ file, bookColor, onClose }: {
       const container = containerRef.current!;
       const canvas = canvasRef.current!;
       const ctx = canvas.getContext('2d')!;
-      const containerWidth = container.clientWidth - 20;
-      const containerHeight = container.clientHeight - 20;
+      const containerWidth = container.clientWidth - 40;
+      const containerHeight = container.clientHeight - 60;
       const vp = page.getViewport({ scale: 1 });
       const scaleW = containerWidth / vp.width;
       const scaleH = containerHeight / vp.height;
-      const scale = Math.min(scaleW, scaleH);
+      const baseScale = Math.min(scaleW, scaleH);
+      const scale = baseScale * zoom;
       const viewport = page.getViewport({ scale });
       canvas.width = viewport.width;
       canvas.height = viewport.height;
       page.render({ canvasContext: ctx, viewport });
     });
     return () => { cancelled = true; };
-  }, [pdfDoc, currentPage, phase]);
+  }, [pdfDoc, currentPage, phase, zoom]);
+
+  const handleSearch = useCallback(async () => {
+    if (!pdfDoc || !searchQuery.trim()) return;
+    const results: { page: number; matches: number }[] = [];
+    const q = searchQuery.toLowerCase();
+    for (let i = 1; i <= pdfDoc.numPages; i++) {
+      const page = await pdfDoc.getPage(i);
+      const textContent = await page.getTextContent();
+      const text = textContent.items.map((item: any) => item.str).join(' ').toLowerCase();
+      const count = text.split(q).length - 1;
+      if (count > 0) results.push({ page: i, matches: count });
+    }
+    setSearchResults(results);
+    setSearchCurrentIdx(0);
+    if (results.length > 0) setCurrentPage(results[0].page);
+  }, [pdfDoc, searchQuery]);
+
+  const navigateSearch = useCallback((dir: 1 | -1) => {
+    if (searchResults.length === 0) return;
+    const nextIdx = (searchCurrentIdx + dir + searchResults.length) % searchResults.length;
+    setSearchCurrentIdx(nextIdx);
+    setCurrentPage(searchResults[nextIdx].page);
+  }, [searchResults, searchCurrentIdx]);
+
+  const toggleBookmark = useCallback(async () => {
+    const existing = bookmarks.find(b => b.page === currentPage);
+    if (existing) {
+      await apiRequest('DELETE', `/api/annotations/${existing.id}`);
+    } else {
+      await apiRequest('POST', `/api/files/${file.id}/annotations`, { page: currentPage, type: 'bookmark' });
+    }
+    refetchAnnotations();
+  }, [bookmarks, currentPage, file.id, refetchAnnotations]);
+
+  const addComment = useCallback(async () => {
+    if (!commentText.trim()) return;
+    await apiRequest('POST', `/api/files/${file.id}/annotations`, { page: currentPage, type: 'comment', content: commentText.trim() });
+    setCommentText('');
+    refetchAnnotations();
+  }, [commentText, currentPage, file.id, refetchAnnotations]);
+
+  const addHighlight = useCallback(async () => {
+    await apiRequest('POST', `/api/files/${file.id}/annotations`, { page: currentPage, type: 'highlight', color: highlightColor, content: `Page ${currentPage} highlight` });
+    refetchAnnotations();
+  }, [currentPage, file.id, highlightColor, refetchAnnotations]);
+
+  const deleteAnnotation = useCallback(async (id: number) => {
+    await apiRequest('DELETE', `/api/annotations/${id}`);
+    refetchAnnotations();
+  }, [refetchAnnotations]);
+
+  useEffect(() => {
+    if (searchOpen && searchInputRef.current) searchInputRef.current.focus();
+  }, [searchOpen]);
 
   return (
     <div
@@ -360,15 +466,11 @@ function BookReader({ file, bookColor, onClose }: {
           50% { width: 200px; height: 280px; opacity: 1; transform: rotateY(10deg); }
           100% { width: 200px; height: 280px; opacity: 1; transform: rotateY(0deg); }
         }
-        @keyframes libBookExpand {
-          0% { width: 200px; height: 280px; border-radius: 4px 12px 12px 4px; }
-          100% { width: 85vw; height: 88vh; border-radius: 8px 16px 16px 8px; }
-        }
       `}</style>
 
       <div style={{
-        width: phase === 'pull' ? '200px' : phase === 'expand' || phase === 'reading' ? '85vw' : '200px',
-        height: phase === 'pull' ? '280px' : phase === 'expand' || phase === 'reading' ? '88vh' : '280px',
+        width: phase === 'pull' ? '200px' : '85vw',
+        height: phase === 'pull' ? '280px' : '88vh',
         backgroundColor: bookColor,
         borderRadius: phase === 'reading' ? '8px 16px 16px 8px' : '4px 12px 12px 4px',
         boxShadow: '0 20px 80px rgba(0,0,0,0.7), inset 0 0 30px rgba(0,0,0,0.2)',
@@ -391,164 +493,234 @@ function BookReader({ file, bookColor, onClose }: {
         }} />
 
         {phase !== 'reading' && (
-          <div style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '30px',
-            zIndex: 1,
-          }}>
-            <div style={{
-              width: '60%',
-              height: '2px',
-              background: 'linear-gradient(90deg, transparent, #D4AF37, transparent)',
-              opacity: 0.5,
-              marginBottom: '20px',
-            }} />
-            <div style={{
-              color: '#D4AF37',
-              fontSize: phase === 'expand' ? '18px' : '13px',
-              fontWeight: 700,
-              textAlign: 'center',
-              textTransform: 'uppercase',
-              letterSpacing: '2px',
-              textShadow: '0 2px 4px rgba(0,0,0,0.5)',
-              lineHeight: 1.4,
-              maxWidth: '80%',
-              wordBreak: 'break-word',
-              transition: 'font-size 0.6s ease',
-            }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '30px', zIndex: 1 }}>
+            <div style={{ width: '60%', height: '2px', background: 'linear-gradient(90deg, transparent, #D4AF37, transparent)', opacity: 0.5, marginBottom: '20px' }} />
+            <div style={{ color: '#D4AF37', fontSize: phase === 'expand' ? '18px' : '13px', fontWeight: 700, textAlign: 'center', textTransform: 'uppercase', letterSpacing: '2px', textShadow: '0 2px 4px rgba(0,0,0,0.5)', lineHeight: 1.4, maxWidth: '80%', wordBreak: 'break-word', transition: 'font-size 0.6s ease' }}>
               {title}
             </div>
-            <div style={{
-              width: '60%',
-              height: '2px',
-              background: 'linear-gradient(90deg, transparent, #D4AF37, transparent)',
-              opacity: 0.5,
-              marginTop: '20px',
-            }} />
+            <div style={{ width: '60%', height: '2px', background: 'linear-gradient(90deg, transparent, #D4AF37, transparent)', opacity: 0.5, marginTop: '20px' }} />
           </div>
         )}
 
         {phase === 'reading' && (
           <>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '8px 16px 8px 32px',
-              borderBottom: '1px solid rgba(255,255,255,0.1)',
-              zIndex: 3,
-              flexShrink: 0,
-            }}>
-              <div style={{
-                color: '#D4AF37',
-                fontSize: '11px',
-                fontWeight: 600,
-                letterSpacing: '1px',
-                textTransform: 'uppercase',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                maxWidth: 'calc(100% - 40px)',
-              }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 12px 6px 32px', borderBottom: '1px solid rgba(255,255,255,0.1)', zIndex: 3, flexShrink: 0, gap: '8px' }}>
+              <div style={{ color: '#D4AF37', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>
                 {title}
               </div>
-              <button
-                onClick={onClose}
-                style={{
-                  background: 'rgba(0,0,0,0.3)',
-                  border: '1px solid rgba(255,255,255,0.2)',
-                  borderRadius: '50%',
-                  width: '28px',
-                  height: '28px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  color: 'rgba(255,255,255,0.7)',
-                  flexShrink: 0,
-                }}
-                data-testid="button-close-book-reader"
-              >
-                <X size={14} />
-              </button>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
+                <button onClick={() => setZoom(z => Math.max(0.5, z - 0.25))} style={toolBtnStyle()} title="Zoom Out" data-testid="btn-zoom-out">
+                  <ZoomOut size={14} />
+                </button>
+                <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '10px', minWidth: '32px', textAlign: 'center' }}>{Math.round(zoom * 100)}%</span>
+                <button onClick={() => setZoom(z => Math.min(3, z + 0.25))} style={toolBtnStyle()} title="Zoom In" data-testid="btn-zoom-in">
+                  <ZoomIn size={14} />
+                </button>
+
+                <div style={{ width: '1px', height: '18px', background: 'rgba(255,255,255,0.15)', margin: '0 2px' }} />
+
+                <button onClick={() => { setSearchOpen(!searchOpen); if (!searchOpen) setActiveToolPanel('none'); }} style={toolBtnStyle(searchOpen)} title="Search" data-testid="btn-search">
+                  <Search size={14} />
+                </button>
+                <button onClick={toggleBookmark} style={toolBtnStyle(pageBookmarked)} title={pageBookmarked ? 'Remove Bookmark' : 'Add Bookmark'} data-testid="btn-bookmark">
+                  <Bookmark size={14} fill={pageBookmarked ? '#D4AF37' : 'none'} />
+                </button>
+                <button onClick={() => setActiveToolPanel(activeToolPanel === 'highlight' ? 'none' : 'highlight')} style={toolBtnStyle(activeToolPanel === 'highlight')} title="Highlight" data-testid="btn-highlight">
+                  <Highlighter size={14} />
+                </button>
+                <button onClick={() => setActiveToolPanel(activeToolPanel === 'comment' ? 'none' : 'comment')} style={toolBtnStyle(activeToolPanel === 'comment')} title="Comment" data-testid="btn-comment">
+                  <MessageSquare size={14} />
+                </button>
+                <button onClick={() => setShowAnnotations(!showAnnotations)} style={toolBtnStyle(showAnnotations)} title="View Annotations" data-testid="btn-annotations">
+                  <BookOpen size={14} />
+                </button>
+
+                <div style={{ width: '1px', height: '18px', background: 'rgba(255,255,255,0.15)', margin: '0 2px' }} />
+
+                <button onClick={onClose} style={{ ...toolBtnStyle(), borderRadius: '50%', width: '26px', height: '26px', padding: 0 }} data-testid="button-close-book-reader">
+                  <X size={14} />
+                </button>
+              </div>
             </div>
-            <div
-              ref={containerRef}
-              style={{
-                flex: 1,
-                margin: '0 8px 8px 28px',
-                borderRadius: '4px',
-                overflow: 'hidden',
-                background: '#f5f5f0',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                position: 'relative',
-              }}
-            >
-              {loading ? (
-                <div style={{ color: '#666', fontSize: '14px' }}>Loading PDF...</div>
-              ) : !pdfDoc ? (
-                <div style={{ color: '#c62828', fontSize: '14px', textAlign: 'center', padding: '20px' }}>
-                  Failed to load PDF{errorMsg ? `: ${errorMsg}` : ''}
-                </div>
-              ) : (
-                <>
-                  <canvas ref={canvasRef} style={{ maxWidth: '100%', maxHeight: 'calc(100% - 36px)' }} />
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    padding: '6px 0',
-                    userSelect: 'none',
-                  }}>
-                    <button
-                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                      disabled={currentPage <= 1}
-                      style={{
-                        background: 'rgba(0,0,0,0.15)',
-                        border: 'none',
-                        borderRadius: '4px',
-                        padding: '4px 10px',
-                        cursor: currentPage <= 1 ? 'not-allowed' : 'pointer',
-                        opacity: currentPage <= 1 ? 0.3 : 1,
-                        color: '#333',
-                        fontSize: '12px',
-                        fontWeight: 600,
-                      }}
-                      data-testid="btn-pdf-prev"
-                    >
-                      ‹ Prev
-                    </button>
-                    <span style={{ fontSize: '12px', color: '#555', fontWeight: 500 }}>
-                      {currentPage} / {totalPages}
+
+            {searchOpen && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 12px 4px 32px', borderBottom: '1px solid rgba(255,255,255,0.08)', background: 'rgba(0,0,0,0.15)', zIndex: 3, flexShrink: 0 }}>
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') handleSearch(); }}
+                  placeholder="Search in PDF..."
+                  style={{ flex: 1, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '4px', padding: '4px 8px', color: '#fff', fontSize: '12px', outline: 'none' }}
+                  data-testid="input-pdf-search"
+                />
+                <button onClick={handleSearch} style={toolBtnStyle()} data-testid="btn-search-go">
+                  <Search size={12} />
+                </button>
+                {searchResults.length > 0 && (
+                  <>
+                    <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '10px', whiteSpace: 'nowrap' }}>
+                      {searchCurrentIdx + 1}/{searchResults.length} pages
                     </span>
-                    <button
-                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                      disabled={currentPage >= totalPages}
-                      style={{
-                        background: 'rgba(0,0,0,0.15)',
-                        border: 'none',
-                        borderRadius: '4px',
-                        padding: '4px 10px',
-                        cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer',
-                        opacity: currentPage >= totalPages ? 0.3 : 1,
-                        color: '#333',
-                        fontSize: '12px',
-                        fontWeight: 600,
-                      }}
-                      data-testid="btn-pdf-next"
-                    >
-                      Next ›
+                    <button onClick={() => navigateSearch(-1)} style={toolBtnStyle()} data-testid="btn-search-prev">
+                      <ChevronLeft size={12} />
                     </button>
-                  </div>
-                </>
+                    <button onClick={() => navigateSearch(1)} style={toolBtnStyle()} data-testid="btn-search-next">
+                      <ChevronRight size={12} />
+                    </button>
+                  </>
+                )}
+                {searchResults.length === 0 && searchQuery && (
+                  <span style={{ color: 'rgba(255,100,100,0.8)', fontSize: '10px' }}>No results</span>
+                )}
+              </div>
+            )}
+
+            {activeToolPanel === 'highlight' && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 12px 4px 32px', borderBottom: '1px solid rgba(255,255,255,0.08)', background: 'rgba(0,0,0,0.15)', zIndex: 3, flexShrink: 0 }}>
+                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '10px' }}>Color:</span>
+                {HIGHLIGHT_COLORS.map(c => (
+                  <button key={c} onClick={() => setHighlightColor(c)} style={{ width: '18px', height: '18px', borderRadius: '50%', background: c, border: highlightColor === c ? '2px solid #fff' : '2px solid transparent', cursor: 'pointer', transition: 'border 0.15s' }} />
+                ))}
+                <button onClick={addHighlight} style={{ ...toolBtnStyle(), fontSize: '10px', padding: '3px 8px', color: '#D4AF37', gap: '4px' }} data-testid="btn-add-highlight">
+                  <Highlighter size={12} /> Add to page {currentPage}
+                </button>
+              </div>
+            )}
+
+            {activeToolPanel === 'comment' && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 12px 4px 32px', borderBottom: '1px solid rgba(255,255,255,0.08)', background: 'rgba(0,0,0,0.15)', zIndex: 3, flexShrink: 0 }}>
+                <input
+                  type="text"
+                  value={commentText}
+                  onChange={e => setCommentText(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') addComment(); }}
+                  placeholder={`Add comment on page ${currentPage}...`}
+                  style={{ flex: 1, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '4px', padding: '4px 8px', color: '#fff', fontSize: '12px', outline: 'none' }}
+                  data-testid="input-pdf-comment"
+                />
+                <button onClick={addComment} style={{ ...toolBtnStyle(), fontSize: '10px', padding: '3px 8px', color: '#D4AF37' }} data-testid="btn-add-comment">
+                  Add
+                </button>
+              </div>
+            )}
+
+            <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+              <div
+                ref={containerRef}
+                style={{ flex: 1, margin: '0 0 0 28px', borderRadius: '4px 0 0 4px', overflow: 'auto', background: '#f5f5f0', display: 'flex', flexDirection: 'column', alignItems: zoom > 1 ? 'flex-start' : 'center', justifyContent: loading || !pdfDoc ? 'center' : 'flex-start', position: 'relative' }}
+              >
+                <div ref={scrollRef} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '10px', minWidth: '100%' }}>
+                  {loading ? (
+                    <div style={{ color: '#666', fontSize: '14px' }}>Loading PDF...</div>
+                  ) : !pdfDoc ? (
+                    <div style={{ color: '#c62828', fontSize: '14px', textAlign: 'center', padding: '20px' }}>
+                      Failed to load PDF{errorMsg ? `: ${errorMsg}` : ''}
+                    </div>
+                  ) : (
+                    <>
+                      <div style={{ position: 'relative' }}>
+                        <canvas ref={canvasRef} style={{ display: 'block' }} />
+                        {pageHighlights.map((h, i) => (
+                          <div key={h.id} style={{ position: 'absolute', top: `${10 + i * 24}px`, right: '8px', background: h.color || '#FFEB3B', borderRadius: '3px', padding: '2px 6px', fontSize: '9px', fontWeight: 600, opacity: 0.85, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <Highlighter size={10} />
+                            <button onClick={() => deleteAnnotation(h.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}>
+                              <Trash2 size={10} color="#333" />
+                            </button>
+                          </div>
+                        ))}
+                        {pageComments.length > 0 && (
+                          <div style={{ position: 'absolute', bottom: '8px', right: '8px', display: 'flex', flexDirection: 'column', gap: '3px', maxWidth: '200px' }}>
+                            {pageComments.map(c => (
+                              <div key={c.id} style={{ background: 'rgba(0,0,0,0.75)', borderRadius: '4px', padding: '4px 8px', fontSize: '10px', color: '#fff', display: 'flex', alignItems: 'flex-start', gap: '4px' }}>
+                                <span style={{ flex: 1 }}>{c.content}</span>
+                                <button onClick={() => deleteAnnotation(c.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', flexShrink: 0, marginTop: '1px' }}>
+                                  <Trash2 size={10} color="rgba(255,255,255,0.5)" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {pageBookmarked && (
+                          <div style={{ position: 'absolute', top: 0, right: '16px', width: '20px', height: '32px', background: '#D4AF37', clipPath: 'polygon(0 0, 100% 0, 100% 100%, 50% 75%, 0 100%)', boxShadow: '0 2px 4px rgba(0,0,0,0.3)' }} />
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {showAnnotations && (
+                <div style={{ width: '220px', background: 'rgba(0,0,0,0.2)', borderLeft: '1px solid rgba(255,255,255,0.1)', overflow: 'auto', padding: '8px', flexShrink: 0 }}>
+                  <div style={{ color: '#D4AF37', fontSize: '11px', fontWeight: 700, letterSpacing: '1px', marginBottom: '8px', textTransform: 'uppercase' }}>Annotations</div>
+
+                  {bookmarks.length > 0 && (
+                    <>
+                      <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '9px', fontWeight: 600, textTransform: 'uppercase', marginBottom: '4px', marginTop: '4px' }}>Bookmarks</div>
+                      {bookmarks.map(b => (
+                        <div key={b.id} onClick={() => setCurrentPage(b.page)} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 6px', borderRadius: '3px', cursor: 'pointer', background: currentPage === b.page ? 'rgba(212,175,55,0.15)' : 'transparent', marginBottom: '2px' }}>
+                          <Bookmark size={12} fill="#D4AF37" color="#D4AF37" />
+                          <span style={{ color: '#fff', fontSize: '11px' }}>Page {b.page}</span>
+                          <button onClick={e => { e.stopPropagation(); deleteAnnotation(b.id); }} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}>
+                            <Trash2 size={10} color="rgba(255,255,255,0.4)" />
+                          </button>
+                        </div>
+                      ))}
+                    </>
+                  )}
+
+                  {highlights.length > 0 && (
+                    <>
+                      <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '9px', fontWeight: 600, textTransform: 'uppercase', marginBottom: '4px', marginTop: '8px' }}>Highlights</div>
+                      {highlights.map(h => (
+                        <div key={h.id} onClick={() => setCurrentPage(h.page)} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 6px', borderRadius: '3px', cursor: 'pointer', background: currentPage === h.page ? 'rgba(212,175,55,0.15)' : 'transparent', marginBottom: '2px' }}>
+                          <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: h.color || '#FFEB3B', flexShrink: 0 }} />
+                          <span style={{ color: '#fff', fontSize: '11px' }}>Page {h.page}</span>
+                          <button onClick={e => { e.stopPropagation(); deleteAnnotation(h.id); }} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}>
+                            <Trash2 size={10} color="rgba(255,255,255,0.4)" />
+                          </button>
+                        </div>
+                      ))}
+                    </>
+                  )}
+
+                  {comments.length > 0 && (
+                    <>
+                      <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '9px', fontWeight: 600, textTransform: 'uppercase', marginBottom: '4px', marginTop: '8px' }}>Comments</div>
+                      {comments.map(c => (
+                        <div key={c.id} onClick={() => setCurrentPage(c.page)} style={{ padding: '4px 6px', borderRadius: '3px', cursor: 'pointer', background: currentPage === c.page ? 'rgba(212,175,55,0.15)' : 'transparent', marginBottom: '2px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <MessageSquare size={10} color="rgba(255,255,255,0.5)" />
+                            <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '9px' }}>Page {c.page}</span>
+                            <button onClick={e => { e.stopPropagation(); deleteAnnotation(c.id); }} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}>
+                              <Trash2 size={10} color="rgba(255,255,255,0.4)" />
+                            </button>
+                          </div>
+                          <div style={{ color: '#fff', fontSize: '10px', marginTop: '2px', wordBreak: 'break-word' }}>{c.content}</div>
+                        </div>
+                      ))}
+                    </>
+                  )}
+
+                  {annotations.length === 0 && (
+                    <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: '11px', textAlign: 'center', marginTop: '20px' }}>No annotations yet</div>
+                  )}
+                </div>
               )}
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', padding: '4px 32px', borderTop: '1px solid rgba(255,255,255,0.1)', zIndex: 3, flexShrink: 0 }}>
+              <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage <= 1} style={{ ...toolBtnStyle(), padding: '3px 8px', opacity: currentPage <= 1 ? 0.3 : 1, cursor: currentPage <= 1 ? 'not-allowed' : 'pointer' }} data-testid="btn-pdf-prev">
+                <ChevronLeft size={14} /> <span style={{ fontSize: '11px' }}>Prev</span>
+              </button>
+              <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', fontWeight: 500, minWidth: '50px', textAlign: 'center' }}>
+                {currentPage} / {totalPages}
+              </span>
+              <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage >= totalPages} style={{ ...toolBtnStyle(), padding: '3px 8px', opacity: currentPage >= totalPages ? 0.3 : 1, cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer' }} data-testid="btn-pdf-next">
+                <span style={{ fontSize: '11px' }}>Next</span> <ChevronRight size={14} />
+              </button>
             </div>
           </>
         )}
