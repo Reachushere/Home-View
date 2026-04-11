@@ -412,7 +412,7 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
             left: 0,
             right: 0,
             bottom: 0,
-            zIndex: 9998,
+            zIndex: 100005,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

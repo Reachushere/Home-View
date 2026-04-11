@@ -5931,7 +5931,29 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       let textContent = "";
       let fileBuffer: Buffer | null = null;
       
-      if (mediaUrl.startsWith("/objects/")) {
+      if (mediaUrl.startsWith("/local-uploads/")) {
+        const fs = await import("fs");
+        const path = await import("path");
+        const fileId = mediaUrl.replace('/local-uploads/', '');
+        const localPath = path.join(process.cwd(), 'local-uploads', fileId);
+        if (fs.existsSync(localPath)) {
+          fileBuffer = fs.readFileSync(localPath);
+        } else {
+          return res.status(404).json({ error: "Local file not found" });
+        }
+      } else if (mediaUrl.startsWith("/local/uploads/")) {
+        const fs = await import("fs");
+        const path = await import("path");
+        const localFileName = mediaUrl.replace('/local/uploads/', '');
+        const persistentPath = path.join(process.cwd(), 'persistent-uploads', localFileName);
+        const legacyPath = path.join(process.cwd(), 'dist', 'public', 'uploads', localFileName);
+        const localFilePath = fs.existsSync(persistentPath) ? persistentPath : legacyPath;
+        if (fs.existsSync(localFilePath)) {
+          fileBuffer = fs.readFileSync(localFilePath);
+        } else {
+          return res.status(404).json({ error: "Local file not found" });
+        }
+      } else if (mediaUrl.startsWith("/objects/")) {
         const { ObjectStorageService } = await import("./replit_integrations/object_storage");
         const objectStorage = new ObjectStorageService();
         
@@ -15235,7 +15257,18 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
       let buffer: Buffer | null = null;
 
-      if (file.objectPath?.startsWith('/local/uploads/')) {
+      if (file.objectPath?.startsWith('/local-uploads/')) {
+        const fs = await import("fs");
+        const path = await import("path");
+        const fileId = file.objectPath.replace('/local-uploads/', '');
+        const localPath = path.join(process.cwd(), 'local-uploads', fileId);
+        if (fs.existsSync(localPath)) {
+          buffer = fs.readFileSync(localPath);
+          console.log(`[ExtractText] Read ${buffer.length} bytes from local-uploads: ${fileId}`);
+        } else {
+          console.error(`[ExtractText] Local upload not found: ${localPath}`);
+        }
+      } else if (file.objectPath?.startsWith('/local/uploads/')) {
         const fs = await import("fs");
         const path = await import("path");
         const localFileName = file.objectPath.replace('/local/uploads/', '');
