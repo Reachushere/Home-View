@@ -17285,7 +17285,7 @@ export default function Dashboard() {
             </Button>
           </div>
 
-          <div className="pill-button-hover" style={{ marginTop: '0px', width: '44px', height: '43px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', zIndex: 1 }}>
+          <div className="pill-button-hover" style={{ marginTop: '0px', width: '44px', height: '43px', borderRadius: '50%', background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)', position: 'relative' as const, zIndex: 1, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Button 
               size="icon"
               variant="ghost"
