@@ -4989,16 +4989,16 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         if (served) return;
         return res.status(404).json({ error: "Local file not found on disk" });
       } else if (mediaUrl.startsWith("/objects/")) {
+        const served = await tryServeLocalFile();
+        if (served) return;
         try {
           const { ObjectStorageService } = await import("./replit_integrations/object_storage");
           const objectStorageService = new ObjectStorageService();
           const objectFile = await objectStorageService.getObjectEntityFile(mediaUrl);
           await objectStorageService.downloadObject(objectFile, res);
         } catch (objErr) {
-          console.log(`[Download] Object storage failed, trying local file for: ${file.originalName}`);
-          const served = await tryServeLocalFile();
-          if (served) return;
-          return res.status(404).json({ error: "File not found in object storage or locally" });
+          console.log(`[Download] Object storage failed for: ${file.originalName}`);
+          return res.status(404).json({ error: "File not found locally or in object storage" });
         }
       } else if (mediaUrl.startsWith("onedrive://")) {
         // OneDrive file - look up the actual download URL from OneDrive
