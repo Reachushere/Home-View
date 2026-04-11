@@ -1,11 +1,31 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
-import { X, ChevronLeft, ChevronRight, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2 } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2, Printer } from 'lucide-react';
 import * as pdfjsLib from 'pdfjs-dist';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
+
+const textLayerCSS = `
+.pdf-text-layer {
+  user-select: text;
+  -webkit-user-select: text;
+}
+.pdf-text-layer span {
+  white-space: pre;
+  color: transparent;
+  position: absolute;
+}
+.pdf-text-layer span::selection {
+  background: rgba(0, 100, 255, 0.35);
+  color: transparent;
+}
+.pdf-text-layer span::-moz-selection {
+  background: rgba(0, 100, 255, 0.35);
+  color: transparent;
+}
+`;
 
 interface FileRecord {
   id: number;
@@ -321,6 +341,7 @@ function BookReader({ file, bookColor, onClose }: {
   const [pendingCommentText, setPendingCommentText] = useState('');
   const [expandedCommentId, setExpandedCommentId] = useState<number | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const textLayerRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -378,7 +399,7 @@ function BookReader({ file, bookColor, onClose }: {
   useEffect(() => {
     if (!pdfDoc || !canvasRef.current || !containerRef.current || phase !== 'reading') return;
     let cancelled = false;
-    pdfDoc.getPage(currentPage).then((page: any) => {
+    pdfDoc.getPage(currentPage).then(async (page: any) => {
       if (cancelled) return;
       const container = containerRef.current!;
       const canvas = canvasRef.current!;
@@ -393,7 +414,37 @@ function BookReader({ file, bookColor, onClose }: {
       const viewport = page.getViewport({ scale });
       canvas.width = viewport.width;
       canvas.height = viewport.height;
-      page.render({ canvasContext: ctx, viewport });
+      await page.render({ canvasContext: ctx, viewport }).promise;
+      if (cancelled) return;
+      const textLayer = textLayerRef.current;
+      if (textLayer) {
+        textLayer.innerHTML = '';
+        textLayer.style.width = `${viewport.width}px`;
+        textLayer.style.height = `${viewport.height}px`;
+        const textContent = await page.getTextContent();
+        if (cancelled) return;
+        textContent.items.forEach((item: any) => {
+          if (!item.str) return;
+          const tx = pdfjsLib.Util.transform(viewport.transform, item.transform);
+          const span = document.createElement('span');
+          span.textContent = item.str;
+          const fontSize = Math.sqrt(tx[0] * tx[0] + tx[1] * tx[1]);
+          span.style.position = 'absolute';
+          span.style.left = `${tx[4]}px`;
+          span.style.top = `${tx[5] - fontSize}px`;
+          span.style.fontSize = `${fontSize}px`;
+          span.style.fontFamily = item.fontName || 'sans-serif';
+          span.style.transformOrigin = '0% 0%';
+          if (item.width > 0) {
+            const textWidth = item.str.length * fontSize * 0.5;
+            const actualWidth = item.width * viewport.scale;
+            if (textWidth > 0) {
+              span.style.transform = `scaleX(${actualWidth / textWidth})`;
+            }
+          }
+          textLayer.appendChild(span);
+        });
+      }
     });
     return () => { cancelled = true; };
   }, [pdfDoc, currentPage, phase, zoom]);
@@ -408,13 +459,15 @@ function BookReader({ file, bookColor, onClose }: {
       for (let i = 1; i <= pdfDoc.numPages; i++) {
         const page = await pdfDoc.getPage(i);
         const textContent = await page.getTextContent();
-        const text = textContent.items.map((item: any) => {
+        const fullText = textContent.items.map((item: any) => {
           let s = item.str || '';
-          if (item.hasEOL) s += '\n';
+          if (item.hasEOL) s += ' ';
           return s;
-        }).join('').toLowerCase();
-        const textSpaced = text.replace(/\s+/g, ' ');
-        const count = textSpaced.split(q).length - 1;
+        }).join('');
+        const normalized = fullText.replace(/\s+/g, ' ').toLowerCase();
+        let count = 0;
+        let pos = 0;
+        while ((pos = normalized.indexOf(q, pos)) !== -1) { count++; pos += q.length; }
         if (count > 0) results.push({ page: i, matches: count });
       }
       setSearchResults(results);
@@ -424,6 +477,26 @@ function BookReader({ file, bookColor, onClose }: {
       setSearching(false);
     }
   }, [pdfDoc, searchQuery]);
+
+  useEffect(() => {
+    const textLayer = textLayerRef.current;
+    if (!textLayer || !searchQuery.trim()) return;
+    const spans = textLayer.querySelectorAll('span');
+    const q = searchQuery.toLowerCase().trim();
+    spans.forEach(span => {
+      const text = span.textContent || '';
+      if (text.toLowerCase().includes(q)) {
+        span.style.background = 'rgba(255, 255, 0, 0.4)';
+        span.style.color = 'transparent';
+        span.style.borderRadius = '2px';
+      } else {
+        span.style.background = '';
+      }
+    });
+    return () => {
+      spans.forEach(span => { span.style.background = ''; });
+    };
+  }, [searchQuery, currentPage, pdfDoc, zoom]);
 
   const navigateSearch = useCallback((dir: 1 | -1) => {
     if (searchResults.length === 0) return;
@@ -498,6 +571,7 @@ function BookReader({ file, bookColor, onClose }: {
       }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
+      <style>{textLayerCSS}</style>
       <style>{`
         @keyframes libBookPull {
           0% { width: 40px; height: 180px; opacity: 0; transform: rotateY(80deg); }
@@ -585,6 +659,14 @@ function BookReader({ file, bookColor, onClose }: {
                 <button onClick={() => { const a = document.createElement('a'); a.href = `/api/files/${file.id}/download`; a.download = file.originalName || 'document.pdf'; a.click(); }} style={toolBtnStyle()} title="Download PDF" data-testid="btn-download-pdf">
                   <Download size={14} />
                 </button>
+                <button onClick={() => {
+                  const printWindow = window.open(`/api/files/${file.id}/download`, '_blank');
+                  if (printWindow) {
+                    printWindow.addEventListener('load', () => { printWindow.print(); });
+                  }
+                }} style={toolBtnStyle()} title="Print PDF" data-testid="btn-print-pdf">
+                  <Printer size={14} />
+                </button>
 
                 <div style={{ width: '1px', height: '18px', background: 'rgba(255,255,255,0.15)', margin: '0 2px' }} />
 
@@ -663,10 +745,24 @@ function BookReader({ file, bookColor, onClose }: {
                   ) : (
                     <>
                       <div
-                        style={{ position: 'relative', cursor: (activeToolPanel === 'highlight' || activeToolPanel === 'comment') ? 'crosshair' : 'default' }}
+                        style={{ position: 'relative', cursor: activeToolPanel === 'highlight' ? 'text' : activeToolPanel === 'comment' ? 'crosshair' : 'default' }}
                         onClick={handleCanvasClick}
                       >
                         <canvas ref={canvasRef} style={{ display: 'block' }} />
+                        <div
+                          ref={textLayerRef}
+                          style={{
+                            position: 'absolute',
+                            left: 0,
+                            top: 0,
+                            overflow: 'hidden',
+                            opacity: 0.25,
+                            lineHeight: 1,
+                            color: 'transparent',
+                            pointerEvents: activeToolPanel === 'highlight' || activeToolPanel === 'comment' ? 'none' : 'auto',
+                          }}
+                          className="pdf-text-layer"
+                        />
                         {pageHighlights.map((h) => {
                           let pos: { x: number; y: number } | null = null;
                           try { if (h.rects) pos = JSON.parse(h.rects); } catch {}

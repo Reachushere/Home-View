@@ -7,6 +7,7 @@ import NotepadDialog from "@/components/NotepadDialog";
 import OtherRowEditDialog from "@/components/OtherRowEditDialog";
 import { FastInput, FastTextarea } from "@/components/FastInput";
 import { SemesterChecklistDialog } from "@/components/SemesterChecklistDialog";
+import LibraryView from "@/components/LibraryView";
 import { Document, Page, pdfjs } from 'react-pdf';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -2222,6 +2223,7 @@ export default function Dashboard() {
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const [isNotepadOpen, setIsNotepadOpen] = useState(false);
   const [isMobileNotepadOpen, setIsMobileNotepadOpen] = useState(false);
+  const [isMobileLibraryOpen, setIsMobileLibraryOpen] = useState(false);
   const [mobileNotepadText, setMobileNotepadText] = useState('');
   const [mobileNotepadImages, setMobileNotepadImages] = useState<{file: File; preview: string}[]>([]);
   const [mobileNotepadSaving, setMobileNotepadSaving] = useState(false);
@@ -13867,6 +13869,17 @@ export default function Dashboard() {
             </button>
           )}
 
+          {isFull && (
+            <button
+              onClick={() => setIsMobileLibraryOpen(true)}
+              data-testid="mobile-button-library"
+              style={{...mobileBtnStyle(btnSize), display: 'flex', flexDirection: 'column', gap: '2px'}}
+            >
+              <Library style={{ height: `${iconSize * 0.7}px`, width: `${iconSize * 0.7}px` }} />
+              <span style={{ fontSize: '7px', fontWeight: 600, fontFamily: "system-ui, -apple-system, sans-serif", lineHeight: 1 }}>Library</span>
+            </button>
+          )}
+
           {isMobilePortrait && (
             <div style={{ marginTop: '12px', color: 'rgba(255,255,255,0.4)', fontSize: '10px', textAlign: 'center', fontFamily: "system-ui, -apple-system, sans-serif" }}>
               Rotate for calendar
@@ -14379,6 +14392,14 @@ export default function Dashboard() {
             </div>
           </div>,
           document.body
+        )}
+
+        {isMobileLibraryOpen && (
+          <LibraryView
+            isOpen={isMobileLibraryOpen}
+            onClose={() => setIsMobileLibraryOpen(false)}
+            semesters={[]}
+          />
         )}
 
         {partnerWizardOpen && createPortal(
