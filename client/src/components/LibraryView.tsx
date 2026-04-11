@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
 import { X, ChevronLeft, ChevronRight, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2, Printer, Volume2, Square, Pause, Play, RefreshCw, Pencil } from 'lucide-react';
@@ -152,7 +152,7 @@ function getFileType(folder: string | null): 'module' | 'reading' | null {
   return null;
 }
 
-function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, shelfHeight, onRename }: {
+function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, shelfHeight, onRename, isGroupHovered }: {
   file: FileRecord;
   index: number;
   courseCode: string;
@@ -161,11 +161,11 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   onClick: () => void;
   shelfHeight: number;
   onRename: (file: FileRecord) => void;
+  isGroupHovered?: boolean;
 }) {
-  const [isHovered, setIsHovered] = useState(false);
   const seededRand = ((file.id * 2654435761) >>> 0) / 4294967296;
   const spineWidth = 28 + seededRand * 12;
-  const bookHeight = shelfHeight - 8 - (index % 3) * 6;
+  const bookHeight = shelfHeight - 14 - (index % 3) * 6;
   const title = truncateSpineTitle(file.displayName || file.originalName, 28, !!file.displayName && file.displayName !== file.originalName);
   const weekNum = file.folder?.match(/^week-(\d+)/)?.[1] || '';
   const fileType = getFileType(file.folder);
@@ -173,15 +173,12 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   const hasTopBand = index % 4 === 1;
   const hasBottomBand = index % 5 === 2;
 
-  const hoverScale = isHovered ? 1.35 : 1;
-  const hoverTranslateY = isHovered ? 45 : 0;
+  const isLifted = isGroupHovered || false;
 
   return (
     <div
       className="book-spine-item"
       onClick={onClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       style={{
         width: `${spineWidth}px`,
         height: `${bookHeight}px`,
@@ -196,16 +193,12 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
         flexShrink: 0,
         boxShadow: isSelected
           ? '0 0 20px rgba(212,175,55,0.6), inset -2px 0 6px rgba(0,0,0,0.3)'
-          : isHovered
+          : isLifted
           ? '0 8px 24px rgba(0,0,0,0.5), inset -2px 0 6px rgba(0,0,0,0.3), 0 0 12px rgba(212,175,55,0.3)'
           : 'inset -2px 0 6px rgba(0,0,0,0.3), 1px 0 2px rgba(0,0,0,0.2)',
-        transition: 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease',
-        transform: isSelected
-          ? 'translateY(-12px) scale(1.03)'
-          : `translateY(${hoverTranslateY}px) scale(${hoverScale})`,
-        zIndex: isSelected ? 10 : isHovered ? 20 : 1,
+        transition: 'box-shadow 0.3s ease',
+        zIndex: isSelected ? 10 : isLifted ? 20 : 1,
         alignSelf: 'flex-end',
-        transformOrigin: 'bottom center',
       }}
       data-testid={`book-spine-${file.id}`}
     >
@@ -362,6 +355,60 @@ function WeekSeparator({ weekNum }: { weekNum: number }) {
         }} />
       </div>
     </div>
+  );
+}
+
+function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, children }: {
+  weekNum: number;
+  showSeparator: boolean;
+  shelfHeight: number;
+  children: React.ReactNode;
+}) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <>
+      {showSeparator && <WeekSeparator weekNum={weekNum} />}
+      <div
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        style={{
+          display: 'flex',
+          alignItems: 'flex-end',
+          gap: '2px',
+          flexShrink: 0,
+          transition: 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)',
+          transform: isHovered ? 'translateY(-30px) scale(1.18)' : 'translateY(0) scale(1)',
+          transformOrigin: 'bottom center',
+          zIndex: isHovered ? 50 : 1,
+          position: 'relative',
+        }}
+      >
+        {React.Children.map(children, child => {
+          if (React.isValidElement(child)) {
+            return React.cloneElement(child as React.ReactElement<any>, { isGroupHovered: isHovered });
+          }
+          return child;
+        })}
+        {isHovered && (
+          <div style={{
+            position: 'absolute',
+            top: '-18px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            fontSize: '10px',
+            fontWeight: 700,
+            color: '#FDDC00',
+            whiteSpace: 'nowrap',
+            textShadow: '0 1px 4px rgba(0,0,0,0.8)',
+            letterSpacing: '0.5px',
+            pointerEvents: 'none',
+          }}>
+            Week {weekNum}
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 
@@ -2295,35 +2342,41 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 >
                   <Bookend side="left" />
                   {(() => {
-                    const elements: React.ReactNode[] = [];
-                    let lastWeek = -1;
+                    const weekGroups: { weekNum: number; files: { file: FileRecord; fileIdx: number }[] }[] = [];
+                    let currentGroup: { weekNum: number; files: { file: FileRecord; fileIdx: number }[] } | null = null;
                     courseFiles.forEach((file, fileIdx) => {
                       const weekMatch = file.folder?.match(/week-(\d+)/);
                       const weekNum = weekMatch ? parseInt(weekMatch[1]) : 0;
-                      if (lastWeek !== -1 && weekNum !== lastWeek) {
-                        elements.push(<WeekSeparator key={`sep-${lastWeek}-${weekNum}`} weekNum={weekNum} />);
+                      if (!currentGroup || currentGroup.weekNum !== weekNum) {
+                        currentGroup = { weekNum, files: [] };
+                        weekGroups.push(currentGroup);
                       }
-                      lastWeek = weekNum;
-                      const color = getBookColor(fileIdx, course.code, weekNum);
-                      elements.push(
-                        <BookSpine
-                          key={file.id}
-                          file={file}
-                          index={fileIdx}
-                          courseCode={course.code}
-                          bookColor={color}
-                          isSelected={selectedBook?.id === file.id}
-                          onClick={() => {
-                            setSelectedBook(file);
-                            setSelectedBookColor(color);
-                            handleBookClick(file, color);
-                          }}
-                          shelfHeight={shelfHeight}
-                          onRename={handleRenameStart}
-                        />
-                      );
+                      currentGroup.files.push({ file, fileIdx });
                     });
-                    return elements;
+                    return weekGroups.map((group, groupIdx) => (
+                      <WeekGroupWrapper key={`wg-${group.weekNum}-${groupIdx}`} weekNum={group.weekNum} showSeparator={groupIdx > 0} shelfHeight={shelfHeight}>
+                        {group.files.map(({ file, fileIdx }) => {
+                          const color = getBookColor(fileIdx, course.code, group.weekNum);
+                          return (
+                            <BookSpine
+                              key={file.id}
+                              file={file}
+                              index={fileIdx}
+                              courseCode={course.code}
+                              bookColor={color}
+                              isSelected={selectedBook?.id === file.id}
+                              onClick={() => {
+                                setSelectedBook(file);
+                                setSelectedBookColor(color);
+                                handleBookClick(file, color);
+                              }}
+                              shelfHeight={shelfHeight}
+                              onRename={handleRenameStart}
+                            />
+                          );
+                        })}
+                      </WeekGroupWrapper>
+                    ));
                   })()}
                   <Bookend side="right" />
                 </div>
