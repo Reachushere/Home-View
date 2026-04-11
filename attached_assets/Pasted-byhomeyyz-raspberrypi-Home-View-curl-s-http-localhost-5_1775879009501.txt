@@ -1,0 +1,52 @@
+byhomeyyz@raspberrypi:~/Home-View $ curl -s http://localhost:5000/api/library/debug-files && echo ""
+{"totalFiles":83,"libraryFiles":83,"byCourse":{"cppa122":53,"cfnf400":10,"casl101":7,"cppa235":2,"tbd2":2,"tbd1":1,"cecn210":1,"tbd3":1,"cphl110":4,"fall3":1,"chis105":1},"onedriveConnected":true}
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs dashboard --lines 20 --nostream | grep -i "Sync\|library\|semester"
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs dashboard --lines 30 --nostream | grep -i "error\|500\|download\|onedrive"
+/home/byhomeyyz/.pm2/logs/dashboard-error.log last 30 lines:
+0|dashboar | [OneDrive][TRACE] listOneDriveItems FAILED for path /School/1. TMU/Courses/2029/Fall/TBD: The resource could not be found.
+0|dashboar | [OneDrive][TRACE] listOneDriveItems FAILED for path /School/1. TMU/Courses/2029/Spring & Summer: The resource could not be found.
+0|dashboar | [OneDrive][TRACE] listOneDriveItems FAILED for path /School/1. TMU/Courses/2029/Fall/TBD: The resource could not be found.
+0|dashboar | [OneDrive][TRACE] listOneDriveItems FAILED for path /School/1. TMU/Courses/2028/Winter/Testing: The resource could not be found.
+0|dashboar | [OneDrive][TRACE] listOneDriveItems FAILED for path /School/1. TMU/Courses/2029/Fall/TBD: The resource could not be found.
+0|dashboar | [OneDrive][TRACE] listOneDriveItems FAILED for path /School/1. TMU/Courses/2029/Spring-Summer: The resource could not be found.
+0|dashboar | [OneDrive][TRACE] listOneDriveItems FAILED for path /School/1. TMU/Courses/2029/Spring_Summer: The resource could not be found.
+0|dashboar | [OneDrive][TRACE] listOneDriveItems FAILED for path /School/1. TMU/Courses/2029/Spring Summer: The resource could not be found.
+0|dashboar | [OneDrive][TRACE] listOneDriveItems FAILED for path /School/1. TMU/Courses/2027/Winter/Name Change: The resource could not be found.
+0|dashboar | [OneDrive][TRACE] listOneDriveItems FAILED for path /School/1. TMU/Courses/2029/Spring & Summer/TBD1: The resource could not be found.
+0|dashboar | [OneDrive][TRACE] listOneDriveItems FAILED for path /School/1. TMU/Courses/2027/Winter/TBD3 - TBD: The resource could not be found.
+0|dashboar | [OneDrive][TRACE] listOneDriveItems FAILED for path /School/1. TMU/Courses/2027/Spring-Summer/Full/FULL: The resource could not be found.
+0|dashboar | [OneDrive][TRACE] listOneDriveItems FAILED for path /School/1. TMU/Courses/2029/Spring & Summer/TBD2: The resource could not be found.
+0|dashboar | [OneDrive][TRACE] listOneDriveItems FAILED for path /School/1. TMU/Courses/2029/Spring & Summer/TBD3: The resource could not be found.
+0|dashboar | [OneDrive][TRACE] listOneDriveItems FAILED for path /School/1. TMU/Courses/2027/Spring-Summer/Full/SPRING-FIRSTHALF: The resource could not be found.
+0|dashboar | [OneDrive][TRACE] listOneDriveItems FAILED for path /School/1. TMU/Courses/2027/Spring-Summer/Full/SUMMER-SECONDHALF: The resource could not be found.
+0|dashboar | Error fetching from OneDrive: ReferenceError: localWeek is not defined
+0|dashboar | Error fetching from OneDrive: ReferenceError: localWeek is not defined
+0|dashboar | [OneDrive][TRACE] listOneDriveItems FAILED for path /School/1. TMU/Courses/2028/Fall/Course 2: The resource could not be found.
+0|dashboar | Error fetching from OneDrive: ReferenceError: localWeek is not defined
+0|dashboar | [ExtractText] Object storage download error: Object not found
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2029/Winter/TBD1/Week 7/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3482s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Winter/TBD3/Week 3
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3482s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CECN210 - Understanding Economics
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3481s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3481s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Spring & Summer/CPHL110 - Philosophy of Religion/Week 5 - Spring
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3481s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Fall/CPPA235 - Theories of the State/Week 12 - Dec 5-11
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3481s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3481s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2029/Winter/TBD1/Week 7/Readings
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3481s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Winter/TBD3/Week 3/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3481s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3481s)
+byhomeyyz@raspberrypi:~/Home-View $
