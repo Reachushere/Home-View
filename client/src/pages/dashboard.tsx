@@ -24523,9 +24523,9 @@ export default function Dashboard() {
                                           return (
                                             <div key={w} className="flex items-center gap-1" style={{ padding: '2px 4px', borderRadius: '3px', background: 'rgba(255,255,255,0.03)' }} data-testid={`health-week-${sem.id}-${c.idx}-${w}`}>
                                               <div style={{ width: '5px', height: '5px', borderRadius: '50%', backgroundColor: weekLinked ? '#22c55e' : 'rgba(255,255,255,0.15)', boxShadow: weekLinked ? '0 0 3px #22c55e' : 'none', flexShrink: 0 }} />
-                                              <span className="text-[8px]" style={{ color: weekLinked ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.3)' }}>W{w}</span>
-                                              {hasModFiles && <span className="text-[7px]" style={{ color: '#60a5fa' }}>M</span>}
-                                              {hasReadFiles && <span className="text-[7px]" style={{ color: '#a78bfa' }}>R</span>}
+                                              <span className="text-[10px] font-medium" style={{ color: '#fff' }}>W{w}</span>
+                                              {hasModFiles && <span className="text-[9px] font-medium" style={{ color: '#60a5fa' }}>M</span>}
+                                              {hasReadFiles && <span className="text-[9px] font-medium" style={{ color: '#a78bfa' }}>R</span>}
                                             </div>
                                           );
                                         })}
