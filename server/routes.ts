@@ -961,6 +961,42 @@ export async function registerRoutes(
     }
   });
 
+  async function cleanupSemesterTestCourses() {
+    try {
+      const allSemesters = await storage.getAllSemesterSettings();
+      const realCourseCodes = new Set([
+        'CPPA101','CPPA102','CPPA120','CPPA121','CPPA122','CPPA125','CPPA235',
+        'CFNF400','CASL101','CECN210','CHIS105','CPHL110','CGCM738',
+      ]);
+      const validPattern = /^TBD\d*$/i;
+      for (const sem of allSemesters) {
+        const yearMatch = sem.semesterName?.match(/\d{4}/);
+        const year = yearMatch ? parseInt(yearMatch[0]) : 0;
+        if (year < 2027) continue;
+        const updates: Record<string, string> = {};
+        for (let ci = 1; ci <= 3; ci++) {
+          const code = ((sem as any)[`course${ci}Code`] || '').trim();
+          const codeNorm = code.replace(/\s/g, '').toUpperCase();
+          if (!code) continue;
+          if (realCourseCodes.has(codeNorm)) continue;
+          if (validPattern.test(codeNorm)) continue;
+          const tbdCode = `TBD${ci}`;
+          updates[`course${ci}Code`] = tbdCode;
+          updates[`course${ci}Name`] = 'TBD';
+          updates[`course${ci}DisplayName`] = '';
+          console.log(`[CleanupSem] ${sem.semesterName} slot ${ci}: "${code}" -> "${tbdCode}"`);
+        }
+        if (Object.keys(updates).length > 0) {
+          await storage.updateSemesterSettings(sem.id, updates);
+        }
+      }
+    } catch (e: any) {
+      console.error('[CleanupSem] Failed:', e.message);
+    }
+  }
+
+  await cleanupSemesterTestCourses();
+
   async function syncDegreeTrackingFromDb() {
     try {
       const allSemesters = await storage.getAllSemesterSettings();
