@@ -2040,173 +2040,161 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
 
       <div style={{
         position: 'absolute',
-        top: '16px',
-        right: '110px',
+        top: '68px',
+        left: '20px',
+        right: '20px',
         zIndex: 100002,
-        display: 'flex',
-        alignItems: 'center',
-        gap: '5px',
-        flexWrap: 'wrap',
-        maxWidth: 'calc(100% - 230px)',
+        background: 'rgba(10,6,4,0.92)',
+        border: '1px solid rgba(255,255,255,0.15)',
+        borderRadius: '12px',
+        padding: '10px 14px',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
       }}>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '4px',
-          background: 'rgba(0,0,0,0.5)',
-          border: '1px solid rgba(255,255,255,0.2)',
-          borderRadius: '18px',
-          padding: '4px 10px',
-        }}>
-          <Search size={13} color="rgba(255,255,255,0.5)" />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+          <Search size={16} color="rgba(255,255,255,0.5)" />
           <input
             type="text"
             value={masterSearch}
             onChange={e => setMasterSearch(e.target.value)}
-            placeholder="Search by name, week, course, type..."
+            placeholder="Search all documents..."
             style={{
               background: 'transparent',
               border: 'none',
               color: '#fff',
-              fontSize: '11px',
+              fontSize: '14px',
               outline: 'none',
-              width: '140px',
+              flex: 1,
             }}
             data-testid="input-master-search"
           />
           {hasAnyFilter && (
             <button
               onClick={() => { setMasterSearch(''); setMasterSemFilter('all'); setMasterCourseFilter('all'); setMasterWeekFilter('all'); setMasterTypeFilter('all'); setMasterFormatFilter('all'); setMasterSortBy('relevance'); }}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}
+              style={{ background: 'rgba(255,255,255,0.1)', border: 'none', cursor: 'pointer', padding: '4px', display: 'flex', borderRadius: '50%' }}
               data-testid="btn-clear-search"
             >
-              <X size={12} color="rgba(255,255,255,0.5)" />
+              <X size={14} color="rgba(255,255,255,0.6)" />
             </button>
           )}
         </div>
-        {(() => {
-          const filterStyle: React.CSSProperties = { background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '12px', padding: '4px 8px', color: '#fff', fontSize: '10px', outline: 'none', cursor: 'pointer' };
-          const activeStyle = (v: string) => v !== 'all' ? { ...filterStyle, border: '1px solid rgba(218,165,32,0.6)', background: 'rgba(218,165,32,0.15)' } : filterStyle;
-          return (
-            <>
-              <select value={masterSemFilter} onChange={e => setMasterSemFilter(e.target.value)} style={activeStyle(masterSemFilter)} data-testid="select-master-sem-filter">
-                <option value="all">All Semesters</option>
-                {semesters.map(s => (<option key={s.key} value={s.key}>{s.label}</option>))}
-              </select>
-              <select value={masterCourseFilter} onChange={e => setMasterCourseFilter(e.target.value)} style={activeStyle(masterCourseFilter)} data-testid="select-master-course-filter">
-                <option value="all">All Courses</option>
-                {allCoursesForSearch.map(c => (<option key={c} value={c}>{c}</option>))}
-              </select>
-              <select value={masterWeekFilter} onChange={e => setMasterWeekFilter(e.target.value)} style={activeStyle(masterWeekFilter)} data-testid="select-master-week-filter">
-                <option value="all">All Weeks</option>
-                {availableWeeks.map(w => (<option key={w} value={String(w)}>Week {w}</option>))}
-              </select>
-              <select value={masterTypeFilter} onChange={e => setMasterTypeFilter(e.target.value as any)} style={activeStyle(masterTypeFilter)} data-testid="select-master-type-filter">
-                <option value="all">All Types</option>
-                <option value="module">Module</option>
-                <option value="reading">Reading</option>
-              </select>
-              <select value={masterFormatFilter} onChange={e => setMasterFormatFilter(e.target.value)} style={activeStyle(masterFormatFilter)} data-testid="select-master-format-filter">
-                <option value="all">All Formats</option>
-                {availableFormats.map(f => (<option key={f} value={f}>.{f.toUpperCase()}</option>))}
-              </select>
-              <select value={masterSortBy} onChange={e => setMasterSortBy(e.target.value as any)} style={{ ...filterStyle, borderColor: masterSortBy !== 'relevance' ? 'rgba(218,165,32,0.6)' : undefined, background: masterSortBy !== 'relevance' ? 'rgba(218,165,32,0.15)' : filterStyle.background }} data-testid="select-master-sort">
-                <option value="relevance">Sort: Default</option>
-                <option value="name">Sort: Name</option>
-                <option value="week">Sort: Week</option>
-              </select>
-            </>
-          );
-        })()}
-      </div>
-
-      {masterSearchResults && (
-        <div style={{
-          position: 'absolute',
-          top: '56px',
-          right: '110px',
-          zIndex: 100003,
-          background: 'rgba(10,6,4,0.95)',
-          border: '1px solid rgba(255,255,255,0.15)',
-          borderRadius: '10px',
-          padding: '8px',
-          maxHeight: '60vh',
-          overflowY: 'auto',
-          minWidth: '320px',
-          maxWidth: '420px',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
-        }}>
-          <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', marginBottom: '6px', padding: '0 4px' }}>
-            {masterSearchResults.length} result{masterSearchResults.length !== 1 ? 's' : ''} found
-          </div>
-          {masterSearchResults.length === 0 && (
-            <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: '11px', textAlign: 'center', padding: '16px' }}>
-              No documents match your search
-            </div>
-          )}
-          {masterSearchResults.map(r => {
-            const wColor = getBookColor(0, r.courseCode, r.weekNum);
+        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+          {(() => {
+            const filterStyle: React.CSSProperties = { background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', padding: '5px 10px', color: '#fff', fontSize: '12px', outline: 'none', cursor: 'pointer' };
+            const activeStyle = (v: string) => v !== 'all' ? { ...filterStyle, border: '1px solid rgba(218,165,32,0.6)', background: 'rgba(218,165,32,0.15)' } : filterStyle;
             return (
-              <div
-                key={r.file.id}
-                onClick={() => {
-                  handleBookClick(r.file, wColor);
-                  setMasterSearch(''); setMasterSemFilter('all'); setMasterCourseFilter('all'); setMasterWeekFilter('all'); setMasterTypeFilter('all'); setMasterFormatFilter('all'); setMasterSortBy('relevance');
-                }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '6px 8px',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  transition: 'background 0.15s',
-                }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.08)')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                data-testid={`search-result-${r.file.id}`}
-              >
-                <div style={{
-                  width: '8px',
-                  height: '32px',
-                  borderRadius: '2px',
-                  backgroundColor: wColor,
-                  flexShrink: 0,
-                }} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                    <span style={{
-                      fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px',
-                      backgroundColor: r.fileType === 'module' ? 'rgba(76,175,80,0.25)' : 'rgba(33,150,243,0.25)',
-                      color: r.fileType === 'module' ? '#81C784' : '#64B5F6',
-                      flexShrink: 0, textTransform: 'uppercase', letterSpacing: '0.5px',
-                    }}>{r.fileType === 'module' ? 'M' : 'R'}</span>
-                    {r.fileFormat && (
+              <>
+                <select value={masterSemFilter} onChange={e => setMasterSemFilter(e.target.value)} style={activeStyle(masterSemFilter)} data-testid="select-master-sem-filter">
+                  <option value="all">All Semesters</option>
+                  {semesters.map(s => (<option key={s.key} value={s.key}>{s.label}</option>))}
+                </select>
+                <select value={masterCourseFilter} onChange={e => setMasterCourseFilter(e.target.value)} style={activeStyle(masterCourseFilter)} data-testid="select-master-course-filter">
+                  <option value="all">All Courses</option>
+                  {allCoursesForSearch.map(c => (<option key={c} value={c}>{c}</option>))}
+                </select>
+                <select value={masterWeekFilter} onChange={e => setMasterWeekFilter(e.target.value)} style={activeStyle(masterWeekFilter)} data-testid="select-master-week-filter">
+                  <option value="all">All Weeks</option>
+                  {availableWeeks.map(w => (<option key={w} value={String(w)}>Week {w}</option>))}
+                </select>
+                <select value={masterTypeFilter} onChange={e => setMasterTypeFilter(e.target.value as any)} style={activeStyle(masterTypeFilter)} data-testid="select-master-type-filter">
+                  <option value="all">All Types</option>
+                  <option value="module">Module</option>
+                  <option value="reading">Reading</option>
+                </select>
+                <select value={masterFormatFilter} onChange={e => setMasterFormatFilter(e.target.value)} style={activeStyle(masterFormatFilter)} data-testid="select-master-format-filter">
+                  <option value="all">All Formats</option>
+                  {availableFormats.map(f => (<option key={f} value={f}>.{f.toUpperCase()}</option>))}
+                </select>
+                <select value={masterSortBy} onChange={e => setMasterSortBy(e.target.value as any)} style={{ ...filterStyle, borderColor: masterSortBy !== 'relevance' ? 'rgba(218,165,32,0.6)' : undefined, background: masterSortBy !== 'relevance' ? 'rgba(218,165,32,0.15)' : filterStyle.background }} data-testid="select-master-sort">
+                  <option value="relevance">Sort: Default</option>
+                  <option value="name">Sort: Name</option>
+                  <option value="week">Sort: Week</option>
+                </select>
+              </>
+            );
+          })()}
+        </div>
+
+        {masterSearchResults && (
+          <div style={{
+            marginTop: '10px',
+            borderTop: '1px solid rgba(255,255,255,0.1)',
+            paddingTop: '8px',
+            maxHeight: '50vh',
+            overflowY: 'auto',
+          }}>
+            <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', marginBottom: '8px' }}>
+              {masterSearchResults.length} result{masterSearchResults.length !== 1 ? 's' : ''} found
+            </div>
+            {masterSearchResults.length === 0 && (
+              <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '14px', textAlign: 'center', padding: '20px' }}>
+                No documents match your search
+              </div>
+            )}
+            {masterSearchResults.map(r => {
+              const wColor = getBookColor(0, r.courseCode, r.weekNum);
+              return (
+                <div
+                  key={r.file.id}
+                  onClick={() => {
+                    handleBookClick(r.file, wColor);
+                    setMasterSearch(''); setMasterSemFilter('all'); setMasterCourseFilter('all'); setMasterWeekFilter('all'); setMasterTypeFilter('all'); setMasterFormatFilter('all'); setMasterSortBy('relevance');
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    padding: '10px 12px',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    transition: 'background 0.15s',
+                    marginBottom: '2px',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.08)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                  data-testid={`search-result-${r.file.id}`}
+                >
+                  <div style={{
+                    width: '6px',
+                    height: '44px',
+                    borderRadius: '3px',
+                    backgroundColor: wColor,
+                    flexShrink: 0,
+                  }} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <span style={{
-                        fontSize: '7px', fontWeight: 700, padding: '1px 3px', borderRadius: '3px',
-                        backgroundColor: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.5)',
-                        flexShrink: 0, textTransform: 'uppercase', letterSpacing: '0.3px',
-                      }}>{r.fileFormat}</span>
-                    )}
-                    <span style={{ fontSize: '11px', color: '#fff', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {r.file.displayName || r.file.originalName}
-                    </span>
-                  </div>
-                  <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', marginTop: '1px' }}>
-                    {r.courseCode} — {r.courseName} · Week {r.weekNum} · {r.semLabel}
+                        fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px',
+                        backgroundColor: r.fileType === 'module' ? 'rgba(76,175,80,0.25)' : 'rgba(33,150,243,0.25)',
+                        color: r.fileType === 'module' ? '#81C784' : '#64B5F6',
+                        flexShrink: 0, textTransform: 'uppercase', letterSpacing: '0.5px',
+                      }}>{r.fileType === 'module' ? 'MOD' : 'READ'}</span>
+                      {r.fileFormat && (
+                        <span style={{
+                          fontSize: '9px', fontWeight: 700, padding: '2px 5px', borderRadius: '4px',
+                          backgroundColor: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.5)',
+                          flexShrink: 0, textTransform: 'uppercase', letterSpacing: '0.3px',
+                        }}>{r.fileFormat}</span>
+                      )}
+                      <span style={{ fontSize: '14px', color: '#fff', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {r.file.displayName || r.file.originalName}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)', marginTop: '3px' }}>
+                      {r.courseCode} — {r.courseName} · Week {r.weekNum} · {r.semLabel}
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+              );
+            })}
+          </div>
+        )}
+      </div>
 
       <div
         ref={scrollRef}
         style={{
           position: 'absolute',
-          top: '80px',
+          top: '170px',
           left: 0,
           right: 0,
           bottom: 0,
