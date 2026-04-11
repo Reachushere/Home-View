@@ -932,16 +932,15 @@ function BookReader({ file, bookColor, onClose }: {
                   <button key={c} onClick={() => setHighlightColor(c)} style={{ width: '18px', height: '18px', borderRadius: '50%', background: c, border: highlightColor === c ? '2px solid #fff' : '2px solid transparent', cursor: 'pointer', transition: 'border 0.15s' }} />
                 ))}
                 <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '10px', marginLeft: '4px', flex: 1 }}>Select text to highlight</span>
-                {highlights.length > 0 && (
-                  <button
-                    onClick={async () => { for (const h of highlights) { await apiRequest('DELETE', `/api/annotations/${h.id}`); } refetchAnnotations(); }}
-                    style={{ ...toolBtnStyle(), display: 'flex', alignItems: 'center', gap: '4px', padding: '2px 8px', fontSize: '9px', color: 'rgba(255,150,150,0.9)', fontWeight: 600 }}
-                    title="Clear all highlights"
-                    data-testid="btn-clear-all-highlights-toolbar"
-                  >
-                    <Trash2 size={10} /> Clear All
-                  </button>
-                )}
+                <button
+                  onClick={async () => { for (const h of highlights) { await apiRequest('DELETE', `/api/annotations/${h.id}`); } refetchAnnotations(); }}
+                  disabled={highlights.length === 0}
+                  style={{ ...toolBtnStyle(), display: 'flex', alignItems: 'center', gap: '4px', padding: '2px 8px', fontSize: '9px', color: highlights.length > 0 ? 'rgba(255,150,150,0.9)' : 'rgba(255,255,255,0.25)', fontWeight: 600, cursor: highlights.length > 0 ? 'pointer' : 'not-allowed' }}
+                  title="Clear all highlights"
+                  data-testid="btn-clear-all-highlights-toolbar"
+                >
+                  <Trash2 size={10} /> Clear All ({highlights.length})
+                </button>
               </div>
             )}
 
