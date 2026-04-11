@@ -4949,27 +4949,57 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 
       const mediaUrl = file.objectPath;
       
-      if (mediaUrl.startsWith("/local/uploads/")) {
+      const tryServeLocalFile = async (): Promise<boolean> => {
         const fs = await import("fs");
         const path = await import("path");
-        const localFileName = mediaUrl.replace('/local/uploads/', '');
-        const persistentPath = path.join(process.cwd(), 'persistent-uploads', localFileName);
-        const legacyPath = path.join(process.cwd(), 'dist', 'public', 'uploads', localFileName);
-        const localFilePath = fs.existsSync(persistentPath) ? persistentPath : legacyPath;
-        if (fs.existsSync(localFilePath)) {
-          const buffer = fs.readFileSync(localFilePath);
-          res.setHeader('Content-Type', file.contentType || 'application/pdf');
-          res.setHeader('Content-Disposition', `inline; filename="${file.originalName}"`);
-          res.send(buffer);
-          return;
+        const persistentDir = path.join(process.cwd(), 'persistent-uploads');
+        const legacyDir = path.join(process.cwd(), 'dist', 'public', 'uploads');
+
+        if (mediaUrl.startsWith("/local/uploads/")) {
+          const localFileName = mediaUrl.replace('/local/uploads/', '');
+          const persistentPath = path.join(persistentDir, localFileName);
+          const legacyPath = path.join(legacyDir, localFileName);
+          const localFilePath = fs.existsSync(persistentPath) ? persistentPath : legacyPath;
+          if (fs.existsSync(localFilePath)) {
+            const buffer = fs.readFileSync(localFilePath);
+            res.setHeader('Content-Type', file.contentType || 'application/pdf');
+            res.setHeader('Content-Disposition', `inline; filename="${file.originalName}"`);
+            res.send(buffer);
+            return true;
+          }
         }
+
+        if (file.originalName && fs.existsSync(persistentDir)) {
+          const allFiles = fs.readdirSync(persistentDir);
+          const sanitizedName = file.originalName.replace(/[^a-zA-Z0-9._-]/g, '_');
+          const match = allFiles.find((f: string) => f.endsWith(`-${sanitizedName}`) || f.endsWith(`-${file.originalName}`));
+          if (match) {
+            const buffer = fs.readFileSync(path.join(persistentDir, match));
+            res.setHeader('Content-Type', file.contentType || 'application/pdf');
+            res.setHeader('Content-Disposition', `inline; filename="${file.originalName}"`);
+            res.send(buffer);
+            return true;
+          }
+        }
+        return false;
+      };
+
+      if (mediaUrl.startsWith("/local/uploads/")) {
+        const served = await tryServeLocalFile();
+        if (served) return;
         return res.status(404).json({ error: "Local file not found on disk" });
       } else if (mediaUrl.startsWith("/objects/")) {
-        const { ObjectStorageService } = await import("./replit_integrations/object_storage");
-        const objectStorageService = new ObjectStorageService();
-        const objectFile = await objectStorageService.getObjectEntityFile(mediaUrl);
-        
-        await objectStorageService.downloadObject(objectFile, res);
+        try {
+          const { ObjectStorageService } = await import("./replit_integrations/object_storage");
+          const objectStorageService = new ObjectStorageService();
+          const objectFile = await objectStorageService.getObjectEntityFile(mediaUrl);
+          await objectStorageService.downloadObject(objectFile, res);
+        } catch (objErr) {
+          console.log(`[Download] Object storage failed, trying local file for: ${file.originalName}`);
+          const served = await tryServeLocalFile();
+          if (served) return;
+          return res.status(404).json({ error: "File not found in object storage or locally" });
+        }
       } else if (mediaUrl.startsWith("onedrive://")) {
         // OneDrive file - look up the actual download URL from OneDrive
         const fileName = mediaUrl.split('/').pop() || '';
