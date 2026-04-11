@@ -4899,6 +4899,18 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
           const [, weekStr, courseCode, subType] = folderMatch2;
           const rawWeek = parseInt(weekStr);
           const weekNum = rawWeek > 13 ? ((rawWeek - 1) % 13) + 1 : rawWeek;
+
+          const cacheKey = `${folderPart}-${fileName}`.replace(/[^a-zA-Z0-9._-]/g, '_');
+          const cachePath = path.join(persistentDir, cacheKey);
+          if (fs.existsSync(cachePath)) {
+            console.log(`[Download] OneDrive cache hit: ${cacheKey}`);
+            const buffer = fs.readFileSync(cachePath);
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
+            res.send(buffer);
+            return;
+          }
+
           try {
             const allSems = await storage.getAllSemesterSettings();
             const code = courseCode.replace(/\s/g, '').toUpperCase();
@@ -4929,16 +4941,19 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
                   if (matchedFile?.downloadUrl) {
                     console.log(`[Download] OneDrive direct: ${fileName} from ${matchedCourse.code} week ${weekNum}`);
                     const pdfResponse = await fetch(matchedFile.downloadUrl);
-                    if (pdfResponse.ok && pdfResponse.body) {
+                    if (pdfResponse.ok) {
+                      const arrayBuf = await pdfResponse.arrayBuffer();
+                      const buffer = Buffer.from(arrayBuf);
+                      try {
+                        if (!fs.existsSync(persistentDir)) fs.mkdirSync(persistentDir, { recursive: true });
+                        fs.writeFileSync(cachePath, buffer);
+                        console.log(`[Download] Cached OneDrive file: ${cacheKey} (${buffer.length} bytes)`);
+                      } catch (cacheErr) {
+                        console.log(`[Download] Cache write failed (non-fatal): ${cacheErr}`);
+                      }
                       res.setHeader('Content-Type', 'application/pdf');
                       res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
-                      const reader = pdfResponse.body.getReader();
-                      while (true) {
-                        const { done, value } = await reader.read();
-                        if (done) break;
-                        res.write(value);
-                      }
-                      res.end();
+                      res.send(buffer);
                       return;
                     }
                   }
