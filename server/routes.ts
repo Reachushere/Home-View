@@ -5432,11 +5432,16 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
             });
             if (renamedFolder) {
               const newCode = renamedFolder.name.split(' - ')[0]?.trim() || renamedFolder.name;
+              const newCourseName = renamedFolder.name.includes(' - ') ? renamedFolder.name.split(' - ').slice(1).join(' - ').trim() : '';
               if (newCode.toUpperCase().replace(/\s/g, '') !== codeUpper) {
                 console.log(`[LibrarySync:FolderRename] Detected rename: ${code} -> ${newCode} (folder: ${renamedFolder.name})`);
                 const newModFolder = modFolder.replace(expectedFolderName, renamedFolder.name);
                 courseUpdates[`course${i}Code`] = newCode;
                 courseUpdates[`course${i}ModuleFolder`] = newModFolder;
+                if (newCourseName) {
+                  courseUpdates[`course${i}Name`] = `${newCode} - ${newCourseName}`;
+                  courseUpdates[`course${i}DisplayName`] = newCourseName;
+                }
                 const readFolder = ((sem as any)[`course${i}ReadingFolder`] || '').trim();
                 if (readFolder && readFolder.includes(expectedFolderName)) {
                   courseUpdates[`course${i}ReadingFolder`] = readFolder.replace(expectedFolderName, renamedFolder.name);
@@ -5447,6 +5452,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
           if (Object.keys(courseUpdates).length > 0) {
             console.log(`[LibrarySync:FolderRename] Updating semester ${sem.id}:`, JSON.stringify(courseUpdates));
             await storage.updateSemesterSettings(sem.id, courseUpdates);
+            syncDegreeTrackingFromDb().catch(() => {});
           }
         } catch (renameErr: any) {
           console.log(`[LibrarySync:FolderRename] Error checking renames: ${renameErr.message}`);
@@ -6715,10 +6721,15 @@ async function pollStatus(timeout){
             } else if (!readFolder) {
               updates[`${prefix}ReadingFolder`] = `${semPath}/${newFolderName}/Reading`;
             }
+            if (courseName) {
+              updates[`${prefix}Name`] = `${code} - ${courseName}`;
+              updates[`${prefix}DisplayName`] = courseName;
+            }
             if (Object.keys(updates).length > 0) {
               await storage.updateSemesterSettings(semester.id, updates);
               console.log(`[OneDrive] Updated folder paths for slot ${i}:`, updates);
             }
+            syncDegreeTrackingFromDb().catch(() => {});
             break;
           }
         }
@@ -6819,7 +6830,7 @@ async function pollStatus(timeout){
       while (existingTbdNums.includes(tbdNum)) {
         tbdNum++;
       }
-      const revertName = `TBD${tbdNum} - TBD`;
+      const revertName = `TBD${tbdNum}`;
 
       try {
         await renameOneDriveItem(courseFolder.id, revertName);
@@ -6846,9 +6857,13 @@ async function pollStatus(timeout){
             if (readFolder && readFolder.includes(`/${folderName}/`)) {
               updates[`${prefix}ReadingFolder`] = readFolder.replace(`/${folderName}/`, `/${revertName}/`);
             }
+            updates[`${prefix}Code`] = `TBD${tbdNum}`;
+            updates[`${prefix}Name`] = `TBD${tbdNum}`;
+            updates[`${prefix}DisplayName`] = `TBD${tbdNum}`;
             if (Object.keys(updates).length > 0) {
               await storage.updateSemesterSettings(semester.id, updates);
             }
+            syncDegreeTrackingFromDb().catch(() => {});
             break;
           }
         }
