@@ -4956,7 +4956,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         
         await objectStorageService.downloadObject(objectFile, res);
       } else if (mediaUrl.startsWith("onedrive://")) {
-        // OneDrive file - look up the actual download URL from OneDrive
         const fileName = mediaUrl.split('/').pop() || '';
         const folderPart = mediaUrl.replace('onedrive://', '').split('/')[0] || '';
         const parts = folderPart.split('-');
@@ -4965,63 +4964,65 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         
         if (courseCode && weekNum) {
           try {
-            const activeSem = await storage.getActiveSemesterSettings();
-            const semStartDate = activeSem?.semesterStartDate ? new Date(activeSem.semesterStartDate) : new Date();
-            const semYear = semStartDate.getFullYear();
-            const semFolderVariants = (() => {
-              const t = (activeSem?.semesterType || 'winter').toLowerCase();
-              if (t.includes('spring') || t.includes('summer')) return ['Spring & Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer'];
-              if (t.includes('fall')) return ['Fall'];
-              return ['Winter'];
-            })();
-            let basePath = `/School/1. TMU/Courses/${semYear}/${semFolderVariants[0]}`;
-            let baseFolders: any[] = [];
-            for (const variant of semFolderVariants) {
-              const tryPath = `/School/1. TMU/Courses/${semYear}/${variant}`;
+            const allSems = await storage.getAllSemesterSettings();
+            let foundFile = false;
+
+            const sortedSems = [...allSems].sort((a, b) => {
+              const aDate = a.semesterStartDate ? new Date(a.semesterStartDate).getTime() : 0;
+              const bDate = b.semesterStartDate ? new Date(b.semesterStartDate).getTime() : 0;
+              return bDate - aDate;
+            });
+
+            for (const sem of sortedSems) {
+              const hasCourse = [1, 2, 3].some(i => {
+                const cc = ((sem as any)[`course${i}Code`] || '').replace(/\s/g, '').toUpperCase();
+                return cc === courseCode;
+              });
+              if (!hasCourse) continue;
+
               try {
-                baseFolders = await listOneDriveItems(tryPath);
-                basePath = tryPath;
-                break;
-              } catch {}
-            }
-            const matchedFolder = baseFolders.find((f: any) => 
-              f.type === 'folder' && f.name.toUpperCase().startsWith(courseCode)
-            );
-            if (matchedFolder) {
-              const courseFolders = await listOneDriveItems(matchedFolder.path);
-              const weekFolder = courseFolders.find((f: any) => 
-                f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${weekNum}`)
-              );
-              if (weekFolder) {
+                const courses = await getSemesterOneDriveCourses(sem);
+                const matchedCourse = courses.find(c => c.code.toUpperCase() === courseCode);
+                if (!matchedCourse) continue;
+
+                const courseFolders = await listOneDriveItems(matchedCourse.path);
+                const weekFolder = courseFolders.find((f: any) => 
+                  f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${weekNum}`)
+                );
+                if (!weekFolder) continue;
+
                 const weekContents = await listOneDriveItems(weekFolder.path);
                 const typeFolder = weekContents.find((f: any) => 
                   f.type === 'folder' && f.name.toLowerCase().includes(folderPart.includes('reading') ? 'reading' : 'module')
                 );
-                if (typeFolder) {
-                  const files = await listOneDriveItems(typeFolder.path);
-                  const matchedFile = files.find((f: any) => f.name === fileName);
-                  if (matchedFile?.downloadUrl) {
-                    const pdfResponse = await fetch(matchedFile.downloadUrl);
-                    if (pdfResponse.ok && pdfResponse.body) {
-                      res.setHeader('Content-Type', 'application/pdf');
-                      res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
-                      const reader = pdfResponse.body.getReader();
-                      const pump = async () => {
-                        while (true) {
-                          const { done, value } = await reader.read();
-                          if (done) break;
-                          res.write(value);
-                        }
-                        res.end();
-                      };
-                      await pump();
-                      return;
+                if (!typeFolder) continue;
+
+                const files = await listOneDriveItems(typeFolder.path);
+                const matchedFile = files.find((f: any) => f.name === fileName);
+                if (matchedFile?.downloadUrl) {
+                  const pdfResponse = await fetch(matchedFile.downloadUrl);
+                  if (pdfResponse.ok && pdfResponse.body) {
+                    res.setHeader('Content-Type', 'application/pdf');
+                    res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
+                    const reader = pdfResponse.body.getReader();
+                    while (true) {
+                      const { done, value } = await reader.read();
+                      if (done) break;
+                      res.write(value);
                     }
+                    res.end();
+                    foundFile = true;
+                    return;
                   }
                 }
+              } catch (e: any) {
+                console.log(`[FileDownload] OneDrive lookup failed for ${courseCode} in ${sem.semesterName}: ${e.message}`);
               }
             }
-            return res.status(404).json({ error: "OneDrive file not found" });
+
+            if (!foundFile) {
+              return res.status(404).json({ error: "OneDrive file not found" });
+            }
           } catch (onedriveErr) {
             console.error("Error fetching from OneDrive:", onedriveErr);
             return res.status(500).json({ error: "Failed to fetch OneDrive file" });
@@ -14801,34 +14802,42 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         const parts = folderPart.split('-');
         const weekNum = parts[1];
         const courseCode = parts[2]?.toUpperCase();
-        const activeSemOd = await storage.getActiveSemesterSettings();
-        const odStartDate = activeSemOd?.semesterStartDate ? new Date(activeSemOd.semesterStartDate) : new Date();
-        const odYear = odStartDate.getFullYear();
-        const odSemVariants = (() => {
-          const t = (activeSemOd?.semesterType || 'winter').toLowerCase();
-          if (t.includes('spring') || t.includes('summer')) return ['Spring & Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer'];
-          if (t.includes('fall')) return ['Fall'];
-          return ['Winter'];
-        })();
-        let odBasePath = `/School/1. TMU/Courses/${odYear}/${odSemVariants[0]}`;
-        let odBaseFolders: any[] = [];
-        for (const v of odSemVariants) {
-          const tryP = `/School/1. TMU/Courses/${odYear}/${v}`;
-          try { odBaseFolders = await listOneDriveItems(tryP); odBasePath = tryP; break; } catch {}
+        const allSemsOd = await storage.getAllSemesterSettings();
+        let foundContent = false;
+        const sortedSemsOd = [...allSemsOd].sort((a, b) => {
+          const aD = a.semesterStartDate ? new Date(a.semesterStartDate).getTime() : 0;
+          const bD = b.semesterStartDate ? new Date(b.semesterStartDate).getTime() : 0;
+          return bD - aD;
+        });
+        for (const sem of sortedSemsOd) {
+          const hasCourse = [1, 2, 3].some(i => {
+            const cc = ((sem as any)[`course${i}Code`] || '').replace(/\s/g, '').toUpperCase();
+            return cc === courseCode;
+          });
+          if (!hasCourse) continue;
+          try {
+            const courses = await getSemesterOneDriveCourses(sem);
+            const mc = courses.find(c => c.code.toUpperCase() === courseCode);
+            if (!mc) continue;
+            const cfs = await listOneDriveItems(mc.path);
+            const wf = cfs.find((f: any) => f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${weekNum}`));
+            if (!wf) continue;
+            const wc = await listOneDriveItems(wf.path);
+            const tf = wc.find((f: any) => f.type === 'folder' && f.name.toLowerCase().includes(folderPart.includes('reading') ? 'reading' : 'module'));
+            if (!tf) continue;
+            const fs = await listOneDriveItems(tf.path);
+            const mf = fs.find((f: any) => f.name === fileNamePart);
+            if (mf?.downloadUrl) {
+              const pdfResponse = await fetch(mf.downloadUrl);
+              content = Buffer.from(await pdfResponse.arrayBuffer());
+              foundContent = true;
+              break;
+            }
+          } catch (e: any) {
+            console.log(`[FileText] OneDrive lookup failed for ${courseCode} in ${sem.semesterName}: ${e.message}`);
+          }
         }
-        const matchedFolder = odBaseFolders.find((f: any) => f.type === 'folder' && f.name.toUpperCase().startsWith(courseCode));
-        if (!matchedFolder) throw new Error("Course folder not found in OneDrive");
-        const courseFolders = await listOneDriveItems(matchedFolder.path);
-        const weekFolder = courseFolders.find((f: any) => f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${weekNum}`));
-        if (!weekFolder) throw new Error("Week folder not found in OneDrive");
-        const weekContents = await listOneDriveItems(weekFolder.path);
-        const typeFolder = weekContents.find((f: any) => f.type === 'folder' && f.name.toLowerCase().includes(folderPart.includes('reading') ? 'reading' : 'module'));
-        if (!typeFolder) throw new Error("Type folder not found in OneDrive");
-        const files = await listOneDriveItems(typeFolder.path);
-        const matchedFile = files.find((f: any) => f.name === fileNamePart);
-        if (!matchedFile?.downloadUrl) throw new Error("File not found in OneDrive");
-        const pdfResponse = await fetch(matchedFile.downloadUrl);
-        content = Buffer.from(await pdfResponse.arrayBuffer());
+        if (!foundContent) throw new Error("File not found in OneDrive across all semesters");
       } else if (mediaUrl.startsWith("http")) {
         const pdfResponse = await fetch(mediaUrl);
         content = Buffer.from(await pdfResponse.arrayBuffer());
