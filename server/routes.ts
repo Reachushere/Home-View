@@ -4838,7 +4838,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
           const folderMatch = (file.folder || '').match(/^week-(\d+)-(.+?)-(reading|module)$/i);
           if (folderMatch && file.originalName) {
             const [, weekNumStr, courseCode, folderType] = folderMatch;
-            const wk = parseInt(weekNumStr);
+            const rawWk = parseInt(weekNumStr);
+            const wk = rawWk > 13 ? ((rawWk - 1) % 13) + 1 : rawWk;
             try {
               const allSems = await storage.getAllSemesterSettings();
               const code = courseCode.toUpperCase().replace(/\s/g, '');
@@ -4896,7 +4897,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         
         if (folderMatch2 && fileName) {
           const [, weekStr, courseCode, subType] = folderMatch2;
-          const weekNum = parseInt(weekStr);
+          const rawWeek = parseInt(weekStr);
+          const weekNum = rawWeek > 13 ? ((rawWeek - 1) % 13) + 1 : rawWeek;
           try {
             const allSems = await storage.getAllSemesterSettings();
             const code = courseCode.replace(/\s/g, '').toUpperCase();
@@ -12540,7 +12542,26 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     }
   }
 
-  setTimeout(() => { syncAllSemesterLibraryFiles('[LibrarySync:Startup]').catch(() => {}); }, 30000);
+  setTimeout(async () => {
+    try {
+      const allFiles = await storage.getFiles();
+      let migrated = 0;
+      for (const f of allFiles) {
+        if (!f.folder) continue;
+        const m = f.folder.match(/^week-(\d+)-(.+?)-(module|reading)$/i);
+        if (!m) continue;
+        const wk = parseInt(m[1]);
+        if (wk <= 13) continue;
+        const relWk = ((wk - 1) % 13) + 1;
+        const newFolder = `week-${relWk}-${m[2]}-${m[3]}`;
+        const newPath = f.objectPath?.replace(f.folder, newFolder) || f.objectPath;
+        await storage.updateFile(f.id, { folder: newFolder, objectPath: newPath });
+        migrated++;
+      }
+      if (migrated > 0) console.log(`[Migration] Fixed ${migrated} files with global week numbers -> relative`);
+    } catch (e: any) { console.log(`[Migration] Error: ${e.message}`); }
+    syncAllSemesterLibraryFiles('[LibrarySync:Startup]').catch(() => {});
+  }, 30000);
   setInterval(() => { syncAllSemesterLibraryFiles('[LibrarySync:Periodic]').catch(() => {}); }, 30 * 60 * 1000);
 
   let audioPreparationActive = false;
