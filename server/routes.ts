@@ -12297,7 +12297,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   }
 
   async function getSemesterOneDriveCourses(semesterSettings: any): Promise<Array<{ code: string; path: string }>> {
-    if (!semesterSettings) return [];
+    console.log(`[OD-Courses] === getSemesterOneDriveCourses START ===`);
+    if (!semesterSettings) { console.log(`[OD-Courses] No semester settings — returning empty`); return []; }
     const startDate = semesterSettings.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date();
     const year = startDate.getFullYear();
     const isSpSu = (semesterSettings.semesterType || '').toLowerCase().includes('spring') || (semesterSettings.semesterType || '').toLowerCase().includes('summer');
@@ -12306,46 +12307,58 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       : (semesterSettings.semesterType || '').toLowerCase().includes('fall')
         ? ['Fall']
         : ['Winter'];
+    console.log(`[OD-Courses] year=${year}, semType=${semesterSettings.semesterType}, isSpSu=${isSpSu}, variants=${JSON.stringify(semFolderVariants)}`);
     const yearPath = `/School/1. TMU/Courses/${year}`;
     let basePath = `${yearPath}/${semFolderVariants[0]}`;
     const courses: Array<{ code: string; path: string }> = [];
     const folderCache: Record<string, any[]> = {};
-    const { listOneDriveItems } = await import("./onedrive");
+    const { listOneDriveItems, isOneDriveConnected } = await import("./onedrive");
+    const odConnected = isOneDriveConnected();
+    console.log(`[OD-Courses] OneDrive connected: ${odConnected}`);
+    if (!odConnected) { console.log(`[OD-Courses] OneDrive NOT connected — returning empty`); return []; }
     async function getBaseFolders(folderPath: string): Promise<any[]> {
       if (folderCache[folderPath]) return folderCache[folderPath];
       try {
+        console.log(`[OD-Courses] Listing OneDrive folder: ${folderPath}`);
         folderCache[folderPath] = await listOneDriveItems(folderPath);
-      } catch {
+        console.log(`[OD-Courses] Folder "${folderPath}" returned ${folderCache[folderPath].length} items: ${folderCache[folderPath].map((i: any) => `${i.name}(${i.type})`).join(', ')}`);
+      } catch (e: any) {
+        console.log(`[OD-Courses] ERROR listing "${folderPath}": ${e.message}`);
         folderCache[folderPath] = [];
       }
       return folderCache[folderPath];
     }
     for (const variant of semFolderVariants) {
       const candidatePath = `${yearPath}/${variant}`;
+      console.log(`[OD-Courses] Trying semester variant path: ${candidatePath}`);
       const items = await getBaseFolders(candidatePath);
       if (items.length > 0) {
         basePath = candidatePath;
+        console.log(`[OD-Courses] Using basePath: ${basePath} (${items.length} items)`);
         break;
       }
     }
     for (let i = 1; i <= 3; i++) {
       const code = (semesterSettings as any)[`course${i}Code`];
-      if (!code || !code.trim()) continue;
+      if (!code || !code.trim()) { console.log(`[OD-Courses] Slot ${i}: empty code — skipping`); continue; }
       const codeClean = code.replace(/\s/g, '');
       const modFolder = (semesterSettings as any)[`course${i}ModuleFolder`] || '';
       const readFolder = (semesterSettings as any)[`course${i}ReadingFolder`] || '';
       const folderOverride = modFolder.trim() || readFolder.trim();
+      console.log(`[OD-Courses] Slot ${i}: code="${codeClean}", modFolder="${modFolder}", readFolder="${readFolder}", override="${folderOverride}"`);
       let usedOverride = false;
       if (folderOverride) {
         const courseFolderPath = folderOverride.replace(/\/(Module|Readings|Reading)$/i, '');
         courses.push({ code: codeClean, path: courseFolderPath });
         usedOverride = true;
+        console.log(`[OD-Courses] Slot ${i}: using folder override → ${courseFolderPath}`);
       }
       if (!usedOverride) {
         try {
           let searchBasePath = basePath;
           if (isSpSu) {
             const term = ((semesterSettings as any)[`course${i}SpringSummerTerm`] || 'full').toLowerCase();
+            console.log(`[OD-Courses] Slot ${i}: SpSu term=${term}`);
             const termFolderMap: Record<string, string[]> = {
               'full': ['Full', 'Full Term'],
               'first_half': ['Spring - First Half', 'First Half', 'Spring'],
@@ -12366,18 +12379,24 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
             }
             if (termFolder) {
               searchBasePath = termFolder.path;
+              console.log(`[OD-Courses] Slot ${i}: found term folder → ${searchBasePath}`);
+            } else {
+              console.log(`[OD-Courses] Slot ${i}: no term folder found for "${term}" in basePath`);
             }
           }
           const searchFolders = await getBaseFolders(searchBasePath);
           const searchCode = codeClean.toUpperCase();
           const tdbSlotMatch = searchCode.match(/^TBD_SLOT(\d+)$/);
           const lookupCode = tdbSlotMatch ? `TBD${tdbSlotMatch[1]}` : searchCode;
+          console.log(`[OD-Courses] Slot ${i}: searching for folder starting with "${lookupCode}" in ${searchBasePath} (${searchFolders.length} folders)`);
           const matchedFolder = searchFolders.find((f: any) =>
             f.type === 'folder' && f.name.toUpperCase().replace(/\s/g, '').startsWith(lookupCode)
           );
           if (matchedFolder) {
             courses.push({ code: codeClean, path: matchedFolder.path });
+            console.log(`[OD-Courses] Slot ${i}: MATCHED folder "${matchedFolder.name}" → ${matchedFolder.path}`);
           } else {
+            console.log(`[OD-Courses] Slot ${i}: NO folder matched "${lookupCode}" — available: ${searchFolders.filter((f: any) => f.type === 'folder').map((f: any) => f.name).join(', ')}`);
             if (isSpSu) {
               const parentFolders = await getBaseFolders(basePath);
               let foundInOtherTerm = false;
@@ -12388,44 +12407,58 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
                 if (match) {
                   courses.push({ code: codeClean, path: match.path });
                   foundInOtherTerm = true;
+                  console.log(`[OD-Courses] Slot ${i}: found in other term → ${match.path}`);
                   break;
                 }
               }
               if (!foundInOtherTerm) {
                 courses.push({ code: codeClean, path: `${searchBasePath}/${lookupCode}` });
+                console.log(`[OD-Courses] Slot ${i}: fallback constructed path → ${searchBasePath}/${lookupCode}`);
               }
             } else {
               const name = (semesterSettings as any)[`course${i}Name`];
               const folderName = name || codeClean;
               courses.push({ code: codeClean, path: `${basePath}/${folderName}` });
+              console.log(`[OD-Courses] Slot ${i}: fallback constructed path → ${basePath}/${folderName}`);
             }
           }
         } catch (e: any) {
           const name = (semesterSettings as any)[`course${i}Name`];
           const folderName = name || codeClean;
           courses.push({ code: codeClean, path: `${basePath}/${folderName}` });
+          console.log(`[OD-Courses] Slot ${i}: ERROR in lookup: ${e.message} — using fallback ${basePath}/${folderName}`);
         }
       }
     }
+    console.log(`[OD-Courses] === RESULT: ${courses.length} courses: ${courses.map(c => `${c.code}→${c.path}`).join(' | ')} ===`);
     return courses;
   }
 
   async function syncOneDriveFilesForWeek(semesterSettings: any, currentWeekNumber: number, logPrefix: string = '[Sync]'): Promise<void> {
+    const syncStart = Date.now();
+    console.log(`${logPrefix}[OD-Sync] === syncOneDriveFilesForWeek START — week ${currentWeekNumber} ===`);
     try {
-      console.log(`${logPrefix}[TRACE] syncOneDriveFilesForWeek: importing onedrive module...`);
-      const { listOneDriveItems } = await import("./onedrive");
-      console.log(`${logPrefix}[TRACE] syncOneDriveFilesForWeek: import done, setting up dirs...`);
+      console.log(`${logPrefix}[OD-Sync] Importing onedrive module...`);
+      const { listOneDriveItems, isOneDriveConnected } = await import("./onedrive");
+      const connected = isOneDriveConnected();
+      console.log(`${logPrefix}[OD-Sync] OneDrive connected: ${connected} (import took ${Date.now() - syncStart}ms)`);
+      if (!connected) { console.log(`${logPrefix}[OD-Sync] OneDrive NOT connected — aborting sync`); return; }
       const fs = await import("fs");
       const path = await import("path");
       const localUploadsDir = path.join(process.cwd(), 'persistent-uploads');
       if (!fs.existsSync(localUploadsDir)) fs.mkdirSync(localUploadsDir, { recursive: true });
-      console.log(`${logPrefix}[TRACE] syncOneDriveFilesForWeek: getting semester OneDrive courses...`);
+      console.log(`${logPrefix}[OD-Sync] Getting semester OneDrive courses...`);
       const courses = await getSemesterOneDriveCourses(semesterSettings);
       const isSpSuSync = (semesterSettings.semesterType || '').toLowerCase().includes('spring') || (semesterSettings.semesterType || '').toLowerCase().includes('summer');
-      console.log(`${logPrefix} Syncing OneDrive for ${courses.length} courses, week ${currentWeekNumber}`);
+      console.log(`${logPrefix}[OD-Sync] ${courses.length} courses found, isSpSu=${isSpSuSync}, elapsed=${Date.now() - syncStart}ms`);
+      if (courses.length === 0) { console.log(`${logPrefix}[OD-Sync] No courses — aborting sync`); return; }
       const existingFiles = await storage.getFiles();
       const existingFileSet = new Set(existingFiles.map((f: any) => `${f.originalName}::${f.folder}`));
+      console.log(`${logPrefix}[OD-Sync] ${existingFiles.length} existing files in DB, ${existingFileSet.size} unique name::folder combos`);
+      let totalNewFiles = 0;
       for (const course of courses) {
+        const courseStart = Date.now();
+        console.log(`${logPrefix}[OD-Sync] --- Course: ${course.code}, path: ${course.path} ---`);
         try {
           let folderWeek = currentWeekNumber;
           if (isSpSuSync) {
@@ -12433,51 +12466,86 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
               const cc = ((semesterSettings as any)[`course${ci}Code`] || '').replace(/\s/g, '');
               if (cc === course.code) {
                 const spsuTerm = ((semesterSettings as any)[`course${ci}SpringSummerTerm`] || 'full').toLowerCase();
+                console.log(`${logPrefix}[OD-Sync] Course ${course.code} SpSu term: ${spsuTerm}`);
                 if (spsuTerm === 'second_half' && currentWeekNumber > 7) {
                   folderWeek = currentWeekNumber - 7;
-                  console.log(`${logPrefix} Second-half course ${course.code}: adjusted week ${currentWeekNumber} → folder Week ${folderWeek}`);
+                  console.log(`${logPrefix}[OD-Sync] Second-half: adjusted week ${currentWeekNumber} → folder Week ${folderWeek}`);
                 } else if (spsuTerm === 'first_half' && currentWeekNumber > 7) {
                   folderWeek = -1;
-                  console.log(`${logPrefix} First-half course ${course.code}: week ${currentWeekNumber} > 7, course ended — skipping`);
+                  console.log(`${logPrefix}[OD-Sync] First-half: week ${currentWeekNumber} > 7, course ended — skipping`);
                 } else if (spsuTerm === 'second_half' && currentWeekNumber <= 7) {
                   folderWeek = -1;
-                  console.log(`${logPrefix} Second-half course ${course.code}: week ${currentWeekNumber} <= 7, course not started — skipping`);
+                  console.log(`${logPrefix}[OD-Sync] Second-half: week ${currentWeekNumber} <= 7, not started — skipping`);
                 }
                 break;
               }
             }
           }
-          if (folderWeek === -1) continue;
+          if (folderWeek === -1) { console.log(`${logPrefix}[OD-Sync] Skipping ${course.code} (folderWeek=-1)`); continue; }
+          console.log(`${logPrefix}[OD-Sync] Listing week folders at: ${course.path} (looking for Week ${folderWeek})`);
           const weekFolders = await listOneDriveItems(course.path);
+          const weekFolderNames = weekFolders.filter((f: any) => f.type === 'folder').map((f: any) => f.name);
+          console.log(`${logPrefix}[OD-Sync] Found ${weekFolders.length} items in course folder. Week folders: [${weekFolderNames.join(', ')}] (${Date.now() - courseStart}ms)`);
           const currentWeekFolder = weekFolders.find((f: any) => f.type === 'folder' && f.name.match(/Week\s+(\d+)/i)?.[1] && parseInt(f.name.match(/Week\s+(\d+)/i)![1], 10) === folderWeek);
-          if (!currentWeekFolder) continue;
+          if (!currentWeekFolder) {
+            console.log(`${logPrefix}[OD-Sync] *** NO "Week ${folderWeek}" folder found for ${course.code} — available: [${weekFolderNames.join(', ')}] ***`);
+            continue;
+          }
+          console.log(`${logPrefix}[OD-Sync] Found week folder: "${currentWeekFolder.name}" at ${currentWeekFolder.path}`);
           const weekContents = await listOneDriveItems(currentWeekFolder.path);
+          const weekContentNames = weekContents.map((f: any) => `${f.name}(${f.type})`);
+          console.log(`${logPrefix}[OD-Sync] Week folder contents: [${weekContentNames.join(', ')}]`);
           for (const subType of ['module', 'reading']) {
             const subFolder = weekContents.find((f: any) => f.type === 'folder' && f.name.toLowerCase().includes(subType));
-            if (!subFolder) continue;
+            if (!subFolder) {
+              console.log(`${logPrefix}[OD-Sync] No "${subType}" subfolder in Week ${folderWeek} for ${course.code}`);
+              continue;
+            }
+            console.log(`${logPrefix}[OD-Sync] Found "${subType}" subfolder: "${subFolder.name}" at ${subFolder.path}`);
             const subFiles = await listOneDriveItems(subFolder.path);
+            console.log(`${logPrefix}[OD-Sync] ${subType} subfolder has ${subFiles.length} items: [${subFiles.map((f: any) => `${f.name}(${f.type})`).join(', ')}]`);
             for (const file of subFiles) {
-              if (file.type !== 'file' || !file.name.endsWith('.pdf')) continue;
+              if (file.type !== 'file' || !file.name.endsWith('.pdf')) {
+                console.log(`${logPrefix}[OD-Sync] Skipping non-PDF: ${file.name} (type=${file.type})`);
+                continue;
+              }
               const folderName = `week-${currentWeekNumber}-${course.code.toLowerCase()}-${subType}`;
-              if (existingFileSet.has(`${file.name}::${folderName}`)) continue;
+              const existsKey = `${file.name}::${folderName}`;
+              if (existingFileSet.has(existsKey)) {
+                console.log(`${logPrefix}[OD-Sync] Already in DB: "${file.name}" → ${folderName}`);
+                continue;
+              }
+              console.log(`${logPrefix}[OD-Sync] DOWNLOADING: "${file.name}" (size=${file.size}) → ${folderName}`);
               const downloadResponse = await fetch(file.downloadUrl);
-              if (!downloadResponse.ok) continue;
+              if (!downloadResponse.ok) {
+                console.log(`${logPrefix}[OD-Sync] Download FAILED: HTTP ${downloadResponse.status} for "${file.name}"`);
+                continue;
+              }
               const fileBuffer = Buffer.from(await downloadResponse.arrayBuffer());
+              console.log(`${logPrefix}[OD-Sync] Downloaded ${fileBuffer.length} bytes for "${file.name}"`);
               const localFileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
               const localFilePath = path.join(localUploadsDir, localFileName);
               fs.writeFileSync(localFilePath, fileBuffer);
               const objectPath = `/local/uploads/${localFileName}`;
               const newFile = await storage.createFile({ originalName: file.name, displayName: file.name, objectPath, contentType: 'application/pdf', size: file.size, folder: folderName, listened: false });
-              console.log(`${logPrefix} Synced new file: ${file.name} → ${folderName} (saved locally)`);
+              console.log(`${logPrefix}[OD-Sync] SAVED: "${file.name}" → ${folderName} (id=${newFile?.id}, objectPath=${objectPath})`);
+              totalNewFiles++;
               if (newFile?.id) {
                 queueFileForPreparation(newFile.id);
               }
             }
           }
-        } catch (e: any) { console.log(`${logPrefix} OneDrive sync error for ${course.code}: ${e.message}`); }
+          console.log(`${logPrefix}[OD-Sync] Course ${course.code} done (${Date.now() - courseStart}ms)`);
+        } catch (e: any) {
+          console.log(`${logPrefix}[OD-Sync] ERROR for ${course.code}: ${e.message}`);
+          console.log(`${logPrefix}[OD-Sync] Stack: ${e.stack?.split('\n').slice(0, 3).join(' | ')}`);
+        }
       }
-      console.log(`${logPrefix} OneDrive sync complete`);
-    } catch (e: any) { console.log(`${logPrefix} OneDrive sync failed: ${e.message}`); }
+      console.log(`${logPrefix}[OD-Sync] === COMPLETE: ${totalNewFiles} new files synced in ${Date.now() - syncStart}ms ===`);
+    } catch (e: any) {
+      console.log(`${logPrefix}[OD-Sync] FATAL: ${e.message}`);
+      console.log(`${logPrefix}[OD-Sync] Stack: ${e.stack?.split('\n').slice(0, 3).join(' | ')}`);
+    }
   }
 
   async function syncAllSemesterLibraryFiles(logPrefix: string = '[LibrarySync]'): Promise<void> {
@@ -12819,31 +12887,42 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   }
 
   async function findNextFileByPriority(allFiles: any[], currentWeekNumber: number, excludeFileId?: number): Promise<any | null> {
-    console.log(`[FileOrder] Searching ${allFiles.length} total files for week ${currentWeekNumber} (priorities: ${JSON.stringify(coursePlayPriority)})`);
+    console.log(`[FileOrder] === findNextFileByPriority START — week ${currentWeekNumber}, ${allFiles.length} total files, excludeId=${excludeFileId || 'none'} ===`);
+    console.log(`[FileOrder] Course priorities: ${JSON.stringify(coursePlayPriority)}`);
     if (extractionFailedFileIds.size > 0) {
-      console.log(`[FileOrder] Skipping ${extractionFailedFileIds.size} extraction-failed file IDs: [${[...extractionFailedFileIds].join(', ')}]`);
+      console.log(`[FileOrder] Extraction-failed IDs (excluded): [${[...extractionFailedFileIds].join(', ')}]`);
     }
+    const allFolders = [...new Set(allFiles.map((f: any) => f.folder).filter(Boolean))].sort();
+    console.log(`[FileOrder] ALL folders in DB: [${allFolders.join(', ')}]`);
+    const weekFoldersInDb = allFolders.filter(f => f.match(/week-(\d+)/i));
+    const weekNumsInDb = [...new Set(weekFoldersInDb.map(f => f.match(/week-(\d+)/i)?.[1]).filter(Boolean))].sort((a, b) => parseInt(a!) - parseInt(b!));
+    console.log(`[FileOrder] Week numbers present in DB: [${weekNumsInDb.join(', ')}]`);
     const allForWeek = allFiles.filter((f: any) => {
       if (excludeFileId && f.id === excludeFileId) return false;
       if (extractionFailedFileIds.has(f.id)) return false;
       const weekMatch = f.folder?.match(/week-(\d+)/i);
       return weekMatch && parseInt(weekMatch[1], 10) === currentWeekNumber;
     });
+    console.log(`[FileOrder] Files matching week ${currentWeekNumber}: ${allForWeek.length} — ${allForWeek.map((f: any) => `id=${f.id} "${f.originalName}" folder=${f.folder} listened=${f.listened}`).join(' | ')}`);
     const allEligible = allForWeek.filter((f: any) => !f.listened);
     const listenedForWeek = allForWeek.filter((f: any) => f.listened);
+    console.log(`[FileOrder] Week ${currentWeekNumber}: ${allEligible.length} unlistened, ${listenedForWeek.length} listened`);
     if (listenedForWeek.length > 0) {
-      console.log(`[FileOrder] Week ${currentWeekNumber} already-listened files: ${listenedForWeek.map((f: any) => `${f.originalName}(folder=${f.folder})`).join(' | ')}`);
+      console.log(`[FileOrder] Already-listened: ${listenedForWeek.map((f: any) => `"${f.originalName}"(folder=${f.folder})`).join(' | ')}`);
     }
     if (allEligible.length === 0) {
-      const weekFolders = allFiles.filter((f: any) => !f.listened).map((f: any) => f.folder).filter(Boolean);
-      const weekNums = [...new Set(weekFolders.map((folder: string) => folder.match(/week-(\d+)/i)?.[1]).filter(Boolean))].sort();
-      console.log(`[FileOrder] No unlistened files found for week ${currentWeekNumber}. Available weeks with unlistened files: [${weekNums.join(', ')}]`);
+      const unlistenedFiles = allFiles.filter((f: any) => !f.listened);
+      const unlistenedWeekNums = [...new Set(unlistenedFiles.map((f: any) => f.folder?.match(/week-(\d+)/i)?.[1]).filter(Boolean))].sort((a: any, b: any) => parseInt(a) - parseInt(b));
+      console.log(`[FileOrder] *** NO unlistened files for week ${currentWeekNumber} ***`);
+      console.log(`[FileOrder] Weeks with unlistened files: [${unlistenedWeekNums.join(', ')}]`);
+      console.log(`[FileOrder] All unlistened files: ${unlistenedFiles.slice(0, 20).map((f: any) => `id=${f.id} "${f.originalName}" folder=${f.folder}`).join(' | ')}${unlistenedFiles.length > 20 ? ` ...+${unlistenedFiles.length - 20} more` : ''}`);
       const cppaFiles = allFiles.filter((f: any) => (f.folder || '').toLowerCase().includes('cppa') || (f.originalName || '').toLowerCase().includes('cppa'));
       if (cppaFiles.length > 0) {
-        console.log(`[FileOrder] CPPA files in DB: ${cppaFiles.map((f: any) => `${f.originalName} (folder=${f.folder}, listened=${f.listened}, week=${f.folder?.match(/week-(\\d+)/i)?.[1] || '?'})`).join(' | ')}`);
+        console.log(`[FileOrder] CPPA files in DB: ${cppaFiles.map((f: any) => `id=${f.id} "${f.originalName}" folder=${f.folder} listened=${f.listened}`).join(' | ')}`);
       } else {
         console.log(`[FileOrder] No CPPA files found in database at all`);
       }
+      console.log(`[FileOrder] === RESULT: null (no files for week ${currentWeekNumber}) ===`);
       return null;
     }
 
@@ -12874,8 +12953,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     });
 
     const picked = withMeta[0];
-    aLog('FileOrder', `${allEligible.length} unlistened files (${eligible.length} eligible, modulesBlock=${hasAnyUnlistenedModule}), picking: ${picked.file.originalName} (course=${picked.coursePriority}, week=${picked.weekNum}, id=${picked.file.id})`);
-    aLog('FileOrder', `ALL candidates sorted: ${withMeta.map(w => `${w.file.originalName}(pri=${w.coursePriority},w=${w.weekNum},mod=${w.isModule},folder=${w.file.folder},id=${w.file.id},listened=${w.file.listened})`).join(' | ')}`);
+    console.log(`[FileOrder] ${allEligible.length} unlistened (${eligible.length} eligible, modulesBlock=${hasAnyUnlistenedModule})`);
+    console.log(`[FileOrder] ALL candidates sorted: ${withMeta.map(w => `${w.file.originalName}(pri=${w.coursePriority},w=${w.weekNum},mod=${w.isModule},folder=${w.file.folder},id=${w.file.id})`).join(' | ')}`);
     if (picked.coursePriority > 1) {
       const higherPriFiles = allForWeek.filter((f: any) => {
         const folder = (f.folder || '').toLowerCase();
@@ -12886,6 +12965,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         console.log(`[FileOrder] WARNING: CPPA files exist for week ${currentWeekNumber} but were not picked! ${higherPriFiles.map((f: any) => `${f.originalName}(listened=${f.listened},id=${f.id})`).join(' | ')}`);
       }
     }
+    console.log(`[FileOrder] === RESULT: id=${picked.file.id} "${picked.file.originalName}" folder=${picked.file.folder} priority=${picked.coursePriority} ===`);
     return picked.file;
   }
 
@@ -15656,7 +15736,7 @@ document.body.removeChild(a);
 
       console.log(`[Cat Lights][TRACE] Step 1: Getting today's date`);
       const today = torontoDate();
-      console.log(`[Cat Lights][TRACE] Step 2: today=${today.toISOString()}, fetching semester settings...`);
+      console.log(`[Cat Lights][TRACE] Step 2: today=${today.toISOString()} (${today.toLocaleString('en-US', { timeZone: 'America/Toronto' })}), fetching semester settings...`);
       let semesterSettings: any;
       try {
         semesterSettings = await storage.getActiveSemesterSettings();
@@ -15678,8 +15758,10 @@ document.body.removeChild(a);
       let currentWeekNumber = 1;
       const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00");
       const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
+      console.log(`[Cat Lights][TRACE] Step 3a: semStart=${semStart.toISOString()}, rwStart=${rwStart.toISOString()}, semEnd=${semesterSettings?.semesterEndDate || 'none'}`);
+      console.log(`[Cat Lights][TRACE] Step 3a: courses: slot1=${semesterSettings?.course1Code || 'empty'}, slot2=${semesterSettings?.course2Code || 'empty'}, slot3=${semesterSettings?.course3Code || 'empty'}`);
       currentWeekNumber = getWeekNumber(today, semStart, rwStart);
-      console.log(`[Cat Lights][TRACE] Step 3b: weekNumber=${currentWeekNumber}`);
+      console.log(`[Cat Lights][TRACE] Step 3b: weekNumber=${currentWeekNumber} (today=${today.toISOString().slice(0, 10)}, semStart=${semStart.toISOString().slice(0, 10)})`);
 
       console.log(`[Cat Lights][TRACE] Step 4: Getting cached files`);
       const allFilesBefore = await storage.getFiles();
