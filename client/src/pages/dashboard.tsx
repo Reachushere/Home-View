@@ -41625,35 +41625,8 @@ function TaskForm({
             )}
           </div>
 
-          <div className="flex items-center justify-end">
-              <Button
-                variant="outline"
-                className="text-[9px] h-5 px-2 text-orange-300 border-orange-400/40 hover:bg-orange-500/15 hover:text-orange-200"
-                disabled={dupSearching || !task?.id}
-                data-testid="button-find-duplicates"
-                onClick={async () => {
-                  if (!task?.id) return;
-                  setDupSearching(true);
-                  setDupResults(null);
-                  setDupDiffTimeEvents([]);
-                  setDupShowDiffTime(false);
-                  try {
-                    const resp = await fetch(`/api/tasks/${task.id}/find-calendar-duplicates`, { method: 'POST', credentials: 'include' });
-                    const data = await resp.json();
-                    const exact = (data.duplicates || []).filter((d: any) => d.isExactTime);
-                    const diffTime = (data.duplicates || []).filter((d: any) => !d.isExactTime);
-                    setDupResults(exact);
-                    setDupDiffTimeEvents(diffTime);
-                  } catch { setDupResults([]); }
-                  setDupSearching(false);
-                }}
-              >
-                {dupSearching ? 'Searching...' : 'Find Duplicates'}
-              </Button>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
+          <div className="flex items-center gap-3">
+            <div className="flex-1">
               <Label htmlFor="priority" className="text-[11px] text-white">Priority</Label>
               <div className="flex items-center gap-2">
                 <select
@@ -41678,7 +41651,7 @@ function TaskForm({
                 </button>
               </div>
             </div>
-            <div>
+            <div className="flex-1">
               <Label className="text-[11px] text-white">Repeat</Label>
               <select
                 value={formData.repeatType}
@@ -41694,6 +41667,32 @@ function TaskForm({
                 <option value="yearly">Yearly</option>
                 <option value="custom">Custom...</option>
               </select>
+            </div>
+            <div className="flex items-end" style={{ paddingBottom: '1px' }}>
+              <Button
+                variant="outline"
+                className="text-[9px] h-8 px-2 text-orange-300 border-orange-400/40 hover:bg-orange-500/15 hover:text-orange-200"
+                disabled={dupSearching || !task?.id}
+                data-testid="button-find-duplicates"
+                onClick={async () => {
+                  if (!task?.id) return;
+                  setDupSearching(true);
+                  setDupResults(null);
+                  setDupDiffTimeEvents([]);
+                  setDupShowDiffTime(false);
+                  try {
+                    const resp = await fetch(`/api/tasks/${task.id}/find-calendar-duplicates`, { method: 'POST', credentials: 'include' });
+                    const data = await resp.json();
+                    const exact = (data.duplicates || []).filter((d: any) => d.isExactTime);
+                    const diffTime = (data.duplicates || []).filter((d: any) => !d.isExactTime);
+                    setDupResults(exact);
+                    setDupDiffTimeEvents(diffTime);
+                  } catch { setDupResults([]); }
+                  setDupSearching(false);
+                }}
+              >
+                {dupSearching ? 'Searching...' : 'Find Duplicates'}
+              </Button>
             </div>
           </div>
 
