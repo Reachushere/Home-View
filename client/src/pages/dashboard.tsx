@@ -6207,35 +6207,8 @@ export default function Dashboard() {
         if (data.courseDisplayNames) {
           localStorage.setItem('courseDisplayNames', JSON.stringify(data.courseDisplayNames));
         }
-        if (data.gridSizes && !layoutDefaultsLoadedRef.current) {
-          const sw = window.screen.width, sh = window.screen.height, pr = window.devicePixelRatio || 1;
-          const did = `device_${sw}x${sh}@${pr}`;
-          localStorage.setItem('gridSizes', JSON.stringify(data.gridSizes));
-          localStorage.setItem(`gridSizes_${did}`, JSON.stringify(data.gridSizes));
-          setGridSizes(prev => ({ ...prev, ...data.gridSizes }));
-          layoutDefaultsLoadedRef.current = true;
-        }
-        if (data.calendarHeight && !layoutDefaultsLoadedRef.current) {
-          const sw = window.screen.width, sh = window.screen.height, pr = window.devicePixelRatio || 1;
-          const did = `device_${sw}x${sh}@${pr}`;
-          const h = typeof data.calendarHeight === 'number' ? data.calendarHeight : parseInt(data.calendarHeight);
-          if (!isNaN(h)) {
-            localStorage.setItem('calendarHeight', String(h));
-            localStorage.setItem(`calendarHeight_${did}`, String(h));
-            setCalendarHeight(h);
-            layoutDefaultsLoadedRef.current = true;
-          }
-        }
-        if (data.calendarReduction && !layoutDefaultsLoadedRef.current) {
-          const sw = window.screen.width, sh = window.screen.height, pr = window.devicePixelRatio || 1;
-          const did = `device_${sw}x${sh}@${pr}`;
-          const r = typeof data.calendarReduction === 'number' ? data.calendarReduction : parseInt(data.calendarReduction);
-          if (!isNaN(r)) {
-            localStorage.setItem('calendarReduction', String(r));
-            localStorage.setItem(`calendarReduction_${did}`, String(r));
-            setCalendarReduction(r);
-          }
-        }
+
+
         if (data.showAllDayRow !== undefined && !localStorage.getItem('showAllDayRow')) {
           const val = typeof data.showAllDayRow === 'boolean' ? data.showAllDayRow : data.showAllDayRow === 'true';
           localStorage.setItem('showAllDayRow', JSON.stringify(val));
@@ -32178,8 +32151,6 @@ export default function Dashboard() {
               localStorage.setItem(`gridSizes_${deviceId}`, JSON.stringify(gridSizes));
               localStorage.setItem(`hwGroupBarWidth_${deviceId}`, String(hwGroupBarWidth));
               layoutDefaultsLoadedRef.current = true;
-              fetch('/api/degree-tracking/bulk', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ calendarHeight, calendarReduction, gridSizes }) }).catch(() => {});
-              fetch('/api/ui-settings/hwGroupBarWidth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: hwGroupBarWidth }) }).catch(() => {});
               toast({ title: "Saved", description: "Calendar size saved as default" });
             }}
             onTouchEnd={(e) => {
@@ -32199,8 +32170,6 @@ export default function Dashboard() {
               localStorage.setItem(`gridSizes_${deviceId}`, JSON.stringify(gridSizes));
               localStorage.setItem(`hwGroupBarWidth_${deviceId}`, String(hwGroupBarWidth));
               layoutDefaultsLoadedRef.current = true;
-              fetch('/api/degree-tracking/bulk', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ calendarHeight, calendarReduction, gridSizes }) }).catch(() => {});
-              fetch('/api/ui-settings/hwGroupBarWidth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: hwGroupBarWidth }) }).catch(() => {});
               toast({ title: "Saved", description: "Calendar size saved as default" });
             }}
             data-testid="button-set-default-size"
