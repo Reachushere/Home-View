@@ -12423,6 +12423,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       const courses = await getSemesterOneDriveCourses(semesterSettings);
       const isSpSuSync = (semesterSettings.semesterType || '').toLowerCase().includes('spring') || (semesterSettings.semesterType || '').toLowerCase().includes('summer');
       console.log(`${logPrefix} Syncing OneDrive for ${courses.length} courses, week ${currentWeekNumber}`);
+      const existingFiles = await storage.getFiles();
+      const existingFileSet = new Set(existingFiles.map((f: any) => `${f.originalName}::${f.folder}`));
       for (const course of courses) {
         try {
           let folderWeek = currentWeekNumber;
@@ -12456,9 +12458,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
             const subFiles = await listOneDriveItems(subFolder.path);
             for (const file of subFiles) {
               if (file.type !== 'file' || !file.name.endsWith('.pdf')) continue;
-              const existingFiles = await storage.getFiles();
               const folderName = `week-${currentWeekNumber}-${course.code.toLowerCase()}-${subType}`;
-              if (existingFiles.some((f: any) => f.originalName === file.name && f.folder === folderName)) continue;
+              if (existingFileSet.has(`${file.name}::${folderName}`)) continue;
               const downloadResponse = await fetch(file.downloadUrl);
               if (!downloadResponse.ok) continue;
               const fileBuffer = Buffer.from(await downloadResponse.arrayBuffer());
