@@ -15693,30 +15693,15 @@ document.body.removeChild(a);
       ]);
 
       if (!nextFile) {
-        console.log(`[Cat Lights][TRACE] Step 5a: No cached files — syncing OneDrive (30s timeout) for week ${currentWeekNumber}`);
-        try { await syncWithTimeout(30000); console.log(`[Cat Lights][TRACE] Step 5a: OneDrive sync completed`); } catch (e: any) { console.log(`[Cat Lights][TRACE] Step 5a: Sync timeout/error: ${e.message}`); }
+        console.log(`[Cat Lights][TRACE] Step 5a: No cached files — syncing OneDrive (15s timeout) for week ${currentWeekNumber}`);
+        try { await syncWithTimeout(15000); console.log(`[Cat Lights][TRACE] Step 5a: OneDrive sync completed`); } catch (e: any) { console.log(`[Cat Lights][TRACE] Step 5a: Sync timeout/error: ${e.message}`); }
         const allFilesAfter = await storage.getFiles();
         console.log(`[Cat Lights][TRACE] Step 5a: ${allFilesAfter.length} files after sync`);
         nextFile = await findNextFileByPriority(allFilesAfter, currentWeekNumber);
         console.log(`[Cat Lights][TRACE] Step 5a: After sync, nextFile=${nextFile ? `id=${nextFile.id}` : 'null'}`);
       } else {
-        const cachedPri = await getCoursePriorityForFile(nextFile);
-        if (cachedPri > 1) {
-          console.log(`[Cat Lights][TRACE] Step 5b: Cached file has priority ${cachedPri} — syncing OneDrive (25s timeout)`);
-          try { await syncWithTimeout(25000); console.log(`[Cat Lights][TRACE] Step 5b: OneDrive sync completed`); } catch (e: any) { console.log(`[Cat Lights][TRACE] Step 5b: Sync timeout/error: ${e.message}`); }
-          const allFilesAfter = await storage.getFiles();
-          const betterFile = await findNextFileByPriority(allFilesAfter, currentWeekNumber);
-          if (betterFile) {
-            const betterPri = await getCoursePriorityForFile(betterFile);
-            if (betterPri < cachedPri) {
-              console.log(`[Cat Lights] Found higher-priority file after sync: priority ${betterPri} (was ${cachedPri})`);
-              nextFile = betterFile;
-            }
-          }
-        } else {
-          console.log(`[Cat Lights][TRACE] Step 5c: Using cached priority-1 file — syncing OneDrive in background`);
-          syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Cat Lights]').catch(e => console.log(`[Cat Lights] Background sync error: ${e.message}`));
-        }
+        console.log(`[Cat Lights][TRACE] Step 5c: Using cached file — syncing OneDrive in background only`);
+        syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Cat Lights]').catch(e => console.log(`[Cat Lights] Background sync error: ${e.message}`));
       }
       console.log(`[Cat Lights][TRACE] Step 6: File lookup complete, nextFile=${nextFile ? `id=${nextFile.id} "${nextFile.originalName}"` : 'null'}`);
 
