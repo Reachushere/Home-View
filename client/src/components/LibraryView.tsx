@@ -109,12 +109,12 @@ interface LibraryViewProps {
   isSharedView?: boolean;
 }
 
-const BOOK_COLORS = [
-  '#8B4513', '#2F4F4F', '#4A0E0E', '#1a3a5c', '#3d2b1f',
-  '#556B2F', '#4B0082', '#8B0000', '#006064', '#37474F',
-  '#5D4037', '#1B5E20', '#311B92', '#BF360C', '#01579B',
-  '#33691E', '#880E4F', '#004D40', '#E65100', '#1A237E',
-];
+const WEEK_COLOR_PALETTE: Record<number, string> = {
+  1: '#1a3a5c', 2: '#5D4037', 3: '#4B0082', 4: '#006064',
+  5: '#2F4F4F', 6: '#BF360C', 7: '#33691E', 8: '#880E4F',
+  9: '#E65100', 10: '#1A237E', 11: '#004D40', 12: '#311B92',
+  13: '#8B0000', 14: '#01579B', 15: '#556B2F',
+};
 
 const SPINE_PATTERNS = [
   'linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 20%, transparent 80%, rgba(255,255,255,0.08) 100%)',
@@ -122,9 +122,11 @@ const SPINE_PATTERNS = [
   'linear-gradient(180deg, rgba(0,0,0,0.1) 0%, transparent 15%, transparent 85%, rgba(0,0,0,0.15) 100%)',
 ];
 
-function getBookColor(index: number, courseCode: string): string {
+function getBookColor(index: number, courseCode: string, weekNum?: number): string {
+  if (weekNum && WEEK_COLOR_PALETTE[weekNum]) return WEEK_COLOR_PALETTE[weekNum];
+  const fallback = ['#8B4513', '#2F4F4F', '#4A0E0E', '#1a3a5c', '#3d2b1f', '#556B2F', '#4B0082', '#8B0000'];
   const hash = courseCode.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
-  return BOOK_COLORS[(hash + index) % BOOK_COLORS.length];
+  return fallback[(hash + index) % fallback.length];
 }
 
 function toTitleCase(str: string): string {
@@ -160,7 +162,6 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   shelfHeight: number;
   onRename: (file: FileRecord) => void;
 }) {
-  const [hovered, setHovered] = useState(false);
   const seededRand = ((file.id * 2654435761) >>> 0) / 4294967296;
   const spineWidth = 28 + seededRand * 12;
   const bookHeight = shelfHeight - 8 - (index % 3) * 6;
@@ -175,8 +176,6 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
     <div
       className="book-spine-item"
       onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
       style={{
         width: `${spineWidth}px`,
         height: `${bookHeight}px`,
@@ -199,30 +198,6 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
       }}
       data-testid={`book-spine-${file.id}`}
     >
-      {hovered && (
-        <div
-          onClick={(e) => { e.stopPropagation(); onRename(file); }}
-          style={{
-            position: 'absolute',
-            top: '-14px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: '20px',
-            height: '20px',
-            borderRadius: '50%',
-            backgroundColor: 'rgba(30,30,30,0.85)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            zIndex: 20,
-            boxShadow: '0 1px 4px rgba(0,0,0,0.4)',
-          }}
-          data-testid={`btn-rename-book-${file.id}`}
-        >
-          <Pencil size={11} color="#D4AF37" />
-        </div>
-      )}
       {hasTopBand && (
         <div style={{
           position: 'absolute',
@@ -269,13 +244,19 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
         color: '#ffffff',
         textShadow: '0 1px 3px rgba(0,0,0,0.7)',
         letterSpacing: '0.5px',
-        maxHeight: `${bookHeight - 46}px`,
+        maxHeight: `${bookHeight - 56}px`,
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
         padding: '4px 0',
         lineHeight: 1.2,
+        marginTop: '-12px',
       }}>
+        <span
+          onClick={(e) => { e.stopPropagation(); onRename(file); }}
+          style={{ cursor: 'pointer', marginRight: '2px' }}
+          data-testid={`btn-rename-book-${file.id}`}
+        >✎ </span>
         {title}
       </span>
       {weekNum && (
@@ -313,13 +294,15 @@ function WeekSeparator({ weekNum }: { weekNum: number }) {
   return (
     <div style={{
       width: '14px',
-      height: '100%',
+      height: 'calc(100% + 20px)',
+      marginBottom: '-10px',
       flexShrink: 0,
       position: 'relative',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
+      alignSelf: 'flex-end',
     }}>
       <div style={{
         width: '6px',
@@ -374,8 +357,9 @@ function Bookend({ side }: { side: 'left' | 'right' }) {
   return (
     <div style={{
       width: '22px',
-      height: 'calc(100% + 40px)',
-      marginTop: '-20px',
+      height: 'calc(100% + 50px)',
+      marginBottom: '-10px',
+      alignSelf: 'flex-end',
       background: side === 'left'
         ? 'linear-gradient(90deg, #005BB5 0%, #004C9B 15%, #003F87 40%, #003670 70%, #002D5C 100%)'
         : 'linear-gradient(90deg, #002D5C 0%, #003670 30%, #003F87 60%, #004C9B 85%, #005BB5 100%)',
@@ -1392,11 +1376,13 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
   const [currentSemIdx, setCurrentSemIdx] = useState(0);
   const [selectedBook, setSelectedBook] = useState<FileRecord | null>(null);
   const [selectedBookColor, setSelectedBookColor] = useState('#8B4513');
-  const [animatingBook, setAnimatingBook] = useState<FileRecord | null>(null);
-  const [animatingColor, setAnimatingColor] = useState('#8B4513');
+  const [openReaders, setOpenReaders] = useState<{ file: FileRecord; color: string }[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [showSharePopup, setShowSharePopup] = useState(false);
+  const [masterSearch, setMasterSearch] = useState('');
+  const [masterSemFilter, setMasterSemFilter] = useState('all');
+  const [masterCourseFilter, setMasterCourseFilter] = useState('all');
   const [shareLink, setShareLink] = useState('');
   const [shareCopied, setShareCopied] = useState(false);
   const [renamingFile, setRenamingFile] = useState<FileRecord | null>(null);
@@ -1541,9 +1527,76 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
     return result;
   }, [currentSemester, allFiles, semesters]);
 
+  const allCoursesForSearch = useMemo(() => {
+    const set = new Set<string>();
+    semesters.forEach(s => s.courses.forEach(c => set.add(c.code)));
+    return Array.from(set);
+  }, [semesters]);
+
+  const masterSearchResults = useMemo(() => {
+    if (!masterSearch.trim()) return null;
+    const q = masterSearch.toLowerCase().trim();
+    const tokens = q.split(/\s+/).filter(Boolean);
+    const results: { file: FileRecord; semLabel: string; semKey: string; courseCode: string; courseName: string; weekNum: number; fileType: string }[] = [];
+
+    const moduleReadingFiles = allFiles.filter(f => {
+      if (!f.folder) return false;
+      const fl = f.folder.toLowerCase();
+      return (fl.includes('-module') || fl.includes('-reading')) && fl.startsWith('week-');
+    });
+
+    semesters.forEach(sem => {
+      if (masterSemFilter !== 'all' && sem.key !== masterSemFilter) return;
+      sem.courses.forEach(course => {
+        if (masterCourseFilter !== 'all' && course.code !== masterCourseFilter) return;
+        const codeNorm = course.code.replace(/\s/g, '').toLowerCase();
+        const matched = moduleReadingFiles.filter(f => {
+          const match = f.folder!.match(/^week-(\d+)-(.+?)-(module|reading)$/i);
+          if (!match) return false;
+          return match[2].toLowerCase() === codeNorm || match[2].toLowerCase().replace(/_/g, '') === codeNorm;
+        });
+        matched.forEach(f => {
+          const name = (f.displayName || f.originalName).toLowerCase();
+          const folder = f.folder?.toLowerCase() || '';
+          const wn = parseInt(folder.match(/week-(\d+)/)?.[1] || '0');
+          const fType = folder.includes('-module') ? 'module' : 'reading';
+          const weekStr = `week ${wn}`;
+          const weekStr2 = `week${wn}`;
+          const searchable = [
+            name,
+            folder,
+            course.code.toLowerCase(),
+            course.name.toLowerCase(),
+            sem.label.toLowerCase(),
+            sem.key.toLowerCase(),
+            weekStr,
+            weekStr2,
+            `w${wn}`,
+            fType,
+          ].join(' ');
+
+          const allMatch = tokens.every(tok => searchable.includes(tok));
+          if (allMatch) {
+            results.push({ file: f, semLabel: sem.label, semKey: sem.key, courseCode: course.code, courseName: course.name, weekNum: wn, fileType: fType });
+          }
+        });
+      });
+    });
+    results.sort((a, b) => {
+      const semCmp = a.semLabel.localeCompare(b.semLabel);
+      if (semCmp !== 0) return semCmp;
+      const codeCmp = a.courseCode.localeCompare(b.courseCode);
+      if (codeCmp !== 0) return codeCmp;
+      return a.weekNum - b.weekNum;
+    });
+    return results;
+  }, [masterSearch, masterSemFilter, masterCourseFilter, allFiles, semesters]);
+
   const handleBookClick = useCallback((file: FileRecord, color: string) => {
-    setAnimatingBook(file);
-    setAnimatingColor(color);
+    setOpenReaders(prev => {
+      if (prev.some(r => r.file.id === file.id)) return prev;
+      return [...prev, { file, color }];
+    });
   }, []);
 
   const handleRenameStart = useCallback((file: FileRecord) => {
@@ -1896,6 +1949,170 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         </div>
       </div>
 
+      <div style={{
+        position: 'absolute',
+        top: '16px',
+        right: '110px',
+        zIndex: 100002,
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px',
+      }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '4px',
+          background: 'rgba(0,0,0,0.5)',
+          border: '1px solid rgba(255,255,255,0.2)',
+          borderRadius: '18px',
+          padding: '4px 10px',
+        }}>
+          <Search size={13} color="rgba(255,255,255,0.5)" />
+          <input
+            type="text"
+            value={masterSearch}
+            onChange={e => setMasterSearch(e.target.value)}
+            placeholder="Search by name, week, course, type..."
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: '#fff',
+              fontSize: '11px',
+              outline: 'none',
+              width: '140px',
+            }}
+            data-testid="input-master-search"
+          />
+          {masterSearch && (
+            <button
+              onClick={() => { setMasterSearch(''); setMasterSemFilter('all'); setMasterCourseFilter('all'); }}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}
+            >
+              <X size={12} color="rgba(255,255,255,0.5)" />
+            </button>
+          )}
+        </div>
+        {masterSearch && (
+          <>
+            <select
+              value={masterSemFilter}
+              onChange={e => setMasterSemFilter(e.target.value)}
+              style={{
+                background: 'rgba(0,0,0,0.5)',
+                border: '1px solid rgba(255,255,255,0.2)',
+                borderRadius: '12px',
+                padding: '4px 8px',
+                color: '#fff',
+                fontSize: '10px',
+                outline: 'none',
+                cursor: 'pointer',
+              }}
+              data-testid="select-master-sem-filter"
+            >
+              <option value="all">All Semesters</option>
+              {semesters.map(s => (
+                <option key={s.key} value={s.key}>{s.label}</option>
+              ))}
+            </select>
+            <select
+              value={masterCourseFilter}
+              onChange={e => setMasterCourseFilter(e.target.value)}
+              style={{
+                background: 'rgba(0,0,0,0.5)',
+                border: '1px solid rgba(255,255,255,0.2)',
+                borderRadius: '12px',
+                padding: '4px 8px',
+                color: '#fff',
+                fontSize: '10px',
+                outline: 'none',
+                cursor: 'pointer',
+              }}
+              data-testid="select-master-course-filter"
+            >
+              <option value="all">All Courses</option>
+              {allCoursesForSearch.map(c => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+          </>
+        )}
+      </div>
+
+      {masterSearchResults && (
+        <div style={{
+          position: 'absolute',
+          top: '56px',
+          right: '110px',
+          zIndex: 100003,
+          background: 'rgba(10,6,4,0.95)',
+          border: '1px solid rgba(255,255,255,0.15)',
+          borderRadius: '10px',
+          padding: '8px',
+          maxHeight: '60vh',
+          overflowY: 'auto',
+          minWidth: '320px',
+          maxWidth: '420px',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
+        }}>
+          <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', marginBottom: '6px', padding: '0 4px' }}>
+            {masterSearchResults.length} result{masterSearchResults.length !== 1 ? 's' : ''} found
+          </div>
+          {masterSearchResults.length === 0 && (
+            <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: '11px', textAlign: 'center', padding: '16px' }}>
+              No documents match your search
+            </div>
+          )}
+          {masterSearchResults.map(r => {
+            const wColor = getBookColor(0, r.courseCode, r.weekNum);
+            return (
+              <div
+                key={r.file.id}
+                onClick={() => {
+                  handleBookClick(r.file, wColor);
+                  setMasterSearch('');
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '6px 8px',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  transition: 'background 0.15s',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.08)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                data-testid={`search-result-${r.file.id}`}
+              >
+                <div style={{
+                  width: '8px',
+                  height: '32px',
+                  borderRadius: '2px',
+                  backgroundColor: wColor,
+                  flexShrink: 0,
+                }} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <span style={{
+                      fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px',
+                      backgroundColor: r.fileType === 'module' ? 'rgba(76,175,80,0.25)' : 'rgba(33,150,243,0.25)',
+                      color: r.fileType === 'module' ? '#81C784' : '#64B5F6',
+                      flexShrink: 0, textTransform: 'uppercase', letterSpacing: '0.5px',
+                    }}>{r.fileType === 'module' ? 'M' : 'R'}</span>
+                    <span style={{ fontSize: '11px', color: '#fff', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {r.file.displayName || r.file.originalName}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', marginTop: '1px' }}>
+                    {r.courseCode} — {r.courseName} · Week {r.weekNum} · {r.semLabel}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
       <div
         ref={scrollRef}
         style={{
@@ -2007,7 +2224,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                         elements.push(<WeekSeparator key={`sep-${lastWeek}-${weekNum}`} weekNum={weekNum} />);
                       }
                       lastWeek = weekNum;
-                      const color = getBookColor(fileIdx, course.code);
+                      const color = getBookColor(fileIdx, course.code, weekNum);
                       elements.push(
                         <BookSpine
                           key={file.id}
@@ -2057,13 +2274,22 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         )}
       </div>
 
-      {animatingBook && (
-        <BookReader
-          file={animatingBook}
-          bookColor={animatingColor}
-          onClose={() => setAnimatingBook(null)}
-        />
-      )}
+      {openReaders.map((reader, readerIdx) => (
+        <div
+          key={reader.file.id}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 100010 + readerIdx,
+          }}
+        >
+          <BookReader
+            file={reader.file}
+            bookColor={reader.color}
+            onClose={() => setOpenReaders(prev => prev.filter(r => r.file.id !== reader.file.id))}
+          />
+        </div>
+      ))}
 
       {renamingFile && (
         <div
