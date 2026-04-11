@@ -15693,12 +15693,17 @@ document.body.removeChild(a);
       ]);
 
       if (!nextFile) {
-        console.log(`[Cat Lights][TRACE] Step 5a: No cached files — syncing OneDrive (15s timeout) for week ${currentWeekNumber}`);
-        try { await syncWithTimeout(15000); console.log(`[Cat Lights][TRACE] Step 5a: OneDrive sync completed`); } catch (e: any) { console.log(`[Cat Lights][TRACE] Step 5a: Sync timeout/error: ${e.message}`); }
+        console.log(`[Cat Lights][TRACE] Step 5a: No cached files for week ${currentWeekNumber} — syncing OneDrive (25s timeout)`);
+        try { await syncWithTimeout(25000); console.log(`[Cat Lights][TRACE] Step 5a: OneDrive sync completed`); } catch (e: any) { console.log(`[Cat Lights][TRACE] Step 5a: Sync timeout/error: ${e.message}`); }
         const allFilesAfter = await storage.getFiles();
         console.log(`[Cat Lights][TRACE] Step 5a: ${allFilesAfter.length} files after sync`);
         nextFile = await findNextFileByPriority(allFilesAfter, currentWeekNumber);
         console.log(`[Cat Lights][TRACE] Step 5a: After sync, nextFile=${nextFile ? `id=${nextFile.id}` : 'null'}`);
+        if (!nextFile && currentWeekNumber > 1) {
+          console.log(`[Cat Lights][TRACE] Step 5a2: Trying previous week ${currentWeekNumber - 1}`);
+          nextFile = await findNextFileByPriority(allFilesAfter, currentWeekNumber - 1);
+          if (nextFile) console.log(`[Cat Lights][TRACE] Step 5a2: Found file from week ${currentWeekNumber - 1}: id=${nextFile.id}`);
+        }
       } else {
         console.log(`[Cat Lights][TRACE] Step 5c: Using cached file — syncing OneDrive in background only`);
         syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Cat Lights]').catch(e => console.log(`[Cat Lights] Background sync error: ${e.message}`));
@@ -15736,8 +15741,7 @@ document.body.removeChild(a);
       console.log(`[Cat Lights][TRACE] Step 9: Have file — building TTS prompt`);
       console.log(`[Cat Lights] Found next file: ${fileDesc} — ${fileName} (id=${nextFile.id})`);
 
-      const nowHour = new Date().toLocaleString('en-US', { timeZone: 'America/Toronto', hour: 'numeric', hour12: false });
-      const hourNum = parseInt(nowHour, 10);
+      const hourNum = easternHour();
       const greeting = hourNum < 12 ? 'Good morning Bryn.' : hourNum < 17 ? 'Good afternoon Bryn.' : 'Good evening Bryn.';
       const ttsMessage = `${greeting} Would you like to play ${fileDesc}?`;
       console.log(`[Cat Lights] Sending TTS prompt: "${ttsMessage}"`);
