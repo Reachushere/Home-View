@@ -6678,20 +6678,46 @@ export default function Dashboard() {
       'w2027': 'W27', 'ss2027': 'SS27', 'f2027': 'F27', 'w2028': 'W28', 'ss2028': 'SS28',
       'f2028': 'F28', 'w2029': 'W29', 'ss2029': 'SS29', 'f2029': 'F29',
     };
+    const SEMKEY_TO_DB_MAP: Record<string, { type: string; year: string }> = {
+      'ss2025': { type: 'spring_summer', year: '2025' }, 'f2025': { type: 'fall', year: '2025' },
+      'w2026': { type: 'winter', year: '2026' }, 'ss2026': { type: 'spring_summer', year: '2026' },
+      'f2026': { type: 'fall', year: '2026' }, 'w2027': { type: 'winter', year: '2027' },
+      'ss2027': { type: 'spring_summer', year: '2027' }, 'f2027': { type: 'fall', year: '2027' },
+      'w2028': { type: 'winter', year: '2028' }, 'ss2028': { type: 'spring_summer', year: '2028' },
+      'f2028': { type: 'fall', year: '2028' }, 'w2029': { type: 'winter', year: '2029' },
+      'ss2029': { type: 'spring_summer', year: '2029' }, 'f2029': { type: 'fall', year: '2029' },
+    };
     for (const semKey of semesterKeyOrder) {
       const courses = semesterCourseAssignments[semKey] || [];
+      const target = SEMKEY_TO_DB_MAP[semKey];
+      const dbSem = target && allSemesterSettings ? allSemesterSettings.find((s: any) => {
+        const yr = s.semesterName?.match(/\d{4}/)?.[0];
+        return s.semesterType === target.type && yr === target.year;
+      }) : null;
       for (const c of courses) {
+        let courseName = c.name || c.fullName || c.code;
+        if (dbSem) {
+          const codeNorm = c.code.replace(/\s/g, '').toUpperCase();
+          for (let si = 1; si <= 3; si++) {
+            const sc = ((dbSem as any)[`course${si}Code`] || '').replace(/\s/g, '').toUpperCase();
+            if (sc === codeNorm) {
+              const dbName = (dbSem as any)[`course${si}Name`] || '';
+              if (dbName) courseName = dbName;
+              break;
+            }
+          }
+        }
         options.push({
           semKey,
           semLabel: semLabelMap[semKey] || semKey,
           code: c.code,
-          name: c.name || c.fullName || c.code,
+          name: courseName,
           linkValue: `${semKey}:${c.code}`,
         });
       }
     }
     return options;
-  }, [semesterCourseAssignments]);
+  }, [semesterCourseAssignments, allSemesterSettings]);
 
   const usedLinkValues = useMemo(() => new Set(Object.values(certCourseLinks)), [certCourseLinks]);
 
@@ -19543,6 +19569,23 @@ export default function Dashboard() {
                     courseName: updates.courseName || prev.courseName,
                     fullName: newName,
                   } : prev);
+                  const semKey = selectedCertCourse?.semKey;
+                  if (semKey) {
+                    const updatedAssignments = { ...semesterCourseAssignments };
+                    const semCourses = [...(updatedAssignments[semKey] || [])];
+                    const oldCodeNorm = courseCode.replace(/\s/g, '').toUpperCase();
+                    const aIdx = semCourses.findIndex(c => c.code.replace(/\s/g, '').toUpperCase() === oldCodeNorm);
+                    if (aIdx >= 0) {
+                      semCourses[aIdx] = {
+                        ...semCourses[aIdx],
+                        code: updates.courseCode || semCourses[aIdx].code,
+                        name: updates.courseName || semCourses[aIdx].name,
+                        fullName: updates.courseName || semCourses[aIdx].fullName,
+                      };
+                      updatedAssignments[semKey] = semCourses;
+                      saveSemesterAssignments(updatedAssignments);
+                    }
+                  }
                 }
               } else {
                 const newCode = updates.courseCode || courseCode;
@@ -19599,6 +19642,23 @@ export default function Dashboard() {
                     courseName: updates.courseName || prev.courseName,
                     fullName: `${newCode} - ${newCourseName}`,
                   } : prev);
+                  const semKey = selectedCertCourse?.semKey;
+                  if (semKey) {
+                    const updatedAssignments = { ...semesterCourseAssignments };
+                    const semCourses = [...(updatedAssignments[semKey] || [])];
+                    const oldCodeNorm = courseCode.replace(/\s/g, '').toUpperCase();
+                    const aIdx = semCourses.findIndex(c => c.code.replace(/\s/g, '').toUpperCase() === oldCodeNorm);
+                    if (aIdx >= 0) {
+                      semCourses[aIdx] = {
+                        ...semCourses[aIdx],
+                        code: updates.courseCode || semCourses[aIdx].code,
+                        name: updates.courseName || semCourses[aIdx].name,
+                        fullName: updates.courseName || semCourses[aIdx].fullName,
+                      };
+                      updatedAssignments[semKey] = semCourses;
+                      saveSemesterAssignments(updatedAssignments);
+                    }
+                  }
                 }
               }
               const computeSemesterDates = (term: string, yr: string) => {

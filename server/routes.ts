@@ -2132,28 +2132,36 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
               };
               const folderNames = semFolderMap[existing.semesterType || ''] || [existing.semesterType || ''];
               const springSummerSubs = ['Full', 'Spring - First Half', 'Summer - Second Half'];
+              const oldFolderCandidates = [oldFolderSuffix];
+              if (slot.oldCode && !oldFolderCandidates.includes(slot.oldCode)) oldFolderCandidates.push(slot.oldCode);
 
               let renamed = false;
               for (const fn of folderNames) {
                 const basePath = `/School/1. TMU/Courses/${year}/${fn}`;
-                try {
-                  const result = await renameOneDriveFolder(`${basePath}/${oldFolderSuffix}`, newFolderName);
-                  if (result.renamed) {
-                    console.log(`[Semester] Renamed OneDrive folder: ${oldFolderSuffix} -> ${newFolderName}`);
-                    renamed = true;
-                    break;
-                  }
-                } catch {}
+                for (const oldName of oldFolderCandidates) {
+                  try {
+                    const result = await renameOneDriveFolder(`${basePath}/${oldName}`, newFolderName);
+                    if (result.renamed) {
+                      console.log(`[Semester] Renamed OneDrive folder: ${oldName} -> ${newFolderName}`);
+                      renamed = true;
+                      break;
+                    }
+                  } catch {}
+                }
+                if (renamed) break;
                 if (existing.semesterType === 'spring_summer') {
                   for (const sub of springSummerSubs) {
-                    try {
-                      const result = await renameOneDriveFolder(`${basePath}/${sub}/${oldFolderSuffix}`, newFolderName);
-                      if (result.renamed) {
-                        console.log(`[Semester] Renamed OneDrive folder in ${sub}: ${oldFolderSuffix} -> ${newFolderName}`);
-                        renamed = true;
-                        break;
-                      }
-                    } catch {}
+                    for (const oldName of oldFolderCandidates) {
+                      try {
+                        const result = await renameOneDriveFolder(`${basePath}/${sub}/${oldName}`, newFolderName);
+                        if (result.renamed) {
+                          console.log(`[Semester] Renamed OneDrive folder in ${sub}: ${oldName} -> ${newFolderName}`);
+                          renamed = true;
+                          break;
+                        }
+                      } catch {}
+                    }
+                    if (renamed) break;
                   }
                   if (renamed) break;
                 }
@@ -2167,11 +2175,15 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
             const oldMod = (updated as any)[modKey] as string | null;
             const oldRead = (updated as any)[readKey] as string | null;
             const folderPathUpdates: Record<string, string> = {};
-            if (oldMod && oldMod.includes(oldFolderSuffix)) {
-              folderPathUpdates[modKey] = oldMod.replace(oldFolderSuffix, newFolderName);
-            }
-            if (oldRead && oldRead.includes(oldFolderSuffix)) {
-              folderPathUpdates[readKey] = oldRead.replace(oldFolderSuffix, newFolderName);
+            const oldFolderNames = [oldFolderSuffix];
+            if (slot.oldCode && !oldFolderNames.includes(slot.oldCode)) oldFolderNames.push(slot.oldCode);
+            for (const ofn of oldFolderNames) {
+              if (oldMod && oldMod.includes(ofn) && !folderPathUpdates[modKey]) {
+                folderPathUpdates[modKey] = oldMod.replace(ofn, newFolderName);
+              }
+              if (oldRead && oldRead.includes(ofn) && !folderPathUpdates[readKey]) {
+                folderPathUpdates[readKey] = oldRead.replace(ofn, newFolderName);
+              }
             }
             if (Object.keys(folderPathUpdates).length > 0) {
               try {
@@ -5213,6 +5225,67 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
           } catch (e: any) { console.log(`[LibrarySync:Semester] Error syncing ${course.code}: ${e.message}`); }
         }
         console.log(`[LibrarySync:Semester] ${semesterKey}: synced ${synced} new files`);
+
+        try {
+          const startDate = sem.semesterStartDate ? new Date(sem.semesterStartDate) : new Date();
+          const year = startDate.getFullYear();
+          const isSpSu = (sem.semesterType || '').toLowerCase().includes('spring') || (sem.semesterType || '').toLowerCase().includes('summer');
+          const semFolderVariants = isSpSu
+            ? ['Spring & Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer']
+            : (sem.semesterType || '').toLowerCase().includes('fall') ? ['Fall'] : ['Winter'];
+          let basePath = `/School/1. TMU/Courses/${year}/${semFolderVariants[0]}`;
+          for (const variant of semFolderVariants) {
+            const candidatePath = `/School/1. TMU/Courses/${year}/${variant}`;
+            try {
+              const items = await listOneDriveItems(candidatePath);
+              if (items.length > 0) { basePath = candidatePath; break; }
+            } catch {}
+          }
+          const baseFolders = await listOneDriveItems(basePath);
+          const courseFolders = baseFolders.filter((f: any) => f.type === 'folder');
+          const courseUpdates: Record<string, any> = {};
+          for (let i = 1; i <= 3; i++) {
+            const code = ((sem as any)[`course${i}Code`] || '').replace(/\s/g, '');
+            if (!code) continue;
+            const modFolder = ((sem as any)[`course${i}ModuleFolder`] || '').trim();
+            if (!modFolder) continue;
+            const expectedFolderName = modFolder.split('/').filter(Boolean).pop() || '';
+            const actualMatch = courseFolders.find((f: any) => f.name === expectedFolderName);
+            if (actualMatch) continue;
+            const codeUpper = code.toUpperCase();
+            const otherCodes = new Set<string>();
+            for (let j = 1; j <= 3; j++) {
+              if (j !== i) otherCodes.add(((sem as any)[`course${j}Code`] || '').replace(/\s/g, '').toUpperCase());
+            }
+            const renamedFolder = courseFolders.find((f: any) => {
+              const nameUpper = f.name.toUpperCase().replace(/\s/g, '');
+              if (otherCodes.has(nameUpper) || otherCodes.has(nameUpper.split('-')[0]?.trim())) return false;
+              if (nameUpper.startsWith(codeUpper.replace(/\d+$/, ''))) return true;
+              if (codeUpper.startsWith('TBD') && nameUpper.startsWith('TBD')) return true;
+              return false;
+            });
+            if (renamedFolder) {
+              const newCode = renamedFolder.name.split(' - ')[0]?.trim() || renamedFolder.name;
+              if (newCode.toUpperCase().replace(/\s/g, '') !== codeUpper) {
+                console.log(`[LibrarySync:FolderRename] Detected rename: ${code} -> ${newCode} (folder: ${renamedFolder.name})`);
+                const newModFolder = modFolder.replace(expectedFolderName, renamedFolder.name);
+                courseUpdates[`course${i}Code`] = newCode;
+                courseUpdates[`course${i}ModuleFolder`] = newModFolder;
+                const readFolder = ((sem as any)[`course${i}ReadingFolder`] || '').trim();
+                if (readFolder && readFolder.includes(expectedFolderName)) {
+                  courseUpdates[`course${i}ReadingFolder`] = readFolder.replace(expectedFolderName, renamedFolder.name);
+                }
+              }
+            }
+          }
+          if (Object.keys(courseUpdates).length > 0) {
+            console.log(`[LibrarySync:FolderRename] Updating semester ${sem.id}:`, JSON.stringify(courseUpdates));
+            await storage.updateSemesterSettings(sem.id, courseUpdates);
+          }
+        } catch (renameErr: any) {
+          console.log(`[LibrarySync:FolderRename] Error checking renames: ${renameErr.message}`);
+        }
+
         const allFilesNow = await storage.getFiles();
         const brokenFiles = allFilesNow.filter((f: any) => {
           if (!f.objectPath) return false;
