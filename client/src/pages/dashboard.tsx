@@ -7661,11 +7661,6 @@ export default function Dashboard() {
   const hasUnackedReminders = allTasks.some((t: any) => t.type === 'reminder' && t.isAcknowledged === false && !t.isCompleted);
 
   const countdownBarsByRow = useMemo(() => {
-    const ss = semesterSettingsRef.current;
-    const semStart = ss?.semesterStartDate ? new Date(ss.semesterStartDate) : null;
-    const rwStart = ss?.readingWeekStart || null;
-    const currentWeekNum = semStart ? getWeekNumber(new Date(), semStart, rwStart) : null;
-    if (currentWeekNum !== null && currentWeekNum !== selectedWeek) return { byCourse: {} as Record<string, Array<{task: Task; daysLeft: number}>>, other: [] as Array<{task: Task; daysLeft: number}> };
     const twoWeeksOut = new Date(stableToday.getTime() + 14 * 24 * 60 * 60 * 1000);
     const allCountdown = (allTasks || []).filter(t => {
       if (t.showCountdownBarMain === false || t.isCompleted) return false;
@@ -7724,7 +7719,7 @@ export default function Dashboard() {
       }
     }
     return { byCourse, other };
-  }, [allTasks, stableToday, selectedWeek]);
+  }, [allTasks, stableToday]);
 
   useEffect(() => {
     if (!allTasksRaw || allTasksRaw.length === 0) return;
