@@ -13068,7 +13068,8 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
     const confirmTTSPromise = confirmationTTS ? (async () => {
       try {
-        console.log(`${logPrefix} Confirm TTS text: "${confirmationTTS}"`);
+        console.log(`${logPrefix} Confirm TTS text: "${confirmationTTS}" — waiting 3s for Nest to wake up`);
+        await new Promise(r => setTimeout(r, 3000));
         const [confirmPath] = await Promise.all([
           confirmAudioPromise,
           haServiceCallSafe('media_player/volume_set', { entity_id: NEST_SPEAKER_ENTITY, volume_level: 0.75 }, 'Nest Pre-Confirm Vol').catch(() => {}),
