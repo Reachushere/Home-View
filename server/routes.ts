@@ -933,11 +933,13 @@ export async function registerRoutes(
     }
   });
 
+  const serverManagedDegreeKeys = new Set(['semesterCourseAssignments', 'coursesData']);
+
   app.post('/api/degree-tracking', async (req, res) => {
     try {
       const { key, value } = req.body;
       if (!key) return res.status(400).json({ error: 'key is required' });
-      if (key === 'semesterCourseAssignments') {
+      if (serverManagedDegreeKeys.has(key)) {
         return res.json({ ok: true, skipped: 'server-managed' });
       }
       const valueStr = typeof value === 'string' ? value : JSON.stringify(value);
@@ -947,8 +949,6 @@ export async function registerRoutes(
       res.status(500).json({ error: 'Failed to save degree tracking data' });
     }
   });
-
-  const serverManagedDegreeKeys = new Set(['semesterCourseAssignments']);
 
   app.post('/api/degree-tracking/bulk', async (req, res) => {
     try {
