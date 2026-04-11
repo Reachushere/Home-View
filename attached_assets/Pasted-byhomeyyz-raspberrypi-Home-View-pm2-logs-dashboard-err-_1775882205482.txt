@@ -1,0 +1,32 @@
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs dashboard --err --lines 20
+[TAILING] Tailing last 20 lines for [dashboard] process (change the value with --lines option)
+/home/byhomeyyz/.pm2/logs/dashboard-error.log last 20 lines:
+0|dashboar |     at Xw.handleRequest (/home/byhomeyyz/Home-View/dist/index.cjs:28:25909)
+0|dashboar |     at /home/byhomeyyz/Home-View/dist/index.cjs:28:30574
+0|dashboar | Error fetching events from second account: Error: Google OAuth credentials not configured for second account
+0|dashboar |     at oAe (/home/byhomeyyz/Home-View/dist/index.cjs:174:96702)
+0|dashboar |     at zvt (/home/byhomeyyz/Home-View/dist/index.cjs:174:97692)
+0|dashboar |     at F2 (/home/byhomeyyz/Home-View/dist/index.cjs:174:98311)
+0|dashboar |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+0|dashboar |     at async $6 (/home/byhomeyyz/Home-View/dist/index.cjs:177:1384)
+0|dashboar |     at async /home/byhomeyyz/Home-View/dist/index.cjs:756:22122
+0|dashboar | List calendars error: Error: Google Calendar not connected - run connect_google.js on the Pi
+0|dashboar |     at QVo (/home/byhomeyyz/Home-View/dist/index.cjs:324:58286)
+0|dashboar |     at Fd (/home/byhomeyyz/Home-View/dist/index.cjs:324:58743)
+0|dashboar |     at dAe (/home/byhomeyyz/Home-View/dist/index.cjs:330:1543)
+0|dashboar |     at /home/byhomeyyz/Home-View/dist/index.cjs:572:38688
+0|dashboar |     at Xw.handleRequest (/home/byhomeyyz/Home-View/dist/index.cjs:28:25909)
+0|dashboar |     at g (/home/byhomeyyz/Home-View/dist/index.cjs:28:27843)
+0|dashboar |     at Ow.dispatch (/home/byhomeyyz/Home-View/dist/index.cjs:28:27599)
+0|dashboar |     at A (/home/byhomeyyz/Home-View/dist/index.cjs:28:31697)
+0|dashboar |     at Xw.handleRequest (/home/byhomeyyz/Home-View/dist/index.cjs:28:25909)
+0|dashboar |     at /home/byhomeyyz/Home-View/dist/index.cjs:28:30574
+
+0|dashboard  | [Server] Port 5000 in use (attempt 1), killing old process...
+0|dashboard  | Error fetching events from third account calendar: Error: Google OAuth credentials not configured for third account
+0|dashboard  |     at yAe (/home/byhomeyyz/Home-View/dist/index.cjs:330:8537)
+0|dashboard  |     at ZVo (/home/byhomeyyz/Home-View/dist/index.cjs:330:9523)
+0|dashboard  |     at w6 (/home/byhomeyyz/Home-View/dist/index.cjs:330:10010)
+0|dashboard  |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+0|dashboard  |     at async E6 (/home/byhomeyyz/Home-View/dist/index.cjs:330:10813)
+0|dashboard  |     at async /home/byhomeyyz/Home-View/dist/index.cjs:831:3334
