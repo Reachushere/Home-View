@@ -285,7 +285,7 @@ function WeekSeparator({ weekNum }: { weekNum: number }) {
   return (
     <div style={{
       width: '14px',
-      alignSelf: 'stretch',
+      height: '100%',
       flexShrink: 0,
       position: 'relative',
       display: 'flex',
@@ -346,8 +346,8 @@ function Bookend({ side }: { side: 'left' | 'right' }) {
   return (
     <div style={{
       width: '22px',
-      alignSelf: 'stretch',
-      marginBottom: '0px',
+      height: 'calc(100% + 14px)',
+      marginTop: '-14px',
       background: side === 'left'
         ? 'linear-gradient(90deg, #005BB5 0%, #004C9B 15%, #003F87 40%, #003670 70%, #002D5C 100%)'
         : 'linear-gradient(90deg, #002D5C 0%, #003670 30%, #003F87 60%, #004C9B 85%, #005BB5 100%)',
@@ -1933,7 +1933,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 <div style={{
                   display: 'flex',
                   alignItems: 'flex-end',
-                  height: `${shelfHeight + 16}px`,
+                  height: `${shelfHeight}px`,
                   padding: '0 4px 10px',
                   gap: '2px',
                   overflowX: 'auto',
