@@ -282,8 +282,8 @@ interface Annotation {
 const HIGHLIGHT_COLORS = ['#FFEB3B', '#4CAF50', '#2196F3', '#FF9800', '#E91E63'];
 
 const toolBtnStyle = (active?: boolean): React.CSSProperties => ({
-  background: active ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.2)',
-  border: active ? '1px solid rgba(255,255,255,0.5)' : '1px solid rgba(255,255,255,0.15)',
+  background: active ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.12)',
+  border: active ? '1px solid rgba(255,255,255,0.6)' : '1px solid rgba(255,255,255,0.25)',
   borderRadius: '4px',
   padding: '4px 6px',
   cursor: 'pointer',
@@ -397,20 +397,31 @@ function BookReader({ file, bookColor, onClose }: {
     return () => { cancelled = true; };
   }, [pdfDoc, currentPage, phase, zoom]);
 
+  const [searching, setSearching] = useState(false);
   const handleSearch = useCallback(async () => {
     if (!pdfDoc || !searchQuery.trim()) return;
-    const results: { page: number; matches: number }[] = [];
-    const q = searchQuery.toLowerCase();
-    for (let i = 1; i <= pdfDoc.numPages; i++) {
-      const page = await pdfDoc.getPage(i);
-      const textContent = await page.getTextContent();
-      const text = textContent.items.map((item: any) => item.str).join(' ').toLowerCase();
-      const count = text.split(q).length - 1;
-      if (count > 0) results.push({ page: i, matches: count });
+    setSearching(true);
+    try {
+      const results: { page: number; matches: number }[] = [];
+      const q = searchQuery.toLowerCase().trim();
+      for (let i = 1; i <= pdfDoc.numPages; i++) {
+        const page = await pdfDoc.getPage(i);
+        const textContent = await page.getTextContent();
+        const text = textContent.items.map((item: any) => {
+          let s = item.str || '';
+          if (item.hasEOL) s += '\n';
+          return s;
+        }).join('').toLowerCase();
+        const textSpaced = text.replace(/\s+/g, ' ');
+        const count = textSpaced.split(q).length - 1;
+        if (count > 0) results.push({ page: i, matches: count });
+      }
+      setSearchResults(results);
+      setSearchCurrentIdx(0);
+      if (results.length > 0) setCurrentPage(results[0].page);
+    } finally {
+      setSearching(false);
     }
-    setSearchResults(results);
-    setSearchCurrentIdx(0);
-    if (results.length > 0) setCurrentPage(results[0].page);
   }, [pdfDoc, searchQuery]);
 
   const navigateSearch = useCallback((dir: 1 | -1) => {
@@ -576,7 +587,7 @@ function BookReader({ file, bookColor, onClose }: {
               </div>
             </div>
             <div style={{ padding: '4px 12px 6px 32px', borderBottom: '1px solid rgba(255,255,255,0.1)', zIndex: 3, flexShrink: 0 }}>
-              <div style={{ color: '#D4AF37', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <div style={{ color: '#ffffff', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {title}
               </div>
             </div>
@@ -593,12 +604,15 @@ function BookReader({ file, bookColor, onClose }: {
                   style={{ flex: 1, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '4px', padding: '4px 8px', color: '#fff', fontSize: '12px', outline: 'none' }}
                   data-testid="input-pdf-search"
                 />
-                <button onClick={handleSearch} style={toolBtnStyle()} data-testid="btn-search-go">
-                  <Search size={12} />
+                <button onClick={handleSearch} disabled={searching} style={{ ...toolBtnStyle(), opacity: searching ? 0.5 : 1 }} data-testid="btn-search-go">
+                  {searching ? <span style={{ fontSize: '10px' }}>...</span> : <Search size={12} />}
                 </button>
-                {searchResults.length > 0 && (
+                {searching && (
+                  <span style={{ color: '#ffffff', fontSize: '10px', whiteSpace: 'nowrap' }}>Searching...</span>
+                )}
+                {!searching && searchResults.length > 0 && (
                   <>
-                    <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '10px', whiteSpace: 'nowrap' }}>
+                    <span style={{ color: '#ffffff', fontSize: '10px', whiteSpace: 'nowrap', fontWeight: 600 }}>
                       {searchCurrentIdx + 1}/{searchResults.length} pages
                     </span>
                     <button onClick={() => navigateSearch(-1)} style={toolBtnStyle()} data-testid="btn-search-prev">
@@ -609,7 +623,7 @@ function BookReader({ file, bookColor, onClose }: {
                     </button>
                   </>
                 )}
-                {searchResults.length === 0 && searchQuery && (
+                {!searching && searchResults.length === 0 && searchQuery && (
                   <span style={{ color: 'rgba(255,100,100,0.8)', fontSize: '10px' }}>No results</span>
                 )}
               </div>
@@ -861,14 +875,14 @@ function BookReader({ file, bookColor, onClose }: {
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', padding: '4px 32px', borderTop: '1px solid rgba(255,255,255,0.1)', zIndex: 3, flexShrink: 0 }}>
-              <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage <= 1} style={{ ...toolBtnStyle(), padding: '3px 8px', opacity: currentPage <= 1 ? 0.3 : 1, cursor: currentPage <= 1 ? 'not-allowed' : 'pointer' }} data-testid="btn-pdf-prev">
-                <ChevronLeft size={14} /> <span style={{ fontSize: '11px' }}>Prev</span>
+              <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage <= 1} style={{ ...toolBtnStyle(), padding: '3px 10px', opacity: currentPage <= 1 ? 0.3 : 1, cursor: currentPage <= 1 ? 'not-allowed' : 'pointer' }} data-testid="btn-pdf-prev">
+                <ChevronLeft size={14} /> <span style={{ fontSize: '11px', fontWeight: 600 }}>Prev</span>
               </button>
               <span style={{ fontSize: '12px', color: '#ffffff', fontWeight: 700, minWidth: '50px', textAlign: 'center' }}>
                 {currentPage} / {totalPages}
               </span>
-              <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage >= totalPages} style={{ ...toolBtnStyle(), padding: '3px 8px', opacity: currentPage >= totalPages ? 0.3 : 1, cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer' }} data-testid="btn-pdf-next">
-                <span style={{ fontSize: '11px' }}>Next</span> <ChevronRight size={14} />
+              <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage >= totalPages} style={{ ...toolBtnStyle(), padding: '3px 10px', opacity: currentPage >= totalPages ? 0.3 : 1, cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer' }} data-testid="btn-pdf-next">
+                <span style={{ fontSize: '11px', fontWeight: 600 }}>Next</span> <ChevronRight size={14} />
               </button>
             </div>
           </>
