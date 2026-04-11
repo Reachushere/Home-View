@@ -1322,7 +1322,12 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
 
   const semesters = useMemo(() => {
     if (semesterSettings.length === 0) return semestersProp;
-    return semesterSettings.map((s: any) => {
+    const sorted = [...semesterSettings].sort((a: any, b: any) => {
+      const aDate = a.semesterStartDate ? new Date(a.semesterStartDate).getTime() : 0;
+      const bDate = b.semesterStartDate ? new Date(b.semesterStartDate).getTime() : 0;
+      return aDate - bDate;
+    });
+    return sorted.map((s: any) => {
       const st = s.semesterType || '';
       const name = s.semesterName || '';
       const yearMatch = name.match(/\d{4}/);
