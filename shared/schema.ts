@@ -440,6 +440,7 @@ export const insertTaskSchema = baseInsertSchema.extend({
   dueDate: z.union([z.date(), dateStringToDate]),
   startDate: z.union([z.date(), dateStringToDate]).optional().nullable(),
   repeatEndDate: z.union([z.date(), dateStringToDate]).optional().nullable(),
+  eventEndDate: z.union([z.date(), dateStringToDate]).optional().nullable(),
   repeatType: z.enum(REPEAT_TYPES).optional().default("none"),
   repeatIntervalUnit: z.enum(REPEAT_INTERVAL_UNITS).optional().nullable(),
 });
