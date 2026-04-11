@@ -31,19 +31,24 @@ async function refreshGoogleToken(rt: string) {
   return r.json();
 }
 
-function getPrimaryOAuth2Client() {
+function getPrimaryOAuth2Client(reqHost?: string) {
   const clientId = process.env.GOOGLE_SECOND_ACCOUNT_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_SECOND_ACCOUNT_CLIENT_SECRET;
   if (!clientId || !clientSecret) throw new Error('Google OAuth credentials not configured');
   const domain = process.env.REPLIT_DEV_DOMAIN || process.env.REPLIT_DOMAINS?.split(',')[0];
-  const redirectUri = domain
-    ? `https://${domain}/api/google/primary-calendar/callback`
-    : 'http://localhost:5000/api/google/primary-calendar/callback';
+  let redirectUri: string;
+  if (domain) {
+    redirectUri = `https://${domain}/api/google/primary-calendar/callback`;
+  } else if (reqHost && reqHost !== 'localhost:5000' && reqHost !== 'localhost') {
+    redirectUri = `http://${reqHost}/api/google/primary-calendar/callback`;
+  } else {
+    redirectUri = 'http://localhost:5000/api/google/primary-calendar/callback';
+  }
   return new google.auth.OAuth2(clientId, clientSecret, redirectUri);
 }
 
-export function getPrimaryCalendarAuthUrl(): string {
-  const oauth2Client = getPrimaryOAuth2Client();
+export function getPrimaryCalendarAuthUrl(reqHost?: string): string {
+  const oauth2Client = getPrimaryOAuth2Client(reqHost);
   return oauth2Client.generateAuthUrl({
     access_type: 'offline',
     scope: [
@@ -55,8 +60,8 @@ export function getPrimaryCalendarAuthUrl(): string {
   });
 }
 
-export async function exchangePrimaryCalendarCode(code: string): Promise<{ email: string }> {
-  const oauth2Client = getPrimaryOAuth2Client();
+export async function exchangePrimaryCalendarCode(code: string, reqHost?: string): Promise<{ email: string }> {
+  const oauth2Client = getPrimaryOAuth2Client(reqHost);
   const { tokens } = await oauth2Client.getToken(code);
   if (!tokens.access_token || !tokens.refresh_token) {
     throw new Error('Failed to get required tokens from Google');

@@ -8209,9 +8209,10 @@ async function pollStatus(timeout){
   });
 
   // PRIMARY GOOGLE CALENDAR OAuth flow (for Pi self-hosting)
-  app.get("/api/google/primary-calendar/auth", async (_req, res) => {
+  app.get("/api/google/primary-calendar/auth", async (req, res) => {
     try {
-      const authUrl = getPrimaryCalendarAuthUrl();
+      const host = req.headers.host || 'localhost:5000';
+      const authUrl = getPrimaryCalendarAuthUrl(host);
       res.redirect(authUrl);
     } catch (err) {
       console.error("Primary calendar auth error:", err);
@@ -8225,7 +8226,8 @@ async function pollStatus(timeout){
       if (!code) {
         return res.status(400).send('Missing authorization code');
       }
-      const result = await exchangePrimaryCalendarCode(code);
+      const host = req.headers.host || 'localhost:5000';
+      const result = await exchangePrimaryCalendarCode(code, host);
       res.send(`
         <!DOCTYPE html>
         <html>
