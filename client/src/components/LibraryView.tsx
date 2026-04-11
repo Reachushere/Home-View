@@ -357,21 +357,35 @@ function WeekSeparator({ weekNum }: { weekNum: number }) {
   );
 }
 
-function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, children }: {
+function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, totalShelves, children }: {
   weekNum: number;
   showSeparator: boolean;
   shelfHeight: number;
+  shelfIndex: number;
+  totalShelves: number;
   children: React.ReactNode;
 }) {
   const [isHovered, setIsHovered] = useState(false);
+  const groupRef = useRef<HTMLDivElement>(null);
+  const [hoverY, setHoverY] = useState(0);
 
-  const hoverY = -(shelfHeight * 0.35);
+  const handleMouseEnter = useCallback(() => {
+    setIsHovered(true);
+    if (groupRef.current) {
+      const rect = groupRef.current.getBoundingClientRect();
+      const groupCenter = rect.top + rect.height / 2;
+      const viewportCenter = window.innerHeight / 2;
+      const offsetToCenter = (viewportCenter - groupCenter) / 2;
+      setHoverY(offsetToCenter);
+    }
+  }, []);
 
   return (
     <>
       {showSeparator && <WeekSeparator weekNum={weekNum} />}
       <div
-        onMouseEnter={() => setIsHovered(true)}
+        ref={groupRef}
+        onMouseEnter={handleMouseEnter}
         onMouseLeave={() => setIsHovered(false)}
         style={{
           display: 'flex',
@@ -2383,7 +2397,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                       currentGroup.files.push({ file, fileIdx });
                     });
                     return weekGroups.map((group, groupIdx) => (
-                      <WeekGroupWrapper key={`wg-${group.weekNum}-${groupIdx}`} weekNum={group.weekNum} showSeparator={groupIdx > 0} shelfHeight={shelfHeight}>
+                      <WeekGroupWrapper key={`wg-${group.weekNum}-${groupIdx}`} weekNum={group.weekNum} showSeparator={groupIdx > 0} shelfHeight={shelfHeight} shelfIndex={courseIdx} totalShelves={courseBooks.length}>
                         {group.files.map(({ file, fileIdx }) => {
                           const color = getBookColor(fileIdx, course.code, group.weekNum);
                           return (
