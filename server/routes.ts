@@ -3232,29 +3232,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
   });
 
   // ── Raw Story Top-3 Change Monitor ──
-  let rawStoryEmailsEnabled = false;
-  (async () => {
-    try {
-      const row = await db.select().from(appState).where(eq(appState.key, 'raw_story_emails_enabled')).limit(1);
-      if (row.length > 0) rawStoryEmailsEnabled = row[0].value === 'true';
-    } catch {}
-  })();
+  const rawStoryEmailsEnabled = false;
 
   app.get("/api/ui-settings/rawStoryEmailsEnabled", (_req, res) => {
     res.json({ value: rawStoryEmailsEnabled });
   });
-  app.post("/api/ui-settings/rawStoryEmailsEnabled", async (req, res) => {
-    const val = !!req.body.value;
-    rawStoryEmailsEnabled = val;
-    try {
-      const existing = await db.select().from(appState).where(eq(appState.key, 'raw_story_emails_enabled')).limit(1);
-      if (existing.length > 0) {
-        await db.update(appState).set({ value: String(val), updatedAt: new Date() }).where(eq(appState.key, 'raw_story_emails_enabled'));
-      } else {
-        await db.insert(appState).values({ key: 'raw_story_emails_enabled', value: String(val) });
-      }
-    } catch {}
-    res.json({ success: true, value: val });
+  app.post("/api/ui-settings/rawStoryEmailsEnabled", async (_req, res) => {
+    res.json({ success: true, value: false });
   });
 
   let lastTopThree: string[] = [];
