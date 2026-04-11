@@ -1320,10 +1320,11 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
     enabled: isOpen,
   });
 
-  const [syncedSemesters, setSyncedSemesters] = useState<Set<string>>(new Set());
+  const librarySyncDoneRef = useRef(false);
 
   useEffect(() => {
-    if (!isOpen || semesterSettings.length === 0) return;
+    if (!isOpen || semesterSettings.length === 0 || librarySyncDoneRef.current) return;
+    librarySyncDoneRef.current = true;
     const sorted = [...semesterSettings].sort((a: any, b: any) => {
       const aDate = a.semesterStartDate ? new Date(a.semesterStartDate).getTime() : 0;
       const bDate = b.semesterStartDate ? new Date(b.semesterStartDate).getTime() : 0;
@@ -1337,14 +1338,12 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         const yearMatch = name.match(/\d{4}/);
         const year = yearMatch ? yearMatch[0] : '';
         const key = st.startsWith('spring_summer') ? `ss${year}` : st === 'fall' ? `f${year}` : st === 'winter' ? `w${year}` : `s${s.id}`;
-        if (syncedSemesters.has(key)) continue;
         try {
           const resp = await fetch('/api/library/sync-semester', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ semesterKey: key }) });
           if (resp.ok) {
             const data = await resp.json();
             if (data.synced > 0) didSync = true;
           }
-          setSyncedSemesters(prev => new Set([...prev, key]));
         } catch {}
       }
       if (didSync) refetchFiles();
@@ -1380,10 +1379,14 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
     });
   }, [semesterSettings, semestersProp]);
 
+  const initialSemAppliedRef = useRef(false);
   useEffect(() => {
-    if (isOpen && initialSemesterKey && semesters.length > 0) {
+    if (!isOpen) { initialSemAppliedRef.current = false; return; }
+    if (initialSemAppliedRef.current) return;
+    if (initialSemesterKey && semesters.length > 0) {
       const idx = semesters.findIndex(s => s.key === initialSemesterKey);
       if (idx >= 0) setCurrentSemIdx(idx);
+      initialSemAppliedRef.current = true;
     }
   }, [isOpen, initialSemesterKey, semesters]);
 
