@@ -1,0 +1,888 @@
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs dashboard --lines 500 --nostream > ~/full-log.txt && cat ~/full-log.txt
+'[TAILING] Tailing last 500 lines for [dashboard] process (change the value with --lines option)
+/home/byhomeyyz/.pm2/logs/dashboard-error.log last 500 lines:
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Edge TTS] Attempt 1 failed: Timed out
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Edge TTS] Attempt 1 failed: Timed out
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [OneDrive][TRACE] listOneDriveItems FAILED for path /School/1. TMU/Courses/2028/Winter/Testing: The resource could not be found.
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Edge TTS] Attempt 1 failed: Timed out
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [OneDrive][TRACE] listOneDriveItems FAILED for path /School/1. TMU/Courses/2028/Spring & Summer: The resource could not be found.
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [OneDrive][TRACE] listOneDriveItems FAILED for path /School/1. TMU/Courses/2028/Fall/Course 2: The resource could not be found.
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Edge TTS] Attempt 1 failed: Timed out
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+
+/home/byhomeyyz/.pm2/logs/dashboard-out.log last 500 lines:
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3251s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD1/Week 4/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3251s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3251s)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3250s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD1/Week 4/Readings
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3250s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | Edge TTS completed in 880ms, 510480 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-188-chunk-53-1775886751716.mp3
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3250s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD1/Week 5
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3250s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3250s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD1/Week 5/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3249s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3249s)
+0|dashboar | [AudioPrep] Generating chunk 55/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1284 chars)
+0|dashboar | Generating Edge TTS for 1221 chars, file: prep-188-chunk-54
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD1/Week 5/Readings
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3249s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3249s)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3249s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD1/Week 6
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3249s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3248s)
+0|dashboar | Edge TTS completed in 884ms, 479232 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-188-chunk-54-1775886753402.mp3
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD1/Week 6/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3248s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3248s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD1/Week 6/Readings
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3248s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3248s)
+0|dashboar | [AudioPrep] Generating chunk 56/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1306 chars)
+0|dashboar | Generating Edge TTS for 1306 chars, file: prep-188-chunk-55
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD1/Week 7
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3247s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3247s)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3247s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD1/Week 7/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3247s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3247s)
+0|dashboar | Edge TTS completed in 798ms, 570816 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-188-chunk-55-1775886755001.mp3
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD1/Week 7/Readings
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3247s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3246s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD1/Week 8
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3246s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3246s)
+0|dashboar | [AudioPrep] Generating chunk 57/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1116 chars)
+0|dashboar | Generating Edge TTS for 522 chars, file: prep-188-chunk-56
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD1/Week 8/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3246s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3246s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD1/Week 8/Readings
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3246s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3245s)
+0|dashboar | Edge TTS completed in 561ms, 255312 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-188-chunk-56-1775886756363.mp3
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD1/Week 9
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3245s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3245s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD1/Week 9/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3245s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3245s)
+0|dashboar | [AudioPrep] Generating chunk 58/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (862 chars)
+0|dashboar | Generating Edge TTS for 326 chars, file: prep-188-chunk-57
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3244s)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3244s)
+0|dashboar | Edge TTS completed in 431ms, 157680 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-188-chunk-57-1775886757595.mp3
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD1/Week 9/Readings
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3244s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3244s)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3243s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/Course 2
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3243s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [AudioPrep] Generating chunk 59/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1404 chars)
+0|dashboar | Generating Edge TTS for 1256 chars, file: prep-188-chunk-58
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3243s)
+0|dashboar | [LibrarySync:Startup] Error syncing course Course2: The resource could not be found.
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3243s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3243s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 1
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3243s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | Edge TTS completed in 797ms, 572688 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-188-chunk-58-1775886759193.mp3
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3242s)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3242s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 1/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3242s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [AudioPrep] Generating chunk 60/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1470 chars)
+0|dashboar | Generating Edge TTS for 1470 chars, file: prep-188-chunk-59
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3242s)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3241s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 1/Readings
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3241s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3241s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 10
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3241s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | Edge TTS completed in 1006ms, 566352 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-188-chunk-59-1775886761001.mp3
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3241s)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3240s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 10/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3240s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3240s)
+0|dashboar | [AudioPrep] Generating chunk 61/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1451 chars)
+0|dashboar | Generating Edge TTS for 1451 chars, file: prep-188-chunk-60
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 10/Readings
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3240s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3240s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 11
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3239s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3239s)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3239s)
+0|dashboar | Edge TTS completed in 958ms, 603504 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-188-chunk-60-1775886762760.mp3
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3239s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 11/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3239s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3239s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 11/Readings
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3238s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3238s)
+0|dashboar | [AudioPrep] Generating chunk 62/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1432 chars)
+0|dashboar | Generating Edge TTS for 1432 chars, file: prep-188-chunk-61
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 12
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3238s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3238s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 12/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3238s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | Edge TTS completed in 904ms, 536688 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-188-chunk-61-1775886764465.mp3
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 12/Readings
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3237s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3237s)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3237s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 13
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3237s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3237s)
+0|dashboar | [AudioPrep] Generating chunk 63/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1419 chars)
+0|dashboar | Generating Edge TTS for 1419 chars, file: prep-188-chunk-62
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 13/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3236s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3236s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 13/Readings
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3236s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3236s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 2
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3236s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3235s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 2/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3235s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3235s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 2/Readings
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3235s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3235s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 3
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3235s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3234s)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3234s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 3/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3234s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3234s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 3/Readings
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3233s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3233s)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3233s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 4
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3233s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3233s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 4/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3233s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 4/Readings
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3232s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 5
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3232s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 5/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3231s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 5/Readings
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3231s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 6
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3231s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 6/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3230s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 6/Readings
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3230s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 7
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3230s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 7/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3229s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 7/Readings
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3229s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 8
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3228s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 8/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3228s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 8/Readings
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3228s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 9
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3227s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 9/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3227s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2028/Fall/TBD3/Week 9/Readings
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3226s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OD-Courses] === getSemesterOneDriveCourses START ===
+0|dashboar | [OD-Courses] year=2029, semType=winter, isSpSu=false, variants=["Winter"]
+0|dashboar | [OD-Courses] OneDrive connected: true
+0|dashboar | [OD-Courses] Trying semester variant path: /School/1. TMU/Courses/2029/Winter
+0|dashboar | [OD-Courses] Listing OneDrive folder: /School/1. TMU/Courses/2029/Winter
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2029/Winter
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3226s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OD-Courses] Folder "/School/1. TMU/Courses/2029/Winter" returned 3 items: TBD1(folder), TBD2(folder), TBD3(folder)
+0|dashboar | [OD-Courses] Using basePath: /School/1. TMU/Courses/2029/Winter (3 items)
+0|dashboar | [OD-Courses] Slot 1: code="TBD1", modFolder="", readFolder="", override=""
+0|dashboar | [OD-Courses] Slot 1: searching for folder starting with "TBD1" in /School/1. TMU/Courses/2029/Winter (3 folders)
+0|dashboar | [OD-Courses] Slot 1: MATCHED folder "TBD1" → /School/1. TMU/Courses/2029/Winter/TBD1
+0|dashboar | [OD-Courses] Slot 2: code="TBD2", modFolder="", readFolder="", override=""
+0|dashboar | [OD-Courses] Slot 2: searching for folder starting with "TBD2" in /School/1. TMU/Courses/2029/Winter (3 folders)
+0|dashboar | [OD-Courses] Slot 2: MATCHED folder "TBD2" → /School/1. TMU/Courses/2029/Winter/TBD2
+0|dashboar | [OD-Courses] Slot 3: code="Course3", modFolder="", readFolder="", override=""
+0|dashboar | [OD-Courses] Slot 3: searching for folder starting with "COURSE3" in /School/1. TMU/Courses/2029/Winter (3 folders)
+0|dashboar | [OD-Courses] Slot 3: NO folder matched "COURSE3" — available: TBD1, TBD2, TBD3
+0|dashboar | [OD-Courses] Slot 3: fallback constructed path → /School/1. TMU/Courses/2029/Winter/Course 3
+0|dashboar | [OD-Courses] === RESULT: 3 courses: TBD1→/School/1. TMU/Courses/2029/Winter/TBD1 | TBD2→/School/1. TMU/Courses/2029/Winter/TBD2 | Course3→/School/1. TMU/Courses/2029/Winter/Course 3 ===
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2029/Winter/TBD1
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3226s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2029/Winter/TBD1/Week 1
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3225s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3225s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2029/Winter/TBD1/Week 1/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3225s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | Edge TTS completed in 12208ms, 609552 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-188-chunk-62-1775886777474.mp3
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2029/Winter/TBD1/Week 1/Readings
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3224s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3224s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2029/Winter/TBD1/Week 10
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3224s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [AudioPrep] Generating chunk 64/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1484 chars)
+0|dashboar | Generating Edge TTS for 1428 chars, file: prep-188-chunk-63
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2029/Winter/TBD1/Week 10/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3223s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3223s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2029/Winter/TBD1/Week 10/Readings
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3223s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3223s)
+0|dashboar | Edge TTS completed in 1014ms, 566064 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-188-chunk-63-1775886779290.mp3
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2029/Winter/TBD1/Week 11
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3222s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3222s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2029/Winter/TBD1/Week 11/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3222s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [AudioPrep] Generating chunk 65/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (710 chars)
+0|dashboar | Generating Edge TTS for 710 chars, file: prep-188-chunk-64
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2029/Winter/TBD1/Week 11/Readings
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3221s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3221s)
+0|dashboar | Edge TTS completed in 671ms, 298512 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-188-chunk-64-1775886780762.mp3
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2029/Winter/TBD1/Week 12
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3221s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2029/Winter/TBD1/Week 12/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3221s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3220s)
+0|dashboar | [AudioPrep] Generating chunk 66/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (2179 chars)
+0|dashboar | Generating Edge TTS for 1959 chars, file: prep-188-chunk-65
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2029/Winter/TBD1/Week 12/Readings
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3220s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3220s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2029/Winter/TBD1/Week 13
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3220s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3220s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2029/Winter/TBD1/Week 13/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3219s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3219s)
+0|dashboar | Edge TTS completed in 1228ms, 845136 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-188-chunk-65-1775886782792.mp3
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3219s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2029/Winter/TBD1/Week 13/Readings
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3219s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2029/Winter/TBD1/Week 2
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3218s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [AudioPrep] Generating chunk 67/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1205 chars)
+0|dashboar | Generating Edge TTS for 1205 chars, file: prep-188-chunk-66
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3218s)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3218s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2029/Winter/TBD1/Week 2/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3218s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | Edge TTS completed in 706ms, 488736 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-188-chunk-66-1775886784299.mp3
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3217s)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3217s)
+0|dashboar | [AudioPrep] Generating chunk 68/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1351 chars)
+0|dashboar | Generating Edge TTS for 1351 chars, file: prep-188-chunk-67
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2029/Winter/TBD1/Week 2/Readings
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3217s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3216s)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3216s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2029/Winter/TBD1/Week 3
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3216s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | Edge TTS completed in 889ms, 537408 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-188-chunk-67-1775886785989.mp3
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3215s)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3215s)
+0|dashboar | [AudioPrep] Generating chunk 69/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1356 chars)
+0|dashboar | Generating Edge TTS for 1356 chars, file: prep-188-chunk-68
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3215s)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3214s)
+0|dashboar | Edge TTS completed in 1228ms, 562464 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-188-chunk-68-1775886788018.mp3
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3214s)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3213s)
+0|dashboar | [AudioPrep] Generating chunk 70/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1477 chars)
+0|dashboar | Generating Edge TTS for 1477 chars, file: prep-188-chunk-69
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3213s)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3212s)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3212s)
+0|dashboar | Edge TTS completed in 1210ms, 577872 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-188-chunk-69-1775886790029.mp3
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3211s)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3211s)
+0|dashboar | [AudioPrep] Generating chunk 71/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1451 chars)
+0|dashboar | Generating Edge TTS for 1451 chars, file: prep-188-chunk-70
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3211s)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3210s)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3210s)
+0|dashboar | Edge TTS completed in 1179ms, 555264 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-188-chunk-70-1775886792010.mp3
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3209s)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3209s)
+0|dashboar | [AudioPrep] Generating chunk 72/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1428 chars)
+0|dashboar | Generating Edge TTS for 1428 chars, file: prep-188-chunk-71
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3209s)
+0|dashboar | Edge TTS completed in 793ms, 554688 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-188-chunk-71-1775886793604.mp3
+0|dashboar | [AudioPrep] Generating chunk 73/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1431 chars)
+0|dashboar | Generating Edge TTS for 1360 chars, file: prep-188-chunk-72
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | Edge TTS completed in 818ms, 553680 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-188-chunk-72-1775886795224.mp3
+0|dashboar | [AudioPrep] Generating chunk 74/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1490 chars)
+0|dashboar | Generating Edge TTS for 1421 chars, file: prep-188-chunk-73
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | Edge TTS completed in 767ms, 599040 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-188-chunk-73-1775886796793.mp3
+0|dashboar | [AudioPrep] Generating chunk 75/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1352 chars)
+0|dashboar | Generating Edge TTS for 1352 chars, file: prep-188-chunk-74
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | Edge TTS completed in 907ms, 554544 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-188-chunk-74-1775886798501.mp3
+0|dashboar | [AudioPrep] Generating chunk 76/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1360 chars)
+0|dashboar | Generating Edge TTS for 1360 chars, file: prep-188-chunk-75
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | Edge TTS completed in 858ms, 565056 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-188-chunk-75-1775886800160.mp3
+0|dashboar | [AudioPrep] Generating chunk 77/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1467 chars)
+0|dashboar | Generating Edge TTS for 1467 chars, file: prep-188-chunk-76
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | Edge TTS completed in 1100ms, 611568 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-188-chunk-76-1775886802063.mp3
+0|dashboar | [AudioPrep] Generating chunk 78/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1444 chars)
+0|dashboar | Generating Edge TTS for 1444 chars, file: prep-188-chunk-77
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | Edge TTS completed in 1156ms, 633744 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-188-chunk-77-1775886804020.mp3
+0|dashboar | [AudioPrep] Generating chunk 79/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1461 chars)
+0|dashboar | Generating Edge TTS for 1406 chars, file: prep-188-chunk-78
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | Edge TTS completed in 980ms, 565920 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-188-chunk-78-1775886805802.mp3
+0|dashboar | [AudioPrep] Generating chunk 80/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1473 chars)
+0|dashboar | Generating Edge TTS for 1473 chars, file: prep-188-chunk-79
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3195s)
+0|dashboar | Edge TTS completed in 909ms, 612720 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-188-chunk-79-1775886807512.mp3
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3194s)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3193s)
+0|dashboar | [AudioPrep] Generating chunk 81/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1420 chars)
+0|dashboar | Generating Edge TTS for 1420 chars, file: prep-188-chunk-80
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3193s)
+0|dashboar | Edge TTS completed in 855ms, 601632 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-188-chunk-80-1775886809168.mp3
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3192s)
+0|dashboar | [AudioPrep] Generating chunk 82/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1187 chars)
+0|dashboar | Generating Edge TTS for 1187 chars, file: prep-188-chunk-81
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3192s)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3191s)
+0|dashboar | Edge TTS completed in 1022ms, 458208 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-188-chunk-81-1775886810992.mp3
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3191s)
+0|dashboar | [AudioPrep] Generating chunk 83/123 for IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (1314 chars)
+0|dashboar | Generating Edge TTS for 1314 chars, file: prep-188-chunk-82
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3190s)
+
+byhomeyyz@raspberrypi:~/Home-View $ 'cd ~/Home-View && git pull origin main && npm run build && fuser -k 5000/tcp; sleep 2 && pm2 delete dashboard; pm2 start dist/index.cjs --name dashboard --cwd /home/byhomeyyz/Home-View --node-args="-r /home/byhomeyyz/Home-View/preload.cjs" && pm2 save
+> ^C
+byhomeyyz@raspberrypi:~/Home-View $ cd ~/Home-View && git pull origin main && npm run build && fuser -k 5000/tcp; sleep 2 && pm2 delete dashboard; pm2 start dist/index.cjs --name dashboard --cwd /home/byhomeyyz/Home-View --node-args="-r /home/byhomeyyz/Home-View/preload.cjs" && pm2 save
+remote: Enumerating objects: 15, done.
+remote: Counting objects: 100% (15/15), done.
+remote: Compressing objects: 100% (3/3), done.
+remote: Total 9 (delta 6), reused 9 (delta 6), pack-reused 0 (from 0)
+Unpacking objects: 100% (9/9), 53.68 KiB | 566.00 KiB/s, done.
+From https://github.com/Reachushere/Home-View
+ * branch                main       -> FETCH_HEAD
+   662fefcb0..cc6901f58  main       -> origin/main
+Updating 662fefcb0..cc6901f58
+Fast-forward
+ ...yhomeyyz-raspberrypi-Home-View-pm2-logs-dashboard-line_1775886751314.txt |  35 +++++++++++++++++++
+ attached_assets/image_1775886528261.png                                     | Bin 0 -> 53417 bytes
+ client/src/pages/dashboard.tsx                                              |  66 ++----------------------------------
+ 3 files changed, 38 insertions(+), 63 deletions(-)
+ create mode 100644 attached_assets/Pasted-byhomeyyz-raspberrypi-Home-View-pm2-logs-dashboard-line_1775886751314.txt
+ create mode 100644 attached_assets/image_1775886528261.png
+npm warn Unknown builtin config "globalignorefile". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> rest-express@1.0.0 build
+> tsx script/build.ts
+
+building client...
+vite v7.3.0 building client environment for production...
+✓ 2978 modules transformed.
+../dist/public/index.html                                                                     4.01 kB │ gzip:   1.54 kB
+../dist/public/assets/CN2_1773897525570-afBA9WIn.png                                          4.64 kB
+../dist/public/assets/Zoomcam_1773655084814-Dd0RqcMf.png                                      6.41 kB
+../dist/public/assets/saturn_planet-DyCcVDqz.jpg                                              9.35 kB
+../dist/public/assets/uranus_planet-BBf9JheU.jpg                                             14.81 kB
+../dist/public/assets/Button_1769701329320-vj3a_XjG.png                                      14.88 kB
+../dist/public/assets/Fox_News_1773610204651-Cm2F7G44.png                                    18.91 kB
+../dist/public/assets/Animoji_1769350617739-DKdhEpD6.webp                                    21.31 kB
+../dist/public/assets/Wifi_1773656687145-BkFdNwBM.png                                        21.68 kB
+../dist/public/assets/Global_White_1773536754594-C17BPXU2.png                                22.80 kB
+../dist/public/assets/jupiter_planet-BIMUlata.jpg                                            26.92 kB
+../dist/public/assets/ABC_1773609250051-CfAo4DiJ.png                                         31.54 kB
+../dist/public/assets/Zoom2_1773776262533-u1jCiZQ5.png                                       31.94 kB
+../dist/public/assets/MSNBC_1773536950584-DXnjYP_H.png                                       32.99 kB
+../dist/public/assets/CTV2_1773545440801-BQRb6VTL.png                                        34.23 kB
+../dist/public/assets/Sound_1775176942072-DQdszRIH.png                                       41.57 kB
+../dist/public/assets/cbc-news-logo-black-and-white_1773536865600-CmQYEfGd.png               42.50 kB
+../dist/public/assets/Weather_Alert_1773608511887-BFQqPgnq.png                               42.94 kB
+../dist/public/assets/mars_planet-CmC43G73.jpg                                               44.56 kB
+../dist/public/assets/ChatGPT_Image_Jan_22__2026__02_34_52_PM_1769110943463-7zS7ot_E.png     44.81 kB
+../dist/public/assets/CNN_1773536484180-DucbTf95.png                                         48.85 kB
+../dist/public/assets/Raw_Story_1773607642361-CKfjYmZ7.png                                   58.82 kB
+../dist/public/assets/venus_planet-pWHYImPJ.jpg                                              59.79 kB
+../dist/public/assets/Closet_Night_1774008796953-DXicaVTT.png                                60.27 kB
+../dist/public/assets/Degree_1775175568321-Dz3bFyki.png                                      63.04 kB
+../dist/public/assets/Teacher_White2_1775164260333-DzP7w8Fj.png                              64.77 kB
+../dist/public/assets/Teacher_1775101022422-6YMTUW-g.png                                     64.78 kB
+../dist/public/assets/Reminders_1775175754351-2hYnQH-_.png                                   65.19 kB
+../dist/public/assets/victory-fanfare-CYW8HOv7.mp3                                           67.20 kB
+../dist/public/assets/BBC_1773609711103-BfBjSiKV.png                                         73.89 kB
+../dist/public/assets/Pug_Night_1774008796949-3yLPls61.png                                   79.00 kB
+../dist/public/assets/Cat_Night_1774008796951-Dcd6HiVq.png                                   79.73 kB
+../dist/public/assets/image_1772579486577-DIShbgJ0.png                                       80.83 kB
+../dist/public/assets/Yasu_1774341165517-DKbY5fn0.png                                        83.10 kB
+../dist/public/assets/Forecast2_1773897989398-DSI3LWIa.png                                  116.96 kB
+../dist/public/assets/BG2_1769977873184-BMC0LH4N.jpg                                        124.20 kB
+../dist/public/assets/Chang-School2_1770607146365-_XjUzhwY.png                              128.19 kB
+../dist/public/assets/Hallway_Night_1774008796945-BuzRBJO8.png                              129.78 kB
+../dist/public/assets/crowd-cheer-DkUts2go.mp3                                              142.08 kB
+../dist/public/assets/Newspaper2_1773898792176-DFEQePQK.png                                 143.21 kB
+../dist/public/assets/Queen_Night_1774008796950-B57EmMzY.png                                228.53 kB
+../dist/public/assets/Living_Room_Night_1774008796948-CTbz7lx7.png                          292.86 kB
+../dist/public/assets/King_Night_1774008796946-qs8T8Rav.png                                 321.84 kB
+../dist/public/assets/Kitchen_Night_1774008796947-DzGdhLNI.png                              333.69 kB
+../dist/public/assets/image_1775263840386-D9P4kHhc.png                                      494.62 kB
+../dist/public/assets/TMU2_1772842397746-B9XhF-lv.png                                       788.80 kB
+../dist/public/assets/Bryn_1774341392117-CfDPXLO2.png                                     1,069.12 kB
+../dist/public/assets/mass-background2_1774005959332-mw-YgJzQ.png                         1,426.94 kB
+../dist/public/assets/Floorplan11_1774005505273-BEWw-gX1.png                              1,553.36 kB
+../dist/public/assets/Echo_1774213902054-Dum5d4T4.png                                     2,055.05 kB
+../dist/public/assets/Music_BG20_1774006032495-CxhBg4I3.png                               2,114.88 kB
+../dist/public/assets/style-DOA8u5M2.css                                                    260.33 kB │ gzip:  42.09 kB
+../dist/public/assets/index-DeIqHPzo.js                                                   3,161.24 kB │ gzip: 795.12 kB
+✓ built in 51.10s
+building server...
+
+  dist/index.cjs  13.3mb ⚠️
+
+⚡ Done in 1455ms
+5000/tcp:            33559
+[PM2] Applying action deleteProcessId on app [dashboard](ids: [ 0 ])
+[PM2] [dashboard](0) ✓
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+[PM2] Starting /home/byhomeyyz/Home-View/dist/index.cjs in fork_mode (1 instance)
+[PM2] Done.
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+├────┼────────────────────┼──────────┼──────┼───────────┼──────────┼──────────┤
+│ 0  │ dashboard          │ fork     │ 0    │ online    │ 0%       │ 19.1mb   │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+[PM2] Saving current process list...
+[PM2] Successfully saved in /home/byhomeyyz/.pm2/dump.pm2
+byhomeyyz@raspberrypi:~/Home-View $ cd ~/Home-View && git pull origin main && npm run build && fuser -k 5000/tcp; sleep 2 && pm2 delete dashboard; pm2 start dist/index.cjs --name dashboard --cwd /home/byhomeyyz/Home-View --node-args="-r /home/byhomeyyz/Home-View/preload.cjs" && pm2 save
+remote: Enumerating objects: 13, done.
+remote: Counting objects: 100% (13/13), done.
+remote: Compressing objects: 100% (4/4), done.
+remote: Total 9 (delta 5), reused 9 (delta 5), pack-reused 0 (from 0)
+Unpacking objects: 100% (9/9), 73.31 KiB | 682.00 KiB/s, done.
+From https://github.com/Reachushere/Home-View
+ * branch                main       -> FETCH_HEAD
+   cc6901f58..f8471a09b  main       -> origin/main
+Updating cc6901f58..f8471a09b
+Fast-forward
+ ...AT-WASHROOM-READING-AUTOMATION-COMPLETE-REFERENCE-Ever_1775886923978.txt |  312 +++++
+ ...yhomeyyz-raspberrypi-Home-View-pm2-logs-dashboard-line_1775886830235.txt | 2159 +++++++++++++++++++++++++++++++++++
+ server/routes.ts                                                            |   10 +-
+ 3 files changed, 2474 insertions(+), 7 deletions(-)
+ create mode 100644 attached_assets/Pasted-CAT-WASHROOM-READING-AUTOMATION-COMPLETE-REFERENCE-Ever_1775886923978.txt
+ create mode 100644 attached_assets/Pasted-byhomeyyz-raspberrypi-Home-View-pm2-logs-dashboard-line_1775886830235.txt
+npm warn Unknown builtin config "globalignorefile". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> rest-express@1.0.0 build
+> tsx script/build.ts
+
+building client...
+vite v7.3.0 building client environment for production...
+✓ 2978 modules transformed.
+../dist/public/index.html                                                                     4.01 kB │ gzip:   1.54 kB
+../dist/public/assets/CN2_1773897525570-afBA9WIn.png                                          4.64 kB
+../dist/public/assets/Zoomcam_1773655084814-Dd0RqcMf.png                                      6.41 kB
+../dist/public/assets/saturn_planet-DyCcVDqz.jpg                                              9.35 kB
+../dist/public/assets/uranus_planet-BBf9JheU.jpg                                             14.81 kB
+../dist/public/assets/Button_1769701329320-vj3a_XjG.png                                      14.88 kB
+../dist/public/assets/Fox_News_1773610204651-Cm2F7G44.png                                    18.91 kB
+../dist/public/assets/Animoji_1769350617739-DKdhEpD6.webp                                    21.31 kB
+../dist/public/assets/Wifi_1773656687145-BkFdNwBM.png                                        21.68 kB
+../dist/public/assets/Global_White_1773536754594-C17BPXU2.png                                22.80 kB
+../dist/public/assets/jupiter_planet-BIMUlata.jpg                                            26.92 kB
+../dist/public/assets/ABC_1773609250051-CfAo4DiJ.png                                         31.54 kB
+../dist/public/assets/Zoom2_1773776262533-u1jCiZQ5.png                                       31.94 kB
+../dist/public/assets/MSNBC_1773536950584-DXnjYP_H.png                                       32.99 kB
+../dist/public/assets/CTV2_1773545440801-BQRb6VTL.png                                        34.23 kB
+../dist/public/assets/Sound_1775176942072-DQdszRIH.png                                       41.57 kB
+../dist/public/assets/cbc-news-logo-black-and-white_1773536865600-CmQYEfGd.png               42.50 kB
+../dist/public/assets/Weather_Alert_1773608511887-BFQqPgnq.png                               42.94 kB
+../dist/public/assets/mars_planet-CmC43G73.jpg                                               44.56 kB
+../dist/public/assets/ChatGPT_Image_Jan_22__2026__02_34_52_PM_1769110943463-7zS7ot_E.png     44.81 kB
+../dist/public/assets/CNN_1773536484180-DucbTf95.png                                         48.85 kB
+../dist/public/assets/Raw_Story_1773607642361-CKfjYmZ7.png                                   58.82 kB
+../dist/public/assets/venus_planet-pWHYImPJ.jpg                                              59.79 kB
+../dist/public/assets/Closet_Night_1774008796953-DXicaVTT.png                                60.27 kB
+../dist/public/assets/Degree_1775175568321-Dz3bFyki.png                                      63.04 kB
+../dist/public/assets/Teacher_White2_1775164260333-DzP7w8Fj.png                              64.77 kB
+../dist/public/assets/Teacher_1775101022422-6YMTUW-g.png                                     64.78 kB
+../dist/public/assets/Reminders_1775175754351-2hYnQH-_.png                                   65.19 kB
+../dist/public/assets/victory-fanfare-CYW8HOv7.mp3                                           67.20 kB
+../dist/public/assets/BBC_1773609711103-BfBjSiKV.png                                         73.89 kB
+../dist/public/assets/Pug_Night_1774008796949-3yLPls61.png                                   79.00 kB
+../dist/public/assets/Cat_Night_1774008796951-Dcd6HiVq.png                                   79.73 kB
+../dist/public/assets/image_1772579486577-DIShbgJ0.png                                       80.83 kB
+../dist/public/assets/Yasu_1774341165517-DKbY5fn0.png                                        83.10 kB
+../dist/public/assets/Forecast2_1773897989398-DSI3LWIa.png                                  116.96 kB
+../dist/public/assets/BG2_1769977873184-BMC0LH4N.jpg                                        124.20 kB
+../dist/public/assets/Chang-School2_1770607146365-_XjUzhwY.png                              128.19 kB
+../dist/public/assets/Hallway_Night_1774008796945-BuzRBJO8.png                              129.78 kB
+../dist/public/assets/crowd-cheer-DkUts2go.mp3                                              142.08 kB
+../dist/public/assets/Newspaper2_1773898792176-DFEQePQK.png                                 143.21 kB
+../dist/public/assets/Queen_Night_1774008796950-B57EmMzY.png                                228.53 kB
+../dist/public/assets/Living_Room_Night_1774008796948-CTbz7lx7.png                          292.86 kB
+../dist/public/assets/King_Night_1774008796946-qs8T8Rav.png                                 321.84 kB
+../dist/public/assets/Kitchen_Night_1774008796947-DzGdhLNI.png                              333.69 kB
+../dist/public/assets/image_1775263840386-D9P4kHhc.png                                      494.62 kB
+../dist/public/assets/TMU2_1772842397746-B9XhF-lv.png                                       788.80 kB
+../dist/public/assets/Bryn_1774341392117-CfDPXLO2.png                                     1,069.12 kB
+../dist/public/assets/mass-background2_1774005959332-mw-YgJzQ.png                         1,426.94 kB
+../dist/public/assets/Floorplan11_1774005505273-BEWw-gX1.png                              1,553.36 kB
+../dist/public/assets/Echo_1774213902054-Dum5d4T4.png                                     2,055.05 kB
+../dist/public/assets/Music_BG20_1774006032495-CxhBg4I3.png                               2,114.88 kB
+../dist/public/assets/style-DOA8u5M2.css                                                    260.33 kB │ gzip:  42.09 kB
+../dist/public/assets/index-DeIqHPzo.js                                                   3,161.24 kB │ gzip: 795.12 kB
+✓ built in 55.86s
+building server...
+
+  dist/index.cjs  13.3mb ⚠️
+
+⚡ Done in 1417ms
+5000/tcp:            34065
+[PM2] Applying action deleteProcessId on app [dashboard](ids: [ 0 ])
+[PM2] [dashboard](0) ✓
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+[PM2] Starting /home/byhomeyyz/Home-View/dist/index.cjs in fork_mode (1 instance)
+[PM2] Done.
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+├────┼────────────────────┼──────────┼──────┼───────────┼──────────┼──────────┤
+│ 0  │ dashboard          │ fork     │ 0    │ online    │ 0%       │ 17.6mb   │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+[PM2] Saving current process list...
+[PM2] Successfully saved in /home/byhomeyyz/.pm2/dump.pm2
+byhomeyyz@raspberrypi:~/Home-View $ ^C2 logs dashboard --lines 100 --nostream | grep -E "\[Cat Lights\]|\[FileOrder\]"pm
+2 logs dashboard --lines 300 --nostream | grep -E "\[Cat Lights\]|\[FileOrder\]|\[Nest-Playback\]|\[AudioPrep\]|Edge TTS
+|chunk|playback"
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs dashboard --lines 300 --nostream | grep -E "\[Cat Lights\]|\[FileOrder\]|\[Nest-Playback\]|\[AudioPrep\]|Edge TTS|chunk|playback"^C
+byhomeyyz@raspberrypi:~/Home-View $ cd ~/Home-View && git pull origin main && npm run build && fuser -k 5000/tcp; sleep 2 && pm2 delete dashboard; pm2 start dist/index.cjs --name dashboard --cwd /home/byhomeyyz/Home-View --node-args="-r /home/byhomeyyz/Home-View/preload.cjs" && pm2 save
+remote: Enumerating objects: 4, done.
+remote: Counting objects: 100% (4/4), done.
+remote: Total 4 (delta 3), reused 4 (delta 3), pack-reused 0 (from 0)
+Unpacking objects: 100% (4/4), 1.08 KiB | 41.00 KiB/s, done.
+From https://github.com/Reachushere/Home-View
+ * branch                main       -> FETCH_HEAD
+   f8471a09b..d06b775e4  main       -> origin/main
+Updating f8471a09b..d06b775e4
+Fast-forward
+ server/routes.ts | 59 +++++++++++++++++++++++++++++++----------------------------
+ 1 file changed, 31 insertions(+), 28 deletions(-)
+npm warn Unknown builtin config "globalignorefile". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> rest-express@1.0.0 build
+> tsx script/build.ts
+
+building client...
+vite v7.3.0 building client environment for production...
+✓ 2978 modules transformed.
+../dist/public/index.html                                                                     4.01 kB │ gzip:   1.54 kB
+../dist/public/assets/CN2_1773897525570-afBA9WIn.png                                          4.64 kB
+../dist/public/assets/Zoomcam_1773655084814-Dd0RqcMf.png                                      6.41 kB
+../dist/public/assets/saturn_planet-DyCcVDqz.jpg                                              9.35 kB
+../dist/public/assets/uranus_planet-BBf9JheU.jpg                                             14.81 kB
+../dist/public/assets/Button_1769701329320-vj3a_XjG.png                                      14.88 kB
+../dist/public/assets/Fox_News_1773610204651-Cm2F7G44.png                                    18.91 kB
+../dist/public/assets/Animoji_1769350617739-DKdhEpD6.webp                                    21.31 kB
+../dist/public/assets/Wifi_1773656687145-BkFdNwBM.png                                        21.68 kB
+../dist/public/assets/Global_White_1773536754594-C17BPXU2.png                                22.80 kB
+../dist/public/assets/jupiter_planet-BIMUlata.jpg                                            26.92 kB
+../dist/public/assets/ABC_1773609250051-CfAo4DiJ.png                                         31.54 kB
+../dist/public/assets/Zoom2_1773776262533-u1jCiZQ5.png                                       31.94 kB
+../dist/public/assets/MSNBC_1773536950584-DXnjYP_H.png                                       32.99 kB
+../dist/public/assets/CTV2_1773545440801-BQRb6VTL.png                                        34.23 kB
+../dist/public/assets/Sound_1775176942072-DQdszRIH.png                                       41.57 kB
+../dist/public/assets/cbc-news-logo-black-and-white_1773536865600-CmQYEfGd.png               42.50 kB
+../dist/public/assets/Weather_Alert_1773608511887-BFQqPgnq.png                               42.94 kB
+../dist/public/assets/mars_planet-CmC43G73.jpg                                               44.56 kB
+../dist/public/assets/ChatGPT_Image_Jan_22__2026__02_34_52_PM_1769110943463-7zS7ot_E.png     44.81 kB
+../dist/public/assets/CNN_1773536484180-DucbTf95.png                                         48.85 kB
+../dist/public/assets/Raw_Story_1773607642361-CKfjYmZ7.png                                   58.82 kB
+../dist/public/assets/venus_planet-pWHYImPJ.jpg                                              59.79 kB
+../dist/public/assets/Closet_Night_1774008796953-DXicaVTT.png                                60.27 kB
+../dist/public/assets/Degree_1775175568321-Dz3bFyki.png                                      63.04 kB
+../dist/public/assets/Teacher_White2_1775164260333-DzP7w8Fj.png                              64.77 kB
+../dist/public/assets/Teacher_1775101022422-6YMTUW-g.png                                     64.78 kB
+../dist/public/assets/Reminders_1775175754351-2hYnQH-_.png                                   65.19 kB
+../dist/public/assets/victory-fanfare-CYW8HOv7.mp3                                           67.20 kB
+../dist/public/assets/BBC_1773609711103-BfBjSiKV.png                                         73.89 kB
+../dist/public/assets/Pug_Night_1774008796949-3yLPls61.png                                   79.00 kB
+../dist/public/assets/Cat_Night_1774008796951-Dcd6HiVq.png                                   79.73 kB
+../dist/public/assets/image_1772579486577-DIShbgJ0.png                                       80.83 kB
+../dist/public/assets/Yasu_1774341165517-DKbY5fn0.png                                        83.10 kB
+../dist/public/assets/Forecast2_1773897989398-DSI3LWIa.png                                  116.96 kB
+../dist/public/assets/BG2_1769977873184-BMC0LH4N.jpg                                        124.20 kB
+../dist/public/assets/Chang-School2_1770607146365-_XjUzhwY.png                              128.19 kB
+../dist/public/assets/Hallway_Night_1774008796945-BuzRBJO8.png                              129.78 kB
+../dist/public/assets/crowd-cheer-DkUts2go.mp3                                              142.08 kB
+../dist/public/assets/Newspaper2_1773898792176-DFEQePQK.png                                 143.21 kB
+../dist/public/assets/Queen_Night_1774008796950-B57EmMzY.png                                228.53 kB
+../dist/public/assets/Living_Room_Night_1774008796948-CTbz7lx7.png                          292.86 kB
+../dist/public/assets/King_Night_1774008796946-qs8T8Rav.png                                 321.84 kB
+../dist/public/assets/Kitchen_Night_1774008796947-DzGdhLNI.png                              333.69 kB
+../dist/public/assets/image_1775263840386-D9P4kHhc.png                                      494.62 kB
+../dist/public/assets/TMU2_1772842397746-B9XhF-lv.png                                       788.80 kB
+../dist/public/assets/Bryn_1774341392117-CfDPXLO2.png                                     1,069.12 kB
+../dist/public/assets/mass-background2_1774005959332-mw-YgJzQ.png                         1,426.94 kB
+../dist/public/assets/Floorplan11_1774005505273-BEWw-gX1.png                              1,553.36 kB
+../dist/public/assets/Echo_1774213902054-Dum5d4T4.png                                     2,055.05 kB
+../dist/public/assets/Music_BG20_1774006032495-CxhBg4I3.png                               2,114.88 kB
+../dist/public/assets/style-DOA8u5M2.css                                                    260.33 kB │ gzip:  42.09 kB
+../dist/public/assets/index-DeIqHPzo.js                                                   3,161.24 kB │ gzip: 795.12 kB
+✓ built in 50.55s
+building server...
+
+  dist/index.cjs  13.3mb ⚠️
+
+⚡ Done in 1491ms
+5000/tcp:            34122
+[PM2] Applying action deleteProcessId on app [dashboard](ids: [ 0 ])
+[PM2] [dashboard](0) ✓
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+[PM2] Starting /home/byhomeyyz/Home-View/dist/index.cjs in fork_mode (1 instance)
+[PM2] Done.
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+├────┼────────────────────┼──────────┼──────┼───────────┼──────────┼──────────┤
+│ 0  │ dashboard          │ fork     │ 0    │ online    │ 0%       │ 17.6mb   │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+[PM2] Saving current process list...
+[PM2] Successfully saved in /home/byhomeyyz/.pm2/dump.pm2
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs dashboard --lines 300 --nostream | grep -E "\[Cat Lights\]|\[FileOrder\]|\[Nest-Playback\]|\[AudioPrep\]|Edge TTS|chunk|playback"
+0|dashboar | [Edge TTS] Attempt 1 failed: Timed out
+0|dashboar | [Edge TTS] Attempt 1 failed: Timed out
+0|dashboar | [Edge TTS] Attempt 1 failed: Timed out
+0|dashboar | [Edge TTS] Attempt 1 failed: Timed out
+0|dashboar | [Edge TTS] Attempt 1 failed: Timed out
+0|dashboar | [Edge TTS] Attempt 1 failed: Timed out
+0|dashboar | [Edge TTS] Attempt 1 failed: Timed out
+0|dashboar | [Edge TTS] Attempt 1 failed: Timed out
+0|dashboar | [Edge TTS] Attempt 1 failed: Timed out
+0|dashboar | [AudioPrep] Failed to generate chunk 33 for CPPA122, Module 10 - Introduction.pdf: ENOENT: no such file or directory, open '/home/byhomeyyz/Home-View/dist/public/tts-audio/prep-213-chunk-32-1775888153324.mp3'
+0|dashboar | [Edge TTS] Attempt 1 failed: Timed out
+0|dashboar | [Edge TTS] Attempt 1 failed: Timed out
+0|dashboar | [Edge TTS] Attempt 1 failed: Timed out
+0|dashboar | municipal acts and governance reviews are undertaken from time to time. Municipal administration tends to be organized under a CAO or city manager, whereby some or all departments and functions report to the senior leader who in turn reports directly to council. Municipalities have one or more types of accountability officers, including an integrity commissioner, ombudsman, auditor general, lobbyist registrar (or registration process), and closed meeting investigation. These functions may be internal to the municipality and report directly to council or may be established by the province territory with responsibility for all municipalities. Municipalities establish special purpose bodies to take on tasks or functions that require specialized attention, like housing, hydro, the zoo, and transit. These corporations are owned by and accountable to the municipality and will have varying authority and autonomy from the municipality. In addition, provinces establish special purpose bodies to oversee or supplement municipalities, or they require the establishment of municipal special purpose bodies in legislation and regulations (e.g., police). Municipal-provincial relationships change over time depending on provincial and local politics and pressures. The informal federal-municipal relationship also changes over time, but it is always mediated by the fact that municipalities aren t a constitutionally recognized form of government. While municipalities continue to be at a disadvantage because of the lack of constitutional standing, there are new multi-governance paths for intergovernmental relationships that work around the lack of constitutional status. Not to be forgotten, municipalities also have longstanding formal and informal relationships with other municipalities. This is an important relationship for both parties, which can be expected to increase in importance in the future. Indigenous peoples are important to municipalities the Indigenous population is growing at a faster rate than non-Indigenous populations, they are younger than average, and they : Week 5 continued to explore the machinery of local government with a focus on the administration or bureaucracy, municipal accountability officers, and municipal special purpose bodies (or agencies, boards, and commissions (A, B, Cs)). : Week 6 focused on the complicated relationship between the municipal, provincial, and federal levels of government in Canada the often grey area of intergovernmental relations. : Week 7 examined municipal-Indigenous relationships. are increasingly urban. In addition, municipalities may be affected by formal land claims settlements negotiated by the federal and provincial territorial governments. The module explored three types of relationships: formal municipal-First Nations agreements, urban reserves, and other accords, protocols, and policy and program initiatives within the It provided some historical perspective on the traditional and imposed First Nations governance as well as examples of self-governance. The module considered municipal expenditures on directly controlled services, downloaded provincial services or regulated services, special purpose bodies, and capital spending. It looked at the three main sources of municipal revenues property taxes, user fees, and grants and funding from other levels of government. The module gave you an opportunity to try the difficult task of balancing a budget making budget decisions in the context of competing priorities and pressures. It highlighted the challenges facing municipalities and helped you to understand the options available to them. Municipalities are described as being in a state of fiscal crisis and the module considered possible responses. There are many internal and external influences on municipal policy; although, we may think of policy in terms of rational processes, it is far from the case in reality. and considered with input from interested stakeholders. Policy options are constrained (or enabled) by municipal formal powers, municipal staff, and financial capacity. Council committees, often with input from interested parties, discuss policy before it is debated and voted on at open council meetings. The module also considered issues related to municipal services, which can be delivered directly by municipal staff, municipal special purpose bodies, or for-profit or nonprofit organizations contracted to provide the services. Over time, municipalities have become more involved in non- traditional and non-property-related service issues, such as homelessness, poverty reduction, and climate change. : Week 8 explored the complex issue of municipal finance by looking at municipal budgets and budget processes. : Week 9 considered the municipal policy-making processes and environment and highlighted that policy-making is a complex process at the local level. : Week 10 considered municipal relationships with the public, including public participation and engagement as well as relationships with service users, citizens , and Many different interests and interest groups business, identity, local community, consumer, staff union, and policy groups try to influence municipal decision-making and service delivery. While there have been many strong efforts at engagement, municipal relationships with the public are not as inclusive or accessible as they need to be to connect effectively with diverse individuals, groups, and communities. Technology and online platforms have the potential for enhanced access and connection and greater levels of engagement. The module ended with a brief look at climate change and local government. This mini case study connected with the discussion of technology and globalization and provided an example of Your Turn Activity What course content resonated with you? What are your two key course learnings, takeaways, or aha moments? Please review the list when you add your contribution and come back to it at the end of this course week and review it again. While there will be some similarity of points, you will also see some perspectives that you might not have thought of or may cause you to reflect further on local government. As you review the key course learning summary on the previous page, you will no doubt notice some similarities and themes in what other students are taking away from the course as important learnings. Here are some additional thoughts on key course themes: : Week 11 looked at two important issues facing local government today technology and globalization. Both will shape the future path of municipalities within provinces, nationally, and on the international stage. They bring implications for relationships with other levels of government and for relationships with community members. Complex Environment Municipalities operate in complex environments. The structure of municipalities can be complicated with regional, two-tier structures as well as municipal and provincial special purpose bodies. Elected representatives are not associated with political parties, which can make decision-making more robust, but at the same time more complicated and more difficult to predict. Downloading has added complexity associated with provincial program requirements and funding and municipal funding, particularly grants, and is subject to change. In addition to special purpose bodies, municipalities have relationships with the private and nonprofit sectors to deliver services. Municipal issues cross boundaries and are increasingly regional. Technology and globalization add further complexities to the challenging context in which municipalities operate. Change Local government, unlike the constitutionally recognized provincial territorial or federal levels of government, is subject to change. While the foundation is remarkably similar to that of the Baldwin Act, 1849, there have been changes in the structure and responsibilities of municipalities through provincially imposed amalgamations and changes to representation and roles. Municipalities have been able to pursue some structural and governance reforms. However, more frequently, provincial decisions overlook municipal and public opposition to the changes. Relationships Municipalities have formal and informal relationships with the public and many interests, stakeholders, and levels of government. As the level of government closest to the people, these relationships bring high expectations regarding efficiency, effectiveness, representation, and engagement in decision- making processes. Municipalities face significant limitations in a formal relationship with the federal government, even though federal policies frequently have direct implications for municipalities. Municipal relationships with provinces are politically unstable and change happens in unanticipated forms. Relationships with Indigenous governments and communities have become increasingly important to municipalities. Capacity Municipalities have limited financial and jurisdictional capacity to address the increasingly complicated local challenges and issues. The course looked at a number of ways that the lack of financial capacity can be addressed, but action has been limited. Lack of jurisdictional capacity was a recurring theme throughout the course. Although municipalities can engage in multi-level governance, act as eager beavers, and be innovative in relationships with the private sector and civil society, these workarounds take time and effort. Looking Back at the Four Key Tensions Before we leave this review and reflection module, let s reflect on the four tensions from the Introducing Four Key Tensions page in Module 2. These tensions have been evident throughout the course, in the discussions of structure, reforms, finance, delegated roles and authority, interests, representation, service delivery, and policy. 1. Tensions between the municipal service delivery and democratic roles were presented in the discussion of role, structure, and process and repeated in the other tensions below. As urban municipalities continue to grow in population and economic importance, and as issues become increasingly complex, municipalities will need to play a stronger democratic and representative role. 2. Tensions between efficiency and effectiveness were evident in the discussions of municipal role, processes, and finances. Cost efficiency is key if the role of local government is service provision; whereas effectiveness and how municipalities do their work and make decisions is critical to the municipal role of democratic representation. The tension between efficiency and effectiveness isn t either or because local governments need some elements of both; the tension is in the balance between efficiency and effectiveness. 3. Tensions about municipal autonomy and the relationship with provinces and territories have been evident throughout the course from the historical overview early in the course to the last module and the future path for municipalities. The municipal relationship with the federal government is constrained by lack of constitutional autonomy and politics at all levels. 4. Finally, the course explored tensions related to stakeholders and how local governments balance and mediate these interests. Reflecting on the discussion of interests, perhaps we also need to add represent to this tension, i.e., tensions related to representation, interests, and how local governments , to highlight tensions in the selection of elected officials, how they represent the many interests in their communities, and whether they play trustee or delegate roles. We are now at the end of the course. At this point, you have developed an appreciation for the often- overlooked local level of government and now possess a better understanding of the challenges of the current system and structures of governance. You also understand how your municipality is governed and have seen the municipality in action in a decision-making council or committee meeting. You can apply these course learnings to future engagement with your municipality and to your broader understanding of inter-governmental relationships in Canada. In addition, you should also have a good understanding of the many municipal interests and the challenges that municipalities face in trying to balance these varied interests. The course explored a number of issues facing municipalities as well as opportunities for leadership, innovation, and continued strengthening of local government. Week 1 Discussion Based on your knowledge of local government structure, relationships, challenges, issues, and its role, would you ever run for office at the local level, i.e., would you ever stand for election as a mayor or local councillor in your municipality? Would this be a job that would interest you? Why? Why not? Please see the Week 12 discussion topic in your D2L course for further instructions. Note: You will be asked to self-assess your participation in the Week 12 course discussion at the end of this discussion week (i.e. Friday) this self-assessment will contribute to your self- assessed participation grade. See the Assessment and Evaluation section of this Course Outline for details. Note: You can access the Discussion Forums and Topics from the Communications menu in your D2L course. Please make sure that your participation in all discussion forums adheres to the Toronto Metropolitan University online etiquette guidelines listed in the Course Outline. There is no assignment due this week. A friendly reminder that the take home exam will be available on the Saturday of Week 13. See the Announcements and Course Outline for more details.","preparedAudioPaths":"[\"/tts-audio/prep-231-chunk-0-1775882856070.mp3\",\"/tts-audio/prep-231-chunk-1-1775882857900.mp3\",\"/tts-audio/prep-231-chunk-2-1775882859563.mp3\",\"/tts-audio/prep-231-chunk-3-1775882861246.mp3\",\"/tts-audio/prep-231-chunk-4-1775882863072.mp3\",\"/tts-audio/prep-231-chunk-5-1775882864823.mp3\",\"/tts-audio/prep-231-chunk-6-1775882866349.mp3\",\"/tts-audio/prep-231-chunk-7-1775882868481.mp3\",\"/tts-audio/prep-231-chunk-8-1775882870283.mp3\",\"/tts-audio/prep-231-chunk-9-1775882871804.mp3\",\"/tts-audio/prep-231-chunk-10-1775882873288.mp3\",\"/tts-audio/prep-231-chunk-11-1775882875045.mp3\",\"/tts-audio/prep-231-chunk-12-1775882876152.mp3\"]","preparedAt":"2026-04-11T04:47:56.952Z","createdAt":"2026-04-06T08:43:41.486Z"},{"id":232,"originalName":"CFNF400, Module 12 - Learning Objectives.pdf","displayName":"CFNF400, Module 12 - Learning Objectives.pdf","objectPath":"/local/uploads/1775479423371-CFNF400__Module_12_-_Learning_Objectives.pdf","contentType":"application/pdf","size":260700,"folder":"week-12-cfnf400-module","listened":false,"lastChunkIndex":0,"totalChunks":15,"checkedChunks":"[9,10]","ttsAudioUrl":null,"ttsGeneratedAt":null,"extractedText":"By the end of this module students will be able to: 1. Understand the roles of Information, Motivation, and Behavioural Skills in changing sexual health related behaviour. 2. Understand the roles of Elicitation, Intervention, and Evaluation in applying the IMB model to sexual health promotion activities. 3. Apply the Elicitation, Intervention, and Evaluation framework and the Information, Motivation, and Behavioural Skills model to sexual health promotion activities. 4. Become aware of opportunities for further professional development in the area of human sexuality. Topic Overview The primary objectives of this course have been to encourage a critical understanding of the social context of human sexuality and to introduce key theories and concepts relevant to the study of human sexuality. We have also paid particular attention to how these concepts can be applied to the work of health professionals addressing sexuality issues in their work. As we have examined the developmental tasks of each phase of the life-cycle and topics such as gender, sexual orientation, and disability, it has become evident that sexuality and sexual health are important components of individual and community well-being. One of the outcomes of the gradual transition from a Restrictive to a Permissive sexual ideology in Western culture is that it is increasingly accepted that in order to comprehensively and holistically meet the needs of their constituents, health professionals (e.g., nurses, rehabilitation counsellors, social workers, and educators) must be willing and able to address issues of sexuality. If we are to utilize our knowledge and expertise in human sexuality to the benefit of our students, clients and communities, it is crucial to incorporate effective, well-tested approaches to sexual health promotion in our work. The aim of this final module is to provide you with a basic general approach to developing and implementing effective sexual health promotion activities. Please Note To effectively promote sexual health, health professionals will benefit from using well-tested, behaviourally focused approaches to sexual health enhancement and problem prevention. We are at a unique juncture in history and have a rare opportunity to develop global, national, and community strategies to promote sexual health for the new century. This opportunity has been created by the fact that the world is experiencing a new sexual revolution and a public health imperative. Much like the sexual revolution of the 1960s and 1970s, it is a revolution fuelled by incredible scientific advances, as well as a dramatic social and economic change We also face a myriad of sexual health problems, which is creating an enormous burden on societies. These two factors are putting pressure on health ministries to develop comprehensive approaches to sexual health promotion . The Information, Motivation, Behavioural Skills Model for Sexual and Reproductive Health Promotion In Module 8, Part 2, we saw how the information, motivation, behavioural skills theoretical model can be applied to adolescent sexuality education. Although it was initially developed and tested as a theoretical model to guide interventions targeting HIV AIDS sexual risk reduction, the IMB model can be used to guide a wide range of sexual health promotion and education activities . Whether we are creating and implementing programs to promote sexual health with individuals, groups, or communities, the IMB model provides a basic and well-tested conceptual framework for ensuring that our interventions are effective in reaching their objectives. First and foremost, sexual and reproductive health behaviors, whether they involve sexual function promotion, contraceptive utilization, STD HIV prevention, reproductive cancer screening, or sexual adaptations to aging, illness, or disability, represent sexualized behavioral events. Each of these sexual and reproductive health behaviors has acquired sexual meaning as a result of social ascription, individual learning, and the sexual and reproductive biology and physiology involved in all of the acts and adjustments in question. As sexualized acts, sexual and reproductive behaviors are all influenced by a common set of determinants of sexual behavior, including information, motivation, and behavioral skills factors, and all are potentially modifiable via common intervention pathways focusing on changing these factors in efforts to promote sexual and reproductive health (Fisher and Fisher, 1998, p. s 39-40). The IMB Model for Sexual Health Promotion Acquisition of Information Individual must learn information that is relevant to the practice of sexual and reproductive health behaviour. Development of Motivation Individual must become personally motivated and or socially motivated to practice sexual and reproductive health behaviour. Development of Behavioural Skills Individual must learn the actual behavioural skills to perform sexual and reproductive health behaviour. Although the necessity of including relevant information, motivation, and behavioural skills in sexual health promotion programs seems obvious, very few existing programs actually contain all three elements. In many cases, sexual health education programs have been exclusively information-based and, in particular, have neglected to provide specific behavioural skills training. Key Point The degree to which an individual is able to enact sexual health promoting behaviour will be dependant to a significant extent on their level of relevant information, motivation, and behavioural skills. Case Example An IMB Model Intervention Approach to Assist Women with Sexual Function Difficulties Related to Chemotherapy Treatment for Breast Cancer. Research suggests that difficulty with sexual functioning is one of the most distressing problems for long-term survivors of breast cancer and that in many cases these problems are related to vaginal dryness resulting from chemotherapy treatment (e.g., see Broeckel, Thors, Jacobsen, Small, and Cox, 2002). Therefore, one of the objectives of a sexual health education intervention for this group might be to target information, motivation, and behaviour skills related to the use of vaginal lubrication prior to sexual activity. Information: (Must be relevant, complete, and easy to translate into behaviour) Examples of relevant information: Many women treated for breast cancer experience problems with sexual function. These problems are often associated with vaginal dryness. Methods to relieve vaginal dryness, including the use of lubricants prior to sexual activity, can be used to improve sexual function among women treated for breast cancer. Lubricants (e.g. Astroglide) are available, without prescription, at the pharmacy in the Family Planning section where the condoms are displayed. Motivation: (Must help the recipient develop a positive attitude towards the behaviour by recognizing that she will benefit from engaging in the behaviour personal motivation and that there is some form of external support for engaging in the behaviour social motivation ). Examples of motivational messages: Restoring sexual function and enjoyment can play an important role in regaining an overall sense of well-being following treatment for breast cancer (personal motivation). Applying a lubricant prior to sexual activity can be an effective and easy to use method for helping to restore sexual function (personal motivation). Other women experiencing vaginal dryness report that using lubricants is very helpful and health professionals recommend their use for this purpose (social motivation). Behavioural Skills:(Must include the teaching of the specific behavioural skills needed to initiate and maintain the behaviour). Examples of behavioural skills training: Instruction on how to locate lubricant in the pharmacy. Instruction on the application of vaginal lubrication (encourage practice and experimentation). Discussion and decision-making on when in the sexual script lubricant will be applied. Practice and rehearsal of communication with partner about the use of lubricants (give explicit and clear examples of communication and or incorporate role-playing exercises where participants practice bringing up and discussing the use of lubricants with a partner). Applying the IMB Model: Elicitation, Intervention, Evaluation Effectively applying the IMB model to a sexual health promotion intervention involves a basic three-step process: elicitation, intervention, and evaluation. In the elicitation phase, program planners assess or measure the target audience s information, motivation, and behavioural skills related to a specific set of sexual health behaviours. This can be done through focus groups, assessment interviews with clients, or questionnaires. In other words, conducting elicitation research will allow program planners to identify which aspects of information, motivation, and behavioural skills the target audience is lacking. Instead of creating programs based on our own assumptions or best guesses as to what the target audience needs, conducting elicitation research helps to ensure that an intervention will be relevant and have the desired impact. In the second step , the program is created and implemented based on the information, motivation, behavioural skills deficits weaknesses of the target audience. In the third step, the program is periodically assessed (again using focus groups, interviews, questionnaires, ect) to ensure that the program is successfully impacting on the information, motivation, and behavioural skills of the target audience. This information can be used to refine and improve the intervention. Key Point The comprehensive, systematic application of an IMB-based sexual health promotion program involves a three-step process of elicitation research, intervention, and evaluation. This program of information motivation behavioural skills and elicitation intervention evaluation will give you a basic structural framework for the delivery of effective sexual health promotion activities. Your required reading for this module is a section of the Canadian Guidelines for Sexual Health Education. This section, titled Key Components provides further description and discussion of the IMB model. The Canadian Guidelines for Sexual Health Education are a recommended resource support document for health professionals involved in the provision of sexual health education and promotion programs. Key Point The Canadian Guidelines for Sexual Health Education provide support and guidance for the development and implementation of effective sexual health education and promotion initiatives. Opportunities for Further Professional Development in the Area of Sexuality The field of sexology has advanced significantly in recent decades. Parallel to the increasing openness towards sexuality in Western culture, the importance of research on human sexuality and sexual health promotion has been increasingly recognized. In addition, as we have seen throughout this course, addressing sexuality and sexual health issues is also gradually becoming an accepted component of the practice of a wide variety of helping professions. However, despite these advancements, it is also important to be aware that sexology has not yet reached the status of a distinct academic discipline. For example, few universities have sexology departments. Indeed, at present, only one sexology department exists in Canada, located at the University of Quebec at Montreal (UQAM s sexology programs are given in the french language). Several universities in Canada offer programs that enable students to specialize in human sexuality (e.g., Graduate programs in the Department of Family Studies at the University of Guelph; Interdisciplinary Studies in Sexuality, Marriage and the Family at the University of Waterloo). For most students seeking to become specialists in sexuality research, education, counselling or therapy, the most advantagious route to so is to pursue graduate studies in an appropriate related academic program (e.g., nursing, clinical, counselling or educational psychology, medicine, social work, education, ect.) and, to the extent possible, focus one s research and study on sexuality within that program. Many graduate programs have faculty members with an interest in sexology and who teach courses related to sexuality. Obtaining additional credentials in one of these more traditional disciplines also provides a broader qualification than training limited to sexology. This is an important factor to consider in choosing a graduate program. In sum, if you want to become a sexuality educator, become an educator first, if you want to become a medical sexologist, become a physician or nurse first, if you want to become a sex therapist, become a therapist first. In other words, first and foremost, establish your credentials in your discipline as you pursue your focus on sexuality. Becoming a Sex Therapist Technically, there are no licensing bodies in Canada that legally certify a person as a sex therapist. Generally speaking, a well-qualified sex therapist has advanced graduate training in an appropriate discipline such as medicine, psychology, social work, nursing ect. as well as additional specific training in sex therapy. Specific training in sex therapy is available through organizations such as the American Association of Sex Educators, Counselors, and Therapists and the Association of Sex Therapy in Ontario (ASTO: A Final Word This course has been ambitious in its scope and objectives. You have been asked to not only develop a critical understanding of the social context of human sexuality. You have also been asked to acquire a wide-ranging knowledge of sexuality issues and concepts that are crucial to the effective promotion of sexual health. You have taken an important first step in developing the knowledge and skills to make a meaningful contribution to the sexual health of those you are or will be working with. Enhancing the ability of individuals, couples, families, and communities to achieve healthy sexuality, a fundamental component of human well-being, is something to be proud of. Congratulations and good luck! Alex McKay Review Poll 4 Module 13 - Due by the end of this week of study. Complete the four multiple choice questions below. Then click on Activity below to receive your short answer response question and follow the instructions on how to submit your short answer response. Alex will provide a commentary on the poll responses and short answers on the Review Poll 4 discussion board. To begin please click on the Review Poll links below. Question A4 - Many of the developmental tasks related to adult sexuality that we have examined in this course are focused, in one way or another, on couple communication about the sexual dimension of their relationship. Yet, it seems clear that many, if not most couples, rarely if ever have frank, open discussions about their sexual life. From the choices below, select the one that you think is the single most important factor in discouraging couple communication about sexuality. In western culture, as we grow up, we are socialized to not speak openly about sexual matters. Many couples assume that as they get to know each other, they will gradually, through nonverbal communication, come to understand each other sexually With busy work schedules and or growing children, many couples today are simply to tired to think about sex. If you are too tired to have sex, youre probably too tired to talk about it. Other. (if you are selecting 'Other' please consider what your response would be; this will be of significance when answering the open-ended question). Submit Question B4 - Sexual expression can play an important role in the maintenance of an older person's well-being and this can also be the case for elderly people living in nursing homes. The sexual behaviour of nursing home residents can raise some difficult issues for nursing home staff. For example, family members may not approve of their elderly mother or father being sexually active. There may be questions as to whether a particular resident has the mental capacity to consent to sexual activity or to behave appropriately and responsibly. In some cases, nursing home residents may not have adequate privacy to engage in sexual activity unless they are assisted by nursing home staff. Given these issues, which of the following do you think is the best approach regarding sexual activity of nursing home residents. All nursing homes should have policies that include the recognition that nursing home residents have a basic right to sexual expression just like any other person. This will make life more difficult and complicated for the staff but they have to understand and accept that dealing with these issues is part of the job. Nursing home staff should not be obligated to assist residents with respect to sexual expression (For example, arranging for residents to have the privacy to be alone together). Staff should only become involved in sexuality related matters if residents are behaving inappropriately. other Submit C4 - Sexual expression can play an important role in the well-being of a person with a developmental disability and this can also be the case for those people living in group homes. The sexual behaviour of group home residents can raise some difficult issues for group home staff. For example, some family members may not approve of a son or daughter being sexually active. There may be questions as to whether a particular resident has the mental capacity to consent to sexual activity or to behave appropriately and responsibly. In some cases, group home residents may not have adequate privacy to engage in sexual activity unless they are assisted by group home staff. Given these issues, which of the following do you think is the best approach regarding the sexual behaviour of people with developmental disabilities living in group homes? All group homes for people with developmental disabilities should have policies that include the recognition that residents have a basic right to sexual expression just like any other person. This will make life more difficult and complicated for the staff but they have to understand and accept that dealing with these issues is part of the job. Group home staff should not be obligated to assist residents with respect to sexual expression (For example, arranging for residents to have the privacy to be alone together). Staff should only become involved in sexuality related matters if residents are behaving inappropriately. Other Submit Question D4 - It is very clear from statistics on STIs and unintended pregnancy, that many adolescents and adults are not taking the necessary measures to protect their sexual health. For example, rates of condom use are much lower than they should be for both groups. From the choices below, select the one that you think is the single most important factor that explains the low level of condom use in Canada. Too many people are simply unaware of the risks involved in having unprotected sex. Most people are aware of the risks generally but too many of them believe that they personally are not at risk for HIV or STDs. For example, some people erroneously believe that because they are monogamous (i.e., they currently only have one sexual partner) or that they know their partner well, they are not at risk and, therefore, do not need to use condoms Most people at risk for HIV or STD know that they should be using condoms. However, many of these people are too embarrassed to bring up the subject of condom use with their partner or they are unsure about how to talk about it or they are worried about how their partner might react to the suggestion that condoms should be used. Other. (if you are selecting 'Other' please consider what your response would be; this will be of significance when answering the open-ended question). Submit Activity Cick here to get an Assignment based on the Opinion Polls above. Please Note You can revisit the review poll to view the updated results of your classmates opinions. Broeckel, J.A., Thors, C.L., Jacobsen, P.B., Small, M. and Cox, C.E. . Sexual functioning in long- term breast cancer survivors treated with adjuvant chemotherapy. Breast Cancer Research and Treatment, 75, 241-248. Coleman, E. . Promoting sexual health and responsible sexual behavior: an introduction. The Journal of Sex Research, 39, 3-6. Fisher, W.A. and Fisher, J.D. . Understanding and promoting sexual and reproductive health behavior: theory and method. Annual Review of Sex Research, 9, 39-76. Public Health Agency of Canada. . Canadian Guidelines for Sexual Health Education. Ottawa: Public Health Agency of Canada. Reading Required Reading SIECCAN. . Canadian Guidelines for Sexual Health Education. Toronto, ON: Sex Information and Education Council of Canada. Pages 36-50 only","preparedAudioPaths":"[\"/tts-audio/prep-232-chun-0-1775882878041.mp3\",\"/tts-audio/prep-232-chunk-1-1775882879590.mp3\",\"/tts-audio/prep-232-chunk-2-1775882881178.mp3\",\"/tts-audio/prep-232-chunk-3-1775882882791.mp3\",\"/tts-audio/prep-232-chunk-4-1775882884400.mp3\",\"/tts-audio/prep-232-chunk-5-1775882885941.mp3\",\"/tts-audio/prep-232-chunk-6-1775882887596.mp3\",\"/tts-audio/prep-232-chunk-7-1775882889210.mp3\",\"/tts-audio/prep-232-chunk-8-1775882891410.mp3\",\"/tts-audio/prep-232-chunk-9-1775882893203.mp3\",\"/tts-audio/prep-232-chunk-10-1775882894880.mp3\",\"/tts-audio/prep-232-chunk-11-1775882907571.mp3\",\"/tts-audio/prep-232-chunk-12-1775882909568.mp3\",\"/tts-audio/prep-232-chunk-13-1775882911258.mp3\",\"/tts-audio/prep-232-chunk-14-1775882912911.mp3\"]","preparedAt":"2026-04-11T04:48:33.713Z","createdAt":"2026-04-06T08:43:43.373Z"},{"id":233,"originalName":"Testing PDF.pdf","displayName":"Testing PDF.pdf","objectPath":"onedrive://week-1-cppa235-module/Testing PDF.pdf","contentType":"application/pdf","size":29106,"folder":"week-1-cppa235-module","listened":false,"lastChunkIndex":0,"totalChunks":0,"checkedChunks":null,"ttsAudioUrl":null,"ttsGeneratedAt":null,"extractedText":null,"preparedAudioPaths":null,"preparedAt":null,"createdAt":"2026-04-10T23:36:55.952Z"},{"id":234,"originalName":"Testing PDF.pdf","displayName":"Testing PDF.pdf","objectPath":"onedrive://week-1-tbd2-module/Testing PDF.pdf","contentType":"application/pdf","size":29106,"folder":"week-1-tbd2-module","listened":false,"lastChunkIndex":0,"totalChunks":0,"checkedChunks":null,"ttsAudioUrl":null,"ttsGeneratedAt":null,"extractedText":null,"preparedAudioPaths":null,"preparedAt":null,"createdAt":"2026-04-10T23:36:56.098Z"},{"id":235,"originalName":"Testing PDF.pdf","displayName":"Testing PDF.pdf","objectPath":"onedrive://week-1-tbd1-module/Testing PDF.pdf","contentType":"application/pdf","size":29106,"folder":"week-1-tbd1-module","listened":false,"lastChunkIndex":0,"totalChunks":0,"checkedChunks":null,"ttsAudioUrl":null,"ttsGeneratedAt":null,"extractedText":null,"preparedAudioPaths":null,"preparedAt":null,"createdAt":"2026-04-10T23:36:56.250Z"},{"id":236,"originalName":"Testing PDF.pdf","displayName":"Testing PDF.pdf","objectPath":"onedrive://week-1-cecn210-module/Testing PDF.pdf","contentType":"application/pdf","size":29106,"folder":"week-1-cecn210-module","listened":false,"lastChunkIndex":0,"totalChunks":0,"checkedChunks":null,"ttsAudioUrl":null,"ttsGeneratedAt":null,"extractedText":null,"preparedAudioPaths":null,"preparedAt":null,"createdAt":"2026-04-10T23:36:56.817Z"},{"id":237,"originalName":"How to Split routes.ts Into Two Files-Complete Step-by-Step Guide.pdf","displayName":"How to Split routes.ts Into Two Files-Complete Step-by-Step Guide.pdf","objectPath":"onedrive://week-1-tbd2-module/How to Split routes.ts Into Two Files-Complete Step-by-Step Guide.pdf","contentType":"application/pdf","size":109049,"folder":"week-1-tbd2-module","listened":false,"lastChunkIndex":0,"totalChunks":0,"checkedChunks":null,"ttsAudioUrl":null,"ttsGeneratedAt":null,"extractedText":null,"preparedAudioPaths":null,"preparedAt":null,"createdAt":"2026-04-10T23:36:57.863Z"},{"id":240,"originalName":"Testing PDF.pdf","displayName":"Testing PDF.pdf","objectPath":"onedrive://week-12-cppa122-reading/Testing PDF.pdf","contentType":"application/pdf","size":29106,"folder":"week-12-cppa122-reading","listened":false,"lastChunkIndex":0,"totalChunks":0,"checkedChunks":null,"ttsAudioUrl":null,"ttsGeneratedAt":null,"extractedText":null,"preparedAudioPaths":null,"preparedAt":null,"createdAt":"2026-04-10T23:37:02.184Z"},{"id":241,"originalName":"Testing PDF.pdf","displayName":"Testing PDF.pdf","objectPath":"onedrive://week-4-cppa235-module/Testing PDF.pdf","contentType":"application/pdf","size":29106,"folder":"week-4-cppa235-module","listened":false,"lastChunkIndex":0,"totalChunks":0,"checkedChunks":null,"ttsAudioUrl":null,"ttsGeneratedAt":null,"extractedText":null,"preparedAudioPaths":null,"preparedAt":null,"createdAt":"2026-04-10T23:37:02.590Z"},{"id":242,"originalName":"CPPA122, Module 13 - End of the Course.pdf","displayName":"CPPA122, Module 13 - End of the Course.pdf","objectPath":"onedrive://week-13-cppa122-module/CPPA122, Module 13 - End of the Course.pdf","contentType":"application/pdf","size":55346,"folder":"week-13-cppa122-module","listened":false,"lastChunkIndex":0,"totalChunks":0,"checkedChunks":null,"ttsAudioUrl":null,"ttsGeneratedAt":null,"extractedText":null,"preparedAudioPaths":null,"preparedAt":null,"createdAt":"2026-04-10T23:37:02.991Z"},{"id":243,"originalName":"Testing PDF.pdf","displayName":"Testing PDF.pdf","objectPath":"onedrive://week-1-tbd3-module/Testing PDF.pdf","contentType":"application/pdf","size":29106,"folder":"week-1-tbd3-module","listened":false,"lastChunkIndex":0,"totalChunks":0,"checkedChunks":null,"ttsAudioUrl":null,"ttsGeneratedAt":null,"extractedText":null,"preparedAudioPaths":null,"preparedAt":null,"createdAt":"2026-04-10T23:37:09.500Z"},{"id":247,"originalName":"Ambassador_CABC_letter_10232025.pdf","displayName":"Ambassador_CABC_letter_10232025.pdf","objectPath":"onedrive://week-1-cphl110-module/Ambassador_CABC_letter_10232025.pdf","contentType":"application/pdf","size":168356,"folder":"week-1-cphl110-module","listened":false,"lastChunkIndex":0,"totalChunks":0,"checkedChunks":null,"ttsAudioUrl":null,"ttsGeneratedAt":null,"extractedText":null,"preparedAudioPaths":null,"preparedAt":null,"createdAt":"2026-04-10T23:37:14.808Z"},{"id":248,"originalName":"Phil3.pdf","displayName":"Phil3.pdf","objectPath":"onedrive://week-3-cphl110-module/Phil3.pdf","contentType":"application/pdf","size":26317,"folder":"week-3-cphl110-module","listened":false,"lastChunkIndex":0,"totalChunks":0,"checkedChunks":null,"ttsAudioUrl":null,"ttsGeneratedAt":null,"extractedText":null,"preparedAudioPaths":null,"preparedAt":null,"createdAt":"2026-04-10T23:37:17.313Z"},{"id":249,"originalName":"Reading3-1.pdf","displayName":"Reading3-1.pdf","objectPath":"onedrive://week-3-cphl110-reading/Reading3-1.pdf","contentType":"application/pdf","size":26317,"folder":"week-3-cphl110-reading","listened":false,"lastChunkIndex":0,"totalChunks":0,"checkedChunks":null,"ttsAudioUrl":null,"ttsGeneratedAt":null,"extractedText":null,"preparedAudioPaths":null,"preparedAt":null,"createdAt":"2026-04-10T23:37:17.751Z"},{"id":250,"originalName":"Reading3-2.pdf","displayName":"Reading3-2.pdf","objectPath":"onedrive://week-3-cphl110-reading/Reading3-2.pdf","contentType":"application/pdf","size":26317,"folder":"week-3-cphl110-reading","listened":false,"lastChunkIndex":0,"totalChunks":0,"checkedChunks":null,"ttsAudioUrl":null,"ttsGeneratedAt":null,"extractedText":null,"preparedAudioPaths":null,"preparedAt":null,"createdAt":"2026-04-10T23:37:17.765Z"},{"id":251,"originalName":"CFNF400, Module 13 - Assignment Detail.pdf","displayName":"CFNF400, Module 13 - Assignment Detail.pdf","objectPath":"onedrive://week-13-cfnf400-module/CFNF400, Module 13 - Assignment Detail.pdf","contentType":"application/pdf","size":54661,"folder":"week-13-cfnf400-module","listened":false,"lastChunkIndex":0,"totalChunks":0,"checkedChunks":null,"ttsAudioUrl":null,"ttsGeneratedAt":null,"extractedText":null,"preparedAudioPaths":null,"preparedAt":null,"createdAt":"2026-04-10T23:37:18.297Z"},{"id":252,"originalName":"Testing PDF.pdf","displayName":"Testing PDF.pdf","objectPath":"onedrive://week-1-fall3-module/Testing PDF.pdf","contentType":"application/pdf","size":29106,"folder":"week-1-fall3-module","listened":false,"lastChunkIndex":0,"totalChunks":0,"checkedChunks":null,"ttsAudioUrl":null,"ttsGeneratedAt":null,"extractedText":null,"preparedAudioPaths":null,"preparedAt":null,"createdAt":"2026-04-10T23:37:18.771Z"},{"id":253,"originalName":"Testing PDF.pdf","displayName":"Testing PDF.pdf","objectPath":"onedrive://week-8-chis105-module/Testing PDF.pdf","contentType":"application/pdf","size":29106,"folder":"week-8-chis105-module","listened":false,"lastChunkIndex":0,"totalChunks":0,"checkedChunks":null,"ttsAudioUrl":null,"ttsGeneratedAt":null,"extractedText":null,"preparedAudioPaths":null,"preparedAt":null,"createdAt":"2026-04-10T23:37:30.056Z"},{"id":254,"originalName":"Units 2,7 - 2,9.pdf","displayName":"Units 2,7 - 2,9.pdf","objectPath":"onedrive://week-5-casl101-module/Units 2,7 - 2,9.pdf","contentType":"application/pdf","size":3320970,"folder":"week-5-casl101-module","listened":false,"lastChunkIndex":0,"totalChunks":0,"checkedChunks":null,"ttsAudioUrl":null,"ttsGeneratedAt":null,"extractedText":null,"preparedAudioPaths":null,"preparedAt":null,"createdAt":"2026-04-10T23:37:31.225Z"},{"id":256,"originalName":"TBD3-5.pdf","displayName":"TBD3-5.pdf","objectPath":"onedrive://week-5-tbd3-module/TBD3-5.pdf","contentType":"application/pdf","size":26317,"folder":"week-5-tbd3-module","listened":false,"lastChunkIndex":0,"totalChunks":0,"checkedChunks":null,"ttsAudioUrl":null,"ttsGeneratedAt":null,"extractedText":null,"preparedAudioPaths":null,"preparedAt":null,"createdAt":"2026-04-10T23:53:31.701Z"}]
+byhomeyyz@raspberrypi:~/Home-View $
