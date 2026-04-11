@@ -28730,33 +28730,54 @@ export default function Dashboard() {
                 const showForecastWeather = !isPast && diffDays >= 0 && effectiveWCode !== undefined;
                 const fwSkyBg = showForecastWeather ? (() => {
                   const wc = effectiveWCode!;
-                  if (wc >= 95) return 'linear-gradient(180deg, #1a1050 0%, #2e1870 50%, #4a2090 100%)';
-                  if (wc >= 71 && wc <= 77) return 'linear-gradient(180deg, #2a4a8e 0%, #3a68b8 50%, #5088d0 100%)';
-                  if (wc >= 85 && wc <= 86) return 'linear-gradient(180deg, #1e3a70 0%, #3a5aa0 50%, #4a78c0 100%)';
-                  if ((wc >= 61 && wc <= 67) || (wc >= 80 && wc <= 82)) return 'linear-gradient(180deg, #1a3868 0%, #2a58a0 50%, #3e78c0 100%)';
-                  if (wc >= 51 && wc <= 55) return 'linear-gradient(180deg, #224078 0%, #3a60a8 50%, #4a78c0 100%)';
-                  if (wc >= 45 && wc <= 48) return 'linear-gradient(180deg, #305088 0%, #4a70b0 100%)';
-                  if (wc === 3) return 'linear-gradient(180deg, #3a5898 0%, #5080c0 100%)';
-                  if (wc === 2) return 'linear-gradient(180deg, #2068c0 0%, #48a0e0 50%, #70c8f8 100%)';
-                  return 'linear-gradient(180deg, #2078d0 0%, #48a8e8 50%, #70d0ff 100%)';
+                  if (wc >= 95) return 'linear-gradient(180deg, #0d0a2a 0%, #1a1252 30%, #3b1878 60%, #6a2fa0 100%)';
+                  if (wc >= 71 && wc <= 77) return 'linear-gradient(180deg, #1e3a6e 0%, #3060a8 40%, #5590d8 70%, #7ab8f0 100%)';
+                  if (wc >= 85 && wc <= 86) return 'linear-gradient(180deg, #162e5e 0%, #2e52a0 40%, #4a80cc 70%, #6aa8e8 100%)';
+                  if ((wc >= 61 && wc <= 67) || (wc >= 80 && wc <= 82)) return 'linear-gradient(180deg, #0e2848 0%, #1e4888 30%, #3070b8 60%, #4a98d8 100%)';
+                  if (wc >= 51 && wc <= 55) return 'linear-gradient(180deg, #1a3868 0%, #2e5898 40%, #4880c0 70%, #68a8e0 100%)';
+                  if (wc >= 45 && wc <= 48) return 'linear-gradient(180deg, #28406e 0%, #3e6098 40%, #5a88b8 100%)';
+                  if (wc === 3) return 'linear-gradient(180deg, #2a4878 0%, #4878b0 50%, #68a0d0 100%)';
+                  if (wc === 2) return 'linear-gradient(180deg, #1060b8 0%, #38a0e0 40%, #60c8ff 70%, #88e0ff 100%)';
+                  if (isNight) return 'linear-gradient(180deg, #0a1628 0%, #142848 40%, #1e4070 100%)';
+                  return 'linear-gradient(180deg, #1070d8 0%, #38b0f0 35%, #60d4ff 65%, #90e8ff 100%)';
                 })() : null;
                 const fwEffectsHtml = showForecastWeather ? (() => {
                   const wc = effectiveWCode!;
                   if (wc >= 95) {
-                    return `<div style="position:absolute;inset:0;overflow:hidden">${Array.from({length:12},(_,i)=>`<div style="position:absolute;left:${(i*31+7)%100}%;top:-6px;width:2px;height:10px;background:linear-gradient(180deg,rgba(140,200,255,0.9),rgba(100,180,255,0.6));border-radius:0 0 2px 2px;animation:fwRainDrop 0.35s ${(i*0.08).toFixed(2)}s linear infinite"></div>`).join('')}</div>`;
+                    const rain = Array.from({length:18},(_,i)=>{
+                      const l = (i*23+5)%100; const w = 1.5+(i%3)*0.5; const h = 8+(i%4)*3;
+                      return `<div style="position:absolute;left:${l}%;top:-8px;width:${w}px;height:${h}px;background:linear-gradient(180deg,rgba(180,220,255,0.95),rgba(120,180,255,0.4));border-radius:0 0 2px 2px;transform:rotate(-8deg);animation:fwRainDrop 0.3s ${(i*0.06).toFixed(2)}s linear infinite"></div>`;
+                    }).join('');
+                    const flash = `<div style="position:absolute;inset:0;background:rgba(200,180,255,0.2);animation:lightningFlash 6s 1s ease-in-out infinite"></div>`;
+                    return `<div style="position:absolute;inset:0;overflow:hidden">${rain}${flash}</div>`;
                   }
                   if (wc >= 71 && wc <= 77) {
-                    return `<div style="position:absolute;inset:0;overflow:hidden">${Array.from({length:8},(_,i)=>`<div style="position:absolute;left:${(i*29+5)%100}%;top:-4px;width:3px;height:3px;background:rgba(230,240,255,0.95);border-radius:50%;animation:fwSnowDrop 2s ${(i*0.25).toFixed(2)}s linear infinite;box-shadow:0 0 3px rgba(200,220,255,0.6)"></div>`).join('')}</div>`;
+                    return `<div style="position:absolute;inset:0;overflow:hidden">${Array.from({length:14},(_,i)=>{
+                      const sz = 2.5+(i%3)*1; const l = (i*21+3)%100;
+                      return `<div style="position:absolute;left:${l}%;top:-5px;width:${sz}px;height:${sz}px;background:radial-gradient(circle,rgba(255,255,255,0.95) 40%,rgba(200,230,255,0.6));border-radius:50%;animation:fwSnowDrop ${1.8+(i%3)*0.6}s ${(i*0.18).toFixed(2)}s linear infinite;box-shadow:0 0 ${3+(i%2)*2}px rgba(180,220,255,0.7)"></div>`;
+                    }).join('')}</div>`;
                   }
                   if (wc >= 85 && wc <= 86) {
-                    return `<div style="position:absolute;inset:0;overflow:hidden">${Array.from({length:10},(_,i)=>`<div style="position:absolute;left:${(i*23+5)%100}%;top:-4px;width:3.5px;height:3.5px;background:rgba(235,245,255,0.95);border-radius:50%;animation:fwSnowDrop 1.5s ${(i*0.2).toFixed(2)}s linear infinite;box-shadow:0 0 4px rgba(200,220,255,0.7)"></div>`).join('')}</div>`;
+                    return `<div style="position:absolute;inset:0;overflow:hidden">${Array.from({length:16},(_,i)=>{
+                      const sz = 3+(i%3)*1.5; const l = (i*19+5)%100;
+                      return `<div style="position:absolute;left:${l}%;top:-5px;width:${sz}px;height:${sz}px;background:radial-gradient(circle,rgba(255,255,255,0.95) 40%,rgba(200,230,255,0.5));border-radius:50%;animation:fwSnowDrop ${1.4+(i%3)*0.5}s ${(i*0.14).toFixed(2)}s linear infinite;box-shadow:0 0 ${4+(i%2)*3}px rgba(180,220,255,0.8)"></div>`;
+                    }).join('')}</div>`;
                   }
                   if ((wc >= 61 && wc <= 67) || (wc >= 80 && wc <= 82)) {
-                    const count = wc >= 80 ? 10 : 8;
-                    return `<div style="position:absolute;inset:0;overflow:hidden">${Array.from({length:count},(_,i)=>`<div style="position:absolute;left:${(i*29+7)%100}%;top:-6px;width:1.5px;height:8px;background:linear-gradient(180deg,rgba(120,190,255,0.85),rgba(80,160,255,0.5));border-radius:0 0 1px 1px;animation:fwRainDrop ${wc>=80?'0.45s':'0.6s'} ${(i*0.1).toFixed(2)}s linear infinite"></div>`).join('')}</div>`;
+                    const count = wc >= 80 ? 16 : 12;
+                    return `<div style="position:absolute;inset:0;overflow:hidden">${Array.from({length:count},(_,i)=>{
+                      const w = 1+(i%3)*0.5; const h = 6+(i%4)*3; const l = (i*23+5)%100;
+                      return `<div style="position:absolute;left:${l}%;top:-8px;width:${w}px;height:${h}px;background:linear-gradient(180deg,rgba(140,210,255,0.9),rgba(80,170,255,0.3));border-radius:0 0 1px 1px;transform:rotate(-5deg);animation:fwRainDrop ${wc>=80?'0.4s':'0.55s'} ${(i*0.07).toFixed(2)}s linear infinite"></div>`;
+                    }).join('')}</div>`;
                   }
                   if (wc >= 51 && wc <= 55) {
-                    return `<div style="position:absolute;inset:0;overflow:hidden">${Array.from({length:6},(_,i)=>`<div style="position:absolute;left:${(i*37+10)%100}%;top:-4px;width:1px;height:6px;background:linear-gradient(180deg,rgba(130,195,255,0.7),rgba(100,170,255,0.4));border-radius:0 0 1px 1px;animation:fwRainDrop 0.8s ${(i*0.15).toFixed(2)}s linear infinite"></div>`).join('')}</div>`;
+                    return `<div style="position:absolute;inset:0;overflow:hidden">${Array.from({length:10},(_,i)=>{
+                      const l = (i*29+8)%100;
+                      return `<div style="position:absolute;left:${l}%;top:-5px;width:1px;height:5px;background:linear-gradient(180deg,rgba(160,210,255,0.75),rgba(120,180,255,0.25));border-radius:0 0 1px 1px;transform:rotate(-3deg);animation:fwRainDrop 0.75s ${(i*0.12).toFixed(2)}s linear infinite"></div>`;
+                    }).join('')}</div>`;
+                  }
+                  if (wc === 0 || wc === 1) {
+                    return `<div style="position:absolute;top:1px;left:50%;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;background:radial-gradient(circle,rgba(255,230,100,0.9) 30%,rgba(255,200,50,0.4) 70%,transparent);animation:sunPulse 3s ease-in-out infinite;box-shadow:0 0 6px rgba(255,200,50,0.5)"></div>`;
                   }
                   return '';
                 })() : '';
@@ -29105,15 +29126,15 @@ export default function Dashboard() {
                               <>
                                 <style>{`
                                   @keyframes twinkle { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
-                                  @keyframes rainDrop { 0% { transform: translateY(-4px); opacity: 0; } 10% { opacity: 1; } 85% { opacity: 0.8; } 100% { transform: translateY(100%); opacity: 0; } }
-                                  @keyframes snowFall { 0% { transform: translateY(-4px) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 85% { opacity: 0.8; } 100% { transform: translateY(100%) rotate(180deg); opacity: 0; } }
-                                  @keyframes fwRainDrop { 0% { transform: translateY(-6px); opacity: 0; } 10% { opacity: 1; } 85% { opacity: 0.7; } 100% { transform: translateY(20px); opacity: 0; } }
-                                  @keyframes fwSnowDrop { 0% { transform: translateY(-4px) translateX(0); opacity: 0; } 10% { opacity: 1; } 50% { transform: translateY(8px) translateX(3px); } 85% { opacity: 0.7; } 100% { transform: translateY(18px) translateX(-2px); opacity: 0; } }
+                                  @keyframes rainDrop { 0% { transform: translateY(-6px) rotate(-5deg); opacity: 0; } 8% { opacity: 1; } 80% { opacity: 0.85; } 100% { transform: translateY(100%) rotate(-5deg); opacity: 0; } }
+                                  @keyframes snowFall { 0% { transform: translateY(-6px) translateX(0) rotate(0deg); opacity: 0; } 8% { opacity: 1; } 30% { transform: translateY(30%) translateX(4px) rotate(60deg); } 60% { transform: translateY(60%) translateX(-3px) rotate(120deg); } 85% { opacity: 0.85; } 100% { transform: translateY(100%) translateX(2px) rotate(180deg); opacity: 0; } }
+                                  @keyframes fwRainDrop { 0% { transform: translateY(-8px) rotate(-8deg); opacity: 0; } 8% { opacity: 1; } 80% { opacity: 0.8; } 100% { transform: translateY(22px) rotate(-8deg); opacity: 0; } }
+                                  @keyframes fwSnowDrop { 0% { transform: translateY(-5px) translateX(0); opacity: 0; } 8% { opacity: 1; } 35% { transform: translateY(5px) translateX(4px); } 65% { transform: translateY(12px) translateX(-3px); } 85% { opacity: 0.8; } 100% { transform: translateY(20px) translateX(1px); opacity: 0; } }
                                   @keyframes fwSnowDrift { 0% { transform: translate(-3px, -2px); } 100% { transform: translate(3px, 2px); } }
-                                  @keyframes fogDrift { 0% { transform: translateX(-5px); } 100% { transform: translateX(5px); } }
-                                  @keyframes lightningFlash { 0%,89%,91%,93%,100% { opacity: 0; } 90% { opacity: 1; } 92% { opacity: 0.6; } }
-                                  @keyframes sunPulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.06); opacity: 0.92; } }
-                                  @keyframes sunGlow { 0% { transform: scale(1); opacity: 0.7; } 100% { transform: scale(1.15); opacity: 1; } }
+                                  @keyframes fogDrift { 0% { transform: translateX(-8px); opacity: 0.6; } 50% { opacity: 1; } 100% { transform: translateX(8px); opacity: 0.6; } }
+                                  @keyframes lightningFlash { 0%,85%,88%,91%,94%,100% { opacity: 0; } 86% { opacity: 0.8; } 87% { opacity: 0.2; } 89% { opacity: 1; } 90% { opacity: 0.3; } 92% { opacity: 0.7; } 93% { opacity: 0.1; } }
+                                  @keyframes sunPulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.08); opacity: 0.9; } }
+                                  @keyframes sunGlow { 0% { transform: scale(1); opacity: 0.6; } 50% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(1); opacity: 0.6; } }
                                 `}</style>
                                 <div className="absolute left-0 right-0 bottom-0 z-10" style={{ top: 0, background: skyBg, overflow: 'hidden', pointerEvents: 'none' }}>
                                   <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }} dangerouslySetInnerHTML={{ __html: starsHtml + moonHtml + sunriseSceneHtml + sunsetSceneHtml }} />
@@ -29138,82 +29159,87 @@ export default function Dashboard() {
                             const wc = dailyEntry.weatherCode;
                             const forecastEffectsHtml = (() => {
                               if (wc >= 95) {
-                                const drops = Array.from({ length: 24 }, (_, i) => {
-                                  const left = (i * 17 + 3) % 100;
-                                  const delay = ((i * 0.11) % 0.7).toFixed(2);
-                                  const h = 10 + (i % 3) * 3;
-                                  return `<div style="position:absolute;left:${left}%;top:-6px;width:2px;height:${h}px;background:linear-gradient(180deg,rgba(120,180,255,0.9),rgba(80,140,255,0.4));animation:rainDrop 0.35s ${delay}s linear infinite;border-radius:0 0 2px 2px"></div>`;
+                                const drops = Array.from({ length: 30 }, (_, i) => {
+                                  const left = (i * 13 + 3) % 100;
+                                  const delay = ((i * 0.08) % 0.6).toFixed(2);
+                                  const h = 10 + (i % 4) * 4;
+                                  const w = 1.5 + (i % 3) * 0.5;
+                                  return `<div style="position:absolute;left:${left}%;top:-8px;width:${w}px;height:${h}px;background:linear-gradient(180deg,rgba(180,220,255,0.95),rgba(100,170,255,0.3));animation:rainDrop 0.3s ${delay}s linear infinite;border-radius:0 0 2px 2px;transform:rotate(-8deg)"></div>`;
                                 }).join('');
-                                return drops + `<div style="position:absolute;inset:0;background:rgba(255,255,200,0.15);animation:lightningFlash 8s 2s ease-in-out infinite"></div>`;
+                                return drops + `<div style="position:absolute;inset:0;background:rgba(200,180,255,0.2);animation:lightningFlash 5s 1.5s ease-in-out infinite"></div><div style="position:absolute;inset:0;background:rgba(255,240,200,0.12);animation:lightningFlash 7s 4s ease-in-out infinite"></div>`;
                               }
                               if (wc >= 71 && wc <= 77) {
-                                return Array.from({ length: 20 }, (_, i) => {
-                                  const left = (i * 19 + 3) % 100;
-                                  const delay = ((i * 0.18) % 2.5).toFixed(2);
-                                  const size = 3 + (i % 3) * 1.5;
-                                  return `<div style="position:absolute;left:${left}%;top:-6px;width:${size}px;height:${size}px;background:rgba(230,240,255,0.95);border-radius:50%;animation:snowFall ${2.5 + (i % 3)}s ${delay}s linear infinite;box-shadow:0 0 3px rgba(200,220,255,0.5)"></div>`;
+                                return Array.from({ length: 28 }, (_, i) => {
+                                  const left = (i * 14 + 3) % 100;
+                                  const delay = ((i * 0.15) % 2.5).toFixed(2);
+                                  const size = 3 + (i % 4) * 1.5;
+                                  return `<div style="position:absolute;left:${left}%;top:-6px;width:${size}px;height:${size}px;background:radial-gradient(circle,rgba(255,255,255,0.95) 30%,rgba(200,230,255,0.5));border-radius:50%;animation:snowFall ${2 + (i % 4) * 0.8}s ${delay}s linear infinite;box-shadow:0 0 ${4+(i%3)*2}px rgba(180,220,255,0.6)"></div>`;
                                 }).join('');
                               }
                               if (wc >= 85 && wc <= 86) {
-                                return Array.from({ length: 22 }, (_, i) => {
-                                  const left = (i * 19 + 3) % 100;
-                                  const delay = ((i * 0.15) % 2).toFixed(2);
+                                return Array.from({ length: 30 }, (_, i) => {
+                                  const left = (i * 13 + 3) % 100;
+                                  const delay = ((i * 0.12) % 2).toFixed(2);
                                   const size = 3 + (i % 3) * 1.5;
                                   return `<div style="position:absolute;left:${left}%;top:-6px;width:${size}px;height:${size}px;background:rgba(230,240,255,0.95);border-radius:50%;animation:snowFall ${1.8 + (i % 2) * 0.7}s ${delay}s linear infinite;box-shadow:0 0 3px rgba(200,220,255,0.5)"></div>`;
                                 }).join('');
                               }
                               if (wc >= 66 && wc <= 67) {
-                                const rain = Array.from({ length: 18 }, (_, i) => {
-                                  const left = (i * 21 + 3) % 100;
-                                  const delay = ((i * 0.12) % 1).toFixed(2);
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:2px;height:8px;background:linear-gradient(180deg,rgba(160,200,255,0.8),rgba(130,170,240,0.3));animation:rainDrop 0.55s ${delay}s linear infinite;border-radius:0 0 2px 2px"></div>`;
+                                const rain = Array.from({ length: 24 }, (_, i) => {
+                                  const left = (i * 16 + 3) % 100;
+                                  const delay = ((i * 0.09) % 0.8).toFixed(2);
+                                  const w = 1.5 + (i % 3) * 0.3;
+                                  const h = 7 + (i % 3) * 3;
+                                  return `<div style="position:absolute;left:${left}%;top:-6px;width:${w}px;height:${h}px;background:linear-gradient(180deg,rgba(160,210,255,0.9),rgba(120,180,240,0.25));animation:rainDrop 0.5s ${delay}s linear infinite;border-radius:0 0 2px 2px;transform:rotate(-6deg)"></div>`;
                                 }).join('');
-                                const snow = Array.from({ length: 8 }, (_, i) => {
-                                  const left = (i * 31 + 11) % 100;
-                                  const delay = ((i * 0.3) % 2).toFixed(2);
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:3px;height:3px;background:rgba(230,240,255,0.8);border-radius:50%;animation:snowFall ${2 + (i % 2)}s ${delay}s linear infinite"></div>`;
+                                const snow = Array.from({ length: 12 }, (_, i) => {
+                                  const left = (i * 25 + 8) % 100;
+                                  const delay = ((i * 0.25) % 2).toFixed(2);
+                                  const sz = 3 + (i % 3);
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:${sz}px;height:${sz}px;background:radial-gradient(circle,rgba(255,255,255,0.9) 40%,rgba(200,230,255,0.4));border-radius:50%;animation:snowFall ${1.8 + (i % 3) * 0.5}s ${delay}s linear infinite;box-shadow:0 0 3px rgba(180,220,255,0.5)"></div>`;
                                 }).join('');
                                 return rain + snow;
                               }
                               if ((wc >= 61 && wc <= 65) || (wc >= 80 && wc <= 82)) {
-                                const density = wc >= 80 ? 22 : 16;
+                                const density = wc >= 80 ? 28 : 20;
                                 return Array.from({ length: density }, (_, i) => {
-                                  const left = (i * 19 + 3) % 100;
-                                  const delay = ((i * 0.12) % 1).toFixed(2);
-                                  const h = 8 + (i % 3) * 2;
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:2px;height:${h}px;background:linear-gradient(180deg,rgba(140,190,255,0.85),rgba(100,160,240,0.3));animation:rainDrop ${wc >= 80 ? '0.4s' : '0.6s'} ${delay}s linear infinite;border-radius:0 0 2px 2px"></div>`;
+                                  const left = (i * 14 + 3) % 100;
+                                  const delay = ((i * 0.09) % 0.9).toFixed(2);
+                                  const h = 8 + (i % 4) * 3;
+                                  const w = 1.5 + (i % 3) * 0.5;
+                                  return `<div style="position:absolute;left:${left}%;top:-6px;width:${w}px;height:${h}px;background:linear-gradient(180deg,rgba(160,210,255,0.9),rgba(90,170,255,0.25));animation:rainDrop ${wc >= 80 ? '0.35s' : '0.5s'} ${delay}s linear infinite;border-radius:0 0 2px 2px;transform:rotate(-5deg)"></div>`;
                                 }).join('');
                               }
                               if (wc >= 51 && wc <= 55) {
-                                return Array.from({ length: 12 }, (_, i) => {
-                                  const left = (i * 25 + 5) % 100;
-                                  const delay = ((i * 0.15) % 1.2).toFixed(2);
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1.5px;height:6px;background:linear-gradient(180deg,rgba(170,200,240,0.7),rgba(140,170,220,0.2));animation:rainDrop 0.9s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                                return Array.from({ length: 16 }, (_, i) => {
+                                  const left = (i * 19 + 5) % 100;
+                                  const delay = ((i * 0.12) % 1.1).toFixed(2);
+                                  return `<div style="position:absolute;left:${left}%;top:-5px;width:1.5px;height:6px;background:linear-gradient(180deg,rgba(170,210,255,0.8),rgba(130,180,240,0.2));animation:rainDrop 0.8s ${delay}s linear infinite;border-radius:0 0 1px 1px;transform:rotate(-3deg)"></div>`;
                                 }).join('');
                               }
                               if (wc >= 45 && wc <= 48) {
-                                return `<div style="position:absolute;inset:0;background:rgba(200,200,215,0.15);animation:fogDrift 8s ease-in-out infinite alternate"></div><div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(200,205,215,0.12) 30%,rgba(195,200,210,0.18) 50%,rgba(200,205,215,0.12) 70%,transparent 100%);animation:fogDrift 12s 2s ease-in-out infinite alternate-reverse"></div>`;
+                                return `<div style="position:absolute;inset:0;background:rgba(180,195,220,0.12);animation:fogDrift 6s ease-in-out infinite alternate"></div><div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(190,205,225,0.15) 25%,rgba(180,200,220,0.2) 50%,rgba(190,205,225,0.15) 75%,transparent 100%);animation:fogDrift 10s 2s ease-in-out infinite alternate-reverse"></div><div style="position:absolute;top:30%;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(200,215,235,0.25),transparent);animation:fogDrift 8s 1s ease-in-out infinite alternate"></div>`;
                               }
                               if (wc === 3) {
-                                return `<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(130,140,155,0.15) 0%,rgba(150,160,170,0.08) 100%)"></div><svg style="position:absolute;top:4px;left:50%;transform:translateX(-50%);opacity:0.35" width="28" height="12" viewBox="0 0 28 12"><path d="M4 10a4 4 0 0 1 4-4c.5-2.5 2.5-4 5-4s4.5 1.5 5 4h1a3 3 0 0 1 0 6H6a2 2 0 0 1-2-2z" fill="rgba(180,190,200,0.6)"/></svg>`;
+                                return `<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(120,140,165,0.12) 0%,rgba(150,165,185,0.06) 100%)"></div><svg style="position:absolute;top:4px;left:50%;transform:translateX(-50%);opacity:0.4;filter:drop-shadow(0 1px 2px rgba(100,120,150,0.2))" width="28" height="12" viewBox="0 0 28 12"><path d="M4 10a4 4 0 0 1 4-4c.5-2.5 2.5-4 5-4s4.5 1.5 5 4h1a3 3 0 0 1 0 6H6a2 2 0 0 1-2-2z" fill="rgba(190,200,215,0.7)"/></svg>`;
                               }
                               if (wc <= 1) {
-                                return `<svg style="position:absolute;top:2px;right:3px;filter:drop-shadow(0 0 4px rgba(255,220,80,0.4));opacity:0.7" width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4.5" fill="#fde047"/><g stroke="#fde047" stroke-width="1.8" stroke-linecap="round"><line x1="12" y1="1.5" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22.5"/><line x1="1.5" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22.5" y2="12"/><line x1="4.93" y1="4.93" x2="6.76" y2="6.76"/><line x1="17.24" y1="17.24" x2="19.07" y2="19.07"/><line x1="4.93" y1="19.07" x2="6.76" y2="17.24"/><line x1="17.24" y1="6.76" x2="19.07" y2="4.93"/></g></svg>`;
+                                return `<div style="position:absolute;top:2px;right:3px;width:18px;height:18px"><svg style="filter:drop-shadow(0 0 5px rgba(255,220,80,0.5));animation:sunPulse 3s ease-in-out infinite" width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4.5" fill="#fde047"/><g stroke="#fde047" stroke-width="1.8" stroke-linecap="round"><line x1="12" y1="1.5" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22.5"/><line x1="1.5" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22.5" y2="12"/><line x1="4.93" y1="4.93" x2="6.76" y2="6.76"/><line x1="17.24" y1="17.24" x2="19.07" y2="19.07"/><line x1="4.93" y1="19.07" x2="6.76" y2="17.24"/><line x1="17.24" y1="6.76" x2="19.07" y2="4.93"/></g></svg><div style="position:absolute;inset:-3px;border-radius:50%;background:radial-gradient(circle,rgba(255,220,80,0.15) 0%,transparent 70%);animation:sunGlow 2s ease-in-out infinite alternate"></div></div>`;
                               }
                               if (wc === 2) {
-                                return `<svg style="position:absolute;top:2px;right:3px;filter:drop-shadow(0 0 3px rgba(255,220,80,0.3));opacity:0.65" width="18" height="15" viewBox="0 0 28 20" fill="none"><circle cx="10" cy="7" r="4" fill="#fde047"/><g stroke="#fde047" stroke-width="1.4" stroke-linecap="round"><line x1="10" y1="0.5" x2="10" y2="2.5"/><line x1="10" y1="11.5" x2="10" y2="13.5"/><line x1="3.5" y1="7" x2="5.5" y2="7"/><line x1="14.5" y1="7" x2="16.5" y2="7"/><line x1="5.76" y1="2.76" x2="6.82" y2="3.82"/><line x1="13.18" y1="10.18" x2="14.24" y2="11.24"/><line x1="5.76" y1="11.24" x2="6.82" y2="10.18"/><line x1="13.18" y1="3.82" x2="14.24" y2="2.76"/></g><path d="M10 16a4 4 0 0 1 4-4h5a3 3 0 0 1 0 6H11.5a2.5 2.5 0 0 1 0-5" fill="rgba(220,225,240,0.5)" stroke="rgba(200,210,230,0.35)" stroke-width="0.5"/></svg>`;
+                                return `<div style="position:absolute;top:2px;right:3px;width:20px;height:16px"><svg style="filter:drop-shadow(0 0 4px rgba(255,220,80,0.35));animation:sunPulse 4s ease-in-out infinite" width="20" height="16" viewBox="0 0 28 20" fill="none"><circle cx="10" cy="7" r="4" fill="#fde047"/><g stroke="#fde047" stroke-width="1.4" stroke-linecap="round"><line x1="10" y1="0.5" x2="10" y2="2.5"/><line x1="10" y1="11.5" x2="10" y2="13.5"/><line x1="3.5" y1="7" x2="5.5" y2="7"/><line x1="14.5" y1="7" x2="16.5" y2="7"/><line x1="5.76" y1="2.76" x2="6.82" y2="3.82"/><line x1="13.18" y1="10.18" x2="14.24" y2="11.24"/><line x1="5.76" y1="11.24" x2="6.82" y2="10.18"/><line x1="13.18" y1="3.82" x2="14.24" y2="2.76"/></g><path d="M10 16a4 4 0 0 1 4-4h5a3 3 0 0 1 0 6H11.5a2.5 2.5 0 0 1 0-5" fill="rgba(220,230,245,0.55)" stroke="rgba(200,215,235,0.4)" stroke-width="0.5"/></svg></div>`;
                               }
                               return '';
                             })();
-                            const skyBg = wc >= 95 ? 'linear-gradient(180deg, #1a1a2e 0%, #2d2d44 50%, #3a3a50 100%)'
-                              : (wc >= 71 && wc <= 77) ? 'linear-gradient(180deg, #4a5060 0%, #6a7080 50%, #8a90a0 100%)'
-                              : (wc >= 85 && wc <= 86) ? 'linear-gradient(180deg, #3a4050 0%, #5a6070 50%, #7a8090 100%)'
-                              : ((wc >= 61 && wc <= 67) || (wc >= 80 && wc <= 82)) ? 'linear-gradient(180deg, #3a4a5a 0%, #4a5a6a 50%, #5a6a7a 100%)'
-                              : (wc >= 51 && wc <= 55) ? 'linear-gradient(180deg, #4a5a68 0%, #5a6a78 50%, #6a7a88 100%)'
-                              : (wc >= 45 && wc <= 48) ? 'linear-gradient(180deg, #5a5a6a 0%, #7a7a8a 100%)'
-                              : wc === 3 ? 'linear-gradient(180deg, #4a5a6a 0%, #6a7a8a 100%)'
-                              : wc === 2 ? 'linear-gradient(180deg, #2a5a9a 0%, #4a8ac8 50%, #7ab8e0 100%)'
-                              : 'linear-gradient(180deg, #2a6aaa 0%, #4a9ad8 50%, #7ac0e8 100%)';
+                            const skyBg = wc >= 95 ? 'linear-gradient(180deg, #0d0a28 0%, #1a1252 30%, #321870 60%, #5a28a0 100%)'
+                              : (wc >= 71 && wc <= 77) ? 'linear-gradient(180deg, #1e3a6a 0%, #3060a0 35%, #5590d0 65%, #78b8e8 100%)'
+                              : (wc >= 85 && wc <= 86) ? 'linear-gradient(180deg, #162e58 0%, #2e5298 40%, #4a80c8 70%, #68a8e0 100%)'
+                              : ((wc >= 61 && wc <= 67) || (wc >= 80 && wc <= 82)) ? 'linear-gradient(180deg, #0e2848 0%, #1e4880 30%, #3068b0 55%, #4890d0 80%, #60b0e8 100%)'
+                              : (wc >= 51 && wc <= 55) ? 'linear-gradient(180deg, #1a3860 0%, #2e5890 35%, #4878b8 65%, #68a0d8 100%)'
+                              : (wc >= 45 && wc <= 48) ? 'linear-gradient(180deg, #283e60 0%, #3e5e88 40%, #5880a8 100%)'
+                              : wc === 3 ? 'linear-gradient(180deg, #2a4870 0%, #4878a8 50%, #6898c8 100%)'
+                              : wc === 2 ? 'linear-gradient(180deg, #1060b0 0%, #38a0d8 35%, #60c8f0 65%, #88e0ff 100%)'
+                              : 'linear-gradient(180deg, #1070d0 0%, #38b0e8 30%, #60d4ff 60%, #90e8ff 100%)';
                             return (
                               <>
                                 <div className="absolute left-0 right-0 bottom-0 z-[5]" style={{ top: 0, background: skyBg, overflow: 'hidden', pointerEvents: 'none', opacity: isNextSchoolWeek ? 0.2 : 0.85 }}>
