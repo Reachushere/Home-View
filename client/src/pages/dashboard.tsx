@@ -25614,10 +25614,12 @@ export default function Dashboard() {
                   if (currentSemKey) {
                     const currentSem = semesterDefs.find(s => s.key === currentSemKey);
                     if (currentSem) {
+                      const currentAssigned = semesterCourseAssignments[currentSemKey] || [];
+                      const currentAssignedCodes = new Set(currentAssigned.map(c => c.code.replace(/\s/g, '').toUpperCase()));
                       coursesData.courses.filter(c => c.name.trim()).forEach(c => {
                         const code = c.name.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '');
                         const name = c.name.split(' - ').slice(1).join(' - ').trim();
-                        if (code && !allDefCodes.has(code)) {
+                        if (code && !allDefCodes.has(code) && currentAssignedCodes.has(code)) {
                           currentSem.courses.push({ code, name: code, fullName: name, period: '' });
                           allDefCodes.add(code);
                         }
