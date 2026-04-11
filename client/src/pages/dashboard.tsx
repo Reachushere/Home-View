@@ -14426,6 +14426,15 @@ export default function Dashboard() {
         backgroundColor: colorSettings.mainBackgroundOverlay ? safeHex(colorSettings.mainBackground, '#3a8bbf') : '#000000',
       }}
     >
+      {isMobileLibraryOpen && (
+        <LibraryView
+          isOpen={isMobileLibraryOpen}
+          onClose={() => { setIsMobileLibraryOpen(false); setLibrarySemesterKey(undefined); }}
+          semesters={[]}
+          initialSemesterKey={librarySemesterKey}
+        />
+      )}
+
       {pomodoroAlertVisible && <div className="pomodoro-alert-border" />}
       {pomodoroAlertVisible && createPortal(
         <div
