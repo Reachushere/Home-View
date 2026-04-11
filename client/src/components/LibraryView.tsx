@@ -1310,7 +1310,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
   const [shareLink, setShareLink] = useState('');
   const [shareCopied, setShareCopied] = useState(false);
 
-  const { data: allFiles = [] } = useQuery<FileRecord[]>({
+  const { data: allFiles = [], refetch: refetchFiles } = useQuery<FileRecord[]>({
     queryKey: ['/api/files'],
     enabled: isOpen,
   });
@@ -1319,6 +1319,38 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
     queryKey: ['/api/semesters'],
     enabled: isOpen,
   });
+
+  const [syncedSemesters, setSyncedSemesters] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (!isOpen || semesterSettings.length === 0) return;
+    const sorted = [...semesterSettings].sort((a: any, b: any) => {
+      const aDate = a.semesterStartDate ? new Date(a.semesterStartDate).getTime() : 0;
+      const bDate = b.semesterStartDate ? new Date(b.semesterStartDate).getTime() : 0;
+      return aDate - bDate;
+    });
+    const syncAll = async () => {
+      let didSync = false;
+      for (const s of sorted) {
+        const st = s.semesterType || '';
+        const name = s.semesterName || '';
+        const yearMatch = name.match(/\d{4}/);
+        const year = yearMatch ? yearMatch[0] : '';
+        const key = st.startsWith('spring_summer') ? `ss${year}` : st === 'fall' ? `f${year}` : st === 'winter' ? `w${year}` : `s${s.id}`;
+        if (syncedSemesters.has(key)) continue;
+        try {
+          const resp = await fetch('/api/library/sync-semester', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ semesterKey: key }) });
+          if (resp.ok) {
+            const data = await resp.json();
+            if (data.synced > 0) didSync = true;
+          }
+          setSyncedSemesters(prev => new Set([...prev, key]));
+        } catch {}
+      }
+      if (didSync) refetchFiles();
+    };
+    syncAll();
+  }, [isOpen, semesterSettings]);
 
   const semesters = useMemo(() => {
     if (semesterSettings.length === 0) return semestersProp;
@@ -1359,10 +1391,6 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
 
   const courseBooks = useMemo(() => {
     if (!currentSemester) return [];
-    const semIdx = semesters.findIndex(s => s.key === currentSemester.key);
-    const weeksPerSem = 13;
-    const semWeekStart = semIdx >= 0 ? semIdx * weeksPerSem + 1 : 1;
-    const semWeekEnd = semWeekStart + weeksPerSem - 1;
 
     const moduleReadingFiles = allFiles.filter(f => {
       if (!f.folder) return false;
@@ -1381,9 +1409,6 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
 
     const getWeekNum = (f: FileRecord) => parseInt(f.folder?.match(/week-(\d+)/)?.[1] || '0');
 
-    const filterByWeekRange = (files: FileRecord[]) =>
-      files.filter(f => { const w = getWeekNum(f); return w >= semWeekStart && w <= semWeekEnd; });
-
     const semCourses = currentSemester.courses;
     const result: { course: { code: string; name: string; color: string }; files: FileRecord[] }[] = [];
 
@@ -1398,16 +1423,15 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
 
     semCourses.forEach((course, courseIdx) => {
       const codeNorm = course.code.replace(/\s/g, '').toLowerCase();
-      let files = courseMap.get(codeNorm);
-      if (files) files = filterByWeekRange(files);
+      let files = courseMap.get(codeNorm) || [];
       if (!files || files.length === 0) {
         const slotKey = `tbd_slot${courseIdx + 1}`;
-        files = filterByWeekRange(courseMap.get(slotKey) || []);
+        files = courseMap.get(slotKey) || [];
       }
       if (!files || files.length === 0) {
         for (const [key, val] of courseMap.entries()) {
           if (key.replace(/[_\s]/g, '') === codeNorm.replace(/[_\s]/g, '')) {
-            files = filterByWeekRange(val);
+            files = val;
             if (files.length > 0) break;
           }
         }

@@ -4837,53 +4837,26 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
           console.log(`[Download] Object storage failed for: ${file.originalName} (${objErr?.message || objErr}), trying OneDrive fallback via folder: ${file.folder}`);
           const folderMatch = (file.folder || '').match(/^week-(\d+)-(.+?)-(reading|module)$/i);
           if (folderMatch && file.originalName) {
-            const [, weekNum, courseCode, folderType] = folderMatch;
+            const [, weekNumStr, courseCode, folderType] = folderMatch;
+            const wk = parseInt(weekNumStr);
             try {
-              const activeSem = await storage.getActiveSemesterSettings();
-              if (!activeSem) throw new Error('No active semester');
               const allSems = await storage.getAllSemesterSettings();
-              let matchedSem = activeSem;
-              const wk = parseInt(weekNum);
-              if (wk > 13) {
-                const semIdx = Math.floor((wk - 1) / 13);
-                const sortedSems = allSems.sort((a, b) => {
-                  const aDate = a.semesterStartDate ? new Date(a.semesterStartDate).getTime() : 0;
-                  const bDate = b.semesterStartDate ? new Date(b.semesterStartDate).getTime() : 0;
-                  return aDate - bDate;
-                });
-                if (semIdx < sortedSems.length) matchedSem = sortedSems[semIdx];
-              }
-              const semYear = matchedSem.semesterStartDate ? new Date(matchedSem.semesterStartDate).getFullYear() : new Date().getFullYear();
-              const semType = (matchedSem.semesterType || 'winter').toLowerCase();
-              const semFolderVariants = semType.includes('spring') || semType.includes('summer') 
-                ? ['Spring & Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer']
-                : semType.includes('fall') ? ['Fall'] : ['Winter'];
-              
-              let baseFolders: any[] = [];
-              let basePath = '';
-              for (const variant of semFolderVariants) {
-                const tryPath = `/School/1. TMU/Courses/${semYear}/${variant}`;
-                try {
-                  baseFolders = await listOneDriveItems(tryPath);
-                  basePath = tryPath;
-                  break;
-                } catch {}
-              }
-              
-              let code = courseCode.toUpperCase();
-              const slotMatch = courseCode.match(/^tbd_slot(\d+)$/i);
-              if (slotMatch) {
-                const slotNum = parseInt(slotMatch[1]);
-                const semCourses = [matchedSem.course1Code, matchedSem.course2Code, matchedSem.course3Code].filter(Boolean);
-                if (slotNum >= 1 && slotNum <= semCourses.length) {
-                  code = (semCourses[slotNum - 1] || code).toUpperCase();
+              const code = courseCode.toUpperCase().replace(/\s/g, '');
+              let matchedCourseInfo: { code: string; path: string } | null = null;
+              for (const sem of allSems) {
+                for (let ci = 1; ci <= 3; ci++) {
+                  const semCode = ((sem as any)[`course${ci}Code`] || '').replace(/\s/g, '').toUpperCase();
+                  if (semCode === code) {
+                    const courses = await getSemesterOneDriveCourses(sem);
+                    matchedCourseInfo = courses.find((c: any) => c.code.toUpperCase() === code) || null;
+                    break;
+                  }
                 }
+                if (matchedCourseInfo) break;
               }
-              const courseFolder = baseFolders.find((f: any) => f.type === 'folder' && f.name.toUpperCase().replace(/\s/g, '').includes(code));
-              if (courseFolder) {
-                const actualWeek = wk > 13 ? ((wk - 1) % 13) + 1 : wk;
-                const courseFolders = await listOneDriveItems(courseFolder.path);
-                const weekFolder = courseFolders.find((f: any) => f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${actualWeek}`));
+              if (matchedCourseInfo) {
+                const courseFolders = await listOneDriveItems(matchedCourseInfo.path);
+                const weekFolder = courseFolders.find((f: any) => f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${wk}`));
                 if (weekFolder) {
                   const weekContents = await listOneDriveItems(weekFolder.path);
                   const typeFolder = weekContents.find((f: any) => f.type === 'folder' && f.name.toLowerCase().includes(folderType));
@@ -4922,27 +4895,28 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         const folderMatch2 = folderPart.match(/^week-(\d+)-(.+?)-(reading|module)$/i);
         
         if (folderMatch2 && fileName) {
-          const [, globalWeekStr, courseCode, subType] = folderMatch2;
-          const globalWeek = parseInt(globalWeekStr);
+          const [, weekStr, courseCode, subType] = folderMatch2;
+          const weekNum = parseInt(weekStr);
           try {
             const allSems = await storage.getAllSemesterSettings();
-            const sortedSems = [...allSems].sort((a, b) => {
-              const aDate = a.semesterStartDate ? new Date(a.semesterStartDate).getTime() : 0;
-              const bDate = b.semesterStartDate ? new Date(b.semesterStartDate).getTime() : 0;
-              return aDate - bDate;
-            });
-            const semIdx = Math.floor((globalWeek - 1) / 13);
-            const localWeek = ((globalWeek - 1) % 13) + 1;
-            const matchedSem = semIdx < sortedSems.length ? sortedSems[semIdx] : sortedSems[sortedSems.length - 1];
-            if (!matchedSem) throw new Error('No semester found');
-            const courses = await getSemesterOneDriveCourses(matchedSem);
             const code = courseCode.replace(/\s/g, '').toUpperCase();
-            const matchedCourse = courses.find((c: any) => c.code.toUpperCase() === code);
+            let matchedCourse: { code: string; path: string } | null = null;
+            for (const sem of allSems) {
+              for (let ci = 1; ci <= 3; ci++) {
+                const semCode = ((sem as any)[`course${ci}Code`] || '').replace(/\s/g, '').toUpperCase();
+                if (semCode === code) {
+                  const courses = await getSemesterOneDriveCourses(sem);
+                  matchedCourse = courses.find((c: any) => c.code.toUpperCase() === code) || null;
+                  break;
+                }
+              }
+              if (matchedCourse) break;
+            }
             if (matchedCourse) {
               const weekFolders = await listOneDriveItems(matchedCourse.path);
               const weekFolder = weekFolders.find((f: any) => {
                 const m = f.name.match(/Week\s+(\d+)/i);
-                return f.type === 'folder' && m && parseInt(m[1]) === localWeek;
+                return f.type === 'folder' && m && parseInt(m[1]) === weekNum;
               });
               if (weekFolder) {
                 const weekContents = await listOneDriveItems(weekFolder.path);
@@ -5076,6 +5050,68 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       syncAllSemesterLibraryFiles('[LibrarySync:Manual]').catch(() => {});
       res.json({ status: 'sync started' });
     } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post("/api/library/sync-semester", async (req, res) => {
+    try {
+      const { semesterKey } = req.body;
+      if (!semesterKey) return res.status(400).json({ error: 'semesterKey required' });
+      const { listOneDriveItems, isOneDriveConnected } = await import("./onedrive");
+      if (!isOneDriveConnected()) return res.status(503).json({ error: 'OneDrive not connected' });
+      const allSems = await storage.getAllSemesterSettings();
+      const sortedSems = [...allSems].sort((a, b) => {
+        const aDate = a.semesterStartDate ? new Date(a.semesterStartDate).getTime() : 0;
+        const bDate = b.semesterStartDate ? new Date(b.semesterStartDate).getTime() : 0;
+        return aDate - bDate;
+      });
+      const semIdx = sortedSems.findIndex((s: any) => {
+        const st = s.semesterType || '';
+        const name = s.semesterName || '';
+        const yearMatch = name.match(/\d{4}/);
+        const year = yearMatch ? yearMatch[0] : '';
+        const key = st.startsWith('spring_summer') ? `ss${year}` : st === 'fall' ? `f${year}` : st === 'winter' ? `w${year}` : `s${s.id}`;
+        return key === semesterKey;
+      });
+      if (semIdx < 0) return res.status(404).json({ error: 'Semester not found' });
+      const sem = sortedSems[semIdx];
+      const existingFiles = await storage.getFiles();
+      const existingSet = new Set(existingFiles.map((f: any) => `${f.folder}::${f.originalName}`));
+      let synced = 0;
+      const courses = await getSemesterOneDriveCourses(sem);
+      for (const course of courses) {
+        try {
+          const weekFolders = await listOneDriveItems(course.path);
+          const weekDirs = weekFolders.filter((f: any) => f.type === 'folder' && /Week\s+\d+/i.test(f.name));
+          for (const weekDir of weekDirs) {
+            const weekMatch = weekDir.name.match(/Week\s+(\d+)/i);
+            if (!weekMatch) continue;
+            const folderWeekNum = parseInt(weekMatch[1], 10);
+            if (folderWeekNum < 1 || folderWeekNum > 13) continue;
+            const weekContents = await listOneDriveItems(weekDir.path);
+            for (const subType of ['module', 'reading']) {
+              const subFolder = weekContents.find((f: any) => f.type === 'folder' && f.name.toLowerCase().includes(subType));
+              if (!subFolder) continue;
+              const subFiles = await listOneDriveItems(subFolder.path);
+              for (const file of subFiles) {
+                if (file.type !== 'file' || !file.name.toLowerCase().endsWith('.pdf')) continue;
+                const folderName = `week-${folderWeekNum}-${course.code.toLowerCase()}-${subType}`;
+                const key = `${folderName}::${file.name}`;
+                if (existingSet.has(key)) continue;
+                const objectPath = `onedrive://${folderName}/${file.name}`;
+                await storage.createFile({ originalName: file.name, displayName: file.name, objectPath, contentType: 'application/pdf', size: file.size || 0, folder: folderName, listened: false });
+                existingSet.add(key);
+                synced++;
+              }
+            }
+          }
+        } catch (e: any) { console.log(`[LibrarySync:Semester] Error syncing ${course.code}: ${e.message}`); }
+      }
+      console.log(`[LibrarySync:Semester] ${semesterKey}: synced ${synced} new files`);
+      res.json({ synced });
+    } catch (err: any) {
+      console.error('[LibrarySync:Semester] Error:', err);
       res.status(500).json({ error: err.message });
     }
   });
@@ -12446,12 +12482,9 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
       for (let semIdx = 0; semIdx < sortedSems.length; semIdx++) {
         const sem = sortedSems[semIdx];
-        const weeksPerSem = 13;
-        const globalWeekStart = semIdx * weeksPerSem + 1;
         try {
           const courses = await getSemesterOneDriveCourses(sem);
           if (courses.length === 0) continue;
-          const isSpSu = (sem.semesterType || '').toLowerCase().includes('spring') || (sem.semesterType || '').toLowerCase().includes('summer');
 
           for (const course of courses) {
             try {
@@ -12464,20 +12497,6 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
                 const folderWeekNum = parseInt(weekMatch[1], 10);
                 if (folderWeekNum < 1 || folderWeekNum > 13) continue;
 
-                let globalWeek = globalWeekStart + folderWeekNum - 1;
-                if (isSpSu) {
-                  for (let ci = 1; ci <= 3; ci++) {
-                    const cc = ((sem as any)[`course${ci}Code`] || '').replace(/\s/g, '');
-                    if (cc === course.code) {
-                      const spsuTerm = ((sem as any)[`course${ci}SpringSummerTerm`] || 'full').toLowerCase();
-                      if (spsuTerm === 'second_half') {
-                        globalWeek = globalWeekStart + folderWeekNum + 7 - 1;
-                      }
-                      break;
-                    }
-                  }
-                }
-
                 const weekContents = await listOneDriveItems(weekDir.path);
                 for (const subType of ['module', 'reading']) {
                   const subFolder = weekContents.find((f: any) => f.type === 'folder' && f.name.toLowerCase().includes(subType));
@@ -12485,7 +12504,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
                   const subFiles = await listOneDriveItems(subFolder.path);
                   for (const file of subFiles) {
                     if (file.type !== 'file' || !file.name.toLowerCase().endsWith('.pdf')) continue;
-                    const folderName = `week-${globalWeek}-${course.code.toLowerCase()}-${subType}`;
+                    const folderName = `week-${folderWeekNum}-${course.code.toLowerCase()}-${subType}`;
                     const key = `${folderName}::${file.name}`;
                     if (existingSet.has(key)) continue;
                     const objectPath = `onedrive://${folderName}/${file.name}`;
