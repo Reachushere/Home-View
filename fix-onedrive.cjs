@@ -11,19 +11,21 @@ async function main() {
     body: new URLSearchParams({ client_id: CLIENT_ID, scope: SCOPES }).toString(),
   });
   const dc = await dcRes.json();
-  if (!dc.user_code) { console.error('Failed to get device code:', dc); process.exit(1); }
+  if (!dc.user_code) { console.error('Failed to get device code:', JSON.stringify(dc, null, 2)); process.exit(1); }
 
   console.log('========================================');
   console.log(`Go to: ${dc.verification_uri}`);
   console.log(`Enter code: ${dc.user_code}`);
   console.log('========================================\n');
-  console.log('Waiting for you to confirm...');
+  console.log('Waiting for you to confirm... (will show every response)\n');
 
   const deadline = Date.now() + (dc.expires_in || 900) * 1000;
   let interval = (dc.interval || 5) * 1000;
+  let pollCount = 0;
 
   while (Date.now() < deadline) {
     await new Promise(r => setTimeout(r, interval));
+    pollCount++;
     try {
       const res = await fetch('https://login.microsoftonline.com/common/oauth2/v2.0/token', {
         method: 'POST',
@@ -35,6 +37,7 @@ async function main() {
         }).toString(),
       });
       const data = await res.json();
+      console.log(`Poll #${pollCount} (status ${res.status}): ${data.error || 'GOT TOKEN!'} ${data.error_description ? '- ' + data.error_description : ''}`);
       if (data.access_token) {
         const tokenFile = path.join(process.cwd(), '.onedrive_tokens.json');
         const tokens = {
@@ -47,13 +50,13 @@ async function main() {
         console.log('Now restart the app: pm2 restart dashboard');
         process.exit(0);
       }
-      if (data.error === 'authorization_pending') { process.stdout.write('.'); continue; }
+      if (data.error === 'authorization_pending') { continue; }
       if (data.error === 'slow_down') { interval += 5000; continue; }
       if (data.error === 'expired_token' || data.error === 'authorization_declined') {
-        console.error('\nAuth failed:', data.error);
+        console.error('\nAuth failed:', data.error, data.error_description);
         process.exit(1);
       }
-    } catch (err) { console.error('\nPoll error:', err.message); }
+    } catch (err) { console.error(`\nPoll #${pollCount} error:`, err.message); }
   }
   console.error('\nTimed out');
   process.exit(1);
