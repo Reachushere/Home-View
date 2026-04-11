@@ -511,7 +511,8 @@ function BookReader({ file, bookColor, onClose }: {
 
       <div style={{
         width: phase === 'pull' ? '200px' : '85vw',
-        height: phase === 'pull' ? '280px' : '88vh',
+        height: phase === 'pull' ? '280px' : '84vh',
+        marginTop: phase === 'reading' ? '60px' : '0',
         backgroundColor: bookColor,
         borderRadius: phase === 'reading' ? '8px 16px 16px 8px' : '4px 12px 12px 4px',
         boxShadow: '0 20px 80px rgba(0,0,0,0.7), inset 0 0 30px rgba(0,0,0,0.2)',
@@ -545,8 +546,13 @@ function BookReader({ file, bookColor, onClose }: {
 
         {phase === 'reading' && (
           <>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '6px 12px 6px 32px', borderBottom: 'none', zIndex: 3, flexShrink: 0, gap: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
+            <div style={{ padding: '8px 12px 4px 32px', zIndex: 3, flexShrink: 0 }}>
+              <div style={{ color: '#ffffff', fontSize: '12px', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {title}
+              </div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '4px 12px 6px 32px', borderBottom: '1px solid rgba(255,255,255,0.1)', zIndex: 3, flexShrink: 0, gap: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
                 <button onClick={() => setZoom(z => Math.max(0.5, z - 0.25))} style={toolBtnStyle()} title="Zoom Out" data-testid="btn-zoom-out">
                   <ZoomOut size={14} />
                 </button>
@@ -584,11 +590,6 @@ function BookReader({ file, bookColor, onClose }: {
                 <button onClick={onClose} style={{ ...toolBtnStyle(), borderRadius: '50%', width: '26px', height: '26px', padding: 0 }} data-testid="button-close-book-reader">
                   <X size={14} />
                 </button>
-              </div>
-            </div>
-            <div style={{ padding: '4px 12px 6px 32px', borderBottom: '1px solid rgba(255,255,255,0.1)', zIndex: 3, flexShrink: 0 }}>
-              <div style={{ color: '#ffffff', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {title}
               </div>
             </div>
 
