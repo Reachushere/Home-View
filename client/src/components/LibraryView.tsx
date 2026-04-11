@@ -162,6 +162,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   shelfHeight: number;
   onRename: (file: FileRecord) => void;
 }) {
+  const [isHovered, setIsHovered] = useState(false);
   const seededRand = ((file.id * 2654435761) >>> 0) / 4294967296;
   const spineWidth = 28 + seededRand * 12;
   const bookHeight = shelfHeight - 8 - (index % 3) * 6;
@@ -172,10 +173,15 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   const hasTopBand = index % 4 === 1;
   const hasBottomBand = index % 5 === 2;
 
+  const hoverScale = isHovered ? 1.35 : 1;
+  const hoverTranslateY = isHovered ? 45 : 0;
+
   return (
     <div
       className="book-spine-item"
       onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       style={{
         width: `${spineWidth}px`,
         height: `${bookHeight}px`,
@@ -190,11 +196,16 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
         flexShrink: 0,
         boxShadow: isSelected
           ? '0 0 20px rgba(212,175,55,0.6), inset -2px 0 6px rgba(0,0,0,0.3)'
+          : isHovered
+          ? '0 8px 24px rgba(0,0,0,0.5), inset -2px 0 6px rgba(0,0,0,0.3), 0 0 12px rgba(212,175,55,0.3)'
           : 'inset -2px 0 6px rgba(0,0,0,0.3), 1px 0 2px rgba(0,0,0,0.2)',
-        transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-        transform: isSelected ? 'translateY(-12px) scale(1.03)' : 'translateY(0)',
-        zIndex: isSelected ? 10 : 1,
+        transition: 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease',
+        transform: isSelected
+          ? 'translateY(-12px) scale(1.03)'
+          : `translateY(${hoverTranslateY}px) scale(${hoverScale})`,
+        zIndex: isSelected ? 10 : isHovered ? 20 : 1,
         alignSelf: 'flex-end',
+        transformOrigin: 'bottom center',
       }}
       data-testid={`book-spine-${file.id}`}
     >
@@ -240,10 +251,10 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
         textOrientation: 'mixed',
         transform: 'rotate(180deg)',
         fontSize: '10px',
-        fontWeight: 700,
+        fontWeight: 600,
         color: '#ffffff',
         textShadow: '0 1px 3px rgba(0,0,0,0.7)',
-        letterSpacing: '0.5px',
+        letterSpacing: '0.3px',
         maxHeight: `${bookHeight - 56}px`,
         overflow: 'hidden',
         textOverflow: 'ellipsis',
@@ -251,6 +262,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
         padding: '4px 0',
         lineHeight: 1.2,
         marginTop: '-12px',
+        fontFamily: "'Segoe UI', 'Helvetica Neue', Arial, sans-serif",
       }}>
         <span
           onClick={(e) => { e.stopPropagation(); onRename(file); }}
@@ -294,7 +306,7 @@ function WeekSeparator({ weekNum }: { weekNum: number }) {
   return (
     <div style={{
       width: '14px',
-      height: 'calc(100% + 20px)',
+      height: 'calc(100% + 80px)',
       marginBottom: '-10px',
       flexShrink: 0,
       position: 'relative',
@@ -357,7 +369,7 @@ function Bookend({ side }: { side: 'left' | 'right' }) {
   return (
     <div style={{
       width: '22px',
-      height: 'calc(100% + 50px)',
+      height: 'calc(100% + 110px)',
       marginBottom: '-10px',
       alignSelf: 'flex-end',
       background: side === 'left'
@@ -2144,9 +2156,10 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           left: 0,
           right: 0,
           bottom: 0,
-          overflowY: 'hidden',
+          overflowY: 'auto',
           overflowX: 'hidden',
           padding: '0 20px 10px 35px',
+          paddingBottom: '60px',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: courseBooks.length > 0 ? 'space-evenly' : 'center',
@@ -2208,7 +2221,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           </div>
         ) : (
           courseBooks.map(({ course, files: courseFiles }, courseIdx) => (
-            <div key={course.code} style={{ marginBottom: courseIdx < courseBooks.length - 1 ? '15px' : '0' }}>
+            <div key={course.code} style={{ marginBottom: courseIdx < courseBooks.length - 1 ? '55px' : '0' }}>
               <div style={{
                 fontSize: '9px',
                 fontWeight: 500,
@@ -2231,7 +2244,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                   padding: '0 4px 10px',
                   gap: '2px',
                   overflowX: 'auto',
-                  overflowY: 'hidden',
+                  overflowY: 'visible',
                   maxWidth: '100%',
                 }}
                 className="library-scroll"
