@@ -2,10 +2,11 @@ const fs = require('fs');
 const path = require('path');
 const CLIENT_ID = '14d82eec-204b-4c2f-b7e8-296a70dab67e';
 const SCOPES = 'Files.ReadWrite.All User.Read Notes.ReadWrite.All Mail.ReadWrite Mail.Send Calendars.ReadWrite offline_access';
+const TENANT = 'consumers';
 
 async function main() {
-  console.log('Starting OneDrive device code auth...\n');
-  const dcRes = await fetch('https://login.microsoftonline.com/common/oauth2/v2.0/devicecode', {
+  console.log('Starting OneDrive device code auth (personal account)...\n');
+  const dcRes = await fetch(`https://login.microsoftonline.com/${TENANT}/oauth2/v2.0/devicecode`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({ client_id: CLIENT_ID, scope: SCOPES }).toString(),
@@ -28,7 +29,7 @@ async function main() {
     await new Promise(r => setTimeout(r, interval));
     pollCount++;
     try {
-      const res = await fetch('https://login.microsoftonline.com/common/oauth2/v2.0/token', {
+      const res = await fetch(`https://login.microsoftonline.com/${TENANT}/oauth2/v2.0/token`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({
