@@ -2,6 +2,9 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
 import { X, ChevronLeft, ChevronRight, BookOpen } from 'lucide-react';
+import * as pdfjsLib from 'pdfjs-dist';
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 
 interface FileRecord {
   id: number;
@@ -271,7 +274,12 @@ function BookReader({ file, bookColor, onClose }: {
   onClose: () => void;
 }) {
   const [phase, setPhase] = useState<'pull' | 'expand' | 'reading'>('pull');
-  const [pdfBlobUrl, setPdfBlobUrl] = useState<string | null>(null);
+  const [pdfDoc, setPdfDoc] = useState<any>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const title = truncateSpineTitle(file.displayName || file.originalName, 80);
 
   useEffect(() => {
@@ -283,20 +291,43 @@ function BookReader({ file, bookColor, onClose }: {
   useEffect(() => {
     let cancelled = false;
     fetch(`/api/files/${file.id}/download`)
-      .then(r => r.blob())
-      .then(blob => {
-        if (!cancelled) {
-          const url = URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
-          setPdfBlobUrl(url);
+      .then(r => r.arrayBuffer())
+      .then(data => {
+        if (cancelled) return;
+        return pdfjsLib.getDocument({ data }).promise;
+      })
+      .then(doc => {
+        if (!cancelled && doc) {
+          setPdfDoc(doc);
+          setTotalPages(doc.numPages);
+          setLoading(false);
         }
       })
-      .catch(() => {});
+      .catch(() => setLoading(false));
     return () => { cancelled = true; };
   }, [file.id]);
 
   useEffect(() => {
-    return () => { if (pdfBlobUrl) URL.revokeObjectURL(pdfBlobUrl); };
-  }, [pdfBlobUrl]);
+    if (!pdfDoc || !canvasRef.current || !containerRef.current || phase !== 'reading') return;
+    let cancelled = false;
+    pdfDoc.getPage(currentPage).then((page: any) => {
+      if (cancelled) return;
+      const container = containerRef.current!;
+      const canvas = canvasRef.current!;
+      const ctx = canvas.getContext('2d')!;
+      const containerWidth = container.clientWidth - 20;
+      const containerHeight = container.clientHeight - 20;
+      const vp = page.getViewport({ scale: 1 });
+      const scaleW = containerWidth / vp.width;
+      const scaleH = containerHeight / vp.height;
+      const scale = Math.min(scaleW, scaleH);
+      const viewport = page.getViewport({ scale });
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      page.render({ canvasContext: ctx, viewport });
+    });
+    return () => { cancelled = true; };
+  }, [pdfDoc, currentPage, phase]);
 
   return (
     <div
@@ -434,29 +465,76 @@ function BookReader({ file, bookColor, onClose }: {
                 <X size={14} />
               </button>
             </div>
-            <div style={{
-              flex: 1,
-              margin: '0 8px 8px 28px',
-              borderRadius: '4px',
-              overflow: 'hidden',
-              background: '#fff',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-              {pdfBlobUrl ? (
-                <embed
-                  src={pdfBlobUrl}
-                  type="application/pdf"
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    border: 'none',
-                  }}
-                  title={file.displayName || file.originalName}
-                />
-              ) : (
+            <div
+              ref={containerRef}
+              style={{
+                flex: 1,
+                margin: '0 8px 8px 28px',
+                borderRadius: '4px',
+                overflow: 'hidden',
+                background: '#f5f5f0',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative',
+              }}
+            >
+              {loading ? (
                 <div style={{ color: '#666', fontSize: '14px' }}>Loading PDF...</div>
+              ) : !pdfDoc ? (
+                <div style={{ color: '#c62828', fontSize: '14px' }}>Failed to load PDF</div>
+              ) : (
+                <>
+                  <canvas ref={canvasRef} style={{ maxWidth: '100%', maxHeight: 'calc(100% - 36px)' }} />
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    padding: '6px 0',
+                    userSelect: 'none',
+                  }}>
+                    <button
+                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                      disabled={currentPage <= 1}
+                      style={{
+                        background: 'rgba(0,0,0,0.15)',
+                        border: 'none',
+                        borderRadius: '4px',
+                        padding: '4px 10px',
+                        cursor: currentPage <= 1 ? 'not-allowed' : 'pointer',
+                        opacity: currentPage <= 1 ? 0.3 : 1,
+                        color: '#333',
+                        fontSize: '12px',
+                        fontWeight: 600,
+                      }}
+                      data-testid="btn-pdf-prev"
+                    >
+                      ‹ Prev
+                    </button>
+                    <span style={{ fontSize: '12px', color: '#555', fontWeight: 500 }}>
+                      {currentPage} / {totalPages}
+                    </span>
+                    <button
+                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                      disabled={currentPage >= totalPages}
+                      style={{
+                        background: 'rgba(0,0,0,0.15)',
+                        border: 'none',
+                        borderRadius: '4px',
+                        padding: '4px 10px',
+                        cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer',
+                        opacity: currentPage >= totalPages ? 0.3 : 1,
+                        color: '#333',
+                        fontSize: '12px',
+                        fontWeight: 600,
+                      }}
+                      data-testid="btn-pdf-next"
+                    >
+                      Next ›
+                    </button>
+                  </div>
+                </>
               )}
             </div>
           </>
