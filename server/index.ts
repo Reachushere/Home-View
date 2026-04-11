@@ -383,9 +383,20 @@ app.use((req, res, next) => {
   process.on('SIGINT', () => gracefulShutdown('SIGINT'));
   process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 
+  let portRetryCount = 0;
   httpServer.on('error', (err: NodeJS.ErrnoException) => {
     if (err.code === 'EADDRINUSE') {
-      console.error(`[Server] Port ${port} in use, retrying in 3s...`);
+      portRetryCount++;
+      console.error(`[Server] Port ${port} in use (attempt ${portRetryCount}), killing old process...`);
+      try {
+        const { execSync } = require('child_process');
+        execSync(`fuser -k ${port}/tcp 2>/dev/null || true`);
+        execSync(`lsof -ti:${port} | xargs kill -9 2>/dev/null || true`);
+      } catch {}
+      if (portRetryCount > 10) {
+        console.error(`[Server] Could not free port ${port} after 10 attempts — exiting`);
+        process.exit(1);
+      }
       setTimeout(() => {
         httpServer.close();
         httpServer.listen({ port, host: '0.0.0.0', reusePort: true });
