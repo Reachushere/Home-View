@@ -31499,22 +31499,20 @@ export default function Dashboard() {
                             const displayTime = hoursUntil !== null ? (hoursUntil < 1 ? `${Math.max(1, Math.round(hoursUntil * 60))}` : hoursUntil < 10 ? `${hoursUntil.toFixed(1)}` : `${Math.round(hoursUntil)}`) : '--';
                             return (
                               <>
-                                {missedCount > 0 && (
-                                  <div className="absolute top-0 bottom-0 z-[55] pointer-events-none animate-due-box-blink" style={{ left: '3px', width: `${gridSizes.timeSlotHeight}px`, padding: '0px' }} data-testid="missed-tasks-indicator">
-                                    <div style={{ width: '100%', height: '100%', position: 'relative', backgroundColor: '#dc2626', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0px' }}>
-                                      <span style={{ fontSize: '20px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{missedCount}</span>
-                                      <span style={{ fontSize: '9px', color: 'white', fontWeight: 600, lineHeight: 1, marginTop: '2px' }}>due</span>
+                                <div className="absolute top-0 bottom-0 z-[55] pointer-events-none" style={{ left: '3px', right: '3px', display: 'flex', gap: '3px' }} data-testid="due-countdown-row">
+                                  {missedCount > 0 && (
+                                    <div className="animate-due-box-blink" style={{ width: `${Math.min(gridSizes.timeSlotHeight, 44)}px`, flexShrink: 0, position: 'relative', backgroundColor: '#dc2626', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0px' }} data-testid="missed-tasks-indicator">
+                                      <span style={{ fontSize: '18px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{missedCount}</span>
+                                      <span style={{ fontSize: '8px', color: 'white', fontWeight: 600, lineHeight: 1, marginTop: '2px' }}>due</span>
                                     </div>
-                                  </div>
-                                )}
-                                <div className="absolute z-[56] pointer-events-none" style={{ top: '0px', bottom: '0px', left: (hourTasks.length > 0 || continuingTasks.length > 0) ? 'calc(50% + 4px)' : missedCount > 0 ? `${2 + gridSizes.timeSlotHeight + 4}px` : '2px', right: '3px', display: 'flex', gap: '4px' }} data-testid="hours-until-next-task">
+                                  )}
                                   {(() => {
                                     const courseCode = nextSchoolTask?.courseName?.split(' - ')[0]?.trim() || '';
                                     const gradColors = getCourseGradientColors(courseCode);
                                     return (
-                                      <div style={{ flex: 1, position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 8px 0 4px' }}>
-                                        <span style={{ zIndex: 1, fontSize: '7px', color: 'rgba(255,255,255,0.9)', fontWeight: 400, lineHeight: 1.1, textAlign: 'left' }}>Next<br/>Task<br/>Due In</span>
-                                        <span style={{ zIndex: 1, fontSize: '20px', color: 'white', fontWeight: 900, lineHeight: 1, flexShrink: 0 }}>{displayTime}<span style={{ fontSize: '10px', fontWeight: 600, marginLeft: '2px' }}>{hoursUntil !== null && hoursUntil < 1 ? 'min' : 'hrs'}</span></span>
+                                      <div style={{ flex: 1, position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 6px 0 4px', minWidth: 0 }} data-testid="hours-until-next-task">
+                                        <span style={{ zIndex: 1, fontSize: '7px', color: 'rgba(255,255,255,0.9)', fontWeight: 400, lineHeight: 1.1, textAlign: 'left', flexShrink: 0 }}>Next<br/>Task<br/>Due In</span>
+                                        <span style={{ zIndex: 1, fontSize: '18px', color: 'white', fontWeight: 900, lineHeight: 1, flexShrink: 0 }}>{displayTime}<span style={{ fontSize: '9px', fontWeight: 600, marginLeft: '1px' }}>{hoursUntil !== null && hoursUntil < 1 ? 'min' : 'hrs'}</span></span>
                                       </div>
                                     );
                                   })()}
