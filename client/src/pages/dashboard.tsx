@@ -6699,7 +6699,7 @@ export default function Dashboard() {
         return s.semesterType === target.type && yr === target.year;
       }) : null;
       for (const c of courses) {
-        let courseName = c.name || c.fullName || c.code;
+        let courseName = c.fullName || '';
         if (dbSem) {
           const codeNorm = c.code.replace(/\s/g, '').toUpperCase();
           for (let si = 1; si <= 3; si++) {
@@ -6710,6 +6710,11 @@ export default function Dashboard() {
               break;
             }
           }
+        }
+        if (!courseName) {
+          const codeNorm = c.code.replace(/\s/g, '').toUpperCase();
+          const nameNorm = (c.name || '').replace(/\s/g, '').toUpperCase();
+          courseName = (nameNorm === codeNorm) ? c.code : (c.name || c.code);
         }
         options.push({
           semKey,
@@ -6769,7 +6774,7 @@ export default function Dashboard() {
             onClick={handleOpen}
             data-testid={`cert-linker-${id}`}
           >
-            <span className="truncate course-code-mono">{displayCode}</span>
+            <span className="truncate course-code-mono">{displayCode}{linkedOption && linkedOption.name !== linkedOption.code ? ` - ${linkedOption.name}` : ''}</span>
             <ChevronDown className="w-3 h-3 shrink-0 text-black" />
           </div>
         </div>
@@ -6817,7 +6822,7 @@ export default function Dashboard() {
                       }}
                     >
                       <span className="course-code-mono font-semibold">{opt.code}</span>
-                      <span className="ml-1.5 text-gray-500">{opt.name}</span>
+                      {opt.name !== opt.code && <span className="ml-1.5 text-gray-500">- {opt.name}</span>}
                     </div>
                   </div>
                 );
