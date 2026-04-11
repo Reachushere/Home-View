@@ -2369,6 +2369,18 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
     }
   });
 
+  app.delete("/api/semesters/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ error: "Invalid ID" });
+      await storage.deleteSemesterSettings(id);
+      res.json({ success: true });
+    } catch (err) {
+      console.error("Error deleting semester:", err);
+      res.status(500).json({ error: "Failed to delete semester" });
+    }
+  });
+
   // PATCH /api/semester-settings/calendar - Update secondary calendar
   app.patch("/api/semester-settings/calendar", async (req, res) => {
     try {

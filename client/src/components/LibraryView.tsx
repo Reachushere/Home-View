@@ -1483,6 +1483,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       if (a.isPast && b.isPast) return b.startMs - a.startMs;
       return a.startMs - b.startMs;
     });
+    mapped.push({ key: 'docdump', label: 'Document Dump', courses: [{ code: 'DOCS', name: 'Document Dump', color: '#D4AF37' }], startMs: 0, isCurrent: false, isFuture: false, isPast: false });
     return mapped;
   }, [semesterSettings, semestersProp]);
 
@@ -1502,6 +1503,25 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
   const courseBooks = useMemo(() => {
     if (!currentSemester) return [];
 
+    const sortFiles = (files: FileRecord[]) => {
+      const getWeekNum = (f: FileRecord) => parseInt(f.folder?.match(/week-(\d+)/)?.[1] || '0');
+      files.sort((a, b) => {
+        const weekA = getWeekNum(a);
+        const weekB = getWeekNum(b);
+        if (weekA !== weekB) return weekA - weekB;
+        return (a.displayName || a.originalName).localeCompare(b.displayName || b.originalName);
+      });
+    };
+
+    if (currentSemester.key === 'docdump') {
+      const dumpFiles = allFiles.filter(f => f.folder === 'week-0-documentdump-reading');
+      if (dumpFiles.length > 0) {
+        sortFiles(dumpFiles);
+        return [{ course: { code: 'DOCS', name: 'Document Dump', color: '#D4AF37' }, files: dumpFiles }];
+      }
+      return [];
+    }
+
     const moduleReadingFiles = allFiles.filter(f => {
       if (!f.folder) return false;
       const fl = f.folder.toLowerCase();
@@ -1517,19 +1537,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       courseMap.get(code)!.push(f);
     });
 
-    const getWeekNum = (f: FileRecord) => parseInt(f.folder?.match(/week-(\d+)/)?.[1] || '0');
-
     const semCourses = currentSemester.courses;
     const result: { course: { code: string; name: string; color: string }; files: FileRecord[] }[] = [];
-
-    const sortFiles = (files: FileRecord[]) => {
-      files.sort((a, b) => {
-        const weekA = getWeekNum(a);
-        const weekB = getWeekNum(b);
-        if (weekA !== weekB) return weekA - weekB;
-        return (a.displayName || a.originalName).localeCompare(b.displayName || b.originalName);
-      });
-    };
 
     semCourses.forEach((course, courseIdx) => {
       const codeNorm = course.code.replace(/\s/g, '').toLowerCase();
@@ -1553,12 +1562,6 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         result.push({ course, files });
       }
     });
-
-    const dumpFiles = allFiles.filter(f => f.folder === 'week-0-documentdump-reading');
-    if (dumpFiles.length > 0) {
-      sortFiles(dumpFiles);
-      result.push({ course: { code: 'DOCS', name: 'Document Dump', color: '#D4AF37' }, files: dumpFiles });
-    }
 
     return result;
   }, [currentSemester, allFiles, semesters]);
@@ -1641,7 +1644,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       });
     });
 
-    if (masterSemFilter === 'all' && (masterCourseFilter === 'all' || masterCourseFilter === 'DOCS')) {
+    if ((masterSemFilter === 'all' || masterSemFilter === 'docdump') && (masterCourseFilter === 'all' || masterCourseFilter === 'DOCS')) {
       const dumpFiles = allFiles.filter(f => f.folder === 'week-0-documentdump-reading');
       dumpFiles.forEach(f => {
         const name = (f.displayName || f.originalName).toLowerCase();
@@ -2241,7 +2244,9 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 const btn = document.querySelector('[data-testid="button-sync-semester-library"]') as HTMLButtonElement;
                 if (btn) { btn.textContent = 'Syncing...'; btn.style.opacity = '0.5'; btn.disabled = true; }
                 try {
-                  await fetch('/api/library/sync-semester', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ semesterKey: currentSemester.key }) });
+                  const syncUrl = currentSemester.key === 'docdump' ? '/api/library/sync-document-dump' : '/api/library/sync-semester';
+                  const syncBody = currentSemester.key === 'docdump' ? undefined : JSON.stringify({ semesterKey: currentSemester.key });
+                  await fetch(syncUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: syncBody });
                   for (const delay of [5000, 15000, 30000, 60000]) {
                     setTimeout(() => refetchFiles(), delay);
                   }

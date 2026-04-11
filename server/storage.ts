@@ -22,6 +22,7 @@ export interface IStorage {
   createSemesterSettings(settings: InsertSemesterSettings): Promise<SemesterSettings>;
   createSemesterSettingsInactive(settings: InsertSemesterSettings): Promise<SemesterSettings>;
   updateSemesterSettings(id: number, updates: Partial<SemesterSettings>): Promise<SemesterSettings>;
+  deleteSemesterSettings(id: number): Promise<void>;
   getSecondGoogleAccount(): Promise<SecondGoogleAccount | undefined>;
   saveSecondGoogleAccount(account: InsertSecondGoogleAccount): Promise<SecondGoogleAccount>;
   updateSecondGoogleAccount(id: number, updates: Partial<SecondGoogleAccount>): Promise<SecondGoogleAccount>;
@@ -325,6 +326,10 @@ export class DatabaseStorage implements IStorage {
       .where(eq(semesterSettings.id, id))
       .returning();
     return updated;
+  }
+
+  async deleteSemesterSettings(id: number): Promise<void> {
+    await db.delete(semesterSettings).where(eq(semesterSettings.id, id));
   }
 
   async getSecondGoogleAccount(): Promise<SecondGoogleAccount | undefined> {
