@@ -152,7 +152,7 @@ function getFileType(folder: string | null): 'module' | 'reading' | null {
   return null;
 }
 
-function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, shelfHeight, onRename, isGroupHovered }: {
+function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, shelfHeight, onRename, isGroupHovered, interceptClick }: {
   file: FileRecord;
   index: number;
   courseCode: string;
@@ -162,6 +162,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   shelfHeight: number;
   onRename: (file: FileRecord) => void;
   isGroupHovered?: boolean;
+  interceptClick?: () => void;
 }) {
   const seededRand = ((file.id * 2654435761) >>> 0) / 4294967296;
   const spineWidth = 28 + seededRand * 12;
@@ -178,7 +179,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   return (
     <div
       className="book-spine-item"
-      onClick={onClick}
+      onClick={interceptClick || onClick}
       style={{
         width: `${spineWidth}px`,
         height: `${bookHeight}px`,
@@ -370,17 +371,15 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
 
   const isTopShelf = shelfIndex === 0;
 
-  const clonedChildren = (hovered: boolean) => React.Children.map(children, child => {
+  const clonedChildren = (expanded: boolean) => React.Children.map(children, child => {
     if (React.isValidElement(child)) {
-      return React.cloneElement(child as React.ReactElement<any>, { isGroupHovered: hovered });
+      return React.cloneElement(child as React.ReactElement<any>, {
+        isGroupHovered: expanded,
+        interceptClick: expanded ? undefined : () => setIsExpanded(true),
+      });
     }
     return child;
   });
-
-  const handleGroupClick = useCallback((e: React.MouseEvent) => {
-    if ((e.target as HTMLElement).closest('.book-spine-item')) return;
-    setIsExpanded(true);
-  }, []);
 
   const slideDirection = isTopShelf ? 'Down' : 'Up';
 
@@ -389,7 +388,7 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
       {showSeparator && <WeekSeparator weekNum={weekNum} />}
       <div
         ref={groupRef}
-        onClick={handleGroupClick}
+        onClick={() => setIsExpanded(true)}
         style={{
           display: 'flex',
           alignItems: 'flex-end',
@@ -445,7 +444,7 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
               display: 'flex',
               alignItems: 'flex-end',
               gap: '6px',
-              transform: 'scale(3)',
+              transform: 'scale(2)',
               transformOrigin: 'bottom center',
               padding: '0 20px',
             }}>
