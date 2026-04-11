@@ -10924,6 +10924,22 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   const SERVER_STARTUP_COOLDOWN_MS = 60 * 1000;
   console.log(`[Startup] Cooldown timer started (${SERVER_STARTUP_COOLDOWN_MS / 1000}s)`);
 
+  (async () => {
+    try {
+      const allFiles = await storage.getFiles();
+      const oneDriveFiles = allFiles.filter((f: any) => f.objectPath?.startsWith('onedrive://'));
+      if (oneDriveFiles.length > 0) {
+        console.log(`[Startup] Removing ${oneDriveFiles.length} files with onedrive:// objectPaths (leftover from library sync — automation will re-sync with local copies)`);
+        for (const f of oneDriveFiles) {
+          await storage.deleteFile(f.id);
+        }
+        console.log(`[Startup] Cleanup complete — ${oneDriveFiles.length} onedrive:// files removed`);
+      }
+    } catch (e: any) {
+      console.log(`[Startup] Error cleaning onedrive:// files: ${e.message}`);
+    }
+  })();
+
   // ===== HA Connectivity Health Monitor =====
   interface HAHealthState {
     connected: boolean;
