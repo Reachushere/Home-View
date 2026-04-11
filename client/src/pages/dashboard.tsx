@@ -37751,8 +37751,18 @@ export default function Dashboard() {
                   onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.22) 48%, rgba(255,255,255,0.1) 52%, rgba(255,255,255,0.3) 100%)'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.15) 48%, rgba(255,255,255,0.06) 52%, rgba(255,255,255,0.22) 100%)'; }}
                   onClick={() => {
+                    console.log('[DEBUG] Update Task button clicked');
                     const form = document.querySelector('[data-edit-task-form]') as HTMLFormElement;
-                    if (form) form.requestSubmit();
+                    console.log('[DEBUG] Found form:', !!form);
+                    if (form) {
+                      try {
+                        form.requestSubmit();
+                        console.log('[DEBUG] requestSubmit() called successfully');
+                      } catch (err) {
+                        console.error('[DEBUG] requestSubmit() error:', err);
+                        form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+                      }
+                    }
                   }}
                   data-testid="button-update-task-footer"
                 >
@@ -40991,7 +41001,7 @@ function TaskForm({
 
   const createMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      // For REMINDER tasks, auto-set due date to tomorrow 9am if not provided
+      console.log('[DEBUG] mutationFn called, task:', task ? task.id : 'new', 'eventEndDate:', data.eventEndDate);
       let effectiveDueDate = data.dueDate;
       if (!effectiveDueDate && data.type === 'reminder') {
         const tomorrow = new Date();
@@ -41212,7 +41222,9 @@ function TaskForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('[DEBUG] handleSubmit fired, formData:', JSON.stringify({ dueDate: formData.dueDate, eventEndDate: formData.eventEndDate, type: formData.type, title: formData.title }));
     if (!formData.dueDate && formData.type !== 'reminder' && formData.type !== 'module') {
+      console.log('[DEBUG] Missing dueDate, showing toast');
       toast({ title: "Missing due date", description: "Please select a due date for this task.", variant: "destructive" });
       return;
     }
@@ -41224,6 +41236,7 @@ function TaskForm({
     }
     const isLinkedRecurring = task && ((task.repeatType && task.repeatType !== 'none') || !!task.parentTaskId);
     const hasSameTitleSiblings = task && !isLinkedRecurring && allTasks.filter(t => t.id !== task.id && t.title === task.title && t.courseName === task.courseName && !t.isCompleted).length > 0;
+    console.log('[DEBUG] isLinkedRecurring:', isLinkedRecurring, 'hasSameTitleSiblings:', hasSameTitleSiblings, 'task:', !!task, 'onRecurringEdit:', !!onRecurringEdit);
     if (task && onRecurringEdit && (isLinkedRecurring || (hasSameTitleSiblings && formData.title !== task.title))) {
       const data = formData;
       const finalDueDate = new Date(data.dueDate);
@@ -41274,9 +41287,11 @@ function TaskForm({
       if (hasSameTitleSiblings && !isLinkedRecurring) {
         payload.originalTitle = task.title;
       }
+      console.log('[DEBUG] Taking onRecurringEdit path');
       onRecurringEdit(task.id, task.title, payload, onSuccess);
       return;
     }
+    console.log('[DEBUG] Calling createMutation.mutate, task:', task ? task.id : 'new');
     createMutation.mutate(formData);
   };
 
