@@ -1580,7 +1580,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
     const weeks = new Set<number>();
     allFiles.forEach(f => {
       const m = f.folder?.match(/^week-(\d+)/);
-      if (m) weeks.add(parseInt(m[1]));
+      if (m && parseInt(m[1]) > 0) weeks.add(parseInt(m[1]));
     });
     return Array.from(weeks).sort((a, b) => a - b);
   }, [allFiles]);
