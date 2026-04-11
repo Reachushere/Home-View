@@ -282,12 +282,12 @@ interface Annotation {
 const HIGHLIGHT_COLORS = ['#FFEB3B', '#4CAF50', '#2196F3', '#FF9800', '#E91E63'];
 
 const toolBtnStyle = (active?: boolean): React.CSSProperties => ({
-  background: active ? 'rgba(212,175,55,0.3)' : 'rgba(0,0,0,0.2)',
-  border: active ? '1px solid #D4AF37' : '1px solid rgba(255,255,255,0.15)',
+  background: active ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.2)',
+  border: active ? '1px solid rgba(255,255,255,0.5)' : '1px solid rgba(255,255,255,0.15)',
   borderRadius: '4px',
   padding: '4px 6px',
   cursor: 'pointer',
-  color: active ? '#D4AF37' : 'rgba(255,255,255,0.7)',
+  color: '#ffffff',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -505,16 +505,12 @@ function BookReader({ file, bookColor, onClose }: {
 
         {phase === 'reading' && (
           <>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 12px 6px 32px', borderBottom: '1px solid rgba(255,255,255,0.1)', zIndex: 3, flexShrink: 0, gap: '8px' }}>
-              <div style={{ color: '#D4AF37', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>
-                {title}
-              </div>
-
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '6px 12px 6px 32px', borderBottom: 'none', zIndex: 3, flexShrink: 0, gap: '8px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
                 <button onClick={() => setZoom(z => Math.max(0.5, z - 0.25))} style={toolBtnStyle()} title="Zoom Out" data-testid="btn-zoom-out">
                   <ZoomOut size={14} />
                 </button>
-                <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '10px', minWidth: '32px', textAlign: 'center' }}>{Math.round(zoom * 100)}%</span>
+                <span style={{ color: '#ffffff', fontSize: '10px', fontWeight: 600, minWidth: '32px', textAlign: 'center' }}>{Math.round(zoom * 100)}%</span>
                 <button onClick={() => setZoom(z => Math.min(3, z + 0.25))} style={toolBtnStyle()} title="Zoom In" data-testid="btn-zoom-in">
                   <ZoomIn size={14} />
                 </button>
@@ -548,6 +544,11 @@ function BookReader({ file, bookColor, onClose }: {
                 <button onClick={onClose} style={{ ...toolBtnStyle(), borderRadius: '50%', width: '26px', height: '26px', padding: 0 }} data-testid="button-close-book-reader">
                   <X size={14} />
                 </button>
+              </div>
+            </div>
+            <div style={{ padding: '4px 12px 6px 32px', borderBottom: '1px solid rgba(255,255,255,0.1)', zIndex: 3, flexShrink: 0 }}>
+              <div style={{ color: '#D4AF37', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {title}
               </div>
             </div>
 
@@ -722,7 +723,7 @@ function BookReader({ file, bookColor, onClose }: {
               <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage <= 1} style={{ ...toolBtnStyle(), padding: '3px 8px', opacity: currentPage <= 1 ? 0.3 : 1, cursor: currentPage <= 1 ? 'not-allowed' : 'pointer' }} data-testid="btn-pdf-prev">
                 <ChevronLeft size={14} /> <span style={{ fontSize: '11px' }}>Prev</span>
               </button>
-              <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', fontWeight: 500, minWidth: '50px', textAlign: 'center' }}>
+              <span style={{ fontSize: '12px', color: '#ffffff', fontWeight: 700, minWidth: '50px', textAlign: 'center' }}>
                 {currentPage} / {totalPages}
               </span>
               <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage >= totalPages} style={{ ...toolBtnStyle(), padding: '3px 8px', opacity: currentPage >= totalPages ? 0.3 : 1, cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer' }} data-testid="btn-pdf-next">
