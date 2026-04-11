@@ -377,9 +377,10 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
 
   const clonedChildren = (expanded: boolean) => React.Children.map(children, child => {
     if (React.isValidElement(child)) {
+      const origOnClick = (child as React.ReactElement<any>).props.onClick;
       return React.cloneElement(child as React.ReactElement<any>, {
         isGroupHovered: expanded,
-        interceptClick: expanded ? undefined : () => setIsExpanded(true),
+        interceptClick: expanded ? (origOnClick ? () => { origOnClick(); setTimeout(() => setIsExpanded(false), 100); } : undefined) : () => setIsExpanded(true),
       });
     }
     return child;
