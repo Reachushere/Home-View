@@ -1032,7 +1032,6 @@ export async function registerRoutes(
         'ss2027': { type: 'spring_summer', year: 2027 }, 'f2027': { type: 'fall', year: 2027 },
         'w2028': { type: 'winter', year: 2028 }, 'ss2028': { type: 'spring_summer', year: 2028 },
         'f2028': { type: 'fall', year: 2028 }, 'w2029': { type: 'winter', year: 2029 },
-        'ss2029': { type: 'spring_summer', year: 2029 }, 'f2029': { type: 'fall', year: 2029 },
       };
 
       const rows = await db.select().from(degreeTrackingData);
@@ -3571,8 +3570,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         { key: 'ss2028', type: 'spring_summer', year: 2028, name: 'Spring/Summer 2028', start: '2028-05-01' },
         { key: 'f2028', type: 'fall', year: 2028, name: 'Fall 2028', start: '2028-09-11' },
         { key: 'w2029', type: 'winter', year: 2029, name: 'Winter 2029', start: '2029-01-15' },
-        { key: 'ss2029', type: 'spring_summer', year: 2029, name: 'Spring/Summer 2029', start: '2029-05-07' },
-        { key: 'f2029', type: 'fall', year: 2029, name: 'Fall 2029', start: '2029-09-10' },
       ];
 
       const dbSemByKey = new Map<string, any>();
@@ -12238,8 +12235,6 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         { key: 'ss2028', type: 'spring_summer', year: 2028, start: '2028-05-01', end: '2028-08-01', name: 'Spring/Summer 2028' },
         { key: 'f2028', type: 'fall', year: 2028, start: '2028-09-11', end: '2028-12-04', name: 'Fall 2028' },
         { key: 'w2029', type: 'winter', year: 2029, start: '2029-01-15', end: '2029-04-13', name: 'Winter 2029' },
-        { key: 'ss2029', type: 'spring_summer', year: 2029, start: '2029-05-07', end: '2029-08-07', name: 'Spring/Summer 2029' },
-        { key: 'f2029', type: 'fall', year: 2029, start: '2029-09-10', end: '2029-12-03', name: 'Fall 2029' },
       ];
 
       const dbSemByKey = new Map<string, any>();
