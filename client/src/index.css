@@ -282,7 +282,12 @@ button[role="combobox"] > span {
 }
 
 @keyframes weekBooksSlideUp {
-  0% { transform: translateY(40px) scale(0.9); opacity: 0; }
+  0% { transform: translateY(120px) scale(0.5); opacity: 0; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+@keyframes weekBooksSlideDown {
+  0% { transform: translateY(-120px) scale(0.5); opacity: 0; }
   100% { transform: translateY(0) scale(1); opacity: 1; }
 }
 

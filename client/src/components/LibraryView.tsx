@@ -365,23 +365,10 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
   totalShelves: number;
   children: React.ReactNode;
 }) {
-  const [isHovered, setIsHovered] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const groupRef = useRef<HTMLDivElement>(null);
-  const leaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const cancelLeave = useCallback(() => {
-    if (leaveTimerRef.current) { clearTimeout(leaveTimerRef.current); leaveTimerRef.current = null; }
-  }, []);
-
-  const scheduleLeave = useCallback(() => {
-    cancelLeave();
-    leaveTimerRef.current = setTimeout(() => setIsHovered(false), 120);
-  }, [cancelLeave]);
-
-  const handleMouseEnter = useCallback(() => {
-    cancelLeave();
-    setIsHovered(true);
-  }, [cancelLeave]);
+  const isTopShelf = shelfIndex === 0;
 
   const clonedChildren = (hovered: boolean) => React.Children.map(children, child => {
     if (React.isValidElement(child)) {
@@ -390,27 +377,32 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
     return child;
   });
 
+  const handleGroupClick = useCallback((e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest('.book-spine-item')) return;
+    setIsExpanded(true);
+  }, []);
+
+  const slideDirection = isTopShelf ? 'Down' : 'Up';
+
   return (
     <>
       {showSeparator && <WeekSeparator weekNum={weekNum} />}
       <div
         ref={groupRef}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={scheduleLeave}
+        onClick={handleGroupClick}
         style={{
           display: 'flex',
           alignItems: 'flex-end',
           gap: '2px',
           flexShrink: 0,
           position: 'relative',
+          cursor: 'pointer',
         }}
       >
         {clonedChildren(false)}
       </div>
-      {isHovered && createPortal(
+      {isExpanded && createPortal(
         <div
-          onMouseLeave={scheduleLeave}
-          onMouseEnter={cancelLeave}
           style={{
             position: 'fixed',
             top: 0,
@@ -426,7 +418,8 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
             animation: 'weekOverlayFadeIn 0.25s ease-out',
             pointerEvents: 'auto',
           }}
-          onClick={() => setIsHovered(false)}
+          onClick={() => setIsExpanded(false)}
+          data-testid={`week-overlay-${weekNum}`}
         >
           <div
             onClick={e => e.stopPropagation()}
@@ -434,7 +427,7 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              animation: 'weekBooksSlideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)',
+              animation: `weekBooksSlide${slideDirection} 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards`,
             }}
           >
             <div style={{
@@ -481,7 +474,7 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
               marginTop: '20px',
               letterSpacing: '0.5px',
             }}>
-              Click a book to open · Click outside to close
+              Tap a book to open · Tap outside to close
             </div>
           </div>
         </div>,
