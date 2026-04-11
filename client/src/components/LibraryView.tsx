@@ -316,10 +316,14 @@ function BookReader({ file, bookColor, onClose }: {
   const [showAnnotations, setShowAnnotations] = useState(false);
   const [activeToolPanel, setActiveToolPanel] = useState<'none' | 'highlight' | 'comment' | 'bookmark'>('none');
   const [saved, setSaved] = useState(false);
+  const [pendingComment, setPendingComment] = useState<{ x: number; y: number } | null>(null);
+  const [pendingCommentText, setPendingCommentText] = useState('');
+  const [expandedCommentId, setExpandedCommentId] = useState<number | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const pendingCommentInputRef = useRef<HTMLInputElement>(null);
   const title = truncateSpineTitle(file.displayName || file.originalName, 80);
 
   const { data: annotations = [], refetch: refetchAnnotations } = useQuery<Annotation[]>({
@@ -426,17 +430,38 @@ function BookReader({ file, bookColor, onClose }: {
     refetchAnnotations();
   }, [bookmarks, currentPage, file.id, refetchAnnotations]);
 
-  const addComment = useCallback(async () => {
-    if (!commentText.trim()) return;
-    await apiRequest('POST', `/api/files/${file.id}/annotations`, { page: currentPage, type: 'comment', content: commentText.trim() });
+  const addComment = useCallback(async (text?: string, pos?: { x: number; y: number }) => {
+    const content = (text || commentText).trim();
+    if (!content) return;
+    const rects = pos ? JSON.stringify(pos) : undefined;
+    await apiRequest('POST', `/api/files/${file.id}/annotations`, { page: currentPage, type: 'comment', content, rects });
     setCommentText('');
+    setPendingComment(null);
+    setPendingCommentText('');
     refetchAnnotations();
   }, [commentText, currentPage, file.id, refetchAnnotations]);
 
-  const addHighlight = useCallback(async () => {
-    await apiRequest('POST', `/api/files/${file.id}/annotations`, { page: currentPage, type: 'highlight', color: highlightColor, content: `Page ${currentPage} highlight` });
+  const addHighlight = useCallback(async (pos?: { x: number; y: number }) => {
+    const rects = pos ? JSON.stringify(pos) : undefined;
+    await apiRequest('POST', `/api/files/${file.id}/annotations`, { page: currentPage, type: 'highlight', color: highlightColor, rects });
     refetchAnnotations();
   }, [currentPage, file.id, highlightColor, refetchAnnotations]);
+
+  const handleCanvasClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (activeToolPanel !== 'highlight' && activeToolPanel !== 'comment') return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    if (activeToolPanel === 'highlight') {
+      addHighlight({ x, y });
+    } else if (activeToolPanel === 'comment') {
+      setPendingComment({ x, y });
+      setPendingCommentText('');
+      setTimeout(() => pendingCommentInputRef.current?.focus(), 50);
+    }
+  }, [activeToolPanel, addHighlight]);
 
   const deleteAnnotation = useCallback(async (id: number) => {
     await apiRequest('DELETE', `/api/annotations/${id}`);
@@ -466,6 +491,10 @@ function BookReader({ file, bookColor, onClose }: {
           0% { width: 40px; height: 180px; opacity: 0; transform: rotateY(80deg); }
           50% { width: 200px; height: 280px; opacity: 1; transform: rotateY(10deg); }
           100% { width: 200px; height: 280px; opacity: 1; transform: rotateY(0deg); }
+        }
+        @keyframes pulse {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(59,130,246,0.5); }
+          50% { box-shadow: 0 0 0 6px rgba(59,130,246,0); }
         }
       `}</style>
 
@@ -592,26 +621,14 @@ function BookReader({ file, bookColor, onClose }: {
                 {HIGHLIGHT_COLORS.map(c => (
                   <button key={c} onClick={() => setHighlightColor(c)} style={{ width: '18px', height: '18px', borderRadius: '50%', background: c, border: highlightColor === c ? '2px solid #fff' : '2px solid transparent', cursor: 'pointer', transition: 'border 0.15s' }} />
                 ))}
-                <button onClick={addHighlight} style={{ ...toolBtnStyle(), fontSize: '10px', padding: '3px 8px', color: '#D4AF37', gap: '4px' }} data-testid="btn-add-highlight">
-                  <Highlighter size={12} /> Add to page {currentPage}
-                </button>
+                <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '10px', marginLeft: '4px' }}>Click on the page to place a highlight</span>
               </div>
             )}
 
             {activeToolPanel === 'comment' && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 12px 4px 32px', borderBottom: '1px solid rgba(255,255,255,0.08)', background: 'rgba(0,0,0,0.15)', zIndex: 3, flexShrink: 0 }}>
-                <input
-                  type="text"
-                  value={commentText}
-                  onChange={e => setCommentText(e.target.value)}
-                  onKeyDown={e => { if (e.key === 'Enter') addComment(); }}
-                  placeholder={`Add comment on page ${currentPage}...`}
-                  style={{ flex: 1, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '4px', padding: '4px 8px', color: '#fff', fontSize: '12px', outline: 'none' }}
-                  data-testid="input-pdf-comment"
-                />
-                <button onClick={addComment} style={{ ...toolBtnStyle(), fontSize: '10px', padding: '3px 8px', color: '#D4AF37' }} data-testid="btn-add-comment">
-                  Add
-                </button>
+                <MessageSquare size={12} style={{ color: 'rgba(255,255,255,0.5)', flexShrink: 0 }} />
+                <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '10px' }}>Click on the page to place a comment</span>
               </div>
             )}
 
@@ -629,26 +646,150 @@ function BookReader({ file, bookColor, onClose }: {
                     </div>
                   ) : (
                     <>
-                      <div style={{ position: 'relative' }}>
+                      <div
+                        style={{ position: 'relative', cursor: (activeToolPanel === 'highlight' || activeToolPanel === 'comment') ? 'crosshair' : 'default' }}
+                        onClick={handleCanvasClick}
+                      >
                         <canvas ref={canvasRef} style={{ display: 'block' }} />
-                        {pageHighlights.map((h, i) => (
-                          <div key={h.id} style={{ position: 'absolute', top: `${10 + i * 24}px`, right: '8px', background: h.color || '#FFEB3B', borderRadius: '3px', padding: '2px 6px', fontSize: '9px', fontWeight: 600, opacity: 0.85, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            <Highlighter size={10} />
-                            <button onClick={() => deleteAnnotation(h.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}>
-                              <Trash2 size={10} color="#333" />
-                            </button>
-                          </div>
-                        ))}
-                        {pageComments.length > 0 && (
-                          <div style={{ position: 'absolute', bottom: '8px', right: '8px', display: 'flex', flexDirection: 'column', gap: '3px', maxWidth: '200px' }}>
-                            {pageComments.map(c => (
-                              <div key={c.id} style={{ background: 'rgba(0,0,0,0.75)', borderRadius: '4px', padding: '4px 8px', fontSize: '10px', color: '#fff', display: 'flex', alignItems: 'flex-start', gap: '4px' }}>
+                        {pageHighlights.map((h) => {
+                          let pos: { x: number; y: number } | null = null;
+                          try { if (h.rects) pos = JSON.parse(h.rects); } catch {}
+                          if (!pos) return null;
+                          return (
+                            <div key={h.id} style={{
+                              position: 'absolute',
+                              left: `${Math.min(pos.x, 92)}%`,
+                              top: `${Math.min(pos.y, 95)}%`,
+                              transform: 'translate(-50%, -50%)',
+                              width: '28px', height: '28px', borderRadius: '50%',
+                              background: `${h.color || '#FFEB3B'}66`,
+                              border: `2px solid ${h.color || '#FFEB3B'}`,
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              cursor: 'pointer',
+                              boxShadow: `0 0 8px ${h.color || '#FFEB3B'}44`,
+                            }}>
+                              <Highlighter size={12} color={h.color || '#FFEB3B'} />
+                              <button
+                                onClick={(e) => { e.stopPropagation(); deleteAnnotation(h.id); }}
+                                style={{
+                                  position: 'absolute', top: '-6px', right: '-6px',
+                                  width: '14px', height: '14px', borderRadius: '50%',
+                                  background: 'rgba(0,0,0,0.7)', border: 'none',
+                                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                  padding: 0,
+                                }}
+                              >
+                                <X size={8} color="#fff" />
+                              </button>
+                            </div>
+                          );
+                        })}
+                        {pageComments.map((c) => {
+                          let pos: { x: number; y: number } | null = null;
+                          try { if (c.rects) pos = JSON.parse(c.rects); } catch {}
+                          if (!pos) {
+                            return (
+                              <div key={c.id} style={{ position: 'absolute', bottom: '8px', right: '8px', background: 'rgba(0,0,0,0.8)', borderRadius: '6px', padding: '5px 8px', fontSize: '10px', color: '#fff', maxWidth: '200px', display: 'flex', alignItems: 'flex-start', gap: '4px' }}>
                                 <span style={{ flex: 1 }}>{c.content}</span>
-                                <button onClick={() => deleteAnnotation(c.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', flexShrink: 0, marginTop: '1px' }}>
+                                <button onClick={(e) => { e.stopPropagation(); deleteAnnotation(c.id); }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', flexShrink: 0 }}>
                                   <Trash2 size={10} color="rgba(255,255,255,0.5)" />
                                 </button>
                               </div>
-                            ))}
+                            );
+                          }
+                          const isExpanded = expandedCommentId === c.id;
+                          return (
+                            <div key={c.id} style={{ position: 'absolute', left: `${Math.min(pos.x, 92)}%`, top: `${Math.min(pos.y, 95)}%`, transform: 'translate(-50%, -50%)', zIndex: isExpanded ? 5 : 2 }}>
+                              <div
+                                onClick={(e) => { e.stopPropagation(); setExpandedCommentId(isExpanded ? null : c.id); }}
+                                style={{
+                                  width: '24px', height: '24px', borderRadius: '50%',
+                                  background: 'rgba(59,130,246,0.85)', border: '2px solid rgba(255,255,255,0.8)',
+                                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                  cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                                }}
+                              >
+                                <MessageSquare size={12} color="#fff" />
+                              </div>
+                              {isExpanded && (
+                                <div style={{
+                                  position: 'absolute', top: '28px', left: '50%', transform: 'translateX(-50%)',
+                                  background: 'rgba(0,0,0,0.9)', borderRadius: '6px', padding: '6px 8px',
+                                  minWidth: '140px', maxWidth: '220px', boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
+                                  border: '1px solid rgba(255,255,255,0.15)',
+                                }}>
+                                  <div style={{ fontSize: '10px', color: '#fff', lineHeight: 1.4, wordBreak: 'break-word' }}>{c.content}</div>
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); deleteAnnotation(c.id); setExpandedCommentId(null); }}
+                                    style={{
+                                      marginTop: '4px', background: 'rgba(255,80,80,0.2)', border: '1px solid rgba(255,80,80,0.3)',
+                                      borderRadius: '3px', padding: '2px 6px', fontSize: '9px', color: '#ff6b6b',
+                                      cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px',
+                                    }}
+                                  >
+                                    <Trash2 size={9} /> Delete
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                        {pendingComment && (
+                          <div style={{
+                            position: 'absolute',
+                            left: `${Math.min(pendingComment.x, 92)}%`,
+                            top: `${Math.min(pendingComment.y, 95)}%`,
+                            transform: 'translate(-50%, -50%)',
+                            zIndex: 10,
+                          }}>
+                            <div style={{
+                              width: '24px', height: '24px', borderRadius: '50%',
+                              background: 'rgba(59,130,246,0.85)', border: '2px solid #fff',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              boxShadow: '0 0 12px rgba(59,130,246,0.5)',
+                              animation: 'pulse 1.5s ease-in-out infinite',
+                            }}>
+                              <MessageSquare size={12} color="#fff" />
+                            </div>
+                            <div
+                              onClick={(e) => e.stopPropagation()}
+                              style={{
+                                position: 'absolute', top: '30px', left: '50%', transform: 'translateX(-50%)',
+                                background: 'rgba(0,0,0,0.92)', borderRadius: '8px', padding: '8px',
+                                minWidth: '200px', boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+                                border: '1px solid rgba(255,255,255,0.2)',
+                              }}
+                            >
+                              <input
+                                ref={pendingCommentInputRef}
+                                type="text"
+                                value={pendingCommentText}
+                                onChange={e => setPendingCommentText(e.target.value)}
+                                onKeyDown={e => { if (e.key === 'Enter' && pendingCommentText.trim()) { addComment(pendingCommentText, pendingComment); } if (e.key === 'Escape') { setPendingComment(null); setPendingCommentText(''); } }}
+                                placeholder="Type your comment..."
+                                style={{
+                                  width: '100%', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
+                                  borderRadius: '4px', padding: '5px 8px', color: '#fff', fontSize: '11px', outline: 'none',
+                                  boxSizing: 'border-box',
+                                }}
+                                data-testid="input-positioned-comment"
+                              />
+                              <div style={{ display: 'flex', gap: '4px', marginTop: '6px', justifyContent: 'flex-end' }}>
+                                <button
+                                  onClick={() => { setPendingComment(null); setPendingCommentText(''); }}
+                                  style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '4px', padding: '3px 8px', fontSize: '10px', color: 'rgba(255,255,255,0.6)', cursor: 'pointer' }}
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  onClick={() => { if (pendingCommentText.trim()) addComment(pendingCommentText, pendingComment); }}
+                                  style={{ background: 'rgba(59,130,246,0.5)', border: '1px solid rgba(59,130,246,0.7)', borderRadius: '4px', padding: '3px 8px', fontSize: '10px', color: '#fff', cursor: pendingCommentText.trim() ? 'pointer' : 'default', opacity: pendingCommentText.trim() ? 1 : 0.4 }}
+                                  data-testid="btn-submit-positioned-comment"
+                                >
+                                  Add
+                                </button>
+                              </div>
+                            </div>
                           </div>
                         )}
                         {pageBookmarked && (
