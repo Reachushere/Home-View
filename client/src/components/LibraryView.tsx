@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { X, ChevronLeft, ChevronRight, BookOpen } from 'lucide-react';
 import * as pdfjsLib from 'pdfjs-dist';
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
 
 interface FileRecord {
   id: number;
@@ -288,12 +288,18 @@ function BookReader({ file, bookColor, onClose }: {
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
 
+  const [errorMsg, setErrorMsg] = useState('');
+
   useEffect(() => {
     let cancelled = false;
     fetch(`/api/files/${file.id}/download`)
-      .then(r => r.arrayBuffer())
+      .then(r => {
+        if (!r.ok) throw new Error(`Server returned ${r.status}`);
+        return r.arrayBuffer();
+      })
       .then(data => {
         if (cancelled) return;
+        if (data.byteLength < 100) throw new Error('File is empty or too small');
         return pdfjsLib.getDocument({ data }).promise;
       })
       .then(doc => {
@@ -303,7 +309,13 @@ function BookReader({ file, bookColor, onClose }: {
           setLoading(false);
         }
       })
-      .catch(() => setLoading(false));
+      .catch(err => {
+        if (!cancelled) {
+          console.error('PDF load error:', err);
+          setErrorMsg(err?.message || 'Unknown error');
+          setLoading(false);
+        }
+      });
     return () => { cancelled = true; };
   }, [file.id]);
 
@@ -483,7 +495,9 @@ function BookReader({ file, bookColor, onClose }: {
               {loading ? (
                 <div style={{ color: '#666', fontSize: '14px' }}>Loading PDF...</div>
               ) : !pdfDoc ? (
-                <div style={{ color: '#c62828', fontSize: '14px' }}>Failed to load PDF</div>
+                <div style={{ color: '#c62828', fontSize: '14px', textAlign: 'center', padding: '20px' }}>
+                  Failed to load PDF{errorMsg ? `: ${errorMsg}` : ''}
+                </div>
               ) : (
                 <>
                   <canvas ref={canvasRef} style={{ maxWidth: '100%', maxHeight: 'calc(100% - 36px)' }} />
