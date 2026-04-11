@@ -4949,7 +4949,22 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 
       const mediaUrl = file.objectPath;
       
-      if (mediaUrl.startsWith("/objects/")) {
+      if (mediaUrl.startsWith("/local/uploads/")) {
+        const fs = await import("fs");
+        const path = await import("path");
+        const localFileName = mediaUrl.replace('/local/uploads/', '');
+        const persistentPath = path.join(process.cwd(), 'persistent-uploads', localFileName);
+        const legacyPath = path.join(process.cwd(), 'dist', 'public', 'uploads', localFileName);
+        const localFilePath = fs.existsSync(persistentPath) ? persistentPath : legacyPath;
+        if (fs.existsSync(localFilePath)) {
+          const buffer = fs.readFileSync(localFilePath);
+          res.setHeader('Content-Type', file.contentType || 'application/pdf');
+          res.setHeader('Content-Disposition', `inline; filename="${file.originalName}"`);
+          res.send(buffer);
+          return;
+        }
+        return res.status(404).json({ error: "Local file not found on disk" });
+      } else if (mediaUrl.startsWith("/objects/")) {
         const { ObjectStorageService } = await import("./replit_integrations/object_storage");
         const objectStorageService = new ObjectStorageService();
         const objectFile = await objectStorageService.getObjectEntityFile(mediaUrl);

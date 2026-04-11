@@ -1,0 +1,103 @@
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs dashboard --lines 30
+[TAILING] Tailing last 30 lines for [dashboard] process (change the value with --lines option)
+/home/byhomeyyz/.pm2/logs/dashboard-out.log last 30 lines:
+21|dashboa | TTS audio saved locally: /tts-audio/prep-231-chunk-9-1775866452659.mp3
+21|dashboa | [AudioPrep] Generating chunk 11/13 for CPPA122, Module 12 - Introduction.pdf (1399 chars)
+21|dashboa | Generating Edge TTS for 1399 chars, file: prep-231-chunk-10
+21|dashboa | [TTS] Using Edge TTS (free, no charges)
+21|dashboa | Edge TTS completed in 731ms, 492192 bytes
+21|dashboa | TTS audio saved locally: /tts-audio/prep-231-chunk-10-1775866454192.mp3
+21|dashboa | [AudioPrep] Generating chunk 12/13 for CPPA122, Module 12 - Introduction.pdf (1448 chars)
+21|dashboa | Generating Edge TTS for 1448 chars, file: prep-231-chunk-11
+21|dashboa | [TTS] Using Edge TTS (free, no charges)
+21|dashboa | Edge TTS completed in 783ms, 517536 bytes
+21|dashboa | TTS audio saved locally: /tts-audio/prep-231-chunk-11-1775866455777.mp3
+21|dashboa | [AudioPrep] Generating chunk 13/13 for CPPA122, Module 12 - Introduction.pdf (58 chars)
+21|dashboa | Generating Edge TTS for 58 chars, file: prep-231-chunk-12
+21|dashboa | [TTS] Using Edge TTS (free, no charges)
+21|dashboa | Edge TTS completed in 274ms, 23184 bytes
+21|dashboa | TTS audio saved locally: /tts-audio/prep-231-chunk-12-1775866456852.mp3
+21|dashboa | [AudioPrep] ===== Completed CPPA122, Module 12 - Introduction.pdf: 13 chunks in 34s =====
+21|dashboa | [AudioPrep] ===== Preparing file 232: CFNF400, Module 12 - Learning Objectives.pdf =====
+21|dashboa | [ExtractText] Read 260700 bytes from local file: 1775479423371-CFNF400__Module_12_-_Learning_Objectives.pdf
+21|dashboa | [ExtractText] Extracted 21248 chars from CFNF400, Module 12 - Learning Objectives.pdf
+21|dashboa | cleanTextForTTS input length: 21248
+21|dashboa | After URL/timestamp/citation cleanup: 21071
+21|dashboa | After JSTOR cleanup: 21071
+21|dashboa | After French filter: 21060
+21|dashboa | Final cleaned length: 21024
+21|dashboa | [ExtractText] Cached 21024 chars for file 232
+21|dashboa | [AudioPrep] CFNF400, Module 12 - Learning Objectives.pdf: 21024 chars → 15 chunks
+21|dashboa | [AudioPrep] Generating chunk 1/15 for CFNF400, Module 12 - Learning Objectives.pdf (1214 chars)
+21|dashboa | Generating Edge TTS for 1214 chars, file: prep-232-chunk-0
+21|dashboa | [TTS] Using Edge TTS (free, no charges)
+
+/home/byhomeyyz/.pm2/logs/dashboard-error.log last 30 lines:
+21|dashboa | Error fetching events from third account calendar: Error: Google OAuth credentials not configured for third account
+21|dashboa |     at PAe (/home/byhomeyyz/Home-View/dist/index.cjs:330:8537)
+21|dashboa |     at XVo (/home/byhomeyyz/Home-View/dist/index.cjs:330:9523)
+21|dashboa |     at A6 (/home/byhomeyyz/Home-View/dist/index.cjs:330:10010)
+21|dashboa |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+21|dashboa |     at async v6 (/home/byhomeyyz/Home-View/dist/index.cjs:330:10813)
+21|dashboa |     at async /home/byhomeyyz/Home-View/dist/index.cjs:836:3334
+21|dashboa | [Server] Port 5000 in use, retrying in 3s...
+21|dashboa | [Server] Port 5000 in use, retrying in 3s...
+21|dashboa | [Server] Port 5000 in use, retrying in 3s...
+21|dashboa | [Server] Port 5000 in use, retrying in 3s...
+21|dashboa | [Gmail] Error fetching D2L announcements: Gmail not connected - run connect_google.js on the Pi
+21|dashboa | [Server] Port 5000 in use, retrying in 3s...
+21|dashboa | [Server] Port 5000 in use, retrying in 3s...
+21|dashboa | [Server] Port 5000 in use, retrying in 3s...
+21|dashboa | [Server] Port 5000 in use, retrying in 3s...
+21|dashboa | [Server] Port 5000 in use, retrying in 3s...
+21|dashboa | [Edge TTS] Attempt 1 failed: Timed out
+21|dashboa | [OneDrive Monitor] Error checking folder renames: OneDrive not connected — visit /api/onedrive/auth to connect
+21|dashboa | [Server] Port 5000 in use, retrying in 3s...
+21|dashboa | [OneDrive Monitor] Error checking folder renames: OneDrive not connected — visit /api/onedrive/auth to connect
+21|dashboa | [Server] Port 5000 in use, retrying in 3s...
+21|dashboa | [Server] Port 5000 in use, retrying in 3s...
+21|dashboa | [Server] Port 5000 in use, retrying in 3s...
+21|dashboa | [Server] Port 5000 in use, retrying in 3s...
+21|dashboa | [Server] Port 5000 in use, retrying in 3s...
+21|dashboa | [Server] Port 5000 in use, retrying in 3s...
+21|dashboa | [Server] Port 5000 in use, retrying in 3s...
+21|dashboa | [Server] Port 5000 in use, retrying in 3s...
+21|dashboa | [Server] Port 5000 in use, retrying in 3s...
+
+21|dashboard  | [Edge TTS] Attempt 1 failed: Timed out
+21|dashboard  | [OneDrive Monitor] Error checking folder renames: OneDrive not connected — visit /api/onedrive/auth to connect
+21|dashboard  | [Server] Port 5000 in use, retrying in 3s...
+21|dashboard  | Edge TTS completed in 12007ms, 475200 bytes
+21|dashboard  | TTS audio saved locally: /tts-audio/prep-232-chunk-0-1775866469880.mp3
+21|dashboard  | [AudioPrep] Generating chunk 2/15 for CFNF400, Module 12 - Learning Objectives.pdf (1267 chars)
+21|dashboard  | Generating Edge TTS for 1193 chars, file: prep-232-chunk-1
+21|dashboard  | [TTS] Using Edge TTS (free, no charges)
+21|dashboard  | Edge TTS completed in 962ms, 441360 bytes
+21|dashboard  | TTS audio saved locally: /tts-audio/prep-232-chunk-1-1775866471644.mp3
+21|dashboard  | [Server] Port 5000 in use, retrying in 3s...
+21|dashboard  | [AudioPrep] Generating chunk 3/15 for CFNF400, Module 12 - Learning Objectives.pdf (1424 chars)
+21|dashboard  | Generating Edge TTS for 1424 chars, file: prep-232-chunk-2
+21|dashboard  | [TTS] Using Edge TTS (free, no charges)
+21|dashboard  | Edge TTS completed in 903ms, 556560 bytes
+21|dashboard  | TTS audio saved locally: /tts-audio/prep-232-chunk-2-1775866473348.mp3
+21|dashboard  | [AudioPrep] Generating chunk 4/15 for CFNF400, Module 12 - Learning Objectives.pdf (1485 chars)
+21|dashboard  | Generating Edge TTS for 1485 chars, file: prep-232-chunk-3
+21|dashboard  | [TTS] Using Edge TTS (free, no charges)
+21|dashboard  | [Server] Port 5000 in use, retrying in 3s...
+21|dashboard  | Edge TTS completed in 1023ms, 570960 bytes
+21|dashboard  | TTS audio saved locally: /tts-audio/prep-232-chunk-3-1775866475172.mp3
+21|dashboard  | [AudioPrep] Generating chunk 5/15 for CFNF400, Module 12 - Learning Objectives.pdf (1462 chars)
+21|dashboard  | Generating Edge TTS for 1336 chars, file: prep-232-chunk-4
+21|dashboard  | [TTS] Using Edge TTS (free, no charges)
+21|dashboard  | Edge TTS completed in 777ms, 486864 bytes
+21|dashboard  | TTS audio saved locally: /tts-audio/prep-232-chunk-4-1775866476750.mp3
+21|dashboard  | [AudioPrep] Generating chunk 6/15 for CFNF400, Module 12 - Learning Objectives.pdf (1477 chars)
+21|dashboard  | Generating Edge TTS for 924 chars, file: prep-232-chunk-5
+21|dashboard  | [TTS] Using Edge TTS (free, no charges)
+21|dashboard  | [Server] Port 5000 in use, retrying in 3s...
+21|dashboard  | Edge TTS completed in 626ms, 360000 bytes
+21|dashboard  | TTS audio saved locally: /tts-audio/prep-232-chunk-5-1775866478179.mp3
+21|dashboard  | [AudioPrep] Generating chunk 7/15 for CFNF400, Module 12 - Learning Objectives.pdf (1388 chars)
+21|dashboard  | Generating Edge TTS for 1328 chars, file: prep-232-chunk-6
+21|dashboard  | [TTS] Using Edge TTS (free, no charges)
+21|dashboard  | Edge TTS completed in 92
