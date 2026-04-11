@@ -29098,70 +29098,70 @@ export default function Dashboard() {
                             const wc = dailyEntry.weatherCode;
                             const forecastEffectsHtml = (() => {
                               if (wc >= 95) {
-                                const drops = Array.from({ length: 16 }, (_, i) => {
-                                  const left = (i * 37 + 13) % 100;
-                                  const delay = ((i * 0.13) % 0.8).toFixed(2);
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1.5px;height:8px;background:rgba(180,190,220,0.5);animation:rainDrop 0.4s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                                const drops = Array.from({ length: 24 }, (_, i) => {
+                                  const left = (i * 17 + 3) % 100;
+                                  const delay = ((i * 0.11) % 0.7).toFixed(2);
+                                  const h = 10 + (i % 3) * 3;
+                                  return `<div style="position:absolute;left:${left}%;top:-6px;width:2px;height:${h}px;background:linear-gradient(180deg,rgba(120,180,255,0.9),rgba(80,140,255,0.4));animation:rainDrop 0.35s ${delay}s linear infinite;border-radius:0 0 2px 2px"></div>`;
                                 }).join('');
-                                return drops + `<div style="position:absolute;inset:0;background:rgba(255,255,200,0.1);animation:lightningFlash 15s 3s ease-in-out infinite"></div>`;
+                                return drops + `<div style="position:absolute;inset:0;background:rgba(255,255,200,0.15);animation:lightningFlash 8s 2s ease-in-out infinite"></div>`;
                               }
                               if (wc >= 71 && wc <= 77) {
-                                return Array.from({ length: 16 }, (_, i) => {
-                                  const left = (i * 23 + 5) % 100;
-                                  const delay = ((i * 0.2) % 2).toFixed(2);
-                                  const size = 3.5 + (i % 2) * 1.5;
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.9);border-radius:50%;animation:snowFall ${2 + (i % 3)}s ${delay}s linear infinite"></div>`;
+                                return Array.from({ length: 20 }, (_, i) => {
+                                  const left = (i * 19 + 3) % 100;
+                                  const delay = ((i * 0.18) % 2.5).toFixed(2);
+                                  const size = 3 + (i % 3) * 1.5;
+                                  return `<div style="position:absolute;left:${left}%;top:-6px;width:${size}px;height:${size}px;background:rgba(230,240,255,0.95);border-radius:50%;animation:snowFall ${2.5 + (i % 3)}s ${delay}s linear infinite;box-shadow:0 0 3px rgba(200,220,255,0.5)"></div>`;
                                 }).join('');
                               }
                               if (wc >= 85 && wc <= 86) {
-                                return Array.from({ length: 18 }, (_, i) => {
-                                  const left = (i * 23 + 5) % 100;
-                                  const delay = ((i * 0.2) % 2).toFixed(2);
-                                  const size = 3.5 + (i % 2) * 1.5;
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.9);border-radius:50%;animation:snowFall ${1.5 + (i % 2)}s ${delay}s linear infinite"></div>`;
+                                return Array.from({ length: 22 }, (_, i) => {
+                                  const left = (i * 19 + 3) % 100;
+                                  const delay = ((i * 0.15) % 2).toFixed(2);
+                                  const size = 3 + (i % 3) * 1.5;
+                                  return `<div style="position:absolute;left:${left}%;top:-6px;width:${size}px;height:${size}px;background:rgba(230,240,255,0.95);border-radius:50%;animation:snowFall ${1.8 + (i % 2) * 0.7}s ${delay}s linear infinite;box-shadow:0 0 3px rgba(200,220,255,0.5)"></div>`;
                                 }).join('');
                               }
                               if (wc >= 66 && wc <= 67) {
-                                return Array.from({ length: 16 }, (_, i) => {
-                                  const left = (i * 23 + 5) % 100;
-                                  const delay = ((i * 0.14) % 1.2).toFixed(2);
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1.5px;height:6px;background:rgba(180,210,255,0.6);animation:rainDrop 0.6s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                                const rain = Array.from({ length: 18 }, (_, i) => {
+                                  const left = (i * 21 + 3) % 100;
+                                  const delay = ((i * 0.12) % 1).toFixed(2);
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:2px;height:8px;background:linear-gradient(180deg,rgba(160,200,255,0.8),rgba(130,170,240,0.3));animation:rainDrop 0.55s ${delay}s linear infinite;border-radius:0 0 2px 2px"></div>`;
                                 }).join('');
+                                const snow = Array.from({ length: 8 }, (_, i) => {
+                                  const left = (i * 31 + 11) % 100;
+                                  const delay = ((i * 0.3) % 2).toFixed(2);
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:3px;height:3px;background:rgba(230,240,255,0.8);border-radius:50%;animation:snowFall ${2 + (i % 2)}s ${delay}s linear infinite"></div>`;
+                                }).join('');
+                                return rain + snow;
                               }
                               if ((wc >= 61 && wc <= 65) || (wc >= 80 && wc <= 82)) {
-                                const density = wc >= 80 ? 18 : 14;
+                                const density = wc >= 80 ? 22 : 16;
                                 return Array.from({ length: density }, (_, i) => {
-                                  const left = (i * 23 + 5) % 100;
-                                  const delay = ((i * 0.14) % 1.2).toFixed(2);
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1.5px;height:7px;background:rgba(200,210,230,0.6);animation:rainDrop ${wc >= 80 ? '0.5s' : '0.7s'} ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                                  const left = (i * 19 + 3) % 100;
+                                  const delay = ((i * 0.12) % 1).toFixed(2);
+                                  const h = 8 + (i % 3) * 2;
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:2px;height:${h}px;background:linear-gradient(180deg,rgba(140,190,255,0.85),rgba(100,160,240,0.3));animation:rainDrop ${wc >= 80 ? '0.4s' : '0.6s'} ${delay}s linear infinite;border-radius:0 0 2px 2px"></div>`;
                                 }).join('');
                               }
                               if (wc >= 51 && wc <= 55) {
-                                return Array.from({ length: 10 }, (_, i) => {
-                                  const left = (i * 29 + 7) % 100;
-                                  const delay = ((i * 0.17) % 1.2).toFixed(2);
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1px;height:5px;background:rgba(200,210,230,0.4);animation:rainDrop 1s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
-                                }).join('');
-                              }
-                              if (wc >= 45 && wc <= 48) {
                                 return Array.from({ length: 12 }, (_, i) => {
-                                  const left = (i * 31 + 7) % 100;
-                                  const delay = ((i * 0.25) % 2).toFixed(2);
-                                  const size = 2 + (i % 2);
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.5);border-radius:50%;animation:snowFall ${1.5 + (i % 2)}s ${delay}s linear infinite"></div>`;
+                                  const left = (i * 25 + 5) % 100;
+                                  const delay = ((i * 0.15) % 1.2).toFixed(2);
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1.5px;height:6px;background:linear-gradient(180deg,rgba(170,200,240,0.7),rgba(140,170,220,0.2));animation:rainDrop 0.9s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
                                 }).join('');
                               }
                               if (wc >= 45 && wc <= 48) {
-                                return `<div style="position:absolute;inset:0;background:rgba(200,200,210,0.12);backdrop-filter:blur(0.5px)"></div>`;
+                                return `<div style="position:absolute;inset:0;background:rgba(200,200,215,0.15);animation:fogDrift 8s ease-in-out infinite alternate"></div><div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(200,205,215,0.12) 30%,rgba(195,200,210,0.18) 50%,rgba(200,205,215,0.12) 70%,transparent 100%);animation:fogDrift 12s 2s ease-in-out infinite alternate-reverse"></div>`;
                               }
                               if (wc === 3) {
-                                return `<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(140,145,155,0.2) 0%,rgba(160,165,175,0.1) 100%)"></div>`;
+                                return `<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(130,140,155,0.15) 0%,rgba(150,160,170,0.08) 100%)"></div><svg style="position:absolute;top:4px;left:50%;transform:translateX(-50%);opacity:0.35" width="28" height="12" viewBox="0 0 28 12"><path d="M4 10a4 4 0 0 1 4-4c.5-2.5 2.5-4 5-4s4.5 1.5 5 4h1a3 3 0 0 1 0 6H6a2 2 0 0 1-2-2z" fill="rgba(180,190,200,0.6)"/></svg>`;
                               }
                               if (wc <= 1) {
-                                return `<svg style="position:absolute;top:3px;right:4px;filter:drop-shadow(0 0 3px rgba(255,220,80,0.3));opacity:0.6" width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" fill="#fde047"/><g stroke="#fde047" stroke-width="1.5" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="6.76" y2="6.76"/><line x1="17.24" y1="17.24" x2="19.07" y2="19.07"/><line x1="4.93" y1="19.07" x2="6.76" y2="17.24"/><line x1="17.24" y1="6.76" x2="19.07" y2="4.93"/></g></svg>`;
+                                return `<svg style="position:absolute;top:2px;right:3px;filter:drop-shadow(0 0 4px rgba(255,220,80,0.4));opacity:0.7" width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4.5" fill="#fde047"/><g stroke="#fde047" stroke-width="1.8" stroke-linecap="round"><line x1="12" y1="1.5" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22.5"/><line x1="1.5" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22.5" y2="12"/><line x1="4.93" y1="4.93" x2="6.76" y2="6.76"/><line x1="17.24" y1="17.24" x2="19.07" y2="19.07"/><line x1="4.93" y1="19.07" x2="6.76" y2="17.24"/><line x1="17.24" y1="6.76" x2="19.07" y2="4.93"/></g></svg>`;
                               }
                               if (wc === 2) {
-                                return `<svg style="position:absolute;top:3px;right:3px;filter:drop-shadow(0 0 2px rgba(255,220,80,0.2));opacity:0.6" width="16" height="13" viewBox="0 0 28 20" fill="none"><circle cx="10" cy="7" r="3.5" fill="#fde047"/><g stroke="#fde047" stroke-width="1.2" stroke-linecap="round"><line x1="10" y1="1" x2="10" y2="2.5"/><line x1="10" y1="11.5" x2="10" y2="13"/><line x1="4" y1="7" x2="5.5" y2="7"/><line x1="14.5" y1="7" x2="16" y2="7"/><line x1="5.76" y1="2.76" x2="6.82" y2="3.82"/><line x1="13.18" y1="10.18" x2="14.24" y2="11.24"/><line x1="5.76" y1="11.24" x2="6.82" y2="10.18"/><line x1="13.18" y1="3.82" x2="14.24" y2="2.76"/></g><path d="M10 16a4 4 0 0 1 4-4h5a3 3 0 0 1 0 6H11.5a2.5 2.5 0 0 1 0-5" fill="rgba(220,225,240,0.45)" stroke="rgba(200,210,230,0.3)" stroke-width="0.5"/></svg>`;
+                                return `<svg style="position:absolute;top:2px;right:3px;filter:drop-shadow(0 0 3px rgba(255,220,80,0.3));opacity:0.65" width="18" height="15" viewBox="0 0 28 20" fill="none"><circle cx="10" cy="7" r="4" fill="#fde047"/><g stroke="#fde047" stroke-width="1.4" stroke-linecap="round"><line x1="10" y1="0.5" x2="10" y2="2.5"/><line x1="10" y1="11.5" x2="10" y2="13.5"/><line x1="3.5" y1="7" x2="5.5" y2="7"/><line x1="14.5" y1="7" x2="16.5" y2="7"/><line x1="5.76" y1="2.76" x2="6.82" y2="3.82"/><line x1="13.18" y1="10.18" x2="14.24" y2="11.24"/><line x1="5.76" y1="11.24" x2="6.82" y2="10.18"/><line x1="13.18" y1="3.82" x2="14.24" y2="2.76"/></g><path d="M10 16a4 4 0 0 1 4-4h5a3 3 0 0 1 0 6H11.5a2.5 2.5 0 0 1 0-5" fill="rgba(220,225,240,0.5)" stroke="rgba(200,210,230,0.35)" stroke-width="0.5"/></svg>`;
                               }
                               return '';
                             })();
