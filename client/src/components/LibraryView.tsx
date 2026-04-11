@@ -1580,6 +1580,7 @@ function BookReader({ file, bookColor, onClose, pdfUrl }: {
 
 export default function LibraryView({ isOpen, onClose, semesters: semestersProp, initialSemesterKey, isSharedView }: LibraryViewProps) {
   const [currentSemIdx, setCurrentSemIdx] = useState(0);
+  const [syncingSemKey, setSyncingSemKey] = useState<string | null>(null);
   const [selectedBook, setSelectedBook] = useState<FileRecord | null>(null);
   const [selectedBookColor, setSelectedBookColor] = useState('#8B4513');
   const [openReaders, setOpenReaders] = useState<{ file: FileRecord; color: string; pdfUrl?: string }[]>([]);
@@ -2282,6 +2283,49 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         </div>
         <button className="semester-nav-btn" onClick={nextSem} disabled={currentSemIdx === semesters.length - 1} data-testid="btn-library-next-sem">
           <ChevronRight size={20} />
+        </button>
+        <button
+          onClick={async () => {
+            const semKey = currentSemester?.key;
+            if (!semKey || syncingSemKey) return;
+            setSyncingSemKey(semKey);
+            try {
+              await fetch('/api/library/sync-semester', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ semesterKey: semKey }),
+              });
+              for (const delay of [5000, 15000, 30000, 60000]) {
+                setTimeout(() => refetchFiles(), delay);
+              }
+              setTimeout(() => setSyncingSemKey(null), 30000);
+            } catch {
+              setSyncingSemKey(null);
+            }
+          }}
+          disabled={!!syncingSemKey}
+          style={{
+            background: syncingSemKey === currentSemester?.key ? 'rgba(76,175,80,0.2)' : 'rgba(255,255,255,0.08)',
+            border: syncingSemKey === currentSemester?.key ? '1px solid rgba(76,175,80,0.4)' : '1px solid rgba(255,255,255,0.15)',
+            borderRadius: '6px',
+            padding: '4px 8px',
+            color: syncingSemKey === currentSemester?.key ? '#81C784' : 'rgba(255,255,255,0.5)',
+            fontSize: '9px',
+            cursor: syncingSemKey ? 'not-allowed' : 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            transition: 'all 0.2s',
+            fontWeight: 600,
+            letterSpacing: '0.3px',
+          }}
+          onMouseEnter={e => { if (!syncingSemKey) { e.currentTarget.style.background = 'rgba(255,255,255,0.15)'; e.currentTarget.style.color = '#fff'; }}}
+          onMouseLeave={e => { if (!syncingSemKey) { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = 'rgba(255,255,255,0.5)'; }}}
+          title={`Sync all files for ${currentSemester?.label || 'this semester'} from OneDrive`}
+          data-testid="btn-library-sync-semester"
+        >
+          <RefreshCw size={11} style={syncingSemKey === currentSemester?.key ? { animation: 'spin 1s linear infinite' } : {}} />
+          {syncingSemKey === currentSemester?.key ? 'Syncing...' : 'Sync'}
         </button>
       </div>
 
