@@ -4948,6 +4948,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       }
 
       const mediaUrl = file.objectPath;
+      console.log(`[Download] File ${file.id}: originalName="${file.originalName}", objectPath="${mediaUrl}"`);
       
       const tryServeLocalFile = async (): Promise<boolean> => {
         const fs = await import("fs");
@@ -4972,14 +4973,19 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         if (file.originalName && fs.existsSync(persistentDir)) {
           const allFiles = fs.readdirSync(persistentDir);
           const sanitizedName = file.originalName.replace(/[^a-zA-Z0-9._-]/g, '_');
+          console.log(`[Download] Looking for "${sanitizedName}" in ${allFiles.length} local files`);
           const match = allFiles.find((f: string) => f.endsWith(`-${sanitizedName}`) || f.endsWith(`-${file.originalName}`));
           if (match) {
+            console.log(`[Download] Found local match: ${match}`);
             const buffer = fs.readFileSync(path.join(persistentDir, match));
             res.setHeader('Content-Type', file.contentType || 'application/pdf');
             res.setHeader('Content-Disposition', `inline; filename="${file.originalName}"`);
             res.send(buffer);
             return true;
           }
+          console.log(`[Download] No local match found for "${sanitizedName}"`);
+        } else {
+          console.log(`[Download] persistent-uploads dir exists: ${fs.existsSync(persistentDir)}`);
         }
         return false;
       };
