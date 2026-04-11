@@ -7,7 +7,6 @@ import NotepadDialog from "@/components/NotepadDialog";
 import OtherRowEditDialog from "@/components/OtherRowEditDialog";
 import { FastInput, FastTextarea } from "@/components/FastInput";
 import { SemesterChecklistDialog } from "@/components/SemesterChecklistDialog";
-import LibraryView from "@/components/LibraryView";
 import { Document, Page, pdfjs } from 'react-pdf';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -2223,8 +2222,6 @@ export default function Dashboard() {
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const [isNotepadOpen, setIsNotepadOpen] = useState(false);
   const [isMobileNotepadOpen, setIsMobileNotepadOpen] = useState(false);
-  const [isMobileLibraryOpen, setIsMobileLibraryOpen] = useState(false);
-  const [librarySemesterKey, setLibrarySemesterKey] = useState<string | undefined>(undefined);
   const [mobileNotepadText, setMobileNotepadText] = useState('');
   const [mobileNotepadImages, setMobileNotepadImages] = useState<{file: File; preview: string}[]>([]);
   const [mobileNotepadSaving, setMobileNotepadSaving] = useState(false);
@@ -3896,6 +3893,8 @@ export default function Dashboard() {
   const [semStartDialogKey, setSemStartDialogKey] = useState<string | null>(null);
   const [bulkSyncLoaded, setBulkSyncLoaded] = useState(false);
   const [weeklyPlanningOpen, setWeeklyPlanningOpen] = useState(false);
+  const [greyClassifyOpen, setGreyClassifyOpen] = useState(false);
+  const [greyClassifySelections, setGreyClassifySelections] = useState<Record<number, string>>({});
 
   useEffect(() => {
     (async () => {
@@ -7693,6 +7692,32 @@ export default function Dashboard() {
     return { byCourse, other };
   }, [allTasks, stableToday, selectedWeek]);
 
+  useEffect(() => {
+    if (!allTasksRaw || allTasksRaw.length === 0) return;
+    if (authLevel !== '5747') return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('catWashFollow') || params.get('followOnly') || params.get('fullscreen')) return;
+    const stored = localStorage.getItem('grey_classify_prompts');
+    const promptData: { dates: string[] } = stored ? (() => { try { return JSON.parse(stored); } catch { return { dates: [] }; } })() : { dates: [] };
+    if (promptData.dates.length >= 2) return;
+    const now = new Date();
+    const etStr = now.toLocaleString('en-US', { timeZone: getAppTz() });
+    const et = new Date(etStr);
+    const todayStr = `${et.getFullYear()}-${String(et.getMonth()+1).padStart(2,'0')}-${String(et.getDate()).padStart(2,'0')}`;
+    if (promptData.dates.includes(todayStr)) return;
+    const todayStart = new Date(`${todayStr}T00:00:00`);
+    const greyTasks = allTasksRaw.filter(t => {
+      if (t.type !== 'other') return false;
+      if (t.isCompleted) return false;
+      const due = new Date(t.dueDate);
+      return due >= todayStart;
+    });
+    if (greyTasks.length === 0) return;
+    const timer = setTimeout(() => {
+      setGreyClassifyOpen(true);
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [allTasksRaw, authLevel]);
 
   useEffect(() => {
     if (!allTasks || allTasks.length === 0) return;
@@ -8297,38 +8322,34 @@ export default function Dashboard() {
     const now = startOfDayET(new Date());
     const typePrefix: Record<string, string> = { winter: 'w', fall: 'f', spring_summer: 'ss' };
     const semLabels: Record<string, string> = { winter: 'Winter', fall: 'Fall', spring_summer: 'Spring/Summer' };
-    fetch('/api/new-semester-checklist/dismissed', { credentials: 'include' })
-      .then(r => r.json())
-      .then((dismissedKeys: string[]) => {
-        for (const sem of allSemesterSettings) {
-          if (!sem.semesterStartDate) continue;
-          const semStart = new Date(sem.semesterStartDate);
-          const semDay = semStart.getDay();
-          let firstMonday: Date;
-          if (semDay === 1) {
-            firstMonday = semStart;
-          } else if (semDay === 0) {
-            firstMonday = addDays(semStart, 1);
-          } else {
-            firstMonday = addDays(semStart, (8 - semDay) % 7);
-          }
-          const triggerDate = addDays(firstMonday, -2);
-          const semEnd = sem.semesterEndDate ? new Date(sem.semesterEndDate) : addDays(firstMonday, 90);
-          if (now >= triggerDate && now <= semEnd) {
-            const yr = new Date(sem.semesterStartDate).getFullYear();
-            const prefix = typePrefix[sem.semesterType] || sem.semesterType?.charAt(0) || 's';
-            const semKey = `${prefix}${yr}`;
-            if (!dismissedKeys.includes(semKey)) {
-              const label = `${semLabels[sem.semesterType] || sem.semesterType || 'Semester'} ${yr}`;
-              setNewSemChecklistKey(semKey);
-              setNewSemChecklistLabel(sem.semesterName || label);
-              setShowNewSemChecklist(true);
-              break;
-            }
-          }
+    for (const sem of allSemesterSettings) {
+      if (!sem.semesterStartDate) continue;
+      const semStart = new Date(sem.semesterStartDate);
+      const semDay = semStart.getDay();
+      let firstMonday: Date;
+      if (semDay === 1) {
+        firstMonday = semStart;
+      } else if (semDay === 0) {
+        firstMonday = addDays(semStart, 1);
+      } else {
+        firstMonday = addDays(semStart, (8 - semDay) % 7);
+      }
+      const triggerDate = addDays(firstMonday, -2);
+      const semEnd = sem.semesterEndDate ? new Date(sem.semesterEndDate) : addDays(firstMonday, 90);
+      if (now >= triggerDate && now <= semEnd) {
+        const yr = new Date(sem.semesterStartDate).getFullYear();
+        const prefix = typePrefix[sem.semesterType] || sem.semesterType?.charAt(0) || 's';
+        const semKey = `${prefix}${yr}`;
+        const dismissed = localStorage.getItem(`newSemChecklist_dismissed_${semKey}`);
+        if (!dismissed) {
+          const label = `${semLabels[sem.semesterType] || sem.semesterType || 'Semester'} ${yr}`;
+          setNewSemChecklistKey(semKey);
+          setNewSemChecklistLabel(sem.semesterName || label);
+          setShowNewSemChecklist(true);
+          break;
         }
-      })
-      .catch(() => {});
+      }
+    }
   }, [allSemesterSettings]);
 
   const courseZoomLinks = useMemo(() => {
@@ -13846,17 +13867,6 @@ export default function Dashboard() {
             </button>
           )}
 
-          {isFull && (
-            <button
-              onClick={() => setIsMobileLibraryOpen(true)}
-              data-testid="mobile-button-library"
-              style={{...mobileBtnStyle(btnSize), display: 'flex', flexDirection: 'column', gap: '2px'}}
-            >
-              <Library style={{ height: `${iconSize * 0.7}px`, width: `${iconSize * 0.7}px` }} />
-              <span style={{ fontSize: '7px', fontWeight: 600, fontFamily: "system-ui, -apple-system, sans-serif", lineHeight: 1 }}>Library</span>
-            </button>
-          )}
-
           {isMobilePortrait && (
             <div style={{ marginTop: '12px', color: 'rgba(255,255,255,0.4)', fontSize: '10px', textAlign: 'center', fontFamily: "system-ui, -apple-system, sans-serif" }}>
               Rotate for calendar
@@ -14402,15 +14412,6 @@ export default function Dashboard() {
         backgroundColor: colorSettings.mainBackgroundOverlay ? safeHex(colorSettings.mainBackground, '#3a8bbf') : '#000000',
       }}
     >
-      {isMobileLibraryOpen && (
-        <LibraryView
-          isOpen={isMobileLibraryOpen}
-          onClose={() => { setIsMobileLibraryOpen(false); setLibrarySemesterKey(undefined); }}
-          semesters={[]}
-          initialSemesterKey={librarySemesterKey}
-        />
-      )}
-
       {pomodoroAlertVisible && <div className="pomodoro-alert-border" />}
       {pomodoroAlertVisible && createPortal(
         <div
@@ -14749,6 +14750,103 @@ export default function Dashboard() {
         </div>
       )}
 
+      {/* Morning Review - Full Page Overlay */}
+      {greyClassifyOpen && desktopIsFull && (() => {
+        const now = new Date();
+        const etStr = now.toLocaleString('en-US', { timeZone: getAppTz() });
+        const et = new Date(etStr);
+        const todayStr = `${et.getFullYear()}-${String(et.getMonth()+1).padStart(2,'0')}-${String(et.getDate()).padStart(2,'0')}`;
+        const todayStart = new Date(`${todayStr}T00:00:00`);
+        const greyTasks = (allTasksRaw || []).filter((t: any) => t.type === 'other' && !t.isCompleted && new Date(t.dueDate) >= todayStart).sort((a: any, b: any) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+        const typeOptions = ["module", "reading", "essay", "discussion", "poll", "quiz", "exam", "project", "reminder", "meeting", "other"] as const;
+        const typeColorMap: Record<string, string> = { module: 'rgba(16,200,120,0.35)', reading: 'rgba(56,130,255,0.35)', essay: 'rgba(255,180,30,0.35)', discussion: 'rgba(180,120,220,0.35)', poll: 'rgba(255,70,160,0.35)', quiz: 'rgba(180,160,40,0.35)', exam: 'rgba(220,30,30,0.4)', project: 'rgba(255,100,50,0.35)', reminder: 'rgba(0,210,240,0.35)', meeting: 'rgba(50,50,180,0.35)', school: 'rgba(0,76,156,0.35)', household: 'rgba(245,158,11,0.35)', financial: 'rgba(16,185,129,0.35)', personal: 'rgba(139,92,246,0.35)', outside: 'rgba(34,197,94,0.35)', other: 'rgba(160,170,180,0.25)' };
+        const handleSaveClassify = async () => {
+          const entries = Object.entries(greyClassifySelections);
+          for (const [idStr, newType] of entries) {
+            const id = Number(idStr);
+            if (newType && newType !== 'other') {
+              try { await apiRequest("PATCH", `/api/tasks/${id}`, { type: newType }); } catch (e) { console.error('Failed to update task type:', e); }
+            }
+          }
+          queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+          const stored = localStorage.getItem('grey_classify_prompts');
+          const promptData: { dates: string[] } = stored ? (() => { try { return JSON.parse(stored); } catch { return { dates: [] }; } })() : { dates: [] };
+          if (!promptData.dates.includes(todayStr)) promptData.dates.push(todayStr);
+          localStorage.setItem('grey_classify_prompts', JSON.stringify(promptData));
+          setGreyClassifySelections({});
+          setGreyClassifyOpen(false);
+        };
+        const handleDismissClassify = () => {
+          const stored = localStorage.getItem('grey_classify_prompts');
+          const promptData: { dates: string[] } = stored ? (() => { try { return JSON.parse(stored); } catch { return { dates: [] }; } })() : { dates: [] };
+          if (!promptData.dates.includes(todayStr)) promptData.dates.push(todayStr);
+          localStorage.setItem('grey_classify_prompts', JSON.stringify(promptData));
+          setGreyClassifySelections({});
+          setGreyClassifyOpen(false);
+        };
+        return (
+        <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 10010, background: 'rgba(0,0,0,0.6)' }} data-testid="dialog-grey-classify">
+          <div className="flex flex-col text-white" style={{ width: '72%', maxWidth: '940px', height: '70vh', maxHeight: '580px', borderRadius: '10px', overflow: 'hidden', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}>
+            <div className="flex items-center justify-between px-3 py-1.5 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)', margin: '0', width: '100%' }}>
+              <div className="flex items-center gap-1.5">
+                <Tag className="text-orange-400" style={{ width: '11px', height: '11px' }} />
+                <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '9px' }}>CLASSIFY GREY TASKS</h2>
+                <span className="text-[7px] text-white/40 ml-1">Select a type for each uncategorized task</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <button onClick={handleSaveClassify} className="text-[8px] px-2 py-0.5 rounded hover:bg-white/20 text-green-400 font-medium" data-testid="grey-classify-save">Save</button>
+                <button onClick={handleDismissClassify} className="text-[8px] px-2 py-0.5 rounded hover:bg-white/20 text-white/60" data-testid="grey-classify-dismiss">Skip</button>
+                <button onClick={handleDismissClassify} className="text-white/60 hover:text-white/80" data-testid="grey-classify-close"><X style={{ width: '12px', height: '12px' }} /></button>
+              </div>
+            </div>
+            <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: 'thin', padding: '6px 10px' }}>
+              {greyTasks.length === 0 ? (
+                <div className="flex items-center justify-center h-full">
+                  <span className="text-[10px] text-white/50 italic">No grey tasks from today forward</span>
+                </div>
+              ) : greyTasks.map((task: any) => {
+                const dueDate = new Date(task.dueDate);
+                const dueFmt = format(dueDate, "MMM d");
+                const selected = greyClassifySelections[task.id] || '';
+                const coursePart = task.courseName ? task.courseName.split(' - ')[0]?.trim() : '';
+                return (
+                  <div key={task.id} className="flex items-center gap-2 py-1.5 border-b border-white/10" data-testid={`grey-classify-row-${task.id}`}>
+                    <div className="flex-shrink-0 text-[8px] text-white/40 w-[42px] text-right">{dueFmt}</div>
+                    {coursePart && <div className="flex-shrink-0 text-[7px] font-bold px-1 py-0.5 rounded" style={{ background: 'rgba(255,255,255,0.1)' }}>{coursePart}</div>}
+                    <div className="flex-1 text-[9px] text-white/90 truncate min-w-0" title={task.title}>{(task.title || '').replace(/^\s*\[[^\]]*\]\s*/g, '')}</div>
+                    <div className="flex-shrink-0 flex gap-0.5 flex-wrap justify-end" style={{ maxWidth: '320px' }}>
+                      {typeOptions.map(type => {
+                        const isSelected = selected === type;
+                        return (
+                          <button
+                            key={type}
+                            className="text-[7px] px-1.5 py-0.5 rounded transition-all"
+                            style={{
+                              background: isSelected ? typeColorMap[type] : 'rgba(255,255,255,0.05)',
+                              border: isSelected ? '1px solid rgba(255,255,255,0.4)' : '1px solid rgba(255,255,255,0.12)',
+                              color: isSelected ? 'white' : 'rgba(255,255,255,0.5)',
+                              fontWeight: isSelected ? 600 : 400,
+                            }}
+                            onClick={() => setGreyClassifySelections(p => ({ ...p, [task.id]: type }))}
+                            data-testid={`grey-classify-type-${task.id}-${type}`}
+                          >
+                            {type}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="flex items-center justify-between px-3 py-1 border-t border-white/15 flex-shrink-0" style={{ background: 'rgba(0,0,0,0.15)' }}>
+              <span className="text-[7px] text-white/30">{greyTasks.length} task{greyTasks.length !== 1 ? 's' : ''} to classify</span>
+              <span className="text-[7px] text-white/30">{Object.keys(greyClassifySelections).filter(k => greyClassifySelections[Number(k)] && greyClassifySelections[Number(k)] !== 'other').length} changed</span>
+            </div>
+          </div>
+        </div>
+        );
+      })()}
       {showMorningReview && desktopIsFull && (
         <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 10010, background: 'rgba(0,0,0,0.6)' }} data-testid="dialog-morning-review">
           <div className="flex flex-col text-white" style={{ width: '86%', maxWidth: '1125px', height: '78vh', maxHeight: '656px', borderRadius: '10px', overflow: 'hidden', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}>
@@ -16735,7 +16833,7 @@ export default function Dashboard() {
         
 
         {/* Icon buttons and task buttons with adjustable spacing */}
-        <div className="flex items-center flex-nowrap [&>*]:flex-shrink-0" onMouseEnter={() => { topPillHoveredRef.current = true; if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); }} onMouseLeave={() => { if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); topPillTimeoutRef.current = setTimeout(() => { topPillHoveredRef.current = false; if (!isSettingsPanelOpen && !isTodoFlyoutOpen && !isProjectsFlyoutOpen && !isRadioDialogOpen && !isCompletedTasksOpen && !isQuickAddOpen && !isAlexaDialogOpen && !isEmailWizardOpen && !isKeyContactsOpen && !isSystemHealthOpen && !isFeedbackOpen && !isSchoolCoursesDialogOpen && !isNewCourseWizardOpen) closeTopPill(); }, 1500); }} style={{ gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 31)}px`, marginTop: '-3px', position: 'relative', zIndex: 1, justifyContent: 'center', paddingLeft: '2px', paddingRight: '2px', width: '100%', overflow: 'visible', pointerEvents: (isTopPillOpen || topPillUndocked) ? 'auto' : 'none' }}>
+        <div className="flex items-center flex-nowrap [&>*]:flex-shrink-0" onMouseEnter={() => { topPillHoveredRef.current = true; if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); }} onMouseLeave={() => { if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); topPillTimeoutRef.current = setTimeout(() => { topPillHoveredRef.current = false; if (!isSettingsPanelOpen && !isTodoFlyoutOpen && !isProjectsFlyoutOpen && !isRadioDialogOpen && !isCompletedTasksOpen && !isQuickAddOpen && !isAlexaDialogOpen && !isEmailWizardOpen && !isKeyContactsOpen && !isSystemHealthOpen && !isFeedbackOpen && !isSchoolCoursesDialogOpen && !isNewCourseWizardOpen) closeTopPill(); }, 1500); }} style={{ gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, marginTop: '-3px', position: 'relative', zIndex: 1, justifyContent: 'center', paddingLeft: '2px', paddingRight: '2px', width: '100%', overflow: 'visible', pointerEvents: (isTopPillOpen || topPillUndocked) ? 'auto' : 'none' }}>
           
 
 
@@ -16774,7 +16872,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── Tasks ── */}
-          <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', paddingRight: '7px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 30)}px`, border: '1.5px solid rgba(50,120,210,0.6)', position: 'relative', top: '1px', margin: '0 0px', marginLeft: '-6px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(40,110,210,0.5) 0%, rgba(25,80,180,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
+          <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', paddingRight: '7px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 28)}px`, border: '1.5px solid rgba(50,120,210,0.6)', position: 'relative', top: '1px', margin: '0 0px', marginLeft: '-6px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(40,110,210,0.5) 0%, rgba(25,80,180,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
           <div style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <ListChecks className="h-[18px] w-[18px] text-white/70" style={{ position: 'relative', top: '-5px', left: '-2px' }} />
             <span style={{ position: 'absolute', top: '13px', fontSize: '7.5px', color: '#ffffff', fontWeight: 500, letterSpacing: '0.5px', whiteSpace: 'nowrap', textAlign: 'center', right: '50%', transform: 'translateX(32%)' }}>Tasks</span>
@@ -17062,7 +17160,7 @@ export default function Dashboard() {
 
 
           {/* ── School ── */}
-          <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 30)}px`, border: '1.5px solid rgba(34,197,94,0.7)', position: 'relative', top: '1px', margin: '0 0px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(34,197,94,0.55) 0%, rgba(22,163,74,0.4) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
+          <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 28)}px`, border: '1.5px solid rgba(34,197,94,0.7)', position: 'relative', top: '1px', margin: '0 0px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(34,197,94,0.55) 0%, rgba(22,163,74,0.4) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
           <div style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <GraduationCap className="h-[20px] w-[20px] text-white/70" style={{ position: 'relative', top: '-7px', left: '-2px' }} />
             <span style={{ position: 'absolute', top: '13px', fontSize: '7.5px', color: '#ffffff', fontWeight: 500, letterSpacing: '0.5px', whiteSpace: 'nowrap', textAlign: 'center', right: '50%', transform: 'translateX(38%)' }}>School</span>
@@ -17164,41 +17262,10 @@ export default function Dashboard() {
             </Button>
           </div>
 
-          {/* Library Button */}
-          <div className="pill-button-hover" style={{ 
-            marginTop: '0px', width: '44px', height: '43px', borderRadius: '50%',
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
-            position: 'relative' as const, zIndex: 1,
-            border: '1.5px solid rgba(255,255,255,0.35)',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center'
-          }}>
-            <Button 
-              size="icon"
-              variant="ghost"
-              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
-              style={{ background: 'transparent' }}
-              data-testid="button-library-pill"
-              title="Library"
-              onClick={() => {
-                const ss = semesterSettings as any;
-                if (ss) {
-                  const st = ss.semesterType || '';
-                  const yr = (ss.semesterName || '').match(/\d{4}/)?.[0] || '';
-                  const key = st.startsWith('spring_summer') ? `ss${yr}` : st === 'fall' ? `f${yr}` : st === 'winter' ? `w${yr}` : '';
-                  setLibrarySemesterKey(key || undefined);
-                }
-                setIsMobileLibraryOpen(true);
-              }}
-            >
-              <Library className="text-white" style={{ height: '20px', width: '20px' }} />
-            </Button>
-          </div>
-
           </div>
 
           {/* ── Entertainment ── */}
-          <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 30)}px`, border: '1.5px solid rgba(160,100,240,0.6)', position: 'relative', top: '1px', margin: '0 0px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(150,90,235,0.5) 0%, rgba(120,60,210,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
+          <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 28)}px`, border: '1.5px solid rgba(160,100,240,0.6)', position: 'relative', top: '1px', margin: '0 0px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(150,90,235,0.5) 0%, rgba(120,60,210,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
           <div style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <img src={soundIconPath} alt="Sound" style={{ height: '22px', width: '22px', objectFit: 'contain', position: 'relative', opacity: 0.7, top: '-7px', left: '-2px' }} />
             <span style={{ position: 'absolute', top: '13px', fontSize: '7.5px', color: '#ffffff', fontWeight: 500, letterSpacing: '0.5px', whiteSpace: 'nowrap', textAlign: 'center', right: '50%', transform: 'translateX(38%)' }}>Sound</span>
@@ -17317,7 +17384,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── Tools ── */}
-          <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 32)}px`, border: '1.5px solid rgba(110,110,110,0.8)', position: 'relative', top: '1px', margin: '0 1.5px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(100,100,100,0.75) 0%, rgba(75,75,75,0.55) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
+          <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 30)}px`, border: '1.5px solid rgba(110,110,110,0.8)', position: 'relative', top: '1px', margin: '0 1.5px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(100,100,100,0.75) 0%, rgba(75,75,75,0.55) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
           {isAdmin && (
             <div style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <Wrench className="h-[18px] w-[18px] text-white/70" style={{ position: 'relative', top: '-6px', left: '-1px' }} />
@@ -20599,7 +20666,6 @@ export default function Dashboard() {
           semesterLabel={newSemChecklistLabel}
           colorSettings={colorSettings}
           onDismiss={() => {
-            fetch('/api/new-semester-checklist/dismiss', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ semesterKey: newSemChecklistKey }) }).catch(() => {});
             localStorage.setItem(`newSemChecklist_dismissed_${newSemChecklistKey}`, 'true');
             setShowNewSemChecklist(false);
           }}
@@ -28784,11 +28850,71 @@ export default function Dashboard() {
                             const todayDate = startOfDayET(new Date());
                             const dayDate = startOfDayET(day);
                             const diffDays = Math.round((dayDate.getTime() - todayDate.getTime()) / (1000 * 60 * 60 * 24));
-                            if (diffDays < 1 || diffDays > 14) return null;
+                            if (diffDays < 2 || diffDays > 14) return null;
                             const dailyEntry = weatherData.daily.find(d => d.date === format(day, 'yyyy-MM-dd'));
                             if (!dailyEntry || dailyEntry.weatherCode === undefined) return null;
                             const wc = dailyEntry.weatherCode;
-                            const forecastIconHtml = (() => {
+                            const forecastEffectsHtml = (() => {
+                              if (wc >= 95) {
+                                const drops = Array.from({ length: 16 }, (_, i) => {
+                                  const left = (i * 37 + 13) % 100;
+                                  const delay = ((i * 0.13) % 0.8).toFixed(2);
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1.5px;height:8px;background:rgba(180,190,220,0.5);animation:rainDrop 0.4s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                                }).join('');
+                                return drops + `<div style="position:absolute;inset:0;background:rgba(255,255,200,0.1);animation:lightningFlash 15s 3s ease-in-out infinite"></div>`;
+                              }
+                              if (wc >= 71 && wc <= 77) {
+                                return Array.from({ length: 16 }, (_, i) => {
+                                  const left = (i * 23 + 5) % 100;
+                                  const delay = ((i * 0.2) % 2).toFixed(2);
+                                  const size = 3.5 + (i % 2) * 1.5;
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.9);border-radius:50%;animation:snowFall ${2 + (i % 3)}s ${delay}s linear infinite"></div>`;
+                                }).join('');
+                              }
+                              if (wc >= 85 && wc <= 86) {
+                                return Array.from({ length: 18 }, (_, i) => {
+                                  const left = (i * 23 + 5) % 100;
+                                  const delay = ((i * 0.2) % 2).toFixed(2);
+                                  const size = 3.5 + (i % 2) * 1.5;
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.9);border-radius:50%;animation:snowFall ${1.5 + (i % 2)}s ${delay}s linear infinite"></div>`;
+                                }).join('');
+                              }
+                              if (wc >= 66 && wc <= 67) {
+                                return Array.from({ length: 16 }, (_, i) => {
+                                  const left = (i * 23 + 5) % 100;
+                                  const delay = ((i * 0.14) % 1.2).toFixed(2);
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1.5px;height:6px;background:rgba(180,210,255,0.6);animation:rainDrop 0.6s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                                }).join('');
+                              }
+                              if ((wc >= 61 && wc <= 65) || (wc >= 80 && wc <= 82)) {
+                                const density = wc >= 80 ? 18 : 14;
+                                return Array.from({ length: density }, (_, i) => {
+                                  const left = (i * 23 + 5) % 100;
+                                  const delay = ((i * 0.14) % 1.2).toFixed(2);
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1.5px;height:7px;background:rgba(200,210,230,0.6);animation:rainDrop ${wc >= 80 ? '0.5s' : '0.7s'} ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                                }).join('');
+                              }
+                              if (wc >= 51 && wc <= 55) {
+                                return Array.from({ length: 10 }, (_, i) => {
+                                  const left = (i * 29 + 7) % 100;
+                                  const delay = ((i * 0.17) % 1.2).toFixed(2);
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1px;height:5px;background:rgba(200,210,230,0.4);animation:rainDrop 1s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                                }).join('');
+                              }
+                              if (wc >= 45 && wc <= 48) {
+                                return Array.from({ length: 12 }, (_, i) => {
+                                  const left = (i * 31 + 7) % 100;
+                                  const delay = ((i * 0.25) % 2).toFixed(2);
+                                  const size = 2 + (i % 2);
+                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.5);border-radius:50%;animation:snowFall ${1.5 + (i % 2)}s ${delay}s linear infinite"></div>`;
+                                }).join('');
+                              }
+                              if (wc >= 45 && wc <= 48) {
+                                return `<div style="position:absolute;inset:0;background:rgba(200,200,210,0.12);backdrop-filter:blur(0.5px)"></div>`;
+                              }
+                              if (wc === 3) {
+                                return `<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(140,145,155,0.2) 0%,rgba(160,165,175,0.1) 100%)"></div>`;
+                              }
                               if (wc <= 1) {
                                 return `<svg style="position:absolute;top:3px;right:4px;filter:drop-shadow(0 0 3px rgba(255,220,80,0.3));opacity:0.6" width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" fill="#fde047"/><g stroke="#fde047" stroke-width="1.5" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="6.76" y2="6.76"/><line x1="17.24" y1="17.24" x2="19.07" y2="19.07"/><line x1="4.93" y1="19.07" x2="6.76" y2="17.24"/><line x1="17.24" y1="6.76" x2="19.07" y2="4.93"/></g></svg>`;
                               }
@@ -28809,7 +28935,7 @@ export default function Dashboard() {
                             return (
                               <>
                                 <div className="absolute left-0 right-0 bottom-0 z-[5]" style={{ top: 0, background: skyBg, overflow: 'hidden', pointerEvents: 'none', opacity: isNextSchoolWeek ? 0.2 : 0.85 }}>
-                                  {forecastIconHtml && <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', opacity: isNextSchoolWeek ? 0.25 : 1 }} dangerouslySetInnerHTML={{ __html: forecastIconHtml }} />}
+                                  <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', opacity: isNextSchoolWeek ? 0.25 : 1 }} dangerouslySetInnerHTML={{ __html: forecastEffectsHtml }} />
                                 </div>
                               </>
                             );

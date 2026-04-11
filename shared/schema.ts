@@ -879,31 +879,5 @@ export const insertNewSemesterChecklistSchema = createInsertSchema(newSemesterCh
 export type NewSemesterChecklistItem = typeof newSemesterChecklist.$inferSelect;
 export type InsertNewSemesterChecklistItem = z.infer<typeof insertNewSemesterChecklistSchema>;
 
-export const pdfAnnotations = pgTable("pdf_annotations", {
-  id: serial("id").primaryKey(),
-  fileId: integer("file_id").notNull(),
-  page: integer("page").notNull(),
-  type: text("type").notNull(),
-  content: text("content"),
-  color: text("color"),
-  rects: text("rects"),
-  createdAt: timestamp("created_at").defaultNow(),
-});
-
-export const insertPdfAnnotationSchema = createInsertSchema(pdfAnnotations).omit({ id: true, createdAt: true });
-export type PdfAnnotation = typeof pdfAnnotations.$inferSelect;
-export type InsertPdfAnnotation = z.infer<typeof insertPdfAnnotationSchema>;
-
-export const sharedLibraryTokens = pgTable("shared_library_tokens", {
-  id: serial("id").primaryKey(),
-  token: text("token").notNull().unique(),
-  semesterKey: text("semester_key"),
-  createdAt: timestamp("created_at").defaultNow(),
-  expiresAt: timestamp("expires_at"),
-  isActive: boolean("is_active").default(true),
-});
-
-export type SharedLibraryToken = typeof sharedLibraryTokens.$inferSelect;
-
 // Export chat models for AI integrations
 export * from "./models/chat";

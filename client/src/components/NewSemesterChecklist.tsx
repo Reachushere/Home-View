@@ -605,10 +605,8 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
                 setPopupDismissed(newVal);
                 if (newVal) {
                   localStorage.setItem(`newSemChecklist_dismissed_${semesterKey}`, 'true');
-                  fetch('/api/new-semester-checklist/dismiss', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ semesterKey }) }).catch(() => {});
                 } else {
                   localStorage.removeItem(`newSemChecklist_dismissed_${semesterKey}`);
-                  fetch('/api/new-semester-checklist/undismiss', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ semesterKey }) }).catch(() => {});
                 }
               }}
               style={{
