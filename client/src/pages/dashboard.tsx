@@ -30536,7 +30536,7 @@ export default function Dashboard() {
                         maxTasksInBarCols = Math.max(maxTasksInBarCols, tasksInCell.length);
                       }
                     }
-                    const taskOffset = maxTasksInBarCols * 15;
+                    const taskOffset = maxTasksInBarCols * 20 + (maxTasksInBarCols > 0 ? 4 : 0);
                     return (
                       <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 30 }}>
                         <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, top: `${taskOffset}px`, overflowY: 'auto', overflowX: 'hidden', pointerEvents: 'none', scrollbarWidth: 'none' as any }}>
@@ -30784,7 +30784,7 @@ export default function Dashboard() {
                           maxOtherTasksInBarCols = Math.max(maxOtherTasksInBarCols, tasksInCell.length);
                         }
                       }
-                      const otherTaskOffset = maxOtherTasksInBarCols * 15;
+                      const otherTaskOffset = maxOtherTasksInBarCols * 20 + (maxOtherTasksInBarCols > 0 ? 4 : 0);
                       return (
                         <div style={{ position: 'absolute', left: 0, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 30 }}>
                           <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, top: `${otherTaskOffset}px`, overflowY: 'auto', overflowX: 'hidden', pointerEvents: 'none', scrollbarWidth: 'none' as any }}>
