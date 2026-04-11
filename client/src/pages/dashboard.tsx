@@ -30475,16 +30475,24 @@ export default function Dashboard() {
                     const totalFr = dws.reduce((s: number, v: number) => s + v, 0);
                     const fixedPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
                     let frBefore = 0;
-                    for (let i = 0; i <= todayDow && i < dws.length; i++) frBefore += dws[i];
                     let frSpan = 0;
-                    for (let i = todayDow + 1; i <= Math.min(todayDow + 2, dws.length - 1); i++) frSpan += dws[i];
+                    if (todayDow === 6) {
+                      frSpan = dws[0] + (dws[1] || 0);
+                    } else {
+                      for (let i = 0; i <= todayDow && i < dws.length; i++) frBefore += dws[i];
+                      for (let i = todayDow + 1; i <= Math.min(todayDow + 2, dws.length - 1); i++) frSpan += dws[i];
+                    }
                     if (frSpan === 0) return null;
                     const leftFrac = frBefore / totalFr;
                     const widthFrac = frSpan / totalFr;
                     const barH = 3;
                     const barGap = 14;
                     const barDayIndices: number[] = [];
-                    for (let i = todayDow + 1; i <= Math.min(todayDow + 2, dws.length - 1); i++) barDayIndices.push(i);
+                    if (todayDow === 6) {
+                      barDayIndices.push(0, 1);
+                    } else {
+                      for (let i = todayDow + 1; i <= Math.min(todayDow + 2, dws.length - 1); i++) barDayIndices.push(i);
+                    }
                     let maxTasksInBarCols = 0;
                     const courseCodeForTaskCount = courseName.trim().replace(/\s/g, '').toUpperCase();
                     for (const dayIdx of barDayIndices) {
@@ -30504,7 +30512,7 @@ export default function Dashboard() {
                       <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 30 }}>
                         <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, top: `${taskOffset}px`, overflowY: 'auto', overflowX: 'hidden', pointerEvents: 'none', scrollbarWidth: 'none' as any }}>
                           <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', minHeight: '100%' }}>
-                            {courseBars.filter(cd => cd.daysLeft > 0 && weekDays.some(wd => isSameDayET(wd, startOfDayET(new Date(cd.task.dueDate))))).map((cd, idx) => {
+                            {courseBars.filter(cd => cd.daysLeft > 0 && (todayDow === 6 || weekDays.some(wd => isSameDayET(wd, startOfDayET(new Date(cd.task.dueDate)))))).map((cd, idx) => {
                               const t = cd.task;
                               const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
                               const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
@@ -30717,16 +30725,24 @@ export default function Dashboard() {
                       const totalFr = dws.reduce((s: number, v: number) => s + v, 0);
                       const fixedPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
                       let frBefore = 0;
-                      for (let i = 0; i <= todayDow && i < dws.length; i++) frBefore += dws[i];
                       let frSpan = 0;
-                      for (let i = todayDow + 1; i <= Math.min(todayDow + 2, dws.length - 1); i++) frSpan += dws[i];
+                      if (todayDow === 6) {
+                        frSpan = dws[0] + (dws[1] || 0);
+                      } else {
+                        for (let i = 0; i <= todayDow && i < dws.length; i++) frBefore += dws[i];
+                        for (let i = todayDow + 1; i <= Math.min(todayDow + 2, dws.length - 1); i++) frSpan += dws[i];
+                      }
                       if (frSpan === 0) return null;
                       const leftFrac = frBefore / totalFr;
                       const widthFrac = frSpan / totalFr;
                       const barH = 3;
                       const barGap = 14;
                       const otherBarDayIndices: number[] = [];
-                      for (let i = todayDow + 1; i <= Math.min(todayDow + 2, dws.length - 1); i++) otherBarDayIndices.push(i);
+                      if (todayDow === 6) {
+                        otherBarDayIndices.push(0, 1);
+                      } else {
+                        for (let i = todayDow + 1; i <= Math.min(todayDow + 2, dws.length - 1); i++) otherBarDayIndices.push(i);
+                      }
                       let maxOtherTasksInBarCols = 0;
                       for (const dayIdx of otherBarDayIndices) {
                         if (dayIdx >= 0 && dayIdx < weekDays.length) {
@@ -30744,7 +30760,7 @@ export default function Dashboard() {
                         <div style={{ position: 'absolute', left: 0, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 30 }}>
                           <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, top: `${otherTaskOffset}px`, overflowY: 'auto', overflowX: 'hidden', pointerEvents: 'none', scrollbarWidth: 'none' as any }}>
                             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', minHeight: '100%' }}>
-                              {otherBars.filter(cd => cd.daysLeft > 0 && weekDays.some(wd => isSameDayET(wd, startOfDayET(new Date(cd.task.dueDate))))).map((cd, idx) => {
+                              {otherBars.filter(cd => cd.daysLeft > 0 && (todayDow === 6 || weekDays.some(wd => isSameDayET(wd, startOfDayET(new Date(cd.task.dueDate)))))).map((cd, idx) => {
                                 const t = cd.task;
                                 const barColor = t.countdownBarColor || (cd.daysLeft <= 1 ? '#ef4444' : cd.daysLeft === 2 ? '#f97316' : cd.daysLeft <= 4 ? '#f59e0b' : '#22c55e');
                                 const isNotStarted = (t as any).taskStatus === 'not_started' || !(t as any).taskStatus;
