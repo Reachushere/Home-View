@@ -12312,7 +12312,10 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     let basePath = `${yearPath}/${semFolderVariants[0]}`;
     const courses: Array<{ code: string; path: string }> = [];
     const folderCache: Record<string, any[]> = {};
-    const { listOneDriveItems } = await import("./onedrive");
+    const { listOneDriveItems, isOneDriveConnected } = await import("./onedrive");
+    const odConnected = isOneDriveConnected();
+    console.log(`[OD-Courses] OneDrive connected: ${odConnected}`);
+    if (!odConnected) { console.log(`[OD-Courses] OneDrive NOT connected — returning empty`); return []; }
     async function getBaseFolders(folderPath: string): Promise<any[]> {
       if (folderCache[folderPath]) return folderCache[folderPath];
       try {
@@ -12435,17 +12438,23 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const syncStart = Date.now();
     console.log(`${logPrefix}[OD-Sync] === syncOneDriveFilesForWeek START — week ${currentWeekNumber} ===`);
     try {
-      console.log(`${logPrefix}[TRACE] syncOneDriveFilesForWeek: importing onedrive module...`);
-      const { listOneDriveItems } = await import("./onedrive");
-      console.log(`${logPrefix}[TRACE] syncOneDriveFilesForWeek: import done, setting up dirs...`);
+      console.log(`${logPrefix}[OD-Sync] Importing onedrive module...`);
+      const { listOneDriveItems, isOneDriveConnected } = await import("./onedrive");
+      const connected = isOneDriveConnected();
+      console.log(`${logPrefix}[OD-Sync] OneDrive connected: ${connected} (import took ${Date.now() - syncStart}ms)`);
+      if (!connected) { console.log(`${logPrefix}[OD-Sync] OneDrive NOT connected — aborting sync`); return; }
       const fs = await import("fs");
       const path = await import("path");
       const localUploadsDir = path.join(process.cwd(), 'persistent-uploads');
       if (!fs.existsSync(localUploadsDir)) fs.mkdirSync(localUploadsDir, { recursive: true });
-      console.log(`${logPrefix}[TRACE] syncOneDriveFilesForWeek: getting semester OneDrive courses...`);
+      console.log(`${logPrefix}[OD-Sync] Getting semester OneDrive courses...`);
       const courses = await getSemesterOneDriveCourses(semesterSettings);
       const isSpSuSync = (semesterSettings.semesterType || '').toLowerCase().includes('spring') || (semesterSettings.semesterType || '').toLowerCase().includes('summer');
-      console.log(`${logPrefix} Syncing OneDrive for ${courses.length} courses, week ${currentWeekNumber}`);
+      console.log(`${logPrefix}[OD-Sync] ${courses.length} courses found, isSpSu=${isSpSuSync}, elapsed=${Date.now() - syncStart}ms`);
+      if (courses.length === 0) { console.log(`${logPrefix}[OD-Sync] No courses — aborting sync`); return; }
+      const existingFiles = await storage.getFiles();
+      const existingFileSet = new Set(existingFiles.map((f: any) => `${f.originalName}::${f.folder}`));
+      console.log(`${logPrefix}[OD-Sync] ${existingFiles.length} existing files in DB, ${existingFileSet.size} unique name::folder combos`);
       let totalNewFiles = 0;
       for (const course of courses) {
         const courseStart = Date.now();
@@ -12500,9 +12509,9 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
                 console.log(`${logPrefix}[OD-Sync] Skipping non-PDF: ${file.name} (type=${file.type})`);
                 continue;
               }
-              const existingFiles = await storage.getFiles();
               const folderName = `week-${currentWeekNumber}-${course.code.toLowerCase()}-${subType}`;
-              if (existingFiles.some((f: any) => f.originalName === file.name && f.folder === folderName)) {
+              const existsKey = `${file.name}::${folderName}`;
+              if (existingFileSet.has(existsKey)) {
                 console.log(`${logPrefix}[OD-Sync] Already in DB: "${file.name}" → ${folderName}`);
                 continue;
               }
@@ -12864,13 +12873,17 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   let extractionFailedFileIds = new Set<number>();
   try {
     if (fs.existsSync(EXTRACTION_FAILED_FILE)) {
-      fs.unlinkSync(EXTRACTION_FAILED_FILE);
-      console.log(`[FileOrder] Deleted extraction-failed-ids.json from disk (no longer persisted)`);
+      const saved = JSON.parse(fs.readFileSync(EXTRACTION_FAILED_FILE, 'utf-8'));
+      extractionFailedFileIds = new Set(saved);
+      console.log(`[FileOrder] Loaded ${extractionFailedFileIds.size} extraction-failed IDs from disk: [${[...extractionFailedFileIds].join(', ')}]`);
     }
   } catch (e: any) {
-    console.log(`[FileOrder] Could not delete extraction-failed file: ${e.message}`);
+    console.log(`[FileOrder] Could not load extraction-failed IDs: ${e.message}`);
   }
   function persistExtractionFailedIds() {
+    try {
+      fs.writeFileSync(EXTRACTION_FAILED_FILE, JSON.stringify([...extractionFailedFileIds]));
+    } catch {}
   }
 
   async function findNextFileByPriority(allFiles: any[], currentWeekNumber: number, excludeFileId?: number): Promise<any | null> {
@@ -15772,31 +15785,16 @@ document.body.removeChild(a);
       ]);
 
       if (!nextFile) {
-        console.log(`[Cat Lights][TRACE] Step 5a: No cached files — syncing OneDrive (30s timeout) for week ${currentWeekNumber}`);
-        try { await syncWithTimeout(30000); console.log(`[Cat Lights][TRACE] Step 5a: OneDrive sync completed`); } catch (e: any) { console.log(`[Cat Lights][TRACE] Step 5a: Sync timeout/error: ${e.message}`); }
+        console.log(`[Cat Lights][TRACE] Step 5a: No cached files — syncing OneDrive (15s timeout) for week ${currentWeekNumber}`);
+        try { await syncWithTimeout(15000); console.log(`[Cat Lights][TRACE] Step 5a: OneDrive sync completed`); } catch (e: any) { console.log(`[Cat Lights][TRACE] Step 5a: Sync timeout/error: ${e.message}`); }
         const allFilesAfter = await storage.getFiles();
         console.log(`[Cat Lights][TRACE] Step 5a: ${allFilesAfter.length} files after sync`);
         nextFile = await findNextFileByPriority(allFilesAfter, currentWeekNumber);
         console.log(`[Cat Lights][TRACE] Step 5a: After sync, nextFile=${nextFile ? `id=${nextFile.id}` : 'null'}`);
 
       } else {
-        const cachedPri = await getCoursePriorityForFile(nextFile);
-        if (cachedPri > 1) {
-          console.log(`[Cat Lights][TRACE] Step 5b: Cached file has priority ${cachedPri} — syncing OneDrive (25s timeout)`);
-          try { await syncWithTimeout(25000); console.log(`[Cat Lights][TRACE] Step 5b: OneDrive sync completed`); } catch (e: any) { console.log(`[Cat Lights][TRACE] Step 5b: Sync timeout/error: ${e.message}`); }
-          const allFilesAfter = await storage.getFiles();
-          const betterFile = await findNextFileByPriority(allFilesAfter, currentWeekNumber);
-          if (betterFile) {
-            const betterPri = await getCoursePriorityForFile(betterFile);
-            if (betterPri < cachedPri) {
-              console.log(`[Cat Lights] Found higher-priority file after sync: priority ${betterPri} (was ${cachedPri})`);
-              nextFile = betterFile;
-            }
-          }
-        } else {
-          console.log(`[Cat Lights][TRACE] Step 5c: Using cached priority-1 file — syncing OneDrive in background`);
-          syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Cat Lights]').catch(e => console.log(`[Cat Lights] Background sync error: ${e.message}`));
-        }
+        console.log(`[Cat Lights][TRACE] Step 5c: Using cached file — syncing OneDrive in background only`);
+        syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Cat Lights]').catch(e => console.log(`[Cat Lights] Background sync error: ${e.message}`));
       }
       console.log(`[Cat Lights][TRACE] Step 6: File lookup complete, nextFile=${nextFile ? `id=${nextFile.id} "${nextFile.originalName}"` : 'null'}`);
 
@@ -15864,15 +15862,18 @@ document.body.removeChild(a);
           }
         }
         if (!ttsPlayed) {
-          console.error(`[Cat Lights] Could not play TTS prompt after all retries — falling back to CHUM FM`);
+          console.warn(`[Cat Lights] Could not play TTS prompt — starting playback directly without voice confirmation`);
           catLightsPromptPending = false;
-          await playChumFmRadio(haUrl);
+          catWashPlaybackTrigger = 'lights';
+          const skipConfirmTTS = `Playing ${fileDesc}.`;
+          await startConfirmedPlaybackFlow(nextFile, '[Cat Lights]', 'echo', skipConfirmTTS);
           return;
         }
       } catch (e: any) {
-        console.error(`[Cat Lights] Critical failure in prompt setup: ${e.message} — falling back to CHUM FM`);
+        console.error(`[Cat Lights] Critical failure in prompt setup: ${e.message} — starting playback directly`);
         catLightsPromptPending = false;
-        await playChumFmRadio(haUrl);
+        catWashPlaybackTrigger = 'lights';
+        await startConfirmedPlaybackFlow(nextFile, '[Cat Lights]', 'echo', null);
         return;
       }
 
