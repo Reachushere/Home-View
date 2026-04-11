@@ -824,7 +824,7 @@ function BookReader({ file, bookColor, onClose }: {
                 {title}
               </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 12px 6px 12px', borderBottom: '1px solid rgba(255,255,255,0.1)', zIndex: 3, flexShrink: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 12px 6px 12px', borderBottom: '1px solid rgba(255,255,255,0.1)', zIndex: 3, flexShrink: 0, flexWrap: 'wrap', gap: '4px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
                 <button onClick={() => setZoom(z => Math.max(0.5, z - 0.25))} style={toolBtnStyle()} title="Zoom Out" data-testid="btn-zoom-out">
                   <ZoomOut size={14} />
@@ -850,7 +850,7 @@ function BookReader({ file, bookColor, onClose }: {
                 </button>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0, flexWrap: 'wrap' }}>
                 <button onClick={() => { setSearchOpen(!searchOpen); if (!searchOpen) setActiveToolPanel('none'); }} style={toolBtnStyle(searchOpen)} title="Search" data-testid="btn-search">
                   <Search size={14} />
                 </button>
