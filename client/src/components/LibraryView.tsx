@@ -1147,7 +1147,15 @@ function BookReader({ file, bookColor, onClose }: {
 
                   {highlights.length > 0 && (
                     <>
-                      <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '9px', fontWeight: 600, textTransform: 'uppercase', marginBottom: '4px', marginTop: '8px' }}>Highlights</div>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '8px', marginBottom: '4px' }}>
+                        <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '9px', fontWeight: 600, textTransform: 'uppercase' }}>Highlights</div>
+                        <button
+                          onClick={async () => { for (const h of highlights) { await apiRequest('DELETE', `/api/annotations/${h.id}`); } refetchAnnotations(); }}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '1px 4px', fontSize: '8px', color: 'rgba(255,100,100,0.6)', fontWeight: 600, letterSpacing: '0.5px' }}
+                          title="Clear all highlights"
+                          data-testid="btn-clear-all-highlights"
+                        >CLEAR ALL</button>
+                      </div>
                       {highlights.map(h => (
                         <div key={h.id} onClick={() => goToSpread(h.page)} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 6px', borderRadius: '3px', cursor: 'pointer', background: (currentPage === h.page || rightPage === h.page) ? 'rgba(212,175,55,0.15)' : 'transparent', marginBottom: '2px' }}>
                           <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: h.color || '#FFEB3B', flexShrink: 0 }} />
