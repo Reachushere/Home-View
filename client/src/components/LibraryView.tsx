@@ -346,7 +346,8 @@ function Bookend({ side }: { side: 'left' | 'right' }) {
   return (
     <div style={{
       width: '22px',
-      height: '100%',
+      height: 'calc(100% + 14px)',
+      marginTop: '-14px',
       background: side === 'left'
         ? 'linear-gradient(90deg, #005BB5 0%, #004C9B 15%, #003F87 40%, #003670 70%, #002D5C 100%)'
         : 'linear-gradient(90deg, #002D5C 0%, #003670 30%, #003F87 60%, #004C9B 85%, #005BB5 100%)',
