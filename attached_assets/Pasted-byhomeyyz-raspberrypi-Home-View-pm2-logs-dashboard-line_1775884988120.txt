@@ -1,0 +1,19 @@
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs dashboard --lines 500 --nostream | grep -E "\[Cat Lights\]|\[OD-Courses\]|\[OD-Sync\]|\[FileOrder\]" > ~/automation-log.txt && cat ~/automation-log.txt
+0|dashboar | [OD-Courses] === getSemesterOneDriveCourses START ===
+0|dashboar | [OD-Courses] year=2026, semType=fall, isSpSu=false, variants=["Fall"]
+0|dashboar | [OD-Courses] OneDrive connected: true
+0|dashboar | [OD-Courses] Trying semester variant path: /School/1. TMU/Courses/2026/Fall
+0|dashboar | [OD-Courses] Listing OneDrive folder: /School/1. TMU/Courses/2026/Fall
+0|dashboar | [OD-Courses] Folder "/School/1. TMU/Courses/2026/Fall" returned 3 items: CPPA235 - Theories of the State(folder), TBD2(folder), TBD3(folder)
+0|dashboar | [OD-Courses] Using basePath: /School/1. TMU/Courses/2026/Fall (3 items)
+0|dashboar | [OD-Courses] Slot 1: code="CPPA235", modFolder="", readFolder="", override=""
+0|dashboar | [OD-Courses] Slot 1: searching for folder starting with "CPPA235" in /School/1. TMU/Courses/2026/Fall (3 folders)
+0|dashboar | [OD-Courses] Slot 1: MATCHED folder "CPPA235 - Theories of the State" → /School/1. TMU/Courses/2026/Fall/CPPA235 - Theories of the State
+0|dashboar | [OD-Courses] Slot 2: code="TBD2", modFolder="", readFolder="", override=""
+0|dashboar | [OD-Courses] Slot 2: searching for folder starting with "TBD2" in /School/1. TMU/Courses/2026/Fall (3 folders)
+0|dashboar | [OD-Courses] Slot 2: MATCHED folder "TBD2" → /School/1. TMU/Courses/2026/Fall/TBD2
+0|dashboar | [OD-Courses] Slot 3: code="TBD3", modFolder="", readFolder="", override=""
+0|dashboar | [OD-Courses] Slot 3: searching for folder starting with "TBD3" in /School/1. TMU/Courses/2026/Fall (3 folders)
+0|dashboar | [OD-Courses] Slot 3: MATCHED folder "TBD3" → /School/1. TMU/Courses/2026/Fall/TBD3
+0|dashboar | [OD-Courses] === RESULT: 3 courses: CPPA235→/School/1. TMU/Courses/2026/Fall/CPPA235 - Theories of the State | TBD2→/School/1. TMU/Courses/2026/Fall/TBD2 | TBD3→/School/1. TMU/Courses/2026/Fall/TBD3 ===
+byhomeyyz@raspberrypi:~/Home-View $
