@@ -1895,6 +1895,7 @@ export default function Dashboard() {
       setHwUploadingState(prev => ({ ...prev, [stateKey]: false }));
     }
   }, []);
+  const layoutDefaultsLoadedRef = useRef(false);
   const [calendarHeight, setCalendarHeight] = useState(() => {
     const defaultHeight = window.innerHeight - 47;
     const minHeight = 200;
@@ -1903,22 +1904,15 @@ export default function Dashboard() {
     const screenHeight = window.screen.height;
     const pixelRatio = window.devicePixelRatio || 1;
     const deviceId = `device_${screenWidth}x${screenHeight}@${pixelRatio}`;
-    const resetKey = 'calendarHeight_reset_v19';
-    if (!localStorage.getItem(resetKey)) {
-      localStorage.removeItem('calendarHeight');
-      localStorage.removeItem(`calendarHeight_${deviceId}`);
-      localStorage.removeItem('calendarReduction');
-      localStorage.setItem(resetKey, '1');
-    }
     const deviceSaved = localStorage.getItem(`calendarHeight_${deviceId}`);
     if (deviceSaved) {
       const val = parseInt(deviceSaved, 10);
-      if (!isNaN(val) && val >= minHeight) return Math.min(val, maxHeight);
+      if (!isNaN(val) && val >= minHeight) { layoutDefaultsLoadedRef.current = true; return Math.min(val, maxHeight); }
     }
     const saved = localStorage.getItem('calendarHeight');
     if (saved) {
       const val = parseInt(saved, 10);
-      if (!isNaN(val) && val >= minHeight) return Math.min(val, maxHeight);
+      if (!isNaN(val) && val >= minHeight) { layoutDefaultsLoadedRef.current = true; return Math.min(val, maxHeight); }
     }
     return defaultHeight;
   });
@@ -2055,10 +2049,13 @@ export default function Dashboard() {
     return saved ? parseFloat(saved) : 71;
   });
   useEffect(() => {
+    const sw = window.screen.width, sh = window.screen.height, pr = window.devicePixelRatio || 1;
+    const did = `device_${sw}x${sh}@${pr}`;
+    if (localStorage.getItem('hwGroupBarWidth') || localStorage.getItem(`hwGroupBarWidth_${did}`)) return;
     fetch('/api/ui-settings/hwGroupBarWidth').then(r => r.json()).then(d => {
       if (d.value != null) {
         const v = parseFloat(d.value);
-        if (!isNaN(v) && v > 0) { setHwGroupBarWidth(v); localStorage.setItem('hwGroupBarWidth', String(v)); }
+        if (!isNaN(v) && v > 0) { setHwGroupBarWidth(v); localStorage.setItem('hwGroupBarWidth', String(v)); localStorage.setItem(`hwGroupBarWidth_${did}`, String(v)); }
       }
     }).catch(() => {});
   }, []);
@@ -2132,8 +2129,6 @@ export default function Dashboard() {
     });
   };
   const [calendarReductionUserSet, setCalendarReductionUserSetRaw] = useState(() => {
-    const resetKey = 'calendarHeight_reset_v19';
-    if (!localStorage.getItem(resetKey)) return false;
     if (localStorage.getItem('calendarReductionUserSet')) return true;
     if (localStorage.getItem('calendarReduction')) return true;
     const sw = window.screen.width, sh = window.screen.height, pr = window.devicePixelRatio || 1;
@@ -4490,7 +4485,17 @@ export default function Dashboard() {
     return defaultSizes;
   });
   
+  const gridSizesMountedRef = useRef(false);
   useEffect(() => {
+    if (!gridSizesMountedRef.current) {
+      gridSizesMountedRef.current = true;
+      if (layoutDefaultsLoadedRef.current) {
+        localStorage.setItem('gridSizes', JSON.stringify(gridSizes));
+        const sw = window.screen.width, sh = window.screen.height, pr = window.devicePixelRatio || 1;
+        localStorage.setItem(`gridSizes_device_${sw}x${sh}@${pr}`, JSON.stringify(gridSizes));
+      }
+      return;
+    }
     localStorage.setItem('gridSizes', JSON.stringify(gridSizes));
     const sw = window.screen.width, sh = window.screen.height, pr = window.devicePixelRatio || 1;
     localStorage.setItem(`gridSizes_device_${sw}x${sh}@${pr}`, JSON.stringify(gridSizes));
@@ -4500,8 +4505,17 @@ export default function Dashboard() {
     return () => clearTimeout(timer);
   }, [gridSizes]);
   
-  // Save calendar height to localStorage
+  const calendarHeightMountedRef = useRef(false);
   useEffect(() => {
+    if (!calendarHeightMountedRef.current) {
+      calendarHeightMountedRef.current = true;
+      if (layoutDefaultsLoadedRef.current) {
+        localStorage.setItem('calendarHeight', calendarHeight.toString());
+        const sw = window.screen.width, sh = window.screen.height, pr = window.devicePixelRatio || 1;
+        localStorage.setItem(`calendarHeight_device_${sw}x${sh}@${pr}`, calendarHeight.toString());
+      }
+      return;
+    }
     localStorage.setItem('calendarHeight', calendarHeight.toString());
     const sw = window.screen.width, sh = window.screen.height, pr = window.devicePixelRatio || 1;
     localStorage.setItem(`calendarHeight_device_${sw}x${sh}@${pr}`, calendarHeight.toString());
@@ -6193,37 +6207,33 @@ export default function Dashboard() {
         if (data.courseDisplayNames) {
           localStorage.setItem('courseDisplayNames', JSON.stringify(data.courseDisplayNames));
         }
-        if (data.gridSizes) {
+        if (data.gridSizes && !layoutDefaultsLoadedRef.current) {
           const sw = window.screen.width, sh = window.screen.height, pr = window.devicePixelRatio || 1;
           const did = `device_${sw}x${sh}@${pr}`;
-          if (!localStorage.getItem('gridSizes') && !localStorage.getItem(`gridSizes_${did}`)) {
-            localStorage.setItem('gridSizes', JSON.stringify(data.gridSizes));
-            localStorage.setItem(`gridSizes_${did}`, JSON.stringify(data.gridSizes));
-            setGridSizes(prev => ({ ...prev, ...data.gridSizes }));
+          localStorage.setItem('gridSizes', JSON.stringify(data.gridSizes));
+          localStorage.setItem(`gridSizes_${did}`, JSON.stringify(data.gridSizes));
+          setGridSizes(prev => ({ ...prev, ...data.gridSizes }));
+          layoutDefaultsLoadedRef.current = true;
+        }
+        if (data.calendarHeight && !layoutDefaultsLoadedRef.current) {
+          const sw = window.screen.width, sh = window.screen.height, pr = window.devicePixelRatio || 1;
+          const did = `device_${sw}x${sh}@${pr}`;
+          const h = typeof data.calendarHeight === 'number' ? data.calendarHeight : parseInt(data.calendarHeight);
+          if (!isNaN(h)) {
+            localStorage.setItem('calendarHeight', String(h));
+            localStorage.setItem(`calendarHeight_${did}`, String(h));
+            setCalendarHeight(h);
+            layoutDefaultsLoadedRef.current = true;
           }
         }
-        if (data.calendarHeight) {
+        if (data.calendarReduction && !layoutDefaultsLoadedRef.current) {
           const sw = window.screen.width, sh = window.screen.height, pr = window.devicePixelRatio || 1;
           const did = `device_${sw}x${sh}@${pr}`;
-          if (!localStorage.getItem('calendarHeight') && !localStorage.getItem(`calendarHeight_${did}`)) {
-            const h = typeof data.calendarHeight === 'number' ? data.calendarHeight : parseInt(data.calendarHeight);
-            if (!isNaN(h)) {
-              localStorage.setItem('calendarHeight', String(h));
-              localStorage.setItem(`calendarHeight_${did}`, String(h));
-              setCalendarHeight(h);
-            }
-          }
-        }
-        if (data.calendarReduction) {
-          const sw = window.screen.width, sh = window.screen.height, pr = window.devicePixelRatio || 1;
-          const did = `device_${sw}x${sh}@${pr}`;
-          if (!localStorage.getItem('calendarReduction') && !localStorage.getItem(`calendarReduction_${did}`)) {
-            const r = typeof data.calendarReduction === 'number' ? data.calendarReduction : parseInt(data.calendarReduction);
-            if (!isNaN(r)) {
-              localStorage.setItem('calendarReduction', String(r));
-              localStorage.setItem(`calendarReduction_${did}`, String(r));
-              setCalendarReduction(r);
-            }
+          const r = typeof data.calendarReduction === 'number' ? data.calendarReduction : parseInt(data.calendarReduction);
+          if (!isNaN(r)) {
+            localStorage.setItem('calendarReduction', String(r));
+            localStorage.setItem(`calendarReduction_${did}`, String(r));
+            setCalendarReduction(r);
           }
         }
         if (data.showAllDayRow !== undefined && !localStorage.getItem('showAllDayRow')) {
@@ -32154,23 +32164,23 @@ export default function Dashboard() {
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              const doSave = () => {
-                localStorage.setItem('calendarHeight', String(calendarHeight));
-                localStorage.setItem('calendarReduction', String(calendarReduction));
-                localStorage.setItem('gridSizes', JSON.stringify(gridSizes));
-                localStorage.setItem('hwGroupBarWidth', String(hwGroupBarWidth));
-                setCalendarReductionUserSet(true);
-                const screenWidth = window.screen.width;
-                const screenHeight = window.screen.height;
-                const pixelRatio = window.devicePixelRatio || 1;
-                const deviceId = `device_${screenWidth}x${screenHeight}@${pixelRatio}`;
-                localStorage.setItem(`calendarHeight_${deviceId}`, String(calendarHeight));
-                localStorage.setItem(`calendarReduction_${deviceId}`, String(calendarReduction));
-                localStorage.setItem(`gridSizes_${deviceId}`, JSON.stringify(gridSizes));
-                localStorage.setItem(`hwGroupBarWidth_${deviceId}`, String(hwGroupBarWidth));
-                toast({ title: "Saved", description: "Calendar size saved as default" });
-              };
-              doSave();
+              localStorage.setItem('calendarHeight', String(calendarHeight));
+              localStorage.setItem('calendarReduction', String(calendarReduction));
+              localStorage.setItem('gridSizes', JSON.stringify(gridSizes));
+              localStorage.setItem('hwGroupBarWidth', String(hwGroupBarWidth));
+              setCalendarReductionUserSet(true);
+              const screenWidth = window.screen.width;
+              const screenHeight = window.screen.height;
+              const pixelRatio = window.devicePixelRatio || 1;
+              const deviceId = `device_${screenWidth}x${screenHeight}@${pixelRatio}`;
+              localStorage.setItem(`calendarHeight_${deviceId}`, String(calendarHeight));
+              localStorage.setItem(`calendarReduction_${deviceId}`, String(calendarReduction));
+              localStorage.setItem(`gridSizes_${deviceId}`, JSON.stringify(gridSizes));
+              localStorage.setItem(`hwGroupBarWidth_${deviceId}`, String(hwGroupBarWidth));
+              layoutDefaultsLoadedRef.current = true;
+              fetch('/api/degree-tracking/bulk', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ calendarHeight, calendarReduction, gridSizes }) }).catch(() => {});
+              fetch('/api/ui-settings/hwGroupBarWidth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: hwGroupBarWidth }) }).catch(() => {});
+              toast({ title: "Saved", description: "Calendar size saved as default" });
             }}
             onTouchEnd={(e) => {
               e.preventDefault();
@@ -32188,6 +32198,9 @@ export default function Dashboard() {
               localStorage.setItem(`calendarReduction_${deviceId}`, String(calendarReduction));
               localStorage.setItem(`gridSizes_${deviceId}`, JSON.stringify(gridSizes));
               localStorage.setItem(`hwGroupBarWidth_${deviceId}`, String(hwGroupBarWidth));
+              layoutDefaultsLoadedRef.current = true;
+              fetch('/api/degree-tracking/bulk', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ calendarHeight, calendarReduction, gridSizes }) }).catch(() => {});
+              fetch('/api/ui-settings/hwGroupBarWidth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: hwGroupBarWidth }) }).catch(() => {});
               toast({ title: "Saved", description: "Calendar size saved as default" });
             }}
             data-testid="button-set-default-size"
