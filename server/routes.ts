@@ -961,6 +961,95 @@ export async function registerRoutes(
     }
   });
 
+  async function syncDegreeTrackingFromDb() {
+    try {
+      const allSemesters = await storage.getAllSemesterSettings();
+      const semKeyMap: Record<string, { type: string; year: number }> = {
+        'ss2025': { type: 'spring_summer', year: 2025 }, 'f2025': { type: 'fall', year: 2025 },
+        'w2026': { type: 'winter', year: 2026 }, 'ss2026': { type: 'spring_summer', year: 2026 },
+        'f2026': { type: 'fall', year: 2026 }, 'w2027': { type: 'winter', year: 2027 },
+        'ss2027': { type: 'spring_summer', year: 2027 }, 'f2027': { type: 'fall', year: 2027 },
+        'w2028': { type: 'winter', year: 2028 }, 'ss2028': { type: 'spring_summer', year: 2028 },
+        'f2028': { type: 'fall', year: 2028 }, 'w2029': { type: 'winter', year: 2029 },
+      };
+
+      const rows = await db.select().from(degreeTrackingData);
+      const stored: Record<string, any> = {};
+      for (const row of rows) {
+        try { stored[row.key] = JSON.parse(row.value); } catch { stored[row.key] = row.value; }
+      }
+      const assignments: Record<string, any[]> = stored.semesterCourseAssignments || {};
+      const coursesDataStored: { courses: any[] } = stored.coursesData || { courses: [] };
+
+      const allDbCodes = new Set<string>();
+
+      for (const [semKey, mapping] of Object.entries(semKeyMap)) {
+        const dbSem = allSemesters.find((s: any) => {
+          const yearMatch = s.semesterName?.match(/\d{4}/);
+          const semYear = yearMatch ? parseInt(yearMatch[0]) : 0;
+          return s.semesterType === mapping.type && semYear === mapping.year;
+        });
+        if (!dbSem) continue;
+
+        const dbCourses: any[] = [];
+        for (let ci = 1; ci <= 3; ci++) {
+          const code = ((dbSem as any)[`course${ci}Code`] || '').trim();
+          const name = ((dbSem as any)[`course${ci}Name`] || '').trim();
+          const displayName = ((dbSem as any)[`course${ci}DisplayName`] || '').trim();
+          if (!code) continue;
+          allDbCodes.add(code.toUpperCase().replace(/\s/g, ''));
+          dbCourses.push({
+            code,
+            name: code,
+            fullName: displayName || name || code,
+            period: '',
+          });
+        }
+        if (dbCourses.length > 0) {
+          assignments[semKey] = dbCourses;
+        }
+      }
+
+      const existingCodes = new Set(coursesDataStored.courses.map((c: any) => (c.name || '').split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '')));
+      for (const code of allDbCodes) {
+        if (!existingCodes.has(code)) {
+          const sem = allSemesters.find((s: any) => {
+            for (let ci = 1; ci <= 3; ci++) {
+              if (((s as any)[`course${ci}Code`] || '').trim().toUpperCase().replace(/\s/g, '') === code) return true;
+            }
+            return false;
+          });
+          if (sem) {
+            for (let ci = 1; ci <= 3; ci++) {
+              const sc = ((sem as any)[`course${ci}Code`] || '').trim().toUpperCase().replace(/\s/g, '');
+              if (sc === code) {
+                const name = ((sem as any)[`course${ci}Name`] || '').trim();
+                const color = ((sem as any)[`course${ci}Color`] || '#6b7280');
+                const colorEnd = ((sem as any)[`course${ci}ColorEnd`] || '#9ca3af');
+                coursesDataStored.courses.push({
+                  name: name ? `${(sem as any)[`course${ci}Code`].trim()} - ${name}` : (sem as any)[`course${ci}Code`].trim(),
+                  color, colorEnd, professor: '', professorEmail: '',
+                });
+                break;
+              }
+            }
+          }
+        }
+      }
+
+      await db.insert(degreeTrackingData).values({ key: 'semesterCourseAssignments', value: JSON.stringify(assignments) })
+        .onConflictDoUpdate({ target: degreeTrackingData.key, set: { value: JSON.stringify(assignments) } });
+      await db.insert(degreeTrackingData).values({ key: 'coursesData', value: JSON.stringify(coursesDataStored) })
+        .onConflictDoUpdate({ target: degreeTrackingData.key, set: { value: JSON.stringify(coursesDataStored) } });
+
+      console.log('[DegreeSync] Synced semesterCourseAssignments and coursesData from DB semesters');
+    } catch (e: any) {
+      console.error('[DegreeSync] Failed to sync:', e.message);
+    }
+  }
+
+  syncDegreeTrackingFromDb();
+
   app.get('/api/ha-redirect', (req, res) => {
     const path = req.query.path ? decodeURIComponent(String(req.query.path)) : '/lovelace/test-home';
     const haUrl = `http://172.24.0.2:8123${path}`;
@@ -2196,6 +2285,8 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
           }
         }
       }
+
+      syncDegreeTrackingFromDb().catch(() => {});
 
       res.json(updated);
     } catch (err) {
