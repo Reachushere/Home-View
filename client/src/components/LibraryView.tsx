@@ -1449,12 +1449,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
 
   const semesters = useMemo(() => {
     if (semesterSettings.length === 0) return semestersProp;
-    const sorted = [...semesterSettings].sort((a: any, b: any) => {
-      const aDate = a.semesterStartDate ? new Date(a.semesterStartDate).getTime() : 0;
-      const bDate = b.semesterStartDate ? new Date(b.semesterStartDate).getTime() : 0;
-      return aDate - bDate;
-    });
-    return sorted.map((s: any) => {
+    const now = new Date().getTime();
+    const mapped = [...semesterSettings].map((s: any) => {
       const st = s.semesterType || '';
       const name = s.semesterName || '';
       const yearMatch = name.match(/\d{4}/);
@@ -1471,8 +1467,23 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           });
         }
       }
-      return { key, label: name, courses };
+      const startMs = s.semesterStartDate ? new Date(s.semesterStartDate).getTime() : 0;
+      const endMs = s.semesterEndDate ? new Date(s.semesterEndDate).getTime() : startMs + 120 * 24 * 60 * 60 * 1000;
+      const isCurrent = now >= startMs && now <= endMs;
+      const isFuture = now < startMs;
+      const isPast = now > endMs;
+      return { key, label: name, courses, startMs, isCurrent, isFuture, isPast };
     });
+    mapped.sort((a, b) => {
+      if (a.isCurrent && !b.isCurrent) return -1;
+      if (!a.isCurrent && b.isCurrent) return 1;
+      if (a.isFuture && b.isPast) return -1;
+      if (a.isPast && b.isFuture) return 1;
+      if (a.isFuture && b.isFuture) return a.startMs - b.startMs;
+      if (a.isPast && b.isPast) return b.startMs - a.startMs;
+      return a.startMs - b.startMs;
+    });
+    return mapped;
   }, [semesterSettings, semestersProp]);
 
   const initialSemAppliedRef = useRef(false);
@@ -1984,6 +1995,9 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             fontFamily: "'Georgia', 'Times New Roman', serif",
           }}>
             {currentSemester?.label || ''}
+            {currentSemester && (currentSemester as any).isCurrent && <span style={{ marginLeft: '6px', fontSize: '8px', padding: '1px 5px', borderRadius: '6px', background: 'rgba(76,175,80,0.3)', color: '#81C784', fontFamily: 'sans-serif', letterSpacing: '0.3px', verticalAlign: 'middle' }}>CURRENT</span>}
+            {currentSemester && (currentSemester as any).isPast && <span style={{ marginLeft: '6px', fontSize: '8px', padding: '1px 5px', borderRadius: '6px', background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.4)', fontFamily: 'sans-serif', letterSpacing: '0.3px', verticalAlign: 'middle' }}>PAST</span>}
+            {currentSemester && (currentSemester as any).isFuture && <span style={{ marginLeft: '6px', fontSize: '8px', padding: '1px 5px', borderRadius: '6px', background: 'rgba(33,150,243,0.25)', color: '#64B5F6', fontFamily: 'sans-serif', letterSpacing: '0.3px', verticalAlign: 'middle' }}>UPCOMING</span>}
           </div>
         </div>
         <button className="semester-nav-btn" onClick={nextSem} disabled={currentSemIdx === semesters.length - 1} data-testid="btn-library-next-sem">
