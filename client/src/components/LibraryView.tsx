@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
-import { X, ChevronLeft, ChevronRight, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2, Printer, Volume2, Square, Pause, Play, RefreshCw } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2, Printer, Volume2, Square, Pause, Play, RefreshCw, Pencil } from 'lucide-react';
 import * as pdfjsLib from 'pdfjs-dist';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 
@@ -150,7 +150,7 @@ function getFileType(folder: string | null): 'module' | 'reading' | null {
   return null;
 }
 
-function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, shelfHeight }: {
+function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, shelfHeight, onRename }: {
   file: FileRecord;
   index: number;
   courseCode: string;
@@ -158,7 +158,9 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   isSelected: boolean;
   onClick: () => void;
   shelfHeight: number;
+  onRename: (file: FileRecord) => void;
 }) {
+  const [hovered, setHovered] = useState(false);
   const seededRand = ((file.id * 2654435761) >>> 0) / 4294967296;
   const spineWidth = 28 + seededRand * 12;
   const bookHeight = shelfHeight - 8 - (index % 3) * 6;
@@ -173,6 +175,8 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
     <div
       className="book-spine-item"
       onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       style={{
         width: `${spineWidth}px`,
         height: `${bookHeight}px`,
@@ -195,6 +199,30 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
       }}
       data-testid={`book-spine-${file.id}`}
     >
+      {hovered && (
+        <div
+          onClick={(e) => { e.stopPropagation(); onRename(file); }}
+          style={{
+            position: 'absolute',
+            top: '-14px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: '20px',
+            height: '20px',
+            borderRadius: '50%',
+            backgroundColor: 'rgba(30,30,30,0.85)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            zIndex: 20,
+            boxShadow: '0 1px 4px rgba(0,0,0,0.4)',
+          }}
+          data-testid={`btn-rename-book-${file.id}`}
+        >
+          <Pencil size={11} color="#D4AF37" />
+        </div>
+      )}
       {hasTopBand && (
         <div style={{
           position: 'absolute',
@@ -1371,6 +1399,10 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
   const [showSharePopup, setShowSharePopup] = useState(false);
   const [shareLink, setShareLink] = useState('');
   const [shareCopied, setShareCopied] = useState(false);
+  const [renamingFile, setRenamingFile] = useState<FileRecord | null>(null);
+  const [renameValue, setRenameValue] = useState('');
+  const [renameSaving, setRenameSaving] = useState(false);
+  const renameInputRef = useRef<HTMLInputElement>(null);
 
   const { data: allFiles = [], refetch: refetchFiles } = useQuery<FileRecord[]>({
     queryKey: ['/api/files'],
@@ -1511,6 +1543,26 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
     setAnimatingBook(file);
     setAnimatingColor(color);
   }, []);
+
+  const handleRenameStart = useCallback((file: FileRecord) => {
+    setRenamingFile(file);
+    setRenameValue(file.displayName || file.originalName);
+    setTimeout(() => renameInputRef.current?.select(), 50);
+  }, []);
+
+  const handleRenameSave = useCallback(async () => {
+    if (!renamingFile || !renameValue.trim()) return;
+    setRenameSaving(true);
+    try {
+      await apiRequest('PATCH', `/api/files/${renamingFile.id}`, { displayName: renameValue.trim() });
+      queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+      setRenamingFile(null);
+    } catch (err) {
+      console.error('Rename failed:', err);
+    } finally {
+      setRenameSaving(false);
+    }
+  }, [renamingFile, renameValue]);
 
   const prevSem = useCallback(() => {
     setCurrentSemIdx(i => Math.max(0, i - 1));
@@ -1968,6 +2020,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                             handleBookClick(file, color);
                           }}
                           shelfHeight={shelfHeight}
+                          onRename={handleRenameStart}
                         />
                       );
                     });
@@ -2008,6 +2061,99 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           bookColor={animatingColor}
           onClose={() => setAnimatingBook(null)}
         />
+      )}
+
+      {renamingFile && (
+        <div
+          onClick={() => setRenamingFile(null)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          data-testid="rename-overlay"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              backgroundColor: '#1a1a2e',
+              border: '1px solid #D4AF37',
+              borderRadius: '12px',
+              padding: '20px 24px',
+              minWidth: '340px',
+              maxWidth: '90vw',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+              <Pencil size={16} color="#D4AF37" />
+              <span style={{ color: '#D4AF37', fontWeight: 700, fontSize: '15px', letterSpacing: '0.5px' }}>Rename Book</span>
+            </div>
+            <div style={{ fontSize: '11px', color: '#888', marginBottom: '8px' }}>
+              Original: {renamingFile.originalName}
+            </div>
+            <input
+              ref={renameInputRef}
+              value={renameValue}
+              onChange={(e) => setRenameValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleRenameSave();
+                if (e.key === 'Escape') setRenamingFile(null);
+              }}
+              style={{
+                width: '100%',
+                padding: '10px 12px',
+                borderRadius: '8px',
+                border: '1px solid rgba(212,175,55,0.3)',
+                backgroundColor: '#0d0d1a',
+                color: '#fff',
+                fontSize: '14px',
+                outline: 'none',
+                boxSizing: 'border-box',
+              }}
+              data-testid="input-rename-book"
+            />
+            <div style={{ display: 'flex', gap: '8px', marginTop: '14px', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setRenamingFile(null)}
+                style={{
+                  padding: '7px 16px',
+                  borderRadius: '6px',
+                  border: '1px solid rgba(255,255,255,0.15)',
+                  backgroundColor: 'transparent',
+                  color: '#aaa',
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                }}
+                data-testid="btn-cancel-rename"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleRenameSave}
+                disabled={renameSaving || !renameValue.trim()}
+                style={{
+                  padding: '7px 16px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  backgroundColor: '#D4AF37',
+                  color: '#000',
+                  fontSize: '13px',
+                  fontWeight: 700,
+                  cursor: renameSaving ? 'wait' : 'pointer',
+                  opacity: renameSaving || !renameValue.trim() ? 0.5 : 1,
+                }}
+                data-testid="btn-save-rename"
+              >
+                {renameSaving ? 'Saving...' : 'Save'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>,
     document.body
