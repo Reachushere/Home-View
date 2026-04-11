@@ -5086,6 +5086,131 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
+  app.post("/api/library/sync", async (_req, res) => {
+    try {
+      syncAllSemesterLibraryFiles('[LibrarySync:Manual]').catch(() => {});
+      res.json({ status: 'sync started' });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get("/api/library/debug-files", async (_req, res) => {
+    try {
+      const allFiles = await storage.getFiles();
+      const moduleReadingFiles = allFiles.filter(f => f.folder && f.folder.startsWith('week-'));
+      const byCourse: Record<string, number> = {};
+      moduleReadingFiles.forEach(f => {
+        const m = f.folder!.match(/^week-\d+-(.+?)-(module|reading)$/i);
+        if (m) { const code = m[1]; byCourse[code] = (byCourse[code] || 0) + 1; }
+      });
+      const { isOneDriveConnected } = await import("./onedrive");
+      res.json({ totalFiles: allFiles.length, libraryFiles: moduleReadingFiles.length, byCourse, onedriveConnected: isOneDriveConnected() });
+    } catch (err: any) { res.status(500).json({ error: err.message }); }
+  });
+
+  app.post("/api/library/sync-semester", async (req, res) => {
+    const { semesterKey } = req.body;
+    if (!semesterKey) return res.status(400).json({ error: 'semesterKey required' });
+    res.json({ status: 'syncing' });
+    (async () => {
+      try {
+        const { listOneDriveItems, isOneDriveConnected } = await import("./onedrive");
+        if (!isOneDriveConnected()) { console.log(`[LibrarySync:Semester] ${semesterKey}: OneDrive not connected`); return; }
+        const allSems = await storage.getAllSemesterSettings();
+        const sortedSems = [...allSems].sort((a, b) => {
+          const aDate = a.semesterStartDate ? new Date(a.semesterStartDate).getTime() : 0;
+          const bDate = b.semesterStartDate ? new Date(b.semesterStartDate).getTime() : 0;
+          return aDate - bDate;
+        });
+        const semIdx = sortedSems.findIndex((s: any) => {
+          const st = s.semesterType || '';
+          const name = s.semesterName || '';
+          const yearMatch = name.match(/\d{4}/);
+          const year = yearMatch ? yearMatch[0] : '';
+          const key = st.startsWith('spring_summer') ? `ss${year}` : st === 'fall' ? `f${year}` : st === 'winter' ? `w${year}` : `s${s.id}`;
+          return key === semesterKey;
+        });
+        if (semIdx < 0) return;
+        const sem = sortedSems[semIdx];
+        const existingFiles = await storage.getFiles();
+        const existingSet = new Set(existingFiles.map((f: any) => `${f.folder}::${f.originalName}`));
+        let synced = 0;
+        const courses = await getSemesterOneDriveCourses(sem);
+        console.log(`[LibrarySync:Semester] ${semesterKey}: found ${courses.length} courses: ${courses.map(c => c.code).join(', ')}`);
+        for (const course of courses) {
+          try {
+            const weekFolders = await listOneDriveItems(course.path);
+            const weekDirs = weekFolders.filter((f: any) => f.type === 'folder' && /Week\s+\d+/i.test(f.name));
+            console.log(`[LibrarySync:Semester] ${course.code}: ${weekDirs.length} week folders at ${course.path}`);
+            for (const weekDir of weekDirs) {
+              const weekMatch = weekDir.name.match(/Week\s+(\d+)/i);
+              if (!weekMatch) continue;
+              const folderWeekNum = parseInt(weekMatch[1], 10);
+              if (folderWeekNum < 1 || folderWeekNum > 13) continue;
+              const weekContents = await listOneDriveItems(weekDir.path);
+              for (const subType of ['module', 'reading']) {
+                const subFolder = weekContents.find((f: any) => f.type === 'folder' && f.name.toLowerCase().includes(subType));
+                if (!subFolder) continue;
+                const subFiles = await listOneDriveItems(subFolder.path);
+                for (const file of subFiles) {
+                  if (file.type !== 'file' || !file.name.toLowerCase().endsWith('.pdf')) continue;
+                  const folderName = `week-${folderWeekNum}-${course.code.toLowerCase()}-${subType}`;
+                  const key = `${folderName}::${file.name}`;
+                  if (existingSet.has(key)) continue;
+                  const objectPath = `onedrive://${folderName}/${file.name}`;
+                  await storage.createFile({ originalName: file.name, displayName: file.name, objectPath, contentType: 'application/pdf', size: file.size || 0, folder: folderName, listened: false });
+                  existingSet.add(key);
+                  synced++;
+                }
+              }
+            }
+          } catch (e: any) { console.log(`[LibrarySync:Semester] Error syncing ${course.code}: ${e.message}`); }
+        }
+        console.log(`[LibrarySync:Semester] ${semesterKey}: synced ${synced} new files`);
+      } catch (err: any) { console.error('[LibrarySync:Semester] Error:', err); }
+    })();
+  });
+
+  app.post("/api/shared-library/create", async (req, res) => {
+    try {
+      const { semesterKey } = req.body;
+      const token = await storage.createSharedLibraryToken(semesterKey);
+      res.json(token);
+    } catch (err) {
+      console.error("Error creating shared library token:", err);
+      res.status(500).json({ error: "Failed to create share link" });
+    }
+  });
+
+  app.get("/api/shared-library/validate/:token", async (req, res) => {
+    try {
+      const token = await storage.getSharedLibraryToken(req.params.token);
+      if (!token) return res.status(404).json({ error: "Invalid or expired link" });
+      res.json(token);
+    } catch (err) {
+      res.status(500).json({ error: "Failed to validate token" });
+    }
+  });
+
+  app.get("/api/shared-library/tokens", async (req, res) => {
+    try {
+      const tokens = await storage.getActiveSharedLibraryTokens();
+      res.json(tokens);
+    } catch (err) {
+      res.status(500).json({ error: "Failed to get tokens" });
+    }
+  });
+
+  app.delete("/api/shared-library/:id", async (req, res) => {
+    try {
+      await storage.deactivateSharedLibraryToken(Number(req.params.id));
+      res.json({ success: true });
+    } catch (err) {
+      res.status(500).json({ error: "Failed to deactivate token" });
+    }
+  });
+
   // GET /api/files/:id/text - Extract text content from a file (for PDF reading with highlighting)
   app.get("/api/files/:id/text", async (req, res) => {
     try {
@@ -12323,6 +12448,106 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     }
     return courses;
   }
+
+  async function syncAllSemesterLibraryFiles(logPrefix: string = '[LibrarySync]'): Promise<void> {
+    try {
+      const { listOneDriveItems, isOneDriveConnected } = await import("./onedrive");
+      if (!isOneDriveConnected()) {
+        console.log(`${logPrefix} OneDrive not connected — skipping library sync`);
+        return;
+      }
+      const allSems = await storage.getAllSemesterSettings();
+      if (!allSems || allSems.length === 0) return;
+      const sortedSems = [...allSems].sort((a, b) => {
+        const aDate = a.semesterStartDate ? new Date(a.semesterStartDate).getTime() : 0;
+        const bDate = b.semesterStartDate ? new Date(b.semesterStartDate).getTime() : 0;
+        return aDate - bDate;
+      });
+      const existingFiles = await storage.getFiles();
+      const existingSet = new Set(existingFiles.map((f: any) => `${f.folder}::${f.originalName}`));
+      let totalSynced = 0;
+
+      for (let semIdx = 0; semIdx < sortedSems.length; semIdx++) {
+        const sem = sortedSems[semIdx];
+        try {
+          const courses = await getSemesterOneDriveCourses(sem);
+          if (courses.length === 0) continue;
+
+          for (const course of courses) {
+            try {
+              const weekFolders = await listOneDriveItems(course.path);
+              const weekDirs = weekFolders.filter((f: any) => f.type === 'folder' && /Week\s+\d+/i.test(f.name));
+
+              for (const weekDir of weekDirs) {
+                const weekMatch = weekDir.name.match(/Week\s+(\d+)/i);
+                if (!weekMatch) continue;
+                const folderWeekNum = parseInt(weekMatch[1], 10);
+                if (folderWeekNum < 1 || folderWeekNum > 13) continue;
+
+                const weekContents = await listOneDriveItems(weekDir.path);
+                for (const subType of ['module', 'reading']) {
+                  const subFolder = weekContents.find((f: any) => f.type === 'folder' && f.name.toLowerCase().includes(subType));
+                  if (!subFolder) continue;
+                  const subFiles = await listOneDriveItems(subFolder.path);
+                  for (const file of subFiles) {
+                    if (file.type !== 'file' || !file.name.toLowerCase().endsWith('.pdf')) continue;
+                    const folderName = `week-${folderWeekNum}-${course.code.toLowerCase()}-${subType}`;
+                    const key = `${folderName}::${file.name}`;
+                    if (existingSet.has(key)) continue;
+                    const objectPath = `onedrive://${folderName}/${file.name}`;
+                    await storage.createFile({
+                      originalName: file.name,
+                      displayName: file.name,
+                      objectPath,
+                      contentType: 'application/pdf',
+                      size: file.size || 0,
+                      folder: folderName,
+                      listened: false,
+                    });
+                    existingSet.add(key);
+                    totalSynced++;
+                  }
+                }
+              }
+            } catch (e: any) {
+              console.log(`${logPrefix} Error syncing course ${course.code}: ${e.message}`);
+            }
+          }
+        } catch (e: any) {
+          console.log(`${logPrefix} Error syncing semester ${sem.semesterName || semIdx}: ${e.message}`);
+        }
+      }
+      if (totalSynced > 0) {
+        console.log(`${logPrefix} Synced ${totalSynced} new files from OneDrive across ${sortedSems.length} semesters`);
+      } else {
+        console.log(`${logPrefix} All library files up to date`);
+      }
+    } catch (e: any) {
+      console.log(`${logPrefix} Library sync failed: ${e.message}`);
+    }
+  }
+
+  setTimeout(async () => {
+    try {
+      const allFiles = await storage.getFiles();
+      let migrated = 0;
+      for (const f of allFiles) {
+        if (!f.folder) continue;
+        const m = f.folder.match(/^week-(\d+)-(.+?)-(module|reading)$/i);
+        if (!m) continue;
+        const wk = parseInt(m[1]);
+        if (wk <= 13) continue;
+        const relWk = ((wk - 1) % 13) + 1;
+        const newFolder = `week-${relWk}-${m[2]}-${m[3]}`;
+        const newPath = f.objectPath?.replace(f.folder, newFolder) || f.objectPath;
+        await storage.updateFile(f.id, { folder: newFolder, objectPath: newPath });
+        migrated++;
+      }
+      if (migrated > 0) console.log(`[Migration] Fixed ${migrated} files with global week numbers -> relative`);
+    } catch (e: any) { console.log(`[Migration] Error: ${e.message}`); }
+    syncAllSemesterLibraryFiles('[LibrarySync:Startup]').catch(() => {});
+  }, 30000);
+  setInterval(() => { syncAllSemesterLibraryFiles('[LibrarySync:Periodic]').catch(() => {}); }, 30 * 60 * 1000);
 
   async function syncOneDriveFilesForWeek(semesterSettings: any, currentWeekNumber: number, logPrefix: string = '[Sync]'): Promise<void> {
     try {

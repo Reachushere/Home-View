@@ -7,6 +7,7 @@ import NotepadDialog from "@/components/NotepadDialog";
 import OtherRowEditDialog from "@/components/OtherRowEditDialog";
 import { FastInput, FastTextarea } from "@/components/FastInput";
 import { SemesterChecklistDialog } from "@/components/SemesterChecklistDialog";
+import LibraryView from "@/components/LibraryView";
 import { Document, Page, pdfjs } from 'react-pdf';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -2222,6 +2223,8 @@ export default function Dashboard() {
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const [isNotepadOpen, setIsNotepadOpen] = useState(false);
   const [isMobileNotepadOpen, setIsMobileNotepadOpen] = useState(false);
+  const [isMobileLibraryOpen, setIsMobileLibraryOpen] = useState(false);
+  const [librarySemesterKey, setLibrarySemesterKey] = useState<string | undefined>(undefined);
   const [mobileNotepadText, setMobileNotepadText] = useState('');
   const [mobileNotepadImages, setMobileNotepadImages] = useState<{file: File; preview: string}[]>([]);
   const [mobileNotepadSaving, setMobileNotepadSaving] = useState(false);
@@ -13867,6 +13870,17 @@ export default function Dashboard() {
             </button>
           )}
 
+          {isFull && (
+            <button
+              onClick={() => setIsMobileLibraryOpen(true)}
+              data-testid="mobile-button-library"
+              style={{...mobileBtnStyle(btnSize), display: 'flex', flexDirection: 'column', gap: '2px'}}
+            >
+              <Library style={{ height: `${iconSize * 0.7}px`, width: `${iconSize * 0.7}px` }} />
+              <span style={{ fontSize: '7px', fontWeight: 600, fontFamily: "system-ui, -apple-system, sans-serif", lineHeight: 1 }}>Library</span>
+            </button>
+          )}
+
           {isMobilePortrait && (
             <div style={{ marginTop: '12px', color: 'rgba(255,255,255,0.4)', fontSize: '10px', textAlign: 'center', fontFamily: "system-ui, -apple-system, sans-serif" }}>
               Rotate for calendar
@@ -14412,6 +14426,15 @@ export default function Dashboard() {
         backgroundColor: colorSettings.mainBackgroundOverlay ? safeHex(colorSettings.mainBackground, '#3a8bbf') : '#000000',
       }}
     >
+      {isMobileLibraryOpen && (
+        <LibraryView
+          isOpen={isMobileLibraryOpen}
+          onClose={() => { setIsMobileLibraryOpen(false); setLibrarySemesterKey(undefined); }}
+          semesters={[]}
+          initialSemesterKey={librarySemesterKey}
+        />
+      )}
+
       {pomodoroAlertVisible && <div className="pomodoro-alert-border" />}
       {pomodoroAlertVisible && createPortal(
         <div
@@ -17262,10 +17285,33 @@ export default function Dashboard() {
             </Button>
           </div>
 
+          <div className="pill-button-hover" style={{ marginTop: '0px', width: '44px', height: '43px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', zIndex: 1 }}>
+            <Button 
+              size="icon"
+              variant="ghost"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
+              style={{ background: 'transparent' }}
+              data-testid="button-library-pill"
+              title="Library"
+              onClick={() => {
+                const ss = semesterSettings as any;
+                if (ss) {
+                  const st = ss.semesterType || '';
+                  const yr = (ss.semesterName || '').match(/\d{4}/)?.[0] || '';
+                  const key = st.startsWith('spring_summer') ? `ss${yr}` : st === 'fall' ? `f${yr}` : st === 'winter' ? `w${yr}` : '';
+                  setLibrarySemesterKey(key || undefined);
+                }
+                setIsMobileLibraryOpen(true);
+              }}
+            >
+              <Library className="text-white" style={{ height: '20px', width: '20px' }} />
+            </Button>
+          </div>
+
           </div>
 
           {/* ── Entertainment ── */}
-          <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 28)}px`, border: '1.5px solid rgba(160,100,240,0.6)', position: 'relative', top: '1px', margin: '0 0px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(150,90,235,0.5) 0%, rgba(120,60,210,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
+          <div style={{ borderRadius: '26px', padding: '2px 5px 2px 13px', display: 'flex', alignItems: 'center', gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 30)}px`, border: '1.5px solid rgba(160,100,240,0.6)', position: 'relative', top: '1px', margin: '0 0px' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(150,90,235,0.5) 0%, rgba(120,60,210,0.3) 100%)', borderRadius: '26px', zIndex: 0, pointerEvents: 'none' }} />
           <div style={{ position: 'relative', zIndex: 1, flexShrink: 0, marginRight: '-4px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <img src={soundIconPath} alt="Sound" style={{ height: '22px', width: '22px', objectFit: 'contain', position: 'relative', opacity: 0.7, top: '-7px', left: '-2px' }} />
             <span style={{ position: 'absolute', top: '13px', fontSize: '7.5px', color: '#ffffff', fontWeight: 500, letterSpacing: '0.5px', whiteSpace: 'nowrap', textAlign: 'center', right: '50%', transform: 'translateX(38%)' }}>Sound</span>

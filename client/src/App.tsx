@@ -20,6 +20,7 @@ import OneNotePage from "@/pages/onenote";
 import MobileNotesPage from "@/pages/mobile-notes";
 import CodeCheckerPage from "@/pages/code-checker";
 import TickerPage from "@/pages/ticker";
+import SharedLibraryPage from "@/pages/shared-library";
 
 function useAutoFullscreen() {
   const [requested, setRequested] = useState(false);
@@ -160,6 +161,15 @@ function App() {
     return (
       <QueryClientProvider client={queryClient}>
         <TickerPage />
+      </QueryClientProvider>
+    );
+  }
+
+  if (location.startsWith('/shared-library/')) {
+    const token = location.replace('/shared-library/', '');
+    return (
+      <QueryClientProvider client={queryClient}>
+        <SharedLibraryPage params={{ token }} />
       </QueryClientProvider>
     );
   }
