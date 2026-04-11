@@ -28605,7 +28605,7 @@ export default function Dashboard() {
               const beforeW = gridSizes.dayColumnWidths.slice(0, todayIdx).reduce((a: number, b: number) => a + b, 0);
               const fixedW = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
               return (
-                <div className="absolute bottom-0 pointer-events-none" style={{ top: '0px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px - ${calScrollbarW}px))`, width: '3px', backgroundColor: '#000000', zIndex: 25 }} />
+                <div className="absolute bottom-0 pointer-events-none" style={{ top: '0px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px - ${calScrollbarW}px))`, width: '3px', backgroundColor: '#000000', zIndex: 57 }} />
               );
             })()}
             {/* Saturday column left border - single continuous black line (hidden when today IS Saturday to avoid doubling with today border) */}
@@ -28618,7 +28618,7 @@ export default function Dashboard() {
               const beforeW = gridSizes.dayColumnWidths.slice(0, satIdx).reduce((a: number, b: number) => a + b, 0);
               const fixedW = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
               return (
-                <div className="absolute bottom-0 pointer-events-none" style={{ top: '0px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px - ${calScrollbarW}px) - 1.5px)`, width: '3px', backgroundColor: '#000000', zIndex: 25 }} />
+                <div className="absolute bottom-0 pointer-events-none" style={{ top: '0px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px - ${calScrollbarW}px) - 1.5px)`, width: '3px', backgroundColor: '#000000', zIndex: 57 }} />
               );
             })()}
             
