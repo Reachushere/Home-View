@@ -2110,6 +2110,15 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               </h2>
             </div>
           </div>
+          <button
+            onClick={(e) => { e.stopPropagation(); onClose(); }}
+            className="flex-shrink-0 p-1 rounded hover:bg-white/20 transition-colors"
+            style={{ color: (editInfo.courseFontColor || courseInfo.courseFontColor) || 'rgba(255,255,255,0.7)' }}
+            title="Close"
+            data-testid="button-close-course-detail"
+          >
+            <X className="w-4 h-4" />
+          </button>
           {gradeCalc && (
             <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md flex-shrink-0" style={{ background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.4)' }} data-testid="grade-calculator-inline">
               <span className="text-[11px] font-bold text-white" data-testid="text-current-grade">{gradeCalc.currentGrade}</span>
