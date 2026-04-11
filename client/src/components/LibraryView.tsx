@@ -555,6 +555,12 @@ function BookReader({ file, bookColor, onClose }: {
   }, [pdfDoc, searchQuery]);
 
   useEffect(() => {
+    if (!searchQuery.trim()) { setSearchResults([]); return; }
+    const timer = setTimeout(() => { handleSearch(); }, 400);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  useEffect(() => {
     const applyToLayer = (layerDiv: HTMLDivElement | null) => {
       if (!layerDiv) return;
       const spans = layerDiv.querySelectorAll('span');
