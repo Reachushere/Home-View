@@ -894,5 +894,16 @@ export const insertPdfAnnotationSchema = createInsertSchema(pdfAnnotations).omit
 export type PdfAnnotation = typeof pdfAnnotations.$inferSelect;
 export type InsertPdfAnnotation = z.infer<typeof insertPdfAnnotationSchema>;
 
+export const sharedLibraryTokens = pgTable("shared_library_tokens", {
+  id: serial("id").primaryKey(),
+  token: text("token").notNull().unique(),
+  semesterKey: text("semester_key"),
+  createdAt: timestamp("created_at").defaultNow(),
+  expiresAt: timestamp("expires_at"),
+  isActive: boolean("is_active").default(true),
+});
+
+export type SharedLibraryToken = typeof sharedLibraryTokens.$inferSelect;
+
 // Export chat models for AI integrations
 export * from "./models/chat";

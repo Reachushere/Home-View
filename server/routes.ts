@@ -5174,6 +5174,45 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
+  app.post("/api/shared-library/create", async (req, res) => {
+    try {
+      const { semesterKey } = req.body;
+      const token = await storage.createSharedLibraryToken(semesterKey);
+      res.json(token);
+    } catch (err) {
+      console.error("Error creating shared library token:", err);
+      res.status(500).json({ error: "Failed to create share link" });
+    }
+  });
+
+  app.get("/api/shared-library/validate/:token", async (req, res) => {
+    try {
+      const token = await storage.getSharedLibraryToken(req.params.token);
+      if (!token) return res.status(404).json({ error: "Invalid or expired link" });
+      res.json(token);
+    } catch (err) {
+      res.status(500).json({ error: "Failed to validate token" });
+    }
+  });
+
+  app.get("/api/shared-library/tokens", async (req, res) => {
+    try {
+      const tokens = await storage.getActiveSharedLibraryTokens();
+      res.json(tokens);
+    } catch (err) {
+      res.status(500).json({ error: "Failed to get tokens" });
+    }
+  });
+
+  app.delete("/api/shared-library/:id", async (req, res) => {
+    try {
+      await storage.deactivateSharedLibraryToken(Number(req.params.id));
+      res.json({ success: true });
+    } catch (err) {
+      res.status(500).json({ error: "Failed to deactivate token" });
+    }
+  });
+
   // GET /api/files/:id/text - Extract text content from a file (for PDF reading with highlighting)
   app.get("/api/files/:id/text", async (req, res) => {
     try {

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
-import { X, ChevronLeft, ChevronRight, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2 } from 'lucide-react';
 import * as pdfjsLib from 'pdfjs-dist';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 
@@ -28,6 +28,7 @@ interface LibraryViewProps {
   onClose: () => void;
   semesters: SemesterInfo[];
   initialSemesterKey?: string;
+  isSharedView?: boolean;
 }
 
 const BOOK_COLORS = [
@@ -893,7 +894,7 @@ function BookReader({ file, bookColor, onClose }: {
   );
 }
 
-export default function LibraryView({ isOpen, onClose, semesters: semestersProp, initialSemesterKey }: LibraryViewProps) {
+export default function LibraryView({ isOpen, onClose, semesters: semestersProp, initialSemesterKey, isSharedView }: LibraryViewProps) {
   const [currentSemIdx, setCurrentSemIdx] = useState(0);
   const [selectedBook, setSelectedBook] = useState<FileRecord | null>(null);
   const [selectedBookColor, setSelectedBookColor] = useState('#8B4513');
@@ -901,6 +902,9 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
   const [animatingColor, setAnimatingColor] = useState('#8B4513');
   const scrollRef = useRef<HTMLDivElement>(null);
   const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [showSharePopup, setShowSharePopup] = useState(false);
+  const [shareLink, setShareLink] = useState('');
+  const [shareCopied, setShareCopied] = useState(false);
 
   const { data: allFiles = [] } = useQuery<FileRecord[]>({
     queryKey: ['/api/files'],
@@ -1140,6 +1144,115 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       >
         <X size={18} />
       </button>
+
+      {!isSharedView && (
+        <button
+          onClick={async () => {
+            try {
+              const currentSem = semesters[currentSemIdx];
+              const resp = await apiRequest('POST', '/api/shared-library/create', { semesterKey: currentSem?.key });
+              const data = await resp.json();
+              const baseUrl = window.location.hostname === 'localhost' || window.location.hostname.startsWith('127.')
+                ? `${window.location.origin}`
+                : `http://172.24.1.204:5000`;
+              setShareLink(`${baseUrl}/shared-library/${data.token}`);
+              setShowSharePopup(true);
+              setShareCopied(false);
+            } catch (err) {
+              console.error('Failed to create share link:', err);
+            }
+          }}
+          style={{
+            position: 'absolute',
+            top: '16px',
+            right: '60px',
+            zIndex: 100002,
+            background: 'rgba(0,0,0,0.5)',
+            border: '1px solid rgba(255,255,255,0.2)',
+            borderRadius: '50%',
+            width: '36px',
+            height: '36px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            color: 'rgba(255,255,255,0.7)',
+            transition: 'all 0.2s',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.5)'; }}
+          onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; }}
+          data-testid="button-share-library"
+          title="Share Library"
+        >
+          <Share2 size={16} />
+        </button>
+      )}
+
+      {showSharePopup && (
+        <div style={{
+          position: 'absolute',
+          top: '60px',
+          right: '16px',
+          zIndex: 100003,
+          background: 'rgba(0,0,0,0.92)',
+          border: '1px solid rgba(255,255,255,0.2)',
+          borderRadius: '12px',
+          padding: '16px',
+          width: '340px',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Link2 size={14} color="#D4AF37" />
+              <span style={{ color: '#fff', fontSize: '13px', fontWeight: 600 }}>Share Library</span>
+            </div>
+            <button
+              onClick={() => setShowSharePopup(false)}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.5)', padding: '2px' }}
+            >
+              <X size={14} />
+            </button>
+          </div>
+          <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', marginBottom: '10px' }}>
+            Anyone with this link can view the library and make their own local annotations.
+          </div>
+          <div style={{
+            display: 'flex', gap: '6px', alignItems: 'center',
+            background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)',
+            borderRadius: '8px', padding: '6px 8px',
+          }}>
+            <input
+              type="text"
+              readOnly
+              value={shareLink}
+              style={{
+                flex: 1, background: 'transparent', border: 'none', color: '#fff',
+                fontSize: '10px', outline: 'none', fontFamily: 'monospace',
+              }}
+              onClick={e => (e.target as HTMLInputElement).select()}
+              data-testid="input-share-link"
+            />
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(shareLink).then(() => {
+                  setShareCopied(true);
+                  setTimeout(() => setShareCopied(false), 2000);
+                });
+              }}
+              style={{
+                background: shareCopied ? 'rgba(74,222,128,0.2)' : 'rgba(255,255,255,0.12)',
+                border: shareCopied ? '1px solid rgba(74,222,128,0.5)' : '1px solid rgba(255,255,255,0.2)',
+                borderRadius: '6px', padding: '4px 10px', cursor: 'pointer',
+                color: shareCopied ? '#4ade80' : '#fff', fontSize: '10px', fontWeight: 600,
+                display: 'flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap',
+              }}
+              data-testid="button-copy-share-link"
+            >
+              {shareCopied ? <><Check size={12} /> Copied</> : <><Copy size={12} /> Copy</>}
+            </button>
+          </div>
+        </div>
+      )}
 
       <div style={{
         position: 'absolute',

@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { tasks, files, semesterSettings, secondGoogleAccount, thirdGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, stickyNotes, accessTokens, shiftSchedule, semesterChecklist, courseWeekMappings, scholarships, keyContacts, announcements, entityComments, pendingReviewItems, dismissedReviewTitles, sharedNotebookLinks, savedEmailSearches, weatherHistory, weatherAlertHistory, newSemesterChecklist, pdfAnnotations, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type ThirdGoogleAccount, type InsertThirdGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, type StickyNote, type InsertStickyNote, type AccessToken, type InsertAccessToken, type ShiftScheduleEntry, type InsertShiftScheduleEntry, type SemesterChecklistItem, type InsertSemesterChecklistItem, type CourseWeekMapping, type InsertCourseWeekMapping, type Scholarship, type InsertScholarship, type KeyContact, type InsertKeyContact, type Announcement, type InsertAnnouncement, type EntityComment, type PendingReviewItem, type InsertPendingReviewItem, type SharedNotebookLink, type InsertSharedNotebookLink, type SavedEmailSearch, type InsertSavedEmailSearch, type WeatherHistory, type InsertWeatherHistory, type WeatherAlertHistory, type InsertWeatherAlertHistory, type NewSemesterChecklistItem, type InsertNewSemesterChecklistItem, type PdfAnnotation, type InsertPdfAnnotation, getWeekNumber } from "@shared/schema";
+import { tasks, files, semesterSettings, secondGoogleAccount, thirdGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, stickyNotes, accessTokens, shiftSchedule, semesterChecklist, courseWeekMappings, scholarships, keyContacts, announcements, entityComments, pendingReviewItems, dismissedReviewTitles, sharedNotebookLinks, savedEmailSearches, weatherHistory, weatherAlertHistory, newSemesterChecklist, pdfAnnotations, sharedLibraryTokens, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type ThirdGoogleAccount, type InsertThirdGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, type StickyNote, type InsertStickyNote, type AccessToken, type InsertAccessToken, type ShiftScheduleEntry, type InsertShiftScheduleEntry, type SemesterChecklistItem, type InsertSemesterChecklistItem, type CourseWeekMapping, type InsertCourseWeekMapping, type Scholarship, type InsertScholarship, type KeyContact, type InsertKeyContact, type Announcement, type InsertAnnouncement, type EntityComment, type PendingReviewItem, type InsertPendingReviewItem, type SharedNotebookLink, type InsertSharedNotebookLink, type SavedEmailSearch, type InsertSavedEmailSearch, type WeatherHistory, type InsertWeatherHistory, type WeatherAlertHistory, type InsertWeatherAlertHistory, type NewSemesterChecklistItem, type InsertNewSemesterChecklistItem, type PdfAnnotation, type InsertPdfAnnotation, type SharedLibraryToken, getWeekNumber } from "@shared/schema";
 import { eq, and, gte, lte, desc, or, isNull } from "drizzle-orm";
 
 export interface IStorage {
@@ -124,6 +124,10 @@ export interface IStorage {
   getPdfAnnotations(fileId: number): Promise<PdfAnnotation[]>;
   createPdfAnnotation(annotation: InsertPdfAnnotation): Promise<PdfAnnotation>;
   deletePdfAnnotation(id: number): Promise<void>;
+  createSharedLibraryToken(semesterKey?: string): Promise<SharedLibraryToken>;
+  getSharedLibraryToken(token: string): Promise<SharedLibraryToken | null>;
+  deactivateSharedLibraryToken(id: number): Promise<void>;
+  getActiveSharedLibraryTokens(): Promise<SharedLibraryToken[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -935,6 +939,25 @@ export class DatabaseStorage implements IStorage {
 
   async deletePdfAnnotation(id: number): Promise<void> {
     await db.delete(pdfAnnotations).where(eq(pdfAnnotations.id, id));
+  }
+
+  async createSharedLibraryToken(semesterKey?: string): Promise<SharedLibraryToken> {
+    const token = Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10);
+    const [created] = await db.insert(sharedLibraryTokens).values({ token, semesterKey: semesterKey || null }).returning();
+    return created;
+  }
+
+  async getSharedLibraryToken(token: string): Promise<SharedLibraryToken | null> {
+    const [result] = await db.select().from(sharedLibraryTokens).where(and(eq(sharedLibraryTokens.token, token), eq(sharedLibraryTokens.isActive, true)));
+    return result || null;
+  }
+
+  async deactivateSharedLibraryToken(id: number): Promise<void> {
+    await db.update(sharedLibraryTokens).set({ isActive: false }).where(eq(sharedLibraryTokens.id, id));
+  }
+
+  async getActiveSharedLibraryTokens(): Promise<SharedLibraryToken[]> {
+    return await db.select().from(sharedLibraryTokens).where(eq(sharedLibraryTokens.isActive, true)).orderBy(desc(sharedLibraryTokens.createdAt));
   }
 }
 
