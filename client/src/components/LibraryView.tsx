@@ -433,16 +433,15 @@ function Bookend({ side }: { side: 'left' | 'right' }) {
       flexShrink: 0,
       alignSelf: 'flex-end',
       position: 'relative',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: side === 'left' ? 'flex-start' : 'flex-end',
+      width: '18px',
+      height: '100%',
     }}>
       <div style={{
         width: '18px',
-        height: 'calc(100% + 40px)',
+        height: 'calc(100% + 22px)',
         position: 'absolute',
-        bottom: '8px',
-        [side === 'left' ? 'left' : 'right']: '0px',
+        bottom: '3px',
+        left: 0,
         background: side === 'left'
           ? 'linear-gradient(90deg, #005BB5 0%, #004C9B 15%, #003F87 40%, #003670 70%, #002D5C 100%)'
           : 'linear-gradient(90deg, #002D5C 0%, #003670 30%, #003F87 60%, #004C9B 85%, #005BB5 100%)',
@@ -451,7 +450,7 @@ function Bookend({ side }: { side: 'left' | 'right' }) {
           ? 'inset 3px 0 8px rgba(255,255,255,0.15), -3px 0 10px rgba(0,0,0,0.4)'
           : 'inset -3px 0 8px rgba(255,255,255,0.15), 3px 0 10px rgba(0,0,0,0.4)',
         borderTop: '1px solid rgba(255,255,255,0.1)',
-        zIndex: 2,
+        zIndex: 5,
       }}>
         <div style={{
           position: 'absolute',
@@ -499,17 +498,15 @@ function Bookend({ side }: { side: 'left' | 'right' }) {
         }} />
       </div>
       <div style={{
-        width: side === 'left' ? '60px' : '60px',
-        height: '8px',
+        width: '110px',
+        height: '3px',
         background: side === 'left'
-          ? 'linear-gradient(90deg, #005BB5, #003F87 30%, #002D5C)'
-          : 'linear-gradient(90deg, #002D5C, #003F87 70%, #005BB5)',
-        borderRadius: side === 'left' ? '3px 1px 1px 3px' : '1px 3px 3px 1px',
-        boxShadow: '0 2px 6px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1)',
-        position: 'relative',
-        zIndex: 3,
-        alignSelf: 'flex-end',
-        [side === 'left' ? 'marginRight' : 'marginLeft']: '-42px',
+          ? 'linear-gradient(90deg, #005BB5, #003F87 40%, #002D5C 80%, transparent)'
+          : 'linear-gradient(90deg, transparent, #002D5C 20%, #003F87 60%, #005BB5)',
+        position: 'absolute',
+        bottom: '0px',
+        [side]: 0,
+        zIndex: 0,
       }} />
     </div>
   );
@@ -1493,6 +1490,14 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
     enabled: isOpen,
   });
 
+  const preExtractTriggered = useRef(false);
+  useEffect(() => {
+    if (isOpen && allFiles.length > 0 && !preExtractTriggered.current) {
+      preExtractTriggered.current = true;
+      fetch('/api/files/pre-extract', { method: 'POST' }).catch(() => {});
+    }
+  }, [isOpen, allFiles]);
+
   const { data: semesterSettings = [] } = useQuery<any[]>({
     queryKey: ['/api/semesters'],
     enabled: isOpen,
@@ -1767,6 +1772,64 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
     }
     return results;
   }, [masterSearch, masterSemFilter, masterCourseFilter, masterWeekFilter, masterTypeFilter, masterFormatFilter, masterSortBy, allFiles, semesters, hasAnyFilter]);
+
+  const [contentSearchResults, setContentSearchResults] = useState<{ fileId: number; snippet: string }[]>([]);
+  const contentSearchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (contentSearchTimerRef.current) clearTimeout(contentSearchTimerRef.current);
+    const q = masterSearch.trim();
+    if (q.length < 2) { setContentSearchResults([]); return; }
+    contentSearchTimerRef.current = setTimeout(() => {
+      fetch(`/api/files/search?q=${encodeURIComponent(q)}`)
+        .then(r => r.json())
+        .then(data => {
+          if (Array.isArray(data)) {
+            setContentSearchResults(data.filter((d: any) => d.matchType === 'content' && d.snippet).map((d: any) => ({ fileId: d.fileId, snippet: d.snippet })));
+          }
+        })
+        .catch(() => {});
+    }, 300);
+    return () => { if (contentSearchTimerRef.current) clearTimeout(contentSearchTimerRef.current); };
+  }, [masterSearch]);
+
+  const combinedSearchResults = useMemo(() => {
+    if (!masterSearchResults) return null;
+    const existingIds = new Set(masterSearchResults.map(r => r.file.id));
+    const contentOnlyMatches: typeof masterSearchResults = [];
+    const contentSnippetMap = new Map<number, string>();
+    contentSearchResults.forEach(cr => contentSnippetMap.set(cr.fileId, cr.snippet));
+    contentSearchResults.forEach(cr => {
+      if (existingIds.has(cr.fileId)) return;
+      const file = allFiles.find(f => f.id === cr.fileId);
+      if (!file || !file.folder) return;
+      const fl = file.folder.toLowerCase();
+      if (!(fl.includes('-module') || fl.includes('-reading')) || !fl.startsWith('week-')) return;
+      const wn = parseInt(fl.match(/week-(\d+)/)?.[1] || '0');
+      const fType = fl.includes('-module') ? 'module' : 'reading';
+      const ext = file.originalName.match(/\.(\w+)$/)?.[1]?.toLowerCase() || '';
+      if (masterWeekFilter !== 'all' && wn !== parseInt(masterWeekFilter)) return;
+      if (masterTypeFilter !== 'all' && fType !== masterTypeFilter) return;
+      if (masterFormatFilter !== 'all' && ext !== masterFormatFilter) return;
+      let semLabel = ''; let semKey = ''; let courseCode = ''; let courseName = '';
+      const folderMatch = file.folder?.match(/^week-\d+-(.+?)-(module|reading)$/i);
+      const folderCode = folderMatch?.[1]?.toLowerCase() || '';
+      for (const sem of semesters) {
+        if (masterSemFilter !== 'all' && sem.key !== masterSemFilter) continue;
+        for (const c of sem.courses) {
+          const cn = c.code.replace(/\s/g, '').toLowerCase();
+          if (cn === folderCode || folderCode.replace(/_/g, '') === cn) {
+            semLabel = sem.label; semKey = sem.key; courseCode = c.code; courseName = c.name;
+            break;
+          }
+        }
+        if (courseCode) break;
+      }
+      if (!courseCode) return;
+      contentOnlyMatches.push({ file, semLabel, semKey, courseCode, courseName, weekNum: wn, fileType: fType, fileFormat: ext });
+    });
+    const combined = [...masterSearchResults.map(r => ({ ...r, contentSnippet: contentSnippetMap.get(r.file.id) })), ...contentOnlyMatches.map(r => ({ ...r, contentSnippet: contentSnippetMap.get(r.file.id) }))];
+    return combined;
+  }, [masterSearchResults, contentSearchResults, allFiles, semesters, masterSemFilter, masterWeekFilter, masterTypeFilter, masterFormatFilter]);
 
   const handleBookClick = useCallback((file: FileRecord, color: string) => {
     setOpenReaders(prev => {
@@ -2204,7 +2267,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           })()}
         </div>
 
-        {masterSearchResults && (
+        {combinedSearchResults && (
           <div style={{
             marginTop: '10px',
             borderTop: '1px solid rgba(255,255,255,0.1)',
@@ -2213,14 +2276,14 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             overflowY: 'auto',
           }}>
             <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', marginBottom: '8px' }}>
-              {masterSearchResults.length} result{masterSearchResults.length !== 1 ? 's' : ''} found
+              {combinedSearchResults.length} result{combinedSearchResults.length !== 1 ? 's' : ''} found
             </div>
-            {masterSearchResults.length === 0 && (
+            {combinedSearchResults.length === 0 && (
               <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '14px', textAlign: 'center', padding: '20px' }}>
                 No documents match your search
               </div>
             )}
-            {masterSearchResults.map(r => {
+            {combinedSearchResults.map(r => {
               const wColor = getBookColor(0, r.courseCode, r.weekNum);
               return (
                 <div
@@ -2272,6 +2335,12 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                     <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)', marginTop: '3px' }}>
                       {r.courseCode} — {r.courseName} · Week {r.weekNum} · {r.semLabel}
                     </div>
+                    {'contentSnippet' in r && (r as any).contentSnippet && (
+                      <div style={{ fontSize: '11px', color: 'rgba(255,200,100,0.7)', marginTop: '4px', fontStyle: 'italic', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        <span style={{ fontSize: '9px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', backgroundColor: 'rgba(255,200,100,0.15)', color: 'rgba(255,200,100,0.8)', marginRight: '6px', textTransform: 'uppercase', letterSpacing: '0.3px' }}>content match</span>
+                        {(r as any).contentSnippet}
+                      </div>
+                    )}
                   </div>
                 </div>
               );

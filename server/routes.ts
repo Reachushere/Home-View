@@ -5187,6 +5187,37 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
+  app.get("/api/files/search", async (req, res) => {
+    try {
+      const q = (req.query.q as string || '').toLowerCase().trim();
+      if (!q || q.length < 2) return res.json([]);
+      const tokens = q.split(/\s+/).filter(Boolean);
+      const allFiles = await storage.getFiles();
+      const results: { fileId: number; matchType: 'name' | 'content'; snippet?: string }[] = [];
+      for (const file of allFiles) {
+        const name = (file.displayName || file.originalName || '').toLowerCase();
+        if (tokens.every(t => name.includes(t))) {
+          results.push({ fileId: file.id, matchType: 'name' });
+          continue;
+        }
+        if (file.extractedText) {
+          const text = file.extractedText.toLowerCase();
+          if (tokens.every(t => text.includes(t))) {
+            const firstIdx = text.indexOf(tokens[0]);
+            const start = Math.max(0, firstIdx - 40);
+            const end = Math.min(text.length, firstIdx + tokens[0].length + 80);
+            const snippet = (start > 0 ? '...' : '') + file.extractedText.substring(start, end).replace(/\n/g, ' ').trim() + (end < text.length ? '...' : '');
+            results.push({ fileId: file.id, matchType: 'content', snippet });
+          }
+        }
+      }
+      res.json(results.slice(0, 50));
+    } catch (err) {
+      console.error("Error searching files:", err);
+      res.status(500).json({ error: "Search failed" });
+    }
+  });
+
   // GET /api/files/recently-prepared (must be before :id route)
   app.get("/api/files/recently-prepared", async (_req, res) => {
     res.json({ files: (globalThis as any).__recentlyPreparedFiles || [] });
