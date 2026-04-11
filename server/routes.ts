@@ -5056,6 +5056,20 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
+  app.get("/api/library/debug-files", async (_req, res) => {
+    try {
+      const allFiles = await storage.getFiles();
+      const moduleReadingFiles = allFiles.filter(f => f.folder && f.folder.startsWith('week-'));
+      const byCourse: Record<string, number> = {};
+      moduleReadingFiles.forEach(f => {
+        const m = f.folder!.match(/^week-\d+-(.+?)-(module|reading)$/i);
+        if (m) { const code = m[1]; byCourse[code] = (byCourse[code] || 0) + 1; }
+      });
+      const { isOneDriveConnected } = await import("./onedrive");
+      res.json({ totalFiles: allFiles.length, libraryFiles: moduleReadingFiles.length, byCourse, onedriveConnected: isOneDriveConnected() });
+    } catch (err: any) { res.status(500).json({ error: err.message }); }
+  });
+
   app.post("/api/library/sync-semester", async (req, res) => {
     const { semesterKey } = req.body;
     if (!semesterKey) return res.status(400).json({ error: 'semesterKey required' });
@@ -5084,10 +5098,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         const existingSet = new Set(existingFiles.map((f: any) => `${f.folder}::${f.originalName}`));
         let synced = 0;
         const courses = await getSemesterOneDriveCourses(sem);
+        console.log(`[LibrarySync:Semester] ${semesterKey}: found ${courses.length} courses: ${courses.map(c => c.code).join(', ')}`);
         for (const course of courses) {
           try {
             const weekFolders = await listOneDriveItems(course.path);
             const weekDirs = weekFolders.filter((f: any) => f.type === 'folder' && /Week\s+\d+/i.test(f.name));
+            console.log(`[LibrarySync:Semester] ${course.code}: ${weekDirs.length} week folders at ${course.path}`);
             for (const weekDir of weekDirs) {
               const weekMatch = weekDir.name.match(/Week\s+(\d+)/i);
               if (!weekMatch) continue;
@@ -5112,7 +5128,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
             }
           } catch (e: any) { console.log(`[LibrarySync:Semester] Error syncing ${course.code}: ${e.message}`); }
         }
-        if (synced > 0) console.log(`[LibrarySync:Semester] ${semesterKey}: synced ${synced} new files`);
+        console.log(`[LibrarySync:Semester] ${semesterKey}: synced ${synced} new files`);
       } catch (err: any) { console.error('[LibrarySync:Semester] Error:', err); }
     })();
   });

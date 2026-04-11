@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
-import { X, ChevronLeft, ChevronRight, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2, Printer, Volume2, Square, Pause, Play } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2, Printer, Volume2, Square, Pause, Play, RefreshCw } from 'lucide-react';
 import * as pdfjsLib from 'pdfjs-dist';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 
@@ -281,14 +281,75 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   );
 }
 
+function WeekSeparator({ weekNum }: { weekNum: number }) {
+  return (
+    <div style={{
+      width: '14px',
+      height: '100%',
+      flexShrink: 0,
+      position: 'relative',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+    }}>
+      <div style={{
+        width: '6px',
+        height: '100%',
+        background: 'linear-gradient(90deg, #003670 0%, #004C9B 40%, #005BB5 60%, #004C9B 80%, #003670 100%)',
+        borderRadius: '2px',
+        position: 'relative',
+        boxShadow: 'inset 1px 0 3px rgba(255,255,255,0.15), inset -1px 0 3px rgba(0,0,0,0.3), 0 0 4px rgba(0,0,0,0.3)',
+      }}>
+        <div style={{
+          position: 'absolute',
+          top: '15%',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '4px',
+          height: '2px',
+          background: '#FDDC00',
+          opacity: 0.6,
+          borderRadius: '1px',
+        }} />
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          fontSize: '5px',
+          fontWeight: 700,
+          color: '#FDDC00',
+          opacity: 0.7,
+          letterSpacing: '-0.5px',
+          whiteSpace: 'nowrap',
+          writingMode: 'vertical-rl',
+          textOrientation: 'mixed',
+        }}>W{weekNum}</div>
+        <div style={{
+          position: 'absolute',
+          bottom: '15%',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '4px',
+          height: '2px',
+          background: '#FDDC00',
+          opacity: 0.6,
+          borderRadius: '1px',
+        }} />
+      </div>
+    </div>
+  );
+}
+
 function Bookend({ side }: { side: 'left' | 'right' }) {
   return (
     <div style={{
       width: '22px',
       height: '100%',
       background: side === 'left'
-        ? 'linear-gradient(90deg, #8D6E63 0%, #6D4C41 15%, #5D4037 40%, #4E342E 70%, #3E2723 100%)'
-        : 'linear-gradient(90deg, #3E2723 0%, #4E342E 30%, #5D4037 60%, #6D4C41 85%, #8D6E63 100%)',
+        ? 'linear-gradient(90deg, #005BB5 0%, #004C9B 15%, #003F87 40%, #003670 70%, #002D5C 100%)'
+        : 'linear-gradient(90deg, #002D5C 0%, #003670 30%, #003F87 60%, #004C9B 85%, #005BB5 100%)',
       borderRadius: side === 'left' ? '5px 1px 1px 5px' : '1px 5px 5px 1px',
       boxShadow: side === 'left'
         ? 'inset 3px 0 8px rgba(255,255,255,0.15), -4px 0 12px rgba(0,0,0,0.5), inset 0 3px 6px rgba(255,255,255,0.08), inset 0 -3px 6px rgba(0,0,0,0.2)'
@@ -305,7 +366,7 @@ function Bookend({ side }: { side: 'left' | 'right' }) {
         transform: 'translateX(-50%)',
         width: '12px',
         height: '3px',
-        background: 'linear-gradient(90deg, transparent, #D4AF37, transparent)',
+        background: 'linear-gradient(90deg, transparent, #FDDC00, transparent)',
         opacity: 0.5,
         borderRadius: '1px',
       }} />
@@ -316,10 +377,10 @@ function Bookend({ side }: { side: 'left' | 'right' }) {
         transform: 'translateX(-50%)',
         width: '10px',
         height: '76%',
-        background: 'linear-gradient(180deg, #D4AF37 0%, #B8860B 20%, #8B6914 40%, #6B4F10 50%, #8B6914 60%, #B8860B 80%, #D4AF37 100%)',
+        background: 'linear-gradient(180deg, #FDDC00 0%, #E5C800 20%, #C4A800 40%, #A08A00 50%, #C4A800 60%, #E5C800 80%, #FDDC00 100%)',
         borderRadius: '2px',
         opacity: 0.4,
-        boxShadow: 'inset 0 0 3px rgba(0,0,0,0.3), 0 0 4px rgba(212,175,55,0.2)',
+        boxShadow: 'inset 0 0 3px rgba(0,0,0,0.3), 0 0 4px rgba(253,220,0,0.2)',
       }} />
       <div style={{
         position: 'absolute',
@@ -328,7 +389,7 @@ function Bookend({ side }: { side: 'left' | 'right' }) {
         transform: 'translate(-50%, -50%) rotate(45deg)',
         width: '8px',
         height: '8px',
-        border: '1px solid rgba(212,175,55,0.5)',
+        border: '1px solid rgba(253,220,0,0.5)',
         borderRadius: '1px',
         opacity: 0.6,
       }} />
@@ -339,7 +400,7 @@ function Bookend({ side }: { side: 'left' | 'right' }) {
         transform: 'translateX(-50%)',
         width: '12px',
         height: '3px',
-        background: 'linear-gradient(90deg, transparent, #D4AF37, transparent)',
+        background: 'linear-gradient(90deg, transparent, #FDDC00, transparent)',
         opacity: 0.5,
         borderRadius: '1px',
       }} />
@@ -1814,6 +1875,41 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             <span style={{ fontSize: '11px', opacity: 0.6 }}>
               Sync your course modules and readings to populate the library
             </span>
+            <button
+              data-testid="button-sync-semester-library"
+              onClick={async () => {
+                if (!currentSemester?.key) return;
+                const btn = document.querySelector('[data-testid="button-sync-semester-library"]') as HTMLButtonElement;
+                if (btn) { btn.textContent = 'Syncing...'; btn.style.opacity = '0.5'; btn.disabled = true; }
+                try {
+                  await fetch('/api/library/sync-semester', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ semesterKey: currentSemester.key }) });
+                  for (const delay of [5000, 15000, 30000, 60000]) {
+                    setTimeout(() => refetchFiles(), delay);
+                  }
+                  if (btn) { btn.textContent = 'Syncing in background...'; }
+                  setTimeout(() => { if (btn) { btn.textContent = 'Sync from OneDrive'; btn.style.opacity = '1'; btn.disabled = false; } }, 65000);
+                } catch { if (btn) { btn.textContent = 'Sync failed'; btn.style.opacity = '1'; btn.disabled = false; } }
+              }}
+              style={{
+                marginTop: '8px',
+                padding: '8px 20px',
+                background: 'rgba(255,255,255,0.1)',
+                border: '1px solid rgba(255,255,255,0.25)',
+                borderRadius: '8px',
+                color: 'rgba(255,255,255,0.6)',
+                fontSize: '12px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={e => { (e.target as HTMLElement).style.background = 'rgba(255,255,255,0.15)'; (e.target as HTMLElement).style.color = 'rgba(255,255,255,0.8)'; }}
+              onMouseLeave={e => { (e.target as HTMLElement).style.background = 'rgba(255,255,255,0.1)'; (e.target as HTMLElement).style.color = 'rgba(255,255,255,0.6)'; }}
+            >
+              <RefreshCw size={14} />
+              Sync from OneDrive
+            </button>
           </div>
         ) : (
           courseBooks.map(({ course, files: courseFiles }, courseIdx) => (
@@ -1846,25 +1942,36 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 className="library-scroll"
                 >
                   <Bookend side="left" />
-                  {courseFiles.map((file, fileIdx) => {
-                    const color = getBookColor(fileIdx, course.code);
-                    return (
-                      <BookSpine
-                        key={file.id}
-                        file={file}
-                        index={fileIdx}
-                        courseCode={course.code}
-                        bookColor={color}
-                        isSelected={selectedBook?.id === file.id}
-                        onClick={() => {
-                          setSelectedBook(file);
-                          setSelectedBookColor(color);
-                          handleBookClick(file, color);
-                        }}
-                        shelfHeight={shelfHeight}
-                      />
-                    );
-                  })}
+                  {(() => {
+                    const elements: React.ReactNode[] = [];
+                    let lastWeek = -1;
+                    courseFiles.forEach((file, fileIdx) => {
+                      const weekMatch = file.folder?.match(/week-(\d+)/);
+                      const weekNum = weekMatch ? parseInt(weekMatch[1]) : 0;
+                      if (lastWeek !== -1 && weekNum !== lastWeek) {
+                        elements.push(<WeekSeparator key={`sep-${lastWeek}-${weekNum}`} weekNum={weekNum} />);
+                      }
+                      lastWeek = weekNum;
+                      const color = getBookColor(fileIdx, course.code);
+                      elements.push(
+                        <BookSpine
+                          key={file.id}
+                          file={file}
+                          index={fileIdx}
+                          courseCode={course.code}
+                          bookColor={color}
+                          isSelected={selectedBook?.id === file.id}
+                          onClick={() => {
+                            setSelectedBook(file);
+                            setSelectedBookColor(color);
+                            handleBookClick(file, color);
+                          }}
+                          shelfHeight={shelfHeight}
+                        />
+                      );
+                    });
+                    return elements;
+                  })()}
                   <Bookend side="right" />
                 </div>
 
