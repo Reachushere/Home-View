@@ -6671,6 +6671,10 @@ export default function Dashboard() {
     return strike ? <span style={{ textDecoration: 'line-through' }}>{children}</span> : <>{children}</>;
   };
 
+  const { data: allSemesterSettingsEarly } = useQuery<any[]>({
+    queryKey: ["/api/semesters"],
+    queryFn: () => fetch("/api/semesters", { credentials: 'include' }).then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
+  });
   const allSemesterCourseOptions = useMemo(() => {
     const options: { semKey: string; semLabel: string; code: string; name: string; linkValue: string }[] = [];
     const semLabelMap: Record<string, string> = {
@@ -6690,7 +6694,7 @@ export default function Dashboard() {
     for (const semKey of semesterKeyOrder) {
       const courses = semesterCourseAssignments[semKey] || [];
       const target = SEMKEY_TO_DB_MAP[semKey];
-      const dbSem = target && allSemesterSettings ? allSemesterSettings.find((s: any) => {
+      const dbSem = target && allSemesterSettingsEarly ? allSemesterSettingsEarly.find((s: any) => {
         const yr = s.semesterName?.match(/\d{4}/)?.[0];
         return s.semesterType === target.type && yr === target.year;
       }) : null;
@@ -6717,7 +6721,7 @@ export default function Dashboard() {
       }
     }
     return options;
-  }, [semesterCourseAssignments, allSemesterSettings]);
+  }, [semesterCourseAssignments, allSemesterSettingsEarly]);
 
   const usedLinkValues = useMemo(() => new Set(Object.values(certCourseLinks)), [certCourseLinks]);
 
