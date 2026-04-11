@@ -995,11 +995,11 @@ export async function registerRoutes(
           if (validPattern.test(codeNorm)) {
             const dn = ((sem as any)[`course${ci}DisplayName`] || '').trim();
             const nm = ((sem as any)[`course${ci}Name`] || '').trim();
-            if (dn && !validPattern.test(dn.replace(/\s/g, '').toUpperCase())) {
+            if (!dn || !validPattern.test(dn.replace(/\s/g, '').toUpperCase())) {
               updates[`course${ci}DisplayName`] = code;
               console.log(`[CleanupSem] ${sem.semesterName} slot ${ci}: fix displayName "${dn}" -> "${code}"`);
             }
-            if (nm && nm !== code && !validPattern.test(nm.replace(/\s/g, '').toUpperCase())) {
+            if (!nm || (nm !== code && !validPattern.test(nm.replace(/\s/g, '').toUpperCase()))) {
               updates[`course${ci}Name`] = code;
               console.log(`[CleanupSem] ${sem.semesterName} slot ${ci}: fix name "${nm}" -> "${code}"`);
             }
