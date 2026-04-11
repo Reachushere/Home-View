@@ -133,10 +133,10 @@ function toTitleCase(str: string): string {
   return str.replace(/\b\w+/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
 }
 
-function truncateSpineTitle(name: string, maxLen: number = 28): string {
+function truncateSpineTitle(name: string, maxLen: number = 28, isCustomName: boolean = false): string {
   const cleaned = name
     .replace(/\.(pdf|docx?|pptx?|xlsx?)$/i, '')
-    .replace(/^(Module|Reading|Lecture|Chapter|Ch|Chap)\s*[-_]?\s*/i, '')
+    .replace(isCustomName ? /(?!)/ : /^(Module|Reading|Lecture|Chapter|Ch|Chap)\s*[-_]?\s*/i, '')
     .replace(/[-_]+/g, ' ')
     .trim();
   const titled = toTitleCase(cleaned);
@@ -166,7 +166,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   const seededRand = ((file.id * 2654435761) >>> 0) / 4294967296;
   const spineWidth = 28 + seededRand * 12;
   const bookHeight = shelfHeight - 8 - (index % 3) * 6;
-  const title = truncateSpineTitle(file.displayName || file.originalName);
+  const title = truncateSpineTitle(file.displayName || file.originalName, 28, !!file.displayName && file.displayName !== file.originalName);
   const weekNum = file.folder?.match(/^week-(\d+)/)?.[1] || '';
   const fileType = getFileType(file.folder);
   const patternIdx = (index + courseCode.charCodeAt(0)) % SPINE_PATTERNS.length;
@@ -497,7 +497,7 @@ function BookReader({ file, bookColor, onClose }: {
   const scrollRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const pendingCommentInputRef = useRef<HTMLInputElement>(null);
-  const title = truncateSpineTitle(file.displayName || file.originalName, 80);
+  const title = truncateSpineTitle(file.displayName || file.originalName, 80, !!file.displayName && file.displayName !== file.originalName);
 
   const { data: annotations = [], refetch: refetchAnnotations } = useQuery<Annotation[]>({
     queryKey: ['/api/files', file.id, 'annotations'],
@@ -1395,6 +1395,10 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
   const [masterSearch, setMasterSearch] = useState('');
   const [masterSemFilter, setMasterSemFilter] = useState('all');
   const [masterCourseFilter, setMasterCourseFilter] = useState('all');
+  const [masterWeekFilter, setMasterWeekFilter] = useState('all');
+  const [masterTypeFilter, setMasterTypeFilter] = useState<'all' | 'module' | 'reading'>('all');
+  const [masterFormatFilter, setMasterFormatFilter] = useState('all');
+  const [masterSortBy, setMasterSortBy] = useState<'relevance' | 'date_added' | 'name' | 'week'>('relevance');
   const [shareLink, setShareLink] = useState('');
   const [shareCopied, setShareCopied] = useState(false);
   const [renamingFile, setRenamingFile] = useState<FileRecord | null>(null);
@@ -1556,11 +1560,31 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
     return Array.from(set);
   }, [semesters, allFiles]);
 
+  const hasAnyFilter = masterSearch.trim() || masterSemFilter !== 'all' || masterCourseFilter !== 'all' || masterWeekFilter !== 'all' || masterTypeFilter !== 'all' || masterFormatFilter !== 'all';
+
+  const availableWeeks = useMemo(() => {
+    const weeks = new Set<number>();
+    allFiles.forEach(f => {
+      const m = f.folder?.match(/^week-(\d+)/);
+      if (m) weeks.add(parseInt(m[1]));
+    });
+    return Array.from(weeks).sort((a, b) => a - b);
+  }, [allFiles]);
+
+  const availableFormats = useMemo(() => {
+    const fmts = new Set<string>();
+    allFiles.forEach(f => {
+      const ext = f.originalName.match(/\.(\w+)$/)?.[1]?.toLowerCase();
+      if (ext) fmts.add(ext);
+    });
+    return Array.from(fmts).sort();
+  }, [allFiles]);
+
   const masterSearchResults = useMemo(() => {
-    if (!masterSearch.trim()) return null;
+    if (!hasAnyFilter) return null;
     const q = masterSearch.toLowerCase().trim();
-    const tokens = q.split(/\s+/).filter(Boolean);
-    const results: { file: FileRecord; semLabel: string; semKey: string; courseCode: string; courseName: string; weekNum: number; fileType: string }[] = [];
+    const tokens = q ? q.split(/\s+/).filter(Boolean) : [];
+    const results: { file: FileRecord; semLabel: string; semKey: string; courseCode: string; courseName: string; weekNum: number; fileType: string; fileFormat: string }[] = [];
 
     const moduleReadingFiles = allFiles.filter(f => {
       if (!f.folder) return false;
@@ -1583,25 +1607,25 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           const folder = f.folder?.toLowerCase() || '';
           const wn = parseInt(folder.match(/week-(\d+)/)?.[1] || '0');
           const fType = folder.includes('-module') ? 'module' : 'reading';
-          const weekStr = `week ${wn}`;
-          const weekStr2 = `week${wn}`;
-          const searchable = [
-            name,
-            folder,
-            course.code.toLowerCase(),
-            course.name.toLowerCase(),
-            sem.label.toLowerCase(),
-            sem.key.toLowerCase(),
-            weekStr,
-            weekStr2,
-            `w${wn}`,
-            fType,
-          ].join(' ');
+          const ext = f.originalName.match(/\.(\w+)$/)?.[1]?.toLowerCase() || '';
 
-          const allMatch = tokens.every(tok => searchable.includes(tok));
-          if (allMatch) {
-            results.push({ file: f, semLabel: sem.label, semKey: sem.key, courseCode: course.code, courseName: course.name, weekNum: wn, fileType: fType });
+          if (masterWeekFilter !== 'all' && wn !== parseInt(masterWeekFilter)) return;
+          if (masterTypeFilter !== 'all' && fType !== masterTypeFilter) return;
+          if (masterFormatFilter !== 'all' && ext !== masterFormatFilter) return;
+
+          if (tokens.length > 0) {
+            const searchable = [
+              name, folder,
+              course.code.toLowerCase(), course.name.toLowerCase(),
+              sem.label.toLowerCase(), sem.key.toLowerCase(),
+              `week ${wn}`, `week${wn}`, `w${wn}`,
+              fType, ext,
+            ].join(' ');
+            const allMatch = tokens.every(tok => searchable.includes(tok));
+            if (!allMatch) return;
           }
+
+          results.push({ file: f, semLabel: sem.label, semKey: sem.key, courseCode: course.code, courseName: course.name, weekNum: wn, fileType: fType, fileFormat: ext });
         });
       });
     });
@@ -1610,22 +1634,35 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       const dumpFiles = allFiles.filter(f => f.folder === 'week-0-documentdump-reading');
       dumpFiles.forEach(f => {
         const name = (f.displayName || f.originalName).toLowerCase();
-        const searchable = [name, 'document dump', 'docs', 'documentdump'].join(' ');
-        const allMatch = tokens.every(tok => searchable.includes(tok));
-        if (allMatch) {
-          results.push({ file: f, semLabel: 'Document Dump', semKey: 'docdump', courseCode: 'DOCS', courseName: 'Document Dump', weekNum: 0, fileType: 'reading' });
+        const ext = f.originalName.match(/\.(\w+)$/)?.[1]?.toLowerCase() || '';
+
+        if (masterTypeFilter !== 'all' && masterTypeFilter !== 'reading') return;
+        if (masterFormatFilter !== 'all' && ext !== masterFormatFilter) return;
+
+        if (tokens.length > 0) {
+          const searchable = [name, 'document dump', 'docs', 'documentdump', ext].join(' ');
+          const allMatch = tokens.every(tok => searchable.includes(tok));
+          if (!allMatch) return;
         }
+        results.push({ file: f, semLabel: 'Document Dump', semKey: 'docdump', courseCode: 'DOCS', courseName: 'Document Dump', weekNum: 0, fileType: 'reading', fileFormat: ext });
       });
     }
-    results.sort((a, b) => {
-      const semCmp = a.semLabel.localeCompare(b.semLabel);
-      if (semCmp !== 0) return semCmp;
-      const codeCmp = a.courseCode.localeCompare(b.courseCode);
-      if (codeCmp !== 0) return codeCmp;
-      return a.weekNum - b.weekNum;
-    });
+
+    if (masterSortBy === 'name') {
+      results.sort((a, b) => (a.file.displayName || a.file.originalName).localeCompare(b.file.displayName || b.file.originalName));
+    } else if (masterSortBy === 'week') {
+      results.sort((a, b) => a.weekNum - b.weekNum || a.courseCode.localeCompare(b.courseCode));
+    } else {
+      results.sort((a, b) => {
+        const semCmp = a.semLabel.localeCompare(b.semLabel);
+        if (semCmp !== 0) return semCmp;
+        const codeCmp = a.courseCode.localeCompare(b.courseCode);
+        if (codeCmp !== 0) return codeCmp;
+        return a.weekNum - b.weekNum;
+      });
+    }
     return results;
-  }, [masterSearch, masterSemFilter, masterCourseFilter, allFiles, semesters]);
+  }, [masterSearch, masterSemFilter, masterCourseFilter, masterWeekFilter, masterTypeFilter, masterFormatFilter, masterSortBy, allFiles, semesters, hasAnyFilter]);
 
   const handleBookClick = useCallback((file: FileRecord, color: string) => {
     setOpenReaders(prev => {
@@ -1991,7 +2028,9 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         zIndex: 100002,
         display: 'flex',
         alignItems: 'center',
-        gap: '6px',
+        gap: '5px',
+        flexWrap: 'wrap',
+        maxWidth: 'calc(100% - 230px)',
       }}>
         <div style={{
           display: 'flex',
@@ -2018,59 +2057,50 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             }}
             data-testid="input-master-search"
           />
-          {masterSearch && (
+          {hasAnyFilter && (
             <button
-              onClick={() => { setMasterSearch(''); setMasterSemFilter('all'); setMasterCourseFilter('all'); }}
+              onClick={() => { setMasterSearch(''); setMasterSemFilter('all'); setMasterCourseFilter('all'); setMasterWeekFilter('all'); setMasterTypeFilter('all'); setMasterFormatFilter('all'); setMasterSortBy('relevance'); }}
               style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}
+              data-testid="btn-clear-search"
             >
               <X size={12} color="rgba(255,255,255,0.5)" />
             </button>
           )}
         </div>
-        {masterSearch && (
-          <>
-            <select
-              value={masterSemFilter}
-              onChange={e => setMasterSemFilter(e.target.value)}
-              style={{
-                background: 'rgba(0,0,0,0.5)',
-                border: '1px solid rgba(255,255,255,0.2)',
-                borderRadius: '12px',
-                padding: '4px 8px',
-                color: '#fff',
-                fontSize: '10px',
-                outline: 'none',
-                cursor: 'pointer',
-              }}
-              data-testid="select-master-sem-filter"
-            >
-              <option value="all">All Semesters</option>
-              {semesters.map(s => (
-                <option key={s.key} value={s.key}>{s.label}</option>
-              ))}
-            </select>
-            <select
-              value={masterCourseFilter}
-              onChange={e => setMasterCourseFilter(e.target.value)}
-              style={{
-                background: 'rgba(0,0,0,0.5)',
-                border: '1px solid rgba(255,255,255,0.2)',
-                borderRadius: '12px',
-                padding: '4px 8px',
-                color: '#fff',
-                fontSize: '10px',
-                outline: 'none',
-                cursor: 'pointer',
-              }}
-              data-testid="select-master-course-filter"
-            >
-              <option value="all">All Courses</option>
-              {allCoursesForSearch.map(c => (
-                <option key={c} value={c}>{c}</option>
-              ))}
-            </select>
-          </>
-        )}
+        {(() => {
+          const filterStyle: React.CSSProperties = { background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '12px', padding: '4px 8px', color: '#fff', fontSize: '10px', outline: 'none', cursor: 'pointer' };
+          const activeStyle = (v: string) => v !== 'all' ? { ...filterStyle, border: '1px solid rgba(218,165,32,0.6)', background: 'rgba(218,165,32,0.15)' } : filterStyle;
+          return (
+            <>
+              <select value={masterSemFilter} onChange={e => setMasterSemFilter(e.target.value)} style={activeStyle(masterSemFilter)} data-testid="select-master-sem-filter">
+                <option value="all">Semester</option>
+                {semesters.map(s => (<option key={s.key} value={s.key}>{s.label}</option>))}
+              </select>
+              <select value={masterCourseFilter} onChange={e => setMasterCourseFilter(e.target.value)} style={activeStyle(masterCourseFilter)} data-testid="select-master-course-filter">
+                <option value="all">Course</option>
+                {allCoursesForSearch.map(c => (<option key={c} value={c}>{c}</option>))}
+              </select>
+              <select value={masterWeekFilter} onChange={e => setMasterWeekFilter(e.target.value)} style={activeStyle(masterWeekFilter)} data-testid="select-master-week-filter">
+                <option value="all">Week</option>
+                {availableWeeks.map(w => (<option key={w} value={String(w)}>Week {w}</option>))}
+              </select>
+              <select value={masterTypeFilter} onChange={e => setMasterTypeFilter(e.target.value as any)} style={activeStyle(masterTypeFilter)} data-testid="select-master-type-filter">
+                <option value="all">Type</option>
+                <option value="module">Module</option>
+                <option value="reading">Reading</option>
+              </select>
+              <select value={masterFormatFilter} onChange={e => setMasterFormatFilter(e.target.value)} style={activeStyle(masterFormatFilter)} data-testid="select-master-format-filter">
+                <option value="all">Format</option>
+                {availableFormats.map(f => (<option key={f} value={f}>.{f.toUpperCase()}</option>))}
+              </select>
+              <select value={masterSortBy} onChange={e => setMasterSortBy(e.target.value as any)} style={{ ...filterStyle, borderColor: masterSortBy !== 'relevance' ? 'rgba(218,165,32,0.6)' : undefined, background: masterSortBy !== 'relevance' ? 'rgba(218,165,32,0.15)' : filterStyle.background }} data-testid="select-master-sort">
+                <option value="relevance">Sort: Default</option>
+                <option value="name">Sort: Name</option>
+                <option value="week">Sort: Week</option>
+              </select>
+            </>
+          );
+        })()}
       </div>
 
       {masterSearchResults && (
@@ -2104,7 +2134,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 key={r.file.id}
                 onClick={() => {
                   handleBookClick(r.file, wColor);
-                  setMasterSearch('');
+                  setMasterSearch(''); setMasterSemFilter('all'); setMasterCourseFilter('all'); setMasterWeekFilter('all'); setMasterTypeFilter('all'); setMasterFormatFilter('all'); setMasterSortBy('relevance');
                 }}
                 style={{
                   display: 'flex',
@@ -2134,6 +2164,13 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                       color: r.fileType === 'module' ? '#81C784' : '#64B5F6',
                       flexShrink: 0, textTransform: 'uppercase', letterSpacing: '0.5px',
                     }}>{r.fileType === 'module' ? 'M' : 'R'}</span>
+                    {r.fileFormat && (
+                      <span style={{
+                        fontSize: '7px', fontWeight: 700, padding: '1px 3px', borderRadius: '3px',
+                        backgroundColor: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.5)',
+                        flexShrink: 0, textTransform: 'uppercase', letterSpacing: '0.3px',
+                      }}>{r.fileFormat}</span>
+                    )}
                     <span style={{ fontSize: '11px', color: '#fff', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {r.file.displayName || r.file.originalName}
                     </span>
