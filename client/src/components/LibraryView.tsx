@@ -824,8 +824,8 @@ function BookReader({ file, bookColor, onClose }: {
                 {title}
               </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '4px 12px 6px 32px', borderBottom: '1px solid rgba(255,255,255,0.1)', zIndex: 3, flexShrink: 0, gap: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 12px 6px 12px', borderBottom: '1px solid rgba(255,255,255,0.1)', zIndex: 3, flexShrink: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
                 <button onClick={() => setZoom(z => Math.max(0.5, z - 0.25))} style={toolBtnStyle()} title="Zoom Out" data-testid="btn-zoom-out">
                   <ZoomOut size={14} />
                 </button>
@@ -833,9 +833,24 @@ function BookReader({ file, bookColor, onClose }: {
                 <button onClick={() => setZoom(z => Math.min(3, z + 0.25))} style={toolBtnStyle()} title="Zoom In" data-testid="btn-zoom-in">
                   <ZoomIn size={14} />
                 </button>
-
                 <div style={{ width: '1px', height: '18px', background: 'rgba(255,255,255,0.15)', margin: '0 2px' }} />
+                <button onClick={() => { refetchAnnotations().then(() => { setSaved(true); setTimeout(() => setSaved(false), 2000); }); }} style={toolBtnStyle(saved)} title="Save Changes" data-testid="btn-save-pdf">
+                  {saved ? <Check size={14} /> : <Save size={14} />}
+                </button>
+                <button onClick={() => {
+                  const printWindow = window.open(`/api/files/${file.id}/download`, '_blank');
+                  if (printWindow) {
+                    printWindow.addEventListener('load', () => { printWindow.print(); });
+                  }
+                }} style={toolBtnStyle()} title="Print PDF" data-testid="btn-print-pdf">
+                  <Printer size={14} />
+                </button>
+                <button onClick={() => { const a = document.createElement('a'); a.href = `/api/files/${file.id}/download`; a.download = file.originalName || 'document.pdf'; a.click(); }} style={toolBtnStyle()} title="Download PDF" data-testid="btn-download-pdf">
+                  <Download size={14} />
+                </button>
+              </div>
 
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
                 <button onClick={() => { setSearchOpen(!searchOpen); if (!searchOpen) setActiveToolPanel('none'); }} style={toolBtnStyle(searchOpen)} title="Search" data-testid="btn-search">
                   <Search size={14} />
                 </button>
@@ -851,23 +866,7 @@ function BookReader({ file, bookColor, onClose }: {
                 <button onClick={() => setShowAnnotations(!showAnnotations)} style={toolBtnStyle(showAnnotations)} title="View Annotations" data-testid="btn-annotations">
                   <BookOpen size={14} />
                 </button>
-                <button onClick={() => { refetchAnnotations().then(() => { setSaved(true); setTimeout(() => setSaved(false), 2000); }); }} style={toolBtnStyle(saved)} title="Save Changes" data-testid="btn-save-pdf">
-                  {saved ? <Check size={14} /> : <Save size={14} />}
-                </button>
-                <button onClick={() => { const a = document.createElement('a'); a.href = `/api/files/${file.id}/download`; a.download = file.originalName || 'document.pdf'; a.click(); }} style={toolBtnStyle()} title="Download PDF" data-testid="btn-download-pdf">
-                  <Download size={14} />
-                </button>
-                <button onClick={() => {
-                  const printWindow = window.open(`/api/files/${file.id}/download`, '_blank');
-                  if (printWindow) {
-                    printWindow.addEventListener('load', () => { printWindow.print(); });
-                  }
-                }} style={toolBtnStyle()} title="Print PDF" data-testid="btn-print-pdf">
-                  <Printer size={14} />
-                </button>
-
                 <div style={{ width: '1px', height: '18px', background: 'rgba(255,255,255,0.15)', margin: '0 2px' }} />
-
                 {!ttsPlaying ? (
                   <button onClick={startTts} disabled={ttsLoading || !pdfDoc} style={{ ...toolBtnStyle(), opacity: ttsLoading ? 0.5 : 1 }} title="Read aloud (current spread)" data-testid="btn-tts-play">
                     {ttsLoading ? <span style={{ fontSize: '10px' }}>...</span> : <Volume2 size={14} />}
@@ -882,9 +881,7 @@ function BookReader({ file, bookColor, onClose }: {
                     </button>
                   </>
                 )}
-
                 <div style={{ width: '1px', height: '18px', background: 'rgba(255,255,255,0.15)', margin: '0 2px' }} />
-
                 <button onClick={onClose} style={{ ...toolBtnStyle(), borderRadius: '50%', width: '26px', height: '26px', padding: 0 }} data-testid="button-close-book-reader">
                   <X size={14} />
                 </button>
