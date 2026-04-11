@@ -3,27 +3,16 @@ import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
 import { X, ChevronLeft, ChevronRight, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2, Printer } from 'lucide-react';
 import * as pdfjsLib from 'pdfjs-dist';
+import { TextLayer } from 'pdfjs-dist';
+import 'pdfjs-dist/web/pdf_viewer.css';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
 
 const textLayerCSS = `
-.pdf-text-layer {
-  user-select: text;
-  -webkit-user-select: text;
-}
-.pdf-text-layer span {
-  white-space: pre;
-  color: transparent;
-  position: absolute;
-}
-.pdf-text-layer span::selection {
-  background: rgba(0, 100, 255, 0.35);
-  color: transparent;
-}
-.pdf-text-layer span::-moz-selection {
-  background: rgba(0, 100, 255, 0.35);
-  color: transparent;
+.textLayer span.search-highlight {
+  background: rgba(255, 255, 0, 0.4) !important;
+  border-radius: 2px;
 }
 `;
 
@@ -416,34 +405,19 @@ function BookReader({ file, bookColor, onClose }: {
       canvas.height = viewport.height;
       await page.render({ canvasContext: ctx, viewport }).promise;
       if (cancelled) return;
-      const textLayer = textLayerRef.current;
-      if (textLayer) {
-        textLayer.innerHTML = '';
-        textLayer.style.width = `${viewport.width}px`;
-        textLayer.style.height = `${viewport.height}px`;
+      const textLayerDiv = textLayerRef.current;
+      if (textLayerDiv) {
+        textLayerDiv.innerHTML = '';
+        textLayerDiv.style.width = `${viewport.width}px`;
+        textLayerDiv.style.height = `${viewport.height}px`;
         const textContent = await page.getTextContent();
         if (cancelled) return;
-        textContent.items.forEach((item: any) => {
-          if (!item.str) return;
-          const tx = pdfjsLib.Util.transform(viewport.transform, item.transform);
-          const span = document.createElement('span');
-          span.textContent = item.str;
-          const fontSize = Math.sqrt(tx[0] * tx[0] + tx[1] * tx[1]);
-          span.style.position = 'absolute';
-          span.style.left = `${tx[4]}px`;
-          span.style.top = `${tx[5] - fontSize}px`;
-          span.style.fontSize = `${fontSize}px`;
-          span.style.fontFamily = item.fontName || 'sans-serif';
-          span.style.transformOrigin = '0% 0%';
-          if (item.width > 0) {
-            const textWidth = item.str.length * fontSize * 0.5;
-            const actualWidth = item.width * viewport.scale;
-            if (textWidth > 0) {
-              span.style.transform = `scaleX(${actualWidth / textWidth})`;
-            }
-          }
-          textLayer.appendChild(span);
+        const tl = new TextLayer({
+          textContentSource: textContent,
+          container: textLayerDiv,
+          viewport,
         });
+        await tl.render();
       }
     });
     return () => { cancelled = true; };
@@ -479,22 +453,24 @@ function BookReader({ file, bookColor, onClose }: {
   }, [pdfDoc, searchQuery]);
 
   useEffect(() => {
-    const textLayer = textLayerRef.current;
-    if (!textLayer || !searchQuery.trim()) return;
-    const spans = textLayer.querySelectorAll('span');
-    const q = searchQuery.toLowerCase().trim();
-    spans.forEach(span => {
-      const text = span.textContent || '';
-      if (text.toLowerCase().includes(q)) {
-        span.style.background = 'rgba(255, 255, 0, 0.4)';
-        span.style.color = 'transparent';
-        span.style.borderRadius = '2px';
-      } else {
-        span.style.background = '';
-      }
-    });
+    const textLayerDiv = textLayerRef.current;
+    if (!textLayerDiv || !searchQuery.trim()) return;
+    const timer = setTimeout(() => {
+      const spans = textLayerDiv.querySelectorAll('span');
+      const q = searchQuery.toLowerCase().trim();
+      spans.forEach(span => {
+        const text = span.textContent || '';
+        if (text.toLowerCase().includes(q)) {
+          span.classList.add('search-highlight');
+        } else {
+          span.classList.remove('search-highlight');
+        }
+      });
+    }, 300);
     return () => {
-      spans.forEach(span => { span.style.background = ''; });
+      clearTimeout(timer);
+      const spans = textLayerDiv.querySelectorAll('span');
+      spans.forEach(span => span.classList.remove('search-highlight'));
     };
   }, [searchQuery, currentPage, pdfDoc, zoom]);
 
@@ -752,16 +728,9 @@ function BookReader({ file, bookColor, onClose }: {
                         <div
                           ref={textLayerRef}
                           style={{
-                            position: 'absolute',
-                            left: 0,
-                            top: 0,
-                            overflow: 'hidden',
-                            opacity: 0.25,
-                            lineHeight: 1,
-                            color: 'transparent',
                             pointerEvents: activeToolPanel === 'highlight' || activeToolPanel === 'comment' ? 'none' : 'auto',
                           }}
-                          className="pdf-text-layer"
+                          className="textLayer"
                         />
                         {pageHighlights.map((h) => {
                           let pos: { x: number; y: number } | null = null;
