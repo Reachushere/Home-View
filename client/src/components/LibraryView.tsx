@@ -1798,11 +1798,13 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       if (files && files.length > 0) {
         sortFiles(files);
         result.push({ course, files });
+      } else if (syllabusPaths[course.code]) {
+        result.push({ course, files: [] });
       }
     });
 
     return result;
-  }, [currentSemester, allFiles, semesters]);
+  }, [currentSemester, allFiles, semesters, syllabusPaths]);
 
   const allCoursesForSearch = useMemo(() => {
     const set = new Set<string>();
