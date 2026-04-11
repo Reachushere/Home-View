@@ -15770,15 +15770,18 @@ document.body.removeChild(a);
           }
         }
         if (!ttsPlayed) {
-          console.error(`[Cat Lights] Could not play TTS prompt after all retries — falling back to CHUM FM`);
+          console.warn(`[Cat Lights] Could not play TTS prompt — starting playback directly without voice confirmation`);
           catLightsPromptPending = false;
-          await playChumFmRadio(haUrl);
+          catWashPlaybackTrigger = 'lights';
+          const skipConfirmTTS = `Playing ${fileDesc}.`;
+          await startConfirmedPlaybackFlow(nextFile, '[Cat Lights]', 'echo', skipConfirmTTS);
           return;
         }
       } catch (e: any) {
-        console.error(`[Cat Lights] Critical failure in prompt setup: ${e.message} — falling back to CHUM FM`);
+        console.error(`[Cat Lights] Critical failure in prompt setup: ${e.message} — starting playback directly`);
         catLightsPromptPending = false;
-        await playChumFmRadio(haUrl);
+        catWashPlaybackTrigger = 'lights';
+        await startConfirmedPlaybackFlow(nextFile, '[Cat Lights]', 'echo', null);
         return;
       }
 
