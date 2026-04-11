@@ -1,0 +1,106 @@
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs dashboard --lines 200 --nostream | grep -E "\[Cat Lights\]|\[FileOrder\]" > ~/cat-log.txt && cat ~/cat-log.txt
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs dashboard --lines 500 --nostream 2>&1 | tail -100
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3468s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3468s)
+0|dashboar | [AudioPrep] Generating chunk 58/558 for shaping-the-metropolis-institutions-and-urbanization-in-the-united-states-and-canada-9780773558427_compress.pdf (1403 chars)
+0|dashboar | Generating Edge TTS for 1403 chars, file: prep-194-chunk-57
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3467s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Fall/TBD3/Week 13 - Dec 12-18
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3467s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3467s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Fall/TBD3/Week 13 - Dec 12-18/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3467s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3467s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Fall/TBD3/Week 13 - Dec 12-18/Reading
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3466s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3466s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Fall/TBD3/Week 2 - Sep 19-25
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3466s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Fall/TBD3/Week 2 - Sep 19-25/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3466s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3465s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Fall/TBD3/Week 2 - Sep 19-25/Reading
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3465s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3465s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Fall/TBD3/Week 3 - Sep 26-Oct 2
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3465s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3464s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Fall/TBD3/Week 3 - Sep 26-Oct 2/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3464s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3464s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Fall/TBD3/Week 3 - Sep 26-Oct 2/Reading
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3464s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3464s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Fall/TBD3/Week 4 - Oct 3-9
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3464s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Fall/TBD3/Week 4 - Oct 3-9/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3463s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3463s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Fall/TBD3/Week 4 - Oct 3-9/Reading
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3462s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3462s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Fall/TBD3/Week 5 - Oct 17-23
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3462s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3462s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Fall/TBD3/Week 5 - Oct 17-23/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3462s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3462s)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3461s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Fall/TBD3/Week 5 - Oct 17-23/Reading
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3461s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3461s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Fall/TBD3/Week 6 - Oct 24-30
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3461s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3460s)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3460s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Fall/TBD3/Week 6 - Oct 24-30/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3460s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3460s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Fall/TBD3/Week 6 - Oct 24-30/Reading
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3460s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3459s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Fall/TBD3/Week 7 - Oct 31-Nov 6
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3459s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3459s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Fall/TBD3/Week 7 - Oct 31-Nov 6/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3459s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3459s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Fall/TBD3/Week 7 - Oct 31-Nov 6/Reading
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3459s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3458s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Fall/TBD3/Week 8 - Nov 7-13
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3458s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3458s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Fall/TBD3/Week 8 - Nov 7-13/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3458s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3458s)
+
+byhomeyyz@raspberrypi:~/Home-View $ ^C
+byhomeyyz@raspberrypi:~/Home-View $ grep "version" ~/Home-View/dist/index.cjs | head -1
+"use strict";var e5t=Object.create;var dG=Object.defineProperty;var t5t=Object.getOwnPropertyDescriptor;var o5t=Object.getOwnPropertyNames;var s5t=Object.getPrototypeOf,r5t=Object.prototype.hasOwnProperty;var $t=(s,u)=>()=>(s&&(u=s(s=0)),u);var Je=(s,u)=>()=>(u||s((u={exports:{}}).exports,u),u.exports),Xf=(s,u)=>{for(var h in u)dG(s,h,{get:u[h],enumerable:!0})},qEe=(s,u,h,I)=>{if(u&&typeof u=="object"||typeof u=="function")for(let A of o5t(u))!r5t.call(s,A)&&A!==h&&dG(s,A,{get:()=>u[A],enumerable:!(I=t5t(u,A))||I.enumerable});return s};var ls=(s,u,h)=>(h=s!=null?e5t(s5t(s)):{},qEe(u||!s||!s.__esModule?dG(h,"default",{value:s,enumerable:!0}):h,s)),Hc=s=>qEe(dG({},"__esModule",{value:!0}),s);var hee=Je((kNo,xEe)=>{var Mw=1e3,Fw=Mw*60,zw=Fw*60,tU=zw*24,n5t=tU*7,i5t=tU*365.25;xEe.exports=function(s,u){u=u||{};var h=typeof s;if(h==="string"&&s.length>0)return u5t(s);if(h==="number"&&isFinite(s))return u.long?c5t(s):p5t(s);throw new Error("val is not a non-empty string or a valid number. val="+JSON.stringify(s))};function u5t(s){if(s=String(s),!(s.length>100)){var u=/^(-?(?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(s);if(u){var h=parseFloat(u[1]),I=(u[2]||"ms").toLowerCase();switch(I){case"years":case"year":case"yrs":case"yr":case"y":return h*i5t;case"weeks":case"week":case"w":return h*n5t;case"days":case"day":case"d":return h*tU;case"hours":case"hour":case"hrs":case"hr":case"h":return h*zw;case"minutes":case"minute":case"mins":case"min":case"m":return h*Fw;case"seconds":case"second":case"secs":case"sec":case"s":return h*Mw;case"milliseconds":case"millisecond":case"msecs":case"msec":case"ms":return h;default:return}}}}function p5t(s){var u=Math.abs(s);return u>=tU?Math.round(s/tU)+"d":u>=zw?Math.round(s/zw)+"h":u>=Fw?Math.round(s/Fw)+"m":u>=Mw?Math.round(s/Mw)+"s":s+"ms"}function c5t(s){var u=Math.abs(s);return u>=tU?hG(s,u,tU,"day"):u>=zw?hG(s,u,zw,"hour"):u>=Fw?hG(s,u,Fw,"minute"):u>=Mw?hG(s,u,Mw,"second"):s+" ms"}function hG(s,u,h,I){var A=u>=h*1.5;return Math.round(s/h)+" "+I+(A?"s":"")}});var gee=Je((eMo,IEe)=>{function a5t(s){h.debug=h,h.default=h,h.coerce=g,h.disable=j,h.enable=A,h.enabled=x,h.humanize=hee(),h.destroy=a,Object.keys(s).forEach(c=>{h[c]=s[c]}),h.names=[],h.skips=[],h.formatters={};function u(c){let t=0;for(let r=0;r<c.length;r++)t=(t<<5)-t+c.charCodeAt(r),t|=0;return h.colors[Math.abs(t)%h.colors.length]}h.selectColor=u;function h(c){let t,r=null,e,i;function o(...p){if(!o.enabled)return;let n=o,f=Number(new Date),m=f-(t||f);n.diff=m,n.prev=t,n.curr=f,t=f,p[0]=h.coerce(p[0]),typeof p[0]!="string"&&p.unshift("%O");let P=0;p[0]=p[0].replace(/%([a-zA-Z%])/g,(q,y)=>{if(q==="%%")return"%";P++;let v=h.formatters[y];if(typeof v=="function"){let R=p[P];q=v.call(n,R),p.splice(P,1),P--}return q}),h.formatArgs.call(n,p),(n.log||h.log).apply(n,p)}return o.namespace=c,o.useColors=h.useColors(),o.color=h.selectColor(c),o.extend=I,o.destroy=h.destroy,Object.defineProperty(o,"enabled",{enumerable:!0,configurable:!1,get:()=>r!==null?r:(e!==h.namespaces&&(e=h.namespaces,i=h.enabled(c)),i),set:p=>{r=p}}),typeof h.init=="function"&&h.init(o),o}function I(c,t){let r=h(this.namespace+(typeof t>"u"?":":t)+c);return r.log=this.log,r}function A(c){h.save(c),h.namespaces=c,h.names=[],h.skips=[];let t=(typeof c=="string"?c:"").trim().replace(/\s+/g,",").split(",").filter(Boolean);for(let r of t)r[0]==="-"?h.skips.push(r.slice(1)):h.names.push(r)}function $(c,t){let r=0,e=0,i=-1,o=0;for(;r<c.length;)if(e<t.length&&(t[e]===c[r]||t[e]==="*"))t[e]==="*"?(i=e,o=r,e++):(r++,e++);else if(i!==-1)e=i+1,o++,r=o;else return!1;for(;e<t.length&&t[e]==="*";)e++;return e===t.length}function j(){let c=[...h.names,...h.skips.map(t=>"-"+t)].join(",");return h.enable(""),c}function x(c){for(let t of h.skips)if($(c,t))return!1;for(let t of h.names)if($(c,t))return!0;return!1}function g(c){return c instanceof Error?c.stack||c.message:c}function a(){console.warn("Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`.")}return h.enable(h.load()),h}IEe.exports=a5t});var REe=Je((UP,gG)=>{UP.formatArgs=m5t;UP.save=d5t;UP.load=h5t;UP.useColors=f5t;UP.storage=g5t();UP.destroy=(()=>{let s=!1;return()=>{s||(s=!0,console.warn("Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`."))}})();UP.colors=["#0000CC","#0000FF","#0033CC","#0033FF","#0066CC","#0066FF","#0099CC","#0099FF","#00CC00","#00CC33","#00CC66","#00CC99","#00CCCC","#00CCFF","#3300CC","#3300FF","#3333CC","#3333FF","#3366CC","#3366FF","#3399CC","#3399FF","#33CC00","#33CC33","#33CC66","#33CC99","#33CCCC","#33CCFF","#6600CC","#6600FF","#6633CC","#6633FF","#66CC00","#66CC33","#9900CC","#9900FF","#9933CC","#9933FF","#99CC00","#99CC33","#CC0000","#CC0033","#CC0066","#CC0099","#CC00CC","#CC00FF","#CC3300","#CC3333","#CC3366","#CC3399","#CC33CC","#CC33FF","#CC6600","#CC6633","#CC9900","#CC9933","#CCCC00","#CCCC33","#FF0000","#FF0033","#FF0066","#FF0099","#FF00CC","#FF00FF","#FF3300","#FF3333","#FF3366","#FF3399","#FF33CC","#FF33FF","#FF6600","#FF6633","#FF9900","#FF9933","#FFCC00","#FFCC33"];function f5t(){if(typeof window<"u"&&window.process&&(window.process.type==="renderer"||window.process.__nwjs))return!0;if(typeof navigator<"u"&&navigator.userAgent&&navigator.userAgent.toLowerCase().match(/(edge|trident)\/(\d+)/))return!1;let s;return typeof document<"u"&&document.documentElement&&document.documentElement.style&&document.documentElement.style.WebkitAppearance||typeof window<"u"&&window.console&&(window.console.firebug||window.console.exception&&window.console.table)||typeof navigator<"u"&&navigator.userAgent&&(s=navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/))&&parseInt(s[1],10)>=31||typeof navigator<"u"&&navigator.userAgent&&navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/)}function m5t(s){if(s[0]=(this.useColors?"%c":"")+this.namespace+(this.useColors?" %c":" ")+s[0]+(this.useColors?"%c ":" ")+"+"+gG.exports.humanize(this.diff),!this.useColors)return;let u="color: "+this.color;s.splice(1,0,u,"color: inherit");let h=0,I=0;s[0].replace(/%[a-zA-Z%]/g,A=>{A!=="%%"&&(h++,A==="%c"&&(I=h))}),s.splice(I,0,u)}UP.log=console.debug||console.log||(()=>{});function d5t(s){try{s?UP.storage.setItem("debug",s):UP.storage.removeItem("debug")}catch{}}function h5t(){let s;try{s=UP.storage.getItem("debug")||UP.storage.getItem("DEBUG")}catch{}return!s&&typeof process<"u"&&"env"in process&&(s=process.env.DEBUG),s}function g5t(){try{return localStorage}catch{}}gG.exports=gee()(UP);var{formatters:P5t}=gG.exports;P5t.j=function(s){try{return JSON.stringify(s)}catch(u){return"[UnexpectedJSONParseError]: "+u.message}}});var vEe=Je((Pm,yG)=>{var y5t=require("tty"),PG=require("util");Pm.init=$5t;Pm.log=R5t;Pm.formatArgs=x5t;Pm.save=A5t;Pm.load=v5t;Pm.useColors=q5t;Pm.destroy=PG.deprecate(()=>{},"Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`.");Pm.colors=[6,2,3,4,5,1];try{let s=require("supports-color");s&&(s.stderr||s).level>=2&&(Pm.colors=[20,21,26,27,32,33,38,39,40,41,42,43,44,45,56,57,62,63,68,69,74,75,76,77,78,79,80,81,92,93,98,99,112,113,128,129,134,135,148,149,160,161,162,163,164,165,166,167,168,169,170,171,172,173,178,179,184,185,196,197,198,199,200,201,202,203,204,205,206,207,208,209,214,215,220,221])}catch{}Pm.inspectOpts=Object.keys(process.env).filter(s=>/^debug_/i.test(s)).reduce((s,u)=>{let h=u.substring(6).toLowerCase().replace(/_([a-z])/g,(A,$)=>$.toUpperCase()),I=process.env[u];return/^(yes|on|true|enabled)$/i.test(I)?I=!0:/^(no|off|false|disabled)$/i.test(I)?I=!1:I==="null"?I=null:I=Number(I),s[h]=I,s},{});function q5t(){return"colors"in Pm.inspectOpts?!!Pm.inspectOpts.colors:y5t.isatty(process.stderr.fd)}function x5t(s){let{namespace:u,useColors:h}=this;if(h){let I=this.color,A="\x1B[3"+(I<8?I:"8;5;"+I),$=`  ${A};1m${u} \x1B[0m`;s[0]=$+s[0].split(`
+byhomeyyz@raspberrypi:~/Home-View $
