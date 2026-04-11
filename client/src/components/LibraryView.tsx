@@ -1331,7 +1331,6 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       return aDate - bDate;
     });
     const syncAll = async () => {
-      let didSync = false;
       for (const s of sorted) {
         const st = s.semesterType || '';
         const name = s.semesterName || '';
@@ -1339,14 +1338,12 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         const year = yearMatch ? yearMatch[0] : '';
         const key = st.startsWith('spring_summer') ? `ss${year}` : st === 'fall' ? `f${year}` : st === 'winter' ? `w${year}` : `s${s.id}`;
         try {
-          const resp = await fetch('/api/library/sync-semester', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ semesterKey: key }) });
-          if (resp.ok) {
-            const data = await resp.json();
-            if (data.synced > 0) didSync = true;
-          }
+          await fetch('/api/library/sync-semester', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ semesterKey: key }) });
         } catch {}
       }
-      if (didSync) refetchFiles();
+      setTimeout(() => refetchFiles(), 10000);
+      setTimeout(() => refetchFiles(), 30000);
+      setTimeout(() => refetchFiles(), 60000);
     };
     syncAll();
   }, [isOpen, semesterSettings]);
