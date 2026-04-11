@@ -4833,8 +4833,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
           const objectStorageService = new ObjectStorageService();
           const objectFile = await objectStorageService.getObjectEntityFile(mediaUrl);
           await objectStorageService.downloadObject(objectFile, res);
-        } catch (objErr) {
-          console.log(`[Download] Object storage failed for: ${file.originalName}, trying OneDrive fallback via folder: ${file.folder}`);
+        } catch (objErr: any) {
+          console.log(`[Download] Object storage failed for: ${file.originalName} (${objErr?.message || objErr}), trying OneDrive fallback via folder: ${file.folder}`);
           const folderMatch = (file.folder || '').match(/^week-(\d+)-(.+?)-(reading|module)$/i);
           if (folderMatch && file.originalName) {
             const [, weekNum, courseCode, folderType] = folderMatch;
