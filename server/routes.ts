@@ -3557,20 +3557,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
   app.post("/api/audit/semester-courses", async (_req, res) => {
     try {
       const PDFDocument = (await import("pdfkit")).default;
+      const { listOneDriveItems } = await import("./onedrive");
       const allSemesters = await storage.getAllSemesterSettings();
-
-      const knownSemDefs = [
-        { key: 'w2026', type: 'winter', year: 2026, name: 'Winter 2026', start: '2026-01-12' },
-        { key: 'ss2026', type: 'spring_summer', year: 2026, name: 'Spring/Summer 2026', start: '2026-05-04' },
-        { key: 'f2026', type: 'fall', year: 2026, name: 'Fall 2026', start: '2026-09-14' },
-        { key: 'w2027', type: 'winter', year: 2027, name: 'Winter 2027', start: '2027-01-11' },
-        { key: 'ss2027', type: 'spring_summer', year: 2027, name: 'Spring/Summer 2027', start: '2027-05-03' },
-        { key: 'f2027', type: 'fall', year: 2027, name: 'Fall 2027', start: '2027-09-13' },
-        { key: 'w2028', type: 'winter', year: 2028, name: 'Winter 2028', start: '2028-01-10' },
-        { key: 'ss2028', type: 'spring_summer', year: 2028, name: 'Spring/Summer 2028', start: '2028-05-01' },
-        { key: 'f2028', type: 'fall', year: 2028, name: 'Fall 2028', start: '2028-09-11' },
-        { key: 'w2029', type: 'winter', year: 2029, name: 'Winter 2029', start: '2029-01-15' },
-      ];
 
       const dbSemByKey = new Map<string, any>();
       for (const sem of (allSemesters || [])) {
@@ -3582,35 +3570,119 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         dbSemByKey.set(`${prefix}${yr}`, sem);
       }
 
-      const auditRows: Array<{ semester: string; slotNum: number; courseCode: string; courseName: string; displayName: string; folderPath: string; term?: string }> = [];
+      const knownSemKeys = [
+        'w2026', 'ss2026', 'f2026',
+        'w2027', 'ss2027', 'f2027',
+        'w2028', 'ss2028', 'f2028',
+        'w2029',
+      ];
 
-      for (const semDef of knownSemDefs) {
-        const sem = dbSemByKey.get(semDef.key);
-        const isSpSu = semDef.type.includes('spring') || semDef.type.includes('summer');
-        const semFolder = isSpSu ? 'Spring & Summer' : semDef.type.includes('fall') ? 'Fall' : 'Winter';
-        const basePath = `/School/1. TMU/Courses/${semDef.year}/${semFolder}`;
+      const semKeyToName: Record<string, string> = {
+        'w2026': 'Winter 2026', 'ss2026': 'Spring/Summer 2026', 'f2026': 'Fall 2026',
+        'w2027': 'Winter 2027', 'ss2027': 'Spring/Summer 2027', 'f2027': 'Fall 2027',
+        'w2028': 'Winter 2028', 'ss2028': 'Spring/Summer 2028', 'f2028': 'Fall 2028',
+        'w2029': 'Winter 2029',
+      };
+
+      type AuditRow = {
+        semester: string;
+        slotNum: number;
+        dbCourseCode: string;
+        dbCourseName: string;
+        dbDisplayName: string;
+        dbTerm: string;
+        expectedPath: string;
+        oneDriveExists: boolean;
+        oneDriveFolderName: string;
+        oneDriveFolders: string[];
+        mismatch: string;
+      };
+
+      const auditRows: AuditRow[] = [];
+
+      for (const semKey of knownSemKeys) {
+        const sem = dbSemByKey.get(semKey);
+        const semName = semKeyToName[semKey];
+        const isSpSu = semKey.startsWith('ss');
+        const isFall = semKey.startsWith('f');
+        const year = parseInt(semKey.replace(/\D/g, ''));
+        const semFolder = isSpSu ? 'Spring & Summer' : isFall ? 'Fall' : 'Winter';
+        const basePath = `/School/1. TMU/Courses/${year}/${semFolder}`;
+
+        let oneDriveFolders: string[] = [];
+        try {
+          const items = await listOneDriveItems(basePath);
+          oneDriveFolders = items.filter((it: any) => it.type === 'folder').map((it: any) => it.name);
+        } catch (e: any) {
+          oneDriveFolders = [`[ERROR listing: ${e.message}]`];
+        }
+
+        let subFolders: Record<string, string[]> = {};
+        if (isSpSu) {
+          for (const sub of ['Spring - First Half', 'Summer - Second Half', 'Full']) {
+            try {
+              const items = await listOneDriveItems(`${basePath}/${sub}`);
+              subFolders[sub] = items.filter((it: any) => it.type === 'folder').map((it: any) => it.name);
+            } catch { subFolders[sub] = []; }
+          }
+        }
 
         for (let i = 1; i <= 3; i++) {
-          const code = sem ? ((sem as any)[`course${i}Code`] || 'TBD' + i) : ('TBD' + i);
-          const name = sem ? ((sem as any)[`course${i}Name`] || 'TBD') : 'TBD';
+          const code = sem ? ((sem as any)[`course${i}Code`] || `TBD${i}`) : `TBD${i}`;
+          const name = sem ? ((sem as any)[`course${i}Name`] || '') : '';
           const displayName = sem ? ((sem as any)[`course${i}DisplayName`] || '') : '';
           const term = isSpSu && sem ? ((sem as any)[`course${i}SpringSummerTerm`] || '') : '';
+
           const folderName = buildCourseFolderName(code, name);
-          let coursePath = basePath;
+          let expectedParent = basePath;
           if (isSpSu && term) {
             const tl = term.toLowerCase();
-            if (tl === 'first_half') coursePath = `${basePath}/Spring - First Half`;
-            else if (tl === 'second_half') coursePath = `${basePath}/Summer - Second Half`;
-            else coursePath = `${basePath}/Full`;
+            if (tl === 'first_half') expectedParent = `${basePath}/Spring - First Half`;
+            else if (tl === 'second_half') expectedParent = `${basePath}/Summer - Second Half`;
+            else expectedParent = `${basePath}/Full`;
           }
+          const expectedPath = `${expectedParent}/${folderName}`;
+
+          let oneDriveExists = false;
+          let matchedFolderName = '';
+          let searchFolders = oneDriveFolders;
+          if (isSpSu && term) {
+            const tl = term.toLowerCase();
+            if (tl === 'first_half') searchFolders = subFolders['Spring - First Half'] || [];
+            else if (tl === 'second_half') searchFolders = subFolders['Summer - Second Half'] || [];
+            else searchFolders = subFolders['Full'] || [];
+          }
+
+          for (const f of searchFolders) {
+            if (f === folderName) { oneDriveExists = true; matchedFolderName = f; break; }
+            if (f.toLowerCase().startsWith(code.toLowerCase())) { oneDriveExists = true; matchedFolderName = f; break; }
+          }
+
+          let mismatch = '';
+          if (!sem) {
+            mismatch = 'No DB record for this semester';
+          } else if (code.startsWith('TBD')) {
+            mismatch = 'Course slot not assigned in DB';
+          } else if (!oneDriveExists) {
+            mismatch = 'OneDrive folder NOT found';
+          } else if (matchedFolderName && matchedFolderName !== folderName) {
+            mismatch = `Name mismatch: OneDrive="${matchedFolderName}" vs DB="${folderName}"`;
+          } else {
+            mismatch = 'OK';
+          }
+
           auditRows.push({
-            semester: semDef.name,
+            semester: semName,
             slotNum: i,
-            courseCode: code,
-            courseName: name,
-            displayName,
-            folderPath: `${coursePath}/${folderName}`,
-            term: term || undefined,
+            dbCourseCode: code,
+            dbCourseName: name,
+            dbDisplayName: displayName,
+            dbTerm: term,
+            expectedPath,
+            oneDriveExists,
+            oneDriveFolderName: matchedFolderName,
+            oneDriveFolders: searchFolders,
+            mismatch,
           });
         }
       }
@@ -3618,45 +3690,67 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       const doc = new PDFDocument({ margin: 40, size: 'LETTER' });
       const chunks: Buffer[] = [];
       doc.on('data', (chunk: Buffer) => chunks.push(chunk));
-
       const pdfReady = new Promise<Buffer>((resolve) => {
         doc.on('end', () => resolve(Buffer.concat(chunks)));
       });
 
-      doc.fontSize(18).font('Helvetica-Bold').text('UniCal — Semester & Course Audit', { align: 'center' });
-      doc.moveDown(0.3);
+      doc.fontSize(16).font('Helvetica-Bold').text('UniCal — Course Audit (OneDrive Verified)', { align: 'center' });
+      doc.moveDown(0.2);
       doc.fontSize(9).font('Helvetica').fillColor('#666666').text(`Generated: ${new Date().toLocaleString('en-US', { timeZone: 'America/Toronto', dateStyle: 'full', timeStyle: 'short' })}`, { align: 'center' });
+      doc.moveDown(0.2);
+      doc.fontSize(8).font('Helvetica').fillColor('#888888').text('Each course was individually checked against the actual OneDrive folder structure.', { align: 'center' });
       doc.moveDown(1);
 
       let currentSem = '';
+      const issues: string[] = [];
       for (const row of auditRows) {
-        if (doc.y > 680) {
-          doc.addPage();
-        }
+        if (doc.y > 650) doc.addPage();
         if (row.semester !== currentSem) {
           if (currentSem) doc.moveDown(0.5);
           currentSem = row.semester;
           doc.fontSize(13).font('Helvetica-Bold').fillColor('#1a3a6e').text(row.semester);
-          doc.moveDown(0.15);
+          doc.moveDown(0.1);
           doc.strokeColor('#1a3a6e').lineWidth(1).moveTo(40, doc.y).lineTo(572, doc.y).stroke();
-          doc.moveDown(0.4);
+          doc.moveDown(0.3);
         }
-        const label = row.displayName || `${row.courseCode}${row.courseName && row.courseName !== row.courseCode ? ' - ' + row.courseName : ''}`;
+
+        const statusColor = row.mismatch === 'OK' ? '#1a7a2e' : '#cc3300';
+        const statusIcon = row.mismatch === 'OK' ? '✓' : '✗';
+        const label = row.dbDisplayName || `${row.dbCourseCode}${row.dbCourseName ? ' - ' + row.dbCourseName : ''}`;
+
         doc.fontSize(10).font('Helvetica-Bold').fillColor('#000000').text(`  Slot ${row.slotNum}: ${label}`);
-        doc.fontSize(8.5).font('Helvetica').fillColor('#444444').text(`    Code: ${row.courseCode}    |    Name: ${row.courseName}${row.term ? '    |    Term: ' + row.term : ''}`);
-        doc.fontSize(8).font('Helvetica').fillColor('#666666').text(`    Path: ${row.folderPath}`);
-        doc.moveDown(0.4);
+        doc.fontSize(8.5).font('Helvetica').fillColor('#444444').text(`    Code: ${row.dbCourseCode}    |    Name: ${row.dbCourseName || '(none)'}${row.dbTerm ? '    |    Term: ' + row.dbTerm : ''}`);
+        doc.fontSize(8).font('Helvetica').fillColor('#666666').text(`    Expected path: ${row.expectedPath}`);
+        if (row.oneDriveExists && row.oneDriveFolderName) {
+          doc.fontSize(8).font('Helvetica').fillColor('#666666').text(`    OneDrive folder: ${row.oneDriveFolderName}`);
+        }
+        doc.fontSize(9).font('Helvetica-Bold').fillColor(statusColor).text(`    ${statusIcon} ${row.mismatch}`);
+        doc.moveDown(0.35);
+
+        if (row.mismatch !== 'OK') issues.push(`${row.semester} Slot ${row.slotNum}: ${row.mismatch}`);
+      }
+
+      if (issues.length > 0) {
+        doc.addPage();
+        doc.fontSize(14).font('Helvetica-Bold').fillColor('#cc3300').text('Issues Summary');
+        doc.moveDown(0.3);
+        for (const issue of issues) {
+          doc.fontSize(9).font('Helvetica').fillColor('#333333').text(`  • ${issue}`);
+          doc.moveDown(0.15);
+        }
       }
 
       doc.end();
       const pdfBuffer = await pdfReady;
 
+      const okCount = auditRows.filter(r => r.mismatch === 'OK').length;
       const result = await sendGmailWithAttachment({
         to: 'bryn.kai-hendricks@outlook.com',
-        subject: 'UniCal — Semester & Course Audit Report',
+        subject: `UniCal — Course Audit: ${okCount}/${auditRows.length} verified`,
         htmlBody: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
-          <h2 style="color:#1a3a6e">UniCal — Semester & Course Audit</h2>
-          <p>Attached is the full audit of all ${auditRows.length} course slots across ${knownSemDefs.length} semesters.</p>
+          <h2 style="color:#1a3a6e">UniCal — Course Audit (OneDrive Verified)</h2>
+          <p><strong>${okCount}/${auditRows.length}</strong> course slots verified against OneDrive.</p>
+          ${issues.length > 0 ? `<p style="color:#cc3300"><strong>${issues.length} issue(s) found:</strong></p><ul style="font-size:13px">${issues.map(i => `<li>${i}</li>`).join('')}</ul>` : '<p style="color:#1a7a2e">All courses verified — no issues found.</p>'}
           <p style="color:#888;font-size:12px">Generated ${new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' })}</p>
         </div>`,
         attachments: [{
@@ -3667,7 +3761,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       });
 
       if (result.success) {
-        res.json({ success: true, courses: auditRows.length, semesters: knownSemDefs.length });
+        res.json({ success: true, verified: okCount, total: auditRows.length, issues: issues.length });
       } else {
         res.status(500).json({ error: result.error });
       }

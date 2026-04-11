@@ -1788,7 +1788,7 @@ export default function Dashboard() {
         'ss2025': '2025-05-05', 'f2025': '2025-09-08', 'w2026': '2026-01-12',
         'ss2026': '2026-05-04', 'f2026': '2026-09-14', 'w2027': '2027-01-11',
         'ss2027': '2027-05-03', 'f2027': '2027-09-13', 'w2028': '2028-01-10',
-        'ss2028': '2028-05-01', 'f2028': '2028-09-11', 'w2029': '2029-01-15', 'ss2029': '2029-05-07', 'f2029': '2029-09-10',
+        'ss2028': '2028-05-01', 'f2028': '2028-09-11', 'w2029': '2029-01-15',
       };
       const ss = semesterSettingsRef.current;
       let semStartDate: Date;
@@ -3687,7 +3687,7 @@ export default function Dashboard() {
     localStorage.setItem('semesterCourseAssignments', JSON.stringify(assignments));
     saveDegreeToServer('semesterCourseAssignments', assignments);
   };
-  const semesterKeyOrder = ['ss2025', 'f2025', 'w2026', 'ss2026', 'f2026', 'w2027', 'ss2027', 'f2027', 'w2028', 'ss2028', 'f2028', 'w2029', 'ss2029', 'f2029'];
+  const semesterKeyOrder = ['ss2025', 'f2025', 'w2026', 'ss2026', 'f2026', 'w2027', 'ss2027', 'f2027', 'w2028', 'ss2028', 'f2028', 'w2029'];
   const addCourseToNextAvailableSemester = (courseCode: string, courseName: string, fullName: string) => {
     const codeNorm = courseCode.toUpperCase().replace(/\s/g, '');
     const allAssigned = Object.values(semesterCourseAssignments).flat();
@@ -3696,7 +3696,7 @@ export default function Dashboard() {
     const semStartDatesMap: Record<string, string> = {
       'ss2025': '2025-05-05', 'f2025': '2025-09-08', 'w2026': '2026-01-12',
       'ss2026': '2026-05-04', 'f2026': '2026-09-14', 'w2027': '2027-01-11',
-      'ss2027': '2027-05-03', 'f2027': '2027-09-13', 'w2028': '2028-01-10', 'ss2028': '2028-05-01', 'f2028': '2028-09-11', 'w2029': '2029-01-15', 'ss2029': '2029-05-07', 'f2029': '2029-09-10',
+      'ss2027': '2027-05-03', 'f2027': '2027-09-13', 'w2028': '2028-01-10', 'ss2028': '2028-05-01', 'f2028': '2028-09-11', 'w2029': '2029-01-15',
     };
     const futureSems = semesterKeyOrder.filter(k => {
       const start = semStartDatesMap[k];
@@ -5069,7 +5069,7 @@ export default function Dashboard() {
     const semStartDates: Record<string, string> = {
       'ss2025': '2025-05-05', 'f2025': '2025-09-08', 'w2026': '2026-01-12',
       'ss2026': '2026-05-04', 'f2026': '2026-09-14', 'w2027': '2027-01-11',
-      'ss2027': '2027-05-03', 'f2027': '2027-09-13', 'w2028': '2028-01-10', 'ss2028': '2028-05-01', 'f2028': '2028-09-11', 'w2029': '2029-01-15', 'ss2029': '2029-05-07', 'f2029': '2029-09-10',
+      'ss2027': '2027-05-03', 'f2027': '2027-09-13', 'w2028': '2028-01-10', 'ss2028': '2028-05-01', 'f2028': '2028-09-11', 'w2029': '2029-01-15',
     };
     const semesterDefs = [
       { key: 'ss2025', courses: ['CPPA101','CPPA120','CPPA102'] },
@@ -6680,7 +6680,7 @@ export default function Dashboard() {
     const semLabelMap: Record<string, string> = {
       'ss2025': 'SS25', 'f2025': 'F25', 'w2026': 'W26', 'ss2026': 'SS26', 'f2026': 'F26',
       'w2027': 'W27', 'ss2027': 'SS27', 'f2027': 'F27', 'w2028': 'W28', 'ss2028': 'SS28',
-      'f2028': 'F28', 'w2029': 'W29', 'ss2029': 'SS29', 'f2029': 'F29',
+      'f2028': 'F28', 'w2029': 'W29',
     };
     const SEMKEY_TO_DB_MAP: Record<string, { type: string; year: string }> = {
       'ss2025': { type: 'spring_summer', year: '2025' }, 'f2025': { type: 'fall', year: '2025' },
@@ -6689,7 +6689,6 @@ export default function Dashboard() {
       'ss2027': { type: 'spring_summer', year: '2027' }, 'f2027': { type: 'fall', year: '2027' },
       'w2028': { type: 'winter', year: '2028' }, 'ss2028': { type: 'spring_summer', year: '2028' },
       'f2028': { type: 'fall', year: '2028' }, 'w2029': { type: 'winter', year: '2029' },
-      'ss2029': { type: 'spring_summer', year: '2029' }, 'f2029': { type: 'fall', year: '2029' },
     };
     for (const semKey of semesterKeyOrder) {
       const courses = semesterCourseAssignments[semKey] || [];
@@ -7073,7 +7072,6 @@ export default function Dashboard() {
     'ss2027': { type: 'spring_summer', year: 2027 }, 'f2027': { type: 'fall', year: 2027 },
     'w2028': { type: 'winter', year: 2028 }, 'ss2028': { type: 'spring_summer', year: 2028 },
     'f2028': { type: 'fall', year: 2028 }, 'w2029': { type: 'winter', year: 2029 },
-    'ss2029': { type: 'spring_summer', year: 2029 }, 'f2029': { type: 'fall', year: 2029 },
   };
 
   const findSemSlot = (semKey: string | undefined, courseCode: string, allSems: any[] | undefined): { sem: any; slot: number } | null => {
@@ -18436,7 +18434,7 @@ export default function Dashboard() {
               </Button>
               </div>
               {(() => {
-                const semKeyOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029','ss2029','f2029'];
+                const semKeyOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029'];
                 const now = new Date();
                 const currentSemIdx = (() => {
                   if (now >= new Date('2025-05-05') && now <= new Date('2025-08-08')) return semKeyOrder.indexOf('ss2025');
@@ -18451,8 +18449,6 @@ export default function Dashboard() {
                   if (now >= new Date('2028-05-01') && now <= new Date('2028-08-04')) return semKeyOrder.indexOf('ss2028');
                   if (now >= new Date('2028-09-11') && now <= new Date('2028-12-15')) return semKeyOrder.indexOf('f2028');
                   if (now >= new Date('2029-01-15') && now <= new Date('2029-04-13')) return semKeyOrder.indexOf('w2029');
-                  if (now >= new Date('2029-05-07') && now <= new Date('2029-08-07')) return semKeyOrder.indexOf('ss2029');
-                  if (now >= new Date('2029-09-10') && now <= new Date('2029-12-03')) return semKeyOrder.indexOf('f2029');
                   return -1;
                 })();
                 const relevantSemKeys = currentSemIdx >= 0 ? semKeyOrder.slice(0, currentSemIdx + 1) : [];
@@ -19956,7 +19952,7 @@ export default function Dashboard() {
               }
 
               if (!revertFired) {
-                const semKeyOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029','ss2029','f2029'];
+                const semKeyOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029'];
                 for (const sk of Object.keys(semesterCourseAssignments)) {
                   const courses = semesterCourseAssignments[sk] || [];
                   const idx = courses.findIndex((c: any) => c.code.replace(/\s/g, '') === codeNorm);
@@ -20015,7 +20011,7 @@ export default function Dashboard() {
               const semStartDatesForDialog: Record<string, string> = {
                 'ss2025': '2025-05-05', 'f2025': '2025-09-08', 'w2026': '2026-01-12',
                 'ss2026': '2026-05-04', 'f2026': '2026-09-14', 'w2027': '2027-01-11',
-                'ss2027': '2027-05-03', 'f2027': '2027-09-13', 'w2028': '2028-01-10', 'ss2028': '2028-05-01', 'f2028': '2028-09-11', 'w2029': '2029-01-15', 'ss2029': '2029-05-07', 'f2029': '2029-09-10',
+                'ss2027': '2027-05-03', 'f2027': '2027-09-13', 'w2028': '2028-01-10', 'ss2028': '2028-05-01', 'f2028': '2028-09-11', 'w2029': '2029-01-15',
               };
               for (const sk of semesterKeyOrder) {
                 const courses = semesterCourseAssignments[sk] || [];
@@ -25630,7 +25626,7 @@ export default function Dashboard() {
                   const semStartDates: Record<string, string> = {
                     'ss2025': '2025-05-05', 'f2025': '2025-09-08', 'w2026': '2026-01-12',
                     'ss2026': '2026-05-04', 'f2026': '2026-09-14', 'w2027': '2027-01-11',
-                    'ss2027': '2027-05-03', 'f2027': '2027-09-13', 'w2028': '2028-01-10', 'ss2028': '2028-05-01', 'f2028': '2028-09-11', 'w2029': '2029-01-15', 'ss2029': '2029-05-07', 'f2029': '2029-09-10',
+                    'ss2027': '2027-05-03', 'f2027': '2027-09-13', 'w2028': '2028-01-10', 'ss2028': '2028-05-01', 'f2028': '2028-09-11', 'w2029': '2029-01-15',
                   };
                   const hasSemStarted = (key: string) => {
                     const start = semStartDates[key];
@@ -25954,7 +25950,7 @@ export default function Dashboard() {
                               }}
                             >
                               <div className="border-b flex-shrink-0" style={(() => {
-                                const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029','ss2029','f2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })();
+                                const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })();
                                 const isEnded = semesterEndConfirmed[sem.key];
                                 const semDef = SEMESTER_COURSE_DEFS.find(s => s.key === sem.key);
                                 const semHasStarted = semDef ? new Date() >= new Date(semDef.start) : false;
@@ -25979,8 +25975,8 @@ export default function Dashboard() {
                                       const ps = perSemesterSettings[sem.key] as any;
                                       if (ps?.week1StartDate || ps?.semesterEndDate) {
                                         const fmtDate = (d: string) => { if (!d) return '?'; const dt = new Date(d + 'T12:00:00'); return dt.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); };
-                                        const semStartDatesLocal: Record<string, string> = { 'f2025': '2025-09-08', 'w2026': '2026-01-12', 'f2026': '2026-09-14', 'w2027': '2027-01-11', 'f2027': '2027-09-13', 'w2028': '2028-01-10', 'f2028': '2028-09-11', 'w2029': '2029-01-15', 'ss2029': '2029-05-07', 'f2029': '2029-09-10' };
-                                        const semEndDatesLocal: Record<string, string> = { 'f2025': '2025-12-12', 'w2026': '2026-04-17', 'f2026': '2026-12-11', 'w2027': '2027-04-16', 'f2027': '2027-12-17', 'w2028': '2028-04-14', 'f2028': '2028-12-15', 'w2029': '2029-04-13', 'ss2029': '2029-08-07', 'f2029': '2029-12-03' };
+                                        const semStartDatesLocal: Record<string, string> = { 'f2025': '2025-09-08', 'w2026': '2026-01-12', 'f2026': '2026-09-14', 'w2027': '2027-01-11', 'f2027': '2027-09-13', 'w2028': '2028-01-10', 'f2028': '2028-09-11', 'w2029': '2029-01-15' };
+                                        const semEndDatesLocal: Record<string, string> = { 'f2025': '2025-12-12', 'w2026': '2026-04-17', 'f2026': '2026-12-11', 'w2027': '2027-04-16', 'f2027': '2027-12-17', 'w2028': '2028-04-14', 'f2028': '2028-12-15', 'w2029': '2029-04-13' };
                                         const startStr = ps.week1StartDate || semStartDatesLocal[sem.key] || '';
                                         const endStr = ps.semesterEndDate || semEndDatesLocal[sem.key] || '';
                                         return `${fmtDate(startStr)} – ${fmtDate(endStr)}`;
@@ -26004,7 +26000,7 @@ export default function Dashboard() {
                                     );
                                   })()}
                                   {isCurrentSem && <span className="text-[7px] font-bold text-white bg-emerald-500/20 px-1 py-0.5 rounded-full border border-white">CURRENT</span>}
-                                  {(() => { const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029','ss2029','f2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })(); const isConfirmedEnded = semesterEndConfirmed[sem.key]; return (isPast || isConfirmedEnded) ? <span className="text-[7px] font-bold tracking-wider uppercase px-1 py-0 rounded border" style={{ color: '#ffffff', background: colorSettings.headerBar, borderColor: 'rgba(255,255,255,0.2)', lineHeight: '14px' }}>COMPLETE</span> : null; })()}
+                                  {(() => { const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })(); const isConfirmedEnded = semesterEndConfirmed[sem.key]; return (isPast || isConfirmedEnded) ? <span className="text-[7px] font-bold tracking-wider uppercase px-1 py-0 rounded border" style={{ color: '#ffffff', background: colorSettings.headerBar, borderColor: 'rgba(255,255,255,0.2)', lineHeight: '14px' }}>COMPLETE</span> : null; })()}
                                 </div>
                                 <span className="text-[10px] text-white whitespace-nowrap ml-1">{(() => {
                                   const letterToGpa: Record<string, number> = { 'A+': 4.33, 'A': 4.0, 'A-': 3.67, 'B+': 3.33, 'B': 3.0, 'B-': 2.67, 'C+': 2.33, 'C': 2.0, 'C-': 1.67, 'D': 1.0, 'F': 0 };
@@ -26045,7 +26041,7 @@ export default function Dashboard() {
                                     'ss2025': '2025-08-08', 'f2025': '2025-12-12', 'w2026': '2026-04-17',
                                     'ss2026': '2026-08-07', 'f2026': '2026-12-11', 'w2027': '2027-04-16',
                                     'ss2027': '2027-08-06', 'f2027': '2027-12-17', 'w2028': '2028-04-14',
-                                    'ss2028': '2028-08-04', 'f2028': '2028-12-15', 'w2029': '2029-04-13', 'ss2029': '2029-08-07', 'f2029': '2029-12-03',
+                                    'ss2028': '2028-08-04', 'f2028': '2028-12-15', 'w2029': '2029-04-13',
                                   };
                                   const startStr = semStartDates[sem.key];
                                   const endStr = semEndDates[sem.key];
@@ -26146,13 +26142,13 @@ export default function Dashboard() {
                   'ss2025': '2025-05-05', 'f2025': '2025-09-08', 'w2026': '2026-01-12',
                   'ss2026': '2026-05-04', 'f2026': '2026-09-14', 'w2027': '2027-01-11',
                   'ss2027': '2027-05-03', 'f2027': '2027-09-13', 'w2028': '2028-01-10',
-                  'ss2028': '2028-05-01', 'f2028': '2028-09-11', 'w2029': '2029-01-15', 'ss2029': '2029-05-07', 'f2029': '2029-09-10',
+                  'ss2028': '2028-05-01', 'f2028': '2028-09-11', 'w2029': '2029-01-15',
                 };
                 const semEndDatesLocal: Record<string, string> = {
                   'ss2025': '2025-08-08', 'f2025': '2025-12-12', 'w2026': '2026-04-17',
                   'ss2026': '2026-08-07', 'f2026': '2026-12-11', 'w2027': '2027-04-16',
                   'ss2027': '2027-08-06', 'f2027': '2027-12-17', 'w2028': '2028-04-14',
-                  'ss2028': '2028-08-04', 'f2028': '2028-12-15', 'w2029': '2029-04-13', 'ss2029': '2029-08-07', 'f2029': '2029-12-03',
+                  'ss2028': '2028-08-04', 'f2028': '2028-12-15', 'w2029': '2029-04-13',
                 };
 
                 if (semDatePickerHalf === 'spring' || semDatePickerHalf === 'summer') {
@@ -29058,8 +29054,7 @@ export default function Dashboard() {
                                   { key: 'ss2028', start: '2028-05-01', end: '2028-08-01', weeks: 14 },
                                   { key: 'f2028', start: '2028-09-11', end: '2028-12-04', weeks: 13 },
                                   { key: 'w2029', start: '2029-01-15', end: '2029-04-13', weeks: 13 },
-                                  { key: 'ss2029', start: '2029-05-07', end: '2029-08-07', weeks: 14 },
-                                  { key: 'f2029', start: '2029-09-10', end: '2029-12-03', weeks: 13 },
+
                                 ];
                                 const activeSem = semDefs.find(s => satDate >= new Date(s.start + 'T00:00:00') && satDate <= new Date(s.end + 'T23:59:59'));
                                 if (activeSem) {
@@ -29105,8 +29100,7 @@ export default function Dashboard() {
                                   { key: 'ss2028', start: '2028-05-01', end: '2028-08-01', weeks: 14 },
                                   { key: 'f2028', start: '2028-09-11', end: '2028-12-04', weeks: 13 },
                                   { key: 'w2029', start: '2029-01-15', end: '2029-04-13', weeks: 13 },
-                                  { key: 'ss2029', start: '2029-05-07', end: '2029-08-07', weeks: 14 },
-                                  { key: 'f2029', start: '2029-09-10', end: '2029-12-03', weeks: 13 },
+
                                 ];
                                 const dayDate = new Date(day.getFullYear(), day.getMonth(), day.getDate(), 12, 0, 0);
                                 const activeSem = semDefs.find(s => dayDate >= new Date(s.start + 'T00:00:00') && dayDate <= new Date(s.end + 'T23:59:59'));
@@ -29158,8 +29152,7 @@ export default function Dashboard() {
                                   { key: 'ss2028', start: '2028-05-01', end: '2028-08-01', weeks: 14 },
                                   { key: 'f2028', start: '2028-09-11', end: '2028-12-04', weeks: 13 },
                                   { key: 'w2029', start: '2029-01-15', end: '2029-04-13', weeks: 13 },
-                                  { key: 'ss2029', start: '2029-05-07', end: '2029-08-07', weeks: 14 },
-                                  { key: 'f2029', start: '2029-09-10', end: '2029-12-03', weeks: 13 },
+
                                 ];
                                 const dayDate = new Date(day.getFullYear(), day.getMonth(), day.getDate(), 12, 0, 0);
                                 const activeSem = semDefs.find(s => dayDate >= new Date(s.start + 'T00:00:00') && dayDate <= new Date(s.end + 'T23:59:59'));
@@ -29324,13 +29317,13 @@ export default function Dashboard() {
                   'ss2025': '2025-05-05', 'f2025': '2025-09-08', 'w2026': '2026-01-12',
                   'ss2026': '2026-05-04', 'f2026': '2026-09-14', 'w2027': '2027-01-11',
                   'ss2027': '2027-05-03', 'f2027': '2027-09-13', 'w2028': '2028-01-10',
-                  'ss2028': '2028-05-01', 'f2028': '2028-09-11', 'w2029': '2029-01-15', 'ss2029': '2029-05-07', 'f2029': '2029-09-10',
+                  'ss2028': '2028-05-01', 'f2028': '2028-09-11', 'w2029': '2029-01-15',
                 };
                 const semEndDates: Record<string, string> = {
                   'ss2025': '2025-08-08', 'f2025': '2025-12-12', 'w2026': '2026-04-17',
                   'ss2026': '2026-08-07', 'f2026': '2026-12-11', 'w2027': '2027-04-16',
                   'ss2027': '2027-08-06', 'f2027': '2027-12-17', 'w2028': '2028-04-14',
-                  'ss2028': '2028-08-04', 'f2028': '2028-12-15', 'w2029': '2029-04-13', 'ss2029': '2029-08-07', 'f2029': '2029-12-03',
+                  'ss2028': '2028-08-04', 'f2028': '2028-12-15', 'w2029': '2029-04-13',
                 };
                 const ssCourseOverrides: Record<string, { startDate: string; endDate: string }> = {
                   'ss2026:CECN210': { startDate: '2026-05-04', endDate: '2026-07-31' },
@@ -29338,7 +29331,7 @@ export default function Dashboard() {
                   'ss2026:CHIS105': { startDate: '2026-06-23', endDate: '2026-08-07' },
                 };
                 const allDisplayCourses: Array<{ name: string; color: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; courseFontColor?: string; professor: string; professorEmail?: string; _semKey: string; displayName?: string }> = [];
-                const semKeyOrder = ['w2026', 'ss2026', 'f2026', 'w2027', 'ss2027', 'f2027', 'w2028', 'ss2028', 'f2028', 'w2029', 'ss2029', 'f2029'];
+                const semKeyOrder = ['w2026', 'ss2026', 'f2026', 'w2027', 'ss2027', 'f2027', 'w2028', 'ss2028', 'f2028', 'w2029'];
                 for (const semKey of semKeyOrder) {
                   if (semesterEndConfirmed[semKey]) continue;
                   const semStart = semStartDates[semKey];
@@ -36375,7 +36368,7 @@ export default function Dashboard() {
               <div className="fixed inset-0 z-[10003] bg-black/50" onClick={() => setSemChecklistFlyoutKey(null)} />
               <NewSemesterChecklist
                 semesterKey={semChecklistFlyoutKey}
-                semesterLabel={(() => { const m: Record<string, string> = { 'ss2025': 'Spring/Summer 2025', 'f2025': 'Fall 2025', 'w2026': 'Winter 2026', 'ss2026': 'Spring/Summer 2026', 'f2026': 'Fall 2026', 'w2027': 'Winter 2027', 'ss2027': 'Spring/Summer 2027', 'f2027': 'Fall 2027', 'w2028': 'Winter 2028', 'ss2028': 'Spring/Summer 2028', 'f2028': 'Fall 2028', 'w2029': 'Winter 2029', 'ss2029': 'Spring/Summer 2029', 'f2029': 'Fall 2029' }; return m[semChecklistFlyoutKey] || semChecklistFlyoutKey; })()}
+                semesterLabel={(() => { const m: Record<string, string> = { 'ss2025': 'Spring/Summer 2025', 'f2025': 'Fall 2025', 'w2026': 'Winter 2026', 'ss2026': 'Spring/Summer 2026', 'f2026': 'Fall 2026', 'w2027': 'Winter 2027', 'ss2027': 'Spring/Summer 2027', 'f2027': 'Fall 2027', 'w2028': 'Winter 2028', 'ss2028': 'Spring/Summer 2028', 'f2028': 'Fall 2028', 'w2029': 'Winter 2029' }; return m[semChecklistFlyoutKey] || semChecklistFlyoutKey; })()}
                 colorSettings={colorSettings}
                 onDismiss={() => setSemChecklistFlyoutKey(null)}
                 noBackdrop
