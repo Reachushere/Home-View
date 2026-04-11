@@ -42,7 +42,7 @@ async function refreshAccessToken(refreshToken: string): Promise<{ access_token:
 
   const controller = new AbortController();
   const fetchTimeout = setTimeout(() => controller.abort(), 15000);
-  const response = await fetch('https://login.microsoftonline.com/common/oauth2/v2.0/token', {
+  const response = await fetch('https://login.microsoftonline.com/consumers/oauth2/v2.0/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: params.toString(),
@@ -64,7 +64,7 @@ export async function startDeviceCodeFlow(): Promise<{ user_code: string; verifi
     scope: ONEDRIVE_SCOPES,
   });
 
-  const response = await fetch('https://login.microsoftonline.com/common/oauth2/v2.0/devicecode', {
+  const response = await fetch('https://login.microsoftonline.com/consumers/oauth2/v2.0/devicecode', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: params.toString(),
@@ -90,7 +90,7 @@ export async function pollDeviceCodeAuth(deviceCode: string, interval: number = 
       device_code: deviceCode,
     });
 
-    const response = await fetch('https://login.microsoftonline.com/common/oauth2/v2.0/token', {
+    const response = await fetch('https://login.microsoftonline.com/consumers/oauth2/v2.0/token', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: params.toString(),
