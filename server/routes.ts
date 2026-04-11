@@ -911,15 +911,25 @@ export async function registerRoutes(
   })();
 
   setTimeout(async () => {
+    console.log('[AutoImport] Starting auto-import check...');
     try {
-      const fs = await import("fs");
-      const path = await import("path");
+      const cwd = process.cwd();
+      console.log(`[AutoImport] Working directory: ${cwd}`);
       const stripBrackets = (s: string) => (s || '').replace(/\[.*?\]\s*/g, '').trim();
-      const tasksFile = path.join(process.cwd(), 'pi-import-tasks.json');
+
+      const tasksFile = path.join(cwd, 'pi-import-tasks.json');
+      console.log(`[AutoImport] Looking for tasks file: ${tasksFile}`);
+      console.log(`[AutoImport] File exists: ${fs.existsSync(tasksFile)}`);
+
       if (fs.existsSync(tasksFile)) {
-        const incoming = JSON.parse(fs.readFileSync(tasksFile, 'utf8'));
+        const raw = fs.readFileSync(tasksFile, 'utf8');
+        console.log(`[AutoImport] Tasks file size: ${raw.length} bytes`);
+        const incoming = JSON.parse(raw);
+        console.log(`[AutoImport] Parsed ${incoming.length} tasks from file`);
+
         if (Array.isArray(incoming) && incoming.length > 0) {
           const existing = await storage.getTasks({});
+          console.log(`[AutoImport] DB currently has ${existing.length} tasks`);
           const existingKeys = new Set<string>();
           for (const t of existing) {
             const title = stripBrackets(t.title || '').toLowerCase();
@@ -927,7 +937,7 @@ export async function registerRoutes(
             existingKeys.add(`${title}||${dateKey}`);
             existingKeys.add(`${(t.title || '').toLowerCase()}||${dateKey}`);
           }
-          let created = 0, skipped = 0;
+          let created = 0, skipped = 0, failed = 0;
           for (const t of incoming) {
             const title = stripBrackets(t.title || '').toLowerCase();
             const dateKey = t.dueDate ? new Date(t.dueDate).toISOString().split('T')[0] : '';
@@ -947,30 +957,53 @@ export async function registerRoutes(
               created++;
               existingKeys.add(`${title}||${dateKey}`);
             } catch (e: any) {
-              console.error(`[AutoImport] Failed to create task "${t.title}": ${e.message}`);
+              failed++;
+              console.error(`[AutoImport] FAILED task "${t.title}": ${e.message}`);
             }
           }
-          if (created > 0) console.log(`[AutoImport] Tasks: ${created} created, ${skipped} skipped (already exist)`);
-          else if (skipped > 0) console.log(`[AutoImport] Tasks: all ${skipped} already exist, nothing to import`);
+          console.log(`[AutoImport] Tasks result: ${created} created, ${skipped} skipped, ${failed} failed`);
+        }
+      } else {
+        console.log(`[AutoImport] No tasks file found at ${tasksFile} — listing directory:`);
+        try {
+          const files = fs.readdirSync(cwd).filter((f: string) => f.includes('import') || f.endsWith('.json'));
+          console.log(`[AutoImport] JSON/import files in ${cwd}: ${files.join(', ') || 'NONE'}`);
+        } catch (dirErr: any) {
+          console.log(`[AutoImport] Cannot list directory: ${dirErr.message}`);
         }
       }
-      const shiftsFile = path.join(process.cwd(), 'pi-import-shifts.json');
+
+      const shiftsFile = path.join(cwd, 'pi-import-shifts.json');
+      console.log(`[AutoImport] Looking for shifts file: ${shiftsFile}`);
+      console.log(`[AutoImport] File exists: ${fs.existsSync(shiftsFile)}`);
+
       if (fs.existsSync(shiftsFile)) {
-        const incoming = JSON.parse(fs.readFileSync(shiftsFile, 'utf8'));
+        const raw = fs.readFileSync(shiftsFile, 'utf8');
+        const incoming = JSON.parse(raw);
+        console.log(`[AutoImport] Parsed ${incoming.length} shifts from file`);
+
         if (Array.isArray(incoming) && incoming.length > 0) {
           const existingShifts = await storage.getShiftSchedule();
+          console.log(`[AutoImport] DB currently has ${existingShifts.length} shifts`);
           const existingDates = new Set(existingShifts.map((s: any) => s.date));
           const newShifts = incoming.filter((s: any) => !existingDates.has(s.date)).map((s: any) => ({ date: s.date, shiftType: s.shiftType }));
           if (newShifts.length > 0) {
             await storage.setShiftBulk(newShifts);
-            console.log(`[AutoImport] Shifts: ${newShifts.length} new entries imported, ${incoming.length - newShifts.length} already exist`);
+            console.log(`[AutoImport] Shifts: ${newShifts.length} created, ${incoming.length - newShifts.length} already existed`);
           } else {
-            console.log(`[AutoImport] Shifts: all ${incoming.length} already exist, nothing to import`);
+            console.log(`[AutoImport] Shifts: all ${incoming.length} already exist`);
           }
         }
+      } else {
+        console.log(`[AutoImport] No shifts file found at ${shiftsFile}`);
       }
+
+      const finalTasks = await storage.getTasks({});
+      const finalShifts = await storage.getShiftSchedule();
+      console.log(`[AutoImport] DONE — DB now has ${finalTasks.length} tasks and ${finalShifts.length} shifts`);
     } catch (e: any) {
-      console.error(`[AutoImport] Error: ${e.message}`);
+      console.error(`[AutoImport] FATAL ERROR: ${e.message}`);
+      console.error(e.stack);
     }
   }, 5000);
 
