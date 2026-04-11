@@ -245,12 +245,11 @@ function Bookend({ side }: { side: 'left' | 'right' }) {
         position: 'absolute',
         top: '50%',
         left: '50%',
-        transform: 'translate(-50%, -50%)',
+        transform: 'translate(-50%, -50%) rotate(45deg)',
         width: '8px',
         height: '8px',
         border: '1px solid rgba(212,175,55,0.5)',
         borderRadius: '1px',
-        transform: 'translate(-50%, -50%) rotate(45deg)',
         opacity: 0.6,
       }} />
       <div style={{
