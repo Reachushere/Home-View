@@ -5229,6 +5229,70 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
           } catch (e: any) { console.log(`[LibrarySync:Semester] Error syncing ${course.code}: ${e.message}`); }
         }
         console.log(`[LibrarySync:Semester] ${semesterKey}: synced ${synced} new files`);
+        const allFilesNow = await storage.getFiles();
+        const brokenFiles = allFilesNow.filter((f: any) => {
+          if (!f.objectPath) return false;
+          return f.objectPath.startsWith('onedrive://') || f.objectPath.startsWith('/School/');
+        });
+        if (brokenFiles.length > 0) {
+          console.log(`[LibrarySync:Repair] Found ${brokenFiles.length} files with non-local paths, attempting repair...`);
+          const { getOneDriveItemByPath } = await import("./onedrive");
+          const fs = await import("fs");
+          const pathMod = await import("path");
+          const localUploadsDir = pathMod.join(process.cwd(), 'persistent-uploads');
+          if (!fs.existsSync(localUploadsDir)) fs.mkdirSync(localUploadsDir, { recursive: true });
+          let repaired = 0;
+          for (const bf of brokenFiles) {
+            try {
+              let downloadUrl: string | null = null;
+              if (bf.objectPath.startsWith('/School/')) {
+                const item = await getOneDriveItemByPath(bf.objectPath);
+                downloadUrl = item?.downloadUrl || null;
+              } else if (bf.objectPath.startsWith('onedrive://')) {
+                const folderPart = bf.objectPath.replace('onedrive://', '').split('/')[0] || '';
+                const fileName = bf.objectPath.split('/').pop() || '';
+                const parts = folderPart.split('-');
+                const weekNum = parts[1];
+                const courseCodeUpper = parts.slice(2, -1).join('').toUpperCase();
+                const subType = parts[parts.length - 1];
+                const allSemsForRepair = await storage.getAllSemesterSettings();
+                let allCoursesForRepair: { code: string; path: string }[] = [];
+                for (const s of allSemsForRepair) {
+                  try { const sc = await getSemesterOneDriveCourses(s); allCoursesForRepair.push(...sc); } catch {}
+                }
+                for (const c of allCoursesForRepair) {
+                  if (c.code.toUpperCase() !== courseCodeUpper) continue;
+                  try {
+                    const wFolders = await listOneDriveItems(c.path);
+                    const wFolder = wFolders.find((f: any) => f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${weekNum}`));
+                    if (!wFolder) continue;
+                    const wContents = await listOneDriveItems(wFolder.path);
+                    const tFolder = wContents.find((f: any) => f.type === 'folder' && f.name.toLowerCase().includes(subType));
+                    if (!tFolder) continue;
+                    const tFiles = await listOneDriveItems(tFolder.path);
+                    const matchFile = tFiles.find((f: any) => f.name === fileName);
+                    if (matchFile?.downloadUrl) { downloadUrl = matchFile.downloadUrl; }
+                  } catch {}
+                  break;
+                }
+              }
+              if (downloadUrl) {
+                const dlResp = await fetch(downloadUrl);
+                if (dlResp.ok) {
+                  const buf = Buffer.from(await dlResp.arrayBuffer());
+                  const localFileName = `${Date.now()}-${(bf.originalName || 'file').replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+                  fs.writeFileSync(pathMod.join(localUploadsDir, localFileName), buf);
+                  await storage.updateFile(bf.id, { objectPath: `/local/uploads/${localFileName}` });
+                  repaired++;
+                  console.log(`[LibrarySync:Repair] Fixed file ${bf.id}: ${bf.originalName}`);
+                }
+              }
+            } catch (repairErr: any) {
+              console.log(`[LibrarySync:Repair] Failed to repair file ${bf.id}: ${repairErr.message}`);
+            }
+          }
+          console.log(`[LibrarySync:Repair] Repaired ${repaired}/${brokenFiles.length} files`);
+        }
       } catch (err: any) { console.error('[LibrarySync:Semester] Error:', err); }
     })();
   });
