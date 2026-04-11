@@ -1896,6 +1896,80 @@ export default function Dashboard() {
     }
   }, []);
   const layoutDefaultsLoadedRef = useRef(false);
+  const serverLayoutLoadedRef = useRef(false);
+  useEffect(() => {
+    if (layoutDefaultsLoadedRef.current || serverLayoutLoadedRef.current) return;
+    serverLayoutLoadedRef.current = true;
+    const screenWidth = window.screen.width;
+    const screenHeight = window.screen.height;
+    const pixelRatio = window.devicePixelRatio || 1;
+    const did = `device_${screenWidth}x${screenHeight}@${pixelRatio}`;
+    fetch(`/api/app-state/calendarLayout_${did}`)
+      .then(r => r.json())
+      .then(data => {
+        if (!data.value || layoutDefaultsLoadedRef.current) return;
+        try {
+          const saved = JSON.parse(data.value);
+          const minH = 200; const maxH = window.innerHeight - 100;
+          if (saved.calendarHeight) {
+            const v = Math.min(Math.max(saved.calendarHeight, minH), maxH);
+            setCalendarHeight(v);
+            localStorage.setItem('calendarHeight', String(v));
+            localStorage.setItem(`calendarHeight_${did}`, String(v));
+          }
+          if (saved.calendarReduction !== undefined) {
+            setCalendarReduction(saved.calendarReduction);
+            setCalendarReductionUserSet(true);
+            localStorage.setItem('calendarReduction', String(saved.calendarReduction));
+            localStorage.setItem(`calendarReduction_${did}`, String(saved.calendarReduction));
+          }
+          if (saved.gridSizes) {
+            setGridSizes(saved.gridSizes);
+            localStorage.setItem('gridSizes', JSON.stringify(saved.gridSizes));
+            localStorage.setItem(`gridSizes_${did}`, JSON.stringify(saved.gridSizes));
+          }
+          if (saved.hwGroupBarWidth) {
+            setHwGroupBarWidth(saved.hwGroupBarWidth);
+            localStorage.setItem('hwGroupBarWidth', String(saved.hwGroupBarWidth));
+            localStorage.setItem(`hwGroupBarWidth_${did}`, String(saved.hwGroupBarWidth));
+          }
+          layoutDefaultsLoadedRef.current = true;
+          console.log('[Layout] Loaded calendar defaults from server for device', did);
+        } catch (e) {}
+      })
+      .catch(() => {
+        fetch('/api/app-state/calendarLayoutDefaults')
+          .then(r => r.json())
+          .then(data => {
+            if (!data.value || layoutDefaultsLoadedRef.current) return;
+            try {
+              const saved = JSON.parse(data.value);
+              const minH = 200; const maxH = window.innerHeight - 100;
+              if (saved.calendarHeight) {
+                const v = Math.min(Math.max(saved.calendarHeight, minH), maxH);
+                setCalendarHeight(v);
+                localStorage.setItem('calendarHeight', String(v));
+              }
+              if (saved.calendarReduction !== undefined) {
+                setCalendarReduction(saved.calendarReduction);
+                setCalendarReductionUserSet(true);
+                localStorage.setItem('calendarReduction', String(saved.calendarReduction));
+              }
+              if (saved.gridSizes) {
+                setGridSizes(saved.gridSizes);
+                localStorage.setItem('gridSizes', JSON.stringify(saved.gridSizes));
+              }
+              if (saved.hwGroupBarWidth) {
+                setHwGroupBarWidth(saved.hwGroupBarWidth);
+                localStorage.setItem('hwGroupBarWidth', String(saved.hwGroupBarWidth));
+              }
+              layoutDefaultsLoadedRef.current = true;
+              console.log('[Layout] Loaded calendar defaults from server (generic)');
+            } catch (e) {}
+          })
+          .catch(() => {});
+      });
+  }, []);
   const [calendarHeight, setCalendarHeight] = useState(() => {
     const defaultHeight = window.innerHeight - 47;
     const minHeight = 200;
@@ -32144,6 +32218,9 @@ export default function Dashboard() {
               localStorage.setItem(`gridSizes_${deviceId}`, JSON.stringify(gridSizes));
               localStorage.setItem(`hwGroupBarWidth_${deviceId}`, String(hwGroupBarWidth));
               layoutDefaultsLoadedRef.current = true;
+              const layoutData = JSON.stringify({ calendarHeight, calendarReduction, gridSizes, hwGroupBarWidth, deviceId });
+              fetch('/api/app-state/calendarLayoutDefaults', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: layoutData }) }).catch(() => {});
+              fetch(`/api/app-state/calendarLayout_${deviceId}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: layoutData }) }).catch(() => {});
               toast({ title: "Saved", description: "Calendar size saved as default" });
             }}
             onTouchEnd={(e) => {
@@ -32163,6 +32240,9 @@ export default function Dashboard() {
               localStorage.setItem(`gridSizes_${deviceId}`, JSON.stringify(gridSizes));
               localStorage.setItem(`hwGroupBarWidth_${deviceId}`, String(hwGroupBarWidth));
               layoutDefaultsLoadedRef.current = true;
+              const layoutData = JSON.stringify({ calendarHeight, calendarReduction, gridSizes, hwGroupBarWidth, deviceId });
+              fetch('/api/app-state/calendarLayoutDefaults', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: layoutData }) }).catch(() => {});
+              fetch(`/api/app-state/calendarLayout_${deviceId}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: layoutData }) }).catch(() => {});
               toast({ title: "Saved", description: "Calendar size saved as default" });
             }}
             data-testid="button-set-default-size"

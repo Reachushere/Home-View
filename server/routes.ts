@@ -24577,6 +24577,31 @@ Keep your tone friendly and educational. Format your response clearly with numbe
     }
   });
 
+  app.get("/api/app-state/:key", async (req, res) => {
+    try {
+      const row = await db.select().from(appState).where(eq(appState.key, req.params.key)).limit(1);
+      if (row.length === 0) return res.json({ value: null });
+      res.json({ value: row[0].value });
+    } catch (err) {
+      res.status(500).json({ error: "Failed to get app state" });
+    }
+  });
+
+  app.post("/api/app-state/:key", async (req, res) => {
+    try {
+      const { value } = req.body;
+      const existing = await db.select().from(appState).where(eq(appState.key, req.params.key)).limit(1);
+      if (existing.length > 0) {
+        await db.update(appState).set({ value: String(value), updatedAt: new Date() }).where(eq(appState.key, req.params.key));
+      } else {
+        await db.insert(appState).values({ key: req.params.key, value: String(value) });
+      }
+      res.json({ success: true });
+    } catch (err) {
+      res.status(500).json({ error: "Failed to set app state" });
+    }
+  });
+
   return httpServer;
 }
 
