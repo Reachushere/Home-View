@@ -1553,15 +1553,28 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
   const [syllabusPaths, setSyllabusPaths] = useState<Record<string, string>>({});
   useEffect(() => {
     if (!isOpen) return;
+    const localPaths: Record<string, string> = {};
+    try {
+      const saved = localStorage.getItem('courseSyllabusPaths');
+      if (saved) Object.assign(localPaths, JSON.parse(saved));
+    } catch {}
     fetch('/api/syllabus/paths')
       .then(r => r.json())
-      .then(data => { if (data && typeof data === 'object') setSyllabusPaths(data); })
-      .catch(() => {
-        try {
-          const saved = localStorage.getItem('courseSyllabusPaths');
-          if (saved) setSyllabusPaths(JSON.parse(saved));
-        } catch {}
-      });
+      .then(serverPaths => {
+        const merged = { ...localPaths, ...(serverPaths && typeof serverPaths === 'object' ? serverPaths : {}) };
+        Object.keys(localPaths).forEach(code => {
+          if (!serverPaths?.[code] && localPaths[code]) {
+            merged[code] = localPaths[code];
+            fetch('/api/syllabus/paths', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ courseCode: code, objectPath: localPaths[code] }),
+            }).catch(() => {});
+          }
+        });
+        setSyllabusPaths(merged);
+      })
+      .catch(() => { setSyllabusPaths(localPaths); });
   }, [isOpen]);
 
   const preExtractTriggered = useRef(false);
