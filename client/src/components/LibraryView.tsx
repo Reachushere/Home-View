@@ -346,8 +346,8 @@ function Bookend({ side }: { side: 'left' | 'right' }) {
   return (
     <div style={{
       width: '22px',
-      height: 'calc(100% + 80px)',
-      marginTop: '-40px',
+      height: 'calc(100% + 40px)',
+      marginTop: '-20px',
       background: side === 'left'
         ? 'linear-gradient(90deg, #005BB5 0%, #004C9B 15%, #003F87 40%, #003670 70%, #002D5C 100%)'
         : 'linear-gradient(90deg, #002D5C 0%, #003670 30%, #003F87 60%, #004C9B 85%, #005BB5 100%)',
@@ -1537,7 +1537,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
   if (!isOpen) return null;
 
   const courseCount = Math.max(courseBooks.length, 1);
-  const shelfHeight = Math.max(110, Math.min(200, Math.floor((window.innerHeight - 130 - (courseCount - 1) * 15) / courseCount) - 40));
+  const shelfHeight = Math.max(100, Math.min(170, Math.floor((window.innerHeight - 130 - (courseCount - 1) * 15) / courseCount) - 40));
 
   return createPortal(
     <div
