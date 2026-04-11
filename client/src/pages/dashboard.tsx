@@ -25584,7 +25584,7 @@ export default function Dashboard() {
                         courses.push({
                           code: slot.code,
                           name: isTBD ? slot.code.toUpperCase() : (isStandardCode ? slot.code : (slot.name || slot.code)),
-                          fullName: codeAndNameSame ? '' : (isTBD ? 'TBD' : (slot.name || '')),
+                          fullName: codeAndNameSame ? '' : (isTBD ? '' : (slot.name || '')),
                           period: slot.period,
                         });
                       }
@@ -29374,7 +29374,7 @@ export default function Dashboard() {
                         dbCourses.push({
                           code: isTBD ? `TBD_SLOT${ci}` : code,
                           name: isTBD ? code.toUpperCase() : code,
-                          fullName: (dbSemForKey as any)[`course${ci}Name`] || 'To Be Determined',
+                          fullName: isTBD ? '' : ((dbSemForKey as any)[`course${ci}Name`] || 'To Be Determined'),
                           period: '',
                           _dbSlot: ci,
                         } as any);
