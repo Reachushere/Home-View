@@ -3588,6 +3588,7 @@ export default function Dashboard() {
   const [healthTab, setHealthTab] = useState<'services' | 'folders' | 'automations'>('services');
   const [allSemestersForHealth, setAllSemestersForHealth] = useState<any[]>([]);
   const [healthFolderVerify, setHealthFolderVerify] = useState<Record<number, Record<number, { checking: boolean; exists: boolean | null }>>>({});
+  const [healthCourseExpanded, setHealthCourseExpanded] = useState<Record<string, boolean>>({});
   const [automationsData, setAutomationsData] = useState<any[]>([]);
   const [automationsLoading, setAutomationsLoading] = useState(false);
   const [expandedAutomation, setExpandedAutomation] = useState<number | null>(null);
@@ -24461,9 +24462,18 @@ export default function Dashboard() {
                             const linked = hasModFolder && hasReadFolder;
                             const verifyState = healthFolderVerify[sem.id]?.[c.idx];
                             const termLabel = sem.semesterType === 'spring_summer' && c.term ? (c.term === 'full' ? 'Full' : c.term === 'first_half' ? 'Spring' : 'Summer') : null;
+                            const expandKey = `${sem.id}-${c.idx}`;
+                            const isExpanded = !!healthCourseExpanded[expandKey];
+                            const cc = (c.code || '').replace(/\s/g, '').toLowerCase();
                             return (
-                              <div key={c.idx} style={{ marginBottom: '6px', padding: '6px 8px', borderRadius: '6px', background: 'rgba(255,255,255,0.03)', borderLeft: `3px solid ${c.color || '#555'}` }} data-testid={`health-course-${sem.id}-${c.idx}`}>
-                                <div className="flex items-center gap-2 mb-1">
+                              <div key={c.idx} style={{ marginBottom: '6px', borderRadius: '6px', background: 'rgba(255,255,255,0.03)', borderLeft: `3px solid ${c.color || '#555'}` }} data-testid={`health-course-${sem.id}-${c.idx}`}>
+                                <div
+                                  className="flex items-center gap-2 cursor-pointer"
+                                  style={{ padding: '6px 8px' }}
+                                  onClick={() => setHealthCourseExpanded(prev => ({ ...prev, [expandKey]: !prev[expandKey] }))}
+                                  data-testid={`health-course-toggle-${sem.id}-${c.idx}`}
+                                >
+                                  <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.5)', transition: 'transform 0.2s', transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)', flexShrink: 0 }}>▶</span>
                                   <div style={{ width: '16px', height: '10px', borderRadius: '3px', background: `linear-gradient(135deg, ${c.color || '#555'}, ${c.colorEnd || '#777'})`, flexShrink: 0 }} />
                                   <span className="text-[10px] font-semibold" style={{ color: c.color || '#fff' }}>{c.code || 'TBD'}</span>
                                   <span className="text-[10px]" style={{ color: '#fff' }}>{c.name || 'To Be Determined'}</span>
@@ -24471,7 +24481,7 @@ export default function Dashboard() {
                                   <div className="flex items-center gap-1 ml-auto">
                                     {linked ? (
                                       <div className="flex items-center gap-1">
-                                        <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: verifyState?.exists === true ? '#22c55e' : verifyState?.exists === false ? '#ef4444' : '#22c55e', boxShadow: `0 0 3px ${verifyState?.exists === false ? '#ef4444' : '#22c55e'}` }} />
+                                        <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: verifyState?.exists === false ? '#ef4444' : '#22c55e', boxShadow: `0 0 3px ${verifyState?.exists === false ? '#ef4444' : '#22c55e'}` }} />
                                         <span className="text-[8px]" style={{ color: verifyState?.exists === false ? '#ef4444' : '#22c55e' }}>{verifyState?.checking ? 'Checking...' : verifyState?.exists === false ? 'Not Found' : 'Linked'}</span>
                                       </div>
                                     ) : (
@@ -24482,65 +24492,46 @@ export default function Dashboard() {
                                     )}
                                   </div>
                                 </div>
-                                <div className="flex items-center gap-1 mt-1">
-                                  <span className="text-[9px]" style={{ color: '#fff', width: '48px', flexShrink: 0 }}>Module:</span>
-                                  <span className="text-[9px] flex-1 truncate" style={{ color: hasModFolder ? '#fff' : '#ef4444' }} title={c.modFolder || 'Not set'}>
-                                    {hasModFolder ? c.modFolder!.split('/').slice(-2).join('/') : 'Not set'}
-                                  </span>
-                                  <button
-                                    className="text-[9px] hover:text-white/80 transition-colors"
-                                    style={{ color: '#fff', padding: '0 4px', cursor: 'pointer', background: 'none', border: 'none', flexShrink: 0 }}
-                                    onClick={() => {
-                                      const startPath = hasModFolder ? c.modFolder! : '/School/1. TMU/Courses';
-                                      setHealthFolderBrowse({ semId: sem.id, courseIdx: c.idx, field: 'module' });
-                                      setHealthBrowsePath(startPath);
-                                      setHealthBrowseLoading(true);
-                                      fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(startPath)}`).then(r => r.json()).then(items => {
-                                        setHealthBrowseItems(Array.isArray(items) ? items : []);
-                                        setHealthBrowseLoading(false);
-                                      }).catch(() => setHealthBrowseLoading(false));
-                                    }}
-                                    data-testid={`browse-module-${sem.id}-${c.idx}`}
-                                  >Browse</button>
-                                </div>
-                                <div className="flex items-center gap-1">
-                                  <span className="text-[9px]" style={{ color: '#fff', width: '48px', flexShrink: 0 }}>Reading:</span>
-                                  <span className="text-[9px] flex-1 truncate" style={{ color: hasReadFolder ? '#fff' : '#ef4444' }} title={c.readFolder || 'Not set'}>
-                                    {hasReadFolder ? c.readFolder!.split('/').slice(-2).join('/') : 'Not set'}
-                                  </span>
-                                  <button
-                                    className="text-[9px] hover:text-white/80 transition-colors"
-                                    style={{ color: '#fff', padding: '0 4px', cursor: 'pointer', background: 'none', border: 'none', flexShrink: 0 }}
-                                    onClick={() => {
-                                      const startPath = hasReadFolder ? c.readFolder! : '/School/1. TMU/Courses';
-                                      setHealthFolderBrowse({ semId: sem.id, courseIdx: c.idx, field: 'reading' });
-                                      setHealthBrowsePath(startPath);
-                                      setHealthBrowseLoading(true);
-                                      fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(startPath)}`).then(r => r.json()).then(items => {
-                                        setHealthBrowseItems(Array.isArray(items) ? items : []);
-                                        setHealthBrowseLoading(false);
-                                      }).catch(() => setHealthBrowseLoading(false));
-                                    }}
-                                    data-testid={`browse-reading-${sem.id}-${c.idx}`}
-                                  >Browse</button>
-                                </div>
-                                {linked && (
-                                  <button
-                                    className="text-[8px] hover:text-white/80 transition-colors mt-1"
-                                    style={{ color: '#fff', cursor: 'pointer', background: 'none', border: 'none' }}
-                                    onClick={() => {
-                                      setHealthFolderVerify(prev => ({ ...prev, [sem.id]: { ...(prev[sem.id] || {}), [c.idx]: { checking: true, exists: null } } }));
-                                      fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(c.modFolder!)}`).then(r => {
-                                        if (r.ok) return r.json();
-                                        throw new Error('not found');
-                                      }).then(() => {
-                                        setHealthFolderVerify(prev => ({ ...prev, [sem.id]: { ...(prev[sem.id] || {}), [c.idx]: { checking: false, exists: true } } }));
-                                      }).catch(() => {
-                                        setHealthFolderVerify(prev => ({ ...prev, [sem.id]: { ...(prev[sem.id] || {}), [c.idx]: { checking: false, exists: false } } }));
-                                      });
-                                    }}
-                                    data-testid={`verify-folder-${sem.id}-${c.idx}`}
-                                  >Verify</button>
+                                {isExpanded && (
+                                  <div style={{ padding: '0 8px 8px 24px' }}>
+                                    <div className="flex items-center gap-1 mb-2">
+                                      <span className="text-[9px]" style={{ color: '#fff', width: '48px', flexShrink: 0 }}>Module:</span>
+                                      <span className="text-[9px] flex-1 truncate" style={{ color: hasModFolder ? '#fff' : '#ef4444' }} title={c.modFolder || 'Not set'}>
+                                        {hasModFolder ? c.modFolder!.split('/').slice(-2).join('/') : 'Not set'}
+                                      </span>
+                                      <button className="text-[9px] hover:text-white/80 transition-colors" style={{ color: '#fff', padding: '0 4px', cursor: 'pointer', background: 'none', border: 'none', flexShrink: 0 }} onClick={() => { const startPath = hasModFolder ? c.modFolder! : '/School/1. TMU/Courses'; setHealthFolderBrowse({ semId: sem.id, courseIdx: c.idx, field: 'module' }); setHealthBrowsePath(startPath); setHealthBrowseLoading(true); fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(startPath)}`).then(r => r.json()).then(items => { setHealthBrowseItems(Array.isArray(items) ? items : []); setHealthBrowseLoading(false); }).catch(() => setHealthBrowseLoading(false)); }} data-testid={`browse-module-${sem.id}-${c.idx}`}>Browse</button>
+                                    </div>
+                                    <div className="flex items-center gap-1 mb-2">
+                                      <span className="text-[9px]" style={{ color: '#fff', width: '48px', flexShrink: 0 }}>Reading:</span>
+                                      <span className="text-[9px] flex-1 truncate" style={{ color: hasReadFolder ? '#fff' : '#ef4444' }} title={c.readFolder || 'Not set'}>
+                                        {hasReadFolder ? c.readFolder!.split('/').slice(-2).join('/') : 'Not set'}
+                                      </span>
+                                      <button className="text-[9px] hover:text-white/80 transition-colors" style={{ color: '#fff', padding: '0 4px', cursor: 'pointer', background: 'none', border: 'none', flexShrink: 0 }} onClick={() => { const startPath = hasReadFolder ? c.readFolder! : '/School/1. TMU/Courses'; setHealthFolderBrowse({ semId: sem.id, courseIdx: c.idx, field: 'reading' }); setHealthBrowsePath(startPath); setHealthBrowseLoading(true); fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(startPath)}`).then(r => r.json()).then(items => { setHealthBrowseItems(Array.isArray(items) ? items : []); setHealthBrowseLoading(false); }).catch(() => setHealthBrowseLoading(false)); }} data-testid={`browse-reading-${sem.id}-${c.idx}`}>Browse</button>
+                                    </div>
+                                    {linked && (
+                                      <button className="text-[8px] hover:text-white/80 transition-colors mb-2" style={{ color: '#fff', cursor: 'pointer', background: 'none', border: 'none' }} onClick={() => { setHealthFolderVerify(prev => ({ ...prev, [sem.id]: { ...(prev[sem.id] || {}), [c.idx]: { checking: true, exists: null } } })); fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(c.modFolder!)}`).then(r => { if (r.ok) return r.json(); throw new Error('not found'); }).then(() => { setHealthFolderVerify(prev => ({ ...prev, [sem.id]: { ...(prev[sem.id] || {}), [c.idx]: { checking: false, exists: true } } })); }).catch(() => { setHealthFolderVerify(prev => ({ ...prev, [sem.id]: { ...(prev[sem.id] || {}), [c.idx]: { checking: false, exists: false } } })); }); }} data-testid={`verify-folder-${sem.id}-${c.idx}`}>Verify</button>
+                                    )}
+                                    <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '6px' }}>
+                                      <span className="text-[9px] font-semibold" style={{ color: 'rgba(255,255,255,0.6)' }}>Weeks</span>
+                                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))', gap: '3px', marginTop: '4px' }}>
+                                        {Array.from({ length: 13 }, (_, i) => i + 1).map(w => {
+                                          const modFolder = `week-${w}-${cc}-module`;
+                                          const readFolder = `week-${w}-${cc}-reading`;
+                                          const hasModFiles = allFiles.some(f => f.folder === modFolder);
+                                          const hasReadFiles = allFiles.some(f => f.folder === readFolder);
+                                          const weekLinked = hasModFiles || hasReadFiles;
+                                          return (
+                                            <div key={w} className="flex items-center gap-1" style={{ padding: '2px 4px', borderRadius: '3px', background: 'rgba(255,255,255,0.03)' }} data-testid={`health-week-${sem.id}-${c.idx}-${w}`}>
+                                              <div style={{ width: '5px', height: '5px', borderRadius: '50%', backgroundColor: weekLinked ? '#22c55e' : 'rgba(255,255,255,0.15)', boxShadow: weekLinked ? '0 0 3px #22c55e' : 'none', flexShrink: 0 }} />
+                                              <span className="text-[8px]" style={{ color: weekLinked ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.3)' }}>W{w}</span>
+                                              {hasModFiles && <span className="text-[7px]" style={{ color: '#60a5fa' }}>M</span>}
+                                              {hasReadFiles && <span className="text-[7px]" style={{ color: '#a78bfa' }}>R</span>}
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                    </div>
+                                  </div>
                                 )}
                               </div>
                             );
