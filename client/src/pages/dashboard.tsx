@@ -41447,55 +41447,69 @@ function TaskForm({
                     );
                   })()}
                   <div className="border-t pt-3 mt-3">
-                    <Label className="text-sm font-medium">Time</Label>
-                    <div className="flex items-center gap-2 mt-2">
-                      <select
-                        value={tempHour}
-                        onChange={(e) => setTempHour(e.target.value)}
-                        className="w-16 h-8 rounded-md border border-input bg-white px-2 font-normal"
-                        style={{ color: 'black', fontSize: '11px' }}
+                    <div className="flex items-center gap-2">
+                      <Label className="text-sm font-medium shrink-0">Time</Label>
+                      {(() => {
+                        const h24 = parseInt(tempHour);
+                        const isPM = h24 >= 12;
+                        const h12 = h24 === 0 ? 12 : h24 > 12 ? h24 - 12 : h24;
+                        return (
+                          <>
+                            <select
+                              value={h12}
+                              onChange={(e) => { const v = Number(e.target.value); const h = v === 12 ? 0 : v; setTempHour(String(isPM ? h + 12 : h).padStart(2, '0')); }}
+                              className="w-14 h-8 rounded-md border border-input bg-white px-1 font-normal"
+                              style={{ color: 'black', fontSize: '11px' }}
+                              data-testid="select-due-hour"
+                            >
+                              {Array.from({ length: 12 }, (_, i) => i + 1).map(v => <option key={v} value={v}>{v}</option>)}
+                            </select>
+                            <span>:</span>
+                            <select
+                              value={tempMinute}
+                              onChange={(e) => setTempMinute(e.target.value)}
+                              className="w-14 h-8 rounded-md border border-input bg-white px-1 font-normal"
+                              style={{ color: 'black', fontSize: '11px' }}
+                              data-testid="select-due-minute"
+                            >
+                              {Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0')).map(min => <option key={min} value={min}>{min}</option>)}
+                            </select>
+                            <select
+                              value={isPM ? 'PM' : 'AM'}
+                              onChange={(e) => { const pm = e.target.value === 'PM'; const cur12 = h12 === 12 ? 0 : h12; setTempHour(String(pm ? cur12 + 12 : cur12).padStart(2, '0')); }}
+                              className="w-14 h-8 rounded-md border border-input bg-white px-1 font-medium"
+                              style={{ color: 'black', fontSize: '11px' }}
+                              data-testid="select-due-ampm"
+                            >
+                              <option value="AM">AM</option>
+                              <option value="PM">PM</option>
+                            </select>
+                          </>
+                        );
+                      })()}
+                      <div className="flex-1" />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setIsDatePickerOpen(false)}
                       >
-                        {Array.from({ length: 24 }, (_, i) => (
-                          <option key={i} value={i.toString().padStart(2, '0')}>
-                            {i.toString().padStart(2, '0')}
-                          </option>
-                        ))}
-                      </select>
-                      <span>:</span>
-                      <select
-                        value={tempMinute}
-                        onChange={(e) => setTempMinute(e.target.value)}
-                        className="w-16 h-8 rounded-md border border-input bg-white px-2 font-normal"
-                        style={{ color: 'black', fontSize: '11px' }}
+                        Cancel
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          if (tempDate) {
+                            const newDate = new Date(tempDate);
+                            newDate.setHours(parseInt(tempHour), parseInt(tempMinute), 0, 0);
+                            setFormData(prev => ({ ...prev, dueDate: format(newDate, "yyyy-MM-dd'T'HH:mm"), eventStartTime: `${tempHour}:${tempMinute}` }));
+                          }
+                          setIsDatePickerOpen(false);
+                        }}
+                        data-testid="button-apply-date"
                       >
-                        {['00', '15', '30', '45'].map((min) => (
-                          <option key={min} value={min}>{min}</option>
-                        ))}
-                      </select>
+                        Apply
+                      </Button>
                     </div>
-                  </div>
-                  <div className="flex justify-end gap-2 mt-4 pt-3 border-t">
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => setIsDatePickerOpen(false)}
-                    >
-                      Cancel
-                    </Button>
-                    <Button 
-                      size="sm"
-                      onClick={() => {
-                        if (tempDate) {
-                          const newDate = new Date(tempDate);
-                          newDate.setHours(parseInt(tempHour), parseInt(tempMinute), 0, 0);
-                          setFormData(prev => ({ ...prev, dueDate: format(newDate, "yyyy-MM-dd'T'HH:mm") }));
-                        }
-                        setIsDatePickerOpen(false);
-                      }}
-                      data-testid="button-apply-date"
-                    >
-                      Apply
-                    </Button>
                   </div>
                 </div>
               </PopoverContent>
@@ -41545,50 +41559,64 @@ function TaskForm({
                         numberOfMonths={1}
                       />
                       <div className="border-t pt-3 mt-3">
-                        <Label className="text-sm font-medium">End Time</Label>
-                        <div className="flex items-center gap-2 mt-2">
-                          <select
-                            value={tempEndHour}
-                            onChange={(e) => setTempEndHour(e.target.value)}
-                            className="w-16 h-8 rounded-md border border-input bg-white px-2 font-normal"
-                            style={{ color: 'black', fontSize: '11px' }}
+                        <div className="flex items-center gap-2">
+                          <Label className="text-sm font-medium shrink-0">End Time</Label>
+                          {(() => {
+                            const h24 = parseInt(tempEndHour);
+                            const isPM = h24 >= 12;
+                            const h12 = h24 === 0 ? 12 : h24 > 12 ? h24 - 12 : h24;
+                            return (
+                              <>
+                                <select
+                                  value={h12}
+                                  onChange={(e) => { const v = Number(e.target.value); const h = v === 12 ? 0 : v; setTempEndHour(String(isPM ? h + 12 : h).padStart(2, '0')); }}
+                                  className="w-14 h-8 rounded-md border border-input bg-white px-1 font-normal"
+                                  style={{ color: 'black', fontSize: '11px' }}
+                                  data-testid="select-end-date-hour"
+                                >
+                                  {Array.from({ length: 12 }, (_, i) => i + 1).map(v => <option key={v} value={v}>{v}</option>)}
+                                </select>
+                                <span>:</span>
+                                <select
+                                  value={tempEndMinute}
+                                  onChange={(e) => setTempEndMinute(e.target.value)}
+                                  className="w-14 h-8 rounded-md border border-input bg-white px-1 font-normal"
+                                  style={{ color: 'black', fontSize: '11px' }}
+                                  data-testid="select-end-date-minute"
+                                >
+                                  {Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0')).map(min => <option key={min} value={min}>{min}</option>)}
+                                </select>
+                                <select
+                                  value={isPM ? 'PM' : 'AM'}
+                                  onChange={(e) => { const pm = e.target.value === 'PM'; const cur12 = h12 === 12 ? 0 : h12; setTempEndHour(String(pm ? cur12 + 12 : cur12).padStart(2, '0')); }}
+                                  className="w-14 h-8 rounded-md border border-input bg-white px-1 font-medium"
+                                  style={{ color: 'black', fontSize: '11px' }}
+                                  data-testid="select-end-date-ampm"
+                                >
+                                  <option value="AM">AM</option>
+                                  <option value="PM">PM</option>
+                                </select>
+                              </>
+                            );
+                          })()}
+                          <div className="flex-1" />
+                          <Button variant="outline" size="sm" onClick={() => setIsEndDatePickerOpen(false)}>Cancel</Button>
+                          <Button
+                            size="sm"
+                            onClick={() => {
+                              if (tempEndDate) {
+                                const newDate = new Date(tempEndDate);
+                                newDate.setHours(parseInt(tempEndHour), parseInt(tempEndMinute), 0, 0);
+                                setEndDateValue(format(newDate, "yyyy-MM-dd'T'HH:mm"));
+                                setFormData(prev => ({ ...prev, eventEndTime: `${tempEndHour}:${tempEndMinute}`, eventEndDate: newDate.toISOString() }));
+                              }
+                              setIsEndDatePickerOpen(false);
+                            }}
+                            data-testid="button-apply-end-date"
                           >
-                            {Array.from({ length: 24 }, (_, i) => (
-                              <option key={i} value={i.toString().padStart(2, '0')}>
-                                {i.toString().padStart(2, '0')}
-                              </option>
-                            ))}
-                          </select>
-                          <span>:</span>
-                          <select
-                            value={tempEndMinute}
-                            onChange={(e) => setTempEndMinute(e.target.value)}
-                            className="w-16 h-8 rounded-md border border-input bg-white px-2 font-normal"
-                            style={{ color: 'black', fontSize: '11px' }}
-                          >
-                            {['00', '15', '30', '45'].map((min) => (
-                              <option key={min} value={min}>{min}</option>
-                            ))}
-                          </select>
+                            Apply
+                          </Button>
                         </div>
-                      </div>
-                      <div className="flex justify-end gap-2 mt-4 pt-3 border-t">
-                        <Button variant="outline" size="sm" onClick={() => setIsEndDatePickerOpen(false)}>Cancel</Button>
-                        <Button
-                          size="sm"
-                          onClick={() => {
-                            if (tempEndDate) {
-                              const newDate = new Date(tempEndDate);
-                              newDate.setHours(parseInt(tempEndHour), parseInt(tempEndMinute), 0, 0);
-                              setEndDateValue(format(newDate, "yyyy-MM-dd'T'HH:mm"));
-                              setFormData(prev => ({ ...prev, eventEndTime: `${tempEndHour}:${tempEndMinute}`, eventEndDate: newDate.toISOString() }));
-                            }
-                            setIsEndDatePickerOpen(false);
-                          }}
-                          data-testid="button-apply-end-date"
-                        >
-                          Apply
-                        </Button>
                       </div>
                     </div>
                   </PopoverContent>
@@ -41597,71 +41625,7 @@ function TaskForm({
             )}
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
-            <div>
-              <Label className="text-[11px] text-white">Start</Label>
-              {(() => {
-                const raw = formData.eventStartTime || '';
-                const [rawH, rawM] = raw ? raw.split(':').map(Number) : [12, 0];
-                const h24 = raw ? rawH : 12;
-                const m = raw ? rawM : 0;
-                const isPM = h24 >= 12;
-                const h12 = h24 === 0 ? 12 : h24 > 12 ? h24 - 12 : h24;
-                const setStart = (hour12: number, minute: number, pm: boolean) => {
-                  let h = hour12 === 12 ? 0 : hour12;
-                  if (pm) h += 12;
-                  setFormData(prev => ({ ...prev, eventStartTime: `${String(h).padStart(2, '0')}:${String(minute).padStart(2, '0')}` }));
-                };
-                return (
-                  <div className="flex gap-0.5 items-center">
-                    <select value={h12} onChange={(e) => setStart(Number(e.target.value), m, isPM)} className="h-8 rounded-md bg-white text-black text-[11px] px-1 outline-none" style={{ width: '38px' }} data-testid="select-start-hour">
-                      {Array.from({ length: 12 }, (_, i) => i + 1).map(v => <option key={v} value={v}>{v}</option>)}
-                    </select>
-                    <span className="text-white text-[11px]">:</span>
-                    <select value={m} onChange={(e) => setStart(h12, Number(e.target.value), isPM)} className="h-8 rounded-md bg-white text-black text-[11px] px-1 outline-none" style={{ width: '38px' }} data-testid="select-start-min">
-                      {[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55].map(v => <option key={v} value={v}>{String(v).padStart(2, '0')}</option>)}
-                    </select>
-                    <select value={isPM ? 'PM' : 'AM'} onChange={(e) => setStart(h12, m, e.target.value === 'PM')} className="h-8 rounded-md bg-white text-black text-[11px] px-1 outline-none font-medium" style={{ width: '42px' }} data-testid="select-start-ampm">
-                      <option value="AM">AM</option>
-                      <option value="PM">PM</option>
-                    </select>
-                  </div>
-                );
-              })()}
-            </div>
-            <div>
-              <Label className="text-[11px] text-white">End</Label>
-              {(() => {
-                const raw = formData.eventEndTime || '';
-                const [rawH, rawM] = raw ? raw.split(':').map(Number) : [12, 0];
-                const h24 = raw ? rawH : 12;
-                const m = raw ? rawM : 0;
-                const isPM = h24 >= 12;
-                const h12 = h24 === 0 ? 12 : h24 > 12 ? h24 - 12 : h24;
-                const setEnd = (hour12: number, minute: number, pm: boolean) => {
-                  let h = hour12 === 12 ? 0 : hour12;
-                  if (pm) h += 12;
-                  setFormData(prev => ({ ...prev, eventEndTime: `${String(h).padStart(2, '0')}:${String(minute).padStart(2, '0')}` }));
-                };
-                return (
-                  <div className="flex gap-0.5 items-center">
-                    <select value={h12} onChange={(e) => setEnd(Number(e.target.value), m, isPM)} className="h-8 rounded-md bg-white text-black text-[11px] px-1 outline-none" style={{ width: '38px' }} data-testid="select-end-hour">
-                      {Array.from({ length: 12 }, (_, i) => i + 1).map(v => <option key={v} value={v}>{v}</option>)}
-                    </select>
-                    <span className="text-white text-[11px]">:</span>
-                    <select value={m} onChange={(e) => setEnd(h12, Number(e.target.value), isPM)} className="h-8 rounded-md bg-white text-black text-[11px] px-1 outline-none" style={{ width: '38px' }} data-testid="select-end-min">
-                      {[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55].map(v => <option key={v} value={v}>{String(v).padStart(2, '0')}</option>)}
-                    </select>
-                    <select value={isPM ? 'PM' : 'AM'} onChange={(e) => setEnd(h12, m, e.target.value === 'PM')} className="h-8 rounded-md bg-white text-black text-[11px] px-1 outline-none font-medium" style={{ width: '42px' }} data-testid="select-end-ampm">
-                      <option value="AM">AM</option>
-                      <option value="PM">PM</option>
-                    </select>
-                  </div>
-                );
-              })()}
-            </div>
-            <div className="flex items-end">
-              <div className="flex-1" />
+          <div className="flex items-center justify-end">
               <Button
                 variant="outline"
                 className="text-[9px] h-5 px-2 text-orange-300 border-orange-400/40 hover:bg-orange-500/15 hover:text-orange-200"
@@ -41686,7 +41650,6 @@ function TaskForm({
               >
                 {dupSearching ? 'Searching...' : 'Find Duplicates'}
               </Button>
-            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
