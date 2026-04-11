@@ -1,10 +1,10 @@
 const fs = require('fs');
 const path = require('path');
-const CLIENT_ID = '14d82eec-204b-4c2f-b7e8-296a70dab67e';
-const SCOPES = 'Files.ReadWrite.All User.Read Notes.ReadWrite.All Mail.ReadWrite Mail.Send Calendars.ReadWrite offline_access';
+const CLIENT_ID = 'd3590ed6-52b3-4102-aeff-aad2292ab01c';
+const SCOPES = 'https://graph.microsoft.com/Files.ReadWrite.All https://graph.microsoft.com/User.Read offline_access';
 
 async function main() {
-  console.log('Starting OneDrive device code auth...\n');
+  console.log('Starting OneDrive device code auth (Microsoft Office client)...\n');
   const dcRes = await fetch('https://login.microsoftonline.com/common/oauth2/v2.0/devicecode', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -17,7 +17,7 @@ async function main() {
   console.log(`Go to: ${dc.verification_uri}`);
   console.log(`Enter code: ${dc.user_code}`);
   console.log('========================================\n');
-  console.log('Waiting for you to confirm... (will show every response)\n');
+  console.log('Waiting for you to confirm...\n');
 
   const deadline = Date.now() + (dc.expires_in || 900) * 1000;
   let interval = (dc.interval || 5) * 1000;
@@ -37,23 +37,28 @@ async function main() {
         }).toString(),
       });
       const data = await res.json();
-      console.log(`Poll #${pollCount} (status ${res.status}): ${data.error || 'GOT TOKEN!'} ${data.error_description ? '- ' + data.error_description : ''}`);
       if (data.access_token) {
+        console.log(`Poll #${pollCount}: GOT TOKEN!`);
         const tokenFile = path.join(process.cwd(), '.onedrive_tokens.json');
         const tokens = {
           refresh_token: data.refresh_token,
           access_token: data.access_token,
           expires_at: Date.now() + (data.expires_in || 3600) * 1000,
+          client_id: CLIENT_ID,
         };
         fs.writeFileSync(tokenFile, JSON.stringify(tokens, null, 2));
         console.log(`\nSuccess! Token saved to ${tokenFile}`);
         console.log('Now restart the app: pm2 restart dashboard');
         process.exit(0);
       }
-      if (data.error === 'authorization_pending') { continue; }
+      if (data.error === 'authorization_pending') {
+        if (pollCount <= 3 || pollCount % 10 === 0) console.log(`Poll #${pollCount}: waiting...`);
+        continue;
+      }
+      console.log(`Poll #${pollCount}: ${data.error} - ${data.error_description || ''}`);
       if (data.error === 'slow_down') { interval += 5000; continue; }
       if (data.error === 'expired_token' || data.error === 'authorization_declined') {
-        console.error('\nAuth failed:', data.error, data.error_description);
+        console.error('\nAuth failed:', data.error);
         process.exit(1);
       }
     } catch (err) { console.error(`\nPoll #${pollCount} error:`, err.message); }

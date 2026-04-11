@@ -4,7 +4,21 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 const MICROSOFT_GRAPH_POWERSHELL_CLIENT_ID = '14d82eec-204b-4c2f-b7e8-296a70dab67e';
+const MICROSOFT_OFFICE_CLIENT_ID = 'd3590ed6-52b3-4102-aeff-aad2292ab01c';
 const ONEDRIVE_SCOPES = 'Files.ReadWrite.All User.Read Notes.ReadWrite.All Mail.ReadWrite Mail.Send Calendars.ReadWrite offline_access';
+const ONEDRIVE_SCOPES_OFFICE = 'https://graph.microsoft.com/Files.ReadWrite.All https://graph.microsoft.com/User.Read offline_access';
+
+function getClientId(): string {
+  try {
+    const tokens = loadStoredTokens();
+    if (tokens && (tokens as any).client_id) return (tokens as any).client_id;
+  } catch {}
+  return MICROSOFT_GRAPH_POWERSHELL_CLIENT_ID;
+}
+
+function getScopesForClient(clientId: string): string {
+  return clientId === MICROSOFT_OFFICE_CLIENT_ID ? ONEDRIVE_SCOPES_OFFICE : ONEDRIVE_SCOPES;
+}
 
 let cachedAccessToken: string | null = null;
 let cachedTokenExpiresAt: number = 0;
@@ -33,11 +47,13 @@ function saveTokens(tokens: { refresh_token: string; access_token: string; expir
 }
 
 async function refreshAccessToken(refreshToken: string): Promise<{ access_token: string; refresh_token: string; expires_in: number }> {
+  const clientId = getClientId();
+  const scopes = getScopesForClient(clientId);
   const params = new URLSearchParams({
-    client_id: MICROSOFT_GRAPH_POWERSHELL_CLIENT_ID,
+    client_id: clientId,
     grant_type: 'refresh_token',
     refresh_token: refreshToken,
-    scope: ONEDRIVE_SCOPES,
+    scope: scopes,
   });
 
   const controller = new AbortController();
@@ -60,8 +76,8 @@ async function refreshAccessToken(refreshToken: string): Promise<{ access_token:
 
 export async function startDeviceCodeFlow(): Promise<{ user_code: string; verification_uri: string; device_code: string; expires_in: number; interval: number }> {
   const params = new URLSearchParams({
-    client_id: MICROSOFT_GRAPH_POWERSHELL_CLIENT_ID,
-    scope: ONEDRIVE_SCOPES,
+    client_id: MICROSOFT_OFFICE_CLIENT_ID,
+    scope: ONEDRIVE_SCOPES_OFFICE,
   });
 
   const response = await fetch('https://login.microsoftonline.com/common/oauth2/v2.0/devicecode', {
@@ -85,7 +101,7 @@ export async function pollDeviceCodeAuth(deviceCode: string, interval: number = 
     await new Promise(r => setTimeout(r, interval * 1000));
 
     const params = new URLSearchParams({
-      client_id: MICROSOFT_GRAPH_POWERSHELL_CLIENT_ID,
+      client_id: MICROSOFT_OFFICE_CLIENT_ID,
       grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
       device_code: deviceCode,
     });
