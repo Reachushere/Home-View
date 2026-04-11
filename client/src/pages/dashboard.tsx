@@ -35393,7 +35393,7 @@ export default function Dashboard() {
                     </div>
                   ))}
 
-                  <div className="flex flex-col items-center" style={{ width: '44px', margin: '0 2px' }}>
+                  <div className="flex flex-col items-center" style={{ width: '44px', margin: '0 2px', marginTop: '-6px' }}>
                     {hwFloating.isPlaying ? (
                       <button className="w-10 h-10 flex items-center justify-center rounded-full bg-red-600 hover:bg-red-500" style={{ outline: '2px solid rgba(255,80,80,0.5)', outlineOffset: '2px', boxShadow: '0 0 16px rgba(255,50,50,0.4)' }} data-testid="hw-ctrl-stop-center" title="Stop" onClick={() => { const iframe = document.querySelector('iframe[name="pdf-reader-frame"]') as HTMLIFrameElement; if (iframe?.contentWindow) iframe.contentWindow.postMessage({ type: 'tts-stop' }, '*'); }}>
                         <Square className="h-4 w-4 text-white fill-white" />
