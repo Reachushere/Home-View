@@ -4997,7 +4997,78 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
           const objectFile = await objectStorageService.getObjectEntityFile(mediaUrl);
           await objectStorageService.downloadObject(objectFile, res);
         } catch (objErr) {
-          console.log(`[Download] Object storage failed for: ${file.originalName}`);
+          console.log(`[Download] Object storage failed for: ${file.originalName}, trying OneDrive fallback via folder: ${file.folder}`);
+          const folderMatch = (file.folder || '').match(/^week-(\d+)-([a-zA-Z]+\d+)-(reading|module)/i);
+          if (folderMatch && file.originalName) {
+            const [, weekNum, courseCode, folderType] = folderMatch;
+            try {
+              const activeSem = await storage.getActiveSemesterSettings();
+              if (!activeSem) throw new Error('No active semester');
+              const allSems = await storage.getAllSemesterSettings();
+              let matchedSem = activeSem;
+              const wk = parseInt(weekNum);
+              if (wk > 13) {
+                const semIdx = Math.floor((wk - 1) / 13);
+                const sortedSems = allSems.sort((a, b) => {
+                  const aDate = a.semesterStartDate ? new Date(a.semesterStartDate).getTime() : 0;
+                  const bDate = b.semesterStartDate ? new Date(b.semesterStartDate).getTime() : 0;
+                  return aDate - bDate;
+                });
+                if (semIdx < sortedSems.length) matchedSem = sortedSems[semIdx];
+              }
+              const semYear = matchedSem.semesterStartDate ? new Date(matchedSem.semesterStartDate).getFullYear() : new Date().getFullYear();
+              const semType = (matchedSem.semesterType || 'winter').toLowerCase();
+              const semFolderVariants = semType.includes('spring') || semType.includes('summer') 
+                ? ['Spring & Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer']
+                : semType.includes('fall') ? ['Fall'] : ['Winter'];
+              
+              let baseFolders: any[] = [];
+              let basePath = '';
+              for (const variant of semFolderVariants) {
+                const tryPath = `/School/1. TMU/Courses/${semYear}/${variant}`;
+                try {
+                  baseFolders = await listOneDriveItems(tryPath);
+                  basePath = tryPath;
+                  break;
+                } catch {}
+              }
+              
+              const code = courseCode.toUpperCase();
+              const courseFolder = baseFolders.find((f: any) => f.type === 'folder' && f.name.toUpperCase().replace(/\s/g, '').includes(code));
+              if (courseFolder) {
+                const actualWeek = wk > 13 ? ((wk - 1) % 13) + 1 : wk;
+                const courseFolders = await listOneDriveItems(courseFolder.path);
+                const weekFolder = courseFolders.find((f: any) => f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${actualWeek}`));
+                if (weekFolder) {
+                  const weekContents = await listOneDriveItems(weekFolder.path);
+                  const typeFolder = weekContents.find((f: any) => f.type === 'folder' && f.name.toLowerCase().includes(folderType));
+                  if (typeFolder) {
+                    const odFiles = await listOneDriveItems(typeFolder.path);
+                    const matchedFile = odFiles.find((f: any) => f.name === file.originalName);
+                    if (matchedFile?.downloadUrl) {
+                      console.log(`[Download] OneDrive fallback success for: ${file.originalName}`);
+                      const pdfResponse = await fetch(matchedFile.downloadUrl);
+                      if (pdfResponse.ok && pdfResponse.body) {
+                        res.setHeader('Content-Type', file.contentType || 'application/pdf');
+                        res.setHeader('Content-Disposition', `inline; filename="${file.originalName}"`);
+                        const reader = pdfResponse.body.getReader();
+                        while (true) {
+                          const { done, value } = await reader.read();
+                          if (done) break;
+                          res.write(value);
+                        }
+                        res.end();
+                        return;
+                      }
+                    }
+                  }
+                }
+              }
+              console.log(`[Download] OneDrive fallback: file not found on OneDrive for ${file.originalName}`);
+            } catch (odErr) {
+              console.error(`[Download] OneDrive fallback error:`, odErr);
+            }
+          }
           return res.status(404).json({ error: "File not found locally or in object storage" });
         }
       } else if (mediaUrl.startsWith("onedrive://")) {
