@@ -3362,7 +3362,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 
       try {
         const freshRow = await db.select().from(appState).where(eq(appState.key, 'raw_story_emails_enabled')).limit(1);
-        if (freshRow.length > 0) rawStoryEmailsEnabled = freshRow[0].value === 'true';
+        if (freshRow.length > 0) { /* rawStoryEmailsEnabled permanently off */ }
       } catch {}
       if (!rawStoryEmailsEnabled) {
         console.log(`[Raw Story] Top-3 changed (${newStories.length} new) but emails are disabled — skipping`);

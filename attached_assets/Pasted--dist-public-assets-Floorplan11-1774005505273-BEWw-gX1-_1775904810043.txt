@@ -1,0 +1,38 @@
+./dist/public/assets/Floorplan11_1774005505273-BEWw-gX1.png                              1,553.36 kB
+../dist/public/assets/Echo_1774213902054-Dum5d4T4.png                                     2,055.05 kB
+../dist/public/assets/Music_BG20_1774006032495-CxhBg4I3.png                               2,114.88 kB
+../dist/public/assets/style-BT3GVIZ6.css                                                    260.35 kB │ gzip:  42.10 kB
+../dist/public/assets/index-DaiF6Kur.js                                                   3,173.95 kB │ gzip: 797.74 kB
+✓ built in 51.48s
+building server...
+✘ [ERROR] Cannot assign to "rawStoryEmailsEnabled" because it is a constant
+
+    server/routes.ts:3365:33:
+      3365 │         if (freshRow.length > 0) rawStoryEmailsEnabled = freshRow[0].value === 'true';
+           ╵                                  ~~~~~~~~~~~~~~~~~~~~~
+
+  The symbol "rawStoryEmailsEnabled" was declared a constant here:
+
+    server/routes.ts:3247:8:
+      3247 │   const rawStoryEmailsEnabled = false;
+           ╵         ~~~~~~~~~~~~~~~~~~~~~
+
+1 error
+Error: Build failed with 1 error:
+server/routes.ts:3365:33: ERROR: Cannot assign to "rawStoryEmailsEnabled" because it is a constant
+    at failureErrorWithLog (/home/byhomeyyz/Home-View/node_modules/esbuild/lib/main.js:1467:15)
+    at /home/byhomeyyz/Home-View/node_modules/esbuild/lib/main.js:926:25
+    at /home/byhomeyyz/Home-View/node_modules/esbuild/lib/main.js:878:52
+    at buildResponseToResult (/home/byhomeyyz/Home-View/node_modules/esbuild/lib/main.js:924:7)
+    at /home/byhomeyyz/Home-View/node_modules/esbuild/lib/main.js:951:16
+    at responseCallbacks.<computed> (/home/byhomeyyz/Home-View/node_modules/esbuild/lib/main.js:603:9)
+    at handleIncomingPacket (/home/byhomeyyz/Home-View/node_modules/esbuild/lib/main.js:658:12)
+    at Socket.readFromStdout (/home/byhomeyyz/Home-View/node_modules/esbuild/lib/main.js:581:7)
+    at Socket.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+    at Pipe.onStreamRead (node:internal/stream_base_commons:191:23) {
+  errors: [Getter/Setter],
+  warnings: [Getter/Setter]
+}
