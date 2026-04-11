@@ -4927,7 +4927,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
                   const files = await listOneDriveItems(typeFolder.path);
                   const matchedFile = files.find((f: any) => f.name === fileName);
                   if (matchedFile?.downloadUrl) {
-                    console.log(`[Download] OneDrive direct: ${fileName} from ${matchedCourse.code} week ${localWeek}`);
+                    console.log(`[Download] OneDrive direct: ${fileName} from ${matchedCourse.code} week ${weekNum}`);
                     const pdfResponse = await fetch(matchedFile.downloadUrl);
                     if (pdfResponse.ok && pdfResponse.body) {
                       res.setHeader('Content-Type', 'application/pdf');
