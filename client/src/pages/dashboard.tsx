@@ -29945,7 +29945,7 @@ export default function Dashboard() {
                           handleCourseRowDrop(e, course.name, day);
                         }}
                       >
-                        {(isDayToday ? (day.getDay() !== 6) : (day.getDay() === 0 && new Date().getDay() === 6)) && (() => {
+                        {isDayToday && (() => {
                           const cCode2 = course.name;
                           const nextTask = (allTasks || []).filter(t => {
                             const tc = t.courseName?.split(' ')[0]?.toUpperCase() || '';
@@ -29989,7 +29989,7 @@ export default function Dashboard() {
                           );
                         })()}
                         
-                        <div className={`flex flex-col gap-0.5${cellHasScroll ? ' course-cell-scroll' : ''}`} style={{ overflowY: cellHasScroll ? 'auto' : 'hidden', overflowX: 'hidden', flex: 1, minHeight: 0, position: 'relative', zIndex: 6, ...((isDayToday && day.getDay() !== 6) || (day.getDay() === 0 && new Date().getDay() === 6) ? { paddingTop: '23px' } : {}) }}>
+                        <div className={`flex flex-col gap-0.5${cellHasScroll ? ' course-cell-scroll' : ''}`} style={{ overflowY: cellHasScroll ? 'auto' : 'hidden', overflowX: 'hidden', flex: 1, minHeight: 0, position: 'relative', zIndex: 6, ...(isDayToday ? { paddingTop: '23px' } : {}) }}>
                         {/* Course-associated projects */}
                         {allProjects.filter(proj => {
                           if (!proj.courseName) return false;
