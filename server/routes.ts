@@ -3494,59 +3494,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         return;
       }
 
-      const newStories = currentTopThree.filter(s => !lastTopThree.includes(s.key));
-      if (newStories.length === 0) {
-        lastTopThree = currentKeys;
-        await saveLastTopThree();
-        console.log('[Raw Story] Top-3 reordered but same stories — no email');
-        return;
-      }
-
-      const storyLines = currentTopThree.map((s, idx) => {
-        const isNew = !lastTopThree.includes(s.key);
-        return { ...s, position: idx + 1, isNew };
-      });
-
-      const textBody = `RAW STORY — TOP 3 STORIES CHANGED\n\n` +
-        storyLines.map(s => `${s.position}. ${s.isNew ? '[NEW] ' : ''}${s.title}\n   ${s.link}`).join('\n\n');
-
-      const htmlBody = `<div style="font-family: Georgia, serif; max-width: 700px;">` +
-        `<h1 style="font-size: 20px; font-weight: bold; margin-bottom: 20px; letter-spacing: 1px;">RAW STORY — TOP 3 CHANGED</h1>` +
-        `<table style="width:100%;border-collapse:collapse;">` +
-        storyLines.map(s =>
-          `<tr style="border-bottom:1px solid #eee;">` +
-          `<td style="padding:12px 8px;font-size:18px;font-weight:bold;vertical-align:top;width:30px;color:#666;">${s.position}.</td>` +
-          `<td style="padding:12px 8px;">` +
-          `${s.isNew ? '<span style="background:#dc2626;color:#fff;font-size:11px;padding:2px 6px;border-radius:3px;margin-right:6px;font-weight:bold;">NEW</span>' : ''}` +
-          `<a href="${s.link}" style="font-size:16px;font-weight:600;color:#1a1a1a;text-decoration:none;">${s.title}</a>` +
-          `</td></tr>`
-        ).join('') +
-        `</table>` +
-        `<hr style="margin-top:30px;border:none;border-top:1px solid #ccc;" />` +
-        `<p style="font-size:12px;color:#888;">Checked every 10 minutes. Only sent when a top-3 story changes.</p>` +
-        `</div>`;
-
-      try {
-        const freshRow = await db.select().from(appState).where(eq(appState.key, 'raw_story_emails_enabled')).limit(1);
-        if (freshRow.length > 0) { /* rawStoryEmailsEnabled permanently off */ }
-      } catch {}
-      if (!rawStoryEmailsEnabled) {
-        console.log(`[Raw Story] Top-3 changed (${newStories.length} new) but emails are disabled — skipping`);
-      } else {
-        const result = await sendGmail({
-          to: 'bryn.kai-hendricks@outlook.com',
-          subject: `RAW STORY TOP 3 CHANGED — ${newStories.length} new stor${newStories.length === 1 ? 'y' : 'ies'}`,
-          htmlBody,
-          textBody,
-        });
-
-        if (result.success) {
-          console.log(`[Raw Story] Top-3 change email sent (${newStories.length} new)`);
-        } else {
-          console.error(`[Raw Story] Failed to send: ${result.error}`);
-        }
-      }
-
       lastTopThree = currentKeys;
       await saveLastTopThree();
     } catch (err: any) {
