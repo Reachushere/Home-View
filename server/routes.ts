@@ -11007,7 +11007,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   });
 
   const SERVER_START_TIME = Date.now();
-  const SERVER_STARTUP_COOLDOWN_MS = 60 * 1000;
+  const SERVER_STARTUP_COOLDOWN_MS = 30 * 1000;
   console.log(`[Startup] Cooldown timer started (${SERVER_STARTUP_COOLDOWN_MS / 1000}s)`);
 
   // ===== HA Connectivity Health Monitor =====
@@ -12546,19 +12546,18 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         console.log(`${logPrefix} OneDrive not connected — skipping library sync`);
         return;
       }
-      const allSems = await storage.getAllSemesterSettings();
-      if (!allSems || allSems.length === 0) return;
-      const sortedSems = [...allSems].sort((a, b) => {
-        const aDate = a.semesterStartDate ? new Date(a.semesterStartDate).getTime() : 0;
-        const bDate = b.semesterStartDate ? new Date(b.semesterStartDate).getTime() : 0;
-        return aDate - bDate;
-      });
+      const activeSem = await storage.getActiveSemesterSettings();
+      if (!activeSem) {
+        console.log(`${logPrefix} No active semester — skipping library sync`);
+        return;
+      }
+      const semsToSync = [activeSem];
+      console.log(`${logPrefix} Syncing library for active semester: ${activeSem.semesterName || activeSem.id}`);
       const existingFiles = await storage.getFiles();
       const existingSet = new Set(existingFiles.map((f: any) => `${f.folder}::${f.originalName}`));
       let totalSynced = 0;
 
-      for (let semIdx = 0; semIdx < sortedSems.length; semIdx++) {
-        const sem = sortedSems[semIdx];
+      for (const sem of semsToSync) {
         try {
           const courses = await getSemesterOneDriveCourses(sem);
           if (courses.length === 0) continue;
@@ -12598,17 +12597,18 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
                     totalSynced++;
                   }
                 }
+                await new Promise(r => setTimeout(r, 200));
               }
             } catch (e: any) {
               console.log(`${logPrefix} Error syncing course ${course.code}: ${e.message}`);
             }
           }
         } catch (e: any) {
-          console.log(`${logPrefix} Error syncing semester ${sem.semesterName || semIdx}: ${e.message}`);
+          console.log(`${logPrefix} Error syncing semester ${sem.semesterName || 'active'}: ${e.message}`);
         }
       }
       if (totalSynced > 0) {
-        console.log(`${logPrefix} Synced ${totalSynced} new files from OneDrive across ${sortedSems.length} semesters`);
+        console.log(`${logPrefix} Synced ${totalSynced} new files from OneDrive (active semester only)`);
       } else {
         console.log(`${logPrefix} All library files up to date`);
       }
@@ -12636,7 +12636,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       if (migrated > 0) console.log(`[Migration] Fixed ${migrated} files with global week numbers -> relative`);
     } catch (e: any) { console.log(`[Migration] Error: ${e.message}`); }
     syncAllSemesterLibraryFiles('[LibrarySync:Startup]').catch(() => {});
-  }, 30000);
+  }, 120000);
   setInterval(() => { syncAllSemesterLibraryFiles('[LibrarySync:Periodic]').catch(() => {}); }, 30 * 60 * 1000);
 
   let audioPreparationActive = false;
