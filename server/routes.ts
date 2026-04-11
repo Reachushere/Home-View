@@ -21327,6 +21327,7 @@ document.body.removeChild(a);
       const semester = await storage.getActiveSemesterSettings();
       const deletedFolders = await storage.getDeletedFolders();
       const customFolders = await storage.getCustomFolders();
+      const shifts = await storage.getShiftSchedule();
       
       const exportData = {
         version: 1,
@@ -21336,6 +21337,7 @@ document.body.removeChild(a);
         semester,
         deletedFolders,
         customFolders,
+        shifts,
       };
       
       res.json(exportData);
@@ -21357,9 +21359,9 @@ document.body.removeChild(a);
     res.header("Access-Control-Allow-Origin", "*");
     
     try {
-      const { tasks, files, semester, deletedFolders, customFolders } = req.body;
+      const { tasks, files, semester, deletedFolders, customFolders, shifts } = req.body;
       
-      let imported = { tasks: 0, files: 0, semester: false, deletedFolders: 0, customFolders: 0 };
+      let imported = { tasks: 0, files: 0, semester: false, deletedFolders: 0, customFolders: 0, shifts: 0 };
       
       // Import semester settings
       if (semester) {
@@ -21382,25 +21384,48 @@ document.body.removeChild(a);
         imported.semester = true;
       }
       
-      // Import tasks - create or update all
+      // Import tasks - match by content (course + title + date) instead of database ID
       if (tasks && Array.isArray(tasks)) {
+        const existingTasks = await storage.getTasks({});
+        const stripBrackets = (s: string) => (s || '').replace(/\[[^\]]*\]\s*/g, '').trim();
+        const toDateStr = (d: any) => {
+          if (!d) return '';
+          const str = typeof d === 'string' ? d : new Date(d).toISOString();
+          return str.split('T')[0];
+        };
+        const existingByContent = new Map<string, any>();
+        const existingByCourseTitleDate = new Map<string, any>();
+        existingTasks.forEach(t => {
+          const key = `${t.courseName}||${t.title}||${t.type}||${t.weekNumber || ''}`;
+          existingByContent.set(key, t);
+          const stripped = stripBrackets(t.title);
+          const dateKey = toDateStr(t.dueDate);
+          const ctdKey = `${t.courseName}||${stripped}||${dateKey}`;
+          if (!existingByCourseTitleDate.has(ctdKey)) existingByCourseTitleDate.set(ctdKey, t);
+        });
+        
         for (const task of tasks) {
           try {
-            const existing = await storage.getTask(task.id);
-            const taskData = {
-              ...task,
-              dueDate: new Date(task.dueDate),
-              startDate: task.startDate ? new Date(task.startDate) : null,
-              repeatEndDate: task.repeatEndDate ? new Date(task.repeatEndDate) : null,
-              completedAt: task.completedAt ? new Date(task.completedAt) : null,
-            };
+            const key = `${task.courseName}||${task.title}||${task.type}||${task.weekNumber || ''}`;
+            const dueStr = toDateStr(task.dueDate);
+            const ctdKey = `${task.courseName}||${stripBrackets(task.title)}||${dueStr}`;
+            const existingTask = existingByContent.get(key) || existingByCourseTitleDate.get(ctdKey);
             
-            if (existing) {
-              const { id, ...updates } = taskData;
-              await storage.updateTask(task.id, updates);
+            const { id, isMissed, calendarEventId, calendarProvider, prepCalendarEventId, secondaryCalendarEventId, secondAccountCalendarEventId, secondAccountPrepEventId, ...taskData } = task;
+            if (taskData.dueDate && typeof taskData.dueDate === 'string') taskData.dueDate = new Date(taskData.dueDate);
+            if (taskData.startDate && typeof taskData.startDate === 'string') taskData.startDate = new Date(taskData.startDate);
+            if (taskData.completedAt && typeof taskData.completedAt === 'string') taskData.completedAt = new Date(taskData.completedAt);
+            if (taskData.repeatEndDate && typeof taskData.repeatEndDate === 'string') taskData.repeatEndDate = new Date(taskData.repeatEndDate);
+            if (taskData.eventEndDate && typeof taskData.eventEndDate === 'string') taskData.eventEndDate = new Date(taskData.eventEndDate);
+            
+            if (existingTask) {
+              await storage.updateTask(existingTask.id, taskData);
             } else {
-              const { id, ...newTask } = taskData;
-              await storage.createTask(newTask);
+              const created = await storage.createTask(taskData);
+              const newKey = `${taskData.courseName}||${taskData.title}||${taskData.type}||${taskData.weekNumber || ''}`;
+              existingByContent.set(newKey, created);
+              const newCtdKey = `${taskData.courseName}||${stripBrackets(taskData.title)}||${dueStr}`;
+              existingByCourseTitleDate.set(newCtdKey, created);
             }
             imported.tasks++;
           } catch (err) {
@@ -21463,6 +21488,19 @@ document.body.removeChild(a);
           } catch (err) {
             console.error("Error importing custom folder:", err);
           }
+        }
+      }
+      
+      // Import shift schedule
+      if (shifts && Array.isArray(shifts)) {
+        const validShiftTypes = ['day', 'night', 'off'];
+        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+        const validShifts = shifts
+          .filter((s: any) => typeof s.date === 'string' && dateRegex.test(s.date) && typeof s.shiftType === 'string' && validShiftTypes.includes(s.shiftType))
+          .map((s: any) => ({ date: s.date, shiftType: s.shiftType }));
+        if (validShifts.length > 0) {
+          await storage.setShiftBulk(validShifts);
+          imported.shifts = validShifts.length;
         }
       }
       
