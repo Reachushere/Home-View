@@ -22003,6 +22003,18 @@ document.body.removeChild(a);
       const objectPath = req.query.path as string;
       if (!objectPath) return res.status(400).json({ error: "path required" });
 
+      if (objectPath.startsWith('/local-uploads/')) {
+        const fs = await import("fs");
+        const path = await import("path");
+        const fileId = objectPath.replace('/local-uploads/', '');
+        const localPath = path.join(process.cwd(), 'local-uploads', fileId);
+        if (!fs.existsSync(localPath)) return res.status(404).json({ error: "File not found" });
+        const buffer = fs.readFileSync(localPath);
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'inline');
+        return res.send(buffer);
+      }
+
       const privateDir = process.env.PRIVATE_OBJECT_DIR || '';
       const pathParts = privateDir.replace(/^\//, '').split('/');
       const bucketName = pathParts[0];
@@ -22026,19 +22038,33 @@ document.body.removeChild(a);
         return res.status(400).json({ error: "objectPath and courseName are required" });
       }
 
-      const privateDir = process.env.PRIVATE_OBJECT_DIR || '';
-      const pathParts = privateDir.replace(/^\//, '').split('/');
-      const bucketName = pathParts[0];
-      const filePath = objectPath.replace('/objects/', '');
-      const fullObjectName = `.private/${filePath}`;
       let fileBuffer: Buffer;
-      try {
-        console.log(`[Syllabus Parse] Downloading from bucket=${bucketName}, object=${fullObjectName}`);
-        const [buffer] = await objectStorageClient.bucket(bucketName).file(fullObjectName).download();
-        fileBuffer = buffer;
-      } catch (dlErr) {
-        console.error("Failed to download syllabus from object storage:", dlErr);
-        return res.status(500).json({ error: "Failed to read uploaded file" });
+      if (objectPath.startsWith('/local-uploads/')) {
+        try {
+          const fs = await import("fs");
+          const pathMod = await import("path");
+          const fileId = objectPath.replace('/local-uploads/', '');
+          const localPath = pathMod.join(process.cwd(), 'local-uploads', fileId);
+          fileBuffer = fs.readFileSync(localPath);
+          console.log(`[Syllabus Parse] Read local file: ${localPath} (${fileBuffer.length} bytes)`);
+        } catch (dlErr) {
+          console.error("Failed to read local syllabus file:", dlErr);
+          return res.status(500).json({ error: "Failed to read uploaded file" });
+        }
+      } else {
+        const privateDir = process.env.PRIVATE_OBJECT_DIR || '';
+        const pathParts = privateDir.replace(/^\//, '').split('/');
+        const bucketName = pathParts[0];
+        const filePath = objectPath.replace('/objects/', '');
+        const fullObjectName = `.private/${filePath}`;
+        try {
+          console.log(`[Syllabus Parse] Downloading from bucket=${bucketName}, object=${fullObjectName}`);
+          const [buffer] = await objectStorageClient.bucket(bucketName).file(fullObjectName).download();
+          fileBuffer = buffer;
+        } catch (dlErr) {
+          console.error("Failed to download syllabus from object storage:", dlErr);
+          return res.status(500).json({ error: "Failed to read uploaded file" });
+        }
       }
 
       let pdfText = '';
