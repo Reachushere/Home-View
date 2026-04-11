@@ -271,6 +271,7 @@ function BookReader({ file, bookColor, onClose }: {
   onClose: () => void;
 }) {
   const [phase, setPhase] = useState<'pull' | 'expand' | 'reading'>('pull');
+  const [pdfBlobUrl, setPdfBlobUrl] = useState<string | null>(null);
   const title = truncateSpineTitle(file.displayName || file.originalName, 80);
 
   useEffect(() => {
@@ -278,6 +279,24 @@ function BookReader({ file, bookColor, onClose }: {
     const t2 = setTimeout(() => setPhase('reading'), 1200);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`/api/files/${file.id}/download`)
+      .then(r => r.blob())
+      .then(blob => {
+        if (!cancelled) {
+          const url = URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
+          setPdfBlobUrl(url);
+        }
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [file.id]);
+
+  useEffect(() => {
+    return () => { if (pdfBlobUrl) URL.revokeObjectURL(pdfBlobUrl); };
+  }, [pdfBlobUrl]);
 
   return (
     <div
@@ -421,16 +440,24 @@ function BookReader({ file, bookColor, onClose }: {
               borderRadius: '4px',
               overflow: 'hidden',
               background: '#fff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}>
-              <iframe
-                src={`/api/files/${file.id}/download`}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  border: 'none',
-                }}
-                title={file.displayName || file.originalName}
-              />
+              {pdfBlobUrl ? (
+                <embed
+                  src={pdfBlobUrl}
+                  type="application/pdf"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    border: 'none',
+                  }}
+                  title={file.displayName || file.originalName}
+                />
+              ) : (
+                <div style={{ color: '#666', fontSize: '14px' }}>Loading PDF...</div>
+              )}
             </div>
           </>
         )}
