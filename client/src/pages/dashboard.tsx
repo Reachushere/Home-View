@@ -28784,71 +28784,11 @@ export default function Dashboard() {
                             const todayDate = startOfDayET(new Date());
                             const dayDate = startOfDayET(day);
                             const diffDays = Math.round((dayDate.getTime() - todayDate.getTime()) / (1000 * 60 * 60 * 24));
-                            if (diffDays < 2 || diffDays > 14) return null;
+                            if (diffDays < 1 || diffDays > 14) return null;
                             const dailyEntry = weatherData.daily.find(d => d.date === format(day, 'yyyy-MM-dd'));
                             if (!dailyEntry || dailyEntry.weatherCode === undefined) return null;
                             const wc = dailyEntry.weatherCode;
-                            const forecastEffectsHtml = (() => {
-                              if (wc >= 95) {
-                                const drops = Array.from({ length: 16 }, (_, i) => {
-                                  const left = (i * 37 + 13) % 100;
-                                  const delay = ((i * 0.13) % 0.8).toFixed(2);
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1.5px;height:8px;background:rgba(180,190,220,0.5);animation:rainDrop 0.4s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
-                                }).join('');
-                                return drops + `<div style="position:absolute;inset:0;background:rgba(255,255,200,0.1);animation:lightningFlash 15s 3s ease-in-out infinite"></div>`;
-                              }
-                              if (wc >= 71 && wc <= 77) {
-                                return Array.from({ length: 16 }, (_, i) => {
-                                  const left = (i * 23 + 5) % 100;
-                                  const delay = ((i * 0.2) % 2).toFixed(2);
-                                  const size = 3.5 + (i % 2) * 1.5;
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.9);border-radius:50%;animation:snowFall ${2 + (i % 3)}s ${delay}s linear infinite"></div>`;
-                                }).join('');
-                              }
-                              if (wc >= 85 && wc <= 86) {
-                                return Array.from({ length: 18 }, (_, i) => {
-                                  const left = (i * 23 + 5) % 100;
-                                  const delay = ((i * 0.2) % 2).toFixed(2);
-                                  const size = 3.5 + (i % 2) * 1.5;
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.9);border-radius:50%;animation:snowFall ${1.5 + (i % 2)}s ${delay}s linear infinite"></div>`;
-                                }).join('');
-                              }
-                              if (wc >= 66 && wc <= 67) {
-                                return Array.from({ length: 16 }, (_, i) => {
-                                  const left = (i * 23 + 5) % 100;
-                                  const delay = ((i * 0.14) % 1.2).toFixed(2);
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1.5px;height:6px;background:rgba(180,210,255,0.6);animation:rainDrop 0.6s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
-                                }).join('');
-                              }
-                              if ((wc >= 61 && wc <= 65) || (wc >= 80 && wc <= 82)) {
-                                const density = wc >= 80 ? 18 : 14;
-                                return Array.from({ length: density }, (_, i) => {
-                                  const left = (i * 23 + 5) % 100;
-                                  const delay = ((i * 0.14) % 1.2).toFixed(2);
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1.5px;height:7px;background:rgba(200,210,230,0.6);animation:rainDrop ${wc >= 80 ? '0.5s' : '0.7s'} ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
-                                }).join('');
-                              }
-                              if (wc >= 51 && wc <= 55) {
-                                return Array.from({ length: 10 }, (_, i) => {
-                                  const left = (i * 29 + 7) % 100;
-                                  const delay = ((i * 0.17) % 1.2).toFixed(2);
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:1px;height:5px;background:rgba(200,210,230,0.4);animation:rainDrop 1s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
-                                }).join('');
-                              }
-                              if (wc >= 45 && wc <= 48) {
-                                return Array.from({ length: 12 }, (_, i) => {
-                                  const left = (i * 31 + 7) % 100;
-                                  const delay = ((i * 0.25) % 2).toFixed(2);
-                                  const size = 2 + (i % 2);
-                                  return `<div style="position:absolute;left:${left}%;top:-4px;width:${size}px;height:${size}px;background:rgba(255,255,255,0.5);border-radius:50%;animation:snowFall ${1.5 + (i % 2)}s ${delay}s linear infinite"></div>`;
-                                }).join('');
-                              }
-                              if (wc >= 45 && wc <= 48) {
-                                return `<div style="position:absolute;inset:0;background:rgba(200,200,210,0.12);backdrop-filter:blur(0.5px)"></div>`;
-                              }
-                              if (wc === 3) {
-                                return `<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(140,145,155,0.2) 0%,rgba(160,165,175,0.1) 100%)"></div>`;
-                              }
+                            const forecastIconHtml = (() => {
                               if (wc <= 1) {
                                 return `<svg style="position:absolute;top:3px;right:4px;filter:drop-shadow(0 0 3px rgba(255,220,80,0.3));opacity:0.6" width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" fill="#fde047"/><g stroke="#fde047" stroke-width="1.5" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="6.76" y2="6.76"/><line x1="17.24" y1="17.24" x2="19.07" y2="19.07"/><line x1="4.93" y1="19.07" x2="6.76" y2="17.24"/><line x1="17.24" y1="6.76" x2="19.07" y2="4.93"/></g></svg>`;
                               }
@@ -28869,7 +28809,7 @@ export default function Dashboard() {
                             return (
                               <>
                                 <div className="absolute left-0 right-0 bottom-0 z-[5]" style={{ top: 0, background: skyBg, overflow: 'hidden', pointerEvents: 'none', opacity: isNextSchoolWeek ? 0.2 : 0.85 }}>
-                                  <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', opacity: isNextSchoolWeek ? 0.25 : 1 }} dangerouslySetInnerHTML={{ __html: forecastEffectsHtml }} />
+                                  {forecastIconHtml && <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', opacity: isNextSchoolWeek ? 0.25 : 1 }} dangerouslySetInnerHTML={{ __html: forecastIconHtml }} />}
                                 </div>
                               </>
                             );

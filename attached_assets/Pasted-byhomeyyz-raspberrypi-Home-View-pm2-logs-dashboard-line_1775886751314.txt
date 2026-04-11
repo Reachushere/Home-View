@@ -1,0 +1,35 @@
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs dashboard --lines 500 --nostream | grep -E "\[Cat Lights\]|\[FileOrder\]|\[OD-Sync\]|\[OD-Courses\]|Clearing.*extraction|WEBHOOK|Nest-Playback" > ~/cat-log.txt && cat ~/cat-log.txt
+0|dashboar | [OD-Courses] === getSemesterOneDriveCourses START ===
+0|dashboar | [OD-Courses] year=2028, semType=spring_summer, isSpSu=true, variants=["Spring & Summer","Spring-Summer","Spring_Summer","Spring Summer"]
+0|dashboar | [OD-Courses] OneDrive connected: true
+0|dashboar | [OD-Courses] Trying semester variant path: /School/1. TMU/Courses/2028/Spring & Summer
+0|dashboar | [OD-Courses] Listing OneDrive folder: /School/1. TMU/Courses/2028/Spring & Summer
+0|dashboar | [OD-Courses] ERROR listing "/School/1. TMU/Courses/2028/Spring & Summer": The resource could not be found.
+0|dashboar | [OD-Courses] Trying semester variant path: /School/1. TMU/Courses/2028/Spring-Summer
+0|dashboar | [OD-Courses] Listing OneDrive folder: /School/1. TMU/Courses/2028/Spring-Summer
+0|dashboar | [OD-Courses] Folder "/School/1. TMU/Courses/2028/Spring-Summer" returned 3 items: Full(folder), Spring - First Half(folder), Summer - Second Half(folder)
+0|dashboar | [OD-Courses] Using basePath: /School/1. TMU/Courses/2028/Spring-Summer (3 items)
+0|dashboar | [OD-Courses] Slot 1: code="ADA", modFolder="/School/1. TMU/Courses/2028/Spring-Summer/Summer - Second Half", readFolder="", override="/School/1. TMU/Courses/2028/Spring-Summer/Summer - Second Half"
+0|dashboar | [OD-Courses] Slot 1: using folder override → /School/1. TMU/Courses/2028/Spring-Summer/Summer - Second Half
+0|dashboar | [OD-Courses] Slot 2: empty code — skipping
+0|dashboar | [OD-Courses] Slot 3: empty code — skipping
+0|dashboar | [OD-Courses] === RESULT: 1 courses: ADA→/School/1. TMU/Courses/2028/Spring-Summer/Summer - Second Half ===
+0|dashboar | [OD-Courses] === getSemesterOneDriveCourses START ===
+0|dashboar | [OD-Courses] year=2028, semType=fall, isSpSu=false, variants=["Fall"]
+0|dashboar | [OD-Courses] OneDrive connected: true
+0|dashboar | [OD-Courses] Trying semester variant path: /School/1. TMU/Courses/2028/Fall
+0|dashboar | [OD-Courses] Listing OneDrive folder: /School/1. TMU/Courses/2028/Fall
+0|dashboar | [OD-Courses] Folder "/School/1. TMU/Courses/2028/Fall" returned 3 items: TBD1(folder), TBD2(folder), TBD3(folder)
+0|dashboar | [OD-Courses] Using basePath: /School/1. TMU/Courses/2028/Fall (3 items)
+0|dashboar | [OD-Courses] Slot 1: code="TBD1", modFolder="", readFolder="", override=""
+0|dashboar | [OD-Courses] Slot 1: searching for folder starting with "TBD1" in /School/1. TMU/Courses/2028/Fall (3 folders)
+0|dashboar | [OD-Courses] Slot 1: MATCHED folder "TBD1" → /School/1. TMU/Courses/2028/Fall/TBD1
+0|dashboar | [OD-Courses] Slot 2: code="Course2", modFolder="", readFolder="", override=""
+0|dashboar | [OD-Courses] Slot 2: searching for folder starting with "COURSE2" in /School/1. TMU/Courses/2028/Fall (3 folders)
+0|dashboar | [OD-Courses] Slot 2: NO folder matched "COURSE2" — available: TBD1, TBD2, TBD3
+0|dashboar | [OD-Courses] Slot 2: fallback constructed path → /School/1. TMU/Courses/2028/Fall/Course 2
+0|dashboar | [OD-Courses] Slot 3: code="TBD3", modFolder="", readFolder="", override=""
+0|dashboar | [OD-Courses] Slot 3: searching for folder starting with "TBD3" in /School/1. TMU/Courses/2028/Fall (3 folders)
+0|dashboar | [OD-Courses] Slot 3: MATCHED folder "TBD3" → /School/1. TMU/Courses/2028/Fall/TBD3
+0|dashboar | [OD-Courses] === RESULT: 3 courses: TBD1→/School/1. TMU/Courses/2028/Fall/TBD1 | Course2→/School/1. TMU/Courses/2028/Fall/Course 2 | TBD3→/School/1. TMU/Courses/2028/Fall/TBD3 ===
+byhomeyyz@raspberrypi:~/Home-View $
