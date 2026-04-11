@@ -2315,6 +2315,8 @@ export default function Dashboard() {
   }, [isEmailWizardOpen]);
   const [feedbackText, setFeedbackText] = useState('');
   const [feedbackSending, setFeedbackSending] = useState(false);
+  const [agentScratchpad, setAgentScratchpad] = useState('');
+  const [scratchpadUpdatedAt, setScratchpadUpdatedAt] = useState<string | null>(null);
   const [showRemainingList, setShowRemainingList] = useState(false);
   
   const [showSemesterChecklist, setShowSemesterChecklist] = useState(false);
@@ -17742,7 +17744,7 @@ export default function Dashboard() {
               style={{ background: 'transparent' }}
               data-testid="button-feedback"
               title="Send Feedback to Agent"
-              onClick={() => setIsFeedbackOpen(true)}
+              onClick={() => { setIsFeedbackOpen(true); fetch('/api/agent-scratchpad').then(r => r.json()).then(d => { setAgentScratchpad(d.content || ''); setScratchpadUpdatedAt(d.updatedAt || null); }).catch(() => {}); }}
             >
               <MessageSquare className="text-white" style={{ height: '20px', width: '20px' }} />
             </Button>
@@ -23973,43 +23975,77 @@ export default function Dashboard() {
           )}
 
           <Dialog open={isFeedbackOpen && desktopIsFull} onOpenChange={setIsFeedbackOpen}>
-            <DialogContent className="max-w-[320px] text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_textarea]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '45%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', zIndex: 10003 }}>
+            <DialogContent className="max-w-[680px] text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_textarea]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '45%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', zIndex: 10003 }}>
               <DialogTitle className="sr-only">Send Feedback</DialogTitle>
               <div className="flex items-center justify-between px-4 py-2 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                 <div className="flex items-center gap-2">
                   <MessageSquare className="text-white" style={{ width: '14px', height: '14px' }} />
-                  <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>SEND NOTE TO AGENT</h2>
+                  <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>FEEDBACK TO AGENT</h2>
                 </div>
                 <button onClick={() => setIsFeedbackOpen(false)} className="text-white hover:text-white/80 transition-colors p-1" data-testid="button-close-feedback"><X className="h-4 w-4" /></button>
               </div>
-              <div className="flex flex-col gap-3 p-4">
-                <textarea
-                  value={feedbackText}
-                  onChange={(e) => setFeedbackText(e.target.value)}
-                  placeholder="Describe a change, bug, or feature request..."
-                  className="w-full h-[120px] bg-black/40 border border-white/30 rounded-lg p-3 text-[11px] text-white placeholder:text-white/40 resize-none focus:outline-none focus:border-white/60"
-                  data-testid="input-feedback-note"
-                />
-                <Button
-                  disabled={!feedbackText.trim() || feedbackSending}
-                  data-testid="button-send-feedback"
-                  className="w-full h-8 text-[11px] font-medium"
-                  style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.08) 100%)', border: '1px solid rgba(255,255,255,0.3)' }}
-                  onClick={async () => {
-                    if (!feedbackText.trim()) return;
-                    setFeedbackSending(true);
-                    try {
-                      const resp = await fetch('/api/feedback-notes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ note: feedbackText.trim() }) });
-                      if (resp.ok) {
-                        toast({ title: "Note Saved", description: "Your feedback has been saved for the agent." });
-                        setFeedbackText('');
-                        setIsFeedbackOpen(false);
-                      }
-                    } catch {} finally { setFeedbackSending(false); }
-                  }}
-                >
-                  {feedbackSending ? 'Sending...' : 'Send Note'}
-                </Button>
+              <div className="flex gap-4 p-4" style={{ minHeight: '320px' }}>
+                <div className="flex flex-col gap-3 flex-1">
+                  <div className="flex items-center gap-1.5" style={{ marginBottom: '2px' }}>
+                    <MessageSquare className="text-white/60" style={{ width: '11px', height: '11px' }} />
+                    <span className="text-[10px] text-white/60 uppercase tracking-wider font-medium">Send Note</span>
+                  </div>
+                  <textarea
+                    value={feedbackText}
+                    onChange={(e) => setFeedbackText(e.target.value)}
+                    placeholder="Describe a change, bug, or feature request..."
+                    className="w-full flex-1 bg-black/40 border border-white/30 rounded-lg p-3 text-[11px] text-white placeholder:text-white/40 resize-none focus:outline-none focus:border-white/60"
+                    style={{ minHeight: '120px' }}
+                    data-testid="input-feedback-note"
+                  />
+                  <Button
+                    disabled={!feedbackText.trim() || feedbackSending}
+                    data-testid="button-send-feedback"
+                    className="w-full h-8 text-[11px] font-medium"
+                    style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.08) 100%)', border: '1px solid rgba(255,255,255,0.3)' }}
+                    onClick={async () => {
+                      if (!feedbackText.trim()) return;
+                      setFeedbackSending(true);
+                      try {
+                        const resp = await fetch('/api/feedback-notes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ note: feedbackText.trim() }) });
+                        if (resp.ok) {
+                          toast({ title: "Note Saved", description: "Your feedback has been saved for the agent." });
+                          setFeedbackText('');
+                          setIsFeedbackOpen(false);
+                        }
+                      } catch {} finally { setFeedbackSending(false); }
+                    }}
+                  >
+                    {feedbackSending ? 'Sending...' : 'Send Note'}
+                  </Button>
+                </div>
+                <div style={{ width: '1px', background: 'rgba(255,255,255,0.2)', alignSelf: 'stretch' }} />
+                <div className="flex flex-col flex-1" style={{ minWidth: 0 }}>
+                  <div className="flex items-center gap-1.5" style={{ marginBottom: '6px' }}>
+                    <ClipboardList className="text-white/60" style={{ width: '11px', height: '11px' }} />
+                    <span className="text-[10px] text-white/60 uppercase tracking-wider font-medium">Agent Scratchpad</span>
+                    {scratchpadUpdatedAt && (
+                      <span className="text-[9px] text-white/30 ml-auto">{new Date(scratchpadUpdatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>
+                    )}
+                  </div>
+                  <div
+                    className="flex-1 bg-black/30 border border-white/20 rounded-lg p-3 overflow-y-auto"
+                    style={{ fontSize: '11px', lineHeight: '1.6', minHeight: '120px', maxHeight: '340px' }}
+                    data-testid="text-agent-scratchpad"
+                  >
+                    {agentScratchpad ? (
+                      <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                        {agentScratchpad.split('\n').map((line, i) => {
+                          const boldLine = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                          const codeLine = boldLine.replace(/`([^`]+)`/g, '<code style="background:rgba(255,255,255,0.1);padding:1px 4px;border-radius:3px;font-size:10px">$1</code>');
+                          return <div key={i} dangerouslySetInnerHTML={{ __html: codeLine }} style={{ marginBottom: line.startsWith('-') ? '4px' : '2px', paddingLeft: line.startsWith('-') ? '0' : '0' }} />;
+                        })}
+                      </div>
+                    ) : (
+                      <span className="text-white/30 italic">No scratchpad notes yet</span>
+                    )}
+                  </div>
+                </div>
               </div>
             </DialogContent>
           </Dialog>
