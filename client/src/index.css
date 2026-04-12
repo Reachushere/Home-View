@@ -2185,6 +2185,15 @@ input[type="date"].bg-white::-webkit-datetime-edit-fields-wrapper {
   color: black;
 }
 
+input[type="date"].date-black-text::-webkit-datetime-edit,
+input[type="date"].date-black-text::-webkit-datetime-edit-fields-wrapper,
+input[type="date"].date-black-text::-webkit-datetime-edit-year-field,
+input[type="date"].date-black-text::-webkit-datetime-edit-month-field,
+input[type="date"].date-black-text::-webkit-datetime-edit-day-field,
+input[type="date"].date-black-text::-webkit-datetime-edit-text {
+  color: #000000 !important;
+}
+
 input[type="time"]::-webkit-datetime-edit-text,
 input[type="time"]::-webkit-datetime-edit-hour-field,
 input[type="time"]::-webkit-datetime-edit-minute-field,
