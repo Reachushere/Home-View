@@ -154,7 +154,7 @@ function getFileType(folder: string | null): 'module' | 'reading' | null {
   return null;
 }
 
-function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, shelfHeight, onRename, isGroupHovered, interceptClick, layout = 'vertical', besideHorizontal, extraMarginLeft }: {
+function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, shelfHeight, onRename, isGroupHovered, interceptClick, layout = 'vertical', besideHorizontal, extraMarginLeft, widthReduction }: {
   file: FileRecord;
   index: number;
   courseCode: string;

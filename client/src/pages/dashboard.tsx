@@ -16929,7 +16929,7 @@ export default function Dashboard() {
           zIndex: 110,
           left: topPillUndocked ? undefined : '19px',
           right: topPillUndocked ? undefined : '18px',
-          pointerEvents: editingTask ? 'none' : (topPillUndocked || isTopPillOpen) ? 'auto' : 'none',
+          pointerEvents: editingTask ? 'none' : 'auto',
           transform: topPillUndocked ? `translate(${topPillPos.x}px, ${topPillPos.y}px)` : `translateY(${isTopPillOpen ? '21px' : '-83px'})`,
           transition: topPillUndocked ? 'none' : (topPillMounted ? 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)' : 'none'),
           animation: (!isTopPillOpen && topPillMounted && !topPillUndocked) ? 'top-pill-container-nudge 6s ease-in-out 1s infinite' : 'none',
