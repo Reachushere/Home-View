@@ -856,7 +856,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
   const [pendingCommentText, setPendingCommentText] = useState('');
   const [expandedCommentId, setExpandedCommentId] = useState<number | null>(null);
   const [flipDirection, setFlipDirection] = useState<'none' | 'forward' | 'backward'>('none');
-  const [showModuleIndex, setShowModuleIndex] = useState(false);
+  const [showModuleIndex, setShowModuleIndex] = useState(!!isSyllabus);
   const [ttsPlaying, setTtsPlaying] = useState(false);
   const [ttsPaused, setTtsPaused] = useState(false);
   const [ttsLoading, setTtsLoading] = useState(false);
