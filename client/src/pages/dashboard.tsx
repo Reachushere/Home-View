@@ -16929,7 +16929,7 @@ export default function Dashboard() {
           zIndex: 110,
           left: topPillUndocked ? undefined : '19px',
           right: topPillUndocked ? undefined : '18px',
-          pointerEvents: editingTask ? 'none' : 'auto',
+          pointerEvents: editingTask ? 'none' : (topPillUndocked || isTopPillOpen) ? 'auto' : 'none',
           transform: topPillUndocked ? `translate(${topPillPos.x}px, ${topPillPos.y}px)` : `translateY(${isTopPillOpen ? '21px' : '-83px'})`,
           transition: topPillUndocked ? 'none' : (topPillMounted ? 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)' : 'none'),
           animation: (!isTopPillOpen && topPillMounted && !topPillUndocked) ? 'top-pill-container-nudge 6s ease-in-out 1s infinite' : 'none',
@@ -16945,7 +16945,6 @@ export default function Dashboard() {
         }}
         onTouchStart={() => {
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
-          if (topPillInitDoneRef.current && !isTopPillOpen) setIsTopPillOpen(true);
         }}
         onTouchEnd={() => {
           if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current);
@@ -17040,7 +17039,7 @@ export default function Dashboard() {
         
 
         {/* Icon buttons and task buttons with adjustable spacing */}
-        <div className="flex items-center flex-nowrap [&>*]:flex-shrink-0" onMouseEnter={() => { topPillHoveredRef.current = true; if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); }} onMouseLeave={() => { if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); topPillTimeoutRef.current = setTimeout(() => { topPillHoveredRef.current = false; if (!isSettingsPanelOpen && !isTodoFlyoutOpen && !isProjectsFlyoutOpen && !isRadioDialogOpen && !isCompletedTasksOpen && !isQuickAddOpen && !isAlexaDialogOpen && !isEmailWizardOpen && !isKeyContactsOpen && !isSystemHealthOpen && !isFeedbackOpen && !isSchoolCoursesDialogOpen && !isNewCourseWizardOpen) closeTopPill(); }, 1500); }} style={{ gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, marginTop: '-3px', position: 'relative', zIndex: 1, justifyContent: 'center', paddingLeft: '2px', paddingRight: '2px', width: '100%', overflow: 'visible', pointerEvents: 'auto' }}>
+        <div className="flex items-center flex-nowrap [&>*]:flex-shrink-0" onMouseEnter={() => { topPillHoveredRef.current = true; if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); }} onMouseLeave={() => { if (topPillTimeoutRef.current) clearTimeout(topPillTimeoutRef.current); topPillTimeoutRef.current = setTimeout(() => { topPillHoveredRef.current = false; if (!isSettingsPanelOpen && !isTodoFlyoutOpen && !isProjectsFlyoutOpen && !isRadioDialogOpen && !isCompletedTasksOpen && !isQuickAddOpen && !isAlexaDialogOpen && !isEmailWizardOpen && !isKeyContactsOpen && !isSystemHealthOpen && !isFeedbackOpen && !isSchoolCoursesDialogOpen && !isNewCourseWizardOpen) closeTopPill(); }, 1500); }} style={{ gap: `${Math.max(0, (blinkSettings.tallPillButtonSpacing || 0) + blinkSettings.buttonSpacing - 29)}px`, marginTop: '-3px', position: 'relative', zIndex: 1, justifyContent: 'center', paddingLeft: '2px', paddingRight: '2px', width: '100%', overflow: 'visible', pointerEvents: (isTopPillOpen || topPillUndocked) ? 'auto' : 'none' }}>
           
 
 
