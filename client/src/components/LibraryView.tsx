@@ -2559,7 +2559,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           onClick={() => { setAiSearchOpen(true); setAiPreview(null); setAiResult(null); setAiError(''); setAiNoteTitle(''); }}
           style={{
             position: 'absolute',
-            top: '22px',
+            top: '29px',
             right: '104px',
             zIndex: 100002,
             background: aiSearchOpen ? 'rgba(139,92,246,0.3)' : 'rgba(0,0,0,0.5)',
@@ -3040,7 +3040,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       {/* Semester navigation - top right area */}
       <div style={{
         position: 'absolute',
-        top: '16px',
+        top: '23px',
         right: '150px',
         zIndex: 100002,
         display: 'flex',
