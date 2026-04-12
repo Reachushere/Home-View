@@ -234,19 +234,35 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
         }} />
       )}
       {fileType && (
-        <span style={{
+        <div style={{
           position: 'absolute',
-          top: '6px',
+          top: '4px',
           left: '50%',
           transform: 'translateX(-50%)',
-          fontSize: '9px',
-          fontWeight: 800,
-          color: 'rgba(255,255,255,0.85)',
-          textShadow: '0 1px 2px rgba(0,0,0,0.7)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
           lineHeight: 1,
         }}>
-          {fileType === 'module' ? 'M' : 'R'}
-        </span>
+          <span style={{
+            fontSize: '9px',
+            fontWeight: 800,
+            color: 'rgba(255,255,255,0.85)',
+            textShadow: '0 1px 2px rgba(0,0,0,0.7)',
+          }}>
+            {fileType === 'module' ? 'M' : 'R'}
+          </span>
+          <span style={{
+            fontSize: '5px',
+            fontWeight: 600,
+            color: 'rgba(255,255,255,0.65)',
+            textShadow: '0 1px 2px rgba(0,0,0,0.7)',
+            letterSpacing: '0.2px',
+            whiteSpace: 'nowrap',
+          }}>
+            {fileType === 'module' ? 'Module' : 'Reading'}
+          </span>
+        </div>
       )}
       <span style={{
         writingMode: 'vertical-rl',
