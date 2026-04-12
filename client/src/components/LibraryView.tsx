@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
-import { X, ChevronLeft, ChevronRight, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2, Printer, Volume2, Square, Pause, Play, RefreshCw, Pencil, FileText } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, ChevronDown, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2, Printer, Volume2, Square, Pause, Play, RefreshCw, Pencil, FileText } from 'lucide-react';
 import * as pdfjsLib from 'pdfjs-dist';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 
@@ -187,6 +187,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
       onClick={interceptClick || onClick}
       style={{
         width: `${spineWidth}px`,
+        minWidth: '16px',
         height: `${isLifted ? bookHeight + 30 : bookHeight}px`,
         backgroundColor: bookColor,
         backgroundImage: SPINE_PATTERNS[patternIdx],
@@ -196,7 +197,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        flexShrink: 0,
+        flexShrink: 1,
         boxShadow: isSelected
           ? '0 0 20px rgba(212,175,55,0.6), inset -2px 0 6px rgba(0,0,0,0.3)'
           : isLifted
@@ -405,7 +406,8 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
           display: 'flex',
           alignItems: 'flex-end',
           gap: '2px',
-          flexShrink: 0,
+          flexShrink: 1,
+          minWidth: 0,
           position: 'relative',
           cursor: 'pointer',
         }}
@@ -1678,6 +1680,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
   const [masterTypeFilter, setMasterTypeFilter] = useState<'all' | 'module' | 'reading'>('all');
   const [masterFormatFilter, setMasterFormatFilter] = useState('all');
   const [masterSortBy, setMasterSortBy] = useState<'relevance' | 'date_added' | 'name' | 'week'>('relevance');
+  const [showFilters, setShowFilters] = useState(false);
   const [shareLink, setShareLink] = useState('');
   const [shareCopied, setShareCopied] = useState(false);
   const [renamingFile, setRenamingFile] = useState<FileRecord | null>(null);
@@ -2349,67 +2352,79 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         </div>
       )}
 
-      <button
-        onClick={prevSem}
-        disabled={currentSemIdx === 0}
-        data-testid="btn-library-prev-sem"
-        style={{
-          position: 'absolute',
-          left: '8px',
-          top: '50%',
-          transform: 'translateY(-50%)',
-          zIndex: 100002,
-          width: '36px',
-          height: '72px',
-          borderRadius: '0 8px 8px 0',
-          background: currentSemIdx === 0 ? 'rgba(0,0,0,0.15)' : 'rgba(0,0,0,0.45)',
-          border: currentSemIdx === 0 ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(255,255,255,0.15)',
-          borderLeft: 'none',
-          color: currentSemIdx === 0 ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.7)',
-          cursor: currentSemIdx === 0 ? 'not-allowed' : 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backdropFilter: 'blur(8px)',
-          transition: 'all 0.2s',
-          boxShadow: currentSemIdx === 0 ? 'none' : '2px 0 12px rgba(0,0,0,0.3)',
-        }}
-        onMouseEnter={e => { if (currentSemIdx > 0) { e.currentTarget.style.background = 'rgba(0,0,0,0.6)'; e.currentTarget.style.color = '#fff'; }}}
-        onMouseLeave={e => { if (currentSemIdx > 0) { e.currentTarget.style.background = 'rgba(0,0,0,0.45)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}}
-      >
-        <ChevronLeft size={22} />
-      </button>
-
-      <button
-        onClick={nextSem}
-        disabled={currentSemIdx === semesters.length - 1}
-        data-testid="btn-library-next-sem"
-        style={{
-          position: 'absolute',
-          right: '8px',
-          top: '50%',
-          transform: 'translateY(-50%)',
-          zIndex: 100002,
-          width: '36px',
-          height: '72px',
-          borderRadius: '8px 0 0 8px',
-          background: currentSemIdx >= semesters.length - 1 ? 'rgba(0,0,0,0.15)' : 'rgba(0,0,0,0.45)',
-          border: currentSemIdx >= semesters.length - 1 ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(255,255,255,0.15)',
-          borderRight: 'none',
-          color: currentSemIdx >= semesters.length - 1 ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.7)',
-          cursor: currentSemIdx >= semesters.length - 1 ? 'not-allowed' : 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backdropFilter: 'blur(8px)',
-          transition: 'all 0.2s',
-          boxShadow: currentSemIdx >= semesters.length - 1 ? 'none' : '-2px 0 12px rgba(0,0,0,0.3)',
-        }}
-        onMouseEnter={e => { if (currentSemIdx < semesters.length - 1) { e.currentTarget.style.background = 'rgba(0,0,0,0.6)'; e.currentTarget.style.color = '#fff'; }}}
-        onMouseLeave={e => { if (currentSemIdx < semesters.length - 1) { e.currentTarget.style.background = 'rgba(0,0,0,0.45)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}}
-      >
-        <ChevronRight size={22} />
-      </button>
+      {/* Semester navigation - top right area */}
+      <div style={{
+        position: 'absolute',
+        top: '16px',
+        right: '110px',
+        zIndex: 100002,
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px',
+      }}>
+        <button
+          onClick={prevSem}
+          disabled={currentSemIdx === 0}
+          data-testid="btn-library-prev-sem"
+          style={{
+            width: '30px',
+            height: '30px',
+            borderRadius: '50%',
+            background: currentSemIdx === 0 ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.5)',
+            border: currentSemIdx === 0 ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(255,255,255,0.2)',
+            color: currentSemIdx === 0 ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.7)',
+            cursor: currentSemIdx === 0 ? 'not-allowed' : 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all 0.2s',
+          }}
+          onMouseEnter={e => { if (currentSemIdx > 0) { e.currentTarget.style.background = 'rgba(0,0,0,0.6)'; e.currentTarget.style.color = '#fff'; }}}
+          onMouseLeave={e => { if (currentSemIdx > 0) { e.currentTarget.style.background = 'rgba(0,0,0,0.5)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}}
+        >
+          <ChevronLeft size={16} />
+        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          {semesters.map((sem, idx) => (
+            <div
+              key={sem.key}
+              onClick={() => setCurrentSemIdx(idx)}
+              style={{
+                width: '7px',
+                height: '7px',
+                borderRadius: '50%',
+                backgroundColor: idx === currentSemIdx ? '#ffffff' : 'rgba(255,255,255,0.25)',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                boxShadow: idx === currentSemIdx ? '0 0 6px rgba(255,255,255,0.5)' : 'none',
+              }}
+              data-testid={`library-sem-dot-${sem.key}`}
+            />
+          ))}
+        </div>
+        <button
+          onClick={nextSem}
+          disabled={currentSemIdx === semesters.length - 1}
+          data-testid="btn-library-next-sem"
+          style={{
+            width: '30px',
+            height: '30px',
+            borderRadius: '50%',
+            background: currentSemIdx >= semesters.length - 1 ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.5)',
+            border: currentSemIdx >= semesters.length - 1 ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(255,255,255,0.2)',
+            color: currentSemIdx >= semesters.length - 1 ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.7)',
+            cursor: currentSemIdx >= semesters.length - 1 ? 'not-allowed' : 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all 0.2s',
+          }}
+          onMouseEnter={e => { if (currentSemIdx < semesters.length - 1) { e.currentTarget.style.background = 'rgba(0,0,0,0.6)'; e.currentTarget.style.color = '#fff'; }}}
+          onMouseLeave={e => { if (currentSemIdx < semesters.length - 1) { e.currentTarget.style.background = 'rgba(0,0,0,0.5)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}}
+        >
+          <ChevronRight size={16} />
+        </button>
+      </div>
 
       <div style={{
         position: 'absolute',
@@ -2491,117 +2506,138 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         </button>
       </div>
 
+      {/* Search box - top left compact */}
       <div style={{
         position: 'absolute',
-        top: '20px',
-        left: '20px',
+        top: '16px',
+        left: '16px',
         zIndex: 100002,
       }}>
         <div style={{
           display: 'flex',
-          flexDirection: 'column',
+          alignItems: 'center',
           gap: '4px',
         }}>
-          {semesters.map((sem, idx) => (
-            <div
-              key={sem.key}
-              onClick={() => setCurrentSemIdx(idx)}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            background: 'rgba(10,6,4,0.92)',
+            border: '1px solid rgba(255,255,255,0.15)',
+            borderRadius: '10px',
+            padding: '7px 12px',
+            width: '220px',
+          }}>
+            <Search size={14} color="rgba(255,255,255,0.5)" />
+            <input
+              type="text"
+              value={masterSearch}
+              onChange={e => setMasterSearch(e.target.value)}
+              placeholder="Search..."
               style={{
-                width: '8px',
-                height: '8px',
-                borderRadius: '50%',
-                backgroundColor: idx === currentSemIdx ? '#ffffff' : 'rgba(255,255,255,0.25)',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                boxShadow: idx === currentSemIdx ? '0 0 6px rgba(255,255,255,0.5)' : 'none',
+                background: 'transparent',
+                border: 'none',
+                color: '#fff',
+                fontSize: '13px',
+                outline: 'none',
+                flex: 1,
+                width: '100%',
               }}
-              data-testid={`library-sem-dot-${sem.key}`}
+              data-testid="input-master-search"
             />
-          ))}
-        </div>
-      </div>
-
-      <div style={{
-        position: 'absolute',
-        top: '68px',
-        left: '20px',
-        right: '20px',
-        zIndex: 100002,
-        background: 'rgba(10,6,4,0.92)',
-        border: '1px solid rgba(255,255,255,0.15)',
-        borderRadius: '12px',
-        padding: '10px 14px',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-          <Search size={16} color="rgba(255,255,255,0.5)" />
-          <input
-            type="text"
-            value={masterSearch}
-            onChange={e => setMasterSearch(e.target.value)}
-            placeholder="Search all documents..."
+            {hasAnyFilter && (
+              <button
+                onClick={() => { setMasterSearch(''); setMasterSemFilter('all'); setMasterCourseFilter('all'); setMasterWeekFilter('all'); setMasterTypeFilter('all'); setMasterFormatFilter('all'); setMasterSortBy('relevance'); }}
+                style={{ background: 'rgba(255,255,255,0.1)', border: 'none', cursor: 'pointer', padding: '3px', display: 'flex', borderRadius: '50%', flexShrink: 0 }}
+                data-testid="btn-clear-search"
+              >
+                <X size={12} color="rgba(255,255,255,0.6)" />
+              </button>
+            )}
+          </div>
+          <button
+            onClick={() => setShowFilters(!showFilters)}
             style={{
-              background: 'transparent',
-              border: 'none',
-              color: '#fff',
-              fontSize: '14px',
-              outline: 'none',
-              flex: 1,
+              width: '34px',
+              height: '34px',
+              borderRadius: '10px',
+              background: showFilters ? 'rgba(218,165,32,0.2)' : 'rgba(10,6,4,0.92)',
+              border: showFilters ? '1px solid rgba(218,165,32,0.5)' : '1px solid rgba(255,255,255,0.15)',
+              color: showFilters ? 'rgba(218,165,32,0.9)' : 'rgba(255,255,255,0.5)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.2s',
+              flexShrink: 0,
             }}
-            data-testid="input-master-search"
-          />
-          {hasAnyFilter && (
-            <button
-              onClick={() => { setMasterSearch(''); setMasterSemFilter('all'); setMasterCourseFilter('all'); setMasterWeekFilter('all'); setMasterTypeFilter('all'); setMasterFormatFilter('all'); setMasterSortBy('relevance'); }}
-              style={{ background: 'rgba(255,255,255,0.1)', border: 'none', cursor: 'pointer', padding: '4px', display: 'flex', borderRadius: '50%' }}
-              data-testid="btn-clear-search"
-            >
-              <X size={14} color="rgba(255,255,255,0.6)" />
-            </button>
-          )}
+            data-testid="btn-toggle-filters"
+          >
+            <ChevronDown size={16} style={{ transform: showFilters ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+          </button>
         </div>
-        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-          {(() => {
-            const filterStyle: React.CSSProperties = { background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', padding: '5px 10px', color: '#fff', fontSize: '12px', outline: 'none', cursor: 'pointer' };
-            const activeStyle = (v: string) => v !== 'all' ? { ...filterStyle, border: '1px solid rgba(218,165,32,0.6)', background: 'rgba(218,165,32,0.15)' } : filterStyle;
-            return (
-              <>
-                <select value={masterSemFilter} onChange={e => setMasterSemFilter(e.target.value)} style={activeStyle(masterSemFilter)} data-testid="select-master-sem-filter">
-                  <option value="all">All Semesters</option>
-                  {semesters.map(s => (<option key={s.key} value={s.key}>{s.label}</option>))}
-                </select>
-                <select value={masterCourseFilter} onChange={e => setMasterCourseFilter(e.target.value)} style={activeStyle(masterCourseFilter)} data-testid="select-master-course-filter">
-                  <option value="all">All Courses</option>
-                  {allCoursesForSearch.map(c => (<option key={c} value={c}>{c}</option>))}
-                </select>
-                <select value={masterWeekFilter} onChange={e => setMasterWeekFilter(e.target.value)} style={activeStyle(masterWeekFilter)} data-testid="select-master-week-filter">
-                  <option value="all">All Weeks</option>
-                  {availableWeeks.map(w => (<option key={w} value={String(w)}>Week {w}</option>))}
-                </select>
-                <select value={masterTypeFilter} onChange={e => setMasterTypeFilter(e.target.value as any)} style={activeStyle(masterTypeFilter)} data-testid="select-master-type-filter">
-                  <option value="all">All Types</option>
-                  <option value="module">Module</option>
-                  <option value="reading">Reading</option>
-                </select>
-                <select value={masterFormatFilter} onChange={e => setMasterFormatFilter(e.target.value)} style={activeStyle(masterFormatFilter)} data-testid="select-master-format-filter">
-                  <option value="all">All Formats</option>
-                  {availableFormats.map(f => (<option key={f} value={f}>.{f.toUpperCase()}</option>))}
-                </select>
-                <select value={masterSortBy} onChange={e => setMasterSortBy(e.target.value as any)} style={{ ...filterStyle, borderColor: masterSortBy !== 'relevance' ? 'rgba(218,165,32,0.6)' : undefined, background: masterSortBy !== 'relevance' ? 'rgba(218,165,32,0.15)' : filterStyle.background }} data-testid="select-master-sort">
-                  <option value="relevance">Sort: Default</option>
-                  <option value="name">Sort: Name</option>
-                  <option value="week">Sort: Week</option>
-                </select>
-              </>
-            );
-          })()}
-        </div>
+
+        {showFilters && (
+          <div style={{
+            marginTop: '6px',
+            background: 'rgba(10,6,4,0.95)',
+            border: '1px solid rgba(255,255,255,0.15)',
+            borderRadius: '10px',
+            padding: '10px 12px',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '6px',
+            width: '260px',
+          }}>
+            {(() => {
+              const filterStyle: React.CSSProperties = { background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', padding: '5px 10px', color: '#fff', fontSize: '12px', outline: 'none', cursor: 'pointer', width: '100%' };
+              const activeStyle = (v: string) => v !== 'all' ? { ...filterStyle, border: '1px solid rgba(218,165,32,0.6)', background: 'rgba(218,165,32,0.15)' } : filterStyle;
+              return (
+                <>
+                  <select value={masterSemFilter} onChange={e => setMasterSemFilter(e.target.value)} style={activeStyle(masterSemFilter)} data-testid="select-master-sem-filter">
+                    <option value="all">All Semesters</option>
+                    {semesters.map(s => (<option key={s.key} value={s.key}>{s.label}</option>))}
+                  </select>
+                  <select value={masterCourseFilter} onChange={e => setMasterCourseFilter(e.target.value)} style={activeStyle(masterCourseFilter)} data-testid="select-master-course-filter">
+                    <option value="all">All Courses</option>
+                    {allCoursesForSearch.map(c => (<option key={c} value={c}>{c}</option>))}
+                  </select>
+                  <select value={masterWeekFilter} onChange={e => setMasterWeekFilter(e.target.value)} style={activeStyle(masterWeekFilter)} data-testid="select-master-week-filter">
+                    <option value="all">All Weeks</option>
+                    {availableWeeks.map(w => (<option key={w} value={String(w)}>Week {w}</option>))}
+                  </select>
+                  <select value={masterTypeFilter} onChange={e => setMasterTypeFilter(e.target.value as any)} style={activeStyle(masterTypeFilter)} data-testid="select-master-type-filter">
+                    <option value="all">All Types</option>
+                    <option value="module">Module</option>
+                    <option value="reading">Reading</option>
+                  </select>
+                  <select value={masterFormatFilter} onChange={e => setMasterFormatFilter(e.target.value)} style={activeStyle(masterFormatFilter)} data-testid="select-master-format-filter">
+                    <option value="all">All Formats</option>
+                    {availableFormats.map(f => (<option key={f} value={f}>.{f.toUpperCase()}</option>))}
+                  </select>
+                  <select value={masterSortBy} onChange={e => setMasterSortBy(e.target.value as any)} style={{ ...filterStyle, borderColor: masterSortBy !== 'relevance' ? 'rgba(218,165,32,0.6)' : undefined, background: masterSortBy !== 'relevance' ? 'rgba(218,165,32,0.15)' : filterStyle.background }} data-testid="select-master-sort">
+                    <option value="relevance">Sort: Default</option>
+                    <option value="name">Sort: Name</option>
+                    <option value="week">Sort: Week</option>
+                  </select>
+                </>
+              );
+            })()}
+          </div>
+        )}
 
         {combinedSearchResults && (
           <div style={{
-            marginTop: '10px',
-            borderTop: '1px solid rgba(255,255,255,0.1)',
-            paddingTop: '8px',
+            marginTop: '6px',
+            background: 'rgba(10,6,4,0.95)',
+            border: '1px solid rgba(255,255,255,0.15)',
+            borderRadius: '10px',
+            padding: '10px 12px',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+            maxWidth: '500px',
+          }}>
+          <div style={{
             maxHeight: '50vh',
             overflowY: 'auto',
           }}>
@@ -2681,6 +2717,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
               );
             })}
           </div>
+          </div>
         )}
       </div>
 
@@ -2688,13 +2725,13 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         ref={scrollRef}
         style={{
           position: 'absolute',
-          top: '170px',
+          top: '65px',
           left: 0,
           right: 0,
           bottom: 0,
           overflowY: 'auto',
           overflowX: 'hidden',
-          padding: '0 20px 10px 35px',
+          padding: '0 20px 10px 20px',
           paddingBottom: '60px',
           display: 'flex',
           flexDirection: 'column',
@@ -2777,7 +2814,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                   textTransform: 'uppercase',
                   fontFamily: "system-ui, -apple-system, sans-serif",
                 }}>
-                  {course.code} — {course.name}
+                  {course.code} — {course.name.startsWith(course.code) ? course.name.slice(course.code.length).replace(/^\s*[-–—]\s*/, '') : course.name}
                 </span>
                 {syllabusPaths[course.code] && (
                   <button
@@ -2820,15 +2857,15 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 )}
               </div>
 
-              <div style={{ position: 'relative', maxWidth: '100%' }}>
+              <div style={{ position: 'relative', maxWidth: '100%', overflow: 'hidden' }}>
                 <div style={{
                   display: 'flex',
                   alignItems: 'flex-end',
                   height: `${shelfHeight}px`,
                   padding: '0 4px 10px',
                   gap: '2px',
-                  overflowX: 'auto',
-                  overflowY: 'visible',
+                  overflowX: 'hidden',
+                  overflowY: 'hidden',
                   maxWidth: '100%',
                 }}
                 className="library-scroll"
