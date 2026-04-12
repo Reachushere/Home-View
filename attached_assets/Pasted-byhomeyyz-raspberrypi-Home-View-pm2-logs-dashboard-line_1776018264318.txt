@@ -1,0 +1,67 @@
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs dashboard --lines 30 --nostream
+[TAILING] Tailing last 30 lines for [dashboard] process (change the value with --lines option)
+/home/byhomeyyz/.pm2/logs/dashboard-error.log last 30 lines:
+0|dashboar |         "domain": "googleapis.com",
+0|dashboar |         "metadata": {
+0|dashboar |           "service": "gmail.googleapis.com",
+0|dashboar |           "method": "caribou.api.proto.MailboxService.ListMessages"
+0|dashboar |         }
+0|dashboar |       }
+0|dashboar |     ]
+0|dashboar |   }
+0|dashboar | }
+0|dashboar |
+0|dashboar | Error downloading file: TypeError [ERR_INVALID_CHAR]: Invalid character in header content ["Content-Disposition"]
+0|dashboar |     at ServerResponse.setHeader (node:_http_outgoing:658:3)
+0|dashboar |     at /home/byhomeyyz/Home-View/dist/index.cjs:531:4637
+0|dashboar |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5) {
+0|dashboar |   code: 'ERR_INVALID_CHAR'
+0|dashboar | }
+0|dashboar | Error downloading file: TypeError [ERR_INVALID_CHAR]: Invalid character in header content ["Content-Disposition"]
+0|dashboar |     at ServerResponse.setHeader (node:_http_outgoing:658:3)
+0|dashboar |     at /home/byhomeyyz/Home-View/dist/index.cjs:531:4637
+0|dashboar |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5) {
+0|dashboar |   code: 'ERR_INVALID_CHAR'
+0|dashboar | }
+0|dashboar | [Edge TTS] Attempt 1 failed: Timed out
+0|dashboar | [Edge TTS] Attempt 1 failed: Timed out
+0|dashboar | Error downloading file: TypeError [ERR_INVALID_CHAR]: Invalid character in header content ["Content-Disposition"]
+0|dashboar |     at ServerResponse.setHeader (node:_http_outgoing:658:3)
+0|dashboar |     at /home/byhomeyyz/Home-View/dist/index.cjs:531:4637
+0|dashboar |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5) {
+0|dashboar |   code: 'ERR_INVALID_CHAR'
+0|dashboar | }
+
+/home/byhomeyyz/.pm2/logs/dashboard-out.log last 30 lines:
+0|dashboar | [ExtractText] Cached 21024 chars, 11 chunks for file 232
+0|dashboar | [AudioPrep] CFNF400, Module 12 - Learning Objectives.pdf: 21024 chars → 15 chunks
+0|dashboar | [AudioPrep] Generating chunk 1/15 for CFNF400, Module 12 - Learning Objectives.pdf (1214 chars)
+0|dashboar | Generating Edge TTS for 1214 chars, file: prep-232-chunk-0
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | 2:24:15 PM [express] GET /api/automation-cooldown 304 in 1ms :: {"active":false,"remaining":0,"reason":null}
+0|dashboar | Edge TTS completed in 820ms, 473472 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-232-chunk-0-1776018255492.mp3
+0|dashboar | [LibrarySync:Semester] TBD1: 13 week folders at /School/1. TMU/Courses/2029/Winter/TBD1
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2029/Winter/TBD1/Week 1
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3482s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3481s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3481s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [AudioPrep] Generating chunk 2/15 for CFNF400, Module 12 - Learning Objectives.pdf (1267 chars)
+0|dashboar | Generating Edge TTS for 1193 chars, file: prep-232-chunk-1
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2027/Fall/TBD1/Week 10/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3481s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3481s)
+0|dashboar | 2:24:16 PM [express] GET /api/version 304 in 0ms :: {"version":"1776018133788"}
+0|dashboar | 2:24:16 PM [express] GET /api/health 200 in 1ms :: {"status":"ok","uptime":121,"ha":{"connected":true,"lastSuccessAt":"2026-04-12T18:23:47.837Z","lastFailureAt":null,"consecutiveFailures":0,"totalChecks":2,"totalFailures":0,"lastError":null,"downSince":null,"commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-12T18:24:16.663Z"}
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2027/Fall/TBD1/Week 10/Readings
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3480s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | 2:24:16 PM [express] GET /api/files/recently-prepared 304 in 1ms :: {"files":[]}
+0|dashboar | 2:24:16 PM [express] GET /api/kitchen/status 304 in 0ms :: {"isPlaying":false,"progress":null}
+
+byhomeyyz@raspberrypi:~/Home-View $

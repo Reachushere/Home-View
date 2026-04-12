@@ -5544,6 +5544,9 @@ Always cite which file/document each finding comes from. Be thorough but concise
     }
   });
 
+  const sanitizeFilenameForHeader = (name: string) =>
+    name.replace(/[^\x20-\x7E]/g, '_').replace(/"/g, "'");
+
   // GET /api/files/:id/download - Download the actual file
   app.get("/api/files/:id/download", async (req, res) => {
     try {
@@ -5603,7 +5606,7 @@ Always cite which file/document each finding comes from. Be thorough but concise
                       console.log(`[FileDownload] Failed to cache: ${cacheErr.message}`);
                     }
                     res.setHeader('Content-Type', 'application/pdf');
-                    res.setHeader('Content-Disposition', `inline; filename="${file.originalName}"`);
+                    res.setHeader('Content-Disposition', `inline; filename="${sanitizeFilenameForHeader(file.originalName)}"`);
                     const reader = pdfResponse.body.getReader();
                     while (true) { const { done, value } = await reader.read(); if (done) break; res.write(value); }
                     res.end();
@@ -5628,7 +5631,7 @@ Always cite which file/document each finding comes from. Be thorough but concise
         const localPath = pathMod.join(process.cwd(), 'persistent-uploads', localFileName);
         if (fs.existsSync(localPath)) {
           res.setHeader('Content-Type', file.contentType || 'application/pdf');
-          res.setHeader('Content-Disposition', `inline; filename="${file.originalName || localFileName}"`);
+          res.setHeader('Content-Disposition', `inline; filename="${sanitizeFilenameForHeader(file.originalName || localFileName)}"`);
           const stream = fs.createReadStream(localPath);
           stream.pipe(res);
           return;
@@ -5685,7 +5688,7 @@ Always cite which file/document each finding comes from. Be thorough but concise
                         console.log(`[FileDownload] Failed to cache locally: ${cacheErr.message}`);
                       }
                       res.setHeader('Content-Type', 'application/pdf');
-                      res.setHeader('Content-Disposition', `inline; filename="${file.originalName}"`);
+                      res.setHeader('Content-Disposition', `inline; filename="${sanitizeFilenameForHeader(file.originalName)}"`);
                       const reader = pdfResponse.body.getReader();
                       while (true) { const { done, value } = await reader.read(); if (done) break; res.write(value); }
                       res.end();
@@ -5758,7 +5761,7 @@ Always cite which file/document each finding comes from. Be thorough but concise
                   const pdfResponse = await fetch(matchedFile.downloadUrl);
                   if (pdfResponse.ok && pdfResponse.body) {
                     res.setHeader('Content-Type', 'application/pdf');
-                    res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
+                    res.setHeader('Content-Disposition', `inline; filename="${sanitizeFilenameForHeader(fileName)}"`);
                     const reader = pdfResponse.body.getReader();
                     while (true) {
                       const { done, value } = await reader.read();
@@ -5798,7 +5801,7 @@ Always cite which file/document each finding comes from. Be thorough but concise
           const pdfResponse = await fetch(downloadUrl);
           if (pdfResponse.ok && pdfResponse.body) {
             res.setHeader('Content-Type', pdfResponse.headers.get('content-type') || 'application/pdf');
-            res.setHeader('Content-Disposition', `inline; filename="${mediaUrl.split('/').pop()}"`);
+            res.setHeader('Content-Disposition', `inline; filename="${sanitizeFilenameForHeader(mediaUrl.split('/').pop() || 'document.pdf')}"`);
             const reader = pdfResponse.body.getReader();
             while (true) {
               const { done, value } = await reader.read();
@@ -5847,7 +5850,7 @@ Always cite which file/document each finding comes from. Be thorough but concise
           const pdfResponse = await fetch(downloadUrl);
           if (pdfResponse.ok && pdfResponse.body) {
             res.setHeader('Content-Type', pdfResponse.headers.get('content-type') || file.contentType || 'application/pdf');
-            res.setHeader('Content-Disposition', `inline; filename="${file.originalName || 'document.pdf'}"`);
+            res.setHeader('Content-Disposition', `inline; filename="${sanitizeFilenameForHeader(file.originalName || 'document.pdf')}"`);
             const reader = pdfResponse.body.getReader();
             while (true) {
               const { done, value } = await reader.read();
@@ -11410,7 +11413,7 @@ async function pollStatus(timeout){
       const [buffer] = await file.download();
 
       res.setHeader('Content-Type', entry.contentType || 'application/octet-stream');
-      res.setHeader('Content-Disposition', `inline; filename="${entry.name}"`);
+      res.setHeader('Content-Disposition', `inline; filename="${sanitizeFilenameForHeader(entry.name)}"`);
       res.send(buffer);
     } catch (error: any) {
       console.error("[Transcript] Download error:", error);
