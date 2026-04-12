@@ -12572,7 +12572,8 @@ export default function Dashboard() {
         let placed = false;
         for (let c = 0; c < columns.length; c++) {
           const last = columns[c][columns[c].length - 1];
-          if (s >= last.endHour * 60 + last.endMin) { columns[c].push(item); placed = true; break; }
+          const lastEnd = last.endHour * 60 + last.endMin;
+          if (s > lastEnd || (s === lastEnd && last.endMin === 0)) { columns[c].push(item); placed = true; break; }
         }
         if (!placed) columns.push([item]);
       }
@@ -12585,7 +12586,7 @@ export default function Dashboard() {
           if (iStart < hEnd && iEnd > hStart) {
             let colsAtH = 0;
             for (const col of columns) {
-              if (col.some(o => o.startHour * 60 + o.startMin < hEnd && (o.endHour * 60 + o.endMin) > hStart)) colsAtH++;
+              if (col.some(o => { const oEnd = o.endHour * 60 + o.endMin; return o.startHour * 60 + o.startMin < hEnd && oEnd > hStart; })) colsAtH++;
             }
             const key = `${dIdx}-${h}`;
             map.set(key, Math.max(map.get(key) || 0, colsAtH));
@@ -31893,7 +31894,7 @@ export default function Dashboard() {
                       for (let c = 0; c < columns.length; c++) {
                         const lastInCol = columns[c][columns[c].length - 1];
                         const lastEnd = lastInCol.endHour * 60 + lastInCol.endMin;
-                        if (itemStart >= lastEnd) {
+                        if (itemStart > lastEnd || (itemStart === lastEnd && lastInCol.endMin === 0)) {
                           columns[c].push(item);
                           placed = true;
                           break;
