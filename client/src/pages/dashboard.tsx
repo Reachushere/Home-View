@@ -30896,14 +30896,14 @@ export default function Dashboard() {
                                 onDoubleClick={(e) => { e.stopPropagation(); setEditingTask(task); }}
                                 data-testid={`other-task-${task.id}`}
                               >
+                                <div onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onTouchStart={(e) => e.stopPropagation()} style={{ display: 'flex', alignItems: 'center', marginLeft: '-1px' }}>
                                 <Checkbox
                                   checked={task.isCompleted || false}
-                                  onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                                  onClick={(e) => e.stopPropagation()}
+                                  onCheckedChange={(checked) => { completeMutation.mutate({ id: task.id, isCompleted: !!checked }); }}
                                   className="h-3 w-3 shrink-0 bg-white border-black data-[state=checked]:bg-white data-[state=checked]:border-black data-[state=checked]:text-black"
-                                  style={{ marginLeft: '-1px' }}
                                   data-testid={`checkbox-other-${task.id}`}
                                 />
+                                </div>
                                 <span
                                   onClick={() => setEditingTask(task)}
                                   className={`cursor-pointer hover:opacity-80 pl-1 flex-1 min-w-0 ${task.isCompleted ? "line-through" : ""}`}
@@ -31118,6 +31118,8 @@ export default function Dashboard() {
                                 checked={task.isCompleted || false}
                                 onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
                                 onClick={(e) => e.stopPropagation()}
+                                onPointerDown={(e) => e.stopPropagation()}
+                                onTouchStart={(e) => e.stopPropagation()}
                                 className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
                                 data-testid={`checkbox-allday-${task.id}`}
                               />
@@ -31747,6 +31749,8 @@ export default function Dashboard() {
                                       checked={task.isCompleted || false}
                                       onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
                                       onClick={(e) => e.stopPropagation()}
+                                      onPointerDown={(e) => e.stopPropagation()}
+                                      onTouchStart={(e) => e.stopPropagation()}
                                       className="h-3.5 w-3.5 shrink-0 bg-white data-[state=checked]:bg-white data-[state=checked]:text-black"
                                       style={{ border: '1px solid black' }}
                                       data-testid={`checkbox-time-${task.id}`}
