@@ -3423,6 +3423,48 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             const isCollapsed = collapsedCourses.has(collapseKey);
             return (
             <div key={course.code} style={{ marginBottom: courseIdx < courseBooks.length - 1 ? (isCollapsed ? '20px' : '55px') : '0' }}>
+              {!isCollapsed && syllabusPaths[course.code] && (
+                <div style={{ paddingLeft: '16px', marginBottom: '4px' }}>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const syllabusFile: FileRecord = {
+                        id: -1 * (course.code.charCodeAt(0) * 1000 + course.code.charCodeAt(1)),
+                        originalName: `${course.code} Syllabus.pdf`,
+                        displayName: `${course.code} Syllabus`,
+                        objectPath: syllabusPaths[course.code],
+                        folder: null,
+                        listened: false,
+                        contentType: 'application/pdf',
+                      };
+                      handleBookClick(syllabusFile, course.color || '#8B6914', `/api/syllabus/view?path=${encodeURIComponent(syllabusPaths[course.code])}`, course.code.replace(/\s/g, '').toLowerCase(), true);
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      padding: '2px 8px',
+                      borderRadius: '4px',
+                      border: '1px solid rgba(255,255,255,0.15)',
+                      background: 'rgba(255,255,255,0.06)',
+                      color: 'rgba(255,255,255,0.7)',
+                      fontSize: '9px',
+                      fontWeight: 600,
+                      letterSpacing: '0.3px',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                      fontFamily: "system-ui, -apple-system, sans-serif",
+                      textTransform: 'uppercase',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.12)'; e.currentTarget.style.color = '#fff'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}
+                    data-testid={`btn-syllabus-${course.code}`}
+                  >
+                    <FileText size={10} />
+                    Syllabus
+                  </button>
+                </div>
+              )}
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -3462,46 +3504,6 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                     {course.code} — {course.name.startsWith(course.code) ? course.name.slice(course.code.length).replace(/^\s*[-–—]\s*/, '') : course.name}
                   </span>
                 </div>
-                {!isCollapsed && syllabusPaths[course.code] && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      const syllabusFile: FileRecord = {
-                        id: -1 * (course.code.charCodeAt(0) * 1000 + course.code.charCodeAt(1)),
-                        originalName: `${course.code} Syllabus.pdf`,
-                        displayName: `${course.code} Syllabus`,
-                        objectPath: syllabusPaths[course.code],
-                        folder: null,
-                        listened: false,
-                        contentType: 'application/pdf',
-                      };
-                      handleBookClick(syllabusFile, course.color || '#8B6914', `/api/syllabus/view?path=${encodeURIComponent(syllabusPaths[course.code])}`, course.code.replace(/\s/g, '').toLowerCase(), true);
-                    }}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px',
-                      padding: '2px 8px',
-                      borderRadius: '4px',
-                      border: '1px solid rgba(255,255,255,0.15)',
-                      background: 'rgba(255,255,255,0.06)',
-                      color: 'rgba(255,255,255,0.7)',
-                      fontSize: '9px',
-                      fontWeight: 600,
-                      letterSpacing: '0.3px',
-                      cursor: 'pointer',
-                      transition: 'all 0.15s ease',
-                      fontFamily: "system-ui, -apple-system, sans-serif",
-                      textTransform: 'uppercase',
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.12)'; e.currentTarget.style.color = '#fff'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}
-                    data-testid={`btn-syllabus-${course.code}`}
-                  >
-                    <FileText size={10} />
-                    Syllabus
-                  </button>
-                )}
               </div>
 
               <div style={{
