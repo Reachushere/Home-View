@@ -3642,7 +3642,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             const collapseKey = `${semKey}::${course.code}`;
             const isCollapsed = collapsedCourses.has(collapseKey);
             return (
-            <div key={course.code} style={{ marginBottom: courseIdx < courseBooks.length - 1 ? (isCollapsed ? '20px' : '55px') : '0', position: 'relative', top: courseIdx === 0 ? '43px' : courseIdx === 1 ? '3px' : courseIdx === 2 ? '-90px' : `${-87 + courseIdx * 5}px` }}>
+            <div key={course.code} style={{ marginBottom: courseIdx < courseBooks.length - 1 ? (isCollapsed ? '20px' : '55px') : '0', position: 'relative', top: courseIdx === 0 ? '63px' : courseIdx === 1 ? '23px' : courseIdx === 2 ? '-70px' : `${-67 + courseIdx * 5}px` }}>
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -3652,7 +3652,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 cursor: 'pointer',
                 userSelect: 'none',
                 position: 'relative',
-                top: courseIdx === 0 ? '205px' : courseIdx === 1 ? '330px' : courseIdx === 2 ? (minimizedReaders.size > 0 ? '290px' : '325px') : '155px',
+                top: courseIdx === 0 ? '225px' : courseIdx === 1 ? '350px' : courseIdx === 2 ? (minimizedReaders.size > 0 ? '310px' : '345px') : '175px',
                 zIndex: 10,
                 marginLeft: 'calc(30% + 193px)',
               }}
