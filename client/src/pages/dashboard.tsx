@@ -29874,9 +29874,9 @@ export default function Dashboard() {
                                 style={{
                                   margin: '2px 2px 2px 2px',
                                   marginRight: '0px',
-                                  backgroundColor: task.isCompleted ? '#e5e7eb' : '#f0f0f0',
-                                  borderColor: task.isCompleted ? '#d1d5db' : '#c0c4cc',
-                                  color: task.isCompleted ? '#aaa' : '#6b7280',
+                                  backgroundColor: task.isCompleted ? '#e5e7eb' : '#ffffff',
+                                  borderColor: task.isCompleted ? '#d1d5db' : '#000000',
+                                  color: task.isCompleted ? '#aaa' : '#000000',
                                 }}
                                 data-testid={`course-module-task-static-${task.id}`}
                               >
@@ -29965,9 +29965,9 @@ export default function Dashboard() {
                                         height: 'calc(100% - 4px)', 
                                         marginTop: '2px', 
                                         marginBottom: '2px',
-                                        backgroundColor: task.isCompleted ? '#e5e7eb' : '#f0f0f0',
-                                        color: task.isCompleted ? '#aaa' : '#6b7280',
-                                        border: `1px solid ${task.isCompleted ? '#d1d5db' : '#c0c4cc'}`,
+                                        backgroundColor: task.isCompleted ? '#e5e7eb' : '#ffffff',
+                                        color: task.isCompleted ? '#aaa' : '#000000',
+                                        border: `1px solid ${task.isCompleted ? '#d1d5db' : '#000000'}`,
                                       }}
                                       data-testid={`course-fullweek-task-today-${task.id}`}
                                     >
@@ -32067,7 +32067,7 @@ export default function Dashboard() {
                         const narrowW = `${VERY_LONG_NARROW_FRAC * 100}%`;
                         return (
                           <>
-                            <div style={{ position: 'absolute', top: `${vlHeaderPx}px`, left: 0, width: narrowW, bottom: 0, background: bgGradient, border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1.5px solid ${borderColor}`, borderTop: 'none', borderRadius: '0 0 0 4px', pointerEvents: 'auto', zIndex: 0 }} />
+                            <div style={{ position: 'absolute', top: `${vlHeaderPx}px`, left: 0, width: narrowW, bottom: 0, background: bgGradient, border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : '1.5px solid #000000', borderTop: 'none', borderRadius: '0 0 0 4px', pointerEvents: 'auto', zIndex: 0 }} />
                             <div style={{ position: 'absolute', top: `${vlHeaderPx - 2}px`, left: 0, width: narrowW, height: '4px', background: bgGradient, pointerEvents: 'none', zIndex: 1 }} />
                           </>
                         );
@@ -32080,8 +32080,8 @@ export default function Dashboard() {
                         const bgGradient = task.isCompleted ? '#e5e7eb' : taskBg ? taskBg : `linear-gradient(180deg, ${otherRowColors.labelStart}, ${otherRowColors.labelEnd})`;
                         const borderColor = task.isCompleted ? '#d1d5db' : hasCourseGrad ? gradColors!.start : otherRowColors.borderColor;
                         return (
-                          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: `${vlHeaderPx}px`, background: bgGradient, border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1.5px solid ${borderColor}`, borderBottom: 'none', borderRadius: '4px 4px 4px 0', overflow: 'visible', display: 'flex', flexDirection: 'column', pointerEvents: 'auto', zIndex: 1 }}>
-                            <div style={{ position: 'absolute', bottom: 0, left: `${VERY_LONG_NARROW_FRAC * 100}%`, right: 0, height: '1.5px', background: borderColor, zIndex: 2 }} />
+                          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: `${vlHeaderPx}px`, background: bgGradient, border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : '1.5px solid #000000', borderBottom: 'none', borderRadius: '4px 4px 4px 0', overflow: 'visible', display: 'flex', flexDirection: 'column', pointerEvents: 'auto', zIndex: 1 }}>
+                            <div style={{ position: 'absolute', bottom: 0, left: `${VERY_LONG_NARROW_FRAC * 100}%`, right: 0, height: '1.5px', background: '#000000', zIndex: 2 }} />
                           </div>
                         );
                       })()}
