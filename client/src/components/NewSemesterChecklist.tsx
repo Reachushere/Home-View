@@ -121,11 +121,13 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
   const activeItems = items.filter(i => !getEffectiveCompleted(i) && !i.isDeleted);
   const completedItems = items.filter(i => getEffectiveCompleted(i) && !i.isDeleted);
   const lastToggleRef = useRef<number>(0);
+  const toggleFiredRef = useRef<Record<number, boolean>>({});
   const handleToggleComplete = useCallback((item: NewSemesterChecklistItem) => {
     const now = Date.now();
     if (now - lastToggleRef.current < 400) return;
     lastToggleRef.current = now;
-    const newVal = !item.isCompleted;
+    const currentlyChecked = localCompleted[item.id] !== undefined ? localCompleted[item.id] : !!item.isCompleted;
+    const newVal = !currentlyChecked;
     setLocalCompleted(prev => ({ ...prev, [item.id]: newVal }));
     fetch(`/api/new-semester-checklist/${item.id}`, {
       method: 'PATCH',
@@ -141,7 +143,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
     }).catch(() => {
       setLocalCompleted(prev => { const n = { ...prev }; delete n[item.id]; return n; });
     });
-  }, [checklistQueryKey]);
+  }, [checklistQueryKey, localCompleted]);
 
   const handleToggleGlobal = useCallback((item: NewSemesterChecklistItem) => {
     updateMutation.mutate({ id: item.id, isGlobal: !item.isGlobal });
@@ -202,7 +204,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
           key={d}
           className="w-6 h-6 flex items-center justify-center text-[10px] rounded cursor-pointer hover:bg-white/30"
           style={{ background: isItemDue ? '#22c55e' : isToday ? 'rgba(59,130,246,0.4)' : 'transparent', color: '#fff', fontWeight: isToday || isItemDue ? 700 : 400 }}
-          onPointerUp={(e) => { e.stopPropagation(); e.preventDefault(); handleDateSelect(item!, dateStr); }}
+          onClick={(e) => { e.stopPropagation(); handleDateSelect(item!, dateStr); }}
           data-testid={`mini-cal-day-${dateStr}`}
         >{d}</div>
       );
@@ -217,9 +219,9 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
         onMouseDown={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-2">
-          <button className="text-white/60 hover:text-white text-xs px-1" onPointerUp={(e) => { e.stopPropagation(); setDatePickerMonth(new Date(year, month - 1, 1)); }}>&lt;</button>
+          <button className="text-white/60 hover:text-white text-xs px-1" onClick={(e) => { e.stopPropagation(); setDatePickerMonth(new Date(year, month - 1, 1)); }}>&lt;</button>
           <span className="text-[10px] text-white font-semibold">{format(datePickerMonth, 'MMMM yyyy')}</span>
-          <button className="text-white/60 hover:text-white text-xs px-1" onPointerUp={(e) => { e.stopPropagation(); setDatePickerMonth(new Date(year, month + 1, 1)); }}>&gt;</button>
+          <button className="text-white/60 hover:text-white text-xs px-1" onClick={(e) => { e.stopPropagation(); setDatePickerMonth(new Date(year, month + 1, 1)); }}>&gt;</button>
         </div>
         <div className="grid grid-cols-7 gap-0">
           {dayLabels.map((l, i) => <div key={i} className="w-6 h-4 flex items-center justify-center text-[8px] text-white/40 font-bold">{l}</div>)}
@@ -302,7 +304,8 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
           role="checkbox"
           aria-checked={checked}
           tabIndex={0}
-          onPointerUp={(e) => { e.stopPropagation(); e.preventDefault(); handleToggleComplete(item); }}
+          onClick={(e) => { e.stopPropagation(); if (!toggleFiredRef.current[item.id]) handleToggleComplete(item); toggleFiredRef.current[item.id] = false; }}
+          onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); toggleFiredRef.current[item.id] = true; handleToggleComplete(item); }}
           style={{
             width: '29px',
             height: '29px',
@@ -349,9 +352,8 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
         <button
           type="button"
           style={{ touchAction: 'manipulation', background: 'none', border: 'none', padding: '4px', cursor: 'pointer' }}
-          onPointerUp={(e) => {
+          onClick={(e) => {
             e.stopPropagation();
-            e.preventDefault();
             setMiniCalSelectedDate(null); setOpenDatePickerId(openDatePickerId === item.id ? null : item.id);
           }}
           title={hasDueDate ? `Due: ${format(new Date(item.dueDate!), 'MMM d, yyyy')}` : 'Set reminder date'}
@@ -363,7 +365,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
         <button
           type="button"
           style={{ touchAction: 'manipulation', background: 'none', border: 'none', padding: '4px', cursor: 'pointer' }}
-          onPointerUp={(e) => { e.stopPropagation(); e.preventDefault(); handleToggleGlobal(item); }}
+          onClick={(e) => { e.stopPropagation(); handleToggleGlobal(item); }}
           title={item.isGlobal ? 'Appears on all semesters' : 'Only this semester'}
           data-testid={`checklist-global-toggle-${item.id}`}
         >
@@ -375,7 +377,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
         <button
           type="button"
           style={{ touchAction: 'manipulation', background: 'none', border: 'none', padding: '4px', cursor: 'pointer' }}
-          onPointerUp={(e) => { e.stopPropagation(); e.preventDefault(); deleteMutation.mutate(item.id); }}
+          onClick={(e) => { e.stopPropagation(); deleteMutation.mutate(item.id); }}
           data-testid={`checklist-delete-${item.id}`}
         >
           <Trash2 className="w-[18px] h-[18px] text-white hover:text-red-400 transition-colors" />
