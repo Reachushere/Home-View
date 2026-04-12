@@ -2340,6 +2340,68 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         </div>
       )}
 
+      <button
+        onClick={prevSem}
+        disabled={currentSemIdx === 0}
+        data-testid="btn-library-prev-sem"
+        style={{
+          position: 'absolute',
+          left: '8px',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          zIndex: 100002,
+          width: '36px',
+          height: '72px',
+          borderRadius: '0 8px 8px 0',
+          background: currentSemIdx === 0 ? 'rgba(0,0,0,0.15)' : 'rgba(0,0,0,0.45)',
+          border: currentSemIdx === 0 ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(255,255,255,0.15)',
+          borderLeft: 'none',
+          color: currentSemIdx === 0 ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.7)',
+          cursor: currentSemIdx === 0 ? 'not-allowed' : 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backdropFilter: 'blur(8px)',
+          transition: 'all 0.2s',
+          boxShadow: currentSemIdx === 0 ? 'none' : '2px 0 12px rgba(0,0,0,0.3)',
+        }}
+        onMouseEnter={e => { if (currentSemIdx > 0) { e.currentTarget.style.background = 'rgba(0,0,0,0.6)'; e.currentTarget.style.color = '#fff'; }}}
+        onMouseLeave={e => { if (currentSemIdx > 0) { e.currentTarget.style.background = 'rgba(0,0,0,0.45)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}}
+      >
+        <ChevronLeft size={22} />
+      </button>
+
+      <button
+        onClick={nextSem}
+        disabled={currentSemIdx === semesters.length - 1}
+        data-testid="btn-library-next-sem"
+        style={{
+          position: 'absolute',
+          right: '8px',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          zIndex: 100002,
+          width: '36px',
+          height: '72px',
+          borderRadius: '8px 0 0 8px',
+          background: currentSemIdx >= semesters.length - 1 ? 'rgba(0,0,0,0.15)' : 'rgba(0,0,0,0.45)',
+          border: currentSemIdx >= semesters.length - 1 ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(255,255,255,0.15)',
+          borderRight: 'none',
+          color: currentSemIdx >= semesters.length - 1 ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.7)',
+          cursor: currentSemIdx >= semesters.length - 1 ? 'not-allowed' : 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backdropFilter: 'blur(8px)',
+          transition: 'all 0.2s',
+          boxShadow: currentSemIdx >= semesters.length - 1 ? 'none' : '-2px 0 12px rgba(0,0,0,0.3)',
+        }}
+        onMouseEnter={e => { if (currentSemIdx < semesters.length - 1) { e.currentTarget.style.background = 'rgba(0,0,0,0.6)'; e.currentTarget.style.color = '#fff'; }}}
+        onMouseLeave={e => { if (currentSemIdx < semesters.length - 1) { e.currentTarget.style.background = 'rgba(0,0,0,0.45)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}}
+      >
+        <ChevronRight size={22} />
+      </button>
+
       <div style={{
         position: 'absolute',
         top: '20px',
@@ -2350,9 +2412,6 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         gap: '20px',
         zIndex: 100002,
       }}>
-        <button className="semester-nav-btn" onClick={prevSem} disabled={currentSemIdx === 0} data-testid="btn-library-prev-sem">
-          <ChevronLeft size={20} />
-        </button>
         <div style={{ textAlign: 'center' }}>
           <div style={{
             fontSize: '22px',
@@ -2378,9 +2437,6 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             {currentSemester && (currentSemester as any).isFuture && <span style={{ marginLeft: '6px', fontSize: '8px', padding: '1px 5px', borderRadius: '6px', background: 'rgba(33,150,243,0.25)', color: '#64B5F6', fontFamily: 'sans-serif', letterSpacing: '0.3px', verticalAlign: 'middle' }}>UPCOMING</span>}
           </div>
         </div>
-        <button className="semester-nav-btn" onClick={nextSem} disabled={currentSemIdx === semesters.length - 1} data-testid="btn-library-next-sem">
-          <ChevronRight size={20} />
-        </button>
         <button
           onClick={async () => {
             const semKey = currentSemester?.key;
