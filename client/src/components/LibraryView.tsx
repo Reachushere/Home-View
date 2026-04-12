@@ -3498,7 +3498,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 position: 'relative',
                 top: courseIdx === 0 ? '161px' : courseIdx === 1 ? '163px' : courseIdx === 2 ? '162px' : '155px',
                 zIndex: 10,
-                marginLeft: 'calc(30% + 160px)',
+                marginLeft: 'calc(30% + 190px)',
               }}
               onClick={() => {
                 setCollapsedCourses(prev => {
