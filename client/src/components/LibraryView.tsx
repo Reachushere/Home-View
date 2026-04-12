@@ -635,8 +635,8 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            background: 'rgba(0,0,0,0.7)',
-            backdropFilter: 'blur(6px)',
+            background: 'rgba(0,0,0,0.85)',
+            backdropFilter: 'blur(12px)',
             animation: 'weekOverlayFadeIn 0.25s ease-out',
             pointerEvents: 'auto',
           }}
