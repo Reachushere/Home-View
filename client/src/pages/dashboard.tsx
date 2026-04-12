@@ -4,6 +4,7 @@ import Cropper from "react-easy-crop";
 import { NewCourseWizard } from "@/components/NewCourseWizard";
 import { CourseDetailDialog } from "@/components/CourseDetailDialog";
 import NotepadDialog from "@/components/NotepadDialog";
+import FloatingPostIt from "@/components/FloatingPostIt";
 import OtherRowEditDialog from "@/components/OtherRowEditDialog";
 import { FastInput, FastTextarea } from "@/components/FastInput";
 import { SemesterChecklistDialog } from "@/components/SemesterChecklistDialog";
@@ -2311,6 +2312,7 @@ export default function Dashboard() {
   const [isKeyContactsOpen, setIsKeyContactsOpen] = useState(false);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const [isNotepadOpen, setIsNotepadOpen] = useState(false);
+  const [floatingNotes, setFloatingNotes] = useState<Array<{ id: number; title: string; content: string; x: number; y: number; width: number; height: number }>>([]);
   const [isMobileNotepadOpen, setIsMobileNotepadOpen] = useState(false);
   const [isMobileLibraryOpen, setIsMobileLibraryOpen] = useState(false);
   const [librarySemesterKey, setLibrarySemesterKey] = useState<string | undefined>(undefined);
@@ -24227,9 +24229,44 @@ export default function Dashboard() {
           </Dialog>
 
           {isNotepadOpen && createPortal(
-            <NotepadDialog isOpen={isNotepadOpen} onClose={() => setIsNotepadOpen(false)} colorSettings={colorSettings} />,
+            <NotepadDialog
+              isOpen={isNotepadOpen}
+              onClose={() => setIsNotepadOpen(false)}
+              colorSettings={colorSettings}
+              undockedNoteIds={new Set(floatingNotes.map(n => n.id))}
+              onUndockNote={(note) => {
+                if (floatingNotes.some(fn => fn.id === note.id)) return;
+                setFloatingNotes(prev => [...prev, {
+                  id: note.id,
+                  title: note.title,
+                  content: note.content || '',
+                  x: 200 + prev.length * 30,
+                  y: 150 + prev.length * 30,
+                  width: 320,
+                  height: 280,
+                }]);
+              }}
+            />,
             document.body
           )}
+
+          {floatingNotes.map(fn => (
+            <FloatingPostIt
+              key={fn.id}
+              id={fn.id}
+              title={fn.title}
+              content={fn.content}
+              x={fn.x}
+              y={fn.y}
+              width={fn.width}
+              height={fn.height}
+              colorSettings={colorSettings}
+              onClose={(noteId) => setFloatingNotes(prev => prev.filter(n => n.id !== noteId))}
+              onDock={(noteId) => setFloatingNotes(prev => prev.filter(n => n.id !== noteId))}
+              onMove={(noteId, nx, ny) => setFloatingNotes(prev => prev.map(n => n.id === noteId ? { ...n, x: nx, y: ny } : n))}
+              onResize={(noteId, nw, nh) => setFloatingNotes(prev => prev.map(n => n.id === noteId ? { ...n, width: nw, height: nh } : n))}
+            />
+          ))}
 
           <Dialog open={isKeyContactsOpen && desktopIsFull} onOpenChange={setIsKeyContactsOpen}>
             <DialogContent className="overflow-hidden flex flex-col text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white p-0 [&>button.absolute]:hidden max-w-none" style={{ width: 'calc(96vw + 28px)', maxWidth: 'calc(96vw + 28px)', height: 'calc(94vh + 16px)', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>

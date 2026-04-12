@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { X, Plus, Trash2, Bold, Italic, List, Type, Palette, Upload, Download, FileText, Image, File, Loader2, Pencil, Check, FolderPlus, ChevronDown, ChevronRight, Eraser, Search, ArrowUp, ArrowDown, CheckSquare2 } from 'lucide-react';
+import { X, Plus, Trash2, Bold, Italic, List, Type, Palette, Upload, Download, FileText, Image, File, Loader2, Pencil, Check, FolderPlus, ChevronDown, ChevronRight, Eraser, Search, ArrowUp, ArrowDown, CheckSquare2, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 
@@ -44,6 +44,8 @@ interface NotepadDialogProps {
   isOpen: boolean;
   onClose: () => void;
   colorSettings: { mainBackground: string; mainBackgroundGradientEnd: string; headerBar: string };
+  onUndockNote?: (note: NotepadNote) => void;
+  undockedNoteIds?: Set<number>;
 }
 
 const FONT_SIZES = ['12px', '14px', '16px', '18px', '24px', '32px'];
@@ -63,7 +65,7 @@ function getFileIcon(fileType: string) {
   return <File className="h-4 w-4" />;
 }
 
-export default function NotepadDialog({ isOpen, onClose, colorSettings }: NotepadDialogProps) {
+export default function NotepadDialog({ isOpen, onClose, colorSettings, onUndockNote, undockedNoteIds }: NotepadDialogProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const editorRef = useRef<HTMLDivElement>(null);
@@ -520,12 +522,37 @@ export default function NotepadDialog({ isOpen, onClose, colorSettings }: Notepa
         </div>
       ) : (
         <>
-          <span onDoubleClick={(e) => { e.stopPropagation(); setEditingTabId(note.id); setEditingTabTitle(note.title); }}>{note.title}</span>
+          <span
+            onDoubleClick={(e) => { e.stopPropagation(); setEditingTabId(note.id); setEditingTabTitle(note.title); }}
+            draggable
+            onDragStart={(e) => {
+              e.dataTransfer.setData('application/x-notepad-undock', JSON.stringify({ id: note.id, title: note.title }));
+              e.dataTransfer.effectAllowed = 'move';
+            }}
+            onDragEnd={(e) => {
+              const dialog = (e.target as HTMLElement).closest('[data-notepad-dialog]');
+              if (dialog) {
+                const rect = dialog.getBoundingClientRect();
+                const outside = e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom;
+                if (outside && onUndockNote) onUndockNote(note);
+              }
+            }}
+            style={{ cursor: 'grab' }}
+            title="Drag to pop out as floating note"
+          >{note.title}</span>
           <button
             className="opacity-0 group-hover:opacity-100 text-white/30 hover:text-white/60 ml-0.5"
             onClick={(e) => { e.stopPropagation(); setEditingTabId(note.id); setEditingTabTitle(note.title); }}
             data-testid={`button-rename-tab-${note.id}`}
           ><Pencil className="h-2.5 w-2.5" /></button>
+          {onUndockNote && (
+            <button
+              className="opacity-0 group-hover:opacity-100 text-white/30 hover:text-yellow-400 ml-0.5"
+              onClick={(e) => { e.stopPropagation(); onUndockNote(note); }}
+              title="Pop out as floating note"
+              data-testid={`button-undock-tab-${note.id}`}
+            ><ExternalLink className="h-2.5 w-2.5" /></button>
+          )}
           <button
             className="opacity-0 group-hover:opacity-100 text-white/30 hover:text-blue-400 ml-0.5"
             onClick={(e) => { e.stopPropagation(); setShowGroupAssign(showGroupAssign === note.id ? null : note.id); }}
@@ -596,6 +623,7 @@ export default function NotepadDialog({ isOpen, onClose, colorSettings }: Notepa
           border: '1.5px solid rgba(255,255,255,0.35)',
         }}
         data-testid="notepad-dialog"
+        data-notepad-dialog
       >
         <div
           className="flex items-center justify-between px-4 py-2 border-b border-white/40 flex-shrink-0 rounded-t-lg"
