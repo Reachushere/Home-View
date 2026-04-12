@@ -32165,7 +32165,7 @@ export default function Dashboard() {
                         );
                       })()}
                       {/* Task body */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '2px 4px 3px 0' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '2px 4px 3px 0', ...(isVeryLong ? {} : { background: '#ffffff', borderRadius: '0 0 2px 2px' }) }}>
                         <div style={{ width: '18px', minWidth: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                         <Checkbox
                           checked={task.isCompleted || false}
@@ -32177,7 +32177,7 @@ export default function Dashboard() {
                         </div>
                         {(() => { const hasAtt = (task.attachments?.length && task.attachments.some((att: any) => { const url = typeof att === 'string' ? ((() => { try { return JSON.parse(att).url || att; } catch { return att; } })()) : att?.url; return !!url; })) || task.referenceLink; return hasAtt ? <img src={pdfAttachIconPath} alt="PDF" style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0 }} data-testid={`attachment-icon-multi-${task.id}`} /> : null; })()}
                         <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
-                          <div style={{ fontSize: '9px', fontWeight: 400, color: isDarkBg ? '#ffffff' : '#000000', lineHeight: 1.2, fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <div style={{ fontSize: '9px', fontWeight: 400, color: isVeryLong ? (isDarkBg ? '#ffffff' : '#000000') : '#000000', lineHeight: 1.2, fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {task.eventStartTime && task.eventEndTime ? `${formatTimeTo12Hour(task.eventStartTime)} - ${formatTimeTo12Hour(task.eventEndTime)}` : (() => { const d = new Date(task.dueDate); const m = d.getMinutes(); if (m === 59) { const rd = new Date(d); rd.setMinutes(0); rd.setHours(rd.getHours() + 1); return format(rd, "h:mm a"); } return format(d, "h:mm a"); })()}
                           </div>
                         </div>
