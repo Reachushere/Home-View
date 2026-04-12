@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { X, ChevronLeft, ChevronRight, ChevronDown, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2, Printer, Volume2, Square, Pause, Play, RefreshCw, Pencil, FileText, Minus, Loader2 } from 'lucide-react';
 import * as pdfjsLib from 'pdfjs-dist';
 import { apiRequest, queryClient } from '@/lib/queryClient';
+import shelfBgImage from '@assets/image_1775987252590.png';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
 
@@ -2431,7 +2432,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         position: 'fixed',
         inset: 0,
         zIndex: 100000,
-        background: 'linear-gradient(180deg, #1a0e07 0%, #0d0805 30%, #0a0604 60%, #000000 100%)',
+        background: 'linear-gradient(180deg, #1a1510 0%, #0f0c08 30%, #0a0805 60%, #050302 100%)',
         overflow: 'hidden',
       }}
       onTouchStart={handleTouchStart}
@@ -3570,12 +3571,21 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 overflow: 'hidden',
                 transition: 'max-height 0.3s ease, opacity 0.25s ease',
               }}>
-              <div style={{ position: 'relative', maxWidth: '100%', overflow: 'hidden' }}>
+              <div style={{
+                position: 'relative',
+                maxWidth: '100%',
+                overflow: 'hidden',
+                backgroundImage: `url(${shelfBgImage})`,
+                backgroundSize: '100% 100%',
+                backgroundPosition: 'center bottom',
+                backgroundRepeat: 'no-repeat',
+                borderRadius: '6px',
+              }}>
                 <div style={{
                   display: 'flex',
                   alignItems: 'flex-end',
                   height: `${shelfHeight + 40}px`,
-                  padding: '40px 4px 10px',
+                  padding: '40px 4px 28px',
                   gap: '2px',
                   overflowX: 'hidden',
                   overflowY: 'hidden',
@@ -3629,26 +3639,6 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                   <Bookend side="right" />
                 </div>
 
-                <div className="shelf-wood" style={{
-                  height: '12px',
-                  borderRadius: '0 0 4px 4px',
-                  marginTop: '-2px',
-                }} />
-                <div className="shelf-front" style={{
-                  height: '16px',
-                  borderRadius: '0 0 6px 6px',
-                  marginTop: '-1px',
-                }} />
-
-                <div style={{
-                  position: 'absolute',
-                  bottom: '28px',
-                  left: 0,
-                  right: 0,
-                  height: '6px',
-                  background: 'linear-gradient(180deg, rgba(0,0,0,0.15) 0%, transparent 100%)',
-                  pointerEvents: 'none',
-                }} />
               </div>
               </div>
             </div>
