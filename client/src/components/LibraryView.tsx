@@ -2847,7 +2847,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'space-between',
+                gap: '10px',
                 marginBottom: isCollapsed ? '0px' : '6px',
                 paddingLeft: '16px',
                 paddingRight: '12px',
