@@ -215,10 +215,12 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   const horizBookHeight = spineWidth - 15;
 
   if (isHoriz) {
+    const horizHandler = interceptClick || onClick;
     return (
       <div
         className="book-spine-item"
-        onClick={interceptClick || onClick}
+        onClick={horizHandler}
+        onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); horizHandler(); }}
         style={{
           width: `${horizBookWidth}px`,
           height: `${horizBookHeight}px`,
@@ -238,6 +240,8 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
           overflow: 'hidden',
           paddingLeft: '20px',
           paddingRight: '14px',
+          touchAction: 'manipulation',
+          WebkitTapHighlightColor: 'transparent',
         }}
         title={file.displayName || file.originalName}
         data-testid={`book-spine-${file.id}`}
@@ -296,10 +300,12 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
     );
   }
 
+  const vertHandler = interceptClick || onClick;
   return (
     <div
       className="book-spine-item"
-      onClick={interceptClick || onClick}
+      onClick={vertHandler}
+      onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); vertHandler(); }}
       style={{
         width: `${spineWidth}px`,
         minWidth: '16px',
@@ -321,6 +327,8 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
         transition: 'box-shadow 0.3s ease',
         zIndex: isSelected ? 10 : isLifted ? 20 : 1,
         alignSelf: 'flex-end',
+        touchAction: 'manipulation',
+        WebkitTapHighlightColor: 'transparent',
         ...(extraMarginLeft ? { marginLeft: `${extraMarginLeft}px` } : {}),
       }}
       title={file.displayName || file.originalName}
@@ -588,7 +596,7 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
       }
       return el;
     });
-    const readingElements = readings.map(c => cloneWithProps(c, expanded, expanded ? 'vertical' : 'horizontal'));
+    const readingElements = readings.map(c => cloneWithProps(c, expanded, 'horizontal'));
 
     return (
       <>
