@@ -3497,7 +3497,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 cursor: 'pointer',
                 userSelect: 'none',
                 position: 'relative',
-                top: courseIdx === 0 ? '157px' : courseIdx === 1 ? '145px' : courseIdx === 2 ? '142px' : '130px',
+                top: courseIdx === 0 ? '165px' : courseIdx === 1 ? '163px' : courseIdx === 2 ? '164px' : '150px',
                 zIndex: 10,
               }}
               onClick={() => {
