@@ -1422,7 +1422,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
                 {title}
               </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 12px 6px 12px', borderBottom: '1px solid rgba(255,255,255,0.1)', zIndex: 3, flexShrink: 0, flexWrap: 'wrap', gap: '4px' }}>
+            <div style={{ display: useNativeViewer ? 'none' : 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 12px 6px 12px', borderBottom: '1px solid rgba(255,255,255,0.1)', zIndex: 3, flexShrink: 0, flexWrap: 'wrap', gap: '4px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
                 <button onClick={() => setZoom(z => Math.max(0.5, z - 0.25))} style={toolBtnStyle()} title="Zoom Out" data-testid="btn-zoom-out">
                   <ZoomOut size={14} />
@@ -1513,7 +1513,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
               </div>
             </div>
 
-            {searchOpen && (
+            {!useNativeViewer && searchOpen && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 12px 4px 32px', borderBottom: '1px solid rgba(255,255,255,0.08)', background: 'rgba(0,0,0,0.15)', zIndex: 3, flexShrink: 0 }}>
                 <input
                   ref={searchInputRef}
@@ -1615,7 +1615,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
                 ref={containerRef}
                 style={{ flex: 1, margin: showModuleIndex ? '0' : '0 0 0 28px', borderRadius: '4px 0 0 4px', overflow: 'auto', background: '#3a3228', display: 'flex', flexDirection: 'column', alignItems: zoom > 1 ? 'flex-start' : 'center', justifyContent: loading || !pdfDoc ? 'center' : 'center', position: 'relative' }}
               >
-                <div ref={scrollRef} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '10px', minWidth: '100%' }}>
+                <div ref={scrollRef} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: useNativeViewer ? '0' : '10px', minWidth: '100%', height: useNativeViewer ? '100%' : 'auto', flex: useNativeViewer ? 1 : undefined }}>
                   {loading ? (
                     <div style={{ color: '#666', fontSize: '14px' }}>Loading PDF...</div>
                   ) : !pdfDoc ? (
@@ -1625,7 +1625,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
                   ) : useNativeViewer ? (
                     <iframe
                       src={pdfUrl || `/api/files/${file.id}/download`}
-                      style={{ width: '100%', height: '100%', border: 'none', borderRadius: '4px', minHeight: '500px', flex: 1 }}
+                      style={{ width: '100%', height: '100%', border: 'none', flex: 1 }}
                       title={file.displayName || file.originalName}
                     />
                   ) : (
@@ -1947,6 +1947,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
               )}
             </div>
 
+            {!useNativeViewer && (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', padding: '4px 32px', borderTop: '1px solid rgba(255,255,255,0.1)', zIndex: 3, flexShrink: 0 }}>
               <button onClick={() => { stopTts(); setFlipDirection('backward'); setCurrentPage(p => Math.max(1, p - 2)); }} disabled={currentPage <= 1} style={{ ...toolBtnStyle(), padding: '3px 10px', opacity: currentPage <= 1 ? 0.3 : 1, cursor: currentPage <= 1 ? 'not-allowed' : 'pointer' }} data-testid="btn-pdf-prev">
                 <ChevronLeft size={14} /> <span style={{ fontSize: '11px', fontWeight: 600 }}>Prev</span>
@@ -1958,6 +1959,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
                 <span style={{ fontSize: '11px', fontWeight: 600 }}>Next</span> <ChevronRight size={14} />
               </button>
             </div>
+            )}
           </>
         )}
 
