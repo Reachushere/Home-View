@@ -36,7 +36,11 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
 
   const { data: items = [], isLoading } = useQuery<NewSemesterChecklistItem[]>({
     queryKey: ['/api/new-semester-checklist', semesterKey],
-    queryFn: () => fetch(`/api/new-semester-checklist?semesterKey=${semesterKey}`, { credentials: 'include' }).then(r => r.json()),
+    queryFn: async () => {
+      const r = await fetch(`/api/new-semester-checklist?semesterKey=${semesterKey}`, { credentials: 'include' });
+      const data = await r.json();
+      return Array.isArray(data) ? data : [];
+    },
   });
 
   const createMutation = useMutation({
