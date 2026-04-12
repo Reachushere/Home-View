@@ -173,8 +173,10 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   const seededRand = ((file.id * 2654435761) >>> 0) / 4294967296;
   const spineWidth = 28 + seededRand * 12 - (widthReduction || 0);
   const bookHeight = shelfHeight - 24 - (index % 3) * 6 + (besideHorizontal ? 50 : 0);
-  const fullTitle = (file.displayName || file.originalName).replace(/\.pdf$/i, '');
-  const title = truncateSpineTitle(fullTitle, 28, !!file.displayName && file.displayName !== file.originalName);
+  const fileType = getFileType(file.folder);
+  const rawFullTitle = (file.displayName || file.originalName).replace(/\.pdf$/i, '');
+  const fullTitle = fileType === 'module' ? 'Module' : rawFullTitle;
+  const title = fileType === 'module' ? 'Module' : truncateSpineTitle(rawFullTitle, 28, !!file.displayName && file.displayName !== file.originalName);
   const expandedTitle = fullTitle;
   const maxTextHeight = bookHeight - 56;
   const liftedTextHeight = maxTextHeight + 30;
@@ -203,7 +205,6 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
     ? Math.max(5, Math.min(11, Math.floor(liftedTextHeight / (Math.max(splitLines[0].length, splitLines[1].length) * 0.85))))
     : expandedFontSize;
   const weekNum = file.folder?.match(/^week-(\d+)/)?.[1] || '';
-  const fileType = getFileType(file.folder);
   const patternIdx = (index + courseCode.charCodeAt(0)) % SPINE_PATTERNS.length;
   const hasTopBand = index % 4 === 1;
   const hasBottomBand = index % 5 === 2;
