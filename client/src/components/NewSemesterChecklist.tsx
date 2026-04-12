@@ -57,7 +57,20 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
   const updateMutation = useMutation({
     mutationFn: ({ id, ...updates }: { id: number; [key: string]: any }) =>
       apiRequest('PATCH', `/api/new-semester-checklist/${id}`, updates),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['/api/new-semester-checklist'] }),
+    onMutate: async ({ id, ...updates }) => {
+      await queryClient.cancelQueries({ queryKey: ['/api/new-semester-checklist'] });
+      const prev = queryClient.getQueryData<NewSemesterChecklistItem[]>(['/api/new-semester-checklist']);
+      if (prev) {
+        queryClient.setQueryData<NewSemesterChecklistItem[]>(['/api/new-semester-checklist'],
+          prev.map(i => i.id === id ? { ...i, ...updates } : i)
+        );
+      }
+      return { prev };
+    },
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.prev) queryClient.setQueryData(['/api/new-semester-checklist'], ctx.prev);
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['/api/new-semester-checklist'] }),
   });
 
   const deleteMutation = useMutation({
@@ -264,9 +277,9 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
       <div key={item.id} className="flex items-center gap-3 py-1.5" data-testid={`checklist-item-${isCompleted ? 'done-' : ''}${item.id}`}>
         <label
           style={{
-            width: '26px',
-            height: '26px',
-            minWidth: '26px',
+            width: '30px',
+            height: '30px',
+            minWidth: '30px',
             flexShrink: 0,
             display: 'flex',
             alignItems: 'center',
@@ -280,8 +293,8 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
             checked={isCompleted}
             onChange={() => handleToggleComplete(item)}
             style={{
-              width: '20px',
-              height: '20px',
+              width: '24px',
+              height: '24px',
               cursor: 'pointer',
               accentColor: '#22c55e',
               margin: 0,
@@ -472,7 +485,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
                       updateMutation.mutate({ id: confirmTask.item.id, dueDate: e.target.value });
                     }
                   }}
-                  className="text-xs rounded px-3 py-2 outline-none flex-1"
+                  className="text-xs rounded px-3 py-2 outline-none flex-1 bg-white"
                   style={{ backgroundColor: '#ffffff', height: '34px', color: '#000000', colorScheme: 'light' }}
                   data-testid="confirm-date-input"
                 />
