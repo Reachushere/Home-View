@@ -3531,9 +3531,9 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                       gap: '4px',
                       padding: '2px 8px',
                       borderRadius: '4px',
-                      border: '1px solid rgba(255,255,255,0.35)',
-                      background: 'rgba(255,255,255,0.15)',
-                      color: 'rgba(255,255,255,0.95)',
+                      border: '1px solid rgba(255,255,255,0.5)',
+                      background: 'rgba(255,255,255,0.22)',
+                      color: '#ffffff',
                       fontSize: '9px',
                       fontWeight: 600,
                       letterSpacing: '0.3px',
@@ -3544,8 +3544,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                       marginRight: '10px',
                       flexShrink: 0,
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.25)'; e.currentTarget.style.color = '#fff'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.15)'; e.currentTarget.style.color = 'rgba(255,255,255,0.95)'; }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.32)'; e.currentTarget.style.color = '#fff'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.22)'; e.currentTarget.style.color = '#ffffff'; }}
                     data-testid={`btn-syllabus-${course.code}`}
                   >
                     <FileText size={10} />
@@ -3559,7 +3559,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                     <ChevronDown size={14} style={{ color: 'rgba(255,255,255,0.85)', flexShrink: 0 }} />
                   )}
                   <span style={{
-                    fontSize: '9px',
+                    fontSize: '10px',
                     fontWeight: 500,
                     color: '#ffffff',
                     letterSpacing: '0.5px',
