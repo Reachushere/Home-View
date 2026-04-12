@@ -33989,7 +33989,14 @@ export default function Dashboard() {
                             const mb = Math.min(255, b + 70);
                             return `rgba(${mr},${mg},${mb},${alpha})`;
                           };
-                          const [c1, c2] = isYearTab ? tab.colors : [`${hb}cc`, `${hb}bb`];
+                          const hbDirect = (hex: string, alpha: number) => {
+                            const h2 = hex.replace('#', '');
+                            const r2 = parseInt(h2.substring(0, 2), 16);
+                            const g2 = parseInt(h2.substring(2, 4), 16);
+                            const b2 = parseInt(h2.substring(4, 6), 16);
+                            return `rgba(${r2},${g2},${b2},${alpha})`;
+                          };
+                          const [c1, c2] = isYearTab ? tab.colors : [hbDirect(hb, 0.8), hbDirect(hb, 0.73)];
                           const br = 7;
                           const gradId = `tabGrad-${tabIdx}`;
                           const topColor = c1;
