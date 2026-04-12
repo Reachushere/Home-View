@@ -394,7 +394,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
           overflow: 'hidden',
           padding: '4px 0',
           lineHeight: 1.2,
-          marginTop: '-12px',
+          marginTop: '-7px',
           fontFamily: "'Segoe UI', 'Helvetica Neue', Arial, sans-serif",
           transition: 'font-size 0.2s ease',
         }}>
@@ -424,7 +424,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
           whiteSpace: 'nowrap',
           padding: '4px 0',
           lineHeight: 1.2,
-          marginTop: '-12px',
+          marginTop: '-7px',
           fontFamily: "'Segoe UI', 'Helvetica Neue', Arial, sans-serif",
           transition: 'font-size 0.2s ease',
         }}>
