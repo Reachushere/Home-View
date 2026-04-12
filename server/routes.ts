@@ -15324,8 +15324,9 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
       if (cleanedText && file.id) {
         try {
-          await storage.updateFile(file.id, { extractedText: cleanedText });
-          console.log(`[ExtractText] Cached ${cleanedText.length} chars for file ${file.id}`);
+          const chunks = Math.ceil(cleanedText.length / CHUNK_SIZE);
+          await storage.updateFile(file.id, { extractedText: cleanedText, totalChunks: chunks });
+          console.log(`[ExtractText] Cached ${cleanedText.length} chars, ${chunks} chunks for file ${file.id}`);
         } catch (cacheErr: any) {
           console.error(`[ExtractText] Failed to cache text: ${cacheErr.message}`);
         }

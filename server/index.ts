@@ -422,6 +422,17 @@ app.use((req, res, next) => {
       setTimeout(runFileMonitor, 10000);
       setInterval(runFileMonitor, 30 * 1000);
 
+      setTimeout(async () => {
+        try {
+          console.log('[Startup] Running one-time text re-extraction for files missing extractedText...');
+          const resp = await fetch(`http://localhost:${port}/api/files/pre-extract`, { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+          const data = await resp.json();
+          console.log(`[Startup] Pre-extract result:`, data);
+        } catch (e: any) {
+          console.error('[Startup] Pre-extract error:', e.message);
+        }
+      }, 20000);
+
       async function ensureFutureSemesters() {
         try {
           const { storage } = await import("./storage");

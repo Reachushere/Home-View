@@ -1,0 +1,33 @@
+         folder          | files | has_text | no_text | has_chunks | no_chunks
+-------------------------+-------+----------+---------+------------+-----------
+ week-10-casl101-module  |     1 |        0 |       1 |          0 |         1
+ week-10-cfnf400-module  |     1 |        0 |       1 |          1 |         0
+ week-10-cppa122-module  |     1 |        0 |       1 |          1 |         0
+ week-10-cppa122-reading |     4 |        1 |       3 |          4 |         0
+ week-11-casl101-module  |     1 |        0 |       1 |          0 |         1
+ week-11-cfnf400-module  |     1 |        1 |       0 |          1 |         0
+ week-11-cppa122-module  |     1 |        0 |       1 |          1 |         0
+ week-11-cppa122-reading |     8 |        0 |       8 |          7 |         1
+ week-12-cfnf400-module  |     1 |        0 |       1 |          1 |         0
+ week-12-cppa122-module  |     1 |        0 |       1 |          1 |         0
+ week-12-cppa122-reading |     1 |        0 |       1 |          1 |         0
+ week-13-cfnf400-module  |     1 |        1 |       0 |          1 |         0
+ week-13-cppa122-module  |     1 |        1 |       0 |          1 |         0
+ week-13-tbd1-module     |     3 |        3 |       0 |          0 |         3
+ week-13-tbd1-reading    |     1 |        1 |       0 |          0 |         1
+ week-13-tbd3-reading    |     1 |        0 |       1 |          1 |         0
+ week-1-cecn210-module   |     3 |        0 |       3 |          3 |         0
+ week-1-cphl110-module   |     3 |        0 |       3 |          3 |         0
+ week-1-cppa122-module   |     1 |        0 |       1 |          1 |         0
+ week-1-cppa122-reading  |     1 |        0 |       1 |          1 |         0
+ week-1-cppa235-module   |     3 |        0 |       3 |          3 |         0
+ week-1-fake900-module   |     2 |        0 |       2 |          2 |         0
+ week-1-fall3-module     |     2 |        0 |       2 |          2 |         0
+ week-1-tbd1-module      |     3 |        0 |       3 |          3 |         0
+ week-1-tbd2-module      |     6 |        0 |       6 |          6 |         0
+ week-1-tbd3-module      |     4 |        0 |       4 |          4 |         0
+ week-1-tbd3-reading     |     1 |        0 |       1 |          0 |         1
+ week-2-cppa122-module   |     1 |        0 |       1 |          1 |         0
+ week-2-cppa122-reading  |     2 |        0 |       2 |          2 |         0
+ week-3-cphl110-module   |     3 |        0 |       3 |          0 |         3
+:
