@@ -3414,7 +3414,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           left: 0,
           right: 0,
           bottom: 0,
-          overflowY: 'auto',
+          overflowY: 'hidden',
           overflowX: 'hidden',
           padding: '0 20px 10px 20px',
           paddingBottom: '35px',
@@ -3422,7 +3422,6 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           flexDirection: 'column',
           justifyContent: courseBooks.length > 0 ? 'space-evenly' : 'center',
         }}
-        className="library-scroll"
       >
         {courseBooks.length === 0 ? (
           <div style={{
