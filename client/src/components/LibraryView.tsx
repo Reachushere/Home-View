@@ -222,7 +222,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
 
   const isLifted = isGroupHovered || false;
   const isHoriz = layout === 'horizontal';
-  const horizBookWidth = 140;
+  const horizBookWidth = 105;
   const horizBookHeight = spineWidth - 15;
 
   if (isHoriz) {
@@ -623,7 +623,7 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
             justifyContent: 'flex-end',
             gap: '2px',
             alignSelf: 'flex-end',
-            marginLeft: isTopShelf ? '-2px' : '2px',
+            marginLeft: '4px',
             position: 'relative',
             zIndex: 2,
           }}>
