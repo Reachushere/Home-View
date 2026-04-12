@@ -31047,12 +31047,13 @@ export default function Dashboard() {
                     key={dayIdx} 
                     className={`relative p-0.5 flex flex-col gap-0.5 min-w-0 ${isSameDayET(day, new Date()) ? 'border-b border-black' : 'border-b border-border/50'}`}
                     style={{ 
-                      borderLeft: isSameDayET(day, new Date()) ? 'none' : day.getDay() === 6 ? 'none' : '1.5px dotted rgba(0,0,0,0.25)',
+                      borderLeft: isSameDayET(day, new Date()) ? '3px solid black' : day.getDay() === 6 ? '3px solid black' : '1.5px dotted rgba(0,0,0,0.25)',
                       backgroundColor: (() => {
                         if (isSameDayET(day, new Date())) return colorSettings.headerBar;
                         if (calendarWeekMode === 'current') {
                           const adNow = new Date();
                           const adDow = adNow.getDay();
+
                           const adSat = startOfDayET(addDays(adNow, adDow === 6 ? 7 : (6 - adDow)));
                           const adTodayIdx = weekDays.findIndex(d => isSameDayET(d, adNow));
                           if (day.getDay() !== 6 && (startOfDayET(day) >= adSat || (adTodayIdx >= 0 && dayIdx < adTodayIdx))) return '#edf3f9';
@@ -31335,7 +31336,7 @@ export default function Dashboard() {
                           key={dayIdx} 
                           className={`relative p-0.5 ${dragOverSlot && isSameDayET(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "ring-2 ring-primary ring-inset" : ""}`}
                           style={{
-                            borderLeft: isSameDayET(day, new Date()) ? 'none' : day.getDay() === 6 ? 'none' : '1.5px dotted rgba(0,0,0,0.25)',
+                            borderLeft: isSameDayET(day, new Date()) ? '3px solid black' : day.getDay() === 6 ? '3px solid black' : '1.5px dotted rgba(0,0,0,0.25)',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined,
                             overflow: 'hidden',
                             minWidth: 0,
