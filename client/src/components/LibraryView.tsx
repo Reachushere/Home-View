@@ -174,6 +174,29 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   const maxTextHeight = bookHeight - 56;
   const liftedTextHeight = maxTextHeight + 30;
   const expandedFontSize = Math.max(4, Math.min(10, Math.floor(liftedTextHeight / (expandedTitle.length * 0.85))));
+
+  const cleanedExpanded = truncateSpineTitle(fullTitle, 80, !!file.displayName && file.displayName !== file.originalName);
+  const singleLineFits = cleanedExpanded.length * 0.85 * 7 <= liftedTextHeight;
+  const shouldSplitLines = !singleLineFits && cleanedExpanded.includes(' ') && spineWidth >= 28;
+  const splitLines = (() => {
+    if (!shouldSplitLines) return null;
+    const words = cleanedExpanded.split(' ');
+    const mid = Math.ceil(cleanedExpanded.length / 2);
+    let bestIdx = 0;
+    let bestDist = Infinity;
+    let runLen = 0;
+    for (let i = 0; i < words.length - 1; i++) {
+      runLen += (i > 0 ? 1 : 0) + words[i].length;
+      const dist = Math.abs(runLen - mid);
+      if (dist < bestDist) { bestDist = dist; bestIdx = i; }
+    }
+    const line1 = words.slice(0, bestIdx + 1).join(' ');
+    const line2 = words.slice(bestIdx + 1).join(' ');
+    return [line1, line2] as [string, string];
+  })();
+  const twoLineFontSize = splitLines
+    ? Math.max(5, Math.min(11, Math.floor(liftedTextHeight / (Math.max(splitLines[0].length, splitLines[1].length) * 0.85))))
+    : expandedFontSize;
   const weekNum = file.folder?.match(/^week-(\d+)/)?.[1] || '';
   const fileType = getFileType(file.folder);
   const patternIdx = (index + courseCode.charCodeAt(0)) % SPINE_PATTERNS.length;
