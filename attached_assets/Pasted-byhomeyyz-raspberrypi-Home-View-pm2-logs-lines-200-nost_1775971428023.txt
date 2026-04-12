@@ -1,0 +1,20 @@
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs --lines 200 --nostream | grep -i "Monitor Sync\|File Monitor\|Including TBD\|Found TBD\|Spring-Summer\|spring_summer"
+0|dashboar | [OneDrive][TRACE] listOneDriveItems FAILED for path /School/1. TMU/Courses/2026/Spring_Summer: The resource could not be found.
+0|dashboar | [OneDrive][TRACE] listOneDriveItems FAILED for path /School/1. TMU/Courses/2026/Spring-Summer: The resource could not be found.
+0|dashboar | [File Monitor] Error: fetch failed
+0|dashboar | [OneDrive][TRACE] listOneDriveItems FAILED for path /School/1. TMU/Courses/2027/Spring_Summer: The resource could not be found.
+0|dashboar | [File Monitor] Error: fetch failed
+0|dashboar | [OneDrive][TRACE] listOneDriveItems FAILED for path /School/1. TMU/Courses/2027/Spring_Summer: The resource could not be found.
+0|dashboar | [OneDrive][TRACE] listOneDriveItems FAILED for path /School/1. TMU/Courses/2027/Spring_Summer: The resource could not be found.
+0|dashboar | [OneDrive][TRACE] listOneDriveItems FAILED for path /School/1. TMU/Courses/2027/Spring_Summer: The resource could not be found.
+0|dashboar | [OneDrive][TRACE] listOneDriveItems FAILED for path /School/1. TMU/Courses/2027/Spring_Summer: The resource could not be found.
+0|dashboar | [OneDrive][TRACE] listOneDriveItems FAILED for path /School/1. TMU/Courses/2027/Spring_Summer: The resource could not be found.
+0|dashboar | [OneDrive][TRACE] listOneDriveItems FAILED for path /School/1. TMU/Courses/2027/Spring_Summer: The resource could not be found.
+0|dashboar | [OneDrive][TRACE] listOneDriveItems FAILED for path /School/1. TMU/Courses/2027/Spring_Summer: The resource could not be found.
+0|dashboar | [OneDrive][TRACE] listOneDriveItems FAILED for path /School/1. TMU/Courses/2027/Spring_Summer: The resource could not be found.
+0|dashboar | [File Monitor] Error: fetch failed
+0|dashboar | [File Monitor] Error: fetch failed
+0|dashboar | [File Monitor] Error: fetch failed
+0|dashboar | [File Monitor] Error: fetch failed
+0|dashboar | [File Monitor] Error: fetch failed
+byhomeyyz@raspberrypi:~/Home-View $
