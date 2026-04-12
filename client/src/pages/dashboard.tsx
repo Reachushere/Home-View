@@ -33965,7 +33965,17 @@ export default function Dashboard() {
                       <svg width={displayW} height={svgH} viewBox={`0 0 ${displayW} ${svgH}`} style={{ display: 'block', overflow: 'visible' }}>
                         {(() => {
                           const isYearTab = tab.id.startsWith('year-');
-                          const [c1, c2] = isYearTab ? tab.colors : [`${hb}cc`, `${hb}bb`];
+                          const hbToRgba = (hex: string, alpha: number) => {
+                            const h = hex.replace('#', '');
+                            const r = parseInt(h.substring(0, 2), 16);
+                            const g = parseInt(h.substring(2, 4), 16);
+                            const b = parseInt(h.substring(4, 6), 16);
+                            const mr = Math.min(255, r + 70);
+                            const mg = Math.min(255, g + 70);
+                            const mb = Math.min(255, b + 70);
+                            return `rgba(${mr},${mg},${mb},${alpha})`;
+                          };
+                          const [c1, c2] = isYearTab ? tab.colors : [hbToRgba(hb, 0.95), hbToRgba(hb, 0.8)];
                           const br = 7;
                           const gradId = `tabGrad-${tabIdx}`;
                           const topColor = c1;
