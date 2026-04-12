@@ -206,7 +206,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
 
   const isLifted = isGroupHovered || false;
   const isHoriz = layout === 'horizontal';
-  const horizBookWidth = 90;
+  const horizBookWidth = 140;
   const horizBookHeight = spineWidth;
 
   if (isHoriz) {
@@ -231,14 +231,39 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
             : 'inset 0 -2px 6px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2)',
           transition: 'box-shadow 0.3s ease',
           overflow: 'hidden',
-          paddingLeft: '6px',
-          paddingRight: '4px',
+          paddingLeft: '20px',
+          paddingRight: '14px',
         }}
         title={file.displayName || file.originalName}
         data-testid={`book-spine-${file.id}`}
       >
+        <div style={{
+          position: 'absolute',
+          left: '4px',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          lineHeight: 1,
+        }}>
+          <span style={{
+            fontSize: '9px',
+            fontWeight: 800,
+            color: 'rgba(255,255,255,0.85)',
+            textShadow: '0 1px 2px rgba(0,0,0,0.7)',
+          }}>R</span>
+          <span style={{
+            fontSize: '5px',
+            fontWeight: 600,
+            color: 'rgba(255,255,255,0.65)',
+            textShadow: '0 1px 2px rgba(0,0,0,0.7)',
+            letterSpacing: '0.2px',
+            whiteSpace: 'nowrap',
+          }}>Reading</span>
+        </div>
         <span style={{
-          fontSize: '7px',
+          fontSize: '10px',
           fontWeight: 600,
           color: '#ffffff',
           textShadow: '0 1px 2px rgba(0,0,0,0.7)',
