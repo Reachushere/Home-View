@@ -24931,6 +24931,55 @@ Keep your tone friendly and educational. Format your response clearly with numbe
     }
   });
 
+  app.post("/api/new-semester-checklist/save-to-calendar", async (req, res) => {
+    try {
+      const { title, date, time, reminder } = req.body;
+      if (!title || !date) return res.status(400).json({ error: "title and date required" });
+
+      const timeZone = 'America/Toronto';
+      let event: any;
+
+      if (time) {
+        const startDateTime = `${date}T${time}:00`;
+        const startDate = new Date(`${startDateTime}-05:00`);
+        const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
+
+        event = {
+          summary: title,
+          start: { dateTime: startDate.toISOString(), timeZone },
+          end: { dateTime: endDate.toISOString(), timeZone },
+        };
+      } else {
+        const nextDay = new Date(date + 'T12:00:00');
+        nextDay.setDate(nextDay.getDate() + 1);
+        event = {
+          summary: title,
+          start: { date },
+          end: { date: nextDay.toISOString().split('T')[0] },
+        };
+      }
+
+      if (reminder && reminder > 0) {
+        event.reminders = {
+          useDefault: false,
+          overrides: [{ method: 'popup', minutes: reminder }],
+        };
+      }
+
+      const calendar = await getGoogleCalendarClient();
+      const response = await calendar.events.insert({
+        calendarId: 'primary',
+        requestBody: event,
+      });
+
+      console.log(`[Checklist→Calendar] Created event: "${title}" on ${date}${time ? ' at ' + time : ''}, id=${response.data.id}`);
+      res.json({ success: true, eventId: response.data.id });
+    } catch (err: any) {
+      console.error('[Checklist→Calendar] Failed:', err);
+      res.status(500).json({ error: err.message || "Failed to create calendar event" });
+    }
+  });
+
   app.get("/api/app-state/:key", async (req, res) => {
     try {
       const row = await db.select().from(appState).where(eq(appState.key, req.params.key)).limit(1);

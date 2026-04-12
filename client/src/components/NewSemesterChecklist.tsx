@@ -26,6 +26,9 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
   const [openDatePickerId, setOpenDatePickerId] = useState<number | null>(null);
   const [confirmTask, setConfirmTask] = useState<{ item: NewSemesterChecklistItem; date: string } | null>(null);
   const [confirmTaskTitle, setConfirmTaskTitle] = useState('');
+  const [confirmTime, setConfirmTime] = useState('09:00');
+  const [confirmAllDay, setConfirmAllDay] = useState(true);
+  const [confirmReminder, setConfirmReminder] = useState(30);
   const [seeded, setSeeded] = useState(false);
   const [datePickerMonth, setDatePickerMonth] = useState<Date>(() => {
     if (semesterStartDate) {
@@ -63,18 +66,13 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
   });
 
   const createTaskMutation = useMutation({
-    mutationFn: (data: { title: string; dueDate: string }) =>
-      apiRequest('POST', '/api/tasks', {
-        title: data.title,
-        dueDate: data.dueDate,
-        courseName: 'General',
-        taskType: 'homework',
-        status: 'not_started',
-        priority: 'medium',
-      }),
+    mutationFn: (data: { title: string; date: string; time?: string; reminder?: number }) =>
+      apiRequest('POST', '/api/new-semester-checklist/save-to-calendar', data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
-      toast({ title: "Task created", description: "Added to your task list and calendar." });
+      toast({ title: "Saved to Google Calendar", description: "Event added to bryn.hendricks@gmail.com" });
+    },
+    onError: (err: any) => {
+      toast({ title: "Failed to save", description: err.message || "Could not create calendar event", variant: "destructive" });
     },
   });
 
@@ -137,11 +135,16 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
     if (!confirmTask) return;
     createTaskMutation.mutate({
       title: confirmTaskTitle || confirmTask.item.title || 'Checklist task',
-      dueDate: confirmTask.date,
+      date: confirmTask.date,
+      time: confirmAllDay ? undefined : confirmTime,
+      reminder: confirmReminder > 0 ? confirmReminder : undefined,
     });
     setConfirmTask(null);
     setConfirmTaskTitle('');
-  }, [confirmTask, confirmTaskTitle]);
+    setConfirmAllDay(true);
+    setConfirmTime('09:00');
+    setConfirmReminder(30);
+  }, [confirmTask, confirmTaskTitle, confirmAllDay, confirmTime, confirmReminder]);
 
   
 
@@ -365,15 +368,53 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
                 autoFocus data-testid="confirm-task-title-input"
               />
             </div>
-            <div className="mb-4">
+            <div className="mb-3">
               <label className="text-[10px] text-white/60 uppercase tracking-wider font-bold mb-1 block">Due Date</label>
               <div className="text-sm text-white font-semibold px-3 py-2 rounded" style={{ backgroundColor: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }}>
                 <CalendarDays className="w-4 h-4 inline mr-2 text-green-400" />
                 {format(new Date(confirmTask.date + 'T12:00:00'), 'EEEE, MMMM d, yyyy')}
               </div>
             </div>
+            <div className="mb-3">
+              <label className="text-[10px] text-white/60 uppercase tracking-wider font-bold mb-1 block">Time</label>
+              <div className="flex items-center gap-3">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" checked={confirmAllDay} onChange={() => setConfirmAllDay(!confirmAllDay)} style={{ width: '16px', height: '16px', accentColor: '#22c55e' }} data-testid="confirm-all-day" />
+                  <span className="text-xs text-white/80">All day</span>
+                </label>
+                {!confirmAllDay && (
+                  <input
+                    type="time"
+                    value={confirmTime}
+                    onChange={(e) => setConfirmTime(e.target.value)}
+                    className="text-xs rounded px-2 py-1.5 outline-none text-black"
+                    style={{ backgroundColor: '#ffffff', height: '30px' }}
+                    data-testid="confirm-time-input"
+                  />
+                )}
+              </div>
+            </div>
+            <div className="mb-4">
+              <label className="text-[10px] text-white/60 uppercase tracking-wider font-bold mb-1 block">Reminder</label>
+              <select
+                value={confirmReminder}
+                onChange={(e) => setConfirmReminder(Number(e.target.value))}
+                className="text-xs rounded px-2 py-1.5 outline-none text-black w-full"
+                style={{ backgroundColor: '#ffffff', height: '30px' }}
+                data-testid="confirm-reminder-select"
+              >
+                <option value={0}>No reminder</option>
+                <option value={5}>5 minutes before</option>
+                <option value={10}>10 minutes before</option>
+                <option value={15}>15 minutes before</option>
+                <option value={30}>30 minutes before</option>
+                <option value={60}>1 hour before</option>
+                <option value={120}>2 hours before</option>
+                <option value={1440}>1 day before</option>
+              </select>
+            </div>
             <div className="flex gap-3">
-              <button onClick={() => { setConfirmTask(null); setConfirmTaskTitle(''); }} className="flex-1 text-xs font-semibold text-white/70 py-2 rounded border border-white/20 hover:bg-white/10 transition-all" data-testid="confirm-task-cancel">Cancel</button>
+              <button onClick={() => { setConfirmTask(null); setConfirmTaskTitle(''); setConfirmAllDay(true); setConfirmTime('09:00'); setConfirmReminder(30); }} className="flex-1 text-xs font-semibold text-white/70 py-2 rounded border border-white/20 hover:bg-white/10 transition-all" data-testid="confirm-task-cancel">Cancel</button>
               <button onClick={handleConfirmSaveTask} disabled={createTaskMutation.isPending} className="flex-1 text-xs font-bold text-white py-2 rounded hover:brightness-110 transition-all disabled:opacity-50" style={{ background: '#22c55e' }} data-testid="confirm-task-save">
                 {createTaskMutation.isPending ? 'Saving...' : 'Save to Calendar'}
               </button>
