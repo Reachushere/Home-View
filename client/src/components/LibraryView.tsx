@@ -3742,8 +3742,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       {openReaders.filter(r => minimizedReaders.has(r.file.id)).length > 0 && (
         <div style={{
           position: 'fixed',
-          bottom: '8px',
-          left: '50%',
+          bottom: '5px',
+          left: 'calc(50% + 12px)',
           transform: 'translateX(-50%)',
           display: 'flex',
           gap: '6px',
