@@ -222,7 +222,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
 
   const isLifted = isGroupHovered || false;
   const isHoriz = layout === 'horizontal';
-  const horizBookWidth = 105;
+  const horizBookWidth = 140;
   const horizBookHeight = spineWidth - 15;
 
   if (isHoriz) {
