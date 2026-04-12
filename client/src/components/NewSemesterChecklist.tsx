@@ -124,11 +124,11 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
     setEditingTitles(prev => { const n = { ...prev }; delete n[item.id]; return n; });
   }, [editingTitles]);
 
+  const [miniCalSelectedDate, setMiniCalSelectedDate] = useState<string | null>(null);
+
   const handleDateSelect = useCallback((item: NewSemesterChecklistItem, dateStr: string) => {
     updateMutation.mutate({ id: item.id, dueDate: dateStr });
-    setOpenDatePickerId(null);
-    setConfirmTaskTitle(item.title || '');
-    setConfirmTask({ item, date: dateStr });
+    setMiniCalSelectedDate(dateStr);
   }, []);
 
   const handleConfirmSaveTask = useCallback(() => {
@@ -190,7 +190,62 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
           {dayLabels.map((l, i) => <div key={i} className="w-6 h-4 flex items-center justify-center text-[8px] text-white/40 font-bold">{l}</div>)}
           {cells}
         </div>
-        <div className="text-[8px] text-white/30 text-center mt-2">Pick a date to create a task</div>
+        {miniCalSelectedDate && item && (
+          <div className="mt-3 pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}>
+            <div className="text-[10px] text-white/60 font-bold mb-2">
+              {format(new Date(miniCalSelectedDate + 'T12:00:00'), 'MMM d, yyyy')}
+            </div>
+            <div className="flex items-center gap-2 mb-2">
+              <label className="flex items-center gap-2 cursor-pointer" onClick={() => setConfirmAllDay(!confirmAllDay)} style={{ touchAction: 'manipulation' }}>
+                <div style={{
+                  width: '14px', height: '14px', borderRadius: '3px',
+                  border: confirmAllDay ? '2px solid #22c55e' : '2px solid rgba(255,255,255,0.5)',
+                  background: confirmAllDay ? '#22c55e' : 'transparent',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  {confirmAllDay && <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>}
+                </div>
+                <span className="text-[10px] text-white/80">All day</span>
+              </label>
+            </div>
+            {!confirmAllDay && (() => {
+              const [hh, mm] = confirmTime.split(':').map(Number);
+              const isPM = hh >= 12;
+              const h12 = hh === 0 ? 12 : hh > 12 ? hh - 12 : hh;
+              return (
+                <div className="flex items-center gap-1 mb-2">
+                  <select value={h12} onChange={(e) => { const n = Number(e.target.value); setConfirmTime(`${String(isPM ? (n === 12 ? 12 : n + 12) : (n === 12 ? 0 : n)).padStart(2, '0')}:${String(mm).padStart(2, '0')}`); }} className="text-[10px] rounded px-1 py-1 outline-none text-black" style={{ backgroundColor: '#fff', height: '26px' }}>
+                    {[12,1,2,3,4,5,6,7,8,9,10,11].map(h => <option key={h} value={h}>{h}</option>)}
+                  </select>
+                  <span className="text-white font-bold text-xs">:</span>
+                  <select value={mm} onChange={(e) => setConfirmTime(`${String(hh).padStart(2, '0')}:${String(Number(e.target.value)).padStart(2, '0')}`)} className="text-[10px] rounded px-1 py-1 outline-none text-black" style={{ backgroundColor: '#fff', height: '26px' }}>
+                    {[0,5,10,15,20,25,30,35,40,45,50,55].map(m => <option key={m} value={m}>{String(m).padStart(2, '0')}</option>)}
+                  </select>
+                  <select value={isPM ? 'PM' : 'AM'} onChange={(e) => { const toAM = e.target.value === 'AM'; setConfirmTime(`${String(toAM ? (hh >= 12 ? hh - 12 : hh) : (hh < 12 ? hh + 12 : hh)).padStart(2, '0')}:${String(mm).padStart(2, '0')}`); }} className="text-[10px] rounded px-1 py-1 outline-none text-black" style={{ backgroundColor: '#fff', height: '26px' }}>
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </div>
+              );
+            })()}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpenDatePickerId(null);
+                setMiniCalSelectedDate(null);
+                setConfirmTaskTitle(item.title || '');
+                setConfirmTask({ item, date: miniCalSelectedDate });
+              }}
+              className="w-full text-[10px] font-bold text-white py-1.5 rounded"
+              style={{ background: '#22c55e', touchAction: 'manipulation' }}
+              data-testid="mini-cal-save-to-calendar"
+            >
+              Save to Calendar
+            </button>
+          </div>
+        )}
+        {!miniCalSelectedDate && <div className="text-[8px] text-white/30 text-center mt-2">Pick a date to create a task</div>}
       </div>
     );
   };
@@ -252,7 +307,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
           onPointerUp={(e) => {
             e.stopPropagation();
             e.preventDefault();
-            setOpenDatePickerId(openDatePickerId === item.id ? null : item.id);
+            setMiniCalSelectedDate(null); setOpenDatePickerId(openDatePickerId === item.id ? null : item.id);
           }}
           title={hasDueDate ? `Due: ${format(new Date(item.dueDate!), 'MMM d, yyyy')}` : 'Set reminder date'}
           data-testid={`checklist-date-${item.id}`}
