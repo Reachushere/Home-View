@@ -3497,7 +3497,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 cursor: 'pointer',
                 userSelect: 'none',
                 position: 'relative',
-                top: courseIdx === 0 ? '168px' : courseIdx === 1 ? '171px' : courseIdx === 2 ? '177px' : '155px',
+                top: courseIdx === 0 ? '168px' : courseIdx === 1 ? '169px' : courseIdx === 2 ? '174px' : '155px',
                 zIndex: 10,
                 marginLeft: 'calc(30% + 190px)',
               }}
@@ -3574,20 +3574,20 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
               </div>
 
               <div style={{
-                maxHeight: isCollapsed ? '0px' : '500px',
+                maxHeight: isCollapsed ? '0px' : '800px',
                 opacity: isCollapsed ? 0 : 1,
-                overflow: 'hidden',
+                overflow: courseIdx > 0 ? 'visible' : 'hidden',
                 transition: 'max-height 0.3s ease, opacity 0.25s ease',
               }}>
-              <div style={{ position: 'relative', maxWidth: '100%', overflow: 'hidden' }}>
+              <div style={{ position: 'relative', maxWidth: '100%', overflow: courseIdx > 0 ? 'visible' : 'hidden' }}>
                 <div style={{
                   display: 'flex',
                   alignItems: 'flex-end',
-                  height: `${courseIdx === 0 ? shelfHeight + 35 : shelfHeight}px`,
+                  height: `${courseIdx === 0 ? shelfHeight + 35 : shelfHeight * 2}px`,
                   padding: '0px 4px 28px',
                   gap: '2px',
-                  overflowX: 'hidden',
-                  overflowY: 'hidden',
+                  overflowX: courseIdx > 0 ? 'visible' : 'hidden',
+                  overflowY: courseIdx > 0 ? 'visible' : 'hidden',
                   maxWidth: '100%',
                   ...(courseIdx > 0 ? { transform: 'scale(1.5)', transformOrigin: 'bottom left' } : {}),
                 }}
