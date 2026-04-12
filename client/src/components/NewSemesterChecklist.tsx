@@ -196,7 +196,13 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
               {format(new Date(miniCalSelectedDate + 'T12:00:00'), 'MMM d, yyyy')}
             </div>
             <div className="flex items-center gap-2 mb-2">
-              <label className="flex items-center gap-2 cursor-pointer" onClick={() => setConfirmAllDay(!confirmAllDay)} style={{ touchAction: 'manipulation' }}>
+              <a
+                href="#"
+                className="flex items-center gap-2"
+                onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setConfirmAllDay(!confirmAllDay); }}
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setConfirmAllDay(!confirmAllDay); }}
+                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', userSelect: 'none', textDecoration: 'none', cursor: 'pointer' }}
+              >
                 <div style={{
                   width: '14px', height: '14px', borderRadius: '3px',
                   border: confirmAllDay ? '2px solid #22c55e' : '2px solid rgba(255,255,255,0.5)',
@@ -206,7 +212,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
                   {confirmAllDay && <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>}
                 </div>
                 <span className="text-[10px] text-white/80">All day</span>
-              </label>
+              </a>
             </div>
             {!confirmAllDay && (() => {
               const [hh, mm] = confirmTime.split(':').map(Number);
@@ -256,35 +262,33 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
 
     return (
       <div key={item.id} className="flex items-center gap-3 py-1.5" data-testid={`checklist-item-${isCompleted ? 'done-' : ''}${item.id}`}>
-        <a
-          href="#"
-          onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); handleToggleComplete(item); }}
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleToggleComplete(item); }}
+        <label
           style={{
-            width: '24px',
-            height: '24px',
-            minWidth: '24px',
+            width: '26px',
+            height: '26px',
+            minWidth: '26px',
             flexShrink: 0,
-            borderRadius: '4px',
-            border: isCompleted ? '2px solid #22c55e' : '2px solid rgba(255,255,255,0.5)',
-            background: isCompleted ? '#22c55e' : 'transparent',
-            cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            cursor: 'pointer',
             touchAction: 'manipulation',
-            WebkitTapHighlightColor: 'transparent',
-            padding: 0,
-            textDecoration: 'none',
           }}
-          data-testid={`checklist-check-${item.id}`}
         >
-          {isCompleted && (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-          )}
-        </a>
+          <input
+            type="checkbox"
+            checked={isCompleted}
+            onChange={() => handleToggleComplete(item)}
+            style={{
+              width: '20px',
+              height: '20px',
+              cursor: 'pointer',
+              accentColor: '#22c55e',
+              margin: 0,
+            }}
+            data-testid={`checklist-check-${item.id}`}
+          />
+        </label>
 
         <input
           type="text"
@@ -469,7 +473,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
                     }
                   }}
                   className="text-xs rounded px-3 py-2 outline-none flex-1"
-                  style={{ backgroundColor: '#ffffff', height: '34px', color: '#000000' }}
+                  style={{ backgroundColor: '#ffffff', height: '34px', color: '#000000', colorScheme: 'light' }}
                   data-testid="confirm-date-input"
                 />
                 <span className="text-xs text-white/60">
@@ -480,9 +484,16 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
             <div className="mb-3">
               <label className="text-[10px] text-white/60 uppercase tracking-wider font-bold mb-1 block">Time</label>
               <div className="flex items-center gap-3">
-                <label className="flex items-center gap-2 cursor-pointer" onClick={() => setConfirmAllDay(!confirmAllDay)} style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', userSelect: 'none' }} data-testid="confirm-all-day">
+                <a
+                  href="#"
+                  className="flex items-center gap-2"
+                  onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setConfirmAllDay(!confirmAllDay); }}
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); setConfirmAllDay(!confirmAllDay); }}
+                  style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', userSelect: 'none', textDecoration: 'none', cursor: 'pointer' }}
+                  data-testid="confirm-all-day"
+                >
                   <div style={{
-                    width: '16px', height: '16px', minWidth: '16px', borderRadius: '3px',
+                    width: '18px', height: '18px', minWidth: '18px', borderRadius: '3px',
                     border: confirmAllDay ? '2px solid #22c55e' : '2px solid rgba(255,255,255,0.5)',
                     background: confirmAllDay ? '#22c55e' : 'transparent',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -494,7 +505,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
                     )}
                   </div>
                   <span className="text-xs text-white/80">All day</span>
-                </label>
+                </a>
                 {!confirmAllDay && (() => {
                   const [hh, mm] = confirmTime.split(':').map(Number);
                   const isPM = hh >= 12;
