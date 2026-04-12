@@ -2883,7 +2883,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                     {course.code} — {course.name.startsWith(course.code) ? course.name.slice(course.code.length).replace(/^\s*[-–—]\s*/, '') : course.name}
                   </span>
                 </div>
-                {syllabusPaths[course.code] && (
+                {!isCollapsed && syllabusPaths[course.code] && (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -2925,7 +2925,12 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 )}
               </div>
 
-              {!isCollapsed && (
+              <div style={{
+                maxHeight: isCollapsed ? '0px' : '500px',
+                opacity: isCollapsed ? 0 : 1,
+                overflow: 'hidden',
+                transition: 'max-height 0.3s ease, opacity 0.25s ease',
+              }}>
               <div style={{ position: 'relative', maxWidth: '100%', overflow: 'hidden' }}>
                 <div style={{
                   display: 'flex',
@@ -3006,7 +3011,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                   pointerEvents: 'none',
                 }} />
               </div>
-              )}
+              </div>
             </div>
           );})
         )}
