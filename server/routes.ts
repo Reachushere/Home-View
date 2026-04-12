@@ -18390,8 +18390,20 @@ document.body.removeChild(a);
           let textContent = '';
           if (file.contentType?.includes('pdf') || file.originalName.endsWith('.pdf')) {
             const PdfParser = await getPdfParser();
-            const parsed = await PdfParser(content);
-            textContent = parsed.text;
+            const parser = new PdfParser({ data: new Uint8Array(content), verbosity: 0 });
+            await parser.load();
+            const pdfText = await parser.getText();
+            let parsed = '';
+            if (pdfText && typeof pdfText === 'object') {
+              if ((pdfText as any).pages && Array.isArray((pdfText as any).pages)) {
+                parsed = (pdfText as any).pages.map((p: any) => p.text || '').join('\n\n');
+              } else if ((pdfText as any).text) {
+                parsed = (pdfText as any).text;
+              }
+            } else if (typeof pdfText === 'string') {
+              parsed = pdfText;
+            }
+            textContent = parsed;
           } else if (Buffer.isBuffer(content)) {
             textContent = content.toString('utf-8');
           }
@@ -20057,21 +20069,29 @@ document.body.removeChild(a);
                   let totalChunks = 0;
                   try {
                     const PdfParser = await getPdfParser();
-                    const parsed = await PdfParser(fileBuffer);
+                    const parser = new PdfParser({ data: new Uint8Array(fileBuffer), verbosity: 0 });
+                    await parser.load();
+                    const pdfText = await parser.getText();
                     let textContent = '';
-                    if (parsed && typeof parsed === 'object') {
-                      if (parsed.text) textContent = parsed.text;
-                      else if ((parsed as any).pages && Array.isArray((parsed as any).pages)) {
-                        textContent = (parsed as any).pages.map((p: any) => p.text || '').join('\n\n');
+                    if (pdfText && typeof pdfText === 'object') {
+                      if ((pdfText as any).pages && Array.isArray((pdfText as any).pages)) {
+                        textContent = (pdfText as any).pages.map((p: any) => p.text || '').join('\n\n');
+                      } else if (Array.isArray(pdfText)) {
+                        textContent = pdfText.map((item: any) => typeof item === 'string' ? item : item.text || '').join('\n\n');
+                      } else if ((pdfText as any).text) {
+                        textContent = (pdfText as any).text;
+                      } else if (typeof pdfText === 'string') {
+                        textContent = pdfText;
                       }
-                    } else if (typeof parsed === 'string') {
-                      textContent = parsed;
+                    } else if (typeof pdfText === 'string') {
+                      textContent = pdfText;
                     }
                     const cleaned = cleanTextForTTS(textContent);
                     textLength = cleaned.length;
                     totalChunks = Math.ceil(cleaned.length / CHUNK_SIZE);
 
                     await storage.updateFile(newFile.id, { totalChunks, extractedText: cleaned });
+                    console.log(`[Monitor] Text extracted for ${file.name}: ${textLength} chars, ${totalChunks} chunks`);
                   } catch (parseErr: any) {
                     console.error(`[Monitor] Failed to extract text from ${file.name}:`, parseErr.message);
                   }
