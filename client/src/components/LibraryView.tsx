@@ -3652,7 +3652,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 cursor: 'pointer',
                 userSelect: 'none',
                 position: 'relative',
-                top: courseIdx === 0 ? '225px' : courseIdx === 1 ? '340px' : courseIdx === 2 ? (minimizedReaders.size > 0 ? '300px' : '335px') : '165px',
+                top: courseIdx === 0 ? '224px' : courseIdx === 1 ? '339px' : courseIdx === 2 ? (minimizedReaders.size > 0 ? '301px' : '336px') : '164px',
                 zIndex: 10,
                 marginLeft: 'calc(30% + 229px)',
               }}
