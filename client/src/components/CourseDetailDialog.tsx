@@ -1957,7 +1957,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             <span className="capitalize">{task.type}</span>
           </div>
         </div>
-        <div className="flex items-center flex-shrink-0" style={{ gap: '6px', marginLeft: '8px' }} onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center flex-shrink-0" style={{ gap: '6px', marginLeft: '8px', marginRight: '15px' }} onClick={(e) => e.stopPropagation()}>
           <label className="flex items-center gap-1 cursor-pointer" title={task.type === 'discussion' ? "Discussion posts are always ungraded" : "Not gradable — click to mark as graded"} data-testid={`toggle-gpa-ungraded-${task.id}`}>
             <div className="relative" onClick={() => { if (task.type !== 'discussion') updateTaskMutation.mutate({ id: task.id, data: { excludeFromGpa: !task.excludeFromGpa }, _task: task }); }}>
               <div className={`w-6 h-3.5 rounded-full transition-colors ${task.type === 'discussion' ? 'bg-white/10' : 'bg-white/20'}`} />
@@ -4464,7 +4464,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               <>
                 <div className="flex items-center px-1.5 py-1.5 text-[11px] font-medium text-white uppercase" style={{ margin: '12px 4px 0 4px' }} data-testid="ungraded-section-header">
                   <span className="flex-1">Assignments (Ungraded)</span>
-                  <span className="text-[9px] text-white">{ungradedCourseTasks.length} items</span>
+                  <span className="text-[9px] text-white" style={{ marginRight: '8px' }}>{ungradedCourseTasks.length} items</span>
+                  <span className="text-[8px] text-white/50 uppercase" style={{ width: '24px', textAlign: 'center', marginRight: '21px', letterSpacing: '0.5px' }}>GPA</span>
                 </div>
                 <div className="flex flex-col" style={{ gap: '3px', padding: '0 4px' }} data-testid="ungraded-assignments-list">
                   {sortedUngradedTasks.map(task => renderUngradedAssignmentRow(task))}
