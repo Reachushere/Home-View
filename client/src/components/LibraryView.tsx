@@ -3685,28 +3685,25 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                     style={{
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '5px',
-                      padding: '5px 14px',
-                      borderRadius: '8px',
-                      border: `2px solid ${course.color || '#ffffff'}`,
-                      background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 100%)',
-                      color: '#ffffff',
-                      fontSize: '10px',
-                      fontWeight: 800,
-                      letterSpacing: '0.8px',
+                      gap: '3px',
+                      padding: 0,
+                      border: 'none',
+                      background: 'none',
+                      color: 'rgba(255,255,255,0.7)',
+                      fontSize: '9px',
+                      fontWeight: 600,
+                      letterSpacing: '0.5px',
                       cursor: 'pointer',
-                      transition: 'all 0.15s ease',
                       fontFamily: "system-ui, -apple-system, sans-serif",
                       textTransform: 'uppercase',
-                      marginRight: '10px',
+                      marginRight: '8px',
                       flexShrink: 0,
-                      boxShadow: '0 3px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3)',
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.35) 100%)'; e.currentTarget.style.transform = 'scale(1.05)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 100%)'; e.currentTarget.style.transform = 'scale(1)'; }}
+                    onMouseEnter={e => { e.currentTarget.style.color = '#ffffff'; }}
+                    onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}
                     data-testid={`btn-syllabus-${course.code}`}
                   >
-                    <FileText size={10} />
+                    <FileText size={9} />
                     Syllabus
                   </button>
                 )}
