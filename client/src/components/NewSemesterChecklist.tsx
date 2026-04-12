@@ -230,23 +230,35 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
         onTouchEnd={handleSwipeEnd}
         data-testid={`checklist-item-${isCompleted ? 'done-' : ''}${item.id}`}
       >
-        <div
+        <button
+          type="button"
           className="shrink-0 flex items-center justify-center rounded border-2 cursor-pointer"
           style={{
-            width: '22px',
-            height: '22px',
+            width: '28px',
+            height: '28px',
             backgroundColor: isCompleted ? '#22c55e' : '#ffffff',
             borderColor: isCompleted ? '#22c55e' : '#ffffff',
+            touchAction: 'manipulation',
+            WebkitTapHighlightColor: 'transparent',
+            padding: 0,
+            outline: 'none',
           }}
-          onClick={() => handleToggleComplete(item)}
+          onPointerDown={(e) => {
+            e.stopPropagation();
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            handleToggleComplete(item);
+          }}
           data-testid={`checklist-check-${item.id}`}
         >
           {isCompleted && (
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
               <path d="M3 7L6 10L11 4" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           )}
-        </div>
+        </button>
 
         <input
           type="text"
@@ -265,9 +277,16 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
           data-testid={`checklist-title-input-${item.id}`}
         />
 
-        <div
+        <button
+          type="button"
           className="shrink-0 flex items-center cursor-pointer select-none"
-          onClick={() => handleToggleGlobal(item)}
+          style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', background: 'none', border: 'none', padding: 0, outline: 'none' }}
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            handleToggleGlobal(item);
+          }}
           title={item.isGlobal ? 'Appears on all semesters (click to make semester-specific)' : 'Only this semester (click to add to all semesters)'}
           data-testid={`checklist-global-toggle-${item.id}`}
         >
@@ -291,7 +310,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
               }}
             />
           </div>
-        </div>
+        </button>
 
         <Trash2
           className="w-4 h-4 text-white/20 hover:text-red-400 cursor-pointer flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
