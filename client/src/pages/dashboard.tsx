@@ -16909,6 +16909,16 @@ export default function Dashboard() {
         );
       })()}
 
+      {/* Touch target to open pill on touch devices */}
+      {!isTopPillOpen && !topPillUndocked && !editingTask && !isQuickAddOpen && (
+        <div
+          style={{ position: 'fixed', top: `${d2lTickerHeight}px`, left: '19px', right: '18px', height: '25px', zIndex: 111, pointerEvents: 'auto', touchAction: 'none' }}
+          onTouchStart={(e) => {
+            e.stopPropagation();
+            if (topPillInitDoneRef.current) setIsTopPillOpen(true);
+          }}
+        />
+      )}
       {/* Top Pill - Slide up/down container for toolbar buttons */}
       <div style={{ position: 'fixed', top: `${d2lTickerHeight}px`, left: 0, right: 0, bottom: 0, zIndex: editingTask ? 1 : 110, pointerEvents: 'none', overflow: topPillUndocked ? 'visible' : 'hidden', display: isQuickAddOpen ? 'none' : undefined }}>
       <div 
