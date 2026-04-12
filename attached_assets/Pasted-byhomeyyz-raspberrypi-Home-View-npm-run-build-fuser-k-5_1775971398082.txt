@@ -1,0 +1,185 @@
+byhomeyyz@raspberrypi:~/Home-View $ npm run build && fuser -k 5000/tcp; sleep 2 && pm2 kill && sleep 3 && pm2 start dist/index.cjs --name dashboard --cwd /home/byhomeyyz/Home-View --node-args="-r /home/byhomeyyz/Home-View/preload.cjs" && pm2 save
+npm warn Unknown builtin config "globalignorefile". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> rest-express@1.0.0 build
+> tsx script/build.ts
+
+building client...
+vite v7.3.0 building client environment for production...
+✓ 2978 modules transformed.
+../dist/public/index.html                                                                     4.01 kB │ gzip:   1.54 kB
+../dist/public/assets/CN2_1773897525570-afBA9WIn.png                                          4.64 kB
+../dist/public/assets/Zoomcam_1773655084814-Dd0RqcMf.png                                      6.41 kB
+../dist/public/assets/saturn_planet-DyCcVDqz.jpg                                              9.35 kB
+../dist/public/assets/uranus_planet-BBf9JheU.jpg                                             14.81 kB
+../dist/public/assets/Button_1769701329320-vj3a_XjG.png                                      14.88 kB
+../dist/public/assets/Fox_News_1773610204651-Cm2F7G44.png                                    18.91 kB
+../dist/public/assets/Animoji_1769350617739-DKdhEpD6.webp                                    21.31 kB
+../dist/public/assets/Wifi_1773656687145-BkFdNwBM.png                                        21.68 kB
+../dist/public/assets/Global_White_1773536754594-C17BPXU2.png                                22.80 kB
+../dist/public/assets/jupiter_planet-BIMUlata.jpg                                            26.92 kB
+../dist/public/assets/ABC_1773609250051-CfAo4DiJ.png                                         31.54 kB
+../dist/public/assets/Zoom2_1773776262533-u1jCiZQ5.png                                       31.94 kB
+../dist/public/assets/MSNBC_1773536950584-DXnjYP_H.png                                       32.99 kB
+../dist/public/assets/CTV2_1773545440801-BQRb6VTL.png                                        34.23 kB
+../dist/public/assets/Sound_1775176942072-DQdszRIH.png                                       41.57 kB
+../dist/public/assets/cbc-news-logo-black-and-white_1773536865600-CmQYEfGd.png               42.50 kB
+../dist/public/assets/Weather_Alert_1773608511887-BFQqPgnq.png                               42.94 kB
+../dist/public/assets/mars_planet-CmC43G73.jpg                                               44.56 kB
+../dist/public/assets/ChatGPT_Image_Jan_22__2026__02_34_52_PM_1769110943463-7zS7ot_E.png     44.81 kB
+../dist/public/assets/CNN_1773536484180-DucbTf95.png                                         48.85 kB
+../dist/public/assets/Raw_Story_1773607642361-CKfjYmZ7.png                                   58.82 kB
+../dist/public/assets/venus_planet-pWHYImPJ.jpg                                              59.79 kB
+../dist/public/assets/Closet_Night_1774008796953-DXicaVTT.png                                60.27 kB
+../dist/public/assets/Degree_1775175568321-Dz3bFyki.png                                      63.04 kB
+../dist/public/assets/Teacher_White2_1775164260333-DzP7w8Fj.png                              64.77 kB
+../dist/public/assets/Teacher_1775101022422-6YMTUW-g.png                                     64.78 kB
+../dist/public/assets/Reminders_1775175754351-2hYnQH-_.png                                   65.19 kB
+../dist/public/assets/victory-fanfare-CYW8HOv7.mp3                                           67.20 kB
+../dist/public/assets/BBC_1773609711103-BfBjSiKV.png                                         73.89 kB
+../dist/public/assets/Pug_Night_1774008796949-3yLPls61.png                                   79.00 kB
+../dist/public/assets/Cat_Night_1774008796951-Dcd6HiVq.png                                   79.73 kB
+../dist/public/assets/image_1772579486577-DIShbgJ0.png                                       80.83 kB
+../dist/public/assets/Yasu_1774341165517-DKbY5fn0.png                                        83.10 kB
+../dist/public/assets/Forecast2_1773897989398-DSI3LWIa.png                                  116.96 kB
+../dist/public/assets/BG2_1769977873184-BMC0LH4N.jpg                                        124.20 kB
+../dist/public/assets/Chang-School2_1770607146365-_XjUzhwY.png                              128.19 kB
+../dist/public/assets/Hallway_Night_1774008796945-BuzRBJO8.png                              129.78 kB
+../dist/public/assets/crowd-cheer-DkUts2go.mp3                                              142.08 kB
+../dist/public/assets/Newspaper2_1773898792176-DFEQePQK.png                                 143.21 kB
+../dist/public/assets/Queen_Night_1774008796950-B57EmMzY.png                                228.53 kB
+../dist/public/assets/Living_Room_Night_1774008796948-CTbz7lx7.png                          292.86 kB
+../dist/public/assets/King_Night_1774008796946-qs8T8Rav.png                                 321.84 kB
+../dist/public/assets/Kitchen_Night_1774008796947-DzGdhLNI.png                              333.69 kB
+../dist/public/assets/image_1775263840386-D9P4kHhc.png                                      494.62 kB
+../dist/public/assets/TMU2_1772842397746-B9XhF-lv.png                                       788.80 kB
+../dist/public/assets/Bryn_1774341392117-CfDPXLO2.png                                     1,069.12 kB
+../dist/public/assets/mass-background2_1774005959332-mw-YgJzQ.png                         1,426.94 kB
+../dist/public/assets/Floorplan11_1774005505273-BEWw-gX1.png                              1,553.36 kB
+../dist/public/assets/Echo_1774213902054-Dum5d4T4.png                                     2,055.05 kB
+../dist/public/assets/Music_BG20_1774006032495-CxhBg4I3.png                               2,114.88 kB
+../dist/public/assets/style-Bz-MBPtj.css                                                    261.24 kB │ gzip:  42.23 kB
+../dist/public/assets/index-DbYzZYqa.js                                                   3,219.89 kB │ gzip: 808.85 kB
+✓ built in 52.79s
+building server...
+
+  dist/index.cjs  13.3mb ⚠️
+
+⚡ Done in 2411ms
+5000/tcp:            72511
+[PM2] Applying action deleteProcessId on app [all](ids: [ 0 ])
+[PM2] [dashboard](0) ✓
+[PM2] [v] All Applications Stopped
+[PM2] [v] PM2 Daemon Stopped
+[PM2] Spawning PM2 daemon with pm2_home=/home/byhomeyyz/.pm2
+[PM2] PM2 Successfully daemonized
+[PM2] Starting /home/byhomeyyz/Home-View/dist/index.cjs in fork_mode (1 instance)
+[PM2] Done.
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+├────┼────────────────────┼──────────┼──────┼───────────┼──────────┼──────────┤
+│ 0  │ dashboard          │ fork     │ 0    │ online    │ 0%       │ 27.3mb   │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+[PM2] Saving current process list...
+[PM2] Successfully saved in /home/byhomeyyz/.pm2/dump.pm2
+byhomeyyz@raspberrypi:~/Home-View $ psql "postgresql://dashboard:W3belong%404201@localhost:5432/dashboard_db" --no-align -t -c "SELECT id, original_name, folder, length(extracted_text) as text_len, total_chunks FROM files WHERE folder LIKE '%week-4-tbd3%' ORDER BY id DESC LIMIT 5;"
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs --lines 50 --nostream | grep -i "monitor\|tbd3\|Spring\|Summer\|week-4"
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs --lines 30 --nostream
+[TAILING] Tailing last 30 lines for [all] processes (change the value with --lines option)
+/home/byhomeyyz/.pm2/pm2.log last 30 lines:
+PM2        | 2026-04-12T00:56:26: PM2 log: Runtime Binary       : /usr/bin/node
+PM2        | 2026-04-12T00:56:26: PM2 log: ===============================================================================
+PM2        | 2026-04-12T00:56:26: PM2 log: App [dashboard:0] starting in -fork mode-
+PM2        | 2026-04-12T00:56:26: PM2 log: App [dashboard:0] online
+PM2        | 2026-04-12T01:21:33: PM2 log: App [dashboard:0] exited with code [0] via signal [SIGKILL]
+PM2        | 2026-04-12T01:21:33: PM2 log: App [dashboard:0] starting in -fork mode-
+PM2        | 2026-04-12T01:21:34: PM2 log: App [dashboard:0] online
+PM2        | 2026-04-12T01:21:36: PM2 log: Stopping app:dashboard id:0
+PM2        | 2026-04-12T01:21:36: PM2 log: App [dashboard:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-12T01:21:36: PM2 log: pid=73467 msg=process killed
+PM2        | 2026-04-12T01:21:36: PM2 log: PM2 successfully stopped
+PM2        | 2026-04-12T01:21:39: PM2 log: ===============================================================================
+PM2        | 2026-04-12T01:21:39: PM2 log: --- New PM2 Daemon started ----------------------------------------------------
+PM2        | 2026-04-12T01:21:39: PM2 log: Time                 : Sun Apr 12 2026 01:21:39 GMT-0400 (Eastern Daylight Time)
+PM2        | 2026-04-12T01:21:39: PM2 log: PM2 version          : 6.0.14
+PM2        | 2026-04-12T01:21:39: PM2 log: Node.js version      : 20.20.2
+PM2        | 2026-04-12T01:21:39: PM2 log: Current arch         : arm64
+PM2        | 2026-04-12T01:21:39: PM2 log: PM2 home             : /home/byhomeyyz/.pm2
+PM2        | 2026-04-12T01:21:39: PM2 log: PM2 PID file         : /home/byhomeyyz/.pm2/pm2.pid
+PM2        | 2026-04-12T01:21:39: PM2 log: RPC socket file      : /home/byhomeyyz/.pm2/rpc.sock
+PM2        | 2026-04-12T01:21:39: PM2 log: BUS socket file      : /home/byhomeyyz/.pm2/pub.sock
+PM2        | 2026-04-12T01:21:39: PM2 log: Application log path : /home/byhomeyyz/.pm2/logs
+PM2        | 2026-04-12T01:21:39: PM2 log: Worker Interval      : 30000
+PM2        | 2026-04-12T01:21:39: PM2 log: Process dump file    : /home/byhomeyyz/.pm2/dump.pm2
+PM2        | 2026-04-12T01:21:39: PM2 log: Concurrent actions   : 2
+PM2        | 2026-04-12T01:21:39: PM2 log: SIGTERM timeout      : 1600
+PM2        | 2026-04-12T01:21:39: PM2 log: Runtime Binary       : /usr/bin/node
+PM2        | 2026-04-12T01:21:39: PM2 log: ===============================================================================
+PM2        | 2026-04-12T01:21:39: PM2 log: App [dashboard:0] starting in -fork mode-
+PM2        | 2026-04-12T01:21:39: PM2 log: App [dashboard:0] online
+
+/home/byhomeyyz/.pm2/logs/dashboard-out.log last 30 lines:
+0|dashboar | Edge TTS completed in 896ms, 536256 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-197-chunk-0-1775971376760.mp3
+0|dashboar | [AudioPrep] Generating chunk 2/24 for imfg_perspectives_4_hidden_in_plain_view_lucas_2013.pdf (1429 chars)
+0|dashboar | Generating Edge TTS for 1429 chars, file: prep-197-chunk-1
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | Edge TTS completed in 852ms, 603792 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-197-chunk-1-1775971378412.mp3
+0|dashboar | [AudioPrep] Generating chunk 3/24 for imfg_perspectives_4_hidden_in_plain_view_lucas_2013.pdf (1348 chars)
+0|dashboar | Generating Edge TTS for 1348 chars, file: prep-197-chunk-2
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | Edge TTS completed in 1401ms, 529200 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-197-chunk-2-1775971380614.mp3
+0|dashboar | [AudioPrep] Generating chunk 4/24 for imfg_perspectives_4_hidden_in_plain_view_lucas_2013.pdf (1377 chars)
+0|dashboar | Generating Edge TTS for 1377 chars, file: prep-197-chunk-3
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | Edge TTS completed in 2851ms, 522432 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-197-chunk-3-1775971384267.mp3
+0|dashboar | [AudioPrep] Generating chunk 5/24 for imfg_perspectives_4_hidden_in_plain_view_lucas_2013.pdf (1028 chars)
+0|dashboar | Generating Edge TTS for 1028 chars, file: prep-197-chunk-4
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | Edge TTS completed in 652ms, 392256 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-197-chunk-4-1775971385721.mp3
+0|dashboar | [AudioPrep] Generating chunk 6/24 for imfg_perspectives_4_hidden_in_plain_view_lucas_2013.pdf (1439 chars)
+0|dashboar | Generating Edge TTS for 1439 chars, file: prep-197-chunk-5
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | Edge TTS completed in 916ms, 580176 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-197-chunk-5-1775971387439.mp3
+0|dashboar | [AudioPrep] Generating chunk 7/24 for imfg_perspectives_4_hidden_in_plain_view_lucas_2013.pdf (1441 chars)
+0|dashboar | Generating Edge TTS for 1441 chars, file: prep-197-chunk-6
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+
+/home/byhomeyyz/.pm2/logs/dashboard-error.log last 30 lines:
+0|dashboar |       }
+0|dashboar |     ]
+0|dashboar |   }
+0|dashboar | }
+0|dashboar |
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Edge TTS] Attempt 1 failed: Timed out
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Edge TTS] Attempt 1 failed: Timed out
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+
+byhomeyyz@raspberrypi:~/Home-View $
