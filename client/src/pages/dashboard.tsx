@@ -32273,15 +32273,15 @@ export default function Dashboard() {
           </div>
           {/* Set Default checkbox — below calendar */}
           <button
+            type="button"
             className="cursor-pointer select-none hover:opacity-80 transition-opacity"
             style={{ position: 'absolute', right: '0px', bottom: '-19px', display: 'flex', alignItems: 'center', gap: '4px', zIndex: 60, background: 'none', border: 'none', padding: '4px 6px', pointerEvents: 'auto', WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
+            onClick={() => {
               localStorage.setItem('calendarHeight', String(calendarHeight));
               localStorage.setItem('calendarReduction', String(calendarReduction));
               localStorage.setItem('gridSizes', JSON.stringify(gridSizes));
               localStorage.setItem('hwGroupBarWidth', String(hwGroupBarWidth));
+              localStorage.setItem('calendarReductionUserSet', '1');
               setCalendarReductionUserSet(true);
               const screenWidth = window.screen.width;
               const screenHeight = window.screen.height;
@@ -32297,28 +32297,7 @@ export default function Dashboard() {
               fetch(`/api/app-state/calendarLayout_${deviceId}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: layoutData }) }).catch(() => {});
               toast({ title: "Saved", description: "Calendar size saved as default" });
             }}
-            onTouchEnd={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              localStorage.setItem('calendarHeight', String(calendarHeight));
-              localStorage.setItem('calendarReduction', String(calendarReduction));
-              localStorage.setItem('gridSizes', JSON.stringify(gridSizes));
-              localStorage.setItem('hwGroupBarWidth', String(hwGroupBarWidth));
-              setCalendarReductionUserSet(true);
-              const screenWidth = window.screen.width;
-              const screenHeight = window.screen.height;
-              const pixelRatio = window.devicePixelRatio || 1;
-              const deviceId = `device_${screenWidth}x${screenHeight}@${pixelRatio}`;
-              localStorage.setItem(`calendarHeight_${deviceId}`, String(calendarHeight));
-              localStorage.setItem(`calendarReduction_${deviceId}`, String(calendarReduction));
-              localStorage.setItem(`gridSizes_${deviceId}`, JSON.stringify(gridSizes));
-              localStorage.setItem(`hwGroupBarWidth_${deviceId}`, String(hwGroupBarWidth));
-              layoutDefaultsLoadedRef.current = true;
-              const layoutData = JSON.stringify({ calendarHeight, calendarReduction, gridSizes, hwGroupBarWidth, deviceId });
-              fetch('/api/app-state/calendarLayoutDefaults', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: layoutData }) }).catch(() => {});
-              fetch(`/api/app-state/calendarLayout_${deviceId}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: layoutData }) }).catch(() => {});
-              toast({ title: "Saved", description: "Calendar size saved as default" });
-            }}
+
             data-testid="button-set-default-size"
           >
             <span style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap' }}>Save Default</span>
