@@ -1120,6 +1120,15 @@ export default function Dashboard() {
   const [mobilePassError, setMobilePassError] = useState(false);
   const { isReadOnly, isAdmin, authLevel } = useAccessMode();
 
+  const isKioskMode = useMemo(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('kiosk') === 'true' || params.get('deviceRole') === 'cat') {
+      try { localStorage.setItem('kioskMode', 'true'); } catch {}
+      return true;
+    }
+    try { return localStorage.getItem('kioskMode') === 'true'; } catch { return false; }
+  }, []);
+
   useEffect(() => {
     const urlAuth = new URLSearchParams(window.location.search).get('auth');
     if (urlAuth && ['5747', '4201', '1010'].includes(urlAuth)) {
@@ -8411,6 +8420,7 @@ export default function Dashboard() {
   }, [allSemesterSettings, deliveryModeVersion]);
 
   useEffect(() => {
+    if (isKioskMode) return;
     if (!allSemesterSettings || allSemesterSettings.length === 0) return;
     const now = startOfDayET(new Date());
     const typePrefix: Record<string, string> = { winter: 'w', fall: 'f', spring_summer: 'ss' };
@@ -8580,6 +8590,7 @@ export default function Dashboard() {
   }, [pastCourseInfo]);
 
   useEffect(() => {
+    if (isKioskMode) return;
     if (!semesterSettings || semesterChecklistShownRef.current) return;
 
     const now = new Date(new Date().toLocaleString('en-US', { timeZone: getAppTz() }));
@@ -8611,6 +8622,7 @@ export default function Dashboard() {
   }, [semesterSettings]);
 
   useEffect(() => {
+    if (isKioskMode) return;
     if (confirmSemesterShownRef.current) return;
     const upcoming = getUpcomingSemesterToConfirm();
     if (!upcoming) return;
