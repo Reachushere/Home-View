@@ -170,6 +170,17 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   extraMarginLeft?: number;
   widthReduction?: number;
 }) {
+  const [isHovered, setIsHovered] = useState(false);
+  const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const handleMouseEnter = useCallback(() => {
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+    setIsHovered(true);
+  }, []);
+  const handleMouseLeave = useCallback(() => {
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+    hoverTimeoutRef.current = setTimeout(() => setIsHovered(false), 80);
+  }, []);
+
   const seededRand = ((file.id * 2654435761) >>> 0) / 4294967296;
   const spineWidth = 28 + seededRand * 12 - (widthReduction || 0);
   const bookHeight = shelfHeight - 24 - (index % 3) * 6 + (besideHorizontal ? 50 : 0);
@@ -218,9 +229,11 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
     const horizHandler = interceptClick || onClick;
     return (
       <div
-        className="book-spine-item"
+        className={`book-spine-item${isHovered ? ' book-hovered' : ''}`}
         onClick={horizHandler}
         onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); horizHandler(); }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
         style={{
           width: `${horizBookWidth}px`,
           height: `${horizBookHeight}px`,
@@ -303,9 +316,11 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   const vertHandler = interceptClick || onClick;
   return (
     <div
-      className="book-spine-item"
+      className={`book-spine-item${isHovered ? ' book-hovered' : ''}`}
       onClick={vertHandler}
       onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); vertHandler(); }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       style={{
         width: `${spineWidth}px`,
         minWidth: '16px',
@@ -2579,7 +2594,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           backface-visibility: hidden;
           -webkit-backface-visibility: hidden;
         }
-        .book-spine-item:hover {
+        .book-spine-item.book-hovered {
           filter: brightness(1.15);
           transform: translateY(-8px) !important;
         }
