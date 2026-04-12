@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { NewSemesterChecklistItem } from "@shared/schema";
@@ -48,16 +48,18 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
     },
   });
 
+  const checklistQueryKey = useMemo(() => ['/api/new-semester-checklist', semesterKey], [semesterKey]);
+
   const createMutation = useMutation({
     mutationFn: (data: { title: string; semesterKey: string; sortOrder: number; isGlobal?: boolean }) =>
       apiRequest('POST', '/api/new-semester-checklist', data),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['/api/new-semester-checklist'] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: checklistQueryKey }),
   });
-
-  const checklistQueryKey = ['/api/new-semester-checklist', semesterKey];
   const updateMutation = useMutation({
-    mutationFn: ({ id, ...updates }: { id: number; [key: string]: any }) =>
-      apiRequest('PATCH', `/api/new-semester-checklist/${id}`, updates),
+    mutationFn: async ({ id, ...updates }: { id: number; [key: string]: any }) => {
+      const res = await apiRequest('PATCH', `/api/new-semester-checklist/${id}`, updates);
+      return await res.json();
+    },
     onMutate: async ({ id, ...updates }) => {
       await queryClient.cancelQueries({ queryKey: checklistQueryKey });
       const prev = queryClient.getQueryData<NewSemesterChecklistItem[]>(checklistQueryKey);
@@ -68,15 +70,21 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
       }
       return { prev };
     },
+    onSuccess: (serverData, { id }) => {
+      if (serverData && serverData.id) {
+        queryClient.setQueryData<NewSemesterChecklistItem[]>(checklistQueryKey, (old) =>
+          old ? old.map(i => i.id === id ? { ...i, ...serverData } : i) : old
+        );
+      }
+    },
     onError: (_err, _vars, ctx) => {
       if (ctx?.prev) queryClient.setQueryData(checklistQueryKey, ctx.prev);
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: checklistQueryKey }),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => apiRequest('DELETE', `/api/new-semester-checklist/${id}`),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['/api/new-semester-checklist'] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: checklistQueryKey }),
   });
 
   const createTaskMutation = useMutation({
