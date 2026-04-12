@@ -3582,7 +3582,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                   display: 'flex',
                   alignItems: 'flex-end',
                   height: `${shelfHeight}px`,
-                  padding: '0px 4px 28px',
+                  padding: courseIdx === 0 ? '0px 4px 28px 8px' : '0px 4px 28px',
                   gap: '2px',
                   overflowX: 'hidden',
                   overflowY: 'hidden',
@@ -3612,8 +3612,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                         {group.files.map(({ file, fileIdx }) => {
                           const color = getBookColor(fileIdx, course.code, group.weekNum);
                           return (
-                            <div key={file.id} style={courseIdx === 0 ? { marginLeft: '4px' } : undefined}>
                             <BookSpine
+                              key={file.id}
                               file={file}
                               index={fileIdx}
                               courseCode={course.code}
@@ -3627,7 +3627,6 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                               shelfHeight={shelfHeight}
                               onRename={handleRenameStart}
                             />
-                            </div>
                           );
                         })}
                       </WeekGroupWrapper>
