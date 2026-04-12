@@ -30907,7 +30907,7 @@ export default function Dashboard() {
                                 <span
                                   onClick={() => setEditingTask(task)}
                                   className={`cursor-pointer hover:opacity-80 pl-1 flex-1 min-w-0 ${task.isCompleted ? "line-through" : ""}`}
-                                  style={{ fontWeight: 400, color: 'white', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textShadow: 'none', WebkitTextStroke: '0', letterSpacing: '0.1px', wordBreak: 'break-word', lineHeight: 1.2 }}
+                                  style={{ fontWeight: 400, color: 'white', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textShadow: 'none', WebkitTextStroke: '0', letterSpacing: '0.1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.2 }}
                                 >
                                   {(task.title || '').replace(/[\[\]]/g, '')}
                                 </span>
