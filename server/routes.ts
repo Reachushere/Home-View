@@ -5219,6 +5219,28 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
   });
 
   // GET /api/files - List all uploaded files
+  app.get("/api/files/debug-paths", async (_req, res) => {
+    try {
+      const files = await storage.getFiles();
+      const readingFiles = files.filter(f => (f.folder || '').toLowerCase().includes('reading'));
+      const summary = readingFiles.map(f => ({
+        id: f.id,
+        name: f.originalName,
+        folder: f.folder,
+        objectPath: f.objectPath,
+        pathType: !f.objectPath ? 'NULL/EMPTY' :
+          f.objectPath.startsWith('/local/uploads/') ? 'local' :
+          f.objectPath.startsWith('/objects/') ? 'objects' :
+          f.objectPath.startsWith('onedrive://') ? 'onedrive-uri' :
+          f.objectPath.startsWith('/School/') ? 'onedrive-path' :
+          f.objectPath.startsWith('http') ? 'http' : 'UNKNOWN'
+      }));
+      res.json({ total: readingFiles.length, files: summary });
+    } catch (err) {
+      res.status(500).json({ error: String(err) });
+    }
+  });
+
   app.get("/api/files", async (_req, res) => {
     try {
       const files = await storage.getFiles();
