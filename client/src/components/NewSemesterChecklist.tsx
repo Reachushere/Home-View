@@ -25,6 +25,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
   const [openDatePickerId, setOpenDatePickerId] = useState<number | null>(null);
   const [confirmTask, setConfirmTask] = useState<{ item: NewSemesterChecklistItem; date: string } | null>(null);
   const [confirmTaskTitle, setConfirmTaskTitle] = useState('');
+  const [seeded, setSeeded] = useState(false);
   const [datePickerMonth, setDatePickerMonth] = useState<Date>(() => {
     if (semesterStartDate) {
       const d = new Date(semesterStartDate + 'T12:00:00');
@@ -61,12 +62,12 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
   });
 
   const createTaskMutation = useMutation({
-    mutationFn: (data: { title: string; dueDate: string; courseName?: string; taskType?: string }) =>
+    mutationFn: (data: { title: string; dueDate: string }) =>
       apiRequest('POST', '/api/tasks', {
         title: data.title,
         dueDate: data.dueDate,
-        courseName: data.courseName || 'General',
-        taskType: data.taskType || 'homework',
+        courseName: 'General',
+        taskType: 'homework',
         status: 'not_started',
         priority: 'medium',
       }),
@@ -76,11 +77,25 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
     },
   });
 
+  useEffect(() => {
+    if (isLoading || seeded) return;
+    const nonDeleted = items.filter(i => !i.isDeleted);
+    if (nonDeleted.length < 10) {
+      const toCreate = 10 - nonDeleted.length;
+      for (let i = 0; i < toCreate; i++) {
+        createMutation.mutate({
+          title: '',
+          semesterKey,
+          sortOrder: nonDeleted.length + i + 1,
+          isGlobal: false,
+        });
+      }
+    }
+    setSeeded(true);
+  }, [isLoading, items, seeded]);
+
   const activeItems = items.filter(i => !i.isCompleted && !i.isDeleted);
   const completedItems = items.filter(i => i.isCompleted && !i.isDeleted);
-  const allItems = [...activeItems, ...completedItems];
-
-  const emptySlots = Math.max(0, 10 - allItems.length);
 
   const handleToggleComplete = useCallback((item: NewSemesterChecklistItem) => {
     updateMutation.mutate({
@@ -91,10 +106,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
   }, []);
 
   const handleToggleGlobal = useCallback((item: NewSemesterChecklistItem) => {
-    updateMutation.mutate({
-      id: item.id,
-      isGlobal: !item.isGlobal,
-    });
+    updateMutation.mutate({ id: item.id, isGlobal: !item.isGlobal });
   }, []);
 
   const handleTitleChange = useCallback((id: number, value: string) => {
@@ -106,11 +118,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
     if (newTitle !== undefined && newTitle.trim() !== item.title) {
       updateMutation.mutate({ id: item.id, title: newTitle.trim() });
     }
-    setEditingTitles(prev => {
-      const next = { ...prev };
-      delete next[item.id];
-      return next;
-    });
+    setEditingTitles(prev => { const n = { ...prev }; delete n[item.id]; return n; });
   }, [editingTitles]);
 
   const handleDateSelect = useCallback((item: NewSemesterChecklistItem, dateStr: string) => {
@@ -131,13 +139,11 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
   }, [confirmTask, confirmTaskTitle]);
 
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (flyoutRef.current && !flyoutRef.current.contains(e.target as Node)) {
-        onDismiss();
-      }
+    const handler = (e: MouseEvent) => {
+      if (flyoutRef.current && !flyoutRef.current.contains(e.target as Node)) onDismiss();
     };
-    setTimeout(() => document.addEventListener('mousedown', handleClickOutside), 100);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    setTimeout(() => document.addEventListener('mousedown', handler), 100);
+    return () => document.removeEventListener('mousedown', handler);
   }, [onDismiss]);
 
   const renderMiniCalendar = (itemId: number) => {
@@ -149,9 +155,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
     const cells: React.ReactNode[] = [];
     const item = items.find(i => i.id === itemId);
 
-    for (let i = 0; i < firstDay; i++) {
-      cells.push(<div key={`e-${i}`} className="w-6 h-6" />);
-    }
+    for (let i = 0; i < firstDay; i++) cells.push(<div key={`e-${i}`} className="w-6 h-6" />);
     for (let d = 1; d <= daysInMonth; d++) {
       const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
       const isToday = dateStr === format(new Date(), 'yyyy-MM-dd');
@@ -160,30 +164,17 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
         <div
           key={d}
           className="w-6 h-6 flex items-center justify-center text-[10px] rounded cursor-pointer hover:bg-white/30"
-          style={{
-            background: isItemDue ? '#22c55e' : isToday ? 'rgba(59,130,246,0.4)' : 'transparent',
-            color: '#ffffff',
-            fontWeight: isToday || isItemDue ? 700 : 400,
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleDateSelect(item!, dateStr);
-          }}
+          style={{ background: isItemDue ? '#22c55e' : isToday ? 'rgba(59,130,246,0.4)' : 'transparent', color: '#fff', fontWeight: isToday || isItemDue ? 700 : 400 }}
+          onClick={(e) => { e.stopPropagation(); handleDateSelect(item!, dateStr); }}
           data-testid={`mini-cal-day-${dateStr}`}
-        >
-          {d}
-        </div>
+        >{d}</div>
       );
     }
 
     return (
       <div
         className="absolute right-0 top-full mt-1 p-3 rounded-lg shadow-lg z-50"
-        style={{
-          background: colorSettings.mainBackground,
-          border: '1px solid rgba(255,255,255,0.25)',
-          minWidth: '220px',
-        }}
+        style={{ background: colorSettings.mainBackground, border: '1px solid rgba(255,255,255,0.25)', minWidth: '220px' }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-2">
@@ -200,44 +191,25 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
     );
   };
 
-  const renderChecklistRow = (item: NewSemesterChecklistItem, isCompleted: boolean) => {
+  const renderRow = (item: NewSemesterChecklistItem, isCompleted: boolean) => {
     const displayTitle = editingTitles[item.id] !== undefined ? editingTitles[item.id] : item.title;
     const hasDueDate = !!item.dueDate;
 
     return (
-      <div
-        key={item.id}
-        className="flex items-center gap-3 py-1.5 relative"
-        data-testid={`checklist-item-${isCompleted ? 'done-' : ''}${item.id}`}
-      >
-        <div
-          role="button"
-          className="shrink-0 flex items-center justify-center rounded border-2"
+      <div key={item.id} className="flex items-center gap-3 py-1.5 relative" data-testid={`checklist-item-${isCompleted ? 'done-' : ''}${item.id}`}>
+        <input
+          type="checkbox"
+          checked={isCompleted}
+          onChange={() => handleToggleComplete(item)}
           style={{
             width: '20px',
             height: '20px',
-            backgroundColor: isCompleted ? '#22c55e' : '#ffffff',
-            borderColor: isCompleted ? '#22c55e' : '#ffffff',
-            touchAction: 'manipulation',
-            WebkitTapHighlightColor: 'transparent',
-            padding: 0,
-            outline: 'none',
+            accentColor: '#22c55e',
             cursor: 'pointer',
-            userSelect: 'none',
-          }}
-          onPointerUp={(e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            handleToggleComplete(item);
+            flexShrink: 0,
           }}
           data-testid={`checklist-check-${item.id}`}
-        >
-          {isCompleted && (
-            <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
-              <path d="M3 7L6 10L11 4" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          )}
-        </div>
+        />
 
         <input
           type="text"
@@ -248,84 +220,43 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
           className="flex-1 text-xs rounded px-2 py-1.5 outline-none min-w-0"
           style={{
             backgroundColor: '#ffffff',
-            color: isCompleted ? '#999999' : '#1a1a1a',
+            color: isCompleted ? '#999' : '#1a1a1a',
             textDecoration: isCompleted ? 'line-through' : 'none',
-            border: '1px solid rgba(255,255,255,0.3)',
             height: '30px',
           }}
+          placeholder=""
           data-testid={`checklist-title-input-${item.id}`}
         />
 
         <button
           type="button"
-          style={{
-            touchAction: 'manipulation',
-            WebkitTapHighlightColor: 'transparent',
-            background: 'none',
-            border: 'none',
-            padding: 0,
-            outline: 'none',
-            cursor: 'pointer',
-          }}
-          onPointerUp={(e) => { e.stopPropagation(); setOpenDatePickerId(openDatePickerId === item.id ? null : item.id); }}
+          style={{ touchAction: 'manipulation', background: 'none', border: 'none', padding: '4px', cursor: 'pointer' }}
+          onClick={() => setOpenDatePickerId(openDatePickerId === item.id ? null : item.id)}
           title={hasDueDate ? `Due: ${format(new Date(item.dueDate!), 'MMM d, yyyy')}` : 'Set reminder date'}
           data-testid={`checklist-date-${item.id}`}
         >
-          <CalendarDays
-            className="w-4 h-4 transition-colors"
-            style={{ color: hasDueDate ? '#22c55e' : 'rgba(255,255,255,0.4)' }}
-          />
+          <CalendarDays className="w-4 h-4" style={{ color: hasDueDate ? '#22c55e' : 'rgba(255,255,255,0.4)' }} />
         </button>
 
         {openDatePickerId === item.id && renderMiniCalendar(item.id)}
 
         <button
           type="button"
-          className="shrink-0 flex items-center"
-          style={{
-            touchAction: 'manipulation',
-            WebkitTapHighlightColor: 'transparent',
-            background: 'none',
-            border: 'none',
-            padding: 0,
-            outline: 'none',
-            cursor: 'pointer',
-          }}
-          onPointerUp={(e) => { e.stopPropagation(); handleToggleGlobal(item); }}
+          style={{ touchAction: 'manipulation', background: 'none', border: 'none', padding: '4px', cursor: 'pointer' }}
+          onClick={() => handleToggleGlobal(item)}
           title={item.isGlobal ? 'Appears on all semesters' : 'Only this semester'}
           data-testid={`checklist-global-toggle-${item.id}`}
         >
-          <div
-            className="flex items-center rounded-full transition-colors"
-            style={{
-              width: '30px',
-              height: '16px',
-              backgroundColor: item.isGlobal ? '#22c55e' : 'rgba(255,255,255,0.25)',
-              justifyContent: item.isGlobal ? 'flex-end' : 'flex-start',
-              display: 'flex',
-              padding: '2px',
-            }}
-          >
-            <div
-              className="rounded-full transition-all"
-              style={{ width: '12px', height: '12px', backgroundColor: '#ffffff' }}
-            />
+          <div className="flex items-center rounded-full" style={{ width: '30px', height: '16px', backgroundColor: item.isGlobal ? '#22c55e' : 'rgba(255,255,255,0.25)', justifyContent: item.isGlobal ? 'flex-end' : 'flex-start', display: 'flex', padding: '2px' }}>
+            <div className="rounded-full" style={{ width: '12px', height: '12px', backgroundColor: '#fff' }} />
           </div>
         </button>
 
         <button
           type="button"
-          style={{
-            touchAction: 'manipulation',
-            WebkitTapHighlightColor: 'transparent',
-            background: 'none',
-            border: 'none',
-            padding: 0,
-            outline: 'none',
-            cursor: 'pointer',
-          }}
+          style={{ touchAction: 'manipulation', background: 'none', border: 'none', padding: '4px', cursor: 'pointer' }}
           onClick={() => deleteMutation.mutate(item.id)}
-          data-testid={`checklist-delete-${isCompleted ? 'done-' : ''}${item.id}`}
+          data-testid={`checklist-delete-${item.id}`}
         >
           <Trash2 className="w-[18px] h-[18px] text-white/30 hover:text-red-400 transition-colors" />
         </button>
@@ -335,15 +266,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
 
   return (
     <>
-      <div
-        style={{
-          position: 'fixed',
-          inset: 0,
-          zIndex: 10004,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-        }}
-        onClick={onDismiss}
-      />
+      <div style={{ position: 'fixed', inset: 0, zIndex: 10004, backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={onDismiss} />
       <div
         ref={flyoutRef}
         style={{
@@ -352,7 +275,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
           left: '50%',
           transform: 'translate(-50%, -50%)',
           zIndex: 10005,
-          width: '580px',
+          width: '620px',
           maxWidth: '95vw',
           background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, ${colorSettings.mainBackgroundGradientEnd} 100%)`,
           border: '1px solid rgba(255,255,255,0.2)',
@@ -372,50 +295,12 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
             <div className="text-white/40 text-xs text-center py-4">Loading...</div>
           ) : (
             <>
-              {activeItems.map((item) => renderChecklistRow(item, false))}
-
-              {Array.from({ length: emptySlots }).map((_, i) => (
-                <div key={`empty-${i}`} className="flex items-center gap-3 py-1.5">
-                  <div
-                    className="shrink-0 rounded border-2"
-                    style={{
-                      width: '20px',
-                      height: '20px',
-                      backgroundColor: '#ffffff',
-                      borderColor: '#ffffff',
-                      opacity: 0.15,
-                    }}
-                  />
-                  <input
-                    type="text"
-                    className="flex-1 text-xs rounded px-2 py-1.5 outline-none min-w-0"
-                    style={{
-                      backgroundColor: '#ffffff',
-                      color: '#1a1a1a',
-                      height: '30px',
-                      border: '1px solid rgba(255,255,255,0.3)',
-                    }}
-                    placeholder=""
-                    onFocus={(e) => {
-                      createMutation.mutate({
-                        title: '',
-                        semesterKey,
-                        sortOrder: allItems.length + i + 1,
-                        isGlobal: false,
-                      });
-                    }}
-                    data-testid={`checklist-empty-slot-${i}`}
-                  />
-                  <div style={{ width: '16px' }} />
-                  <div style={{ width: '30px' }} />
-                  <div style={{ width: '18px' }} />
-                </div>
-              ))}
+              {activeItems.map((item) => renderRow(item, false))}
 
               {completedItems.length > 0 && (
                 <div className="mt-2 pt-2 border-t border-white/10">
-                  <span className="text-[8px] text-white/30 uppercase tracking-wider font-bold">Completed</span>
-                  {completedItems.map((item) => renderChecklistRow(item, true))}
+                  <span className="text-[9px] text-white/30 uppercase tracking-wider font-bold">Completed</span>
+                  {completedItems.map((item) => renderRow(item, true))}
                 </div>
               )}
             </>
@@ -424,14 +309,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
 
         <div className="px-4 py-2.5 border-t border-white/10 flex items-center justify-center">
           <button
-            onClick={() => {
-              createMutation.mutate({
-                title: '',
-                semesterKey,
-                sortOrder: allItems.length + 1,
-                isGlobal: false,
-              });
-            }}
+            onClick={() => createMutation.mutate({ title: '', semesterKey, sortOrder: activeItems.length + completedItems.length + 1, isGlobal: false })}
             className="flex items-center gap-1.5 text-xs font-semibold text-white px-4 py-2 rounded hover:brightness-110 transition-all"
             style={{ background: colorSettings.headerBar }}
             data-testid="checklist-add-btn"
@@ -449,29 +327,13 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
 
       {confirmTask && (
         <>
+          <div style={{ position: 'fixed', inset: 0, zIndex: 10010, backgroundColor: 'rgba(0,0,0,0.6)' }} onClick={() => { setConfirmTask(null); setConfirmTaskTitle(''); }} />
           <div
             style={{
-              position: 'fixed',
-              inset: 0,
-              zIndex: 10010,
-              backgroundColor: 'rgba(0,0,0,0.6)',
-            }}
-            onClick={() => { setConfirmTask(null); setConfirmTaskTitle(''); }}
-          />
-          <div
-            style={{
-              position: 'fixed',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              zIndex: 10011,
-              width: '380px',
-              maxWidth: '90vw',
+              position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 10011,
+              width: '380px', maxWidth: '90vw',
               background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, ${colorSettings.mainBackgroundGradientEnd} 100%)`,
-              border: '1px solid rgba(255,255,255,0.25)',
-              borderRadius: '12px',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
-              padding: '20px',
+              border: '1px solid rgba(255,255,255,0.25)', borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.5)', padding: '20px',
             }}
             data-testid="confirm-task-dialog"
           >
@@ -479,47 +341,26 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
               <span className="text-sm font-bold text-white">Add Task to Calendar</span>
               <X className="w-4 h-4 text-white/60 hover:text-white cursor-pointer" onClick={() => { setConfirmTask(null); setConfirmTaskTitle(''); }} />
             </div>
-
             <div className="mb-3">
               <label className="text-[10px] text-white/60 uppercase tracking-wider font-bold mb-1 block">Task Name</label>
               <input
-                type="text"
-                value={confirmTaskTitle}
-                onChange={(e) => setConfirmTaskTitle(e.target.value)}
+                type="text" value={confirmTaskTitle} onChange={(e) => setConfirmTaskTitle(e.target.value)}
                 placeholder="Enter task name..."
                 className="w-full text-xs rounded px-3 py-2 outline-none text-black"
                 style={{ backgroundColor: '#ffffff', height: '34px' }}
-                autoFocus
-                data-testid="confirm-task-title-input"
+                autoFocus data-testid="confirm-task-title-input"
               />
             </div>
-
             <div className="mb-4">
               <label className="text-[10px] text-white/60 uppercase tracking-wider font-bold mb-1 block">Due Date</label>
-              <div
-                className="text-sm text-white font-semibold px-3 py-2 rounded"
-                style={{ backgroundColor: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }}
-              >
+              <div className="text-sm text-white font-semibold px-3 py-2 rounded" style={{ backgroundColor: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }}>
                 <CalendarDays className="w-4 h-4 inline mr-2 text-green-400" />
                 {format(new Date(confirmTask.date + 'T12:00:00'), 'EEEE, MMMM d, yyyy')}
               </div>
             </div>
-
             <div className="flex gap-3">
-              <button
-                onClick={() => { setConfirmTask(null); setConfirmTaskTitle(''); }}
-                className="flex-1 text-xs font-semibold text-white/70 py-2 rounded border border-white/20 hover:bg-white/10 transition-all"
-                data-testid="confirm-task-cancel"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleConfirmSaveTask}
-                disabled={createTaskMutation.isPending}
-                className="flex-1 text-xs font-bold text-white py-2 rounded hover:brightness-110 transition-all disabled:opacity-50"
-                style={{ background: '#22c55e' }}
-                data-testid="confirm-task-save"
-              >
+              <button onClick={() => { setConfirmTask(null); setConfirmTaskTitle(''); }} className="flex-1 text-xs font-semibold text-white/70 py-2 rounded border border-white/20 hover:bg-white/10 transition-all" data-testid="confirm-task-cancel">Cancel</button>
+              <button onClick={handleConfirmSaveTask} disabled={createTaskMutation.isPending} className="flex-1 text-xs font-bold text-white py-2 rounded hover:brightness-110 transition-all disabled:opacity-50" style={{ background: '#22c55e' }} data-testid="confirm-task-save">
                 {createTaskMutation.isPending ? 'Saving...' : 'Save to Calendar'}
               </button>
             </div>
