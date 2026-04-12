@@ -307,6 +307,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
         cursor: 'pointer',
         position: 'relative',
         display: 'flex',
+        marginLeft: '-3px',
         alignItems: 'center',
         justifyContent: 'center',
         flexShrink: 1,
@@ -3484,7 +3485,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             const collapseKey = `${semKey}::${course.code}`;
             const isCollapsed = collapsedCourses.has(collapseKey);
             return (
-            <div key={course.code} style={{ marginBottom: courseIdx < courseBooks.length - 1 ? (isCollapsed ? '20px' : '55px') : '0', position: 'relative', top: courseIdx === 0 ? '-3px' : courseIdx === 1 ? '40px' : courseIdx === 2 ? '50px' : `${40 + courseIdx * 5}px` }}>
+            <div key={course.code} style={{ marginBottom: courseIdx < courseBooks.length - 1 ? (isCollapsed ? '20px' : '55px') : '0', position: 'relative', top: courseIdx === 0 ? '-1px' : courseIdx === 1 ? '39px' : courseIdx === 2 ? '43px' : `${40 + courseIdx * 5}px` }}>
               {!isCollapsed && syllabusPaths[course.code] && (
                 <div style={{ paddingLeft: '16px', marginBottom: '4px' }}>
                   <button
