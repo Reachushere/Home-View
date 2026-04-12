@@ -697,19 +697,28 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
               )}
             </div>
             <div style={{
+              position: 'relative',
+              height: `${(shelfHeight - 10) * 2}px`,
               display: 'flex',
               alignItems: 'flex-end',
-              gap: '6px',
-              transform: 'scale(2)',
-              transformOrigin: 'top center',
-              padding: '0 20px',
+              justifyContent: 'center',
+              width: '100%',
             }}>
-              {renderShelfLayout(true)}
+              <div style={{
+                display: 'flex',
+                alignItems: 'flex-end',
+                gap: '6px',
+                transform: 'scale(2)',
+                transformOrigin: 'bottom center',
+                padding: '0 20px',
+              }}>
+                {renderShelfLayout(true)}
+              </div>
             </div>
             <div style={{
               width: '100%',
               maxWidth: '90vw',
-              marginTop: `${shelfHeight + 10}px`,
+              marginTop: '0px',
             }}>
               <div className="shelf-wood" style={{
                 height: '14px',
