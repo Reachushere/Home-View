@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
-import { X, ChevronLeft, ChevronRight, ChevronDown, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2, Printer, Volume2, Square, Pause, Play, RefreshCw, Pencil, FileText } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, ChevronDown, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2, Printer, Volume2, Square, Pause, Play, RefreshCw, Pencil, FileText, Minus } from 'lucide-react';
 import * as pdfjsLib from 'pdfjs-dist';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 
@@ -287,32 +287,65 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
           </span>
         </div>
       )}
-      <span style={{
-        writingMode: 'vertical-rl',
-        textOrientation: 'mixed',
-        transform: 'rotate(180deg)',
-        fontSize: isLifted ? `${expandedFontSize}px` : '10px',
-        fontWeight: 600,
-        color: '#ffffff',
-        textShadow: '0 1px 3px rgba(0,0,0,0.7)',
-        letterSpacing: '0.3px',
-        maxHeight: `${isLifted ? liftedTextHeight : maxTextHeight}px`,
-        overflow: 'hidden',
-        textOverflow: isLifted ? 'clip' : 'ellipsis',
-        whiteSpace: 'nowrap',
-        padding: '4px 0',
-        lineHeight: 1.2,
-        marginTop: '-12px',
-        fontFamily: "'Segoe UI', 'Helvetica Neue', Arial, sans-serif",
-        transition: 'font-size 0.2s ease',
-      }}>
-        <span
-          onClick={(e) => { e.stopPropagation(); onRename(file); }}
-          style={{ cursor: 'pointer', marginRight: '2px' }}
-          data-testid={`btn-rename-book-${file.id}`}
-        >✎ </span>
-        {isLifted ? expandedTitle : title}
-      </span>
+      {isLifted && splitLines ? (
+        <div style={{
+          writingMode: 'vertical-rl',
+          textOrientation: 'mixed',
+          transform: 'rotate(180deg)',
+          display: 'flex',
+          flexDirection: 'row',
+          gap: '1px',
+          fontSize: `${twoLineFontSize}px`,
+          fontWeight: 600,
+          color: '#ffffff',
+          textShadow: '0 1px 3px rgba(0,0,0,0.7)',
+          letterSpacing: '0.3px',
+          maxHeight: `${liftedTextHeight}px`,
+          overflow: 'hidden',
+          padding: '4px 0',
+          lineHeight: 1.2,
+          marginTop: '-12px',
+          fontFamily: "'Segoe UI', 'Helvetica Neue', Arial, sans-serif",
+          transition: 'font-size 0.2s ease',
+        }}>
+          <span style={{ whiteSpace: 'nowrap' }}>
+            <span
+              onClick={(e) => { e.stopPropagation(); onRename(file); }}
+              style={{ cursor: 'pointer', marginRight: '2px' }}
+              data-testid={`btn-rename-book-${file.id}`}
+            >✎ </span>
+            {splitLines[0]}
+          </span>
+          <span style={{ whiteSpace: 'nowrap' }}>{splitLines[1]}</span>
+        </div>
+      ) : (
+        <span style={{
+          writingMode: 'vertical-rl',
+          textOrientation: 'mixed',
+          transform: 'rotate(180deg)',
+          fontSize: isLifted ? `${expandedFontSize}px` : '10px',
+          fontWeight: 600,
+          color: '#ffffff',
+          textShadow: '0 1px 3px rgba(0,0,0,0.7)',
+          letterSpacing: '0.3px',
+          maxHeight: `${isLifted ? liftedTextHeight : maxTextHeight}px`,
+          overflow: 'hidden',
+          textOverflow: isLifted ? 'clip' : 'ellipsis',
+          whiteSpace: 'nowrap',
+          padding: '4px 0',
+          lineHeight: 1.2,
+          marginTop: '-12px',
+          fontFamily: "'Segoe UI', 'Helvetica Neue', Arial, sans-serif",
+          transition: 'font-size 0.2s ease',
+        }}>
+          <span
+            onClick={(e) => { e.stopPropagation(); onRename(file); }}
+            style={{ cursor: 'pointer', marginRight: '2px' }}
+            data-testid={`btn-rename-book-${file.id}`}
+          >✎ </span>
+          {isLifted ? expandedTitle : title}
+        </span>
+      )}
       {weekNum && (
         <span style={{
           position: 'absolute',
@@ -678,10 +711,11 @@ const toolBtnStyle = (active?: boolean): React.CSSProperties => ({
   transition: 'all 0.15s ease',
 });
 
-function BookReader({ file, bookColor, onClose, pdfUrl, moduleFiles, onOpenModuleFile, isSyllabus, onBringToFront, readerIndex }: {
+function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles, onOpenModuleFile, isSyllabus, onBringToFront, readerIndex }: {
   file: FileRecord;
   bookColor: string;
   onClose: () => void;
+  onMinimize?: () => void;
   pdfUrl?: string;
   moduleFiles?: { weekNum: number; file: FileRecord; color: string }[];
   onOpenModuleFile?: (file: FileRecord, color: string) => void;
@@ -1305,6 +1339,11 @@ function BookReader({ file, bookColor, onClose, pdfUrl, moduleFiles, onOpenModul
                   </>
                 )}
                 <div style={{ width: '1px', height: '18px', background: 'rgba(255,255,255,0.15)', margin: '0 2px' }} />
+                {onMinimize && (
+                  <button onClick={onMinimize} style={{ ...toolBtnStyle(), borderRadius: '50%', width: '26px', height: '26px', padding: 0 }} title="Minimize" data-testid="button-minimize-book-reader">
+                    <Minus size={14} />
+                  </button>
+                )}
                 <button onClick={onClose} style={{ ...toolBtnStyle(), borderRadius: '50%', width: '26px', height: '26px', padding: 0 }} data-testid="button-close-book-reader">
                   <X size={14} />
                 </button>
@@ -1730,6 +1769,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
   const [selectedBookColor, setSelectedBookColor] = useState('#8B4513');
   const [openReaders, setOpenReaders] = useState<{ file: FileRecord; color: string; pdfUrl?: string; courseCode?: string; isSyllabus?: boolean }[]>([]);
   const [focusedReaderId, setFocusedReaderId] = useState<number | null>(null);
+  const [minimizedReaders, setMinimizedReaders] = useState<Set<number>>(new Set());
   const scrollRef = useRef<HTMLDivElement>(null);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [showSharePopup, setShowSharePopup] = useState(false);
@@ -2891,9 +2931,9 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   {isCollapsed ? (
-                    <ChevronRight size={12} style={{ color: 'rgba(255,255,255,0.5)', flexShrink: 0 }} />
+                    <ChevronRight size={14} style={{ color: 'rgba(255,255,255,0.85)', flexShrink: 0 }} />
                   ) : (
-                    <ChevronDown size={12} style={{ color: 'rgba(255,255,255,0.5)', flexShrink: 0 }} />
+                    <ChevronDown size={14} style={{ color: 'rgba(255,255,255,0.85)', flexShrink: 0 }} />
                   )}
                   <span style={{
                     fontSize: '9px',
@@ -3044,6 +3084,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         const isFocused = focusedReaderId === reader.file.id;
         const baseZ = 100010;
         const zIdx = isFocused ? baseZ + openReaders.length + 1 : baseZ + readerIdx;
+        const isMinimized = minimizedReaders.has(reader.file.id);
+        if (isMinimized) return null;
         return (
         <div
           key={reader.file.id}
@@ -3058,7 +3100,13 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           <BookReader
             file={reader.file}
             bookColor={reader.color}
-            onClose={() => setOpenReaders(prev => prev.filter(r => r.file.id !== reader.file.id))}
+            onClose={() => {
+              setOpenReaders(prev => prev.filter(r => r.file.id !== reader.file.id));
+              setMinimizedReaders(prev => { const next = new Set(prev); next.delete(reader.file.id); return next; });
+            }}
+            onMinimize={() => {
+              setMinimizedReaders(prev => { const next = new Set(prev); next.add(reader.file.id); return next; });
+            }}
             pdfUrl={reader.pdfUrl}
             moduleFiles={reader.courseCode ? courseModuleFilesMap[reader.courseCode] : undefined}
             onOpenModuleFile={(mf, color) => handleBookClick(mf, color)}
@@ -3070,6 +3118,59 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         </div>
         );
       })}
+
+      {openReaders.filter(r => minimizedReaders.has(r.file.id)).length > 0 && (
+        <div style={{
+          position: 'fixed',
+          bottom: '8px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          display: 'flex',
+          gap: '6px',
+          zIndex: 10000,
+          pointerEvents: 'auto',
+        }}>
+          {openReaders.filter(r => minimizedReaders.has(r.file.id)).map(reader => {
+            const rawTitle = (reader.file.displayName || reader.file.originalName).replace(/\.pdf$/i, '');
+            const shortTitle = rawTitle.length > 25 ? rawTitle.substring(0, 24) + '…' : rawTitle;
+            return (
+              <div
+                key={reader.file.id}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  background: reader.color,
+                  borderRadius: '8px 8px 0 0',
+                  padding: '6px 10px',
+                  cursor: 'pointer',
+                  boxShadow: '0 -2px 8px rgba(0,0,0,0.3)',
+                  maxWidth: '200px',
+                }}
+                onClick={() => {
+                  setMinimizedReaders(prev => { const next = new Set(prev); next.delete(reader.file.id); return next; });
+                  setFocusedReaderId(reader.file.id);
+                }}
+                data-testid={`minimized-tab-${reader.file.id}`}
+              >
+                <BookOpen size={12} color="#fff" />
+                <span style={{ fontSize: '11px', color: '#fff', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{shortTitle}</span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setOpenReaders(prev => prev.filter(r => r.file.id !== reader.file.id));
+                    setMinimizedReaders(prev => { const next = new Set(prev); next.delete(reader.file.id); return next; });
+                  }}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0 0 0 2px', display: 'flex', alignItems: 'center' }}
+                  data-testid={`close-minimized-${reader.file.id}`}
+                >
+                  <X size={10} color="rgba(255,255,255,0.7)" />
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {renamingFile && (
         <div
