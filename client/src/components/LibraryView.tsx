@@ -3168,11 +3168,11 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           }}
           disabled={!!syncingSemKey}
           style={{
-            background: syncingSemKey === currentSemester?.key ? 'rgba(76,175,80,0.2)' : 'rgba(255,255,255,0.08)',
-            border: syncingSemKey === currentSemester?.key ? '1px solid rgba(76,175,80,0.4)' : '1px solid rgba(255,255,255,0.15)',
+            background: syncingSemKey === currentSemester?.key ? 'rgba(76,175,80,0.2)' : 'rgba(255,255,255,0.45)',
+            border: syncingSemKey === currentSemester?.key ? '1px solid rgba(76,175,80,0.4)' : '1px solid rgba(255,255,255,0.5)',
             borderRadius: '6px',
             padding: '4px 8px',
-            color: syncingSemKey === currentSemester?.key ? '#81C784' : 'rgba(255,255,255,0.5)',
+            color: syncingSemKey === currentSemester?.key ? '#81C784' : '#ffffff',
             fontSize: '9px',
             cursor: syncingSemKey ? 'not-allowed' : 'pointer',
             display: 'flex',
@@ -3182,8 +3182,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             fontWeight: 600,
             letterSpacing: '0.3px',
           }}
-          onMouseEnter={e => { if (!syncingSemKey) { e.currentTarget.style.background = 'rgba(255,255,255,0.15)'; e.currentTarget.style.color = '#fff'; }}}
-          onMouseLeave={e => { if (!syncingSemKey) { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = 'rgba(255,255,255,0.5)'; }}}
+          onMouseEnter={e => { if (!syncingSemKey) { e.currentTarget.style.background = 'rgba(255,255,255,0.55)'; e.currentTarget.style.color = '#fff'; }}}
+          onMouseLeave={e => { if (!syncingSemKey) { e.currentTarget.style.background = 'rgba(255,255,255,0.45)'; e.currentTarget.style.color = '#ffffff'; }}}
           title={`Sync all files for ${currentSemester?.label || 'this semester'} from OneDrive`}
           data-testid="btn-library-sync-semester"
         >
