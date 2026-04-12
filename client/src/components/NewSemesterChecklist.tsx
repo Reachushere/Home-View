@@ -200,12 +200,12 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
         className="flex items-center gap-3 py-1.5 relative"
         data-testid={`checklist-item-${isCompleted ? 'done-' : ''}${item.id}`}
       >
-        <button
-          type="button"
+        <div
+          role="button"
           className="shrink-0 flex items-center justify-center rounded border-2"
           style={{
-            width: '24px',
-            height: '24px',
+            width: '20px',
+            height: '20px',
             backgroundColor: isCompleted ? '#22c55e' : '#ffffff',
             borderColor: isCompleted ? '#22c55e' : '#ffffff',
             touchAction: 'manipulation',
@@ -213,16 +213,21 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
             padding: 0,
             outline: 'none',
             cursor: 'pointer',
+            userSelect: 'none',
           }}
-          onClick={() => handleToggleComplete(item)}
+          onPointerUp={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            handleToggleComplete(item);
+          }}
           data-testid={`checklist-check-${item.id}`}
         >
           {isCompleted && (
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
               <path d="M3 7L6 10L11 4" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           )}
-        </button>
+        </div>
 
         <input
           type="text"
@@ -252,7 +257,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
             outline: 'none',
             cursor: 'pointer',
           }}
-          onClick={() => setOpenDatePickerId(openDatePickerId === item.id ? null : item.id)}
+          onPointerUp={(e) => { e.stopPropagation(); setOpenDatePickerId(openDatePickerId === item.id ? null : item.id); }}
           title={hasDueDate ? `Due: ${format(new Date(item.dueDate!), 'MMM d, yyyy')}` : 'Set reminder date'}
           data-testid={`checklist-date-${item.id}`}
         >
@@ -276,7 +281,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
             outline: 'none',
             cursor: 'pointer',
           }}
-          onClick={() => handleToggleGlobal(item)}
+          onPointerUp={(e) => { e.stopPropagation(); handleToggleGlobal(item); }}
           title={item.isGlobal ? 'Appears on all semesters' : 'Only this semester'}
           data-testid={`checklist-global-toggle-${item.id}`}
         >
