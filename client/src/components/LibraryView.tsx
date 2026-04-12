@@ -3511,23 +3511,6 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
               }}
               data-testid={`toggle-shelf-${course.code}`}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  {isCollapsed ? (
-                    <ChevronRight size={14} style={{ color: 'rgba(255,255,255,0.85)', flexShrink: 0 }} />
-                  ) : (
-                    <ChevronDown size={14} style={{ color: 'rgba(255,255,255,0.85)', flexShrink: 0 }} />
-                  )}
-                  <span style={{
-                    fontSize: '9px',
-                    fontWeight: 500,
-                    color: '#ffffff',
-                    letterSpacing: '0.5px',
-                    textTransform: 'uppercase',
-                    fontFamily: "system-ui, -apple-system, sans-serif",
-                  }}>
-                    {course.code} — {course.name.startsWith(course.code) ? course.name.slice(course.code.length).replace(/^\s*[-–—]\s*/, '') : course.name}
-                  </span>
-                </div>
                 {!isCollapsed && syllabusPaths[course.code] && (
                   <button
                     onClick={(e) => {
@@ -3559,7 +3542,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                       transition: 'all 0.15s ease',
                       fontFamily: "system-ui, -apple-system, sans-serif",
                       textTransform: 'uppercase',
-                      marginLeft: '10px',
+                      marginRight: '10px',
                       flexShrink: 0,
                     }}
                     onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.12)'; e.currentTarget.style.color = '#fff'; }}
@@ -3570,6 +3553,23 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                     Syllabus
                   </button>
                 )}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  {isCollapsed ? (
+                    <ChevronRight size={14} style={{ color: 'rgba(255,255,255,0.85)', flexShrink: 0 }} />
+                  ) : (
+                    <ChevronDown size={14} style={{ color: 'rgba(255,255,255,0.85)', flexShrink: 0 }} />
+                  )}
+                  <span style={{
+                    fontSize: '9px',
+                    fontWeight: 500,
+                    color: '#ffffff',
+                    letterSpacing: '0.5px',
+                    textTransform: 'uppercase',
+                    fontFamily: "system-ui, -apple-system, sans-serif",
+                  }}>
+                    {course.code} — {course.name.startsWith(course.code) ? course.name.slice(course.code.length).replace(/^\s*[-–—]\s*/, '') : course.name}
+                  </span>
+                </div>
               </div>
 
               <div style={{
