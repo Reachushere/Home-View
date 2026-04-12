@@ -524,18 +524,29 @@ export default function NotepadDialog({ isOpen, onClose, colorSettings, onUndock
         <>
           <span
             onDoubleClick={(e) => { e.stopPropagation(); setEditingTabId(note.id); setEditingTabTitle(note.title); }}
-            draggable
-            onDragStart={(e) => {
-              e.dataTransfer.setData('application/x-notepad-undock', JSON.stringify({ id: note.id, title: note.title }));
-              e.dataTransfer.effectAllowed = 'move';
-            }}
-            onDragEnd={(e) => {
-              const dialog = (e.target as HTMLElement).closest('[data-notepad-dialog]');
-              if (dialog) {
-                const rect = dialog.getBoundingClientRect();
-                const outside = e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom;
-                if (outside && onUndockNote) onUndockNote(note);
-              }
+            onMouseDown={(e) => {
+              if (e.button !== 0) return;
+              e.preventDefault();
+              e.stopPropagation();
+              const startX = e.clientX;
+              const startY = e.clientY;
+              let didDrag = false;
+              const onMove = (me: MouseEvent) => {
+                if (Math.abs(me.clientX - startX) > 10 || Math.abs(me.clientY - startY) > 10) didDrag = true;
+              };
+              const onUp = (me: MouseEvent) => {
+                window.removeEventListener('mousemove', onMove);
+                window.removeEventListener('mouseup', onUp);
+                if (!didDrag) return;
+                const dialog = (e.target as HTMLElement).closest('[data-notepad-dialog]');
+                if (dialog) {
+                  const rect = dialog.getBoundingClientRect();
+                  const outside = me.clientX < rect.left || me.clientX > rect.right || me.clientY < rect.top || me.clientY > rect.bottom;
+                  if (outside && onUndockNote) onUndockNote(note);
+                }
+              };
+              window.addEventListener('mousemove', onMove);
+              window.addEventListener('mouseup', onUp);
             }}
             style={{ cursor: 'grab' }}
             title="Drag to pop out as floating note"
