@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
-import { X, ChevronLeft, ChevronRight, ChevronDown, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2, Printer, Volume2, Square, Pause, Play, RefreshCw, Pencil, FileText, Minus } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, ChevronDown, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2, Printer, Volume2, Square, Pause, Play, RefreshCw, Pencil, FileText, Minus, Loader2 } from 'lucide-react';
 import * as pdfjsLib from 'pdfjs-dist';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 
@@ -1919,6 +1919,16 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
   const [renameSaving, setRenameSaving] = useState(false);
   const renameInputRef = useRef<HTMLInputElement>(null);
 
+  const [aiSearchOpen, setAiSearchOpen] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiPreview, setAiPreview] = useState<any>(null);
+  const [aiExecuting, setAiExecuting] = useState(false);
+  const [aiResult, setAiResult] = useState<{ result: string; noteId?: number; usage?: any; actualCost?: string } | null>(null);
+  const [aiError, setAiError] = useState('');
+  const [aiNoteTitle, setAiNoteTitle] = useState('');
+  const aiPromptRef = useRef<HTMLTextAreaElement>(null);
+
   const { data: allFiles = [], refetch: refetchFiles } = useQuery<FileRecord[]>({
     queryKey: ['/api/files'],
     enabled: isOpen,
@@ -2476,6 +2486,35 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
 
       {!isSharedView && (
         <button
+          onClick={() => { setAiSearchOpen(true); setAiPreview(null); setAiResult(null); setAiError(''); setAiNoteTitle(''); }}
+          style={{
+            position: 'absolute',
+            top: '16px',
+            right: '104px',
+            zIndex: 100002,
+            background: aiSearchOpen ? 'rgba(139,92,246,0.3)' : 'rgba(0,0,0,0.5)',
+            border: aiSearchOpen ? '1px solid rgba(139,92,246,0.5)' : '1px solid rgba(255,255,255,0.2)',
+            borderRadius: '50%',
+            width: '36px',
+            height: '36px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            color: aiSearchOpen ? '#c4b5fd' : 'rgba(255,255,255,0.7)',
+            transition: 'all 0.2s',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.color = '#c4b5fd'; e.currentTarget.style.borderColor = 'rgba(139,92,246,0.5)'; }}
+          onMouseLeave={e => { if (!aiSearchOpen) { e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; } }}
+          data-testid="button-ai-search"
+          title="AI Document Search"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/></svg>
+        </button>
+      )}
+
+      {!isSharedView && (
+        <button
           onClick={async () => {
             try {
               const currentSem = semesters[currentSemIdx];
@@ -2583,11 +2622,356 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         </div>
       )}
 
+      {aiSearchOpen && (
+        <div style={{
+          position: 'absolute',
+          top: '60px',
+          right: '16px',
+          zIndex: 100003,
+          background: 'rgba(15,10,25,0.96)',
+          border: '1px solid rgba(139,92,246,0.3)',
+          borderRadius: '16px',
+          padding: '20px',
+          width: '420px',
+          maxHeight: 'calc(100vh - 100px)',
+          overflowY: 'auto',
+          boxShadow: '0 12px 48px rgba(0,0,0,0.7), 0 0 30px rgba(139,92,246,0.1)',
+          backdropFilter: 'blur(20px)',
+        }} data-testid="ai-search-panel">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c4b5fd" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>
+              <span style={{ color: '#fff', fontSize: '15px', fontWeight: 700, letterSpacing: '0.5px' }}>AI Document Search</span>
+            </div>
+            <button onClick={() => { setAiSearchOpen(false); setAiPreview(null); setAiResult(null); setAiError(''); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.5)', padding: '2px' }} data-testid="ai-search-close"><X size={16} /></button>
+          </div>
+
+          {!aiPreview && !aiResult && (
+            <>
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', marginBottom: '12px', lineHeight: '1.5' }}>
+                Describe what you want to find. Include course codes (CPPA, CFNF, CASL) and file types (Module, Reading) to narrow the search.
+              </div>
+              <textarea
+                ref={aiPromptRef}
+                value={aiPrompt}
+                onChange={e => setAiPrompt(e.target.value)}
+                placeholder="e.g. Look through all CPPA Module and Reading files and find anything related to municipalities and representative government"
+                style={{
+                  width: '100%',
+                  minHeight: '80px',
+                  background: 'rgba(255,255,255,0.06)',
+                  border: '1px solid rgba(255,255,255,0.15)',
+                  borderRadius: '10px',
+                  color: '#fff',
+                  fontSize: '13px',
+                  padding: '12px',
+                  resize: 'vertical',
+                  outline: 'none',
+                  fontFamily: 'inherit',
+                  lineHeight: '1.5',
+                }}
+                onFocus={e => e.currentTarget.style.borderColor = 'rgba(139,92,246,0.5)'}
+                onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'}
+                data-testid="ai-search-prompt"
+              />
+              {aiError && <div style={{ color: '#ef4444', fontSize: '11px', marginTop: '8px', padding: '8px', background: 'rgba(239,68,68,0.1)', borderRadius: '8px', border: '1px solid rgba(239,68,68,0.2)' }} data-testid="ai-search-error">{aiError}</div>}
+              <button
+                onClick={async () => {
+                  if (!aiPrompt.trim() || aiLoading) return;
+                  setAiLoading(true);
+                  setAiError('');
+                  try {
+                    const resp = await fetch('/api/library/ai-search/preview', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ prompt: aiPrompt }),
+                    });
+                    const data = await resp.json();
+                    if (!resp.ok) {
+                      if (data.error?.includes('API key not configured')) {
+                        setAiError('NO_KEY');
+                      } else {
+                        setAiError(data.error || 'Search failed');
+                      }
+                    } else if (data.matchingFiles?.length === 0) {
+                      setAiError(data.message || 'No matching files found.');
+                    } else {
+                      setAiPreview(data);
+                      setAiNoteTitle(aiPrompt.length > 40 ? aiPrompt.substring(0, 37) + '...' : aiPrompt);
+                    }
+                  } catch (err) {
+                    setAiError('Failed to connect to server');
+                  }
+                  setAiLoading(false);
+                }}
+                disabled={!aiPrompt.trim() || aiLoading}
+                style={{
+                  width: '100%',
+                  marginTop: '12px',
+                  padding: '10px',
+                  borderRadius: '10px',
+                  border: 'none',
+                  background: !aiPrompt.trim() || aiLoading ? 'rgba(139,92,246,0.15)' : 'rgba(139,92,246,0.4)',
+                  color: !aiPrompt.trim() || aiLoading ? 'rgba(255,255,255,0.3)' : '#fff',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  cursor: !aiPrompt.trim() || aiLoading ? 'not-allowed' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  transition: 'all 0.2s',
+                }}
+                data-testid="ai-search-preview-btn"
+              >
+                {aiLoading ? <><Loader2 size={14} className="animate-spin" style={{ animation: 'spin 1s linear infinite' }} /> Scanning files...</> : <><Search size={14} /> Find matching documents</>}
+              </button>
+
+              {aiError === 'NO_KEY' && (
+                <div style={{ marginTop: '16px', padding: '14px', background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.25)', borderRadius: '10px' }}>
+                  <div style={{ fontSize: '12px', fontWeight: 600, color: '#f59e0b', marginBottom: '8px' }}>OpenAI API Key Required</div>
+                  <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', marginBottom: '10px', lineHeight: '1.5' }}>
+                    Paste your API key from platform.openai.com. It will be stored locally on this device and never shared.
+                  </div>
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    <input
+                      type="password"
+                      placeholder="sk-proj-..."
+                      style={{
+                        flex: 1,
+                        background: 'rgba(0,0,0,0.3)',
+                        border: '1px solid rgba(255,255,255,0.15)',
+                        borderRadius: '8px',
+                        color: '#fff',
+                        fontSize: '11px',
+                        padding: '8px 10px',
+                        outline: 'none',
+                        fontFamily: 'monospace',
+                      }}
+                      onKeyDown={async (e) => {
+                        if (e.key === 'Enter') {
+                          const input = e.currentTarget;
+                          const key = input.value.trim();
+                          if (!key.startsWith('sk-')) return;
+                          try {
+                            const resp = await fetch('/api/ai/set-key', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ apiKey: key }) });
+                            if (resp.ok) { setAiError(''); input.value = ''; }
+                            else { const d = await resp.json(); setAiError(d.error || 'Failed to save key'); }
+                          } catch { setAiError('Failed to connect'); }
+                        }
+                      }}
+                      data-testid="ai-key-input"
+                    />
+                    <button
+                      onClick={async (e) => {
+                        const input = (e.currentTarget.parentElement?.querySelector('input') as HTMLInputElement);
+                        const key = input?.value?.trim();
+                        if (!key || !key.startsWith('sk-')) return;
+                        try {
+                          const resp = await fetch('/api/ai/set-key', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ apiKey: key }) });
+                          if (resp.ok) { setAiError(''); input.value = ''; }
+                          else { const d = await resp.json(); setAiError(d.error || 'Failed to save key'); }
+                        } catch { setAiError('Failed to connect'); }
+                      }}
+                      style={{
+                        background: 'rgba(245,158,11,0.2)',
+                        border: '1px solid rgba(245,158,11,0.4)',
+                        borderRadius: '8px',
+                        color: '#f59e0b',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        padding: '8px 14px',
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap',
+                      }}
+                      data-testid="ai-key-save-btn"
+                    >Save</button>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
+          {aiPreview && !aiResult && (
+            <div data-testid="ai-search-confirm">
+              <div style={{ fontSize: '12px', fontWeight: 600, color: '#22c55e', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Check size={14} /> {aiPreview.matchingFiles.length} document{aiPreview.matchingFiles.length !== 1 ? 's' : ''} found
+              </div>
+              <div style={{ maxHeight: '140px', overflowY: 'auto', marginBottom: '12px', borderRadius: '8px', background: 'rgba(0,0,0,0.2)', padding: '8px' }}>
+                {aiPreview.matchingFiles.map((f: any) => (
+                  <div key={f.id} style={{ fontSize: '10px', color: 'rgba(255,255,255,0.6)', padding: '3px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <FileText size={10} style={{ flexShrink: 0 }} />
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{f.name}</span>
+                    <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: '9px', flexShrink: 0 }}>{Math.round(f.textLength / 1000)}k chars</span>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{
+                padding: '14px',
+                background: 'rgba(245,158,11,0.06)',
+                border: '1px solid rgba(245,158,11,0.2)',
+                borderRadius: '10px',
+                marginBottom: '14px',
+              }}>
+                <div style={{ fontSize: '12px', fontWeight: 700, color: '#f59e0b', marginBottom: '8px' }}>Cost Estimate</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 12px', fontSize: '11px' }}>
+                  <span style={{ color: 'rgba(255,255,255,0.5)' }}>Model:</span>
+                  <span style={{ color: '#fff' }}>{aiPreview.model}</span>
+                  <span style={{ color: 'rgba(255,255,255,0.5)' }}>Input tokens:</span>
+                  <span style={{ color: '#fff' }}>~{aiPreview.estimatedInputTokens?.toLocaleString()}</span>
+                  <span style={{ color: 'rgba(255,255,255,0.5)' }}>Output tokens:</span>
+                  <span style={{ color: '#fff' }}>~{aiPreview.estimatedOutputTokens?.toLocaleString()}</span>
+                  <span style={{ color: 'rgba(255,255,255,0.5)' }}>Estimated cost:</span>
+                  <span style={{ color: '#f59e0b', fontWeight: 700, fontSize: '13px' }}>{aiPreview.estimatedCost}</span>
+                </div>
+              </div>
+
+              <div style={{ marginBottom: '14px' }}>
+                <label style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', display: 'block', marginBottom: '4px' }}>Note title (saved to Notepad)</label>
+                <input
+                  type="text"
+                  value={aiNoteTitle}
+                  onChange={e => setAiNoteTitle(e.target.value)}
+                  style={{
+                    width: '100%',
+                    background: 'rgba(255,255,255,0.06)',
+                    border: '1px solid rgba(255,255,255,0.15)',
+                    borderRadius: '8px',
+                    color: '#fff',
+                    fontSize: '12px',
+                    padding: '8px 10px',
+                    outline: 'none',
+                  }}
+                  data-testid="ai-note-title-input"
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  onClick={() => { setAiPreview(null); }}
+                  style={{
+                    flex: 1,
+                    padding: '10px',
+                    borderRadius: '10px',
+                    border: '1px solid rgba(255,255,255,0.15)',
+                    background: 'rgba(255,255,255,0.05)',
+                    color: 'rgba(255,255,255,0.7)',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                  data-testid="ai-search-cancel-btn"
+                >Cancel</button>
+                <button
+                  onClick={async () => {
+                    if (aiExecuting) return;
+                    setAiExecuting(true);
+                    setAiError('');
+                    try {
+                      const resp = await fetch('/api/library/ai-search/execute', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          prompt: aiPrompt,
+                          fileIds: aiPreview.matchingFiles.map((f: any) => f.id),
+                          createNote: true,
+                          noteTitle: aiNoteTitle || 'AI Research',
+                        }),
+                      });
+                      const data = await resp.json();
+                      if (!resp.ok) {
+                        setAiError(data.error || 'Search failed');
+                        setAiPreview(null);
+                      } else {
+                        setAiResult(data);
+                      }
+                    } catch {
+                      setAiError('Failed to connect');
+                      setAiPreview(null);
+                    }
+                    setAiExecuting(false);
+                  }}
+                  disabled={aiExecuting}
+                  style={{
+                    flex: 2,
+                    padding: '10px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    background: aiExecuting ? 'rgba(139,92,246,0.2)' : 'linear-gradient(135deg, rgba(139,92,246,0.5), rgba(59,130,246,0.5))',
+                    color: '#fff',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    cursor: aiExecuting ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                  }}
+                  data-testid="ai-search-confirm-btn"
+                >
+                  {aiExecuting ? <><Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> Researching...</> : <>Confirm & Run ({aiPreview.estimatedCost})</>}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {aiResult && (
+            <div data-testid="ai-search-result">
+              <div style={{ fontSize: '12px', fontWeight: 600, color: '#22c55e', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Check size={14} /> Research complete
+              </div>
+              {aiResult.actualCost && (
+                <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', marginBottom: '12px' }}>
+                  Actual cost: {aiResult.actualCost} | Tokens used: {aiResult.usage?.totalTokens?.toLocaleString()}
+                </div>
+              )}
+              <div
+                style={{
+                  maxHeight: '300px',
+                  overflowY: 'auto',
+                  background: 'rgba(0,0,0,0.3)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: '10px',
+                  padding: '16px',
+                  fontSize: '12px',
+                  color: 'rgba(255,255,255,0.85)',
+                  lineHeight: '1.6',
+                }}
+                dangerouslySetInnerHTML={{ __html: aiResult.result }}
+                data-testid="ai-search-result-content"
+              />
+              {aiResult.noteId && (
+                <div style={{ marginTop: '12px', fontSize: '11px', color: 'rgba(139,92,246,0.8)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <FileText size={12} /> Saved to Notepad as "{aiNoteTitle || 'AI Research'}"
+                </div>
+              )}
+              <button
+                onClick={() => { setAiResult(null); setAiPreview(null); setAiPrompt(''); }}
+                style={{
+                  width: '100%',
+                  marginTop: '12px',
+                  padding: '10px',
+                  borderRadius: '10px',
+                  border: '1px solid rgba(139,92,246,0.3)',
+                  background: 'rgba(139,92,246,0.1)',
+                  color: '#c4b5fd',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+                data-testid="ai-search-new-btn"
+              >New Search</button>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Semester navigation - top right area */}
       <div style={{
         position: 'absolute',
         top: '16px',
-        right: '110px',
+        right: '150px',
         zIndex: 100002,
         display: 'flex',
         alignItems: 'center',

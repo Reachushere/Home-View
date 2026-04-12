@@ -5260,6 +5260,208 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
+  app.get("/api/ai/key-status", async (_req, res) => {
+    try {
+      const hasKey = !!process.env.OPENAI_API_KEY;
+      const maskedKey = hasKey ? `sk-...${process.env.OPENAI_API_KEY!.slice(-6)}` : null;
+      res.json({ configured: hasKey, maskedKey });
+    } catch (err) {
+      res.status(500).json({ error: "Failed to check key status" });
+    }
+  });
+
+  app.post("/api/ai/set-key", async (req, res) => {
+    try {
+      const { apiKey } = req.body;
+      if (!apiKey || typeof apiKey !== 'string' || !apiKey.startsWith('sk-')) {
+        return res.status(400).json({ error: "Invalid API key format. Must start with 'sk-'" });
+      }
+      const fs = await import('fs');
+      const path = await import('path');
+      const envPath = path.join(process.cwd(), '.env.local');
+      let envContent = '';
+      try { envContent = fs.readFileSync(envPath, 'utf8'); } catch {}
+      const lines = envContent.split('\n').filter(l => !l.startsWith('OPENAI_API_KEY='));
+      lines.push(`OPENAI_API_KEY=${apiKey}`);
+      fs.writeFileSync(envPath, lines.filter(l => l.trim()).join('\n') + '\n');
+      process.env.OPENAI_API_KEY = apiKey;
+      const maskedKey = `sk-...${apiKey.slice(-6)}`;
+      res.json({ success: true, maskedKey });
+    } catch (err) {
+      console.error("Error setting API key:", err);
+      res.status(500).json({ error: "Failed to save API key" });
+    }
+  });
+
+  app.post("/api/library/ai-search/preview", async (req, res) => {
+    try {
+      const { prompt } = req.body;
+      if (!prompt || typeof prompt !== 'string' || prompt.trim().length < 5) {
+        return res.status(400).json({ error: "Prompt must be at least 5 characters" });
+      }
+      if (!process.env.OPENAI_API_KEY) {
+        return res.status(503).json({ error: "OpenAI API key not configured. Set OPENAI_API_KEY environment variable." });
+      }
+      const allFiles = await storage.getFiles();
+      const promptLower = prompt.toLowerCase();
+
+      const coursePatterns: string[] = [];
+      const courseMatches = promptLower.match(/\b(cppa|cfnf|casl|crim|psyc|soci|poli|econ|engl|math)\w*/gi);
+      if (courseMatches) coursePatterns.push(...courseMatches.map(m => m.toLowerCase()));
+
+      const wantModules = /\bmodule/i.test(prompt);
+      const wantReadings = /\breading/i.test(prompt);
+      const wantAll = (!wantModules && !wantReadings) || (wantModules && wantReadings);
+
+      let matchingFiles = allFiles.filter(f => {
+        if (!f.extractedText || f.extractedText.length < 50) return false;
+        const folder = (f.folder || '').toLowerCase();
+        const name = (f.displayName || f.originalName || '').toLowerCase();
+        const combined = folder + ' ' + name;
+
+        if (coursePatterns.length > 0) {
+          const hasCourse = coursePatterns.some(cp => combined.includes(cp));
+          if (!hasCourse) return false;
+        }
+
+        if (!wantAll) {
+          if (wantModules && !combined.includes('module')) return false;
+          if (wantReadings && !combined.includes('reading')) return false;
+        }
+
+        return true;
+      });
+
+      if (matchingFiles.length === 0 && coursePatterns.length > 0) {
+        matchingFiles = allFiles.filter(f => {
+          if (!f.extractedText || f.extractedText.length < 50) return false;
+          const combined = ((f.folder || '') + ' ' + (f.displayName || f.originalName || '')).toLowerCase();
+          return coursePatterns.some(cp => combined.includes(cp));
+        });
+      }
+
+      if (matchingFiles.length === 0) {
+        return res.json({ matchingFiles: [], estimatedTokens: 0, estimatedCost: "$0.00", message: "No matching files found. Try specifying a course code (e.g. CPPA, CFNF)." });
+      }
+
+      const MAX_CHARS_PER_FILE = 8000;
+      let totalChars = 0;
+      const fileInfo = matchingFiles.map(f => {
+        const textLen = Math.min(f.extractedText!.length, MAX_CHARS_PER_FILE);
+        totalChars += textLen;
+        return {
+          id: f.id,
+          name: f.displayName || f.originalName,
+          folder: f.folder,
+          textLength: f.extractedText!.length,
+          truncatedLength: textLen,
+        };
+      });
+
+      const promptTokens = Math.ceil((totalChars + prompt.length + 500) / 4);
+      const estOutputTokens = 2000;
+      const inputCost = (promptTokens / 1_000_000) * 0.15;
+      const outputCost = (estOutputTokens / 1_000_000) * 0.60;
+      const totalCost = inputCost + outputCost;
+
+      res.json({
+        matchingFiles: fileInfo,
+        estimatedTokens: promptTokens + estOutputTokens,
+        estimatedInputTokens: promptTokens,
+        estimatedOutputTokens: estOutputTokens,
+        estimatedCost: `$${totalCost.toFixed(4)}`,
+        estimatedCostNum: totalCost,
+        model: "gpt-4o-mini",
+      });
+    } catch (err) {
+      console.error("AI search preview error:", err);
+      res.status(500).json({ error: "Failed to generate preview" });
+    }
+  });
+
+  app.post("/api/library/ai-search/execute", async (req, res) => {
+    try {
+      const { prompt, fileIds, createNote, noteTitle } = req.body;
+      if (!prompt || !Array.isArray(fileIds) || fileIds.length === 0) {
+        return res.status(400).json({ error: "Missing prompt or fileIds" });
+      }
+      if (!process.env.OPENAI_API_KEY) {
+        return res.status(503).json({ error: "OpenAI API key not configured" });
+      }
+
+      const allFiles = await storage.getFiles();
+      const selectedFiles = allFiles.filter(f => fileIds.includes(f.id) && f.extractedText);
+
+      const MAX_CHARS_PER_FILE = 8000;
+      const fileContents = selectedFiles.map(f => {
+        const text = f.extractedText!.substring(0, MAX_CHARS_PER_FILE);
+        return `--- FILE: ${f.displayName || f.originalName} (${f.folder || 'no folder'}) ---\n${text}`;
+      }).join('\n\n');
+
+      const systemPrompt = `You are a research assistant for a university student. You search through academic documents and synthesize findings into clear, well-organized notes.
+
+Your output should be formatted as clean HTML suitable for a rich text notepad. Use:
+- <h2> for the main title (with style="color:#3b82f6")
+- <h3> for section headers (with style="color:#f59e0b")
+- <p> for paragraphs
+- <b> for key terms
+- <i> for direct quotes
+- <br> between sections
+- Include a <h3 style="color:#22c55e">Key Takeaway</h3> summary section at the end
+
+Always cite which file/document each finding comes from. Be thorough but concise.`;
+
+      const OpenAI = (await import("openai")).default;
+      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: `${prompt}\n\nHere are the documents to search through:\n\n${fileContents}` },
+        ],
+        max_completion_tokens: 4096,
+      });
+
+      const result = completion.choices[0]?.message?.content || "No results generated.";
+      const usage = completion.usage;
+
+      let noteId: number | undefined;
+      if (createNote !== false) {
+        const title = noteTitle || "AI Research";
+        const existingNotes = await storage.getNotepadNotes();
+        const note = await storage.createNotepadNote({
+          title,
+          content: result,
+          sortOrder: existingNotes.length,
+          groupName: null,
+        });
+        noteId = note.id;
+      }
+
+      res.json({
+        result,
+        noteId,
+        usage: usage ? {
+          promptTokens: usage.prompt_tokens,
+          completionTokens: usage.completion_tokens,
+          totalTokens: usage.total_tokens,
+        } : null,
+        actualCost: usage ? `$${((usage.prompt_tokens / 1_000_000) * 0.15 + (usage.completion_tokens / 1_000_000) * 0.60).toFixed(4)}` : null,
+      });
+    } catch (err: any) {
+      console.error("AI search execute error:", err);
+      const msg = err?.message || "AI search failed";
+      if (msg.includes("API key") || msg.includes("authentication") || msg.includes("401")) {
+        return res.status(401).json({ error: "Invalid OpenAI API key. Check your OPENAI_API_KEY environment variable." });
+      }
+      if (msg.includes("quota") || msg.includes("billing") || msg.includes("429")) {
+        return res.status(429).json({ error: "OpenAI rate limit or quota exceeded. Check your OpenAI billing." });
+      }
+      res.status(500).json({ error: msg });
+    }
+  });
+
   // GET /api/files/recently-prepared (must be before :id route)
   app.get("/api/files/recently-prepared", async (_req, res) => {
     res.json({ files: (globalThis as any).__recentlyPreparedFiles || [] });
