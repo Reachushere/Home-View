@@ -153,7 +153,7 @@ function getFileType(folder: string | null): 'module' | 'reading' | null {
   return null;
 }
 
-function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, shelfHeight, onRename, isGroupHovered, interceptClick, layout = 'vertical' }: {
+function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, shelfHeight, onRename, isGroupHovered, interceptClick, layout = 'vertical', besideHorizontal }: {
   file: FileRecord;
   index: number;
   courseCode: string;
@@ -165,10 +165,11 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   isGroupHovered?: boolean;
   interceptClick?: () => void;
   layout?: 'vertical' | 'horizontal';
+  besideHorizontal?: boolean;
 }) {
   const seededRand = ((file.id * 2654435761) >>> 0) / 4294967296;
   const spineWidth = 28 + seededRand * 12;
-  const bookHeight = shelfHeight - 24 - (index % 3) * 6;
+  const bookHeight = shelfHeight - 24 - (index % 3) * 6 + (besideHorizontal ? 50 : 0);
   const fullTitle = (file.displayName || file.originalName).replace(/\.pdf$/i, '');
   const title = truncateSpineTitle(fullTitle, 28, !!file.displayName && file.displayName !== file.originalName);
   const expandedTitle = fullTitle;
@@ -207,7 +208,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   const isLifted = isGroupHovered || false;
   const isHoriz = layout === 'horizontal';
   const horizBookWidth = 140;
-  const horizBookHeight = spineWidth;
+  const horizBookHeight = spineWidth - 6;
 
   if (isHoriz) {
     return (
@@ -570,7 +571,14 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
 
   const renderShelfLayout = (expanded: boolean) => {
     const { modules, readings, others } = separateChildren(children);
-    const moduleElements = [...modules, ...others].map(c => cloneWithProps(c, expanded));
+    const hasReadings = readings.length > 0;
+    const moduleElements = [...modules, ...others].map(c => {
+      const el = cloneWithProps(c, expanded);
+      if (hasReadings && !expanded) {
+        return React.cloneElement(el, { besideHorizontal: true });
+      }
+      return el;
+    });
     const readingElements = readings.map(c => cloneWithProps(c, expanded, expanded ? 'vertical' : 'horizontal'));
 
     return (
@@ -596,7 +604,6 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
 
   return (
     <>
-      {showSeparator && <WeekSeparator weekNum={weekNum} />}
       <div
         ref={groupRef}
         onClick={() => setIsExpanded(true)}
