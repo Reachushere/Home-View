@@ -175,8 +175,8 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   const bookHeight = shelfHeight - 24 - (index % 3) * 6 + (besideHorizontal ? 50 : 0);
   const fileType = getFileType(file.folder);
   const rawFullTitle = (file.displayName || file.originalName).replace(/\.pdf$/i, '');
-  const fullTitle = fileType === 'module' ? 'Module' : rawFullTitle;
-  const title = fileType === 'module' ? 'Module' : truncateSpineTitle(rawFullTitle, 28, !!file.displayName && file.displayName !== file.originalName);
+  const fullTitle = rawFullTitle;
+  const title = truncateSpineTitle(rawFullTitle, 28, !!file.displayName && file.displayName !== file.originalName);
   const expandedTitle = fullTitle;
   const maxTextHeight = bookHeight - 56;
   const liftedTextHeight = maxTextHeight + 30;
@@ -348,7 +348,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
           opacity: 0.5,
         }} />
       )}
-      {fileType && (
+      {fileType === 'reading' && (
         <div style={{
           position: 'absolute',
           top: '4px',
@@ -365,7 +365,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
             color: 'rgba(255,255,255,0.85)',
             textShadow: '0 1px 2px rgba(0,0,0,0.7)',
           }}>
-            {fileType === 'module' ? 'M' : 'R'}
+            R
           </span>
           <span style={{
             fontSize: '5px',
@@ -375,7 +375,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
             letterSpacing: '0.2px',
             whiteSpace: 'nowrap',
           }}>
-            {fileType === 'module' ? 'Module' : 'Reading'}
+            Reading
           </span>
         </div>
       )}
@@ -518,7 +518,7 @@ function WeekSeparator({ weekNum }: { weekNum: number }) {
           whiteSpace: 'nowrap',
           writingMode: 'vertical-rl',
           textOrientation: 'mixed',
-        }}>W{weekNum}</div>
+        }}>{weekNum}</div>
         <div style={{
           position: 'absolute',
           bottom: '15%',
@@ -658,49 +658,7 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
               animation: `weekBooksSlide${slideDirection} 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards`,
             }}
           >
-            <div
-              style={{
-                fontSize: '14px',
-                fontWeight: 700,
-                color: '#FDDC00',
-                letterSpacing: '1.5px',
-                textShadow: '0 2px 8px rgba(0,0,0,0.8)',
-                marginBottom: '16px',
-                textTransform: 'uppercase',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                cursor: moduleFile && onOpenModule ? 'pointer' : 'default',
-                position: 'relative',
-                zIndex: 2,
-              }}
-              onClick={(e) => {
-                if (moduleFile && onOpenModule) {
-                  e.stopPropagation();
-                  onOpenModule(moduleFile);
-                }
-              }}
-            >
-              Week {weekNum}
-              {moduleFile && onOpenModule && (
-                <span style={{
-                  fontSize: '9px',
-                  padding: '2px 6px',
-                  borderRadius: '4px',
-                  border: '1px solid rgba(253,220,0,0.3)',
-                  background: 'rgba(253,220,0,0.1)',
-                  color: 'rgba(253,220,0,0.8)',
-                  fontWeight: 600,
-                  letterSpacing: '0.3px',
-                  transition: 'all 0.15s',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(253,220,0,0.2)'; e.currentTarget.style.color = '#FDDC00'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(253,220,0,0.1)'; e.currentTarget.style.color = 'rgba(253,220,0,0.8)'; }}
-                >
-                  Open Module
-                </span>
-              )}
-            </div>
+            <div style={{ marginBottom: '16px' }} />
             <div style={{
               display: 'flex',
               alignItems: 'flex-end',
