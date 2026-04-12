@@ -23,6 +23,8 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
   const flyoutRef = useRef<HTMLDivElement>(null);
   const [editingTitles, setEditingTitles] = useState<Record<number, string>>({});
   const [openDatePickerId, setOpenDatePickerId] = useState<number | null>(null);
+  const [confirmTask, setConfirmTask] = useState<{ item: NewSemesterChecklistItem; date: string } | null>(null);
+  const [confirmTaskTitle, setConfirmTaskTitle] = useState('');
   const [datePickerMonth, setDatePickerMonth] = useState<Date>(() => {
     if (semesterStartDate) {
       const d = new Date(semesterStartDate + 'T12:00:00');
@@ -113,12 +115,20 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
 
   const handleDateSelect = useCallback((item: NewSemesterChecklistItem, dateStr: string) => {
     updateMutation.mutate({ id: item.id, dueDate: dateStr });
-    createTaskMutation.mutate({
-      title: `[Checklist] ${item.title}`,
-      dueDate: dateStr,
-    });
     setOpenDatePickerId(null);
+    setConfirmTaskTitle(item.title || '');
+    setConfirmTask({ item, date: dateStr });
   }, []);
+
+  const handleConfirmSaveTask = useCallback(() => {
+    if (!confirmTask) return;
+    createTaskMutation.mutate({
+      title: confirmTaskTitle || confirmTask.item.title || 'Checklist task',
+      dueDate: confirmTask.date,
+    });
+    setConfirmTask(null);
+    setConfirmTaskTitle('');
+  }, [confirmTask, confirmTaskTitle]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -424,6 +434,86 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
           <span className="flex items-center gap-1"><Trash2 className="w-3.5 h-3.5" /> Delete</span>
         </div>
       </div>
+
+      {confirmTask && (
+        <>
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 10010,
+              backgroundColor: 'rgba(0,0,0,0.6)',
+            }}
+            onClick={() => { setConfirmTask(null); setConfirmTaskTitle(''); }}
+          />
+          <div
+            style={{
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              zIndex: 10011,
+              width: '380px',
+              maxWidth: '90vw',
+              background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, ${colorSettings.mainBackgroundGradientEnd} 100%)`,
+              border: '1px solid rgba(255,255,255,0.25)',
+              borderRadius: '12px',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+              padding: '20px',
+            }}
+            data-testid="confirm-task-dialog"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-sm font-bold text-white">Add Task to Calendar</span>
+              <X className="w-4 h-4 text-white/60 hover:text-white cursor-pointer" onClick={() => { setConfirmTask(null); setConfirmTaskTitle(''); }} />
+            </div>
+
+            <div className="mb-3">
+              <label className="text-[10px] text-white/60 uppercase tracking-wider font-bold mb-1 block">Task Name</label>
+              <input
+                type="text"
+                value={confirmTaskTitle}
+                onChange={(e) => setConfirmTaskTitle(e.target.value)}
+                placeholder="Enter task name..."
+                className="w-full text-xs rounded px-3 py-2 outline-none text-black"
+                style={{ backgroundColor: '#ffffff', height: '34px' }}
+                autoFocus
+                data-testid="confirm-task-title-input"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="text-[10px] text-white/60 uppercase tracking-wider font-bold mb-1 block">Due Date</label>
+              <div
+                className="text-sm text-white font-semibold px-3 py-2 rounded"
+                style={{ backgroundColor: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }}
+              >
+                <CalendarDays className="w-4 h-4 inline mr-2 text-green-400" />
+                {format(new Date(confirmTask.date + 'T12:00:00'), 'EEEE, MMMM d, yyyy')}
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => { setConfirmTask(null); setConfirmTaskTitle(''); }}
+                className="flex-1 text-xs font-semibold text-white/70 py-2 rounded border border-white/20 hover:bg-white/10 transition-all"
+                data-testid="confirm-task-cancel"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmSaveTask}
+                disabled={createTaskMutation.isPending}
+                className="flex-1 text-xs font-bold text-white py-2 rounded hover:brightness-110 transition-all disabled:opacity-50"
+                style={{ background: '#22c55e' }}
+                data-testid="confirm-task-save"
+              >
+                {createTaskMutation.isPending ? 'Saving...' : 'Save to Calendar'}
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </>
   );
 }
