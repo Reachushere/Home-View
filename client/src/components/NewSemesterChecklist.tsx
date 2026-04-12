@@ -223,16 +223,12 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
     return (
       <div
         key={item.id}
-        className="flex items-center gap-3 py-1.5 group relative"
-        style={{ transform: swipingId === item.id ? `translateX(${swipeX}px)` : 'none', transition: swipingId === item.id ? 'none' : 'transform 0.2s' }}
-        onTouchStart={(e) => handleSwipeStart(item.id, e.touches[0].clientX)}
-        onTouchMove={(e) => handleSwipeMove(e.touches[0].clientX)}
-        onTouchEnd={handleSwipeEnd}
+        className="flex items-center gap-3 py-1.5 relative"
         data-testid={`checklist-item-${isCompleted ? 'done-' : ''}${item.id}`}
       >
         <button
           type="button"
-          className="shrink-0 flex items-center justify-center rounded border-2 cursor-pointer"
+          className="shrink-0 flex items-center justify-center rounded border-2"
           style={{
             width: '28px',
             height: '28px',
@@ -242,15 +238,9 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
             WebkitTapHighlightColor: 'transparent',
             padding: 0,
             outline: 'none',
+            cursor: 'pointer',
           }}
-          onPointerDown={(e) => {
-            e.stopPropagation();
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            handleToggleComplete(item);
-          }}
+          onClick={() => handleToggleComplete(item)}
           data-testid={`checklist-check-${item.id}`}
         >
           {isCompleted && (
@@ -279,14 +269,17 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
 
         <button
           type="button"
-          className="shrink-0 flex items-center cursor-pointer select-none"
-          style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', background: 'none', border: 'none', padding: 0, outline: 'none' }}
-          onPointerDown={(e) => e.stopPropagation()}
-          onClick={(e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            handleToggleGlobal(item);
+          className="shrink-0 flex items-center"
+          style={{
+            touchAction: 'manipulation',
+            WebkitTapHighlightColor: 'transparent',
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            outline: 'none',
+            cursor: 'pointer',
           }}
+          onClick={() => handleToggleGlobal(item)}
           title={item.isGlobal ? 'Appears on all semesters (click to make semester-specific)' : 'Only this semester (click to add to all semesters)'}
           data-testid={`checklist-global-toggle-${item.id}`}
         >
@@ -312,11 +305,22 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
           </div>
         </button>
 
-        <Trash2
-          className="w-4 h-4 text-white/20 hover:text-red-400 cursor-pointer flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+        <button
+          type="button"
+          style={{
+            touchAction: 'manipulation',
+            WebkitTapHighlightColor: 'transparent',
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            outline: 'none',
+            cursor: 'pointer',
+          }}
           onClick={() => deleteMutation.mutate(item.id)}
           data-testid={`checklist-delete-${isCompleted ? 'done-' : ''}${item.id}`}
-        />
+        >
+          <Trash2 className="w-4 h-4 text-white/40 hover:text-red-400 transition-colors" />
+        </button>
       </div>
     );
   };
