@@ -8528,9 +8528,8 @@ async function pollStatus(timeout){
         });
       }
       
-      await storage.clearAllShifts();
-      
       if (shiftEntries.length > 0) {
+        await storage.clearAllShifts();
         await storage.setShiftBulk(shiftEntries);
       }
       
@@ -22439,11 +22438,13 @@ Return ONLY the JSON object, no markdown formatting.`;
           const isNight = hour >= 18 || hour < 6 || summary.includes('🌙');
           shiftEntries.push({ date: dateStr, shiftType: isNight ? 'night' : 'day' });
         }
-        await storage.clearAllShifts();
         if (shiftEntries.length > 0) {
+          await storage.clearAllShifts();
           await storage.setShiftBulk(shiftEntries);
+          console.log(`[Startup] Auto-synced ${shiftEntries.length} CRCU shifts`);
+        } else {
+          console.log(`[Startup] CRCU calendar returned 0 shift events — keeping existing shift data`);
         }
-        console.log(`[Startup] Auto-synced ${shiftEntries.length} CRCU shifts`);
       } else {
         console.log('[Startup] Third Google account not connected, skipping CRCU shift sync');
       }
