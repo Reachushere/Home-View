@@ -468,8 +468,8 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
                       updateMutation.mutate({ id: confirmTask.item.id, dueDate: e.target.value });
                     }
                   }}
-                  className="text-xs rounded px-3 py-2 outline-none text-black flex-1"
-                  style={{ backgroundColor: '#ffffff', height: '34px' }}
+                  className="text-xs rounded px-3 py-2 outline-none flex-1"
+                  style={{ backgroundColor: '#ffffff', height: '34px', color: '#000000' }}
                   data-testid="confirm-date-input"
                 />
                 <span className="text-xs text-white/60">
