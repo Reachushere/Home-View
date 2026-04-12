@@ -618,6 +618,7 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
           minWidth: 0,
           position: 'relative',
           cursor: 'pointer',
+          ...(isTopShelf ? { marginLeft: '4px' } : {}),
         }}
       >
         {renderShelfLayout(false)}
@@ -3584,7 +3585,6 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                   alignItems: 'flex-end',
                   height: `${shelfHeight}px`,
                   padding: '0px 4px 28px',
-                  ...(courseIdx === 0 ? { transform: 'translateX(4px)' } : {}),
                   gap: '2px',
                   overflowX: 'hidden',
                   overflowY: 'hidden',
