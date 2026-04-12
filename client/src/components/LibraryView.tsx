@@ -3486,7 +3486,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             return (
             <div key={course.code} style={{ marginBottom: courseIdx < courseBooks.length - 1 ? (isCollapsed ? '20px' : '55px') : '0', position: 'relative', top: courseIdx === 0 ? '-1px' : courseIdx === 1 ? '39px' : courseIdx === 2 ? '39px' : `${40 + courseIdx * 5}px` }}>
               {!isCollapsed && syllabusPaths[course.code] && (
-                <div style={{ paddingLeft: '16px', marginBottom: '4px', position: 'relative', top: courseIdx === 0 ? '100px' : courseIdx === 1 ? '80px' : courseIdx === 2 ? '70px' : '60px' }}>
+                <div style={{ paddingLeft: '16px', marginBottom: '4px', position: 'relative', top: courseIdx === 0 ? '150px' : courseIdx === 1 ? '130px' : courseIdx === 2 ? '120px' : '110px', zIndex: 10 }}>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -3538,7 +3538,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 cursor: 'pointer',
                 userSelect: 'none',
                 position: 'relative',
-                top: courseIdx === 0 ? '100px' : courseIdx === 1 ? '80px' : courseIdx === 2 ? '70px' : '60px',
+                top: courseIdx === 0 ? '150px' : courseIdx === 1 ? '130px' : courseIdx === 2 ? '120px' : '110px',
+                zIndex: 10,
               }}
               onClick={() => {
                 setCollapsedCourses(prev => {
