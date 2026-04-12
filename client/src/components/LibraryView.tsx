@@ -3556,7 +3556,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 )}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <span style={{
-                    fontSize: '10px',
+                    fontSize: '13px',
                     fontWeight: 500,
                     color: '#ffffff',
                     letterSpacing: '0.5px',
