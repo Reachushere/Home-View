@@ -27,7 +27,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
   const [confirmTask, setConfirmTask] = useState<{ item: NewSemesterChecklistItem; date: string } | null>(null);
   const [confirmTaskTitle, setConfirmTaskTitle] = useState('');
   const [confirmTime, setConfirmTime] = useState('09:00');
-  const [confirmAllDay, setConfirmAllDay] = useState(true);
+  const [confirmAllDay, setConfirmAllDay] = useState(false);
   const [confirmReminder, setConfirmReminder] = useState(30);
   const [seeded, setSeeded] = useState(false);
   const [datePickerMonth, setDatePickerMonth] = useState<Date>(() => {
@@ -141,7 +141,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
     });
     setConfirmTask(null);
     setConfirmTaskTitle('');
-    setConfirmAllDay(true);
+    setConfirmAllDay(false);
     setConfirmTime('09:00');
     setConfirmReminder(30);
   }, [confirmTask, confirmTaskTitle, confirmAllDay, confirmTime, confirmReminder]);
@@ -412,8 +412,19 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
             <div className="mb-3">
               <label className="text-[10px] text-white/60 uppercase tracking-wider font-bold mb-1 block">Time</label>
               <div className="flex items-center gap-3">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" checked={confirmAllDay} onChange={() => setConfirmAllDay(!confirmAllDay)} style={{ width: '16px', height: '16px', accentColor: '#22c55e' }} data-testid="confirm-all-day" />
+                <label className="flex items-center gap-2 cursor-pointer" onClick={() => setConfirmAllDay(!confirmAllDay)} style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', userSelect: 'none' }} data-testid="confirm-all-day">
+                  <div style={{
+                    width: '16px', height: '16px', minWidth: '16px', borderRadius: '3px',
+                    border: confirmAllDay ? '2px solid #22c55e' : '2px solid rgba(255,255,255,0.5)',
+                    background: confirmAllDay ? '#22c55e' : 'transparent',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    {confirmAllDay && (
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    )}
+                  </div>
                   <span className="text-xs text-white/80">All day</span>
                 </label>
                 {!confirmAllDay && (
@@ -448,7 +459,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
               </select>
             </div>
             <div className="flex gap-3">
-              <button onClick={() => { setConfirmTask(null); setConfirmTaskTitle(''); setConfirmAllDay(true); setConfirmTime('09:00'); setConfirmReminder(30); }} className="flex-1 text-xs font-semibold text-white/70 py-2 rounded border border-white/20 hover:bg-white/10 transition-all" data-testid="confirm-task-cancel">Cancel</button>
+              <button onClick={() => { setConfirmTask(null); setConfirmTaskTitle(''); setConfirmAllDay(false); setConfirmTime('09:00'); setConfirmReminder(30); }} className="flex-1 text-xs font-semibold text-white/70 py-2 rounded border border-white/20 hover:bg-white/10 transition-all" data-testid="confirm-task-cancel">Cancel</button>
               <button onClick={handleConfirmSaveTask} disabled={createTaskMutation.isPending} className="flex-1 text-xs font-bold text-white py-2 rounded hover:brightness-110 transition-all disabled:opacity-50" style={{ background: '#22c55e' }} data-testid="confirm-task-save">
                 {createTaskMutation.isPending ? 'Saving...' : 'Save to Calendar'}
               </button>
