@@ -201,20 +201,36 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
 
     return (
       <div key={item.id} className="flex items-center gap-3 py-1.5" data-testid={`checklist-item-${isCompleted ? 'done-' : ''}${item.id}`}>
-        <input
-          type="checkbox"
-          checked={isCompleted}
-          onChange={() => handleToggleComplete(item)}
+        <div
+          role="checkbox"
+          aria-checked={isCompleted}
+          tabIndex={0}
+          onClick={() => handleToggleComplete(item)}
+          onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') handleToggleComplete(item); }}
           style={{
             width: '28px',
             height: '28px',
+            minWidth: '28px',
             flexShrink: 0,
+            borderRadius: '4px',
+            border: isCompleted ? '2px solid #22c55e' : '2px solid rgba(255,255,255,0.5)',
+            background: isCompleted ? '#22c55e' : 'transparent',
             cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             touchAction: 'manipulation',
-            accentColor: '#22c55e',
+            WebkitTapHighlightColor: 'transparent',
+            userSelect: 'none',
           }}
           data-testid={`checklist-check-${item.id}`}
-        />
+        >
+          {isCompleted && (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          )}
+        </div>
 
         <input
           type="text"
