@@ -3113,7 +3113,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
 
       <div style={{
         position: 'absolute',
-        top: '20px',
+        top: '29px',
         left: '50%',
         transform: 'translateX(-50%)',
         display: 'flex',
