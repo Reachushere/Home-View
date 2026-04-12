@@ -170,9 +170,10 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   const bookHeight = shelfHeight - 24 - (index % 3) * 6;
   const fullTitle = (file.displayName || file.originalName).replace(/\.pdf$/i, '');
   const title = truncateSpineTitle(fullTitle, 28, !!file.displayName && file.displayName !== file.originalName);
-  const expandedTitle = truncateSpineTitle(fullTitle, 80, !!file.displayName && file.displayName !== file.originalName);
+  const expandedTitle = fullTitle;
   const maxTextHeight = bookHeight - 56;
-  const expandedFontSize = expandedTitle.length > 40 ? 7 : expandedTitle.length > 30 ? 8 : expandedTitle.length > 20 ? 9 : 10;
+  const liftedTextHeight = maxTextHeight + 30;
+  const expandedFontSize = Math.max(4, Math.min(10, Math.floor(liftedTextHeight / (expandedTitle.length * 0.85))));
   const weekNum = file.folder?.match(/^week-(\d+)/)?.[1] || '';
   const fileType = getFileType(file.folder);
   const patternIdx = (index + courseCode.charCodeAt(0)) % SPINE_PATTERNS.length;
@@ -256,9 +257,9 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
         color: '#ffffff',
         textShadow: '0 1px 3px rgba(0,0,0,0.7)',
         letterSpacing: '0.3px',
-        maxHeight: `${isLifted ? maxTextHeight + 30 : maxTextHeight}px`,
+        maxHeight: `${isLifted ? liftedTextHeight : maxTextHeight}px`,
         overflow: 'hidden',
-        textOverflow: 'ellipsis',
+        textOverflow: isLifted ? 'clip' : 'ellipsis',
         whiteSpace: 'nowrap',
         padding: '4px 0',
         lineHeight: 1.2,
