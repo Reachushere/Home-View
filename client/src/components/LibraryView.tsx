@@ -3196,7 +3196,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       <div style={{
         position: 'absolute',
         top: '34px',
-        left: '16px',
+        left: '28px',
         zIndex: 100002,
       }}>
         <div style={{
