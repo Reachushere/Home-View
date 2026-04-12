@@ -3548,7 +3548,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 cursor: 'pointer',
                 userSelect: 'none',
                 position: 'relative',
-                top: courseIdx === 0 ? '205px' : courseIdx === 1 ? '338px' : courseIdx === 2 ? (minimizedReaders.size > 0 ? '305px' : '325px') : '155px',
+                top: courseIdx === 0 ? '205px' : courseIdx === 1 ? '338px' : courseIdx === 2 ? (minimizedReaders.size > 0 ? '290px' : '325px') : '155px',
                 zIndex: 10,
                 marginLeft: 'calc(30% + 193px)',
               }}
@@ -3610,7 +3610,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                   <span style={{
                     fontSize: '13px',
                     fontWeight: 700,
-                    color: '#000000',
+                    color: (courseIdx === 2 && minimizedReaders.size > 0) ? '#ffffff' : '#000000',
                     letterSpacing: '0.5px',
                     textTransform: 'uppercase',
                     fontFamily: "system-ui, -apple-system, sans-serif",
@@ -3618,9 +3618,9 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                     {course.code} — {course.name.startsWith(course.code) ? course.name.slice(course.code.length).replace(/^\s*[-–—]\s*/, '') : course.name}
                   </span>
                   {isCollapsed ? (
-                    <ChevronRight size={14} style={{ color: 'rgba(0,0,0,0.7)', flexShrink: 0 }} />
+                    <ChevronRight size={14} style={{ color: (courseIdx === 2 && minimizedReaders.size > 0) ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)', flexShrink: 0 }} />
                   ) : (
-                    <ChevronDown size={14} style={{ color: 'rgba(0,0,0,0.7)', flexShrink: 0 }} />
+                    <ChevronDown size={14} style={{ color: (courseIdx === 2 && minimizedReaders.size > 0) ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)', flexShrink: 0 }} />
                   )}
                 </div>
               </div>
