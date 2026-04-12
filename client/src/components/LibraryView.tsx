@@ -584,7 +584,11 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
 
     return (
       <>
-        {moduleElements}
+        {isTopShelf
+          ? moduleElements.map((el, i) => (
+              <div key={i} style={{ marginLeft: '4px' }}>{el}</div>
+            ))
+          : moduleElements}
         {readingElements.length > 0 && (
           <div style={{
             display: 'flex',
@@ -3582,7 +3586,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                   display: 'flex',
                   alignItems: 'flex-end',
                   height: `${shelfHeight}px`,
-                  padding: courseIdx === 0 ? '0px 4px 28px 8px' : '0px 4px 28px',
+                  padding: '0px 4px 28px',
                   gap: '2px',
                   overflowX: 'hidden',
                   overflowY: 'hidden',
