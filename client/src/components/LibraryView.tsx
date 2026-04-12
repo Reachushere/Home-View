@@ -3553,11 +3553,6 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                   </button>
                 )}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  {isCollapsed ? (
-                    <ChevronRight size={14} style={{ color: 'rgba(255,255,255,0.85)', flexShrink: 0 }} />
-                  ) : (
-                    <ChevronDown size={14} style={{ color: 'rgba(255,255,255,0.85)', flexShrink: 0 }} />
-                  )}
                   <span style={{
                     fontSize: '10px',
                     fontWeight: 500,
@@ -3568,6 +3563,11 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                   }}>
                     {course.code} — {course.name.startsWith(course.code) ? course.name.slice(course.code.length).replace(/^\s*[-–—]\s*/, '') : course.name}
                   </span>
+                  {isCollapsed ? (
+                    <ChevronRight size={14} style={{ color: 'rgba(255,255,255,0.85)', flexShrink: 0 }} />
+                  ) : (
+                    <ChevronDown size={14} style={{ color: 'rgba(255,255,255,0.85)', flexShrink: 0 }} />
+                  )}
                 </div>
               </div>
 
