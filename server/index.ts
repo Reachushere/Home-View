@@ -420,7 +420,7 @@ app.use((req, res, next) => {
         }
       }
       setTimeout(runFileMonitor, 10000);
-      setInterval(runFileMonitor, 5 * 60 * 1000);
+      setInterval(runFileMonitor, 30 * 1000);
 
       async function ensureFutureSemesters() {
         try {
