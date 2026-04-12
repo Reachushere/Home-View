@@ -856,6 +856,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
+  const [useNativeViewer, setUseNativeViewer] = useState(false);
   const [zoom, setZoom] = useState(1.0);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -964,14 +965,26 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
     const viewport = page.getViewport({ scale });
     canvas.width = viewport.width;
     canvas.height = viewport.height;
-    console.log(`[PDF] Rendering page ${pageNum}: canvas=${canvas.width}x${canvas.height}, vpScale=${scale.toFixed(3)}, origVP=${vp.width.toFixed(0)}x${vp.height.toFixed(0)}, container=${containerW}x${containerH}`);
     try {
       await page.render({ canvasContext: ctx, viewport }).promise;
-      const pixelData = ctx.getImageData(0, 0, Math.min(canvas.width, 10), Math.min(canvas.height, 10)).data;
-      const hasContent = pixelData.some((v, i) => i % 4 !== 3 && v !== 0 && v !== 255);
-      console.log(`[PDF] Page ${pageNum} rendered. hasContent=${hasContent}, firstPixels=[${pixelData.slice(0, 16).join(',')}]`);
+      const sampleSize = Math.min(100, canvas.width, canvas.height);
+      if (sampleSize > 0) {
+        const pixelData = ctx.getImageData(0, 0, sampleSize, sampleSize).data;
+        let allWhite = true;
+        for (let i = 0; i < pixelData.length; i += 4) {
+          if (pixelData[i] !== 255 || pixelData[i+1] !== 255 || pixelData[i+2] !== 255) {
+            allWhite = false;
+            break;
+          }
+        }
+        if (allWhite && pageNum === 1) {
+          console.warn('[PDF] Page 1 rendered all-white, switching to native viewer');
+          setUseNativeViewer(true);
+        }
+      }
     } catch (renderErr) {
       console.error(`[PDF] Canvas render failed for page ${pageNum}:`, renderErr);
+      if (pageNum === 1) setUseNativeViewer(true);
     }
     if (textLayer) {
       textLayer.innerHTML = '';
@@ -1606,6 +1619,12 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
                     <div style={{ color: '#c62828', fontSize: '14px', textAlign: 'center', padding: '20px' }}>
                       Failed to load PDF{errorMsg ? `: ${errorMsg}` : ''}
                     </div>
+                  ) : useNativeViewer ? (
+                    <iframe
+                      src={pdfUrl || `/api/files/${file.id}/download`}
+                      style={{ width: '100%', height: '100%', border: 'none', borderRadius: '4px', minHeight: '500px', flex: 1 }}
+                      title={file.displayName || file.originalName}
+                    />
                   ) : (
                     <div className={`book-spread ${flipDirection !== 'none' ? `flip-${flipDirection}` : ''}`} style={{ display: 'flex', gap: '0px', perspective: '2000px' }} onAnimationEnd={() => setFlipDirection('none')}>
                       <div
