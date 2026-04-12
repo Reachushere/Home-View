@@ -35,6 +35,15 @@ export function changeTimezone(newTz: string, password: string): { success: bool
 }
 
 export function easternNow(): Date {
+  const override = process.env.DEBUG_DATE_OVERRIDE;
+  if (override) {
+    const target = new Date(override + 'T00:00:00');
+    const realNow = new Date(new Date().toLocaleString('en-US', { timeZone: LOCKED_TZ }));
+    const realMidnight = new Date(realNow);
+    realMidnight.setHours(0, 0, 0, 0);
+    const timeOfDay = realNow.getTime() - realMidnight.getTime();
+    return new Date(target.getTime() + timeOfDay);
+  }
   return new Date(new Date().toLocaleString('en-US', { timeZone: LOCKED_TZ }));
 }
 
