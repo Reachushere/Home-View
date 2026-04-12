@@ -25901,35 +25901,8 @@ export default function Dashboard() {
                     const displayNameFromDb = displayNameResult.fromDb;
                     const subtitle = semCourse.fullName || '';
                     const dotColor = (() => {
-                      const dcMatch = findSemSlot(semKey, semCourse.code, allSemesterSettings);
-                      if (dcMatch) {
-                        const ls = (dcMatch.sem as any)[`course${dcMatch.slot}LabelStart`];
-                        const le = (dcMatch.sem as any)[`course${dcMatch.slot}LabelEnd`];
-                        const lstops = (dcMatch.sem as any)[`course${dcMatch.slot}LabelStops`];
-                        if (ls) {
-                          const midStops = lstops ? (() => { try { return JSON.parse(lstops); } catch { return []; } })() : [];
-                          const allStops = [{ position: 0, color: ls }, ...midStops, { position: 100, color: le || ls }];
-                          return `linear-gradient(180deg, ${allStops.map((s: any) => `${s.color} ${s.position}%`).join(', ')})`;
-                        }
-                        const c = (dcMatch.sem as any)[`course${dcMatch.slot}Color`];
-                        const ce = (dcMatch.sem as any)[`course${dcMatch.slot}ColorEnd`];
-                        if (c) return ce ? `linear-gradient(to right, ${c}, ${ce})` : c;
-                      }
-                      if (currentCourse) {
-                        return currentCourse.colorEnd ? `linear-gradient(to right, ${currentCourse.color}, ${currentCourse.colorEnd})` : currentCourse.color;
-                      }
-                      try {
-                        const cd = localStorage.getItem('certCourseData');
-                        if (cd) {
-                          const sd = JSON.parse(cd);
-                          const certKey = pastEntry?.certKey || semCourse.code;
-                          const saved = sd[certKey] || sd[codeNorm] || sd[semCourse.code];
-                          if (saved?.color) {
-                            return saved.colorEnd ? `linear-gradient(to right, ${saved.color}, ${saved.colorEnd})` : saved.color;
-                          }
-                        }
-                      } catch {}
-                      return '#6b7280';
+                      const gc = getCourseGradientColors(semCourse.code);
+                      return gc.start !== gc.end ? `linear-gradient(180deg, ${gc.start}, ${gc.end})` : gc.start;
                     })();
                     const isSS = semKey.startsWith('ss');
                     const courseSSterm = (() => {
