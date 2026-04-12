@@ -3517,49 +3517,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
-  // ── Raw Story Top-3 Change Monitor ──
-  const rawStoryEmailsEnabled = false;
-
-  app.get("/api/ui-settings/rawStoryEmailsEnabled", (_req, res) => {
-    res.json({ value: rawStoryEmailsEnabled });
-  });
-  app.post("/api/ui-settings/rawStoryEmailsEnabled", async (_req, res) => {
-    res.json({ success: true, value: false });
-  });
-
-  let lastTopThree: string[] = [];
-  let rawStoryTop3Loaded = false;
-
-  async function loadLastTopThree() {
-    if (rawStoryTop3Loaded) return;
-    try {
-      const row = await db.select().from(appState).where(eq(appState.key, 'raw_story_top3')).limit(1);
-      if (row.length > 0) {
-        lastTopThree = JSON.parse(row[0].value);
-      }
-      rawStoryTop3Loaded = true;
-    } catch (err) {
-      console.error('[Raw Story] Failed to load top-3 from DB:', err);
-    }
-  }
-
-  async function saveLastTopThree() {
-    try {
-      const value = JSON.stringify(lastTopThree);
-      const row = await db.select().from(appState).where(eq(appState.key, 'raw_story_top3')).limit(1);
-      if (row.length > 0) {
-        await db.update(appState).set({ value, updatedAt: new Date() }).where(eq(appState.key, 'raw_story_top3'));
-      } else {
-        await db.insert(appState).values({ key: 'raw_story_top3', value });
-      }
-    } catch (err) {
-      console.error('[Raw Story] Failed to save top-3 to DB:', err);
-    }
-  }
-
-  async function checkRawStoryTop3() {
-    return;
-  }
 
   app.post("/api/audit/semester-courses", async (_req, res) => {
     try {
@@ -3778,18 +3735,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
-    app.post("/api/raw-story/test", async (_req, res) => {
-    try {
-      lastTopThree = [];
-      rawStoryTop3Loaded = false;
-      await checkRawStoryTop3();
-      res.json({ success: true, currentTop3: lastTopThree });
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-  console.log('[Raw Story] Monitor PERMANENTLY DISABLED — no emails will be sent');
 
   app.get("/api/ha/news", async (_req, res) => {
     try {
