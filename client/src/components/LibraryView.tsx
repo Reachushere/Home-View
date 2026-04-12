@@ -913,16 +913,8 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
   useEffect(() => {
     let cancelled = false;
     const fetchUrl = pdfUrl || `/api/files/${file.id}/download`;
-    fetch(fetchUrl)
-      .then(r => {
-        if (!r.ok) throw new Error(`Server returned ${r.status}`);
-        return r.arrayBuffer();
-      })
-      .then(data => {
-        if (cancelled) return;
-        if (data.byteLength < 100) throw new Error('File is empty or too small');
-        return pdfjsLib.getDocument({ data }).promise;
-      })
+    const loadingTask = pdfjsLib.getDocument({ url: fetchUrl, disableAutoFetch: false, disableStream: false });
+    loadingTask.promise
       .then(doc => {
         if (!cancelled && doc) {
           setPdfDoc(doc);
@@ -937,7 +929,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
           setLoading(false);
         }
       });
-    return () => { cancelled = true; };
+    return () => { cancelled = true; loadingTask.destroy(); };
   }, [file.id]);
 
   const rightPage = currentPage + 1 <= totalPages ? currentPage + 1 : null;
