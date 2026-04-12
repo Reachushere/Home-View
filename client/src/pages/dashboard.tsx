@@ -16909,16 +16909,18 @@ export default function Dashboard() {
         );
       })()}
 
-      {/* Top Pill - Slide up/down container for toolbar buttons */}
-      <div style={{ position: 'fixed', top: `${d2lTickerHeight}px`, left: 0, right: 0, bottom: 0, zIndex: editingTask ? 1 : 110, pointerEvents: 'none', overflow: topPillUndocked ? 'visible' : 'hidden', display: isQuickAddOpen ? 'none' : undefined }}>
-      {/* Touch zone at top to open pill on touch devices */}
-      {!isTopPillOpen && !topPillUndocked && !editingTask && (
+      {/* Touch zone to open pill on touch devices - placed at same z-level as binder tabs */}
+      {!isTopPillOpen && !topPillUndocked && !editingTask && !isQuickAddOpen && (
         <div
-          style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '30px', zIndex: 200, pointerEvents: 'auto', touchAction: 'none' }}
-          onTouchStart={() => { setIsTopPillOpen(true); }}
+          data-testid="pill-touch-zone"
+          style={{ position: 'fixed', top: `${d2lTickerHeight}px`, left: 0, right: 0, height: '30px', zIndex: 10001, pointerEvents: 'auto', touchAction: 'manipulation' }}
+          onTouchStart={(e) => { e.preventDefault(); setIsTopPillOpen(true); }}
+          onClick={() => { setIsTopPillOpen(true); }}
           onMouseEnter={() => { if (topPillInitDoneRef.current) setIsTopPillOpen(true); }}
         />
       )}
+      {/* Top Pill - Slide up/down container for toolbar buttons */}
+      <div style={{ position: 'fixed', top: `${d2lTickerHeight}px`, left: 0, right: 0, bottom: 0, zIndex: editingTask ? 1 : 110, pointerEvents: 'none', overflow: topPillUndocked ? 'visible' : 'hidden', display: isQuickAddOpen ? 'none' : undefined }}>
       <div 
         ref={topPillRef}
         id="top-pill-container"
