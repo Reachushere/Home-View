@@ -31737,7 +31737,7 @@ export default function Dashboard() {
                                   );
                                 })()}
                                 {/* Task body */}
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '0', flex: 1, minHeight: '14px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '0', flex: 1, minHeight: '14px', background: '#ffffff', borderRadius: '0 0 2px 2px' }}>
                                   <div style={{ width: '16px', minWidth: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, height: '14px' }}>
                                     <Checkbox
                                       checked={task.isCompleted || false}
@@ -31749,7 +31749,7 @@ export default function Dashboard() {
                                     />
                                   </div>
                                   <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', height: '14px', overflow: 'hidden' }}>
-                                    <span style={{ fontSize: '9px', fontWeight: 400, color: isDarkBg ? '#ffffff' : '#000000', lineHeight: '14px', fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
+                                    <span style={{ fontSize: '9px', fontWeight: 400, color: '#000000', lineHeight: '14px', fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
                                       {task.eventStartTime && task.eventEndTime ? `${formatTimeTo12Hour(task.eventStartTime)} - ${formatTimeTo12Hour(task.eventEndTime)}` : (() => { const d = new Date(task.dueDate); const m = d.getMinutes(); if (m === 59) { const rd = new Date(d); rd.setMinutes(0); rd.setHours(rd.getHours() + 1); return format(rd, "h:mm a"); } return format(d, "h:mm a"); })()}
                                     </span>
                                   </div>
@@ -31835,7 +31835,7 @@ export default function Dashboard() {
                                   </span>
                                 </div>
                               </div>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '2px 4px 3px 0', flex: 1 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '2px 4px 3px 0', flex: 1, background: '#ffffff', borderRadius: '0 0 2px 2px' }}>
                                 <div style={{ width: '17px', minWidth: '17px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                                   <Checkbox
                                     checked={false}
