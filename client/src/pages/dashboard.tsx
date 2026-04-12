@@ -33977,7 +33977,7 @@ export default function Dashboard() {
                             const b2 = parseInt(h2.substring(4, 6), 16);
                             return `rgba(${r2},${g2},${b2},${alpha})`;
                           };
-                          const [c1, c2] = isYearTab ? tab.colors : [hbDirect(hb, 0.8), hbDirect(hb, 0.73)];
+                          const [c1, c2] = isYearTab ? tab.colors : [hbDirect(hb, 1), hbDirect(hb, 1)];
                           const br = 7;
                           const gradId = `tabGrad-${tabIdx}`;
                           const topColor = c1;
