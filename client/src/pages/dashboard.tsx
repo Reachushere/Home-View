@@ -3043,6 +3043,16 @@ export default function Dashboard() {
     }, 800);
     return () => { clearTimeout(mountDelay); };
   }, []);
+  useEffect(() => {
+    const handler = (e: TouchEvent) => {
+      const y = e.touches?.[0]?.clientY;
+      if (y !== undefined && y < 40 && topPillInitDoneRef.current && !topPillHoveredRef.current) {
+        setIsTopPillOpen(true);
+      }
+    };
+    document.addEventListener('touchstart', handler, { passive: true });
+    return () => document.removeEventListener('touchstart', handler);
+  }, []);
   const [draggedFileForMove, setDraggedFileForMove] = useState<{id: number; folder: string} | null>(null);
   const [moveFileId, setMoveFileId] = useState<number | null>(null);
   const [moveFileCurrentFolder, setMoveFileCurrentFolder] = useState<string>('');
@@ -16909,16 +16919,6 @@ export default function Dashboard() {
         );
       })()}
 
-      {/* Touch zone to open pill on touch devices - placed at same z-level as binder tabs */}
-      {!isTopPillOpen && !topPillUndocked && !editingTask && !isQuickAddOpen && (
-        <div
-          data-testid="pill-touch-zone"
-          style={{ position: 'fixed', top: `${d2lTickerHeight}px`, left: 0, right: 0, height: '30px', zIndex: 10001, pointerEvents: 'auto', touchAction: 'manipulation' }}
-          onTouchStart={(e) => { e.preventDefault(); setIsTopPillOpen(true); }}
-          onClick={() => { setIsTopPillOpen(true); }}
-          onMouseEnter={() => { if (topPillInitDoneRef.current) setIsTopPillOpen(true); }}
-        />
-      )}
       {/* Top Pill - Slide up/down container for toolbar buttons */}
       <div style={{ position: 'fixed', top: `${d2lTickerHeight}px`, left: 0, right: 0, bottom: 0, zIndex: editingTask ? 1 : 110, pointerEvents: 'none', overflow: topPillUndocked ? 'visible' : 'hidden', display: isQuickAddOpen ? 'none' : undefined }}>
       <div 
