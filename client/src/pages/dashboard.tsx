@@ -33714,13 +33714,13 @@ export default function Dashboard() {
             const now = new Date();
             const hb = colorSettings.headerBar;
             const yearColors: Record<number, [string, string]> = {
-              2026: [`${hb}cc`, `${hb}99`],
-              2027: [`${hb}cc`, `${hb}99`],
-              2028: [`${hb}cc`, `${hb}99`],
-              2029: [`${hb}cc`, `${hb}99`],
+              2026: ['#161616', '#161616'],
+              2027: ['rgba(34,197,94,0.85)', 'rgba(22,163,74,0.7)'],
+              2028: ['rgba(150,90,235,0.8)', 'rgba(120,60,210,0.6)'],
+              2029: ['rgba(120,120,120,0.8)', 'rgba(95,95,95,0.6)'],
             };
-            const getYearColor = (y: number): [string, string] => yearColors[y] || [`${hb}cc`, `${hb}99`];
-            const gapColor: [string, string] = [`${hb}aa`, `${hb}77`];
+            const getYearColor = (y: number): [string, string] => yearColors[y] || ['#161616', '#161616'];
+            const gapColor: [string, string] = ['#95A5A6', '#7F8C8D'];
             const semDates = {
               w2026End: new Date(2026, 3, 10),
               ss2026Start: new Date(2026, 4, 4), ss2026End: new Date(2026, 7, 7),
