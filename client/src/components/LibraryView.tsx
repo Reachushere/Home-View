@@ -666,6 +666,8 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
                 alignItems: 'center',
                 gap: '8px',
                 cursor: moduleFile && onOpenModule ? 'pointer' : 'default',
+                position: 'relative',
+                zIndex: 2,
               }}
               onClick={(e) => {
                 if (moduleFile && onOpenModule) {
@@ -699,7 +701,7 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
               alignItems: 'flex-end',
               gap: '6px',
               transform: 'scale(2)',
-              transformOrigin: 'bottom center',
+              transformOrigin: 'top center',
               padding: '0 20px',
             }}>
               {renderShelfLayout(true)}
@@ -707,7 +709,7 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
             <div style={{
               width: '100%',
               maxWidth: '90vw',
-              marginTop: '0px',
+              marginTop: `${shelfHeight + 10}px`,
             }}>
               <div className="shelf-wood" style={{
                 height: '14px',
