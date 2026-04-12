@@ -3054,8 +3054,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           disabled={currentSemIdx === 0}
           data-testid="btn-library-prev-sem"
           style={{
-            width: '38px',
-            height: '38px',
+            width: '37px',
+            height: '37px',
             borderRadius: '50%',
             background: currentSemIdx === 0 ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.5)',
             border: currentSemIdx === 0 ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(255,255,255,0.2)',
@@ -3094,8 +3094,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           disabled={currentSemIdx === semesters.length - 1}
           data-testid="btn-library-next-sem"
           style={{
-            width: '38px',
-            height: '38px',
+            width: '37px',
+            height: '37px',
             borderRadius: '50%',
             background: currentSemIdx >= semesters.length - 1 ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.5)',
             border: currentSemIdx >= semesters.length - 1 ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(255,255,255,0.2)',
