@@ -284,7 +284,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
 
   return (
     <>
-      <div style={{ position: 'fixed', inset: 0, zIndex: 10004, backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={onDismiss} />
+      <div style={{ position: 'fixed', inset: 0, zIndex: 10004, backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={() => { if (!confirmTask) onDismiss(); }} />
       <div
         ref={flyoutRef}
         style={{
@@ -354,6 +354,9 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
           <div style={{ position: 'fixed', inset: 0, zIndex: 10010, backgroundColor: 'rgba(0,0,0,0.6)' }} onClick={() => { setConfirmTask(null); setConfirmTaskTitle(''); }} />
           <div
             ref={confirmRef}
+            onMouseDown={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
             style={{
               position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 10011,
               width: '380px', maxWidth: '90vw',
