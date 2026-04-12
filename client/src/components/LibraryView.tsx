@@ -307,7 +307,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
         cursor: 'pointer',
         position: 'relative',
         display: 'flex',
-        marginLeft: '-3px',
+        marginLeft: '4px',
         alignItems: 'center',
         justifyContent: 'center',
         flexShrink: 1,
