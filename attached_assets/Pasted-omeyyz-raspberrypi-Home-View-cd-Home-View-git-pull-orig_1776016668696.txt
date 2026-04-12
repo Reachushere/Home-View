@@ -1,0 +1,462 @@
+omeyyz@raspberrypi:~/Home-View $ cd ~/Home-View && git pull origin main && npm run build && fuser -k 5000/tcp; sleep 2 && pm2 delete dashboard; pm2 start dist/index.cjs --name dashboard --cwd /home/byhomeyyz/Home-View --node-args="-r /home/byhomeyyz/Home-View/preload.cjs" && pm2 save
+remote: Enumerating objects: 11, done.
+remote: Counting objects: 100% (11/11), done.
+remote: Compressing objects: 100% (1/1), done.
+remote: Total 6 (delta 5), reused 6 (delta 5), pack-reused 0 (from 0)
+Unpacking objects: 100% (6/6), 786 bytes | 393.00 KiB/s, done.
+From https://github.com/Reachushere/Home-View
+ * branch                main       -> FETCH_HEAD
+   00b658677..0580b4aeb  main       -> origin/main
+Updating 00b658677..0580b4aeb
+Fast-forward
+ client/src/components/NewSemesterChecklist.tsx | 22 ++++++++++++----------
+ 1 file changed, 12 insertions(+), 10 deletions(-)
+npm warn Unknown builtin config "globalignorefile". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> rest-express@1.0.0 build
+> tsx script/build.ts
+
+building client...
+vite v7.3.0 building client environment for production...
+✓ 2978 modules transformed.
+../dist/public/index.html                                                                     4.01 kB │ gzip:   1.54 kB
+../dist/public/assets/CN2_1773897525570-afBA9WIn.png                                          4.64 kB
+../dist/public/assets/Zoomcam_1773655084814-Dd0RqcMf.png                                      6.41 kB
+../dist/public/assets/saturn_planet-DyCcVDqz.jpg                                              9.35 kB
+../dist/public/assets/uranus_planet-BBf9JheU.jpg                                             14.81 kB
+../dist/public/assets/Button_1769701329320-vj3a_XjG.png                                      14.88 kB
+../dist/public/assets/Fox_News_1773610204651-Cm2F7G44.png                                    18.91 kB
+../dist/public/assets/Animoji_1769350617739-DKdhEpD6.webp                                    21.31 kB
+../dist/public/assets/Wifi_1773656687145-BkFdNwBM.png                                        21.68 kB
+../dist/public/assets/Global_White_1773536754594-C17BPXU2.png                                22.80 kB
+../dist/public/assets/jupiter_planet-BIMUlata.jpg                                            26.92 kB
+../dist/public/assets/ABC_1773609250051-CfAo4DiJ.png                                         31.54 kB
+../dist/public/assets/Zoom2_1773776262533-u1jCiZQ5.png                                       31.94 kB
+../dist/public/assets/MSNBC_1773536950584-DXnjYP_H.png                                       32.99 kB
+../dist/public/assets/CTV2_1773545440801-BQRb6VTL.png                                        34.23 kB
+../dist/public/assets/Sound_1775176942072-DQdszRIH.png                                       41.57 kB
+../dist/public/assets/cbc-news-logo-black-and-white_1773536865600-CmQYEfGd.png               42.50 kB
+../dist/public/assets/Weather_Alert_1773608511887-BFQqPgnq.png                               42.94 kB
+../dist/public/assets/mars_planet-CmC43G73.jpg                                               44.56 kB
+../dist/public/assets/ChatGPT_Image_Jan_22__2026__02_34_52_PM_1769110943463-7zS7ot_E.png     44.81 kB
+../dist/public/assets/CNN_1773536484180-DucbTf95.png                                         48.85 kB
+../dist/public/assets/Raw_Story_1773607642361-CKfjYmZ7.png                                   58.82 kB
+../dist/public/assets/venus_planet-pWHYImPJ.jpg                                              59.79 kB
+../dist/public/assets/Closet_Night_1774008796953-DXicaVTT.png                                60.27 kB
+../dist/public/assets/Degree_1775175568321-Dz3bFyki.png                                      63.04 kB
+../dist/public/assets/Teacher_White2_1775164260333-DzP7w8Fj.png                              64.77 kB
+../dist/public/assets/Teacher_1775101022422-6YMTUW-g.png                                     64.78 kB
+../dist/public/assets/Reminders_1775175754351-2hYnQH-_.png                                   65.19 kB
+../dist/public/assets/victory-fanfare-CYW8HOv7.mp3                                           67.20 kB
+../dist/public/assets/BBC_1773609711103-BfBjSiKV.png                                         73.89 kB
+../dist/public/assets/Pug_Night_1774008796949-3yLPls61.png                                   79.00 kB
+../dist/public/assets/Cat_Night_1774008796951-Dcd6HiVq.png                                   79.73 kB
+../dist/public/assets/image_1772579486577-DIShbgJ0.png                                       80.83 kB
+../dist/public/assets/Yasu_1774341165517-DKbY5fn0.png                                        83.10 kB
+../dist/public/assets/Forecast2_1773897989398-DSI3LWIa.png                                  116.96 kB
+../dist/public/assets/BG2_1769977873184-BMC0LH4N.jpg                                        124.20 kB
+../dist/public/assets/Chang-School2_1770607146365-_XjUzhwY.png                              128.19 kB
+../dist/public/assets/Hallway_Night_1774008796945-BuzRBJO8.png                              129.78 kB
+../dist/public/assets/crowd-cheer-DkUts2go.mp3                                              142.08 kB
+../dist/public/assets/Newspaper2_1773898792176-DFEQePQK.png                                 143.21 kB
+../dist/public/assets/Queen_Night_1774008796950-B57EmMzY.png                                228.53 kB
+../dist/public/assets/Living_Room_Night_1774008796948-CTbz7lx7.png                          292.86 kB
+../dist/public/assets/King_Night_1774008796946-qs8T8Rav.png                                 321.84 kB
+../dist/public/assets/Kitchen_Night_1774008796947-DzGdhLNI.png                              333.69 kB
+../dist/public/assets/Bookshelf9_1776012207833-B5LLo_UQ.jpg                                 421.70 kB
+../dist/public/assets/image_1775263840386-D9P4kHhc.png                                      494.62 kB
+../dist/public/assets/TMU2_1772842397746-B9XhF-lv.png                                       788.80 kB
+../dist/public/assets/Bryn_1774341392117-CfDPXLO2.png                                     1,069.12 kB
+../dist/public/assets/mass-background2_1774005959332-mw-YgJzQ.png                         1,426.94 kB
+../dist/public/assets/Floorplan11_1774005505273-BEWw-gX1.png                              1,553.36 kB
+../dist/public/assets/Echo_1774213902054-Dum5d4T4.png                                     2,055.05 kB
+../dist/public/assets/Music_BG20_1774006032495-CxhBg4I3.png                               2,114.88 kB
+../dist/public/assets/style-gahiLtYy.css                                                    261.65 kB │ gzip:  42.28 kB
+../dist/public/assets/index-DeCm7JuD.js                                                   3,234.91 kB │ gzip: 812.37 kB
+✓ built in 52.83s
+building server...
+
+  dist/index.cjs  13.3mb ⚠️
+
+⚡ Done in 1459ms
+5000/tcp:            101834
+[PM2] Applying action deleteProcessId on app [dashboard](ids: [ 0 ])
+[PM2] [dashboard](0) ✓
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+[PM2] Starting /home/byhomeyyz/Home-View/dist/index.cjs in fork_mode (1 instance)
+[PM2] Done.
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+├────┼────────────────────┼──────────┼──────┼───────────┼──────────┼──────────┤
+│ 0  │ dashboard          │ fork     │ 0    │ online    │ 0%       │ 17.3mb   │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+[PM2] Saving current process list...
+[PM2] Successfully saved in /home/byhomeyyz/.pm2/dump.pm2
+byhomeyyz@raspberrypi:~/Home-View $ cd ~/Home-View && git pull origin main && npm run build && fuser -k 5000/tcp; sleep 2 && pm2 delete dashboard; pm2 start dist/index.cjs --name dashboard --cwd /home/byhomeyyz/Home-View --node-args="-r /home/byhomeyyz/Home-View/preload.cjs" && pm2 save
+remote: Enumerating objects: 11, done.
+remote: Counting objects: 100% (11/11), done.
+remote: Compressing objects: 100% (1/1), done.
+remote: Total 6 (delta 5), reused 6 (delta 5), pack-reused 0 (from 0)
+Unpacking objects: 100% (6/6), 729 bytes | 10.00 KiB/s, done.
+From https://github.com/Reachushere/Home-View
+ * branch                main       -> FETCH_HEAD
+   0580b4aeb..d226ecc03  main       -> origin/main
+Updating 0580b4aeb..d226ecc03
+Fast-forward
+ client/src/pages/dashboard.tsx | 31 ++-----------------------------
+ 1 file changed, 2 insertions(+), 29 deletions(-)
+npm warn Unknown builtin config "globalignorefile". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> rest-express@1.0.0 build
+> tsx script/build.ts
+
+building client...
+vite v7.3.0 building client environment for production...
+✓ 2978 modules transformed.
+../dist/public/index.html                                                                     4.01 kB │ gzip:   1.54 kB
+../dist/public/assets/CN2_1773897525570-afBA9WIn.png                                          4.64 kB
+../dist/public/assets/Zoomcam_1773655084814-Dd0RqcMf.png                                      6.41 kB
+../dist/public/assets/saturn_planet-DyCcVDqz.jpg                                              9.35 kB
+../dist/public/assets/uranus_planet-BBf9JheU.jpg                                             14.81 kB
+../dist/public/assets/Button_1769701329320-vj3a_XjG.png                                      14.88 kB
+../dist/public/assets/Fox_News_1773610204651-Cm2F7G44.png                                    18.91 kB
+../dist/public/assets/Animoji_1769350617739-DKdhEpD6.webp                                    21.31 kB
+../dist/public/assets/Wifi_1773656687145-BkFdNwBM.png                                        21.68 kB
+../dist/public/assets/Global_White_1773536754594-C17BPXU2.png                                22.80 kB
+../dist/public/assets/jupiter_planet-BIMUlata.jpg                                            26.92 kB
+../dist/public/assets/ABC_1773609250051-CfAo4DiJ.png                                         31.54 kB
+../dist/public/assets/Zoom2_1773776262533-u1jCiZQ5.png                                       31.94 kB
+../dist/public/assets/MSNBC_1773536950584-DXnjYP_H.png                                       32.99 kB
+../dist/public/assets/CTV2_1773545440801-BQRb6VTL.png                                        34.23 kB
+../dist/public/assets/Sound_1775176942072-DQdszRIH.png                                       41.57 kB
+../dist/public/assets/cbc-news-logo-black-and-white_1773536865600-CmQYEfGd.png               42.50 kB
+../dist/public/assets/Weather_Alert_1773608511887-BFQqPgnq.png                               42.94 kB
+../dist/public/assets/mars_planet-CmC43G73.jpg                                               44.56 kB
+../dist/public/assets/ChatGPT_Image_Jan_22__2026__02_34_52_PM_1769110943463-7zS7ot_E.png     44.81 kB
+../dist/public/assets/CNN_1773536484180-DucbTf95.png                                         48.85 kB
+../dist/public/assets/Raw_Story_1773607642361-CKfjYmZ7.png                                   58.82 kB
+../dist/public/assets/venus_planet-pWHYImPJ.jpg                                              59.79 kB
+../dist/public/assets/Closet_Night_1774008796953-DXicaVTT.png                                60.27 kB
+../dist/public/assets/Degree_1775175568321-Dz3bFyki.png                                      63.04 kB
+../dist/public/assets/Teacher_White2_1775164260333-DzP7w8Fj.png                              64.77 kB
+../dist/public/assets/Teacher_1775101022422-6YMTUW-g.png                                     64.78 kB
+../dist/public/assets/Reminders_1775175754351-2hYnQH-_.png                                   65.19 kB
+../dist/public/assets/victory-fanfare-CYW8HOv7.mp3                                           67.20 kB
+../dist/public/assets/BBC_1773609711103-BfBjSiKV.png                                         73.89 kB
+../dist/public/assets/Pug_Night_1774008796949-3yLPls61.png                                   79.00 kB
+../dist/public/assets/Cat_Night_1774008796951-Dcd6HiVq.png                                   79.73 kB
+../dist/public/assets/image_1772579486577-DIShbgJ0.png                                       80.83 kB
+../dist/public/assets/Yasu_1774341165517-DKbY5fn0.png                                        83.10 kB
+../dist/public/assets/Forecast2_1773897989398-DSI3LWIa.png                                  116.96 kB
+../dist/public/assets/BG2_1769977873184-BMC0LH4N.jpg                                        124.20 kB
+../dist/public/assets/Chang-School2_1770607146365-_XjUzhwY.png                              128.19 kB
+../dist/public/assets/Hallway_Night_1774008796945-BuzRBJO8.png                              129.78 kB
+../dist/public/assets/crowd-cheer-DkUts2go.mp3                                              142.08 kB
+../dist/public/assets/Newspaper2_1773898792176-DFEQePQK.png                                 143.21 kB
+../dist/public/assets/Queen_Night_1774008796950-B57EmMzY.png                                228.53 kB
+../dist/public/assets/Living_Room_Night_1774008796948-CTbz7lx7.png                          292.86 kB
+../dist/public/assets/King_Night_1774008796946-qs8T8Rav.png                                 321.84 kB
+../dist/public/assets/Kitchen_Night_1774008796947-DzGdhLNI.png                              333.69 kB
+../dist/public/assets/Bookshelf9_1776012207833-B5LLo_UQ.jpg                                 421.70 kB
+../dist/public/assets/image_1775263840386-D9P4kHhc.png                                      494.62 kB
+../dist/public/assets/TMU2_1772842397746-B9XhF-lv.png                                       788.80 kB
+../dist/public/assets/Bryn_1774341392117-CfDPXLO2.png                                     1,069.12 kB
+../dist/public/assets/mass-background2_1774005959332-mw-YgJzQ.png                         1,426.94 kB
+../dist/public/assets/Floorplan11_1774005505273-BEWw-gX1.png                              1,553.36 kB
+../dist/public/assets/Echo_1774213902054-Dum5d4T4.png                                     2,055.05 kB
+../dist/public/assets/Music_BG20_1774006032495-CxhBg4I3.png                               2,114.88 kB
+../dist/public/assets/style-gahiLtYy.css                                                    261.65 kB │ gzip:  42.28 kB
+../dist/public/assets/index-OToc9lnl.js                                                   3,234.20 kB │ gzip: 812.14 kB
+✓ built in 51.75s
+building server...
+
+  dist/index.cjs  13.3mb ⚠️
+
+⚡ Done in 1415ms
+5000/tcp:            102263
+[PM2] Applying action deleteProcessId on app [dashboard](ids: [ 0 ])
+[PM2] [dashboard](0) ✓
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+[PM2] Starting /home/byhomeyyz/Home-View/dist/index.cjs in fork_mode (1 instance)
+[PM2] Done.
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+├────┼────────────────────┼──────────┼──────┼───────────┼──────────┼──────────┤
+│ 0  │ dashboard          │ fork     │ 0    │ online    │ 0%       │ 17.3mb   │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+[PM2] Saving current process list...
+[PM2] Successfully saved in /home/byhomeyyz/.pm2/dump.pm2
+byhomeyyz@raspberrypi:~/Home-View $ cd ~/Home-View && git pull origin main && npm run build && fuser -k 5000/tcp; sleep 2 && pm2 delete dashboard; pm2 start dist/index.cjs --name dashboard --cwd /home/byhomeyyz/Home-View --node-args="-r /home/byhomeyyz/Home-View/preload.cjs" && pm2 save
+remote: Enumerating objects: 11, done.
+remote: Counting objects: 100% (11/11), done.
+remote: Compressing objects: 100% (1/1), done.
+remote: Total 6 (delta 5), reused 6 (delta 5), pack-reused 0 (from 0)
+Unpacking objects: 100% (6/6), 767 bytes | 383.00 KiB/s, done.
+From https://github.com/Reachushere/Home-View
+ * branch                main       -> FETCH_HEAD
+   d226ecc03..28546f222  main       -> origin/main
+Updating d226ecc03..28546f222
+Fast-forward
+ client/src/components/NewSemesterChecklist.tsx | 27 +++++++++++++--------------
+ 1 file changed, 13 insertions(+), 14 deletions(-)
+npm warn Unknown builtin config "globalignorefile". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> rest-express@1.0.0 build
+> tsx script/build.ts
+
+building client...
+vite v7.3.0 building client environment for production...
+✓ 2978 modules transformed.
+../dist/public/index.html                                                                     4.01 kB │ gzip:   1.54 kB
+../dist/public/assets/CN2_1773897525570-afBA9WIn.png                                          4.64 kB
+../dist/public/assets/Zoomcam_1773655084814-Dd0RqcMf.png                                      6.41 kB
+../dist/public/assets/saturn_planet-DyCcVDqz.jpg                                              9.35 kB
+../dist/public/assets/uranus_planet-BBf9JheU.jpg                                             14.81 kB
+../dist/public/assets/Button_1769701329320-vj3a_XjG.png                                      14.88 kB
+../dist/public/assets/Fox_News_1773610204651-Cm2F7G44.png                                    18.91 kB
+../dist/public/assets/Animoji_1769350617739-DKdhEpD6.webp                                    21.31 kB
+../dist/public/assets/Wifi_1773656687145-BkFdNwBM.png                                        21.68 kB
+../dist/public/assets/Global_White_1773536754594-C17BPXU2.png                                22.80 kB
+../dist/public/assets/jupiter_planet-BIMUlata.jpg                                            26.92 kB
+../dist/public/assets/ABC_1773609250051-CfAo4DiJ.png                                         31.54 kB
+../dist/public/assets/Zoom2_1773776262533-u1jCiZQ5.png                                       31.94 kB
+../dist/public/assets/MSNBC_1773536950584-DXnjYP_H.png                                       32.99 kB
+../dist/public/assets/CTV2_1773545440801-BQRb6VTL.png                                        34.23 kB
+../dist/public/assets/Sound_1775176942072-DQdszRIH.png                                       41.57 kB
+../dist/public/assets/cbc-news-logo-black-and-white_1773536865600-CmQYEfGd.png               42.50 kB
+../dist/public/assets/Weather_Alert_1773608511887-BFQqPgnq.png                               42.94 kB
+../dist/public/assets/mars_planet-CmC43G73.jpg                                               44.56 kB
+../dist/public/assets/ChatGPT_Image_Jan_22__2026__02_34_52_PM_1769110943463-7zS7ot_E.png     44.81 kB
+../dist/public/assets/CNN_1773536484180-DucbTf95.png                                         48.85 kB
+../dist/public/assets/Raw_Story_1773607642361-CKfjYmZ7.png                                   58.82 kB
+../dist/public/assets/venus_planet-pWHYImPJ.jpg                                              59.79 kB
+../dist/public/assets/Closet_Night_1774008796953-DXicaVTT.png                                60.27 kB
+../dist/public/assets/Degree_1775175568321-Dz3bFyki.png                                      63.04 kB
+../dist/public/assets/Teacher_White2_1775164260333-DzP7w8Fj.png                              64.77 kB
+../dist/public/assets/Teacher_1775101022422-6YMTUW-g.png                                     64.78 kB
+../dist/public/assets/Reminders_1775175754351-2hYnQH-_.png                                   65.19 kB
+../dist/public/assets/victory-fanfare-CYW8HOv7.mp3                                           67.20 kB
+../dist/public/assets/BBC_1773609711103-BfBjSiKV.png                                         73.89 kB
+../dist/public/assets/Pug_Night_1774008796949-3yLPls61.png                                   79.00 kB
+../dist/public/assets/Cat_Night_1774008796951-Dcd6HiVq.png                                   79.73 kB
+../dist/public/assets/image_1772579486577-DIShbgJ0.png                                       80.83 kB
+../dist/public/assets/Yasu_1774341165517-DKbY5fn0.png                                        83.10 kB
+../dist/public/assets/Forecast2_1773897989398-DSI3LWIa.png                                  116.96 kB
+../dist/public/assets/BG2_1769977873184-BMC0LH4N.jpg                                        124.20 kB
+../dist/public/assets/Chang-School2_1770607146365-_XjUzhwY.png                              128.19 kB
+../dist/public/assets/Hallway_Night_1774008796945-BuzRBJO8.png                              129.78 kB
+../dist/public/assets/crowd-cheer-DkUts2go.mp3                                              142.08 kB
+../dist/public/assets/Newspaper2_1773898792176-DFEQePQK.png                                 143.21 kB
+../dist/public/assets/Queen_Night_1774008796950-B57EmMzY.png                                228.53 kB
+../dist/public/assets/Living_Room_Night_1774008796948-CTbz7lx7.png                          292.86 kB
+../dist/public/assets/King_Night_1774008796946-qs8T8Rav.png                                 321.84 kB
+../dist/public/assets/Kitchen_Night_1774008796947-DzGdhLNI.png                              333.69 kB
+../dist/public/assets/Bookshelf9_1776012207833-B5LLo_UQ.jpg                                 421.70 kB
+../dist/public/assets/image_1775263840386-D9P4kHhc.png                                      494.62 kB
+../dist/public/assets/TMU2_1772842397746-B9XhF-lv.png                                       788.80 kB
+../dist/public/assets/Bryn_1774341392117-CfDPXLO2.png                                     1,069.12 kB
+../dist/public/assets/mass-background2_1774005959332-mw-YgJzQ.png                         1,426.94 kB
+../dist/public/assets/Floorplan11_1774005505273-BEWw-gX1.png                              1,553.36 kB
+../dist/public/assets/Echo_1774213902054-Dum5d4T4.png                                     2,055.05 kB
+../dist/public/assets/Music_BG20_1774006032495-CxhBg4I3.png                               2,114.88 kB
+../dist/public/assets/style-gahiLtYy.css                                                    261.65 kB │ gzip:  42.28 kB
+../dist/public/assets/index-BdrZoXLU.js                                                   3,234.09 kB │ gzip: 812.08 kB
+✓ built in 52.37s
+building server...
+
+  dist/index.cjs  13.3mb ⚠️
+
+⚡ Done in 1462ms
+5000/tcp:            102322
+[PM2] Applying action deleteProcessId on app [dashboard](ids: [ 0 ])
+[PM2] [dashboard](0) ✓
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+[PM2] Starting /home/byhomeyyz/Home-View/dist/index.cjs in fork_mode (1 instance)
+[PM2] Done.
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+├────┼────────────────────┼──────────┼──────┼───────────┼──────────┼──────────┤
+│ 0  │ dashboard          │ fork     │ 0    │ online    │ 0%       │ 17.3mb   │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+[PM2] Saving current process list...
+[PM2] Successfully saved in /home/byhomeyyz/.pm2/dump.pm2
+byhomeyyz@raspberrypi:~/Home-View $ cd ~/Home-View && git pull origin main && npm run build && fuser -k 5000/tcp; sleep 2 && pm2 delete dashboard; pm2 start dist/index.cjs --name dashboard --cwd /home/byhomeyyz/Home-View --node-args="-r /home/byhomeyyz/Home-View/preload.cjs" && pm2 save
+remote: Enumerating objects: 7, done.
+remote: Counting objects: 100% (7/7), done.
+remote: Compressing objects: 100% (1/1), done.
+remote: Total 4 (delta 3), reused 4 (delta 3), pack-reused 0 (from 0)
+Unpacking objects: 100% (4/4), 1.36 KiB | 46.00 KiB/s, done.
+From https://github.com/Reachushere/Home-View
+ * branch                main       -> FETCH_HEAD
+   28546f222..f7c0558d2  main       -> origin/main
+Updating 28546f222..f7c0558d2
+Fast-forward
+ server/routes.ts | 60 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 59 insertions(+), 1 deletion(-)
+npm warn Unknown builtin config "globalignorefile". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> rest-express@1.0.0 build
+> tsx script/build.ts
+
+building client...
+vite v7.3.0 building client environment for production...
+✓ 2978 modules transformed.
+../dist/public/index.html                                                                     4.01 kB │ gzip:   1.54 kB
+../dist/public/assets/CN2_1773897525570-afBA9WIn.png                                          4.64 kB
+../dist/public/assets/Zoomcam_1773655084814-Dd0RqcMf.png                                      6.41 kB
+../dist/public/assets/saturn_planet-DyCcVDqz.jpg                                              9.35 kB
+../dist/public/assets/uranus_planet-BBf9JheU.jpg                                             14.81 kB
+../dist/public/assets/Button_1769701329320-vj3a_XjG.png                                      14.88 kB
+../dist/public/assets/Fox_News_1773610204651-Cm2F7G44.png                                    18.91 kB
+../dist/public/assets/Animoji_1769350617739-DKdhEpD6.webp                                    21.31 kB
+../dist/public/assets/Wifi_1773656687145-BkFdNwBM.png                                        21.68 kB
+../dist/public/assets/Global_White_1773536754594-C17BPXU2.png                                22.80 kB
+../dist/public/assets/jupiter_planet-BIMUlata.jpg                                            26.92 kB
+../dist/public/assets/ABC_1773609250051-CfAo4DiJ.png                                         31.54 kB
+../dist/public/assets/Zoom2_1773776262533-u1jCiZQ5.png                                       31.94 kB
+../dist/public/assets/MSNBC_1773536950584-DXnjYP_H.png                                       32.99 kB
+../dist/public/assets/CTV2_1773545440801-BQRb6VTL.png                                        34.23 kB
+../dist/public/assets/Sound_1775176942072-DQdszRIH.png                                       41.57 kB
+../dist/public/assets/cbc-news-logo-black-and-white_1773536865600-CmQYEfGd.png               42.50 kB
+../dist/public/assets/Weather_Alert_1773608511887-BFQqPgnq.png                               42.94 kB
+../dist/public/assets/mars_planet-CmC43G73.jpg                                               44.56 kB
+../dist/public/assets/ChatGPT_Image_Jan_22__2026__02_34_52_PM_1769110943463-7zS7ot_E.png     44.81 kB
+../dist/public/assets/CNN_1773536484180-DucbTf95.png                                         48.85 kB
+../dist/public/assets/Raw_Story_1773607642361-CKfjYmZ7.png                                   58.82 kB
+../dist/public/assets/venus_planet-pWHYImPJ.jpg                                              59.79 kB
+../dist/public/assets/Closet_Night_1774008796953-DXicaVTT.png                                60.27 kB
+../dist/public/assets/Degree_1775175568321-Dz3bFyki.png                                      63.04 kB
+../dist/public/assets/Teacher_White2_1775164260333-DzP7w8Fj.png                              64.77 kB
+../dist/public/assets/Teacher_1775101022422-6YMTUW-g.png                                     64.78 kB
+../dist/public/assets/Reminders_1775175754351-2hYnQH-_.png                                   65.19 kB
+../dist/public/assets/victory-fanfare-CYW8HOv7.mp3                                           67.20 kB
+../dist/public/assets/BBC_1773609711103-BfBjSiKV.png                                         73.89 kB
+../dist/public/assets/Pug_Night_1774008796949-3yLPls61.png                                   79.00 kB
+../dist/public/assets/Cat_Night_1774008796951-Dcd6HiVq.png                                   79.73 kB
+../dist/public/assets/image_1772579486577-DIShbgJ0.png                                       80.83 kB
+../dist/public/assets/Yasu_1774341165517-DKbY5fn0.png                                        83.10 kB
+../dist/public/assets/Forecast2_1773897989398-DSI3LWIa.png                                  116.96 kB
+../dist/public/assets/BG2_1769977873184-BMC0LH4N.jpg                                        124.20 kB
+../dist/public/assets/Chang-School2_1770607146365-_XjUzhwY.png                              128.19 kB
+../dist/public/assets/Hallway_Night_1774008796945-BuzRBJO8.png                              129.78 kB
+../dist/public/assets/crowd-cheer-DkUts2go.mp3                                              142.08 kB
+../dist/public/assets/Newspaper2_1773898792176-DFEQePQK.png                                 143.21 kB
+../dist/public/assets/Queen_Night_1774008796950-B57EmMzY.png                                228.53 kB
+../dist/public/assets/Living_Room_Night_1774008796948-CTbz7lx7.png                          292.86 kB
+../dist/public/assets/King_Night_1774008796946-qs8T8Rav.png                                 321.84 kB
+../dist/public/assets/Kitchen_Night_1774008796947-DzGdhLNI.png                              333.69 kB
+../dist/public/assets/Bookshelf9_1776012207833-B5LLo_UQ.jpg                                 421.70 kB
+../dist/public/assets/image_1775263840386-D9P4kHhc.png                                      494.62 kB
+../dist/public/assets/TMU2_1772842397746-B9XhF-lv.png                                       788.80 kB
+../dist/public/assets/Bryn_1774341392117-CfDPXLO2.png                                     1,069.12 kB
+../dist/public/assets/mass-background2_1774005959332-mw-YgJzQ.png                         1,426.94 kB
+../dist/public/assets/Floorplan11_1774005505273-BEWw-gX1.png                              1,553.36 kB
+../dist/public/assets/Echo_1774213902054-Dum5d4T4.png                                     2,055.05 kB
+../dist/public/assets/Music_BG20_1774006032495-CxhBg4I3.png                               2,114.88 kB
+../dist/public/assets/style-gahiLtYy.css                                                    261.65 kB │ gzip:  42.28 kB
+../dist/public/assets/index-BdrZoXLU.js                                                   3,234.09 kB │ gzip: 812.08 kB
+✓ built in 52.92s
+building server...
+
+  dist/index.cjs  13.3mb ⚠️
+
+⚡ Done in 1474ms
+5000/tcp:            102840
+[PM2] Applying action deleteProcessId on app [dashboard](ids: [ 0 ])
+[PM2] [dashboard](0) ✓
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+[PM2] Starting /home/byhomeyyz/Home-View/dist/index.cjs in fork_mode (1 instance)
+[PM2] Done.
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+├────┼────────────────────┼──────────┼──────┼───────────┼──────────┼──────────┤
+│ 0  │ dashboard          │ fork     │ 0    │ online    │ 0%       │ 17.3mb   │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+[PM2] Saving current process list...
+[PM2] Successfully saved in /home/byhomeyyz/.pm2/dump.pm2
+byhomeyyz@raspberrypi:~/Home-View $ [FileDownload] id=123 name="filename.pdf" objectPath="..." folder="..."
+-bash: [FileDownload]: command not found
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs
+[TAILING] Tailing last 15 lines for [all] processes (change the value with --lines option)
+/home/byhomeyyz/.pm2/pm2.log last 15 lines:
+PM2        | 2026-04-12T13:45:13: PM2 log: App [dashboard:0] starting in -fork mode-
+PM2        | 2026-04-12T13:45:13: PM2 log: App [dashboard:0] online
+PM2        | 2026-04-12T13:52:16: PM2 log: Stopping app:dashboard id:0
+PM2        | 2026-04-12T13:52:16: PM2 log: App [dashboard:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-12T13:52:16: PM2 log: pid=102605 msg=process killed
+PM2        | 2026-04-12T13:52:16: PM2 log: App [dashboard:0] starting in -fork mode-
+PM2        | 2026-04-12T13:52:16: PM2 log: App [dashboard:0] online
+PM2        | 2026-04-12T13:56:15: PM2 log: App [dashboard:0] exited with code [0] via signal [SIGKILL]
+PM2        | 2026-04-12T13:56:15: PM2 log: App [dashboard:0] starting in -fork mode-
+PM2        | 2026-04-12T13:56:15: PM2 log: App [dashboard:0] online
+PM2        | 2026-04-12T13:56:17: PM2 log: Stopping app:dashboard id:0
+PM2        | 2026-04-12T13:56:17: PM2 log: App [dashboard:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-04-12T13:56:17: PM2 log: pid=103085 msg=process killed
+PM2        | 2026-04-12T13:56:17: PM2 log: App [dashboard:0] starting in -fork mode-
+PM2        | 2026-04-12T13:56:17: PM2 log: App [dashboard:0] online
+
+/home/byhomeyyz/.pm2/logs/dashboard-error.log last 15 lines:
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Edge TTS] Attempt 1 failed: Timed out
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Edge TTS] Attempt 1 failed: Timed out
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Edge TTS] Attempt 2 failed: Timed out
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+
+/home/byhomeyyz/.pm2/logs/dashboard-out.log last 15 lines:
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3562s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CASL101 - ASL
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3562s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3562s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CASL101 - ASL/Week 1 - Jan 12-16
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3561s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | Edge TTS completed in 24379ms, 505728 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-226-chunk-0-1776016650379.mp3
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3561s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CASL101 - ASL/Week 10 - Mar 21-27
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3561s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3561s)
+
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CASL101 - ASL/Week 10 - Mar 21-27/Module
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3561s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [AudioPrep] Generating chunk 2/8 for Municipal Priorities for 2020 and Beyond_ Part Two - StrategyCorp.pdf (1414 chars)
+0|dashboard  | Generating Edge TTS for 1414 chars, file: prep-226-chunk-1
+0|dashboard  | [TTS] Using Edge TTS (free, no charges)
+0|dashboard  | [Server] Port 5000 in use, retrying in 3s...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3560s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CASL101 - ASL/Week 11 - Mar 28-Apr 3
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3560s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3560s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CASL101 - ASL/Week 11 - Mar 28-Apr 3/Module
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3560s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3560s)
+0|dashboard  | Edge TTS completed in 1060ms, 540144 bytes
+0|dashboard  | TTS audio saved locally: /tts-audio/prep-226-chunk-1-1776016652241.mp3
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CASL101 - ASL/Week 2 - Jan 17-23
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3559s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3559s)
+0|dashboard  | [OneDrive][TRACE]
