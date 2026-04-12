@@ -3533,7 +3533,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                       padding: '2px 8px',
                       borderRadius: '4px',
                       border: '1px solid rgba(255,255,255,0.5)',
-                      background: 'rgba(255,255,255,0.22)',
+                      background: 'rgba(255,255,255,0.45)',
                       color: '#ffffff',
                       fontSize: '9px',
                       fontWeight: 600,
@@ -3546,7 +3546,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                       flexShrink: 0,
                     }}
                     onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.32)'; e.currentTarget.style.color = '#fff'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.22)'; e.currentTarget.style.color = '#ffffff'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.45)'; e.currentTarget.style.color = '#ffffff'; }}
                     data-testid={`btn-syllabus-${course.code}`}
                   >
                     <FileText size={10} />
