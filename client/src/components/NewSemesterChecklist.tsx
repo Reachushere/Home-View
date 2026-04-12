@@ -99,7 +99,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
   const lastToggleRef = useRef<number>(0);
   const handleToggleComplete = useCallback((item: NewSemesterChecklistItem) => {
     const now = Date.now();
-    if (now - lastToggleRef.current < 400) return;
+    if (now - lastToggleRef.current < 600) return;
     lastToggleRef.current = now;
     updateMutation.mutate({
       id: item.id,
@@ -256,13 +256,14 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
 
     return (
       <div key={item.id} className="flex items-center gap-3 py-1.5" data-testid={`checklist-item-${isCompleted ? 'done-' : ''}${item.id}`}>
-        <button
-          type="button"
+        <a
+          href="#"
+          onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); handleToggleComplete(item); }}
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleToggleComplete(item); }}
           style={{
-            width: '34px',
-            height: '34px',
-            minWidth: '34px',
+            width: '24px',
+            height: '24px',
+            minWidth: '24px',
             flexShrink: 0,
             borderRadius: '4px',
             border: isCompleted ? '2px solid #22c55e' : '2px solid rgba(255,255,255,0.5)',
@@ -274,15 +275,16 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
             touchAction: 'manipulation',
             WebkitTapHighlightColor: 'transparent',
             padding: 0,
+            textDecoration: 'none',
           }}
           data-testid={`checklist-check-${item.id}`}
         >
           {isCompleted && (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="20 6 9 17 4 12" />
             </svg>
           )}
-        </button>
+        </a>
 
         <input
           type="text"
