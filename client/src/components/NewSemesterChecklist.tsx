@@ -143,16 +143,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
     setConfirmTaskTitle('');
   }, [confirmTask, confirmTaskTitle]);
 
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      const target = e.target as Node;
-      if (flyoutRef.current && flyoutRef.current.contains(target)) return;
-      if (confirmRef.current && confirmRef.current.contains(target)) return;
-      onDismiss();
-    };
-    setTimeout(() => document.addEventListener('mousedown', handler), 100);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [onDismiss]);
+  
 
   const renderMiniCalendar = (itemId: number) => {
     const year = datePickerMonth.getFullYear();
