@@ -913,8 +913,16 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
   useEffect(() => {
     let cancelled = false;
     const fetchUrl = pdfUrl || `/api/files/${file.id}/download`;
-    const loadingTask = pdfjsLib.getDocument({ url: fetchUrl, disableAutoFetch: false, disableStream: false });
-    loadingTask.promise
+    fetch(fetchUrl)
+      .then(r => {
+        if (!r.ok) throw new Error(`Server returned ${r.status}`);
+        return r.arrayBuffer();
+      })
+      .then(data => {
+        if (cancelled) return;
+        if (data.byteLength < 100) throw new Error('File is empty or too small');
+        return pdfjsLib.getDocument({ data }).promise;
+      })
       .then(doc => {
         if (!cancelled && doc) {
           setPdfDoc(doc);
@@ -929,7 +937,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
           setLoading(false);
         }
       });
-    return () => { cancelled = true; loadingTask.destroy(); };
+    return () => { cancelled = true; };
   }, [file.id]);
 
   const rightPage = currentPage + 1 <= totalPages ? currentPage + 1 : null;
@@ -946,7 +954,13 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
     const scaleW = halfW / vp.width;
     const scaleH = containerH / vp.height;
     const baseScale = Math.min(scaleW, scaleH);
-    const scale = baseScale * zoom;
+    let scale = baseScale * zoom;
+    const MAX_CANVAS_DIM = 4096;
+    const testVp = page.getViewport({ scale });
+    if (testVp.width > MAX_CANVAS_DIM || testVp.height > MAX_CANVAS_DIM) {
+      const downscale = Math.min(MAX_CANVAS_DIM / testVp.width, MAX_CANVAS_DIM / testVp.height);
+      scale = scale * downscale;
+    }
     const viewport = page.getViewport({ scale });
     canvas.width = viewport.width;
     canvas.height = viewport.height;
