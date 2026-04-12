@@ -1,0 +1,22 @@
+byhomeyyz@raspberrypi:~/Home-View $ psql "postgresql://dashboard:W3belong%404201@localhost:5432/dashboard_db" --no-align -t -c "SELECT id, original_name, LEFT(object_path, 50) as obj_path, LEFT(folder, 30) as folder FROM files WHERE (extracted_text IS NULL OR LENGTH(extracted_text) = 0) AND (folder LIKE '%module%' OR folder LIKE '%reading%') ORDER BY id LIMIT 20;"
+137|CherylN.CollierJonat_2024_ThePoliticsofOntarioSecondEdition.pdf|/local/uploads/1775902325736-CherylN.CollierJonat_|week-8-cppa122-reading
+158|Units 2,10 - 2,12.pdf|/School/1. TMU/Courses/2026/Winter/CASL101 - Ameri|week-7-casl101-module
+192|CherylN.CollierJonat_2024_ThePoliticsofOntarioSecondEdition.pdf|/local/uploads/1775479359566-CherylN.CollierJonat_|week-4-cppa122-reading
+196|CAMA Strong Mayors White Paper - Final English - March 23 2023_0.pdf|/local/uploads/1775479367095-CAMA_Strong_Mayors_Wh|week-5-cppa122-reading
+198|Units 2,1 - 2,6.pdf|/local/uploads/1775479371798-Units_2_1_-_2_6.pdf|week-5-casl101-module
+205|Units 2,7 - 2,9.pdf|/local/uploads/1775479383445-Units_2_7_-_2_9.pdf|week-6-casl101-module
+212|Units 3,1 - 3,5.pdf|/local/uploads/1775479403912-Units_3_1_-_3_5.pdf|week-9-casl101-module
+214|156CBEBA.pdf|/local/uploads/1775479407046-156CBEBA.pdf|week-10-cppa122-reading
+215|26929898.pdf|/local/uploads/1775479407261-26929898.pdf|week-10-cppa122-reading
+216|AUMA-UP42-ResPapr-CommEngageLocalComm.Jones_.Oct11.pdf|/local/uploads/1775479407556-AUMA-UP42-ResPapr-Com|week-10-cppa122-reading
+217|The Paradox of Participation_ An Overview of Public Participation and Local Government in Canada_26_01_13_02_25_03.pdf|/local/uploads/1775479407757-The_Paradox_of_Partic|week-10-cppa122-reading
+218|CFNF400, Module 10 - Learning Objectives.pdf|/local/uploads/1775479409939-CFNF400__Module_10_-_|week-10-cfnf400-module
+219|Units 3,6 - 3,13.pdf|/local/uploads/1775479412183-Units_3_6_-_3_13.pdf|week-10-casl101-module
+228|PUBLIC OPINION RESEARCH REPORT.pdf|/local/uploads/1775479416081-PUBLIC_OPINION_RESEAR|week-11-cppa122-reading
+229|CFNF400, Module 11 - Learning Objectives.pdf|/local/uploads/1775479417594-CFNF400__Module_11_-_|week-11-cfnf400-module
+230|Units 3,14 - 3,16.pdf|/local/uploads/1775479419945-Units_3_14_-_3_16.pdf|week-11-casl101-module
+258|CPPA122, Module 13 - End of the Course.pdf|/local/uploads/1775890924045-CPPA122__Module_13_-_|week-13-cppa122-module
+259|CFNF400, Module 13 - Assignment Detail.pdf|/local/uploads/1775890926717-CFNF400__Module_13_-_|week-13-cfnf400-module
+315|Units 2,7 - 2,9.pdf|/local/uploads/1775900863891-Units_2_7_-_2_9.pdf|week-5-casl101-module
+319|Units 2,7 - 2,9.pdf|/local/uploads/1775900871356-Units_2_7_-_2_9.pdf|week-5-casl101-module
+byhomeyyz@raspberrypi:~/Home-View $
