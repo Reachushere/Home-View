@@ -726,7 +726,7 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
               marginTop: '20px',
               letterSpacing: '0.5px',
             }}>
-              Tap a book to open · Tap outside to close
+              Click a book to open
             </div>
           </div>
         </div>,
