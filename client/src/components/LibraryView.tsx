@@ -2571,6 +2571,14 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             inset 0 1px 4px rgba(255,255,255,0.14);
           border-bottom: 2px solid rgba(30,15,5,0.5);
         }
+        .book-spine-item {
+          will-change: transform, filter;
+          transform: translateY(0);
+          filter: brightness(1);
+          transition: transform 0.2s ease-out, filter 0.2s ease-out;
+          backface-visibility: hidden;
+          -webkit-backface-visibility: hidden;
+        }
         .book-spine-item:hover {
           filter: brightness(1.15);
           transform: translateY(-8px) !important;
