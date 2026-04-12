@@ -16764,16 +16764,34 @@ document.body.removeChild(a);
       const haHeaders = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
 
       let inBreakPeriod = false;
+      let effectiveSemester: any = null;
       try {
         const breakCheckSem = await storage.getActiveSemesterSettings();
         if (breakCheckSem) {
           const breakToday = torontoDate();
           const semEnd = breakCheckSem.semesterEndDate ? new Date(breakCheckSem.semesterEndDate) : null;
           if (semEnd && breakToday > semEnd) {
-            inBreakPeriod = true;
-            console.log(`[Cat Lights] Between semesters (past ${breakCheckSem.semesterName} end ${semEnd.toISOString().slice(0, 10)}) — skipping prompt entirely`);
-            catLightsPromptPending = false;
-            return;
+            console.log(`[Cat Lights] Past active semester "${breakCheckSem.semesterName}" end (${semEnd.toISOString().slice(0, 10)}) — checking for another semester covering today...`);
+            const allSems = await storage.getAllSemesterSettings();
+            const matchingSem = allSems.find(s => {
+              const sStart = s.semesterStartDate ? new Date(s.semesterStartDate) : null;
+              const sEnd = s.semesterEndDate ? new Date(s.semesterEndDate) : null;
+              if (!sStart) return false;
+              const bufferStart = new Date(sStart);
+              bufferStart.setDate(bufferStart.getDate() - 7);
+              return breakToday >= bufferStart && (!sEnd || breakToday <= sEnd);
+            });
+            if (matchingSem) {
+              console.log(`[Cat Lights] Found matching semester: "${matchingSem.semesterName}" (${matchingSem.semesterStartDate} to ${matchingSem.semesterEndDate})`);
+              effectiveSemester = matchingSem;
+            } else {
+              inBreakPeriod = true;
+              console.log(`[Cat Lights] No semester covers today's date — skipping prompt entirely`);
+              catLightsPromptPending = false;
+              return;
+            }
+          } else {
+            effectiveSemester = breakCheckSem;
           }
         } else {
           inBreakPeriod = true;
@@ -16844,16 +16862,20 @@ document.body.removeChild(a);
 
       console.log(`[Cat Lights][TRACE] Step 1: Getting today's date`);
       const today = torontoDate();
-      console.log(`[Cat Lights][TRACE] Step 2: today=${today.toISOString()}, fetching semester settings...`);
-      let semesterSettings: any;
-      try {
-        semesterSettings = await storage.getActiveSemesterSettings();
-        console.log(`[Cat Lights][TRACE] Step 2b: getActiveSemesterSettings returned ${semesterSettings ? `id=${semesterSettings.id}, type=${semesterSettings.semesterType}` : 'null'}`);
-      } catch (dbErr: any) {
-        console.error(`[Cat Lights][TRACE] Step 2 FAILED — DB error getting semester settings: ${dbErr.message}`);
-        console.error(`[Cat Lights][TRACE] Full error:`, dbErr);
-        catLightsPromptPending = false;
-        return;
+      console.log(`[Cat Lights][TRACE] Step 2: today=${today.toISOString()}, using effective semester...`);
+      let semesterSettings: any = effectiveSemester;
+      if (!semesterSettings) {
+        try {
+          semesterSettings = await storage.getActiveSemesterSettings();
+          console.log(`[Cat Lights][TRACE] Step 2b: getActiveSemesterSettings returned ${semesterSettings ? `id=${semesterSettings.id}, type=${semesterSettings.semesterType}` : 'null'}`);
+        } catch (dbErr: any) {
+          console.error(`[Cat Lights][TRACE] Step 2 FAILED — DB error getting semester settings: ${dbErr.message}`);
+          console.error(`[Cat Lights][TRACE] Full error:`, dbErr);
+          catLightsPromptPending = false;
+          return;
+        }
+      } else {
+        console.log(`[Cat Lights][TRACE] Step 2b: Using effective semester id=${semesterSettings.id} "${semesterSettings.semesterName}"`);
       }
 
       if (!semesterSettings) {
