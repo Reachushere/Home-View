@@ -1926,6 +1926,11 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
   const [renameSaving, setRenameSaving] = useState(false);
   const renameInputRef = useRef<HTMLInputElement>(null);
 
+  const [newReadingPrompt, setNewReadingPrompt] = useState<FileRecord | null>(null);
+  const [newReadingRenameValue, setNewReadingRenameValue] = useState('');
+  const newReadingRenameRef = useRef<HTMLInputElement>(null);
+  const newReadingQueueRef = useRef<FileRecord[]>([]);
+
   const [aiSearchOpen, setAiSearchOpen] = useState(false);
   const [aiPrompt, setAiPrompt] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
@@ -1967,6 +1972,59 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       })
       .catch(() => { setSyllabusPaths(localPaths); });
   }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen || allFiles.length === 0 || newReadingPrompt) return;
+    try {
+      const prompted: string[] = JSON.parse(localStorage.getItem('library-reading-rename-prompted') || '[]');
+      const promptedSet = new Set(prompted);
+      const newReadings = allFiles.filter(f => {
+        if (!f.folder || !f.folder.toLowerCase().includes('-reading')) return false;
+        if (promptedSet.has(String(f.id))) return false;
+        if (f.displayName && f.displayName !== f.originalName) return false;
+        return true;
+      });
+      if (newReadings.length > 0) {
+        newReadingQueueRef.current = newReadings.slice(1);
+        const first = newReadings[0];
+        setNewReadingRenameValue(first.originalName.replace(/\.(pdf|docx?|pptx?|xlsx?)$/i, ''));
+        setNewReadingPrompt(first);
+      }
+    } catch {}
+  }, [isOpen, allFiles, newReadingPrompt]);
+
+  useEffect(() => {
+    if (newReadingPrompt && newReadingRenameRef.current) {
+      newReadingRenameRef.current.focus();
+      newReadingRenameRef.current.select();
+    }
+  }, [newReadingPrompt]);
+
+  const handleReadingRenameResponse = useCallback(async (file: FileRecord, newName: string | null) => {
+    const prompted: string[] = JSON.parse(localStorage.getItem('library-reading-rename-prompted') || '[]');
+    prompted.push(String(file.id));
+    localStorage.setItem('library-reading-rename-prompted', JSON.stringify(prompted));
+
+    if (newName && newName.trim() && newName.trim() !== file.originalName.replace(/\.(pdf|docx?|pptx?|xlsx?)$/i, '')) {
+      try {
+        await fetch(`/api/files/${file.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ displayName: newName.trim() }),
+        });
+        refetchFiles();
+      } catch {}
+    }
+
+    setNewReadingPrompt(null);
+    if (newReadingQueueRef.current.length > 0) {
+      const next = newReadingQueueRef.current.shift()!;
+      setTimeout(() => {
+        setNewReadingRenameValue(next.originalName.replace(/\.(pdf|docx?|pptx?|xlsx?)$/i, ''));
+        setNewReadingPrompt(next);
+      }, 300);
+    }
+  }, [refetchFiles]);
 
   const preExtractTriggered = useRef(false);
   useEffect(() => {
@@ -3687,6 +3745,104 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
               </div>
             );
           })}
+        </div>
+      )}
+
+      {newReadingPrompt && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0,0,0,0.6)',
+            zIndex: 100010,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          data-testid="new-reading-rename-overlay"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              backgroundColor: '#1a1a2e',
+              border: '1px solid rgba(139,92,246,0.4)',
+              borderRadius: '14px',
+              padding: '22px 26px',
+              minWidth: '380px',
+              maxWidth: '90vw',
+              boxShadow: '0 12px 48px rgba(0,0,0,0.7), 0 0 20px rgba(139,92,246,0.1)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
+              <BookOpen size={18} color="#c4b5fd" />
+              <span style={{ color: '#c4b5fd', fontWeight: 700, fontSize: '15px', letterSpacing: '0.5px' }}>New Reading Added</span>
+            </div>
+            <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', marginBottom: '6px' }}>
+              File: <span style={{ color: 'rgba(255,255,255,0.7)' }}>{newReadingPrompt.originalName}</span>
+            </div>
+            <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', marginBottom: '14px' }}>
+              Folder: <span style={{ color: 'rgba(255,255,255,0.7)' }}>{newReadingPrompt.folder}</span>
+            </div>
+            <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', marginBottom: '10px' }}>
+              Would you like to give this reading a display name?
+            </div>
+            <input
+              ref={newReadingRenameRef}
+              value={newReadingRenameValue}
+              onChange={(e) => setNewReadingRenameValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleReadingRenameResponse(newReadingPrompt, newReadingRenameValue);
+                if (e.key === 'Escape') handleReadingRenameResponse(newReadingPrompt, null);
+              }}
+              style={{
+                width: '100%',
+                padding: '10px 12px',
+                borderRadius: '8px',
+                border: '1px solid rgba(139,92,246,0.3)',
+                backgroundColor: '#0d0d1a',
+                color: '#fff',
+                fontSize: '14px',
+                outline: 'none',
+                boxSizing: 'border-box',
+              }}
+              data-testid="input-new-reading-rename"
+            />
+            <div style={{ display: 'flex', gap: '8px', marginTop: '14px', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => handleReadingRenameResponse(newReadingPrompt, null)}
+                style={{
+                  padding: '8px 18px',
+                  borderRadius: '8px',
+                  border: '1px solid rgba(255,255,255,0.15)',
+                  backgroundColor: 'transparent',
+                  color: 'rgba(255,255,255,0.6)',
+                  fontSize: '12px',
+                  cursor: 'pointer',
+                }}
+                data-testid="btn-skip-reading-rename"
+              >
+                Keep Original
+              </button>
+              <button
+                onClick={() => handleReadingRenameResponse(newReadingPrompt, newReadingRenameValue)}
+                disabled={!newReadingRenameValue.trim()}
+                style={{
+                  padding: '8px 18px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: 'linear-gradient(135deg, rgba(139,92,246,0.6), rgba(99,102,241,0.6))',
+                  color: '#fff',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  cursor: !newReadingRenameValue.trim() ? 'not-allowed' : 'pointer',
+                  opacity: !newReadingRenameValue.trim() ? 0.5 : 1,
+                }}
+                data-testid="btn-save-reading-rename"
+              >
+                Rename
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
