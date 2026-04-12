@@ -34031,9 +34031,8 @@ export default function Dashboard() {
                                 </linearGradient>
                               </defs>
                               <defs><filter id={`tabShadow-${tabIdx}`}><feDropShadow dx="0" dy="0.3" stdDeviation="0.3" floodColor="rgba(0,0,0,0.03)" /></filter></defs>
-                              <path d={`M0,0 L${displayW - br},0 Q${displayW},0 ${displayW},${br} L${displayW},${svgH - br} Q${displayW},${svgH} ${displayW - br},${svgH} L0,${svgH} Z`} fill={`url(#${gradId})`} filter={`url(#tabShadow-${tabIdx})`} stroke="rgba(255,255,255,0.4)" strokeWidth="0.5" />
+                              <path d={`M0,0 L${displayW - br},0 Q${displayW},0 ${displayW},${br} L${displayW},${svgH - br} Q${displayW},${svgH} ${displayW - br},${svgH} L0,${svgH} Z`} fill={isYearTab ? `url(#${gradId})` : hbDirect(hb, 1)} filter={`url(#tabShadow-${tabIdx})`} stroke={isYearTab ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.85)"} strokeWidth={isYearTab ? "0.5" : "0.8"} />
                               {isYearTab && <path d={`M0,0 L${displayW - br},0 Q${displayW},0 ${displayW},${br} L${displayW},${svgH * 0.45} L0,${svgH * 0.35} Z`} fill="rgba(255,255,255,0.15)" />}
-                              {!isYearTab && <path d={`M0,0 L${displayW - br},0 Q${displayW},0 ${displayW},${br} L${displayW},${svgH * 0.45} L0,${svgH * 0.35} Z`} fill="rgba(255,255,255,0.12)" />}
                               {tab.topText ? (
                                 <>
                                   <text x={cx} y={svgH * 0.28 + 2} textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.9)" fontSize={Math.min(6.5, svgH * 0.15 + 1)} fontWeight="500" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.5">{tab.bottomText}</text>
