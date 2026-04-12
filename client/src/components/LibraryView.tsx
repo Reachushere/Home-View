@@ -168,9 +168,10 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   layout?: 'vertical' | 'horizontal';
   besideHorizontal?: boolean;
   extraMarginLeft?: number;
+  widthReduction?: number;
 }) {
   const seededRand = ((file.id * 2654435761) >>> 0) / 4294967296;
-  const spineWidth = 28 + seededRand * 12;
+  const spineWidth = 28 + seededRand * 12 - (widthReduction || 0);
   const bookHeight = shelfHeight - 24 - (index % 3) * 6 + (besideHorizontal ? 50 : 0);
   const fullTitle = (file.displayName || file.originalName).replace(/\.pdf$/i, '');
   const title = truncateSpineTitle(fullTitle, 28, !!file.displayName && file.displayName !== file.originalName);
@@ -3615,6 +3616,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                         {group.files.map(({ file, fileIdx }, fileInGroupIdx) => {
                           const color = getBookColor(fileIdx, course.code, group.weekNum);
                           const isVeryFirstBook = courseIdx > 0 && groupIdx === 0 && fileInGroupIdx === 0;
+                          const isLastWeekTopShelf = courseIdx === 0 && groupIdx === weekGroups.length - 1;
                           return (
                             <BookSpine
                               key={file.id}
@@ -3631,6 +3633,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                               shelfHeight={shelfHeight}
                               onRename={handleRenameStart}
                               extraMarginLeft={isVeryFirstBook ? 2 : undefined}
+                              widthReduction={isLastWeekTopShelf ? 6 : undefined}
                             />
                           );
                         })}
