@@ -28719,9 +28719,9 @@ export default function Dashboard() {
                 const isTodayForecast = isSameDayET(day, new Date());
                 const srTime = weatherData?.sunrise ? new Date(weatherData.sunrise) : null;
                 const afterSunrise = isTodayForecast && srTime && new Date() >= srTime;
-                const effectiveWCode = afterSunrise ? weatherData!.code : dayForecast?.weatherCode;
+                const effectiveWCode = dayForecast?.weatherCode ?? weatherData!.code;
                 const ssTime = weatherData?.sunset ? new Date(weatherData.sunset) : null;
-                const isNight = isTodayForecast && srTime && ssTime ? (new Date() < srTime || new Date() >= ssTime) : false;
+                const isNight = false;
                 const wIconEl = ((wc: number | undefined) => {
                   if (wc === undefined) return null;
                   const s = 11;
