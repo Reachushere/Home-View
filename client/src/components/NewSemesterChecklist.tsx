@@ -21,6 +21,7 @@ interface Props {
 
 export default function NewSemesterChecklist({ semesterKey, semesterLabel, colorSettings, onDismiss, semesterStartDate }: Props) {
   const flyoutRef = useRef<HTMLDivElement>(null);
+  const confirmRef = useRef<HTMLDivElement>(null);
   const [editingTitles, setEditingTitles] = useState<Record<number, string>>({});
   const [openDatePickerId, setOpenDatePickerId] = useState<number | null>(null);
   const [confirmTask, setConfirmTask] = useState<{ item: NewSemesterChecklistItem; date: string } | null>(null);
@@ -97,7 +98,11 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
   const activeItems = items.filter(i => !i.isCompleted && !i.isDeleted);
   const completedItems = items.filter(i => i.isCompleted && !i.isDeleted);
 
+  const lastToggleRef = useRef<number>(0);
   const handleToggleComplete = useCallback((item: NewSemesterChecklistItem) => {
+    const now = Date.now();
+    if (now - lastToggleRef.current < 400) return;
+    lastToggleRef.current = now;
     updateMutation.mutate({
       id: item.id,
       isCompleted: !item.isCompleted,
@@ -140,7 +145,10 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (flyoutRef.current && !flyoutRef.current.contains(e.target as Node)) onDismiss();
+      const target = e.target as Node;
+      if (flyoutRef.current && flyoutRef.current.contains(target)) return;
+      if (confirmRef.current && confirmRef.current.contains(target)) return;
+      onDismiss();
     };
     setTimeout(() => document.addEventListener('mousedown', handler), 100);
     return () => document.removeEventListener('mousedown', handler);
@@ -199,8 +207,10 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
 
     return (
       <div key={item.id} className="flex items-center gap-3 py-1.5" data-testid={`checklist-item-${isCompleted ? 'done-' : ''}${item.id}`}>
-        <div
-          onPointerUp={(e) => { e.stopPropagation(); e.preventDefault(); handleToggleComplete(item); }}
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); e.preventDefault(); handleToggleComplete(item); }}
+          onTouchEnd={(e) => { e.stopPropagation(); e.preventDefault(); handleToggleComplete(item); }}
           style={{
             width: '28px',
             height: '28px',
@@ -213,6 +223,9 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
             alignItems: 'center',
             justifyContent: 'center',
             touchAction: 'manipulation',
+            padding: 0,
+            WebkitAppearance: 'none',
+            appearance: 'none',
           }}
           data-testid={`checklist-check-${item.id}`}
         >
@@ -221,7 +234,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
               <polyline points="20 6 9 17 4 12" />
             </svg>
           )}
-        </div>
+        </button>
 
         <input
           type="text"
@@ -349,6 +362,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
         <>
           <div style={{ position: 'fixed', inset: 0, zIndex: 10010, backgroundColor: 'rgba(0,0,0,0.6)' }} onClick={() => { setConfirmTask(null); setConfirmTaskTitle(''); }} />
           <div
+            ref={confirmRef}
             style={{
               position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 10011,
               width: '380px', maxWidth: '90vw',
