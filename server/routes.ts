@@ -19981,9 +19981,26 @@ document.body.removeChild(a);
 
       for (const tbdSlot of remainingTbdSlots) {
         const tbdFolderName = tbdSlot.code!;
-        const tbdFolder = baseFolders.find((f: any) =>
+        let tbdFolder = baseFolders.find((f: any) =>
           f.type === 'folder' && f.name.toUpperCase() === tbdFolderName.toUpperCase()
         );
+        if (!tbdFolder && semester.semesterType === 'spring_summer') {
+          for (const subName of springSummerSubFolders) {
+            const subFolder = baseFolders.find((f: any) => f.type === 'folder' && f.name === subName);
+            if (!subFolder) continue;
+            try {
+              const subContents = await listOneDriveItems(subFolder.path);
+              const found = subContents.find((f: any) =>
+                f.type === 'folder' && f.name.toUpperCase() === tbdFolderName.toUpperCase()
+              );
+              if (found) {
+                tbdFolder = found;
+                console.log(`[Monitor Sync] Found TBD folder "${tbdFolderName}" inside ${subName}`);
+                break;
+              }
+            } catch {}
+          }
+        }
         if (tbdFolder) {
           courseCodes.push(tbdFolderName);
           console.log(`[Monitor Sync] Including TBD folder "${tbdFolderName}" for scanning in ${semester.semesterName}`);
