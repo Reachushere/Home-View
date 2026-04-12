@@ -404,9 +404,23 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
             </div>
             <div className="mb-3">
               <label className="text-[10px] text-white/60 uppercase tracking-wider font-bold mb-1 block">Due Date</label>
-              <div className="text-sm text-white font-semibold px-3 py-2 rounded" style={{ backgroundColor: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }}>
-                <CalendarDays className="w-4 h-4 inline mr-2 text-green-400" />
-                {format(new Date(confirmTask.date + 'T12:00:00'), 'EEEE, MMMM d, yyyy')}
+              <div className="flex items-center gap-2">
+                <input
+                  type="date"
+                  value={confirmTask.date}
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      setConfirmTask(prev => prev ? { ...prev, date: e.target.value } : null);
+                      updateMutation.mutate({ id: confirmTask.item.id, dueDate: e.target.value });
+                    }
+                  }}
+                  className="text-xs rounded px-3 py-2 outline-none text-black flex-1"
+                  style={{ backgroundColor: '#ffffff', height: '34px' }}
+                  data-testid="confirm-date-input"
+                />
+                <span className="text-xs text-white/60">
+                  {format(new Date(confirmTask.date + 'T12:00:00'), 'EEEE')}
+                </span>
               </div>
             </div>
             <div className="mb-3">
