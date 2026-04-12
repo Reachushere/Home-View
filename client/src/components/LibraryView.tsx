@@ -2531,7 +2531,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         onClick={onClose}
         style={{
           position: 'absolute',
-          top: '29px',
+          top: '33px',
           right: '16px',
           zIndex: 100002,
           background: 'rgba(0,0,0,0.5)',
@@ -2558,7 +2558,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           onClick={() => { setAiSearchOpen(true); setAiPreview(null); setAiResult(null); setAiError(''); setAiNoteTitle(''); }}
           style={{
             position: 'absolute',
-            top: '29px',
+            top: '33px',
             right: '104px',
             zIndex: 100002,
             background: aiSearchOpen ? 'rgba(139,92,246,0.3)' : 'rgba(0,0,0,0.5)',
@@ -2601,7 +2601,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           }}
           style={{
             position: 'absolute',
-            top: '29px',
+            top: '33px',
             right: '60px',
             zIndex: 100002,
             background: 'rgba(0,0,0,0.5)',
@@ -3039,7 +3039,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       {/* Semester navigation - top right area */}
       <div style={{
         position: 'absolute',
-        top: '29px',
+        top: '33px',
         right: '150px',
         zIndex: 100002,
         display: 'flex',
