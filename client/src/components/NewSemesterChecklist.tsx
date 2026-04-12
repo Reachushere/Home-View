@@ -20,7 +20,6 @@ interface Props {
 }
 
 export default function NewSemesterChecklist({ semesterKey, semesterLabel, colorSettings, onDismiss, semesterStartDate }: Props) {
-  const [newItemTitle, setNewItemTitle] = useState("");
   const flyoutRef = useRef<HTMLDivElement>(null);
   const [editingTitles, setEditingTitles] = useState<Record<number, string>>({});
   const [openDatePickerId, setOpenDatePickerId] = useState<number | null>(null);
@@ -80,17 +79,6 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
   const allItems = [...activeItems, ...completedItems];
 
   const emptySlots = Math.max(0, 10 - allItems.length);
-
-  const handleAddItem = useCallback(() => {
-    if (!newItemTitle.trim()) return;
-    createMutation.mutate({
-      title: newItemTitle.trim(),
-      semesterKey,
-      sortOrder: allItems.length + 1,
-      isGlobal: false,
-    });
-    setNewItemTitle("");
-  }, [newItemTitle, semesterKey, allItems.length]);
 
   const handleToggleComplete = useCallback((item: NewSemesterChecklistItem) => {
     updateMutation.mutate({
@@ -209,7 +197,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
     return (
       <div
         key={item.id}
-        className="flex items-center gap-2 py-1 relative"
+        className="flex items-center gap-3 py-1.5 relative"
         data-testid={`checklist-item-${isCompleted ? 'done-' : ''}${item.id}`}
       >
         <button
@@ -295,8 +283,8 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
           <div
             className="flex items-center rounded-full transition-colors"
             style={{
-              width: '36px',
-              height: '20px',
+              width: '30px',
+              height: '16px',
               backgroundColor: item.isGlobal ? '#22c55e' : 'rgba(255,255,255,0.25)',
               justifyContent: item.isGlobal ? 'flex-end' : 'flex-start',
               display: 'flex',
@@ -305,7 +293,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
           >
             <div
               className="rounded-full transition-all"
-              style={{ width: '16px', height: '16px', backgroundColor: '#ffffff' }}
+              style={{ width: '12px', height: '12px', backgroundColor: '#ffffff' }}
             />
           </div>
         </button>
@@ -324,7 +312,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
           onClick={() => deleteMutation.mutate(item.id)}
           data-testid={`checklist-delete-${isCompleted ? 'done-' : ''}${item.id}`}
         >
-          <Trash2 className="w-3.5 h-3.5 text-white/30 hover:text-red-400 transition-colors" />
+          <Trash2 className="w-[18px] h-[18px] text-white/30 hover:text-red-400 transition-colors" />
         </button>
       </div>
     );
@@ -372,29 +360,28 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
               {activeItems.map((item) => renderChecklistRow(item, false))}
 
               {Array.from({ length: emptySlots }).map((_, i) => (
-                <div key={`empty-${i}`} className="flex items-center gap-2 py-1">
+                <div key={`empty-${i}`} className="flex items-center gap-3 py-1.5">
                   <div
                     className="shrink-0 rounded border-2"
                     style={{
                       width: '24px',
                       height: '24px',
-                      backgroundColor: 'rgba(255,255,255,0.12)',
-                      borderColor: 'rgba(255,255,255,0.12)',
+                      backgroundColor: '#ffffff',
+                      borderColor: '#ffffff',
+                      opacity: 0.15,
                     }}
                   />
                   <div
-                    className="flex-1 rounded px-2 py-1.5"
+                    className="flex-1 rounded"
                     style={{
-                      backgroundColor: 'rgba(255,255,255,0.06)',
+                      backgroundColor: '#ffffff',
                       height: '30px',
-                      border: '1px solid rgba(255,255,255,0.08)',
+                      opacity: 0.08,
                     }}
-                  >
-                    <span className="text-xs text-white/12">Empty</span>
-                  </div>
+                  />
                   <div style={{ width: '16px' }} />
-                  <div style={{ width: '36px' }} />
-                  <div style={{ width: '14px' }} />
+                  <div style={{ width: '30px' }} />
+                  <div style={{ width: '18px' }} />
                 </div>
               ))}
 
@@ -408,32 +395,28 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
           )}
         </div>
 
-        <div className="px-4 py-2.5 border-t border-white/10 flex items-center gap-2">
-          <input
-            type="text"
-            value={newItemTitle}
-            onChange={(e) => setNewItemTitle(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter') handleAddItem(); }}
-            placeholder="Add new item..."
-            className="flex-1 text-xs rounded px-2 py-1.5 text-black placeholder-gray-400 outline-none focus:ring-2 focus:ring-white/30"
-            style={{ backgroundColor: '#ffffff', height: '30px', border: '1px solid rgba(255,255,255,0.3)' }}
-            data-testid="checklist-new-input"
-          />
+        <div className="px-4 py-2.5 border-t border-white/10 flex items-center justify-center">
           <button
-            onClick={handleAddItem}
-            disabled={!newItemTitle.trim()}
-            className="flex items-center gap-1 text-xs font-semibold text-white px-3 py-1.5 rounded disabled:opacity-30 hover:brightness-110 transition-all"
-            style={{ background: colorSettings.headerBar, height: '30px' }}
+            onClick={() => {
+              createMutation.mutate({
+                title: '',
+                semesterKey,
+                sortOrder: allItems.length + 1,
+                isGlobal: false,
+              });
+            }}
+            className="flex items-center gap-1.5 text-xs font-semibold text-white px-4 py-2 rounded hover:brightness-110 transition-all"
+            style={{ background: colorSettings.headerBar }}
             data-testid="checklist-add-btn"
           >
-            <Plus className="w-3.5 h-3.5" /> Add
+            <Plus className="w-4 h-4" /> Add Item
           </button>
         </div>
 
-        <div className="px-4 py-1.5 text-[8px] text-white/20 text-center flex items-center justify-center gap-4" style={{ borderRadius: '0 0 12px 12px' }}>
-          <span><CalendarDays className="w-3 h-3 inline mr-1" />= set reminder date</span>
-          <span>Toggle = all semesters</span>
-          <span><Trash2 className="w-3 h-3 inline mr-1" />= delete</span>
+        <div className="px-4 py-2 text-[10px] text-white/70 text-center flex items-center justify-center gap-6" style={{ borderRadius: '0 0 12px 12px' }}>
+          <span className="flex items-center gap-1"><CalendarDays className="w-3.5 h-3.5" /> Set reminder</span>
+          <span className="flex items-center gap-1">Toggle = all semesters</span>
+          <span className="flex items-center gap-1"><Trash2 className="w-3.5 h-3.5" /> Delete</span>
         </div>
       </div>
     </>
