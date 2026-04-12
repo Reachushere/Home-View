@@ -20901,7 +20901,7 @@ export default function Dashboard() {
         title="Files"
       >
         <svg width="84" height="25" viewBox="0 0 84 25" style={{ display: 'block' }}>
-          <path d="M0,25 L84,25 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill={`${colorSettings.headerBar}cc`} stroke={`${colorSettings.headerBar}ee`} strokeWidth="1.5" />
+          <path d="M0,25 L84,25 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
           <g transform="translate(34, 1)">
             <path d="M2,4 L6,4 L8,2 L14,2 L14,12 L2,12 Z" fill="rgba(255,255,255,0.8)" stroke="rgba(255,255,255,0.8)" strokeWidth="0.5" strokeLinejoin="round" />
           </g>
@@ -33710,14 +33710,15 @@ export default function Dashboard() {
           </div>}
           {(() => {
             const now = new Date();
+            const hb = colorSettings.headerBar;
             const yearColors: Record<number, [string, string]> = {
-              2026: ['rgba(40,110,210,0.8)', 'rgba(25,80,180,0.6)'],
-              2027: ['rgba(34,197,94,0.85)', 'rgba(22,163,74,0.7)'],
-              2028: ['rgba(150,90,235,0.8)', 'rgba(120,60,210,0.6)'],
-              2029: ['rgba(120,120,120,0.8)', 'rgba(95,95,95,0.6)'],
+              2026: [`${hb}cc`, `${hb}99`],
+              2027: [`${hb}cc`, `${hb}99`],
+              2028: [`${hb}cc`, `${hb}99`],
+              2029: [`${hb}cc`, `${hb}99`],
             };
-            const getYearColor = (y: number): [string, string] => yearColors[y] || ['rgba(40,110,210,0.8)', 'rgba(25,80,180,0.6)'];
-            const gapColor: [string, string] = ['#95A5A6', '#7F8C8D'];
+            const getYearColor = (y: number): [string, string] => yearColors[y] || [`${hb}cc`, `${hb}99`];
+            const gapColor: [string, string] = [`${hb}aa`, `${hb}77`];
             const semDates = {
               w2026End: new Date(2026, 3, 10),
               ss2026Start: new Date(2026, 4, 4), ss2026End: new Date(2026, 7, 7),
