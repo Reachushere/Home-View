@@ -307,7 +307,6 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
         cursor: 'pointer',
         position: 'relative',
         display: 'flex',
-        marginLeft: '4px',
         alignItems: 'center',
         justifyContent: 'center',
         flexShrink: 1,
@@ -3613,8 +3612,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                         {group.files.map(({ file, fileIdx }) => {
                           const color = getBookColor(fileIdx, course.code, group.weekNum);
                           return (
+                            <div key={file.id} style={courseIdx === 0 ? { marginLeft: '4px' } : undefined}>
                             <BookSpine
-                              key={file.id}
                               file={file}
                               index={fileIdx}
                               courseCode={course.code}
@@ -3628,6 +3627,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                               shelfHeight={shelfHeight}
                               onRename={handleRenameStart}
                             />
+                            </div>
                           );
                         })}
                       </WeekGroupWrapper>
