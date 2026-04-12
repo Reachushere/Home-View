@@ -623,7 +623,7 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
             justifyContent: 'flex-end',
             gap: '2px',
             alignSelf: 'flex-end',
-            marginLeft: '4px',
+            marginLeft: '1px',
             position: 'relative',
             zIndex: 0,
             flexShrink: 1,
