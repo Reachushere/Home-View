@@ -115,20 +115,33 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
     setSeeded(true);
   }, [isLoading, items, seeded]);
 
-  const activeItems = items.filter(i => !i.isCompleted && !i.isDeleted);
-  const completedItems = items.filter(i => i.isCompleted && !i.isDeleted);
-
+  const [localCompleted, setLocalCompleted] = useState<Record<number, boolean>>({});
+  const getEffectiveCompleted = (item: NewSemesterChecklistItem) =>
+    localCompleted[item.id] !== undefined ? localCompleted[item.id] : !!item.isCompleted;
+  const activeItems = items.filter(i => !getEffectiveCompleted(i) && !i.isDeleted);
+  const completedItems = items.filter(i => getEffectiveCompleted(i) && !i.isDeleted);
   const lastToggleRef = useRef<number>(0);
   const handleToggleComplete = useCallback((item: NewSemesterChecklistItem) => {
     const now = Date.now();
-    if (now - lastToggleRef.current < 600) return;
+    if (now - lastToggleRef.current < 400) return;
     lastToggleRef.current = now;
-    updateMutation.mutate({
-      id: item.id,
-      isCompleted: !item.isCompleted,
-      completedAt: !item.isCompleted ? new Date().toISOString() : null,
+    const newVal = !item.isCompleted;
+    setLocalCompleted(prev => ({ ...prev, [item.id]: newVal }));
+    fetch(`/api/new-semester-checklist/${item.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ isCompleted: newVal, completedAt: newVal ? new Date().toISOString() : null }),
+    }).then(r => r.json()).then(serverItem => {
+      if (serverItem && serverItem.id) {
+        queryClient.setQueryData<NewSemesterChecklistItem[]>(checklistQueryKey, (old) =>
+          old ? old.map(i => i.id === serverItem.id ? { ...i, ...serverItem } : i) : old
+        );
+      }
+      setLocalCompleted(prev => { const n = { ...prev }; delete n[item.id]; return n; });
+    }).catch(() => {
+      setLocalCompleted(prev => { const n = { ...prev }; delete n[item.id]; return n; });
     });
-  }, []);
+  }, [checklistQueryKey]);
 
   const handleToggleGlobal = useCallback((item: NewSemesterChecklistItem) => {
     updateMutation.mutate({ id: item.id, isGlobal: !item.isGlobal });
@@ -278,39 +291,43 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
     );
   };
 
-  const renderRow = (item: NewSemesterChecklistItem, isCompleted: boolean) => {
+  const renderRow = (item: NewSemesterChecklistItem, _isCompleted: boolean) => {
+    const checked = localCompleted[item.id] !== undefined ? localCompleted[item.id] : item.isCompleted;
     const displayTitle = editingTitles[item.id] !== undefined ? editingTitles[item.id] : item.title;
     const hasDueDate = !!item.dueDate;
 
     return (
-      <div key={item.id} className="flex items-center gap-3 py-1.5" data-testid={`checklist-item-${isCompleted ? 'done-' : ''}${item.id}`}>
-        <label
+      <div key={item.id} className="flex items-center gap-3 py-1.5" data-testid={`checklist-item-${checked ? 'done-' : ''}${item.id}`}>
+        <div
+          role="checkbox"
+          aria-checked={checked}
+          tabIndex={0}
+          onPointerUp={(e) => { e.stopPropagation(); e.preventDefault(); handleToggleComplete(item); }}
           style={{
-            width: '36px',
-            height: '36px',
-            minWidth: '36px',
+            width: '29px',
+            height: '29px',
+            minWidth: '29px',
             flexShrink: 0,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
             touchAction: 'manipulation',
+            borderRadius: '4px',
+            border: checked ? '2px solid #22c55e' : '2px solid rgba(255,255,255,0.5)',
+            background: checked ? '#22c55e' : 'transparent',
+            transition: 'all 0.15s ease',
+            WebkitTapHighlightColor: 'transparent',
+            userSelect: 'none',
           }}
+          data-testid={`checklist-check-${item.id}`}
         >
-          <input
-            type="checkbox"
-            checked={isCompleted}
-            onChange={() => handleToggleComplete(item)}
-            style={{
-              width: '28px',
-              height: '28px',
-              cursor: 'pointer',
-              accentColor: '#22c55e',
-              margin: 0,
-            }}
-            data-testid={`checklist-check-${item.id}`}
-          />
-        </label>
+          {checked && (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          )}
+        </div>
 
         <input
           type="text"
@@ -321,8 +338,8 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
           className="flex-1 text-xs rounded px-2 py-1.5 outline-none min-w-0"
           style={{
             backgroundColor: '#ffffff',
-            color: isCompleted ? '#999' : '#1a1a1a',
-            textDecoration: isCompleted ? 'line-through' : 'none',
+            color: checked ? '#999' : '#1a1a1a',
+            textDecoration: checked ? 'line-through' : 'none',
             height: '30px',
           }}
           placeholder=""
