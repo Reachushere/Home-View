@@ -12570,14 +12570,47 @@ export default function Dashboard() {
       }
       return true;
     });
-    const dayGroups = new Map<number, typeof items>();
+
+    type OverlayItem = { startHour: number; startMin: number; endHour: number; endMin: number; task: { id: number } };
+    const allItems: (OverlayItem & { dayIdx: number })[] = [];
     for (const item of items) {
+      allItems.push({ ...item, dayIdx: item.dayIdx });
+    }
+    const now = new Date();
+    for (let dIdx = 0; dIdx < weekDays.length; dIdx++) {
+      const day = weekDays[dIdx];
+      const dayKey = _etDateKey(day);
+      const dayTasks = tasksByDateKey.get(dayKey) || [];
+      for (const e of filteredCalendarEvents) {
+        if (e.isAllDay) continue;
+        const eStart = new Date(e.startDate);
+        const eEnd = new Date(e.endDate);
+        if (eEnd < now) continue;
+        if (!isSameDayET(eStart, day)) continue;
+        const sH = getETHours(eStart);
+        const sM = eStart.getMinutes();
+        const eH = getETHours(eEnd);
+        const eM = eEnd.getMinutes();
+        if (eH <= sH) continue;
+        const titleClean = e.title.replace(/^\[PREP\]\s*/, '').replace(/^PREP\s+/, '').replace(/^\[.*?\]\s*/g, '').toLowerCase().trim();
+        const isDup = dayTasks.some(t => {
+          if (t.calendarEventId === e.id || t.secondAccountCalendarEventId === e.id || t.prepCalendarEventId === e.id || t.secondAccountPrepEventId === e.id) return true;
+          const taskTitle = t.title.replace(/^\[.*?\]\s*/g, '').toLowerCase().trim();
+          return taskTitle === titleClean;
+        });
+        if (isDup) continue;
+        allItems.push({ dayIdx: dIdx, startHour: sH, startMin: sM, endHour: eH, endMin: eM, task: { id: -parseInt(e.id.replace(/\D/g, '').slice(0, 8) || '0') || -(dIdx * 1000 + sH) } });
+      }
+    }
+
+    const dayGroups = new Map<number, typeof allItems>();
+    for (const item of allItems) {
       if (!dayGroups.has(item.dayIdx)) dayGroups.set(item.dayIdx, []);
       dayGroups.get(item.dayIdx)!.push(item);
     }
     for (const [dIdx, dayItems] of dayGroups) {
       const sorted = [...dayItems].sort((a, b) => a.startHour * 60 + a.startMin - (b.startHour * 60 + b.startMin));
-      const columns: typeof items[] = [];
+      const columns: typeof allItems[] = [];
       for (const item of sorted) {
         const s = item.startHour * 60 + item.startMin;
         let placed = false;
@@ -12606,7 +12639,7 @@ export default function Dashboard() {
       }
     }
     return map;
-  }, [allTasks, weekDays]);
+  }, [allTasks, weekDays, filteredCalendarEvents]);
 
   const inlineCountPerSlot = useMemo(() => {
     const map = new Map<string, number>();
@@ -31898,17 +31931,44 @@ export default function Dashboard() {
                     return true;
                   });
                   const overlapInfo = new Map<number, { col: number; totalCols: number }>();
-                  const dayGroups = new Map<number, typeof allMultiHour>();
-                  for (const item of allMultiHour) {
+
+                  type OvItem = { startHour: number; startMin: number; endHour: number; endMin: number; task: { id: number }; dayIdx: number; isCalEvent?: boolean };
+                  const allWithCal: OvItem[] = allMultiHour.map(i => ({ ...i, isCalEvent: false }));
+                  const nowOv = new Date();
+                  for (let dIdx = 0; dIdx < weekDays.length; dIdx++) {
+                    const day = weekDays[dIdx];
+                    const dayKey = _etDateKey(day);
+                    const dayTasks = tasksByDateKey.get(dayKey) || [];
+                    for (const ev of filteredCalendarEvents) {
+                      if (ev.isAllDay) continue;
+                      const eStart = new Date(ev.startDate);
+                      const eEnd = new Date(ev.endDate);
+                      if (eEnd < nowOv) continue;
+                      if (!isSameDayET(eStart, day)) continue;
+                      const sH = getETHours(eStart); const sM = eStart.getMinutes();
+                      const eH = getETHours(eEnd); const eM = eEnd.getMinutes();
+                      if (eH <= sH) continue;
+                      const titleClean = ev.title.replace(/^\[PREP\]\s*/, '').replace(/^PREP\s+/, '').replace(/^\[.*?\]\s*/g, '').toLowerCase().trim();
+                      const isDup = dayTasks.some(t => {
+                        if (t.calendarEventId === ev.id || t.secondAccountCalendarEventId === ev.id || t.prepCalendarEventId === ev.id || t.secondAccountPrepEventId === ev.id) return true;
+                        const taskTitle = t.title.replace(/^\[.*?\]\s*/g, '').toLowerCase().trim();
+                        return taskTitle === titleClean;
+                      });
+                      if (isDup) continue;
+                      allWithCal.push({ dayIdx: dIdx, startHour: sH, startMin: sM, endHour: eH, endMin: eM, task: { id: -parseInt(ev.id.replace(/\D/g, '').slice(0, 8) || '0') || -(dIdx * 1000 + sH) }, isCalEvent: true });
+                    }
+                  }
+
+                  const dayGroups = new Map<number, OvItem[]>();
+                  for (const item of allWithCal) {
                     if (!dayGroups.has(item.dayIdx)) dayGroups.set(item.dayIdx, []);
                     dayGroups.get(item.dayIdx)!.push(item);
                   }
                   for (const [, items] of dayGroups) {
                     const sorted = [...items].sort((a, b) => a.startHour * 60 + a.startMin - (b.startHour * 60 + b.startMin));
-                    const columns: typeof allMultiHour[] = [];
+                    const columns: OvItem[][] = [];
                     for (const item of sorted) {
                       const itemStart = item.startHour * 60 + item.startMin;
-                      const itemEnd = item.endHour * 60 + item.endMin;
                       let placed = false;
                       for (let c = 0; c < columns.length; c++) {
                         const lastInCol = columns[c][columns[c].length - 1];
@@ -31927,7 +31987,6 @@ export default function Dashboard() {
                       for (const item of columns[c]) {
                         const itemStart = item.startHour * 60 + item.startMin;
                         const itemEnd = item.endHour * 60 + item.endMin;
-                        let maxConcurrent = columns.length;
                         let colsOverlapping = 0;
                         for (let cc = 0; cc < columns.length; cc++) {
                           const hasOverlap = columns[cc].some(other => {
@@ -31937,8 +31996,7 @@ export default function Dashboard() {
                           });
                           if (hasOverlap) colsOverlapping++;
                         }
-                        maxConcurrent = colsOverlapping;
-                        overlapInfo.set(item.task.id, { col: c, totalCols: maxConcurrent });
+                        overlapInfo.set(item.task.id, { col: c, totalCols: colsOverlapping });
                       }
                     }
                   }
