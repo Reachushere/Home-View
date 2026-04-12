@@ -626,9 +626,8 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
             marginLeft: '1px',
             position: 'relative',
             zIndex: 0,
-            flexShrink: 1,
-            minWidth: 0,
-            overflow: 'hidden',
+            flexShrink: 0,
+            overflow: 'visible',
           }}>
             {readingElements}
           </div>
