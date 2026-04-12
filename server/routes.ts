@@ -2332,7 +2332,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
               const year = yearMatch ? yearMatch[0] : new Date().getFullYear().toString();
               const semFolderMap: Record<string, string[]> = {
                 'fall': ['Fall'], 'winter': ['Winter'],
-                'spring_summer': ['Spring & Summer', 'Spring_Summer', 'Spring Summer', 'Spring-Summer'],
+                'spring_summer': ['Spring-Summer', 'Spring & Summer', 'Spring_Summer', 'Spring Summer'],
               };
               const folderNames = semFolderMap[existing.semesterType || ''] || [existing.semesterType || ''];
               const springSummerSubs = ['Full', 'Spring - First Half', 'Summer - Second Half'];
@@ -2388,7 +2388,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
               const year = yearMatch ? yearMatch[0] : new Date().getFullYear().toString();
               const semFolderMap: Record<string, string[]> = {
                 'fall': ['Fall'], 'winter': ['Winter'],
-                'spring_summer': ['Spring & Summer', 'Spring_Summer', 'Spring Summer', 'Spring-Summer'],
+                'spring_summer': ['Spring-Summer', 'Spring & Summer', 'Spring_Summer', 'Spring Summer'],
               };
               const folderNames = semFolderMap[existing.semesterType || ''] || [existing.semesterType || ''];
               const springSummerSubs = ['Full', 'Spring - First Half', 'Summer - Second Half'];
@@ -4388,7 +4388,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       }
       const semFolderVars = (() => {
         const t = (activeSemester.semesterType || "winter").toLowerCase();
-        if (t.includes("spring") || t.includes("summer")) return ['Spring & Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer'];
+        if (t.includes("spring") || t.includes("summer")) return ['Spring-Summer', 'Spring & Summer', 'Spring_Summer', 'Spring Summer'];
         if (t.includes("fall")) return ['Fall'];
         return ['Winter'];
       })();
@@ -4973,7 +4973,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       await Promise.all(semestersToCheck.map(async ({ semester, year, semFolder }) => {
         const semFolderVariants = (() => {
           const t = (semester?.semesterType || 'winter').toLowerCase();
-          if (t.includes('spring') || t.includes('summer')) return ['Spring & Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer'];
+          if (t.includes('spring') || t.includes('summer')) return ['Spring-Summer', 'Spring & Summer', 'Spring_Summer', 'Spring Summer'];
           if (t.includes('fall')) return ['Fall'];
           return ['Winter'];
         })();
@@ -7156,7 +7156,7 @@ async function pollStatus(timeout){
 
       const semTypeVariants = (() => {
         const t = (semester.semesterType || 'winter').toLowerCase();
-        if (t.includes('spring') || t.includes('summer')) return ['Spring-Summer', 'Spring & Summer', 'Spring_Summer'];
+        if (t.includes('spring') || t.includes('summer')) return ['Spring & Summer', 'Spring-Summer', 'Spring_Summer'];
         if (t.includes('fall')) return ['Fall'];
         return ['Winter'];
       })();
@@ -7285,7 +7285,7 @@ async function pollStatus(timeout){
 
       const semTypeVariants = (() => {
         const t = (semester.semesterType || 'winter').toLowerCase();
-        if (t.includes('spring') || t.includes('summer')) return ['Spring-Summer', 'Spring & Summer', 'Spring_Summer'];
+        if (t.includes('spring') || t.includes('summer')) return ['Spring & Summer', 'Spring-Summer', 'Spring_Summer'];
         if (t.includes('fall')) return ['Fall'];
         return ['Winter'];
       })();
@@ -7416,7 +7416,7 @@ async function pollStatus(timeout){
       const isSpSuRename = (semester.semesterType || '').toLowerCase().includes('spring') || (semester.semesterType || '').toLowerCase().includes('summer');
       const semFolderVariants = (() => {
         const t = (semester.semesterType || 'winter').toLowerCase();
-        if (t.includes('spring') || t.includes('summer')) return ['Spring & Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer'];
+        if (t.includes('spring') || t.includes('summer')) return ['Spring-Summer', 'Spring & Summer', 'Spring_Summer', 'Spring Summer'];
         if (t.includes('fall')) return ['Fall'];
         return ['Winter'];
       })();
@@ -7529,7 +7529,7 @@ async function pollStatus(timeout){
       const year = semester.semesterYear || new Date().getFullYear();
       const cleanupSemVariants = (() => {
         const t = (semester.semesterType || 'winter').toLowerCase();
-        if (t.includes('spring') || t.includes('summer')) return ['Spring & Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer'];
+        if (t.includes('spring') || t.includes('summer')) return ['Spring-Summer', 'Spring & Summer', 'Spring_Summer', 'Spring Summer'];
         if (t.includes('fall')) return ['Fall'];
         return ['Winter'];
       })();
@@ -7800,7 +7800,7 @@ async function pollStatus(timeout){
 
       const renameWeekSemVariants = (() => {
         const t = (targetSemester.semesterType || 'winter').toLowerCase();
-        if (t.includes('spring') || t.includes('summer')) return ['Spring & Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer'];
+        if (t.includes('spring') || t.includes('summer')) return ['Spring-Summer', 'Spring & Summer', 'Spring_Summer', 'Spring Summer'];
         if (t.includes('fall')) return ['Fall'];
         return ['Winter'];
       })();
@@ -19414,7 +19414,7 @@ document.body.removeChild(a);
 
       const semFolderVariants = (() => {
         const t = (semester?.semesterType || 'winter').toLowerCase();
-        if (t.includes('spring') || t.includes('summer')) return ['Spring & Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer'];
+        if (t.includes('spring') || t.includes('summer')) return ['Spring-Summer', 'Spring & Summer', 'Spring_Summer', 'Spring Summer'];
         if (t.includes('fall')) return ['Fall'];
         return ['Winter'];
       })();
@@ -19702,7 +19702,7 @@ document.body.removeChild(a);
       const year = semester.semesterName?.match(/\d{4}/)?.[0] || '2026';
       const semFolderVariants = (() => {
         const t = (semester.semesterType || 'winter').toLowerCase();
-        if (t.includes('spring') || t.includes('summer')) return ['Spring & Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer'];
+        if (t.includes('spring') || t.includes('summer')) return ['Spring-Summer', 'Spring & Summer', 'Spring_Summer', 'Spring Summer'];
         if (t.includes('fall')) return ['Fall'];
         return ['Winter'];
       })();
@@ -20090,7 +20090,7 @@ document.body.removeChild(a);
       const semesterFolderMap: Record<string, string[]> = {
         'fall': ['Fall'],
         'winter': ['Winter'],
-        'spring_summer': ['Spring & Summer', 'Spring_Summer', 'Spring Summer', 'Spring-Summer'],
+        'spring_summer': ['Spring-Summer', 'Spring & Summer', 'Spring_Summer', 'Spring Summer'],
       };
 
       for (const semester of allSemesters) {
