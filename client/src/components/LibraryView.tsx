@@ -154,7 +154,7 @@ function getFileType(folder: string | null): 'module' | 'reading' | null {
   return null;
 }
 
-function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, shelfHeight, onRename, isGroupHovered, interceptClick, layout = 'vertical', besideHorizontal }: {
+function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, shelfHeight, onRename, isGroupHovered, interceptClick, layout = 'vertical', besideHorizontal, extraMarginLeft }: {
   file: FileRecord;
   index: number;
   courseCode: string;
@@ -167,6 +167,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   interceptClick?: () => void;
   layout?: 'vertical' | 'horizontal';
   besideHorizontal?: boolean;
+  extraMarginLeft?: number;
 }) {
   const seededRand = ((file.id * 2654435761) >>> 0) / 4294967296;
   const spineWidth = 28 + seededRand * 12;
@@ -318,6 +319,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
         transition: 'box-shadow 0.3s ease',
         zIndex: isSelected ? 10 : isLifted ? 20 : 1,
         alignSelf: 'flex-end',
+        ...(extraMarginLeft ? { marginLeft: `${extraMarginLeft}px` } : {}),
       }}
       title={file.displayName || file.originalName}
       data-testid={`book-spine-${file.id}`}
@@ -3581,7 +3583,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                   display: 'flex',
                   alignItems: 'flex-end',
                   height: `${shelfHeight}px`,
-                  padding: courseIdx === 0 ? '0px 4px 28px 8px' : '0px 4px 28px',
+                  padding: '0px 4px 28px',
+                  ...(courseIdx === 0 ? { transform: 'translateX(4px)' } : {}),
                   gap: '2px',
                   overflowX: 'hidden',
                   overflowY: 'hidden',
