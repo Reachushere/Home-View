@@ -19972,6 +19972,23 @@ document.body.removeChild(a);
         }
       }
 
+      const remainingTbdSlots = [
+        { idx: 0, code: allCourseCodes[0] },
+        { idx: 1, code: allCourseCodes[1] },
+        { idx: 2, code: allCourseCodes[2] },
+      ].filter(s => s.code && s.code.toUpperCase().startsWith('TBD') && !courseCodes.some(c => c.toUpperCase() === s.code!.toUpperCase()));
+
+      for (const tbdSlot of remainingTbdSlots) {
+        const tbdFolderName = tbdSlot.code!;
+        const tbdFolder = baseFolders.find((f: any) =>
+          f.type === 'folder' && f.name.toUpperCase() === tbdFolderName.toUpperCase()
+        );
+        if (tbdFolder) {
+          courseCodes.push(tbdFolderName);
+          console.log(`[Monitor Sync] Including TBD folder "${tbdFolderName}" for scanning in ${semester.semesterName}`);
+        }
+      }
+
       for (const courseCode of courseCodes) {
         try {
           let matchedFolder = baseFolders.find((f: any) =>
