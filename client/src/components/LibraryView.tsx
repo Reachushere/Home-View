@@ -765,7 +765,9 @@ function BookReader({ file, bookColor, onClose, pdfUrl, moduleFiles, onOpenModul
       const measureCanvas = document.createElement('canvas');
       const measureCtx = measureCanvas.getContext('2d')!;
       const frag = document.createDocumentFragment();
-      for (const item of textContent.items as any[]) {
+      const textItems = textContent.items as any[];
+      for (let ti = 0; ti < textItems.length; ti++) {
+        const item = textItems[ti];
         if (!item.str || !item.transform) continue;
         const tx = pdfjsLib.Util.transform(viewport.transform, item.transform);
         const fontHeight = Math.hypot(tx[2], tx[3]);
@@ -783,21 +785,39 @@ function BookReader({ file, bookColor, onClose, pdfUrl, moduleFiles, onOpenModul
             span.style.transform = `scaleX(${scaledWidth / measuredWidth})`;
           }
         }
-        const weekMatch = item.str.match(/(?:week|module)\s*(\d+)/i);
-        if (weekMatch && isSyllabus && moduleFiles && moduleFiles.length > 0 && onOpenModuleFile) {
-          const weekNum = parseInt(weekMatch[1], 10);
-          const mf = moduleFiles.find(m => m.weekNum === weekNum);
-          if (mf) {
-            span.style.color = '#D4AF37';
-            span.style.cursor = 'pointer';
-            span.style.textDecoration = 'underline';
-            span.style.textDecorationColor = 'rgba(212,175,55,0.5)';
-            span.title = `Open Module: ${(mf.file.displayName || mf.file.originalName).replace(/\.pdf$/i, '')}`;
-            span.addEventListener('click', (e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              onOpenModuleFile(mf.file, mf.color);
-            });
+        if (isSyllabus && moduleFiles && moduleFiles.length > 0 && onOpenModuleFile) {
+          let weekNum: number | null = null;
+          const weekMatch = item.str.match(/(?:week|module)\s*(\d+)/i);
+          if (weekMatch) {
+            weekNum = parseInt(weekMatch[1], 10);
+          } else {
+            const bareMatch = item.str.match(/^(module|week)\s*$/i);
+            if (bareMatch) {
+              for (let nj = ti + 1; nj < textItems.length && nj <= ti + 3; nj++) {
+                const nextStr = (textItems[nj]?.str || '').trim();
+                const numMatch = nextStr.match(/^(\d+)/);
+                if (numMatch) { weekNum = parseInt(numMatch[1], 10); break; }
+                if (nextStr.length > 0 && !/^\s+$/.test(nextStr)) break;
+              }
+            }
+          }
+          if (weekNum !== null) {
+            const mf = moduleFiles.find(m => m.weekNum === weekNum);
+            if (mf) {
+              span.style.color = '#D4AF37';
+              span.style.cursor = 'pointer';
+              span.style.textDecoration = 'underline';
+              span.style.textDecorationColor = 'rgba(212,175,55,0.5)';
+              span.style.backgroundColor = 'rgba(212,175,55,0.12)';
+              span.style.borderRadius = '3px';
+              span.style.padding = '1px 3px';
+              span.title = `Open Module ${weekNum}: ${(mf.file.displayName || mf.file.originalName).replace(/\.pdf$/i, '')}`;
+              span.addEventListener('click', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                onOpenModuleFile(mf.file, mf.color);
+              });
+            }
           }
         }
         frag.appendChild(span);
