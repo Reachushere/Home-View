@@ -30357,8 +30357,8 @@ export default function Dashboard() {
                                 <div
                                   className="flex items-center text-[9px] rounded border cursor-pointer relative w-full"
                                   style={{ 
-                                    backgroundColor: (() => { const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === course.name); if (cMatch?.taskBgColor) return cMatch.taskBgColor; return cMatch?.colorEnd || course.bg; })(),
-                                    borderColor: course.darkColor,
+                                    backgroundColor: '#ffffff',
+                                    borderColor: '#000000',
                                     zIndex: 1,
                                     overflow: 'hidden',
                                     position: 'relative',
@@ -30401,8 +30401,8 @@ export default function Dashboard() {
                             <div 
                               className={`flex flex-col gap-0 text-[9px] pl-1 pr-0.5 py-0.5 rounded border cursor-pointer w-full min-w-0 ${isDueTomorrow ? "animate-slow-blink" : ""}`}
                               style={{ 
-                                backgroundColor: (() => { const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === course.name); if (cMatch?.taskBgColor) return cMatch.taskBgColor; return cMatch?.colorEnd || course.bg; })(),
-                                borderColor: course.darkColor,
+                                backgroundColor: '#ffffff',
+                                borderColor: '#000000',
                                 paddingRight: dueModulePdfUrl && courseDeliveryModes[task.courseName?.split(' - ')[0]?.trim().replace(/\s/g, '') || ''] === 'virtual' ? '54px' : dueModulePdfUrl ? '30px' : courseDeliveryModes[task.courseName?.split(' - ')[0]?.trim().replace(/\s/g, '') || ''] === 'virtual' ? '26px' : undefined,
                                 position: 'relative',
                               }}
@@ -30884,8 +30884,8 @@ export default function Dashboard() {
                                 key={task.id}
                                 className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 rounded border cursor-pointer w-full min-w-0 ${isUnackedReminder ? "animate-reminder-pulse" : ""}`}
                                 style={{
-                                  backgroundColor: isUnackedReminder ? 'rgba(220, 38, 38, 0.25)' : (() => { const otherTypeBg: Record<string, string> = { reading: 'rgba(56,130,255,0.45)', module: 'rgba(180,120,220,0.45)', essay: 'rgba(255,180,30,0.45)', project: 'rgba(255,100,50,0.45)', discussion: 'rgba(0,210,240,0.45)', poll: 'rgba(255,70,160,0.45)', exam: 'rgba(220,30,30,0.5)', quiz: 'rgba(16,200,120,0.45)', reminder: 'rgba(80,100,220,0.5)', meeting: 'rgba(202,138,4,0.5)', scholarship: 'rgba(224,76,23,0.45)', medical: 'rgba(220,60,60,0.45)', school: 'rgba(0,76,156,0.45)', household: 'rgba(245,158,11,0.45)', financial: 'rgba(16,185,129,0.45)', personal: 'rgba(139,92,246,0.45)', outside: 'rgba(34,197,94,0.45)', other: 'rgba(180,160,40,0.45)' }; return otherTypeBg[task.type] || otherRowColors.taskBgColor; })(),
-                                  borderColor: isUnackedReminder ? 'rgba(220, 38, 38, 0.6)' : (() => { const otherTypeBorder: Record<string, string> = { reading: 'rgba(56,130,255,0.7)', module: 'rgba(180,120,220,0.7)', essay: 'rgba(255,180,30,0.7)', project: 'rgba(255,100,50,0.7)', discussion: 'rgba(0,210,240,0.7)', poll: 'rgba(255,70,160,0.7)', exam: 'rgba(220,30,30,0.7)', quiz: 'rgba(16,200,120,0.7)', reminder: 'rgba(100,120,240,0.7)', meeting: 'rgba(202,138,4,0.7)', scholarship: 'rgba(224,76,23,0.7)', medical: 'rgba(220,60,60,0.7)', school: 'rgba(0,76,156,0.7)', household: 'rgba(245,158,11,0.7)', financial: 'rgba(16,185,129,0.7)', personal: 'rgba(139,92,246,0.7)', outside: 'rgba(34,197,94,0.7)', other: 'rgba(180,160,40,0.7)' }; return otherTypeBorder[task.type] || otherRowColors.borderColor; })(),
+                                  backgroundColor: '#ffffff',
+                                  borderColor: '#000000',
                                   position: 'relative',
                                   zIndex: 6,
                                 }}
@@ -30905,13 +30905,13 @@ export default function Dashboard() {
                                 <span
                                   onClick={() => setEditingTask(task)}
                                   className={`cursor-pointer hover:opacity-80 pl-1 flex-1 min-w-0 ${task.isCompleted ? "line-through" : ""}`}
-                                  style={{ fontWeight: 400, color: 'white', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textShadow: 'none', WebkitTextStroke: '0', letterSpacing: '0.1px', wordBreak: 'break-word', lineHeight: 1.2 }}
+                                  style={{ fontWeight: 400, color: '#000000', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textShadow: 'none', WebkitTextStroke: '0', letterSpacing: '0.1px', wordBreak: 'break-word', lineHeight: 1.2 }}
                                 >
                                   {(task.title || '').replace(/[\[\]]/g, '')}
                                 </span>
                                 {task.referenceLink && (
                                   <a href={task.referenceLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0" title={task.referenceLink} data-testid={`link-icon-other-${task.id}`}>
-                                    <ExternalLink className="h-2.5 w-2.5 text-white/60 hover:text-white" />
+                                    <ExternalLink className="h-2.5 w-2.5 text-black/60 hover:text-black" />
                                   </a>
                                 )}
                               </div>
@@ -30927,8 +30927,8 @@ export default function Dashboard() {
                                 key={`proj-${proj.id}`}
                                 className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 truncate rounded border cursor-pointer`}
                                 style={{
-                                  backgroundColor: otherRowColors.taskBgColor,
-                                  borderColor: proj.color || otherRowColors.borderColor,
+                                  backgroundColor: '#ffffff',
+                                  borderColor: '#000000',
                                   borderStyle: 'dashed',
                                   position: 'relative',
                                   zIndex: 6,
@@ -30938,7 +30938,7 @@ export default function Dashboard() {
                                 data-testid={`other-project-${proj.id}`}
                               >
                                 <FolderKanban className="h-3 w-3 shrink-0" style={{ color: proj.color || '#6b7280' }} />
-                                <span className="truncate cursor-pointer hover:opacity-80 pl-1 flex-1 min-w-0" style={{ fontWeight: 400, color: 'white', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textShadow: 'none', WebkitTextStroke: '0', letterSpacing: '0.1px' }}>{proj.name}</span>
+                                <span className="truncate cursor-pointer hover:opacity-80 pl-1 flex-1 min-w-0" style={{ fontWeight: 400, color: '#000000', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textShadow: 'none', WebkitTextStroke: '0', letterSpacing: '0.1px' }}>{proj.name}</span>
                               </div>
                             );
                           })}
@@ -31088,10 +31088,10 @@ export default function Dashboard() {
                               ""
                             } ${task.isCompleted ? "text-gray-400" : ""}`}
                             style={{
-                              backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || (task.type === 'other' ? otherRowColors.taskBgColor : '#dbeafe')),
-                              borderColor: task.isCompleted ? '#d1d5db' : (colors?.hex || (task.type === 'other' ? otherRowColors.borderColor : '#60a5fa')),
+                              backgroundColor: task.isCompleted ? '#e5e7eb' : '#ffffff',
+                              borderColor: task.isCompleted ? '#d1d5db' : '#000000',
                               borderWidth: '1.5px',
-                              color: task.isCompleted ? undefined : (() => { const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase().replace(/\s/g, '') === courseCode.replace(/\s/g, '').toUpperCase()); if (cMatch?.courseFontColor) return cMatch.courseFontColor; const cbg = colors?.bg || ''; let cr=0,cg=0,cb=0,cm=false; const chm=cbg.match(/#([0-9a-fA-F]{6})/); if(chm){cr=parseInt(chm[1].substring(0,2),16);cg=parseInt(chm[1].substring(2,4),16);cb=parseInt(chm[1].substring(4,6),16);cm=true;} if(!cm){const crm=cbg.match(/rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);if(crm){cr=parseInt(crm[1]);cg=parseInt(crm[2]);cb=parseInt(crm[3]);cm=true;}} return (cm && (cr*299+cg*587+cb*114)/1000<160) ? '#ffffff' : '#000000'; })(),
+                              color: task.isCompleted ? undefined : '#000000',
                             }}
                             title={adModuleFile ? `${task.title}\n📄 ${adModuleFile.displayName || adModuleFile.originalName}` : task.title}
                             onContextMenu={(e) => {
