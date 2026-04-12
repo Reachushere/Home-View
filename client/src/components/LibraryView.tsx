@@ -168,7 +168,11 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   const seededRand = ((file.id * 2654435761) >>> 0) / 4294967296;
   const spineWidth = 28 + seededRand * 12;
   const bookHeight = shelfHeight - 24 - (index % 3) * 6;
-  const title = truncateSpineTitle((file.displayName || file.originalName).replace(/\.pdf$/i, ''), 28, !!file.displayName && file.displayName !== file.originalName);
+  const fullTitle = (file.displayName || file.originalName).replace(/\.pdf$/i, '');
+  const title = truncateSpineTitle(fullTitle, 28, !!file.displayName && file.displayName !== file.originalName);
+  const expandedTitle = truncateSpineTitle(fullTitle, 80, !!file.displayName && file.displayName !== file.originalName);
+  const maxTextHeight = bookHeight - 56;
+  const expandedFontSize = expandedTitle.length > 40 ? 7 : expandedTitle.length > 30 ? 8 : expandedTitle.length > 20 ? 9 : 10;
   const weekNum = file.folder?.match(/^week-(\d+)/)?.[1] || '';
   const fileType = getFileType(file.folder);
   const patternIdx = (index + courseCode.charCodeAt(0)) % SPINE_PATTERNS.length;
@@ -183,7 +187,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
       onClick={interceptClick || onClick}
       style={{
         width: `${spineWidth}px`,
-        height: `${bookHeight}px`,
+        height: `${isLifted ? bookHeight + 30 : bookHeight}px`,
         backgroundColor: bookColor,
         backgroundImage: SPINE_PATTERNS[patternIdx],
         borderRadius: '2px 4px 4px 2px',
@@ -246,12 +250,12 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
         writingMode: 'vertical-rl',
         textOrientation: 'mixed',
         transform: 'rotate(180deg)',
-        fontSize: '10px',
+        fontSize: isLifted ? `${expandedFontSize}px` : '10px',
         fontWeight: 600,
         color: '#ffffff',
         textShadow: '0 1px 3px rgba(0,0,0,0.7)',
         letterSpacing: '0.3px',
-        maxHeight: `${bookHeight - 56}px`,
+        maxHeight: `${isLifted ? maxTextHeight + 30 : maxTextHeight}px`,
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
@@ -259,13 +263,14 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
         lineHeight: 1.2,
         marginTop: '-12px',
         fontFamily: "'Segoe UI', 'Helvetica Neue', Arial, sans-serif",
+        transition: 'font-size 0.2s ease',
       }}>
         <span
           onClick={(e) => { e.stopPropagation(); onRename(file); }}
           style={{ cursor: 'pointer', marginRight: '2px' }}
           data-testid={`btn-rename-book-${file.id}`}
         >✎ </span>
-        {title}
+        {isLifted ? expandedTitle : title}
       </span>
       {weekNum && (
         <span style={{
@@ -1814,10 +1819,14 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
 
     const sortFiles = (files: FileRecord[]) => {
       const getWeekNum = (f: FileRecord) => parseInt(f.folder?.match(/week-(\d+)/)?.[1] || '0');
+      const getType = (f: FileRecord) => f.folder?.toLowerCase().includes('-module') ? 0 : 1;
       files.sort((a, b) => {
         const weekA = getWeekNum(a);
         const weekB = getWeekNum(b);
         if (weekA !== weekB) return weekA - weekB;
+        const typeA = getType(a);
+        const typeB = getType(b);
+        if (typeA !== typeB) return typeA - typeB;
         return (a.displayName || a.originalName).localeCompare(b.displayName || b.originalName);
       });
     };
