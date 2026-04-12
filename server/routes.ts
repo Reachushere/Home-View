@@ -20137,6 +20137,18 @@ document.body.removeChild(a);
       }
       }
 
+      try {
+        const allFiles = await storage.getFiles();
+        const needsChunkFix = allFiles.filter((f: any) => f.extractedText && f.extractedText.length > 0 && (!f.totalChunks || f.totalChunks === 0));
+        for (const f of needsChunkFix) {
+          const chunks = Math.ceil(f.extractedText.length / CHUNK_SIZE);
+          await storage.updateFile(f.id, { totalChunks: chunks });
+          console.log(`[Monitor] Backfilled totalChunks for file ${f.id}: ${chunks}`);
+        }
+      } catch (backfillErr: any) {
+        console.error(`[Monitor] Backfill error:`, backfillErr.message);
+      }
+
       res.json({
         success: true,
         totalSynced: syncedFiles.length,
