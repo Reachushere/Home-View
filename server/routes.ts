@@ -19870,10 +19870,12 @@ document.body.removeChild(a);
       const { ObjectStorageService } = await import("./replit_integrations/object_storage");
       const objectStorage = new ObjectStorageService();
 
-      const allSemesters = await storage.getAllSemesterSettings();
-      if (!allSemesters || allSemesters.length === 0) {
+      const allSemestersRaw = await storage.getAllSemesterSettings();
+      if (!allSemestersRaw || allSemestersRaw.length === 0) {
         return res.json({ success: true, message: 'No semesters configured', synced: [] });
       }
+      const activeSemester = allSemestersRaw.find((s: any) => s.isActive);
+      const allSemesters = activeSemester ? [activeSemester] : allSemestersRaw.slice(0, 1);
 
       const existingFiles = await storage.getFiles();
       const existingFileKeys = new Set(
