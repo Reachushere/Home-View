@@ -3043,7 +3043,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       {/* Semester navigation - top right area */}
       <div style={{
         position: 'absolute',
-        top: '33px',
+        top: '37px',
         right: '150px',
         zIndex: 100002,
         display: 'flex',
