@@ -1916,7 +1916,10 @@ export default function Dashboard() {
     fetch(`/api/app-state/calendarLayout_${did}`)
       .then(r => r.json())
       .then(data => {
-        if (!data.value || layoutDefaultsLoadedRef.current) return;
+        if (!data.value || layoutDefaultsLoadedRef.current) {
+          layoutDefaultsLoadedRef.current = true;
+          return;
+        }
         try {
           const saved = JSON.parse(data.value);
           const minH = 200; const maxH = window.innerHeight - 100;
@@ -1927,10 +1930,12 @@ export default function Dashboard() {
             localStorage.setItem(`calendarHeight_${did}`, String(v));
           }
           if (saved.calendarReduction !== undefined) {
+            calendarReductionUserSetRef.current = true;
             setCalendarReduction(saved.calendarReduction);
             setCalendarReductionUserSet(true);
             localStorage.setItem('calendarReduction', String(saved.calendarReduction));
             localStorage.setItem(`calendarReduction_${did}`, String(saved.calendarReduction));
+            localStorage.setItem('calendarReductionUserSet', '1');
           }
           if (saved.gridSizes) {
             setGridSizes(saved.gridSizes);
@@ -1944,13 +1949,16 @@ export default function Dashboard() {
           }
           layoutDefaultsLoadedRef.current = true;
           console.log('[Layout] Loaded calendar defaults from server for device', did);
-        } catch (e) {}
+        } catch (e) { layoutDefaultsLoadedRef.current = true; }
       })
       .catch(() => {
         fetch('/api/app-state/calendarLayoutDefaults')
           .then(r => r.json())
           .then(data => {
-            if (!data.value || layoutDefaultsLoadedRef.current) return;
+            if (!data.value || layoutDefaultsLoadedRef.current) {
+              layoutDefaultsLoadedRef.current = true;
+              return;
+            }
             try {
               const saved = JSON.parse(data.value);
               const minH = 200; const maxH = window.innerHeight - 100;
@@ -1960,9 +1968,11 @@ export default function Dashboard() {
                 localStorage.setItem('calendarHeight', String(v));
               }
               if (saved.calendarReduction !== undefined) {
+                calendarReductionUserSetRef.current = true;
                 setCalendarReduction(saved.calendarReduction);
                 setCalendarReductionUserSet(true);
                 localStorage.setItem('calendarReduction', String(saved.calendarReduction));
+                localStorage.setItem('calendarReductionUserSet', '1');
               }
               if (saved.gridSizes) {
                 setGridSizes(saved.gridSizes);
@@ -1974,9 +1984,9 @@ export default function Dashboard() {
               }
               layoutDefaultsLoadedRef.current = true;
               console.log('[Layout] Loaded calendar defaults from server (generic)');
-            } catch (e) {}
+            } catch (e) { layoutDefaultsLoadedRef.current = true; }
           })
-          .catch(() => {});
+          .catch(() => { layoutDefaultsLoadedRef.current = true; });
       });
   }, []);
   const [calendarHeight, setCalendarHeight] = useState(() => {
@@ -12042,7 +12052,7 @@ export default function Dashboard() {
         const tuesdayFr = gridSizes.dayColumnWidths[2] || 1;
         const tuesdayPixelWidth = (frSpace / totalFr) * tuesdayFr;
         const reduction = Math.round(1.5 * tuesdayPixelWidth) + 120;
-        if (!calendarReductionUserSetRef.current) {
+        if (!calendarReductionUserSetRef.current && layoutDefaultsLoadedRef.current) {
           setCalendarReduction(prev => prev === reduction ? prev : reduction);
         }
         const origLeft = Math.round(rect.left - Math.max(0, curReduction - 3));
@@ -29019,7 +29029,7 @@ export default function Dashboard() {
                                   const left = (i * 37 + 13) % 100;
                                   const delay = ((i * 0.13) % 0.8).toFixed(2);
                                   const color = rainColors[i % rainColors.length];
-                                  return `<div style="position:absolute;left:${left}%;top:0;width:2px;height:10px;background:linear-gradient(180deg,${color},rgba(80,140,255,0.5));animation:rainDrop 0.4s ${delay}s linear infinite;border-radius:0 0 2px 2px"></div>`;
+                                  return `<div style="position:absolute;left:${left}%;top:0;width:1px;height:4px;background:linear-gradient(180deg,${color},rgba(80,140,255,0.5));animation:rainDrop 0.4s ${delay}s linear infinite;border-radius:0 0 2px 2px"></div>`;
                                 }).join('');
                                 return drops + `<div style="position:absolute;inset:0;background:rgba(255,255,200,0.2);animation:lightningFlash 15s 3s ease-in-out infinite"></div>`;
                               }
@@ -29044,7 +29054,7 @@ export default function Dashboard() {
                                   const left = (i * 23 + 5) % 100;
                                   const delay = ((i * 0.14) % 1.2).toFixed(2);
                                   const color = rainColors[i % rainColors.length];
-                                  return `<div style="position:absolute;left:${left}%;top:0;width:1.5px;height:7px;background:linear-gradient(180deg,${color},rgba(80,160,255,0.4));animation:rainDrop 0.6s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                                  return `<div style="position:absolute;left:${left}%;top:0;width:1px;height:3px;background:linear-gradient(180deg,${color},rgba(80,160,255,0.4));animation:rainDrop 0.6s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
                                 }).join('');
                               }
                               if ((wCode >= 61 && wCode <= 65) || (wCode >= 80 && wCode <= 82)) {
@@ -29053,7 +29063,7 @@ export default function Dashboard() {
                                   const left = (i * 23 + 5) % 100;
                                   const delay = ((i * 0.14) % 1.2).toFixed(2);
                                   const color = rainColors[i % rainColors.length];
-                                  return `<div style="position:absolute;left:${left}%;top:0;width:1.5px;height:8px;background:linear-gradient(180deg,${color},rgba(70,150,255,0.4));animation:rainDrop ${wCode >= 80 ? '0.5s' : '0.7s'} ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                                  return `<div style="position:absolute;left:${left}%;top:0;width:1px;height:3.5px;background:linear-gradient(180deg,${color},rgba(70,150,255,0.4));animation:rainDrop ${wCode >= 80 ? '0.5s' : '0.7s'} ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
                                 }).join('');
                               }
                               if (wCode >= 51 && wCode <= 55) {
@@ -29061,7 +29071,7 @@ export default function Dashboard() {
                                   const left = (i * 29 + 7) % 100;
                                   const delay = ((i * 0.17) % 1.2).toFixed(2);
                                   const color = rainColors[i % rainColors.length];
-                                  return `<div style="position:absolute;left:${left}%;top:0;width:1px;height:6px;background:linear-gradient(180deg,${color},rgba(80,160,255,0.3));animation:rainDrop 1s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                                  return `<div style="position:absolute;left:${left}%;top:0;width:0.8px;height:2.5px;background:linear-gradient(180deg,${color},rgba(80,160,255,0.3));animation:rainDrop 1s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
                                 }).join('');
                               }
                               if (wCode === 45 || wCode === 48) {
@@ -29124,8 +29134,8 @@ export default function Dashboard() {
                               <>
                                 <style>{`
                                   @keyframes twinkle { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
-                                  @keyframes rainDrop { 0% { transform: translateY(-6px) rotate(-5deg); opacity: 0; } 8% { opacity: 1; } 80% { opacity: 0.85; } 100% { transform: translateY(100%) rotate(-5deg); opacity: 0; } }
-                                  @keyframes snowFall { 0% { transform: translateY(-6px) translateX(0) rotate(0deg); opacity: 0; } 8% { opacity: 1; } 30% { transform: translateY(30%) translateX(4px) rotate(60deg); } 60% { transform: translateY(60%) translateX(-3px) rotate(120deg); } 85% { opacity: 0.85; } 100% { transform: translateY(100%) translateX(2px) rotate(180deg); opacity: 0; } }
+                                  @keyframes rainDrop { 0% { transform: translateY(-4px) rotate(-5deg); opacity: 0; } 8% { opacity: 0.9; } 75% { opacity: 0.7; } 100% { transform: translateY(45px) rotate(-5deg); opacity: 0; } }
+                                  @keyframes snowFall { 0% { transform: translateY(-4px) translateX(0) rotate(0deg); opacity: 0; } 8% { opacity: 1; } 30% { transform: translateY(12px) translateX(4px) rotate(60deg); } 60% { transform: translateY(28px) translateX(-3px) rotate(120deg); } 85% { opacity: 0.85; } 100% { transform: translateY(45px) translateX(2px) rotate(180deg); opacity: 0; } }
                                   @keyframes fwRainDrop { 0% { transform: translateY(-4px) rotate(-6deg); opacity: 0; } 8% { opacity: 0.9; } 75% { opacity: 0.7; } 100% { transform: translateY(40px) rotate(-6deg); opacity: 0; } }
                                   @keyframes fwSnowDrop { 0% { transform: translateY(-5px) translateX(0); opacity: 0; } 8% { opacity: 1; } 35% { transform: translateY(5px) translateX(4px); } 65% { transform: translateY(12px) translateX(-3px); } 85% { opacity: 0.8; } 100% { transform: translateY(20px) translateX(1px); opacity: 0; } }
                                   @keyframes fwSnowDrift { 0% { transform: translate(-3px, -2px); } 100% { transform: translate(3px, 2px); } }
@@ -29160,8 +29170,8 @@ export default function Dashboard() {
                                 const drops = Array.from({ length: 30 }, (_, i) => {
                                   const left = (i * 13 + 3) % 100;
                                   const delay = ((i * 0.08) % 0.6).toFixed(2);
-                                  const h = 10 + (i % 4) * 4;
-                                  const w = 1.5 + (i % 3) * 0.5;
+                                  const h = 4 + (i % 4) * 2;
+                                  const w = 1 + (i % 3) * 0.3;
                                   return `<div style="position:absolute;left:${left}%;top:-8px;width:${w}px;height:${h}px;background:linear-gradient(180deg,rgba(180,220,255,0.95),rgba(100,170,255,0.3));animation:rainDrop 0.3s ${delay}s linear infinite;border-radius:0 0 2px 2px;transform:rotate(-8deg)"></div>`;
                                 }).join('');
                                 return drops + `<div style="position:absolute;inset:0;background:rgba(200,180,255,0.2);animation:lightningFlash 5s 1.5s ease-in-out infinite"></div><div style="position:absolute;inset:0;background:rgba(255,240,200,0.12);animation:lightningFlash 7s 4s ease-in-out infinite"></div>`;
@@ -29186,8 +29196,8 @@ export default function Dashboard() {
                                 const rain = Array.from({ length: 24 }, (_, i) => {
                                   const left = (i * 16 + 3) % 100;
                                   const delay = ((i * 0.09) % 0.8).toFixed(2);
-                                  const w = 1.5 + (i % 3) * 0.3;
-                                  const h = 7 + (i % 3) * 3;
+                                  const w = 1 + (i % 3) * 0.2;
+                                  const h = 3 + (i % 3) * 1.5;
                                   return `<div style="position:absolute;left:${left}%;top:-6px;width:${w}px;height:${h}px;background:linear-gradient(180deg,rgba(160,210,255,0.9),rgba(120,180,240,0.25));animation:rainDrop 0.5s ${delay}s linear infinite;border-radius:0 0 2px 2px;transform:rotate(-6deg)"></div>`;
                                 }).join('');
                                 const snow = Array.from({ length: 12 }, (_, i) => {
@@ -29203,8 +29213,8 @@ export default function Dashboard() {
                                 return Array.from({ length: density }, (_, i) => {
                                   const left = (i * 14 + 3) % 100;
                                   const delay = ((i * 0.09) % 0.9).toFixed(2);
-                                  const h = 8 + (i % 4) * 3;
-                                  const w = 1.5 + (i % 3) * 0.5;
+                                  const h = 3.5 + (i % 4) * 1.5;
+                                  const w = 1 + (i % 3) * 0.3;
                                   return `<div style="position:absolute;left:${left}%;top:-6px;width:${w}px;height:${h}px;background:linear-gradient(180deg,rgba(160,210,255,0.9),rgba(90,170,255,0.25));animation:rainDrop ${wc >= 80 ? '0.35s' : '0.5s'} ${delay}s linear infinite;border-radius:0 0 2px 2px;transform:rotate(-5deg)"></div>`;
                                 }).join('');
                               }
@@ -29212,7 +29222,7 @@ export default function Dashboard() {
                                 return Array.from({ length: 16 }, (_, i) => {
                                   const left = (i * 19 + 5) % 100;
                                   const delay = ((i * 0.12) % 1.1).toFixed(2);
-                                  return `<div style="position:absolute;left:${left}%;top:-5px;width:1.5px;height:6px;background:linear-gradient(180deg,rgba(170,210,255,0.8),rgba(130,180,240,0.2));animation:rainDrop 0.8s ${delay}s linear infinite;border-radius:0 0 1px 1px;transform:rotate(-3deg)"></div>`;
+                                  return `<div style="position:absolute;left:${left}%;top:-5px;width:0.8px;height:3px;background:linear-gradient(180deg,rgba(170,210,255,0.8),rgba(130,180,240,0.2));animation:rainDrop 0.8s ${delay}s linear infinite;border-radius:0 0 1px 1px;transform:rotate(-3deg)"></div>`;
                                 }).join('');
                               }
                               if (wc >= 45 && wc <= 48) {
