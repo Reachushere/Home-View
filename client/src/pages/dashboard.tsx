@@ -20939,7 +20939,7 @@ export default function Dashboard() {
         title="Add"
       >
         <svg width="17" height="84" viewBox="2 0 17 84" style={{ display: 'block' }}>
-          <path d="M0,0 L0,84 L6,84 Q6,75 12,75 L13,75 Q19,75 19,63 L19,21 Q19,9 13,9 L12,9 Q6,9 6,0 Z" fill={`${colorSettings.headerBar}cc`} stroke={`${colorSettings.headerBar}ee`} strokeWidth="1.5" />
+          <path d="M0,0 L0,84 L6,84 Q6,75 12,75 L13,75 Q19,75 19,63 L19,21 Q19,9 13,9 L12,9 Q6,9 6,0 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
           <text x="12" y="46" textAnchor="middle" fill="rgba(255,255,255,0.8)" fontSize="16" fontWeight="bold">+</text>
         </svg>
       </div>
@@ -20962,7 +20962,7 @@ export default function Dashboard() {
         title="Projects"
       >
         <svg width="23" height="84" viewBox="0 0 23 84" style={{ display: 'block' }}>
-          <path d="M23,0 L23,84 L14,84 Q14,75 8,75 L7,75 Q0,75 0,63 L0,21 Q0,9 7,9 L8,9 Q14,9 14,0 Z" fill={`${colorSettings.headerBar}cc`} stroke={`${colorSettings.headerBar}ee`} strokeWidth="1.5" />
+          <path d="M23,0 L23,84 L14,84 Q14,75 8,75 L7,75 Q0,75 0,63 L0,21 Q0,9 7,9 L8,9 Q14,9 14,0 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
           <g transform="translate(1, 36)">
             <rect x="1" y="1" width="4" height="4" rx="0.5" fill="rgba(255,255,255,0.8)" stroke="rgba(255,255,255,0.8)" strokeWidth="0.3" />
             <rect x="7" y="1" width="4" height="4" rx="0.5" fill="rgba(255,255,255,0.8)" stroke="rgba(255,255,255,0.8)" strokeWidth="0.3" />
