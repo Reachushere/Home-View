@@ -3578,8 +3578,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 <div style={{
                   display: 'flex',
                   alignItems: 'flex-end',
-                  height: `${shelfHeight + 40}px`,
-                  padding: '40px 4px 28px',
+                  height: `${shelfHeight}px`,
+                  padding: '0px 4px 28px',
                   gap: '2px',
                   overflowX: 'hidden',
                   overflowY: 'hidden',
@@ -3587,7 +3587,6 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 }}
                 className="library-scroll"
                 >
-                  <Bookend side="left" />
                   {(() => {
                     const weekGroups: { weekNum: number; files: { file: FileRecord; fileIdx: number }[] }[] = [];
                     let currentGroup: { weekNum: number; files: { file: FileRecord; fileIdx: number }[] } | null = null;
@@ -3630,7 +3629,6 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                       </WeekGroupWrapper>
                     );});
                   })()}
-                  <Bookend side="right" />
                 </div>
 
               </div>
