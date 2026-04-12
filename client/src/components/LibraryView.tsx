@@ -631,11 +631,13 @@ const toolBtnStyle = (active?: boolean): React.CSSProperties => ({
   transition: 'all 0.15s ease',
 });
 
-function BookReader({ file, bookColor, onClose, pdfUrl }: {
+function BookReader({ file, bookColor, onClose, pdfUrl, moduleFiles, onOpenModuleFile }: {
   file: FileRecord;
   bookColor: string;
   onClose: () => void;
   pdfUrl?: string;
+  moduleFiles?: { weekNum: number; file: FileRecord; color: string }[];
+  onOpenModuleFile?: (file: FileRecord, color: string) => void;
 }) {
   const [phase, setPhase] = useState<'pull' | 'expand' | 'reading'>('pull');
   const [pdfDoc, setPdfDoc] = useState<any>(null);
@@ -769,11 +771,28 @@ function BookReader({ file, bookColor, onClose, pdfUrl }: {
             span.style.transform = `scaleX(${scaledWidth / measuredWidth})`;
           }
         }
+        const weekMatch = item.str.match(/(?:week|module)\s*(\d+)/i);
+        if (weekMatch && moduleFiles && moduleFiles.length > 0 && onOpenModuleFile) {
+          const weekNum = parseInt(weekMatch[1], 10);
+          const mf = moduleFiles.find(m => m.weekNum === weekNum);
+          if (mf) {
+            span.style.color = '#D4AF37';
+            span.style.cursor = 'pointer';
+            span.style.textDecoration = 'underline';
+            span.style.textDecorationColor = 'rgba(212,175,55,0.5)';
+            span.title = `Open Module: ${(mf.file.displayName || mf.file.originalName).replace(/\.pdf$/i, '')}`;
+            span.addEventListener('click', (e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              onOpenModuleFile(mf.file, mf.color);
+            });
+          }
+        }
         frag.appendChild(span);
       }
       textLayer.appendChild(frag);
     }
-  }, [zoom]);
+  }, [zoom, moduleFiles, onOpenModuleFile]);
 
   useEffect(() => {
     if (!pdfDoc || !canvasRef.current || !containerRef.current || phase !== 'reading') return;
@@ -1249,11 +1268,11 @@ function BookReader({ file, bookColor, onClose, pdfUrl }: {
                     <div className={`book-spread ${flipDirection !== 'none' ? `flip-${flipDirection}` : ''}`} style={{ display: 'flex', gap: '0px', perspective: '2000px' }} onAnimationEnd={() => setFlipDirection('none')}>
                       <div
                         className="book-page book-page-left"
-                        style={{ position: 'relative', cursor: activeToolPanel === 'highlight' ? 'text' : activeToolPanel === 'comment' ? 'crosshair' : 'default', boxShadow: 'inset -8px 0 16px -6px rgba(0,0,0,0.15), 2px 2px 8px rgba(0,0,0,0.1)' }}
+                        style={{ position: 'relative', cursor: activeToolPanel === 'highlight' ? 'text' : activeToolPanel === 'comment' ? 'crosshair' : 'text', boxShadow: 'inset -8px 0 16px -6px rgba(0,0,0,0.15), 2px 2px 8px rgba(0,0,0,0.1)' }}
                         onClick={handleCanvasClick}
                         onMouseUp={activeToolPanel === 'highlight' ? handleCanvasClick : undefined}
                       >
-                        <canvas ref={canvasRef} style={{ display: 'block' }} />
+                        <canvas ref={canvasRef} style={{ display: 'block', pointerEvents: 'none' }} />
                         <div
                           ref={textLayerRef}
                           style={{
@@ -1430,7 +1449,7 @@ function BookReader({ file, bookColor, onClose, pdfUrl }: {
                       {rightPage ? (
                         <div
                           className="book-page book-page-right"
-                          style={{ position: 'relative', cursor: activeToolPanel === 'highlight' ? 'text' : 'default', boxShadow: 'inset 8px 0 16px -6px rgba(0,0,0,0.15), -2px 2px 8px rgba(0,0,0,0.1)' }}
+                          style={{ position: 'relative', cursor: activeToolPanel === 'highlight' ? 'text' : 'text', boxShadow: 'inset 8px 0 16px -6px rgba(0,0,0,0.15), -2px 2px 8px rgba(0,0,0,0.1)' }}
                           onMouseUp={activeToolPanel === 'highlight' ? (e) => {
                             const sel = window.getSelection();
                             if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
@@ -1455,7 +1474,7 @@ function BookReader({ file, bookColor, onClose, pdfUrl }: {
                             }
                           } : undefined}
                         >
-                          <canvas ref={canvasRightRef} style={{ display: 'block' }} />
+                          <canvas ref={canvasRightRef} style={{ display: 'block', pointerEvents: 'none' }} />
                           <div
                             ref={textLayerRightRef}
                             style={{ pointerEvents: activeToolPanel === 'comment' ? 'none' : 'auto' }}
@@ -1587,7 +1606,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
   const [syncingSemKey, setSyncingSemKey] = useState<string | null>(null);
   const [selectedBook, setSelectedBook] = useState<FileRecord | null>(null);
   const [selectedBookColor, setSelectedBookColor] = useState('#8B4513');
-  const [openReaders, setOpenReaders] = useState<{ file: FileRecord; color: string; pdfUrl?: string }[]>([]);
+  const [openReaders, setOpenReaders] = useState<{ file: FileRecord; color: string; pdfUrl?: string; courseCode?: string }[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [showSharePopup, setShowSharePopup] = useState(false);
@@ -1807,6 +1826,20 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
     return result;
   }, [currentSemester, allFiles, semesters, syllabusPaths]);
 
+  const courseModuleFilesMap = useMemo(() => {
+    const map: Record<string, { weekNum: number; file: FileRecord; color: string }[]> = {};
+    allFiles.forEach(f => {
+      if (!f.folder) return;
+      const match = f.folder.match(/^week-(\d+)-(.+?)-module$/i);
+      if (!match) return;
+      const weekNum = parseInt(match[1], 10);
+      const codeNorm = match[2].toLowerCase();
+      if (!map[codeNorm]) map[codeNorm] = [];
+      map[codeNorm].push({ weekNum, file: f, color: getBookColor(0, codeNorm, weekNum) });
+    });
+    return map;
+  }, [allFiles]);
+
   const allCoursesForSearch = useMemo(() => {
     const set = new Set<string>();
     semesters.forEach(s => s.courses.forEach(c => set.add(c.code)));
@@ -1962,10 +1995,11 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
     return results;
   }, [masterSearch, masterSemFilter, masterCourseFilter, masterWeekFilter, masterTypeFilter, masterFormatFilter, masterSortBy, allFiles, semesters, hasAnyFilter]);
 
-  const handleBookClick = useCallback((file: FileRecord, color: string, pdfUrl?: string) => {
+  const handleBookClick = useCallback((file: FileRecord, color: string, pdfUrl?: string, courseCode?: string) => {
+    const cc = courseCode || file.folder?.match(/^week-\d+-(.+?)-(module|reading)$/i)?.[1]?.toLowerCase();
     setOpenReaders(prev => {
       if (prev.some(r => r.file.id === file.id)) return prev;
-      return [...prev, { file, color, pdfUrl }];
+      return [...prev, { file, color, pdfUrl, courseCode: cc }];
     });
   }, []);
 
@@ -2635,7 +2669,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                         listened: false,
                         contentType: 'application/pdf',
                       };
-                      handleBookClick(syllabusFile, course.color || '#8B6914', `/api/syllabus/view?path=${encodeURIComponent(syllabusPaths[course.code])}`);
+                      handleBookClick(syllabusFile, course.color || '#8B6914', `/api/syllabus/view?path=${encodeURIComponent(syllabusPaths[course.code])}`, course.code.replace(/\s/g, '').toLowerCase());
                     }}
                     style={{
                       display: 'flex',
@@ -2763,6 +2797,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             bookColor={reader.color}
             onClose={() => setOpenReaders(prev => prev.filter(r => r.file.id !== reader.file.id))}
             pdfUrl={reader.pdfUrl}
+            moduleFiles={reader.courseCode ? courseModuleFilesMap[reader.courseCode] : undefined}
+            onOpenModuleFile={(mf, color) => handleBookClick(mf, color)}
           />
         </div>
       ))}
