@@ -3589,7 +3589,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                   overflowX: courseIdx > 0 ? 'visible' : 'hidden',
                   overflowY: courseIdx > 0 ? 'visible' : 'hidden',
                   maxWidth: '100%',
-                  ...(courseIdx > 0 ? { transform: 'scale(1.5)', transformOrigin: 'bottom left' } : {}),
+                  ...(courseIdx > 0 ? { transform: 'scale(1.5) scaleX(0.84)', transformOrigin: 'bottom left' } : {}),
                 }}
                 className="library-scroll"
                 >
