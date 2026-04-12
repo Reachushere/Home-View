@@ -231,6 +231,17 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createFile(insertFile: InsertFile): Promise<FileRecord> {
+    if (insertFile.folder && insertFile.originalName) {
+      const dupes = await db.select().from(files).where(
+        and(eq(files.originalName, insertFile.originalName), eq(files.folder, insertFile.folder))
+      );
+      if (dupes.length > 0) {
+        for (const dupe of dupes) {
+          await db.delete(files).where(eq(files.id, dupe.id));
+        }
+        console.log(`[Storage] Removed ${dupes.length} duplicate(s) of "${insertFile.originalName}" in folder "${insertFile.folder}"`);
+      }
+    }
     const [file] = await db.insert(files).values(insertFile).returning();
     return file;
   }
