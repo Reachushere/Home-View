@@ -5635,10 +5635,13 @@ Always cite which file/document each finding comes from. Be thorough but concise
         } else {
           console.log(`[FileDownload] Local file not found at ${localPath}, will try OneDrive fallback`);
           const folderMatch = file.folder?.match(/^week-(\d+)-(.+?)-(module|reading)$/i);
+          console.log(`[FileDownload] folder="${file.folder}" folderMatch=${!!folderMatch} originalName="${file.originalName}"`);
           if (folderMatch) {
             const [, weekNum, courseCode, subType] = folderMatch;
+            console.log(`[FileDownload] Parsed: weekNum=${weekNum} courseCode=${courseCode} subType=${subType}`);
             try {
               const allSems = await storage.getAllSemesterSettings();
+              console.log(`[FileDownload] Found ${allSems.length} semesters`);
               const sortedSems = [...allSems].sort((a, b) => {
                 const aDate = a.semesterStartDate ? new Date(a.semesterStartDate).getTime() : 0;
                 const bDate = b.semesterStartDate ? new Date(b.semesterStartDate).getTime() : 0;
@@ -5649,20 +5652,27 @@ Always cite which file/document each finding comes from. Be thorough but concise
                   const cc = ((sem as any)[`course${i}Code`] || '').replace(/\s/g, '').toUpperCase();
                   return cc === courseCode.toUpperCase();
                 });
-                if (!hasCourse) continue;
+                if (!hasCourse) { continue; }
+                console.log(`[FileDownload] Found course ${courseCode} in semester ${sem.semesterName}`);
                 try {
                   const courses = await getSemesterOneDriveCourses(sem);
                   const matchedCourse = courses.find(c => c.code.toUpperCase() === courseCode.toUpperCase());
-                  if (!matchedCourse) continue;
+                  if (!matchedCourse) { console.log(`[FileDownload] No matching OneDrive course for ${courseCode}`); continue; }
+                  console.log(`[FileDownload] Found OneDrive course: ${matchedCourse.path}`);
                   const courseFolders = await listOneDriveItems(matchedCourse.path);
                   const weekFolder = courseFolders.find((f: any) => f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${weekNum}`));
-                  if (!weekFolder) continue;
+                  if (!weekFolder) { console.log(`[FileDownload] No week ${weekNum} folder found`); continue; }
+                  console.log(`[FileDownload] Found week folder: ${weekFolder.name}`);
                   const weekContents = await listOneDriveItems(weekFolder.path);
                   const typeFolder = weekContents.find((f: any) => f.type === 'folder' && f.name.toLowerCase().includes(subType));
-                  if (!typeFolder) continue;
-                  const files = await listOneDriveItems(typeFolder.path);
-                  const matchedFile = files.find((f: any) => f.name === file.originalName);
+                  if (!typeFolder) { console.log(`[FileDownload] No ${subType} subfolder found in ${weekFolder.name}`); continue; }
+                  console.log(`[FileDownload] Found type folder: ${typeFolder.name}`);
+                  const odFiles = await listOneDriveItems(typeFolder.path);
+                  console.log(`[FileDownload] OneDrive files in folder: ${odFiles.map((f: any) => f.name).join(', ')}`);
+                  console.log(`[FileDownload] Looking for: "${file.originalName}"`);
+                  const matchedFile = odFiles.find((f: any) => f.name === file.originalName);
                   if (matchedFile?.downloadUrl) {
+                    console.log(`[FileDownload] Found matching file on OneDrive, downloading...`);
                     const pdfResponse = await fetch(matchedFile.downloadUrl);
                     if (pdfResponse.ok && pdfResponse.body) {
                       try {
@@ -5681,6 +5691,8 @@ Always cite which file/document each finding comes from. Be thorough but concise
                       res.end();
                       return;
                     }
+                  } else {
+                    console.log(`[FileDownload] No matching file found on OneDrive (or no downloadUrl)`);
                   }
                 } catch (e: any) {
                   console.log(`[FileDownload] OneDrive fallback lookup failed: ${e.message}`);
