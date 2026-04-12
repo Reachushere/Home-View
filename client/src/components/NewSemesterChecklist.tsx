@@ -331,10 +331,28 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
           </button>
         </div>
 
-        <div className="px-4 py-2 text-[10px] text-white/70 text-center flex items-center justify-center gap-6" style={{ borderRadius: '0 0 12px 12px' }}>
+        <div className="px-4 py-2 text-[10px] text-white/40 text-center flex items-center justify-center gap-6">
           <span className="flex items-center gap-1"><CalendarDays className="w-3.5 h-3.5" /> Set reminder</span>
           <span className="flex items-center gap-1">Toggle = all semesters</span>
           <span className="flex items-center gap-1"><Trash2 className="w-3.5 h-3.5" /> Delete</span>
+        </div>
+
+        <div className="px-4 py-3 border-t border-white/10 flex gap-3" style={{ borderRadius: '0 0 12px 12px' }}>
+          <button
+            onClick={() => { setEditingTitles({}); onDismiss(); }}
+            className="flex-1 text-xs font-semibold text-white/70 py-2 rounded border border-white/20 hover:bg-white/10 transition-all"
+            data-testid="checklist-cancel-btn"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onDismiss}
+            className="flex-1 text-xs font-bold text-white py-2 rounded hover:brightness-110 transition-all"
+            style={{ background: '#22c55e' }}
+            data-testid="checklist-save-btn"
+          >
+            Save & Close
+          </button>
         </div>
       </div>
 
