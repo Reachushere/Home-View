@@ -379,6 +379,22 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
           </span>
         </div>
       )}
+      <span
+        onClick={(e) => { e.stopPropagation(); onRename(file); }}
+        style={{
+          position: 'absolute',
+          top: '22px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          cursor: 'pointer',
+          fontSize: '8px',
+          color: 'rgba(255,255,255,0.7)',
+          textShadow: '0 1px 2px rgba(0,0,0,0.7)',
+          zIndex: 5,
+          lineHeight: 1,
+        }}
+        data-testid={`btn-rename-book-${file.id}`}
+      >✎</span>
       {isLifted && splitLines ? (
         <div style={{
           writingMode: 'vertical-rl',
@@ -400,14 +416,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
           fontFamily: "'Segoe UI', 'Helvetica Neue', Arial, sans-serif",
           transition: 'font-size 0.2s ease',
         }}>
-          <span style={{ whiteSpace: 'nowrap' }}>
-            <span
-              onClick={(e) => { e.stopPropagation(); onRename(file); }}
-              style={{ cursor: 'pointer', marginRight: '2px' }}
-              data-testid={`btn-rename-book-${file.id}`}
-            >✎ </span>
-            {splitLines[0]}
-          </span>
+          <span style={{ whiteSpace: 'nowrap' }}>{splitLines[0]}</span>
           <span style={{ whiteSpace: 'nowrap' }}>{splitLines[1]}</span>
         </div>
       ) : (
@@ -430,11 +439,6 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
           fontFamily: "'Segoe UI', 'Helvetica Neue', Arial, sans-serif",
           transition: 'font-size 0.2s ease',
         }}>
-          <span
-            onClick={(e) => { e.stopPropagation(); onRename(file); }}
-            style={{ cursor: 'pointer', marginRight: '2px' }}
-            data-testid={`btn-rename-book-${file.id}`}
-          >✎ </span>
           {isLifted ? expandedTitle : title}
         </span>
       )}
