@@ -5552,8 +5552,74 @@ Always cite which file/document each finding comes from. Be thorough but concise
         return res.status(404).json({ error: "File not found" });
       }
 
-      const mediaUrl = file.objectPath;
+      const mediaUrl = file.objectPath || '';
       console.log(`[FileDownload] id=${file.id} name="${file.originalName}" objectPath="${mediaUrl}" folder="${file.folder}"`);
+
+      if (!mediaUrl) {
+        console.log(`[FileDownload] objectPath is null/empty for file ${file.id}, attempting OneDrive lookup by folder`);
+        const folderMatch = file.folder?.match(/^week-(\d+)-(.+?)-(module|reading)$/i);
+        if (folderMatch) {
+          const [, weekNum, courseCode, subType] = folderMatch;
+          try {
+            const allSems = await storage.getAllSemesterSettings();
+            const sortedSems = [...allSems].sort((a, b) => {
+              const aDate = a.semesterStartDate ? new Date(a.semesterStartDate).getTime() : 0;
+              const bDate = b.semesterStartDate ? new Date(b.semesterStartDate).getTime() : 0;
+              return bDate - aDate;
+            });
+            for (const sem of sortedSems) {
+              const hasCourse = [1, 2, 3].some(i => {
+                const cc = ((sem as any)[`course${i}Code`] || '').replace(/\s/g, '').toUpperCase();
+                return cc === courseCode.toUpperCase();
+              });
+              if (!hasCourse) continue;
+              try {
+                const courses = await getSemesterOneDriveCourses(sem);
+                const matchedCourse = courses.find(c => c.code.toUpperCase() === courseCode.toUpperCase());
+                if (!matchedCourse) continue;
+                const courseFolders = await listOneDriveItems(matchedCourse.path);
+                const weekFolder = courseFolders.find((f: any) => f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${weekNum}`));
+                if (!weekFolder) continue;
+                const weekContents = await listOneDriveItems(weekFolder.path);
+                const typeFolder = weekContents.find((f: any) => f.type === 'folder' && f.name.toLowerCase().includes(subType));
+                if (!typeFolder) continue;
+                const files = await listOneDriveItems(typeFolder.path);
+                const matchedFile = files.find((f: any) => f.name === file.originalName);
+                if (matchedFile?.downloadUrl) {
+                  const pdfResponse = await fetch(matchedFile.downloadUrl);
+                  if (pdfResponse.ok && pdfResponse.body) {
+                    const fs = await import("fs");
+                    const pathMod = await import("path");
+                    try {
+                      const buf = Buffer.from(await pdfResponse.clone().arrayBuffer());
+                      const localFileName = `${file.id}-${file.originalName}`;
+                      const localUploadsDir = pathMod.join(process.cwd(), 'persistent-uploads');
+                      if (!fs.existsSync(localUploadsDir)) fs.mkdirSync(localUploadsDir, { recursive: true });
+                      const localPath = pathMod.join(localUploadsDir, localFileName);
+                      fs.writeFileSync(localPath, buf);
+                      await storage.updateFile(file.id, { objectPath: `/local/uploads/${localFileName}` });
+                      console.log(`[FileDownload] Downloaded from OneDrive and cached: ${localPath}`);
+                    } catch (cacheErr: any) {
+                      console.log(`[FileDownload] Failed to cache: ${cacheErr.message}`);
+                    }
+                    res.setHeader('Content-Type', 'application/pdf');
+                    res.setHeader('Content-Disposition', `inline; filename="${file.originalName}"`);
+                    const reader = pdfResponse.body.getReader();
+                    while (true) { const { done, value } = await reader.read(); if (done) break; res.write(value); }
+                    res.end();
+                    return;
+                  }
+                }
+              } catch (e: any) {
+                console.log(`[FileDownload] OneDrive lookup failed: ${e.message}`);
+              }
+            }
+          } catch (odErr: any) {
+            console.log(`[FileDownload] OneDrive fallback error: ${odErr.message}`);
+          }
+        }
+        return res.status(404).json({ error: "File has no objectPath and OneDrive lookup failed" });
+      }
 
       if (mediaUrl.startsWith("/local/uploads/")) {
         const fs = await import("fs");
