@@ -379,20 +379,32 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
                   <div
                     className="shrink-0 rounded border-2"
                     style={{
-                      width: '24px',
-                      height: '24px',
+                      width: '20px',
+                      height: '20px',
                       backgroundColor: '#ffffff',
                       borderColor: '#ffffff',
                       opacity: 0.15,
                     }}
                   />
-                  <div
-                    className="flex-1 rounded"
+                  <input
+                    type="text"
+                    className="flex-1 text-xs rounded px-2 py-1.5 outline-none min-w-0"
                     style={{
                       backgroundColor: '#ffffff',
+                      color: '#1a1a1a',
                       height: '30px',
-                      opacity: 0.08,
+                      border: '1px solid rgba(255,255,255,0.3)',
                     }}
+                    placeholder=""
+                    onFocus={(e) => {
+                      createMutation.mutate({
+                        title: '',
+                        semesterKey,
+                        sortOrder: allItems.length + i + 1,
+                        isGlobal: false,
+                      });
+                    }}
+                    data-testid={`checklist-empty-slot-${i}`}
                   />
                   <div style={{ width: '16px' }} />
                   <div style={{ width: '30px' }} />
