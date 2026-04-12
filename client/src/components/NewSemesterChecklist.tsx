@@ -115,34 +115,11 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
     setSeeded(true);
   }, [isLoading, items, seeded]);
 
-  const [localCompleted, setLocalCompleted] = useState<Record<number, boolean>>({});
-  const getEffectiveCompleted = (item: NewSemesterChecklistItem) =>
-    localCompleted[item.id] !== undefined ? localCompleted[item.id] : !!item.isCompleted;
   const activeItems = items.filter(i => !i.isCompleted && !i.isDeleted);
   const completedItems = items.filter(i => !!i.isCompleted && !i.isDeleted);
-  const pendingToggleRef = useRef<Set<number>>(new Set());
   const handleToggleComplete = (item: NewSemesterChecklistItem) => {
-    if (pendingToggleRef.current.has(item.id)) return;
-    pendingToggleRef.current.add(item.id);
-    const currentlyChecked = localCompleted[item.id] !== undefined ? localCompleted[item.id] : !!item.isCompleted;
-    const newVal = !currentlyChecked;
-    setLocalCompleted(prev => ({ ...prev, [item.id]: newVal }));
-    fetch(`/api/new-semester-checklist/${item.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ isCompleted: newVal, completedAt: newVal ? new Date().toISOString() : null }),
-    }).then(r => r.json()).then(serverItem => {
-      pendingToggleRef.current.delete(item.id);
-      if (serverItem && serverItem.id) {
-        queryClient.setQueryData<NewSemesterChecklistItem[]>(checklistQueryKey, (old) =>
-          old ? old.map(i => i.id === serverItem.id ? { ...i, ...serverItem } : i) : old
-        );
-      }
-      setLocalCompleted(prev => { const n = { ...prev }; delete n[item.id]; return n; });
-    }).catch(() => {
-      pendingToggleRef.current.delete(item.id);
-      setLocalCompleted(prev => { const n = { ...prev }; delete n[item.id]; return n; });
-    });
+    const newVal = !item.isCompleted;
+    updateMutation.mutate({ id: item.id, isCompleted: newVal });
   };
 
   const handleToggleGlobal = useCallback((item: NewSemesterChecklistItem) => {
@@ -294,7 +271,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
   };
 
   const renderRow = (item: NewSemesterChecklistItem, _isCompleted: boolean) => {
-    const checked = localCompleted[item.id] !== undefined ? localCompleted[item.id] : item.isCompleted;
+    const checked = !!item.isCompleted;
     const displayTitle = editingTitles[item.id] !== undefined ? editingTitles[item.id] : item.title;
     const hasDueDate = !!item.dueDate;
 

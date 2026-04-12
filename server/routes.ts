@@ -25072,9 +25072,14 @@ Keep your tone friendly and educational. Format your response clearly with numbe
   app.patch("/api/new-semester-checklist/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const updated = await storage.updateNewSemesterChecklistItem(id, req.body);
+      const updates = { ...req.body };
+      if ('isCompleted' in updates) {
+        updates.completedAt = updates.isCompleted ? new Date() : null;
+      }
+      const updated = await storage.updateNewSemesterChecklistItem(id, updates);
       res.json(updated);
     } catch (err) {
+      console.error("Error updating checklist item:", err);
       res.status(500).json({ error: "Failed to update checklist item" });
     }
   });
