@@ -16482,7 +16482,7 @@ export default function Dashboard() {
           const snowCount = isSnow ? 120 : 0;
           const particleCount = rainCount || snowCount;
           return (
-            <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 1 }}>
+            <div className="absolute pointer-events-none overflow-hidden" style={{ zIndex: 1, top: 0, left: 0, right: 0, bottom: '-80px' }}>
               {isFog && (
                 <>
                   <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(180,185,200,0.3) 0%, rgba(160,165,180,0.2) 40%, rgba(180,185,200,0.35) 100%)', animation: 'bgFogPulse 8s ease-in-out infinite' }} />
@@ -16522,8 +16522,8 @@ export default function Dashboard() {
                     }} />
                   );
                 }
-                const height = isFreezingRain ? (10 + p.sizeFactor * 14) : (16 + p.sizeFactor * 22);
-                const width = isFreezingRain ? 2 : (1.5 + p.sizeFactor * 1);
+                const height = isFreezingRain ? (3 + p.sizeFactor * 5) : (4 + p.sizeFactor * 6);
+                const width = isFreezingRain ? 1.2 : 1;
                 const duration = isHeavyRain ? (0.8 + p.durationFactor * 0.6) : (1.2 + p.durationFactor * 1);
                 const windAngle = isHeavyRain ? 12 : 8;
                 return (
