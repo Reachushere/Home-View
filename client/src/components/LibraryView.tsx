@@ -3610,7 +3610,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <span style={{
                     fontSize: '13px',
-                    fontWeight: 500,
+                    fontWeight: 700,
                     color: '#000000',
                     letterSpacing: '0.5px',
                     textTransform: 'uppercase',
