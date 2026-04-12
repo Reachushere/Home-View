@@ -3534,24 +3534,26 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                     style={{
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '4px',
-                      padding: '2px 8px',
-                      borderRadius: '4px',
-                      border: '1px solid rgba(255,255,255,0.5)',
-                      background: 'rgba(255,255,255,0.45)',
+                      gap: '5px',
+                      padding: '4px 12px',
+                      borderRadius: '6px',
+                      border: '1px solid rgba(255,255,255,0.3)',
+                      background: 'rgba(255,255,255,0.15)',
                       color: '#ffffff',
-                      fontSize: '9px',
-                      fontWeight: 600,
-                      letterSpacing: '0.3px',
+                      fontSize: '10px',
+                      fontWeight: 700,
+                      letterSpacing: '0.5px',
                       cursor: 'pointer',
                       transition: 'all 0.15s ease',
                       fontFamily: "system-ui, -apple-system, sans-serif",
                       textTransform: 'uppercase',
                       marginRight: '10px',
                       flexShrink: 0,
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.15)',
+                      backdropFilter: 'blur(4px)',
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.32)'; e.currentTarget.style.color = '#fff'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.45)'; e.currentTarget.style.color = '#ffffff'; }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.28)'; e.currentTarget.style.transform = 'scale(1.04)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.15)'; e.currentTarget.style.transform = 'scale(1)'; }}
                     data-testid={`btn-syllabus-${course.code}`}
                   >
                     <FileText size={10} />
