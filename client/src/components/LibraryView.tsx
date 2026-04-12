@@ -3583,7 +3583,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 <div style={{
                   display: 'flex',
                   alignItems: 'flex-end',
-                  height: `${shelfHeight}px`,
+                  height: `${courseIdx === 0 ? shelfHeight + 35 : shelfHeight}px`,
                   padding: '0px 4px 28px',
                   gap: '2px',
                   overflowX: 'hidden',
