@@ -631,13 +631,16 @@ const toolBtnStyle = (active?: boolean): React.CSSProperties => ({
   transition: 'all 0.15s ease',
 });
 
-function BookReader({ file, bookColor, onClose, pdfUrl, moduleFiles, onOpenModuleFile }: {
+function BookReader({ file, bookColor, onClose, pdfUrl, moduleFiles, onOpenModuleFile, isSyllabus, onBringToFront, readerIndex }: {
   file: FileRecord;
   bookColor: string;
   onClose: () => void;
   pdfUrl?: string;
   moduleFiles?: { weekNum: number; file: FileRecord; color: string }[];
   onOpenModuleFile?: (file: FileRecord, color: string) => void;
+  isSyllabus?: boolean;
+  onBringToFront?: () => void;
+  readerIndex?: number;
 }) {
   const [phase, setPhase] = useState<'pull' | 'expand' | 'reading'>('pull');
   const [pdfDoc, setPdfDoc] = useState<any>(null);
@@ -674,6 +677,8 @@ function BookReader({ file, bookColor, onClose, pdfUrl, moduleFiles, onOpenModul
   const pendingCommentInputRef = useRef<HTMLInputElement>(null);
   const [readerPos, setReaderPos] = useState<{ x: number; y: number } | null>(null);
   const readerDragRef = useRef<{ startX: number; startY: number; startPosX: number; startPosY: number } | null>(null);
+  const [readerWidth, setReaderWidth] = useState<number | null>(null);
+  const resizeRef = useRef<{ startX: number; startWidth: number; side: 'left' | 'right'; startPosX: number } | null>(null);
   const rawTitle = (file.displayName || file.originalName).replace(/\.pdf$/i, '');
   const title = truncateSpineTitle(rawTitle, 80, !!file.displayName && file.displayName !== file.originalName);
 
@@ -772,7 +777,7 @@ function BookReader({ file, bookColor, onClose, pdfUrl, moduleFiles, onOpenModul
           }
         }
         const weekMatch = item.str.match(/(?:week|module)\s*(\d+)/i);
-        if (weekMatch && moduleFiles && moduleFiles.length > 0 && onOpenModuleFile) {
+        if (weekMatch && isSyllabus && moduleFiles && moduleFiles.length > 0 && onOpenModuleFile) {
           const weekNum = parseInt(weekMatch[1], 10);
           const mf = moduleFiles.find(m => m.weekNum === weekNum);
           if (mf) {
@@ -792,7 +797,7 @@ function BookReader({ file, bookColor, onClose, pdfUrl, moduleFiles, onOpenModul
       }
       textLayer.appendChild(frag);
     }
-  }, [zoom, moduleFiles, onOpenModuleFile]);
+  }, [zoom, moduleFiles, onOpenModuleFile, isSyllabus]);
 
   useEffect(() => {
     if (!pdfDoc || !canvasRef.current || !containerRef.current || phase !== 'reading') return;
@@ -809,7 +814,7 @@ function BookReader({ file, bookColor, onClose, pdfUrl, moduleFiles, onOpenModul
       }
     })();
     return () => { cancelled = true; };
-  }, [pdfDoc, currentPage, phase, zoom, rightPage, renderPageToCanvas]);
+  }, [pdfDoc, currentPage, phase, zoom, rightPage, renderPageToCanvas, readerWidth]);
 
   const [searching, setSearching] = useState(false);
   const handleSearch = useCallback(async () => {
@@ -1037,20 +1042,47 @@ function BookReader({ file, bookColor, onClose, pdfUrl, moduleFiles, onOpenModul
     if (searchOpen && searchInputRef.current) searchInputRef.current.focus();
   }, [searchOpen]);
 
+  const defaultWidth = typeof window !== 'undefined' ? Math.round(window.innerWidth * 0.85) : 1200;
+  const effectiveWidth = readerWidth || defaultWidth;
+  const minReaderWidth = 480;
+  const maxReaderWidth = typeof window !== 'undefined' ? window.innerWidth - 40 : 2000;
+
+  const startResize = useCallback((e: React.MouseEvent, side: 'left' | 'right') => {
+    e.preventDefault();
+    e.stopPropagation();
+    const startX = e.clientX;
+    const startWidth = effectiveWidth;
+    const bookEl = (e.currentTarget as HTMLElement).closest('[data-book-reader]') as HTMLElement | null;
+    const currentLeft = bookEl ? bookEl.getBoundingClientRect().left : (readerPos?.x ?? Math.max(20, (window.innerWidth - effectiveWidth) / 2));
+    const currentTop = bookEl ? bookEl.getBoundingClientRect().top : (readerPos?.y ?? 60);
+    if (!readerPos) {
+      setReaderPos({ x: currentLeft, y: currentTop });
+    }
+    const startPosX = currentLeft;
+    resizeRef.current = { startX, startWidth, side, startPosX };
+    const onMove = (ev: MouseEvent) => {
+      if (!resizeRef.current) return;
+      const dx = ev.clientX - resizeRef.current.startX;
+      let newWidth: number;
+      let newPosX = resizeRef.current.startPosX;
+      if (resizeRef.current.side === 'right') {
+        newWidth = Math.max(minReaderWidth, Math.min(maxReaderWidth, resizeRef.current.startWidth + dx));
+      } else {
+        newWidth = Math.max(minReaderWidth, Math.min(maxReaderWidth, resizeRef.current.startWidth - dx));
+        newPosX = resizeRef.current.startPosX + (resizeRef.current.startWidth - newWidth);
+      }
+      setReaderWidth(newWidth);
+      setReaderPos(prev => prev ? { ...prev, x: newPosX } : { x: newPosX, y: currentTop });
+    };
+    const onUp = () => { resizeRef.current = null; window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); document.body.style.cursor = ''; document.body.style.userSelect = ''; };
+    document.body.style.cursor = 'ew-resize';
+    document.body.style.userSelect = 'none';
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  }, [effectiveWidth, readerPos, minReaderWidth, maxReaderWidth]);
+
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 100001,
-        backgroundColor: 'rgba(0,0,0,0.85)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        perspective: '1500px',
-      }}
-      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
-    >
+    <>
       <style>{textLayerCSS}</style>
       <style>{`
         @keyframes libBookPull {
@@ -1064,20 +1096,24 @@ function BookReader({ file, bookColor, onClose, pdfUrl, moduleFiles, onOpenModul
         }
       `}</style>
 
-      <div style={{
-        width: phase === 'pull' ? '200px' : '85vw',
+      <div
+        data-book-reader
+        onMouseDown={() => onBringToFront?.()}
+        style={{
+        width: phase === 'pull' ? '200px' : `${effectiveWidth}px`,
         height: phase === 'pull' ? '280px' : '84vh',
-        marginTop: phase === 'reading' && !readerPos ? '60px' : '0',
         backgroundColor: bookColor,
         borderRadius: phase === 'reading' ? '8px 16px 16px 8px' : '4px 12px 12px 4px',
         boxShadow: '0 20px 80px rgba(0,0,0,0.7), inset 0 0 30px rgba(0,0,0,0.2)',
-        position: readerPos ? 'fixed' : 'relative',
-        ...(readerPos ? { left: `${readerPos.x}px`, top: `${readerPos.y}px`, zIndex: 100020 } : {}),
+        position: 'fixed',
+        left: readerPos ? `${readerPos.x}px` : `${Math.max(20, (window.innerWidth - effectiveWidth) / 2 + (readerIndex || 0) * 30)}px`,
+        top: readerPos ? `${readerPos.y}px` : `${60 + (readerIndex || 0) * 30}px`,
         overflow: 'hidden',
-        transition: phase === 'pull' ? 'none' : readerPos ? 'none' : 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+        transition: phase === 'pull' ? 'none' : readerPos ? 'none' : 'width 0.6s cubic-bezier(0.4, 0, 0.2, 1), height 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
         animation: phase === 'pull' ? 'libBookPull 0.6s ease-out forwards' : 'none',
         display: 'flex',
         flexDirection: 'column',
+        perspective: '1500px',
       }}>
         <div style={{
           position: 'absolute',
@@ -1596,8 +1632,27 @@ function BookReader({ file, bookColor, onClose, pdfUrl, moduleFiles, onOpenModul
             </div>
           </>
         )}
+
+        {phase === 'reading' && (
+          <>
+            <div
+              onMouseDown={(e) => startResize(e, 'left')}
+              style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '6px', cursor: 'ew-resize', zIndex: 20 }}
+              data-testid="resize-handle-left"
+            >
+              <div style={{ position: 'absolute', left: '2px', top: '50%', transform: 'translateY(-50%)', width: '2px', height: '40px', borderRadius: '1px', background: 'rgba(255,255,255,0.2)' }} />
+            </div>
+            <div
+              onMouseDown={(e) => startResize(e, 'right')}
+              style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '6px', cursor: 'ew-resize', zIndex: 20 }}
+              data-testid="resize-handle-right"
+            >
+              <div style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', width: '2px', height: '40px', borderRadius: '1px', background: 'rgba(255,255,255,0.2)' }} />
+            </div>
+          </>
+        )}
       </div>
-    </div>
+    </>
   );
 }
 
@@ -1606,7 +1661,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
   const [syncingSemKey, setSyncingSemKey] = useState<string | null>(null);
   const [selectedBook, setSelectedBook] = useState<FileRecord | null>(null);
   const [selectedBookColor, setSelectedBookColor] = useState('#8B4513');
-  const [openReaders, setOpenReaders] = useState<{ file: FileRecord; color: string; pdfUrl?: string; courseCode?: string }[]>([]);
+  const [openReaders, setOpenReaders] = useState<{ file: FileRecord; color: string; pdfUrl?: string; courseCode?: string; isSyllabus?: boolean }[]>([]);
+  const [focusedReaderId, setFocusedReaderId] = useState<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [showSharePopup, setShowSharePopup] = useState(false);
@@ -1995,12 +2051,13 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
     return results;
   }, [masterSearch, masterSemFilter, masterCourseFilter, masterWeekFilter, masterTypeFilter, masterFormatFilter, masterSortBy, allFiles, semesters, hasAnyFilter]);
 
-  const handleBookClick = useCallback((file: FileRecord, color: string, pdfUrl?: string, courseCode?: string) => {
+  const handleBookClick = useCallback((file: FileRecord, color: string, pdfUrl?: string, courseCode?: string, isSyllabus?: boolean) => {
     const cc = courseCode || file.folder?.match(/^week-\d+-(.+?)-(module|reading)$/i)?.[1]?.toLowerCase();
     setOpenReaders(prev => {
       if (prev.some(r => r.file.id === file.id)) return prev;
-      return [...prev, { file, color, pdfUrl, courseCode: cc }];
+      return [...prev, { file, color, pdfUrl, courseCode: cc, isSyllabus }];
     });
+    setFocusedReaderId(file.id);
   }, []);
 
   const handleRenameStart = useCallback((file: FileRecord) => {
@@ -2669,7 +2726,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                         listened: false,
                         contentType: 'application/pdf',
                       };
-                      handleBookClick(syllabusFile, course.color || '#8B6914', `/api/syllabus/view?path=${encodeURIComponent(syllabusPaths[course.code])}`, course.code.replace(/\s/g, '').toLowerCase());
+                      handleBookClick(syllabusFile, course.color || '#8B6914', `/api/syllabus/view?path=${encodeURIComponent(syllabusPaths[course.code])}`, course.code.replace(/\s/g, '').toLowerCase(), true);
                     }}
                     style={{
                       display: 'flex',
@@ -2783,15 +2840,21 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         )}
       </div>
 
-      {openReaders.map((reader, readerIdx) => (
+      {openReaders.map((reader, readerIdx) => {
+        const isFocused = focusedReaderId === reader.file.id;
+        const baseZ = 100010;
+        const zIdx = isFocused ? baseZ + openReaders.length + 1 : baseZ + readerIdx;
+        return (
         <div
           key={reader.file.id}
           style={{
             position: 'fixed',
             inset: 0,
-            zIndex: 100010 + readerIdx,
+            zIndex: zIdx,
+            pointerEvents: 'none',
           }}
         >
+          <div style={{ pointerEvents: 'auto', display: 'contents' }}>
           <BookReader
             file={reader.file}
             bookColor={reader.color}
@@ -2799,9 +2862,14 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             pdfUrl={reader.pdfUrl}
             moduleFiles={reader.courseCode ? courseModuleFilesMap[reader.courseCode] : undefined}
             onOpenModuleFile={(mf, color) => handleBookClick(mf, color)}
+            isSyllabus={reader.isSyllabus}
+            onBringToFront={() => setFocusedReaderId(reader.file.id)}
+            readerIndex={readerIdx}
           />
+          </div>
         </div>
-      ))}
+        );
+      })}
 
       {renamingFile && (
         <div
