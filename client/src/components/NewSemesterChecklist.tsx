@@ -120,12 +120,10 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
     localCompleted[item.id] !== undefined ? localCompleted[item.id] : !!item.isCompleted;
   const activeItems = items.filter(i => !getEffectiveCompleted(i) && !i.isDeleted);
   const completedItems = items.filter(i => getEffectiveCompleted(i) && !i.isDeleted);
-  const lastToggleRef = useRef<number>(0);
-  const toggleFiredRef = useRef<Record<number, boolean>>({});
-  const handleToggleComplete = useCallback((item: NewSemesterChecklistItem) => {
-    const now = Date.now();
-    if (now - lastToggleRef.current < 400) return;
-    lastToggleRef.current = now;
+  const pendingToggleRef = useRef<Set<number>>(new Set());
+  const handleToggleComplete = (item: NewSemesterChecklistItem) => {
+    if (pendingToggleRef.current.has(item.id)) return;
+    pendingToggleRef.current.add(item.id);
     const currentlyChecked = localCompleted[item.id] !== undefined ? localCompleted[item.id] : !!item.isCompleted;
     const newVal = !currentlyChecked;
     setLocalCompleted(prev => ({ ...prev, [item.id]: newVal }));
@@ -134,6 +132,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ isCompleted: newVal, completedAt: newVal ? new Date().toISOString() : null }),
     }).then(r => r.json()).then(serverItem => {
+      pendingToggleRef.current.delete(item.id);
       if (serverItem && serverItem.id) {
         queryClient.setQueryData<NewSemesterChecklistItem[]>(checklistQueryKey, (old) =>
           old ? old.map(i => i.id === serverItem.id ? { ...i, ...serverItem } : i) : old
@@ -141,9 +140,10 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
       }
       setLocalCompleted(prev => { const n = { ...prev }; delete n[item.id]; return n; });
     }).catch(() => {
+      pendingToggleRef.current.delete(item.id);
       setLocalCompleted(prev => { const n = { ...prev }; delete n[item.id]; return n; });
     });
-  }, [checklistQueryKey, localCompleted]);
+  };
 
   const handleToggleGlobal = useCallback((item: NewSemesterChecklistItem) => {
     updateMutation.mutate({ id: item.id, isGlobal: !item.isGlobal });
@@ -300,12 +300,9 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
 
     return (
       <div key={item.id} className="flex items-center gap-3 py-1.5" data-testid={`checklist-item-${checked ? 'done-' : ''}${item.id}`}>
-        <div
-          role="checkbox"
-          aria-checked={checked}
-          tabIndex={0}
-          onClick={(e) => { e.stopPropagation(); if (!toggleFiredRef.current[item.id]) handleToggleComplete(item); toggleFiredRef.current[item.id] = false; }}
-          onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); toggleFiredRef.current[item.id] = true; handleToggleComplete(item); }}
+        <button
+          type="button"
+          onClick={() => handleToggleComplete(item)}
           style={{
             width: '29px',
             height: '29px',
@@ -322,6 +319,8 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
             transition: 'all 0.15s ease',
             WebkitTapHighlightColor: 'transparent',
             userSelect: 'none',
+            padding: 0,
+            outline: 'none',
           }}
           data-testid={`checklist-check-${item.id}`}
         >
@@ -330,7 +329,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
               <polyline points="20 6 9 17 4 12" />
             </svg>
           )}
-        </div>
+        </button>
 
         <input
           type="text"
