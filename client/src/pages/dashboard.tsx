@@ -12538,7 +12538,24 @@ export default function Dashboard() {
     const map = new Map<string, number>();
     const items = getMultiHourTasksForWeek().filter(item => {
       if (item.endHour === item.startHour + 1) {
-        return getConflictExtraHeight(item.startHour) === 0;
+        const h = item.startHour;
+        let hasLongMultiHourAtH = false;
+        for (const day of weekDays) {
+          const dayKey = _etDateKey(day);
+          const dayTasks = tasksByDateKey.get(dayKey);
+          if (!dayTasks) continue;
+          hasLongMultiHourAtH = dayTasks.some(t => {
+            if (!t.eventStartTime || !t.eventEndTime) return false;
+            const [sH, sM] = t.eventStartTime.split(':').map(Number);
+            const [eH] = t.eventEndTime.split(':').map(Number);
+            if (eH <= sH + 1) return false;
+            const tStart = sH * 60 + sM;
+            const tEnd = eH * 60;
+            return tStart < (h + 1) * 60 && tEnd > h * 60;
+          });
+          if (hasLongMultiHourAtH) break;
+        }
+        return !hasLongMultiHourAtH;
       }
       return true;
     });
