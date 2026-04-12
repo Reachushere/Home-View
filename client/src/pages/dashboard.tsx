@@ -28822,7 +28822,7 @@ export default function Dashboard() {
                   return '';
                 })() : '';
                 return (
-                  <div key={idx} className="flex items-center justify-center overflow-hidden relative" style={{ opacity: isPast ? 0.5 : 1, ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }} data-testid={`weather-above-${dateStr}`}>
+                  <div key={idx} className="flex items-center justify-center overflow-hidden relative" style={{ opacity: isPast ? 0.5 : 1, borderLeft: isTodayForecast ? '3px solid #64b5f6' : undefined, borderRight: isTodayForecast ? '2px solid rgba(100,181,246,0.35)' : undefined, ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }} data-testid={`weather-above-${dateStr}`}>
                     {showForecastWeather && fwSkyBg && (
                       <div className="absolute inset-0 z-0" style={{ background: fwSkyBg, overflow: 'hidden', pointerEvents: 'none', opacity: isTodayForecast ? 1 : isNextWeekDay ? 0.35 : 1 }}>
                         {fwEffectsHtml && <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }} dangerouslySetInnerHTML={{ __html: fwEffectsHtml }} />}
@@ -28953,7 +28953,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`flex flex-col items-center justify-center h-full relative`}
-                    style={isToday ? { backgroundColor: colorSettings.headerBar, paddingLeft: '2px', overflow: 'hidden', minWidth: 0, borderLeft: '3px solid black', ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) } : day.getDay() === 6 ? { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', overflow: 'hidden', minWidth: 0, borderLeft: new Date().getDay() === 6 ? undefined : '3px solid black', ...(calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) } : { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', borderLeft: '1.5px dotted rgba(255,255,255,0.35)', overflow: 'hidden', minWidth: 0 }}
+                    style={isToday ? { background: 'linear-gradient(180deg, #0a3d7a 0%, #1565c0 30%, #42a5f5 70%, #90caf9 100%)', paddingLeft: '2px', overflow: 'hidden', minWidth: 0, borderLeft: '3px solid #64b5f6', borderRight: '2px solid rgba(100,181,246,0.5)', boxShadow: 'inset 0 0 12px rgba(66,165,245,0.3), 0 0 8px rgba(33,150,243,0.2)', ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) } : day.getDay() === 6 ? { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', overflow: 'hidden', minWidth: 0, borderLeft: new Date().getDay() === 6 ? undefined : '3px solid black', ...(calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) } : { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', borderLeft: '1.5px dotted rgba(255,255,255,0.35)', overflow: 'hidden', minWidth: 0 }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     
@@ -31348,12 +31348,14 @@ export default function Dashboard() {
                           key={dayIdx} 
                           className={`relative p-0.5 ${dragOverSlot && isSameDayET(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "ring-2 ring-primary ring-inset" : ""}`}
                           style={{
-                            borderLeft: isSameDayET(day, new Date()) ? '3px solid black' : day.getDay() === 6 ? '3px solid black' : '1.5px dotted rgba(0,0,0,0.25)',
+                            borderLeft: isSameDayET(day, new Date()) ? '3px solid #64b5f6' : day.getDay() === 6 ? '3px solid black' : '1.5px dotted rgba(0,0,0,0.25)',
+                            borderRight: isSameDayET(day, new Date()) ? '2px solid rgba(100,181,246,0.35)' : undefined,
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined,
                             overflow: 'hidden',
                             minWidth: 0,
                             backgroundColor: (() => {
-                              if (isToday || isCurrentHour) return '#e4ecf5';
+                              if (isToday) return isCurrentHour ? '#d4e6f9' : '#e8f0fb';
+                              if (isCurrentHour) return '#e4ecf5';
                               if (isNightShiftSleepHour) return nightSleepColor;
                               if (isDayShiftSleepHour) return 'rgba(180, 180, 180, 0.22)';
                               if (calendarWeekMode === 'current') {

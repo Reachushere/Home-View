@@ -165,7 +165,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
           key={d}
           className="w-6 h-6 flex items-center justify-center text-[10px] rounded cursor-pointer hover:bg-white/30"
           style={{ background: isItemDue ? '#22c55e' : isToday ? 'rgba(59,130,246,0.4)' : 'transparent', color: '#fff', fontWeight: isToday || isItemDue ? 700 : 400 }}
-          onClick={(e) => { e.stopPropagation(); handleDateSelect(item!, dateStr); }}
+          onPointerUp={(e) => { e.stopPropagation(); e.preventDefault(); handleDateSelect(item!, dateStr); }}
           data-testid={`mini-cal-day-${dateStr}`}
         >{d}</div>
       );
@@ -173,14 +173,16 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
 
     return (
       <div
-        className="absolute right-0 top-full mt-1 p-3 rounded-lg shadow-lg z-50"
+        className="p-3 rounded-lg shadow-lg"
         style={{ background: colorSettings.mainBackground, border: '1px solid rgba(255,255,255,0.25)', minWidth: '220px' }}
+        onPointerDown={(e) => e.stopPropagation()}
         onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-2">
-          <button className="text-white/60 hover:text-white text-xs px-1" onClick={(e) => { e.stopPropagation(); setDatePickerMonth(new Date(year, month - 1, 1)); }}>&lt;</button>
+          <button className="text-white/60 hover:text-white text-xs px-1" onPointerUp={(e) => { e.stopPropagation(); setDatePickerMonth(new Date(year, month - 1, 1)); }}>&lt;</button>
           <span className="text-[10px] text-white font-semibold">{format(datePickerMonth, 'MMMM yyyy')}</span>
-          <button className="text-white/60 hover:text-white text-xs px-1" onClick={(e) => { e.stopPropagation(); setDatePickerMonth(new Date(year, month + 1, 1)); }}>&gt;</button>
+          <button className="text-white/60 hover:text-white text-xs px-1" onPointerUp={(e) => { e.stopPropagation(); setDatePickerMonth(new Date(year, month + 1, 1)); }}>&gt;</button>
         </div>
         <div className="grid grid-cols-7 gap-0">
           {dayLabels.map((l, i) => <div key={i} className="w-6 h-4 flex items-center justify-center text-[8px] text-white/40 font-bold">{l}</div>)}
@@ -196,20 +198,30 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
     const hasDueDate = !!item.dueDate;
 
     return (
-      <div key={item.id} className="flex items-center gap-3 py-1.5 relative" data-testid={`checklist-item-${isCompleted ? 'done-' : ''}${item.id}`}>
-        <input
-          type="checkbox"
-          checked={isCompleted}
-          onChange={() => handleToggleComplete(item)}
+      <div key={item.id} className="flex items-center gap-3 py-1.5" data-testid={`checklist-item-${isCompleted ? 'done-' : ''}${item.id}`}>
+        <div
+          onPointerUp={(e) => { e.stopPropagation(); e.preventDefault(); handleToggleComplete(item); }}
           style={{
-            width: '20px',
-            height: '20px',
-            accentColor: '#22c55e',
-            cursor: 'pointer',
+            width: '28px',
+            height: '28px',
             flexShrink: 0,
+            borderRadius: '4px',
+            border: isCompleted ? '2px solid #22c55e' : '2px solid rgba(255,255,255,0.5)',
+            background: isCompleted ? '#22c55e' : 'transparent',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            touchAction: 'manipulation',
           }}
           data-testid={`checklist-check-${item.id}`}
-        />
+        >
+          {isCompleted && (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          )}
+        </div>
 
         <input
           type="text"
@@ -231,19 +243,21 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
         <button
           type="button"
           style={{ touchAction: 'manipulation', background: 'none', border: 'none', padding: '4px', cursor: 'pointer' }}
-          onClick={() => setOpenDatePickerId(openDatePickerId === item.id ? null : item.id)}
+          onPointerUp={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            setOpenDatePickerId(openDatePickerId === item.id ? null : item.id);
+          }}
           title={hasDueDate ? `Due: ${format(new Date(item.dueDate!), 'MMM d, yyyy')}` : 'Set reminder date'}
           data-testid={`checklist-date-${item.id}`}
         >
           <CalendarDays className="w-4 h-4" style={{ color: hasDueDate ? '#22c55e' : 'rgba(255,255,255,0.4)' }} />
         </button>
 
-        {openDatePickerId === item.id && renderMiniCalendar(item.id)}
-
         <button
           type="button"
           style={{ touchAction: 'manipulation', background: 'none', border: 'none', padding: '4px', cursor: 'pointer' }}
-          onClick={() => handleToggleGlobal(item)}
+          onPointerUp={(e) => { e.stopPropagation(); e.preventDefault(); handleToggleGlobal(item); }}
           title={item.isGlobal ? 'Appears on all semesters' : 'Only this semester'}
           data-testid={`checklist-global-toggle-${item.id}`}
         >
@@ -255,7 +269,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
         <button
           type="button"
           style={{ touchAction: 'manipulation', background: 'none', border: 'none', padding: '4px', cursor: 'pointer' }}
-          onClick={() => deleteMutation.mutate(item.id)}
+          onPointerUp={(e) => { e.stopPropagation(); e.preventDefault(); deleteMutation.mutate(item.id); }}
           data-testid={`checklist-delete-${item.id}`}
         >
           <Trash2 className="w-[18px] h-[18px] text-white/30 hover:text-red-400 transition-colors" />
@@ -290,7 +304,7 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
           <X className="w-4 h-4 text-white/60 hover:text-white cursor-pointer" onClick={onDismiss} data-testid="close-sem-checklist" />
         </div>
 
-        <div className="px-4 py-3">
+        <div className="px-4 py-3" style={{ maxHeight: '60vh', overflowY: 'auto' }}>
           {isLoading ? (
             <div className="text-white/40 text-xs text-center py-4">Loading...</div>
           ) : (
@@ -306,6 +320,12 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
             </>
           )}
         </div>
+
+        {openDatePickerId !== null && (
+          <div className="px-4 py-2 border-t border-white/10">
+            {renderMiniCalendar(openDatePickerId)}
+          </div>
+        )}
 
         <div className="px-4 py-2.5 border-t border-white/10 flex items-center justify-center">
           <button
