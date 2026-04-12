@@ -2432,7 +2432,10 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         position: 'fixed',
         inset: 0,
         zIndex: 100000,
-        background: 'linear-gradient(180deg, #1a1510 0%, #0f0c08 30%, #0a0805 60%, #050302 100%)',
+        backgroundImage: `url(${shelfBgImage})`,
+        backgroundSize: '100% 100%',
+        backgroundPosition: 'center center',
+        backgroundRepeat: 'no-repeat',
         overflow: 'hidden',
       }}
       onTouchStart={handleTouchStart}
@@ -3571,16 +3574,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 overflow: 'hidden',
                 transition: 'max-height 0.3s ease, opacity 0.25s ease',
               }}>
-              <div style={{
-                position: 'relative',
-                maxWidth: '100%',
-                overflow: 'hidden',
-                backgroundImage: `url(${shelfBgImage})`,
-                backgroundSize: '100% 100%',
-                backgroundPosition: 'center bottom',
-                backgroundRepeat: 'no-repeat',
-                borderRadius: '6px',
-              }}>
+              <div style={{ position: 'relative', maxWidth: '100%', overflow: 'hidden' }}>
                 <div style={{
                   display: 'flex',
                   alignItems: 'flex-end',
