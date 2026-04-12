@@ -20937,7 +20937,7 @@ export default function Dashboard() {
         data-testid="left-add-task-tab"
         title="Add"
       >
-        <svg width="19" height="84" viewBox="0 0 19 84" style={{ display: 'block' }}>
+        <svg width="17" height="84" viewBox="2 0 17 84" style={{ display: 'block' }}>
           <path d="M0,0 L0,84 L6,84 Q6,75 12,75 L13,75 Q19,75 19,63 L19,21 Q19,9 13,9 L12,9 Q6,9 6,0 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
           <text x="12" y="46" textAnchor="middle" fill="rgba(255,255,255,0.8)" fontSize="16" fontWeight="bold">+</text>
         </svg>
