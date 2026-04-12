@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
-import { X, ChevronLeft, ChevronRight, ChevronDown, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2, Printer, Volume2, Square, Pause, Play, RefreshCw, Pencil, FileText, Minus, Loader2 } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, ChevronDown, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2, Printer, Volume2, Square, Pause, Play, RefreshCw, Pencil, FileText, Minus, Loader2, ListOrdered } from 'lucide-react';
 import * as pdfjsLib from 'pdfjs-dist';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import shelfBgImage from '@assets/Bookshelf9_1776012207833.jpg';
@@ -846,6 +846,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
   const [pendingCommentText, setPendingCommentText] = useState('');
   const [expandedCommentId, setExpandedCommentId] = useState<number | null>(null);
   const [flipDirection, setFlipDirection] = useState<'none' | 'forward' | 'backward'>('none');
+  const [showModuleIndex, setShowModuleIndex] = useState(false);
   const [ttsPlaying, setTtsPlaying] = useState(false);
   const [ttsPaused, setTtsPaused] = useState(false);
   const [ttsLoading, setTtsLoading] = useState(false);
@@ -1425,6 +1426,11 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
                 <button onClick={() => setShowAnnotations(!showAnnotations)} style={toolBtnStyle(showAnnotations)} title="View Annotations" data-testid="btn-annotations">
                   <BookOpen size={14} />
                 </button>
+                {isSyllabus && moduleFiles && moduleFiles.length > 0 && onOpenModuleFile && (
+                  <button onClick={() => setShowModuleIndex(!showModuleIndex)} style={toolBtnStyle(showModuleIndex)} title="Module Index" data-testid="btn-module-index">
+                    <ListOrdered size={14} />
+                  </button>
+                )}
                 <div style={{ width: '1px', height: '18px', background: 'rgba(255,255,255,0.15)', margin: '0 2px' }} />
                 {!ttsPlaying ? (
                   <button onClick={startTts} disabled={ttsLoading || !pdfDoc} style={{ ...toolBtnStyle(), opacity: ttsLoading ? 0.5 : 1 }} title="Read aloud (current spread)" data-testid="btn-tts-play">
@@ -1497,9 +1503,62 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
             )}
 
             <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+              {showModuleIndex && isSyllabus && moduleFiles && moduleFiles.length > 0 && onOpenModuleFile && (
+                <div style={{
+                  width: '180px',
+                  flexShrink: 0,
+                  marginLeft: '28px',
+                  background: 'rgba(0,0,0,0.3)',
+                  borderRight: '1px solid rgba(255,255,255,0.1)',
+                  overflowY: 'auto',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  padding: '8px 0',
+                }}>
+                  <div style={{ padding: '4px 12px 8px', color: 'rgba(255,255,255,0.5)', fontSize: '9px', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase' }}>
+                    Modules
+                  </div>
+                  {Array.from({ length: 13 }, (_, i) => i + 1).map(num => {
+                    const mf = moduleFiles.find(m => m.weekNum === num);
+                    return (
+                      <button
+                        key={num}
+                        onClick={() => { if (mf) onOpenModuleFile(mf.file, mf.color); }}
+                        disabled={!mf}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          padding: '6px 12px',
+                          background: 'transparent',
+                          border: 'none',
+                          cursor: mf ? 'pointer' : 'default',
+                          color: mf ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.25)',
+                          fontSize: '11px',
+                          fontWeight: 500,
+                          textAlign: 'left',
+                          transition: 'background 0.15s',
+                          width: '100%',
+                        }}
+                        onMouseEnter={e => { if (mf) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+                        data-testid={`btn-module-index-${num}`}
+                        title={mf ? (mf.file.displayName || mf.file.originalName).replace(/\.pdf$/i, '') : `Module ${num} — not available`}
+                      >
+                        <span style={{ width: '20px', height: '20px', borderRadius: '4px', background: mf ? 'rgba(212,175,55,0.2)' : 'rgba(255,255,255,0.05)', color: mf ? '#D4AF37' : 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700, flexShrink: 0 }}>
+                          {num}
+                        </span>
+                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          Module {num}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
               <div
                 ref={containerRef}
-                style={{ flex: 1, margin: '0 0 0 28px', borderRadius: '4px 0 0 4px', overflow: 'auto', background: '#3a3228', display: 'flex', flexDirection: 'column', alignItems: zoom > 1 ? 'flex-start' : 'center', justifyContent: loading || !pdfDoc ? 'center' : 'center', position: 'relative' }}
+                style={{ flex: 1, margin: showModuleIndex ? '0' : '0 0 0 28px', borderRadius: '4px 0 0 4px', overflow: 'auto', background: '#3a3228', display: 'flex', flexDirection: 'column', alignItems: zoom > 1 ? 'flex-start' : 'center', justifyContent: loading || !pdfDoc ? 'center' : 'center', position: 'relative' }}
               >
                 <div ref={scrollRef} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '10px', minWidth: '100%' }}>
                   {loading ? (
