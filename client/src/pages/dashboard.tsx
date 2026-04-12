@@ -2301,6 +2301,7 @@ export default function Dashboard() {
   const [newSemChecklistKey, setNewSemChecklistKey] = useState('');
   const [newSemChecklistLabel, setNewSemChecklistLabel] = useState('');
   const [semChecklistFlyoutKey, setSemChecklistFlyoutKey] = useState<string | null>(null);
+  const [semChecklistAnchorRect, setSemChecklistAnchorRect] = useState<DOMRect | null>(null);
   const [showWeatherHistoryPanel, setShowWeatherHistoryPanel] = useState(false);
   const [weatherHistoryData, setWeatherHistoryData] = useState<any[]>([]);
   const [weatherHistoryLoading, setWeatherHistoryLoading] = useState(false);
@@ -15425,13 +15426,7 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      <SemesterChecklistDialog
-        open={showSemesterChecklist}
-        onOpenChange={setShowSemesterChecklist}
-        items={semesterChecklistItems}
-        onItemsChange={setSemesterChecklistItems}
-        semesterSettingsId={semesterSettings?.id}
-      />
+      
 
       <Dialog open={showConfirmSemesterDialog} onOpenChange={setShowConfirmSemesterDialog}>
         <DialogContent className="max-w-md text-white" data-testid="confirm-semester-dialog">
@@ -26209,6 +26204,13 @@ export default function Dashboard() {
                                   const gpaLetter = avg >= 4.17 ? 'A+' : avg >= 3.84 ? 'A' : avg >= 3.5 ? 'A-' : avg >= 3.17 ? 'B+' : avg >= 2.84 ? 'B' : avg >= 2.5 ? 'B-' : avg >= 2.17 ? 'C+' : avg >= 1.84 ? 'C' : avg >= 1.34 ? 'C-' : avg >= 0.5 ? 'D' : 'F';
                                   return `GPA: ${avg.toFixed(2)} (${gpaLetter})`;
                                 })()}</span>
+                                <ChevronRight
+                                  className="text-white/40 hover:text-white cursor-pointer transition-colors flex-shrink-0 ml-1"
+                                  style={{ width: '14px', height: '14px' }}
+                                  onClick={(e) => { e.stopPropagation(); const rect = (e.currentTarget as HTMLElement).getBoundingClientRect(); setSemChecklistFlyoutKey(semChecklistFlyoutKey === sem.key ? null : sem.key); setSemChecklistAnchorRect(rect); }}
+                                  data-testid={`button-sem-checklist-${sem.key}`}
+                                  title="Semester Checklist"
+                                />
                               </div>
                                 {(() => {
                                   const semEndDates: Record<string, string> = {
@@ -36611,13 +36613,14 @@ export default function Dashboard() {
 
           {semChecklistFlyoutKey && createPortal(
             <>
-              <div className="fixed inset-0 z-[10003] bg-black/50" onClick={() => setSemChecklistFlyoutKey(null)} />
+              <div className="fixed inset-0 z-[10003]" onClick={() => setSemChecklistFlyoutKey(null)} />
               <NewSemesterChecklist
                 semesterKey={semChecklistFlyoutKey}
                 semesterLabel={(() => { const m: Record<string, string> = { 'ss2025': 'Spring/Summer 2025', 'f2025': 'Fall 2025', 'w2026': 'Winter 2026', 'ss2026': 'Spring/Summer 2026', 'f2026': 'Fall 2026', 'w2027': 'Winter 2027', 'ss2027': 'Spring/Summer 2027', 'f2027': 'Fall 2027', 'w2028': 'Winter 2028', 'ss2028': 'Spring/Summer 2028', 'f2028': 'Fall 2028', 'w2029': 'Winter 2029' }; return m[semChecklistFlyoutKey] || semChecklistFlyoutKey; })()}
+                semesterStartDate={(() => { const starts: Record<string, string> = { 'ss2025': '2025-05-05', 'f2025': '2025-09-08', 'w2026': '2026-01-12', 'ss2026': '2026-05-04', 'f2026': '2026-09-07', 'w2027': '2027-01-11', 'ss2027': '2027-05-03', 'f2027': '2027-09-06', 'w2028': '2028-01-10', 'ss2028': '2028-05-01', 'f2028': '2028-09-04', 'w2029': '2029-01-08' }; return starts[semChecklistFlyoutKey] || ''; })()}
                 colorSettings={colorSettings}
                 onDismiss={() => setSemChecklistFlyoutKey(null)}
-                noBackdrop
+                anchorRect={semChecklistAnchorRect}
               />
             </>, document.body
           )}

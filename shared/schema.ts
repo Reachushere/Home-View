@@ -873,6 +873,7 @@ export const newSemesterChecklist = pgTable("new_semester_checklist", {
   isDeleted: boolean("is_deleted").default(false),
   sortOrder: integer("sort_order").default(0),
   semesterKey: text("semester_key"),
+  isGlobal: boolean("is_global").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

@@ -915,7 +915,14 @@ export class DatabaseStorage implements IStorage {
 
   async getNewSemesterChecklist(semesterKey?: string): Promise<NewSemesterChecklistItem[]> {
     const conditions = [eq(newSemesterChecklist.isDeleted, false)];
-    if (semesterKey) conditions.push(eq(newSemesterChecklist.semesterKey, semesterKey));
+    if (semesterKey) {
+      conditions.push(
+        or(
+          eq(newSemesterChecklist.semesterKey, semesterKey),
+          eq(newSemesterChecklist.isGlobal, true)
+        )!
+      );
+    }
     return await db.select().from(newSemesterChecklist).where(and(...conditions)).orderBy(newSemesterChecklist.sortOrder);
   }
 
