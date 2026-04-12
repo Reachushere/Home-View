@@ -438,16 +438,54 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
                   </div>
                   <span className="text-xs text-white/80">All day</span>
                 </label>
-                {!confirmAllDay && (
-                  <input
-                    type="time"
-                    value={confirmTime}
-                    onChange={(e) => setConfirmTime(e.target.value)}
-                    className="text-xs rounded px-2 py-1.5 outline-none text-black"
-                    style={{ backgroundColor: '#ffffff', height: '30px' }}
-                    data-testid="confirm-time-input"
-                  />
-                )}
+                {!confirmAllDay && (() => {
+                  const [hh, mm] = confirmTime.split(':').map(Number);
+                  const isPM = hh >= 12;
+                  const h12 = hh === 0 ? 12 : hh > 12 ? hh - 12 : hh;
+                  return (
+                    <div className="flex items-center gap-1">
+                      <select
+                        value={h12}
+                        onChange={(e) => {
+                          const newH12 = Number(e.target.value);
+                          const newH24 = isPM ? (newH12 === 12 ? 12 : newH12 + 12) : (newH12 === 12 ? 0 : newH12);
+                          setConfirmTime(`${String(newH24).padStart(2, '0')}:${String(mm).padStart(2, '0')}`);
+                        }}
+                        className="text-xs rounded px-1 py-1.5 outline-none text-black"
+                        style={{ backgroundColor: '#ffffff', height: '30px' }}
+                        data-testid="confirm-time-hour"
+                      >
+                        {[12,1,2,3,4,5,6,7,8,9,10,11].map(h => <option key={h} value={h}>{h}</option>)}
+                      </select>
+                      <span className="text-white font-bold">:</span>
+                      <select
+                        value={mm}
+                        onChange={(e) => {
+                          setConfirmTime(`${String(hh).padStart(2, '0')}:${String(Number(e.target.value)).padStart(2, '0')}`);
+                        }}
+                        className="text-xs rounded px-1 py-1.5 outline-none text-black"
+                        style={{ backgroundColor: '#ffffff', height: '30px' }}
+                        data-testid="confirm-time-minute"
+                      >
+                        {[0,5,10,15,20,25,30,35,40,45,50,55].map(m => <option key={m} value={m}>{String(m).padStart(2, '0')}</option>)}
+                      </select>
+                      <select
+                        value={isPM ? 'PM' : 'AM'}
+                        onChange={(e) => {
+                          const toAM = e.target.value === 'AM';
+                          let newH24 = toAM ? (hh >= 12 ? hh - 12 : hh) : (hh < 12 ? hh + 12 : hh);
+                          setConfirmTime(`${String(newH24).padStart(2, '0')}:${String(mm).padStart(2, '0')}`);
+                        }}
+                        className="text-xs rounded px-1 py-1.5 outline-none text-black"
+                        style={{ backgroundColor: '#ffffff', height: '30px' }}
+                        data-testid="confirm-time-ampm"
+                      >
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                      </select>
+                    </div>
+                  );
+                })()}
               </div>
             </div>
             <div className="mb-4">
