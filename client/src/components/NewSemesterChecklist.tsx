@@ -118,8 +118,8 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
   const [localCompleted, setLocalCompleted] = useState<Record<number, boolean>>({});
   const getEffectiveCompleted = (item: NewSemesterChecklistItem) =>
     localCompleted[item.id] !== undefined ? localCompleted[item.id] : !!item.isCompleted;
-  const activeItems = items.filter(i => !getEffectiveCompleted(i) && !i.isDeleted);
-  const completedItems = items.filter(i => getEffectiveCompleted(i) && !i.isDeleted);
+  const activeItems = items.filter(i => !i.isCompleted && !i.isDeleted);
+  const completedItems = items.filter(i => !!i.isCompleted && !i.isDeleted);
   const pendingToggleRef = useRef<Set<number>>(new Set());
   const handleToggleComplete = (item: NewSemesterChecklistItem) => {
     if (pendingToggleRef.current.has(item.id)) return;
