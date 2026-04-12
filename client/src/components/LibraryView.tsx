@@ -3585,7 +3585,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                       padding: '5px 14px',
                       borderRadius: '8px',
                       border: `2px solid ${course.color || '#ffffff'}`,
-                      background: 'linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.08) 100%)',
+                      background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 100%)',
                       color: '#ffffff',
                       fontSize: '10px',
                       fontWeight: 800,
@@ -3598,8 +3598,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                       flexShrink: 0,
                       boxShadow: '0 3px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3)',
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.15) 100%)'; e.currentTarget.style.transform = 'scale(1.05)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.08) 100%)'; e.currentTarget.style.transform = 'scale(1)'; }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.35) 100%)'; e.currentTarget.style.transform = 'scale(1.05)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 100%)'; e.currentTarget.style.transform = 'scale(1)'; }}
                     data-testid={`btn-syllabus-${course.code}`}
                   >
                     <FileText size={10} />
