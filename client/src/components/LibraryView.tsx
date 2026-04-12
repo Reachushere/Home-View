@@ -153,7 +153,7 @@ function getFileType(folder: string | null): 'module' | 'reading' | null {
   return null;
 }
 
-function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, shelfHeight, onRename, isGroupHovered, interceptClick }: {
+function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, shelfHeight, onRename, isGroupHovered, interceptClick, layout = 'vertical' }: {
   file: FileRecord;
   index: number;
   courseCode: string;
@@ -164,6 +164,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   onRename: (file: FileRecord) => void;
   isGroupHovered?: boolean;
   interceptClick?: () => void;
+  layout?: 'vertical' | 'horizontal';
 }) {
   const seededRand = ((file.id * 2654435761) >>> 0) / 4294967296;
   const spineWidth = 28 + seededRand * 12;
@@ -204,6 +205,66 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   const hasBottomBand = index % 5 === 2;
 
   const isLifted = isGroupHovered || false;
+  const isHoriz = layout === 'horizontal';
+  const horizBookWidth = 90;
+  const horizBookHeight = spineWidth;
+
+  if (isHoriz) {
+    return (
+      <div
+        className="book-spine-item"
+        onClick={interceptClick || onClick}
+        style={{
+          width: `${horizBookWidth}px`,
+          height: `${horizBookHeight}px`,
+          backgroundColor: bookColor,
+          backgroundImage: SPINE_PATTERNS[patternIdx],
+          borderRadius: '2px 2px 4px 4px',
+          cursor: 'pointer',
+          position: 'relative',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          flexShrink: 0,
+          boxShadow: isSelected
+            ? '0 0 20px rgba(212,175,55,0.6), inset 0 -2px 6px rgba(0,0,0,0.3)'
+            : 'inset 0 -2px 6px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2)',
+          transition: 'box-shadow 0.3s ease',
+          overflow: 'hidden',
+          paddingLeft: '6px',
+          paddingRight: '4px',
+        }}
+        title={file.displayName || file.originalName}
+        data-testid={`book-spine-${file.id}`}
+      >
+        <span style={{
+          fontSize: '7px',
+          fontWeight: 600,
+          color: '#ffffff',
+          textShadow: '0 1px 2px rgba(0,0,0,0.7)',
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          fontFamily: "'Segoe UI', 'Helvetica Neue', Arial, sans-serif",
+          flex: 1,
+        }}>
+          {title}
+        </span>
+        <div style={{
+          position: 'absolute',
+          right: '4px',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          width: '5px',
+          height: '5px',
+          backgroundColor: file.listened ? '#4CAF50' : '#e53935',
+          borderRadius: '50%',
+          boxShadow: file.listened ? '0 0 4px rgba(76,175,80,0.5)' : '0 0 4px rgba(229,57,53,0.5)',
+          flexShrink: 0,
+        }} />
+      </div>
+    );
+  }
 
   return (
     <div
@@ -454,18 +515,57 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
 
   const isTopShelf = shelfIndex === 0;
 
-  const clonedChildren = (expanded: boolean) => React.Children.map(children, child => {
-    if (React.isValidElement(child)) {
-      const origOnClick = (child as React.ReactElement<any>).props.onClick;
-      return React.cloneElement(child as React.ReactElement<any>, {
-        isGroupHovered: expanded,
-        interceptClick: expanded
-          ? () => { if (origOnClick) origOnClick(); setIsExpanded(false); }
-          : () => setIsExpanded(true),
-      });
-    }
-    return child;
-  });
+  const separateChildren = (childrenToSplit: React.ReactNode) => {
+    const modules: React.ReactElement[] = [];
+    const readings: React.ReactElement[] = [];
+    const others: React.ReactElement[] = [];
+    React.Children.forEach(childrenToSplit, child => {
+      if (React.isValidElement(child)) {
+        const folder = (child.props as any)?.file?.folder || '';
+        const fl = folder.toLowerCase();
+        if (fl.includes('-reading')) readings.push(child as React.ReactElement);
+        else if (fl.includes('-module')) modules.push(child as React.ReactElement);
+        else others.push(child as React.ReactElement);
+      }
+    });
+    return { modules, readings, others };
+  };
+
+  const cloneWithProps = (child: React.ReactElement, expanded: boolean, layoutOverride?: string) => {
+    const origOnClick = (child as React.ReactElement<any>).props.onClick;
+    const extraProps: any = {
+      isGroupHovered: expanded,
+      interceptClick: expanded
+        ? () => { if (origOnClick) origOnClick(); setIsExpanded(false); }
+        : () => setIsExpanded(true),
+    };
+    if (layoutOverride) extraProps.layout = layoutOverride;
+    return React.cloneElement(child as React.ReactElement<any>, extraProps);
+  };
+
+  const renderShelfLayout = (expanded: boolean) => {
+    const { modules, readings, others } = separateChildren(children);
+    const moduleElements = [...modules, ...others].map(c => cloneWithProps(c, expanded));
+    const readingElements = readings.map(c => cloneWithProps(c, expanded, expanded ? 'vertical' : 'horizontal'));
+
+    return (
+      <>
+        {moduleElements}
+        {readingElements.length > 0 && (
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'flex-end',
+            gap: '2px',
+            alignSelf: 'flex-end',
+            marginLeft: '2px',
+          }}>
+            {readingElements}
+          </div>
+        )}
+      </>
+    );
+  };
 
   const slideDirection = isTopShelf ? 'Down' : 'Up';
 
@@ -485,7 +585,7 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
           cursor: 'pointer',
         }}
       >
-        {clonedChildren(false)}
+        {renderShelfLayout(false)}
       </div>
       {isExpanded && createPortal(
         <div
@@ -565,7 +665,7 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
               transformOrigin: 'bottom center',
               padding: '0 20px',
             }}>
-              {clonedChildren(true)}
+              {renderShelfLayout(true)}
             </div>
             <div style={{
               width: '100%',
