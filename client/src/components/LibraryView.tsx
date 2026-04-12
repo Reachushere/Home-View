@@ -2197,6 +2197,21 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           files = [...files, ...slotFiles.filter(f => !existingIds.has(f.id))];
         }
       }
+
+      if (files.length === 0 && codeNorm.startsWith('tbd')) {
+        const numMatch = codeNorm.match(/\d+/);
+        if (numMatch) {
+          const num = numMatch[0];
+          for (const variant of [`tbd${num}`, `tbd_slot${num}`, `tbd${num}00`]) {
+            const variantFiles = courseMap.get(variant) || [];
+            if (variantFiles.length > 0) {
+              const existingIds = new Set(files.map(f => f.id));
+              files = [...files, ...variantFiles.filter(f => !existingIds.has(f.id))];
+            }
+          }
+        }
+      }
+
       if (files && files.length > 0) {
         sortFiles(files);
         result.push({ course, files });
@@ -2204,6 +2219,34 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         result.push({ course, files: [] });
       }
     });
+
+    if (result.length === 0 && semCourses.length > 0) {
+      const usedIds = new Set(result.flatMap(r => r.files.map(f => f.id)));
+      const tbdKeys = [...courseMap.keys()].filter(k => k.startsWith('tbd'));
+      if (tbdKeys.length > 0) {
+        const tbdNums = new Set<string>();
+        tbdKeys.forEach(k => {
+          const m = k.match(/tbd_?(?:slot)?(\d+)/);
+          if (m) tbdNums.add(m[1]);
+        });
+        const sortedNums = [...tbdNums].sort((a, b) => parseInt(a) - parseInt(b));
+        sortedNums.forEach((num, idx) => {
+          if (idx >= semCourses.length) return;
+          const course = semCourses[idx];
+          let files: FileRecord[] = [];
+          for (const variant of [`tbd${num}`, `tbd_slot${num}`]) {
+            const variantFiles = courseMap.get(variant) || [];
+            const existingIds = new Set(files.map(f => f.id));
+            files = [...files, ...variantFiles.filter(f => !existingIds.has(f.id) && !usedIds.has(f.id))];
+          }
+          if (files.length > 0) {
+            sortFiles(files);
+            result.push({ course: { ...course, name: course.name || `TBD Course ${num}` }, files });
+            files.forEach(f => usedIds.add(f.id));
+          }
+        });
+      }
+    }
 
     return result;
   }, [currentSemester, allFiles, semesters, syllabusPaths]);
