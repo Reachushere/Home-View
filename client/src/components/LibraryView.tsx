@@ -964,7 +964,15 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
     const viewport = page.getViewport({ scale });
     canvas.width = viewport.width;
     canvas.height = viewport.height;
-    await page.render({ canvasContext: ctx, viewport }).promise;
+    console.log(`[PDF] Rendering page ${pageNum}: canvas=${canvas.width}x${canvas.height}, vpScale=${scale.toFixed(3)}, origVP=${vp.width.toFixed(0)}x${vp.height.toFixed(0)}, container=${containerW}x${containerH}`);
+    try {
+      await page.render({ canvasContext: ctx, viewport }).promise;
+      const pixelData = ctx.getImageData(0, 0, Math.min(canvas.width, 10), Math.min(canvas.height, 10)).data;
+      const hasContent = pixelData.some((v, i) => i % 4 !== 3 && v !== 0 && v !== 255);
+      console.log(`[PDF] Page ${pageNum} rendered. hasContent=${hasContent}, firstPixels=[${pixelData.slice(0, 16).join(',')}]`);
+    } catch (renderErr) {
+      console.error(`[PDF] Canvas render failed for page ${pageNum}:`, renderErr);
+    }
     if (textLayer) {
       textLayer.innerHTML = '';
       textLayer.style.width = `${viewport.width}px`;
