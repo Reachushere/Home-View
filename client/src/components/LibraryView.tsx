@@ -1698,6 +1698,12 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
   const [masterSemFilter, setMasterSemFilter] = useState('all');
   const [masterCourseFilter, setMasterCourseFilter] = useState('all');
   const [masterWeekFilter, setMasterWeekFilter] = useState('all');
+  const [collapsedCourses, setCollapsedCourses] = useState<Set<string>>(() => {
+    try {
+      const saved = localStorage.getItem('library-collapsed-courses');
+      return saved ? new Set(JSON.parse(saved)) : new Set();
+    } catch { return new Set(); }
+  });
   const [masterTypeFilter, setMasterTypeFilter] = useState<'all' | 'module' | 'reading'>('all');
   const [masterFormatFilter, setMasterFormatFilter] = useState('all');
   const [masterSortBy, setMasterSortBy] = useState<'relevance' | 'date_added' | 'name' | 'week'>('relevance');
@@ -2816,30 +2822,55 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             </button>
           </div>
         ) : (
-          courseBooks.map(({ course, files: courseFiles }, courseIdx) => (
-            <div key={course.code} style={{ marginBottom: courseIdx < courseBooks.length - 1 ? '55px' : '0' }}>
+          courseBooks.map(({ course, files: courseFiles }, courseIdx) => {
+            const semKey = semesters[currentSemIdx]?.key || '';
+            const collapseKey = `${semKey}::${course.code}`;
+            const isCollapsed = collapsedCourses.has(collapseKey);
+            return (
+            <div key={course.code} style={{ marginBottom: courseIdx < courseBooks.length - 1 ? (isCollapsed ? '20px' : '55px') : '0' }}>
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                marginBottom: '6px',
+                marginBottom: isCollapsed ? '0px' : '6px',
                 paddingLeft: '16px',
                 paddingRight: '12px',
                 borderLeft: `3px solid ${course.color || '#ffffff'}`,
-              }}>
-                <span style={{
-                  fontSize: '9px',
-                  fontWeight: 500,
-                  color: '#ffffff',
-                  letterSpacing: '0.5px',
-                  textTransform: 'uppercase',
-                  fontFamily: "system-ui, -apple-system, sans-serif",
-                }}>
-                  {course.code} — {course.name.startsWith(course.code) ? course.name.slice(course.code.length).replace(/^\s*[-–—]\s*/, '') : course.name}
-                </span>
+                cursor: 'pointer',
+                userSelect: 'none',
+              }}
+              onClick={() => {
+                setCollapsedCourses(prev => {
+                  const next = new Set(prev);
+                  if (next.has(collapseKey)) next.delete(collapseKey);
+                  else next.add(collapseKey);
+                  localStorage.setItem('library-collapsed-courses', JSON.stringify([...next]));
+                  return next;
+                });
+              }}
+              data-testid={`toggle-shelf-${course.code}`}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  {isCollapsed ? (
+                    <ChevronRight size={12} style={{ color: 'rgba(255,255,255,0.5)', flexShrink: 0 }} />
+                  ) : (
+                    <ChevronDown size={12} style={{ color: 'rgba(255,255,255,0.5)', flexShrink: 0 }} />
+                  )}
+                  <span style={{
+                    fontSize: '9px',
+                    fontWeight: 500,
+                    color: '#ffffff',
+                    letterSpacing: '0.5px',
+                    textTransform: 'uppercase',
+                    fontFamily: "system-ui, -apple-system, sans-serif",
+                  }}>
+                    {course.code} — {course.name.startsWith(course.code) ? course.name.slice(course.code.length).replace(/^\s*[-–—]\s*/, '') : course.name}
+                  </span>
+                </div>
                 {syllabusPaths[course.code] && (
                   <button
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       const syllabusFile: FileRecord = {
                         id: -1 * (course.code.charCodeAt(0) * 1000 + course.code.charCodeAt(1)),
                         originalName: `${course.code} Syllabus.pdf`,
@@ -2878,6 +2909,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 )}
               </div>
 
+              {!isCollapsed && (
               <div style={{ position: 'relative', maxWidth: '100%', overflow: 'hidden' }}>
                 <div style={{
                   display: 'flex',
@@ -2958,8 +2990,9 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                   pointerEvents: 'none',
                 }} />
               </div>
+              )}
             </div>
-          ))
+          );})
         )}
       </div>
 
