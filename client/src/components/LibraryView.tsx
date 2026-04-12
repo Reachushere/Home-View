@@ -618,7 +618,7 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
           minWidth: 0,
           position: 'relative',
           cursor: 'pointer',
-          ...(isTopShelf ? { marginLeft: '4px' } : {}),
+          ...(isTopShelf ? { marginLeft: '-1px' } : {}),
         }}
       >
         {renderShelfLayout(false)}
