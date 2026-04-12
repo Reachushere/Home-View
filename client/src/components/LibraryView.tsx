@@ -3197,7 +3197,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       {/* Search box - top left compact */}
       <div style={{
         position: 'absolute',
-        top: '16px',
+        top: '23px',
         left: '16px',
         zIndex: 100002,
       }}>
