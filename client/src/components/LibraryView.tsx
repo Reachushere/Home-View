@@ -3484,7 +3484,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             const collapseKey = `${semKey}::${course.code}`;
             const isCollapsed = collapsedCourses.has(collapseKey);
             return (
-            <div key={course.code} style={{ marginBottom: courseIdx < courseBooks.length - 1 ? (isCollapsed ? '20px' : '55px') : '0', position: 'relative', top: courseIdx === 0 ? '-1px' : courseIdx === 1 ? '39px' : courseIdx === 2 ? '39px' : `${40 + courseIdx * 5}px` }}>
+            <div key={course.code} style={{ marginBottom: courseIdx < courseBooks.length - 1 ? (isCollapsed ? '20px' : '55px') : '0', position: 'relative', top: courseIdx === 0 ? '0px' : courseIdx === 1 ? '40px' : courseIdx === 2 ? '39px' : `${40 + courseIdx * 5}px` }}>
               {!isCollapsed && syllabusPaths[course.code] && (
                 <div style={{ paddingLeft: '16px', marginBottom: '4px', position: 'relative', top: courseIdx === 0 ? '150px' : courseIdx === 1 ? '130px' : courseIdx === 2 ? '120px' : '110px', zIndex: 10 }}>
                   <button
