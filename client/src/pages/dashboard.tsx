@@ -14702,6 +14702,7 @@ export default function Dashboard() {
           semesters={[]}
           initialSemesterKey={librarySemesterKey}
           onOpenNotepad={() => setIsNotepadOpen(true)}
+          courseDisplayNames={courseDisplayNames}
         />
       )}
 

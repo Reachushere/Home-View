@@ -110,6 +110,7 @@ interface LibraryViewProps {
   initialSemesterKey?: string;
   isSharedView?: boolean;
   onOpenNotepad?: () => void;
+  courseDisplayNames?: Record<string, string>;
 }
 
 const WEEK_COLOR_PALETTE: Record<number, string> = {
@@ -2240,7 +2241,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
   );
 }
 
-export default function LibraryView({ isOpen, onClose, semesters: semestersProp, initialSemesterKey, isSharedView, onOpenNotepad }: LibraryViewProps) {
+export default function LibraryView({ isOpen, onClose, semesters: semestersProp, initialSemesterKey, isSharedView, onOpenNotepad, courseDisplayNames }: LibraryViewProps) {
   const [currentSemIdx, setCurrentSemIdx] = useState(0);
   const [syncingSemKey, setSyncingSemKey] = useState<string | null>(null);
   const [selectedBook, setSelectedBook] = useState<FileRecord | null>(null);
@@ -4124,8 +4125,9 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                     letterSpacing: '0.5px',
                     textTransform: 'uppercase',
                     fontFamily: "system-ui, -apple-system, sans-serif",
+                    whiteSpace: 'nowrap',
                   }}>
-                    {course.code} — {course.name.startsWith(course.code) ? course.name.slice(course.code.length).replace(/^\s*[-–—]\s*/, '') : course.name}
+                    {courseDisplayNames?.[course.code] || `${course.code} — ${course.name.startsWith(course.code) ? course.name.slice(course.code.length).replace(/^\s*[-–—]\s*/, '') : course.name}`}
                   </span>
                   {isCollapsed ? (
                     <ChevronRight size={14} style={{ color: (courseIdx === 2 && minimizedReaders.size > 0) ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)', flexShrink: 0 }} />
