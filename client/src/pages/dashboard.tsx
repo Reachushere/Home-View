@@ -31128,12 +31128,9 @@ export default function Dashboard() {
                 const otherWkStart = startOfDayET(otherSortedWd[0]);
                 const otherWkEnd = startOfDayET(addDays(otherSortedWd[otherSortedWd.length - 1], 1));
                 const otherTasks = allTasks?.filter(task => {
-                  if (task.type !== 'other' && task.type !== 'meeting' && task.type !== 'reminder') return false;
-                  if (task.type === 'meeting' && task.courseName) return false;
                   if (task.courseName) {
                     const taskCourseCode = task.courseName.split(' - ')[0]?.toUpperCase();
                     if (taskCourseCode && activeCourseNames.includes(taskCourseCode)) return false;
-                    if (task.eventStartTime && task.eventEndTime) return false;
                   }
                   const bracketMatch = task.title.match(/^\[([^\]]+)\]/);
                   if (bracketMatch) {
@@ -32297,7 +32294,7 @@ export default function Dashboard() {
                           const hasOverlap = columns[cc].some(other => {
                             const otherStart = other.startHour * 60 + other.startMin;
                             const otherEnd = other.endHour * 60 + other.endMin;
-                            return otherStart < itemEnd && otherEnd > itemStart;
+                            return otherStart < itemEnd - 1 && otherEnd - 1 > itemStart;
                           });
                           if (hasOverlap) colsOverlapping++;
                         }
