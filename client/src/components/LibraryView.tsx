@@ -1080,7 +1080,7 @@ const toolBtnStyle = (active?: boolean): React.CSSProperties => ({
   transition: 'all 0.15s ease',
 });
 
-function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles, onOpenModuleFile, isSyllabus, onBringToFront, readerIndex }: {
+function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles, onOpenModuleFile, isSyllabus, onBringToFront, readerIndex, initialSearchQuery }: {
   file: FileRecord;
   bookColor: string;
   onClose: () => void;
@@ -1091,6 +1091,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
   isSyllabus?: boolean;
   onBringToFront?: () => void;
   readerIndex?: number;
+  initialSearchQuery?: string;
 }) {
   const [phase, setPhase] = useState<'pull' | 'expand' | 'reading'>('pull');
   const [pdfDoc, setPdfDoc] = useState<any>(null);
@@ -1110,6 +1111,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
   const [showAnnotations, setShowAnnotations] = useState(false);
   const [activeToolPanel, setActiveToolPanel] = useState<'none' | 'highlight' | 'comment' | 'bookmark'>('none');
   const [saved, setSaved] = useState(false);
+  const initialSearchApplied = useRef(false);
   const [pendingComment, setPendingComment] = useState<{ x: number; y: number } | null>(null);
   const [pendingCommentText, setPendingCommentText] = useState('');
   const [expandedCommentId, setExpandedCommentId] = useState<number | null>(null);
@@ -1402,6 +1404,42 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
       });
     };
   }, [searchQuery, currentPage, pdfDoc, zoom]);
+
+  useEffect(() => {
+    if (!initialSearchQuery || !pdfDoc || initialSearchApplied.current) return;
+    initialSearchApplied.current = true;
+    setSearchQuery(initialSearchQuery);
+    setSearchOpen(true);
+    const runSearch = async () => {
+      setSearching(true);
+      try {
+        const tokens = initialSearchQuery.toLowerCase().trim().split(/\s+/).filter(Boolean);
+        const results: { page: number; matches: number }[] = [];
+        for (let i = 1; i <= pdfDoc.numPages; i++) {
+          const page = await pdfDoc.getPage(i);
+          const textContent = await page.getTextContent();
+          const fullText = textContent.items.map((item: any) => {
+            let s = item.str || '';
+            if (item.hasEOL) s += ' ';
+            return s;
+          }).join('');
+          const normalized = fullText.replace(/\s+/g, ' ').toLowerCase();
+          let count = 0;
+          for (const tok of tokens) {
+            let pos = 0;
+            while ((pos = normalized.indexOf(tok, pos)) !== -1) { count++; pos += tok.length; }
+          }
+          if (count > 0) results.push({ page: i, matches: count });
+        }
+        setSearchResults(results);
+        setSearchCurrentIdx(0);
+        if (results.length > 0) goToSpread(results[0].page);
+      } finally {
+        setSearching(false);
+      }
+    };
+    runSearch();
+  }, [pdfDoc, initialSearchQuery]);
 
   const navigateSearch = useCallback((dir: 1 | -1) => {
     if (searchResults.length === 0) return;
@@ -2246,7 +2284,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
   const [syncingSemKey, setSyncingSemKey] = useState<string | null>(null);
   const [selectedBook, setSelectedBook] = useState<FileRecord | null>(null);
   const [selectedBookColor, setSelectedBookColor] = useState('#8B4513');
-  const [openReaders, setOpenReaders] = useState<{ file: FileRecord; color: string; pdfUrl?: string; courseCode?: string; isSyllabus?: boolean }[]>([]);
+  const [openReaders, setOpenReaders] = useState<{ file: FileRecord; color: string; pdfUrl?: string; courseCode?: string; isSyllabus?: boolean; initialSearchQuery?: string }[]>([]);
   const [focusedReaderId, setFocusedReaderId] = useState<number | null>(null);
   const [minimizedReaders, setMinimizedReaders] = useState<Set<number>>(new Set());
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -2882,11 +2920,11 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
     });
   }, []);
 
-  const handleBookClick = useCallback((file: FileRecord, color: string, pdfUrl?: string, courseCode?: string, isSyllabus?: boolean) => {
+  const handleBookClick = useCallback((file: FileRecord, color: string, pdfUrl?: string, courseCode?: string, isSyllabus?: boolean, initialSearchQuery?: string) => {
     const cc = courseCode || file.folder?.match(/^week-\d+-(.+?)-(module|reading)$/i)?.[1]?.toLowerCase();
     setOpenReaders(prev => {
       if (prev.some(r => r.file.id === file.id)) return prev;
-      return [...prev, { file, color, pdfUrl, courseCode: cc, isSyllabus }];
+      return [...prev, { file, color, pdfUrl, courseCode: cc, isSyllabus, initialSearchQuery }];
     });
     setFocusedReaderId(file.id);
   }, []);
@@ -3892,7 +3930,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 <div
                   key={r.file.id}
                   onClick={() => {
-                    handleBookClick(r.file, wColor);
+                    const sq = masterSearch.trim();
+                    handleBookClick(r.file, wColor, undefined, undefined, undefined, sq || undefined);
                     setMasterSearch(''); setMasterSemFilter('all'); setMasterCourseFilter('all'); setMasterWeekFilter('all'); setMasterTypeFilter('all'); setMasterFormatFilter('all'); setMasterSortBy('relevance');
                   }}
                   style={{
@@ -4259,6 +4298,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             isSyllabus={reader.isSyllabus}
             onBringToFront={() => setFocusedReaderId(reader.file.id)}
             readerIndex={readerIdx}
+            initialSearchQuery={reader.initialSearchQuery}
           />
           </div>
         </div>
