@@ -4040,10 +4040,12 @@ export default function Dashboard() {
             if (data.weekKey === dismissKey) return;
           }
         } catch (_) {}
+        if (sessionStorage.getItem('wpShownThisSession')) return;
         if (wpSettings.minTasks > 1) {
           const upcoming = (allTasks || []).filter(t => !t.isCompleted && t.dueDate && new Date(t.dueDate) <= new Date(Date.now() + 10 * 86400000));
           if (upcoming.length < wpSettings.minTasks) return;
         }
+        sessionStorage.setItem('wpShownThisSession', '1');
         setWeeklyPlanningOpen(true);
       } catch {}
     })();
