@@ -4480,7 +4480,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             const labelShift = Math.round(calib.label * shelfScale);
             const labelRight = Math.round((calib.labelRight || 0) * shelfScale);
             return (
-            <div key={course.code} style={{ position: 'relative', overflow: 'visible', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', transform: `translateY(${rowShift}px)` }}>
+            <div key={course.code} style={{ position: 'relative', overflow: 'visible', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', transform: `translateY(${rowShift}px)`, zIndex: courseBooks.length - courseIdx }}>
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -4491,7 +4491,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 position: 'absolute',
                 bottom: '4px',
                 transform: `translate(${labelRight}px, ${labelShift}px)`,
-                zIndex: 10,
+                zIndex: 50,
                 left: 'calc(30% + 141px)',
               }}
               onClick={() => {
