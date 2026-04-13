@@ -12581,7 +12581,7 @@ export default function Dashboard() {
       if (!t.eventStartTime || !t.eventEndTime) return false;
       const [startHour] = t.eventStartTime.split(':').map(Number);
       const [endHour] = t.eventEndTime.split(':').map(Number);
-      return endHour > startHour;
+      return endHour > startHour + 1;
     }).map(t => {
       const dueDate = new Date(t.dueDate);
       const dueDateKey = _etDateKey(dueDate);
@@ -12594,29 +12594,7 @@ export default function Dashboard() {
 
   const multiHourOverlayCols = useMemo(() => {
     const map = new Map<string, number>();
-    const items = getMultiHourTasksForWeek().filter(item => {
-      if (item.endHour === item.startHour + 1) {
-        const h = item.startHour;
-        let hasLongMultiHourAtH = false;
-        for (const day of weekDays) {
-          const dayKey = _etDateKey(day);
-          const dayTasks = tasksByDateKey.get(dayKey);
-          if (!dayTasks) continue;
-          hasLongMultiHourAtH = dayTasks.some(t => {
-            if (!t.eventStartTime || !t.eventEndTime) return false;
-            const [sH, sM] = t.eventStartTime.split(':').map(Number);
-            const [eH] = t.eventEndTime.split(':').map(Number);
-            if (eH <= sH + 1) return false;
-            const tStart = sH * 60 + sM;
-            const tEnd = eH * 60;
-            return tStart < (h + 1) * 60 && tEnd > h * 60;
-          });
-          if (hasLongMultiHourAtH) break;
-        }
-        return !hasLongMultiHourAtH;
-      }
-      return true;
-    });
+    const items = getMultiHourTasksForWeek();
 
     type OverlayItem = { startHour: number; startMin: number; endHour: number; endMin: number; task: { id: number } };
     const allItems: (OverlayItem & { dayIdx: number })[] = [];
@@ -12711,7 +12689,6 @@ export default function Dashboard() {
             const [sH] = t.eventStartTime.split(':').map(Number);
             const [eH] = t.eventEndTime.split(':').map(Number);
             if (eH > sH + 1) return false;
-            if (eH === sH + 1) return getConflictExtraHeight(sH) > 0;
           }
           return true;
         });
@@ -31685,7 +31662,6 @@ export default function Dashboard() {
                           const [sH] = task.eventStartTime.split(':').map(Number);
                           const [eH] = task.eventEndTime.split(':').map(Number);
                           if (eH > sH + 1) return false;
-                          if (eH === sH + 1) return getConflictExtraHeight(sH) > 0;
                         }
                         return true;
                       });
@@ -31935,9 +31911,6 @@ export default function Dashboard() {
                               const [startHour] = task.eventStartTime.split(':').map(Number);
                               const [endHour] = task.eventEndTime.split(':').map(Number);
                               if (endHour > startHour + 1) return false;
-                              if (endHour === startHour + 1) {
-                                return getConflictExtraHeight(startHour) > 0;
-                              }
                             }
                             return true;
                           }).map((task, taskIdx) => {
@@ -32279,12 +32252,7 @@ export default function Dashboard() {
                 {/* Multi-hour tasks overlay layer - positioned above grid rows */}
                 <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 50, pointerEvents: 'none' }}>
                 {(() => {
-                  const allMultiHour = getMultiHourTasksForWeek().filter(item => {
-                    if (item.endHour === item.startHour + 1) {
-                      return getConflictExtraHeight(item.startHour) === 0;
-                    }
-                    return true;
-                  });
+                  const allMultiHour = getMultiHourTasksForWeek();
                   const overlapInfo = new Map<number, { col: number; totalCols: number }>();
 
                   type OvItem = { startHour: number; startMin: number; endHour: number; endMin: number; task: { id: number }; dayIdx: number; isCalEvent?: boolean };
