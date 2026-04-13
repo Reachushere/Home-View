@@ -12673,6 +12673,16 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     res.json({ results, testUrl });
   });
 
+  try {
+    await db.execute(sql`CREATE EXTENSION IF NOT EXISTS pg_trgm`);
+    await db.execute(sql`ALTER TABLE file_pages ADD COLUMN IF NOT EXISTS search_vector tsvector`);
+    await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_file_pages_search_vector ON file_pages USING GIN (search_vector)`);
+    await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_file_pages_trgm ON file_pages USING GIN (page_text gin_trgm_ops)`);
+    console.log(`[Startup] file_pages search indexes ensured`);
+  } catch (e: any) {
+    console.log(`[Startup] file_pages migration note: ${e.message}`);
+  }
+
   const SERVER_START_TIME = Date.now();
   const SERVER_STARTUP_COOLDOWN_MS = 60 * 1000;
   console.log(`[Startup] Cooldown timer started (${SERVER_STARTUP_COOLDOWN_MS / 1000}s)`);
