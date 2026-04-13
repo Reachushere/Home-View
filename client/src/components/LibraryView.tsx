@@ -4022,8 +4022,10 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             const semKey = semesters[currentSemIdx]?.key || '';
             const collapseKey = `${semKey}::${course.code}`;
             const isCollapsed = collapsedCourses.has(collapseKey);
+            const rowShift = courseIdx === 0 ? -12 : courseIdx === 1 ? 14 : courseIdx === 2 ? -55 : 0;
+            const labelShift = course.code.startsWith('CASL') ? 15 : course.code.startsWith('CFNF') ? 3 : course.code.startsWith('CPPA') ? -15 : 0;
             return (
-            <div key={course.code} style={{ position: 'relative', overflow: 'visible', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+            <div key={course.code} style={{ position: 'relative', overflow: 'visible', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', marginTop: rowShift }}>
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -4032,9 +4034,9 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 cursor: 'pointer',
                 userSelect: 'none',
                 position: 'absolute',
-                bottom: '4px',
+                bottom: `${4 - labelShift}px`,
                 zIndex: 10,
-                marginLeft: 'calc(30% + 244px)',
+                left: 'calc(30% + 236px)',
               }}
               onClick={() => {
                 setCollapsedCourses(prev => {
