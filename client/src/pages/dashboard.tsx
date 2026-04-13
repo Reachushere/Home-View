@@ -31373,7 +31373,16 @@ export default function Dashboard() {
                       const calEventConflict = (hasMultiHourCalEvent || hasMultiHourTask || hasContinuingMultiHour) && totalSlotItems > 1;
                       const isFriday = day.getDay() === 5;
                       const isToday = isSameDayET(day, new Date());
-                      const totalItems = hourTasks.length + visibleCalendarEvents.length;
+                      const inlineFilteredTasks = hourTasks.filter(task => {
+                        if (task.eventStartTime && task.eventEndTime) {
+                          const [sH] = task.eventStartTime.split(':').map(Number);
+                          const [eH] = task.eventEndTime.split(':').map(Number);
+                          if (eH > sH + 1) return false;
+                          if (eH === sH + 1) return getConflictExtraHeight(sH) > 0;
+                        }
+                        return true;
+                      });
+                      const totalItems = inlineFilteredTasks.length + visibleCalendarEvents.length;
                       const hasAnyTasks = totalItems > 0 || continuingTasks.length > 0;
                       const columnWidth = totalItems > 0 ? 100 / totalItems : 100;
                       const cellDateStr = getETDateString(day);
@@ -31662,8 +31671,14 @@ export default function Dashboard() {
                             let topOffset = 2;
                             
                             if (stackInConflict) {
-                              topOffset = taskIdx * 32 + 2;
-                              taskHeight = 28;
+                              const maxStackable = Math.floor((rowHeight - 2) / 32);
+                              if (totalItems > 1 && maxStackable < totalItems) {
+                                topOffset = 2;
+                                taskHeight = rowHeight - 4;
+                              } else {
+                                topOffset = taskIdx * 32 + 2;
+                                taskHeight = 28;
+                              }
                             } else {
                               topOffset = 2;
                               taskHeight = rowHeight - 4;
@@ -31723,8 +31738,8 @@ export default function Dashboard() {
                                   const borderColor = task.isCompleted ? '#d1d5db' : hasCourseGrad ? gradColors.start : (typeFallbackBorder[task.type] || otherRowColors.borderColor);
                                   return {
                                     top: `${topOffset}px`,
-                                    left: (() => { const narrowInfo = veryLongTaskNarrowCols.get(`${dayIdx}-${hour}`); const overlayCols = multiHourOverlayCols.get(`${dayIdx}-${hour}`) || 0; const totalC = Math.max(overlayCols + totalItems, 1); if (stackInConflict) { if (overlayCols > 0) { return `calc(${overlayCols} / ${totalC} * 100% + 4px)`; } if (narrowInfo) { return `calc(${narrowInfo.narrowFrac * 100}% + 4px)`; } return '4px'; } if (overlayCols > 0) { return `calc(${(overlayCols + taskIdx)} / ${totalC} * 100% + 4px)`; } if (narrowInfo) { const narrowPct = narrowInfo.narrowFrac * 100; const availPct = 100 - narrowPct; return `calc(${narrowPct}% + ${taskIdx * availPct / totalItems}% + 4px)`; } return `calc(${taskIdx * columnWidth}% + 4px)`; })(),
-                                    width: (() => { const narrowInfo = veryLongTaskNarrowCols.get(`${dayIdx}-${hour}`); const overlayCols = multiHourOverlayCols.get(`${dayIdx}-${hour}`) || 0; const totalC = Math.max(overlayCols + totalItems, 1); if (stackInConflict) { if (overlayCols > 0) { return `calc(100% / ${totalC} - 8px)`; } if (narrowInfo) { return `calc(${(1 - narrowInfo.narrowFrac) * 100}% - 8px)`; } return 'calc(100% - 8px)'; } if (overlayCols > 0) { return `calc(100% / ${totalC} - 8px)`; } if (narrowInfo) { const availPct = (1 - narrowInfo.narrowFrac) * 100; return `calc(${availPct / totalItems}% - 8px)`; } return `calc(${columnWidth}% - 8px)`; })(),
+                                    left: (() => { const narrowInfo = veryLongTaskNarrowCols.get(`${dayIdx}-${hour}`); const overlayCols = multiHourOverlayCols.get(`${dayIdx}-${hour}`) || 0; const totalC = Math.max(overlayCols + totalItems, 1); const maxStackable = Math.floor((rowHeight - 2) / 32); const useSideBySide = totalItems > 1 && (!stackInConflict || maxStackable < totalItems); if (stackInConflict && !useSideBySide) { if (overlayCols > 0) { return `calc(${overlayCols} / ${totalC} * 100% + 4px)`; } if (narrowInfo) { return `calc(${narrowInfo.narrowFrac * 100}% + 4px)`; } return '4px'; } if (overlayCols > 0) { return `calc(${(overlayCols + taskIdx)} / ${totalC} * 100% + 4px)`; } if (narrowInfo) { const narrowPct = narrowInfo.narrowFrac * 100; const availPct = 100 - narrowPct; return `calc(${narrowPct}% + ${taskIdx * availPct / totalItems}% + 4px)`; } return `calc(${taskIdx * columnWidth}% + 4px)`; })(),
+                                    width: (() => { const narrowInfo = veryLongTaskNarrowCols.get(`${dayIdx}-${hour}`); const overlayCols = multiHourOverlayCols.get(`${dayIdx}-${hour}`) || 0; const totalC = Math.max(overlayCols + totalItems, 1); const maxStackable = Math.floor((rowHeight - 2) / 32); const useSideBySide = totalItems > 1 && (!stackInConflict || maxStackable < totalItems); if (stackInConflict && !useSideBySide) { if (overlayCols > 0) { return `calc(100% / ${totalC} - 8px)`; } if (narrowInfo) { return `calc(${(1 - narrowInfo.narrowFrac) * 100}% - 8px)`; } return 'calc(100% - 8px)'; } if (overlayCols > 0) { return `calc(100% / ${totalC} - 8px)`; } if (narrowInfo) { const availPct = (1 - narrowInfo.narrowFrac) * 100; return `calc(${availPct / totalItems}% - 8px)`; } return `calc(${columnWidth}% - 8px)`; })(),
                                     minHeight: `${taskHeight}px`,
                                     zIndex: selectedTaskId === task.id ? 57 : (draggedTask?.id === task.id ? 56 : 54 + taskIdx),
                                     background: bgGradient,
@@ -31858,8 +31873,8 @@ export default function Dashboard() {
                               className={`absolute rounded hover:opacity-90 shadow-sm overflow-hidden cursor-pointer`}
                               style={{
                                 top: `${calTopOffset}px`,
-                                left: (() => { const narrowInfo = veryLongTaskNarrowCols.get(`${dayIdx}-${hour}`); const overlayCols = multiHourOverlayCols.get(`${dayIdx}-${hour}`) || 0; const totalC = Math.max(overlayCols + totalItems, 1); if (stackInConflict) { if (overlayCols > 0) return `calc(${overlayCols} / ${totalC} * 100% + 4px)`; if (narrowInfo) return `calc(${narrowInfo.narrowFrac * 100}% + 4px)`; return '4px'; } if (overlayCols > 0) { return `calc(${(overlayCols + hourTasks.length + eventIdx)} / ${totalC} * 100% + 4px)`; } if (narrowInfo) { const narrowPct = narrowInfo.narrowFrac * 100; const availPct = 100 - narrowPct; return `calc(${narrowPct}% + ${(hourTasks.length + eventIdx) * availPct / totalItems}% + 4px)`; } return `calc(${(hourTasks.length + eventIdx) * columnWidth}% + 4px)`; })(),
-                                width: (() => { const narrowInfo = veryLongTaskNarrowCols.get(`${dayIdx}-${hour}`); const overlayCols = multiHourOverlayCols.get(`${dayIdx}-${hour}`) || 0; const totalC = Math.max(overlayCols + totalItems, 1); if (stackInConflict) { if (overlayCols > 0) return `calc(100% / ${totalC} - 8px)`; if (narrowInfo) return `calc(${(1 - narrowInfo.narrowFrac) * 100}% - 8px)`; return 'calc(100% - 8px)'; } if (overlayCols > 0) { return `calc(100% / ${totalC} - 8px)`; } if (narrowInfo) { const availPct = (1 - narrowInfo.narrowFrac) * 100; return `calc(${availPct / totalItems}% - 8px)`; } return `calc(${columnWidth}% - 8px)`; })(),
+                                left: (() => { const narrowInfo = veryLongTaskNarrowCols.get(`${dayIdx}-${hour}`); const overlayCols = multiHourOverlayCols.get(`${dayIdx}-${hour}`) || 0; const totalC = Math.max(overlayCols + totalItems, 1); const maxStackable = Math.floor((rowHeight - 2) / 32); const useSideBySide = totalItems > 1 && (!stackInConflict || maxStackable < totalItems); if (stackInConflict && !useSideBySide) { if (overlayCols > 0) return `calc(${overlayCols} / ${totalC} * 100% + 4px)`; if (narrowInfo) return `calc(${narrowInfo.narrowFrac * 100}% + 4px)`; return '4px'; } if (overlayCols > 0) { return `calc(${(overlayCols + inlineFilteredTasks.length + eventIdx)} / ${totalC} * 100% + 4px)`; } if (narrowInfo) { const narrowPct = narrowInfo.narrowFrac * 100; const availPct = 100 - narrowPct; return `calc(${narrowPct}% + ${(inlineFilteredTasks.length + eventIdx) * availPct / totalItems}% + 4px)`; } return `calc(${(inlineFilteredTasks.length + eventIdx) * columnWidth}% + 4px)`; })(),
+                                width: (() => { const narrowInfo = veryLongTaskNarrowCols.get(`${dayIdx}-${hour}`); const overlayCols = multiHourOverlayCols.get(`${dayIdx}-${hour}`) || 0; const totalC = Math.max(overlayCols + totalItems, 1); const maxStackable = Math.floor((rowHeight - 2) / 32); const useSideBySide = totalItems > 1 && (!stackInConflict || maxStackable < totalItems); if (stackInConflict && !useSideBySide) { if (overlayCols > 0) return `calc(100% / ${totalC} - 8px)`; if (narrowInfo) return `calc(${(1 - narrowInfo.narrowFrac) * 100}% - 8px)`; return 'calc(100% - 8px)'; } if (overlayCols > 0) { return `calc(100% / ${totalC} - 8px)`; } if (narrowInfo) { const availPct = (1 - narrowInfo.narrowFrac) * 100; return `calc(${availPct / totalItems}% - 8px)`; } return `calc(${columnWidth}% - 8px)`; })(),
                                 minHeight: stackInConflict ? '28px' : undefined,
                                 zIndex: stackInConflict ? 2 : 3,
                                 border: '1px solid black',
