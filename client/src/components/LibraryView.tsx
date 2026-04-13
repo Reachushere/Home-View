@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
-import { X, ChevronLeft, ChevronRight, ChevronDown, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2, Printer, Volume2, Square, Pause, Play, RefreshCw, Pencil, FileText, Minus, Loader2, ListOrdered, RotateCcw, StickyNote } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, ChevronDown, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2, Printer, Volume2, Square, Pause, Play, RefreshCw, Pencil, FileText, Minus, Loader2, ListOrdered, RotateCcw, StickyNote, Clock } from 'lucide-react';
 import * as pdfjsLib from 'pdfjs-dist';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import shelfBgImage from '@assets/Bookshelf9_1776012207833.jpg';
@@ -2291,6 +2291,26 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [showSharePopup, setShowSharePopup] = useState(false);
   const [masterSearch, setMasterSearch] = useState('');
+  const [searchHistory, setSearchHistory] = useState<{ query: string; timestamp: number }[]>(() => {
+    try {
+      const saved = localStorage.getItem('library-search-history');
+      if (!saved) return [];
+      const parsed: { query: string; timestamp: number }[] = JSON.parse(saved);
+      const oneMonthAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+      return parsed.filter(h => h.timestamp > oneMonthAgo);
+    } catch { return []; }
+  });
+  const [searchFocused, setSearchFocused] = useState(false);
+  const addSearchHistory = useCallback((query: string) => {
+    const q = query.trim().toLowerCase();
+    if (!q || q.length < 2) return;
+    setSearchHistory(prev => {
+      const filtered = prev.filter(h => h.query.toLowerCase() !== q);
+      const next = [{ query: q, timestamp: Date.now() }, ...filtered].slice(0, 50);
+      localStorage.setItem('library-search-history', JSON.stringify(next));
+      return next;
+    });
+  }, []);
   const [showLibraryNote, setShowLibraryNote] = useState(false);
   const [masterSemFilter, setMasterSemFilter] = useState('all');
   const [masterCourseFilter, setMasterCourseFilter] = useState('all');
@@ -2678,10 +2698,12 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
 
   type SearchResult = { file: FileRecord; semLabel: string; semKey: string; courseCode: string; courseName: string; weekNum: number; fileType: string; fileFormat: string; contentSnippet?: string; matchedTokenCount?: number; proximitySnippet?: string };
 
+  const STOP_WORDS = new Set(['a', 'an', 'and', 'are', 'as', 'at', 'be', 'but', 'by', 'for', 'if', 'in', 'is', 'it', 'no', 'not', 'of', 'on', 'or', 'so', 'the', 'to', 'was', 'we', 'with']);
+
   const combinedSearchResults = useMemo(() => {
     if (!hasAnyFilter) return null;
     const q = masterSearch.toLowerCase().trim();
-    const tokens = q ? q.split(/\s+/).filter(Boolean) : [];
+    const tokens = q ? q.split(/\s+/).filter(Boolean).filter(t => !STOP_WORDS.has(t)) : [];
     const results: SearchResult[] = [];
     const addedFileIds = new Set<number>();
 
@@ -2903,7 +2925,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
 
   const searchTokens = useMemo(() => {
     const q = masterSearch.toLowerCase().trim();
-    return q ? q.split(/\s+/).filter(Boolean) : [];
+    return q ? q.split(/\s+/).filter(Boolean).filter(t => !STOP_WORDS.has(t)) : [];
   }, [masterSearch]);
 
   const highlightTokens = useCallback((text: string, tokens: string[], color?: string): (string | JSX.Element)[] => {
@@ -3798,6 +3820,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
               type="text"
               value={masterSearch}
               onChange={e => setMasterSearch(e.target.value)}
+              onFocus={() => setSearchFocused(true)}
+              onBlur={() => setTimeout(() => setSearchFocused(false), 200)}
               placeholder="Search..."
               style={{
                 background: 'transparent',
@@ -3892,6 +3916,47 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           </div>
         )}
 
+        {searchFocused && masterSearch.trim().length >= 1 && (() => {
+          const q = masterSearch.toLowerCase().trim();
+          const matching = searchHistory.filter(h => h.query.startsWith(q) && h.query !== q).slice(0, 5);
+          if (matching.length === 0) return null;
+          return (
+            <div style={{
+              marginTop: '4px',
+              background: 'rgba(10,6,4,0.95)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: '8px',
+              padding: '6px 8px',
+              maxWidth: '300px',
+              boxShadow: '0 2px 12px rgba(0,0,0,0.4)',
+            }}>
+              <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.35)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Recent</div>
+              {matching.map((h, i) => {
+                const daysAgo = Math.floor((Date.now() - h.timestamp) / (24 * 60 * 60 * 1000));
+                const timeLabel = daysAgo === 0 ? 'today' : daysAgo === 1 ? 'yesterday' : `${daysAgo}d ago`;
+                return (
+                  <div
+                    key={i}
+                    onMouseDown={e => { e.preventDefault(); setMasterSearch(h.query); }}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '8px',
+                      padding: '5px 8px', borderRadius: '6px', cursor: 'pointer',
+                      transition: 'background 0.12s',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.08)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    data-testid={`search-history-${i}`}
+                  >
+                    <Clock size={12} color="rgba(255,255,255,0.3)" style={{ flexShrink: 0 }} />
+                    <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', flex: 1 }}>{h.query}</span>
+                    <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.25)', flexShrink: 0 }}>{timeLabel}</span>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })()}
+
         {combinedSearchResults && (
           <div style={{
             marginTop: '6px',
@@ -3931,6 +3996,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                   key={r.file.id}
                   onClick={() => {
                     const sq = masterSearch.trim();
+                    if (sq) addSearchHistory(sq);
                     handleBookClick(r.file, wColor, undefined, undefined, undefined, sq || undefined);
                     setMasterSearch(''); setMasterSemFilter('all'); setMasterCourseFilter('all'); setMasterWeekFilter('all'); setMasterTypeFilter('all'); setMasterFormatFilter('all'); setMasterSortBy('relevance');
                   }}
