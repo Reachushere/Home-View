@@ -265,6 +265,18 @@ export const insertFileSchema = createInsertSchema(files).omit({ id: true, creat
 export type FileRecord = typeof files.$inferSelect;
 export type InsertFile = z.infer<typeof insertFileSchema>;
 
+export const filePages = pgTable("file_pages", {
+  id: serial("id").primaryKey(),
+  fileId: integer("file_id").notNull(),
+  pageNum: integer("page_num").notNull(),
+  pageText: text("page_text").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertFilePageSchema = createInsertSchema(filePages).omit({ id: true, createdAt: true });
+export type FilePage = typeof filePages.$inferSelect;
+export type InsertFilePage = z.infer<typeof insertFilePageSchema>;
+
 export const deletedFolders = pgTable("deleted_folders", {
   id: serial("id").primaryKey(),
   folderId: text("folder_id").notNull().unique(),

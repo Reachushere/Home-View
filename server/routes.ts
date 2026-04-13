@@ -5277,6 +5277,220 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
+  app.get("/api/library/search-fts", async (req, res) => {
+    try {
+      const q = (req.query.q as string || '').trim();
+      if (!q || q.length < 2) return res.json({ results: [] });
+      const { sql } = await import("drizzle-orm");
+
+      const STOP_WORDS = new Set(['a', 'an', 'and', 'as', 'at', 'be', 'but', 'by', 'for', 'if', 'in', 'is', 'it', 'no', 'not', 'of', 'on', 'or', 'so', 'the', 'to', 'we']);
+      const rawTokens = q.toLowerCase().split(/\s+/).filter(Boolean);
+      const tokens = rawTokens.filter(t => !STOP_WORDS.has(t));
+      const searchTerms = (tokens.length > 0 ? tokens : rawTokens).join(' ');
+
+      const tsQuery = searchTerms.split(/\s+/).map(t => t + ':*').join(' & ');
+
+      const ftsResults = await db.execute(sql`
+        SELECT fp.file_id, fp.page_num, 
+               ts_rank(fp.search_vector, to_tsquery('english', ${tsQuery})) as rank,
+               ts_headline('english', fp.page_text, to_tsquery('english', ${tsQuery}), 
+                 'StartSel=<<, StopSel=>>, MaxWords=35, MinWords=15') as headline
+        FROM file_pages fp
+        WHERE fp.search_vector @@ to_tsquery('english', ${tsQuery})
+        ORDER BY rank DESC
+        LIMIT 50
+      `);
+
+      let fuzzyResults: any[] = [];
+      if (tokens.length === 1 && tokens[0].length >= 4) {
+        try {
+          fuzzyResults = await db.execute(sql`
+            SELECT fp.file_id, fp.page_num,
+                   similarity(fp.page_text, ${tokens[0]}) as sim,
+                   ts_headline('english', fp.page_text, to_tsquery('english', ${tsQuery}),
+                     'StartSel=<<, StopSel=>>, MaxWords=35, MinWords=15') as headline
+            FROM file_pages fp
+            WHERE fp.page_text % ${tokens[0]}
+            AND NOT fp.search_vector @@ to_tsquery('english', ${tsQuery})
+            ORDER BY sim DESC
+            LIMIT 10
+          `);
+        } catch (fuzzyErr: any) {
+          console.log(`[Search] Fuzzy search skipped: ${fuzzyErr.message}`);
+        }
+      }
+
+      const allFiles = await storage.getFiles();
+      const fileMap = new Map(allFiles.map(f => [f.id, f]));
+
+      const results = [...(ftsResults as any[]).map(r => ({
+        fileId: r.file_id,
+        pageNum: r.page_num,
+        rank: parseFloat(r.rank),
+        headline: r.headline,
+        matchType: 'fts' as const,
+        file: fileMap.get(r.file_id),
+      })), ...(fuzzyResults as any[]).map(r => ({
+        fileId: r.file_id,
+        pageNum: r.page_num,
+        rank: parseFloat(r.sim) * 0.5,
+        headline: r.headline,
+        matchType: 'fuzzy' as const,
+        file: fileMap.get(r.file_id),
+      }))].filter(r => r.file);
+
+      const grouped = new Map<string, typeof results[0]>();
+      for (const r of results) {
+        const key = `${r.fileId}-${r.pageNum}`;
+        const existing = grouped.get(key);
+        if (!existing || r.rank > existing.rank) grouped.set(key, r);
+      }
+
+      res.json({ results: Array.from(grouped.values()).sort((a, b) => b.rank - a.rank).slice(0, 30) });
+    } catch (err: any) {
+      console.error("[Search FTS] Error:", err.message);
+      res.status(500).json({ error: "Search failed", details: err.message });
+    }
+  });
+
+  app.post("/api/library/reindex", async (_req, res) => {
+    try {
+      const allFiles = await storage.getFiles();
+      const moduleReadingFiles = allFiles.filter(f => {
+        const fl = (f.folder || '').toLowerCase();
+        return (fl.includes('-module') || fl.includes('-reading')) && fl.startsWith('week-');
+      });
+      let indexed = 0;
+      let skipped = 0;
+      for (const file of moduleReadingFiles) {
+        if (!file.extractedText || file.extractedText.length < 10) {
+          skipped++;
+          continue;
+        }
+        try {
+          const ext = (file.originalName || '').toLowerCase().split('.').pop();
+          let pages: { pageNum: number; pageText: string }[] = [];
+          if (ext === 'pdf' && file.objectPath) {
+            pages = [{ pageNum: 1, pageText: file.extractedText }];
+          } else {
+            pages = [{ pageNum: 1, pageText: file.extractedText }];
+          }
+          await storage.upsertFilePages(file.id, pages);
+          indexed++;
+        } catch (fileErr: any) {
+          console.error(`[Reindex] Failed for file ${file.id}: ${fileErr.message}`);
+          skipped++;
+        }
+      }
+      res.json({ success: true, indexed, skipped, total: moduleReadingFiles.length });
+    } catch (err: any) {
+      console.error("[Reindex] Error:", err.message);
+      res.status(500).json({ error: "Reindex failed" });
+    }
+  });
+
+  app.post("/api/essays/export-docx", async (req, res) => {
+    try {
+      const { title, htmlContent, onedrivePath } = req.body;
+      if (!htmlContent) return res.status(400).json({ error: "No content provided" });
+
+      const mammoth = await import('mammoth');
+      const { Document, Packer, Paragraph, TextRun, HeadingLevel } = await import('docx');
+
+      const lines = htmlContent
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<\/p>/gi, '\n\n')
+        .replace(/<\/h[1-6]>/gi, '\n\n')
+        .replace(/<\/li>/gi, '\n')
+        .replace(/<[^>]+>/g, '')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .split('\n');
+
+      const paragraphs = lines.filter(l => l.trim()).map((line, i) => {
+        if (i === 0 && title) {
+          return new Paragraph({
+            heading: HeadingLevel.HEADING_1,
+            children: [new TextRun({ text: line.trim(), bold: true, size: 32 })],
+          });
+        }
+        return new Paragraph({
+          children: [new TextRun({ text: line.trim(), size: 24 })],
+          spacing: { after: 200 },
+        });
+      });
+
+      const doc = new Document({
+        sections: [{ properties: {}, children: paragraphs.length > 0 ? paragraphs : [new Paragraph({ children: [new TextRun('')] })] }],
+      });
+      const docxBuffer = await Packer.toBuffer(doc);
+
+      if (onedrivePath) {
+        try {
+          const { getOneDriveClient } = await import("./onedrive");
+          const client = await getOneDriveClient();
+          const fileName = `${title || 'Untitled'}.docx`.replace(/[<>:"/\\|?*]/g, '_');
+          const uploadPath = `${onedrivePath}/${fileName}`;
+          await client.api(`/me/drive/root:${uploadPath}:/content`).put(docxBuffer);
+          return res.json({ success: true, fileName, uploadPath, size: docxBuffer.length });
+        } catch (odErr: any) {
+          console.error("[Essay] OneDrive upload failed:", odErr.message);
+          return res.status(500).json({ error: "OneDrive upload failed", details: odErr.message });
+        }
+      }
+
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      res.setHeader('Content-Disposition', `attachment; filename="${(title || 'essay').replace(/[<>:"/\\|?*]/g, '_')}.docx"`);
+      res.send(docxBuffer);
+    } catch (err: any) {
+      console.error("[Essay] Export failed:", err.message);
+      res.status(500).json({ error: "Export failed", details: err.message });
+    }
+  });
+
+  app.get("/api/onedrive/word-online-url", async (req, res) => {
+    try {
+      const filePath = req.query.path as string;
+      if (!filePath) return res.status(400).json({ error: "path required" });
+      const { getOneDriveClient } = await import("./onedrive");
+      const client = await getOneDriveClient();
+      const encodedPath = encodeURIComponent(filePath).replace(/%2F/g, '/');
+      const item = await client.api(`/me/drive/root:${encodedPath}`).get();
+      const webUrl = item.webUrl;
+      if (!webUrl) return res.status(404).json({ error: "No web URL found" });
+      res.json({ webUrl, name: item.name, size: item.size });
+    } catch (err: any) {
+      console.error("[WordOnline] Error:", err.message);
+      res.status(500).json({ error: "Failed to get Word Online URL" });
+    }
+  });
+
+  app.get("/api/onedrive/documents", async (req, res) => {
+    try {
+      const folderPath = (req.query.path as string) || '/School/1. TMU/Essays';
+      const { listOneDriveItems } = await import("./onedrive");
+      const items = await listOneDriveItems(folderPath);
+      const docs = items.filter((item: any) => {
+        if (item.type !== 'file') return false;
+        const ext = item.name.toLowerCase().split('.').pop();
+        return ['docx', 'doc', 'pptx', 'pdf', 'txt'].includes(ext || '');
+      }).map((item: any) => ({
+        name: item.name,
+        path: item.path,
+        size: item.size,
+        lastModified: item.lastModifiedDateTime,
+        downloadUrl: item.downloadUrl,
+      }));
+      res.json(docs);
+    } catch (err: any) {
+      console.error("[OneDrive Docs] Error:", err.message);
+      res.status(500).json({ error: "Failed to list documents" });
+    }
+  });
+
   app.get("/api/ai/key-status", async (_req, res) => {
     try {
       const hasKey = !!process.env.OPENAI_API_KEY;
@@ -16044,29 +16258,66 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       }
 
       if (!buffer) return null;
-      const PdfParser = await getPdfParser();
-      const parser = new PdfParser({ data: new Uint8Array(buffer), verbosity: 0 });
-      await parser.load();
-      const pdfText = await parser.getText();
-      let textContent = '';
-      if (pdfText && typeof pdfText === 'object') {
-        if (pdfText.pages && Array.isArray(pdfText.pages)) {
-          textContent = pdfText.pages.map((p: any) => p.text || '').join('\n\n');
-        } else if (pdfText.text) {
-          textContent = pdfText.text;
-        }
-      } else if (typeof pdfText === 'string') {
-        textContent = pdfText;
-      }
-      console.log(`[ExtractText] Extracted ${textContent.length} chars from ${file.originalName}`);
 
-      if (textContent.trim().length < 100) {
+      const ext = (file.originalName || '').toLowerCase().split('.').pop();
+      let textContent = '';
+      let pageTexts: string[] = [];
+
+      if (ext === 'docx' || ext === 'doc') {
+        try {
+          const mammoth = await import('mammoth');
+          const result = await mammoth.default.extractRawText({ buffer });
+          textContent = result.value || '';
+          pageTexts = [textContent];
+          console.log(`[ExtractText] DOCX extracted ${textContent.length} chars from ${file.originalName}`);
+        } catch (docErr: any) {
+          console.error(`[ExtractText] DOCX extraction failed for ${file.originalName}: ${docErr.message}`);
+        }
+      } else if (ext === 'pptx') {
+        try {
+          const JSZip = (await import('jszip')).default;
+          const zip = await JSZip.loadAsync(buffer);
+          const slideTexts: string[] = [];
+          const slideFiles = Object.keys(zip.files).filter(f => f.match(/ppt\/slides\/slide\d+\.xml/)).sort();
+          for (const slideFile of slideFiles) {
+            const xml = await zip.files[slideFile].async('text');
+            const texts = xml.match(/<a:t>([^<]*)<\/a:t>/g)?.map(m => m.replace(/<\/?a:t>/g, '')) || [];
+            slideTexts.push(texts.join(' '));
+          }
+          textContent = slideTexts.join('\n\n');
+          pageTexts = slideTexts;
+          console.log(`[ExtractText] PPTX extracted ${textContent.length} chars from ${file.originalName} (${slideTexts.length} slides)`);
+        } catch (pptErr: any) {
+          console.error(`[ExtractText] PPTX extraction failed for ${file.originalName}: ${pptErr.message}`);
+        }
+      } else {
+        const PdfParser = await getPdfParser();
+        const parser = new PdfParser({ data: new Uint8Array(buffer), verbosity: 0 });
+        await parser.load();
+        const pdfText = await parser.getText();
+        if (pdfText && typeof pdfText === 'object') {
+          if (pdfText.pages && Array.isArray(pdfText.pages)) {
+            pageTexts = pdfText.pages.map((p: any) => p.text || '');
+            textContent = pageTexts.join('\n\n');
+          } else if (pdfText.text) {
+            textContent = pdfText.text;
+            pageTexts = [textContent];
+          }
+        } else if (typeof pdfText === 'string') {
+          textContent = pdfText;
+          pageTexts = [textContent];
+        }
+        console.log(`[ExtractText] PDF extracted ${textContent.length} chars from ${file.originalName} (${pageTexts.length} pages)`);
+      }
+
+      if (textContent.trim().length < 100 && (ext === 'pdf' || !ext)) {
         console.log(`[ExtractText] Text too short (${textContent.trim().length} chars), attempting OCR for ${file.originalName}`);
         try {
           const ocrText = await ocrExtractFromPdf(buffer, file.originalName);
           if (ocrText && ocrText.trim().length > textContent.trim().length) {
             console.log(`[ExtractText] OCR extracted ${ocrText.length} chars for ${file.originalName}`);
             textContent = ocrText;
+            pageTexts = [textContent];
           }
         } catch (ocrErr: any) {
           console.error(`[ExtractText] OCR failed for ${file.originalName}: ${ocrErr.message}`);
@@ -16082,6 +16333,15 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           console.log(`[ExtractText] Cached ${cleanedText.length} chars, ${chunks} chunks for file ${file.id}`);
         } catch (cacheErr: any) {
           console.error(`[ExtractText] Failed to cache text: ${cacheErr.message}`);
+        }
+        if (pageTexts.length > 0) {
+          try {
+            const pages = pageTexts.map((text, i) => ({ pageNum: i + 1, pageText: text })).filter(p => p.pageText.trim().length > 0);
+            await storage.upsertFilePages(file.id, pages);
+            console.log(`[ExtractText] Indexed ${pages.length} pages for file ${file.id}`);
+          } catch (pageErr: any) {
+            console.error(`[ExtractText] Failed to index pages: ${pageErr.message}`);
+          }
         }
       }
 

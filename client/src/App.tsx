@@ -22,6 +22,7 @@ import MobileUploadPage from "@/pages/mobile-upload";
 import CodeCheckerPage from "@/pages/code-checker";
 import TickerPage from "@/pages/ticker";
 import SharedLibraryPage from "@/pages/shared-library";
+import EssayEditorPage from "@/pages/essay-editor";
 
 function useAutoFullscreen() {
   const [requested, setRequested] = useState(false);
@@ -149,6 +150,7 @@ function Router() {
       <Route path="/onenote" component={OneNotePage} />
       <Route path="/mobile/notes" component={MobileNotesPage} />
       <Route path="/code-checker" component={CodeCheckerPage} />
+      <Route path="/essay-editor" component={EssayEditorPage} />
       <Route component={NotFound} />
     </Switch>
   );

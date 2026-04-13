@@ -1080,7 +1080,7 @@ const toolBtnStyle = (active?: boolean): React.CSSProperties => ({
   transition: 'all 0.15s ease',
 });
 
-function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles, onOpenModuleFile, isSyllabus, onBringToFront, readerIndex, initialSearchQuery }: {
+function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles, onOpenModuleFile, isSyllabus, onBringToFront, readerIndex, initialSearchQuery, initialPage }: {
   file: FileRecord;
   bookColor: string;
   onClose: () => void;
@@ -1092,6 +1092,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
   onBringToFront?: () => void;
   readerIndex?: number;
   initialSearchQuery?: string;
+  initialPage?: number;
 }) {
   const [phase, setPhase] = useState<'pull' | 'expand' | 'reading'>('pull');
   const [pdfDoc, setPdfDoc] = useState<any>(null);
@@ -1172,6 +1173,10 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
         if (!cancelled && doc) {
           setPdfDoc(doc);
           setTotalPages(doc.numPages);
+          if (initialPage && initialPage > 1 && initialPage <= doc.numPages) {
+            const leftPage = initialPage % 2 === 1 ? initialPage : Math.max(1, initialPage - 1);
+            setCurrentPage(leftPage);
+          }
           setLoading(false);
         }
       })
@@ -2284,7 +2289,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
   const [syncingSemKey, setSyncingSemKey] = useState<string | null>(null);
   const [selectedBook, setSelectedBook] = useState<FileRecord | null>(null);
   const [selectedBookColor, setSelectedBookColor] = useState('#8B4513');
-  const [openReaders, setOpenReaders] = useState<{ file: FileRecord; color: string; pdfUrl?: string; courseCode?: string; isSyllabus?: boolean; initialSearchQuery?: string }[]>([]);
+  const [openReaders, setOpenReaders] = useState<{ file: FileRecord; color: string; pdfUrl?: string; courseCode?: string; isSyllabus?: boolean; initialSearchQuery?: string; initialPage?: number }[]>([]);
   const [focusedReaderId, setFocusedReaderId] = useState<number | null>(null);
   const [minimizedReaders, setMinimizedReaders] = useState<Set<number>>(new Set());
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -2331,6 +2336,29 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
   const [renameValue, setRenameValue] = useState('');
   const [renameSaving, setRenameSaving] = useState(false);
   const renameInputRef = useRef<HTMLInputElement>(null);
+
+  const [ftsResults, setFtsResults] = useState<any[]>([]);
+  const [ftsLoading, setFtsLoading] = useState(false);
+  useEffect(() => {
+    const q = masterSearch.trim();
+    if (q.length < 2) { setFtsResults([]); return; }
+    const controller = new AbortController();
+    const timer = setTimeout(async () => {
+      setFtsLoading(true);
+      try {
+        const resp = await fetch(`/api/library/search-fts?q=${encodeURIComponent(q)}`, { signal: controller.signal });
+        if (resp.ok) {
+          const data = await resp.json();
+          setFtsResults(data.results || []);
+        }
+      } catch (err: any) {
+        if (err.name !== 'AbortError') console.error('FTS search error:', err);
+      } finally {
+        setFtsLoading(false);
+      }
+    }, 300);
+    return () => { clearTimeout(timer); controller.abort(); };
+  }, [masterSearch]);
 
   const [newReadingPrompt, setNewReadingPrompt] = useState<FileRecord | null>(null);
   const [newReadingRenameValue, setNewReadingRenameValue] = useState('');
@@ -2696,7 +2724,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
     return Array.from(fmts).sort();
   }, [allFiles]);
 
-  type SearchResult = { file: FileRecord; semLabel: string; semKey: string; courseCode: string; courseName: string; weekNum: number; fileType: string; fileFormat: string; contentSnippet?: string; matchedTokenCount?: number; proximitySnippet?: string };
+  type SearchResult = { file: FileRecord; semLabel: string; semKey: string; courseCode: string; courseName: string; weekNum: number; fileType: string; fileFormat: string; contentSnippet?: string; matchedTokenCount?: number; proximitySnippet?: string; ftsPageNum?: number; ftsHeadline?: string; ftsRank?: number };
 
   const STOP_WORDS = new Set(['a', 'an', 'and', 'as', 'at', 'be', 'but', 'by', 'for', 'if', 'in', 'is', 'it', 'no', 'not', 'of', 'on', 'or', 'so', 'the', 'to', 'we']);
 
@@ -2922,8 +2950,64 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         results.push(...nameResults, ...contentResults);
       }
     }
+    if (ftsResults.length > 0 && masterSearch.trim().length >= 2) {
+      for (const fts of ftsResults) {
+        if (!fts.file) continue;
+        const existing = results.find(r => r.file.id === fts.fileId);
+        if (existing) {
+          if (!existing.ftsPageNum || (fts.rank > (existing.ftsRank || 0))) {
+            existing.ftsPageNum = fts.pageNum;
+            existing.ftsRank = fts.rank;
+            const hl = (fts.headline || '').replace(/<<([^>]*?)>>/g, '**$1**');
+            existing.ftsHeadline = hl;
+            if (!existing.contentSnippet) existing.contentSnippet = hl;
+          }
+        } else {
+          const f = fts.file;
+          const folder = f.folder?.toLowerCase() || '';
+          const fMatch = folder.match(/^week-(\d+)-(.+?)-(module|reading)$/i);
+          if (!fMatch && folder !== 'week-0-documentdump-reading') continue;
+          const wn = fMatch ? parseInt(fMatch[1]) : 0;
+          const fType = folder === 'week-0-documentdump-reading' ? 'reading' : (fMatch?.[3]?.toLowerCase() || 'reading');
+          const ext = f.originalName?.match(/\.(\w+)$/)?.[1]?.toLowerCase() || '';
+          const courseCodeNorm = fMatch ? fMatch[2].toLowerCase() : 'DOCS';
+
+          let semLabel = '', semKey = '', courseCode = '', courseName = '';
+          for (const sem of semesters) {
+            for (const course of sem.courses) {
+              const cn = course.code.replace(/\s/g, '').toLowerCase();
+              if (cn === courseCodeNorm || cn.replace(/_/g, '') === courseCodeNorm) {
+                semLabel = sem.label; semKey = sem.key; courseCode = course.code; courseName = course.name;
+                break;
+              }
+            }
+            if (courseCode) break;
+          }
+          if (!courseCode && folder === 'week-0-documentdump-reading') {
+            semLabel = 'Document Dump'; semKey = 'docdump'; courseCode = 'DOCS'; courseName = 'Document Dump';
+          }
+          if (!courseCode) continue;
+
+          const hl = (fts.headline || '').replace(/<<([^>]*?)>>/g, '**$1**');
+          results.push({
+            file: f, semLabel, semKey, courseCode, courseName, weekNum: wn,
+            fileType: fType, fileFormat: ext, contentSnippet: hl,
+            matchedTokenCount: 1, ftsPageNum: fts.pageNum, ftsHeadline: hl, ftsRank: fts.rank,
+          });
+        }
+      }
+      if (masterSortBy === 'relevance') {
+        results.sort((a, b) => {
+          const aRank = a.ftsRank || 0;
+          const bRank = b.ftsRank || 0;
+          if (aRank !== bRank) return bRank - aRank;
+          return (b.matchedTokenCount || 0) - (a.matchedTokenCount || 0);
+        });
+      }
+    }
+
     return results;
-  }, [masterSearch, masterSemFilter, masterCourseFilter, masterWeekFilter, masterTypeFilter, masterFormatFilter, masterSortBy, allFiles, semesters, hasAnyFilter]);
+  }, [masterSearch, masterSemFilter, masterCourseFilter, masterWeekFilter, masterTypeFilter, masterFormatFilter, masterSortBy, allFiles, semesters, hasAnyFilter, ftsResults]);
 
   const searchTokens = useMemo(() => {
     const q = masterSearch.toLowerCase().trim();
@@ -2946,11 +3030,11 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
     });
   }, []);
 
-  const handleBookClick = useCallback((file: FileRecord, color: string, pdfUrl?: string, courseCode?: string, isSyllabus?: boolean, initialSearchQuery?: string) => {
+  const handleBookClick = useCallback((file: FileRecord, color: string, pdfUrl?: string, courseCode?: string, isSyllabus?: boolean, initialSearchQuery?: string, initialPage?: number) => {
     const cc = courseCode || file.folder?.match(/^week-\d+-(.+?)-(module|reading)$/i)?.[1]?.toLowerCase();
     setOpenReaders(prev => {
       if (prev.some(r => r.file.id === file.id)) return prev;
-      return [...prev, { file, color, pdfUrl, courseCode: cc, isSyllabus, initialSearchQuery }];
+      return [...prev, { file, color, pdfUrl, courseCode: cc, isSyllabus, initialSearchQuery, initialPage }];
     });
     setFocusedReaderId(file.id);
   }, []);
@@ -3977,6 +4061,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           }}>
             <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', marginBottom: '8px' }}>
               {combinedSearchResults.length} result{combinedSearchResults.length !== 1 ? 's' : ''} found
+              {ftsLoading && <span style={{ marginLeft: '8px', fontSize: '10px', color: 'rgba(218,165,32,0.7)' }}>searching content...</span>}
               {masterSearch.trim() && masterSearch.trim().split(/\s+/).length > 1 && (
                 <span style={{ marginLeft: '6px', fontSize: '10px', color: 'rgba(130,200,255,0.6)' }}>
                   (matching any of: {masterSearch.trim().split(/\s+/).map((w, i) => <span key={i}>{i > 0 && ', '}<span style={{ color: 'rgba(130,200,255,0.9)' }}>{w}</span></span>)})
@@ -4001,7 +4086,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                   onClick={() => {
                     const sq = masterSearch.trim();
                     if (sq) addSearchHistory(sq);
-                    handleBookClick(r.file, wColor, undefined, undefined, undefined, sq || undefined);
+                    handleBookClick(r.file, wColor, undefined, undefined, undefined, sq || undefined, r.ftsPageNum || undefined);
                     setMasterSearch(''); setMasterSemFilter('all'); setMasterCourseFilter('all'); setMasterWeekFilter('all'); setMasterTypeFilter('all'); setMasterFormatFilter('all'); setMasterSortBy('relevance');
                   }}
                   style={{
@@ -4046,6 +4131,11 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                     </div>
                     <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)', marginTop: '3px' }}>
                       {r.courseCode} — {r.courseName} · Week {r.weekNum} · {r.semLabel}
+                      {r.ftsPageNum && r.ftsPageNum > 0 && (
+                        <span style={{ marginLeft: '6px', fontSize: '10px', fontWeight: 700, padding: '1px 5px', borderRadius: '3px', backgroundColor: 'rgba(218,165,32,0.2)', color: '#DAA520', border: '1px solid rgba(218,165,32,0.3)' }}>
+                          p.{r.ftsPageNum}
+                        </span>
+                      )}
                     </div>
                     {r.contentSnippet && (
                       <div style={{ fontSize: '11px', color: r.proximitySnippet ? 'rgba(130,255,130,0.8)' : 'rgba(255,200,100,0.7)', marginTop: '4px', fontStyle: 'italic', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -4369,6 +4459,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             onBringToFront={() => setFocusedReaderId(reader.file.id)}
             readerIndex={readerIdx}
             initialSearchQuery={reader.initialSearchQuery}
+            initialPage={reader.initialPage}
           />
           </div>
         </div>
