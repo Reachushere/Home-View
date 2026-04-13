@@ -7797,6 +7797,7 @@ export default function Dashboard() {
 
   const countdownBarsByRow = useMemo(() => {
     const twoWeeksOut = new Date(stableToday.getTime() + 14 * 24 * 60 * 60 * 1000);
+    const tomorrow = new Date(stableToday.getTime() + 1 * 24 * 60 * 60 * 1000);
     const allCountdown = (allTasks || []).filter(t => {
       if (t.showCountdownBarMain === false || t.isCompleted) return false;
       const tDue = startOfDayET(new Date(t.dueDate));
@@ -7805,7 +7806,8 @@ export default function Dashboard() {
     }).map(t => {
       const tDue = startOfDayET(new Date(t.dueDate));
       const daysLeft = Math.max(0, Math.round((tDue.getTime() - stableToday.getTime()) / (1000*60*60*24)));
-      return { task: t, daysLeft };
+      const isTomorrow = daysLeft === 1;
+      return { task: t, daysLeft, isTomorrow };
     }).sort((a, b) => {
       const aDue = new Date(a.task.dueDate).getTime();
       const bDue = new Date(b.task.dueDate).getTime();
@@ -7847,10 +7849,14 @@ export default function Dashboard() {
         if (inferredCourse) courseCode = inferredCourse.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '') || '';
       }
       if (courseCode) {
-        if (!byCourse[courseCode]) byCourse[courseCode] = [];
-        byCourse[courseCode].push(cd);
+        if (!cd.isTomorrow) {
+          if (!byCourse[courseCode]) byCourse[courseCode] = [];
+          byCourse[courseCode].push(cd);
+        }
       } else if (!courseTaskTypes.has((cd.task.type || '').toLowerCase())) {
-        other.push(cd);
+        if (!cd.isTomorrow) {
+          other.push(cd);
+        }
       }
     }
     return { byCourse, other };
