@@ -453,6 +453,22 @@ function toET(date: Date): Date {
   return new Date(result.getTime());
 }
 
+function getWmoEmoji(code: number, isDay: boolean = true): string {
+  if (code === 0) return isDay ? '☀️' : '🌙';
+  if (code === 1) return isDay ? '🌤️' : '🌙';
+  if (code === 2) return '⛅';
+  if (code === 3) return '☁️';
+  if (code === 45 || code === 48) return '🌫️';
+  if (code >= 51 && code <= 55) return '🌦️';
+  if (code >= 61 && code <= 65) return '🌧️';
+  if (code === 66 || code === 67) return '🧊';
+  if (code >= 71 && code <= 77) return '❄️';
+  if (code >= 80 && code <= 82) return '🌧️';
+  if (code === 85 || code === 86) return '🌨️';
+  if (code >= 95) return '⛈️';
+  return '🌡️';
+}
+
 function getETHours(date: Date): number {
   return toET(date).getHours();
 }
@@ -31617,8 +31633,24 @@ export default function Dashboard() {
                     className={`grid relative group/row flex-shrink-0`}
                     style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${rowHeight}px`, minHeight: `${rowHeight}px`, overflow: 'hidden', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '12px' : undefined, borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '12px' : undefined, backgroundColor: '#faf8f5' }}
                   >
-                    <div className={`text-[10px] font-medium tracking-wide flex items-center justify-center relative ${isCurrentHour && blinkSettings.todayColumnBlink ? "animate-today-time-cell" : ""}`} style={{ backgroundColor: isCurrentHour && blinkSettings.todayColumnBlink ? undefined : (isCurrentHour ? colorSettings.todayCurrentHourCellBackground : colorSettings.headerBar), color: 'white', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '8px' : undefined, borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined, borderBottom: hourIdx < timeSlots.length - 1 ? '1px dotted rgba(255,255,255,0.25)' : undefined, animationDelay: isCurrentHour && blinkSettings.todayColumnBlink ? `-${Date.now() % 7000}ms` : undefined }}>
-                      {hour === 0 || hour === 24 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
+                    <div className={`text-[10px] font-medium tracking-wide flex flex-col items-center justify-center relative ${isCurrentHour && blinkSettings.todayColumnBlink ? "animate-today-time-cell" : ""}`} style={{ backgroundColor: isCurrentHour && blinkSettings.todayColumnBlink ? undefined : (isCurrentHour ? colorSettings.todayCurrentHourCellBackground : colorSettings.headerBar), color: 'white', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '8px' : undefined, borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined, borderBottom: hourIdx < timeSlots.length - 1 ? '1px dotted rgba(255,255,255,0.25)' : undefined, animationDelay: isCurrentHour && blinkSettings.todayColumnBlink ? `-${Date.now() % 7000}ms` : undefined, padding: '1px 2px' }}>
+                      <span style={{ alignSelf: 'flex-end', fontSize: '9px', lineHeight: 1, letterSpacing: '0.3px' }} data-testid={`time-label-${hour}`}>{hour === 0 || hour === 24 ? '12AM' : hour === 12 ? '12PM' : hour > 12 ? `${hour - 12}PM` : `${hour}AM`}</span>
+                      {(() => {
+                        const nowET = toET(new Date());
+                        const todayStr = `${nowET.getFullYear()}-${String(nowET.getMonth() + 1).padStart(2, '0')}-${String(nowET.getDate()).padStart(2, '0')}`;
+                        const hourStr = `${todayStr}T${String(hour).padStart(2, '0')}:00`;
+                        const hourlyEntry = weatherData?.hourly?.find(h => h.time === hourStr);
+                        if (!hourlyEntry) return null;
+                        const sunriseH = weatherData?.sunrise ? new Date(weatherData.sunrise).getHours() : 6;
+                        const sunsetH = weatherData?.sunset ? new Date(weatherData.sunset).getHours() : 20;
+                        const isDayHour = hour >= sunriseH && hour < sunsetH;
+                        return (
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1, gap: '0px' }} data-testid={`weather-cell-${hour}`}>
+                            <span style={{ fontSize: '12px', lineHeight: 1 }}>{getWmoEmoji(hourlyEntry.weatherCode, isDayHour)}</span>
+                            <span style={{ fontSize: '7px', color: 'rgba(255,255,255,0.85)', lineHeight: 1, fontWeight: 600 }}>{hourlyEntry.temp}°</span>
+                          </div>
+                        );
+                      })()}
                     </div>
                     {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: isCurrentHour ? '#f0f0f0' : colorSettings.headerBar }} data-testid="module-column-cell" />}
                     {weekDays.map((day, dayIdx) => {
