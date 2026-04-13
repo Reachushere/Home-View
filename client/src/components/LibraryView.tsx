@@ -4037,7 +4037,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             const collapseKey = `${semKey}::${course.code}`;
             const isCollapsed = collapsedCourses.has(collapseKey);
             const shelfCalibration: Record<string, { row: number; label: number; labelRight?: number }> = {
-              'CPPA122': { row: 37, label: 8, labelRight: 5 },
+              'CPPA122': { row: 41, label: 4, labelRight: 8 },
               'CFNF400': { row: 30, label: -5 },
               'CASL101': { row: 30, label: 0 },
             };
