@@ -3712,6 +3712,13 @@ export default function Dashboard() {
   const [isProfileDirty, setIsProfileDirty] = useState(false);
   const [isSystemHealthOpen, setIsSystemHealthOpen] = useState(false);
   const [systemHealthData, setSystemHealthData] = useState<any>(null);
+  const [isNlTaskOpen, setIsNlTaskOpen] = useState(false);
+  const [nlTaskInput, setNlTaskInput] = useState('');
+  const [nlTaskParsing, setNlTaskParsing] = useState(false);
+  const [nlTaskResult, setNlTaskResult] = useState<any>(null);
+  const [nlTaskError, setNlTaskError] = useState('');
+  const [nlTaskCreating, setNlTaskCreating] = useState(false);
+  const nlTaskInputRef = useRef<HTMLInputElement>(null);
   const [systemHealthLoading, setSystemHealthLoading] = useState(false);
   const [healthTab, setHealthTab] = useState<'services' | 'folders' | 'automations' | 'sitemap'>('services');
   const [siteMapData, setSiteMapData] = useState<any>(null);
@@ -6064,6 +6071,21 @@ export default function Dashboard() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedTaskId]);
+
+  useEffect(() => {
+    const handleNlShortcut = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        setIsNlTaskOpen(prev => !prev);
+        setNlTaskResult(null);
+        setNlTaskError('');
+        setNlTaskInput('');
+        setTimeout(() => nlTaskInputRef.current?.focus(), 100);
+      }
+    };
+    window.addEventListener('keydown', handleNlShortcut);
+    return () => window.removeEventListener('keydown', handleNlShortcut);
+  }, []);
 
   // Restore pomodoro state from server on mount
   useEffect(() => {

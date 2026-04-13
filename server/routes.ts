@@ -5532,6 +5532,183 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
+  app.post("/api/ai/parse-task", async (req, res) => {
+    try {
+      const { text } = req.body;
+      if (!text || typeof text !== 'string' || text.trim().length < 3) {
+        return res.status(400).json({ error: "Input too short" });
+      }
+      if (!process.env.OPENAI_API_KEY) {
+        return res.status(503).json({ error: "OpenAI API key not configured" });
+      }
+
+      const allCourses = COURSES.map(c => `${c.code}: ${c.name}`).join('\n');
+      const semesters = await storage.getSemesters();
+      const activeSem = semesters.find(s => s.isActive);
+      const semStart = activeSem?.startDate ? new Date(activeSem.startDate) : null;
+
+      const systemPrompt = `You are a task parser for a university student's task management app. Parse the user's natural language input into structured task data.
+
+Available courses:
+${allCourses}
+
+Available task types: reading, module, essay, project, discussion, poll, exam, quiz, reminder, meeting, scholarship, medical, school, household, financial, personal, outside, other
+
+Today's date: ${new Date().toISOString().split('T')[0]}
+Day of week: ${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][new Date().getDay()]}
+${semStart ? `Semester start: ${semStart.toISOString().split('T')[0]}` : ''}
+
+Rules:
+- Match course codes case-insensitively (e.g., "cfnf" → "CFNF400", "cppa" → best match based on context)
+- If a course code is ambiguous (e.g., just "cppa"), pick the most likely one or return the partial code
+- Parse relative dates: "friday" = this coming Friday, "next week" = next Monday, "tomorrow", etc.
+- Infer task type from keywords: "discussion" → discussion, "read" → reading, "quiz" → quiz, "essay/paper" → essay, "exam/test/midterm/final" → exam
+- Default priority: medium
+- If no due date specified, use tomorrow
+
+Return ONLY valid JSON (no markdown):
+{
+  "title": "task title",
+  "courseName": "COURSE_CODE or null",
+  "type": "task_type",
+  "dueDate": "YYYY-MM-DD",
+  "priority": "low|medium|high",
+  "description": "optional notes or null",
+  "startTime": "HH:MM or null",
+  "endTime": "HH:MM or null",
+  "confidence": 0.0-1.0
+}`;
+
+      const OpenAI = (await import("openai")).default;
+      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: text.trim() },
+        ],
+        max_completion_tokens: 500,
+        temperature: 0.1,
+      });
+
+      const raw = completion.choices[0]?.message?.content || '{}';
+      const cleaned = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      const parsed = JSON.parse(cleaned);
+
+      if (parsed.courseName) {
+        const exactMatch = COURSES.find(c => c.code === parsed.courseName);
+        if (!exactMatch) {
+          const partial = COURSES.find(c => c.code.toLowerCase().startsWith(parsed.courseName.toLowerCase()));
+          if (partial) parsed.courseName = partial.code;
+        }
+      }
+
+      if (parsed.dueDate) {
+        const dueDate = new Date(parsed.dueDate + 'T23:59:00');
+        if (semStart) {
+          parsed.weekNumber = getWeekNumber(dueDate, semStart, activeSem?.readingWeekStart || null);
+        }
+      }
+
+      res.json({ parsed, usage: completion.usage });
+    } catch (err: any) {
+      console.error("AI parse-task error:", err);
+      if (err instanceof SyntaxError) {
+        return res.status(422).json({ error: "AI returned invalid JSON. Try rephrasing." });
+      }
+      res.status(500).json({ error: err?.message || "Failed to parse task" });
+    }
+  });
+
+  app.post("/api/ai/chat-materials", async (req, res) => {
+    try {
+      const { message, courseFilter, history } = req.body;
+      if (!message || typeof message !== 'string' || message.trim().length < 3) {
+        return res.status(400).json({ error: "Message too short" });
+      }
+      if (!process.env.OPENAI_API_KEY) {
+        return res.status(503).json({ error: "OpenAI API key not configured" });
+      }
+
+      const allFiles = await storage.getFiles();
+      let relevantFiles = allFiles.filter(f => f.extractedText && f.extractedText.length > 50);
+
+      if (courseFilter && courseFilter !== 'all') {
+        relevantFiles = relevantFiles.filter(f => {
+          const folder = (f.folder || '').toLowerCase();
+          const name = (f.displayName || f.originalName || '').toLowerCase();
+          return (folder + ' ' + name).includes(courseFilter.toLowerCase());
+        });
+      }
+
+      const msgLower = message.toLowerCase();
+      const coursePatterns = msgLower.match(/\b(cppa|cfnf|casl|cecn|cphl|chis|cgcm)\w*/gi);
+      if (coursePatterns && !courseFilter) {
+        const filtered = relevantFiles.filter(f => {
+          const combined = ((f.folder || '') + ' ' + (f.displayName || f.originalName || '')).toLowerCase();
+          return coursePatterns.some(cp => combined.includes(cp.toLowerCase()));
+        });
+        if (filtered.length > 0) relevantFiles = filtered;
+      }
+
+      const MAX_CHARS_PER_FILE = 6000;
+      const MAX_TOTAL_CHARS = 60000;
+      let totalChars = 0;
+      const fileContents: string[] = [];
+      for (const f of relevantFiles) {
+        const text = f.extractedText!.substring(0, MAX_CHARS_PER_FILE);
+        if (totalChars + text.length > MAX_TOTAL_CHARS) break;
+        fileContents.push(`--- ${f.displayName || f.originalName} (${f.folder || 'no folder'}) ---\n${text}`);
+        totalChars += text.length;
+      }
+
+      const systemPrompt = `You are a study assistant for a university student at Toronto Metropolitan University (Chang School of Continuing Education). You have access to the student's course materials below.
+
+Answer questions thoroughly using ONLY the provided materials. Always cite which document your answer comes from. If you can't find the answer in the materials, say so clearly.
+
+For flashcard requests, format as numbered Q&A pairs.
+For summaries, use clear headings and bullet points.
+For explanations, break down complex concepts simply.
+
+Course materials (${fileContents.length} documents, ${totalChars} characters):
+
+${fileContents.join('\n\n')}`;
+
+      const messages: any[] = [{ role: "system", content: systemPrompt }];
+      if (Array.isArray(history)) {
+        for (const h of history.slice(-6)) {
+          messages.push({ role: h.role, content: h.content });
+        }
+      }
+      messages.push({ role: "user", content: message.trim() });
+
+      const OpenAI = (await import("openai")).default;
+      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages,
+        max_completion_tokens: 4096,
+      });
+
+      const reply = completion.choices[0]?.message?.content || "I couldn't generate a response.";
+      const usage = completion.usage;
+      const cost = usage ? ((usage.prompt_tokens / 1_000_000) * 0.15 + (usage.completion_tokens / 1_000_000) * 0.60) : 0;
+
+      res.json({
+        reply,
+        filesUsed: fileContents.length,
+        totalChars,
+        usage: usage ? { promptTokens: usage.prompt_tokens, completionTokens: usage.completion_tokens, totalTokens: usage.total_tokens } : null,
+        cost: `$${cost.toFixed(4)}`,
+      });
+    } catch (err: any) {
+      console.error("AI chat-materials error:", err);
+      res.status(500).json({ error: err?.message || "Chat failed" });
+    }
+  });
+
   app.post("/api/library/ai-search/preview", async (req, res) => {
     try {
       const { prompt } = req.body;

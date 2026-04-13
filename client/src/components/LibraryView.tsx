@@ -1327,7 +1327,8 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
     setSearching(true);
     try {
       const results: { page: number; matches: number }[] = [];
-      const q = searchQuery.toLowerCase().trim();
+      const tokens = searchQuery.toLowerCase().trim().split(/\s+/).filter(t => t.length >= 2);
+      if (tokens.length === 0) { setSearchResults([]); setSearching(false); return; }
       for (let i = 1; i <= pdfDoc.numPages; i++) {
         const page = await pdfDoc.getPage(i);
         const textContent = await page.getTextContent();
@@ -1338,8 +1339,10 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
         }).join('');
         const normalized = fullText.replace(/\s+/g, ' ').toLowerCase();
         let count = 0;
-        let pos = 0;
-        while ((pos = normalized.indexOf(q, pos)) !== -1) { count++; pos += q.length; }
+        for (const tok of tokens) {
+          let pos = 0;
+          while ((pos = normalized.indexOf(tok, pos)) !== -1) { count++; pos += tok.length; }
+        }
         if (count > 0) results.push({ page: i, matches: count });
       }
       setSearchResults(results);
@@ -1367,29 +1370,20 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
         });
         return;
       }
-      const q = searchQuery.toLowerCase().trim();
+      const tokens = searchQuery.toLowerCase().trim().split(/\s+/).filter(t => t.length >= 2);
+      if (tokens.length === 0) return;
+      const escapedTokens = tokens.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+      const pattern = new RegExp(`(${escapedTokens.join('|')})`, 'gi');
       spans.forEach(span => {
         const origText = span.textContent || '';
-        const lowerText = origText.toLowerCase();
-        if (!lowerText.includes(q)) {
+        if (!pattern.test(origText.toLowerCase())) {
           const marks = span.querySelectorAll('mark.search-mark');
           if (marks.length > 0) span.textContent = origText;
+          pattern.lastIndex = 0;
           return;
         }
-        let html = '';
-        let idx = 0;
-        let lIdx = 0;
-        while (lIdx < lowerText.length) {
-          const pos = lowerText.indexOf(q, lIdx);
-          if (pos === -1) {
-            html += origText.slice(idx);
-            break;
-          }
-          html += origText.slice(idx, pos);
-          html += `<mark class="search-mark">${origText.slice(pos, pos + q.length)}</mark>`;
-          idx = pos + q.length;
-          lIdx = pos + q.length;
-        }
+        pattern.lastIndex = 0;
+        const html = origText.replace(pattern, '<mark class="search-mark">$1</mark>');
         span.innerHTML = html;
       });
     };
@@ -4004,9 +3998,11 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           </div>
         )}
 
-        {searchFocused && masterSearch.trim().length >= 1 && (() => {
+        {searchFocused && (() => {
           const q = masterSearch.toLowerCase().trim();
-          const matching = searchHistory.filter(h => h.query.startsWith(q) && h.query !== q).slice(0, 5);
+          const matching = q.length === 0
+            ? searchHistory.slice(0, 8)
+            : searchHistory.filter(h => h.query.toLowerCase().includes(q) && h.query.toLowerCase() !== q).slice(0, 5);
           if (matching.length === 0) return null;
           return (
             <div style={{
