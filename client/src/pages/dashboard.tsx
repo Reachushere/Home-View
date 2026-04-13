@@ -31982,7 +31982,11 @@ export default function Dashboard() {
                             
                             if (stackInConflict) {
                               const maxStackable = Math.floor((rowHeight - 2) / 32);
+                              const overlayCols = multiHourOverlayCols.get(`${dayIdx}-${hour}`) || 0;
                               if (totalItems > 1 && maxStackable < totalItems) {
+                                topOffset = 2;
+                                taskHeight = rowHeight - 4;
+                              } else if (overlayCols > 0) {
                                 topOffset = 2;
                                 taskHeight = rowHeight - 4;
                               } else {
