@@ -29170,7 +29170,7 @@ export default function Dashboard() {
                   return '';
                 })() : '';
                 return (
-                  <div key={idx} className="flex items-center justify-center overflow-hidden relative" style={{ opacity: isPast ? 0.5 : 1, borderLeft: isTodayForecast ? '3px solid #64b5f6' : undefined, borderRight: isTodayForecast ? '2px solid rgba(100,181,246,0.35)' : undefined, ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }} data-testid={`weather-above-${dateStr}`}>
+                  <div key={idx} className="flex items-center justify-center overflow-hidden relative" style={{ opacity: isPast ? 0.5 : 1, borderLeft: isTodayForecast ? '3px solid #64b5f6' : undefined, borderRight: isTodayForecast ? '2px solid rgba(100,181,246,0.35)' : undefined, paddingRight: isTodayForecast ? '3px' : undefined, ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }} data-testid={`weather-above-${dateStr}`}>
                     {showForecastWeather && fwSkyBg && (
                       <div className="absolute inset-0 z-0" style={{ background: fwSkyBg, overflow: 'hidden', pointerEvents: 'none', opacity: isTodayForecast ? 1 : isNextWeekDay ? 0.35 : 1 }}>
                         {fwEffectsHtml && <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }} dangerouslySetInnerHTML={{ __html: fwEffectsHtml }} />}
