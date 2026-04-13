@@ -831,11 +831,14 @@ function WeekGroupWrapper({ weekNum, showSeparator, shelfHeight, shelfIndex, tot
 
   const cloneWithProps = (child: React.ReactElement, expanded: boolean, layoutOverride?: string) => {
     const origOnClick = (child as React.ReactElement<any>).props.onClick;
+    const isReadingFile = layoutOverride === 'horizontal' || ((child.props as any)?.file?.folder || '').toLowerCase().includes('-reading');
     const extraProps: any = {
       isGroupHovered: expanded,
-      interceptClick: expanded
-        ? () => { if (origOnClick) origOnClick(); setIsExpanded(false); }
-        : () => setIsExpanded(true),
+      interceptClick: isReadingFile
+        ? () => { if (origOnClick) origOnClick(); if (expanded) setIsExpanded(false); }
+        : expanded
+          ? () => { if (origOnClick) origOnClick(); setIsExpanded(false); }
+          : () => setIsExpanded(true),
     };
     if (layoutOverride) extraProps.layout = layoutOverride;
     return React.cloneElement(child as React.ReactElement<any>, extraProps);
