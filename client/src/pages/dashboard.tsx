@@ -12730,6 +12730,9 @@ export default function Dashboard() {
           const eventEndDate = new Date(e.endDate);
           if (eventEndDate < now) return false;
           if (!isSameDayET(eventDate, day) || getETHours(eventDate) !== h) return false;
+          const eSH = getETHours(eventDate);
+          const eEH = getETHours(eventEndDate);
+          if (eEH > eSH + 1) return false;
           const titleClean = e.title.replace(/^\[PREP\]\s*/, '').replace(/^PREP\s+/, '').replace(/^\[.*?\]\s*/g, '').toLowerCase().trim();
           const isDup = dayTasks.some(t2 => {
             if (t2.calendarEventId === e.id || t2.secondAccountCalendarEventId === e.id || t2.prepCalendarEventId === e.id || t2.secondAccountPrepEventId === e.id) return true;
