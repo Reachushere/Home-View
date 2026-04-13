@@ -421,7 +421,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   const seededRand = ((file.id * 2654435761) >>> 0) / 4294967296;
   const spineWidth = 28 + seededRand * 12 - (widthReduction || 0);
   const fileType = getFileType(file.folder);
-  const bookHeight = fileType === 'module' ? shelfHeight - 24 + (besideHorizontal ? 50 : 0) : shelfHeight - 24 - (index % 3) * 6 + (besideHorizontal ? 50 : 0);
+  const bookHeight = fileType === 'module' ? shelfHeight - 24 + 50 : shelfHeight - 24 - (index % 3) * 6 + (besideHorizontal ? 50 : 0);
   const rawFullTitle = fileType === 'module' ? 'Module' : (file.displayName || file.originalName).replace(/\.pdf$/i, '');
   const fullTitle = rawFullTitle;
   const title = truncateSpineTitle(rawFullTitle, 28, !!file.displayName && file.displayName !== file.originalName);
