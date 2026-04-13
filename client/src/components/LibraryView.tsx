@@ -2398,7 +2398,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
     return Array.from(fmts).sort();
   }, [allFiles]);
 
-  type SearchResult = { file: FileRecord; semLabel: string; semKey: string; courseCode: string; courseName: string; weekNum: number; fileType: string; fileFormat: string; contentSnippet?: string };
+  type SearchResult = { file: FileRecord; semLabel: string; semKey: string; courseCode: string; courseName: string; weekNum: number; fileType: string; fileFormat: string; contentSnippet?: string; matchedTokenCount?: number; proximitySnippet?: string };
 
   const combinedSearchResults = useMemo(() => {
     if (!hasAnyFilter) return null;
@@ -2419,12 +2419,44 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       return { wn, fType, ext };
     };
 
-    const getContentSnippet = (f: FileRecord, matchedTokens?: string[]): string | undefined => {
+    const getContentSnippet = (f: FileRecord, matchedTokens?: string[]): { snippet: string; matchCount: number; proximitySnippet?: string } | undefined => {
       if (!tokens.length || !f.extractedText) return undefined;
       const text = f.extractedText.toLowerCase();
       const toks = matchedTokens || tokens;
       const matching = toks.filter(t => text.includes(t));
       if (matching.length === 0) return undefined;
+
+      let proximitySnippet: string | undefined;
+      if (matching.length >= 2) {
+        const PROXIMITY_WINDOW = 300;
+        let bestPos = -1;
+        let bestSpan = Infinity;
+        for (let scan = 0; scan < text.length - 1; scan = text.indexOf(matching[0], scan + 1)) {
+          if (scan < 0) break;
+          const firstPos = scan;
+          for (let ti = 1; ti < matching.length; ti++) {
+            const searchStart = Math.max(0, firstPos - PROXIMITY_WINDOW);
+            const searchEnd = Math.min(text.length, firstPos + matching[0].length + PROXIMITY_WINDOW);
+            const region = text.substring(searchStart, searchEnd);
+            const otherIdx = region.indexOf(matching[ti]);
+            if (otherIdx >= 0) {
+              const absOtherIdx = searchStart + otherIdx;
+              const span = Math.abs(absOtherIdx - firstPos);
+              if (span < bestSpan) {
+                bestSpan = span;
+                bestPos = Math.min(firstPos, absOtherIdx);
+              }
+            }
+          }
+          if (scan === -1) break;
+        }
+        if (bestPos >= 0 && bestSpan < PROXIMITY_WINDOW) {
+          const pStart = Math.max(0, bestPos - 30);
+          const pEnd = Math.min(f.extractedText.length, bestPos + bestSpan + matching[matching.length - 1].length + 60);
+          proximitySnippet = (pStart > 0 ? '...' : '') + f.extractedText.substring(pStart, pEnd).replace(/\n/g, ' ').trim() + (pEnd < f.extractedText.length ? '...' : '');
+        }
+      }
+
       const snippets: string[] = [];
       const seen = new Set<number>();
       for (const tok of matching) {
@@ -2438,7 +2470,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         snippets.push((start > 0 ? '...' : '') + f.extractedText.substring(start, end).replace(/\n/g, ' ').trim() + (end < f.extractedText.length ? '...' : ''));
         if (snippets.length >= 2) break;
       }
-      return snippets.join('  ··  ') || undefined;
+      return { snippet: proximitySnippet || snippets.join('  ··  ') || '', matchCount: matching.length, proximitySnippet };
     };
 
     const moduleReadingFiles = allFiles.filter(f => {
@@ -2465,6 +2497,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
 
           let nameMatch = true;
           let contentSnippet: string | undefined;
+          let matchedTokenCount = 0;
+          let proximitySnippet: string | undefined;
 
           if (tokens.length > 0) {
             const name = (f.displayName || f.originalName).toLowerCase();
@@ -2478,18 +2512,33 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             ].join(' ');
             const nameMatchedTokens = tokens.filter(tok => searchable.includes(tok));
             nameMatch = nameMatchedTokens.length > 0;
+
+            const fullContentResult = getContentSnippet(f);
+            if (fullContentResult) {
+              matchedTokenCount = fullContentResult.matchCount;
+              proximitySnippet = fullContentResult.proximitySnippet;
+            }
+
             if (!nameMatch) {
-              contentSnippet = getContentSnippet(f);
-              if (!contentSnippet) return;
+              if (!fullContentResult) return;
+              contentSnippet = fullContentResult.snippet;
             } else if (nameMatchedTokens.length < tokens.length) {
               const remainingTokens = tokens.filter(tok => !nameMatchedTokens.includes(tok));
-              const extraSnippet = getContentSnippet(f, remainingTokens);
-              if (extraSnippet) contentSnippet = extraSnippet;
+              const extraResult = getContentSnippet(f, remainingTokens);
+              if (extraResult) {
+                contentSnippet = fullContentResult?.proximitySnippet || extraResult.snippet;
+                matchedTokenCount = Math.max(matchedTokenCount, extraResult.matchCount + nameMatchedTokens.length);
+              }
+            } else if (fullContentResult) {
+              matchedTokenCount = fullContentResult.matchCount + nameMatchedTokens.length;
+              if (fullContentResult.proximitySnippet) {
+                contentSnippet = fullContentResult.proximitySnippet;
+              }
             }
           }
 
           addedFileIds.add(f.id);
-          results.push({ file: f, semLabel: sem.label, semKey: sem.key, courseCode: course.code, courseName: course.name, weekNum: info.wn, fileType: info.fType, fileFormat: info.ext, contentSnippet });
+          results.push({ file: f, semLabel: sem.label, semKey: sem.key, courseCode: course.code, courseName: course.name, weekNum: info.wn, fileType: info.fType, fileFormat: info.ext, contentSnippet, matchedTokenCount, proximitySnippet });
         });
       });
     });
@@ -2504,20 +2553,33 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         if (masterFormatFilter !== 'all' && ext !== masterFormatFilter) return;
 
         let contentSnippet: string | undefined;
+        let matchedTokenCount = 0;
+        let proximitySnippet: string | undefined;
         if (tokens.length > 0) {
           const searchable = [name, 'document dump', 'docs', 'documentdump', ext].join(' ');
           const nameMatchedTokens = tokens.filter(tok => searchable.includes(tok));
+          const fullContentResult = getContentSnippet(f);
+          if (fullContentResult) {
+            matchedTokenCount = fullContentResult.matchCount;
+            proximitySnippet = fullContentResult.proximitySnippet;
+          }
           if (nameMatchedTokens.length === 0) {
-            contentSnippet = getContentSnippet(f);
-            if (!contentSnippet) return;
+            if (!fullContentResult) return;
+            contentSnippet = fullContentResult.snippet;
           } else if (nameMatchedTokens.length < tokens.length) {
             const remainingTokens = tokens.filter(tok => !nameMatchedTokens.includes(tok));
-            const extraSnippet = getContentSnippet(f, remainingTokens);
-            if (extraSnippet) contentSnippet = extraSnippet;
+            const extraResult = getContentSnippet(f, remainingTokens);
+            if (extraResult) {
+              contentSnippet = fullContentResult?.proximitySnippet || extraResult.snippet;
+              matchedTokenCount = Math.max(matchedTokenCount, extraResult.matchCount + nameMatchedTokens.length);
+            }
+          } else if (fullContentResult) {
+            matchedTokenCount = fullContentResult.matchCount + nameMatchedTokens.length;
+            if (fullContentResult.proximitySnippet) contentSnippet = fullContentResult.proximitySnippet;
           }
         }
         addedFileIds.add(f.id);
-        results.push({ file: f, semLabel: 'Document Dump', semKey: 'docdump', courseCode: 'DOCS', courseName: 'Document Dump', weekNum: 0, fileType: 'reading', fileFormat: ext, contentSnippet });
+        results.push({ file: f, semLabel: 'Document Dump', semKey: 'docdump', courseCode: 'DOCS', courseName: 'Document Dump', weekNum: 0, fileType: 'reading', fileFormat: ext, contentSnippet, matchedTokenCount, proximitySnippet });
       });
     }
 
@@ -2526,25 +2588,45 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
     } else if (masterSortBy === 'week') {
       results.sort((a, b) => a.weekNum - b.weekNum || a.courseCode.localeCompare(b.courseCode));
     } else {
-      const nameResults = results.filter(r => !r.contentSnippet);
-      const contentResults = results.filter(r => r.contentSnippet);
-      nameResults.sort((a, b) => {
-        const semCmp = a.semLabel.localeCompare(b.semLabel);
-        if (semCmp !== 0) return semCmp;
-        const codeCmp = a.courseCode.localeCompare(b.courseCode);
-        if (codeCmp !== 0) return codeCmp;
-        return a.weekNum - b.weekNum;
-      });
-      contentResults.sort((a, b) => {
-        const semCmp = a.semLabel.localeCompare(b.semLabel);
-        if (semCmp !== 0) return semCmp;
-        return a.courseCode.localeCompare(b.courseCode);
-      });
-      results.length = 0;
-      results.push(...nameResults, ...contentResults);
+      if (tokens.length >= 2) {
+        results.sort((a, b) => {
+          const aProx = a.proximitySnippet ? 1 : 0;
+          const bProx = b.proximitySnippet ? 1 : 0;
+          if (aProx !== bProx) return bProx - aProx;
+          const aCount = a.matchedTokenCount || 0;
+          const bCount = b.matchedTokenCount || 0;
+          if (aCount !== bCount) return bCount - aCount;
+          const aContent = a.contentSnippet ? 1 : 0;
+          const bContent = b.contentSnippet ? 1 : 0;
+          if (aContent !== bContent) return aContent - bContent;
+          return a.courseCode.localeCompare(b.courseCode) || a.weekNum - b.weekNum;
+        });
+      } else {
+        const nameResults = results.filter(r => !r.contentSnippet);
+        const contentResults = results.filter(r => r.contentSnippet);
+        nameResults.sort((a, b) => {
+          const semCmp = a.semLabel.localeCompare(b.semLabel);
+          if (semCmp !== 0) return semCmp;
+          const codeCmp = a.courseCode.localeCompare(b.courseCode);
+          if (codeCmp !== 0) return codeCmp;
+          return a.weekNum - b.weekNum;
+        });
+        contentResults.sort((a, b) => {
+          const semCmp = a.semLabel.localeCompare(b.semLabel);
+          if (semCmp !== 0) return semCmp;
+          return a.courseCode.localeCompare(b.courseCode);
+        });
+        results.length = 0;
+        results.push(...nameResults, ...contentResults);
+      }
     }
     return results;
   }, [masterSearch, masterSemFilter, masterCourseFilter, masterWeekFilter, masterTypeFilter, masterFormatFilter, masterSortBy, allFiles, semesters, hasAnyFilter]);
+
+  const searchTokens = useMemo(() => {
+    const q = masterSearch.toLowerCase().trim();
+    return q ? q.split(/\s+/).filter(Boolean) : [];
+  }, [masterSearch]);
 
   const handleBookClick = useCallback((file: FileRecord, color: string, pdfUrl?: string, courseCode?: string, isSyllabus?: boolean) => {
     const cc = courseCode || file.folder?.match(/^week-\d+-(.+?)-(module|reading)$/i)?.[1]?.toLowerCase();
@@ -3543,7 +3625,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
               )}
               {masterSearch.trim() && combinedSearchResults.some(r => r.contentSnippet) && (
                 <span style={{ marginLeft: '6px', fontSize: '10px', color: 'rgba(255,200,100,0.6)' }}>
-                  ({combinedSearchResults.filter(r => r.contentSnippet).length} from content)
+                  ({combinedSearchResults.filter(r => r.contentSnippet).length} from content{combinedSearchResults.some(r => r.proximitySnippet) ? `, ${combinedSearchResults.filter(r => r.proximitySnippet).length} nearby` : ''})
                 </span>
               )}
             </div>
@@ -3605,9 +3687,18 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                       {r.courseCode} — {r.courseName} · Week {r.weekNum} · {r.semLabel}
                     </div>
                     {r.contentSnippet && (
-                      <div style={{ fontSize: '11px', color: 'rgba(255,200,100,0.7)', marginTop: '4px', fontStyle: 'italic', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        <span style={{ fontSize: '9px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', backgroundColor: 'rgba(255,200,100,0.15)', color: 'rgba(255,200,100,0.8)', marginRight: '6px', textTransform: 'uppercase', letterSpacing: '0.3px' }}>content match</span>
+                      <div style={{ fontSize: '11px', color: r.proximitySnippet ? 'rgba(130,255,130,0.8)' : 'rgba(255,200,100,0.7)', marginTop: '4px', fontStyle: 'italic', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {r.proximitySnippet ? (
+                          <span data-testid="badge-both-found" style={{ fontSize: '9px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', backgroundColor: 'rgba(100,255,100,0.15)', color: 'rgba(130,255,130,0.9)', marginRight: '6px', textTransform: 'uppercase', letterSpacing: '0.3px', border: '1px solid rgba(100,255,100,0.2)' }}>both found</span>
+                        ) : (
+                          <span style={{ fontSize: '9px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', backgroundColor: 'rgba(255,200,100,0.15)', color: 'rgba(255,200,100,0.8)', marginRight: '6px', textTransform: 'uppercase', letterSpacing: '0.3px' }}>content match</span>
+                        )}
                         {r.contentSnippet}
+                      </div>
+                    )}
+                    {!r.contentSnippet && r.matchedTokenCount !== undefined && r.matchedTokenCount >= 2 && searchTokens.length >= 2 && (
+                      <div style={{ marginTop: '3px' }}>
+                        <span data-testid="badge-all-tokens" style={{ fontSize: '9px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', backgroundColor: 'rgba(100,200,255,0.15)', color: 'rgba(100,200,255,0.9)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>all terms matched</span>
                       </div>
                     )}
                   </div>
