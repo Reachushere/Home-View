@@ -4043,7 +4043,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             const shelfCalibration: Record<string, { row: number; label: number; labelRight?: number }> = {
               'CPPA122': { row: 48, label: -4, labelRight: 8 },
               'CFNF400': { row: 103, label: -16, labelRight: 8 },
-              'CASL101': { row: 30, label: 0, labelRight: 8 },
+              'CASL101': { row: 55, label: 20, labelRight: 8 },
             };
             const codeKey = course.code.replace(/\s/g, '').toUpperCase();
             const calib = shelfCalibration[codeKey] || { row: 0, label: 0 };
