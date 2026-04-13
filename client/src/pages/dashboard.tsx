@@ -22652,6 +22652,21 @@ export default function Dashboard() {
                           <span className="text-white">{quickAddData.sendInvite ? (quickAddData.inviteEmail || '—') : 'Not sending'}</span>
                         </div>
                       </div>
+                      <div className="bg-white/5 rounded-lg p-3 border border-white/10 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span style={{ fontSize: '14px' }}>✉️</span>
+                          <span className="text-[11px] text-white/80">Send email reminders?</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setQuickAddData(p => ({ ...p, reminderEmail: !p.reminderEmail }))}
+                          className="relative inline-flex h-5 w-9 items-center rounded-full transition-colors"
+                          style={{ background: quickAddData.reminderEmail ? 'rgba(59,130,246,0.7)' : 'rgba(255,255,255,0.15)' }}
+                          data-testid="quick-add-reminder-email-toggle"
+                        >
+                          <span className="inline-block h-3.5 w-3.5 rounded-full bg-white transition-transform" style={{ transform: quickAddData.reminderEmail ? 'translateX(17px)' : 'translateX(3px)' }} />
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -26841,6 +26856,9 @@ export default function Dashboard() {
                             }
                             try {
                               await fetch(`/api/tasks/${t.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ taskStatus: newStatus }) });
+                              if (newStatus !== 'ignore' && !t.reminderEmail) {
+                                await fetch(`/api/tasks/${t.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reminderEmail: true }) });
+                              }
                               queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
                             } catch {}
                           }}
@@ -26853,6 +26871,21 @@ export default function Dashboard() {
                           <option value="done">Done</option>
                           <option value="ignore" style={{ color: '#6b7280' }}>Ignore</option>
                         </select>
+                        <button
+                          type="button"
+                          title={t.reminderEmail ? 'Email reminders on' : 'Email reminders off'}
+                          onClick={async () => {
+                            try {
+                              await fetch(`/api/tasks/${t.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reminderEmail: !t.reminderEmail }) });
+                              queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+                            } catch {}
+                          }}
+                          className="flex-shrink-0 flex items-center justify-center rounded-full transition-colors"
+                          style={{ width: '24px', height: '24px', background: t.reminderEmail ? 'rgba(59,130,246,0.35)' : 'rgba(255,255,255,0.08)', border: t.reminderEmail ? '1px solid rgba(59,130,246,0.5)' : '1px solid rgba(255,255,255,0.15)' }}
+                          data-testid={`weekly-plan-email-toggle-${t.id}`}
+                        >
+                          <span style={{ fontSize: '11px', opacity: t.reminderEmail ? 1 : 0.4 }}>✉️</span>
+                        </button>
                       </div>
                     );
                   });

@@ -156,10 +156,13 @@ export async function checkReminders() {
 
           const isTravelling = getIsTravellingMode();
           const digestSentToday = await digestAlreadySentToday();
-          const notifications: Promise<{ success: boolean; error?: string }>[] = [
-            sendTaskReminder(taskReminder),
-            sendHaTaskReminder(taskReminder),
-          ];
+          const notifications: Promise<{ success: boolean; error?: string }>[] = [];
+          if ((task as any).reminderEmail) {
+            notifications.push(sendTaskReminder(taskReminder));
+          } else {
+            console.log(`[Reminder] Skipping email for "${task.title}" (reminderEmail not enabled)`);
+          }
+          notifications.push(sendHaTaskReminder(taskReminder));
           if (echoAnnouncedTaskIds.has(task.id)) {
             console.log(`[Reminder] Skipping duplicate Echo announcement for "${task.title}" (already announced this cycle for a different reminder slot)`);
           } else if (digestSentToday) {
@@ -175,28 +178,12 @@ export async function checkReminders() {
 
           const results = await Promise.allSettled(notifications);
 
-          const [emailResult, haResult] = results;
-          if (emailResult.status === "fulfilled" && emailResult.value.success) {
-            console.log(`[Reminder] Email sent for "${task.title}"`);
-          } else {
-            const err = emailResult.status === "rejected" ? emailResult.reason : emailResult.value.error;
-            console.error(`[Reminder] Email failed for "${task.title}":`, err);
-          }
-
-          if (haResult.status === "fulfilled" && haResult.value.success) {
-            console.log(`[Reminder] HA push sent for "${task.title}"`);
-          } else {
-            const err = haResult.status === "rejected" ? haResult.reason : haResult.value.error;
-            console.error(`[Reminder] HA push failed for "${task.title}":`, err);
-          }
-
-          if (!isTravelling && results[2]) {
-            const echoResult = results[2];
-            if (echoResult.status === "fulfilled" && echoResult.value.success) {
-              console.log(`[Reminder] Echo voice announcement sent for "${task.title}"`);
+          for (const r of results) {
+            if (r.status === "fulfilled" && r.value.success) {
+              console.log(`[Reminder] Notification sent for "${task.title}"`);
             } else {
-              const err = echoResult.status === "rejected" ? echoResult.reason : echoResult.value.error;
-              console.error(`[Reminder] Echo voice announcement failed for "${task.title}":`, err);
+              const err = r.status === "rejected" ? r.reason : (r as any).value?.error;
+              console.error(`[Reminder] Notification failed for "${task.title}":`, err);
             }
           }
 
