@@ -3631,9 +3631,9 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           overflowX: 'hidden',
           padding: '0 20px 10px 20px',
           paddingBottom: '35px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: courseBooks.length > 0 ? 'space-evenly' : 'center',
+          ...(courseBooks.length > 0
+            ? { display: 'grid', gridTemplateRows: `repeat(${Math.max(courseBooks.length, 1)}, 1fr)` }
+            : { display: 'flex', flexDirection: 'column' as const, justifyContent: 'center' }),
         }}
       >
         {courseBooks.length === 0 ? (
@@ -3697,17 +3697,16 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             const collapseKey = `${semKey}::${course.code}`;
             const isCollapsed = collapsedCourses.has(collapseKey);
             return (
-            <div key={course.code} style={{ marginBottom: courseIdx < courseBooks.length - 1 ? (isCollapsed ? '20px' : '55px') : '0', position: 'relative', top: courseIdx === 0 ? '48px' : courseIdx === 1 ? '22px' : courseIdx === 2 ? '-65px' : `${-62 + courseIdx * 5}px` }}>
+            <div key={course.code} style={{ position: 'relative', overflow: 'visible', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '10px',
-                marginBottom: isCollapsed ? '0px' : '6px',
                 paddingLeft: '8px',
                 cursor: 'pointer',
                 userSelect: 'none',
-                position: 'relative',
-                top: courseIdx === 0 ? '204px' : courseIdx === 1 ? '324px' : courseIdx === 2 ? (minimizedReaders.size > 0 ? '289px' : '324px') : '153px',
+                position: 'absolute',
+                bottom: '4px',
                 zIndex: 10,
                 marginLeft: 'calc(30% + 244px)',
               }}
