@@ -8019,6 +8019,183 @@ async function pollStatus(timeout){
 
   // ============= END ONEDRIVE ROUTES =============
 
+  // ============= MICROSOFT GRAPH: EXCEL & WORD =============
+
+  app.get("/api/graph/excel/list", async (req, res) => {
+    try {
+      const client = await (await import("./onedrive")).getOneDriveClient();
+      const folderPath = (req.query.path as string) || '/';
+      const endpoint = folderPath === '/' ? '/me/drive/root/children' : `/me/drive/root:${encodeURI(folderPath)}:/children`;
+      const result = await client.api(endpoint).select('id,name,file,folder,lastModifiedDateTime,size,webUrl').top(200).get();
+      const items = (result.value || []).filter((item: any) => {
+        if (item.folder) return true;
+        const ext = (item.name || '').toLowerCase();
+        return ext.endsWith('.xlsx') || ext.endsWith('.xls') || ext.endsWith('.docx') || ext.endsWith('.doc');
+      }).map((item: any) => ({
+        id: item.id,
+        name: item.name,
+        isFolder: !!item.folder,
+        lastModified: item.lastModifiedDateTime,
+        size: item.size,
+        webUrl: item.webUrl,
+        mimeType: item.file?.mimeType,
+      }));
+      res.json({ items });
+    } catch (err: any) {
+      console.error('[Graph/Excel] List error:', err.message);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get("/api/graph/excel/worksheets/:itemId", async (req, res) => {
+    try {
+      const client = await (await import("./onedrive")).getOneDriveClient();
+      const result = await client.api(`/me/drive/items/${req.params.itemId}/workbook/worksheets`).get();
+      const sheets = (result.value || []).map((s: any) => ({ id: s.id, name: s.name, position: s.position, visibility: s.visibility }));
+      res.json({ sheets });
+    } catch (err: any) {
+      console.error('[Graph/Excel] Worksheets error:', err.message);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get("/api/graph/excel/range/:itemId/:sheetName", async (req, res) => {
+    try {
+      const client = await (await import("./onedrive")).getOneDriveClient();
+      const range = (req.query.range as string) || 'A1:Z50';
+      const sheetName = encodeURIComponent(`'${req.params.sheetName}'`);
+      const result = await client.api(`/me/drive/items/${req.params.itemId}/workbook/worksheets/${sheetName}/range(address='${range}')`).get();
+      res.json({ address: result.address, values: result.values, formulas: result.formulas, numberFormat: result.numberFormat, rowCount: result.rowCount, columnCount: result.columnCount });
+    } catch (err: any) {
+      console.error('[Graph/Excel] Range read error:', err.message);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get("/api/graph/excel/used-range/:itemId/:sheetName", async (req, res) => {
+    try {
+      const client = await (await import("./onedrive")).getOneDriveClient();
+      const sheetName = encodeURIComponent(`'${req.params.sheetName}'`);
+      const result = await client.api(`/me/drive/items/${req.params.itemId}/workbook/worksheets/${sheetName}/usedRange`).get();
+      res.json({ address: result.address, values: result.values, formulas: result.formulas, rowCount: result.rowCount, columnCount: result.columnCount });
+    } catch (err: any) {
+      console.error('[Graph/Excel] Used range error:', err.message);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.patch("/api/graph/excel/range/:itemId/:sheetName", async (req, res) => {
+    try {
+      const client = await (await import("./onedrive")).getOneDriveClient();
+      const { range, values } = req.body;
+      if (!range || !values) return res.status(400).json({ error: 'range and values required' });
+      const sheetName = encodeURIComponent(`'${req.params.sheetName}'`);
+      const result = await client.api(`/me/drive/items/${req.params.itemId}/workbook/worksheets/${sheetName}/range(address='${range}')`).patch({ values });
+      res.json({ address: result.address, values: result.values });
+    } catch (err: any) {
+      console.error('[Graph/Excel] Range write error:', err.message);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post("/api/graph/excel/add-row/:itemId/:sheetName/:tableName", async (req, res) => {
+    try {
+      const client = await (await import("./onedrive")).getOneDriveClient();
+      const { values } = req.body;
+      if (!values) return res.status(400).json({ error: 'values required' });
+      const sheetName = encodeURIComponent(`'${req.params.sheetName}'`);
+      const result = await client.api(`/me/drive/items/${req.params.itemId}/workbook/worksheets/${sheetName}/tables/${req.params.tableName}/rows`).post({ values: [values] });
+      res.json({ index: result.index, values: result.values });
+    } catch (err: any) {
+      console.error('[Graph/Excel] Add row error:', err.message);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get("/api/graph/excel/tables/:itemId/:sheetName", async (req, res) => {
+    try {
+      const client = await (await import("./onedrive")).getOneDriveClient();
+      const sheetName = encodeURIComponent(`'${req.params.sheetName}'`);
+      const result = await client.api(`/me/drive/items/${req.params.itemId}/workbook/worksheets/${sheetName}/tables`).get();
+      const tables = (result.value || []).map((t: any) => ({ id: t.id, name: t.name, showHeaders: t.showHeaders, style: t.style }));
+      res.json({ tables });
+    } catch (err: any) {
+      console.error('[Graph/Excel] Tables error:', err.message);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get("/api/graph/excel/table-rows/:itemId/:sheetName/:tableName", async (req, res) => {
+    try {
+      const client = await (await import("./onedrive")).getOneDriveClient();
+      const sheetName = encodeURIComponent(`'${req.params.sheetName}'`);
+      const result = await client.api(`/me/drive/items/${req.params.itemId}/workbook/worksheets/${sheetName}/tables/${req.params.tableName}/rows`).get();
+      const rows = (result.value || []).map((r: any) => ({ index: r.index, values: r.values }));
+      res.json({ rows });
+    } catch (err: any) {
+      console.error('[Graph/Excel] Table rows error:', err.message);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get("/api/graph/word/content/:itemId", async (req, res) => {
+    try {
+      const client = await (await import("./onedrive")).getOneDriveClient();
+      const item = await client.api(`/me/drive/items/${req.params.itemId}`).select('id,name,@microsoft.graph.downloadUrl,webUrl,lastModifiedDateTime').get();
+      const downloadUrl = item['@microsoft.graph.downloadUrl'];
+      if (!downloadUrl) return res.status(404).json({ error: 'No download URL' });
+      const format = (req.query.format as string) || 'pdf';
+      if (format === 'html') {
+        const convertResult = await client.api(`/me/drive/items/${req.params.itemId}/content?format=html`).responseType(1 as any).get();
+        const chunks: Buffer[] = [];
+        for await (const chunk of convertResult) chunks.push(Buffer.from(chunk));
+        const html = Buffer.concat(chunks).toString('utf-8');
+        res.json({ id: item.id, name: item.name, html, webUrl: item.webUrl, lastModified: item.lastModifiedDateTime });
+      } else {
+        res.json({ id: item.id, name: item.name, downloadUrl, webUrl: item.webUrl, lastModified: item.lastModifiedDateTime });
+      }
+    } catch (err: any) {
+      console.error('[Graph/Word] Content error:', err.message);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.put("/api/graph/word/upload", async (req, res) => {
+    try {
+      const client = await (await import("./onedrive")).getOneDriveClient();
+      const { path: filePath, content } = req.body;
+      if (!filePath || content === undefined) return res.status(400).json({ error: 'path and content required' });
+      const encodedPath = encodeURI(filePath);
+      const result = await client.api(`/me/drive/root:${encodedPath}:/content`).putStream(Buffer.from(content, 'base64'));
+      res.json({ id: result.id, name: result.name, webUrl: result.webUrl, lastModified: result.lastModifiedDateTime });
+    } catch (err: any) {
+      console.error('[Graph/Word] Upload error:', err.message);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post("/api/graph/excel/create", async (req, res) => {
+    try {
+      const client = await (await import("./onedrive")).getOneDriveClient();
+      const { path: filePath, sheetName } = req.body;
+      if (!filePath) return res.status(400).json({ error: 'path required' });
+      const encodedPath = encodeURI(filePath);
+      const emptyXlsx = Buffer.from('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', 'base64');
+      const result = await client.api(`/me/drive/root:${encodedPath}:/content`).headers({ 'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }).put(emptyXlsx);
+      if (sheetName) {
+        try {
+          await client.api(`/me/drive/items/${result.id}/workbook/worksheets/Sheet1`).patch({ name: sheetName });
+        } catch (_) {}
+      }
+      res.json({ id: result.id, name: result.name, webUrl: result.webUrl });
+    } catch (err: any) {
+      console.error('[Graph/Excel] Create error:', err.message);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // ============= END MICROSOFT GRAPH: EXCEL & WORD =============
+
   // ============= D2L ANNOUNCEMENTS =============
   app.get("/api/announcements", async (_req, res) => {
     try {
