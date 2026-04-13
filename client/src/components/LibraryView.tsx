@@ -684,7 +684,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
           writingMode: 'vertical-rl',
           textOrientation: 'mixed',
           transform: 'rotate(180deg)',
-          fontSize: isLifted ? `${expandedFontSize}px` : '10px',
+          fontSize: isLifted ? `${expandedFontSize + (fileType === 'module' ? 3 : 0)}px` : `${10 + (fileType === 'module' ? 3 : 0)}px`,
           fontWeight: 600,
           color: '#ffffff',
           textShadow: '0 1px 3px rgba(0,0,0,0.7)',
