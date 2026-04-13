@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
-import { X, ChevronLeft, ChevronRight, ChevronDown, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2, Printer, Volume2, Square, Pause, Play, RefreshCw, Pencil, FileText, Minus, Loader2, ListOrdered, RotateCcw, StickyNote, Clock, ArrowLeft } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, ChevronDown, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2, Printer, Volume2, Square, Pause, Play, RefreshCw, Pencil, FileText, Minus, Loader2, ListOrdered, RotateCcw, StickyNote, Clock, ArrowLeft, Upload } from 'lucide-react';
 import * as pdfjsLib from 'pdfjs-dist';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import shelfBgImage from '@assets/Bookshelf10_1776107329434.jpg';
@@ -2525,6 +2525,49 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
   });
 
   const [syllabusPaths, setSyllabusPaths] = useState<Record<string, string>>({});
+  const syllabusUploadRef = useRef<HTMLInputElement>(null);
+  const syllabusUploadCodeRef = useRef<string>('');
+  const syllabusUploadColorRef = useRef<string>('#8B6914');
+  const handleBookClickRef = useRef<Function>(() => {});
+
+  const handleSyllabusUpload = useCallback(async (file: File, courseCode: string) => {
+    try {
+      const uploadRes = await fetch('/api/uploads/request-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fileName: file.name, contentType: file.type || 'application/pdf' }),
+      });
+      const uploadData = await uploadRes.json();
+      if (uploadData.uploadUrl) {
+        await fetch(uploadData.uploadUrl, {
+          method: 'PUT',
+          headers: { 'Content-Type': file.type || 'application/pdf' },
+          body: file,
+        });
+      }
+      const objectPath = uploadData.objectPath || uploadData.key || `syllabi/${courseCode}_syllabus.pdf`;
+      const pathsRes = await fetch('/api/syllabus/paths');
+      const existingPaths = await pathsRes.json();
+      const updatedPaths = { ...existingPaths, [courseCode]: objectPath };
+      await apiRequest('POST', '/api/syllabus/paths', updatedPaths);
+      localStorage.setItem('courseSyllabusPaths', JSON.stringify(updatedPaths));
+      setSyllabusPaths(updatedPaths);
+      queryClient.invalidateQueries({ queryKey: ['/api/syllabus/paths'] });
+
+      const syllabusFile: any = {
+        id: -1 * (courseCode.charCodeAt(0) * 1000 + courseCode.charCodeAt(1)),
+        originalName: `${courseCode} Syllabus.pdf`,
+        displayName: `${courseCode} Syllabus`,
+        objectPath,
+        folder: null,
+        listened: false,
+        contentType: 'application/pdf',
+      };
+      handleBookClickRef.current(syllabusFile, syllabusUploadColorRef.current, `/api/syllabus/view?path=${encodeURIComponent(objectPath)}`, courseCode.replace(/\s/g, '').toLowerCase(), true);
+    } catch (err: any) {
+      console.error('[Syllabus Upload] Error:', err);
+    }
+  }, []);
   useEffect(() => {
     if (!isOpen) return;
     const localPaths: Record<string, string> = {};
@@ -3182,6 +3225,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
     });
     setFocusedReaderId(file.id);
   }, []);
+  handleBookClickRef.current = handleBookClick;
 
   const handleRenameStart = useCallback((file: FileRecord) => {
     setRenamingFile(file);
@@ -3246,6 +3290,19 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
+      <input
+        ref={syllabusUploadRef}
+        type="file"
+        accept="application/pdf"
+        style={{ display: 'none' }}
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file && syllabusUploadCodeRef.current) {
+            handleSyllabusUpload(file, syllabusUploadCodeRef.current);
+          }
+          e.target.value = '';
+        }}
+      />
       <style>{`
         .library-ambience {
           position: absolute;
@@ -4572,34 +4629,41 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
               }}
               data-testid={`toggle-shelf-${course.code}`}
               >
-                {!isCollapsed && syllabusPaths[course.code] && (
+                {!isCollapsed && (() => {
+                  const code = course.code;
+                  const hasSyllabus = !!syllabusPaths[code];
+                  return (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       e.preventDefault();
-                      const code = course.code;
-                      const path = syllabusPaths[code];
-                      if (!path) return;
-                      const syllabusFile: FileRecord = {
-                        id: -1 * (code.charCodeAt(0) * 1000 + code.charCodeAt(1)),
-                        originalName: `${code} Syllabus.pdf`,
-                        displayName: `${code} Syllabus`,
-                        objectPath: path,
-                        folder: null,
-                        listened: false,
-                        contentType: 'application/pdf',
-                      };
-                      handleBookClick(syllabusFile, course.color || '#8B6914', `/api/syllabus/view?path=${encodeURIComponent(path)}`, code.replace(/\s/g, '').toLowerCase(), true);
+                      if (hasSyllabus) {
+                        const path = syllabusPaths[code];
+                        const syllabusFile: FileRecord = {
+                          id: -1 * (code.charCodeAt(0) * 1000 + code.charCodeAt(1)),
+                          originalName: `${code} Syllabus.pdf`,
+                          displayName: `${code} Syllabus`,
+                          objectPath: path,
+                          folder: null,
+                          listened: false,
+                          contentType: 'application/pdf',
+                        };
+                        handleBookClick(syllabusFile, course.color || '#8B6914', `/api/syllabus/view?path=${encodeURIComponent(path)}`, code.replace(/\s/g, '').toLowerCase(), true);
+                      } else {
+                        syllabusUploadCodeRef.current = code;
+                        syllabusUploadColorRef.current = course.color || '#8B6914';
+                        syllabusUploadRef.current?.click();
+                      }
                     }}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
                       gap: '3px',
                       padding: '2px 6px',
-                      border: '1px solid rgba(255,255,255,0.25)',
+                      border: hasSyllabus ? '1px solid rgba(255,255,255,0.25)' : '1px dashed rgba(255,255,255,0.2)',
                       borderRadius: '4px',
-                      background: 'rgba(139,105,20,0.35)',
-                      color: 'rgba(255,255,255,0.8)',
+                      background: hasSyllabus ? 'rgba(139,105,20,0.35)' : 'rgba(255,255,255,0.06)',
+                      color: hasSyllabus ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.35)',
                       fontSize: '9px',
                       fontWeight: 600,
                       letterSpacing: '0.5px',
@@ -4611,14 +4675,16 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                       position: 'relative',
                       zIndex: 20,
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.color = '#ffffff'; e.currentTarget.style.background = 'rgba(139,105,20,0.55)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.8)'; e.currentTarget.style.background = 'rgba(139,105,20,0.35)'; }}
+                    onMouseEnter={e => { e.currentTarget.style.color = '#ffffff'; e.currentTarget.style.background = hasSyllabus ? 'rgba(139,105,20,0.55)' : 'rgba(255,255,255,0.12)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.color = hasSyllabus ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.35)'; e.currentTarget.style.background = hasSyllabus ? 'rgba(139,105,20,0.35)' : 'rgba(255,255,255,0.06)'; }}
                     data-testid={`btn-syllabus-${course.code}`}
+                    title={hasSyllabus ? `Open ${code} Syllabus` : `Upload ${code} Syllabus`}
                   >
-                    <FileText size={9} />
+                    {hasSyllabus ? <FileText size={9} /> : <Upload size={9} />}
                     Syllabus
                   </button>
-                )}
+                  );
+                })()}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <span style={{
                     fontSize: '13px',
