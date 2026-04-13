@@ -2800,7 +2800,9 @@ export default function Dashboard() {
   }, []);
 
   const [weatherData, setWeatherData] = useState<{ code: number; temp: number; windSpeed: number; isDay: boolean; sunrise?: string; sunset?: string; daily?: { date: string; high: number; low: number; weatherCode?: number; sunrise?: string; sunset?: string }[]; hourly?: { time: string; temp: number; weatherCode: number }[] } | null>(null);
+  const [weatherStale, setWeatherStale] = useState<{ stale: boolean; ageMin: number }>({ stale: false, ageMin: 0 });
   const [pollenData, setPollenData] = useState<{ tree: { value: number; level: string }; grass: { value: number; level: string }; weed: { value: number; level: string }; overall: { value: number; level: string }; aqi: number } | null>(null);
+  const [pollenStale, setPollenStale] = useState<{ stale: boolean; ageMin: number }>({ stale: false, ageMin: 0 });
   const [weatherAlerts, setWeatherAlerts] = useState<{ title: string; summary: string; description: string; type: string; url: string }[]>([]);
   const [weatherAlertDialogOpen, setWeatherAlertDialogOpen] = useState(false);
   const [dayDetailDate, setDayDetailDate] = useState<Date | null>(null);
@@ -2871,6 +2873,7 @@ export default function Dashboard() {
             daily,
             hourly,
           });
+          setWeatherStale({ stale: !!data._stale, ageMin: data._cacheAgeMin || 0 });
         }
       } catch (e) {
         console.error('[Weather] Failed to fetch:', e);
@@ -2880,7 +2883,10 @@ export default function Dashboard() {
       try {
         const res = await fetch('/api/pollen');
         const data = await res.json();
-        if (data.overall) setPollenData(data);
+        if (data.overall) {
+          setPollenData(data);
+          setPollenStale({ stale: !!data._stale, ageMin: data._cacheAgeMin || 0 });
+        }
       } catch (e) {
         console.error('[Pollen] Failed to fetch:', e);
       }

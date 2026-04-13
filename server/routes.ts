@@ -2629,7 +2629,8 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
     try {
       const now = Date.now();
       if (weatherCache.data && now - weatherCache.timestamp < 15 * 60 * 1000) {
-        return res.json(weatherCache.data);
+        const age = Math.round((now - weatherCache.timestamp) / 60000);
+        return res.json({ ...weatherCache.data, _cached: true, _cacheAgeMin: age });
       }
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
@@ -2865,7 +2866,8 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
         console.error("Fallback weather also failed:", fallbackErr);
         if (weatherCache.data) {
           console.log("[Weather] Serving stale cache");
-          return res.json(weatherCache.data);
+          const age = Math.round((Date.now() - weatherCache.timestamp) / 60000);
+          return res.json({ ...weatherCache.data, _cached: true, _stale: true, _cacheAgeMin: age });
         }
         res.status(500).json({ error: "Failed to fetch weather" });
       }
@@ -3135,7 +3137,8 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
     try {
       const now = Date.now();
       if (pollenCache.data && now - pollenCache.timestamp < 30 * 60 * 1000) {
-        return res.json(pollenCache.data);
+        const age = Math.round((now - pollenCache.timestamp) / 60000);
+        return res.json({ ...pollenCache.data, _cached: true, _cacheAgeMin: age });
       }
       const response = await fetch('https://air-quality-api.open-meteo.com/v1/air-quality?latitude=43.6275&longitude=-79.3962&current=alder_pollen,birch_pollen,grass_pollen,mugwort_pollen,olive_pollen,ragweed_pollen,european_aqi&timezone=America/Toronto');
       const raw = await response.json();
@@ -3167,6 +3170,11 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
       res.json(result);
     } catch (err) {
       console.error("Error fetching pollen:", err);
+      if (pollenCache.data) {
+        console.log("[Pollen] Serving stale cache");
+        const age = Math.round((Date.now() - pollenCache.timestamp) / 60000);
+        return res.json({ ...pollenCache.data, _cached: true, _stale: true, _cacheAgeMin: age });
+      }
       res.status(500).json({ error: "Failed to fetch pollen data" });
     }
   });
