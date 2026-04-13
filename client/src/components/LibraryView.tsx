@@ -4168,7 +4168,16 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                       })?.file || null;
                       return (
                       <WeekGroupWrapper key={`wg-${group.weekNum}-${groupIdx}`} weekNum={group.weekNum} showSeparator={groupIdx > 0} shelfHeight={shelfHeight} shelfIndex={courseIdx} totalShelves={courseBooks.length} moduleFile={moduleFileForWeek} onOpenModule={(mf) => { const color = getBookColor(0, course.code, group.weekNum); handleBookClick(mf, color); }}>
-                        {group.files.map(({ file, fileIdx }, fileInGroupIdx) => {
+                        {(() => {
+                          const seenModuleFolders = new Set<string>();
+                          return group.files.filter(({ file }) => {
+                            const fl = (file.folder || '').toLowerCase();
+                            if (fl.includes('-module')) {
+                              if (seenModuleFolders.has(fl)) return false;
+                              seenModuleFolders.add(fl);
+                            }
+                            return true;
+                          }).map(({ file, fileIdx }, fileInGroupIdx) => {
                           const color = getBookColor(fileIdx, course.code, group.weekNum);
                           const isVeryFirstBook = courseIdx > 0 && groupIdx === 0 && fileInGroupIdx === 0;
                           const isLastWeekTopShelf = courseIdx === 0 && groupIdx === weekGroups.length - 1;
@@ -4192,6 +4201,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                             />
                           );
                         })}
+                        )()}
                       </WeekGroupWrapper>
                     );});
                   })()}
