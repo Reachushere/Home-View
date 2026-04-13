@@ -13021,9 +13021,7 @@ export default function Dashboard() {
         if (taskCourseCode && activeCourseNames.some(ac => taskCourseCode.startsWith(ac))) return false;
       }
       const dueDate = new Date(t.dueDate);
-      const isMidnightET = getETHours(dueDate) === 0 && getETMinutes(dueDate) === 0;
       const isMidnightUTC = dueDate.getUTCHours() === 0 && dueDate.getUTCMinutes() === 0;
-      if (!isMidnightET && !isMidnightUTC) return false;
       if (isMidnightUTC) {
         const prev = new Date(dueDate.getTime() - 1);
         return _etDateKey(prev) === dayKey;
