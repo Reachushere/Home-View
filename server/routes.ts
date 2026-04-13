@@ -15555,6 +15555,65 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     return chunks.filter(c => c.length > 10);
   }
 
+  async function ocrExtractFromPdf(pdfBuffer: Buffer, fileName: string): Promise<string> {
+    const OCR_MAX_PAGES = 30;
+    const OCR_MAX_FILE_SIZE = 200 * 1024 * 1024;
+    const OCR_SCALE = 1.5;
+    try {
+      if (pdfBuffer.length > OCR_MAX_FILE_SIZE) {
+        console.log(`[OCR] File too large (${Math.round(pdfBuffer.length / 1024 / 1024)}MB), skipping OCR for ${fileName}`);
+        return '';
+      }
+
+      let pdfjsLib: any, createCanvasFn: any, TesseractMod: any;
+      try {
+        pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs");
+        const canvasMod = await import("canvas");
+        createCanvasFn = canvasMod.createCanvas;
+        TesseractMod = await import("tesseract.js");
+      } catch (importErr: any) {
+        console.error(`[OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): ${importErr.message}`);
+        return '';
+      }
+
+      const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(pdfBuffer), verbosity: 0 });
+      const pdfDoc = await loadingTask.promise;
+      const totalPages = Math.min(pdfDoc.numPages, OCR_MAX_PAGES);
+      console.log(`[OCR] Processing ${totalPages}/${pdfDoc.numPages} pages of ${fileName} (${Math.round(pdfBuffer.length / 1024 / 1024)}MB)`);
+
+      const worker = await TesseractMod.createWorker('eng', 1, {
+        logger: () => {},
+      });
+
+      const pageTexts: string[] = [];
+      for (let i = 1; i <= totalPages; i++) {
+        try {
+          const page = await pdfDoc.getPage(i);
+          const viewport = page.getViewport({ scale: OCR_SCALE });
+          const canvas = createCanvasFn(viewport.width, viewport.height);
+          const ctx = canvas.getContext('2d');
+          await page.render({ canvasContext: ctx as any, viewport }).promise;
+          const imageData = canvas.toBuffer('image/png');
+          const { data: { text } } = await worker.recognize(imageData);
+          if (text.trim()) {
+            pageTexts.push(text.trim());
+          }
+          if (i % 5 === 0 || i === totalPages) console.log(`[OCR] Processed page ${i}/${totalPages} of ${fileName}`);
+        } catch (pageErr: any) {
+          console.error(`[OCR] Error on page ${i} of ${fileName}: ${pageErr.message}`);
+        }
+      }
+
+      await worker.terminate();
+      const result = pageTexts.join('\n\n');
+      console.log(`[OCR] Complete: ${result.length} chars from ${totalPages} pages of ${fileName}`);
+      return result;
+    } catch (err: any) {
+      console.error(`[OCR] Fatal error for ${fileName}: ${err.message}`);
+      return '';
+    }
+  }
+
   async function extractFileText(file: any): Promise<string | null> {
     try {
       if (file.extractedText) {
@@ -15683,6 +15742,20 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         textContent = pdfText;
       }
       console.log(`[ExtractText] Extracted ${textContent.length} chars from ${file.originalName}`);
+
+      if (textContent.trim().length < 100) {
+        console.log(`[ExtractText] Text too short (${textContent.trim().length} chars), attempting OCR for ${file.originalName}`);
+        try {
+          const ocrText = await ocrExtractFromPdf(buffer, file.originalName);
+          if (ocrText && ocrText.trim().length > textContent.trim().length) {
+            console.log(`[ExtractText] OCR extracted ${ocrText.length} chars for ${file.originalName}`);
+            textContent = ocrText;
+          }
+        } catch (ocrErr: any) {
+          console.error(`[ExtractText] OCR failed for ${file.originalName}: ${ocrErr.message}`);
+        }
+      }
+
       const cleanedText = cleanTextForTTS(textContent);
 
       if (cleanedText && file.id) {
