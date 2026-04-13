@@ -31947,8 +31947,11 @@ export default function Dashboard() {
                                 topOffset = 2;
                                 taskHeight = rowHeight - 4;
                               } else {
-                                topOffset = taskIdx * 32 + 2;
-                                taskHeight = 28;
+                                const stackTotal = inlineFilteredTasks.length + visibleCalendarEvents.length;
+                                const itemH = Math.min(28, Math.floor((rowHeight - 2) / Math.max(stackTotal, 1)) - 2);
+                                const spacing = stackTotal > 1 ? (rowHeight - 2 - stackTotal * itemH) / (stackTotal - 1) : 0;
+                                topOffset = Math.round(taskIdx * (itemH + spacing)) + 2;
+                                taskHeight = itemH;
                               }
                             } else {
                               topOffset = 2;
@@ -32135,7 +32138,13 @@ export default function Dashboard() {
                               }
                               return true;
                             }).length : 0;
-                            const calTopOffset = stackInConflict ? (stackedTaskCount + eventIdx) * 32 + 2 : (eventMin > 0 ? (eventMin / 60) * rowHeight : 2);
+                            const calTopOffset = (() => {
+                              if (!stackInConflict) return eventMin > 0 ? (eventMin / 60) * rowHeight : 2;
+                              const stackTotal = inlineFilteredTasks.length + visibleCalendarEvents.length;
+                              const itemH = Math.min(28, Math.floor((rowHeight - 2) / Math.max(stackTotal, 1)) - 2);
+                              const spacing = stackTotal > 1 ? (rowHeight - 2 - stackTotal * itemH) / (stackTotal - 1) : 0;
+                              return Math.round((stackedTaskCount + eventIdx) * (itemH + spacing)) + 2;
+                            })();
                             const gcalColor = otherRowColors.borderColor || '#6b7280';
                             const gcalBg = otherRowColors.taskBgColor || '#f3f4f6';
                             return (
@@ -32146,7 +32155,7 @@ export default function Dashboard() {
                                 top: `${calTopOffset}px`,
                                 left: (() => { const narrowInfo = veryLongTaskNarrowCols.get(`${dayIdx}-${hour}`); const overlayCols = multiHourOverlayCols.get(`${dayIdx}-${hour}`) || 0; const totalC = Math.max(overlayCols + totalItems, 1); const maxStackable = Math.floor((rowHeight - 2) / 32); const useSideBySide = totalItems > 1 && (!stackInConflict || maxStackable < totalItems); if (stackInConflict && !useSideBySide) { if (overlayCols > 0) return `calc(${overlayCols} / ${totalC} * 100% + 4px)`; if (narrowInfo) return `calc(${narrowInfo.narrowFrac * 100}% + 4px)`; return '4px'; } if (overlayCols > 0) { return `calc(${(overlayCols + inlineFilteredTasks.length + eventIdx)} / ${totalC} * 100% + 4px)`; } if (narrowInfo) { const narrowPct = narrowInfo.narrowFrac * 100; const availPct = 100 - narrowPct; return `calc(${narrowPct}% + ${(inlineFilteredTasks.length + eventIdx) * availPct / totalItems}% + 4px)`; } return `calc(${(inlineFilteredTasks.length + eventIdx) * columnWidth}% + 4px)`; })(),
                                 width: (() => { const narrowInfo = veryLongTaskNarrowCols.get(`${dayIdx}-${hour}`); const overlayCols = multiHourOverlayCols.get(`${dayIdx}-${hour}`) || 0; const totalC = Math.max(overlayCols + totalItems, 1); const maxStackable = Math.floor((rowHeight - 2) / 32); const useSideBySide = totalItems > 1 && (!stackInConflict || maxStackable < totalItems); if (stackInConflict && !useSideBySide) { if (overlayCols > 0) return `calc(100% / ${totalC} - 8px)`; if (narrowInfo) return `calc(${(1 - narrowInfo.narrowFrac) * 100}% - 8px)`; return 'calc(100% - 8px)'; } if (overlayCols > 0) { return `calc(100% / ${totalC} - 8px)`; } if (narrowInfo) { const availPct = (1 - narrowInfo.narrowFrac) * 100; return `calc(${availPct / totalItems}% - 8px)`; } return `calc(${columnWidth}% - 8px)`; })(),
-                                minHeight: stackInConflict ? '28px' : undefined,
+                                height: stackInConflict ? `${Math.min(28, Math.floor((rowHeight - 2) / Math.max(inlineFilteredTasks.length + visibleCalendarEvents.length, 1)) - 2)}px` : undefined,
                                 zIndex: stackInConflict ? 2 : 3,
                                 border: '1px solid black',
                                 backgroundColor: gcalBg,
