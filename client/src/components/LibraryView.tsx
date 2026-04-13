@@ -4146,7 +4146,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                   gap: '2px',
                   overflow: 'visible',
                   maxWidth: '100%',
-                  ...(courseIdx > 0 ? { transform: 'scale(1.5) scaleX(0.84)', transformOrigin: 'bottom left' } : { marginLeft: '-3px', transform: 'scaleX(0.85)', transformOrigin: 'bottom left' }),
+                  ...(courseIdx > 0 ? { transform: 'scale(1.5) scaleX(0.84)', transformOrigin: 'bottom left' } : { marginLeft: '-3px', transform: 'scaleX(0.87)', transformOrigin: 'bottom left' }),
                 }}
                 className="library-scroll"
                 >
