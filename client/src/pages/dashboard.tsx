@@ -18082,7 +18082,7 @@ export default function Dashboard() {
                   fetch('/api/google/calendar/events').catch(() => {}),
                   fetch('/api/tasks').catch(() => {}),
                   fetch('/api/announcements').catch(() => {}),
-                  fetch('/api/weather').then(r => r.json()).then(data => { if (data?.current) { const daily = data.daily ? data.daily.time.map((d: string, i: number) => ({ date: d, high: Math.round(data.daily.temperature_2m_max[i]), low: Math.round(data.daily.temperature_2m_min[i]), weatherCode: data.daily.weather_code?.[i] ?? undefined, sunrise: data.daily.sunrise?.[i] ?? undefined, sunset: data.daily.sunset?.[i] ?? undefined })) : []; const nowET = new Date(new Date().toLocaleString('en-US', { timeZone: getAppTz() })); const todayStr = `${nowET.getFullYear()}-${String(nowET.getMonth() + 1).padStart(2, '0')}-${String(nowET.getDate()).padStart(2, '0')}`; const todayDaily = daily.find((d: any) => d.date === todayStr); const hourly = data.hourly ? data.hourly.time.map((t: string, i: number) => ({ time: t, temp: Math.round(data.hourly.temperature_2m[i]), weatherCode: data.hourly.weather_code[i] ?? 0 })) : []; setWeatherData({ code: data.current.weather_code, temp: data.current.temperature_2m, windSpeed: data.current.wind_speed_10m, isDay: data.current.is_day === 1, sunrise: todayDaily?.sunrise, sunset: todayDaily?.sunset, daily, hourly }); } }).catch(() => {}),
+                  fetch('/api/weather').then(r => r.json()).then(data => { if (data?.current) { const daily = data.daily ? data.daily.time.map((d: string, i: number) => ({ date: d, high: Math.round(data.daily.temperature_2m_max[i]), low: Math.round(data.daily.temperature_2m_min[i]), weatherCode: data.daily.weather_code?.[i] ?? undefined, sunrise: data.daily.sunrise?.[i] ?? undefined, sunset: data.daily.sunset?.[i] ?? undefined })) : []; const nowET = new Date(new Date().toLocaleString('en-US', { timeZone: getAppTz() })); const todayStr = `${nowET.getFullYear()}-${String(nowET.getMonth() + 1).padStart(2, '0')}-${String(nowET.getDate()).padStart(2, '0')}`; const todayDaily = daily.find((d: any) => d.date === todayStr); const hourly = data.hourly ? data.hourly.time.map((t: string, i: number) => ({ time: t, temp: Math.round(data.hourly.temperature_2m[i]), weatherCode: data.hourly.weather_code[i] ?? 0 })) : []; setWeatherData({ code: data.current.weather_code, temp: data.current.temperature_2m, windSpeed: data.current.wind_speed_10m, isDay: data.current.is_day === 1, sunrise: todayDaily?.sunrise, sunset: todayDaily?.sunset, daily, hourly }); setWeatherStale({ stale: !!data._stale, ageMin: data._cacheAgeMin || 0 }); } }).catch(() => {}),
                   fetch('/api/spotify/now-playing').catch(() => {}),
                 ]);
                 refreshFileCounts();
@@ -20373,7 +20373,8 @@ export default function Dashboard() {
           const WMO_DESC: Record<number, string> = { 0:'Clear',1:'Mainly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',48:'Rime Fog',51:'Light Drizzle',53:'Drizzle',55:'Heavy Drizzle',61:'Light Rain',63:'Rain',65:'Heavy Rain',66:'Freezing Rain',67:'Heavy Freezing Rain',71:'Light Snow',73:'Snow',75:'Heavy Snow',77:'Snow Grains',80:'Light Showers',81:'Showers',82:'Heavy Showers',85:'Light Snow Showers',86:'Heavy Snow Showers',95:'Thunderstorm',96:'Thunderstorm w/ Hail',99:'Severe Thunderstorm' };
           const desc = WMO_DESC[weatherData.code] || 'Mixed';
           const items: { title: string; source: string; link: string }[] = [];
-          items.push({ title: `<img src="${cnTowerPath}" style="height:34px;width:auto;display:inline-block;vertical-align:middle;margin-right:9px" />Toronto Forecast: ${Math.round(weatherData.temp)}°C — ${desc}  |  Wind: ${Math.round(weatherData.windSpeed)} km/h`, source: '_FORECAST_NOSEP_', link: '' });
+          const staleTag = weatherStale.stale ? `<span style="color:rgba(255,180,0,0.8);font-size:10px;margin-left:8px;vertical-align:middle">⚠ ${weatherStale.ageMin}m ago</span>` : '';
+          items.push({ title: `<img src="${cnTowerPath}" style="height:34px;width:auto;display:inline-block;vertical-align:middle;margin-right:9px" />Toronto Forecast: ${Math.round(weatherData.temp)}°C — ${desc}  |  Wind: ${Math.round(weatherData.windSpeed)} km/h${staleTag}`, source: '_FORECAST_NOSEP_', link: '' });
           if (weatherData.daily && weatherData.daily.length >= 3) {
             const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
             const todayDateStr = format(new Date(), 'yyyy-MM-dd');
@@ -20400,7 +20401,7 @@ export default function Dashboard() {
           }
           return items;
         })() : []),
-        ...(pollenData ? [{ title: `<span style="margin-left:17px;font-size:17px;margin-right:4px;vertical-align:middle">🌿</span>Pollen: ${pollenData.overall.level} (Tree: ${pollenData.tree.level}, Grass: ${pollenData.grass.level}, Weed: ${pollenData.weed.level})  |  AQI: ${pollenData.aqi} (${pollenData.aqi <= 50 ? 'Good' : pollenData.aqi <= 100 ? 'Moderate' : pollenData.aqi <= 150 ? 'Unhealthy for Sensitive' : pollenData.aqi <= 200 ? 'Unhealthy' : pollenData.aqi <= 300 ? 'Very Unhealthy' : 'Hazardous'})`, source: '_FORECAST_NOSEP_', link: '' }] : []),
+        ...(pollenData ? [{ title: `<span style="margin-left:17px;font-size:17px;margin-right:4px;vertical-align:middle">🌿</span>Pollen: ${pollenData.overall.level} (Tree: ${pollenData.tree.level}, Grass: ${pollenData.grass.level}, Weed: ${pollenData.weed.level})  |  AQI: ${pollenData.aqi} (${pollenData.aqi <= 50 ? 'Good' : pollenData.aqi <= 100 ? 'Moderate' : pollenData.aqi <= 150 ? 'Unhealthy for Sensitive' : pollenData.aqi <= 200 ? 'Unhealthy' : pollenData.aqi <= 300 ? 'Very Unhealthy' : 'Hazardous'})${pollenStale.stale ? `<span style="color:rgba(255,180,0,0.8);font-size:10px;margin-left:8px;vertical-align:middle">⚠ ${pollenStale.ageMin}m ago</span>` : ''}`, source: '_FORECAST_NOSEP_', link: '' }] : []),
         ...(() => {
           const US_SOURCES = ['CNN', 'Politico', 'Raw Story', 'MSNBC', 'ABC News', 'Fox News'];
           const ca = newsHeadlines.filter(h => !US_SOURCES.includes(h.source) && h.source !== 'BBC');
@@ -29153,9 +29154,9 @@ export default function Dashboard() {
                       <div className="absolute inset-0 weather-alert-box-pulse" style={{ backgroundColor: 'rgb(255,0,0)', left: '-1px', right: '-2px' }} />
                     )}
                     {dayForecast && (
-                      <span className="text-white/90 whitespace-nowrap leading-none font-medium relative z-10 inline-flex items-center gap-[2px]" style={{ letterSpacing: '-0.2px', marginTop: '-1px', fontSize: isTodayForecast ? '17px' : '14px', opacity: isNextWeekDay ? 0.5 : 1 }}>
+                      <span className="text-white/90 whitespace-nowrap leading-none font-medium relative z-10 inline-flex items-center gap-[2px]" style={{ letterSpacing: '-0.2px', marginTop: '-1px', fontSize: isTodayForecast ? '15px' : '12px', opacity: isNextWeekDay ? 0.5 : 1 }}>
                         <span>{afterSunrise ? `${Math.round(weatherData!.temp)}°` : `${Math.round(dayForecast.high)}°/${Math.round(dayForecast.low)}°`}</span>
-                        {desc && <span style={{ fontSize: isTodayForecast ? '17px' : '14px', fontWeight: 500, opacity: 0.8, lineHeight: 1 }}>{desc}</span>}
+                        {desc && <span style={{ fontSize: isTodayForecast ? '15px' : '12px', fontWeight: 500, opacity: 0.8, lineHeight: 1 }}>{desc}</span>}
                       </span>
                     )}
                   </div>
