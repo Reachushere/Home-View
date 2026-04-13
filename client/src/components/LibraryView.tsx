@@ -2698,12 +2698,14 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
 
   type SearchResult = { file: FileRecord; semLabel: string; semKey: string; courseCode: string; courseName: string; weekNum: number; fileType: string; fileFormat: string; contentSnippet?: string; matchedTokenCount?: number; proximitySnippet?: string };
 
-  const STOP_WORDS = new Set(['a', 'an', 'and', 'are', 'as', 'at', 'be', 'but', 'by', 'for', 'if', 'in', 'is', 'it', 'no', 'not', 'of', 'on', 'or', 'so', 'the', 'to', 'was', 'we', 'with']);
+  const STOP_WORDS = new Set(['a', 'an', 'and', 'as', 'at', 'be', 'but', 'by', 'for', 'if', 'in', 'is', 'it', 'no', 'not', 'of', 'on', 'or', 'so', 'the', 'to', 'we']);
 
   const combinedSearchResults = useMemo(() => {
     if (!hasAnyFilter) return null;
     const q = masterSearch.toLowerCase().trim();
-    const tokens = q ? q.split(/\s+/).filter(Boolean).filter(t => !STOP_WORDS.has(t)) : [];
+    const rawTokens = q ? q.split(/\s+/).filter(Boolean) : [];
+    const filtered = rawTokens.filter(t => !STOP_WORDS.has(t));
+    const tokens = filtered.length > 0 ? filtered : rawTokens;
     const results: SearchResult[] = [];
     const addedFileIds = new Set<number>();
 
@@ -2925,7 +2927,9 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
 
   const searchTokens = useMemo(() => {
     const q = masterSearch.toLowerCase().trim();
-    return q ? q.split(/\s+/).filter(Boolean).filter(t => !STOP_WORDS.has(t)) : [];
+    const raw = q ? q.split(/\s+/).filter(Boolean) : [];
+    const filtered = raw.filter(t => !STOP_WORDS.has(t));
+    return filtered.length > 0 ? filtered : raw;
   }, [masterSearch]);
 
   const highlightTokens = useCallback((text: string, tokens: string[], color?: string): (string | JSX.Element)[] => {
