@@ -24784,19 +24784,50 @@ export default function Dashboard() {
                     <div className="text-[9px] text-white/30 text-right mt-2" data-testid="text-health-timestamp">
                       Checked: {systemHealthData.timestamp ? new Date(systemHealthData.timestamp).toLocaleTimeString() : '—'}
                     </div>
-                    <button
-                      className="text-[10px] text-white/50 hover:text-white/80 underline mt-1 self-end"
-                      data-testid="button-refresh-health"
-                      onClick={() => {
-                        setSystemHealthLoading(true);
-                        fetch('/api/system-health').then(r => r.json()).then(data => {
-                          setSystemHealthData(data);
-                          setSystemHealthLoading(false);
-                        }).catch(() => setSystemHealthLoading(false));
-                      }}
-                    >
-                      Refresh
-                    </button>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center', justifyContent: 'flex-end', marginTop: '4px' }}>
+                      <button
+                        className="text-[10px] text-white/50 hover:text-white/80 underline"
+                        data-testid="button-refresh-health"
+                        onClick={() => {
+                          setSystemHealthLoading(true);
+                          fetch('/api/system-health').then(r => r.json()).then(data => {
+                            setSystemHealthData(data);
+                            setSystemHealthLoading(false);
+                          }).catch(() => setSystemHealthLoading(false));
+                        }}
+                      >
+                        Refresh
+                      </button>
+                      <button
+                        className="text-[10px] text-orange-400/70 hover:text-orange-300 underline"
+                        data-testid="button-clear-cache"
+                        onClick={() => {
+                          const safeKeys = [
+                            'morning_review_dismiss_until', 'monthlyReportDismissed',
+                            'calendarHeight', 'calendarReduction', 'calendarReductionUserSet',
+                            'gridSizes', 'hwGroupBarWidth', 'hwDividerPercent',
+                            'hwFloating', 'timelineSyncCalendar', 'calendarWeekMode',
+                            'unical_selectedWeek', 'alarmMuteUntil', 'dismissedCalendarEvents',
+                            'partnerAwayDismissedUntil', 'hwShowDaysOnly', 'monthlyReportFields',
+                            'replitLastActiveTime', 'lastNavTimestamp',
+                            'celebrationEnabled', 'completedTaskHistory',
+                            'library-collapsed-courses', 'library-reading-rename-prompted',
+                            'customFolders',
+                          ];
+                          let localCleared = 0;
+                          safeKeys.forEach(k => { if (localStorage.getItem(k) !== null) { localStorage.removeItem(k); localCleared++; } });
+                          fetch('/api/clear-cache', { method: 'POST' })
+                            .then(r => r.json())
+                            .then(data => {
+                              const msg = `Cleared ${localCleared} local entries, server: ${(data.cleared || []).join(', ')}${data.ttsFilesCleared ? ` (${data.ttsFilesCleared} TTS audio files)` : ''}`;
+                              alert(msg);
+                            })
+                            .catch(() => alert(`Cleared ${localCleared} local cache entries (server unreachable)`));
+                        }}
+                      >
+                        Clear Cache
+                      </button>
+                    </div>
                   </div>
                 ) : null}
               </div>

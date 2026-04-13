@@ -12948,6 +12948,28 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     }
   });
 
+  app.post("/api/clear-cache", async (_req, res) => {
+    try {
+      weatherCache.data = null;
+      weatherCache.timestamp = 0;
+      weatherAlertCache.data = null;
+      weatherAlertCache.timestamp = 0;
+      pollenCache.data = null;
+      pollenCache.timestamp = 0;
+      const ttsDir = path.join(process.cwd(), 'dist', 'public', 'tts-audio');
+      let ttsFilesCleared = 0;
+      if (fs.existsSync(ttsDir)) {
+        const files = fs.readdirSync(ttsDir);
+        for (const f of files) {
+          try { fs.unlinkSync(path.join(ttsDir, f)); ttsFilesCleared++; } catch {}
+        }
+      }
+      res.json({ success: true, cleared: ['weatherCache', 'weatherAlertCache', 'pollenCache', 'ttsAudioFiles'], ttsFilesCleared });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
   app.get("/api/system-health", async (_req, res) => {
     const uptimeSeconds = Math.round((Date.now() - SERVER_START_TIME) / 1000);
     const checks: Record<string, { status: 'ok' | 'degraded' | 'down' | 'unconfigured'; message: string; details?: any }> = {};
