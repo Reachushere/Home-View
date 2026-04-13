@@ -3688,7 +3688,11 @@ export default function Dashboard() {
   const [isSystemHealthOpen, setIsSystemHealthOpen] = useState(false);
   const [systemHealthData, setSystemHealthData] = useState<any>(null);
   const [systemHealthLoading, setSystemHealthLoading] = useState(false);
-  const [healthTab, setHealthTab] = useState<'services' | 'folders' | 'automations'>('services');
+  const [healthTab, setHealthTab] = useState<'services' | 'folders' | 'automations' | 'sitemap'>('services');
+  const [siteMapData, setSiteMapData] = useState<any>(null);
+  const [siteMapLoading, setSiteMapLoading] = useState(false);
+  const [siteMapSearch, setSiteMapSearch] = useState('');
+  const [siteMapExpanded, setSiteMapExpanded] = useState<Set<string>>(new Set());
   const [allSemestersForHealth, setAllSemestersForHealth] = useState<any[]>([]);
   const [healthFolderVerify, setHealthFolderVerify] = useState<Record<number, Record<number, { checking: boolean; exists: boolean | null }>>>({});
   const [healthCourseExpanded, setHealthCourseExpanded] = useState<Record<string, boolean>>({});
@@ -18497,6 +18501,25 @@ export default function Dashboard() {
           title="Print current document"
         />
       )}
+      {desktopIsFull && authLevel === '5747' && (
+        <Copy
+          className="text-white/50 cursor-pointer hover:text-white/90"
+          strokeWidth={2.5}
+          style={{ height: '13px', width: '13px', position: 'fixed', bottom: '39px', right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 2 - 17 - 7 - 2 + 3 + 2 + 8 + 2 - 28 + 5 + 3 + 1 + 48 + 25 + 9 + 6 + 2 + 3 + 20}px`, zIndex: 70 }}
+          onClick={async () => {
+            try {
+              const res = await fetch('/api/source-code/all');
+              const text = await res.text();
+              await navigator.clipboard.writeText(text);
+              toast({ title: 'Copied!', description: `All app source code copied to clipboard (${(text.length / 1024).toFixed(0)} KB)` });
+            } catch (err: any) {
+              toast({ title: 'Copy failed', description: err.message, variant: 'destructive' });
+            }
+          }}
+          data-testid="button-copy-app"
+          title="Copy all app source code to clipboard"
+        />
+      )}
 
       {/* Timer bar - controls left, bottom-aligned with timer, label above */}
       <div style={{
@@ -24684,6 +24707,23 @@ export default function Dashboard() {
                   style={{ color: healthTab === 'automations' ? '#fff' : 'rgba(255,255,255,0.45)', borderBottom: healthTab === 'automations' ? '2px solid #60a5fa' : '2px solid transparent' }}
                   data-testid="health-tab-automations"
                 >Automations</button>
+                {authLevel === '5747' && (
+                  <button
+                    onClick={() => {
+                      setHealthTab('sitemap');
+                      if (!siteMapData && !siteMapLoading) {
+                        setSiteMapLoading(true);
+                        fetch('/api/site-map').then(r => r.json()).then(data => {
+                          setSiteMapData(data);
+                          setSiteMapLoading(false);
+                        }).catch(() => setSiteMapLoading(false));
+                      }
+                    }}
+                    className="text-[10px] font-medium py-2 px-3 transition-colors"
+                    style={{ color: healthTab === 'sitemap' ? '#fff' : 'rgba(255,255,255,0.45)', borderBottom: healthTab === 'sitemap' ? '2px solid #60a5fa' : '2px solid transparent' }}
+                    data-testid="health-tab-sitemap"
+                  >Site Map</button>
+                )}
               </div>
 
               {healthTab === 'services' ? (
@@ -24997,6 +25037,97 @@ export default function Dashboard() {
                       );
                     })}
                   </div>
+                )}
+              </div>
+              ) : healthTab === 'sitemap' && authLevel === '5747' ? (
+              <div className="px-4 py-3" style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent' }}>
+                <div className="mb-3 flex items-center gap-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-white/40" />
+                    <input
+                      type="text"
+                      value={siteMapSearch}
+                      onChange={e => setSiteMapSearch(e.target.value)}
+                      placeholder="Search files, routes, APIs..."
+                      className="w-full pl-7 pr-3 py-1.5 rounded border border-white/20 bg-white/5 text-[10px] text-white placeholder:text-white/30 focus:outline-none focus:border-white/40"
+                      data-testid="input-sitemap-search"
+                    />
+                  </div>
+                  <span className="text-[9px] text-white/30">{siteMapData?.totalApiRoutes || 0} API routes</span>
+                </div>
+                {siteMapLoading ? (
+                  <div className="flex items-center justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-white/60" /><span className="ml-2 text-white/60 text-[11px]">Loading site map...</span></div>
+                ) : siteMapData ? (
+                  <div className="flex flex-col gap-2">
+                    <div className="mb-2">
+                      <div className="text-[10px] font-bold text-white/70 uppercase tracking-wider mb-1">Pages</div>
+                      {(siteMapData.routes || []).map((r: any, i: number) => (
+                        <div key={i} className="flex items-center gap-2 py-0.5 text-[10px]">
+                          <span className="text-blue-400 font-mono">{r.path}</span>
+                          <span className="text-white/50">→</span>
+                          <span className="text-white/70">{r.name}</span>
+                          <span className="text-white/30 font-mono text-[8px]">{r.file}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mb-2">
+                      <div className="text-[10px] font-bold text-white/70 uppercase tracking-wider mb-1">API Routes ({siteMapData.totalApiRoutes})</div>
+                      <div className="flex flex-col gap-0.5 max-h-[200px] overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
+                        {(siteMapData.apiRoutes || []).filter((r: string) => !siteMapSearch || r.toLowerCase().includes(siteMapSearch.toLowerCase())).map((r: string, i: number) => {
+                          const [method, ...pathParts] = r.split(' ');
+                          const apiPath = pathParts.join(' ');
+                          const methodColors: Record<string, string> = { GET: '#4ade80', POST: '#60a5fa', PUT: '#facc15', PATCH: '#fb923c', DELETE: '#f87171' };
+                          return (
+                            <div key={i} className="flex items-center gap-2 py-0.5 text-[9px] font-mono">
+                              <span style={{ color: methodColors[method] || '#fff', fontWeight: 700, minWidth: '40px' }}>{method}</span>
+                              <span className="text-white/60">{apiPath}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] font-bold text-white/70 uppercase tracking-wider mb-1">File Tree</div>
+                      {(() => {
+                        const sq = siteMapSearch.toLowerCase();
+                        const renderTree = (nodes: any[], depth: number = 0): JSX.Element[] => {
+                          return nodes.filter((n: any) => {
+                            if (!sq) return true;
+                            if (n.name.toLowerCase().includes(sq) || n.path?.toLowerCase().includes(sq)) return true;
+                            if (n.type === 'dir' && n.children?.some((c: any) => c.name.toLowerCase().includes(sq) || c.path?.toLowerCase().includes(sq) || (c.children && JSON.stringify(c.children).toLowerCase().includes(sq)))) return true;
+                            return false;
+                          }).map((node: any) => {
+                            const isExpanded = siteMapExpanded.has(node.path);
+                            if (node.type === 'dir') {
+                              return (
+                                <div key={node.path}>
+                                  <div className="flex items-center gap-1 py-0.5 cursor-pointer hover:bg-white/5 rounded px-1" style={{ paddingLeft: `${depth * 12 + 4}px` }} onClick={() => setSiteMapExpanded(prev => { const next = new Set(prev); if (next.has(node.path)) next.delete(node.path); else next.add(node.path); return next; })}>
+                                    {isExpanded ? <ChevronDown className="h-2.5 w-2.5 text-white/40" /> : <ChevronRight className="h-2.5 w-2.5 text-white/40" />}
+                                    <FolderOpen className="h-3 w-3 text-yellow-400/70" />
+                                    <span className="text-[9px] text-white/80 font-medium">{node.name}</span>
+                                    <span className="text-[8px] text-white/20">{node.children?.length || 0}</span>
+                                  </div>
+                                  {isExpanded && node.children && renderTree(node.children, depth + 1)}
+                                </div>
+                              );
+                            }
+                            const extColors: Record<string, string> = { '.tsx': '#60a5fa', '.ts': '#3b82f6', '.css': '#c084fc', '.json': '#facc15', '.html': '#f97316', '.js': '#4ade80', '.jsx': '#22d3ee', '.sql': '#f87171' };
+                            return (
+                              <div key={node.path} className="flex items-center gap-1 py-0.5 px-1" style={{ paddingLeft: `${depth * 12 + 18}px` }}>
+                                <FileText className="h-2.5 w-2.5" style={{ color: extColors[node.ext] || 'rgba(255,255,255,0.3)' }} />
+                                <span className="text-[9px] text-white/60 font-mono">{node.name}</span>
+                                {node.lines && <span className="text-[7px] text-white/20">{node.lines}L</span>}
+                                <span className="text-[7px] text-white/15">{node.size > 1024 ? `${(node.size / 1024).toFixed(0)}KB` : `${node.size}B`}</span>
+                              </div>
+                            );
+                          });
+                        };
+                        return <div className="max-h-[300px] overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>{renderTree(siteMapData.tree)}</div>;
+                      })()}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center text-white/40 py-8 text-[11px]">No site map data</div>
                 )}
               </div>
               ) : null}

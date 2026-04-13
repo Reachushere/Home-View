@@ -348,6 +348,38 @@ export default function NotepadDialog({ isOpen, onClose, colorSettings, onUndock
     toast({ title: 'Cleared', description: 'Note content has been cleared.' });
   };
 
+  const handleBulkExport = () => {
+    if (!notes.length) return;
+    const grouped: Record<string, typeof notes> = {};
+    for (const n of notes) {
+      const g = n.groupName || 'Ungrouped';
+      if (!grouped[g]) grouped[g] = [];
+      grouped[g].push(n);
+    }
+    const tempDiv = document.createElement('div');
+    let text = `NOTEPAD EXPORT — ${new Date().toLocaleDateString('en-CA')} ${new Date().toLocaleTimeString('en-CA')}\n${'='.repeat(60)}\n\n`;
+    for (const [group, gNotes] of Object.entries(grouped)) {
+      text += `\n${'─'.repeat(40)}\n  ${group.toUpperCase()}\n${'─'.repeat(40)}\n\n`;
+      for (const n of gNotes.sort((a, b) => a.sortOrder - b.sortOrder)) {
+        text += `▸ ${n.title}\n`;
+        if (n.content) {
+          tempDiv.innerHTML = n.content;
+          const plain = tempDiv.textContent || tempDiv.innerText || '';
+          if (plain.trim()) text += `${plain.trim()}\n`;
+        }
+        text += '\n';
+      }
+    }
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `notepad-export-${new Date().toISOString().slice(0, 10)}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast({ title: 'Exported', description: `${notes.length} notes exported as text file.` });
+  };
+
   const deleteAttachmentMutation = useMutation({
     mutationFn: async (id: number) => {
       await fetch(`/api/notepad/attachments/${id}`, { method: 'DELETE' });
@@ -856,7 +888,18 @@ export default function NotepadDialog({ isOpen, onClose, colorSettings, onUndock
                   }}
                   data-testid="input-notepad"
                 />
-                <div className="flex items-center justify-end px-3 py-1.5 border-t border-white/15 flex-shrink-0" style={{ background: 'rgba(0,0,0,0.15)' }}>
+                <div className="flex items-center justify-between px-3 py-1.5 border-t border-white/15 flex-shrink-0" style={{ background: 'rgba(0,0,0,0.15)' }}>
+                  <Button
+                    size="sm"
+                    className="h-6 px-3 text-[10px] flex items-center gap-1"
+                    style={{ background: 'linear-gradient(180deg, rgba(59,130,246,0.3) 0%, rgba(59,130,246,0.15) 100%)', border: '1px solid rgba(59,130,246,0.4)', color: '#60a5fa' }}
+                    onClick={handleBulkExport}
+                    data-testid="button-bulk-export"
+                    title="Export all notes as text file"
+                  >
+                    <Download className="h-3 w-3" />
+                    Export All
+                  </Button>
                   <Button
                     size="sm"
                     className="h-6 px-3 text-[10px] flex items-center gap-1"

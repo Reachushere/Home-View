@@ -8196,6 +8196,119 @@ async function pollStatus(timeout){
 
   // ============= END MICROSOFT GRAPH: EXCEL & WORD =============
 
+  // ============= SEND RAW EMAIL =============
+  app.post("/api/send-guide-email", async (req, res) => {
+    try {
+      const { to, subject, html } = req.body;
+      if (!to || !subject || !html) return res.status(400).json({ error: 'to, subject, html required' });
+      const { getGmailAccessToken } = await import("./gmail");
+      const accessToken = await getGmailAccessToken();
+      const rawEmail = [
+        `To: ${to}`,
+        `Subject: =?UTF-8?B?${Buffer.from(subject).toString('base64')}?=`,
+        `MIME-Version: 1.0`,
+        `Content-Type: text/html; charset=UTF-8`,
+        `Content-Transfer-Encoding: base64`,
+        '',
+        Buffer.from(html).toString('base64'),
+      ].join('\r\n');
+      const encoded = Buffer.from(rawEmail).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+      const sendRes = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ raw: encoded }),
+      });
+      const result = await sendRes.json() as any;
+      if (result.error) throw new Error(JSON.stringify(result.error));
+      res.json({ success: true, messageId: result.id });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // ============= COPY APP SOURCE CODE =============
+  app.get("/api/source-code/all", async (_req, res) => {
+    try {
+      const fs = await import('fs');
+      const path = await import('path');
+      const root = process.cwd();
+      const output: string[] = [];
+      const includeExts = ['.ts', '.tsx', '.js', '.jsx', '.css', '.json', '.html', '.sql', '.cjs', '.mjs'];
+      const excludeDirs = ['node_modules', '.git', 'dist', '.replit', '.cache', '.local', 'attached_assets', 'artifacts'];
+      const excludeFiles = ['package-lock.json'];
+      const walk = (dir: string) => {
+        const entries = fs.readdirSync(dir, { withFileTypes: true });
+        for (const entry of entries) {
+          const fullPath = path.join(dir, entry.name);
+          const relPath = path.relative(root, fullPath);
+          if (entry.isDirectory()) {
+            if (!excludeDirs.includes(entry.name)) walk(fullPath);
+          } else if (entry.isFile()) {
+            if (excludeFiles.includes(entry.name)) continue;
+            const ext = path.extname(entry.name).toLowerCase();
+            if (includeExts.includes(ext)) {
+              try {
+                const content = fs.readFileSync(fullPath, 'utf-8');
+                output.push(`\n${'═'.repeat(80)}\n📄 FILE: ${relPath}\n${'═'.repeat(80)}\n${content}`);
+              } catch {}
+            }
+          }
+        }
+      };
+      walk(root);
+      res.type('text/plain').send(output.join('\n'));
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // ============= SITE MAP =============
+  app.get("/api/site-map", async (_req, res) => {
+    try {
+      const fs = await import('fs');
+      const path = await import('path');
+      const root = process.cwd();
+      const excludeDirs = ['node_modules', '.git', 'dist', '.replit', '.cache', '.local', 'attached_assets'];
+      const tree: any[] = [];
+      const walk = (dir: string, parent: any[]) => {
+        const entries = fs.readdirSync(dir, { withFileTypes: true }).sort((a, b) => {
+          if (a.isDirectory() && !b.isDirectory()) return -1;
+          if (!a.isDirectory() && b.isDirectory()) return 1;
+          return a.name.localeCompare(b.name);
+        });
+        for (const entry of entries) {
+          const fullPath = path.join(dir, entry.name);
+          const relPath = path.relative(root, fullPath);
+          if (entry.isDirectory()) {
+            if (excludeDirs.includes(entry.name)) continue;
+            const children: any[] = [];
+            walk(fullPath, children);
+            parent.push({ name: entry.name, path: relPath, type: 'dir', children });
+          } else {
+            const ext = path.extname(entry.name).toLowerCase();
+            const stats = fs.statSync(fullPath);
+            parent.push({ name: entry.name, path: relPath, type: 'file', ext, size: stats.size, lines: ext.match(/\.(ts|tsx|js|jsx|css|json|html|sql|cjs|mjs)$/) ? fs.readFileSync(fullPath, 'utf-8').split('\n').length : undefined });
+          }
+        }
+      };
+      walk(root, tree);
+      const routes = [
+        { path: '/', name: 'Dashboard (Main Calendar)', file: 'client/src/pages/dashboard.tsx' },
+        { path: '/library', name: 'Library View', file: 'client/src/components/LibraryView.tsx' },
+      ];
+      const apiRoutes: string[] = [];
+      const routeContent = fs.readFileSync(path.join(root, 'server/routes.ts'), 'utf-8');
+      const routeRegex = /app\.(get|post|put|patch|delete)\s*\(\s*["'`](\/api\/[^"'`]+)["'`]/gi;
+      let m;
+      while ((m = routeRegex.exec(routeContent)) !== null) {
+        apiRoutes.push(`${m[1].toUpperCase()} ${m[2]}`);
+      }
+      res.json({ tree, routes, apiRoutes, totalApiRoutes: apiRoutes.length });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   // ============= D2L ANNOUNCEMENTS =============
   app.get("/api/announcements", async (_req, res) => {
     try {
