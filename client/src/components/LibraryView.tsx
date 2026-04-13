@@ -2348,6 +2348,11 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       }
     }
 
+    result.sort((a, b) => {
+      const aHasFiles = a.files.length > 0 ? 0 : 1;
+      const bHasFiles = b.files.length > 0 ? 0 : 1;
+      return aHasFiles - bHasFiles;
+    });
     return result;
   }, [currentSemester, allFiles, semesters, syllabusPaths]);
 
