@@ -2414,14 +2414,26 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       return { wn, fType, ext };
     };
 
-    const getContentSnippet = (f: FileRecord): string | undefined => {
+    const getContentSnippet = (f: FileRecord, matchedTokens?: string[]): string | undefined => {
       if (!tokens.length || !f.extractedText) return undefined;
       const text = f.extractedText.toLowerCase();
-      if (!tokens.every(t => text.includes(t))) return undefined;
-      const firstIdx = text.indexOf(tokens[0]);
-      const start = Math.max(0, firstIdx - 40);
-      const end = Math.min(f.extractedText.length, firstIdx + tokens[0].length + 80);
-      return (start > 0 ? '...' : '') + f.extractedText.substring(start, end).replace(/\n/g, ' ').trim() + (end < f.extractedText.length ? '...' : '');
+      const toks = matchedTokens || tokens;
+      const matching = toks.filter(t => text.includes(t));
+      if (matching.length === 0) return undefined;
+      const snippets: string[] = [];
+      const seen = new Set<number>();
+      for (const tok of matching) {
+        const idx = text.indexOf(tok);
+        if (idx < 0) continue;
+        const bucket = Math.floor(idx / 120);
+        if (seen.has(bucket)) continue;
+        seen.add(bucket);
+        const start = Math.max(0, idx - 40);
+        const end = Math.min(f.extractedText.length, idx + tok.length + 80);
+        snippets.push((start > 0 ? '...' : '') + f.extractedText.substring(start, end).replace(/\n/g, ' ').trim() + (end < f.extractedText.length ? '...' : ''));
+        if (snippets.length >= 2) break;
+      }
+      return snippets.join('  ··  ') || undefined;
     };
 
     const moduleReadingFiles = allFiles.filter(f => {
@@ -2459,10 +2471,15 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
               `week ${info.wn}`, `week${info.wn}`, `w${info.wn}`,
               info.fType, info.ext,
             ].join(' ');
-            nameMatch = tokens.every(tok => searchable.includes(tok));
+            const nameMatchedTokens = tokens.filter(tok => searchable.includes(tok));
+            nameMatch = nameMatchedTokens.length > 0;
             if (!nameMatch) {
               contentSnippet = getContentSnippet(f);
               if (!contentSnippet) return;
+            } else if (nameMatchedTokens.length < tokens.length) {
+              const remainingTokens = tokens.filter(tok => !nameMatchedTokens.includes(tok));
+              const extraSnippet = getContentSnippet(f, remainingTokens);
+              if (extraSnippet) contentSnippet = extraSnippet;
             }
           }
 
@@ -2484,10 +2501,14 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         let contentSnippet: string | undefined;
         if (tokens.length > 0) {
           const searchable = [name, 'document dump', 'docs', 'documentdump', ext].join(' ');
-          const nameMatch = tokens.every(tok => searchable.includes(tok));
-          if (!nameMatch) {
+          const nameMatchedTokens = tokens.filter(tok => searchable.includes(tok));
+          if (nameMatchedTokens.length === 0) {
             contentSnippet = getContentSnippet(f);
             if (!contentSnippet) return;
+          } else if (nameMatchedTokens.length < tokens.length) {
+            const remainingTokens = tokens.filter(tok => !nameMatchedTokens.includes(tok));
+            const extraSnippet = getContentSnippet(f, remainingTokens);
+            if (extraSnippet) contentSnippet = extraSnippet;
           }
         }
         addedFileIds.add(f.id);
@@ -3513,6 +3534,11 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           }}>
             <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', marginBottom: '8px' }}>
               {combinedSearchResults.length} result{combinedSearchResults.length !== 1 ? 's' : ''} found
+              {masterSearch.trim() && masterSearch.trim().split(/\s+/).length > 1 && (
+                <span style={{ marginLeft: '6px', fontSize: '10px', color: 'rgba(130,200,255,0.6)' }}>
+                  (matching any of: {masterSearch.trim().split(/\s+/).map((w, i) => <span key={i}>{i > 0 && ', '}<span style={{ color: 'rgba(130,200,255,0.9)' }}>{w}</span></span>)})
+                </span>
+              )}
               {masterSearch.trim() && combinedSearchResults.some(r => r.contentSnippet) && (
                 <span style={{ marginLeft: '6px', fontSize: '10px', color: 'rgba(255,200,100,0.6)' }}>
                   ({combinedSearchResults.filter(r => r.contentSnippet).length} from content)
