@@ -4125,7 +4125,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
               <div style={{
                 maxHeight: isCollapsed ? '0px' : '800px',
                 opacity: isCollapsed ? 0 : 1,
-                overflow: isCollapsed ? 'hidden' : 'visible',
+                overflowX: 'hidden',
+                overflowY: isCollapsed ? 'hidden' : 'visible',
                 transition: 'max-height 0.3s ease, opacity 0.25s ease',
               }}>
               <div style={{ position: 'relative', maxWidth: '100%', overflow: 'hidden' }}>
