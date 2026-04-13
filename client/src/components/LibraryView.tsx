@@ -4499,25 +4499,30 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
+                      e.preventDefault();
+                      const code = course.code;
+                      const path = syllabusPaths[code];
+                      if (!path) return;
                       const syllabusFile: FileRecord = {
-                        id: -1 * (course.code.charCodeAt(0) * 1000 + course.code.charCodeAt(1)),
-                        originalName: `${course.code} Syllabus.pdf`,
-                        displayName: `${course.code} Syllabus`,
-                        objectPath: syllabusPaths[course.code],
+                        id: -1 * (code.charCodeAt(0) * 1000 + code.charCodeAt(1)),
+                        originalName: `${code} Syllabus.pdf`,
+                        displayName: `${code} Syllabus`,
+                        objectPath: path,
                         folder: null,
                         listened: false,
                         contentType: 'application/pdf',
                       };
-                      handleBookClick(syllabusFile, course.color || '#8B6914', `/api/syllabus/view?path=${encodeURIComponent(syllabusPaths[course.code])}`, course.code.replace(/\s/g, '').toLowerCase(), true);
+                      handleBookClick(syllabusFile, course.color || '#8B6914', `/api/syllabus/view?path=${encodeURIComponent(path)}`, code.replace(/\s/g, '').toLowerCase(), true);
                     }}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
                       gap: '3px',
-                      padding: 0,
-                      border: 'none',
-                      background: 'none',
-                      color: 'rgba(255,255,255,0.7)',
+                      padding: '2px 6px',
+                      border: '1px solid rgba(255,255,255,0.25)',
+                      borderRadius: '4px',
+                      background: 'rgba(139,105,20,0.35)',
+                      color: 'rgba(255,255,255,0.8)',
                       fontSize: '9px',
                       fontWeight: 600,
                       letterSpacing: '0.5px',
@@ -4526,9 +4531,11 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                       textTransform: 'uppercase',
                       marginRight: '8px',
                       flexShrink: 0,
+                      position: 'relative',
+                      zIndex: 20,
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.color = '#ffffff'; }}
-                    onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}
+                    onMouseEnter={e => { e.currentTarget.style.color = '#ffffff'; e.currentTarget.style.background = 'rgba(139,105,20,0.55)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.8)'; e.currentTarget.style.background = 'rgba(139,105,20,0.35)'; }}
                     data-testid={`btn-syllabus-${course.code}`}
                   >
                     <FileText size={9} />
