@@ -423,7 +423,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   const spineWidth = 28 + seededRand * 12 - (widthReduction || 0);
   const fileType = getFileType(file.folder);
   const bookHeight = fileType === 'module' ? shelfHeight - 24 + 50 : shelfHeight - 24 - (index % 3) * 6 + (besideHorizontal ? 50 : 0);
-  const rawFullTitle = fileType === 'module' ? 'Module' : (file.displayName || file.originalName).replace(/\.pdf$/i, '');
+  const rawFullTitle = fileType === 'module' ? `Module ${weekNum || ''}`.trim() : (file.displayName || file.originalName).replace(/\.pdf$/i, '');
   const fullTitle = rawFullTitle;
   const title = truncateSpineTitle(rawFullTitle, 28, !!file.displayName && file.displayName !== file.originalName);
   const expandedTitle = fullTitle;
@@ -4041,13 +4041,18 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             const isCollapsed = collapsedCourses.has(collapseKey);
             const REF_SHELF_HEIGHT = 170;
             const shelfScale = shelfHeight / REF_SHELF_HEIGHT;
-            const shelfCalibration: Record<string, { row: number; label: number; labelRight?: number }> = {
+            const shelfCalibrationByCode: Record<string, { row: number; label: number; labelRight?: number }> = {
               'CPPA122': { row: 48, label: -4, labelRight: 8 },
               'CFNF400': { row: 103, label: -16, labelRight: 8 },
               'CASL101': { row: 98, label: -20, labelRight: 8 },
             };
+            const shelfCalibrationByIndex: { row: number; label: number; labelRight?: number }[] = [
+              { row: 48, label: -4, labelRight: 8 },
+              { row: 103, label: -16, labelRight: 8 },
+              { row: 98, label: -20, labelRight: 8 },
+            ];
             const codeKey = course.code.replace(/\s/g, '').toUpperCase();
-            const calib = shelfCalibration[codeKey] || { row: 0, label: 0 };
+            const calib = shelfCalibrationByCode[codeKey] || shelfCalibrationByIndex[courseIdx] || shelfCalibrationByIndex[shelfCalibrationByIndex.length - 1] || { row: 0, label: 0 };
             const rowShift = Math.round(calib.row * shelfScale);
             const labelShift = Math.round(calib.label * shelfScale);
             const labelRight = Math.round((calib.labelRight || 0) * shelfScale);
