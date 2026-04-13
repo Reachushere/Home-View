@@ -31216,7 +31216,7 @@ export default function Dashboard() {
                                 key={task.id}
                                 className={`flex items-center gap-0.5 text-[9px] pl-1 pr-0.5 py-0.5 rounded border cursor-pointer w-full min-w-0 ${isUnackedReminder ? "animate-reminder-pulse" : ""}`}
                                 style={{
-                                  backgroundColor: isUnackedReminder ? 'rgba(220, 38, 38, 0.25)' : (() => { const otherTypeBg: Record<string, string> = { reading: 'rgba(56,130,255,0.45)', module: 'rgba(180,120,220,0.45)', essay: 'rgba(255,180,30,0.45)', project: 'rgba(255,100,50,0.45)', discussion: 'rgba(0,210,240,0.45)', poll: 'rgba(255,70,160,0.45)', exam: 'rgba(220,30,30,0.5)', quiz: 'rgba(16,200,120,0.45)', reminder: 'rgba(80,100,220,0.5)', meeting: 'rgba(202,138,4,0.5)', scholarship: 'rgba(224,76,23,0.45)', medical: 'rgba(220,60,60,0.45)', school: 'rgba(0,76,156,0.45)', household: 'rgba(245,158,11,0.45)', financial: 'rgba(16,185,129,0.45)', personal: 'rgba(139,92,246,0.45)', outside: 'rgba(34,197,94,0.45)', other: 'rgba(180,160,40,0.45)' }; return otherTypeBg[task.type] || otherRowColors.taskBgColor; })(),
+                                  backgroundColor: isUnackedReminder ? 'rgba(220, 38, 38, 0.25)' : (otherRowColors.taskBgColor || '#f59e0b'),
                                   borderColor: isUnackedReminder ? 'rgba(220, 38, 38, 0.6)' : '#000000',
                                   position: 'relative',
                                   zIndex: 6,
@@ -31237,13 +31237,13 @@ export default function Dashboard() {
                                 <span
                                   onClick={() => setEditingTask(task)}
                                   className={`cursor-pointer hover:opacity-80 pl-1 flex-1 min-w-0 ${task.isCompleted ? "line-through" : ""}`}
-                                  style={{ fontWeight: 400, color: 'white', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textShadow: 'none', WebkitTextStroke: '0', letterSpacing: '0.1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.2 }}
+                                  style={{ fontWeight: 400, color: '#000000', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textShadow: 'none', WebkitTextStroke: '0', letterSpacing: '0.1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.2 }}
                                 >
                                   {(task.title || '').replace(/[\[\]]/g, '')}
                                 </span>
                                 {task.referenceLink && (
                                   <a href={task.referenceLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0" title={task.referenceLink} data-testid={`link-icon-other-${task.id}`}>
-                                    <ExternalLink className="h-2.5 w-2.5 text-white/60 hover:text-white" />
+                                    <ExternalLink className="h-2.5 w-2.5 text-black/50 hover:text-black" />
                                   </a>
                                 )}
                               </div>
@@ -31270,7 +31270,7 @@ export default function Dashboard() {
                                 data-testid={`other-project-${proj.id}`}
                               >
                                 <FolderKanban className="h-3 w-3 shrink-0" style={{ color: proj.color || '#6b7280' }} />
-                                <span className="truncate cursor-pointer hover:opacity-80 pl-1 flex-1 min-w-0" style={{ fontWeight: 400, color: 'white', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textShadow: 'none', WebkitTextStroke: '0', letterSpacing: '0.1px' }}>{proj.name}</span>
+                                <span className="truncate cursor-pointer hover:opacity-80 pl-1 flex-1 min-w-0" style={{ fontWeight: 400, color: '#000000', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textShadow: 'none', WebkitTextStroke: '0', letterSpacing: '0.1px' }}>{proj.name}</span>
                               </div>
                             );
                           })}
