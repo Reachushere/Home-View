@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
-import { X, ChevronLeft, ChevronRight, ChevronDown, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2, Printer, Volume2, Square, Pause, Play, RefreshCw, Pencil, FileText, Minus, Loader2, ListOrdered, RotateCcw, StickyNote, Clock } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, ChevronDown, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2, Printer, Volume2, Square, Pause, Play, RefreshCw, Pencil, FileText, Minus, Loader2, ListOrdered, RotateCcw, StickyNote, Clock, ArrowLeft } from 'lucide-react';
 import * as pdfjsLib from 'pdfjs-dist';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import shelfBgImage from '@assets/Bookshelf10_1776107329434.jpg';
@@ -1080,7 +1080,7 @@ const toolBtnStyle = (active?: boolean): React.CSSProperties => ({
   transition: 'all 0.15s ease',
 });
 
-function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles, onOpenModuleFile, isSyllabus, onBringToFront, readerIndex, initialSearchQuery, initialPage, onOpenSyllabus, courseCode: readerCourseCode }: {
+function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles, onOpenModuleFile, isSyllabus, onBringToFront, readerIndex, initialSearchQuery, initialPage, onOpenSyllabus, courseCode: readerCourseCode, onBackToSyllabus }: {
   file: FileRecord;
   bookColor: string;
   onClose: () => void;
@@ -1095,6 +1095,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
   initialPage?: number;
   onOpenSyllabus?: (courseCode: string) => void;
   courseCode?: string;
+  onBackToSyllabus?: () => void;
 }) {
   const [phase, setPhase] = useState<'pull' | 'expand' | 'reading'>('pull');
   const [pdfDoc, setPdfDoc] = useState<any>(null);
@@ -1746,7 +1747,27 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
                 </button>
               </div>
 
-              {!isSyllabus && readerCourseCode && onOpenSyllabus && (
+              {onBackToSyllabus && (
+                <button
+                  onClick={onBackToSyllabus}
+                  style={{
+                    ...toolBtnStyle(),
+                    display: 'flex', alignItems: 'center', gap: '4px',
+                    padding: '3px 10px',
+                    fontSize: '10px', fontWeight: 600, letterSpacing: '0.3px',
+                    color: '#D4AF37',
+                    textTransform: 'uppercase',
+                    background: 'rgba(212,175,55,0.15)',
+                    border: '1px solid rgba(212,175,55,0.3)',
+                  }}
+                  title="Back to Syllabus"
+                  data-testid="btn-back-to-syllabus"
+                >
+                  <ArrowLeft size={12} />
+                  Syllabus
+                </button>
+              )}
+              {!isSyllabus && !onBackToSyllabus && readerCourseCode && onOpenSyllabus && (
                 <button
                   onClick={() => onOpenSyllabus(readerCourseCode)}
                   style={{
@@ -2304,7 +2325,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
   const [syncingSemKey, setSyncingSemKey] = useState<string | null>(null);
   const [selectedBook, setSelectedBook] = useState<FileRecord | null>(null);
   const [selectedBookColor, setSelectedBookColor] = useState('#8B4513');
-  const [openReaders, setOpenReaders] = useState<{ file: FileRecord; color: string; pdfUrl?: string; courseCode?: string; isSyllabus?: boolean; initialSearchQuery?: string; initialPage?: number }[]>([]);
+  const [openReaders, setOpenReaders] = useState<{ file: FileRecord; color: string; pdfUrl?: string; courseCode?: string; isSyllabus?: boolean; initialSearchQuery?: string; initialPage?: number; openedFromSyllabusCode?: string }[]>([]);
   const [focusedReaderId, setFocusedReaderId] = useState<number | null>(null);
   const [minimizedReaders, setMinimizedReaders] = useState<Set<number>>(new Set());
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -3076,11 +3097,11 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
     });
   }, []);
 
-  const handleBookClick = useCallback((file: FileRecord, color: string, pdfUrl?: string, courseCode?: string, isSyllabus?: boolean, initialSearchQuery?: string, initialPage?: number) => {
+  const handleBookClick = useCallback((file: FileRecord, color: string, pdfUrl?: string, courseCode?: string, isSyllabus?: boolean, initialSearchQuery?: string, initialPage?: number, openedFromSyllabusCode?: string) => {
     const cc = courseCode || file.folder?.match(/^week-\d+-(.+?)-(module|reading)$/i)?.[1]?.toLowerCase();
     setOpenReaders(prev => {
       if (prev.some(r => r.file.id === file.id)) return prev;
-      return [...prev, { file, color, pdfUrl, courseCode: cc, isSyllabus, initialSearchQuery, initialPage }];
+      return [...prev, { file, color, pdfUrl, courseCode: cc, isSyllabus, initialSearchQuery, initialPage, openedFromSyllabusCode }];
     });
     setFocusedReaderId(file.id);
   }, []);
@@ -4647,7 +4668,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             }}
             pdfUrl={reader.pdfUrl}
             moduleFiles={reader.courseCode ? courseModuleFilesMap[reader.courseCode] : undefined}
-            onOpenModuleFile={(mf, color) => handleBookClick(mf, color)}
+            onOpenModuleFile={(mf, color) => handleBookClick(mf, color, undefined, reader.courseCode, false, undefined, undefined, reader.isSyllabus ? reader.courseCode : undefined)}
             isSyllabus={reader.isSyllabus}
             onBringToFront={() => setFocusedReaderId(reader.file.id)}
             readerIndex={readerIdx}
@@ -4669,6 +4690,28 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
               };
               handleBookClick(syllabusFile, '#8B6914', `/api/syllabus/view?path=${encodeURIComponent(sp)}`, code.toLowerCase(), true);
             }}
+            onBackToSyllabus={reader.openedFromSyllabusCode ? () => {
+              const cc = reader.openedFromSyllabusCode!.toUpperCase();
+              const sp = syllabusPaths[cc] || syllabusPaths[cc.toLowerCase()];
+              if (!sp) return;
+              setOpenReaders(prev => prev.filter(r => r.file.id !== reader.file.id));
+              setMinimizedReaders(prev => { const next = new Set(prev); next.delete(reader.file.id); return next; });
+              const syllabusFile: FileRecord = {
+                id: -1 * (cc.charCodeAt(0) * 1000 + cc.charCodeAt(1)),
+                originalName: `${cc} Syllabus.pdf`,
+                displayName: `${cc} Syllabus`,
+                objectPath: sp,
+                folder: null,
+                listened: false,
+                contentType: 'application/pdf',
+              };
+              const existing = openReaders.find(r => r.isSyllabus && r.courseCode?.toUpperCase() === cc);
+              if (existing) {
+                setFocusedReaderId(existing.file.id);
+              } else {
+                handleBookClick(syllabusFile, '#8B6914', `/api/syllabus/view?path=${encodeURIComponent(sp)}`, cc.toLowerCase(), true);
+              }
+            } : undefined}
           />
           </div>
         </div>

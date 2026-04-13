@@ -775,6 +775,46 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
     return map;
   }, [courseModuleFiles]);
 
+  const courseReadingFiles = useMemo(() => {
+    const codeUpper = courseInfo.courseCode.toUpperCase().replace(/\s/g, '');
+    const codeLower = codeUpper.toLowerCase();
+    return allFiles.filter(f => {
+      if (!f.folder) return false;
+      const folderLower = f.folder.toLowerCase();
+      return folderLower.includes(codeLower) && folderLower.includes('reading');
+    });
+  }, [allFiles, courseInfo.courseCode]);
+
+  const readingsByWeek = useMemo(() => {
+    const map: Record<number, ModuleFile[]> = {};
+    for (let w = FIRST_WEEK; w <= maxWeek; w++) map[w] = [];
+    for (const f of courseReadingFiles) {
+      const weekMatch = f.folder?.match(/week-(\d+)/i);
+      if (weekMatch) {
+        const weekNum = parseInt(weekMatch[1], 10);
+        if (weekNum >= FIRST_WEEK && weekNum <= maxWeek) {
+          if (!map[weekNum]) map[weekNum] = [];
+          map[weekNum].push(f);
+        }
+      }
+    }
+    return map;
+  }, [courseReadingFiles, maxWeek]);
+
+  const docCompletionStats = useMemo(() => {
+    const hasSyllabus = !!syllabusObjectPath;
+    let weeksWithModule = 0;
+    let weeksWithReading = 0;
+    for (let w = FIRST_WEEK; w <= maxWeek; w++) {
+      if ((modulesByWeek[w] || []).length > 0) weeksWithModule++;
+      if ((readingsByWeek[w] || []).length > 0) weeksWithReading++;
+    }
+    const totalItems = 1 + maxWeek;
+    const doneItems = (hasSyllabus ? 1 : 0) + weeksWithModule;
+    const pct = Math.round((doneItems / totalItems) * 100);
+    return { hasSyllabus, weeksWithModule, weeksWithReading, totalWeeks: maxWeek, pct, doneItems, totalItems };
+  }, [syllabusObjectPath, modulesByWeek, readingsByWeek, maxWeek]);
+
   const getModuleProgress = useCallback((file: ModuleFile): number => {
     if (file.listened) return 100;
     if (!file.totalChunks || file.totalChunks === 0) return 0;
@@ -2308,6 +2348,22 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               )}
         </div>
         <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(255,255,255,0.2) transparent" }}>
+          {docCompletionStats.pct < 100 && !isEditingInfo && (
+            <div className="mx-3 mt-2 mb-0 px-3 py-2 rounded-lg" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }} data-testid="doc-completion-bar">
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[9px] text-white/50 font-medium uppercase tracking-wider">Course Documents</span>
+                <span className="text-[9px] font-semibold" style={{ color: docCompletionStats.pct >= 70 ? '#f59e0b' : '#ef4444' }}>{docCompletionStats.pct}%</span>
+              </div>
+              <div className="h-1.5 rounded-full overflow-hidden mb-1.5" style={{ background: 'rgba(255,255,255,0.08)' }}>
+                <div className="h-full rounded-full transition-all duration-500" style={{ width: `${docCompletionStats.pct}%`, background: docCompletionStats.pct >= 70 ? '#f59e0b' : '#ef4444' }} />
+              </div>
+              <div className="flex items-center gap-3 text-[8px] text-white/40">
+                <span>{docCompletionStats.hasSyllabus ? '✓ Syllabus' : '✗ Syllabus'}</span>
+                <span>{docCompletionStats.weeksWithModule}/{docCompletionStats.totalWeeks} Modules</span>
+                <span>{docCompletionStats.weeksWithReading}/{docCompletionStats.totalWeeks} Readings</span>
+              </div>
+            </div>
+          )}
           <div className="p-3 space-y-2">
             {isEditingInfo ? (
               <div className="space-y-2 text-[10px]">

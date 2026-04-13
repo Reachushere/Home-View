@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import Cropper from "react-easy-crop";
 import { NewCourseWizard } from "@/components/NewCourseWizard";
 import { CourseDetailDialog } from "@/components/CourseDetailDialog";
+import CourseDocumentsWizard from "@/components/CourseDocumentsWizard";
 import NotepadDialog from "@/components/NotepadDialog";
 import FloatingPostIt from "@/components/FloatingPostIt";
 import OtherRowEditDialog from "@/components/OtherRowEditDialog";
@@ -1292,6 +1293,7 @@ export default function Dashboard() {
   });
   const [isMedicalWizardOpen, setIsMedicalWizardOpen] = useState(false);
   const [medicalStep, setMedicalStep] = useState(0);
+  const [isCourseDocWizardOpen, setIsCourseDocWizardOpen] = useState(false);
   const [medicalData, setMedicalData] = useState({
     appointmentType: '' as '' | 'dentist' | 'doctor' | 'specialist' | 'eye' | 'walk-in' | 'other',
     customType: '',
@@ -21739,6 +21741,17 @@ export default function Dashboard() {
                           <img src={teacherWhiteIconPath} alt="Course" className="h-3.5 w-3.5" style={{ filter: 'brightness(1)' }} />
                           Course
                         </button>
+                        <button
+                          className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 text-white flex items-center gap-1.5"
+                          style={{ background: 'rgba(100,80,200,0.35)', border: '1px solid rgba(100,80,200,0.7)' }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(100,80,200,0.45)'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(100,80,200,0.35)'; }}
+                          onClick={(e) => { e.stopPropagation(); setIsQuickAddOpen(false); setTimeout(() => setIsCourseDocWizardOpen(true), 50); }}
+                          data-testid="quick-add-type-course-documents"
+                        >
+                          <FileText className="h-3.5 w-3.5" />
+                          Course Documents
+                        </button>
                         {(["module", "reading", "essay", "discussion", "poll", "quiz", "exam", "other", "reminder", "meeting", "scholarship", "project"] as const).map(type => {
                           const TypeIcon = iconMap[type] || FileText;
                           const typeColors: Record<string, { bg: string; border: string; hover: string }> = {
@@ -23047,6 +23060,22 @@ export default function Dashboard() {
               )}
             </div>
           )}
+
+          <CourseDocumentsWizard
+            open={isCourseDocWizardOpen}
+            onClose={() => setIsCourseDocWizardOpen(false)}
+            coursesData={coursesData}
+            semesters={(() => {
+              const map: Record<string, any> = {};
+              const allSems = allSemesterSettingsRef.current || [];
+              for (const sem of allSems) {
+                const sk = sem.semKey || '';
+                if (sk) map[sk] = sem;
+              }
+              return map;
+            })()}
+            semesterKeyOrder={semesterKeyOrder}
+          />
 
           {isMedicalWizardOpen && (
             <div
