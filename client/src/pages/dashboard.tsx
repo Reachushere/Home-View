@@ -29611,8 +29611,8 @@ export default function Dashboard() {
               {/* Course Rows - Dynamic based on selected week */}
               {/* Pre-compute course row height: minimum = 3 tasks height, expand only if any course has >3 tasks */}
               {(() => {
-                const currentWeekStart = weekDays[0];
-                const currentWeekEnd = weekDays[6];
+                const currentWeekStart = weekStartDate;
+                const currentWeekEnd = weekEndDate;
                 const semStartDates: Record<string, string> = {
                   'ss2025': '2025-05-05', 'f2025': '2025-09-08', 'w2026': '2026-01-12',
                   'ss2026': '2026-05-04', 'f2026': '2026-09-14', 'w2027': '2027-01-11',
