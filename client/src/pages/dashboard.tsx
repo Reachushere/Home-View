@@ -26542,28 +26542,32 @@ export default function Dashboard() {
                 fetch('/api/weekly-planning/dismiss', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ weekKey }) }).catch(() => {});
                 setWeeklyPlanningOpen(false);
               }} />
-              <div className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] z-[10006] w-[420px] max-w-[94vw] max-h-[80vh] overflow-y-auto rounded-lg text-white p-5" style={{ background: 'linear-gradient(180deg, #1a1f3a 0%, #0d1025 100%)', border: '2px solid rgba(255,255,255,0.3)', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }} data-testid="weekly-planning-dialog">
-                <h3 className="text-sm font-bold mb-1" style={{ letterSpacing: '0.5px' }}>📋 Weekly Planning</h3>
-                <p className="text-[10px] text-white/50 mb-3">Review your upcoming tasks and mark their status.</p>
+              <div className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] z-[10006] w-[440px] max-w-[94vw] max-h-[80vh] rounded-xl text-white flex flex-col overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, ${colorSettings.mainBackgroundGradientEnd} 100%)`, border: '1.5px solid rgba(255,255,255,0.25)', boxShadow: '0 12px 48px rgba(0,0,0,0.55)' }} data-testid="weekly-planning-dialog">
+                <div className="px-5 pt-5 pb-3">
+                  <h3 className="text-sm font-bold mb-1" style={{ letterSpacing: '0.5px' }}>Weekly Planning</h3>
+                  <p className="text-[10px] text-white/50">Review your upcoming tasks and mark their status.</p>
+                </div>
+                <div className="flex-1 overflow-y-auto px-5 pb-3" style={{ maxHeight: 'calc(80vh - 120px)' }}>
                 {(() => {
+                  const ignoredIds: number[] = (() => { try { return JSON.parse(localStorage.getItem('weeklyPlanIgnored') || '[]'); } catch { return []; } })();
                   const upcoming = allTasks.filter(t => {
                     if (t.isCompleted) return false;
                     if (!t.dueDate) return false;
+                    if (ignoredIds.includes(t.id)) return false;
                     const due = new Date(t.dueDate);
                     const now = new Date();
                     const diff = (due.getTime() - now.getTime()) / (1000*60*60*24);
                     return diff >= -1 && diff <= 10;
                   }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
-                  if (upcoming.length === 0) return <p className="text-[11px] text-white/50 italic">No upcoming tasks this week.</p>;
-                  const statusColors: Record<string, string> = { not_started: '#ef4444', in_progress: '#f59e0b', done: '#22c55e' };
-                  const statusLabels: Record<string, string> = { not_started: 'Not Started', in_progress: 'In Progress', done: 'Done' };
+                  if (upcoming.length === 0) return <p className="text-[11px] text-white/50 italic py-4 text-center">No upcoming tasks this week.</p>;
+                  const statusColors: Record<string, string> = { not_started: '#ef4444', in_progress: '#f59e0b', done: '#22c55e', ignore: '#6b7280' };
                   return upcoming.map(t => {
                     const due = new Date(t.dueDate);
                     const daysLeft = Math.max(0, Math.round((due.getTime() - new Date().getTime()) / (1000*60*60*24)));
                     const status = (t as any).taskStatus || 'not_started';
                     const co = (coursesData?.courses || []).find((c: any) => c.name?.split(' - ')[0]?.toUpperCase() === t.courseName?.toUpperCase() || c.name === t.courseName);
                     return (
-                      <div key={t.id} className="flex items-center gap-2 mb-2 p-2 rounded" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }} data-testid={`weekly-plan-task-${t.id}`}>
+                      <div key={t.id} className="flex items-center gap-2 mb-2 p-2 rounded-lg" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }} data-testid={`weekly-plan-task-${t.id}`}>
                         <div style={{ width: '4px', height: '32px', borderRadius: '2px', background: co?.color || '#3b82f6', flexShrink: 0 }} />
                         <div className="flex-1 min-w-0">
                           <div className="text-[11px] font-semibold truncate">{t.title}</div>
@@ -26573,6 +26577,13 @@ export default function Dashboard() {
                           value={status}
                           onChange={async (e) => {
                             const newStatus = e.target.value;
+                            if (newStatus === 'ignore') {
+                              const current: number[] = (() => { try { return JSON.parse(localStorage.getItem('weeklyPlanIgnored') || '[]'); } catch { return []; } })();
+                              current.push(t.id);
+                              localStorage.setItem('weeklyPlanIgnored', JSON.stringify(current));
+                              queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+                              return;
+                            }
                             try {
                               await fetch(`/api/tasks/${t.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ taskStatus: newStatus }) });
                               queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
@@ -26585,14 +26596,17 @@ export default function Dashboard() {
                           <option value="not_started">Not Started</option>
                           <option value="in_progress">In Progress</option>
                           <option value="done">Done</option>
+                          <option value="ignore" style={{ color: '#6b7280' }}>Ignore</option>
                         </select>
                       </div>
                     );
                   });
                 })()}
-                <div className="flex gap-2 mt-4">
+                </div>
+                <div className="px-5 py-3 flex items-center justify-between flex-shrink-0" style={{ borderTop: '1px solid rgba(255,255,255,0.15)', background: 'rgba(0,0,0,0.15)' }}>
+                  <span className="text-[9px] text-white/30">Tasks due within 10 days</span>
                   <button
-                    className="flex-1 py-2 rounded text-[11px] font-bold border cursor-pointer transition-all hover:brightness-110"
+                    className="py-2 px-6 rounded-lg text-[11px] font-bold border cursor-pointer transition-all hover:brightness-110"
                     style={{ background: 'rgba(59,130,246,0.25)', borderColor: 'rgba(59,130,246,0.5)', color: '#93c5fd' }}
                     onClick={() => {
                       const weekKey = `weeklyPlan_${format(startOfDayET(new Date()), 'yyyy-ww')}`;
