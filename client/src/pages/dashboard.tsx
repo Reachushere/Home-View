@@ -30168,11 +30168,11 @@ export default function Dashboard() {
                           const firstWord = cdWords[0] || '';
                           const restWords = cdWords.slice(1).join(' ');
                           return hasCustomDisplay ? (
-                            <span className="font-[785] text-center" style={{ wordBreak: 'normal', overflowWrap: 'anywhere', hyphens: 'auto', whiteSpace: 'normal', lineHeight: 1.15 } as any}>{labelText}</span>
+                            <span className="font-[785] text-center" style={{ wordBreak: 'break-word', overflowWrap: 'break-word', whiteSpace: 'normal', lineHeight: 1.15, padding: '0 3px', maxWidth: '100%', display: 'block' } as any}>{labelText}</span>
                           ) : (
                             <>
-                              <span className="font-[785] text-center" style={{ whiteSpace: 'nowrap' }}>{firstWord}</span>
-                              {restWords && <span className="text-center" style={{ wordBreak: 'normal', overflowWrap: 'anywhere', hyphens: 'auto', whiteSpace: 'normal', lineHeight: 1.15 } as any}>{restWords}</span>}
+                              <span className="font-[785] text-center" style={{ whiteSpace: 'nowrap', padding: '0 2px' }}>{firstWord}</span>
+                              {restWords && <span className="text-center" style={{ wordBreak: 'break-word', overflowWrap: 'break-word', whiteSpace: 'normal', lineHeight: 1.15, padding: '0 3px', maxWidth: '100%', display: 'block' } as any}>- {restWords}</span>}
                             </>
                           );
                         })()}

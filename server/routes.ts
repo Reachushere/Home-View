@@ -1090,12 +1090,7 @@ export async function registerRoutes(
           }
           if (realCourseCodes.has(codeNorm)) continue;
           if (validPattern.test(codeNorm)) {
-            const dn = ((sem as any)[`course${ci}DisplayName`] || '').trim();
             const nm = ((sem as any)[`course${ci}Name`] || '').trim();
-            if (!dn || !validPattern.test(dn.replace(/\s/g, '').toUpperCase())) {
-              updates[`course${ci}DisplayName`] = code;
-              console.log(`[CleanupSem] ${sem.semesterName} slot ${ci}: fix displayName "${dn}" -> "${code}"`);
-            }
             if (!nm || (nm !== code && !validPattern.test(nm.replace(/\s/g, '').toUpperCase()))) {
               updates[`course${ci}Name`] = code;
               console.log(`[CleanupSem] ${sem.semesterName} slot ${ci}: fix name "${nm}" -> "${code}"`);
@@ -6022,7 +6017,10 @@ Always cite which file/document each finding comes from. Be thorough but concise
                 courseUpdates[`course${i}ModuleFolder`] = newModFolder;
                 if (newCourseName) {
                   courseUpdates[`course${i}Name`] = `${newCode} - ${newCourseName}`;
-                  courseUpdates[`course${i}DisplayName`] = newCourseName;
+                  const existingDN = ((sem as any)[`course${i}DisplayName`] || '').trim();
+                  if (!existingDN || existingDN.startsWith('TBD')) {
+                    courseUpdates[`course${i}DisplayName`] = newCourseName;
+                  }
                 }
                 const readFolder = ((sem as any)[`course${i}ReadingFolder`] || '').trim();
                 if (readFolder && readFolder.includes(expectedFolderName)) {
@@ -7402,7 +7400,10 @@ async function pollStatus(timeout){
             }
             if (courseName) {
               updates[`${prefix}Name`] = `${code} - ${courseName}`;
-              updates[`${prefix}DisplayName`] = courseName;
+              const existingDN = ((semester as any)[`${prefix}DisplayName`] || '').trim();
+              if (!existingDN || existingDN.startsWith('TBD')) {
+                updates[`${prefix}DisplayName`] = courseName;
+              }
             }
             if (Object.keys(updates).length > 0) {
               await storage.updateSemesterSettings(semester.id, updates);
