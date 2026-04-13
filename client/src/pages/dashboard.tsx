@@ -2252,6 +2252,9 @@ export default function Dashboard() {
     setCalendarReductionUserSetRaw(val);
     if (val) localStorage.setItem('calendarReductionUserSet', '1');
   };
+  const [homeworkMinimized, setHomeworkMinimized] = useState(() => localStorage.getItem('homeworkMinimized') === '1');
+  const [homeworkAnimating, setHomeworkAnimating] = useState(false);
+  const savedCalendarReductionRef = useRef<number | null>(null);
   const [isResizingHomework, setIsResizingHomework] = useState(false);
   const resizingHomeworkRef = useRef<{ startX: number; startReduction: number } | null>(null);
   const [originalCalendarLeft, setOriginalCalendarLeft] = useState(27); // Original left before reduction
@@ -28968,7 +28971,7 @@ export default function Dashboard() {
           
           
           {/* Calendar wrapper - leaves space for honeycombs on right */}
-          <div ref={calendarWrapperRef} style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction - 2}px` : ''})`, height: 'calc(100% - 18px)', marginTop: '18px', marginLeft: '12px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 - 2 - 2 - 2 : 0}px`, display: desktopShowCalendar ? 'flex' : 'none', flexDirection: 'column' }} className="relative overflow-visible">
+          <div ref={calendarWrapperRef} style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction - 2}px` : ''})`, height: 'calc(100% - 18px)', marginTop: '18px', marginLeft: '12px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 - 2 - 2 - 2 : 0}px`, display: desktopShowCalendar ? 'flex' : 'none', flexDirection: 'column', transition: homeworkAnimating ? 'width 0.35s cubic-bezier(0.4,0,0.2,1), margin-right 0.35s cubic-bezier(0.4,0,0.2,1)' : 'none' }} className="relative overflow-visible">
           
           {/* Glass effect backing box - resizes with calendar */}
           <div 
@@ -29173,12 +29176,47 @@ export default function Dashboard() {
                 });
               }}
               className="absolute cursor-pointer hover:opacity-80 transition-opacity"
-              style={{ left: '-15px', top: '-12px', zIndex: 60, background: 'none', border: 'none', padding: 0 }}
+              style={{ left: '-15px', top: '-14px', zIndex: 60, background: 'none', border: 'none', padding: 0 }}
               data-testid="button-calendar-settings-cog"
               title="Calendar Settings"
             >
               <Settings className="h-[17px] w-[17px] text-white/70 hover:text-white" />
             </button>
+            {desktopShowHomework && (
+              <button
+                onClick={() => {
+                  if (homeworkAnimating) return;
+                  setHomeworkAnimating(true);
+                  if (!homeworkMinimized) {
+                    savedCalendarReductionRef.current = calendarReduction;
+                    localStorage.setItem('savedCalendarReduction', String(calendarReduction));
+                    localStorage.setItem('homeworkMinimized', '1');
+                    setHomeworkMinimized(true);
+                    setTimeout(() => {
+                      setCalendarReduction(0);
+                      localStorage.setItem('calendarReduction', '0');
+                      setTimeout(() => setHomeworkAnimating(false), 350);
+                    }, 50);
+                  } else {
+                    const restore = savedCalendarReductionRef.current ?? (parseFloat(localStorage.getItem('savedCalendarReduction') || '0') || 260);
+                    localStorage.removeItem('homeworkMinimized');
+                    setCalendarReduction(restore);
+                    localStorage.setItem('calendarReduction', String(restore));
+                    setHomeworkMinimized(false);
+                    setTimeout(() => setHomeworkAnimating(false), 400);
+                  }
+                }}
+                className="absolute cursor-pointer hover:opacity-80 transition-opacity"
+                style={{ left: '5px', top: '-14px', zIndex: 60, background: 'none', border: 'none', padding: 0 }}
+                data-testid="button-toggle-homework"
+                title={homeworkMinimized ? 'Show homework panel' : 'Hide homework panel'}
+              >
+                {homeworkMinimized
+                  ? <ChevronLeft className="h-[17px] w-[17px] text-white/70 hover:text-white" />
+                  : <ChevronRight className="h-[17px] w-[17px] text-white/70 hover:text-white" />
+                }
+              </button>
+            )}
             <div
               style={{ position: 'absolute', left: '9px', top: '-31px', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto' }}
               data-testid="calendar-top-resize-handle"
@@ -33336,7 +33374,7 @@ export default function Dashboard() {
         </div>
         ) : (
         <div className="mb-[0px] mt-[0px] relative flex gap-4 transition-opacity duration-300" style={{ height: calendarHeight - 12 - d2lTickerHeight, flexShrink: 0, order: 1, paddingTop: `${10 + d2lTickerHeight}px` }}>
-          <div ref={calendarWrapperRef} className="relative overflow-visible" style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction - 2}px` : ''})`, height: 'calc(100% - 24px)', marginTop: '24px', marginLeft: '12px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 - 2 - 2 - 2 : 0}px`, display: 'flex', flexDirection: 'column' as const }}>
+          <div ref={calendarWrapperRef} className="relative overflow-visible" style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction - 2}px` : ''})`, height: 'calc(100% - 24px)', marginTop: '24px', marginLeft: '12px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 - 2 - 2 - 2 : 0}px`, display: 'flex', flexDirection: 'column' as const, transition: homeworkAnimating ? 'width 0.35s cubic-bezier(0.4,0,0.2,1), margin-right 0.35s cubic-bezier(0.4,0,0.2,1)' : 'none' }}>
           {/* Glass effect backing box - same as main calendar */}
           <div 
             className="absolute pointer-events-none"
@@ -33983,9 +34021,10 @@ export default function Dashboard() {
             WebkitBackdropFilter: 'blur(40px)',
             boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)',
             border: 'none',
-            opacity: (isPillMenuOpen && !sidePillIdle) ? 0 : 1,
-            pointerEvents: (isPillMenuOpen && !sidePillIdle) ? 'none' : 'auto',
-            transition: 'opacity 0.2s ease'
+            clipPath: homeworkMinimized ? 'inset(0 0 100% 0)' : 'inset(0 0 0% 0)',
+            transition: homeworkAnimating ? 'clip-path 0.35s cubic-bezier(0.4,0,0.2,1), right 0.35s cubic-bezier(0.4,0,0.2,1), width 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease' : 'opacity 0.3s ease',
+            opacity: (isPillMenuOpen && !sidePillIdle) ? 0 : (homeworkMinimized && !homeworkAnimating) ? 0 : 1,
+            pointerEvents: (isPillMenuOpen && !sidePillIdle) ? 'none' : (homeworkMinimized && !homeworkAnimating) ? 'none' : 'auto',
           }}
           data-testid="section-coming-up"
         >
