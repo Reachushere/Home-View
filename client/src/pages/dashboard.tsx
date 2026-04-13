@@ -31641,7 +31641,7 @@ export default function Dashboard() {
                     style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${rowHeight}px`, minHeight: `${rowHeight}px`, overflow: 'hidden', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '12px' : undefined, borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '12px' : undefined, backgroundColor: '#faf8f5' }}
                   >
                     <div className={`text-[10px] font-medium tracking-wide flex flex-col items-center justify-center relative ${isCurrentHour && blinkSettings.todayColumnBlink ? "animate-today-time-cell" : ""}`} style={{ backgroundColor: isCurrentHour && blinkSettings.todayColumnBlink ? undefined : (isCurrentHour ? colorSettings.todayCurrentHourCellBackground : colorSettings.headerBar), color: 'white', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '8px' : undefined, borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined, borderBottom: hourIdx < timeSlots.length - 1 ? '1px dotted rgba(255,255,255,0.25)' : undefined, animationDelay: isCurrentHour && blinkSettings.todayColumnBlink ? `-${Date.now() % 7000}ms` : undefined, padding: '1px 2px' }}>
-                      <span style={{ alignSelf: 'flex-end', fontSize: '9px', lineHeight: 1, letterSpacing: '0.3px', marginTop: 'auto', marginBottom: 'auto' }} data-testid={`time-label-${hour}`}>{hour === 0 || hour === 24 ? '12AM' : hour === 12 ? '12PM' : hour > 12 ? `${hour - 12}PM` : `${hour}AM`}</span>
+                      <span style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', fontSize: '9px', lineHeight: 1, letterSpacing: '0.3px' }} data-testid={`time-label-${hour}`}>{hour === 0 || hour === 24 ? '12AM' : hour === 12 ? '12PM' : hour > 12 ? `${hour - 12}PM` : `${hour}AM`}</span>
                       {(() => {
                         const nowET = toET(new Date());
                         const todayStr = `${nowET.getFullYear()}-${String(nowET.getMonth() + 1).padStart(2, '0')}-${String(nowET.getDate()).padStart(2, '0')}`;
@@ -31652,7 +31652,7 @@ export default function Dashboard() {
                         const sunsetH = weatherData?.sunset ? new Date(weatherData.sunset).getHours() : 20;
                         const isDayHour = hour >= sunriseH && hour < sunsetH;
                         return (
-                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1, gap: '0px', marginRight: '10px', marginBottom: 'auto' }} data-testid={`weather-cell-${hour}`}>
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1, gap: '0px', marginRight: '17px', marginBottom: 'auto' }} data-testid={`weather-cell-${hour}`}>
                             <span style={{ fontSize: '12px', lineHeight: 1 }}>{getWmoEmoji(hourlyEntry.weatherCode, isDayHour)}</span>
                             <span style={{ fontSize: '7px', color: 'rgba(255,255,255,0.85)', lineHeight: 1, fontWeight: 600 }}>{hourlyEntry.temp}°</span>
                           </div>
