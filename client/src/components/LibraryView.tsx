@@ -4036,8 +4036,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             const semKey = semesters[currentSemIdx]?.key || '';
             const collapseKey = `${semKey}::${course.code}`;
             const isCollapsed = collapsedCourses.has(collapseKey);
-            const shelfCalibration: Record<string, { row: number; label: number }> = {
-              'CPPA122': { row: 30, label: 15 },
+            const shelfCalibration: Record<string, { row: number; label: number; labelRight?: number }> = {
+              'CPPA122': { row: 37, label: 8, labelRight: 5 },
               'CFNF400': { row: 30, label: -5 },
               'CASL101': { row: 30, label: 0 },
             };
@@ -4045,6 +4045,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             const calib = shelfCalibration[codeKey] || { row: 0, label: 0 };
             const rowShift = calib.row;
             const labelShift = calib.label;
+            const labelRight = calib.labelRight || 0;
             return (
             <div key={course.code} style={{ position: 'relative', overflow: 'visible', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', transform: `translateY(${rowShift}px)` }}>
               <div style={{
@@ -4056,7 +4057,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 userSelect: 'none',
                 position: 'absolute',
                 bottom: '4px',
-                transform: `translateY(${labelShift}px)`,
+                transform: `translate(${labelRight}px, ${labelShift}px)`,
                 zIndex: 10,
                 left: 'calc(30% + 141px)',
               }}
@@ -4145,7 +4146,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                   gap: '2px',
                   overflow: 'visible',
                   maxWidth: '100%',
-                  ...(courseIdx > 0 ? { transform: 'scale(1.5) scaleX(0.84)', transformOrigin: 'bottom left' } : { marginLeft: '-3px', transform: 'scaleX(0.82)', transformOrigin: 'bottom left' }),
+                  ...(courseIdx > 0 ? { transform: 'scale(1.5) scaleX(0.84)', transformOrigin: 'bottom left' } : { marginLeft: '-3px', transform: 'scaleX(0.85)', transformOrigin: 'bottom left' }),
                 }}
                 className="library-scroll"
                 >
