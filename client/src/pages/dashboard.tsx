@@ -3774,6 +3774,7 @@ export default function Dashboard() {
   }, []);
   const [schoolCoursesOpenSource, setSchoolCoursesOpenSource] = useState<'pill' | 'degree'>('degree');
   const [semSettingsDialogKey, setSemSettingsDialogKey] = useState<string | null>(null);
+  const [endEarlyNextSemPicker, setEndEarlyNextSemPicker] = useState<string | null>(null);
   const [semDatePickerKey, setSemDatePickerKey] = useState<string | null>(null);
   const [semDatePickerHalf, setSemDatePickerHalf] = useState<'full' | 'spring' | 'summer'>('full');
   const [perSemesterSettings, setPerSemesterSettings] = useState<Record<string, { week1StartDate: string; semesterType: string; numberOfWeeks: number; timezone: string; readingWeekDate: string; isTravelling: boolean; travelTimezone: string; travelStartDate: string; travelEndDate: string }>>(() => {
@@ -27139,6 +27140,11 @@ export default function Dashboard() {
               <SemesterSettingsFormBody
                 semKey={semSettingsDialogKey}
                 existing={perSemesterSettings[semSettingsDialogKey] || {}}
+                isCurrentSemester={(() => {
+                  const now = new Date();
+                  const semDef = SEMESTER_COURSE_DEFS.find(s => s.key === semSettingsDialogKey);
+                  return semDef ? (now >= new Date(semDef.start) && now <= new Date(semDef.end)) : false;
+                })()}
                 onCancel={() => setSemSettingsDialogKey(null)}
                 onSave={(data) => {
                   const semKey = semSettingsDialogKey!;
@@ -27155,7 +27161,88 @@ export default function Dashboard() {
                   }
                   setSemSettingsDialogKey(null);
                 }}
+                onEndEarly={() => {
+                  const endingKey = semSettingsDialogKey!;
+                  fetch('/api/export-backup').catch(() => {});
+                  const updated = { ...semesterEndConfirmed, [endingKey]: true };
+                  setSemesterEndConfirmed(updated);
+                  localStorage.setItem('semesterEndConfirmed', JSON.stringify(updated));
+                  fetch('/api/degree-tracking/bulk', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ semesterEndConfirmed: updated }) }).catch(() => {});
+                  const matchedSem = (allSemesterSettings || []).find(s => {
+                    const yr = new Date(s.semesterStartDate).getFullYear();
+                    const typePrefix: Record<string, string> = { winter: 'w', fall: 'f', spring_summer: 'ss' };
+                    const prefix = typePrefix[s.semesterType] || s.semesterType?.charAt(0) || 's';
+                    return `${prefix}${yr}` === endingKey;
+                  });
+                  if (matchedSem) {
+                    apiRequest("PATCH", `/api/semester-settings/${matchedSem.id}`, { isActive: false }).catch(() => {});
+                  }
+                  setSemSettingsDialogKey(null);
+                  setEndEarlyNextSemPicker(endingKey);
+                }}
               />
+            </div>
+            </div>,
+            document.body
+          )}
+
+          {endEarlyNextSemPicker && createPortal(
+            <div>
+            <div className="fixed inset-0 z-[10004] bg-black/50" onClick={() => setEndEarlyNextSemPicker(null)} />
+            <div
+              className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] z-[10004] overflow-hidden flex flex-col text-[11px] text-white p-0 rounded-lg"
+              style={{ width: '400px', maxWidth: '94vw', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25)' }}
+            >
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15)' }}>
+                <div className="flex items-center gap-2">
+                  <GraduationCap className="text-white" style={{ width: '14px', height: '14px' }} />
+                  <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
+                    START NEXT SEMESTER
+                  </h2>
+                </div>
+                <button onClick={() => setEndEarlyNextSemPicker(null)} className="text-white/60 hover:text-white transition-colors" data-testid="button-close-next-sem-picker">
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="px-4 py-4 space-y-3">
+                <p className="text-[10px] text-white/70 leading-relaxed">
+                  <span className="font-bold text-emerald-300">Semester ended successfully.</span> Would you like to start a new semester? Select one below to trigger the setup checklist.
+                </p>
+                <div className="space-y-1.5">
+                  {(() => {
+                    const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029'];
+                    const endedIdx = semOrder.indexOf(endEarlyNextSemPicker);
+                    const futureSems = endedIdx >= 0 ? semOrder.slice(endedIdx + 1) : semOrder;
+                    const semLabels: Record<string, string> = { 'ss2025': 'Spring/Summer 2025', 'f2025': 'Fall 2025', 'w2026': 'Winter 2026', 'ss2026': 'Spring/Summer 2026', 'f2026': 'Fall 2026', 'w2027': 'Winter 2027', 'ss2027': 'Spring/Summer 2027', 'f2027': 'Fall 2027', 'w2028': 'Winter 2028', 'ss2028': 'Spring/Summer 2028', 'f2028': 'Fall 2028', 'w2029': 'Winter 2029' };
+                    return futureSems.map(sk => (
+                      <button
+                        key={sk}
+                        className="w-full py-2 px-3 rounded text-[11px] font-medium border text-left cursor-pointer transition-all hover:brightness-110 flex items-center justify-between"
+                        style={{ background: 'rgba(255,255,255,0.06)', borderColor: 'rgba(255,255,255,0.2)', color: 'white' }}
+                        onClick={() => {
+                          localStorage.removeItem(`newSemChecklist_dismissed_${sk}`);
+                          setNewSemChecklistKey(sk);
+                          setNewSemChecklistLabel(semLabels[sk] || sk);
+                          setShowNewSemChecklist(true);
+                          setEndEarlyNextSemPicker(null);
+                        }}
+                        data-testid={`button-start-next-sem-${sk}`}
+                      >
+                        <span>{semLabels[sk] || sk}</span>
+                        <ChevronRight className="h-3 w-3 text-white/40" />
+                      </button>
+                    ));
+                  })()}
+                </div>
+                <button
+                  className="w-full py-2 rounded text-[10px] border cursor-pointer transition-all hover:brightness-110 mt-2"
+                  style={{ background: 'transparent', borderColor: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.5)' }}
+                  onClick={() => setEndEarlyNextSemPicker(null)}
+                  data-testid="button-skip-next-sem"
+                >
+                  Skip for now
+                </button>
+              </div>
             </div>
             </div>,
             document.body
@@ -40378,11 +40465,13 @@ function SemDatePickerBody({ startLabel, endLabel, initialStart, initialEnd, onC
     </>
   );
 }
-function SemesterSettingsFormBody({ semKey, existing, onCancel, onSave }: {
+function SemesterSettingsFormBody({ semKey, existing, onCancel, onSave, onEndEarly, isCurrentSemester }: {
   semKey: string;
   existing: Partial<{ week1StartDate: string; semesterType: string; numberOfWeeks: number; timezone: string; readingWeekDate: string; isTravelling: boolean; travelTimezone: string; travelStartDate: string; travelEndDate: string; springStartDate: string; springEndDate: string; summerStartDate: string; summerEndDate: string }>;
   onCancel: () => void;
   onSave: (data: { week1StartDate: string; semesterType: string; numberOfWeeks: number; timezone: string; readingWeekDate: string; isTravelling: boolean; travelTimezone: string; travelStartDate: string; travelEndDate: string; springStartDate: string; springEndDate: string; summerStartDate: string; summerEndDate: string }) => void;
+  onEndEarly?: () => void;
+  isCurrentSemester?: boolean;
 }) {
   const defaultType = semKey.startsWith('ss') ? 'spring_summer' : semKey.startsWith('f') ? 'fall' : 'winter';
   const [localW1, setLocalW1] = useState(existing.week1StartDate || '');
@@ -40399,6 +40488,7 @@ function SemesterSettingsFormBody({ semKey, existing, onCancel, onSave }: {
   const [summerStart, setSummerStart] = useState(existing.summerStartDate || '');
   const [summerEnd, setSummerEnd] = useState(existing.summerEndDate || '');
   const isSSType = localType === 'spring_summer';
+  const [showEndEarlyConfirm, setShowEndEarlyConfirm] = useState(false);
 
   return (
     <>
@@ -40599,6 +40689,48 @@ function SemesterSettingsFormBody({ semKey, existing, onCancel, onSave }: {
           )}
         </div>
         <p className="text-[8px] text-white/40">Course details shown in the Courses section.</p>
+        {isCurrentSemester && onEndEarly && (
+          <div className="mt-4 pt-3 border-t border-red-500/30">
+            {!showEndEarlyConfirm ? (
+              <button
+                className="w-full py-2 rounded text-[11px] font-bold border cursor-pointer transition-all hover:brightness-110"
+                style={{ background: 'rgba(239,68,68,0.15)', borderColor: 'rgba(239,68,68,0.4)', color: '#f87171' }}
+                onClick={() => setShowEndEarlyConfirm(true)}
+                data-testid="button-end-semester-early"
+              >
+                End Semester Early
+              </button>
+            ) : (
+              <div className="space-y-2 p-3 rounded-lg" style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)' }}>
+                <div className="flex items-center gap-1.5">
+                  <AlertTriangle className="h-3.5 w-3.5 text-red-400 flex-shrink-0" />
+                  <span className="text-[11px] font-bold text-red-300">Are you sure?</span>
+                </div>
+                <p className="text-[10px] text-white/70 leading-relaxed">
+                  This will mark the semester as <span className="font-bold text-white">COMPLETE</span> and remove course rows from the calendar. A backup will be created automatically. <span className="font-bold text-red-300">This cannot be undone.</span>
+                </p>
+                <div className="flex gap-2 mt-2">
+                  <button
+                    className="flex-1 py-1.5 rounded text-[10px] font-bold border cursor-pointer transition-all hover:brightness-110"
+                    style={{ background: 'rgba(239,68,68,0.25)', borderColor: 'rgba(239,68,68,0.5)', color: '#f87171' }}
+                    onClick={() => { onEndEarly(); }}
+                    data-testid="button-confirm-end-semester-early"
+                  >
+                    Yes, End Semester
+                  </button>
+                  <button
+                    className="flex-1 py-1.5 rounded text-[10px] font-bold border cursor-pointer transition-all hover:brightness-110"
+                    style={{ background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)', color: 'white' }}
+                    onClick={() => setShowEndEarlyConfirm(false)}
+                    data-testid="button-cancel-end-semester-early"
+                  >
+                    No, Go Back
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
       <div className="flex items-center justify-end px-4 py-3 border-t border-white/20">
         <div className="flex gap-2">
