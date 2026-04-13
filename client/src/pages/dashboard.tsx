@@ -12702,17 +12702,20 @@ export default function Dashboard() {
             const [eH] = t.eventEndTime.split(':').map(Number);
             if (eH > sH + 1) return false;
             if (eH === sH + 1) {
-              const hasConflict = dayTasks.some(other => {
-                if (!other.eventStartTime || !other.eventEndTime) return false;
-                if (other.id === t.id) return false;
-                const [osH] = other.eventStartTime.split(':').map(Number);
-                const [oeH] = other.eventEndTime.split(':').map(Number);
-                if (oeH <= osH + 1) return false;
-                const oStart = osH * 60;
-                const oEnd = oeH * 60;
-                return oStart < (sH + 1) * 60 && oEnd > sH * 60;
-              });
-              if (!hasConflict) return false;
+              const hasOverlayAtHour = (multiHourOverlayCols.get(`${dIdx}-${sH}`) || 0) > 0;
+              if (!hasOverlayAtHour) {
+                const hasConflict = dayTasks.some(other => {
+                  if (!other.eventStartTime || !other.eventEndTime) return false;
+                  if (other.id === t.id) return false;
+                  const [osH] = other.eventStartTime.split(':').map(Number);
+                  const [oeH] = other.eventEndTime.split(':').map(Number);
+                  if (oeH <= osH + 1) return false;
+                  const oStart = osH * 60;
+                  const oEnd = oeH * 60;
+                  return oStart < (sH + 1) * 60 && oEnd > sH * 60;
+                });
+                if (!hasConflict) return false;
+              }
             }
             return sH === h;
           }
