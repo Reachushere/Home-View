@@ -1113,6 +1113,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<{ page: number; matches: number }[]>([]);
   const [searchCurrentIdx, setSearchCurrentIdx] = useState(0);
+  const [searchMatchIdx, setSearchMatchIdx] = useState(0);
   const [commentOpen, setCommentOpen] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [highlightColor, setHighlightColor] = useState(HIGHLIGHT_COLORS[0]);
@@ -1354,6 +1355,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
       }
       setSearchResults(results);
       setSearchCurrentIdx(0);
+      setSearchMatchIdx(0);
       if (results.length > 0) goToSpread(results[0].page);
     } finally {
       setSearching(false);
@@ -1412,10 +1414,26 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
       }
       applySearchHighlights(textLayerRef.current, searchQuery);
       applySearchHighlights(textLayerRightRef.current, searchQuery);
+
+      if (searchResults.length > 0) {
+        const targetPage = searchResults[searchCurrentIdx]?.page;
+        const layers = [
+          { el: textLayerRef.current, page: currentPage },
+          { el: textLayerRightRef.current, page: currentPage + 1 },
+        ];
+        for (const { el, page } of layers) {
+          if (!el || page !== targetPage) continue;
+          const marks = el.querySelectorAll('mark.search-mark');
+          marks.forEach(m => (m as HTMLElement).style.outline = 'none');
+          if (searchMatchIdx < marks.length) {
+            (marks[searchMatchIdx] as HTMLElement).style.outline = '2px solid #ff6600';
+          }
+        }
+      }
     };
     tryApply(0);
     return () => { cancelled = true; };
-  }, [searchQuery, currentPage, pdfDoc, zoom, applySearchHighlights]);
+  }, [searchQuery, currentPage, pdfDoc, zoom, applySearchHighlights, searchResults, searchCurrentIdx, searchMatchIdx]);
 
   useEffect(() => {
     if (!initialSearchQuery || !pdfDoc || initialSearchApplied.current) return;
@@ -1445,6 +1463,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
         }
         setSearchResults(results);
         setSearchCurrentIdx(0);
+        setSearchMatchIdx(0);
         if (results.length > 0) goToSpread(results[0].page);
       } finally {
         setSearching(false);
@@ -1453,12 +1472,60 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
     runSearch();
   }, [pdfDoc, initialSearchQuery]);
 
+  const totalMatchCount = useMemo(() => searchResults.reduce((sum, r) => sum + r.matches, 0), [searchResults]);
+
+  const currentGlobalMatchIdx = useMemo(() => {
+    let idx = 0;
+    for (let i = 0; i < searchCurrentIdx && i < searchResults.length; i++) {
+      idx += searchResults[i].matches;
+    }
+    return idx + searchMatchIdx;
+  }, [searchResults, searchCurrentIdx, searchMatchIdx]);
+
   const navigateSearch = useCallback((dir: 1 | -1) => {
     if (searchResults.length === 0) return;
-    const nextIdx = (searchCurrentIdx + dir + searchResults.length) % searchResults.length;
-    setSearchCurrentIdx(nextIdx);
-    goToSpread(searchResults[nextIdx].page);
-  }, [searchResults, searchCurrentIdx]);
+    let pageIdx = searchCurrentIdx;
+    let matchInPage = searchMatchIdx;
+
+    if (dir === 1) {
+      matchInPage++;
+      if (matchInPage >= searchResults[pageIdx].matches) {
+        pageIdx = (pageIdx + 1) % searchResults.length;
+        matchInPage = 0;
+      }
+    } else {
+      matchInPage--;
+      if (matchInPage < 0) {
+        pageIdx = (pageIdx - 1 + searchResults.length) % searchResults.length;
+        matchInPage = searchResults[pageIdx].matches - 1;
+      }
+    }
+
+    setSearchCurrentIdx(pageIdx);
+    setSearchMatchIdx(matchInPage);
+    goToSpread(searchResults[pageIdx].page);
+
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        const layers = [textLayerRef.current, textLayerRightRef.current];
+        for (const layer of layers) {
+          if (!layer) continue;
+          const marks = layer.querySelectorAll('mark.search-mark');
+          marks.forEach(m => (m as HTMLElement).style.outline = 'none');
+          if (marks.length > 0) {
+            const targetPage = searchResults[pageIdx].page;
+            const isLeftPage = layer === textLayerRef.current;
+            const layerPage = isLeftPage ? currentPage : currentPage + 1;
+            if (layerPage === targetPage && matchInPage < marks.length) {
+              const targetMark = marks[matchInPage] as HTMLElement;
+              targetMark.style.outline = '2px solid #ff6600';
+              targetMark.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          }
+        }
+      }, 400);
+    });
+  }, [searchResults, searchCurrentIdx, searchMatchIdx, currentPage]);
 
   const toggleBookmark = useCallback(async () => {
     const existing = bookmarks.find(b => b.page === currentPage);
@@ -1878,7 +1945,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
                 {!searching && searchResults.length > 0 && (
                   <>
                     <span style={{ color: '#ffffff', fontSize: '10px', whiteSpace: 'nowrap', fontWeight: 600 }}>
-                      {searchCurrentIdx + 1}/{searchResults.length} pages
+                      {currentGlobalMatchIdx + 1}/{totalMatchCount}
                     </span>
                     <button onClick={() => navigateSearch(-1)} style={toolBtnStyle()} data-testid="btn-search-prev">
                       <ChevronLeft size={12} />
