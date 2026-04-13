@@ -3288,6 +3288,30 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         >
           <ChevronRight size={16} />
         </button>
+        {onOpenNotepad && (
+          <button
+            onClick={onOpenNotepad}
+            data-testid="btn-library-notepad"
+            title="Open Notepad"
+            style={{
+              width: '37px',
+              height: '37px',
+              borderRadius: '50%',
+              background: 'rgba(0,0,0,0.5)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              color: 'rgba(255,255,255,0.7)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.2s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.6)'; e.currentTarget.style.color = '#fff'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.5)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}
+          >
+            <StickyNote size={16} />
+          </button>
+        )}
       </div>
 
       <div style={{
@@ -3368,33 +3392,6 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           <RefreshCw size={11} style={syncingSemKey === currentSemester?.key ? { animation: 'spin 1s linear infinite' } : {}} />
           {syncingSemKey === currentSemester?.key ? 'Syncing...' : 'Sync'}
         </button>
-        {onOpenNotepad && (
-          <button
-            onClick={onOpenNotepad}
-            style={{
-              background: 'rgba(255,255,255,0.45)',
-              border: '1px solid rgba(255,255,255,0.5)',
-              borderRadius: '6px',
-              padding: '4px 8px',
-              color: '#ffffff',
-              fontSize: '9px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              transition: 'all 0.2s',
-              fontWeight: 600,
-              letterSpacing: '0.3px',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.55)'; e.currentTarget.style.color = '#fff'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.45)'; e.currentTarget.style.color = '#ffffff'; }}
-            title="Open Notepad"
-            data-testid="btn-library-notepad"
-          >
-            <StickyNote size={11} />
-            Notepad
-          </button>
-        )}
       </div>
 
       {/* Search box - top left compact */}
