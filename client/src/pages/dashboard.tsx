@@ -26565,7 +26565,11 @@ export default function Dashboard() {
                     const due = new Date(t.dueDate);
                     const daysLeft = Math.max(0, Math.round((due.getTime() - new Date().getTime()) / (1000*60*60*24)));
                     const status = (t as any).taskStatus || 'not_started';
-                    const co = (coursesData?.courses || []).find((c: any) => c.name?.split(' - ')[0]?.toUpperCase() === t.courseName?.toUpperCase() || c.name === t.courseName);
+                    const tn = (t.courseName || '').toUpperCase();
+                    const co = (coursesData?.courses || []).find((c: any) => {
+                      const code = c.name?.split(' - ')[0]?.trim().toUpperCase();
+                      return code === tn || c.name === t.courseName || c.name?.toUpperCase() === tn || (code && tn.includes(code)) || (code && t.title?.toUpperCase().includes(code));
+                    });
                     return (
                       <div key={t.id} className="flex items-center gap-2 mb-2 p-2 rounded-lg" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }} data-testid={`weekly-plan-task-${t.id}`}>
                         <div style={{ width: '4px', height: '32px', borderRadius: '2px', background: co?.color || '#3b82f6', flexShrink: 0 }} />
