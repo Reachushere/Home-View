@@ -14656,6 +14656,7 @@ export default function Dashboard() {
           onClose={() => { setIsMobileLibraryOpen(false); setLibrarySemesterKey(undefined); }}
           semesters={[]}
           initialSemesterKey={librarySemesterKey}
+          onOpenNotepad={() => setIsNotepadOpen(true)}
         />
       )}
 

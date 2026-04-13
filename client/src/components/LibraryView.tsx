@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
-import { X, ChevronLeft, ChevronRight, ChevronDown, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2, Printer, Volume2, Square, Pause, Play, RefreshCw, Pencil, FileText, Minus, Loader2, ListOrdered, RotateCcw } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, ChevronDown, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2, Printer, Volume2, Square, Pause, Play, RefreshCw, Pencil, FileText, Minus, Loader2, ListOrdered, RotateCcw, StickyNote } from 'lucide-react';
 import * as pdfjsLib from 'pdfjs-dist';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import shelfBgImage from '@assets/Bookshelf9_1776012207833.jpg';
@@ -109,6 +109,7 @@ interface LibraryViewProps {
   semesters: SemesterInfo[];
   initialSemesterKey?: string;
   isSharedView?: boolean;
+  onOpenNotepad?: () => void;
 }
 
 const WEEK_COLOR_PALETTE: Record<number, string> = {
@@ -2001,7 +2002,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
   );
 }
 
-export default function LibraryView({ isOpen, onClose, semesters: semestersProp, initialSemesterKey, isSharedView }: LibraryViewProps) {
+export default function LibraryView({ isOpen, onClose, semesters: semestersProp, initialSemesterKey, isSharedView, onOpenNotepad }: LibraryViewProps) {
   const [currentSemIdx, setCurrentSemIdx] = useState(0);
   const [syncingSemKey, setSyncingSemKey] = useState<string | null>(null);
   const [selectedBook, setSelectedBook] = useState<FileRecord | null>(null);
@@ -3346,6 +3347,33 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           <RefreshCw size={11} style={syncingSemKey === currentSemester?.key ? { animation: 'spin 1s linear infinite' } : {}} />
           {syncingSemKey === currentSemester?.key ? 'Syncing...' : 'Sync'}
         </button>
+        {onOpenNotepad && (
+          <button
+            onClick={onOpenNotepad}
+            style={{
+              background: 'rgba(255,255,255,0.45)',
+              border: '1px solid rgba(255,255,255,0.5)',
+              borderRadius: '6px',
+              padding: '4px 8px',
+              color: '#ffffff',
+              fontSize: '9px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              transition: 'all 0.2s',
+              fontWeight: 600,
+              letterSpacing: '0.3px',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.55)'; e.currentTarget.style.color = '#fff'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.45)'; e.currentTarget.style.color = '#ffffff'; }}
+            title="Open Notepad"
+            data-testid="btn-library-notepad"
+          >
+            <StickyNote size={11} />
+            Notepad
+          </button>
+        )}
       </div>
 
       {/* Search box - top left compact */}
