@@ -675,6 +675,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
           marginTop: '-7px',
           fontFamily: "'Segoe UI', 'Helvetica Neue', Arial, sans-serif",
           transition: 'font-size 0.2s ease',
+          pointerEvents: 'none',
         }}>
           <span style={{ whiteSpace: 'nowrap' }}>{splitLines[0]}</span>
           <span style={{ whiteSpace: 'nowrap' }}>{splitLines[1]}</span>
@@ -698,6 +699,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
           marginTop: '-7px',
           fontFamily: "'Segoe UI', 'Helvetica Neue', Arial, sans-serif",
           transition: 'font-size 0.2s ease',
+          pointerEvents: 'none',
         }}>
           {isLifted ? expandedTitle : title}
         </span>
