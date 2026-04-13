@@ -31652,9 +31652,9 @@ export default function Dashboard() {
                         const sunsetH = weatherData?.sunset ? new Date(weatherData.sunset).getHours() : 20;
                         const isDayHour = hour >= sunriseH && hour < sunsetH;
                         return (
-                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1, gap: '0px', marginRight: '17px', marginBottom: 'auto' }} data-testid={`weather-cell-${hour}`}>
-                            <span style={{ fontSize: '12px', lineHeight: 1 }}>{getWmoEmoji(hourlyEntry.weatherCode, isDayHour)}</span>
-                            <span style={{ fontSize: '7px', color: 'rgba(255,255,255,0.85)', lineHeight: 1, fontWeight: 600 }}>{hourlyEntry.temp}°</span>
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1, gap: '0px', marginRight: '29px' }} data-testid={`weather-cell-${hour}`}>
+                            <span style={{ fontSize: '14px', lineHeight: 1 }}>{getWmoEmoji(hourlyEntry.weatherCode, isDayHour)}</span>
+                            <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.85)', lineHeight: 1, fontWeight: 600 }}>{hourlyEntry.temp}°</span>
                           </div>
                         );
                       })()}
