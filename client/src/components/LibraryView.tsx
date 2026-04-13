@@ -4037,16 +4037,16 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             const collapseKey = `${semKey}::${course.code}`;
             const isCollapsed = collapsedCourses.has(collapseKey);
             const shelfCalibration: Record<string, { row: number; label: number }> = {
-              'CPPA122': { row: 20, label: 20 },
-              'CFNF400': { row: 40, label: 30 },
-              'CASL101': { row: 50, label: 40 },
+              'CPPA122': { row: 20, label: 12 },
+              'CFNF400': { row: 30, label: 10 },
+              'CASL101': { row: 5, label: -25 },
             };
             const codeKey = course.code.replace(/\s/g, '').toUpperCase();
             const calib = shelfCalibration[codeKey] || { row: 0, label: 0 };
             const rowShift = calib.row;
             const labelShift = calib.label;
             return (
-            <div key={course.code} style={{ position: 'relative', overflow: 'visible', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', marginTop: rowShift }}>
+            <div key={course.code} style={{ position: 'relative', overflow: 'visible', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', transform: `translateY(${rowShift}px)` }}>
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -4055,7 +4055,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 cursor: 'pointer',
                 userSelect: 'none',
                 position: 'absolute',
-                bottom: `${4 - labelShift}px`,
+                bottom: '4px',
+                transform: `translateY(${labelShift}px)`,
                 zIndex: 10,
                 left: 'calc(30% + 141px)',
               }}
