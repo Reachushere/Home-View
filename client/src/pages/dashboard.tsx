@@ -29095,6 +29095,7 @@ export default function Dashboard() {
                 const nowDayOfWeek = new Date().getDay();
                 const isNextWeekDay = (() => {
                   if (isPast || isTodayForecast) return false;
+                  if (day.getDay() === 6) return false;
                   const saturdayOffset = nowDayOfWeek === 6 ? 0 : -(nowDayOfWeek + 1);
                   const daysLeftInSchoolWeek = 6 - (nowDayOfWeek === 6 ? 0 : nowDayOfWeek + 1);
                   return diffDays > daysLeftInSchoolWeek;
