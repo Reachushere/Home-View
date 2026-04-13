@@ -11721,8 +11721,10 @@ async function pollStatus(timeout){
         req.on('error', reject);
       });
       const fileBuffer = Buffer.concat(chunks);
-      const fileName = (req.headers['x-file-name'] as string) || 'upload.pdf';
+      const rawFileName = req.headers['x-file-name'] as string | undefined;
+      const fileName = rawFileName ? decodeURIComponent(rawFileName) : 'upload.pdf';
       const contentType = (req.headers['content-type'] as string) || 'application/octet-stream';
+      const uploadFolder = (req.headers['x-upload-folder'] as string) || undefined;
 
       const privateDir = process.env.PRIVATE_OBJECT_DIR;
       if (!privateDir) {
@@ -11741,8 +11743,9 @@ async function pollStatus(timeout){
           objectPath,
           contentType,
           size: fileBuffer.length,
+          folder: uploadFolder,
         });
-        console.log(`[Upload] Local file saved: ${localPath} (${fileBuffer.length} bytes)`);
+        console.log(`[Upload] Local file saved: ${localPath} (${fileBuffer.length} bytes)${uploadFolder ? ` [folder=${uploadFolder}]` : ''}`);
         return res.json({ objectPath, fileId: createdFile.id, fileName });
       }
 
@@ -11770,9 +11773,10 @@ async function pollStatus(timeout){
         objectPath,
         contentType,
         size: fileBuffer.length,
+        folder: uploadFolder,
       });
 
-      console.log(`[Upload] Direct upload success: ${fileName} -> ${objectPath} (${fileBuffer.length} bytes)`);
+      console.log(`[Upload] Direct upload success: ${fileName} -> ${objectPath} (${fileBuffer.length} bytes)${uploadFolder ? ` [folder=${uploadFolder}]` : ''}`);
       res.json({ objectPath, fileId: createdFile?.id, metadata: { name: fileName, size: fileBuffer.length, contentType } });
     } catch (error: any) {
       console.error("[Upload] Direct upload error:", error);

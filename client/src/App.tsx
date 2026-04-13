@@ -18,6 +18,7 @@ import OneDrivePage from "@/pages/onedrive";
 import SpotifyPlayerPage from "@/pages/spotify-player";
 import OneNotePage from "@/pages/onenote";
 import MobileNotesPage from "@/pages/mobile-notes";
+import MobileUploadPage from "@/pages/mobile-upload";
 import CodeCheckerPage from "@/pages/code-checker";
 import TickerPage from "@/pages/ticker";
 import SharedLibraryPage from "@/pages/shared-library";
@@ -156,6 +157,14 @@ function Router() {
 function App() {
   useAutoFullscreen();
   const [location] = useLocation();
+
+  if (location === '/upload') {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <MobileUploadPage />
+      </QueryClientProvider>
+    );
+  }
 
   if (location === '/ticker') {
     return (
