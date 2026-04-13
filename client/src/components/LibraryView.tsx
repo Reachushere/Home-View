@@ -4036,8 +4036,15 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             const semKey = semesters[currentSemIdx]?.key || '';
             const collapseKey = `${semKey}::${course.code}`;
             const isCollapsed = collapsedCourses.has(collapseKey);
-            const rowShift = courseIdx === 0 ? 20 : courseIdx === 1 ? 20 : courseIdx === 2 ? 5 : 0;
-            const labelShift = courseIdx === 0 ? 20 : courseIdx === 1 ? 15 : courseIdx === 2 ? -3 : 0;
+            const shelfCalibration: Record<string, { row: number; label: number }> = {
+              'CPPA122': { row: 20, label: 20 },
+              'CFNF400': { row: 40, label: 30 },
+              'CASL101': { row: 50, label: 40 },
+            };
+            const codeKey = course.code.replace(/\s/g, '').toUpperCase();
+            const calib = shelfCalibration[codeKey] || { row: 0, label: 0 };
+            const rowShift = calib.row;
+            const labelShift = calib.label;
             return (
             <div key={course.code} style={{ position: 'relative', overflow: 'visible', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', marginTop: rowShift }}>
               <div style={{
