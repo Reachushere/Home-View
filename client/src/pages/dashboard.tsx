@@ -4000,6 +4000,7 @@ export default function Dashboard() {
   const [semStartDialogKey, setSemStartDialogKey] = useState<string | null>(null);
   const [bulkSyncLoaded, setBulkSyncLoaded] = useState(false);
   const [weeklyPlanningOpen, setWeeklyPlanningOpen] = useState(false);
+  const [wpSettingsOpen, setWpSettingsOpen] = useState(false);
   const [greyClassifyOpen, setGreyClassifyOpen] = useState(false);
   const [greyClassifySelections, setGreyClassifySelections] = useState<Record<number, string>>({});
 
@@ -4012,17 +4013,33 @@ export default function Dashboard() {
         const now = new Date();
         const dow = now.getDay();
         const hour = now.getHours();
-        const isSunEvening = dow === 0 && hour >= 17;
-        const isMonMorning = dow === 1 && hour < 12;
-        if (!isSunEvening && !isMonMorning) return;
-        const weekKey = `weeklyPlan_${format(startOfDayET(now), 'yyyy-ww')}`;
+        const wpSettings: { frequency: string; days: number[]; startHour: number; endHour: number; minTasks: number; onlyWithDue: boolean; enabled: boolean } = (() => { try { return { enabled: true, frequency: 'weekly', days: [0, 1], startHour: 17, endHour: 12, minTasks: 1, onlyWithDue: false, ...JSON.parse(localStorage.getItem('wpSettings') || '{}') }; } catch { return { enabled: true, frequency: 'weekly', days: [0, 1], startHour: 17, endHour: 12, minTasks: 1, onlyWithDue: false }; } })();
+        if (!wpSettings.enabled) return;
+        let shouldShow = false;
+        if (wpSettings.frequency === 'daily') {
+          shouldShow = hour >= wpSettings.startHour && hour < wpSettings.endHour;
+        } else if (wpSettings.frequency === 'weekly') {
+          shouldShow = wpSettings.days.includes(dow) && (dow === wpSettings.days[0] ? hour >= wpSettings.startHour : hour < wpSettings.endHour);
+        } else if (wpSettings.frequency === 'every_open') {
+          shouldShow = true;
+        } else {
+          const isSunEvening = dow === 0 && hour >= 17;
+          const isMonMorning = dow === 1 && hour < 12;
+          shouldShow = isSunEvening || isMonMorning;
+        }
+        if (!shouldShow) return;
+        const dismissKey = wpSettings.frequency === 'daily' ? `weeklyPlan_${format(startOfDayET(now), 'yyyy-MM-dd')}` : `weeklyPlan_${format(startOfDayET(now), 'yyyy-ww')}`;
         try {
           const res = await fetch('/api/weekly-planning/dismissed');
           if (res.ok) {
             const data = await res.json();
-            if (data.weekKey === weekKey) return;
+            if (data.weekKey === dismissKey) return;
           }
         } catch (_) {}
+        if (wpSettings.minTasks > 1) {
+          const upcoming = (allTasks || []).filter(t => !t.isCompleted && t.dueDate && new Date(t.dueDate) <= new Date(Date.now() + 10 * 86400000));
+          if (upcoming.length < wpSettings.minTasks) return;
+        }
         setWeeklyPlanningOpen(true);
       } catch {}
     })();
@@ -26537,17 +26554,93 @@ export default function Dashboard() {
           {weeklyPlanningOpen && desktopIsFull && createPortal(
             <div>
               <div className="fixed inset-0 z-[10006] bg-black/60" onClick={() => {
-                const weekKey = `weeklyPlan_${format(startOfDayET(new Date()), 'yyyy-ww')}`;
+                const wpS: any = (() => { try { return JSON.parse(localStorage.getItem('wpSettings') || '{}'); } catch { return {}; } })();
+                const weekKey = wpS.frequency === 'daily' ? `weeklyPlan_${format(startOfDayET(new Date()), 'yyyy-MM-dd')}` : `weeklyPlan_${format(startOfDayET(new Date()), 'yyyy-ww')}`;
                 localStorage.setItem(weekKey, '1');
                 fetch('/api/weekly-planning/dismiss', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ weekKey }) }).catch(() => {});
                 setWeeklyPlanningOpen(false);
               }} />
-              <div className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] z-[10006] w-[440px] max-w-[94vw] max-h-[80vh] rounded-xl text-white flex flex-col overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, ${colorSettings.mainBackgroundGradientEnd} 100%)`, border: '1.5px solid rgba(255,255,255,0.25)', boxShadow: '0 12px 48px rgba(0,0,0,0.55)' }} data-testid="weekly-planning-dialog">
-                <div className="px-5 pt-5 pb-3">
-                  <h3 className="text-sm font-bold mb-1" style={{ letterSpacing: '0.5px' }}>Weekly Planning</h3>
-                  <p className="text-[10px] text-white/50">Review your upcoming tasks and mark their status.</p>
+              <div className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] z-[10006] w-[440px] max-w-[94vw] max-h-[80vh] rounded-xl text-white flex flex-col overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }} data-testid="weekly-planning-dialog">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-xl" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm">📋</span>
+                    <h3 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>Weekly Planning</h3>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-[9px] text-white/50">Review upcoming tasks</p>
+                    <button onClick={() => setWpSettingsOpen(v => !v)} className="p-1 rounded hover:bg-white/10 transition-colors" data-testid="button-wp-settings" title="Planning settings">
+                      <Settings className="w-3.5 h-3.5 text-white/50 hover:text-white/80" />
+                    </button>
+                  </div>
                 </div>
-                <div className="flex-1 overflow-y-auto px-5 pb-3" style={{ maxHeight: 'calc(80vh - 120px)' }}>
+                {wpSettingsOpen && (() => {
+                  const stored: { frequency: string; days: number[]; startHour: number; endHour: number; minTasks: number; onlyWithDue: boolean; enabled: boolean } = (() => { try { return { enabled: true, frequency: 'weekly', days: [0, 1], startHour: 17, endHour: 12, minTasks: 1, onlyWithDue: false, ...JSON.parse(localStorage.getItem('wpSettings') || '{}') }; } catch { return { enabled: true, frequency: 'weekly', days: [0, 1], startHour: 17, endHour: 12, minTasks: 1, onlyWithDue: false }; } })();
+                  const save = (patch: Partial<typeof stored>) => { const next = { ...stored, ...patch }; localStorage.setItem('wpSettings', JSON.stringify(next)); setWpSettingsOpen(false); setTimeout(() => setWpSettingsOpen(true), 10); };
+                  const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+                  const hourLabel = (h: number) => { const ap = h >= 12 ? 'PM' : 'AM'; return `${h === 0 ? 12 : h > 12 ? h - 12 : h} ${ap}`; };
+                  return (
+                    <div className="px-4 py-3 border-b border-white/15 flex-shrink-0" style={{ background: 'rgba(0,0,0,0.2)' }}>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-[10px] font-bold text-white/70 uppercase tracking-wider" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}>Popup Settings</span>
+                        <label className="flex items-center gap-1.5 cursor-pointer">
+                          <span className="text-[9px] text-white/50">{stored.enabled ? 'Enabled' : 'Disabled'}</span>
+                          <div className="relative w-7 h-4 rounded-full transition-colors" style={{ background: stored.enabled ? 'rgba(34,197,94,0.5)' : 'rgba(255,255,255,0.15)' }} onClick={() => save({ enabled: !stored.enabled })}>
+                            <div className="absolute top-0.5 w-3 h-3 rounded-full bg-white transition-all" style={{ left: stored.enabled ? '14px' : '2px' }} />
+                          </div>
+                        </label>
+                      </div>
+                      <div className="mb-2">
+                        <span className="text-[9px] text-white/50 block mb-1" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}>Frequency</span>
+                        <div className="flex gap-1 flex-wrap">
+                          {[{v:'weekly',l:'Weekly'},{v:'daily',l:'Daily'},{v:'every_open',l:'Every Open'}].map(o => (
+                            <button key={o.v} onClick={() => save({ frequency: o.v })} className="px-2 py-0.5 rounded text-[9px] border transition-colors" style={{ background: stored.frequency === o.v ? 'rgba(255,255,255,0.2)' : 'transparent', borderColor: stored.frequency === o.v ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.15)', color: stored.frequency === o.v ? 'white' : 'rgba(255,255,255,0.5)', fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }} data-testid={`wp-freq-${o.v}`}>{o.l}</button>
+                          ))}
+                        </div>
+                      </div>
+                      {stored.frequency === 'weekly' && (
+                        <div className="mb-2">
+                          <span className="text-[9px] text-white/50 block mb-1" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}>Show on days</span>
+                          <div className="flex gap-1">
+                            {dayNames.map((d, i) => (
+                              <button key={i} onClick={() => { const next = stored.days.includes(i) ? stored.days.filter(x => x !== i) : [...stored.days, i].sort(); if (next.length > 0) save({ days: next }); }} className="w-7 h-6 rounded text-[8px] border transition-colors" style={{ background: stored.days.includes(i) ? 'rgba(255,255,255,0.2)' : 'transparent', borderColor: stored.days.includes(i) ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.1)', color: stored.days.includes(i) ? 'white' : 'rgba(255,255,255,0.4)', fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }} data-testid={`wp-day-${i}`}>{d}</button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {stored.frequency !== 'every_open' && (
+                        <div className="flex gap-3 mb-2">
+                          <div>
+                            <span className="text-[9px] text-white/50 block mb-1" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}>From</span>
+                            <select value={stored.startHour} onChange={(e) => save({ startHour: Number(e.target.value) })} className="bg-white/10 border border-white/20 rounded text-[9px] text-white px-1 py-0.5" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }} data-testid="wp-start-hour">
+                              {Array.from({ length: 24 }, (_, i) => <option key={i} value={i} style={{ color: '#000' }}>{hourLabel(i)}</option>)}
+                            </select>
+                          </div>
+                          <div>
+                            <span className="text-[9px] text-white/50 block mb-1" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}>Until</span>
+                            <select value={stored.endHour} onChange={(e) => save({ endHour: Number(e.target.value) })} className="bg-white/10 border border-white/20 rounded text-[9px] text-white px-1 py-0.5" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }} data-testid="wp-end-hour">
+                              {Array.from({ length: 24 }, (_, i) => <option key={i} value={i} style={{ color: '#000' }}>{hourLabel(i)}</option>)}
+                            </select>
+                          </div>
+                        </div>
+                      )}
+                      <div className="flex gap-3 items-center">
+                        <div>
+                          <span className="text-[9px] text-white/50 block mb-1" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}>Min tasks to show</span>
+                          <select value={stored.minTasks} onChange={(e) => save({ minTasks: Number(e.target.value) })} className="bg-white/10 border border-white/20 rounded text-[9px] text-white px-1 py-0.5" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }} data-testid="wp-min-tasks">
+                            {[1,2,3,5,10].map(n => <option key={n} value={n} style={{ color: '#000' }}>{n}+ task{n > 1 ? 's' : ''}</option>)}
+                          </select>
+                        </div>
+                        <label className="flex items-center gap-1.5 cursor-pointer mt-3">
+                          <div className="relative w-7 h-4 rounded-full transition-colors" style={{ background: stored.onlyWithDue ? 'rgba(34,197,94,0.5)' : 'rgba(255,255,255,0.15)' }} onClick={() => save({ onlyWithDue: !stored.onlyWithDue })}>
+                            <div className="absolute top-0.5 w-3 h-3 rounded-full bg-white transition-all" style={{ left: stored.onlyWithDue ? '14px' : '2px' }} />
+                          </div>
+                          <span className="text-[9px] text-white/50" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}>Only with due dates</span>
+                        </label>
+                      </div>
+                    </div>
+                  );
+                })()}
+                <div className="flex-1 overflow-y-auto px-5 py-3" style={{ maxHeight: 'calc(80vh - 120px)' }}>
                 {(() => {
                   const ignoredIds: number[] = (() => { try { return JSON.parse(localStorage.getItem('weeklyPlanIgnored') || '[]'); } catch { return []; } })();
                   const upcoming = allTasks.filter(t => {
@@ -26607,13 +26700,14 @@ export default function Dashboard() {
                   });
                 })()}
                 </div>
-                <div className="px-5 py-3 flex items-center justify-between flex-shrink-0" style={{ borderTop: '1px solid rgba(255,255,255,0.15)', background: 'rgba(0,0,0,0.15)' }}>
-                  <span className="text-[9px] text-white/30">Tasks due within 10 days</span>
+                <div className="px-4 py-3 flex items-center justify-between flex-shrink-0 border-t border-white/20" style={{ background: 'rgba(255,255,255,0.08)' }}>
+                  <span className="text-[9px] text-white/30" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}>Tasks due within 10 days</span>
                   <button
                     className="py-2 px-6 rounded-lg text-[11px] font-bold border cursor-pointer transition-all hover:brightness-110"
-                    style={{ background: 'rgba(59,130,246,0.25)', borderColor: 'rgba(59,130,246,0.5)', color: '#93c5fd' }}
+                    style={{ background: 'rgba(255,255,255,0.12)', borderColor: 'rgba(255,255,255,0.3)', color: 'rgba(255,255,255,0.85)', fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}
                     onClick={() => {
-                      const weekKey = `weeklyPlan_${format(startOfDayET(new Date()), 'yyyy-ww')}`;
+                      const wpS: any = (() => { try { return JSON.parse(localStorage.getItem('wpSettings') || '{}'); } catch { return {}; } })();
+                      const weekKey = wpS.frequency === 'daily' ? `weeklyPlan_${format(startOfDayET(new Date()), 'yyyy-MM-dd')}` : `weeklyPlan_${format(startOfDayET(new Date()), 'yyyy-ww')}`;
                       localStorage.setItem(weekKey, '1');
                       fetch('/api/weekly-planning/dismiss', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ weekKey }) }).catch(() => {});
                       setWeeklyPlanningOpen(false);
