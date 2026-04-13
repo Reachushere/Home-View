@@ -126,6 +126,7 @@ import {
   Upload,
   Camera,
   Loader2,
+  Sparkles,
   Play,
   Square,
   MinusCircle,
@@ -14746,6 +14747,148 @@ export default function Dashboard() {
             >
               Dismiss
             </button>
+          </div>
+        </div>,
+        document.body
+      )}
+      {isNlTaskOpen && createPortal(
+        <div
+          data-testid="nl-task-overlay"
+          style={{ position: 'fixed', inset: 0, zIndex: 99998, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: '15vh', background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
+          onClick={() => { setIsNlTaskOpen(false); setNlTaskResult(null); setNlTaskError(''); }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{ background: '#1a1a2e', border: '1.5px solid rgba(255,255,255,0.15)', borderRadius: '16px', padding: '0', width: '520px', maxWidth: '90vw', boxShadow: '0 20px 60px rgba(0,0,0,0.6)', overflow: 'hidden' }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '14px 18px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+              <Sparkles size={18} color="#a78bfa" />
+              <input
+                ref={nlTaskInputRef}
+                data-testid="input-nl-task"
+                value={nlTaskInput}
+                onChange={e => { setNlTaskInput(e.target.value); setNlTaskError(''); }}
+                onKeyDown={async e => {
+                  if (e.key === 'Enter' && nlTaskInput.trim().length >= 3 && !nlTaskParsing) {
+                    setNlTaskParsing(true);
+                    setNlTaskResult(null);
+                    setNlTaskError('');
+                    try {
+                      const resp = await fetch('/api/ai/parse-task', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: nlTaskInput.trim() }) });
+                      const data = await resp.json();
+                      if (!resp.ok) throw new Error(data.error || 'Parse failed');
+                      setNlTaskResult(data.parsed);
+                    } catch (err: any) {
+                      setNlTaskError(err.message || 'Failed to parse');
+                    } finally {
+                      setNlTaskParsing(false);
+                    }
+                  }
+                  if (e.key === 'Escape') { setIsNlTaskOpen(false); setNlTaskResult(null); setNlTaskError(''); }
+                }}
+                placeholder="Describe a task... e.g. &quot;CFNF discussion post due Friday&quot;"
+                style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '15px', fontFamily: 'inherit' }}
+                autoFocus
+              />
+              {nlTaskParsing && <Loader2 size={16} color="rgba(255,255,255,0.5)" className="animate-spin" />}
+              <kbd style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.06)', padding: '2px 6px', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.1)' }}>Enter</kbd>
+            </div>
+
+            {nlTaskError && (
+              <div style={{ padding: '12px 18px', color: '#ef4444', fontSize: '13px' }}>{nlTaskError}</div>
+            )}
+
+            {nlTaskResult && (
+              <div style={{ padding: '16px 18px' }}>
+                <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '12px' }}>
+                  Parsed Task {nlTaskResult.confidence != null && <span style={{ color: nlTaskResult.confidence > 0.8 ? '#22c55e' : '#f59e0b' }}>({Math.round(nlTaskResult.confidence * 100)}% confident)</span>}
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 16px' }}>
+                  {[
+                    ['Title', nlTaskResult.title],
+                    ['Course', nlTaskResult.courseName || '—'],
+                    ['Type', nlTaskResult.type],
+                    ['Due', nlTaskResult.dueDate],
+                    ['Priority', nlTaskResult.priority],
+                    ['Week', nlTaskResult.weekNumber || '—'],
+                  ].map(([label, val]) => (
+                    <div key={label as string}>
+                      <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.35)', marginBottom: '2px' }}>{label}</div>
+                      <div style={{ fontSize: '14px', color: '#fff', fontWeight: 500 }}>{val as string}</div>
+                    </div>
+                  ))}
+                </div>
+                {nlTaskResult.description && (
+                  <div style={{ marginTop: '8px' }}>
+                    <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.35)', marginBottom: '2px' }}>Notes</div>
+                    <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>{nlTaskResult.description}</div>
+                  </div>
+                )}
+                <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
+                  <button
+                    data-testid="button-nl-create-task"
+                    disabled={nlTaskCreating}
+                    onClick={async () => {
+                      setNlTaskCreating(true);
+                      try {
+                        const taskBody: any = {
+                          title: nlTaskResult.title,
+                          type: nlTaskResult.type || 'other',
+                          courseName: nlTaskResult.courseName || undefined,
+                          dueDate: nlTaskResult.dueDate + 'T23:59:00',
+                          priority: nlTaskResult.priority || 'medium',
+                          weekNumber: nlTaskResult.weekNumber || 1,
+                          notes: nlTaskResult.description || undefined,
+                          eventStartTime: nlTaskResult.startTime || undefined,
+                          eventEndTime: nlTaskResult.endTime || undefined,
+                          taskType: 'homework',
+                        };
+                        const resp = await fetch('/api/tasks', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(taskBody) });
+                        if (!resp.ok) { const d = await resp.json(); throw new Error(d.error || 'Create failed'); }
+                        queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+                        setIsNlTaskOpen(false);
+                        setNlTaskResult(null);
+                        setNlTaskInput('');
+                      } catch (err: any) {
+                        setNlTaskError(err.message || 'Failed to create task');
+                      } finally {
+                        setNlTaskCreating(false);
+                      }
+                    }}
+                    style={{ flex: 1, background: '#6366f1', color: '#fff', border: 'none', borderRadius: '10px', padding: '10px 0', fontSize: '14px', fontWeight: 600, cursor: 'pointer', opacity: nlTaskCreating ? 0.6 : 1 }}
+                  >
+                    {nlTaskCreating ? 'Creating...' : 'Create Task'}
+                  </button>
+                  <button
+                    data-testid="button-nl-cancel"
+                    onClick={() => { setNlTaskResult(null); setNlTaskInput(''); nlTaskInputRef.current?.focus(); }}
+                    style={{ padding: '10px 20px', background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', fontSize: '14px', cursor: 'pointer' }}
+                  >
+                    Edit
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {!nlTaskResult && !nlTaskError && !nlTaskParsing && (
+              <div style={{ padding: '12px 18px 16px', color: 'rgba(255,255,255,0.3)', fontSize: '12px' }}>
+                <div style={{ marginBottom: '6px' }}>Examples:</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  {['CFNF discussion post due Friday', 'Read chapter 5 for CPPA122 by Wednesday', 'Quiz for CASL next Monday at 6pm', 'Submit CPPA101 essay by April 25'].map(ex => (
+                    <div
+                      key={ex}
+                      onClick={() => { setNlTaskInput(ex); nlTaskInputRef.current?.focus(); }}
+                      style={{ cursor: 'pointer', padding: '4px 8px', borderRadius: '6px', transition: 'background 0.12s' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    >
+                      <span style={{ color: 'rgba(167,139,250,0.6)' }}>→</span> {ex}
+                    </div>
+                  ))}
+                </div>
+                <div style={{ marginTop: '8px', fontSize: '10px', color: 'rgba(255,255,255,0.2)' }}>Press Ctrl+K to toggle · Enter to parse · Esc to close</div>
+              </div>
+            )}
           </div>
         </div>,
         document.body

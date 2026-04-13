@@ -2311,6 +2311,37 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
     });
   }, []);
   const [showLibraryNote, setShowLibraryNote] = useState(false);
+  const [isAiChatOpen, setIsAiChatOpen] = useState(false);
+  const [aiChatMessages, setAiChatMessages] = useState<{ role: 'user' | 'assistant'; content: string }[]>([]);
+  const [aiChatInput, setAiChatInput] = useState('');
+  const [aiChatLoading, setAiChatLoading] = useState(false);
+  const [aiChatCourseFilter, setAiChatCourseFilter] = useState('all');
+  const aiChatScrollRef = useRef<HTMLDivElement>(null);
+  const aiChatInputRef = useRef<HTMLTextAreaElement>(null);
+  const sendAiChat = useCallback(async () => {
+    const msg = aiChatInput.trim();
+    if (!msg || aiChatLoading) return;
+    const userMsg = { role: 'user' as const, content: msg };
+    setAiChatMessages(prev => [...prev, userMsg]);
+    setAiChatInput('');
+    setAiChatLoading(true);
+    setTimeout(() => aiChatScrollRef.current?.scrollTo({ top: aiChatScrollRef.current.scrollHeight, behavior: 'smooth' }), 50);
+    try {
+      const resp = await fetch('/api/ai/chat-materials', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: msg, courseFilter: aiChatCourseFilter, history: aiChatMessages.slice(-6) }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || 'Chat failed');
+      setAiChatMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
+      setTimeout(() => aiChatScrollRef.current?.scrollTo({ top: aiChatScrollRef.current.scrollHeight, behavior: 'smooth' }), 50);
+    } catch (err: any) {
+      setAiChatMessages(prev => [...prev, { role: 'assistant', content: `Error: ${err.message}` }]);
+    } finally {
+      setAiChatLoading(false);
+    }
+  }, [aiChatInput, aiChatLoading, aiChatCourseFilter, aiChatMessages]);
   const [masterSemFilter, setMasterSemFilter] = useState('all');
   const [masterCourseFilter, setMasterCourseFilter] = useState('all');
   const [masterWeekFilter, setMasterWeekFilter] = useState('all');
@@ -3247,6 +3278,30 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
 
       {!isSharedView && (
         <button
+          onClick={() => { setIsAiChatOpen(prev => !prev); setTimeout(() => aiChatInputRef.current?.focus(), 100); }}
+          style={{
+            background: isAiChatOpen ? 'rgba(139,92,246,0.2)' : 'rgba(255,255,255,0.08)',
+            border: `1px solid ${isAiChatOpen ? 'rgba(139,92,246,0.5)' : 'rgba(255,255,255,0.2)'}`,
+            borderRadius: '8px',
+            padding: '6px 12px',
+            color: isAiChatOpen ? '#c4b5fd' : 'rgba(255,255,255,0.7)',
+            fontSize: '12px',
+            cursor: 'pointer',
+            display: 'flex', alignItems: 'center', gap: '6px',
+            transition: 'all 0.2s',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.color = '#c4b5fd'; e.currentTarget.style.borderColor = 'rgba(139,92,246,0.5)'; }}
+          onMouseLeave={e => { if (!isAiChatOpen) { e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; } }}
+          data-testid="button-ai-study-chat"
+          title="AI Study Assistant"
+        >
+          <MessageSquare size={14} />
+          <span>Study Chat</span>
+        </button>
+      )}
+
+      {!isSharedView && (
+        <button
           onClick={async () => {
             try {
               const currentSem = semesters[currentSemIdx];
@@ -3696,6 +3751,127 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
               >New Search</button>
             </div>
           )}
+        </div>
+      )}
+
+      {isAiChatOpen && (
+        <div style={{
+          position: 'absolute',
+          top: '60px',
+          right: '16px',
+          width: '400px',
+          maxHeight: 'calc(100vh - 140px)',
+          background: 'rgba(15,10,25,0.97)',
+          border: '1px solid rgba(139,92,246,0.3)',
+          borderRadius: '14px',
+          zIndex: 100005,
+          display: 'flex',
+          flexDirection: 'column',
+          boxShadow: '0 12px 40px rgba(0,0,0,0.5)',
+          backdropFilter: 'blur(20px)',
+        }} data-testid="ai-chat-panel">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <MessageSquare size={16} color="#c4b5fd" />
+              <span style={{ fontSize: '14px', fontWeight: 600, color: '#fff' }}>Study Assistant</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <select
+                value={aiChatCourseFilter}
+                onChange={e => setAiChatCourseFilter(e.target.value)}
+                style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '6px', color: '#fff', fontSize: '11px', padding: '3px 6px', cursor: 'pointer' }}
+                data-testid="select-ai-chat-course"
+              >
+                <option value="all">All courses</option>
+                {['CPPA122','CFNF400','CASL101','CPPA101','CPPA102','CPPA120','CPPA121','CPPA125','CECN210','CPHL110','CHIS105'].map(c => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+              <button onClick={() => { setAiChatMessages([]); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.4)', padding: '2px' }} title="Clear chat" data-testid="button-ai-chat-clear">
+                <RotateCcw size={14} />
+              </button>
+              <button onClick={() => setIsAiChatOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.4)', padding: '2px' }} data-testid="button-ai-chat-close">
+                <X size={14} />
+              </button>
+            </div>
+          </div>
+
+          <div ref={aiChatScrollRef} style={{ flex: 1, overflowY: 'auto', padding: '12px 16px', minHeight: '200px', maxHeight: '400px' }}>
+            {aiChatMessages.length === 0 && (
+              <div style={{ textAlign: 'center', padding: '30px 10px', color: 'rgba(255,255,255,0.3)' }}>
+                <MessageSquare size={28} style={{ margin: '0 auto 10px', opacity: 0.3 }} />
+                <div style={{ fontSize: '13px', marginBottom: '12px' }}>Ask questions about your course materials</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', textAlign: 'left' }}>
+                  {['Summarize the key concepts from CFNF module 3', 'Generate flashcards for CPPA122 week 5', 'What are the main arguments in the CASL reading?', 'Compare the theories discussed in CPHL110'].map(ex => (
+                    <div
+                      key={ex}
+                      onClick={() => { setAiChatInput(ex); aiChatInputRef.current?.focus(); }}
+                      style={{ fontSize: '11px', padding: '6px 10px', borderRadius: '8px', cursor: 'pointer', background: 'rgba(139,92,246,0.06)', border: '1px solid rgba(139,92,246,0.1)', transition: 'all 0.15s' }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(139,92,246,0.12)'; e.currentTarget.style.borderColor = 'rgba(139,92,246,0.25)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(139,92,246,0.06)'; e.currentTarget.style.borderColor = 'rgba(139,92,246,0.1)'; }}
+                    >
+                      <span style={{ color: 'rgba(167,139,250,0.6)' }}>→</span> {ex}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {aiChatMessages.map((msg, i) => (
+              <div key={i} style={{ marginBottom: '12px', display: 'flex', flexDirection: 'column', alignItems: msg.role === 'user' ? 'flex-end' : 'flex-start' }}>
+                <div style={{
+                  maxWidth: '90%',
+                  padding: '10px 14px',
+                  borderRadius: msg.role === 'user' ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
+                  background: msg.role === 'user' ? 'rgba(99,102,241,0.2)' : 'rgba(255,255,255,0.06)',
+                  border: `1px solid ${msg.role === 'user' ? 'rgba(99,102,241,0.3)' : 'rgba(255,255,255,0.08)'}`,
+                  fontSize: '13px',
+                  color: msg.role === 'user' ? '#c4b5fd' : 'rgba(255,255,255,0.85)',
+                  lineHeight: 1.5,
+                  whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-word',
+                }}>
+                  {msg.content}
+                </div>
+              </div>
+            ))}
+            {aiChatLoading && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 0', color: 'rgba(255,255,255,0.4)', fontSize: '12px' }}>
+                <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> Thinking...
+              </div>
+            )}
+          </div>
+
+          <div style={{ padding: '10px 12px', borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', gap: '8px' }}>
+            <textarea
+              ref={aiChatInputRef}
+              value={aiChatInput}
+              onChange={e => setAiChatInput(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendAiChat(); } }}
+              placeholder="Ask about your readings..."
+              rows={1}
+              style={{
+                flex: 1, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
+                borderRadius: '10px', padding: '10px 14px', color: '#fff', fontSize: '13px',
+                resize: 'none', outline: 'none', fontFamily: 'inherit',
+                minHeight: '40px', maxHeight: '80px',
+              }}
+              data-testid="input-ai-chat"
+            />
+            <button
+              onClick={sendAiChat}
+              disabled={!aiChatInput.trim() || aiChatLoading}
+              style={{
+                background: aiChatInput.trim() ? '#6366f1' : 'rgba(255,255,255,0.06)',
+                border: 'none', borderRadius: '10px', padding: '0 14px',
+                color: '#fff', cursor: aiChatInput.trim() ? 'pointer' : 'default',
+                opacity: aiChatInput.trim() && !aiChatLoading ? 1 : 0.4,
+                transition: 'all 0.15s',
+              }}
+              data-testid="button-ai-chat-send"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            </button>
+          </div>
         </div>
       )}
 
