@@ -2865,6 +2865,20 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
     return q ? q.split(/\s+/).filter(Boolean) : [];
   }, [masterSearch]);
 
+  const highlightTokens = useCallback((text: string, tokens: string[], color?: string): (string | JSX.Element)[] => {
+    if (!tokens.length || !text) return [text];
+    const escaped = tokens.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    const regex = new RegExp(`(${escaped.join('|')})`, 'gi');
+    const parts = text.split(regex);
+    return parts.map((part, i) => {
+      if (regex.test(part)) {
+        regex.lastIndex = 0;
+        return <mark key={i} style={{ backgroundColor: color || 'rgba(255,220,80,0.35)', color: '#fff', borderRadius: '2px', padding: '0 1px', fontStyle: 'normal' }}>{part}</mark>;
+      }
+      return part;
+    });
+  }, []);
+
   const handleBookClick = useCallback((file: FileRecord, color: string, pdfUrl?: string, courseCode?: string, isSyllabus?: boolean) => {
     const cc = courseCode || file.folder?.match(/^week-\d+-(.+?)-(module|reading)$/i)?.[1]?.toLowerCase();
     setOpenReaders(prev => {
@@ -3915,7 +3929,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                         }}>{r.fileFormat}</span>
                       )}
                       <span style={{ fontSize: '14px', color: '#fff', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {(r.file.displayName || r.file.originalName).replace(/\.pdf$/i, '')}
+                        {searchTokens.length ? highlightTokens((r.file.displayName || r.file.originalName).replace(/\.pdf$/i, ''), searchTokens) : (r.file.displayName || r.file.originalName).replace(/\.pdf$/i, '')}
                       </span>
                     </div>
                     <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)', marginTop: '3px' }}>
@@ -3928,7 +3942,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                         ) : (
                           <span style={{ fontSize: '9px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', backgroundColor: 'rgba(255,200,100,0.15)', color: 'rgba(255,200,100,0.8)', marginRight: '6px', textTransform: 'uppercase', letterSpacing: '0.3px' }}>content match</span>
                         )}
-                        {r.contentSnippet}
+                        {searchTokens.length ? highlightTokens(r.contentSnippet!, searchTokens, r.proximitySnippet ? 'rgba(130,255,130,0.3)' : 'rgba(255,200,100,0.3)') : r.contentSnippet}
                       </div>
                     )}
                     {!r.contentSnippet && r.matchedTokenCount !== undefined && r.matchedTokenCount >= 2 && searchTokens.length >= 2 && (
