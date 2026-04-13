@@ -19,12 +19,31 @@ interface SemesterInfo {
   readingWeekStart?: number;
 }
 
+interface HealthCourseData {
+  code: string;
+  syllabusLinked: boolean;
+  totalModules: number;
+  totalReadings: number;
+  totalTtsReady: number;
+  totalTtsNeeded: number;
+  moduleWeeks: Record<number, { count: number; ttsReady: number }>;
+  readingWeeks: Record<number, { count: number; ttsReady: number }>;
+}
+
+interface HealthData {
+  healthScore: number;
+  numberOfWeeks: number;
+  courses: HealthCourseData[];
+  issues: string[];
+}
+
 interface Props {
   open: boolean;
   onClose: () => void;
   coursesData: { courses: CourseInfo[] };
   semesters: Record<string, SemesterInfo>;
   semesterKeyOrder: string[];
+  healthData?: HealthData | null;
 }
 
 function getSemLabel(key: string) {
@@ -50,7 +69,7 @@ function formatDate(d: Date) {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
-export default function CourseDocumentsWizard({ open, onClose, coursesData, semesters, semesterKeyOrder }: Props) {
+export default function CourseDocumentsWizard({ open, onClose, coursesData, semesters, semesterKeyOrder, healthData }: Props) {
   const { toast } = useToast();
   const [step, setStep] = useState(0);
   const [selectedCourse, setSelectedCourse] = useState('');
@@ -301,8 +320,15 @@ export default function CourseDocumentsWizard({ open, onClose, coursesData, seme
                         data-testid={`select-course-${code}`}
                       >
                         <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ background: c.color }} />
-                        <div>
-                          <div className="text-[11px] font-medium">{c.name}</div>
+                        <div className="flex-1">
+                          <div className="text-[11px] font-medium flex items-center gap-1.5">
+                            {c.name}
+                            {healthData && (() => {
+                              const hc = healthData.courses.find(h => code && h.code.toLowerCase() === code.toLowerCase());
+                              if (hc && (!hc.syllabusLinked || hc.totalModules === 0)) return <span style={{ color: '#f59e0b', fontSize: '12px' }} title="Needs attention">★</span>;
+                              return null;
+                            })()}
+                          </div>
                           {c.professor && <div className="text-[9px] text-white/40">{c.professor}</div>}
                         </div>
                       </button>
@@ -329,8 +355,15 @@ export default function CourseDocumentsWizard({ open, onClose, coursesData, seme
                           data-testid={`select-course-${code}`}
                         >
                           <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ background: c?.color || '#6b7280' }} />
-                          <div>
-                            <div className="text-[11px] font-medium">{cName}</div>
+                          <div className="flex-1">
+                            <div className="text-[11px] font-medium flex items-center gap-1.5">
+                              {cName}
+                              {healthData && (() => {
+                                const hc = healthData.courses.find(h => code && h.code.toLowerCase() === code.toLowerCase());
+                                if (hc && (!hc.syllabusLinked || hc.totalModules === 0)) return <span style={{ color: '#f59e0b', fontSize: '12px' }} title="Needs attention">★</span>;
+                                return null;
+                              })()}
+                            </div>
                             {c?.professor && <div className="text-[9px] text-white/40">{c.professor}</div>}
                           </div>
                           {selectedCourse === cName && <Check className="h-4 w-4 text-blue-400 ml-auto" />}
@@ -515,12 +548,16 @@ export default function CourseDocumentsWizard({ open, onClose, coursesData, seme
             </div>
           )}
 
-          {step === 3 && (
+          {step === 3 && (() => {
+            const hc = healthData?.courses.find(h => h.code.toLowerCase() === courseCode.toLowerCase());
+            const ttsOk = hc ? (hc.totalTtsNeeded === 0 || hc.totalTtsReady === hc.totalTtsNeeded) : true;
+            const allGood = syllabusUploaded && uploadedModules === totalModules && totalReadings > 0;
+            return (
             <div className="flex flex-col gap-4">
               <div className="text-center mb-2">
-                <Check className="h-10 w-10 text-green-400 mx-auto mb-2" />
+                {allGood ? <Check className="h-10 w-10 text-green-400 mx-auto mb-2" /> : <AlertCircle className="h-10 w-10 text-amber-400 mx-auto mb-2" />}
                 <h3 className="text-[14px] font-semibold">Summary</h3>
-                <p className="text-[10px] text-white/50 mt-1">Review what has been uploaded for {courseCode}</p>
+                <p className="text-[10px] text-white/50 mt-1">Review status for {courseCode}</p>
               </div>
               <div className="rounded-xl border border-white/15 overflow-hidden" style={{ background: 'rgba(255,255,255,0.03)' }}>
                 <div className="px-4 py-3 border-b border-white/10">
@@ -535,29 +572,73 @@ export default function CourseDocumentsWizard({ open, onClose, coursesData, seme
                 <div className="px-4 py-3 space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] text-white/60">Syllabus</span>
-                    {syllabusUploaded ? <span className="text-[10px] text-green-400 flex items-center gap-1"><Check className="h-3 w-3" /> Uploaded</span> : <span className="text-[10px] text-red-400 flex items-center gap-1"><AlertCircle className="h-3 w-3" /> Missing</span>}
+                    {syllabusUploaded ? (
+                      <span className="text-[10px] text-green-400 flex items-center gap-1"><Check className="h-3 w-3" /> Linked</span>
+                    ) : (
+                      <span className="text-[10px] text-red-400 flex items-center gap-1"><AlertCircle className="h-3 w-3" /> Missing</span>
+                    )}
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] text-white/60">Modules</span>
-                    <span className="text-[10px]" style={{ color: uploadedModules === totalModules ? '#22c55e' : '#f59e0b' }}>{uploadedModules}/{totalModules} uploaded</span>
+                    <span className="text-[10px] flex items-center gap-1" style={{ color: uploadedModules === totalModules ? '#22c55e' : '#f59e0b' }}>
+                      {uploadedModules === totalModules ? <Check className="h-3 w-3" /> : <AlertCircle className="h-3 w-3" />}
+                      {uploadedModules}/{totalModules} weeks
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] text-white/60">Readings</span>
-                    <span className="text-[10px]" style={{ color: totalReadings > 0 ? '#22c55e' : '#f59e0b' }}>{totalReadings} uploaded</span>
+                    <span className="text-[10px] flex items-center gap-1" style={{ color: totalReadings > 0 ? '#22c55e' : '#f59e0b' }}>
+                      {totalReadings > 0 ? <Check className="h-3 w-3" /> : <AlertCircle className="h-3 w-3" />}
+                      {totalReadings} files
+                    </span>
                   </div>
-                  {(uploadedModules < totalModules || !syllabusUploaded) && (
-                    <div className="mt-2 pt-2 border-t border-white/10">
-                      <div className="text-[9px] text-amber-400/70 font-medium mb-1">Missing Items:</div>
-                      {!syllabusUploaded && <div className="text-[9px] text-white/40">• Syllabus PDF</div>}
-                      {Array.from({ length: weekCount }, (_, i) => i + 1).filter(w => !moduleFiles[w]?.uploaded).map(w => (
-                        <div key={w} className="text-[9px] text-white/40">• Week {w} Module</div>
-                      ))}
+                  {hc && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] text-white/60">TTS Ready</span>
+                      <span className="text-[10px] flex items-center gap-1" style={{ color: ttsOk ? '#22c55e' : '#f59e0b' }}>
+                        {ttsOk ? <Check className="h-3 w-3" /> : <AlertCircle className="h-3 w-3" />}
+                        {hc.totalTtsNeeded > 0 ? `${hc.totalTtsReady}/${hc.totalTtsNeeded}` : 'No files'}
+                      </span>
                     </div>
                   )}
                 </div>
               </div>
+
+              {(uploadedModules < totalModules || !syllabusUploaded || totalReadings === 0) && (
+                <div className="rounded-xl border overflow-hidden" style={{ background: 'rgba(239,68,68,0.04)', borderColor: 'rgba(239,68,68,0.2)' }}>
+                  <div className="px-4 py-2.5 border-b" style={{ borderColor: 'rgba(239,68,68,0.15)' }}>
+                    <span className="text-[10px] font-bold text-amber-400">Outstanding Items</span>
+                  </div>
+                  <div className="px-4 py-2.5 space-y-1">
+                    {!syllabusUploaded && (
+                      <div className="text-[9px] text-white/50 flex items-center gap-1.5">
+                        <span style={{ color: '#f59e0b' }}>★</span> Syllabus PDF not linked
+                      </div>
+                    )}
+                    {Array.from({ length: weekCount }, (_, i) => i + 1).filter(w => !moduleFiles[w]?.uploaded).map(w => (
+                      <div key={w} className="text-[9px] text-white/50 flex items-center gap-1.5">
+                        <span style={{ color: '#f59e0b' }}>★</span> Week {w} — Module missing
+                      </div>
+                    ))}
+                    {totalReadings === 0 && (
+                      <div className="text-[9px] text-white/50 flex items-center gap-1.5">
+                        <span style={{ color: '#f59e0b' }}>★</span> No readings uploaded yet
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {allGood && (
+                <div className="rounded-xl border overflow-hidden" style={{ background: 'rgba(34,197,94,0.06)', borderColor: 'rgba(34,197,94,0.25)' }}>
+                  <div className="px-4 py-3 text-center">
+                    <span className="text-[10px] text-green-400 font-medium">All documents are in order for {courseCode}</span>
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+            );
+          })()}
         </div>
 
         <div className="flex items-center justify-between px-5 py-3 border-t border-white/15" style={{ background: 'rgba(255,255,255,0.05)' }}>

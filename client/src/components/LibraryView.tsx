@@ -39,10 +39,11 @@ const textLayerCSS = `
   border-radius: 2px;
 }
 .textLayer span mark.search-mark {
-  background: rgba(255, 255, 0, 0.5);
-  color: transparent;
+  background: rgba(255, 200, 0, 0.55);
+  color: inherit;
   border-radius: 2px;
-  padding: 0;
+  padding: 0 1px;
+  box-shadow: 0 0 0 1px rgba(255, 200, 0, 0.3);
 }
 .textLayer .endOfContent {
   display: block;
@@ -1365,50 +1366,56 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  useEffect(() => {
-    const applyToLayer = (layerDiv: HTMLDivElement | null) => {
-      if (!layerDiv) return;
-      const spans = layerDiv.querySelectorAll('span');
-      if (!searchQuery.trim()) {
-        spans.forEach(span => {
-          const marks = span.querySelectorAll('mark.search-mark');
-          if (marks.length > 0) span.textContent = span.textContent || '';
-        });
-        return;
-      }
-      const tokens = searchQuery.toLowerCase().trim().split(/\s+/).filter(t => t.length >= 2);
-      if (tokens.length === 0) return;
-      const escapedTokens = tokens.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-      const pattern = new RegExp(`(${escapedTokens.join('|')})`, 'gi');
+  const applySearchHighlights = useCallback((layerDiv: HTMLDivElement | null, query: string) => {
+    if (!layerDiv) return;
+    const spans = layerDiv.querySelectorAll('span');
+    if (!query.trim()) {
       spans.forEach(span => {
-        const origText = span.textContent || '';
-        if (!pattern.test(origText.toLowerCase())) {
-          const marks = span.querySelectorAll('mark.search-mark');
-          if (marks.length > 0) span.textContent = origText;
-          pattern.lastIndex = 0;
-          return;
-        }
-        pattern.lastIndex = 0;
-        const html = origText.replace(pattern, '<mark class="search-mark">$1</mark>');
-        span.innerHTML = html;
+        const marks = span.querySelectorAll('mark.search-mark');
+        if (marks.length > 0) span.textContent = span.textContent || '';
       });
-    };
-    const timer = setTimeout(() => {
-      applyToLayer(textLayerRef.current);
-      applyToLayer(textLayerRightRef.current);
-    }, 300);
-    return () => {
-      clearTimeout(timer);
+      return;
+    }
+    const tokens = query.toLowerCase().trim().split(/\s+/).filter(t => t.length >= 2);
+    if (tokens.length === 0) return;
+    const escapedTokens = tokens.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    const pattern = new RegExp(`(${escapedTokens.join('|')})`, 'gi');
+    spans.forEach(span => {
+      if (span.querySelector('mark.search-mark')) return;
+      const origText = span.textContent || '';
+      if (!origText.trim()) return;
+      if (!pattern.test(origText.toLowerCase())) { pattern.lastIndex = 0; return; }
+      pattern.lastIndex = 0;
+      const html = origText.replace(pattern, '<mark class="search-mark">$1</mark>');
+      span.innerHTML = html;
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!searchQuery.trim()) {
       [textLayerRef.current, textLayerRightRef.current].forEach(layerDiv => {
         if (!layerDiv) return;
-        const spans = layerDiv.querySelectorAll('span');
-        spans.forEach(span => {
+        layerDiv.querySelectorAll('span').forEach(span => {
           const marks = span.querySelectorAll('mark.search-mark');
           if (marks.length > 0) span.textContent = span.textContent || '';
         });
       });
+      return;
+    }
+    let cancelled = false;
+    const tryApply = (attempt: number) => {
+      if (cancelled || attempt > 10) return;
+      const leftReady = textLayerRef.current && textLayerRef.current.querySelectorAll('span').length > 0;
+      if (!leftReady && attempt < 10) {
+        setTimeout(() => tryApply(attempt + 1), 150);
+        return;
+      }
+      applySearchHighlights(textLayerRef.current, searchQuery);
+      applySearchHighlights(textLayerRightRef.current, searchQuery);
     };
-  }, [searchQuery, currentPage, pdfDoc, zoom]);
+    tryApply(0);
+    return () => { cancelled = true; };
+  }, [searchQuery, currentPage, pdfDoc, zoom, applySearchHighlights]);
 
   useEffect(() => {
     if (!initialSearchQuery || !pdfDoc || initialSearchApplied.current) return;

@@ -3775,6 +3775,9 @@ export default function Dashboard() {
   const [schoolCoursesOpenSource, setSchoolCoursesOpenSource] = useState<'pill' | 'degree'>('degree');
   const [semSettingsDialogKey, setSemSettingsDialogKey] = useState<string | null>(null);
   const [endEarlyNextSemPicker, setEndEarlyNextSemPicker] = useState<string | null>(null);
+  const [semHealthCheckKey, setSemHealthCheckKey] = useState<string | null>(null);
+  const [semHealthData, setSemHealthData] = useState<any>(null);
+  const [semHealthLoading, setSemHealthLoading] = useState(false);
   const [semDatePickerKey, setSemDatePickerKey] = useState<string | null>(null);
   const [semDatePickerHalf, setSemDatePickerHalf] = useState<'full' | 'spring' | 'summer'>('full');
   const [perSemesterSettings, setPerSemesterSettings] = useState<Record<string, { week1StartDate: string; semesterType: string; numberOfWeeks: number; timezone: string; readingWeekDate: string; isTravelling: boolean; travelTimezone: string; travelStartDate: string; travelEndDate: string }>>(() => {
@@ -23076,6 +23079,7 @@ export default function Dashboard() {
               return map;
             })()}
             semesterKeyOrder={semesterKeyOrder}
+            healthData={semHealthData}
           />
 
           {isMedicalWizardOpen && (
@@ -26913,10 +26917,14 @@ export default function Dashboard() {
                     className="flex-1 py-2 rounded text-[11px] font-bold border cursor-pointer transition-all hover:brightness-110"
                     style={{ background: 'rgba(59,130,246,0.25)', borderColor: 'rgba(59,130,246,0.5)', color: '#93c5fd' }}
                     onClick={() => {
-                      const updated = { ...semesterStartConfirmed, [semStartDialogKey]: true };
+                      const sk = semStartDialogKey!;
+                      const updated = { ...semesterStartConfirmed, [sk]: true };
                       setSemesterStartConfirmed(updated);
                       localStorage.setItem('semesterStartConfirmed', JSON.stringify(updated));
                       setSemStartDialogKey(null);
+                      setSemHealthCheckKey(sk);
+                      setSemHealthLoading(true);
+                      fetch(`/api/semester-health-check/${sk}`).then(r => r.json()).then(d => { setSemHealthData(d); setSemHealthLoading(false); }).catch(() => setSemHealthLoading(false));
                     }}
                     data-testid="button-confirm-semester-start"
                   >Yes, Activate Semester</button>
@@ -27225,6 +27233,9 @@ export default function Dashboard() {
                           setNewSemChecklistLabel(semLabels[sk] || sk);
                           setShowNewSemChecklist(true);
                           setEndEarlyNextSemPicker(null);
+                          setSemHealthCheckKey(sk);
+                          setSemHealthLoading(true);
+                          fetch(`/api/semester-health-check/${sk}`).then(r => r.json()).then(d => { setSemHealthData(d); setSemHealthLoading(false); }).catch(() => setSemHealthLoading(false));
                         }}
                         data-testid={`button-start-next-sem-${sk}`}
                       >
@@ -27244,6 +27255,135 @@ export default function Dashboard() {
                 </button>
               </div>
             </div>
+            </div>,
+            document.body
+          )}
+
+          {semHealthCheckKey && createPortal(
+            <div
+              className="fixed inset-0 z-[100003] flex items-center justify-center"
+              style={{ background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(12px)', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
+              onClick={(e) => { if (e.target === e.currentTarget) { setSemHealthCheckKey(null); setSemHealthData(null); } }}
+              data-testid="health-check-overlay"
+            >
+              <div className="rounded-2xl border px-6 py-5 w-[420px] max-h-[80vh] overflow-y-auto" style={{ background: 'rgba(30,30,40,0.98)', borderColor: 'rgba(255,255,255,0.15)', boxShadow: '0 25px 50px rgba(0,0,0,0.5)' }}>
+                {semHealthLoading ? (
+                  <div className="flex flex-col items-center gap-3 py-8">
+                    <Loader2 className="h-8 w-8 text-blue-400 animate-spin" />
+                    <span className="text-[11px] text-white/50">Running health check...</span>
+                  </div>
+                ) : semHealthData ? (
+                  <div className="flex flex-col gap-4">
+                    <div className="text-center mb-1">
+                      <ClipboardCheck className="h-8 w-8 mx-auto mb-2" style={{ color: semHealthData.healthScore >= 80 ? '#22c55e' : semHealthData.healthScore >= 50 ? '#f59e0b' : '#ef4444' }} />
+                      <h3 className="text-[14px] font-bold tracking-wide">Semester Health Check</h3>
+                      <p className="text-[10px] text-white/50 mt-1">
+                        {semHealthCheckKey.replace(/^ss/, 'Spring/Summer ').replace(/^f/, 'Fall ').replace(/^w/, 'Winter ')}
+                      </p>
+                    </div>
+
+                    <div className="rounded-xl border overflow-hidden" style={{ background: 'rgba(255,255,255,0.03)', borderColor: 'rgba(255,255,255,0.1)' }}>
+                      <div className="px-4 py-3 border-b" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-[11px] font-medium">Overall Health</span>
+                          <span className="text-[13px] font-bold" style={{ color: semHealthData.healthScore >= 80 ? '#22c55e' : semHealthData.healthScore >= 50 ? '#f59e0b' : '#ef4444' }}>
+                            {semHealthData.healthScore}%
+                          </span>
+                        </div>
+                        <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.1)' }}>
+                          <div className="h-full rounded-full transition-all duration-700" style={{ width: `${semHealthData.healthScore}%`, background: semHealthData.healthScore >= 80 ? '#22c55e' : semHealthData.healthScore >= 50 ? '#f59e0b' : '#ef4444' }} />
+                        </div>
+                      </div>
+                    </div>
+
+                    {semHealthData.courses && semHealthData.courses.map((course: any) => {
+                      const nw = semHealthData.numberOfWeeks || 13;
+                      const modsUploaded = Object.values(course.moduleWeeks || {}).filter((w: any) => w.count > 0).length;
+                      const hasReadings = course.totalReadings > 0;
+                      const ttsOk = course.totalTtsNeeded === 0 || course.totalTtsReady === course.totalTtsNeeded;
+                      const checks = [course.syllabusLinked, modsUploaded >= nw, hasReadings, ttsOk];
+                      const courseScore = Math.round((checks.filter(Boolean).length / checks.length) * 100);
+                      return (
+                      <div key={course.code} className="rounded-xl border overflow-hidden" style={{ background: 'rgba(255,255,255,0.03)', borderColor: 'rgba(255,255,255,0.1)' }}>
+                        <div className="px-4 py-2.5 border-b flex items-center justify-between" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+                          <span className="text-[11px] font-bold" style={{ color: '#93c5fd' }}>{course.code}</span>
+                          <span className="text-[10px] font-bold" style={{ color: courseScore >= 80 ? '#22c55e' : courseScore >= 50 ? '#f59e0b' : '#ef4444' }}>{courseScore}%</span>
+                        </div>
+                        <div className="px-4 py-2.5 space-y-1.5">
+                          {[
+                            { label: 'Syllabus', ok: course.syllabusLinked },
+                            { label: 'Modules', ok: modsUploaded >= nw, detail: `${modsUploaded}/${nw} weeks` },
+                            { label: 'Readings', ok: hasReadings, detail: `${course.totalReadings} files` },
+                            { label: 'TTS Ready', ok: ttsOk, detail: course.totalTtsNeeded > 0 ? `${course.totalTtsReady}/${course.totalTtsNeeded}` : undefined },
+                          ].map(item => (
+                            <div key={item.label} className="flex items-center justify-between">
+                              <span className="text-[10px] text-white/60">{item.label}</span>
+                              <div className="flex items-center gap-1.5">
+                                {item.detail && <span className="text-[9px] text-white/40">{item.detail}</span>}
+                                {item.ok ? (
+                                  <Check className="h-3 w-3 text-green-400" />
+                                ) : (
+                                  <X className="h-3 w-3 text-red-400" />
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      );
+                    })}
+
+                    {semHealthData.issues && semHealthData.issues.length > 0 && (
+                      <div className="rounded-xl border overflow-hidden" style={{ background: 'rgba(239,68,68,0.05)', borderColor: 'rgba(239,68,68,0.2)' }}>
+                        <div className="px-4 py-2.5 border-b" style={{ borderColor: 'rgba(239,68,68,0.15)' }}>
+                          <span className="text-[10px] font-bold text-red-400">Outstanding Issues ({semHealthData.issues.length})</span>
+                        </div>
+                        <div className="px-4 py-2.5 space-y-1">
+                          {semHealthData.issues.map((issue: string, i: number) => (
+                            <div key={i} className="text-[9px] text-red-300/70 flex items-start gap-1.5">
+                              <span className="text-red-400 mt-0.5">★</span>
+                              <span>{issue}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="flex gap-2 mt-1">
+                      <button
+                        className="flex-1 py-2.5 rounded-lg text-[11px] font-bold border cursor-pointer transition-all hover:brightness-110"
+                        style={{ background: 'rgba(59,130,246,0.25)', borderColor: 'rgba(59,130,246,0.5)', color: '#93c5fd' }}
+                        onClick={() => {
+                          setSemHealthCheckKey(null);
+                          setSemHealthData(null);
+                          setIsCourseDocWizardOpen(true);
+                        }}
+                        data-testid="button-health-open-wizard"
+                      >
+                        Open Course Wizard
+                      </button>
+                      <button
+                        className="flex-1 py-2.5 rounded-lg text-[11px] font-bold border cursor-pointer transition-all hover:brightness-110"
+                        style={{ background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)', color: 'white' }}
+                        onClick={() => { setSemHealthCheckKey(null); setSemHealthData(null); }}
+                        data-testid="button-health-dismiss"
+                      >
+                        Dismiss
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-6">
+                    <AlertTriangle className="h-6 w-6 text-amber-400 mx-auto mb-2" />
+                    <p className="text-[10px] text-white/50">Failed to load health check data</p>
+                    <button
+                      className="mt-3 py-1.5 px-4 rounded text-[10px] border cursor-pointer"
+                      style={{ background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)', color: 'white' }}
+                      onClick={() => { setSemHealthCheckKey(null); setSemHealthData(null); }}
+                    >Close</button>
+                  </div>
+                )}
+              </div>
             </div>,
             document.body
           )}

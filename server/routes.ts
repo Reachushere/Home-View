@@ -3969,6 +3969,168 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
+  app.get("/api/semester-health-check/:semKey", async (req, res) => {
+    try {
+      const { semKey } = req.params;
+      const allSemesters = await storage.getAllSemesterSettings();
+      const allFiles = await storage.getFiles();
+
+      const typePrefix: Record<string, string> = { winter: 'w', fall: 'f', spring_summer: 'ss' };
+      const matchedSem = allSemesters.find(s => {
+        const yr = new Date(s.semesterStartDate).getFullYear();
+        const prefix = typePrefix[(s.semesterType || 'winter').toLowerCase()] || s.semesterType?.charAt(0) || 'w';
+        return `${prefix}${yr}` === semKey;
+      });
+
+      const syllabusRow = await db.select().from(appState).where(eq(appState.key, 'courseSyllabusPaths')).limit(1);
+      const syllabusPaths: Record<string, string> = syllabusRow.length ? JSON.parse(syllabusRow[0].value || '{}') : {};
+
+      const courses: {
+        code: string;
+        name: string;
+        slotNum: number;
+        syllabusLinked: boolean;
+        syllabusPath: string | null;
+        moduleWeeks: Record<number, { count: number; ttsReady: number }>;
+        readingWeeks: Record<number, { count: number; ttsReady: number }>;
+        totalModules: number;
+        totalReadings: number;
+        totalTtsReady: number;
+        totalTtsNeeded: number;
+        oneDriveFolderConfigured: boolean;
+        folderName: string;
+      }[] = [];
+
+      const numberOfWeeks = (matchedSem as any)?.numberOfWeeks || 13;
+
+      for (let i = 1; i <= 3; i++) {
+        const code = matchedSem ? ((matchedSem as any)[`course${i}Code`] || '') : '';
+        const name = matchedSem ? ((matchedSem as any)[`course${i}Name`] || '') : '';
+        if (!code || code.startsWith('TBD')) continue;
+
+        const cleanCode = code.replace(/\s/g, '').toLowerCase();
+        const hasSyllabus = !!(syllabusPaths[code] || syllabusPaths[code.toUpperCase()] || syllabusPaths[cleanCode]);
+        const syllabusPath = syllabusPaths[code] || syllabusPaths[code.toUpperCase()] || syllabusPaths[cleanCode] || null;
+
+        const moduleWeeks: Record<number, { count: number; ttsReady: number }> = {};
+        const readingWeeks: Record<number, { count: number; ttsReady: number }> = {};
+        let totalModules = 0;
+        let totalReadings = 0;
+        let totalTtsReady = 0;
+        let totalTtsNeeded = 0;
+
+        for (let w = 1; w <= numberOfWeeks; w++) {
+          moduleWeeks[w] = { count: 0, ttsReady: 0 };
+          readingWeeks[w] = { count: 0, ttsReady: 0 };
+        }
+
+        for (const file of allFiles) {
+          if (!file.folder) continue;
+          const fl = file.folder.toLowerCase();
+          const weekMatch = fl.match(/^week-(\d+)-(.+?)-(module|reading)$/i);
+          if (!weekMatch) continue;
+          const weekNum = parseInt(weekMatch[1]);
+          const fileCode = weekMatch[2].toLowerCase();
+          const fileType = weekMatch[3].toLowerCase();
+          if (fileCode !== cleanCode) continue;
+
+          if (fileType === 'module') {
+            if (!moduleWeeks[weekNum]) moduleWeeks[weekNum] = { count: 0, ttsReady: 0 };
+            moduleWeeks[weekNum].count++;
+            totalModules++;
+            if (file.totalChunks && file.totalChunks > 0) {
+              moduleWeeks[weekNum].ttsReady++;
+              totalTtsReady++;
+            }
+            totalTtsNeeded++;
+          } else if (fileType === 'reading') {
+            if (!readingWeeks[weekNum]) readingWeeks[weekNum] = { count: 0, ttsReady: 0 };
+            readingWeeks[weekNum].count++;
+            totalReadings++;
+            if (file.totalChunks && file.totalChunks > 0) {
+              readingWeeks[weekNum].ttsReady++;
+              totalTtsReady++;
+            }
+            totalTtsNeeded++;
+          }
+        }
+
+        const moduleFolderKey = `course${i}ModuleFolder`;
+        const readingFolderKey = `course${i}ReadingFolder`;
+        const hasOneDriveConfig = !!(matchedSem && ((matchedSem as any)[moduleFolderKey] || (matchedSem as any)[readingFolderKey]));
+        const folderName = matchedSem ? ((matchedSem as any)[`course${i}Name`] || '') : '';
+
+        courses.push({
+          code, name, slotNum: i,
+          syllabusLinked: hasSyllabus, syllabusPath,
+          moduleWeeks, readingWeeks,
+          totalModules, totalReadings,
+          totalTtsReady, totalTtsNeeded,
+          oneDriveFolderConfigured: hasOneDriveConfig,
+          folderName,
+        });
+      }
+
+      const semesterConfigured = !!(matchedSem && matchedSem.semesterStartDate);
+      const hasDates = !!(matchedSem?.semesterStartDate && matchedSem?.semesterEndDate);
+      const isActive = matchedSem?.isActive || false;
+
+      const weeksWithModules = courses.reduce((sum, c) => {
+        let count = 0;
+        for (let w = 1; w <= numberOfWeeks; w++) {
+          if (c.moduleWeeks[w]?.count > 0) count++;
+        }
+        return sum + count;
+      }, 0);
+      const totalExpectedModuleWeeks = courses.length * numberOfWeeks;
+      const allSyllabiLinked = courses.every(c => c.syllabusLinked);
+      const ttsFullyReady = courses.every(c => c.totalTtsNeeded === 0 || c.totalTtsReady === c.totalTtsNeeded);
+
+      const issues: string[] = [];
+      if (!semesterConfigured) issues.push('Semester dates not configured');
+      if (!isActive) issues.push('Semester is not active');
+      for (const c of courses) {
+        if (!c.syllabusLinked) issues.push(`${c.code}: Syllabus not linked`);
+        const missingModWeeks: number[] = [];
+        for (let w = 1; w <= numberOfWeeks; w++) {
+          if (!c.moduleWeeks[w] || c.moduleWeeks[w].count === 0) missingModWeeks.push(w);
+        }
+        if (missingModWeeks.length > 0) {
+          issues.push(`${c.code}: Missing modules for weeks ${missingModWeeks.join(', ')}`);
+        }
+        if (c.totalTtsNeeded > 0 && c.totalTtsReady < c.totalTtsNeeded) {
+          issues.push(`${c.code}: TTS not ready for ${c.totalTtsNeeded - c.totalTtsReady} files`);
+        }
+      }
+
+      const healthScore = Math.round(
+        ((allSyllabiLinked ? 20 : 0) +
+        (totalExpectedModuleWeeks > 0 ? (weeksWithModules / totalExpectedModuleWeeks) * 50 : 50) +
+        (hasDates ? 15 : 0) +
+        (ttsFullyReady ? 15 : 0)) 
+      );
+
+      res.json({
+        semKey,
+        semesterConfigured,
+        hasDates,
+        isActive,
+        numberOfWeeks,
+        courses,
+        allSyllabiLinked,
+        weeksWithModules,
+        totalExpectedModuleWeeks,
+        ttsFullyReady,
+        healthScore,
+        issues,
+        semesterName: matchedSem?.semesterName || semKey,
+      });
+    } catch (err: any) {
+      console.error("[Health Check] Error:", err);
+      res.status(500).json({ error: "Health check failed", message: err.message });
+    }
+  });
+
   app.post("/api/semester-reset-files", async (_req, res) => {
     try {
       const allFiles = await storage.getFiles();
