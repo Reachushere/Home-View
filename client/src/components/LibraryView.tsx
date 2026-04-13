@@ -155,6 +155,242 @@ function getFileType(folder: string | null): 'module' | 'reading' | null {
   return null;
 }
 
+const LIB_NOTE_FONT_SIZES = ['12px', '14px', '16px', '18px', '24px', '32px'];
+const LIB_NOTE_FONT_COLORS = ['#ffffff', '#000000', '#ef4444', '#f59e0b', '#22c55e', '#3b82f6', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'];
+
+function LibraryFloatingNote({ onClose }: { onClose: () => void }) {
+  const editorRef = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState({ x: Math.max(60, window.innerWidth / 2 - 200), y: Math.max(60, window.innerHeight / 2 - 180) });
+  const [size, setSize] = useState({ w: 400, h: 360 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [isResizing, setIsResizing] = useState(false);
+  const [minimized, setMinimized] = useState(false);
+  const [showFontSize, setShowFontSize] = useState(false);
+  const [showFontColor, setShowFontColor] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const dragOff = useRef({ x: 0, y: 0 });
+  const resizeStart = useRef({ x: 0, y: 0, w: 0, h: 0 });
+
+  const handleDragStart = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+    dragOff.current = { x: e.clientX - pos.x, y: e.clientY - pos.y };
+  }, [pos]);
+
+  const handleResizeStart = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsResizing(true);
+    resizeStart.current = { x: e.clientX, y: e.clientY, w: size.w, h: size.h };
+  }, [size]);
+
+  useEffect(() => {
+    if (!isDragging && !isResizing) return;
+    const onMove = (e: MouseEvent) => {
+      if (isDragging) {
+        setPos({
+          x: Math.max(0, Math.min(window.innerWidth - 100, e.clientX - dragOff.current.x)),
+          y: Math.max(0, Math.min(window.innerHeight - 40, e.clientY - dragOff.current.y)),
+        });
+      }
+      if (isResizing) {
+        setSize({
+          w: Math.max(280, resizeStart.current.w + (e.clientX - resizeStart.current.x)),
+          h: Math.max(200, resizeStart.current.h + (e.clientY - resizeStart.current.y)),
+        });
+      }
+    };
+    const onUp = () => { setIsDragging(false); setIsResizing(false); };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    return () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); };
+  }, [isDragging, isResizing]);
+
+  const execCmd = useCallback((cmd: string, val?: string) => {
+    document.execCommand(cmd, false, val);
+    editorRef.current?.focus();
+  }, []);
+
+  const insertCheckbox = useCallback(() => {
+    const id = 'cb-' + Date.now();
+    document.execCommand('insertHTML', false, `<label style="display:flex;align-items:center;gap:6px;margin:3px 0;cursor:pointer"><input type="checkbox" id="${id}" style="width:14px;height:14px;cursor:pointer;accent-color:#22c55e"><span contenteditable="true" style="flex:1">Task item</span></label>`);
+    editorRef.current?.focus();
+  }, []);
+
+  const handleSaveToNotepad = useCallback(async () => {
+    const content = editorRef.current?.innerHTML || '';
+    if (!content.trim() || content === '<br>') return;
+    setSaving(true);
+    try {
+      const res = await fetch('/api/notepad/notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: `Library Note — ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`, content, sortOrder: 999, groupName: 'Library Notes' }),
+      });
+      if (!res.ok) throw new Error('Failed');
+      queryClient.invalidateQueries({ queryKey: ['/api/notepad/notes'] });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch { /* ignore */ } finally { setSaving(false); }
+  }, []);
+
+  const toolBtnStyle: React.CSSProperties = {
+    background: 'none', border: 'none', cursor: 'pointer', padding: '3px 5px', borderRadius: 4,
+    color: 'rgba(255,255,255,0.65)', fontSize: 12, display: 'flex', alignItems: 'center', justifyContent: 'center',
+    transition: 'all 0.15s',
+  };
+
+  return createPortal(
+    <div
+      data-testid="library-floating-note"
+      style={{
+        position: 'fixed', left: pos.x, top: pos.y, width: size.w, height: minimized ? 'auto' : size.h,
+        zIndex: 100010, borderRadius: 12, overflow: 'hidden',
+        boxShadow: '0 12px 48px rgba(0,0,0,0.55), 0 4px 16px rgba(0,0,0,0.3)',
+        border: '1.5px solid rgba(255,255,255,0.2)',
+        display: 'flex', flexDirection: 'column',
+        background: 'linear-gradient(145deg, #1a1208, #2d1f0e)',
+        backdropFilter: 'blur(20px)',
+        userSelect: isDragging ? 'none' : 'auto',
+        transition: isDragging || isResizing ? 'none' : 'box-shadow 0.2s',
+      }}
+    >
+      <div
+        onMouseDown={handleDragStart}
+        style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '6px 10px', cursor: isDragging ? 'grabbing' : 'grab',
+          background: 'linear-gradient(90deg, rgba(180,140,60,0.3), rgba(120,80,30,0.2))',
+          borderBottom: '1px solid rgba(255,255,255,0.12)', flexShrink: 0,
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5"><line x1="2" y1="5" x2="14" y2="5"/><line x1="2" y1="8" x2="14" y2="8"/><line x1="2" y1="11" x2="14" y2="11"/></svg>
+          <StickyNote size={13} style={{ color: 'rgba(212,175,55,0.7)' }} />
+          <span style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.85)', fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif" }}>Library Note</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <button onClick={(e) => { e.stopPropagation(); setMinimized(!minimized); }} style={{ ...toolBtnStyle, padding: 2 }} title={minimized ? 'Expand' : 'Minimize'} data-testid="btn-lib-note-minimize">
+            <Minus style={{ width: 12, height: 12 }} />
+          </button>
+          <button onClick={(e) => { e.stopPropagation(); onClose(); }} style={{ ...toolBtnStyle, padding: 2 }} title="Close" data-testid="btn-lib-note-close">
+            <X style={{ width: 12, height: 12 }} />
+          </button>
+        </div>
+      </div>
+
+      {!minimized && (
+        <>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 2, padding: '4px 8px', flexWrap: 'wrap',
+            borderBottom: '1px solid rgba(255,255,255,0.08)', background: 'rgba(0,0,0,0.15)', flexShrink: 0,
+          }}>
+            <button onClick={() => execCmd('bold')} style={toolBtnStyle} title="Bold (Ctrl+B)" data-testid="btn-lib-note-bold"><strong>B</strong></button>
+            <button onClick={() => execCmd('italic')} style={toolBtnStyle} title="Italic (Ctrl+I)" data-testid="btn-lib-note-italic"><em>I</em></button>
+            <button onClick={() => execCmd('underline')} style={toolBtnStyle} title="Underline (Ctrl+U)" data-testid="btn-lib-note-underline"><span style={{ textDecoration: 'underline' }}>U</span></button>
+            <div style={{ width: 1, height: 16, background: 'rgba(255,255,255,0.12)', margin: '0 2px' }} />
+            <button onClick={() => execCmd('insertUnorderedList')} style={toolBtnStyle} title="Bullet list" data-testid="btn-lib-note-bullets">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="3" cy="4" r="1.2" fill="currentColor"/><line x1="6" y1="4" x2="14" y2="4"/><circle cx="3" cy="8" r="1.2" fill="currentColor"/><line x1="6" y1="8" x2="14" y2="8"/><circle cx="3" cy="12" r="1.2" fill="currentColor"/><line x1="6" y1="12" x2="14" y2="12"/></svg>
+            </button>
+            <button onClick={insertCheckbox} style={toolBtnStyle} title="Checkbox" data-testid="btn-lib-note-checkbox">
+              <Check style={{ width: 13, height: 13 }} />
+            </button>
+            <div style={{ width: 1, height: 16, background: 'rgba(255,255,255,0.12)', margin: '0 2px' }} />
+            <div style={{ position: 'relative' }}>
+              <button onClick={() => { setShowFontSize(!showFontSize); setShowFontColor(false); }} style={toolBtnStyle} title="Font size" data-testid="btn-lib-note-fontsize">
+                <span style={{ fontSize: 11, fontWeight: 600 }}>A<span style={{ fontSize: 9 }}>a</span></span>
+              </button>
+              {showFontSize && (
+                <div style={{ position: 'absolute', top: '100%', left: 0, background: '#1a1208', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 6, padding: 4, zIndex: 10, display: 'flex', flexDirection: 'column', gap: 2, minWidth: 55 }}>
+                  {LIB_NOTE_FONT_SIZES.map(s => (
+                    <button key={s} onClick={() => { execCmd('fontSize', '7'); const els = editorRef.current?.querySelectorAll('font[size="7"]'); els?.forEach(el => { (el as HTMLElement).removeAttribute('size'); (el as HTMLElement).style.fontSize = s; }); setShowFontSize(false); }}
+                      style={{ ...toolBtnStyle, fontSize: parseInt(s) > 18 ? 14 : 12, padding: '3px 8px', width: '100%', justifyContent: 'flex-start' }}
+                    >{s}</button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div style={{ position: 'relative' }}>
+              <button onClick={() => { setShowFontColor(!showFontColor); setShowFontSize(false); }} style={toolBtnStyle} title="Font color" data-testid="btn-lib-note-fontcolor">
+                <span style={{ fontSize: 12, fontWeight: 700 }}>A</span>
+                <div style={{ width: 12, height: 3, background: 'linear-gradient(90deg, #ef4444, #3b82f6, #22c55e)', borderRadius: 1, marginTop: 1 }} />
+              </button>
+              {showFontColor && (
+                <div style={{ position: 'absolute', top: '100%', left: -20, background: '#1a1208', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 6, padding: 6, zIndex: 10, display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 4 }}>
+                  {LIB_NOTE_FONT_COLORS.map(c => (
+                    <button key={c} onClick={() => { execCmd('foreColor', c); setShowFontColor(false); }}
+                      style={{ width: 20, height: 20, borderRadius: '50%', background: c, border: `2px solid ${c === '#000000' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.2)'}`, cursor: 'pointer' }}
+                      data-testid={`btn-lib-note-color-${c.replace('#', '')}`}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div
+            ref={editorRef}
+            contentEditable
+            data-testid="lib-note-editor"
+            suppressContentEditableWarning
+            onClick={() => { setShowFontSize(false); setShowFontColor(false); }}
+            style={{
+              flex: 1, overflow: 'auto', padding: '10px 12px',
+              fontSize: 13, color: 'rgba(255,255,255,0.9)', lineHeight: 1.6,
+              fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif",
+              outline: 'none', minHeight: 80, whiteSpace: 'pre-wrap', wordBreak: 'break-word',
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'b' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); execCmd('bold'); }
+              if (e.key === 'i' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); execCmd('italic'); }
+              if (e.key === 'u' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); execCmd('underline'); }
+            }}
+          />
+
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 6,
+            padding: '6px 10px', borderTop: '1px solid rgba(255,255,255,0.08)', background: 'rgba(0,0,0,0.12)', flexShrink: 0,
+          }}>
+            {saved && <span style={{ fontSize: 11, color: 'rgba(100,255,100,0.8)', marginRight: 'auto' }}>Saved to Notepad!</span>}
+            <button
+              onClick={handleSaveToNotepad}
+              disabled={saving}
+              data-testid="btn-lib-note-save-to-notepad"
+              style={{
+                display: 'flex', alignItems: 'center', gap: 5, padding: '5px 14px',
+                background: 'linear-gradient(135deg, rgba(212,175,55,0.3), rgba(180,140,40,0.2))',
+                border: '1px solid rgba(212,175,55,0.35)', borderRadius: 6, cursor: 'pointer',
+                color: 'rgba(255,235,180,0.9)', fontSize: 11, fontWeight: 600,
+                fontFamily: "Avenir, 'Avenir Next', -apple-system, sans-serif",
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(212,175,55,0.45), rgba(180,140,40,0.35))'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(212,175,55,0.3), rgba(180,140,40,0.2))'; }}
+            >
+              <Save style={{ width: 12, height: 12 }} />
+              {saving ? 'Saving…' : 'Save to Notepad'}
+            </button>
+          </div>
+        </>
+      )}
+
+      {!minimized && (
+        <div
+          onMouseDown={handleResizeStart}
+          style={{ position: 'absolute', right: 0, bottom: 0, width: 18, height: 18, cursor: 'nwse-resize' }}
+        >
+          <svg width="10" height="10" viewBox="0 0 10 10" style={{ position: 'absolute', right: 3, bottom: 3 }}>
+            <path d="M9 1L1 9M9 5L5 9" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" />
+          </svg>
+        </div>
+      )}
+    </div>,
+    document.body
+  );
+}
+
 function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, shelfHeight, onRename, isGroupHovered, interceptClick, layout = 'vertical', besideHorizontal, extraMarginLeft, widthReduction }: {
   file: FileRecord;
   index: number;
@@ -2014,6 +2250,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [showSharePopup, setShowSharePopup] = useState(false);
   const [masterSearch, setMasterSearch] = useState('');
+  const [showLibraryNote, setShowLibraryNote] = useState(false);
   const [masterSemFilter, setMasterSemFilter] = useState('all');
   const [masterCourseFilter, setMasterCourseFilter] = useState('all');
   const [masterWeekFilter, setMasterWeekFilter] = useState('all');
@@ -3375,30 +3612,28 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         >
           <ChevronRight size={16} />
         </button>
-        {onOpenNotepad && (
-          <button
-            onClick={onOpenNotepad}
-            data-testid="btn-library-notepad"
-            title="Open Notepad"
-            style={{
-              width: '37px',
-              height: '37px',
-              borderRadius: '50%',
-              background: 'rgba(0,0,0,0.5)',
-              border: '1px solid rgba(255,255,255,0.2)',
-              color: 'rgba(255,255,255,0.7)',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'all 0.2s',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.6)'; e.currentTarget.style.color = '#fff'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.5)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}
-          >
-            <StickyNote size={16} />
-          </button>
-        )}
+        <button
+          onClick={() => setShowLibraryNote(true)}
+          data-testid="btn-library-notepad"
+          title="Open Library Note"
+          style={{
+            width: '37px',
+            height: '37px',
+            borderRadius: '50%',
+            background: showLibraryNote ? 'rgba(212,175,55,0.25)' : 'rgba(0,0,0,0.5)',
+            border: showLibraryNote ? '1px solid rgba(212,175,55,0.4)' : '1px solid rgba(255,255,255,0.2)',
+            color: showLibraryNote ? 'rgba(212,175,55,0.9)' : 'rgba(255,255,255,0.7)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all 0.2s',
+          }}
+          onMouseEnter={e => { if (!showLibraryNote) { e.currentTarget.style.background = 'rgba(0,0,0,0.6)'; e.currentTarget.style.color = '#fff'; } }}
+          onMouseLeave={e => { if (!showLibraryNote) { e.currentTarget.style.background = 'rgba(0,0,0,0.5)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; } }}
+        >
+          <StickyNote size={16} />
+        </button>
       </div>
 
       <div style={{
@@ -4228,6 +4463,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           </div>
         </div>
       )}
+      {showLibraryNote && <LibraryFloatingNote onClose={() => setShowLibraryNote(false)} />}
     </div>,
     document.body
   );
