@@ -12696,56 +12696,50 @@ export default function Dashboard() {
       const dayKey = _etDateKey(day);
       const dayTasks = tasksByDateKey.get(dayKey) || [];
       for (let h = 0; h < 24; h++) {
-        const inlineTasks = dayTasks.filter(t => {
-          if (t.eventStartTime && t.eventEndTime) {
-            const [sH] = t.eventStartTime.split(':').map(Number);
-            const [eH] = t.eventEndTime.split(':').map(Number);
-            if (eH > sH + 1) return false;
-            if (eH === sH + 1) {
-              const hasOverlayAtHour = (multiHourOverlayCols.get(`${dIdx}-${sH}`) || 0) > 0;
-              if (!hasOverlayAtHour) {
-                const hasConflict = dayTasks.some(other => {
-                  if (!other.eventStartTime || !other.eventEndTime) return false;
-                  if (other.id === t.id) return false;
-                  const [osH] = other.eventStartTime.split(':').map(Number);
-                  const [oeH] = other.eventEndTime.split(':').map(Number);
-                  if (oeH <= osH + 1) return false;
-                  const oStart = osH * 60;
-                  const oEnd = oeH * 60;
-                  return oStart < (sH + 1) * 60 && oEnd > sH * 60;
-                });
-                if (!hasConflict) return false;
-              }
-            }
-            return sH === h;
+        const hourTasks = dayTasks.filter(t => {
+          if (t.eventStartTime) {
+            const [startHour] = t.eventStartTime.split(':').map(Number);
+            return startHour === h;
           }
           const dueDate = new Date(t.dueDate);
           const isMidnightUTC = dueDate.getUTCHours() === 0 && dueDate.getUTCMinutes() === 0;
           if (isMidnightUTC) return h === 20;
           return getETHours(dueDate) === h;
         });
+        const inlineTasks = hourTasks.filter(t => {
+          if (t.eventStartTime && t.eventEndTime) {
+            const [sH] = t.eventStartTime.split(':').map(Number);
+            const [eH] = t.eventEndTime.split(':').map(Number);
+            if (eH > sH + 1) return false;
+            if (eH === sH + 1) return getConflictExtraHeight(sH) > 0;
+          }
+          return true;
+        });
         const calEvents = filteredCalendarEvents.filter(e => {
           if (e.isAllDay) return false;
           const eventDate = new Date(e.startDate);
+          const eventEndDate = new Date(e.endDate);
+          if (eventEndDate < now) return false;
           if (!isSameDayET(eventDate, day) || getETHours(eventDate) !== h) return false;
-          if (new Date(e.endDate) < now) return false;
           const titleClean = e.title.replace(/^\[PREP\]\s*/, '').replace(/^PREP\s+/, '').replace(/^\[.*?\]\s*/g, '').toLowerCase().trim();
           const isDup = dayTasks.some(t2 => {
             if (t2.calendarEventId === e.id || t2.secondAccountCalendarEventId === e.id || t2.prepCalendarEventId === e.id || t2.secondAccountPrepEventId === e.id) return true;
             const taskTitle = t2.title.replace(/^\[.*?\]\s*/g, '').toLowerCase().trim();
             if (taskTitle === titleClean) return true;
+            if (t2.type === 'class' && titleClean.includes(taskTitle.substring(0, 15))) return true;
             return false;
           });
           return !isDup;
         });
-        const count = inlineTasks.length + calEvents.length;
+        const visibleCalEvents = calEvents.filter(e => !dismissedCalendarEvents.has(e.id));
+        const count = inlineTasks.length + visibleCalEvents.length;
         if (count > 0) {
           map.set(`${dIdx}-${h}`, count);
         }
       }
     }
     return map;
-  }, [allTasks, weekDays, filteredCalendarEvents]);
+  }, [allTasks, weekDays, filteredCalendarEvents, dismissedCalendarEvents]);
 
   const getTasksForHour = (day: Date, hour: number) => {
     const dayKey = _etDateKey(day);
