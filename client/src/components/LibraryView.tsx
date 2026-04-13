@@ -4050,7 +4050,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 position: 'absolute',
                 bottom: `${4 - labelShift}px`,
                 zIndex: 10,
-                left: 'calc(30% + 166px)',
+                left: 'calc(30% + 141px)',
               }}
               onClick={() => {
                 setCollapsedCourses(prev => {
