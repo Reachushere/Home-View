@@ -31858,7 +31858,8 @@ export default function Dashboard() {
                             const displayTime = hoursUntil !== null ? (hoursUntil < 1 ? `${Math.max(1, Math.round(hoursUntil * 60))}` : hoursUntil < 10 ? `${hoursUntil.toFixed(1)}` : `${Math.round(hoursUntil)}`) : '--';
                             return (
                               <>
-                                <div className="absolute top-0 bottom-0 z-[55] pointer-events-none" style={{ left: '0px', right: '3px', display: 'flex', gap: '0px', borderRadius: '8px', overflow: 'hidden', boxShadow: 'inset 0 0 0 2px #2563eb' }} data-testid="due-countdown-row">
+                                <div className="absolute top-0 bottom-0 z-[55] pointer-events-none" style={{ left: '0px', right: '3px', display: 'flex', gap: '0px', borderRadius: '8px', overflow: 'hidden' }} data-testid="due-countdown-row">
+                                  <div className="pointer-events-none" style={{ position: 'absolute', inset: 0, borderRadius: '8px', border: '2px solid #2563eb', zIndex: 10 }} />
                                   {missedCount > 0 && (
                                     <div className="animate-due-box-blink" style={{ width: `${Math.min(gridSizes.timeSlotHeight, 44)}px`, flexShrink: 0, position: 'relative', backgroundColor: '#dc2626', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0px' }} data-testid="missed-tasks-indicator">
                                       <span style={{ fontSize: '18px', color: 'white', fontWeight: 900, lineHeight: 1 }}>{missedCount}</span>
