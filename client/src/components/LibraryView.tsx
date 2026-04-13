@@ -4125,19 +4125,17 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
               <div style={{
                 maxHeight: isCollapsed ? '0px' : '800px',
                 opacity: isCollapsed ? 0 : 1,
-                overflowX: 'hidden',
-                overflowY: isCollapsed ? 'hidden' : 'visible',
+                overflow: isCollapsed ? 'hidden' : 'visible',
                 transition: 'max-height 0.3s ease, opacity 0.25s ease',
               }}>
-              <div style={{ position: 'relative', maxWidth: '100%', overflow: 'hidden' }}>
+              <div style={{ position: 'relative', maxWidth: '100%', overflow: 'visible' }}>
                 <div style={{
                   display: 'flex',
                   alignItems: 'flex-end',
                   height: `${courseIdx === 0 ? shelfHeight + 35 : shelfHeight * 2}px`,
                   padding: '0px 4px 28px',
                   gap: '2px',
-                  overflowX: 'hidden',
-                  overflowY: 'visible',
+                  overflow: 'visible',
                   maxWidth: '100%',
                   ...(courseIdx > 0 ? { transform: 'scale(1.5) scaleX(0.84)', transformOrigin: 'bottom left' } : { marginLeft: '-3px' }),
                 }}
