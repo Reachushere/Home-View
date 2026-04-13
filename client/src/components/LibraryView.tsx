@@ -4037,7 +4037,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             const collapseKey = `${semKey}::${course.code}`;
             const isCollapsed = collapsedCourses.has(collapseKey);
             const rowShift = courseIdx === 0 ? -52 : courseIdx === 1 ? 38 : courseIdx === 2 ? -20 : 0;
-            const labelShift = courseIdx === 0 ? 4 : courseIdx === 1 ? 26 : courseIdx === 2 ? 68 : 0;
+            const labelShift = courseIdx === 0 ? -25 : courseIdx === 1 ? 26 : courseIdx === 2 ? 68 : 0;
             return (
             <div key={course.code} style={{ position: 'relative', overflow: 'visible', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', marginTop: rowShift }}>
               <div style={{
