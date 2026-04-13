@@ -1080,7 +1080,7 @@ const toolBtnStyle = (active?: boolean): React.CSSProperties => ({
   transition: 'all 0.15s ease',
 });
 
-function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles, onOpenModuleFile, isSyllabus, onBringToFront, readerIndex, initialSearchQuery, initialPage }: {
+function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles, onOpenModuleFile, isSyllabus, onBringToFront, readerIndex, initialSearchQuery, initialPage, onOpenSyllabus, courseCode: readerCourseCode }: {
   file: FileRecord;
   bookColor: string;
   onClose: () => void;
@@ -1093,6 +1093,8 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
   readerIndex?: number;
   initialSearchQuery?: string;
   initialPage?: number;
+  onOpenSyllabus?: (courseCode: string) => void;
+  courseCode?: string;
 }) {
   const [phase, setPhase] = useState<'pull' | 'expand' | 'reading'>('pull');
   const [pdfDoc, setPdfDoc] = useState<any>(null);
@@ -1743,6 +1745,25 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
                   <Search size={14} />
                 </button>
               </div>
+
+              {!isSyllabus && readerCourseCode && onOpenSyllabus && (
+                <button
+                  onClick={() => onOpenSyllabus(readerCourseCode)}
+                  style={{
+                    ...toolBtnStyle(),
+                    display: 'flex', alignItems: 'center', gap: '4px',
+                    padding: '3px 10px',
+                    fontSize: '10px', fontWeight: 600, letterSpacing: '0.3px',
+                    color: 'rgba(255,255,255,0.7)',
+                    textTransform: 'uppercase',
+                  }}
+                  title="Open Course Syllabus"
+                  data-testid="btn-open-syllabus-from-reader"
+                >
+                  <FileText size={12} />
+                  Syllabus
+                </button>
+              )}
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0, flexWrap: 'wrap' }}>
                 {activeToolPanel === 'highlight' && (
@@ -4632,6 +4653,22 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             readerIndex={readerIdx}
             initialSearchQuery={reader.initialSearchQuery}
             initialPage={reader.initialPage}
+            courseCode={reader.courseCode}
+            onOpenSyllabus={(cc: string) => {
+              const sp = syllabusPaths[cc.toUpperCase()] || syllabusPaths[cc];
+              if (!sp) return;
+              const code = cc.toUpperCase();
+              const syllabusFile: FileRecord = {
+                id: -1 * (code.charCodeAt(0) * 1000 + code.charCodeAt(1)),
+                originalName: `${code} Syllabus.pdf`,
+                displayName: `${code} Syllabus`,
+                objectPath: sp,
+                folder: null,
+                listened: false,
+                contentType: 'application/pdf',
+              };
+              handleBookClick(syllabusFile, '#8B6914', `/api/syllabus/view?path=${encodeURIComponent(sp)}`, code.toLowerCase(), true);
+            }}
           />
           </div>
         </div>

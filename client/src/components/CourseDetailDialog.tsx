@@ -4785,11 +4785,18 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               </button>
             </div>
           </div>
-          <iframe
-            src={`/api/syllabus/view?path=${encodeURIComponent(syllabusObjectPath)}`}
+          <object
+            data={`/api/syllabus/view?path=${encodeURIComponent(syllabusObjectPath)}#toolbar=1&navpanes=1`}
+            type="application/pdf"
             style={{ flex: 1, border: 'none', background: '#fff', width: '100%' }}
             title="Syllabus PDF"
-          />
+          >
+            <iframe
+              src={`/api/syllabus/view?path=${encodeURIComponent(syllabusObjectPath)}#toolbar=1`}
+              style={{ width: '100%', height: '100%', border: 'none' }}
+              title="Syllabus PDF"
+            />
+          </object>
           <div
             style={{
               position: 'absolute',
