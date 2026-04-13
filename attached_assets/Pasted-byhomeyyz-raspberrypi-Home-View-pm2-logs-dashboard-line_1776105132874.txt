@@ -1,0 +1,1893 @@
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs dashboard --lines 30
+[TAILING] Tailing last 30 lines for [dashboard] process (change the value with --lines option)
+/home/byhomeyyz/.pm2/logs/dashboard-error.log last 30 lines:
+0|dashboar | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboar | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboar | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboar | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboar | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboar | Require stack:
+0|dashboar | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboar | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboar | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboar | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboar | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboar | Require stack:
+0|dashboar | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboar | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboar | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboar | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboar | Require stack:
+0|dashboar | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboar | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboar | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboar | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboar | Require stack:
+0|dashboar | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboar | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboar | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboar | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboar | Require stack:
+0|dashboar | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboar | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboar | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+
+/home/byhomeyyz/.pm2/logs/dashboard-out.log last 30 lines:
+0|dashboar | [ExtractText] PDF extracted 902 chars from Signing Naturally Student Workbook Units 1-6-RS.pdf (452 pages)
+0|dashboar | [ExtractText] Text too short (0 chars), attempting OCR for Signing Naturally Student Workbook Units 1-6-RS.pdf
+0|dashboar | cleanTextForTTS input length: 902
+0|dashboar | After URL/timestamp/citation cleanup: 902
+0|dashboar | After JSTOR cleanup: 902
+0|dashboar | After French filter: 1
+0|dashboar | Final cleaned length: 0
+0|dashboar | [AudioPrep] No usable text extracted from Signing Naturally Student Workbook Units 1-6-RS.pdf — skipping
+0|dashboar | [AudioPrep] ===== Preparing file 219: Units 3,6 - 3,13.pdf =====
+0|dashboar | [ExtractText] Read 9176641 bytes from local file: 1775479412183-Units_3_6_-_3_13.pdf
+0|dashboar | [ExtractText] PDF extracted 54 chars from Units 3,6 - 3,13.pdf (28 pages)
+0|dashboar | [ExtractText] Text too short (0 chars), attempting OCR for Units 3,6 - 3,13.pdf
+0|dashboar | cleanTextForTTS input length: 54
+0|dashboar | After URL/timestamp/citation cleanup: 54
+0|dashboar | After JSTOR cleanup: 54
+0|dashboar | After French filter: 1
+0|dashboar | Final cleaned length: 0
+0|dashboar | [AudioPrep] No usable text extracted from Units 3,6 - 3,13.pdf — skipping
+0|dashboar | [AudioPrep] ===== Preparing file 212: Units 3,1 - 3,5.pdf =====
+0|dashboar | [ExtractText] Read 4158918 bytes from local file: 1775479403912-Units_3_1_-_3_5.pdf
+0|dashboar | [ExtractText] PDF extracted 22 chars from Units 3,1 - 3,5.pdf (12 pages)
+0|dashboar | [ExtractText] Text too short (0 chars), attempting OCR for Units 3,1 - 3,5.pdf
+0|dashboar | cleanTextForTTS input length: 22
+0|dashboar | After URL/timestamp/citation cleanup: 22
+0|dashboar | After JSTOR cleanup: 22
+0|dashboar | After French filter: 1
+0|dashboar | Final cleaned length: 0
+0|dashboar | [AudioPrep] No usable text extracted from Units 3,1 - 3,5.pdf — skipping
+0|dashboar | [AudioPrep] ===== Preparing file 137: CherylN.CollierJonat_2024_ThePoliticsofOntarioSecondEdition.pdf =====
+0|dashboar | [ExtractText] Read 7520151 bytes from local file: 1775902325736-CherylN.CollierJonat_2024_ThePoliticsofOntarioSecondEdition.pdf
+
+0|dashboard  | [ExtractText] PDF extracted 1000195 chars from CherylN.CollierJonat_2024_ThePoliticsofOntarioSecondEdition.pdf (374 pages)
+0|dashboard  | cleanTextForTTS input length: 1000195
+0|dashboard  | After URL/timestamp/citation cleanup: 957452
+0|dashboard  | After JSTOR cleanup: 951964
+0|dashboard  | After French filter: 946664
+0|dashboard  | Final cleaned length: 0
+0|dashboard  | [AudioPrep] No usable text extracted from CherylN.CollierJonat_2024_ThePoliticsofOntarioSecondEdition.pdf — skipping
+0|dashboard  | [Startup] Running one-time text re-extraction for files missing extractedText...
+0|dashboard  | [AudioPrep] ===== Preparing file 158: Units 2,10 - 2,12.pdf =====
+0|dashboard  | [ExtractText] Downloading from OneDrive path: /School/1. TMU/Courses/2026/Winter/CASL101 - American Sign Language/Week 7 - Feb 28-Mar 6/Module/Units 2,10 - 2,12.pdf
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3587s)
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3587s)
+0|dashboard  | [Pre-Extract] Found 130 files needing text extraction
+0|dashboard  | [ExtractText] Read 605654 bytes from local file: 1775902316178-CPPA122__Module_7_-_Introduction.pdf
+0|dashboard  | [ExtractText] PDF extracted 73274 chars from CPPA122, Module 7 - Introduction.pdf (30 pages)
+0|dashboard  | cleanTextForTTS input length: 73274
+0|dashboard  | After URL/timestamp/citation cleanup: 68813
+0|dashboard  | After JSTOR cleanup: 68813
+0|dashboard  | After French filter: 68142
+0|dashboard  | Final cleaned length: 67849
+0|dashboard  | 2:31:12 PM [express] POST /api/files/pre-extract 200 in 325ms :: {"success":true,"message":"Extracting 130 files in background","queued":130}
+0|dashboard  | [Startup] Pre-extract result: {
+0|dashboard  |   success: true,
+0|dashboard  |   message: 'Extracting 130 files in background',
+0|dashboard  |   queued: 130
+0|dashboard  | }
+0|dashboard  | [ExtractText] Cached 67849 chars, 34 chunks for file 132
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 1/130: CPPA122, Module 7 - Introduction.pdf (67849 chars)
+0|dashboard  | [ExtractText] Read 242843 bytes from local file: 1775902316791-Bold_Election_Ideas_for_the_Toronto_Region___IMFG.pdf
+0|dashboard  | [ExtractText] PDF extracted 7519 chars from Bold Election Ideas for the Toronto Region – IMFG.pdf (5 pages)
+0|dashboard  | cleanTextForTTS input length: 7519
+0|dashboard  | After URL/timestamp/citation cleanup: 7480
+0|dashboard  | After JSTOR cleanup: 7480
+0|dashboard  | After French filter: 7476
+0|dashboard  | Final cleaned length: 7422
+0|dashboard  | [ExtractText] Cached 7422 chars, 4 chunks for file 133
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 2/130: Bold Election Ideas for the Toronto Region – IMFG.pdf (7422 chars)
+0|dashboard  | [ExtractText] Read 141091 bytes from local file: 1775902317559-Can_Public_Adm_-_2018_-_Heritz_-_From_self_determination_to_service_delivery__Assessing_Indigenous_inclusion_in_municipal.pdf
+0|dashboard  | [ExtractText] PDF extracted 65805 chars from Can Public Adm - 2018 - Heritz - From self‐determination to service delivery  Assessing Indigenous inclusion in municipal.pdf (20 pages)
+0|dashboard  | cleanTextForTTS input length: 65805
+0|dashboard  | After URL/timestamp/citation cleanup: 62411
+0|dashboard  | After JSTOR cleanup: 62411
+0|dashboard  | After French filter: 60927
+0|dashboard  | Final cleaned length: 60636
+0|dashboard  | [ExtractText] Cached 60636 chars, 31 chunks for file 134
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 3/130: Can Public Adm - 2018 - Heritz - From self‐determination to service delivery  Assessing Indigenous inclusion in municipal.pdf (60636 chars)
+0|dashboard  | [ExtractText] Read 2562285 bytes from local file: 1775902322117-K34-7-2019-eng_-_Supplementary.pdf
+0|dashboard  | [ExtractText] PDF extracted 69736 chars from K34-7-2019-eng - Supplementary.pdf (36 pages)
+0|dashboard  | cleanTextForTTS input length: 69736
+0|dashboard  | After URL/timestamp/citation cleanup: 68785
+0|dashboard  | After JSTOR cleanup: 68711
+0|dashboard  | After French filter: 65722
+0|dashboard  | Final cleaned length: 65137
+0|dashboard  | 2:31:13 PM [express] POST /api/onedrive/ensure-placeholder-folders 200 in 9234ms :: {"success":true,"placeholders":[]}
+0|dashboard  | [OneDrive] All year/semester placeholder folders already exist
+0|dashboard  | [ExtractText] Cached 65137 chars, 33 chunks for file 135
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 4/130: K34-7-2019-eng - Supplementary.pdf (65137 chars)
+0|dashboard  | [ExtractText] Read 611071 bytes from local file: 1775902322907-CPPA122__Module_8_-_Introduction.pdf
+0|dashboard  | [ExtractText] PDF extracted 78457 chars from CPPA122, Module 8 - Introduction.pdf (32 pages)
+0|dashboard  | cleanTextForTTS input length: 78457
+0|dashboard  | After URL/timestamp/citation cleanup: 74636
+0|dashboard  | After JSTOR cleanup: 74636
+0|dashboard  | After French filter: 73835
+0|dashboard  | Final cleaned length: 73251
+0|dashboard  | 2:31:14 PM [express] POST /api/weather-history/record 200 in 1691ms :: {"id":2510,"recordedAt":"2026-04-13T18:31:14.022Z","temperature":20.9,"feelsLike":19.4,"windSpeed":27.5,"windDirection":264,"humidity":68,"condition":"Mostly Clear","weatherCode":1,"precipitation":0}
+0|dashboard  | [ExtractText] Cached 73251 chars, 37 chunks for file 136
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 5/130: CPPA122, Module 8 - Introduction.pdf (73251 chars)
+0|dashboard  | [ExtractText] Read 7520151 bytes from local file: 1775902325736-CherylN.CollierJonat_2024_ThePoliticsofOntarioSecondEdition.pdf
+0|dashboard  | [ExtractText] PDF extracted 1000195 chars from CherylN.CollierJonat_2024_ThePoliticsofOntarioSecondEdition.pdf (374 pages)
+0|dashboard  | cleanTextForTTS input length: 1000195
+0|dashboard  | After URL/timestamp/citation cleanup: 957452
+0|dashboard  | After JSTOR cleanup: 951964
+0|dashboard  | After French filter: 946664
+0|dashboard  | Final cleaned length: 0
+0|dashboard  | [Pre-Extract] Failed: CherylN.CollierJonat_2024_ThePoliticsofOntarioSecondEdition.pdf (no text)
+0|dashboard  | [ExtractText] Read 1177012 bytes from local file: 1775902326818-IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf
+0|dashboard  | [ExtractText] PDF extracted 184051 chars from IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (80 pages)
+0|dashboard  | cleanTextForTTS input length: 184051
+0|dashboard  | After URL/timestamp/citation cleanup: 182033
+0|dashboard  | After JSTOR cleanup: 182029
+0|dashboard  | After French filter: 177028
+0|dashboard  | Final cleaned length: 167589
+0|dashboard  | [ExtractText] Cached 167589 chars, 84 chunks for file 138
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 6/130: IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (167589 chars)
+0|dashboard  | [ExtractText] Read 959281 bytes from local file: 1775902327444-CPPA122__Module_9_-_Introduction.pdf
+0|dashboard  | [ExtractText] PDF extracted 64562 chars from CPPA122, Module 9 - Introduction.pdf (30 pages)
+0|dashboard  | cleanTextForTTS input length: 64562
+0|dashboard  | After URL/timestamp/citation cleanup: 61437
+0|dashboard  | After JSTOR cleanup: 61437
+0|dashboard  | After French filter: 60749
+0|dashboard  | Final cleaned length: 60010
+0|dashboard  | [Startup] Reset MODULE_READING_CONFIRMED and MODULE_READING_PENDING booleans
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3579s)
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3579s)
+0|dashboard  | [AudioPrep] Startup scan: 127 unprepared files found — queueing
+0|dashboard  | [AudioPrep] Queued file 132 for preparation (queue size: 65)
+0|dashboard  | [AudioPrep] Queued file 133 for preparation (queue size: 66)
+0|dashboard  | [AudioPrep] Queued file 134 for preparation (queue size: 67)
+0|dashboard  | [AudioPrep] Queued file 135 for preparation (queue size: 68)
+0|dashboard  | [AudioPrep] Queued file 136 for preparation (queue size: 69)
+0|dashboard  | [AudioPrep] Queued file 137 for preparation (queue size: 70)
+0|dashboard  | [AudioPrep] Queued file 138 for preparation (queue size: 71)
+0|dashboard  | [AudioPrep] Queued file 139 for preparation (queue size: 72)
+0|dashboard  | [AudioPrep] Queued file 148 for preparation (queue size: 73)
+0|dashboard  | [AudioPrep] Queued file 151 for preparation (queue size: 74)
+0|dashboard  | [AudioPrep] Queued file 158 for preparation (queue size: 75)
+0|dashboard  | [AudioPrep] Queued file 160 for preparation (queue size: 76)
+0|dashboard  | [AudioPrep] Queued file 161 for preparation (queue size: 77)
+0|dashboard  | [AudioPrep] Queued file 180 for preparation (queue size: 78)
+0|dashboard  | [AudioPrep] Queued file 182 for preparation (queue size: 79)
+0|dashboard  | [AudioPrep] Queued file 185 for preparation (queue size: 80)
+0|dashboard  | [AudioPrep] Queued file 189 for preparation (queue size: 81)
+0|dashboard  | [AudioPrep] Queued file 190 for preparation (queue size: 82)
+0|dashboard  | [AudioPrep] Queued file 191 for preparation (queue size: 83)
+0|dashboard  | [AudioPrep] Queued file 193 for preparation (queue size: 84)
+0|dashboard  | [AudioPrep] Queued file 197 for preparation (queue size: 85)
+0|dashboard  | [AudioPrep] Queued file 199 for preparation (queue size: 86)
+0|dashboard  | [AudioPrep] Queued file 200 for preparation (queue size: 87)
+0|dashboard  | [AudioPrep] Queued file 201 for preparation (queue size: 88)
+0|dashboard  | [AudioPrep] Queued file 202 for preparation (queue size: 89)
+0|dashboard  | [AudioPrep] Queued file 203 for preparation (queue size: 90)
+0|dashboard  | [AudioPrep] Queued file 204 for preparation (queue size: 91)
+0|dashboard  | [AudioPrep] Queued file 206 for preparation (queue size: 92)
+0|dashboard  | [AudioPrep] Queued file 207 for preparation (queue size: 93)
+0|dashboard  | [AudioPrep] Queued file 208 for preparation (queue size: 94)
+0|dashboard  | [AudioPrep] Queued file 209 for preparation (queue size: 95)
+0|dashboard  | [AudioPrep] Queued file 210 for preparation (queue size: 96)
+0|dashboard  | [AudioPrep] Queued file 211 for preparation (queue size: 97)
+0|dashboard  | [AudioPrep] Queued file 212 for preparation (queue size: 98)
+0|dashboard  | [AudioPrep] Queued file 213 for preparation (queue size: 99)
+0|dashboard  | [AudioPrep] Queued file 214 for preparation (queue size: 100)
+0|dashboard  | [AudioPrep] Queued file 215 for preparation (queue size: 101)
+0|dashboard  | [AudioPrep] Queued file 216 for preparation (queue size: 102)
+0|dashboard  | [AudioPrep] Queued file 217 for preparation (queue size: 103)
+0|dashboard  | [AudioPrep] Queued file 218 for preparation (queue size: 104)
+0|dashboard  | [AudioPrep] Queued file 219 for preparation (queue size: 105)
+0|dashboard  | [AudioPrep] Queued file 220 for preparation (queue size: 106)
+0|dashboard  | [AudioPrep] Queued file 221 for preparation (queue size: 107)
+0|dashboard  | [AudioPrep] Queued file 222 for preparation (queue size: 108)
+0|dashboard  | [AudioPrep] Queued file 223 for preparation (queue size: 109)
+0|dashboard  | [AudioPrep] Queued file 224 for preparation (queue size: 110)
+0|dashboard  | [AudioPrep] Queued file 225 for preparation (queue size: 111)
+0|dashboard  | [AudioPrep] Queued file 226 for preparation (queue size: 112)
+0|dashboard  | [AudioPrep] Queued file 227 for preparation (queue size: 113)
+0|dashboard  | [AudioPrep] Queued file 228 for preparation (queue size: 114)
+0|dashboard  | [AudioPrep] Queued file 229 for preparation (queue size: 115)
+0|dashboard  | [AudioPrep] Queued file 230 for preparation (queue size: 116)
+0|dashboard  | [AudioPrep] Queued file 231 for preparation (queue size: 117)
+0|dashboard  | [AudioPrep] Queued file 232 for preparation (queue size: 118)
+0|dashboard  | [AudioPrep] Queued file 308 for preparation (queue size: 119)
+0|dashboard  | [AudioPrep] Queued file 332 for preparation (queue size: 120)
+0|dashboard  | [AudioPrep] Queued file 340 for preparation (queue size: 121)
+0|dashboard  | [AudioPrep] Queued file 341 for preparation (queue size: 122)
+0|dashboard  | [AudioPrep] Queued file 343 for preparation (queue size: 123)
+0|dashboard  | [AudioPrep] Queued file 357 for preparation (queue size: 124)
+0|dashboard  | [AudioPrep] Queued file 358 for preparation (queue size: 125)
+0|dashboard  | [AudioPrep] Queued file 359 for preparation (queue size: 126)
+0|dashboard  | [AudioPrep] Queued file 360 for preparation (queue size: 127)
+0|dashboard  | [AudioPrep] Queued file 365 for preparation (queue size: 128)
+0|dashboard  | [AudioPrep] Queued file 372 for preparation (queue size: 129)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3579s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3579s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [ExtractText] Cached 60010 chars, 31 chunks for file 139
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 7/130: CPPA122, Module 9 - Introduction.pdf (60010 chars)
+0|dashboard  | [ExtractText] Read 534874 bytes from local file: 1775902328255-CFNF400__Module_5_-_Learning_Objectives.pdf
+0|dashboard  | [ExtractText] PDF extracted 26162 chars from CFNF400, Module 5 - Learning Objectives.pdf (13 pages)
+0|dashboard  | cleanTextForTTS input length: 26162
+0|dashboard  | After URL/timestamp/citation cleanup: 24902
+0|dashboard  | After JSTOR cleanup: 24902
+0|dashboard  | After French filter: 24822
+0|dashboard  | Final cleaned length: 24797
+0|dashboard  | [ExtractText] Cached 24797 chars, 13 chunks for file 148
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 8/130: CFNF400, Module 5 - Learning Objectives.pdf (24797 chars)
+0|dashboard  | [ExtractText] Read 381064 bytes from local file: 1775902328758-CFNF400__Module_8_-_Learning_Objectives.pdf
+0|dashboard  | [ExtractText] PDF extracted 43539 chars from CFNF400, Module 8 - Learning Objectives.pdf (10 pages)
+0|dashboard  | cleanTextForTTS input length: 43539
+0|dashboard  | After URL/timestamp/citation cleanup: 41914
+0|dashboard  | After JSTOR cleanup: 41914
+0|dashboard  | After French filter: 41830
+0|dashboard  | Final cleaned length: 41800
+0|dashboard  | [HA Health] Initial check: connected
+0|dashboard  | [ExtractText] Cached 41800 chars, 21 chunks for file 151
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 9/130: CFNF400, Module 8 - Learning Objectives.pdf (41800 chars)
+0|dashboard  | [ExtractText] Downloading from OneDrive path: /School/1. TMU/Courses/2026/Winter/CASL101 - American Sign Language/Week 7 - Feb 28-Mar 6/Module/Units 2,10 - 2,12.pdf
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3578s)
+0|dashboard  | [Startup] Sent startup notification to HA
+0|dashboard  | [Startup] Sent startup push notification (silent)
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3578s)
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3578s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3577s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [Cleanup] Found Rascal entity: number.rascal_set_weight (Rascal Set weight)
+0|dashboard  | [Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_device_sn (Feeder - LR Rascal Device SN)
+0|dashboard  | [Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_mac_address (Feeder - LR Rascal MAC Address)
+0|dashboard  | [Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_wi_fi_ssid (Feeder - LR Rascal Wi-Fi SSID)
+0|dashboard  | [Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_wi_fi_signal_strength (Feeder - LR Rascal Wi-Fi Signal Strength)
+0|dashboard  | [Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_desiccant_remaining_days (Feeder - LR Rascal Desiccant Remaining Days)
+0|dashboard  | [Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_battery_level (Feeder - LR Rascal Battery Level)
+0|dashboard  | [Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_battery_ac (Feeder - LR Rascal Battery / AC %)
+0|dashboard  | [Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_today_s_feeding_plan (Feeder - LR Rascal Today's Feeding Plan)
+0|dashboard  | [Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_today_s_feeding_quantity_weight (Feeder - LR Rascal Today's Feeding Quantity (Weight))
+0|dashboard  | [Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_today_s_feeding_quantity_volume (Feeder - LR Rascal Today's Feeding Quantity (Volume))
+0|dashboard  | [Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_today_s_feeding_times (Feeder - LR Rascal Today's Feeding Times)
+0|dashboard  | [Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_today_s_eating_times (Feeder - LR Rascal Today's Eating Times)
+0|dashboard  | [Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_today_s_total_eating_time (Feeder - LR Rascal Today's Total Eating Time)
+0|dashboard  | [Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_last_feed_time (Feeder - LR Rascal Last Feed Time)
+0|dashboard  | [Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_last_feed_quantity_weight (Feeder - LR Rascal Last Feed Quantity (Weight))
+0|dashboard  | [Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_last_feed_quantity_volume (Feeder - LR Rascal Last Feed Quantity (Volume))
+0|dashboard  | [Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_next_feed_time (Feeder - LR Rascal Next Feed Time)
+0|dashboard  | [Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_next_feed_quantity_weight (Feeder - LR Rascal Next Feed Quantity (Weight))
+0|dashboard  | [Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_next_feed_quantity_volume (Feeder - LR Rascal Next Feed Quantity (Volume))
+0|dashboard  | [Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_display_value (Feeder - LR Rascal Display Value)
+0|dashboard  | [Cleanup] Found Rascal entity: button.feeder_lr_rascal_manual_feed (Feeder - LR Rascal Manual Feed)
+0|dashboard  | [Cleanup] Found Rascal entity: button.feeder_lr_rascal_enable_feeding_plan (Feeder - LR Rascal Enable Feeding Plan)
+0|dashboard  | [Cleanup] Found Rascal entity: button.feeder_lr_rascal_disable_feeding_plan (Feeder - LR Rascal Disable Feeding Plan)
+0|dashboard  | [Cleanup] Found Rascal entity: button.feeder_lr_rascal_manually_open_lid (Feeder - LR Rascal Manually Open Lid)
+0|dashboard  | [Cleanup] Found Rascal entity: button.feeder_lr_rascal_turn_on_display (Feeder - LR Rascal Turn On Display)
+0|dashboard  | [Cleanup] Found Rascal entity: button.feeder_lr_rascal_turn_off_display (Feeder - LR Rascal Turn Off Display)
+0|dashboard  | [Cleanup] Found Rascal entity: button.feeder_lr_rascal_turn_on_sound (Feeder - LR Rascal Turn On Sound)
+0|dashboard  | [Cleanup] Found Rascal entity: button.feeder_lr_rascal_turn_off_sound (Feeder - LR Rascal Turn Off Sound)
+0|dashboard  | [Cleanup] Found Rascal entity: button.feeder_lr_rascal_desiccant_replaced (Feeder - LR Rascal Desiccant Reset)
+0|dashboard  | [Cleanup] Found Rascal entity: binary_sensor.feeder_lr_rascal_lid (Feeder - LR Rascal Lid)
+0|dashboard  | [Cleanup] Found Rascal entity: binary_sensor.feeder_lr_rascal_food_dispenser (Feeder - LR Rascal Food Dispenser)
+0|dashboard  | [Cleanup] Found Rascal entity: binary_sensor.feeder_lr_rascal_lid_status (Feeder - LR Rascal Lid Status)
+0|dashboard  | [Cleanup] Found Rascal entity: binary_sensor.feeder_lr_rascal_food_status (Feeder - LR Rascal Food Status)
+0|dashboard  | [Cleanup] Found Rascal entity: binary_sensor.feeder_lr_rascal_wi_fi (Feeder - LR Rascal Wi-Fi)
+0|dashboard  | [Cleanup] Found Rascal entity: binary_sensor.feeder_lr_rascal_sleep_mode (Feeder - LR Rascal Sleep Mode)
+0|dashboard  | [Cleanup] Found Rascal entity: binary_sensor.feeder_lr_rascal_battery_status (Feeder - LR Rascal Battery Status)
+0|dashboard  | [Cleanup] Found Rascal entity: binary_sensor.feeder_lr_rascal_sound_status (Feeder - LR Rascal Sound Status)
+0|dashboard  | [Cleanup] Found Rascal entity: binary_sensor.feeder_lr_rascal_buttons_lock (Feeder - LR Rascal Buttons Lock)
+0|dashboard  | [Cleanup] Found Rascal entity: binary_sensor.feeder_lr_rascal_display_status (Feeder - LR Rascal Display Status)
+0|dashboard  | [Cleanup] Found Rascal entity: number.feeder_lr_rascal_desiccant_cycle (Feeder - LR Rascal Desiccant Cycle)
+0|dashboard  | [Cleanup] Found Rascal entity: number.feeder_lr_rascal_volume_level (Feeder - LR Rascal Volume Level)
+0|dashboard  | [Cleanup] Found Rascal entity: number.feeder_lr_rascal_lid_close_time (Feeder - LR Rascal Lid Close Time)
+0|dashboard  | [Cleanup] Found Rascal entity: select.feeder_lr_rascal_manual_feed_quantity (Feeder - LR Rascal Manual Feed Quantity)
+0|dashboard  | [Cleanup] Found Rascal entity: select.feeder_lr_rascal_lid_speed (Feeder - LR Rascal Lid Speed)
+0|dashboard  | [Cleanup] Found Rascal entity: select.feeder_lr_rascal_lid_mode (Feeder - LR Rascal Lid Mode)
+0|dashboard  | [Cleanup] Found Rascal entity: select.feeder_lr_rascal_icon_on_display (Feeder - LR Rascal Icon on Display)
+0|dashboard  | [Cleanup] Found Rascal entity: text.feeder_lr_rascal_text_on_display (Feeder - LR Rascal Text on Display)
+0|dashboard  | [Cleanup] Found Rascal entity: update.feeder_lr_rascal_firmware (Feeder - LR Rascal Firmware)
+0|dashboard  | [Cleanup] Found Rascal entity: calendar.reachushereinyyz_gmail_com (Reachushereinyyz@gmail.com)
+0|dashboard  | [Cleanup] Found Rascal entity: automation.cat_water_rascal_announcement (Cat Water Rascal Announcement)
+0|dashboard  | [Cleanup] Turned off automation: automation.cat_water_rascal_announcement
+0|dashboard  | [Cleanup] Found Rascal entity: automation.rascal_cat_food_low (Rascal Cat Food Low)
+0|dashboard  | [Cleanup] Turned off automation: automation.rascal_cat_food_low
+0|dashboard  | [Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_today_s_feeding_quantity (Today's Feeding Quantity)
+0|dashboard  | [Cleanup] Found Rascal entity: number.feeder_lr_rascal_desiccant_frequency (Desiccant Frequency)
+0|dashboard  | [Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_last_feed_quantity (Last Feed Quantity)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3577s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3577s)
+0|dashboard  | [ExtractText] Error for Units 2,10 - 2,12.pdf: The resource could not be found.
+0|dashboard  | [Pre-Extract] Failed: Units 2,10 - 2,12.pdf (no text)
+0|dashboard  | [ExtractText] Read 301626 bytes from local file: 1775902329336-CPPA122__Module_5_-_Introduction.pdf
+0|dashboard  | [ExtractText] PDF extracted 43040 chars from CPPA122, Module 5 - Introduction.pdf (14 pages)
+0|dashboard  | cleanTextForTTS input length: 43040
+0|dashboard  | After URL/timestamp/citation cleanup: 42069
+0|dashboard  | After JSTOR cleanup: 42069
+0|dashboard  | After French filter: 41544
+0|dashboard  | Final cleaned length: 41293
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3577s)
+0|dashboard  | [ExtractText] Cached 41293 chars, 21 chunks for file 160
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 10/130: CPPA122, Module 5 - Introduction.pdf (41293 chars)
+0|dashboard  | [ExtractText] Read 810080 bytes from local file: 1775902329772-urban-politics-local-government-in-canada.pdf
+0|dashboard  | [ExtractText] PDF extracted 125502 chars from urban-politics-local-government-in-canada.pdf (44 pages)
+0|dashboard  | cleanTextForTTS input length: 125502
+0|dashboard  | After URL/timestamp/citation cleanup: 125078
+0|dashboard  | After JSTOR cleanup: 108207
+0|dashboard  | After French filter: 107523
+0|dashboard  | Final cleaned length: 8412
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3576s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 1 - Jan 12-16
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3576s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [ExtractText] Cached 8412 chars, 5 chunks for file 161
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 11/130: urban-politics-local-government-in-canada.pdf (8412 chars)
+0|dashboard  | [ExtractText] Read 380949 bytes from local file: 1775479335915-CPPA122__Module_1_-_Welcome.pdf
+0|dashboard  | [ExtractText] PDF extracted 44355 chars from CPPA122, Module 1 - Welcome.pdf (21 pages)
+0|dashboard  | cleanTextForTTS input length: 44355
+0|dashboard  | After URL/timestamp/citation cleanup: 42515
+0|dashboard  | After JSTOR cleanup: 42515
+0|dashboard  | After French filter: 42216
+0|dashboard  | Final cleaned length: 41910
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3576s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 1 - Jan 12-16
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3576s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [ExtractText] Cached 41910 chars, 21 chunks for file 180
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 12/130: CPPA122, Module 1 - Welcome.pdf (41910 chars)
+0|dashboard  | [ExtractText] Read 617534 bytes from local file: 1775479336990-A_Citizen_s_Guide_to_Government.pdf
+0|dashboard  | [ExtractText] PDF extracted 39842 chars from A Citizen's Guide to Government.pdf (21 pages)
+0|dashboard  | cleanTextForTTS input length: 39842
+0|dashboard  | After URL/timestamp/citation cleanup: 39799
+0|dashboard  | After JSTOR cleanup: 39799
+0|dashboard  | After French filter: 39668
+0|dashboard  | Final cleaned length: 16144
+0|dashboard  | [ExtractText] Cached 16144 chars, 9 chunks for file 181
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 13/130: A Citizen's Guide to Government.pdf (16144 chars)
+0|dashboard  | [ExtractText] Read 292550 bytes from local file: 1775479341738-CPPA122__Module_2_-_Introduction.pdf
+0|dashboard  | [ExtractText] PDF extracted 39796 chars from CPPA122, Module 2 - Introduction.pdf (17 pages)
+0|dashboard  | cleanTextForTTS input length: 39796
+0|dashboard  | After URL/timestamp/citation cleanup: 38781
+0|dashboard  | After JSTOR cleanup: 38781
+0|dashboard  | After French filter: 38556
+0|dashboard  | Final cleaned length: 38354
+0|dashboard  | [ExtractText] Cached 38354 chars, 20 chunks for file 182
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 14/130: CPPA122, Module 2 - Introduction.pdf (38354 chars)
+0|dashboard  | [ExtractText] Read 1348962 bytes from local file: 1775479342477-156C823F.pdf
+0|dashboard  | [ExtractText] PDF extracted 71092 chars from 156C823F.pdf (24 pages)
+0|dashboard  | cleanTextForTTS input length: 71092
+0|dashboard  | After URL/timestamp/citation cleanup: 69458
+0|dashboard  | After JSTOR cleanup: 69455
+0|dashboard  | After French filter: 69380
+0|dashboard  | Final cleaned length: 69278
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3575s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 1 - Jan 12-16/Module
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3575s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [ExtractText] Cached 69278 chars, 35 chunks for file 183
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 15/130: 156C823F.pdf (69278 chars)
+0|dashboard  | [ExtractText] Read 1016087 bytes from local file: 1775479342759-156CBA1A.pdf
+0|dashboard  | [ExtractText] PDF extracted 36578 chars from 156CBA1A.pdf (17 pages)
+0|dashboard  | cleanTextForTTS input length: 36578
+0|dashboard  | After URL/timestamp/citation cleanup: 36241
+0|dashboard  | After JSTOR cleanup: 35814
+0|dashboard  | After French filter: 35584
+0|dashboard  | Final cleaned length: 26750
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 1 - Jan 12-16/Module
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3575s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [ExtractText] Cached 26750 chars, 14 chunks for file 184
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 16/130: 156CBA1A.pdf (26750 chars)
+0|dashboard  | [ExtractText] Read 385275 bytes from local file: 1775479346566-CPPA122__Module_3_-_Introduction.pdf
+0|dashboard  | [ExtractText] PDF extracted 65657 chars from CPPA122, Module 3 - Introduction.pdf (23 pages)
+0|dashboard  | cleanTextForTTS input length: 65657
+0|dashboard  | After URL/timestamp/citation cleanup: 61581
+0|dashboard  | After JSTOR cleanup: 61581
+0|dashboard  | After French filter: 61257
+0|dashboard  | Final cleaned length: 61008
+0|dashboard  | [ExtractText] Cached 61008 chars, 31 chunks for file 185
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 17/130: CPPA122, Module 3 - Introduction.pdf (61008 chars)
+0|dashboard  | [ExtractText] Read 630516 bytes from local file: 1775479347201-44320906-Supplementary.pdf
+0|dashboard  | [ExtractText] PDF extracted 63547 chars from 44320906-Supplementary.pdf (21 pages)
+0|dashboard  | cleanTextForTTS input length: 63547
+0|dashboard  | After URL/timestamp/citation cleanup: 62109
+0|dashboard  | After JSTOR cleanup: 60282
+0|dashboard  | After French filter: 58713
+0|dashboard  | Final cleaned length: 58565
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3574s)
+0|dashboard  | [ExtractText] Cached 58565 chars, 30 chunks for file 186
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 18/130: 44320906-Supplementary.pdf (58565 chars)
+0|dashboard  | [ExtractText] Read 414847 bytes from local file: 1775479347400-AM.OrgCdnLocGovt.Spicer.pdf
+0|dashboard  | [ExtractText] PDF extracted 59663 chars from AM.OrgCdnLocGovt.Spicer.pdf (23 pages)
+0|dashboard  | cleanTextForTTS input length: 59663
+0|dashboard  | After URL/timestamp/citation cleanup: 57880
+0|dashboard  | After JSTOR cleanup: 57842
+0|dashboard  | After French filter: 56831
+0|dashboard  | Final cleaned length: 56433
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 1 - Jan 12-16/Reading
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3574s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [ExtractText] Cached 56433 chars, 29 chunks for file 187
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 19/130: AM.OrgCdnLocGovt.Spicer.pdf (56433 chars)
+0|dashboard  | [ExtractText] Read 1177012 bytes from local file: 1775479347660-IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf
+0|dashboard  | [ExtractText] PDF extracted 184051 chars from IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (80 pages)
+0|dashboard  | cleanTextForTTS input length: 184051
+0|dashboard  | After URL/timestamp/citation cleanup: 182033
+0|dashboard  | After JSTOR cleanup: 182029
+0|dashboard  | After French filter: 177028
+0|dashboard  | Final cleaned length: 167589
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3573s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 10 - Mar 21-27
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3573s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [ExtractText] Cached 167589 chars, 84 chunks for file 188
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 20/130: IMFG_Paper_No47_Power_and_Purpose_Taylor_Dobson.pdf (167589 chars)
+0|dashboard  | [ExtractText] Read 425452 bytes from local file: 1775479352627-CPPA122__Module_4_-_Introduction.pdf
+0|dashboard  | [ExtractText] PDF extracted 56859 chars from CPPA122, Module 4 - Introduction.pdf (13 pages)
+0|dashboard  | cleanTextForTTS input length: 56859
+0|dashboard  | After URL/timestamp/citation cleanup: 56260
+0|dashboard  | After JSTOR cleanup: 56260
+0|dashboard  | After French filter: 55858
+0|dashboard  | Final cleaned length: 55544
+0|dashboard  | [ExtractText] Cached 55544 chars, 28 chunks for file 189
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 21/130: CPPA122, Module 4 - Introduction.pdf (55544 chars)
+0|dashboard  | [ExtractText] Read 36568383 bytes from local file: 1775479356761-156CB68A.pdf
+0|dashboard  | [ExtractText] PDF extracted 104661 chars from 156CB68A.pdf (35 pages)
+0|dashboard  | cleanTextForTTS input length: 104661
+0|dashboard  | After URL/timestamp/citation cleanup: 38386
+0|dashboard  | After JSTOR cleanup: 38386
+0|dashboard  | After French filter: 38058
+0|dashboard  | Final cleaned length: 25303
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 10 - Mar 21-27/Module
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3571s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3571s)
+0|dashboard  | [ExtractText] Cached 25303 chars, 13 chunks for file 190
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 22/130: 156CB68A.pdf (25303 chars)
+0|dashboard  | [ExtractText] Read 6452348 bytes from local file: 1775479358105-62263157-c416-47a7-8207-8eab759500b8.pdf
+0|dashboard  | [ExtractText] PDF extracted 63751 chars from 62263157-c416-47a7-8207-8eab759500b8.pdf (22 pages)
+0|dashboard  | cleanTextForTTS input length: 63751
+0|dashboard  | After URL/timestamp/citation cleanup: 63643
+0|dashboard  | After JSTOR cleanup: 63643
+0|dashboard  | After French filter: 63485
+0|dashboard  | Final cleaned length: 63358
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3571s)
+0|dashboard  | [ExtractText] Cached 63358 chars, 32 chunks for file 191
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 23/130: 62263157-c416-47a7-8207-8eab759500b8.pdf (63358 chars)
+0|dashboard  | [ExtractText] Read 7520151 bytes from local file: 1775479359566-CherylN.CollierJonat_2024_ThePoliticsofOntarioSecondEdition.pdf
+0|dashboard  | [ExtractText] PDF extracted 1000195 chars from CherylN.CollierJonat_2024_ThePoliticsofOntarioSecondEdition.pdf (374 pages)
+0|dashboard  | cleanTextForTTS input length: 1000195
+0|dashboard  | After URL/timestamp/citation cleanup: 957452
+0|dashboard  | After JSTOR cleanup: 951964
+0|dashboard  | After French filter: 946664
+0|dashboard  | Final cleaned length: 0
+0|dashboard  | [Pre-Extract] Failed: CherylN.CollierJonat_2024_ThePoliticsofOntarioSecondEdition.pdf (no text)
+0|dashboard  | [ExtractText] Read 2030200 bytes from local file: 1775479360162-Municipal_101___AMO.pdf
+0|dashboard  | [ExtractText] PDF extracted 5529 chars from Municipal 101 _ AMO.pdf (5 pages)
+0|dashboard  | cleanTextForTTS input length: 5529
+0|dashboard  | After URL/timestamp/citation cleanup: 5475
+0|dashboard  | After JSTOR cleanup: 5469
+0|dashboard  | After French filter: 5353
+0|dashboard  | Final cleaned length: 5320
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3566s)
+0|dashboard  | [ExtractText] Cached 5320 chars, 3 chunks for file 193
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 24/130: Municipal 101 _ AMO.pdf (5320 chars)
+0|dashboard  | [ExtractText] Read 15409717 bytes from local file: 1775479362558-shaping-the-metropolis-institutions-and-urbanization-in-the-united-states-and-canada-9780773558427_compress.pdf
+0|dashboard  | [ExtractText] PDF extracted 1061713 chars from shaping-the-metropolis-institutions-and-urbanization-in-the-united-states-and-canada-9780773558427_compress.pdf (473 pages)
+0|dashboard  | cleanTextForTTS input length: 1061713
+0|dashboard  | After URL/timestamp/citation cleanup: 1057206
+0|dashboard  | After JSTOR cleanup: 1053594
+0|dashboard  | After French filter: 1048377
+0|dashboard  | Final cleaned length: 765194
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3561s)
+0|dashboard  | [ExtractText] Cached 765194 chars, 383 chunks for file 194
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 25/130: shaping-the-metropolis-institutions-and-urbanization-in-the-united-states-and-canada-9780773558427_compress.pdf (765194 chars)
+0|dashboard  | [ExtractText] Read 388310 bytes from local file: 1775479364345-CFNF400__Module_4_-_Learning_Objectives.pdf
+0|dashboard  | [ExtractText] PDF extracted 28642 chars from CFNF400, Module 4 - Learning Objectives.pdf (11 pages)
+0|dashboard  | cleanTextForTTS input length: 28642
+0|dashboard  | After URL/timestamp/citation cleanup: 27741
+0|dashboard  | After JSTOR cleanup: 27741
+0|dashboard  | After French filter: 27721
+0|dashboard  | Final cleaned length: 27692
+0|dashboard  | [ExtractText] Cached 27692 chars, 14 chunks for file 195
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 26/130: CFNF400, Module 4 - Learning Objectives.pdf (27692 chars)
+0|dashboard  | [ExtractText] Read 629122 bytes from local file: 1775479367095-CAMA_Strong_Mayors_White_Paper_-_Final_English_-_March_23_2023_0.pdf
+0|dashboard  | [ExtractText] PDF extracted 67899 chars from CAMA Strong Mayors White Paper - Final English - March 23 2023_0.pdf (22 pages)
+0|dashboard  | cleanTextForTTS input length: 67899
+0|dashboard  | After URL/timestamp/citation cleanup: 66733
+0|dashboard  | After JSTOR cleanup: 66582
+0|dashboard  | After French filter: 65808
+0|dashboard  | Final cleaned length: 0
+0|dashboard  | [Pre-Extract] Failed: CAMA Strong Mayors White Paper - Final English - March 23 2023_0.pdf (no text)
+0|dashboard  | [ExtractText] Read 5695496 bytes from local file: 1775479368005-imfg_perspectives_4_hidden_in_plain_view_lucas_2013.pdf
+0|dashboard  | [ExtractText] PDF extracted 34326 chars from imfg_perspectives_4_hidden_in_plain_view_lucas_2013.pdf (11 pages)
+0|dashboard  | cleanTextForTTS input length: 34326
+0|dashboard  | After URL/timestamp/citation cleanup: 34120
+0|dashboard  | After JSTOR cleanup: 34120
+0|dashboard  | After French filter: 33475
+0|dashboard  | Final cleaned length: 33346
+0|dashboard  | [ExtractText] Cached 33346 chars, 17 chunks for file 197
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 27/130: imfg_perspectives_4_hidden_in_plain_view_lucas_2013.pdf (33346 chars)
+0|dashboard  | [ExtractText] Read 8837554 bytes from local file: 1775479371798-Units_2_1_-_2_6.pdf
+0|dashboard  | [ExtractText] PDF extracted 46 chars from Units 2,1 - 2,6.pdf (24 pages)
+0|dashboard  | [ExtractText] Text too short (0 chars), attempting OCR for Units 2,1 - 2,6.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 46
+0|dashboard  | After URL/timestamp/citation cleanup: 46
+0|dashboard  | After JSTOR cleanup: 46
+0|dashboard  | After French filter: 1
+0|dashboard  | Final cleaned length: 0
+0|dashboard  | [Pre-Extract] Failed: Units 2,1 - 2,6.pdf (no text)
+0|dashboard  | [ExtractText] Read 1111109 bytes from local file: 1775479377948-CPPA122__Module_6_-_Introduction.pdf
+0|dashboard  | [ExtractText] PDF extracted 83983 chars from CPPA122, Module 6 - Introduction.pdf (33 pages)
+0|dashboard  | cleanTextForTTS input length: 83983
+0|dashboard  | After URL/timestamp/citation cleanup: 78279
+0|dashboard  | After JSTOR cleanup: 78279
+0|dashboard  | After French filter: 77284
+0|dashboard  | Final cleaned length: 76875
+0|dashboard  | [ExtractText] Cached 76875 chars, 39 chunks for file 199
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 28/130: CPPA122, Module 6 - Introduction.pdf (76875 chars)
+0|dashboard  | [ExtractText] Read 1051487 bytes from local file: 1775479378495-Can_Public_Adm_-_2023_-_Eidelman_-_How_do_municipal_mayors_and_councillors_communicate_with_other_levels_of_government_.pdf
+0|dashboard  | [ExtractText] PDF extracted 59069 chars from Can Public Adm - 2023 - Eidelman - How do municipal mayors and councillors communicate with other levels of government .pdf (18 pages)
+0|dashboard  | cleanTextForTTS input length: 59069
+0|dashboard  | After URL/timestamp/citation cleanup: 56170
+0|dashboard  | After JSTOR cleanup: 56168
+0|dashboard  | After French filter: 54109
+0|dashboard  | Final cleaned length: 53685
+0|dashboard  | [ExtractText] Cached 53685 chars, 27 chunks for file 200
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 29/130: Can Public Adm - 2023 - Eidelman - How do municipal mayors and councillors communicate with other levels of government .pdf (53685 chars)
+0|dashboard  | [ExtractText] Read 256687 bytes from local file: 1775479379500-Canadian_Geographer___Le_g_ographe_canadien_-_2022_-_Gibson_-_Do_more__with_less__The_realities_of_local_government_in.pdf
+0|dashboard  | [ExtractText] PDF extracted 67889 chars from Canadian Geographer   Le g ographe canadien - 2022 - Gibson - Do more  with less  The realities of local government in.pdf (12 pages)
+0|dashboard  | cleanTextForTTS input length: 67889
+0|dashboard  | After URL/timestamp/citation cleanup: 63848
+0|dashboard  | After JSTOR cleanup: 63841
+0|dashboard  | After French filter: 61087
+0|dashboard  | Final cleaned length: 60783
+0|dashboard  | [ExtractText] Cached 60783 chars, 31 chunks for file 201
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 30/130: Canadian Geographer   Le g ographe canadien - 2022 - Gibson - Do more  with less  The realities of local government in.pdf (60783 chars)
+0|dashboard  | [ExtractText] Read 1149679 bytes from local file: 1775479379755-How_to_get_cities_out_of_their_constitutional_straitjacket.pdf
+0|dashboard  | [ExtractText] PDF extracted 10852 chars from How to get cities out of their constitutional straitjacket.pdf (9 pages)
+0|dashboard  | cleanTextForTTS input length: 10852
+0|dashboard  | After URL/timestamp/citation cleanup: 10852
+0|dashboard  | After JSTOR cleanup: 10852
+0|dashboard  | After French filter: 10796
+0|dashboard  | Final cleaned length: 10753
+0|dashboard  | [ExtractText] Cached 10753 chars, 6 chunks for file 202
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 31/130: How to get cities out of their constitutional straitjacket.pdf (10753 chars)
+0|dashboard  | [ExtractText] Read 1759893 bytes from local file: 1775479380174-What_we_expect_from_regional_and_city_governments_is_increasingly_out_of_step_with_their_powers___CBC_News.pdf
+0|dashboard  | [ExtractText] PDF extracted 8258 chars from What we expect from regional and city governments is increasingly out of step with their powers _ CBC News.pdf (6 pages)
+0|dashboard  | cleanTextForTTS input length: 8258
+0|dashboard  | After URL/timestamp/citation cleanup: 8216
+0|dashboard  | After JSTOR cleanup: 8216
+0|dashboard  | After French filter: 8206
+0|dashboard  | Final cleaned length: 8178
+0|dashboard  | [ExtractText] Cached 8178 chars, 5 chunks for file 203
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 32/130: What we expect from regional and city governments is increasingly out of step with their powers _ CBC News.pdf (8178 chars)
+0|dashboard  | [ExtractText] Read 224103 bytes from local file: 1775479381697-CFNF400__Module_6_-_Topic_Overview.pdf
+0|dashboard  | [ExtractText] PDF extracted 18981 chars from CFNF400, Module 6 - Topic Overview.pdf (7 pages)
+0|dashboard  | cleanTextForTTS input length: 18981
+0|dashboard  | After URL/timestamp/citation cleanup: 18580
+0|dashboard  | After JSTOR cleanup: 18580
+0|dashboard  | After French filter: 18539
+0|dashboard  | Final cleaned length: 18509
+0|dashboard  | [ExtractText] Cached 18509 chars, 10 chunks for file 204
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 33/130: CFNF400, Module 6 - Topic Overview.pdf (18509 chars)
+0|dashboard  | [ExtractText] Read 3320971 bytes from local file: 1775479383445-Units_2_7_-_2_9.pdf
+0|dashboard  | [ExtractText] PDF extracted 16 chars from Units 2,7 - 2,9.pdf (9 pages)
+0|dashboard  | [ExtractText] Text too short (0 chars), attempting OCR for Units 2,7 - 2,9.pdf
+0|dashboard  | cleanTextForTTS input length: 16
+0|dashboard  | After URL/timestamp/citation cleanup: 16
+0|dashboard  | After JSTOR cleanup: 16
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | After French filter: 1
+0|dashboard  | Final cleaned length: 0
+0|dashboard  | [Pre-Extract] Failed: Units 2,7 - 2,9.pdf (no text)
+0|dashboard  | [ExtractText] Read 56314 bytes from local file: 1775479385959-CFNF400__Module_7_-_Assignment_Detail.pdf
+0|dashboard  | [ExtractText] PDF extracted 329 chars from CFNF400, Module 7 - Assignment Detail.pdf (1 pages)
+0|dashboard  | cleanTextForTTS input length: 329
+0|dashboard  | After URL/timestamp/citation cleanup: 329
+0|dashboard  | After JSTOR cleanup: 329
+0|dashboard  | After French filter: 329
+0|dashboard  | Final cleaned length: 329
+0|dashboard  | [ExtractText] Cached 329 chars, 1 chunks for file 206
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 34/130: CFNF400, Module 7 - Assignment Detail.pdf (329 chars)
+0|dashboard  | [ExtractText] Read 222508 bytes from local file: 1775479391309-Can_Public_Adm_-_2019_-_Lucas_-_Multilevel_policy_from_the_municipal_perspective__A_pan_Canadian_survey.pdf
+0|dashboard  | [ExtractText] PDF extracted 73016 chars from Can Public Adm - 2019 - Lucas - Multilevel policy from the municipal perspective  A pan‐Canadian survey.pdf (24 pages)
+0|dashboard  | cleanTextForTTS input length: 73016
+0|dashboard  | After URL/timestamp/citation cleanup: 70036
+0|dashboard  | After JSTOR cleanup: 69964
+0|dashboard  | After French filter: 67861
+0|dashboard  | Final cleaned length: 67428
+0|dashboard  | [ExtractText] Cached 67428 chars, 34 chunks for file 207
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 35/130: Can Public Adm - 2019 - Lucas - Multilevel policy from the municipal perspective  A pan‐Canadian survey.pdf (67428 chars)
+0|dashboard  | [ExtractText] Read 104949 bytes from local file: 1775479391443-proquest.com_printviewfile_accountid_13631.pdf
+0|dashboard  | [ExtractText] PDF extracted 6438 chars from proquest.com_printviewfile_accountid=13631.pdf (2 pages)
+0|dashboard  | cleanTextForTTS input length: 6438
+0|dashboard  | After URL/timestamp/citation cleanup: 6239
+0|dashboard  | After JSTOR cleanup: 6239
+0|dashboard  | After French filter: 6158
+0|dashboard  | Final cleaned length: 6121
+0|dashboard  | [ExtractText] Cached 6121 chars, 4 chunks for file 208
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 36/130: proquest.com_printviewfile_accountid=13631.pdf (6121 chars)
+0|dashboard  | [ExtractText] Read 935120 bytes from local file: 1775479391632-Reflections_on_Who_Does_What___IMFG.pdf
+0|dashboard  | [ExtractText] PDF extracted 16071 chars from Reflections on Who Does What – IMFG.pdf (8 pages)
+0|dashboard  | cleanTextForTTS input length: 16071
+0|dashboard  | After URL/timestamp/citation cleanup: 14694
+0|dashboard  | After JSTOR cleanup: 14684
+0|dashboard  | After French filter: 14188
+0|dashboard  | Final cleaned length: 14095
+0|dashboard  | [ExtractText] Cached 14095 chars, 8 chunks for file 209
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 37/130: Reflections on Who Does What – IMFG.pdf (14095 chars)
+0|dashboard  | [ExtractText] Read 99251729 bytes from local file: 1775479398775-Uber_launches_lawsuit_over__bad_faith__council_vote__calls_on_court_to_overturn_ridesharing_cap.pdf
+0|dashboard  | [ExtractText] PDF extracted 13414 chars from Uber launches lawsuit over 'bad faith' council vote, calls on court to overturn ridesharing cap.pdf (29 pages)
+0|dashboard  | cleanTextForTTS input length: 13414
+0|dashboard  | After URL/timestamp/citation cleanup: 13335
+0|dashboard  | After JSTOR cleanup: 13335
+0|dashboard  | After French filter: 13307
+0|dashboard  | Final cleaned length: 13220
+0|dashboard  | [ExtractText] Cached 13220 chars, 7 chunks for file 210
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 38/130: Uber launches lawsuit over 'bad faith' council vote, calls on court to overturn ridesharing cap.pdf (13220 chars)
+0|dashboard  | [ExtractText] Read 284420 bytes from local file: 1775479401590-CFNF400__Module_9_-_Learning_Objectives.pdf
+0|dashboard  | [ExtractText] PDF extracted 20457 chars from CFNF400, Module 9 - Learning Objectives.pdf (10 pages)
+0|dashboard  | cleanTextForTTS input length: 20457
+0|dashboard  | After URL/timestamp/citation cleanup: 20266
+0|dashboard  | After JSTOR cleanup: 20266
+0|dashboard  | After French filter: 20220
+0|dashboard  | Final cleaned length: 20190
+0|dashboard  | [ExtractText] Cached 20190 chars, 11 chunks for file 211
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 39/130: CFNF400, Module 9 - Learning Objectives.pdf (20190 chars)
+0|dashboard  | [ExtractText] Read 4158918 bytes from local file: 1775479403912-Units_3_1_-_3_5.pdf
+0|dashboard  | [ExtractText] PDF extracted 22 chars from Units 3,1 - 3,5.pdf (12 pages)
+0|dashboard  | [ExtractText] Text too short (0 chars), attempting OCR for Units 3,1 - 3,5.pdf
+0|dashboard  | cleanTextForTTS input length: 22
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | After URL/timestamp/citation cleanup: 22
+0|dashboard  | After JSTOR cleanup: 22
+0|dashboard  | After French filter: 1
+0|dashboard  | Final cleaned length: 0
+0|dashboard  | [Pre-Extract] Failed: Units 3,1 - 3,5.pdf (no text)
+0|dashboard  | [ExtractText] Read 823471 bytes from local file: 1775479406281-CPPA122__Module_10_-_Introduction.pdf
+0|dashboard  | [ExtractText] PDF extracted 76110 chars from CPPA122, Module 10 - Introduction.pdf (31 pages)
+0|dashboard  | cleanTextForTTS input length: 76110
+0|dashboard  | After URL/timestamp/citation cleanup: 72494
+0|dashboard  | After JSTOR cleanup: 72494
+0|dashboard  | After French filter: 71985
+0|dashboard  | Final cleaned length: 71604
+0|dashboard  | [ExtractText] Cached 71604 chars, 36 chunks for file 213
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 40/130: CPPA122, Module 10 - Introduction.pdf (71604 chars)
+0|dashboard  | [ExtractText] Read 157835 bytes from local file: 1775479407046-156CBEBA.pdf
+0|dashboard  | [ExtractText] PDF extracted 57098 chars from 156CBEBA.pdf (15 pages)
+0|dashboard  | cleanTextForTTS input length: 57098
+0|dashboard  | After URL/timestamp/citation cleanup: 55012
+0|dashboard  | After JSTOR cleanup: 55009
+0|dashboard  | After French filter: 54912
+0|dashboard  | Final cleaned length: 54673
+0|dashboard  | [ExtractText] Cached 54673 chars, 28 chunks for file 214
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 41/130: 156CBEBA.pdf (54673 chars)
+0|dashboard  | [ExtractText] Read 446851 bytes from local file: 1775479407261-26929898.pdf
+0|dashboard  | [ExtractText] PDF extracted 73776 chars from 26929898.pdf (25 pages)
+0|dashboard  | cleanTextForTTS input length: 73776
+0|dashboard  | After URL/timestamp/citation cleanup: 72218
+0|dashboard  | After JSTOR cleanup: 70043
+0|dashboard  | After French filter: 58503
+0|dashboard  | Final cleaned length: 58276
+0|dashboard  | [ExtractText] Cached 58276 chars, 30 chunks for file 215
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 42/130: 26929898.pdf (58276 chars)
+0|dashboard  | [ExtractText] Read 1589636 bytes from local file: 1775479407556-AUMA-UP42-ResPapr-CommEngageLocalComm.Jones_.Oct11.pdf
+0|dashboard  | [ExtractText] PDF extracted 91265 chars from AUMA-UP42-ResPapr-CommEngageLocalComm.Jones_.Oct11.pdf (37 pages)
+0|dashboard  | cleanTextForTTS input length: 91265
+0|dashboard  | After URL/timestamp/citation cleanup: 90024
+0|dashboard  | After JSTOR cleanup: 89954
+0|dashboard  | After French filter: 89782
+0|dashboard  | Final cleaned length: 88554
+0|dashboard  | [ExtractText] Cached 88554 chars, 45 chunks for file 216
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 43/130: AUMA-UP42-ResPapr-CommEngageLocalComm.Jones_.Oct11.pdf (88554 chars)
+0|dashboard  | [ExtractText] Read 386373 bytes from local file: 1775479407757-The_Paradox_of_Participation__An_Overview_of_Public_Participation_and_Local_Government_in_Canada_26_01_13_02_25_03.pdf
+0|dashboard  | [ExtractText] PDF extracted 52940 chars from The Paradox of Participation_ An Overview of Public Participation and Local Government in Canada_26_01_13_02_25_03.pdf (18 pages)
+0|dashboard  | cleanTextForTTS input length: 52940
+0|dashboard  | After URL/timestamp/citation cleanup: 52043
+0|dashboard  | After JSTOR cleanup: 52041
+0|dashboard  | After French filter: 51650
+0|dashboard  | Final cleaned length: 51428
+0|dashboard  | [ExtractText] Cached 51428 chars, 26 chunks for file 217
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 44/130: The Paradox of Participation_ An Overview of Public Participation and Local Government in Canada_26_01_13_02_25_03.pdf (51428 chars)
+0|dashboard  | [ExtractText] Read 297404 bytes from local file: 1775479409939-CFNF400__Module_10_-_Learning_Objectives.pdf
+0|dashboard  | [ExtractText] PDF extracted 24894 chars from CFNF400, Module 10 - Learning Objectives.pdf (11 pages)
+0|dashboard  | cleanTextForTTS input length: 24894
+0|dashboard  | After URL/timestamp/citation cleanup: 24367
+0|dashboard  | After JSTOR cleanup: 24367
+0|dashboard  | After French filter: 24322
+0|dashboard  | Final cleaned length: 24287
+0|dashboard  | [ExtractText] Cached 24287 chars, 13 chunks for file 218
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 45/130: CFNF400, Module 10 - Learning Objectives.pdf (24287 chars)
+0|dashboard  | [ExtractText] Read 9176641 bytes from local file: 1775479412183-Units_3_6_-_3_13.pdf
+0|dashboard  | [ExtractText] PDF extracted 54 chars from Units 3,6 - 3,13.pdf (28 pages)
+0|dashboard  | [ExtractText] Text too short (0 chars), attempting OCR for Units 3,6 - 3,13.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 54
+0|dashboard  | After URL/timestamp/citation cleanup: 54
+0|dashboard  | After JSTOR cleanup: 54
+0|dashboard  | After French filter: 1
+0|dashboard  | Final cleaned length: 0
+0|dashboard  | [Pre-Extract] Failed: Units 3,6 - 3,13.pdf (no text)
+0|dashboard  | [ExtractText] Read 554604 bytes from local file: 1775479413809-CPPA122__Module_11_-_Introduction.pdf
+0|dashboard  | [ExtractText] PDF extracted 68938 chars from CPPA122, Module 11 - Introduction.pdf (26 pages)
+0|dashboard  | cleanTextForTTS input length: 68938
+0|dashboard  | After URL/timestamp/citation cleanup: 59892
+0|dashboard  | After JSTOR cleanup: 59892
+0|dashboard  | After French filter: 59411
+0|dashboard  | Final cleaned length: 59061
+0|dashboard  | [ExtractText] Cached 59061 chars, 30 chunks for file 220
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 46/130: CPPA122, Module 11 - Introduction.pdf (59061 chars)
+0|dashboard  | [ExtractText] Read 1315608 bytes from local file: 1775479414471-156CBA19.pdf
+0|dashboard  | [ExtractText] PDF extracted 70932 chars from 156CBA19.pdf (27 pages)
+0|dashboard  | cleanTextForTTS input length: 70932
+0|dashboard  | After URL/timestamp/citation cleanup: 70675
+0|dashboard  | After JSTOR cleanup: 69839
+0|dashboard  | After French filter: 69622
+0|dashboard  | Final cleaned length: 11545
+0|dashboard  | [ExtractText] Cached 11545 chars, 6 chunks for file 221
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 47/130: 156CBA19.pdf (11545 chars)
+0|dashboard  | [ExtractText] Read 177099 bytes from local file: 1775479414762-ANALYSIS__Potential_impact_of_tariffs_on_municipalities___Alberta_Municipalities.pdf
+0|dashboard  | [ExtractText] PDF extracted 2824 chars from ANALYSIS_ Potential impact of tariffs on municipalities _ Alberta Municipalities.pdf (2 pages)
+0|dashboard  | cleanTextForTTS input length: 2824
+0|dashboard  | After URL/timestamp/citation cleanup: 2799
+0|dashboard  | After JSTOR cleanup: 2799
+0|dashboard  | After French filter: 2773
+0|dashboard  | Final cleaned length: 2750
+0|dashboard  | [ExtractText] Cached 2750 chars, 2 chunks for file 222
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 48/130: ANALYSIS_ Potential impact of tariffs on municipalities _ Alberta Municipalities.pdf (2750 chars)
+0|dashboard  | [ExtractText] Read 2841411 bytes from local file: 1775479415112-Canadian_municipalities_continue_leading_the_tariff_fight_-_Municipal_World.pdf
+0|dashboard  | [ExtractText] PDF extracted 14051 chars from Canadian municipalities continue leading the tariff fight - Municipal World.pdf (18 pages)
+0|dashboard  | cleanTextForTTS input length: 14051
+0|dashboard  | After URL/timestamp/citation cleanup: 11921
+0|dashboard  | After JSTOR cleanup: 11921
+0|dashboard  | After French filter: 11827
+0|dashboard  | Final cleaned length: 11737
+0|dashboard  | [ExtractText] Cached 11737 chars, 6 chunks for file 223
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 49/130: Canadian municipalities continue leading the tariff fight - Municipal World.pdf (11737 chars)
+0|dashboard  | [ExtractText] Read 1183647 bytes from local file: 1775479415356-Let_s_empower_municipalities__too_often_the_little_siblings_of_federalism.pdf
+0|dashboard  | [ExtractText] PDF extracted 9174 chars from Let’s empower municipalities, too often the little siblings of federalism.pdf (5 pages)
+0|dashboard  | cleanTextForTTS input length: 9174
+0|dashboard  | After URL/timestamp/citation cleanup: 9174
+0|dashboard  | After JSTOR cleanup: 9174
+0|dashboard  | After French filter: 9122
+0|dashboard  | Final cleaned length: 9097
+0|dashboard  | [ExtractText] Cached 9097 chars, 5 chunks for file 224
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 50/130: Let’s empower municipalities, too often the little siblings of federalism.pdf (9097 chars)
+0|dashboard  | [ExtractText] Read 180293 bytes from local file: 1775479415538-Municipal_Priorities_for_2020_and_Beyond__Part_One_-_StrategyCorp.pdf
+0|dashboard  | [ExtractText] PDF extracted 10741 chars from Municipal Priorities for 2020 and Beyond_ Part One - StrategyCorp.pdf (5 pages)
+0|dashboard  | cleanTextForTTS input length: 10741
+0|dashboard  | After URL/timestamp/citation cleanup: 10496
+0|dashboard  | After JSTOR cleanup: 10496
+0|dashboard  | After French filter: 10420
+0|dashboard  | Final cleaned length: 10366
+0|dashboard  | [ExtractText] Cached 10366 chars, 6 chunks for file 225
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 51/130: Municipal Priorities for 2020 and Beyond_ Part One - StrategyCorp.pdf (10366 chars)
+0|dashboard  | [ExtractText] Read 140661 bytes from local file: 1775479415693-Municipal_Priorities_for_2020_and_Beyond__Part_Two_-_StrategyCorp.pdf
+0|dashboard  | [ExtractText] PDF extracted 11396 chars from Municipal Priorities for 2020 and Beyond_ Part Two - StrategyCorp.pdf (4 pages)
+0|dashboard  | cleanTextForTTS input length: 11396
+0|dashboard  | After URL/timestamp/citation cleanup: 11396
+0|dashboard  | After JSTOR cleanup: 11396
+0|dashboard  | After French filter: 11354
+0|dashboard  | Final cleaned length: 11315
+0|dashboard  | [ExtractText] Cached 11315 chars, 6 chunks for file 226
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 52/130: Municipal Priorities for 2020 and Beyond_ Part Two - StrategyCorp.pdf (11315 chars)
+0|dashboard  | [ExtractText] Read 246983 bytes from local file: 1775479415911-out.pdf
+0|dashboard  | [ExtractText] PDF extracted 7890 chars from out.pdf (3 pages)
+0|dashboard  | cleanTextForTTS input length: 7890
+0|dashboard  | After URL/timestamp/citation cleanup: 7885
+0|dashboard  | After JSTOR cleanup: 7885
+0|dashboard  | After French filter: 7837
+0|dashboard  | Final cleaned length: 7803
+0|dashboard  | [ExtractText] Cached 7803 chars, 4 chunks for file 227
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 53/130: out.pdf (7803 chars)
+0|dashboard  | [ExtractText] Read 542701 bytes from local file: 1775479416081-PUBLIC_OPINION_RESEARCH_REPORT.pdf
+0|dashboard  | [ExtractText] PDF extracted 5472 chars from PUBLIC OPINION RESEARCH REPORT.pdf (18 pages)
+0|dashboard  | cleanTextForTTS input length: 5472
+0|dashboard  | After URL/timestamp/citation cleanup: 5472
+0|dashboard  | After JSTOR cleanup: 5472
+0|dashboard  | After French filter: 5312
+0|dashboard  | Final cleaned length: 0
+0|dashboard  | [Pre-Extract] Failed: PUBLIC OPINION RESEARCH REPORT.pdf (no text)
+0|dashboard  | [ExtractText] Read 383263 bytes from local file: 1775479417594-CFNF400__Module_11_-_Learning_Objectives.pdf
+0|dashboard  | [ExtractText] PDF extracted 30203 chars from CFNF400, Module 11 - Learning Objectives.pdf (10 pages)
+0|dashboard  | cleanTextForTTS input length: 30203
+0|dashboard  | After URL/timestamp/citation cleanup: 28237
+0|dashboard  | After JSTOR cleanup: 28237
+0|dashboard  | After French filter: 28211
+0|dashboard  | Final cleaned length: 28177
+0|dashboard  | [ExtractText] Cached 28177 chars, 15 chunks for file 229
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 54/130: CFNF400, Module 11 - Learning Objectives.pdf (28177 chars)
+0|dashboard  | [ExtractText] Read 9821103 bytes from local file: 1775479419945-Units_3_14_-_3_16.pdf
+0|dashboard  | [ExtractText] PDF extracted 48 chars from Units 3,14 - 3,16.pdf (25 pages)
+0|dashboard  | [ExtractText] Text too short (0 chars), attempting OCR for Units 3,14 - 3,16.pdf
+0|dashboard  | cleanTextForTTS input length: 48
+0|dashboard  | After URL/timestamp/citation cleanup: 48
+0|dashboard  | After JSTOR cleanup: 48
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | After French filter: 1
+0|dashboard  | Final cleaned length: 0
+0|dashboard  | [Pre-Extract] Failed: Units 3,14 - 3,16.pdf (no text)
+0|dashboard  | [ExtractText] Read 206058 bytes from local file: 1775479421485-CPPA122__Module_12_-_Introduction.pdf
+0|dashboard  | [ExtractText] PDF extracted 17631 chars from CPPA122, Module 12 - Introduction.pdf (8 pages)
+0|dashboard  | cleanTextForTTS input length: 17631
+0|dashboard  | After URL/timestamp/citation cleanup: 17417
+0|dashboard  | After JSTOR cleanup: 17417
+0|dashboard  | After French filter: 17237
+0|dashboard  | Final cleaned length: 17153
+0|dashboard  | [ExtractText] Cached 17153 chars, 9 chunks for file 231
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 55/130: CPPA122, Module 12 - Introduction.pdf (17153 chars)
+0|dashboard  | [ExtractText] Read 260700 bytes from local file: 1775479423371-CFNF400__Module_12_-_Learning_Objectives.pdf
+0|dashboard  | [ExtractText] PDF extracted 21248 chars from CFNF400, Module 12 - Learning Objectives.pdf (10 pages)
+0|dashboard  | cleanTextForTTS input length: 21248
+0|dashboard  | After URL/timestamp/citation cleanup: 21071
+0|dashboard  | After JSTOR cleanup: 21071
+0|dashboard  | After French filter: 21060
+0|dashboard  | Final cleaned length: 21024
+0|dashboard  | [ExtractText] Cached 21024 chars, 11 chunks for file 232
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 56/130: CFNF400, Module 12 - Learning Objectives.pdf (21024 chars)
+0|dashboard  | [ExtractText] Read 54661 bytes from local file: 1775890926717-CFNF400__Module_13_-_Assignment_Detail.pdf
+0|dashboard  | [ExtractText] PDF extracted 259 chars from CFNF400, Module 13 - Assignment Detail.pdf (1 pages)
+0|dashboard  | cleanTextForTTS input length: 259
+0|dashboard  | After URL/timestamp/citation cleanup: 259
+0|dashboard  | After JSTOR cleanup: 259
+0|dashboard  | After French filter: 259
+0|dashboard  | Final cleaned length: 259
+0|dashboard  | [ExtractText] Cached 259 chars, 1 chunks for file 259
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 57/130: CFNF400, Module 13 - Assignment Detail.pdf (259 chars)
+0|dashboard  | [ExtractText] Read 29106 bytes from local file: 1775900837920-Testing_PDF.pdf
+0|dashboard  | [ExtractText] PDF extracted 50 chars from Testing PDF.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (50 chars), attempting OCR for Testing PDF.pdf
+0|dashboard  | cleanTextForTTS input length: 50
+0|dashboard  | After URL/timestamp/citation cleanup: 50
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | After JSTOR cleanup: 50
+0|dashboard  | After French filter: 50
+0|dashboard  | Final cleaned length: 50
+0|dashboard  | [ExtractText] Cached 50 chars, 1 chunks for file 308
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 58/130: Testing PDF.pdf (50 chars)
+0|dashboard  | [ExtractText] Read 29106 bytes from local file: 1775900857071-Testing_PDF.pdf
+0|dashboard  | [ExtractText] PDF extracted 50 chars from Testing PDF.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (50 chars), attempting OCR for Testing PDF.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 50
+0|dashboard  | After URL/timestamp/citation cleanup: 50
+0|dashboard  | After JSTOR cleanup: 50
+0|dashboard  | After French filter: 50
+0|dashboard  | Final cleaned length: 50
+0|dashboard  | [ExtractText] Cached 50 chars, 1 chunks for file 309
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 59/130: Testing PDF.pdf (50 chars)
+0|dashboard  | [ExtractText] Read 29106 bytes from local file: 1775900857256-Testing_PDF.pdf
+0|dashboard  | [ExtractText] PDF extracted 50 chars from Testing PDF.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (50 chars), attempting OCR for Testing PDF.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 50
+0|dashboard  | After URL/timestamp/citation cleanup: 50
+0|dashboard  | After JSTOR cleanup: 50
+0|dashboard  | After French filter: 50
+0|dashboard  | Final cleaned length: 50
+0|dashboard  | [ExtractText] Cached 50 chars, 1 chunks for file 310
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 60/130: Testing PDF.pdf (50 chars)
+0|dashboard  | [ExtractText] Read 29106 bytes from local file: 1775900857604-Testing_PDF.pdf
+0|dashboard  | [ExtractText] PDF extracted 50 chars from Testing PDF.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (50 chars), attempting OCR for Testing PDF.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 50
+0|dashboard  | After URL/timestamp/citation cleanup: 50
+0|dashboard  | After JSTOR cleanup: 50
+0|dashboard  | After French filter: 50
+0|dashboard  | Final cleaned length: 50
+0|dashboard  | [ExtractText] Cached 50 chars, 1 chunks for file 311
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 61/130: Testing PDF.pdf (50 chars)
+0|dashboard  | [ExtractText] Read 29106 bytes from local file: 1775900857745-Testing_PDF.pdf
+0|dashboard  | [ExtractText] PDF extracted 50 chars from Testing PDF.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (50 chars), attempting OCR for Testing PDF.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 50
+0|dashboard  | After URL/timestamp/citation cleanup: 50
+0|dashboard  | After JSTOR cleanup: 50
+0|dashboard  | After French filter: 50
+0|dashboard  | Final cleaned length: 50
+0|dashboard  | [ExtractText] Cached 50 chars, 1 chunks for file 312
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 62/130: Testing PDF.pdf (50 chars)
+0|dashboard  | [ExtractText] Read 109049 bytes from local file: 1775900857899-How_to_Split_routes.ts_Into_Two_Files-Complete_Step-by-Step_Guide.pdf
+0|dashboard  | [ExtractText] PDF extracted 667 chars from How to Split routes.ts Into Two Files-Complete Step-by-Step Guide.pdf (1 pages)
+0|dashboard  | cleanTextForTTS input length: 667
+0|dashboard  | After URL/timestamp/citation cleanup: 667
+0|dashboard  | After JSTOR cleanup: 667
+0|dashboard  | After French filter: 667
+0|dashboard  | Final cleaned length: 666
+0|dashboard  | [ExtractText] Cached 666 chars, 1 chunks for file 313
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 63/130: How to Split routes.ts Into Two Files-Complete Step-by-Step Guide.pdf (666 chars)
+0|dashboard  | [ExtractText] Read 29106 bytes from local file: 1775900859351-Testing_PDF.pdf
+0|dashboard  | [ExtractText] PDF extracted 50 chars from Testing PDF.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (50 chars), attempting OCR for Testing PDF.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 50
+0|dashboard  | After URL/timestamp/citation cleanup: 50
+0|dashboard  | After JSTOR cleanup: 50
+0|dashboard  | After French filter: 50
+0|dashboard  | Final cleaned length: 50
+0|dashboard  | [ExtractText] Cached 50 chars, 1 chunks for file 314
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 64/130: Testing PDF.pdf (50 chars)
+0|dashboard  | [ExtractText] Read 3320970 bytes from local file: 1775900863891-Units_2_7_-_2_9.pdf
+0|dashboard  | [ExtractText] PDF extracted 16 chars from Units 2,7 - 2,9.pdf (9 pages)
+0|dashboard  | [ExtractText] Text too short (0 chars), attempting OCR for Units 2,7 - 2,9.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 16
+0|dashboard  | After URL/timestamp/citation cleanup: 16
+0|dashboard  | After JSTOR cleanup: 16
+0|dashboard  | After French filter: 1
+0|dashboard  | Final cleaned length: 0
+0|dashboard  | [Pre-Extract] Failed: Units 2,7 - 2,9.pdf (no text)
+0|dashboard  | [ExtractText] Read 29106 bytes from local file: 1775900868329-Testing_PDF.pdf
+0|dashboard  | [ExtractText] PDF extracted 50 chars from Testing PDF.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (50 chars), attempting OCR for Testing PDF.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 50
+0|dashboard  | After URL/timestamp/citation cleanup: 50
+0|dashboard  | After JSTOR cleanup: 50
+0|dashboard  | After French filter: 50
+0|dashboard  | Final cleaned length: 50
+0|dashboard  | [ExtractText] Cached 50 chars, 1 chunks for file 316
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 65/130: Testing PDF.pdf (50 chars)
+0|dashboard  | [ExtractText] Read 29106 bytes from local file: 1775900868828-Testing_PDF.pdf
+0|dashboard  | [ExtractText] PDF extracted 50 chars from Testing PDF.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (50 chars), attempting OCR for Testing PDF.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 50
+0|dashboard  | After URL/timestamp/citation cleanup: 50
+0|dashboard  | After JSTOR cleanup: 50
+0|dashboard  | After French filter: 50
+0|dashboard  | Final cleaned length: 50
+0|dashboard  | [ExtractText] Cached 50 chars, 1 chunks for file 317
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 66/130: Testing PDF.pdf (50 chars)
+0|dashboard  | [ExtractText] Read 29106 bytes from local file: 1775900870901-Testing_PDF.pdf
+0|dashboard  | [ExtractText] PDF extracted 50 chars from Testing PDF.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (50 chars), attempting OCR for Testing PDF.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 50
+0|dashboard  | After URL/timestamp/citation cleanup: 50
+0|dashboard  | After JSTOR cleanup: 50
+0|dashboard  | After French filter: 50
+0|dashboard  | Final cleaned length: 50
+0|dashboard  | [ExtractText] Cached 50 chars, 1 chunks for file 318
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 67/130: Testing PDF.pdf (50 chars)
+0|dashboard  | [ExtractText] Read 3320970 bytes from local file: 1775900871356-Units_2_7_-_2_9.pdf
+0|dashboard  | [ExtractText] PDF extracted 16 chars from Units 2,7 - 2,9.pdf (9 pages)
+0|dashboard  | [ExtractText] Text too short (0 chars), attempting OCR for Units 2,7 - 2,9.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 16
+0|dashboard  | After URL/timestamp/citation cleanup: 16
+0|dashboard  | After JSTOR cleanup: 16
+0|dashboard  | After French filter: 1
+0|dashboard  | Final cleaned length: 0
+0|dashboard  | [Pre-Extract] Failed: Units 2,7 - 2,9.pdf (no text)
+0|dashboard  | [ExtractText] Read 168356 bytes from local file: 1775900872659-Ambassador_CABC_letter_10232025.pdf
+0|dashboard  | [ExtractText] PDF extracted 2482 chars from Ambassador_CABC_letter_10232025.pdf (1 pages)
+0|dashboard  | cleanTextForTTS input length: 2482
+0|dashboard  | After URL/timestamp/citation cleanup: 2302
+0|dashboard  | After JSTOR cleanup: 2302
+0|dashboard  | After French filter: 2297
+0|dashboard  | Final cleaned length: 2264
+0|dashboard  | [ExtractText] Cached 2264 chars, 2 chunks for file 320
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 68/130: Ambassador_CABC_letter_10232025.pdf (2264 chars)
+0|dashboard  | [ExtractText] Read 29106 bytes from local file: 1775900873306-Testing_PDF.pdf
+0|dashboard  | [ExtractText] PDF extracted 50 chars from Testing PDF.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (50 chars), attempting OCR for Testing PDF.pdf
+0|dashboard  | cleanTextForTTS input length: 50
+0|dashboard  | After URL/timestamp/citation cleanup: 50
+0|dashboard  | After JSTOR cleanup: 50
+0|dashboard  | After French filter: 50
+0|dashboard  | Final cleaned length: 50
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | [ExtractText] Cached 50 chars, 1 chunks for file 321
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 69/130: Testing PDF.pdf (50 chars)
+0|dashboard  | [ExtractText] Read 29106 bytes from local file: 1775902339200-Testing_PDF.pdf
+0|dashboard  | [ExtractText] PDF extracted 50 chars from Testing PDF.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (50 chars), attempting OCR for Testing PDF.pdf
+0|dashboard  | cleanTextForTTS input length: 50
+0|dashboard  | After URL/timestamp/citation cleanup: 50
+0|dashboard  | After JSTOR cleanup: 50
+0|dashboard  | After French filter: 50
+0|dashboard  | Final cleaned length: 50
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | [ExtractText] Cached 50 chars, 1 chunks for file 322
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 70/130: Testing PDF.pdf (50 chars)
+0|dashboard  | [ExtractText] Read 29106 bytes from local file: 1775900875319-Testing_PDF.pdf
+0|dashboard  | [ExtractText] PDF extracted 50 chars from Testing PDF.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (50 chars), attempting OCR for Testing PDF.pdf
+0|dashboard  | cleanTextForTTS input length: 50
+0|dashboard  | After URL/timestamp/citation cleanup: 50
+0|dashboard  | After JSTOR cleanup: 50
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | After French filter: 50
+0|dashboard  | Final cleaned length: 50
+0|dashboard  | [ExtractText] Cached 50 chars, 1 chunks for file 323
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 71/130: Testing PDF.pdf (50 chars)
+0|dashboard  | [ExtractText] Read 26317 bytes from local file: 1775900875372-Phil3.pdf
+0|dashboard  | [ExtractText] PDF extracted 7 chars from Phil3.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (7 chars), attempting OCR for Phil3.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 7
+0|dashboard  | After URL/timestamp/citation cleanup: 7
+0|dashboard  | After JSTOR cleanup: 7
+0|dashboard  | After French filter: 7
+0|dashboard  | Final cleaned length: 7
+0|dashboard  | [ExtractText] Cached 7 chars, 1 chunks for file 324
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 72/130: Phil3.pdf (7 chars)
+0|dashboard  | [ExtractText] Read 26317 bytes from local file: 1775900875977-Reading3-1.pdf
+0|dashboard  | [ExtractText] PDF extracted 7 chars from Reading3-1.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (7 chars), attempting OCR for Reading3-1.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 7
+0|dashboard  | After URL/timestamp/citation cleanup: 7
+0|dashboard  | After JSTOR cleanup: 7
+0|dashboard  | After French filter: 7
+0|dashboard  | Final cleaned length: 7
+0|dashboard  | [ExtractText] Cached 7 chars, 1 chunks for file 325
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 73/130: Reading3-1.pdf (7 chars)
+0|dashboard  | [ExtractText] Read 26317 bytes from local file: 1775902461609-Reading3-2.pdf
+0|dashboard  | [ExtractText] PDF extracted 7 chars from Reading3-2.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (7 chars), attempting OCR for Reading3-2.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 7
+0|dashboard  | After URL/timestamp/citation cleanup: 7
+0|dashboard  | After JSTOR cleanup: 7
+0|dashboard  | After French filter: 7
+0|dashboard  | Final cleaned length: 7
+0|dashboard  | [ExtractText] Cached 7 chars, 1 chunks for file 326
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 74/130: Reading3-2.pdf (7 chars)
+0|dashboard  | [ExtractText] Read 29106 bytes from local file: 1775900876268-Testing_PDF.pdf
+0|dashboard  | [ExtractText] PDF extracted 50 chars from Testing PDF.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (50 chars), attempting OCR for Testing PDF.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 50
+0|dashboard  | After URL/timestamp/citation cleanup: 50
+0|dashboard  | After JSTOR cleanup: 50
+0|dashboard  | After French filter: 50
+0|dashboard  | Final cleaned length: 50
+0|dashboard  | [ExtractText] Cached 50 chars, 1 chunks for file 327
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 75/130: Testing PDF.pdf (50 chars)
+0|dashboard  | [ExtractText] Read 168356 bytes from local file: 1775900949033-Ambassador_CABC_letter_10232025.pdf
+0|dashboard  | [ExtractText] PDF extracted 2482 chars from Ambassador_CABC_letter_10232025.pdf (1 pages)
+0|dashboard  | cleanTextForTTS input length: 2482
+0|dashboard  | After URL/timestamp/citation cleanup: 2302
+0|dashboard  | After JSTOR cleanup: 2302
+0|dashboard  | After French filter: 2297
+0|dashboard  | Final cleaned length: 2264
+0|dashboard  | [ExtractText] Cached 2264 chars, 2 chunks for file 328
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 76/130: Ambassador_CABC_letter_10232025.pdf (2264 chars)
+0|dashboard  | [ExtractText] Read 26317 bytes from local file: 1775900950687-Phil3.pdf
+0|dashboard  | [ExtractText] PDF extracted 7 chars from Phil3.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (7 chars), attempting OCR for Phil3.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 7
+0|dashboard  | After URL/timestamp/citation cleanup: 7
+0|dashboard  | After JSTOR cleanup: 7
+0|dashboard  | After French filter: 7
+0|dashboard  | Final cleaned length: 7
+0|dashboard  | [ExtractText] Cached 7 chars, 1 chunks for file 329
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 77/130: Phil3.pdf (7 chars)
+0|dashboard  | [ExtractText] Read 26317 bytes from local file: 1775900951100-Reading3-1.pdf
+0|dashboard  | [ExtractText] PDF extracted 7 chars from Reading3-1.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (7 chars), attempting OCR for Reading3-1.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 7
+0|dashboard  | After URL/timestamp/citation cleanup: 7
+0|dashboard  | After JSTOR cleanup: 7
+0|dashboard  | After French filter: 7
+0|dashboard  | Final cleaned length: 7
+0|dashboard  | 2:31:47 PM [express] GET /api/news 200 in 2131ms :: [{"title":"PM Carney’s Liberals could secure a majority government tonight. Live coverage starts here at 7 p.m. ET.","source":"CTV","link":"https://news.google.com/rss/articles/CBMi1wFBVV95cUxPVExOSGFGN09rU19rN1ZEZHpPdGFoT3FTVXMzYVp4dUYxbEpYelV6QWt2OFVhajltSEhYNDJOTy1sODBCYWpMXzFjS1VKTXFJWll0RHVMaS1xTnNVUU1KSWNlSlFFbnFWT214ejNTcmFDeTVISkk5ZnpTa09PMnd4UmpDbzlWc0tUa2FmWHIxekRGMC1UVmJST3V1R2tuaTRJRVN2aW5kR2RYWHRnSV9vbVlTQnVUenJTN0F5Y1hYQ051WTZuNEk3RDhLN0ZVYVp2ZG5yWGRCMA?oc=5","publishedAt":"2026-04-13T09:00:00.000Z"},{"title":"Judge tosses Trump’s Wall Street Journal defamation lawsuit, gives him chance to refile","source":"CNN","link":"https://news.google.com/rss/articles/CBMihAFBVV95cUxQNVNBd1pkTVRYcTYtVm1iMHhhMkJmeVh3ZWVmMTZWbF9UcHBuTzJuRXlDaGFfT1hwQXpUSnh2QUJVOVdnakVvTTdjalhpOUgxODhuNG9lMzhQZy1oRkt1S1RGMmlieUNJVUZzZ25lclFYMFJ5cEFaXzZ0UDJmUzhsUFZGcDY?oc=5","publishedAt":"2026-04-13T13:44:54.000Z"},{"title":"Trump's Jesus meme might have triggered a MAGA exodus before decisive midterms","source":"Raw Story","link":"https://www.rawstory.com/trump-gets-warning-huge-maga/","publishedAt":"2026-04-13T18:30:01.000Z"},{"title":"Swalwell faces House ethics probe over alleged sexual misconduct as expulsion threat looms","source":"Fox News","link":"https://www.foxnews.com/politics/swalwell-faces-house-ethics-probe-over-alleged-sexual-misconduct-expulsion-threat-looms","publishedAt":"2026-04-13T18:00:13.000Z"},{"title":"Trump takes down image from social media that depicted him as Jesus-like figure","source":"ABC News","link":"https://abcnews.com/Politics/trump-takes-image-social-media-platform-depicted-jesus/story?id=131998889","publishedAt":"2026-04-13T17:32:05.000Z"},{"title":"Trump threat to Iranian civilians 'wrong', Starmer says","source":"BBC","link":"https://www.bbc.com/news/articles/cd7j0p09j7no?at_medium=RSS&amp;at_campaign=rss","publishedAt":"2026-04-13T16:18:38.000Z"},{"title":"‘It would be catastrophic’: A Supreme Court decision could upend Alaska’s crucial Senate race","source":"Politico","link":"https://www.politico.com/news/2026/04/12/it-would-be-catastrophic-a-supreme-court-decision-could-upend-alaskas-crucial-senate-race-00867699","publishedAt":"2026-04-12T16:00:00.000Z"},{"title":"Conservative MP tells reporters on hot mic, Liberals ‘trying to poach me’","source":"Global","link":"https://globalnews.ca/news/11799114/billy-morin-liberal-floor-crossing-attempts/","publishedAt":"2026-04-13T17:11:15.000Z"},{"title":"Lawsuit accuses Winnipeg woman of taking $6M from non-profit to fund vacations, buy TikTok coins","source":"CBC","link":"https://www.cbc.ca/news/canada/manitoba/lawsuit-ngn-desjarlais-guardians-9.7159598?cmp=rss","publishedAt":"2026-04-13T10:00:00.000Z"},{"title":"As Tax Day arrives, Trump’s decision to kill off IRS Direct File looms large","source":"MSNBC","link":"https://www.ms.now/rachel-maddow-show/maddowblog/tax-day-irs-direct-file-trump","publishedAt":"2026-04-13T18:09:57.000Z"},{"title":"‘Severely emaciated’ puppy found abandoned in parking lot in St. Catharines","source":"CTV","link":"https://news.google.com/rss/articles/CBMixAFBVV95cUxOaGhUN016RThfSWJVZUVnc3QxaE9TemlHVU82V2s3WW5mMGZDMWR4MTI0aXpPSEZhUG9oLUdtVUp0MVNJdHg3V1hYN09tTmdNUXJ2SFlWU1BmeUk5dHEwajNKQ3FoX3JfdTJzd3V4RFVzNzAtcFVrcXF6RUkzVjMweDhXRTRmQVhGU0pDQjdzRUgtTWMxYXBiVHNabmt4WmxpQmpBZ0F4bG5qS1NkVF9xcU91aG1PRE16ejRBQVFUYklNTUhM?oc=5","publishedAt":"2026-04-13T16:10:43.000Z"},{"title":"After three years as Iran’s hostage, the taxman came knocking","source":"CNN","link":"https://news.google.com/rss/articles/CBMie0FVX3lxTE5jWFQ5c2FwcGZHeXpvdEFfbEp1YXludXBsdk1fbGM2RTFkallnOW1ibGVfUkMyYnE2STlsTm5pX1ZaSThwTldNUkVmUmhpZlBvSm15RUFuampyaWttaTRWbEJxYTUxUEh5T21wb3RsMldFTFJrYTVrdHpoOA?oc=5","publishedAt":"2026-04-13T14:02:58.000Z"},{"title":"White House immediately mocked for praising Trump’s ‘brilliant’ move: ‘Certainly is not!’","source":"Raw Story","link":"https://www.rawstory.com/blockade/","publishedAt":"2026-04-13T18:15:09.000Z"},{"title":"Obama CIA chief under DOJ scrutiny pushes fringe Trump ouster plan","source":"Fox News","link":"https://www.foxnews.com/politics/obama-cia-chief-doj-scrutiny-pushes-fringe-trump-ouster-plan","publishedAt":"2026-04-13T17:06:44.000Z"},{"title":"Stepbrother charged with murder, sex abuse in teen girl's cruise ship death: DOJ","source":"ABC News","link":"https://abcnews.com/US/stepbrother-charged-murder-sex-abuse-teen-girls-cruise/story?id=131998496","publishedAt":"2026-04-13T17:25:57.000Z"},{"title":"UK could adopt EU single market rules under new legislation","source":"BBC","link":"https://www.bbc.com/news/articles/c937jkvp3w8o?at_medium=RSS&amp;at_campaign=rss","publishedAt":"2026-04-13T11:18:33.000Z"},{"title":"Fears over who can win in 2028 are already surfacing among Democrats","source":"Politico","link":"https://www.politico.com/news/2026/04/11/black-voters-democrats-2028-00867925","publishedAt":"2026-04-11T11:00:00.000Z"},{"title":"Key byelections underway with Carney on the verge of majority","source":"Global","link":"https://globalnews.ca/news/11798684/federal-byelections-2026/","publishedAt":"2026-04-13T12:52:45.000Z"},{"title":"Trump says blockade in Strait of Hormuz has started, promises Iranian ships that approach will be 'eliminated'","source":"CBC","link":"https://www.cbc.ca/news/world/livestory/us-israel-iran-war-blockade-strait-hormuz-9.7161372?cmp=rss","publishedAt":"2026-03-02T22:30:36.000Z"},{"title":"The Trump DOJ is right: Mass Jan. 6 pardon shouldn’t save alleged pipe bomb planter","source":"MSNBC","link":"https://www.ms.now/deadline-white-house/deadline-legal-blog/the-trump-doj-is-right-mass-jan-6-pardon-shouldnt-save-alleged-pipe-bomb-planter","publishedAt":"2026-04-13T18:06:21.000Z"},{"title":"Iran threatens ports in Mideast as U.S. military set to impose shipping blockade","source":"CTV","link":"https://news.google.com/rss/articles/CBMizgFBVV95cUxOcG51OGZHeTlMTUNDSFJybnBkdi1ZNTdVUXg0MUwzVFViOGE0dG9BOXZCbEV6MWVsbnR5R0NzZ3RPWmUwNHNiRzYySXFBS1Z3VEpsNml2N0FhSWZNa2NTU3dEQ1FnOHJRZE1SVHJuQ1RNZUVSaDRoUThoX2d6WFhQUDhodk12NWFWUVRrQkhRbE5aRkhoUjFHMS1GdEFMOHY0alpxQjdZRk8takd4VzcyOWEzcFRiQlNFWEFFTGNnTVp4M2dmWGdtWTI2QmxoUQ?oc=5","publishedAt":"2026-04-13T09:53:24.000Z"},{"title":"Judge tosses Trump’s Wall Street Journal defamation lawsuit, gives him chance to refile","source":"CNN","link":"https://news.google.com/rss/articles/CBMiigFBVV95cUxPWHZZRWUwTWwxc0VGRndILUZ4cGdxbzhUVnBTS0VwQnIySVUxb3NhOFNha3N2SXJtb2U2bVF2S1BFZzNPYUpMTVplbWNpR3kwa3c1NXg3V01XY0FxRUpXOGZyQWJDZFNLcDVSLThfbUg4eVh3R3YySjZ3UEhnUldZQ1Q3WEt4VFJUc3c?oc=5","publishedAt":"2026-04-13T13:44:54.000Z"},{"title":"Trump's bizarre cover story for 'blasphemous' meme bewilders: 'Invoke the 25th Amendment'","source":"Raw Story","link":"https://www.rawstory.com/trump-2676706986/","publishedAt":"2026-04-13T17:59:34.000Z"},{"title":"Soros-backed prosecutor set for Capitol Hill grilling as sanctuary policies face reckoning","source":"Fox News","link":"https://www.foxnews.com/politics/soros-backed-prosecutor-set-capitol-hill-grilling-sanctuary-policies-face-reckoning","publishedAt":"2026-04-13T16:47:17.000Z"},{"title":"Mamdani's 100th day","source":"Politico","link":"https://www.politico.com/newsletters/new-york-playbook-pm/2026/04/10/mamdanis-100th-day-00867662","publishedAt":"2026-04-10T21:37:05.000Z"},{"title":"Canada byelection results: Scarborough Southwest","source":"Global","link":"https://globalnews.ca/news/11773387/canada-byelection-results-scarborough-southwest/","publishedAt":"2026-04-13T10:00:34.000Z"},{"title":"Ontario capping number of school trustees per board, creating new oversight roles","source":"CBC","link":"https://www.cbc.ca/news/canada/toronto/ontario-school-board-legislation-9.7161639?cmp=rss","publishedAt":"2026-04-13T14:40:09.000Z"},{"title":"‘Alarming’: Court flags ‘serious questions’ about government conduct in DOGE data case","source":"MSNBC","link":"https://www.ms.now/deadline-white-house/deadline-legal-blog/doge-data-social-security-administration-ssa-government-conduct","publishedAt":"2026-04-13T18:03:47.000Z"}]
+0|dashboard  | 2:31:47 PM [express] GET /api/ha/news 200 in 2138ms :: {"headlines":[{"title":"PM Carney’s Liberals could secure a majority government tonight. Live coverage starts here at 7 p.m. ET.","source":"CTV","link":"https://news.google.com/rss/articles/CBMi1wFBVV95cUxPVExOSGFGN09rU19rN1ZEZHpPdGFoT3FTVXMzYVp4dUYxbEpYelV6QWt2OFVhajltSEhYNDJOTy1sODBCYWpMXzFjS1VKTXFJWll0RHVMaS1xTnNVUU1KSWNlSlFFbnFWT214ejNTcmFDeTVISkk5ZnpTa09PMnd4UmpDbzlWc0tUa2FmWHIxekRGMC1UVmJST3V1R2tuaTRJRVN2aW5kR2RYWHRnSV9vbVlTQnVUenJTN0F5Y1hYQ051WTZuNEk3RDhLN0ZVYVp2ZG5yWGRCMA?oc=5","publishedAt":"2026-04-13T09:00:00.000Z"},{"title":"Judge tosses Trump’s Wall Street Journal defamation lawsuit, gives him chance to refile","source":"CNN","link":"https://news.google.com/rss/articles/CBMihAFBVV95cUxQNVNBd1pkTVRYcTYtVm1iMHhhMkJmeVh3ZWVmMTZWbF9UcHBuTzJuRXlDaGFfT1hwQXpUSnh2QUJVOVdnakVvTTdjalhpOUgxODhuNG9lMzhQZy1oRkt1S1RGMmlieUNJVUZzZ25lclFYMFJ5cEFaXzZ0UDJmUzhsUFZGcDY?oc=5","publishedAt":"2026-04-13T13:44:54.000Z"},{"title":"Trump's Jesus meme might have triggered a MAGA exodus before decisive midterms","source":"Raw Story","link":"https://www.rawstory.com/trump-gets-warning-huge-maga/","publishedAt":"2026-04-13T18:30:01.000Z"},{"title":"Swalwell faces House ethics probe over alleged sexual misconduct as expulsion threat looms","source":"Fox News","link":"https://www.foxnews.com/politics/swalwell-faces-house-ethics-probe-over-alleged-sexual-misconduct-expulsion-threat-looms","publishedAt":"2026-04-13T18:00:13.000Z"},{"title":"Trump takes down image from social media that depicted him as Jesus-like figure","source":"ABC News","link":"https://abcnews.com/Politics/trump-takes-image-social-media-platform-depicted-jesus/story?id=131998889","publishedAt":"2026-04-13T17:32:05.000Z"},{"title":"Trump threat to Iranian civilians 'wrong', Starmer says","source":"BBC","link":"https://www.bbc.com/news/articles/cd7j0p09j7no?at_medium=RSS&amp;at_campaign=rss","publishedAt":"2026-04-13T16:18:38.000Z"},{"title":"‘It would be catastrophic’: A Supreme Court decision could upend Alaska’s crucial Senate race","source":"Politico","link":"https://www.politico.com/news/2026/04/12/it-would-be-catastrophic-a-supreme-court-decision-could-upend-alaskas-crucial-senate-race-00867699","publishedAt":"2026-04-12T16:00:00.000Z"},{"title":"Conservative MP tells reporters on hot mic, Liberals ‘trying to poach me’","source":"Global","link":"https://globalnews.ca/news/11799114/billy-morin-liberal-floor-crossing-attempts/","publishedAt":"2026-04-13T17:11:15.000Z"},{"title":"Lawsuit accuses Winnipeg woman of taking $6M from non-profit to fund vacations, buy TikTok coins","source":"CBC","link":"https://www.cbc.ca/news/canada/manitoba/lawsuit-ngn-desjarlais-guardians-9.7159598?cmp=rss","publishedAt":"2026-04-13T10:00:00.000Z"},{"title":"As Tax Day arrives, Trump’s decision to kill off IRS Direct File looms large","source":"MSNBC","link":"https://www.ms.now/rachel-maddow-show/maddowblog/tax-day-irs-direct-file-trump","publishedAt":"2026-04-13T18:09:57.000Z"},{"title":"‘Severely emaciated’ puppy found abandoned in parking lot in St. Catharines","source":"CTV","link":"https://news.google.com/rss/articles/CBMixAFBVV95cUxOaGhUN016RThfSWJVZUVnc3QxaE9TemlHVU82V2s3WW5mMGZDMWR4MTI0aXpPSEZhUG9oLUdtVUp0MVNJdHg3V1hYN09tTmdNUXJ2SFlWU1BmeUk5dHEwajNKQ3FoX3JfdTJzd3V4RFVzNzAtcFVrcXF6RUkzVjMweDhXRTRmQVhGU0pDQjdzRUgtTWMxYXBiVHNabmt4WmxpQmpBZ0F4bG5qS1NkVF9xcU91aG1PRE16ejRBQVFUYklNTUhM?oc=5","publishedAt":"2026-04-13T16:10:43.000Z"},{"title":"After three years as Iran’s hostage, the taxman came knocking","source":"CNN","link":"https://news.google.com/rss/articles/CBMie0FVX3lxTE5jWFQ5c2FwcGZHeXpvdEFfbEp1YXludXBsdk1fbGM2RTFkallnOW1ibGVfUkMyYnE2STlsTm5pX1ZaSThwTldNUkVmUmhpZlBvSm15RUFuampyaWttaTRWbEJxYTUxUEh5T21wb3RsMldFTFJrYTVrdHpoOA?oc=5","publishedAt":"2026-04-13T14:02:58.000Z"},{"title":"White House immediately mocked for praising Trump’s ‘brilliant’ move: ‘Certainly is not!’","source":"Raw Story","link":"https://www.rawstory.com/blockade/","publishedAt":"2026-04-13T18:15:09.000Z"},{"title":"Obama CIA chief under DOJ scrutiny pushes fringe Trump ouster plan","source":"Fox News","link":"https://www.foxnews.com/politics/obama-cia-chief-doj-scrutiny-pushes-fringe-trump-ouster-plan","publishedAt":"2026-04-13T17:06:44.000Z"},{"title":"Stepbrother charged with murder, sex abuse in teen girl's cruise ship death: DOJ","source":"ABC News","link":"https://abcnews.com/US/stepbrother-charged-murder-sex-abuse-teen-girls-cruise/story?id=131998496","publishedAt":"2026-04-13T17:25:57.000Z"},{"title":"UK could adopt EU single market rules under new legislation","source":"BBC","link":"https://www.bbc.com/news/articles/c937jkvp3w8o?at_medium=RSS&amp;at_campaign=rss","publishedAt":"2026-04-13T11:18:33.000Z"},{"title":"Fears over who can win in 2028 are already surfacing among Democrats","source":"Politico","link":"https://www.politico.com/news/2026/04/11/black-voters-democrats-2028-00867925","publishedAt":"2026-04-11T11:00:00.000Z"},{"title":"Key byelections underway with Carney on the verge of majority","source":"Global","link":"https://globalnews.ca/news/11798684/federal-byelections-2026/","publishedAt":"2026-04-13T12:52:45.000Z"},{"title":"Trump says blockade in Strait of Hormuz has started, promises Iranian ships that approach will be 'eliminated'","source":"CBC","link":"https://www.cbc.ca/news/world/livestory/us-israel-iran-war-blockade-strait-hormuz-9.7161372?cmp=rss","publishedAt":"2026-03-02T22:30:36.000Z"},{"title":"The Trump DOJ is right: Mass Jan. 6 pardon shouldn’t save alleged pipe bomb planter","source":"MSNBC","link":"https://www.ms.now/deadline-white-house/deadline-legal-blog/the-trump-doj-is-right-mass-jan-6-pardon-shouldnt-save-alleged-pipe-bomb-planter","publishedAt":"2026-04-13T18:06:21.000Z"},{"title":"Iran threatens ports in Mideast as U.S. military set to impose shipping blockade","source":"CTV","link":"https://news.google.com/rss/articles/CBMizgFBVV95cUxOcG51OGZHeTlMTUNDSFJybnBkdi1ZNTdVUXg0MUwzVFViOGE0dG9BOXZCbEV6MWVsbnR5R0NzZ3RPWmUwNHNiRzYySXFBS1Z3VEpsNml2N0FhSWZNa2NTU3dEQ1FnOHJRZE1SVHJuQ1RNZUVSaDRoUThoX2d6WFhQUDhodk12NWFWUVRrQkhRbE5aRkhoUjFHMS1GdEFMOHY0alpxQjdZRk8takd4VzcyOWEzcFRiQlNFWEFFTGNnTVp4M2dmWGdtWTI2QmxoUQ?oc=5","publishedAt":"2026-04-13T09:53:24.000Z"},{"title":"Judge tosses Trump’s Wall Street Journal defamation lawsuit, gives him chance to refile","source":"CNN","link":"https://news.google.com/rss/articles/CBMiigFBVV95cUxPWHZZRWUwTWwxc0VGRndILUZ4cGdxbzhUVnBTS0VwQnIySVUxb3NhOFNha3N2SXJtb2U2bVF2S1BFZzNPYUpMTVplbWNpR3kwa3c1NXg3V01XY0FxRUpXOGZyQWJDZFNLcDVSLThfbUg4eVh3R3YySjZ3UEhnUldZQ1Q3WEt4VFJUc3c?oc=5","publishedAt":"2026-04-13T13:44:54.000Z"},{"title":"Trump's bizarre cover story for 'blasphemous' meme bewilders: 'Invoke the 25th Amendment'","source":"Raw Story","link":"https://www.rawstory.com/trump-2676706986/","publishedAt":"2026-04-13T17:59:34.000Z"},{"title":"Soros-backed prosecutor set for Capitol Hill grilling as sanctuary policies face reckoning","source":"Fox News","link":"https://www.foxnews.com/politics/soros-backed-prosecutor-set-capitol-hill-grilling-sanctuary-policies-face-reckoning","publishedAt":"2026-04-13T16:47:17.000Z"},{"title":"Mamdani's 100th day","source":"Politico","link":"https://www.politico.com/newsletters/new-york-playbook-pm/2026/04/10/mamdanis-100th-day-00867662","publishedAt":"2026-04-10T21:37:05.000Z"},{"title":"Canada byelection results: Scarborough Southwest","source":"Global","link":"https://globalnews.ca/news/11773387/canada-byelection-results-scarborough-southwest/","publishedAt":"2026-04-13T10:00:34.000Z"},{"title":"Ontario capping number of school trustees per board, creating new oversight roles","source":"CBC","link":"https://www.cbc.ca/news/canada/toronto/ontario-school-board-legislation-9.7161639?cmp=rss","publishedAt":"2026-04-13T14:40:09.000Z"},{"title":"‘Alarming’: Court flags ‘serious questions’ about government conduct in DOGE data case","source":"MSNBC","link":"https://www.ms.now/deadline-white-house/deadline-legal-blog/doge-data-social-security-administration-ssa-government-conduct","publishedAt":"2026-04-13T18:03:47.000Z"}]}
+0|dashboard  | [ExtractText] Cached 7 chars, 1 chunks for file 330
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 78/130: Reading3-1.pdf (7 chars)
+0|dashboard  | [ExtractText] Read 26317 bytes from local file: 1775900951227-Reading3-2.pdf
+0|dashboard  | [ExtractText] PDF extracted 7 chars from Reading3-2.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (7 chars), attempting OCR for Reading3-2.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 7
+0|dashboard  | After URL/timestamp/citation cleanup: 7
+0|dashboard  | After JSTOR cleanup: 7
+0|dashboard  | After French filter: 7
+0|dashboard  | Final cleaned length: 7
+0|dashboard  | [ExtractText] Cached 7 chars, 1 chunks for file 331
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 79/130: Reading3-2.pdf (7 chars)
+0|dashboard  | [ExtractText] Read 29106 bytes from local file: 1775900958512-Testing_PDF.pdf
+0|dashboard  | [ExtractText] PDF extracted 50 chars from Testing PDF.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (50 chars), attempting OCR for Testing PDF.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 50
+0|dashboard  | After URL/timestamp/citation cleanup: 50
+0|dashboard  | After JSTOR cleanup: 50
+0|dashboard  | After French filter: 50
+0|dashboard  | Final cleaned length: 50
+0|dashboard  | [ExtractText] Cached 50 chars, 1 chunks for file 332
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 80/130: Testing PDF.pdf (50 chars)
+0|dashboard  | [ExtractText] Read 29106 bytes from local file: 1775900961413-Testing_PDF.pdf
+0|dashboard  | [ExtractText] PDF extracted 50 chars from Testing PDF.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (50 chars), attempting OCR for Testing PDF.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 50
+0|dashboard  | After URL/timestamp/citation cleanup: 50
+0|dashboard  | After JSTOR cleanup: 50
+0|dashboard  | After French filter: 50
+0|dashboard  | Final cleaned length: 50
+0|dashboard  | [ExtractText] Cached 50 chars, 1 chunks for file 333
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 81/130: Testing PDF.pdf (50 chars)
+0|dashboard  | [ExtractText] Read 29106 bytes from local file: 1775900974892-Testing_PDF.pdf
+0|dashboard  | [ExtractText] PDF extracted 50 chars from Testing PDF.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (50 chars), attempting OCR for Testing PDF.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 50
+0|dashboard  | After URL/timestamp/citation cleanup: 50
+0|dashboard  | After JSTOR cleanup: 50
+0|dashboard  | After French filter: 50
+0|dashboard  | Final cleaned length: 50
+0|dashboard  | [ExtractText] Cached 50 chars, 1 chunks for file 334
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 82/130: Testing PDF.pdf (50 chars)
+0|dashboard  | [ExtractText] Read 168356 bytes from local file: 1775901016101-Ambassador_CABC_letter_10232025.pdf
+0|dashboard  | [ExtractText] PDF extracted 2482 chars from Ambassador_CABC_letter_10232025.pdf (1 pages)
+0|dashboard  | cleanTextForTTS input length: 2482
+0|dashboard  | After URL/timestamp/citation cleanup: 2302
+0|dashboard  | After JSTOR cleanup: 2302
+0|dashboard  | After French filter: 2297
+0|dashboard  | Final cleaned length: 2264
+0|dashboard  | [ExtractText] Cached 2264 chars, 2 chunks for file 335
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 83/130: Ambassador_CABC_letter_10232025.pdf (2264 chars)
+0|dashboard  | [ExtractText] Read 26317 bytes from local file: 1775902639333-Phil3.pdf
+0|dashboard  | [ExtractText] PDF extracted 7 chars from Phil3.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (7 chars), attempting OCR for Phil3.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 7
+0|dashboard  | After URL/timestamp/citation cleanup: 7
+0|dashboard  | After JSTOR cleanup: 7
+0|dashboard  | After French filter: 7
+0|dashboard  | Final cleaned length: 7
+0|dashboard  | [ExtractText] Cached 7 chars, 1 chunks for file 336
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 84/130: Phil3.pdf (7 chars)
+0|dashboard  | [ExtractText] Read 26317 bytes from local file: 1775902672696-Reading3-1.pdf
+0|dashboard  | [ExtractText] PDF extracted 7 chars from Reading3-1.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (7 chars), attempting OCR for Reading3-1.pdf
+0|dashboard  | cleanTextForTTS input length: 7
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | After URL/timestamp/citation cleanup: 7
+0|dashboard  | After JSTOR cleanup: 7
+0|dashboard  | After French filter: 7
+0|dashboard  | Final cleaned length: 7
+0|dashboard  | [ExtractText] Cached 7 chars, 1 chunks for file 337
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 85/130: Reading3-1.pdf (7 chars)
+0|dashboard  | [ExtractText] Read 26317 bytes from local file: 1775901018453-Reading3-2.pdf
+0|dashboard  | [ExtractText] PDF extracted 7 chars from Reading3-2.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (7 chars), attempting OCR for Reading3-2.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 7
+0|dashboard  | After URL/timestamp/citation cleanup: 7
+0|dashboard  | After JSTOR cleanup: 7
+0|dashboard  | After French filter: 7
+0|dashboard  | Final cleaned length: 7
+0|dashboard  | [ExtractText] Cached 7 chars, 1 chunks for file 338
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 86/130: Reading3-2.pdf (7 chars)
+0|dashboard  | [ExtractText] Read 29106 bytes from local file: 1775901071248-Testing_PDF.pdf
+0|dashboard  | [ExtractText] PDF extracted 50 chars from Testing PDF.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (50 chars), attempting OCR for Testing PDF.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 50
+0|dashboard  | After URL/timestamp/citation cleanup: 50
+0|dashboard  | After JSTOR cleanup: 50
+0|dashboard  | After French filter: 50
+0|dashboard  | Final cleaned length: 50
+0|dashboard  | [ExtractText] Cached 50 chars, 1 chunks for file 339
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 87/130: Testing PDF.pdf (50 chars)
+0|dashboard  | [ExtractText] Read 29106 bytes from local file: 1775901095123-Testing_PDF.pdf
+0|dashboard  | [ExtractText] PDF extracted 50 chars from Testing PDF.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (50 chars), attempting OCR for Testing PDF.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 50
+0|dashboard  | After URL/timestamp/citation cleanup: 50
+0|dashboard  | After JSTOR cleanup: 50
+0|dashboard  | After French filter: 50
+0|dashboard  | Final cleaned length: 50
+0|dashboard  | [ExtractText] Cached 50 chars, 1 chunks for file 340
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 88/130: Testing PDF.pdf (50 chars)
+0|dashboard  | [ExtractText] Read 29106 bytes from local file: 1775901097121-Testing_PDF.pdf
+0|dashboard  | [ExtractText] PDF extracted 50 chars from Testing PDF.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (50 chars), attempting OCR for Testing PDF.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 50
+0|dashboard  | After URL/timestamp/citation cleanup: 50
+0|dashboard  | After JSTOR cleanup: 50
+0|dashboard  | After French filter: 50
+0|dashboard  | Final cleaned length: 50
+0|dashboard  | [ExtractText] Cached 50 chars, 1 chunks for file 341
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 89/130: Testing PDF.pdf (50 chars)
+0|dashboard  | [ExtractText] Read 3320970 bytes from local file: 1775901135109-Units_2_7_-_2_9.pdf
+0|dashboard  | [ExtractText] PDF extracted 16 chars from Units 2,7 - 2,9.pdf (9 pages)
+0|dashboard  | [ExtractText] Text too short (0 chars), attempting OCR for Units 2,7 - 2,9.pdf
+0|dashboard  | cleanTextForTTS input length: 16
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | After URL/timestamp/citation cleanup: 16
+0|dashboard  | After JSTOR cleanup: 16
+0|dashboard  | After French filter: 1
+0|dashboard  | Final cleaned length: 0
+0|dashboard  | [Pre-Extract] Failed: Units 2,7 - 2,9.pdf (no text)
+0|dashboard  | [ExtractText] Read 29106 bytes from local file: 1775901155610-Testing_PDF.pdf
+0|dashboard  | [ExtractText] PDF extracted 50 chars from Testing PDF.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (50 chars), attempting OCR for Testing PDF.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 50
+0|dashboard  | After URL/timestamp/citation cleanup: 50
+0|dashboard  | After JSTOR cleanup: 50
+0|dashboard  | After French filter: 50
+0|dashboard  | Final cleaned length: 50
+0|dashboard  | [ExtractText] Cached 50 chars, 1 chunks for file 343
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 90/130: Testing PDF.pdf (50 chars)
+0|dashboard  | [ExtractText] Read 29106 bytes from local file: 1775901158467-Testing_PDF.pdf
+0|dashboard  | [ExtractText] PDF extracted 50 chars from Testing PDF.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (50 chars), attempting OCR for Testing PDF.pdf
+0|dashboard  | cleanTextForTTS input length: 50
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | After URL/timestamp/citation cleanup: 50
+0|dashboard  | After JSTOR cleanup: 50
+0|dashboard  | After French filter: 50
+0|dashboard  | Final cleaned length: 50
+0|dashboard  | [ExtractText] Cached 50 chars, 1 chunks for file 344
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 91/130: Testing PDF.pdf (50 chars)
+0|dashboard  | [ExtractText] Read 29106 bytes from local file: 1775901162334-Testing_PDF.pdf
+0|dashboard  | [ExtractText] PDF extracted 50 chars from Testing PDF.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (50 chars), attempting OCR for Testing PDF.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 50
+0|dashboard  | After URL/timestamp/citation cleanup: 50
+0|dashboard  | After JSTOR cleanup: 50
+0|dashboard  | After French filter: 50
+0|dashboard  | Final cleaned length: 50
+0|dashboard  | [ExtractText] Cached 50 chars, 1 chunks for file 345
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 92/130: Testing PDF.pdf (50 chars)
+0|dashboard  | [ExtractText] Read 29106 bytes from local file: 1775901232854-Testing_PDF.pdf
+0|dashboard  | [ExtractText] PDF extracted 50 chars from Testing PDF.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (50 chars), attempting OCR for Testing PDF.pdf
+0|dashboard  | cleanTextForTTS input length: 50
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | After URL/timestamp/citation cleanup: 50
+0|dashboard  | After JSTOR cleanup: 50
+0|dashboard  | After French filter: 50
+0|dashboard  | Final cleaned length: 50
+0|dashboard  | [ExtractText] Cached 50 chars, 1 chunks for file 346
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 93/130: Testing PDF.pdf (50 chars)
+0|dashboard  | [ExtractText] Read 29106 bytes from local file: 1775901244525-Testing_PDF.pdf
+0|dashboard  | [ExtractText] PDF extracted 50 chars from Testing PDF.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (50 chars), attempting OCR for Testing PDF.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 50
+0|dashboard  | After URL/timestamp/citation cleanup: 50
+0|dashboard  | After JSTOR cleanup: 50
+0|dashboard  | After French filter: 50
+0|dashboard  | Final cleaned length: 50
+0|dashboard  | [ExtractText] Cached 50 chars, 1 chunks for file 347
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 94/130: Testing PDF.pdf (50 chars)
+0|dashboard  | [ExtractText] Read 26317 bytes from local file: 1775901348928-TBD3-5.pdf
+0|dashboard  | [ExtractText] PDF extracted 7 chars from TBD3-5.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (7 chars), attempting OCR for TBD3-5.pdf
+0|dashboard  | cleanTextForTTS input length: 7
+0|dashboard  | After URL/timestamp/citation cleanup: 7
+0|dashboard  | After JSTOR cleanup: 7
+0|dashboard  | After French filter: 7
+0|dashboard  | Final cleaned length: 7
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | [ExtractText] Cached 7 chars, 1 chunks for file 348
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 95/130: TBD3-5.pdf (7 chars)
+0|dashboard  | [ExtractText] Read 29106 bytes from local file: 1775901426740-Testing_PDF.pdf
+0|dashboard  | [ExtractText] PDF extracted 50 chars from Testing PDF.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (50 chars), attempting OCR for Testing PDF.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 50
+0|dashboard  | After URL/timestamp/citation cleanup: 50
+0|dashboard  | After JSTOR cleanup: 50
+0|dashboard  | After French filter: 50
+0|dashboard  | Final cleaned length: 50
+0|dashboard  | [ExtractText] Cached 50 chars, 1 chunks for file 349
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 96/130: Testing PDF.pdf (50 chars)
+0|dashboard  | [ExtractText] Read 26317 bytes from local file: 1775901434612-TBD3-5.pdf
+0|dashboard  | [ExtractText] PDF extracted 7 chars from TBD3-5.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (7 chars), attempting OCR for TBD3-5.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 7
+0|dashboard  | After URL/timestamp/citation cleanup: 7
+0|dashboard  | After JSTOR cleanup: 7
+0|dashboard  | After French filter: 7
+0|dashboard  | Final cleaned length: 7
+0|dashboard  | [ExtractText] Cached 7 chars, 1 chunks for file 350
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 97/130: TBD3-5.pdf (7 chars)
+0|dashboard  | [ExtractText] Read 109049 bytes from local file: 1775901444714-How_to_Split_routes.ts_Into_Two_Files-Complete_Step-by-Step_Guide.pdf
+0|dashboard  | [ExtractText] PDF extracted 667 chars from How to Split routes.ts Into Two Files-Complete Step-by-Step Guide.pdf (1 pages)
+0|dashboard  | cleanTextForTTS input length: 667
+0|dashboard  | After URL/timestamp/citation cleanup: 667
+0|dashboard  | After JSTOR cleanup: 667
+0|dashboard  | After French filter: 667
+0|dashboard  | Final cleaned length: 666
+0|dashboard  | [ExtractText] Cached 666 chars, 1 chunks for file 351
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 98/130: How to Split routes.ts Into Two Files-Complete Step-by-Step Guide.pdf (666 chars)
+0|dashboard  | [ExtractText] Read 26317 bytes from local file: 1775901557889-TBD3-5.pdf
+0|dashboard  | [ExtractText] PDF extracted 7 chars from TBD3-5.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (7 chars), attempting OCR for TBD3-5.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 7
+0|dashboard  | After URL/timestamp/citation cleanup: 7
+0|dashboard  | After JSTOR cleanup: 7
+0|dashboard  | After French filter: 7
+0|dashboard  | Final cleaned length: 7
+0|dashboard  | [ExtractText] Cached 7 chars, 1 chunks for file 352
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 99/130: TBD3-5.pdf (7 chars)
+0|dashboard  | [ExtractText] Read 29106 bytes from local file: 1775901566868-Testing_PDF.pdf
+0|dashboard  | [ExtractText] PDF extracted 50 chars from Testing PDF.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (50 chars), attempting OCR for Testing PDF.pdf
+0|dashboard  | cleanTextForTTS input length: 50
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | After URL/timestamp/citation cleanup: 50
+0|dashboard  | After JSTOR cleanup: 50
+0|dashboard  | After French filter: 50
+0|dashboard  | Final cleaned length: 50
+0|dashboard  | [ExtractText] Cached 50 chars, 1 chunks for file 353
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 100/130: Testing PDF.pdf (50 chars)
+0|dashboard  | [ExtractText] Read 26317 bytes from local file: 1775908753783-TBD1-7.pdf
+0|dashboard  | [ExtractText] PDF extracted 7 chars from TBD1-7.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (7 chars), attempting OCR for TBD1-7.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 7
+0|dashboard  | After URL/timestamp/citation cleanup: 7
+0|dashboard  | After JSTOR cleanup: 7
+0|dashboard  | After French filter: 7
+0|dashboard  | Final cleaned length: 7
+0|dashboard  | [ExtractText] Cached 7 chars, 1 chunks for file 354
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 101/130: TBD1-7.pdf (7 chars)
+0|dashboard  | [ExtractText] Read 29106 bytes from local file: 1775926388440-Testing_PDF.pdf
+0|dashboard  | [ExtractText] PDF extracted 50 chars from Testing PDF.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (50 chars), attempting OCR for Testing PDF.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 50
+0|dashboard  | After URL/timestamp/citation cleanup: 50
+0|dashboard  | After JSTOR cleanup: 50
+0|dashboard  | After French filter: 50
+0|dashboard  | Final cleaned length: 50
+0|dashboard  | [ExtractText] Cached 50 chars, 1 chunks for file 355
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 102/130: Testing PDF.pdf (50 chars)
+0|dashboard  | [ExtractText] Read 29106 bytes from local file: 1775926419982-Testing_PDF.pdf
+0|dashboard  | [ExtractText] PDF extracted 50 chars from Testing PDF.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (50 chars), attempting OCR for Testing PDF.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 50
+0|dashboard  | After URL/timestamp/citation cleanup: 50
+0|dashboard  | After JSTOR cleanup: 50
+0|dashboard  | After French filter: 50
+0|dashboard  | Final cleaned length: 50
+0|dashboard  | [ExtractText] Cached 50 chars, 1 chunks for file 356
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 103/130: Testing PDF.pdf (50 chars)
+0|dashboard  | [ExtractText] Read 27413 bytes from local file: 1775932995913-Testing123.pdf
+0|dashboard  | [ExtractText] PDF extracted 10 chars from Testing123.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (10 chars), attempting OCR for Testing123.pdf
+0|dashboard  | cleanTextForTTS input length: 10
+0|dashboard  | After URL/timestamp/citation cleanup: 10
+0|dashboard  | After JSTOR cleanup: 10
+0|dashboard  | After French filter: 10
+0|dashboard  | Final cleaned length: 10
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | [ExtractText] Cached 10 chars, 1 chunks for file 357
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 104/130: Testing123.pdf (10 chars)
+0|dashboard  | [ExtractText] Read 27413 bytes from local file: 1775933187718-Testing123.pdf
+0|dashboard  | [ExtractText] PDF extracted 10 chars from Testing123.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (10 chars), attempting OCR for Testing123.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 10
+0|dashboard  | After URL/timestamp/citation cleanup: 10
+0|dashboard  | After JSTOR cleanup: 10
+0|dashboard  | After French filter: 10
+0|dashboard  | Final cleaned length: 10
+0|dashboard  | [ExtractText] Cached 10 chars, 1 chunks for file 358
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 105/130: Testing123.pdf (10 chars)
+0|dashboard  | [ExtractText] Read 27413 bytes from local file: 1775933213228-Testing456.pdf
+0|dashboard  | [ExtractText] PDF extracted 10 chars from Testing456.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (10 chars), attempting OCR for Testing456.pdf
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | cleanTextForTTS input length: 10
+0|dashboard  | After URL/timestamp/citation cleanup: 10
+0|dashboard  | After JSTOR cleanup: 10
+0|dashboard  | After French filter: 10
+0|dashboard  | Final cleaned length: 10
+0|dashboard  | [ExtractText] Cached 10 chars, 1 chunks for file 359
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 106/130: Testing456.pdf (10 chars)
+0|dashboard  | [ExtractText] Read 27413 bytes from local file: 1775933330133-Testing789.pdf
+0|dashboard  | [ExtractText] PDF extracted 10 chars from Testing789.pdf (1 pages)
+0|dashboard  | [ExtractText] Text too short (10 chars), attempting OCR for Testing789.pdf
+0|dashboard  | cleanTextForTTS input length: 10
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | After URL/timestamp/citation cleanup: 10
+0|dashboard  | After JSTOR cleanup: 10
+0|dashboard  | After French filter: 10
+0|dashboard  | Final cleaned length: 10
+0|dashboard  | [ExtractText] Cached 10 chars, 1 chunks for file 360
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 107/130: Testing789.pdf (10 chars)
+0|dashboard  | [ExtractText] Read 113783 bytes from local file: 1775949394845-Quizzes_-_CPPA120_-_Cdn_Politics_and_Government_-_P2025_-_Toronto_Metropolitan_University.pdf
+0|dashboard  | [ExtractText] PDF extracted 417 chars from Quizzes - CPPA120 - Cdn Politics and Government - P2025 - Toronto Metropolitan University.pdf (1 pages)
+0|dashboard  | cleanTextForTTS input length: 417
+0|dashboard  | After URL/timestamp/citation cleanup: 409
+0|dashboard  | After JSTOR cleanup: 407
+0|dashboard  | After French filter: 406
+0|dashboard  | Final cleaned length: 384
+0|dashboard  | [ExtractText] Cached 384 chars, 1 chunks for file 361
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 108/130: Quizzes - CPPA120 - Cdn Politics and Government - P2025 - Toronto Metropolitan University.pdf (384 chars)
+0|dashboard  | [ExtractText] Read 5000117 bytes from local-uploads: eb6d289e-83d0-46cb-aafe-69aabc5275e0
+0|dashboard  | [ExtractText] PDF extracted 50 chars from CPPA Course Schedule.pdf (26 pages)
+0|dashboard  | [ExtractText] Text too short (0 chars), attempting OCR for CPPA Course Schedule.pdf
+0|dashboard  | cleanTextForTTS input length: 50
+0|dashboard  | After URL/timestamp/citation cleanup: 50
+0|dashboard  | After JSTOR cleanup: 50
+0|dashboard  | After French filter: 1
+0|dashboard  | Final cleaned length: 0
+0|dashboard  | [Pre-Extract] Failed: CPPA Course Schedule.pdf (no text)
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | [ExtractText] Read 264840 bytes from local-uploads: a6264fcf-2f7b-4e6d-a5b6-f085eabc0de1
+0|dashboard  | [ExtractText] PDF extracted 9233 chars from CFNF Course Schedule.pdf (10 pages)
+0|dashboard  | cleanTextForTTS input length: 9233
+0|dashboard  | After URL/timestamp/citation cleanup: 8997
+0|dashboard  | After JSTOR cleanup: 8997
+0|dashboard  | After French filter: 8986
+0|dashboard  | Final cleaned length: 8917
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3548s)
+0|dashboard  | [ExtractText] Cached 8917 chars, 5 chunks for file 363
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 109/130: CFNF Course Schedule.pdf (8917 chars)
+0|dashboard  | [ExtractText] Read 113783 bytes from local file: 1775968136473-Quizzes_-_CPPA120_-_Cdn_Politics_and_Government_-_P2025_-_Toronto_Metropolitan_University.pdf
+0|dashboard  | [ExtractText] PDF extracted 417 chars from Quizzes - CPPA120 - Cdn Politics and Government - P2025 - Toronto Metropolitan University.pdf (1 pages)
+0|dashboard  | cleanTextForTTS input length: 417
+0|dashboard  | After URL/timestamp/citation cleanup: 409
+0|dashboard  | After JSTOR cleanup: 407
+0|dashboard  | After French filter: 406
+0|dashboard  | Final cleaned length: 384
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3548s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [ExtractText] Cached 384 chars, 1 chunks for file 364
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 110/130: Quizzes - CPPA120 - Cdn Politics and Government - P2025 - Toronto Metropolitan University.pdf (384 chars)
+0|dashboard  | [ExtractText] Read 292550 bytes from local file: 1775968986977-CPPA122__Module_2_-_Introduction.pdf
+0|dashboard  | [ExtractText] PDF extracted 39796 chars from CPPA122, Module 2 - Introduction.pdf (17 pages)
+0|dashboard  | cleanTextForTTS input length: 39796
+0|dashboard  | After URL/timestamp/citation cleanup: 38781
+0|dashboard  | After JSTOR cleanup: 38781
+0|dashboard  | After French filter: 38556
+0|dashboard  | Final cleaned length: 38354
+0|dashboard  | [ExtractText] Cached 38354 chars, 20 chunks for file 365
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 111/130: CPPA122, Module 2 - Introduction.pdf (38354 chars)
+0|dashboard  | [ExtractText] Read 277569 bytes from local file: 1775972892568-CFNF400__Module_3_-_Learning_Objectives.pdf
+0|dashboard  | [ExtractText] PDF extracted 16033 chars from CFNF400, Module 3 - Learning Objectives.pdf (8 pages)
+0|dashboard  | cleanTextForTTS input length: 16033
+0|dashboard  | After URL/timestamp/citation cleanup: 15519
+0|dashboard  | After JSTOR cleanup: 15519
+0|dashboard  | After French filter: 15437
+0|dashboard  | Final cleaned length: 15399
+0|dashboard  | [ExtractText] Cached 15399 chars, 8 chunks for file 366
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 112/130: CFNF400, Module 3 - Learning Objectives.pdf (15399 chars)
+0|dashboard  | [ExtractText] Read 277569 bytes from local file: 1775972936956-CFNF400__Module_3_-_Learning_Objectives.pdf
+0|dashboard  | [ExtractText] PDF extracted 16033 chars from CFNF400, Module 3 - Learning Objectives.pdf (8 pages)
+0|dashboard  | cleanTextForTTS input length: 16033
+0|dashboard  | After URL/timestamp/citation cleanup: 15519
+0|dashboard  | After JSTOR cleanup: 15519
+0|dashboard  | After French filter: 15437
+0|dashboard  | Final cleaned length: 15399
+0|dashboard  | [ExtractText] Cached 15399 chars, 8 chunks for file 367
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 113/130: CFNF400, Module 3 - Learning Objectives.pdf (15399 chars)
+0|dashboard  | [ExtractText] Read 425452 bytes from local file: 1776007115134-CPPA122__Module_4_-_Introduction.pdf
+0|dashboard  | [ExtractText] PDF extracted 56859 chars from CPPA122, Module 4 - Introduction.pdf (13 pages)
+0|dashboard  | cleanTextForTTS input length: 56859
+0|dashboard  | After URL/timestamp/citation cleanup: 56260
+0|dashboard  | After JSTOR cleanup: 56260
+0|dashboard  | After French filter: 55858
+0|dashboard  | Final cleaned length: 55544
+0|dashboard  | [ExtractText] Cached 55544 chars, 28 chunks for file 368
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 114/130: CPPA122, Module 4 - Introduction.pdf (55544 chars)
+0|dashboard  | [ExtractText] Read 425452 bytes from local file: 1776007115718-CPPA122__Module_4_-_Introduction.pdf
+0|dashboard  | [ExtractText] PDF extracted 56859 chars from CPPA122, Module 4 - Introduction.pdf (13 pages)
+0|dashboard  | cleanTextForTTS input length: 56859
+0|dashboard  | After URL/timestamp/citation cleanup: 56260
+0|dashboard  | After JSTOR cleanup: 56260
+0|dashboard  | After French filter: 55858
+0|dashboard  | Final cleaned length: 55544
+0|dashboard  | [ExtractText] Cached 55544 chars, 28 chunks for file 369
+0|dashboard  | [ExtractText] Failed to index pages: column "search_vector" of relation "file_pages" does not exist
+0|dashboard  | [Pre-Extract] 115/130: CPPA122, Module 4 - Introduction.pdf (55544 chars)
+0|dashboard  | [ExtractText] Read 59638427 bytes from local file: 1776029964378-Signing_Naturally_Student_Workbook_Units_1-6-RS.pdf
+0|dashboard  | [ExtractText] PDF extracted 902 chars from Signing Naturally Student Workbook Units 1-6-RS.pdf (452 pages)
+0|dashboard  | [ExtractText] Text too short (0 chars), attempting OCR for Signing Naturally Student Workbook Units 1-6-RS.pdf
+0|dashboard  | cleanTextForTTS input length: 902
+0|dashboard  | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboard  | Require stack:
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboard  | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboard  | After URL/timestamp/citation cleanup: 902
+0|dashboard  | After JSTOR cleanup: 902
+0|dashboard  | After French filter: 1
+0|dashboard  | Final cleaned length: 0
+0|dashboard  | [Pre-Extract] Failed: Signing Naturally Student Workbook Units 1-6-RS.pdf (no text)
+0|dashboard  | [Pre-Extract] Complete: 115 extracted, 15 failed
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3547s)
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3547s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3541s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 1 - Jan 12-16
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3541s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 1 - Jan 12-16/Module
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3540s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3540s)
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 1 - Jan 12-16/Reading
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3539s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 10 - Mar 21-27
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3539s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 10 - Mar 21-27/Module
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3532s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 10 - Mar 21-27/Reading
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3532s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboard  | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 10 - Mar 21-27/Reading
+0|dashboard  | [OneDrive][TRACE] Using cached access token (expires in 3529s)
+0|dashboard  | [OneDrive][TRACE] Got OneDrive client, making API call...
