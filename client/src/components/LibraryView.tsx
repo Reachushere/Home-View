@@ -139,7 +139,7 @@ function toTitleCase(str: string): string {
 function truncateSpineTitle(name: string, maxLen: number = 28, isCustomName: boolean = false): string {
   const cleaned = name
     .replace(/\.(pdf|docx?|pptx?|xlsx?)$/i, '')
-    .replace(isCustomName ? /(?!)/ : /^(Module|Reading|Lecture|Chapter|Ch|Chap)\s*[-_]?\s*/i, '')
+    .replace(isCustomName || name.trim().toLowerCase() === 'module' ? /(?!)/ : /^(Module|Reading|Lecture|Chapter|Ch|Chap)\s*[-_]?\s*/i, '')
     .replace(/[-_]+/g, ' ')
     .trim();
   const titled = toTitleCase(cleaned);
@@ -4036,8 +4036,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             const semKey = semesters[currentSemIdx]?.key || '';
             const collapseKey = `${semKey}::${course.code}`;
             const isCollapsed = collapsedCourses.has(collapseKey);
-            const rowShift = courseIdx === 0 ? -84 : courseIdx === 1 ? 3 : courseIdx === 2 ? -10 : 0;
-            const labelShift = courseIdx === 0 ? -15 : courseIdx === 1 ? 46 : courseIdx === 2 ? 77 : 0;
+            const rowShift = courseIdx === 0 ? -84 : courseIdx === 1 ? 18 : courseIdx === 2 ? -10 : 0;
+            const labelShift = courseIdx === 0 ? -15 : courseIdx === 1 ? 21 : courseIdx === 2 ? 77 : 0;
             return (
             <div key={course.code} style={{ position: 'relative', overflow: 'visible', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', marginTop: rowShift }}>
               <div style={{
