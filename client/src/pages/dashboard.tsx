@@ -12640,7 +12640,7 @@ export default function Dashboard() {
         for (let c = 0; c < columns.length; c++) {
           const last = columns[c][columns[c].length - 1];
           const lastEnd = last.endHour * 60 + last.endMin;
-          if (s > lastEnd || (s === lastEnd && last.endMin === 0)) { columns[c].push(item); placed = true; break; }
+          if (s >= lastEnd) { columns[c].push(item); placed = true; break; }
         }
         if (!placed) columns.push([item]);
       }
@@ -13014,7 +13014,6 @@ export default function Dashboard() {
     return allTasks.filter(t => {
       if (t.isCompleted) return false;
       if (isCASL101Finished(t)) return false;
-      if (t.eventStartTime) return false;
       if (!t.courseName && /^\[.+?\]/.test(t.title)) {
         const cleanTitle = t.title.replace(/^\[.*?\]\s*/, '').toLowerCase().trim();
         const isDuplicateOfReal = allTasks.some(other => other.id !== t.id && other.courseName && other.title.toLowerCase().trim() === cleanTitle && other.dueDate && new Date(other.dueDate).toDateString() === new Date(t.dueDate!).toDateString());
@@ -32279,7 +32278,7 @@ export default function Dashboard() {
                       for (let c = 0; c < columns.length; c++) {
                         const lastInCol = columns[c][columns[c].length - 1];
                         const lastEnd = lastInCol.endHour * 60 + lastInCol.endMin;
-                        if (itemStart > lastEnd || (itemStart === lastEnd && lastInCol.endMin === 0)) {
+                        if (itemStart >= lastEnd) {
                           columns[c].push(item);
                           placed = true;
                           break;
