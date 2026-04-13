@@ -4037,9 +4037,9 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             const collapseKey = `${semKey}::${course.code}`;
             const isCollapsed = collapsedCourses.has(collapseKey);
             const shelfCalibration: Record<string, { row: number; label: number }> = {
-              'CPPA122': { row: 10, label: -2 },
-              'CFNF400': { row: 30, label: -10 },
-              'CASL101': { row: 40, label: 10 },
+              'CPPA122': { row: 15, label: -3 },
+              'CFNF400': { row: 25, label: 0 },
+              'CASL101': { row: 25, label: -13 },
             };
             const codeKey = course.code.replace(/\s/g, '').toUpperCase();
             const calib = shelfCalibration[codeKey] || { row: 0, label: 0 };
@@ -4145,7 +4145,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                   gap: '2px',
                   overflow: 'visible',
                   maxWidth: '100%',
-                  ...(courseIdx > 0 ? { transform: 'scale(1.5) scaleX(0.84)', transformOrigin: 'bottom left' } : { marginLeft: '-3px', transform: 'scaleX(0.78)', transformOrigin: 'bottom left' }),
+                  ...(courseIdx > 0 ? { transform: 'scale(1.5) scaleX(0.84)', transformOrigin: 'bottom left' } : { marginLeft: '-3px', transform: 'scaleX(0.82)', transformOrigin: 'bottom left' }),
                 }}
                 className="library-scroll"
                 >
