@@ -3969,7 +3969,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           bottom: 0,
           overflowY: 'auto',
           overflowX: 'hidden',
-          padding: '0 20px 10px 20px',
+          padding: '20px 20px 10px 20px',
           paddingBottom: '80px',
           ...(courseBooks.length > 0
             ? { display: 'grid', gridTemplateRows: `repeat(${Math.max(courseBooks.length, 1)}, 1fr)` }
@@ -4145,7 +4145,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                   gap: '2px',
                   overflow: 'visible',
                   maxWidth: '100%',
-                  ...(courseIdx > 0 ? { transform: 'scale(1.5) scaleX(0.84)', transformOrigin: 'bottom left' } : { marginLeft: '-3px' }),
+                  ...(courseIdx > 0 ? { transform: 'scale(1.5) scaleX(0.84)', transformOrigin: 'bottom left' } : { marginLeft: '-3px', transform: 'scaleX(0.78)', transformOrigin: 'bottom left' }),
                 }}
                 className="library-scroll"
                 >
