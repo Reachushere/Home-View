@@ -28947,86 +28947,45 @@ export default function Dashboard() {
             }}
           />
 
-          {/* Current button - below glass backing, left-aligned */}
-          <Button
-            variant="ghost"
-            className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white/60 border-0 leading-tight fixed"
-            data-tpo data-tpo-opacity="1"
-            style={{ bottom: `${calendarBottom - 18}px`, left: `${calendarLeft + 9}px`, zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
-            onClick={() => {
-              if (calendarView === "month") {
-                setCurrentMonth(new Date());
-              } else {
-                const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : 1;
-                setSelectedWeek(cw);
-                scrollHomeworkToWeek(cw);
-              }
-            }}
-            data-testid="button-current-view"
-          >
-            Current
-          </Button>
+          {/* Controls tab - same style as grab handle tabs, below glass backing */}
           <div
             className="fixed"
             data-tpo data-tpo-opacity="1"
-            style={{ bottom: `${calendarBottom - 18}px`, left: `${calendarLeft + 60}px`, zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'center', gap: '6px' }}
+            style={{ bottom: `${calendarBottom - 26}px`, left: `${calendarLeft + 9}px`, height: '14px', zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'center' }}
+            data-testid="controls-tab"
           >
-            <div style={{ width: '1px', height: '12px', background: 'rgba(255,255,255,0.5)', marginLeft: '6px', marginBottom: '5px' }} />
-            <Button
-              variant="ghost"
-              className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white/60 border-0 leading-tight"
-              onClick={() => setDayDetailDate(startOfDayET(new Date()))}
-              data-testid="button-today-view"
-            >
-              Today View
-            </Button>
-            <div style={{ width: '1px', height: '12px', background: 'rgba(255,255,255,0.5)', marginLeft: '6px', marginBottom: '5px' }} />
-            <Button
-              variant="ghost"
-              className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white/60 border-0 leading-tight"
-              onClick={() => {
+            <div style={{ height: '14px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)', padding: '0 2px', gap: '0px' }}>
+              <div className="controls-tab-btn" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 6px', height: '100%', borderRadius: '0 0 4px 4px', fontSize: '9px', fontWeight: 600, color: 'rgba(0,0,0,0.65)', whiteSpace: 'nowrap', letterSpacing: '0.3px' }} onClick={() => {
+                if (calendarView === "month") {
+                  setCurrentMonth(new Date());
+                } else {
+                  const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : 1;
+                  setSelectedWeek(cw);
+                  scrollHomeworkToWeek(cw);
+                }
+              }} data-testid="button-current-view">Current</div>
+              <span style={{ width: '1px', height: '8px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
+              <div className="controls-tab-btn" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 6px', height: '100%', borderRadius: '0 0 4px 4px', fontSize: '9px', fontWeight: 600, color: 'rgba(0,0,0,0.65)', whiteSpace: 'nowrap', letterSpacing: '0.3px' }} onClick={() => setDayDetailDate(startOfDayET(new Date()))} data-testid="button-today-view">Today</div>
+              <span style={{ width: '1px', height: '8px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
+              <div className="controls-tab-btn" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 6px', height: '100%', borderRadius: '0 0 4px 4px', fontSize: '9px', fontWeight: 600, color: 'rgba(0,0,0,0.65)', whiteSpace: 'nowrap', letterSpacing: '0.3px' }} onClick={() => {
                 if (calendarView === "week") {
                   setCurrentMonth(new Date());
                 }
                 setCalendarView(calendarView === "month" ? "week" : "month");
-              }}
-              data-testid="button-month-view"
-            >
-              {calendarView === "month" ? "Week View" : "Month View"}
-            </Button>
-            <div style={{ width: '1px', height: '12px', background: 'rgba(255,255,255,0.5)', marginLeft: '6px', marginBottom: '5px' }} />
-            <Button
-              variant="ghost"
-              className="!h-5 !min-h-0 !w-5 !min-w-0 px-0 text-[13px] hover:bg-white/20 rounded font-medium text-white/60 border-0 leading-tight"
-              onClick={() => {
+              }} data-testid="button-month-view">{calendarView === "month" ? "Week" : "Month"}</div>
+              <span style={{ width: '1px', height: '8px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
+              <div className="controls-tab-btn" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 4px', height: '100%', borderRadius: '0 0 4px 4px', fontSize: '10px', fontWeight: 700, color: 'rgba(0,0,0,0.55)' }} onClick={() => {
                 const cur = parseFloat((document.body.style as any).zoom || '1');
                 (document.body.style as any).zoom = String(Math.max(0.25, cur - 0.05));
-              }}
-              data-testid="button-zoom-minus"
-            >
-              −
-            </Button>
-            <Button
-              variant="ghost"
-              className="!h-5 !min-h-0 px-1.5 text-[11px] hover:bg-white/20 rounded font-medium text-white/60 border-0 leading-tight"
-              onClick={() => {
+              }} data-testid="button-zoom-minus">−</div>
+              <div className="controls-tab-btn" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 3px', height: '100%', borderRadius: '0 0 4px 4px', fontSize: '8px', fontWeight: 600, color: 'rgba(0,0,0,0.65)', whiteSpace: 'nowrap', minWidth: '24px' }} onClick={() => {
                 (document.body.style as any).zoom = '1';
-              }}
-              data-testid="button-zoom-100"
-            >
-              {Math.round(parseFloat((document.body.style as any).zoom || '1') * 100)}%
-            </Button>
-            <Button
-              variant="ghost"
-              className="!h-5 !min-h-0 !w-5 !min-w-0 px-0 text-[13px] hover:bg-white/20 rounded font-medium text-white/60 border-0 leading-tight"
-              onClick={() => {
+              }} data-testid="button-zoom-100">{Math.round(parseFloat((document.body.style as any).zoom || '1') * 100)}%</div>
+              <div className="controls-tab-btn" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 4px', height: '100%', borderRadius: '0 0 4px 4px', fontSize: '10px', fontWeight: 700, color: 'rgba(0,0,0,0.55)' }} onClick={() => {
                 const cur = parseFloat((document.body.style as any).zoom || '1');
                 (document.body.style as any).zoom = String(Math.min(2, cur + 0.05));
-              }}
-              data-testid="button-zoom-plus"
-            >
-              +
-            </Button>
+              }} data-testid="button-zoom-plus">+</div>
+            </div>
           </div>
           
           <div className="grid w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), height: '16px', marginTop: '-3px', paddingRight: calScrollbarW > 0 ? `${calScrollbarW}px` : undefined }}>
@@ -29184,12 +29143,12 @@ export default function Dashboard() {
               style={{ position: 'absolute', left: '9px', top: '-31px', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto' }}
               data-testid="calendar-top-resize-handle"
             >
-              <div style={{ width: '191px', height: '14px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
-                <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 84, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 84, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▲</span></div>
+              <div className="grab-tab-press" style={{ width: '191px', height: '14px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)', transition: 'filter 0.1s ease' }}>
+                <div className="cursor-pointer controls-tab-btn" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 84, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 84, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▲</span></div>
                 <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
                 <div className="cursor-grab active:cursor-grabbing select-none" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={handleTopResizeStart} onTouchStart={handleTopResizeStart}><svg width="14" height="10" viewBox="0 0 14 10"><circle cx="3" cy="2.5" r="1.2" fill="rgba(0,0,0,0.4)"/><circle cx="7" cy="2.5" r="1.2" fill="rgba(0,0,0,0.4)"/><circle cx="11" cy="2.5" r="1.2" fill="rgba(0,0,0,0.4)"/><circle cx="3" cy="7.5" r="1.2" fill="rgba(0,0,0,0.4)"/><circle cx="7" cy="7.5" r="1.2" fill="rgba(0,0,0,0.4)"/><circle cx="11" cy="7.5" r="1.2" fill="rgba(0,0,0,0.4)"/></svg></div>
                 <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
-                <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.max(200, prev - 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.max(200, prev - 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▼</span></div>
+                <div className="cursor-pointer controls-tab-btn" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.max(200, prev - 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.max(200, prev - 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▼</span></div>
               </div>
             </div>
           <div ref={calendarBorderRef} className="shadow-lg flex flex-col relative" style={{ background: 'transparent', borderRadius: '8px', overflow: 'hidden', height: 'calc(100%)', width: 'calc(100%)', marginLeft: '0px', marginTop: '-2px', isolation: 'isolate' }}>
@@ -32644,12 +32603,12 @@ export default function Dashboard() {
             style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', bottom: '-12px', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto' }}
             data-testid="calendar-bottom-resize-handle"
           >
-            <div style={{ width: '191px', height: '14px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
-              <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 84, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 84, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▼</span></div>
+            <div className="grab-tab-press" style={{ width: '191px', height: '14px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)', transition: 'filter 0.1s ease' }}>
+              <div className="cursor-pointer controls-tab-btn" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 84, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 84, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▼</span></div>
               <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
               <div className="cursor-grab active:cursor-grabbing select-none" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={handleResizeStart} onTouchStart={handleResizeStart}><svg width="14" height="10" viewBox="0 0 14 10"><circle cx="3" cy="2.5" r="1.2" fill="rgba(0,0,0,0.4)"/><circle cx="7" cy="2.5" r="1.2" fill="rgba(0,0,0,0.4)"/><circle cx="11" cy="2.5" r="1.2" fill="rgba(0,0,0,0.4)"/><circle cx="3" cy="7.5" r="1.2" fill="rgba(0,0,0,0.4)"/><circle cx="7" cy="7.5" r="1.2" fill="rgba(0,0,0,0.4)"/><circle cx="11" cy="7.5" r="1.2" fill="rgba(0,0,0,0.4)"/></svg></div>
               <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
-              <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.max(200, prev - 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.max(200, prev - 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▲</span></div>
+              <div className="cursor-pointer controls-tab-btn" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.max(200, prev - 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.max(200, prev - 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▲</span></div>
             </div>
           </div>
           {/* Set Default checkbox — below calendar */}
@@ -33355,44 +33314,24 @@ export default function Dashboard() {
             }}
           />
 
-          {/* Current button */}
-          <Button
-            variant="ghost"
-            className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white/60 border-0 leading-tight fixed"
-            data-tpo data-tpo-opacity="1"
-            style={{ bottom: `${calendarBottom - 18}px`, left: `${calendarLeft + 9}px`, zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : undefined, opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto' }}
-            onClick={() => {
-              setCurrentMonth(new Date());
-            }}
-            data-testid="button-current-view-month"
-          >
-            Current
-          </Button>
+          {/* Controls tab - month view, same style as grab handle tabs */}
           <div
             className="fixed"
             data-tpo data-tpo-opacity="1"
-            style={{ bottom: `${calendarBottom - 18}px`, left: `${calendarLeft + 60}px`, zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'center', gap: '6px' }}
+            style={{ bottom: `${calendarBottom - 26}px`, left: `${calendarLeft + 9}px`, height: '14px', zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'center' }}
+            data-testid="controls-tab-month"
           >
-            <div style={{ width: '1px', height: '12px', background: 'rgba(255,255,255,0.5)', marginLeft: '6px', marginBottom: '5px' }} />
-            <Button
-              variant="ghost"
-              className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white/60 border-0 leading-tight"
-              onClick={() => setDayDetailDate(startOfDayET(new Date()))}
-              data-testid="button-today-view-month"
-            >
-              Today View
-            </Button>
-            <div style={{ width: '1px', height: '12px', background: 'rgba(255,255,255,0.5)', marginLeft: '6px', marginBottom: '5px' }} />
-            <Button
-              variant="ghost"
-              className="!h-5 !min-h-0 px-2 text-[11px] hover:bg-white/20 rounded font-medium text-white/60 border-0 leading-tight"
-              onClick={() => {
+            <div style={{ height: '14px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)', padding: '0 2px', gap: '0px' }}>
+              <div className="controls-tab-btn" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 6px', height: '100%', borderRadius: '0 0 4px 4px', fontSize: '9px', fontWeight: 600, color: 'rgba(0,0,0,0.65)', whiteSpace: 'nowrap', letterSpacing: '0.3px' }} onClick={() => {
+                setCurrentMonth(new Date());
+              }} data-testid="button-current-view-month">Current</div>
+              <span style={{ width: '1px', height: '8px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
+              <div className="controls-tab-btn" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 6px', height: '100%', borderRadius: '0 0 4px 4px', fontSize: '9px', fontWeight: 600, color: 'rgba(0,0,0,0.65)', whiteSpace: 'nowrap', letterSpacing: '0.3px' }} onClick={() => setDayDetailDate(startOfDayET(new Date()))} data-testid="button-today-view-month">Today</div>
+              <span style={{ width: '1px', height: '8px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
+              <div className="controls-tab-btn" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 6px', height: '100%', borderRadius: '0 0 4px 4px', fontSize: '9px', fontWeight: 600, color: 'rgba(0,0,0,0.65)', whiteSpace: 'nowrap', letterSpacing: '0.3px' }} onClick={() => {
                 setCalendarView("week");
-              }}
-              data-testid="button-week-view-month"
-            >
-              Week View
-            </Button>
+              }} data-testid="button-week-view-month">Week</div>
+            </div>
           </div>
 
           {/* Date navigation tab - month mode (matches main page tab) */}
@@ -33430,12 +33369,12 @@ export default function Dashboard() {
               style={{ position: 'absolute', left: '9px', top: '-31px', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto' }}
               data-testid="calendar-top-resize-handle-month"
             >
-              <div style={{ width: '191px', height: '14px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
-                <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 84, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 84, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▲</span></div>
+              <div className="grab-tab-press" style={{ width: '191px', height: '14px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)', transition: 'filter 0.1s ease' }}>
+                <div className="cursor-pointer controls-tab-btn" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 84, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.min(window.innerHeight - 84, prev + 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▲</span></div>
                 <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
                 <div className="cursor-grab active:cursor-grabbing select-none" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={handleTopResizeStart} onTouchStart={handleTopResizeStart}><svg width="14" height="10" viewBox="0 0 14 10"><circle cx="3" cy="2.5" r="1.2" fill="rgba(0,0,0,0.4)"/><circle cx="7" cy="2.5" r="1.2" fill="rgba(0,0,0,0.4)"/><circle cx="11" cy="2.5" r="1.2" fill="rgba(0,0,0,0.4)"/><circle cx="3" cy="7.5" r="1.2" fill="rgba(0,0,0,0.4)"/><circle cx="7" cy="7.5" r="1.2" fill="rgba(0,0,0,0.4)"/><circle cx="11" cy="7.5" r="1.2" fill="rgba(0,0,0,0.4)"/></svg></div>
                 <span style={{ width: '1px', height: '6px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
-                <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.max(200, prev - 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.max(200, prev - 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▼</span></div>
+                <div className="cursor-pointer controls-tab-btn" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.max(200, prev - 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarHeight(prev => { const v = Math.max(200, prev - 2); localStorage.setItem('calendarHeight', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▼</span></div>
               </div>
             </div>
             <div className="overflow-hidden h-full" style={{ borderRadius: '8px', border: '1px solid rgba(255,255,255,0.3)' }}>
@@ -34079,12 +34018,12 @@ export default function Dashboard() {
             style={{ left: '-17px', top: '50%', transform: 'translateY(-50%)', width: '17px', height: '181px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'auto' }}
             data-testid="resize-handle-homework"
           >
-            <div style={{ width: '17px', height: '181px', borderRadius: '0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderRight: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', backdropFilter: 'blur(8px)' }}>
-              <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => { const v = prev + 2; localStorage.setItem('calendarReduction', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => { const v = prev + 2; localStorage.setItem('calendarReduction', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>◀</span></div>
+            <div className="grab-tab-press" style={{ width: '17px', height: '181px', borderRadius: '0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderRight: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', backdropFilter: 'blur(8px)', transition: 'filter 0.1s ease' }}>
+              <div className="cursor-pointer controls-tab-btn" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => { const v = prev + 2; localStorage.setItem('calendarReduction', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => { const v = prev + 2; localStorage.setItem('calendarReduction', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>◀</span></div>
               <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
               <div className="cursor-grab active:cursor-grabbing select-none" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={handleCombinedResizeStart} onTouchStart={handleCombinedResizeStart}><svg width="10" height="14" viewBox="0 0 10 14"><circle cx="2.5" cy="3" r="1.2" fill="rgba(0,0,0,0.4)"/><circle cx="7.5" cy="3" r="1.2" fill="rgba(0,0,0,0.4)"/><circle cx="2.5" cy="7" r="1.2" fill="rgba(0,0,0,0.4)"/><circle cx="7.5" cy="7" r="1.2" fill="rgba(0,0,0,0.4)"/><circle cx="2.5" cy="11" r="1.2" fill="rgba(0,0,0,0.4)"/><circle cx="7.5" cy="11" r="1.2" fill="rgba(0,0,0,0.4)"/></svg></div>
               <span style={{ width: '6px', height: '1px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
-              <div className="cursor-pointer" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => { const v = Math.max(0, prev - 2); localStorage.setItem('calendarReduction', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => { const v = Math.max(0, prev - 2); localStorage.setItem('calendarReduction', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▶</span></div>
+              <div className="cursor-pointer controls-tab-btn" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => { const v = Math.max(0, prev - 2); localStorage.setItem('calendarReduction', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => { const v = Math.max(0, prev - 2); localStorage.setItem('calendarReduction', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▶</span></div>
             </div>
           </div>}
           {(() => {

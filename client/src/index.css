@@ -2708,6 +2708,29 @@ input[type="date"].bg-white::-webkit-datetime-edit-year-field {
   right: 0px !important;
 }
 
+.tab-press-anim {
+  transition: transform 0.1s ease, filter 0.1s ease;
+}
+.tab-press-anim:active {
+  transform: scale(0.93);
+  filter: brightness(0.85);
+}
+
+.grab-tab-press:active {
+  filter: brightness(0.82);
+}
+
+.controls-tab-btn {
+  transition: background 0.15s ease, transform 0.1s ease, filter 0.1s ease;
+  cursor: pointer;
+  user-select: none;
+}
+.controls-tab-btn:active {
+  transform: scale(0.88);
+  filter: brightness(0.8);
+  background: rgba(0,0,0,0.12) !important;
+}
+
 .section-dim > *:not(.no-dim) {
   opacity: 0.45;
 }
