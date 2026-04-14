@@ -3709,34 +3709,6 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         <X size={18} />
       </button>
 
-      {!isSharedView && isFullAccess && (
-        <button
-          onClick={() => { setAiSearchOpen(true); setAiPreview(null); setAiResult(null); setAiError(''); setAiNoteTitle(''); }}
-          style={{
-            position: 'absolute',
-            top: '33px',
-            right: '116px',
-            zIndex: 100002,
-            background: aiSearchOpen ? 'rgba(139,92,246,0.3)' : 'rgba(0,0,0,0.5)',
-            border: aiSearchOpen ? '1px solid rgba(139,92,246,0.5)' : '1px solid rgba(255,255,255,0.2)',
-            borderRadius: '50%',
-            width: '44px',
-            height: '44px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            color: aiSearchOpen ? '#c4b5fd' : 'rgba(255,255,255,0.7)',
-            transition: 'all 0.2s',
-          }}
-          onMouseEnter={e => { e.currentTarget.style.color = '#c4b5fd'; e.currentTarget.style.borderColor = 'rgba(139,92,246,0.5)'; }}
-          onMouseLeave={e => { if (!aiSearchOpen) { e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; } }}
-          data-testid="button-ai-search"
-          title="AI Document Search"
-        >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/></svg>
-        </button>
-      )}
 
       {!isSharedView && isFullAccess && (
         <button
@@ -4852,6 +4824,31 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           >
             <ChevronDown size={16} style={{ transform: showFilters ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
           </button>
+          {!isSharedView && isFullAccess && (
+            <button
+              onClick={() => { setAiSearchOpen(true); setAiPreview(null); setAiResult(null); setAiError(''); setAiNoteTitle(''); }}
+              style={{
+                width: '34px',
+                height: '34px',
+                borderRadius: '10px',
+                background: aiSearchOpen ? 'rgba(139,92,246,0.3)' : 'rgba(10,6,4,0.92)',
+                border: aiSearchOpen ? '1px solid rgba(139,92,246,0.5)' : '1px solid rgba(255,255,255,0.15)',
+                color: aiSearchOpen ? '#c4b5fd' : 'rgba(255,255,255,0.5)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.2s',
+                flexShrink: 0,
+              }}
+              onMouseEnter={e => { e.currentTarget.style.color = '#c4b5fd'; e.currentTarget.style.borderColor = 'rgba(139,92,246,0.5)'; }}
+              onMouseLeave={e => { if (!aiSearchOpen) { e.currentTarget.style.color = 'rgba(255,255,255,0.5)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'; } }}
+              data-testid="button-ai-search"
+              title="AI Document Search"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/></svg>
+            </button>
+          )}
         </div>
 
         {showFilters && (
