@@ -34553,7 +34553,7 @@ export default function Dashboard() {
           style={{
             zIndex: 35,
             overflow: homeworkAnimating || blankBoxAnimating || homeworkMinimized || blankBoxOpen ? 'hidden' : 'visible',
-            right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1 + 3}px`,
+            right: `${calendarRight + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1 + 3}px`,
             width: `${Math.max(0, calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4 - 1 - 1 + 1 - 5 - 2 - 1 - 3 + 2)}px`,
             top: `${(calendarBorderTop || (calendarTop + 15))}px`,
             height: `${window.innerHeight - (calendarBorderTop || (calendarTop + 15)) - calendarBottom}px`,
@@ -34562,7 +34562,7 @@ export default function Dashboard() {
             WebkitBackdropFilter: 'blur(40px)',
             boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)',
             border: 'none',
-            transition: (homeworkAnimating || blankBoxAnimating) ? 'right 0.35s cubic-bezier(0.4,0,0.2,1), width 0.35s cubic-bezier(0.4,0,0.2,1)' : 'none',
+            transition: (homeworkAnimating || blankBoxAnimating) ? 'width 0.35s cubic-bezier(0.4,0,0.2,1)' : 'none',
             opacity: (isPillMenuOpen && !sidePillIdle) ? 0 : 1,
             pointerEvents: (isPillMenuOpen && !sidePillIdle) ? 'none' : 'auto',
           }}
