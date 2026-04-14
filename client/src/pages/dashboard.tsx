@@ -219,6 +219,7 @@ import {
   DollarSign,
   TreePine,
   FileCheck,
+  Phone,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import { useAccessMode } from "@/components/access-gate";
@@ -249,6 +250,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   financial: DollarSign,
   personal: User,
   outside: TreePine,
+  phone_call: Phone,
   other: MoreHorizontal,
 };
 
@@ -271,6 +273,7 @@ const typeColors: Record<string, string> = {
   financial: "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400",
   personal: "bg-violet-500/20 text-violet-600 dark:text-violet-400",
   outside: "bg-green-500/20 text-green-600 dark:text-green-400",
+  phone_call: "bg-teal-500/20 text-teal-600 dark:text-teal-400",
   other: "bg-yellow-600/20 text-yellow-600 dark:text-yellow-400",
 };
 
@@ -293,6 +296,7 @@ const calendarTypeIconColors: Record<string, string> = {
   financial: '#10b981',
   personal: '#8b5cf6',
   outside: '#22c55e',
+  phone_call: '#0d9488',
   other: '#b4a028',
 };
 
@@ -315,6 +319,7 @@ const calendarTypeBarColors: Record<string, string> = {
   financial: 'rgb(16,185,129)',
   personal: 'rgb(139,92,246)',
   outside: 'rgb(34,197,94)',
+  phone_call: 'rgb(13,148,136)',
   other: 'rgb(180,160,40)',
   partnerShifts: 'rgb(100,100,180)',
 };
@@ -21981,7 +21986,7 @@ export default function Dashboard() {
                           <FileText className="h-3.5 w-3.5" />
                           Course Documents
                         </button>
-                        {(["module", "reading", "essay", "discussion", "poll", "quiz", "exam", "other", "reminder", "meeting", "scholarship", "project"] as const).map(type => {
+                        {(["module", "reading", "essay", "discussion", "poll", "quiz", "exam", "other", "reminder", "meeting", "phone_call", "scholarship", "project"] as const).map(type => {
                           const TypeIcon = iconMap[type] || FileText;
                           const typeColors: Record<string, { bg: string; border: string; hover: string }> = {
                             reading: { bg: 'rgba(56,130,255,0.35)', border: 'rgba(56,130,255,0.7)', hover: 'rgba(56,130,255,0.45)' },
@@ -26966,9 +26971,35 @@ export default function Dashboard() {
               </div>
               
               {expandedSemKey && (() => {
-                const semMeta = semesterMeta.find(m => m.key === expandedSemKey);
+                const semesterMetaLocal = [
+                  { key: 'ss2025', year: 2025, label: 'Spring/Summer 2025', dates: 'May 5 – August 8, 2025' },
+                  { key: 'f2025', year: 2025, label: 'Fall 2025', dates: 'September 8 – December 12, 2025' },
+                  { key: 'w2026', year: 2026, label: 'Winter 2026', dates: 'January 12 – April 17, 2026' },
+                  { key: 'ss2026', year: 2026, label: 'Spring/Summer 2026', dates: 'May 4 – August 7, 2026' },
+                  { key: 'f2026', year: 2026, label: 'Fall 2026', dates: 'September 7 – December 11, 2026' },
+                  { key: 'w2027', year: 2027, label: 'Winter 2027', dates: 'January 11 – April 16, 2027' },
+                  { key: 'ss2027', year: 2027, label: 'Spring/Summer 2027', dates: 'May 3 – August 6, 2027' },
+                  { key: 'f2027', year: 2027, label: 'Fall 2027', dates: 'September 13 – December 17, 2027' },
+                  { key: 'w2028', year: 2028, label: 'Winter 2028', dates: 'January 10 – April 14, 2028' },
+                  { key: 'ss2028', year: 2028, label: 'Spring/Summer 2028', dates: 'May 1 – August 4, 2028' },
+                  { key: 'f2028', year: 2028, label: 'Fall 2028', dates: 'September 11 – December 15, 2028' },
+                  { key: 'w2029', year: 2029, label: 'Winter 2029', dates: 'January 15 – April 13, 2029' },
+                ];
+                const semMeta = semesterMetaLocal.find(m => m.key === expandedSemKey);
                 if (!semMeta) return null;
-                const expandedSem = { ...semMeta, courses: buildCoursesFromDb(expandedSemKey) };
+                const buildCoursesLocal = (semKey: string): { code: string; name: string; fullName: string; period: string }[] => {
+                  const semKeyToType: Record<string, { type: string; year: number }> = {};
+                  semesterMetaLocal.forEach(m => { const type = m.key.startsWith('ss') ? 'spring_summer' : m.key.startsWith('f') ? 'fall' : 'winter'; semKeyToType[m.key] = { type, year: m.year }; });
+                  const mapping = semKeyToType[semKey];
+                  if (!mapping || !allSemesterSettings) return semesterCourseAssignments[semKey] || [];
+                  const dbSem = allSemesterSettings.find((s: any) => { const yearMatch = s.semesterName?.match(/\d{4}/); const semYear = yearMatch ? parseInt(yearMatch[0]) : 0; return s.semesterType === mapping.type && semYear === mapping.year; });
+                  if (!dbSem) return semesterCourseAssignments[semKey] || [];
+                  const courses: { code: string; name: string; fullName: string; period: string }[] = [];
+                  const slots = [{ code: dbSem.course1Code, name: dbSem.course1Name, period: '' }, { code: dbSem.course2Code, name: dbSem.course2Name, period: '' }, { code: dbSem.course3Code, name: dbSem.course3Name, period: '' }];
+                  for (const slot of slots) { if (slot.code) { const isTBD = slot.code.toUpperCase().startsWith('TBD'); const isStd = /^[A-Z]{3,5}\d{2,4}$/i.test(slot.code.replace(/\s/g, '')); const same = slot.code === slot.name; courses.push({ code: slot.code, name: isTBD ? slot.code.toUpperCase() : (isStd ? slot.code : (slot.name || slot.code)), fullName: same ? '' : (isTBD ? '' : (slot.name || '')), period: slot.period }); } }
+                  return courses.length > 0 ? courses : (semesterCourseAssignments[semKey] || []);
+                };
+                const expandedSem = { ...semMeta, courses: buildCoursesLocal(expandedSemKey) };
                 const expIsCurrentSem = expandedSemKey === currentSemKey;
                 const expIsPast = !expIsCurrentSem && hasSemStarted(expandedSemKey) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(expandedSemKey); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })();
                 const expIsEnded = semesterEndConfirmed[expandedSemKey];

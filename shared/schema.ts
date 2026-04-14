@@ -21,6 +21,7 @@ export const TASK_TYPES = [
   "financial",
   "personal",
   "outside",
+  "phone_call",
   "other"
 ] as const;
 
