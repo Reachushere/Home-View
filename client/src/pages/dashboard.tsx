@@ -29467,7 +29467,7 @@ export default function Dashboard() {
                 const isTodayForecast = isSameDayET(day, new Date());
                 const srTime = weatherData?.sunrise ? new Date(weatherData.sunrise) : null;
                 const afterSunrise = isTodayForecast && srTime && new Date() >= srTime;
-                const effectiveWCode = dayForecast?.weatherCode ?? weatherData!.code;
+                const effectiveWCode = isTodayForecast ? weatherData!.code : (dayForecast?.weatherCode ?? weatherData!.code);
                 const ssTime = weatherData?.sunset ? new Date(weatherData.sunset) : null;
                 const isNight = false;
                 const wIconEl = ((wc: number | undefined) => {
@@ -29581,9 +29581,9 @@ export default function Dashboard() {
                       <div className="absolute inset-0 weather-alert-box-pulse" style={{ backgroundColor: 'rgb(255,0,0)', left: '-1px', right: '-2px' }} />
                     )}
                     {dayForecast && (
-                      <span className="text-white/90 whitespace-nowrap leading-none font-medium relative z-10 inline-flex items-center gap-[2px]" style={{ letterSpacing: '-0.2px', marginTop: '-1px', fontSize: isTodayForecast ? '15px' : '12px', opacity: isNextWeekDay ? 0.5 : 1 }}>
+                      <span className="text-white/90 whitespace-nowrap leading-none font-medium relative z-10 inline-flex items-center gap-[2px]" style={{ letterSpacing: '-0.2px', marginTop: '-1px', fontSize: '11px', opacity: isNextWeekDay ? 0.5 : 1 }}>
                         <span>{afterSunrise ? `${Math.round(weatherData!.temp)}°` : `${Math.round(dayForecast.high)}°/${Math.round(dayForecast.low)}°`}</span>
-                        {desc && <span style={{ fontSize: isTodayForecast ? '15px' : '12px', fontWeight: 500, opacity: 0.8, lineHeight: 1 }}>{desc}</span>}
+                        {desc && <span style={{ fontSize: '11px', fontWeight: 500, opacity: 0.8, lineHeight: 1 }}>{desc}</span>}
                       </span>
                     )}
                   </div>
