@@ -29617,11 +29617,11 @@ export default function Dashboard() {
             </div>
           </div>
           
-          <div className="grid w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), height: '16px', marginTop: '-3px', paddingRight: calScrollbarW > 0 ? `${calScrollbarW}px` : undefined }}>
-              <div style={{ minWidth: 0 }} />
-              {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0 }} />}
+          <div className="grid w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), height: '16px', marginTop: '-3px', paddingRight: calScrollbarW > 0 ? `${calScrollbarW}px` : undefined, gap: 0 }}>
+              <div style={{ minWidth: 0, backgroundColor: colorSettings.headerBar }} />
+              {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: colorSettings.headerBar }} />}
               {weekDays.map((day, idx) => {
-                if (!weatherData?.daily) return <div key={idx} style={{ minWidth: 0 }} />;
+                if (!weatherData?.daily) return <div key={idx} style={{ minWidth: 0, backgroundColor: colorSettings.headerBar }} />;
                 const dateStr = format(day, 'yyyy-MM-dd');
                 const dayForecast = weatherData.daily?.find(d => d.date === dateStr);
                 const isPast = day < startOfDayET(new Date());
@@ -29733,14 +29733,14 @@ export default function Dashboard() {
                   return '';
                 })() : '';
                 return (
-                  <div key={idx} className="flex items-center justify-center overflow-hidden relative" style={{ opacity: isPast ? 0.5 : 1, borderLeft: isTodayForecast ? '3px solid #64b5f6' : undefined, borderRight: isTodayForecast ? '2px solid rgba(100,181,246,0.35)' : undefined, ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }} data-testid={`weather-above-${dateStr}`}>
+                  <div key={idx} className="flex items-center justify-center overflow-hidden relative" style={{ opacity: isPast ? 0.5 : 1, borderLeft: isTodayForecast ? '3px solid #64b5f6' : undefined, background: showForecastWeather && fwSkyBg ? undefined : colorSettings.headerBar, ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }} data-testid={`weather-above-${dateStr}`}>
                     {showForecastWeather && fwSkyBg && (
-                      <div className="absolute inset-0 z-0" style={{ background: fwSkyBg, overflow: 'hidden', pointerEvents: 'none', opacity: isTodayForecast ? 1 : isNextWeekDay ? 0.35 : 1 }}>
+                      <div className="absolute z-0" style={{ top: 0, bottom: 0, left: 0, right: 0, background: fwSkyBg, overflow: 'hidden', pointerEvents: 'none', opacity: isTodayForecast ? 1 : isNextWeekDay ? 0.35 : 1 }}>
                         {fwEffectsHtml && <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }} dangerouslySetInnerHTML={{ __html: fwEffectsHtml }} />}
                       </div>
                     )}
                     {isTodayForecast && weatherAlerts.length > 0 && (
-                      <div className="absolute inset-0 weather-alert-box-pulse" style={{ backgroundColor: 'rgb(255,0,0)', left: '-1px', right: '-2px' }} />
+                      <div className="absolute inset-0 weather-alert-box-pulse" style={{ backgroundColor: 'rgb(255,0,0)' }} />
                     )}
                     {dayForecast && (
                       <span className="text-white/90 whitespace-nowrap leading-none font-medium relative z-10 inline-flex items-center gap-[2px]" style={{ letterSpacing: '-0.2px', marginTop: '-1px', fontSize: '11px', opacity: isNextWeekDay ? 0.5 : 1 }}>
