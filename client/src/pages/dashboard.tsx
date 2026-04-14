@@ -29531,7 +29531,7 @@ export default function Dashboard() {
           
           
           {/* Calendar wrapper - leaves space for honeycombs on right */}
-          <div ref={calendarWrapperRef} style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction - 2}px` : ''})`, height: 'calc(100% - 18px)', marginTop: '18px', marginLeft: '12px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 - 2 - 2 - 2 : 0}px`, display: desktopShowCalendar ? 'flex' : 'none', flexDirection: 'column', transition: homeworkAnimating ? 'width 0.35s cubic-bezier(0.4,0,0.2,1), margin-right 0.35s cubic-bezier(0.4,0,0.2,1)' : 'none' }} className="relative overflow-visible">
+          <div ref={calendarWrapperRef} style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction - 2}px` : ' - 12px'})`, height: 'calc(100% - 18px)', marginTop: '18px', marginLeft: '12px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 - 2 - 2 - 2 : 12}px`, display: desktopShowCalendar ? 'flex' : 'none', flexDirection: 'column', transition: homeworkAnimating ? 'width 0.35s cubic-bezier(0.4,0,0.2,1), margin-right 0.35s cubic-bezier(0.4,0,0.2,1)' : 'none' }} className="relative overflow-visible">
           
           {/* Glass effect backing box - resizes with calendar */}
           <div 
@@ -33907,7 +33907,7 @@ export default function Dashboard() {
         </div>
         ) : (
         <div className="mb-[0px] mt-[0px] relative flex gap-4 transition-opacity duration-300" style={{ height: calendarHeight - 12 - d2lTickerHeight, flexShrink: 0, order: 1, paddingTop: `${10 + d2lTickerHeight}px` }}>
-          <div ref={calendarWrapperRef} className="relative overflow-visible" style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction - 2}px` : ''})`, height: 'calc(100% - 24px)', marginTop: '24px', marginLeft: '12px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 - 2 - 2 - 2 : 0}px`, display: 'flex', flexDirection: 'column' as const, transition: homeworkAnimating ? 'width 0.35s cubic-bezier(0.4,0,0.2,1), margin-right 0.35s cubic-bezier(0.4,0,0.2,1)' : 'none' }}>
+          <div ref={calendarWrapperRef} className="relative overflow-visible" style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction - 2}px` : ' - 12px'})`, height: 'calc(100% - 24px)', marginTop: '24px', marginLeft: '12px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 - 2 - 2 - 2 : 12}px`, display: 'flex', flexDirection: 'column' as const, transition: homeworkAnimating ? 'width 0.35s cubic-bezier(0.4,0,0.2,1), margin-right 0.35s cubic-bezier(0.4,0,0.2,1)' : 'none' }}>
           {/* Glass effect backing box - same as main calendar */}
           <div 
             className="absolute pointer-events-none"
@@ -34544,9 +34544,9 @@ export default function Dashboard() {
           className="rounded-[12px] flex flex-col fixed"
           style={{
             zIndex: 35,
-            overflow: 'visible',
+            overflow: homeworkAnimating || homeworkMinimized ? 'hidden' : 'visible',
             right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1 + 3}px`,
-            width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4 - 1 - 1 + 1 - 5 - 2 - 1 - 3 + 2}px`,
+            width: `${Math.max(0, calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4 - 1 - 1 + 1 - 5 - 2 - 1 - 3 + 2)}px`,
             top: `${(calendarBorderTop || (calendarTop + 15))}px`,
             height: `${window.innerHeight - (calendarBorderTop || (calendarTop + 15)) - calendarBottom}px`,
             background: homeworkMinimized && !homeworkAnimating ? 'transparent' : 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)',
@@ -34561,43 +34561,10 @@ export default function Dashboard() {
           data-testid="section-coming-up"
         >
           <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', border: homeworkMinimized && !homeworkAnimating ? 'none' : '1.5px solid rgba(255,255,255,0.5)', pointerEvents: 'none', zIndex: 9999, opacity: homeworkMinimized && !homeworkAnimating ? 0 : 1, transition: 'opacity 0.3s ease' }} />
-          <button
-            onClick={() => {
-              if (homeworkAnimating) return;
-              setHomeworkAnimating(true);
-              if (!homeworkMinimized) {
-                savedCalendarReductionRef.current = calendarReduction;
-                localStorage.setItem('savedCalendarReduction', String(calendarReduction));
-                localStorage.setItem('homeworkMinimized', '1');
-                setHomeworkMinimized(true);
-                setTimeout(() => {
-                  setCalendarReduction(0);
-                  localStorage.setItem('calendarReduction', '0');
-                  setTimeout(() => setHomeworkAnimating(false), 350);
-                }, 50);
-              } else {
-                const restore = savedCalendarReductionRef.current ?? (parseFloat(localStorage.getItem('savedCalendarReduction') || '0') || 260);
-                localStorage.removeItem('homeworkMinimized');
-                setCalendarReduction(restore);
-                localStorage.setItem('calendarReduction', String(restore));
-                setHomeworkMinimized(false);
-                setTimeout(() => setHomeworkAnimating(false), 400);
-              }
-            }}
-            className="absolute cursor-pointer hover:opacity-80 transition-opacity"
-            style={{ right: '4px', bottom: '-15px', zIndex: 10000, background: 'none', border: 'none', padding: 0 }}
-            data-testid="button-toggle-homework"
-            title={homeworkMinimized ? 'Show homework panel' : 'Hide homework panel'}
-          >
-            {homeworkMinimized
-              ? <ChevronRight className="h-[17px] w-[17px] text-white/70 hover:text-white" />
-              : <ChevronDown className="h-[17px] w-[17px] text-white/70 hover:text-white" />
-            }
-          </button>
           {/* Date navigation tab above glass box */}
           <div
             className="absolute z-[60]"
-            style={{ top: '-29px', right: '7px', left: '10px', display: (calendarView === 'month' || (homeworkMinimized && !homeworkAnimating)) ? 'none' : 'flex', alignItems: 'center', justifyContent: 'flex-end', height: '15px', pointerEvents: 'auto', opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.2s ease' }}
+            style={{ top: '-29px', right: '7px', left: '10px', display: calendarView === 'month' ? 'none' : 'flex', alignItems: 'center', justifyContent: 'flex-end', height: '15px', pointerEvents: (homeworkMinimized || homeworkAnimating) ? 'none' : 'auto', opacity: (homeworkMinimized || homeworkAnimating || isTopPillOpen) ? 0 : 1, transition: 'opacity 0.25s ease' }}
             data-testid="date-nav-tab"
           >
             <div style={{ width: '280px', height: '15px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)', padding: '0 2px', gap: '5px' }}>
@@ -34622,7 +34589,7 @@ export default function Dashboard() {
           <div
             onClick={(e) => { e.stopPropagation(); const next = !timelineSyncCalendar; setTimelineSyncCalendar(next); localStorage.setItem('timelineSyncCalendar', String(next)); fetch('/api/ui-settings/timelineSyncCalendar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: next }) }).catch(() => {}); }}
             className="absolute z-[71]"
-            style={{ top: '-13px', left: '1px', display: homeworkMinimized && !homeworkAnimating ? 'none' : 'flex', alignItems: 'center', gap: '3px', cursor: 'pointer', padding: '1px 4px 1px 2px', borderRadius: '4px 4px 0 0' }}
+            style={{ top: '-13px', left: '1px', display: 'flex', alignItems: 'center', gap: '3px', cursor: 'pointer', padding: '1px 4px 1px 2px', borderRadius: '4px 4px 0 0', opacity: (homeworkMinimized || homeworkAnimating) ? 0 : 1, pointerEvents: (homeworkMinimized || homeworkAnimating) ? 'none' : 'auto', transition: 'opacity 0.25s ease' }}
             data-testid="timeline-sync-toggle-container"
           >
             <div
@@ -34638,7 +34605,7 @@ export default function Dashboard() {
               onClick={hwFloatingHandlers.onDetach}
               onTouchEnd={(e) => { e.preventDefault(); hwFloatingHandlers.onDetach(); }}
               className="absolute z-[70] rounded-tl-[11px] rounded-br-[4px] rounded-tr-[2px] rounded-bl-[2px] flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors"
-              style={{ top: '1px', left: '1px', width: '25px', height: '25px', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', display: homeworkMinimized && !homeworkAnimating ? 'none' : 'flex' }}
+              style={{ top: '1px', left: '1px', width: '25px', height: '25px', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', display: 'flex', opacity: (homeworkMinimized || homeworkAnimating) ? 0 : 1, pointerEvents: (homeworkMinimized || homeworkAnimating) ? 'none' : 'auto', transition: 'opacity 0.25s ease' }}
               data-testid="hw-detach-button"
               title="Pop out progress as floating window"
             >
@@ -34659,7 +34626,7 @@ export default function Dashboard() {
           {/* Joint Resize Handle — controls both calendar+homework width and calendar height */}
           {!hwFloating.detached && <div
             className="absolute z-[60]"
-            style={{ left: '-17px', top: '50%', transform: 'translateY(-50%)', width: '17px', height: '181px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'auto' }}
+            style={{ left: '-17px', top: '50%', transform: 'translateY(-50%)', width: '17px', height: '181px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: (homeworkMinimized || homeworkAnimating) ? 'none' : 'auto', opacity: (homeworkMinimized || homeworkAnimating) ? 0 : 1, transition: 'opacity 0.25s ease' }}
             data-testid="resize-handle-homework"
           >
             <div className="grab-tab-press" style={{ width: '17px', height: '181px', borderRadius: '0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderRight: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', backdropFilter: 'blur(8px)', transition: 'filter 0.1s ease' }}>
@@ -34859,7 +34826,7 @@ export default function Dashboard() {
                   const boxEl = document.querySelector('[data-testid="section-coming-up"]') as HTMLElement | null;
                   const boxH = boxEl ? boxEl.offsetHeight : (window.innerHeight - (calendarBorderTop || (calendarTop + 15)) - calendarBottom);
                   const availH = Math.max(60, boxH + 30);
-                  return { right: '-19px', top: '3px', pointerEvents: 'auto' as const, zIndex: -1, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || hwFloating.detached) ? 'none' : 'block', width: '21px', height: `${availH - 15}px`, overflow: 'visible' };
+                  return { right: '-19px', top: '3px', pointerEvents: (homeworkMinimized || homeworkAnimating || isSettingsPanelOpen || isSchoolCoursesDialogOpen || hwFloating.detached) ? 'none' as const : 'auto' as const, zIndex: -1, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || hwFloating.detached) ? 'none' : 'block', width: '21px', height: `${availH - 15}px`, overflow: 'visible', opacity: (homeworkMinimized || homeworkAnimating) ? 0 : 1, transition: 'opacity 0.25s ease' };
                 })()}
               >
                 {(() => {
@@ -36466,6 +36433,49 @@ export default function Dashboard() {
           </div>
           </div>
         </section>}
+        {desktopShowHomework && (
+          <button
+            onClick={() => {
+              if (homeworkAnimating) return;
+              setHomeworkAnimating(true);
+              if (!homeworkMinimized) {
+                savedCalendarReductionRef.current = calendarReduction;
+                localStorage.setItem('savedCalendarReduction', String(calendarReduction));
+                localStorage.setItem('homeworkMinimized', '1');
+                setHomeworkMinimized(true);
+                setTimeout(() => {
+                  setCalendarReduction(0);
+                  localStorage.setItem('calendarReduction', '0');
+                  setTimeout(() => setHomeworkAnimating(false), 350);
+                }, 50);
+              } else {
+                const restore = savedCalendarReductionRef.current ?? (parseFloat(localStorage.getItem('savedCalendarReduction') || '0') || 260);
+                localStorage.removeItem('homeworkMinimized');
+                setCalendarReduction(restore);
+                localStorage.setItem('calendarReduction', String(restore));
+                setHomeworkMinimized(false);
+                setTimeout(() => setHomeworkAnimating(false), 400);
+              }
+            }}
+            className="fixed cursor-pointer hover:opacity-80 transition-opacity"
+            style={{
+              right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1 + 3 + 4}px`,
+              bottom: `${calendarBottom + 2}px`,
+              zIndex: 10000,
+              background: 'none',
+              border: 'none',
+              padding: 0,
+              transition: homeworkAnimating ? 'right 0.35s cubic-bezier(0.4,0,0.2,1)' : 'none',
+            }}
+            data-testid="button-toggle-homework"
+            title={homeworkMinimized ? 'Show homework panel' : 'Hide homework panel'}
+          >
+            {homeworkMinimized
+              ? <ChevronRight className="h-[17px] w-[17px] text-white/70 hover:text-white" />
+              : <ChevronDown className="h-[17px] w-[17px] text-white/70 hover:text-white" />
+            }
+          </button>
+        )}
 
         {desktopShowHomework && hwFloating.detached && (
           <div
