@@ -2259,6 +2259,8 @@ export default function Dashboard() {
   const [homeworkMinimized, setHomeworkMinimized] = useState(() => localStorage.getItem('homeworkMinimized') === '1');
   const [homeworkAnimating, setHomeworkAnimating] = useState(false);
   const savedCalendarReductionRef = useRef<number | null>(null);
+  const savedGlassRightRef = useRef<number | null>(null);
+  const savedGlassWidthRef = useRef<number | null>(null);
   const [blankBoxOpen, setBlankBoxOpen] = useState(() => localStorage.getItem('blankBoxOpen') === '1');
   const [blankBoxAnimating, setBlankBoxAnimating] = useState(false);
   const [isResizingHomework, setIsResizingHomework] = useState(false);
@@ -34561,11 +34563,20 @@ export default function Dashboard() {
             overflow: homeworkAnimating || blankBoxAnimating || homeworkMinimized || blankBoxOpen ? 'hidden' : 'visible',
             right: (() => {
               const frozen = savedCalendarReductionRef.current ?? (parseFloat(localStorage.getItem('savedCalendarReduction') || '0') || 260);
-              return `${calendarRight - frozen + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1 + 3}px`;
+              const computedRight = calendarRight - frozen + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1 + 3;
+              const computedWidth = Math.max(0, frozen + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4 - 1 - 1 + 1 - 5 - 2 - 1 - 3 + 2);
+              if (!homeworkMinimized && !homeworkAnimating && !blankBoxOpen && !blankBoxAnimating && calendarReduction > 0) {
+                savedGlassRightRef.current = computedRight;
+                savedGlassWidthRef.current = computedWidth;
+              }
+              const finalRight = (homeworkAnimating || blankBoxAnimating || homeworkMinimized || blankBoxOpen) && savedGlassRightRef.current !== null ? savedGlassRightRef.current : computedRight;
+              return `${finalRight}px`;
             })(),
             width: (() => {
               const frozen = savedCalendarReductionRef.current ?? (parseFloat(localStorage.getItem('savedCalendarReduction') || '0') || 260);
-              return `${Math.max(0, frozen + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4 - 1 - 1 + 1 - 5 - 2 - 1 - 3 + 2)}px`;
+              const computedWidth = Math.max(0, frozen + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4 - 1 - 1 + 1 - 5 - 2 - 1 - 3 + 2);
+              const finalWidth = (homeworkAnimating || blankBoxAnimating || homeworkMinimized || blankBoxOpen) && savedGlassWidthRef.current !== null ? savedGlassWidthRef.current : computedWidth;
+              return `${finalWidth}px`;
             })(),
             top: `${(calendarBorderTop || (calendarTop + 15))}px`,
             height: `${window.innerHeight - (calendarBorderTop || (calendarTop + 15)) - calendarBottom}px`,
