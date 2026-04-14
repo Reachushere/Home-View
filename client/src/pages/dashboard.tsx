@@ -34455,7 +34455,7 @@ export default function Dashboard() {
           {/* Date navigation tab above glass box */}
           <div
             className="absolute z-[60]"
-            style={{ top: '-29px', right: '7px', left: '10px', display: calendarView === 'month' ? 'none' : 'flex', alignItems: 'center', justifyContent: 'flex-end', height: '15px', pointerEvents: 'auto', opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.2s ease' }}
+            style={{ top: '-29px', right: '7px', left: '10px', display: (calendarView === 'month' || (homeworkMinimized && !homeworkAnimating)) ? 'none' : 'flex', alignItems: 'center', justifyContent: 'flex-end', height: '15px', pointerEvents: 'auto', opacity: isTopPillOpen ? 0 : 1, transition: 'opacity 0.2s ease' }}
             data-testid="date-nav-tab"
           >
             <div style={{ width: '280px', height: '15px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)', padding: '0 2px', gap: '5px' }}>
@@ -34480,7 +34480,7 @@ export default function Dashboard() {
           <div
             onClick={(e) => { e.stopPropagation(); const next = !timelineSyncCalendar; setTimelineSyncCalendar(next); localStorage.setItem('timelineSyncCalendar', String(next)); fetch('/api/ui-settings/timelineSyncCalendar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: next }) }).catch(() => {}); }}
             className="absolute z-[71]"
-            style={{ top: '-13px', left: '1px', display: 'flex', alignItems: 'center', gap: '3px', cursor: 'pointer', padding: '1px 4px 1px 2px', borderRadius: '4px 4px 0 0' }}
+            style={{ top: '-13px', left: '1px', display: homeworkMinimized && !homeworkAnimating ? 'none' : 'flex', alignItems: 'center', gap: '3px', cursor: 'pointer', padding: '1px 4px 1px 2px', borderRadius: '4px 4px 0 0' }}
             data-testid="timeline-sync-toggle-container"
           >
             <div
@@ -34496,7 +34496,7 @@ export default function Dashboard() {
               onClick={hwFloatingHandlers.onDetach}
               onTouchEnd={(e) => { e.preventDefault(); hwFloatingHandlers.onDetach(); }}
               className="absolute z-[70] rounded-tl-[11px] rounded-br-[4px] rounded-tr-[2px] rounded-bl-[2px] flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors"
-              style={{ top: '1px', left: '1px', width: '25px', height: '25px', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)' }}
+              style={{ top: '1px', left: '1px', width: '25px', height: '25px', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', display: homeworkMinimized && !homeworkAnimating ? 'none' : 'flex' }}
               data-testid="hw-detach-button"
               title="Pop out progress as floating window"
             >
