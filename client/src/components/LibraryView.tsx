@@ -1084,6 +1084,61 @@ const toolBtnStyle = (active?: boolean): React.CSSProperties => ({
   transition: 'all 0.15s ease',
 });
 
+interface ParsedQuery {
+  phrases: string[];
+  required: string[];
+  optional: string[];
+  allHighlightTokens: string[];
+}
+
+function parseSearchQuery(raw: string): ParsedQuery {
+  const phrases: string[] = [];
+  const required: string[] = [];
+  const optional: string[] = [];
+
+  let remaining = raw;
+  const phraseRegex = /"([^"]+)"/g;
+  let m: RegExpExecArray | null;
+  while ((m = phraseRegex.exec(raw)) !== null) {
+    const phrase = m[1].trim().toLowerCase();
+    if (phrase.length >= 2) phrases.push(phrase);
+  }
+  remaining = remaining.replace(/"[^"]*"/g, ' ');
+
+  const parts = remaining.split(/\s+/).filter(Boolean);
+  for (const p of parts) {
+    if (p.startsWith('+') && p.length > 1) {
+      required.push(p.slice(1).toLowerCase());
+    } else if (p.length >= 2) {
+      optional.push(p.toLowerCase());
+    }
+  }
+
+  const allHighlightTokens: string[] = [];
+  for (const ph of phrases) {
+    allHighlightTokens.push(ph);
+    ph.split(/\s+/).forEach(w => { if (w.length >= 2 && !allHighlightTokens.includes(w)) allHighlightTokens.push(w); });
+  }
+  for (const r of required) { if (!allHighlightTokens.includes(r)) allHighlightTokens.push(r); }
+  for (const o of optional) { if (!allHighlightTokens.includes(o)) allHighlightTokens.push(o); }
+
+  return { phrases, required, optional, allHighlightTokens };
+}
+
+function textMatchesParsedQuery(text: string, pq: ParsedQuery): boolean {
+  const lower = text.toLowerCase();
+  for (const ph of pq.phrases) {
+    if (!lower.includes(ph)) return false;
+  }
+  for (const r of pq.required) {
+    if (!lower.includes(r)) return false;
+  }
+  if (pq.optional.length > 0 && pq.phrases.length === 0 && pq.required.length === 0) {
+    return pq.optional.some(o => lower.includes(o));
+  }
+  return pq.phrases.length > 0 || pq.required.length > 0 || pq.optional.some(o => lower.includes(o));
+}
+
 function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles, onOpenModuleFile, isSyllabus, onBringToFront, readerIndex, initialSearchQuery, initialPage, onOpenSyllabus, courseCode: readerCourseCode, onBackToSyllabus }: {
   file: FileRecord;
   bookColor: string;
@@ -1339,7 +1394,8 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
     setSearching(true);
     try {
       const results: { page: number; matches: number }[] = [];
-      const tokens = searchQuery.toLowerCase().trim().split(/\s+/).filter(t => t.length >= 2);
+      const pq = parseSearchQuery(searchQuery);
+      const tokens = pq.allHighlightTokens.filter(t => t.length >= 2);
       if (tokens.length === 0) { setSearchResults([]); setSearching(false); return; }
       const escapedTokens = tokens.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
       const pattern = new RegExp(`(${escapedTokens.join('|')})`, 'gi');
@@ -1351,6 +1407,10 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
           if (item.hasEOL) s += ' ';
           return s;
         });
+        const pageText = spans.join('');
+        if (pq.phrases.length > 0 || pq.required.length > 0) {
+          if (!textMatchesParsedQuery(pageText, pq)) continue;
+        }
         let count = 0;
         for (const spanText of spans) {
           if (!spanText.trim()) continue;
@@ -1384,7 +1444,8 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
       });
       return;
     }
-    const tokens = query.toLowerCase().trim().split(/\s+/).filter(t => t.length >= 2);
+    const pq = parseSearchQuery(query);
+    const tokens = pq.allHighlightTokens.filter(t => t.length >= 2);
     if (tokens.length === 0) return;
     const escapedTokens = tokens.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
     const pattern = new RegExp(`(${escapedTokens.join('|')})`, 'gi');
@@ -2924,12 +2985,12 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
 
   const STOP_WORDS = new Set(['a', 'an', 'and', 'as', 'at', 'be', 'but', 'by', 'for', 'if', 'in', 'is', 'it', 'no', 'not', 'of', 'on', 'or', 'so', 'the', 'to', 'we']);
 
+  const parsedQuery = useMemo(() => parseSearchQuery(masterSearch), [masterSearch]);
+
   const combinedSearchResults = useMemo(() => {
     if (!hasAnyFilter) return null;
-    const q = masterSearch.toLowerCase().trim();
-    const rawTokens = q ? q.split(/\s+/).filter(Boolean) : [];
-    const filtered = rawTokens.filter(t => !STOP_WORDS.has(t));
-    const tokens = filtered.length > 0 ? filtered : rawTokens;
+    const pq = parsedQuery;
+    const tokens = pq.allHighlightTokens.filter(t => !STOP_WORDS.has(t));
     const results: SearchResult[] = [];
     const addedFileIds = new Set<number>();
 
@@ -3063,6 +3124,11 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             }
           }
 
+          if (pq.phrases.length > 0 || pq.required.length > 0) {
+            const fullText = [(f.displayName || f.originalName), f.extractedText || ''].join(' ');
+            if (!textMatchesParsedQuery(fullText, pq)) return;
+          }
+
           if (addedFileIds.has(f.id)) return;
           addedFileIds.add(f.id);
           results.push({ file: f, semLabel: sem.label, semKey: sem.key, courseCode: course.code, courseName: course.name, weekNum: info.wn, fileType: info.fType, fileFormat: info.ext, contentSnippet, matchedTokenCount, proximitySnippet });
@@ -3104,6 +3170,10 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             matchedTokenCount = fullContentResult.matchCount + nameMatchedTokens.length;
             if (fullContentResult.proximitySnippet) contentSnippet = fullContentResult.proximitySnippet;
           }
+        }
+        if (pq.phrases.length > 0 || pq.required.length > 0) {
+          const fullText = [(f.displayName || f.originalName), f.extractedText || ''].join(' ');
+          if (!textMatchesParsedQuery(fullText, pq)) return;
         }
         if (addedFileIds.has(f.id)) return;
         addedFileIds.add(f.id);
@@ -3205,14 +3275,12 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
     }
 
     return results;
-  }, [masterSearch, masterSemFilter, masterCourseFilter, masterWeekFilter, masterTypeFilter, masterFormatFilter, masterSortBy, allFiles, semesters, hasAnyFilter, ftsResults]);
+  }, [masterSearch, masterSemFilter, masterCourseFilter, masterWeekFilter, masterTypeFilter, masterFormatFilter, masterSortBy, allFiles, semesters, hasAnyFilter, ftsResults, parsedQuery]);
 
   const searchTokens = useMemo(() => {
-    const q = masterSearch.toLowerCase().trim();
-    const raw = q ? q.split(/\s+/).filter(Boolean) : [];
-    const filtered = raw.filter(t => !STOP_WORDS.has(t));
-    return filtered.length > 0 ? filtered : raw;
-  }, [masterSearch]);
+    const tokens = parsedQuery.allHighlightTokens.filter(t => !STOP_WORDS.has(t));
+    return tokens.length > 0 ? tokens : parsedQuery.allHighlightTokens;
+  }, [parsedQuery]);
 
   const highlightTokens = useCallback((text: string, tokens: string[], color?: string): (string | JSX.Element)[] => {
     if (!tokens.length || !text) return [text];
