@@ -36456,17 +36456,8 @@ export default function Dashboard() {
           <button
             onClick={() => {
               if (homeworkAnimating || blankBoxAnimating) return;
-              if (blankBoxOpen) {
+              if (!homeworkMinimized && !blankBoxOpen) {
                 setHomeworkAnimating(true);
-                setBlankBoxOpen(false);
-                localStorage.removeItem('blankBoxOpen');
-                setHomeworkMinimized(false);
-                localStorage.removeItem('homeworkMinimized');
-                setTimeout(() => setHomeworkAnimating(false), 400);
-                return;
-              }
-              setHomeworkAnimating(true);
-              if (!homeworkMinimized) {
                 savedCalendarReductionRef.current = calendarReduction;
                 localStorage.setItem('savedCalendarReduction', String(calendarReduction));
                 localStorage.setItem('homeworkMinimized', '1');
@@ -36476,7 +36467,19 @@ export default function Dashboard() {
                   localStorage.setItem('calendarReduction', '0');
                 });
                 setTimeout(() => setHomeworkAnimating(false), 400);
-              } else {
+              } else if (homeworkMinimized && blankBoxOpen) {
+                setBlankBoxAnimating(true);
+                setBlankBoxOpen(false);
+                localStorage.removeItem('blankBoxOpen');
+                setTimeout(() => {
+                  setBlankBoxAnimating(false);
+                  setHomeworkAnimating(true);
+                  setHomeworkMinimized(false);
+                  localStorage.removeItem('homeworkMinimized');
+                  setTimeout(() => setHomeworkAnimating(false), 400);
+                }, 350);
+              } else if (homeworkMinimized && !blankBoxOpen) {
+                setHomeworkAnimating(true);
                 const restore = savedCalendarReductionRef.current ?? (parseFloat(localStorage.getItem('savedCalendarReduction') || '0') || 260);
                 localStorage.removeItem('homeworkMinimized');
                 setCalendarReduction(restore);
@@ -36508,17 +36511,8 @@ export default function Dashboard() {
           <button
             onClick={() => {
               if (homeworkAnimating || blankBoxAnimating) return;
-              if (!homeworkMinimized && !blankBoxOpen) {
-                setHomeworkAnimating(true);
-                setHomeworkMinimized(true);
-                localStorage.setItem('homeworkMinimized', '1');
-                setBlankBoxOpen(true);
-                localStorage.setItem('blankBoxOpen', '1');
-                setTimeout(() => setHomeworkAnimating(false), 400);
-                return;
-              }
-              setBlankBoxAnimating(true);
               if (blankBoxOpen) {
+                setBlankBoxAnimating(true);
                 setBlankBoxOpen(false);
                 localStorage.removeItem('blankBoxOpen');
                 savedCalendarReductionRef.current = calendarReduction;
@@ -36528,7 +36522,19 @@ export default function Dashboard() {
                   localStorage.setItem('calendarReduction', '0');
                 });
                 setTimeout(() => setBlankBoxAnimating(false), 400);
+              } else if (!homeworkMinimized && !blankBoxOpen) {
+                setHomeworkAnimating(true);
+                setHomeworkMinimized(true);
+                localStorage.setItem('homeworkMinimized', '1');
+                setTimeout(() => {
+                  setHomeworkAnimating(false);
+                  setBlankBoxAnimating(true);
+                  setBlankBoxOpen(true);
+                  localStorage.setItem('blankBoxOpen', '1');
+                  setTimeout(() => setBlankBoxAnimating(false), 400);
+                }, 350);
               } else {
+                setBlankBoxAnimating(true);
                 const restore = savedCalendarReductionRef.current ?? (parseFloat(localStorage.getItem('savedCalendarReduction') || '0') || 260);
                 setCalendarReduction(restore);
                 localStorage.setItem('calendarReduction', String(restore));
