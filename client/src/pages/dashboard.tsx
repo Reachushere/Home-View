@@ -12914,22 +12914,7 @@ export default function Dashboard() {
   };
 
   const veryLongTaskNarrowCols = useMemo(() => {
-    const map = new Map<string, { narrowFrac: number; taskIds: Set<number> }>();
-    const items = getMultiHourTasksForWeek().filter(item => {
-      const dur = (item.endHour * 60 + item.endMin) - (item.startHour * 60 + item.startMin);
-      return dur > VERY_LONG_TASK_HOURS * 60;
-    });
-    for (const item of items) {
-      for (let h = item.startHour + 1; h <= item.endHour; h++) {
-        if (h === item.startHour) continue;
-        const key = `${item.dayIdx}-${h}`;
-        const existing = map.get(key) || { narrowFrac: 0, taskIds: new Set<number>() };
-        existing.narrowFrac = Math.max(existing.narrowFrac, VERY_LONG_NARROW_FRAC);
-        existing.taskIds.add(item.task.id);
-        map.set(key, existing);
-      }
-    }
-    return map;
+    return new Map<string, { narrowFrac: number; taskIds: Set<number> }>();
   }, [allTasks, weekDays]);
 
   const getConflictExtraHeight = (h: number) => {
@@ -20937,6 +20922,39 @@ export default function Dashboard() {
                       if (!taskGroups[sh]) taskGroups[sh] = [];
                       taskGroups[sh].push(t);
                     });
+                    const taskIntervals = colTasks.map(t => {
+                      const [sh, sm] = getTaskStartHourMin(t);
+                      const [eh, em] = getTaskEndHourMin(t);
+                      return { task: t, start: sh * 60 + sm, end: eh * 60 + em };
+                    });
+                    const overlapsWith = (a: typeof taskIntervals[0], b: typeof taskIntervals[0]) => a.start < b.end && b.start < a.end;
+                    const overlapGroups: (typeof taskIntervals)[] = [];
+                    const visited = new Set<number>();
+                    taskIntervals.forEach((iv, i) => {
+                      if (visited.has(i)) return;
+                      const group = [iv];
+                      visited.add(i);
+                      let changed = true;
+                      while (changed) {
+                        changed = false;
+                        taskIntervals.forEach((jv, j) => {
+                          if (visited.has(j)) return;
+                          if (group.some(g => overlapsWith(g, jv))) {
+                            group.push(jv);
+                            visited.add(j);
+                            changed = true;
+                          }
+                        });
+                      }
+                      group.sort((a, b) => a.start - b.start || a.end - b.end);
+                      overlapGroups.push(group);
+                    });
+                    const taskLayout = new Map<number, { idx: number; total: number }>();
+                    overlapGroups.forEach(group => {
+                      group.forEach((iv, idx) => {
+                        taskLayout.set(iv.task.id, { idx, total: group.length });
+                      });
+                    });
                     return (
                       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'row', height: '100%' }}>
                         <div style={{ width: '52px', flexShrink: 0, borderRight: '1px solid rgba(255,255,255,0.15)', display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -20960,11 +20978,9 @@ export default function Dashboard() {
                             const startPct = ((sh - colStart) + sm / 60) * ROW_PCT;
                             const endPct = Math.min(((eh - colStart) + em / 60) * ROW_PCT, 100);
                             const heightPct = Math.max(ROW_PCT, endPct - startPct);
-                            const sameHourTasks = taskGroups[sh] || [task];
-                            const taskIdx = sameHourTasks.findIndex(t => t.id === task.id);
-                            const totalAtHour = sameHourTasks.length;
-                            const widthPct = 100 / totalAtHour;
-                            const leftPct = taskIdx * widthPct;
+                            const layout = taskLayout.get(task.id) || { idx: 0, total: 1 };
+                            const widthPct = 100 / layout.total;
+                            const leftPct = layout.idx * widthPct;
                             return (
                               <div key={task.id} style={{ position: 'absolute', top: `${startPct}%`, left: `calc(${leftPct}% + 3px)`, width: `calc(${widthPct}% - 6px)`, height: `${heightPct}%`, zIndex: 10, overflow: 'hidden' }}>
                                 {renderDetailTask(task)}
@@ -33050,11 +33066,10 @@ export default function Dashboard() {
                         const taskBg = cMatch?.taskBgColor || (colors?.bg) || (hasCourseGrad ? `linear-gradient(180deg, ${gradColors.start}, ${gradColors.end})` : null);
                         const bgGradient = task.isCompleted ? '#e5e7eb' : taskBg ? taskBg : `linear-gradient(180deg, ${otherRowColors.labelStart}, ${otherRowColors.labelEnd})`;
                         const borderColor = task.isCompleted ? '#d1d5db' : hasCourseGrad ? gradColors!.start : otherRowColors.borderColor;
-                        const narrowW = `${VERY_LONG_NARROW_FRAC * 100}%`;
                         return (
                           <>
-                            <div style={{ position: 'absolute', top: `${vlHeaderPx}px`, left: 0, width: narrowW, bottom: 0, background: bgGradient, border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : '1.5px solid #000000', borderTop: 'none', borderRadius: '0 0 0 4px', pointerEvents: 'auto', zIndex: 0 }} />
-                            <div style={{ position: 'absolute', top: `${vlHeaderPx - 2}px`, left: 0, width: narrowW, height: '4px', background: bgGradient, pointerEvents: 'none', zIndex: 1 }} />
+                            <div style={{ position: 'absolute', top: `${vlHeaderPx}px`, left: 0, width: '100%', bottom: 0, background: bgGradient, border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : '1.5px solid #000000', borderTop: 'none', borderRadius: '0 0 4px 4px', pointerEvents: 'auto', zIndex: 0 }} />
+                            <div style={{ position: 'absolute', top: `${vlHeaderPx - 2}px`, left: 0, width: '100%', height: '4px', background: bgGradient, pointerEvents: 'none', zIndex: 1 }} />
                           </>
                         );
                       })()}
@@ -33066,8 +33081,7 @@ export default function Dashboard() {
                         const bgGradient = task.isCompleted ? '#e5e7eb' : taskBg ? taskBg : `linear-gradient(180deg, ${otherRowColors.labelStart}, ${otherRowColors.labelEnd})`;
                         const borderColor = task.isCompleted ? '#d1d5db' : hasCourseGrad ? gradColors!.start : otherRowColors.borderColor;
                         return (
-                          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: `${vlHeaderPx}px`, background: bgGradient, border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : '1.5px solid #000000', borderBottom: 'none', borderRadius: '4px 4px 4px 0', overflow: 'visible', display: 'flex', flexDirection: 'column', pointerEvents: 'auto', zIndex: 1 }}>
-                            <div style={{ position: 'absolute', bottom: 0, left: `${VERY_LONG_NARROW_FRAC * 100}%`, right: 0, height: '1.5px', background: '#000000', zIndex: 2 }} />
+                          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: `${vlHeaderPx}px`, background: bgGradient, border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : '1.5px solid #000000', borderBottom: '1.5px solid #000000', borderRadius: '4px 4px 0 0', overflow: 'visible', display: 'flex', flexDirection: 'column', pointerEvents: 'auto', zIndex: 1 }}>
                           </div>
                         );
                       })()}
