@@ -36480,7 +36480,7 @@ export default function Dashboard() {
             }}
             className="fixed cursor-pointer hover:opacity-80 transition-opacity"
             style={{
-              right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1 + 3 + 6 - 19}px`,
+              right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1 + 3 + 6 - 22}px`,
               top: `${(calendarBorderTop || (calendarTop + 15)) - 12}px`,
               zIndex: 10000,
               background: 'none',
@@ -36536,7 +36536,7 @@ export default function Dashboard() {
             }}
             className="fixed cursor-pointer hover:opacity-80 transition-opacity"
             style={{
-              right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1 + 3 + 6 - 19}px`,
+              right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1 + 3 + 6 - 22}px`,
               bottom: `${calendarBottom - 16}px`,
               zIndex: 10000,
               background: 'none',
