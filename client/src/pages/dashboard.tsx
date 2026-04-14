@@ -21383,7 +21383,7 @@ export default function Dashboard() {
           className="fixed cursor-pointer"
           style={{
             bottom: '29px',
-            left: 'calc(50% - 42px)',
+            left: 'calc(50% + 52px)',
             display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : 'block',
             zIndex: 10002,
             background: 'none',
@@ -35057,7 +35057,7 @@ export default function Dashboard() {
                 }, 380);
               }}
               className="absolute z-[9999] rounded-tr-[11px] rounded-bl-[4px] rounded-tl-[2px] rounded-br-[2px] flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors"
-              style={{ top: '1px', right: '1px', width: '25px', height: '25px', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)' }}
+              style={{ top: '0px', right: '0px', width: '26px', height: '26px', background: colorSettings.headerBar, border: '1px solid rgba(255,255,255,0.3)', borderTop: 'none', borderRight: 'none' }}
               data-testid="blank-minimize-dock"
               title="Minimize blank box to tab"
             >
@@ -35142,7 +35142,7 @@ export default function Dashboard() {
               }, 350);
             }}
             className="absolute z-[70] rounded-tr-[11px] rounded-bl-[4px] rounded-tl-[2px] rounded-br-[2px] flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors"
-            style={{ top: '1px', right: '1px', width: '25px', height: '25px', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', display: 'flex', opacity: (homeworkMinimized || blankBoxOpen) ? 0 : 1, pointerEvents: (homeworkMinimized || blankBoxOpen) ? 'none' : 'auto' }}
+            style={{ top: '0px', right: '0px', width: '26px', height: '26px', background: 'rgba(255,255,255,0.25)', border: '1px solid rgba(255,255,255,0.3)', borderTop: 'none', borderRight: 'none', display: 'flex', opacity: (homeworkMinimized || blankBoxOpen) ? 0 : 1, pointerEvents: (homeworkMinimized || blankBoxOpen) ? 'none' : 'auto' }}
             data-testid="hw-minimize-dock"
             title="Minimize homework panel"
           >
