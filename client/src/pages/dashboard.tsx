@@ -5928,6 +5928,7 @@ export default function Dashboard() {
   }, [todoPanelPos, todoPanelSize]);
   const [dragOverSlot, setDragOverSlot] = useState<{ day: Date; hour: number } | null>(null);
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
+  const [hoveredOverlapGroup, setHoveredOverlapGroup] = useState<string | null>(null);
   
   const hoveredCountdownTaskIdRef = useRef<number | null>(null);
   const showCountdownHoverLine = useCallback((taskId: number) => {
@@ -33526,6 +33527,8 @@ export default function Dashboard() {
                 {(() => {
                   const allMultiHour = getMultiHourTasksForWeek();
                   const overlapInfo = new Map<number, { col: number; totalCols: number }>();
+                  const overlapGroupMembers = new Map<string, number[]>();
+                  const taskToOverlapGroup = new Map<number, string>();
 
                   type OvItem = { startHour: number; startMin: number; endHour: number; endMin: number; task: { id: number }; dayIdx: number; isCalEvent?: boolean };
                   const allWithCal: OvItem[] = allMultiHour.map(i => ({ ...i, isCalEvent: false }));
@@ -33600,7 +33603,14 @@ export default function Dashboard() {
                     }
                     for (let i = 0; i < itemCount; i++) {
                       const root = find(i);
-                      overlapInfo.set(allItems[i].item.task.id, { col: allItems[i].col, totalCols: groupCols.get(root)!.size });
+                      const totalCols = groupCols.get(root)!.size;
+                      overlapInfo.set(allItems[i].item.task.id, { col: allItems[i].col, totalCols });
+                      if (totalCols > 1) {
+                        const groupKey = `${allItems[i].item.dayIdx}-${find(i)}`;
+                        if (!overlapGroupMembers.has(groupKey)) overlapGroupMembers.set(groupKey, []);
+                        overlapGroupMembers.get(groupKey)!.push(allItems[i].item.task.id);
+                        taskToOverlapGroup.set(allItems[i].item.task.id, groupKey);
+                      }
                     }
                   }
 
@@ -33753,16 +33763,29 @@ export default function Dashboard() {
                         const taskBg = cMatch?.taskBgColor || (colors?.bg) || (hasCourseGrad ? `linear-gradient(180deg, ${gradColors.start}, ${gradColors.end})` : null);
                         const bgGradient = task.isCompleted ? '#e5e7eb' : taskBg ? taskBg : `linear-gradient(180deg, ${otherRowColors.labelStart}, ${otherRowColors.labelEnd})`;
                         const borderColor = task.isCompleted ? '#d1d5db' : hasCourseGrad ? gradColors.start : otherRowColors.borderColor;
+                        const myGroup = taskToOverlapGroup.get(task.id);
+                        const isGroupHovered = myGroup != null && hoveredOverlapGroup === myGroup;
+                        const groupMembers = myGroup ? (overlapGroupMembers.get(myGroup) || []) : [];
+                        const myGroupIdx = groupMembers.indexOf(task.id);
+                        const fanOutHeight = Math.max(heightPx, 48);
+                        const sidebarPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
+                        const dayFrac = `(${gridSizes.dayColumnWidths.slice(0, dayIdx).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)})`;
+                        const dayW = `(${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${sidebarPx}px)`;
+                        const maxTotalCols = taskGroupMax.get(task.id) || oi.totalCols;
+                        const fullLeft = `calc(${sidebarPx}px + ${dayFrac} * (100% - ${sidebarPx}px) + 2px)`;
+                        const colLeft = maxTotalCols > 1 ? `calc(${sidebarPx}px + ${dayFrac} * (100% - ${sidebarPx}px) + (${dayW}) * ${oi.col} / ${maxTotalCols} + 2px)` : fullLeft;
+                        const fullWidth = `calc((${dayW}) - 4px)`;
+                        const colWidth = `calc((${dayW}) / ${Math.max(maxTotalCols, 1)} - 4px)`;
                         return {
-                          top: `${topPx}px`,
-                          left: (() => { const sidebarPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0); const dayFrac = `(${gridSizes.dayColumnWidths.slice(0, dayIdx).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)})`; const maxTotalCols = taskGroupMax.get(task.id) || oi.totalCols; if (maxTotalCols > 1) { const dayW = `(${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${sidebarPx}px)`; return `calc(${sidebarPx}px + ${dayFrac} * (100% - ${sidebarPx}px) + (${dayW}) * ${oi.col} / ${maxTotalCols} + 2px)`; } return `calc(${sidebarPx}px + ${dayFrac} * (100% - ${sidebarPx}px) + 2px)`; })(),
-                          width: (() => { const sidebarPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0); const dayW = `(${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${sidebarPx}px)`; const maxTotalCols = taskGroupMax.get(task.id) || oi.totalCols; const colDivisor = Math.max(maxTotalCols, 1); return `calc((${dayW}) / ${colDivisor} - 4px)`; })(),
-                          height: `${heightPx}px`,
-                          zIndex: selectedTaskId === task.id ? 55 : (draggedTask?.id === task.id ? 53 : (51 + oi.col)),
-                          transition: 'left 0.15s ease, width 0.15s ease',
+                          top: isGroupHovered ? `${topPx + myGroupIdx * (fanOutHeight + 4)}px` : `${topPx}px`,
+                          left: isGroupHovered ? fullLeft : colLeft,
+                          width: isGroupHovered ? fullWidth : colWidth,
+                          height: isGroupHovered ? `${fanOutHeight}px` : `${heightPx}px`,
+                          zIndex: isGroupHovered ? (200 + myGroupIdx) : (selectedTaskId === task.id ? 55 : (draggedTask?.id === task.id ? 53 : (51 + oi.col))),
+                          transition: 'left 0.25s ease, width 0.25s ease, top 0.25s ease, height 0.25s ease, box-shadow 0.2s ease',
                           background: isVeryLong ? 'transparent' : bgGradient,
                           border: isVeryLong ? 'none' : (selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : '1px solid black'),
-                          boxShadow: isVeryLong ? 'none' : '0 0 0 1px rgba(255,255,255,0.95)',
+                          boxShadow: isVeryLong ? 'none' : (isGroupHovered ? '0 4px 20px rgba(0,0,0,0.4), 0 0 0 2px rgba(255,255,255,1)' : '0 0 0 1px rgba(255,255,255,0.95)'),
                           overflow: isVeryLong ? 'visible' : 'hidden',
                           display: 'flex',
                           flexDirection: 'column' as const,
@@ -33781,6 +33804,8 @@ export default function Dashboard() {
                       data-hover-left={(() => { const sidebarPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0); const dayFrac = `(${gridSizes.dayColumnWidths.slice(0, dayIdx).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)})`; return `calc(${sidebarPx}px + ${dayFrac} * (100% - ${sidebarPx}px) + 4px)`; })()}
                       data-hover-width={(() => { const sidebarPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0); const dayW = `(${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${sidebarPx}px)`; return `calc(${dayW} - 8px)`; })()}
                       data-is-very-long={isVeryLong ? 'true' : undefined}
+                      onMouseEnter={() => { const g = taskToOverlapGroup.get(task.id); if (g) setHoveredOverlapGroup(g); }}
+                      onMouseLeave={() => { const g = taskToOverlapGroup.get(task.id); if (g && hoveredOverlapGroup === g) setHoveredOverlapGroup(null); }}
                     >
                       {isVeryLong && (() => {
                         const cMatch = coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === courseCode);
