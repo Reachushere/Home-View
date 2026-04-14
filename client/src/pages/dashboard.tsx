@@ -2295,6 +2295,7 @@ export default function Dashboard() {
   const savedGlassWidthRef = useRef<number | null>(null);
   const [blankBoxOpen, setBlankBoxOpen] = useState(() => localStorage.getItem('blankBoxOpen') === '1');
   const [blankBoxAnimating, setBlankBoxAnimating] = useState(false);
+  const [blankCanvasNotes, setBlankCanvasNotes] = useState(() => localStorage.getItem('blankCanvasNotes') || '');
   const [hwMinimizeAnim, setHwMinimizeAnim] = useState<'idle' | 'minimizing' | 'restoring'>('idle');
   const [blankMinimizeAnim, setBlankMinimizeAnim] = useState<'idle' | 'minimizing' | 'restoring'>('idle');
   const [blankBoxMinimizedToTab, setBlankBoxMinimizedToTab] = useState(() => localStorage.getItem('blankBoxMinimizedToTab') === '1');
@@ -21393,11 +21394,11 @@ export default function Dashboard() {
             padding: 0,
           }}
           data-testid="bottom-tab-blankbox"
-          title="Restore blank canvas"
+          title="Restore temporary notes"
         >
           <svg width="84" height="25" viewBox="0 0 84 25" style={{ display: 'block' }}>
             <path d="M0,25 L84,25 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
-            <text x="42" y="13" textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.85)" fontSize="9" fontWeight="500" fontFamily="system-ui, -apple-system, sans-serif">Blank Box</text>
+            <text x="42" y="13" textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.85)" fontSize="8" fontWeight="500" fontFamily="system-ui, -apple-system, sans-serif">Notes</text>
           </svg>
         </button>
       )}
@@ -35275,11 +35276,11 @@ export default function Dashboard() {
             </button>
           )}
           <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', border: '1.5px solid rgba(255,255,255,0.5)', pointerEvents: 'none', zIndex: 9999 }} />
-          {(blankBoxOpen || blankMinimizeAnim === 'minimizing' || blankMinimizeAnim === 'restoring') && <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', background: `linear-gradient(180deg, ${colorSettings.headerBar}e6 0%, ${colorSettings.headerBar}cc 30%, ${colorSettings.headerBar}b3 60%, ${colorSettings.headerBar}99 100%)`, backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', zIndex: 9998, pointerEvents: blankMinimizeAnim !== 'idle' ? 'none' : 'auto', display: 'flex', flexDirection: 'column', transform: blankMinimizeAnim === 'minimizing' ? 'scale(0.08) translateY(180%)' : blankMinimizeAnim === 'restoring' ? 'none' : 'none', opacity: blankMinimizeAnim === 'minimizing' ? 0 : 1, transition: blankMinimizeAnim === 'minimizing' ? 'transform 0.38s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.38s cubic-bezier(0.4, 0, 0.2, 1)' : blankMinimizeAnim === 'restoring' ? 'transform 0.35s cubic-bezier(0.0, 0, 0.2, 1), opacity 0.35s cubic-bezier(0.0, 0, 0.2, 1)' : 'none', transformOrigin: 'bottom center' }}>
+          {(blankBoxOpen || blankMinimizeAnim === 'minimizing' || blankMinimizeAnim === 'restoring') && <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', zIndex: 9998, pointerEvents: blankMinimizeAnim !== 'idle' ? 'none' : 'auto', display: 'flex', flexDirection: 'column', transform: blankMinimizeAnim === 'minimizing' ? 'scale(0.08) translateY(180%)' : blankMinimizeAnim === 'restoring' ? 'none' : 'none', opacity: blankMinimizeAnim === 'minimizing' ? 0 : 1, transition: blankMinimizeAnim === 'minimizing' ? 'transform 0.38s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.38s cubic-bezier(0.4, 0, 0.2, 1)' : blankMinimizeAnim === 'restoring' ? 'transform 0.35s cubic-bezier(0.0, 0, 0.2, 1), opacity 0.35s cubic-bezier(0.0, 0, 0.2, 1)' : 'none', transformOrigin: 'bottom center' }}>
             <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', border: '1.5px solid rgba(255,255,255,0.5)', pointerEvents: 'none', zIndex: 9999 }} />
             <div style={{ padding: '0 8px', height: courseRowRects.length > 0 ? `${courseRowRects[0].top - (calendarBorderTop || (calendarTop + 15)) - 1}px` : '45px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 46, overflow: 'hidden', borderRadius: '12px 12px 0 0', boxShadow: '0 3px 6px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3)' }}>
               <div style={{ position: 'absolute', top: '21px', left: '25px', right: '8px', height: '0.5px', backgroundColor: 'rgba(255,255,255,0.3)', zIndex: 2 }} />
-              <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: '6px', bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap', zIndex: 2 }}>Blank Canvas</span>
+              <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: '6px', bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap', zIndex: 2 }}>Temporary Notes</span>
               <div style={{ position: 'absolute', top: 0, left: '14px', right: '4px', height: '21px', overflow: 'hidden', zIndex: 1, display: 'flex', alignItems: 'center', padding: '0 6px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: '11px', flexShrink: 0, whiteSpace: 'nowrap', visibility: weatherData ? 'visible' : 'hidden' }}>
                   <span className="text-[8.5px] font-medium" style={{ color: 'rgba(255,255,255,1)', whiteSpace: 'nowrap' }} data-testid="blank-weather-temp">{weatherData ? `${Math.round(weatherData.temp)}°C` : '--°C'}</span>
@@ -35292,7 +35293,16 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
-            {/* Expansion dock — top-left, matches homework box style */}
+            <div style={{ flex: 1, padding: '7px', overflow: 'hidden', position: 'relative', zIndex: 46 }}>
+              <textarea
+                value={blankCanvasNotes}
+                onChange={(e) => { setBlankCanvasNotes(e.target.value); localStorage.setItem('blankCanvasNotes', e.target.value); }}
+                placeholder="Type your temporary notes here..."
+                className="w-full h-full resize-none outline-none text-[13px] leading-relaxed"
+                style={{ background: 'rgba(255,255,255,0.92)', borderRadius: '6px', padding: '10px 12px', color: '#1a1a2e', fontFamily: 'system-ui, -apple-system, sans-serif', border: 'none', boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.1)', caretColor: '#1a1a2e' }}
+                data-testid="blank-canvas-notes"
+              />
+            </div>
             {!hwFloating.detached ? (
               <button
                 onClick={hwFloatingHandlers.onDetach}
