@@ -165,6 +165,7 @@ import {
   Radio,
   Minus,
   ArrowDownToLine,
+  ArrowDownRight,
   Music2,
   ListChecks,
   ZoomIn,
@@ -2257,14 +2258,14 @@ export default function Dashboard() {
     if (val) localStorage.setItem('calendarReductionUserSet', '1');
   };
   const [homeworkMinimized, setHomeworkMinimized] = useState(() => localStorage.getItem('homeworkMinimized') === '1');
-  const [homeworkAnimating, setHomeworkAnimating] = useState(false);
+  const [homeworkAnimating] = useState(false);
   const savedCalendarReductionRef = useRef<number | null>(null);
   const savedGlassRightRef = useRef<number | null>(null);
   const savedGlassWidthRef = useRef<number | null>(null);
-  const [hwWipeClipped, setHwWipeClipped] = useState(() => localStorage.getItem('homeworkMinimized') === '1');
+  const hwWipeClipped = homeworkMinimized && !blankBoxOpen;
   const [blankBoxOpen, setBlankBoxOpen] = useState(() => localStorage.getItem('blankBoxOpen') === '1');
-  const [blankBoxAnimating, setBlankBoxAnimating] = useState(false);
-  const [blankWipeClipped, setBlankWipeClipped] = useState(() => localStorage.getItem('blankBoxOpen') !== '1');
+  const [blankBoxAnimating] = useState(false);
+  const blankWipeClipped = !blankBoxOpen;
   const [isResizingHomework, setIsResizingHomework] = useState(false);
   const resizingHomeworkRef = useRef<{ startX: number; startReduction: number } | null>(null);
   const [originalCalendarLeft, setOriginalCalendarLeft] = useState(27); // Original left before reduction
@@ -21355,6 +21356,34 @@ export default function Dashboard() {
           </g>
         </svg>
       </a>
+      {/* Bottom tab for minimized homework — shows when homework is minimized (blank box is open) */}
+      {desktopShowHomework && homeworkMinimized && (
+        <button
+          onClick={() => {
+            setBlankBoxOpen(false);
+            localStorage.removeItem('blankBoxOpen');
+            localStorage.removeItem('homeworkMinimized');
+            setHomeworkMinimized(false);
+          }}
+          className="fixed cursor-pointer"
+          style={{
+            bottom: '29px',
+            left: 'calc(50% + 52px)',
+            display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : 'block',
+            zIndex: 10002,
+            background: 'none',
+            border: 'none',
+            padding: 0,
+          }}
+          data-testid="bottom-tab-homework"
+          title="Restore homework panel"
+        >
+          <svg width="84" height="25" viewBox="0 0 84 25" style={{ display: 'block' }}>
+            <path d="M0,25 L84,25 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+            <text x="42" y="13" textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.85)" fontSize="9" fontWeight="500" fontFamily="system-ui, -apple-system, sans-serif">Homework</text>
+          </svg>
+        </button>
+      )}
       {showNewSemChecklist && newSemChecklistKey && (
         <NewSemesterChecklist
           semesterKey={newSemChecklistKey}
@@ -34643,7 +34672,38 @@ export default function Dashboard() {
           data-testid="section-coming-up"
         >
           <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', border: '1.5px solid rgba(255,255,255,0.5)', pointerEvents: 'none', zIndex: 9999 }} />
-          {(blankBoxOpen || blankBoxAnimating) && <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', zIndex: 9998, pointerEvents: blankBoxOpen ? 'auto' : 'none', clipPath: blankWipeClipped ? 'inset(0 0 0 100%)' : 'inset(0 0 0 0)', transition: blankBoxAnimating ? 'clip-path 0.35s cubic-bezier(0.4,0,0.2,1)' : 'none' }} />}
+          {blankBoxOpen && <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', zIndex: 9998, pointerEvents: 'auto', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', border: '1.5px solid rgba(255,255,255,0.5)', pointerEvents: 'none', zIndex: 9999 }} />
+            <div style={{ padding: '0 8px', height: courseRowRects.length > 0 ? `${courseRowRects[0].top - (calendarBorderTop || (calendarTop + 15)) - 1}px` : '45px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 46, overflow: 'hidden', borderRadius: '12px 12px 0 0', boxShadow: '0 3px 6px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3)' }}>
+              <div style={{ position: 'absolute', top: '21px', left: '25px', right: '8px', height: '0.5px', backgroundColor: 'rgba(255,255,255,0.3)', zIndex: 2 }} />
+              <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: '6px', bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap', zIndex: 2 }}>Blank Canvas</span>
+              <div style={{ position: 'absolute', top: 0, left: '14px', right: '4px', height: '21px', overflow: 'hidden', zIndex: 1, display: 'flex', alignItems: 'center', padding: '0 6px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: '11px', flexShrink: 0, whiteSpace: 'nowrap', visibility: weatherData ? 'visible' : 'hidden' }}>
+                  <span className="text-[8.5px] font-medium" style={{ color: 'rgba(255,255,255,1)', whiteSpace: 'nowrap' }} data-testid="blank-weather-temp">{weatherData ? `${Math.round(weatherData.temp)}°C` : '--°C'}</span>
+                  <span className="text-[8.5px]" style={{ color: 'rgba(255,255,255,1)', whiteSpace: 'nowrap' }} data-testid="blank-weather-desc">{weatherData ? (() => { const WMO: Record<number, string> = {0:'Clear',1:'Mostly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',48:'Rime Fog',51:'Lt Drizzle',53:'Drizzle',55:'Hvy Drizzle',61:'Lt Rain',63:'Rain',65:'Hvy Rain',66:'Frzg Rain',67:'Hvy Frzg Rain',71:'Lt Snow',73:'Snow',75:'Hvy Snow',77:'Snow Grains',80:'Lt Showers',81:'Showers',82:'Hvy Showers',85:'Lt Snow Shwrs',86:'Hvy Snow Shwrs',95:'T-Storm',96:'T-Storm Hail',99:'Svr T-Storm'}; return WMO[weatherData.code] || ''; })() : '--'}</span>
+                  <span className="text-[8.5px]" style={{ color: 'rgba(255,255,255,0.85)', whiteSpace: 'nowrap' }} data-testid="blank-weather-wind">{weatherData ? `💨 ${Math.round(weatherData.windSpeed)} km/h` : ''}</span>
+                </div>
+                <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '4px', lineHeight: 1, marginRight: '23px', flexShrink: 0, whiteSpace: 'nowrap', visibility: weatherData && (weatherData.sunrise || weatherData.sunset) ? 'visible' : 'hidden' }}>
+                  <span className="text-[8.5px]" style={{ display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }} data-testid="blank-sunrise"><span style={{ color: '#FFFF00' }}>☀</span><span style={{ color: '#FFFF00', marginLeft: '3px', position: 'relative', top: '-2px' }}>↑</span><span style={{ color: 'rgba(255,255,255,1)', marginLeft: '6px' }}>{weatherData?.sunrise ? (() => { const t = new Date(weatherData.sunrise); const h = t.getHours(); const m = t.getMinutes(); const ampm = h >= 12 ? 'PM' : 'AM'; return `${h === 0 ? 12 : h > 12 ? h - 12 : h}:${m.toString().padStart(2, '0')} ${ampm}`; })() : '--:--'}</span><span style={{ marginLeft: '5px', color: 'rgba(255,255,255,0.4)' }}>|</span></span>
+                  <span className="text-[8.5px]" style={{ marginLeft: '5px', display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }} data-testid="blank-sunset"><span style={{ color: '#FFFF00', display: 'inline-block', transform: 'scaleX(-1) rotate(30deg)' }}>☽</span><span style={{ color: '#FFFF00', marginLeft: '3px', position: 'relative', top: '-2px' }}>↓</span><span style={{ color: 'rgba(255,255,255,1)', marginLeft: '6px' }}>{weatherData?.sunset ? (() => { const t = new Date(weatherData.sunset); const h = t.getHours(); const m = t.getMinutes(); const ampm = h >= 12 ? 'PM' : 'AM'; return `${h === 0 ? 12 : h > 12 ? h - 12 : h}:${m.toString().padStart(2, '0')} ${ampm}`; })() : '--:--'}</span></span>
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                setBlankBoxOpen(false);
+                localStorage.removeItem('blankBoxOpen');
+                localStorage.removeItem('homeworkMinimized');
+                setHomeworkMinimized(false);
+              }}
+              className="absolute z-[9999] rounded-tr-[11px] rounded-bl-[4px] rounded-tl-[2px] rounded-br-[2px] flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors"
+              style={{ top: '1px', right: '1px', width: '25px', height: '25px', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)' }}
+              data-testid="blank-minimize-dock"
+              title="Minimize blank box, restore homework"
+            >
+              <ArrowDownRight className="h-3 w-3 text-white" />
+            </button>
+          </div>}
           {/* Date navigation tab above glass box */}
           <div
             className="absolute z-[60]"
@@ -34706,6 +34766,21 @@ export default function Dashboard() {
               <Minimize2 className="h-3 w-3 text-white" />
             </button>
           )}
+          {/* Minimize dock button — top-right, mirrors expansion dock style */}
+          <button
+            onClick={() => {
+              localStorage.setItem('homeworkMinimized', '1');
+              setHomeworkMinimized(true);
+              setBlankBoxOpen(true);
+              localStorage.setItem('blankBoxOpen', '1');
+            }}
+            className="absolute z-[70] rounded-tr-[11px] rounded-bl-[4px] rounded-tl-[2px] rounded-br-[2px] flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors"
+            style={{ top: '1px', right: '1px', width: '25px', height: '25px', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', display: 'flex', opacity: (homeworkMinimized || blankBoxOpen) ? 0 : 1, pointerEvents: (homeworkMinimized || blankBoxOpen) ? 'none' : 'auto' }}
+            data-testid="hw-minimize-dock"
+            title="Minimize homework panel"
+          >
+            <ArrowDownRight className="h-3 w-3 text-white" />
+          </button>
           {/* Joint Resize Handle — controls both calendar+homework width and calendar height */}
           {!hwFloating.detached && <div
             className="absolute z-[60]"
@@ -35050,7 +35125,7 @@ export default function Dashboard() {
                     <span className="text-[8.5px]" style={{ color: 'rgba(255,255,255,1)', whiteSpace: 'nowrap' }} data-testid="homework-weather-desc">{weatherData ? (() => { const WMO: Record<number, string> = {0:'Clear',1:'Mostly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',48:'Rime Fog',51:'Lt Drizzle',53:'Drizzle',55:'Hvy Drizzle',61:'Lt Rain',63:'Rain',65:'Hvy Rain',66:'Frzg Rain',67:'Hvy Frzg Rain',71:'Lt Snow',73:'Snow',75:'Hvy Snow',77:'Snow Grains',80:'Lt Showers',81:'Showers',82:'Hvy Showers',85:'Lt Snow Shwrs',86:'Hvy Snow Shwrs',95:'T-Storm',96:'T-Storm Hail',99:'Svr T-Storm'}; return WMO[weatherData.code] || ''; })() : '--'}</span>
                     <span className="text-[8.5px]" style={{ color: 'rgba(255,255,255,0.85)', whiteSpace: 'nowrap' }} data-testid="homework-weather-wind">{weatherData ? `💨 ${Math.round(weatherData.windSpeed)} km/h` : ''}</span>
                   </div>
-                  <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '4px', lineHeight: 1, marginRight: '-2px', flexShrink: 0, whiteSpace: 'nowrap', visibility: weatherData && (weatherData.sunrise || weatherData.sunset) ? 'visible' : 'hidden' }}>
+                  <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '4px', lineHeight: 1, marginRight: '23px', flexShrink: 0, whiteSpace: 'nowrap', visibility: weatherData && (weatherData.sunrise || weatherData.sunset) ? 'visible' : 'hidden' }}>
                     <span className="text-[8.5px]" style={{ display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }} data-testid="homework-sunrise"><span style={{ color: '#FFFF00' }}>☀</span><span style={{ color: '#FFFF00', marginLeft: '3px', position: 'relative', top: '-2px' }}>↑</span><span style={{ color: 'rgba(255,255,255,1)', marginLeft: '6px' }}>{weatherData?.sunrise ? (() => { const t = new Date(weatherData.sunrise); const h = t.getHours(); const m = t.getMinutes(); const ampm = h >= 12 ? 'PM' : 'AM'; return `${h === 0 ? 12 : h > 12 ? h - 12 : h}:${m.toString().padStart(2, '0')} ${ampm}`; })() : '--:--'}</span><span style={{ marginLeft: '5px', color: 'rgba(255,255,255,0.4)' }}>|</span></span>
                     <span className="text-[8.5px]" style={{ marginLeft: '5px', display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }} data-testid="homework-sunset"><span style={{ color: '#FFFF00', display: 'inline-block', transform: 'scaleX(-1) rotate(30deg)' }}>☽</span><span style={{ color: '#FFFF00', marginLeft: '3px', position: 'relative', top: '-2px' }}>↓</span><span style={{ color: 'rgba(255,255,255,1)', marginLeft: '6px' }}>{weatherData?.sunset ? (() => { const t = new Date(weatherData.sunset); const h = t.getHours(); const m = t.getMinutes(); const ampm = h >= 12 ? 'PM' : 'AM'; return `${h === 0 ? 12 : h > 12 ? h - 12 : h}:${m.toString().padStart(2, '0')} ${ampm}`; })() : '--:--'}</span></span>
                   </div>
@@ -36519,143 +36594,8 @@ export default function Dashboard() {
           </div>
           </div>
         </section>}
-        {desktopShowHomework && (
-          <button
-            onClick={() => {
-              if (homeworkAnimating || blankBoxAnimating) return;
-              if (!homeworkMinimized && !blankBoxOpen) {
-                setHomeworkAnimating(true);
-                savedCalendarReductionRef.current = calendarReduction;
-                localStorage.setItem('savedCalendarReduction', String(calendarReduction));
-                localStorage.setItem('homeworkMinimized', '1');
-                setHomeworkMinimized(true);
-                requestAnimationFrame(() => {
-                  setHwWipeClipped(true);
-                  setCalendarReduction(0);
-                  localStorage.setItem('calendarReduction', '0');
-                });
-                setTimeout(() => setHomeworkAnimating(false), 400);
-              } else if (homeworkMinimized && blankBoxOpen) {
-                setBlankBoxAnimating(true);
-                setHomeworkMinimized(false);
-                localStorage.removeItem('homeworkMinimized');
-                requestAnimationFrame(() => {
-                  setBlankWipeClipped(true);
-                });
-                setTimeout(() => {
-                  setBlankBoxAnimating(false);
-                  setBlankBoxOpen(false);
-                  localStorage.removeItem('blankBoxOpen');
-                }, 400);
-              } else if (homeworkMinimized && !blankBoxOpen) {
-                setHomeworkAnimating(true);
-                const restore = savedCalendarReductionRef.current ?? (parseFloat(localStorage.getItem('savedCalendarReduction') || '0') || 260);
-                localStorage.removeItem('homeworkMinimized');
-                setCalendarReduction(restore);
-                localStorage.setItem('calendarReduction', String(restore));
-                setHomeworkMinimized(false);
-                requestAnimationFrame(() => {
-                  setHwWipeClipped(false);
-                });
-                setTimeout(() => setHomeworkAnimating(false), 400);
-              }
-            }}
-            className="fixed cursor-pointer hover:opacity-80 transition-opacity"
-            style={{
-              right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1 + 3 + 6 - 22}px`,
-              top: `${(calendarBorderTop || (calendarTop + 15)) - 12}px`,
-              zIndex: 10000,
-              background: 'none',
-              border: 'none',
-              padding: 0,
-              transition: (homeworkAnimating || blankBoxAnimating) ? 'right 0.35s cubic-bezier(0.4,0,0.2,1)' : 'none',
-            }}
-            data-testid="button-toggle-homework"
-            title={homeworkMinimized ? 'Show homework panel' : 'Hide homework panel'}
-          >
-            {(homeworkMinimized || blankBoxOpen)
-              ? <ChevronRight className="h-[17px] w-[17px] text-white/70 hover:text-white" />
-              : <ChevronDown className="h-[17px] w-[17px] text-white/70 hover:text-white" />
-            }
-          </button>
-        )}
-        {desktopShowHomework && (
-          <button
-            onClick={() => {
-              if (homeworkAnimating || blankBoxAnimating) return;
-              if (blankBoxOpen) {
-                setBlankBoxAnimating(true);
-                savedCalendarReductionRef.current = calendarReduction;
-                localStorage.setItem('savedCalendarReduction', String(calendarReduction));
-                requestAnimationFrame(() => {
-                  setBlankWipeClipped(true);
-                  setHwWipeClipped(true);
-                  setCalendarReduction(0);
-                  localStorage.setItem('calendarReduction', '0');
-                });
-                setTimeout(() => {
-                  setBlankBoxAnimating(false);
-                  setBlankBoxOpen(false);
-                  localStorage.removeItem('blankBoxOpen');
-                }, 400);
-              } else if (!homeworkMinimized && !blankBoxOpen) {
-                setHomeworkAnimating(true);
-                savedCalendarReductionRef.current = calendarReduction;
-                localStorage.setItem('savedCalendarReduction', String(calendarReduction));
-                localStorage.setItem('homeworkMinimized', '1');
-                setHomeworkMinimized(true);
-                requestAnimationFrame(() => {
-                  setHwWipeClipped(true);
-                  setCalendarReduction(0);
-                  localStorage.setItem('calendarReduction', '0');
-                });
-                setTimeout(() => {
-                  setHomeworkAnimating(false);
-                  setBlankBoxAnimating(true);
-                  setHwWipeClipped(false);
-                  setBlankBoxOpen(true);
-                  localStorage.setItem('blankBoxOpen', '1');
-                  const restore = savedCalendarReductionRef.current ?? (parseFloat(localStorage.getItem('savedCalendarReduction') || '0') || 260);
-                  setCalendarReduction(restore);
-                  localStorage.setItem('calendarReduction', String(restore));
-                  requestAnimationFrame(() => {
-                    setBlankWipeClipped(false);
-                  });
-                  setTimeout(() => setBlankBoxAnimating(false), 400);
-                }, 400);
-              } else {
-                setBlankBoxAnimating(true);
-                const restore = savedCalendarReductionRef.current ?? (parseFloat(localStorage.getItem('savedCalendarReduction') || '0') || 260);
-                setCalendarReduction(restore);
-                localStorage.setItem('calendarReduction', String(restore));
-                setBlankBoxOpen(true);
-                localStorage.setItem('blankBoxOpen', '1');
-                setHwWipeClipped(false);
-                requestAnimationFrame(() => {
-                  setBlankWipeClipped(false);
-                });
-                setTimeout(() => setBlankBoxAnimating(false), 400);
-              }
-            }}
-            className="fixed cursor-pointer hover:opacity-80 transition-opacity"
-            style={{
-              right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1 + 3 + 6 - 22}px`,
-              bottom: `${calendarBottom - 5}px`,
-              zIndex: 10000,
-              background: 'none',
-              border: 'none',
-              padding: 0,
-              transition: (homeworkAnimating || blankBoxAnimating) ? 'right 0.35s cubic-bezier(0.4,0,0.2,1)' : 'none',
-            }}
-            data-testid="button-toggle-blank-box"
-            title={blankBoxOpen ? 'Hide blank panel' : 'Show blank panel'}
-          >
-            {blankBoxOpen
-              ? <ChevronDown className="h-[17px] w-[17px] text-white/70 hover:text-white" />
-              : <ChevronRight className="h-[17px] w-[17px] text-white/70 hover:text-white" />
-            }
-          </button>
-        )}
+        {/* Old floating arrow toggle removed — minimize is now via dock button inside homework header */}
+        {/* Old blank box floating toggle removed — minimize is now via dock button inside headers */}
 
         {desktopShowHomework && hwFloating.detached && (
           <div
