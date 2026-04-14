@@ -14829,13 +14829,19 @@ export default function Dashboard() {
               <button
                 onClick={() => {
                   const attachments = essayReminderTask.attachments || [];
-                  const oneDriveAttachment = attachments.find((a: any) => {
-                    try { const p = typeof a === 'string' ? JSON.parse(a) : a; return p.type === 'onedrive'; } catch { return false; }
-                  });
-                  if (oneDriveAttachment) {
-                    const parsed = typeof oneDriveAttachment === 'string' ? JSON.parse(oneDriveAttachment) : oneDriveAttachment;
-                    const webUrl = parsed.webUrl || parsed.url;
-                    if (webUrl) window.open(webUrl, '_blank');
+                  let opened = false;
+                  for (const att of attachments) {
+                    try {
+                      const parsed = typeof att === 'string' ? JSON.parse(att) : att;
+                      const url = parsed.webUrl || parsed.url;
+                      if (url && url.startsWith('http')) { window.open(url, '_blank'); opened = true; break; }
+                    } catch {
+                      if (typeof att === 'string' && att.startsWith('http')) { window.open(att, '_blank'); opened = true; break; }
+                    }
+                  }
+                  if (!opened && essayReminderTask.referenceLink) {
+                    window.open(essayReminderTask.referenceLink, '_blank');
+                    opened = true;
                   }
                   const todayStr = new Date().toISOString().split('T')[0];
                   localStorage.setItem(`essay-reminder-dismissed-${essayReminderTask.id}-${todayStr}`, '1');
