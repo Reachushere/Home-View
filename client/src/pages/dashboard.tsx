@@ -26720,7 +26720,7 @@ export default function Dashboard() {
                           onClick={(e) => {
                             e.stopPropagation();
                             const certKey = pastEntry?.certKey || semCourse.code;
-                            startTransition(() => setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey, semKey }));
+                            startTransition(() => setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey, semKey, openInEdit: true }));
                           }}
                           data-testid={`button-edit-course-${semCourse.code}`}
                         >
