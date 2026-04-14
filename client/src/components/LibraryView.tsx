@@ -648,7 +648,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
         onClick={(e) => { e.stopPropagation(); onRename(file); }}
         style={{
           position: 'absolute',
-          top: '22px',
+          ...(fileType === 'module' ? { bottom: '4px' } : { top: '22px' }),
           left: '50%',
           transform: 'translateX(-50%)',
           cursor: 'pointer',
@@ -698,6 +698,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
           maxHeight: fileType === 'module' ? 'none' : `${isLifted ? liftedTextHeight : maxTextHeight}px`,
           overflow: fileType === 'module' ? 'visible' : 'hidden',
           textOverflow: fileType === 'module' ? undefined : (isLifted ? 'clip' : 'ellipsis'),
+          display: fileType === 'module' ? 'none' : undefined,
           whiteSpace: 'nowrap',
           padding: '4px 0',
           lineHeight: 1.2,
@@ -709,7 +710,42 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
           {isLifted ? expandedTitle : title}
         </span>
       )}
-      {weekNum && (
+      {weekNum && fileType === 'module' && (
+        <div style={{
+          position: 'absolute',
+          top: '4px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          lineHeight: 1,
+          gap: '1px',
+        }}>
+          <span style={{
+            fontSize: '18px',
+            fontWeight: 800,
+            color: 'rgba(255,255,255,0.9)',
+            textShadow: '0 1px 3px rgba(0,0,0,0.7)',
+            lineHeight: 1,
+            whiteSpace: 'nowrap',
+          }}>
+            {weekNum}
+          </span>
+          <span style={{
+            fontSize: '5px',
+            fontWeight: 700,
+            color: 'rgba(255,255,255,0.6)',
+            textShadow: '0 1px 2px rgba(0,0,0,0.7)',
+            letterSpacing: '0.2px',
+            whiteSpace: 'nowrap',
+            lineHeight: 1,
+          }}>
+            {courseCode}
+          </span>
+        </div>
+      )}
+      {weekNum && fileType !== 'module' && (
         <span style={{
           position: 'absolute',
           bottom: '4px',
@@ -727,7 +763,7 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
       )}
       <div style={{
         position: 'absolute',
-        bottom: weekNum ? '22px' : '6px',
+        bottom: (weekNum && fileType !== 'module') ? '22px' : '6px',
         left: '50%',
         transform: 'translateX(-50%)',
         width: '6px',
