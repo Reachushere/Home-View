@@ -1510,7 +1510,8 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
     const runSearch = async () => {
       setSearching(true);
       try {
-        const tokens = initialSearchQuery.toLowerCase().trim().split(/\s+/).filter(t => t.length >= 2);
+        const pq = parseSearchQuery(initialSearchQuery);
+        const tokens = pq.allHighlightTokens.filter(t => t.length >= 2);
         if (tokens.length === 0) { setSearching(false); return; }
         const escapedTokens = tokens.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
         const pattern = new RegExp(`(${escapedTokens.join('|')})`, 'gi');
@@ -1523,6 +1524,10 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
             if (item.hasEOL) s += ' ';
             return s;
           });
+          const pageText = spans.join('');
+          if (pq.phrases.length > 0 || pq.required.length > 0) {
+            if (!textMatchesParsedQuery(pageText, pq)) continue;
+          }
           let count = 0;
           for (const spanText of spans) {
             if (!spanText.trim()) continue;
@@ -4489,9 +4494,11 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', marginBottom: '8px' }}>
               {combinedSearchResults.length} result{combinedSearchResults.length !== 1 ? 's' : ''} found
               {ftsLoading && <span style={{ marginLeft: '8px', fontSize: '10px', color: 'rgba(218,165,32,0.7)' }}>searching content...</span>}
-              {masterSearch.trim() && masterSearch.trim().split(/\s+/).length > 1 && (
+              {masterSearch.trim() && (parsedQuery.phrases.length > 0 || parsedQuery.required.length > 0 || parsedQuery.optional.length > 1) && (
                 <span style={{ marginLeft: '6px', fontSize: '10px', color: 'rgba(130,200,255,0.6)' }}>
-                  (matching any of: {masterSearch.trim().split(/\s+/).map((w, i) => <span key={i}>{i > 0 && ', '}<span style={{ color: 'rgba(130,200,255,0.9)' }}>{w}</span></span>)})
+                  ({parsedQuery.phrases.map((ph, i) => <span key={`ph${i}`}>{i > 0 && ' + '}<span style={{ color: 'rgba(255,200,100,0.9)' }}>&quot;{ph}&quot;</span></span>)}
+                  {parsedQuery.required.length > 0 && <>{parsedQuery.phrases.length > 0 && ' + '}{parsedQuery.required.map((r, i) => <span key={`r${i}`}>{i > 0 && ' + '}<span style={{ color: 'rgba(100,220,100,0.9)' }}>+{r}</span></span>)}</>}
+                  {parsedQuery.optional.length > 0 && <>{(parsedQuery.phrases.length > 0 || parsedQuery.required.length > 0) ? ', also ' : 'matching any: '}{parsedQuery.optional.map((o, i) => <span key={`o${i}`}>{i > 0 && ', '}<span style={{ color: 'rgba(130,200,255,0.9)' }}>{o}</span></span>)}</>})
                 </span>
               )}
               {masterSearch.trim() && combinedSearchResults.some(r => r.contentSnippet) && (

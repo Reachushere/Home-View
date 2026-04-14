@@ -5454,11 +5454,44 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       const { sql } = await import("drizzle-orm");
 
       const STOP_WORDS = new Set(['a', 'an', 'and', 'as', 'at', 'be', 'but', 'by', 'for', 'if', 'in', 'is', 'it', 'no', 'not', 'of', 'on', 'or', 'so', 'the', 'to', 'we']);
-      const rawTokens = q.toLowerCase().split(/\s+/).filter(Boolean);
-      const tokens = rawTokens.filter(t => !STOP_WORDS.has(t));
-      const searchTerms = (tokens.length > 0 ? tokens : rawTokens).join(' ');
 
-      const tsQuery = searchTerms.split(/\s+/).map(t => t + ':*').join(' & ');
+      const phrases: string[] = [];
+      const required: string[] = [];
+      const optional: string[] = [];
+      let remaining = q;
+      const phraseRegex = /"([^"]+)"/g;
+      let pm: RegExpExecArray | null;
+      while ((pm = phraseRegex.exec(q)) !== null) {
+        const phrase = pm[1].trim().toLowerCase();
+        if (phrase.length >= 2) phrases.push(phrase);
+      }
+      remaining = remaining.replace(/"[^"]*"/g, ' ');
+      remaining.split(/\s+/).filter(Boolean).forEach(p => {
+        if (p.startsWith('+') && p.length > 1) required.push(p.slice(1).toLowerCase());
+        else if (p.length >= 2) optional.push(p.toLowerCase());
+      });
+
+      const allTokens = [
+        ...phrases.flatMap(ph => ph.split(/\s+/).filter(w => w.length >= 2)),
+        ...required,
+        ...optional,
+      ].filter(t => !STOP_WORDS.has(t));
+      const tokens = allTokens.length > 0 ? allTokens : [
+        ...phrases.flatMap(ph => ph.split(/\s+/)),
+        ...required,
+        ...optional,
+      ];
+
+      const tsQueryParts: string[] = [];
+      for (const ph of phrases) {
+        const phWords = ph.split(/\s+/).filter(w => w.length >= 2);
+        if (phWords.length > 0) tsQueryParts.push(phWords.map(w => w + ':*').join(' <-> '));
+      }
+      for (const r of required) tsQueryParts.push(r + ':*');
+      for (const o of optional) tsQueryParts.push(o + ':*');
+      const tsQuery = tsQueryParts.length > 0
+        ? tsQueryParts.join(' & ')
+        : tokens.map(t => t + ':*').join(' & ');
 
       const ftsResults = await db.execute(sql`
         SELECT fp.file_id, fp.page_num, 
