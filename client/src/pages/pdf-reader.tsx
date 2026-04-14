@@ -2034,6 +2034,19 @@ export default function PDFReaderPage() {
     }
   };
 
+  const lastWheelTime = useRef(0);
+  const handlePdfWheel = useCallback((e: React.WheelEvent) => {
+    e.preventDefault();
+    const now = Date.now();
+    if (now - lastWheelTime.current < 200) return;
+    lastWheelTime.current = now;
+    if (e.deltaY > 0) {
+      setCurrentPage(p => Math.min(p + 1, numPagesRef.current));
+    } else if (e.deltaY < 0) {
+      setCurrentPage(p => Math.max(p - 1, 1));
+    }
+  }, []);
+
   useEffect(() => {
     if (extractedText && chunksRef.current.length === 0) {
       const newChunks = chunkText(extractedText);
@@ -2416,7 +2429,7 @@ export default function PDFReaderPage() {
       </div>}
 
       <div className="flex-1 flex relative overflow-hidden min-h-0" style={{ zIndex: 2 }}>
-        <div className={`${isFullPage ? 'w-full' : 'flex-1 lg:w-1/2'} overflow-auto pdf-reader-scrollbar`} style={{ background: 'rgba(0,0,0,0.4)' }}>
+        <div className={`${isFullPage ? 'w-full' : 'flex-1'} overflow-auto pdf-reader-scrollbar`} style={{ background: 'rgba(0,0,0,0.4)' }}>
           {!followOnly && <div className="sticky top-0 z-20" style={{ background: 'rgba(0,10,30,0.8)', backdropFilter: 'blur(10px)' }}>
             <div className="flex items-center justify-between px-4 py-1.5 border-b border-white/10">
               <span className="text-[10px] uppercase tracking-wider text-white/50 font-semibold">Filtered Text</span>
@@ -2883,36 +2896,36 @@ export default function PDFReaderPage() {
           )}
         </div>
 
-        <div className={`${isFullPage ? 'hidden' : 'hidden lg:flex'} lg:w-[45%] flex-col border-l border-white/10`} style={{ background: 'rgba(0,0,0,0.3)' }}>
-          <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-1.5 border-b border-white/10" style={{ background: 'rgba(0,10,30,0.6)' }}>
-            <span className="text-[10px] uppercase tracking-wider text-white/50 font-semibold">Original PDF</span>
-            <div className="flex items-center gap-1" style={{ marginRight: '13px' }}>
-              <Button variant="ghost" size="icon" className="h-6 w-6 text-white/60 hover:text-white" onClick={goToPreviousPage} disabled={currentPage <= 1}>
-                <ChevronLeft className="h-3.5 w-3.5" />
+        <div className={`${isFullPage ? 'hidden' : 'flex'} w-[35%] min-w-[200px] max-w-[400px] flex-col border-l border-white/10`} style={{ background: 'rgba(0,0,0,0.3)' }} onWheel={handlePdfWheel}>
+          <div className="sticky top-0 z-10 flex items-center justify-between px-3 py-1 border-b border-white/10" style={{ background: 'rgba(0,10,30,0.6)' }}>
+            <span className="text-[9px] uppercase tracking-wider text-white/50 font-semibold">Preview</span>
+            <div className="flex items-center gap-0.5">
+              <Button variant="ghost" size="icon" className="h-5 w-5 text-white/60 hover:text-white" onClick={goToPreviousPage} disabled={currentPage <= 1}>
+                <ChevronLeft className="h-3 w-3" />
               </Button>
-              <span className="text-[10px] text-white/60 min-w-[40px] text-center">{currentPage} / {numPages}</span>
-              <Button variant="ghost" size="icon" className="h-6 w-6 text-white/60 hover:text-white" onClick={goToNextPage} disabled={currentPage >= numPages}>
-                <ChevronRight className="h-3.5 w-3.5" />
+              <span className="text-[9px] text-white/60 min-w-[36px] text-center">{currentPage}/{numPages}</span>
+              <Button variant="ghost" size="icon" className="h-5 w-5 text-white/60 hover:text-white" onClick={goToNextPage} disabled={currentPage >= numPages}>
+                <ChevronRight className="h-3 w-3" />
               </Button>
             </div>
           </div>
-          <div className="flex-1 overflow-auto flex justify-center items-start p-2" ref={(el) => { if (el && !el.dataset.observed) { el.dataset.observed = '1'; const ro = new ResizeObserver(() => { const h = el.clientHeight; if (h > 0) setPdfContainerHeight(h); }); ro.observe(el); } }}>
+          <div className="flex-1 overflow-hidden flex justify-center items-start p-1" style={{ cursor: 'ns-resize' }} ref={(el) => { if (el && !el.dataset.observed) { el.dataset.observed = '1'; const ro = new ResizeObserver(() => { const h = el.clientHeight; if (h > 0) setPdfContainerHeight(h); }); ro.observe(el); } }}>
             {pdfUrl && (
               <Document
                 file={pdfUrl}
                 onLoadSuccess={onDocumentLoadSuccess}
                 loading={
                   <div className="flex items-center justify-center h-full">
-                    <Loader2 className="h-8 w-8 animate-spin text-white/40" />
+                    <Loader2 className="h-6 w-6 animate-spin text-white/40" />
                   </div>
                 }
               >
                 <Page
                   pageNumber={currentPage}
-                  height={pdfContainerHeight ? pdfContainerHeight - 16 : undefined}
-                  width={!pdfContainerHeight ? (isMobile ? window.innerWidth - 32 : 480) : undefined}
-                  renderTextLayer={true}
-                  renderAnnotationLayer={true}
+                  height={pdfContainerHeight ? pdfContainerHeight - 8 : undefined}
+                  width={!pdfContainerHeight ? 280 : undefined}
+                  renderTextLayer={false}
+                  renderAnnotationLayer={false}
                 />
               </Document>
             )}
