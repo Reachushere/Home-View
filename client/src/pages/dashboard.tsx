@@ -3821,6 +3821,7 @@ export default function Dashboard() {
   const [expandedSemKey, setExpandedSemKey] = useState<string | null>(null);
   const [expandedSemHealth, setExpandedSemHealth] = useState<any>(null);
   const [expandedSemHealthLoading, setExpandedSemHealthLoading] = useState(false);
+  const [semFlowWizard, setSemFlowWizard] = useState<{ courseCode: string; issue: string; step: number } | null>(null);
   useEffect(() => {
     if (!expandedSemKey) { setExpandedSemHealth(null); return; }
     setExpandedSemHealthLoading(true);
@@ -27019,7 +27020,6 @@ export default function Dashboard() {
                   return 'w2026';
                 })();
                 const expIsCurrentSem = expandedSemKey === currentSemKey;
-                const expIsPast = !expIsCurrentSem && hasSemStarted(expandedSemKey) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(expandedSemKey); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })();
                 const expIsEnded = semesterEndConfirmed[expandedSemKey];
                 const expHealth = expandedSemHealth;
 
@@ -27036,6 +27036,11 @@ export default function Dashboard() {
                   'ss2028': '2028-08-04', 'f2028': '2028-12-15', 'w2029': '2029-04-13',
                 };
                 const fmtDate = (d: string) => { if (!d) return '?'; const dt = new Date(d + 'T12:00:00'); return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); };
+                const hasSemStartedLocal = (key: string) => {
+                  const start = semStartDatesLocal[key];
+                  return start ? new Date() >= new Date(start + 'T00:00:00') : false;
+                };
+                const expIsPast = !expIsCurrentSem && hasSemStartedLocal(expandedSemKey) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(expandedSemKey); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })();
 
                 const getOneDrivePath = (courseCode: string, weekNum?: number) => {
                   const yearStr = expandedSemKey.replace(/^(ss|f|w)/, '');
@@ -27076,7 +27081,7 @@ export default function Dashboard() {
 
                       <div className="flex-1 overflow-y-auto p-6" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.2) transparent' }}>
                         <div className="space-y-6">
-                          {expandedSem.courses.length === 0 && <div className="text-[14px] text-white/40 text-center py-12">No courses assigned to this semester</div>}
+                          {expandedSem.courses.length === 0 && <div className="text-[16px] text-white/60 text-center py-12">No courses assigned to this semester yet</div>}
                           {expandedSem.courses.map((c, cIdx) => {
                             const codeNorm = c.code.toUpperCase().replace(/\s/g, '');
                             const gc = getCourseGradientColors(c.code);
@@ -27095,34 +27100,39 @@ export default function Dashboard() {
                               <div key={c.code} className="rounded-lg border border-white/20 overflow-hidden" data-testid={`expanded-course-${c.code}`}>
                                 <div className="px-4 py-3 flex items-center gap-3 border-b border-white/15" style={{ background: 'rgba(255,255,255,0.06)' }}>
                                   <div className="w-4 h-4 rounded-full flex-shrink-0" style={{ background: dotBg }} />
-                                  <span className="text-[13px] font-bold text-white">{displayNameResult}</span>
-                                  {c.fullName && <span className="text-[11px] text-white/50">— {c.fullName}</span>}
+                                  <span className="text-[15px] font-bold text-white">{displayNameResult}</span>
+                                  {c.fullName && <span className="text-[13px] text-white/60">— {c.fullName}</span>}
                                   {courseHealth && (
-                                    <div className="ml-auto flex items-center gap-2">
-                                      <span className="text-[9px] text-white/50">{courseHealth.totalModules} modules · {courseHealth.totalReadings} readings</span>
-                                      {courseHealth.syllabusLinked ? <span className="text-[8px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Syllabus ✓</span> : <span className="text-[8px] px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30">No Syllabus</span>}
+                                    <div className="ml-auto flex items-center gap-3">
+                                      <span className="text-[12px] text-white/60">{courseHealth.totalModules} modules · {courseHealth.totalReadings} readings</span>
+                                      {courseHealth.syllabusLinked ? <span className="text-[11px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Syllabus ✓</span> : <span className="text-[11px] px-2 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30 cursor-pointer hover:bg-red-500/30" onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: 'syllabus', step: 0 }); }}>No Syllabus — Fix</span>}
                                     </div>
                                   )}
                                 </div>
                                 <div className="p-4 space-y-4">
                                   <div>
-                                    <div className="text-[10px] font-semibold text-white/70 uppercase tracking-wider mb-2">Automation Flow</div>
+                                    <div className="text-[13px] font-semibold text-white uppercase tracking-wider mb-3">Automation Flow</div>
                                     <div className="flex items-center gap-0 flex-wrap">
                                       {[
-                                        { label: 'OneDrive', icon: '☁️', path: getOneDrivePath(c.code), status: courseHealth?.oneDriveFolderConfigured ? 'ok' : 'error' },
-                                        { label: 'Folder Sync', icon: '🔄', path: `week-*-${c.code.toLowerCase()}-module/reading`, status: courseHealth?.totalModules > 0 ? 'ok' : 'warning' },
-                                        { label: 'Local Storage', icon: '💾', path: `persistent-uploads/`, status: 'ok' },
-                                        { label: 'TTS Processing', icon: '🔊', path: `TTS chunks → Cat Lights`, status: courseHealth ? (courseHealth.totalTtsReady === courseHealth.totalTtsNeeded ? 'ok' : courseHealth.totalTtsReady > 0 ? 'warning' : 'idle') : 'idle' },
-                                        { label: 'Library Shelf', icon: '📚', path: `LibraryView → BookReader`, status: courseHealth?.totalModules > 0 || courseHealth?.totalReadings > 0 ? 'ok' : 'idle' },
+                                        { label: 'OneDrive', icon: '☁️', path: getOneDrivePath(c.code), status: courseHealth?.oneDriveFolderConfigured ? 'ok' : 'error', issueKey: 'onedrive' },
+                                        { label: 'Folder Sync', icon: '🔄', path: `week-*-${c.code.toLowerCase()}-module/reading`, status: courseHealth?.totalModules > 0 ? 'ok' : 'warning', issueKey: 'sync' },
+                                        { label: 'Local Storage', icon: '💾', path: `persistent-uploads/`, status: 'ok', issueKey: 'storage' },
+                                        { label: 'TTS Processing', icon: '🔊', path: `TTS chunks → Cat Lights`, status: courseHealth ? (courseHealth.totalTtsReady === courseHealth.totalTtsNeeded ? 'ok' : courseHealth.totalTtsReady > 0 ? 'warning' : 'idle') : 'idle', issueKey: 'tts' },
+                                        { label: 'Library Shelf', icon: '📚', path: `LibraryView → BookReader`, status: courseHealth?.totalModules > 0 || courseHealth?.totalReadings > 0 ? 'ok' : 'idle', issueKey: 'library' },
                                       ].map((step, sIdx, arr) => (
                                         <div key={step.label} className="flex items-center" style={{ flexShrink: 0 }}>
-                                          <div className="flex flex-col items-center" style={{ width: '90px' }}>
-                                            <div className="w-8 h-8 rounded-full flex items-center justify-center text-[14px] border" style={{
-                                              background: step.status === 'ok' ? 'rgba(34,197,94,0.15)' : step.status === 'warning' ? 'rgba(234,179,8,0.15)' : step.status === 'error' ? 'rgba(239,68,68,0.15)' : 'rgba(255,255,255,0.05)',
-                                              borderColor: step.status === 'ok' ? 'rgba(34,197,94,0.4)' : step.status === 'warning' ? 'rgba(234,179,8,0.4)' : step.status === 'error' ? 'rgba(239,68,68,0.4)' : 'rgba(255,255,255,0.15)',
-                                            }}>{step.icon}</div>
-                                            <span className="text-[8px] font-semibold text-white/80 mt-1 text-center leading-tight">{step.label}</span>
-                                            <span className="text-[7px] text-white/40 text-center leading-tight mt-0.5 break-all" style={{ maxWidth: '85px' }}>{step.path}</span>
+                                          <div className="flex flex-col items-center" style={{ width: '110px' }}>
+                                            <div
+                                              className={`w-10 h-10 rounded-full flex items-center justify-center text-[16px] border ${(step.status === 'error' || step.status === 'warning') ? 'cursor-pointer hover:scale-110 transition-transform' : ''}`}
+                                              style={{
+                                                background: step.status === 'ok' ? 'rgba(34,197,94,0.15)' : step.status === 'warning' ? 'rgba(234,179,8,0.15)' : step.status === 'error' ? 'rgba(239,68,68,0.15)' : 'rgba(255,255,255,0.05)',
+                                                borderColor: step.status === 'ok' ? 'rgba(34,197,94,0.4)' : step.status === 'warning' ? 'rgba(234,179,8,0.4)' : step.status === 'error' ? 'rgba(239,68,68,0.4)' : 'rgba(255,255,255,0.15)',
+                                              }}
+                                              onClick={(e) => { if (step.status === 'error' || step.status === 'warning') { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: step.issueKey, step: 0 }); } }}
+                                            >{step.icon}</div>
+                                            <span className="text-[11px] font-semibold text-white mt-1.5 text-center leading-tight">{step.label}</span>
+                                            <span className="text-[9px] text-white/60 text-center leading-tight mt-0.5 break-all" style={{ maxWidth: '100px' }}>{step.path}</span>
+                                            {(step.status === 'error' || step.status === 'warning') && <span className="text-[9px] mt-1 px-2 py-0.5 rounded cursor-pointer hover:brightness-125 transition-all" style={{ background: step.status === 'error' ? 'rgba(239,68,68,0.25)' : 'rgba(234,179,8,0.25)', color: step.status === 'error' ? '#fca5a5' : '#fde68a', border: `1px solid ${step.status === 'error' ? 'rgba(239,68,68,0.4)' : 'rgba(234,179,8,0.4)'}` }} onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: step.issueKey, step: 0 }); }}>Fix</span>}
                                           </div>
                                           {sIdx < arr.length - 1 && (
                                             <div className="flex items-center" style={{ width: '24px', height: '2px', marginTop: '-16px' }}>
@@ -27136,14 +27146,14 @@ export default function Dashboard() {
                                   </div>
 
                                   <div>
-                                    <div className="text-[10px] font-semibold text-white/70 uppercase tracking-wider mb-2">Naming Convention & File Paths</div>
-                                    <div className="rounded border border-white/10 overflow-hidden" style={{ background: 'rgba(0,0,0,0.2)' }}>
-                                      <table className="w-full text-[10px] text-white/80">
+                                    <div className="text-[13px] font-semibold text-white uppercase tracking-wider mb-3">Naming Convention & File Paths</div>
+                                    <div className="rounded border border-white/15 overflow-hidden" style={{ background: 'rgba(0,0,0,0.2)' }}>
+                                      <table className="w-full text-[13px] text-white">
                                         <thead>
                                           <tr style={{ background: 'rgba(255,255,255,0.06)' }}>
-                                            <th className="text-left px-3 py-1.5 font-semibold text-white/60 border-b border-white/10">Connection</th>
-                                            <th className="text-left px-3 py-1.5 font-semibold text-white/60 border-b border-white/10">Path / Pattern</th>
-                                            <th className="text-center px-3 py-1.5 font-semibold text-white/60 border-b border-white/10 w-16">Status</th>
+                                            <th className="text-left px-3 py-2 font-semibold text-white/80 border-b border-white/15">Connection</th>
+                                            <th className="text-left px-3 py-2 font-semibold text-white/80 border-b border-white/15">Path / Pattern</th>
+                                            <th className="text-center px-3 py-2 font-semibold text-white/80 border-b border-white/15 w-16">Status</th>
                                           </tr>
                                         </thead>
                                         <tbody>
@@ -27156,12 +27166,17 @@ export default function Dashboard() {
                                             { label: 'TTS Audio', path: `TTS chunks (${courseHealth?.totalTtsReady || 0}/${courseHealth?.totalTtsNeeded || 0} ready)`, ok: courseHealth ? courseHealth.totalTtsReady === courseHealth.totalTtsNeeded : undefined },
                                           ].map((row) => (
                                             <tr key={row.label} className="hover:bg-white/5 transition-colors">
-                                              <td className="px-3 py-1.5 font-medium border-b border-white/5">{row.label}</td>
-                                              <td className="px-3 py-1.5 font-mono text-[9px] text-white/60 border-b border-white/5">{row.path}</td>
-                                              <td className="px-3 py-1.5 text-center border-b border-white/5">
-                                                {row.ok === true && <span className="inline-block w-2 h-2 rounded-full bg-emerald-500" title="Connected" />}
-                                                {row.ok === false && <span className="inline-block w-2 h-2 rounded-full bg-red-500" title="Not connected" />}
-                                                {row.ok === undefined && <span className="inline-block w-2 h-2 rounded-full bg-white/20" title="Unknown" />}
+                                              <td className="px-3 py-2 font-medium text-white border-b border-white/5">{row.label}</td>
+                                              <td className="px-3 py-2 font-mono text-[11px] text-white/70 border-b border-white/5">{row.path}</td>
+                                              <td className="px-3 py-2 text-center border-b border-white/5">
+                                                {row.ok === true && <span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500" title="Connected" />}
+                                                {row.ok === false && (
+                                                  <span className="inline-flex items-center gap-1.5 cursor-pointer" onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: row.label.toLowerCase().replace(/\s/g, '_'), step: 0 }); }}>
+                                                    <span className="inline-block w-2.5 h-2.5 rounded-full bg-red-500" title="Not connected" />
+                                                    <span className="text-[10px] text-red-400 hover:text-red-300 underline">Fix</span>
+                                                  </span>
+                                                )}
+                                                {row.ok === undefined && <span className="inline-block w-2.5 h-2.5 rounded-full bg-white/20" title="Unknown" />}
                                               </td>
                                             </tr>
                                           ))}
@@ -27172,7 +27187,7 @@ export default function Dashboard() {
 
                                   {courseHealth && (
                                     <div>
-                                      <div className="text-[10px] font-semibold text-white/70 uppercase tracking-wider mb-2">Weekly Content Status</div>
+                                      <div className="text-[13px] font-semibold text-white uppercase tracking-wider mb-3">Weekly Content Status</div>
                                       <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${Math.min(courseHealth.moduleWeeks ? Object.keys(courseHealth.moduleWeeks).length : 13, 13)}, 1fr)` }}>
                                         {Array.from({ length: expHealth?.numberOfWeeks || 13 }, (_, i) => i + 1).map(w => {
                                           const mCount = courseHealth.moduleWeeks?.[w]?.count || 0;
@@ -27180,10 +27195,10 @@ export default function Dashboard() {
                                           const mTts = courseHealth.moduleWeeks?.[w]?.ttsReady || 0;
                                           const hasContent = mCount > 0 || rCount > 0;
                                           return (
-                                            <div key={w} className="rounded border text-center py-1" style={{ background: hasContent ? 'rgba(34,197,94,0.1)' : 'rgba(255,255,255,0.03)', borderColor: hasContent ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.1)' }}>
-                                              <div className="text-[8px] font-bold text-white/50">W{w}</div>
-                                              <div className="text-[7px] text-white/40">{mCount}M {rCount}R</div>
-                                              {mCount > 0 && mTts < mCount && <div className="text-[6px] text-yellow-400">TTS {mTts}/{mCount}</div>}
+                                            <div key={w} className="rounded border text-center py-1.5" style={{ background: hasContent ? 'rgba(34,197,94,0.1)' : 'rgba(255,255,255,0.03)', borderColor: hasContent ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.1)' }}>
+                                              <div className="text-[10px] font-bold text-white/70">W{w}</div>
+                                              <div className="text-[9px] text-white/50">{mCount}M {rCount}R</div>
+                                              {mCount > 0 && mTts < mCount && <div className="text-[8px] text-yellow-400">TTS {mTts}/{mCount}</div>}
                                             </div>
                                           );
                                         })}
@@ -27197,17 +27212,27 @@ export default function Dashboard() {
 
                           {expHealth?.issues && expHealth.issues.length > 0 && (
                             <div className="rounded-lg border border-yellow-500/30 overflow-hidden" style={{ background: 'rgba(234,179,8,0.05)' }}>
-                              <div className="px-4 py-2 border-b border-yellow-500/20 flex items-center gap-2" style={{ background: 'rgba(234,179,8,0.1)' }}>
-                                <span className="text-[12px]">⚠️</span>
-                                <span className="text-[11px] font-semibold text-yellow-400">Issues ({expHealth.issues.length})</span>
+                              <div className="px-4 py-3 border-b border-yellow-500/20 flex items-center gap-2" style={{ background: 'rgba(234,179,8,0.1)' }}>
+                                <span className="text-[14px]">⚠️</span>
+                                <span className="text-[14px] font-semibold text-yellow-400">Issues ({expHealth.issues.length})</span>
                               </div>
-                              <div className="p-3 space-y-1">
-                                {expHealth.issues.map((issue: string, idx: number) => (
-                                  <div key={idx} className="text-[10px] text-yellow-300/80 flex items-start gap-2">
-                                    <span className="text-yellow-500 flex-shrink-0 mt-0.5">•</span>
-                                    <span>{issue}</span>
-                                  </div>
-                                ))}
+                              <div className="p-4 space-y-2">
+                                {expHealth.issues.map((issue: string, idx: number) => {
+                                  const issueKey = issue.includes('Syllabus') ? 'syllabus' : issue.includes('OneDrive') || issue.includes('onedrive') ? 'onedrive' : issue.includes('TTS') ? 'tts' : issue.includes('modules') || issue.includes('Missing modules') ? 'sync' : issue.includes('not active') ? 'activate' : issue.includes('dates') ? 'dates' : 'general';
+                                  const courseMatch = issue.match(/^([A-Z]{3,5}\d{2,4})/);
+                                  const courseCode = courseMatch ? courseMatch[1] : expandedSem.courses[0]?.code || '';
+                                  return (
+                                    <div key={idx} className="text-[13px] text-yellow-200 flex items-center gap-2">
+                                      <span className="text-yellow-500 flex-shrink-0">•</span>
+                                      <span className="flex-1">{issue}</span>
+                                      <button
+                                        className="text-[11px] px-2.5 py-1 rounded hover:brightness-125 transition-all flex-shrink-0"
+                                        style={{ background: 'rgba(234,179,8,0.2)', color: '#fde68a', border: '1px solid rgba(234,179,8,0.35)' }}
+                                        onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode, issue: issueKey, step: 0 }); }}
+                                      >Resolve</button>
+                                    </div>
+                                  );
+                                })}
                               </div>
                             </div>
                           )}
@@ -27215,6 +27240,140 @@ export default function Dashboard() {
                           <div style={{ height: '200px' }} />
                         </div>
                       </div>
+
+                      {semFlowWizard && (() => {
+                        const wizardSteps: Record<string, { title: string; steps: { heading: string; body: string; action?: string }[] }> = {
+                          onedrive: {
+                            title: 'Fix OneDrive Connection',
+                            steps: [
+                              { heading: 'Check OneDrive Folder', body: `Make sure you have a folder at:\n${getOneDrivePath(semFlowWizard.courseCode)}\n\nThis should contain subfolders for each week (Week 1, Week 2, etc.) with Module and Reading subfolders inside each.` },
+                              { heading: 'Create Missing Folders', body: `In OneDrive, navigate to:\n/School/1. TMU/Courses/${expandedSemKey.replace(/^(ss|f|w)/, '')}/${expandedSemKey.startsWith('ss') ? 'Spring & Summer' : expandedSemKey.startsWith('f') ? 'Fall' : 'Winter'}/\n\nCreate a folder named after your course code (e.g. ${semFlowWizard.courseCode}).` },
+                              { heading: 'Verify Sync', body: 'Once the folder exists, the system will automatically detect it on the next sync cycle. You can trigger a manual sync from the Settings panel if needed.', action: 'Done' },
+                            ],
+                          },
+                          sync: {
+                            title: 'Fix Folder Sync',
+                            steps: [
+                              { heading: 'Upload Course Files', body: `Upload your module and reading files to the OneDrive folder:\n${getOneDrivePath(semFlowWizard.courseCode)}/Week {n}/Module/\n${getOneDrivePath(semFlowWizard.courseCode)}/Week {n}/Reading/\n\nFiles should be PDF, DOCX, or PPTX format.` },
+                              { heading: 'Wait for Sync', body: 'The system syncs files from OneDrive automatically. After uploading, files should appear within a few minutes. Check the Weekly Content Status grid above to confirm.', action: 'Done' },
+                            ],
+                          },
+                          tts: {
+                            title: 'Fix TTS Processing',
+                            steps: [
+                              { heading: 'About TTS', body: 'Text-to-Speech (TTS) converts your course materials into audio chunks for Cat Lights playback. This happens automatically when files are synced.' },
+                              { heading: 'Trigger Processing', body: 'If TTS is stuck, go to the Library page, find the file, and click "Prepare Audio." The system will re-process the file into audio chunks.', action: 'Done' },
+                            ],
+                          },
+                          syllabus: {
+                            title: 'Link Course Syllabus',
+                            steps: [
+                              { heading: 'Upload Syllabus', body: `Upload your syllabus PDF to OneDrive at:\n${getOneDrivePath(semFlowWizard.courseCode)}/\n\nName it something like "${semFlowWizard.courseCode}_syllabus.pdf"` },
+                              { heading: 'Link in Settings', body: 'Open the course settings (pencil icon on the semester box) and use the Syllabus field to link the uploaded file.', action: 'Done' },
+                            ],
+                          },
+                          onedrive_root: {
+                            title: 'Fix OneDrive Root',
+                            steps: [
+                              { heading: 'Verify Root Path', body: `Your OneDrive root for this course should be:\n${getOneDrivePath(semFlowWizard.courseCode)}\n\nMake sure this folder exists and contains week subfolders.` },
+                              { heading: 'Create Structure', body: 'Inside the course folder, create folders named "Week 1", "Week 2", etc. Inside each week, create "Module" and "Reading" subfolders.', action: 'Done' },
+                            ],
+                          },
+                          module_folder: {
+                            title: 'Fix Module Folder',
+                            steps: [
+                              { heading: 'Add Module Files', body: `Upload your module files (PDF, DOCX, PPTX) to:\n${getOneDrivePath(semFlowWizard.courseCode)}/Week {n}/Module/\n\nEach week should have at least one module file.` },
+                              { heading: 'Verify', body: 'After uploading, the sync will pick up new files automatically. Check the Weekly Content Status grid to confirm.', action: 'Done' },
+                            ],
+                          },
+                          reading_folder: {
+                            title: 'Fix Reading Folder',
+                            steps: [
+                              { heading: 'Add Reading Files', body: `Upload your reading files to:\n${getOneDrivePath(semFlowWizard.courseCode)}/Week {n}/Reading/\n\nSupported formats: PDF, DOCX, PPTX.` },
+                              { heading: 'Verify', body: 'After uploading, check the Weekly Content Status grid to confirm files appear.', action: 'Done' },
+                            ],
+                          },
+                          local_sync: {
+                            title: 'Fix Local Sync',
+                            steps: [
+                              { heading: 'Check Source', body: 'Local sync copies files from OneDrive to the Pi\'s persistent storage. Make sure OneDrive folders have files first.' },
+                              { heading: 'Manual Sync', body: 'You can trigger a manual sync from the Settings panel. The system will re-download all files from OneDrive.', action: 'Done' },
+                            ],
+                          },
+                          tts_audio: {
+                            title: 'Fix TTS Audio',
+                            steps: [
+                              { heading: 'About TTS Audio', body: 'TTS audio is generated automatically when files are synced. If some files show as not ready, they may still be processing.' },
+                              { heading: 'Re-process', body: 'Go to the Library page, find the file, and click "Prepare Audio" to re-generate TTS chunks.', action: 'Done' },
+                            ],
+                          },
+                          activate: {
+                            title: 'Activate Semester',
+                            steps: [
+                              { heading: 'Mark as Active', body: 'This semester is not marked as active. Open the semester settings (gear icon on the semester header) and toggle it to active.' },
+                              { heading: 'Set Dates', body: 'Make sure the semester start and end dates are configured correctly. You can set these by clicking the date pill on the semester header.', action: 'Done' },
+                            ],
+                          },
+                          dates: {
+                            title: 'Configure Semester Dates',
+                            steps: [
+                              { heading: 'Set Dates', body: 'Click the date pill on the semester header to set the start and end dates for this semester.' },
+                              { heading: 'Verify', body: 'Once dates are set, the semester will show the correct date range and week numbers.', action: 'Done' },
+                            ],
+                          },
+                          library: {
+                            title: 'Library Not Ready',
+                            steps: [
+                              { heading: 'Add Content First', body: 'The Library Shelf requires module or reading files to be synced. Make sure you have uploaded files to OneDrive and they have been synced.' },
+                              { heading: 'Check Library', body: 'Once files are synced, visit the Library page to see your course materials organized by week.', action: 'Done' },
+                            ],
+                          },
+                          general: {
+                            title: 'Resolve Issue',
+                            steps: [
+                              { heading: 'Review', body: 'Check your semester settings and OneDrive folder structure to ensure everything is configured correctly.' },
+                              { heading: 'Need Help?', body: 'If the issue persists, try re-syncing from the Settings panel or checking the OneDrive connection.', action: 'Done' },
+                            ],
+                          },
+                        };
+                        const wiz = wizardSteps[semFlowWizard.issue] || wizardSteps.general;
+                        const currentStep = Math.min(semFlowWizard.step, wiz.steps.length - 1);
+                        const step = wiz.steps[currentStep];
+                        const isLast = currentStep >= wiz.steps.length - 1;
+
+                        return (
+                          <div className="fixed inset-0 z-[10010] flex items-center justify-center" onClick={() => setSemFlowWizard(null)}>
+                            <div className="fixed inset-0 bg-black/50" />
+                            <div className="relative z-[10011] rounded-xl overflow-hidden flex flex-col" style={{ width: '480px', maxWidth: '90%', maxHeight: '70vh', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 8px 48px rgba(0,0,0,0.5)' }} onClick={(e) => e.stopPropagation()}>
+                              <div className="px-5 py-3 border-b border-white/30 flex items-center gap-3" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 -1px 0 rgba(255,255,255,0.1)' }}>
+                                <span className="text-[14px]">🔧</span>
+                                <span className="text-[13px] font-bold text-white uppercase tracking-wider" style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}>{wiz.title}</span>
+                                <span className="ml-auto text-[11px] text-white/60">Step {currentStep + 1} of {wiz.steps.length}</span>
+                              </div>
+                              <div className="flex-1 overflow-y-auto p-6">
+                                <div className="flex gap-2 mb-4">
+                                  {wiz.steps.map((_, si) => (
+                                    <div key={si} className="h-1.5 flex-1 rounded-full" style={{ background: si <= currentStep ? 'rgba(34,197,94,0.6)' : 'rgba(255,255,255,0.15)' }} />
+                                  ))}
+                                </div>
+                                <h3 className="text-[16px] font-bold text-white mb-3">{step.heading}</h3>
+                                <div className="text-[14px] text-white/80 leading-relaxed whitespace-pre-wrap">{step.body}</div>
+                              </div>
+                              <div className="px-5 py-3 border-t border-white/20 flex items-center justify-between" style={{ background: `${colorSettings.headerBar}88` }}>
+                                <button className="px-4 py-1.5 rounded text-[12px] font-medium text-white/70 hover:text-white transition-colors" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }} onClick={() => setSemFlowWizard(null)}>Close</button>
+                                <div className="flex gap-2">
+                                  {currentStep > 0 && <button className="px-4 py-1.5 rounded text-[12px] font-medium text-white/70 hover:text-white transition-colors" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }} onClick={() => setSemFlowWizard({ ...semFlowWizard, step: currentStep - 1 })}>Back</button>}
+                                  {!isLast ? (
+                                    <button className="px-4 py-1.5 rounded text-[12px] font-medium text-white hover:brightness-110 transition-all" style={{ background: 'rgba(34,197,94,0.3)', border: '1px solid rgba(34,197,94,0.5)' }} onClick={() => setSemFlowWizard({ ...semFlowWizard, step: currentStep + 1 })}>Next</button>
+                                  ) : (
+                                    <button className="px-4 py-1.5 rounded text-[12px] font-medium text-white hover:brightness-110 transition-all" style={{ background: 'rgba(34,197,94,0.3)', border: '1px solid rgba(34,197,94,0.5)' }} onClick={() => setSemFlowWizard(null)}>Done</button>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })()}
                     </div>
                   </div>
                 , document.body);
