@@ -16994,7 +16994,7 @@ export default function Dashboard() {
                 }
                 const height = isFreezingRain ? (3 + p.sizeFactor * 5) : (4 + p.sizeFactor * 6);
                 const width = isFreezingRain ? 1.2 : 1;
-                const duration = isHeavyRain ? (0.8 + p.durationFactor * 0.6) : (1.2 + p.durationFactor * 1);
+                const duration = isHeavyRain ? (1.1 + p.durationFactor * 0.7) : (1.5 + p.durationFactor * 1.1);
                 const windAngle = isHeavyRain ? 12 : 8;
                 return (
                   <div key={`bg-rain-${i}`} style={{
@@ -30049,11 +30049,11 @@ export default function Dashboard() {
                   if (wc >= 95) {
                     const rain = Array.from({length:18},(_,i)=>{
                       const l = (i*23+5)%100; const w = 1+(i%3)*0.5; const h = 3+(i%3)*1.5;
-                      return `<div style="position:absolute;left:${l}%;top:-4px;width:${w}px;height:${h}px;background:linear-gradient(180deg,rgba(180,220,255,0.9),rgba(120,180,255,0.3));border-radius:0 0 1px 1px;transform:rotate(-8deg);animation:fwRainDrop 0.5s ${(i*0.04).toFixed(2)}s linear infinite"></div>`;
+                      return `<div style="position:absolute;left:${l}%;top:-4px;width:${w}px;height:${h}px;background:linear-gradient(180deg,rgba(180,220,255,0.9),rgba(120,180,255,0.3));border-radius:0 0 1px 1px;transform:rotate(-8deg);animation:fwRainDrop 0.75s ${(i*0.04).toFixed(2)}s linear infinite"></div>`;
                     }).join('');
                     const rain2 = Array.from({length:14},(_,i)=>{
                       const l = (i*31+17)%100; const w = 1+(i%2)*0.5; const h = 2.5+(i%3)*1;
-                      return `<div style="position:absolute;left:${l}%;top:-3px;width:${w}px;height:${h}px;background:linear-gradient(180deg,rgba(160,210,255,0.7),rgba(100,170,255,0.2));border-radius:0 0 1px 1px;transform:rotate(-6deg);animation:fwRainDrop 0.6s ${(i*0.05+0.15).toFixed(2)}s linear infinite"></div>`;
+                      return `<div style="position:absolute;left:${l}%;top:-3px;width:${w}px;height:${h}px;background:linear-gradient(180deg,rgba(160,210,255,0.7),rgba(100,170,255,0.2));border-radius:0 0 1px 1px;transform:rotate(-6deg);animation:fwRainDrop 0.9s ${(i*0.05+0.15).toFixed(2)}s linear infinite"></div>`;
                     }).join('');
                     const flash = `<div style="position:absolute;inset:0;background:rgba(200,180,255,0.2);animation:lightningFlash 6s 1s ease-in-out infinite"></div>`;
                     return `<div style="position:absolute;inset:0;overflow:hidden">${rain}${rain2}${flash}</div>`;
@@ -30075,22 +30075,22 @@ export default function Dashboard() {
                     const count2 = wc >= 80 ? 10 : 7;
                     const layer1 = Array.from({length:count},(_,i)=>{
                       const w = 1+(i%2)*0.5; const h = 3+(i%3)*1.5; const l = (i*23+5)%100;
-                      return `<div style="position:absolute;left:${l}%;top:-4px;width:${w}px;height:${h}px;background:linear-gradient(180deg,rgba(140,210,255,0.85),rgba(80,170,255,0.25));border-radius:0 0 1px 1px;transform:rotate(-5deg);animation:fwRainDrop ${wc>=80?'0.55s':'0.7s'} ${(i*0.06).toFixed(2)}s linear infinite"></div>`;
+                      return `<div style="position:absolute;left:${l}%;top:-4px;width:${w}px;height:${h}px;background:linear-gradient(180deg,rgba(140,210,255,0.85),rgba(80,170,255,0.25));border-radius:0 0 1px 1px;transform:rotate(-5deg);animation:fwRainDrop ${wc>=80?'0.8s':'1.0s'} ${(i*0.06).toFixed(2)}s linear infinite"></div>`;
                     }).join('');
                     const layer2 = Array.from({length:count2},(_,i)=>{
                       const w = 0.8+(i%2)*0.4; const h = 2.5+(i%3)*1; const l = (i*29+15)%100;
-                      return `<div style="position:absolute;left:${l}%;top:-3px;width:${w}px;height:${h}px;background:linear-gradient(180deg,rgba(130,200,255,0.65),rgba(80,160,255,0.15));border-radius:0 0 1px 1px;transform:rotate(-4deg);animation:fwRainDrop ${wc>=80?'0.65s':'0.85s'} ${(i*0.08+0.2).toFixed(2)}s linear infinite"></div>`;
+                      return `<div style="position:absolute;left:${l}%;top:-3px;width:${w}px;height:${h}px;background:linear-gradient(180deg,rgba(130,200,255,0.65),rgba(80,160,255,0.15));border-radius:0 0 1px 1px;transform:rotate(-4deg);animation:fwRainDrop ${wc>=80?'0.95s':'1.15s'} ${(i*0.08+0.2).toFixed(2)}s linear infinite"></div>`;
                     }).join('');
                     return `<div style="position:absolute;inset:0;overflow:hidden">${layer1}${layer2}</div>`;
                   }
                   if (wc >= 51 && wc <= 55) {
                     const layer1 = Array.from({length:8},(_,i)=>{
                       const l = (i*29+8)%100;
-                      return `<div style="position:absolute;left:${l}%;top:-3px;width:1px;height:3px;background:linear-gradient(180deg,rgba(160,210,255,0.7),rgba(120,180,255,0.2));border-radius:0 0 1px 1px;transform:rotate(-3deg);animation:fwRainDrop 0.9s ${(i*0.12).toFixed(2)}s linear infinite"></div>`;
+                      return `<div style="position:absolute;left:${l}%;top:-3px;width:1px;height:3px;background:linear-gradient(180deg,rgba(160,210,255,0.7),rgba(120,180,255,0.2));border-radius:0 0 1px 1px;transform:rotate(-3deg);animation:fwRainDrop 1.2s ${(i*0.12).toFixed(2)}s linear infinite"></div>`;
                     }).join('');
                     const layer2 = Array.from({length:6},(_,i)=>{
                       const l = (i*37+20)%100;
-                      return `<div style="position:absolute;left:${l}%;top:-2px;width:0.8px;height:2.5px;background:linear-gradient(180deg,rgba(150,200,255,0.5),rgba(110,170,255,0.15));border-radius:0 0 1px 1px;transform:rotate(-2deg);animation:fwRainDrop 1.1s ${(i*0.15+0.3).toFixed(2)}s linear infinite"></div>`;
+                      return `<div style="position:absolute;left:${l}%;top:-2px;width:0.8px;height:2.5px;background:linear-gradient(180deg,rgba(150,200,255,0.5),rgba(110,170,255,0.15));border-radius:0 0 1px 1px;transform:rotate(-2deg);animation:fwRainDrop 1.4s ${(i*0.15+0.3).toFixed(2)}s linear infinite"></div>`;
                     }).join('');
                     return `<div style="position:absolute;inset:0;overflow:hidden">${layer1}${layer2}</div>`;
                   }
@@ -30345,7 +30345,7 @@ export default function Dashboard() {
                                   const left = (i * 37 + 13) % 100;
                                   const delay = ((i * 0.13) % 0.8).toFixed(2);
                                   const color = rainColors[i % rainColors.length];
-                                  return `<div style="position:absolute;left:${left}%;top:0;width:1px;height:4px;background:linear-gradient(180deg,${color},rgba(80,140,255,0.5));animation:rainDrop 0.4s ${delay}s linear infinite;border-radius:0 0 2px 2px"></div>`;
+                                  return `<div style="position:absolute;left:${left}%;top:0;width:1px;height:4px;background:linear-gradient(180deg,${color},rgba(80,140,255,0.5));animation:rainDrop 0.65s ${delay}s linear infinite;border-radius:0 0 2px 2px"></div>`;
                                 }).join('');
                                 return drops + `<div style="position:absolute;inset:0;background:rgba(255,255,200,0.2);animation:lightningFlash 15s 3s ease-in-out infinite"></div>`;
                               }
@@ -30370,7 +30370,7 @@ export default function Dashboard() {
                                   const left = (i * 23 + 5) % 100;
                                   const delay = ((i * 0.14) % 1.2).toFixed(2);
                                   const color = rainColors[i % rainColors.length];
-                                  return `<div style="position:absolute;left:${left}%;top:0;width:1px;height:3px;background:linear-gradient(180deg,${color},rgba(80,160,255,0.4));animation:rainDrop 0.6s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                                  return `<div style="position:absolute;left:${left}%;top:0;width:1px;height:3px;background:linear-gradient(180deg,${color},rgba(80,160,255,0.4));animation:rainDrop 0.85s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
                                 }).join('');
                               }
                               if ((wCode >= 61 && wCode <= 65) || (wCode >= 80 && wCode <= 82)) {
@@ -30379,7 +30379,7 @@ export default function Dashboard() {
                                   const left = (i * 23 + 5) % 100;
                                   const delay = ((i * 0.14) % 1.2).toFixed(2);
                                   const color = rainColors[i % rainColors.length];
-                                  return `<div style="position:absolute;left:${left}%;top:0;width:1px;height:3.5px;background:linear-gradient(180deg,${color},rgba(70,150,255,0.4));animation:rainDrop ${wCode >= 80 ? '0.5s' : '0.7s'} ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                                  return `<div style="position:absolute;left:${left}%;top:0;width:1px;height:3.5px;background:linear-gradient(180deg,${color},rgba(70,150,255,0.4));animation:rainDrop ${wCode >= 80 ? '0.7s' : '0.95s'} ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
                                 }).join('');
                               }
                               if (wCode >= 51 && wCode <= 55) {
@@ -30387,7 +30387,7 @@ export default function Dashboard() {
                                   const left = (i * 29 + 7) % 100;
                                   const delay = ((i * 0.17) % 1.2).toFixed(2);
                                   const color = rainColors[i % rainColors.length];
-                                  return `<div style="position:absolute;left:${left}%;top:0;width:0.8px;height:2.5px;background:linear-gradient(180deg,${color},rgba(80,160,255,0.3));animation:rainDrop 1s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
+                                  return `<div style="position:absolute;left:${left}%;top:0;width:0.8px;height:2.5px;background:linear-gradient(180deg,${color},rgba(80,160,255,0.3));animation:rainDrop 1.3s ${delay}s linear infinite;border-radius:0 0 1px 1px"></div>`;
                                 }).join('');
                               }
                               if (wCode === 45 || wCode === 48) {
@@ -30488,7 +30488,7 @@ export default function Dashboard() {
                                   const delay = ((i * 0.08) % 0.6).toFixed(2);
                                   const h = 4 + (i % 4) * 2;
                                   const w = 1 + (i % 3) * 0.3;
-                                  return `<div style="position:absolute;left:${left}%;top:-8px;width:${w}px;height:${h}px;background:linear-gradient(180deg,rgba(180,220,255,0.95),rgba(100,170,255,0.3));animation:rainDrop 0.3s ${delay}s linear infinite;border-radius:0 0 2px 2px;transform:rotate(-8deg)"></div>`;
+                                  return `<div style="position:absolute;left:${left}%;top:-8px;width:${w}px;height:${h}px;background:linear-gradient(180deg,rgba(180,220,255,0.95),rgba(100,170,255,0.3));animation:rainDrop 0.55s ${delay}s linear infinite;border-radius:0 0 2px 2px;transform:rotate(-8deg)"></div>`;
                                 }).join('');
                                 return drops + `<div style="position:absolute;inset:0;background:rgba(200,180,255,0.2);animation:lightningFlash 5s 1.5s ease-in-out infinite"></div><div style="position:absolute;inset:0;background:rgba(255,240,200,0.12);animation:lightningFlash 7s 4s ease-in-out infinite"></div>`;
                               }
@@ -30514,7 +30514,7 @@ export default function Dashboard() {
                                   const delay = ((i * 0.09) % 0.8).toFixed(2);
                                   const w = 1 + (i % 3) * 0.2;
                                   const h = 3 + (i % 3) * 1.5;
-                                  return `<div style="position:absolute;left:${left}%;top:-6px;width:${w}px;height:${h}px;background:linear-gradient(180deg,rgba(160,210,255,0.9),rgba(120,180,240,0.25));animation:rainDrop 0.5s ${delay}s linear infinite;border-radius:0 0 2px 2px;transform:rotate(-6deg)"></div>`;
+                                  return `<div style="position:absolute;left:${left}%;top:-6px;width:${w}px;height:${h}px;background:linear-gradient(180deg,rgba(160,210,255,0.9),rgba(120,180,240,0.25));animation:rainDrop 0.75s ${delay}s linear infinite;border-radius:0 0 2px 2px;transform:rotate(-6deg)"></div>`;
                                 }).join('');
                                 const snow = Array.from({ length: 12 }, (_, i) => {
                                   const left = (i * 25 + 8) % 100;
@@ -30531,14 +30531,14 @@ export default function Dashboard() {
                                   const delay = ((i * 0.09) % 0.9).toFixed(2);
                                   const h = 3.5 + (i % 4) * 1.5;
                                   const w = 1 + (i % 3) * 0.3;
-                                  return `<div style="position:absolute;left:${left}%;top:-6px;width:${w}px;height:${h}px;background:linear-gradient(180deg,rgba(160,210,255,0.9),rgba(90,170,255,0.25));animation:rainDrop ${wc >= 80 ? '0.35s' : '0.5s'} ${delay}s linear infinite;border-radius:0 0 2px 2px;transform:rotate(-5deg)"></div>`;
+                                  return `<div style="position:absolute;left:${left}%;top:-6px;width:${w}px;height:${h}px;background:linear-gradient(180deg,rgba(160,210,255,0.9),rgba(90,170,255,0.25));animation:rainDrop ${wc >= 80 ? '0.6s' : '0.75s'} ${delay}s linear infinite;border-radius:0 0 2px 2px;transform:rotate(-5deg)"></div>`;
                                 }).join('');
                               }
                               if (wc >= 51 && wc <= 55) {
                                 return Array.from({ length: 16 }, (_, i) => {
                                   const left = (i * 19 + 5) % 100;
                                   const delay = ((i * 0.12) % 1.1).toFixed(2);
-                                  return `<div style="position:absolute;left:${left}%;top:-5px;width:0.8px;height:3px;background:linear-gradient(180deg,rgba(170,210,255,0.8),rgba(130,180,240,0.2));animation:rainDrop 0.8s ${delay}s linear infinite;border-radius:0 0 1px 1px;transform:rotate(-3deg)"></div>`;
+                                  return `<div style="position:absolute;left:${left}%;top:-5px;width:0.8px;height:3px;background:linear-gradient(180deg,rgba(170,210,255,0.8),rgba(130,180,240,0.2));animation:rainDrop 1.1s ${delay}s linear infinite;border-radius:0 0 1px 1px;transform:rotate(-3deg)"></div>`;
                                 }).join('');
                               }
                               if (wc >= 45 && wc <= 48) {
