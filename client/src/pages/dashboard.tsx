@@ -21404,7 +21404,7 @@ export default function Dashboard() {
         >
           <svg width="84" height="25" viewBox="0 0 84 25" style={{ display: 'block' }}>
             <path d="M0,25 L84,25 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
-            <text x="42" y="13" textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.85)" fontSize="9" fontWeight="500" fontFamily="system-ui, -apple-system, sans-serif">Homework</text>
+            <text x="42" y="7" textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.85)" fontSize="9" fontWeight="500" fontFamily="system-ui, -apple-system, sans-serif">Homework</text>
           </svg>
         </button>
       )}
@@ -21441,7 +21441,7 @@ export default function Dashboard() {
         >
           <svg width="84" height="25" viewBox="0 0 84 25" style={{ display: 'block' }}>
             <path d="M0,25 L84,25 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
-            <text x="42" y="13" textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.85)" fontSize="8" fontWeight="500" fontFamily="system-ui, -apple-system, sans-serif">Notes</text>
+            <text x="42" y="7" textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.85)" fontSize="8" fontWeight="500" fontFamily="system-ui, -apple-system, sans-serif">Notes</text>
           </svg>
         </button>
       )}
@@ -35478,14 +35478,64 @@ export default function Dashboard() {
                   <span className="text-[8.5px]" style={{ marginLeft: '5px', display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }} data-testid="blank-sunset"><span style={{ color: '#FFFF00', display: 'inline-block', transform: 'scaleX(-1) rotate(30deg)' }}>☽</span><span style={{ color: '#FFFF00', marginLeft: '3px', position: 'relative', top: '-2px' }}>↓</span><span style={{ color: 'rgba(255,255,255,1)', marginLeft: '6px' }}>{weatherData?.sunset ? (() => { const t = new Date(weatherData.sunset); const h = t.getHours(); const m = t.getMinutes(); const ampm = h >= 12 ? 'PM' : 'AM'; return `${h === 0 ? 12 : h > 12 ? h - 12 : h}:${m.toString().padStart(2, '0')} ${ampm}`; })() : '--:--'}</span></span>
                 </div>
               </div>
+              <div style={{ position: 'absolute', bottom: '-1px', left: '100px', right: '30px', height: '14px', display: 'flex', alignItems: 'center', gap: '1px', zIndex: 3, overflow: 'hidden' }}>
+                <button onClick={() => blankExecCommand('bold')} className="hover:bg-white/20 active:bg-white/30 transition-colors" style={{ width: '18px', height: '13px', borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.08)', border: 'none', cursor: 'pointer', padding: 0 }} title="Bold" data-testid="blank-fmt-bold"><span style={{ fontSize: '9px', fontWeight: 800, color: 'rgba(255,255,255,0.8)', lineHeight: 1 }}>B</span></button>
+                <button onClick={() => blankExecCommand('italic')} className="hover:bg-white/20 active:bg-white/30 transition-colors" style={{ width: '18px', height: '13px', borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.08)', border: 'none', cursor: 'pointer', padding: 0 }} title="Italic" data-testid="blank-fmt-italic"><span style={{ fontSize: '9px', fontStyle: 'italic', color: 'rgba(255,255,255,0.8)', lineHeight: 1 }}>I</span></button>
+                <button onClick={() => blankExecCommand('underline')} className="hover:bg-white/20 active:bg-white/30 transition-colors" style={{ width: '18px', height: '13px', borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.08)', border: 'none', cursor: 'pointer', padding: 0 }} title="Underline" data-testid="blank-fmt-underline"><span style={{ fontSize: '9px', textDecoration: 'underline', color: 'rgba(255,255,255,0.8)', lineHeight: 1 }}>U</span></button>
+                <button onClick={() => blankExecCommand('strikeThrough')} className="hover:bg-white/20 active:bg-white/30 transition-colors" style={{ width: '18px', height: '13px', borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.08)', border: 'none', cursor: 'pointer', padding: 0 }} title="Strikethrough" data-testid="blank-fmt-strike"><span style={{ fontSize: '9px', textDecoration: 'line-through', color: 'rgba(255,255,255,0.8)', lineHeight: 1 }}>S</span></button>
+                <div style={{ width: '1px', height: '9px', background: 'rgba(255,255,255,0.2)', margin: '0 1px' }} />
+                <button onClick={() => blankExecCommand('insertUnorderedList')} className="hover:bg-white/20 active:bg-white/30 transition-colors" style={{ width: '18px', height: '13px', borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.08)', border: 'none', cursor: 'pointer', padding: 0 }} title="Bullet List" data-testid="blank-fmt-bullets"><svg width="9" height="9" viewBox="0 0 9 9"><circle cx="1.5" cy="2" r="1" fill="rgba(255,255,255,0.8)"/><line x1="3.5" y1="2" x2="8" y2="2" stroke="rgba(255,255,255,0.8)" strokeWidth="0.8"/><circle cx="1.5" cy="4.5" r="1" fill="rgba(255,255,255,0.8)"/><line x1="3.5" y1="4.5" x2="8" y2="4.5" stroke="rgba(255,255,255,0.8)" strokeWidth="0.8"/><circle cx="1.5" cy="7" r="1" fill="rgba(255,255,255,0.8)"/><line x1="3.5" y1="7" x2="8" y2="7" stroke="rgba(255,255,255,0.8)" strokeWidth="0.8"/></svg></button>
+                <button onClick={() => blankExecCommand('insertOrderedList')} className="hover:bg-white/20 active:bg-white/30 transition-colors" style={{ width: '18px', height: '13px', borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.08)', border: 'none', cursor: 'pointer', padding: 0 }} title="Numbered List" data-testid="blank-fmt-numbers"><svg width="9" height="9" viewBox="0 0 9 9"><text x="0" y="3" fontSize="3.5" fill="rgba(255,255,255,0.8)" fontFamily="system-ui">1</text><line x1="3.5" y1="2" x2="8" y2="2" stroke="rgba(255,255,255,0.8)" strokeWidth="0.8"/><text x="0" y="5.5" fontSize="3.5" fill="rgba(255,255,255,0.8)" fontFamily="system-ui">2</text><line x1="3.5" y1="4.5" x2="8" y2="4.5" stroke="rgba(255,255,255,0.8)" strokeWidth="0.8"/><text x="0" y="8" fontSize="3.5" fill="rgba(255,255,255,0.8)" fontFamily="system-ui">3</text><line x1="3.5" y1="7" x2="8" y2="7" stroke="rgba(255,255,255,0.8)" strokeWidth="0.8"/></svg></button>
+                <button onClick={() => blankInsertCheckbox()} className="hover:bg-white/20 active:bg-white/30 transition-colors" style={{ width: '18px', height: '13px', borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.08)', border: 'none', cursor: 'pointer', padding: 0 }} title="Checkbox" data-testid="blank-fmt-checkbox"><svg width="9" height="9" viewBox="0 0 9 9"><rect x="0.5" y="0.5" width="8" height="8" rx="1.5" stroke="rgba(255,255,255,0.8)" strokeWidth="0.8" fill="none"/><path d="M2 4.5L3.8 6.5L7 2.5" stroke="rgba(255,255,255,0.8)" strokeWidth="0.8" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg></button>
+                <div style={{ width: '1px', height: '9px', background: 'rgba(255,255,255,0.2)', margin: '0 1px' }} />
+                <div style={{ position: 'relative' }}>
+                  <button onClick={() => { setBlankShowFontSize(!blankShowFontSize); setBlankShowFontColor(false); }} className="hover:bg-white/20 active:bg-white/30 transition-colors" style={{ width: '22px', height: '13px', borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: blankShowFontSize ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.08)', border: 'none', cursor: 'pointer', padding: 0 }} title="Font Size" data-testid="blank-fmt-fontsize"><span style={{ fontSize: '7px', color: 'rgba(255,255,255,0.8)', lineHeight: 1 }}>A<span style={{ fontSize: '9px' }}>A</span></span></button>
+                  {blankShowFontSize && (
+                    <div style={{ position: 'absolute', bottom: '15px', left: '50%', transform: 'translateX(-50%)', background: 'rgba(30,30,50,0.95)', borderRadius: '6px', padding: '4px', display: 'flex', flexDirection: 'column', gap: '2px', border: '1px solid rgba(255,255,255,0.2)', boxShadow: '0 4px 12px rgba(0,0,0,0.3)', zIndex: 100 }}>
+                      {BLANK_FONT_SIZES.map(sz => (
+                        <button key={sz} onClick={() => { blankExecCommand('fontSize', '7'); const sel = window.getSelection(); if (sel && sel.rangeCount > 0) { const range = sel.getRangeAt(0); const container = range.commonAncestorContainer; const fontEls = (container.nodeType === 1 ? container as HTMLElement : container.parentElement)?.querySelectorAll('font[size="7"]'); fontEls?.forEach(el => { (el as HTMLElement).removeAttribute('size'); (el as HTMLElement).style.fontSize = sz; }); } setBlankShowFontSize(false); }} style={{ padding: '2px 8px', borderRadius: '3px', background: 'transparent', border: 'none', color: 'white', fontSize: sz, cursor: 'pointer', textAlign: 'left', whiteSpace: 'nowrap' }} className="hover:bg-white/20">{sz}</button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div style={{ position: 'relative' }}>
+                  <button onClick={() => { setBlankShowFontColor(!blankShowFontColor); setBlankShowFontSize(false); }} className="hover:bg-white/20 active:bg-white/30 transition-colors" style={{ width: '18px', height: '13px', borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: blankShowFontColor ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.08)', border: 'none', cursor: 'pointer', padding: 0 }} title="Font Color" data-testid="blank-fmt-fontcolor"><svg width="9" height="9" viewBox="0 0 9 9"><text x="1" y="7" fontSize="8" fill="rgba(255,255,255,0.8)" fontFamily="system-ui" fontWeight="bold">A</text><rect x="0" y="7.5" width="9" height="1.5" rx="0.5" fill="#ef4444"/></svg></button>
+                  {blankShowFontColor && (
+                    <div style={{ position: 'absolute', bottom: '15px', left: '50%', transform: 'translateX(-50%)', background: 'rgba(30,30,50,0.95)', borderRadius: '6px', padding: '4px', display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '3px', border: '1px solid rgba(255,255,255,0.2)', boxShadow: '0 4px 12px rgba(0,0,0,0.3)', zIndex: 100 }}>
+                      {BLANK_FONT_COLORS.map(c => (
+                        <button key={c} onClick={() => { blankExecCommand('foreColor', c); setBlankShowFontColor(false); }} style={{ width: '16px', height: '16px', borderRadius: '50%', background: c, border: `1.5px solid ${c === '#ffffff' ? 'rgba(200,200,200,0.5)' : 'rgba(255,255,255,0.2)'}`, cursor: 'pointer', padding: 0 }} className="hover:scale-110 transition-transform" />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
             <div style={{ flex: 1, padding: '7px', overflow: 'hidden', position: 'relative', zIndex: 46 }}>
-              <textarea
-                value={blankCanvasNotes}
-                onChange={(e) => { setBlankCanvasNotes(e.target.value); localStorage.setItem('blankCanvasNotes', e.target.value); }}
-                placeholder="Type your temporary notes here..."
-                className="w-full h-full resize-none outline-none text-[13px] leading-relaxed"
-                style={{ background: 'rgba(255,255,255,0.92)', borderRadius: '6px', padding: '10px 12px', color: '#1a1a2e', fontFamily: 'system-ui, -apple-system, sans-serif', border: 'none', boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.1)', caretColor: '#1a1a2e' }}
+              <div
+                ref={blankEditorRef}
+                contentEditable
+                suppressContentEditableWarning
+                onInput={() => {
+                  if (blankEditorRef.current) {
+                    const html = blankEditorRef.current.innerHTML;
+                    localStorage.setItem('blankCanvasNotesHtml', html);
+                  }
+                }}
+                onBlur={() => {
+                  if (blankEditorRef.current) {
+                    localStorage.setItem('blankCanvasNotesHtml', blankEditorRef.current.innerHTML);
+                  }
+                  setBlankShowFontSize(false);
+                  setBlankShowFontColor(false);
+                }}
+                dangerouslySetInnerHTML={{ __html: (() => {
+                  const saved = localStorage.getItem('blankCanvasNotesHtml');
+                  if (saved) return saved;
+                  if (blankCanvasNotes) return blankCanvasNotes.replace(/\n/g, '<br>');
+                  return '';
+                })() }}
+                className="w-full h-full outline-none text-[13px] leading-relaxed overflow-y-auto"
+                style={{ background: 'rgba(255,255,255,0.92)', borderRadius: '6px', padding: '10px 12px', color: '#1a1a2e', fontFamily: 'system-ui, -apple-system, sans-serif', border: 'none', boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.1)', caretColor: '#1a1a2e', minHeight: '100%', wordBreak: 'break-word' }}
                 data-testid="blank-canvas-notes"
               />
             </div>
@@ -35613,7 +35663,7 @@ export default function Dashboard() {
               }, 350);
             }}
             className="absolute z-[70] rounded-tr-[11px] rounded-bl-[4px] rounded-tl-[2px] rounded-br-[2px] flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors"
-            style={{ top: '0px', right: '0px', width: '26px', height: '26px', background: 'rgba(255,255,255,0.25)', border: '1px solid rgba(255,255,255,0.3)', borderTop: 'none', borderRight: 'none', display: 'flex', opacity: (homeworkMinimized || blankBoxOpen) ? 0 : 1, pointerEvents: (homeworkMinimized || blankBoxOpen) ? 'none' : 'auto' }}
+            style={{ top: '0px', right: '0px', width: '26px', height: '26px', background: colorSettings.headerBar, border: '1px solid rgba(255,255,255,0.3)', borderTop: 'none', borderRight: 'none', display: 'flex', opacity: (homeworkMinimized || blankBoxOpen) ? 0 : 1, pointerEvents: (homeworkMinimized || blankBoxOpen) ? 'none' : 'auto' }}
             data-testid="hw-minimize-dock"
             title="Minimize homework panel"
           >
