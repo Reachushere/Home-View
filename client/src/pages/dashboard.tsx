@@ -29870,7 +29870,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`flex flex-col items-center justify-center h-full relative`}
-                    style={isToday ? { background: 'linear-gradient(180deg, #0a3d7a 0%, #1565c0 30%, #42a5f5 70%, #90caf9 100%)', paddingLeft: '2px', overflow: 'hidden', minWidth: 0, boxShadow: 'inset 3px 0 0 #64b5f6, inset -2px 0 0 rgba(100,181,246,0.5), inset 0 0 12px rgba(66,165,245,0.3), 0 0 8px rgba(33,150,243,0.2)', ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) } : day.getDay() === 6 ? { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', overflow: 'hidden', minWidth: 0, borderLeft: new Date().getDay() === 6 ? undefined : '3px solid black', ...(calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) } : { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', borderLeft: '1.5px dotted rgba(255,255,255,0.35)', overflow: 'hidden', minWidth: 0 }}
+                    style={isToday ? { background: 'linear-gradient(180deg, #0a3d7a 0%, #1565c0 30%, #42a5f5 70%, #90caf9 100%)', paddingLeft: '2px', overflow: 'hidden', minWidth: 0, boxShadow: 'inset 3px 0 0 #64b5f6, inset -2px 0 0 rgba(100,181,246,0.5), inset 0 0 12px rgba(66,165,245,0.3), 0 0 8px rgba(33,150,243,0.2)', ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) } : day.getDay() === 6 ? { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', overflow: 'hidden', minWidth: 0, ...(calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) } : { background: 'linear-gradient(180deg, #154B96 0%, #154B96 10%, #ACD6F2 100%)', borderLeft: '1.5px dotted rgba(255,255,255,0.35)', overflow: 'hidden', minWidth: 0 }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     
@@ -31147,7 +31147,7 @@ export default function Dashboard() {
                       <div 
                         key={dayIdx} 
                         className="relative pt-0.5"
-                        style={{ backgroundColor: cellBgColor, padding: '2px 1px 2px 1px', borderBottom: '1px dotted rgba(0,0,0,0.25)', borderLeft: isDayToday ? '3px solid black' : day.getDay() === 6 ? '3px solid black' : '1.5px dotted rgba(0,0,0,0.25)', minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', boxSizing: 'border-box', ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }}
+                        style={{ backgroundColor: cellBgColor, padding: '2px 1px 2px 1px', borderBottom: '1px dotted rgba(0,0,0,0.25)', borderLeft: isDayToday ? '3px solid black' : '1.5px dotted rgba(0,0,0,0.25)', minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', boxSizing: 'border-box', ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
                           e.preventDefault();
@@ -31796,7 +31796,7 @@ export default function Dashboard() {
                         <div
                           key={dayIdx}
                           className="relative flex flex-col gap-0.5 pt-0.5 course-cell-scroll"
-                          style={{ minWidth: 0, boxSizing: 'border-box', backgroundColor: otherCellBg, borderBottom: '1px dotted rgba(0,0,0,0.25)', borderLeft: (day.getDay() === 6 || isOtherToday) ? '3px solid black' : '1.5px dotted rgba(0,0,0,0.25)', overflow: 'hidden', maxHeight: `${otherRowHeight}px`, ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }}
+                          style={{ minWidth: 0, boxSizing: 'border-box', backgroundColor: otherCellBg, borderBottom: '1px dotted rgba(0,0,0,0.25)', borderLeft: isOtherToday ? '3px solid black' : '1.5px dotted rgba(0,0,0,0.25)', overflow: 'hidden', maxHeight: `${otherRowHeight}px`, ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }}
                           data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
                         >
                         <div className="flex flex-col course-cell-scroll" style={{ gap: '2px', padding: isOtherToday ? '1px 1px 1px 0px' : '1px 1px 1px 1px', overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'thin', maxHeight: '100%', height: '100%' }}>
@@ -31971,7 +31971,7 @@ export default function Dashboard() {
                     key={dayIdx} 
                     className={`relative p-0.5 flex flex-col gap-0.5 min-w-0 ${isSameDayET(day, new Date()) ? 'border-b border-black' : 'border-b border-border/50'}`}
                     style={{ 
-                      borderLeft: isSameDayET(day, new Date()) ? '3px solid black' : day.getDay() === 6 ? '3px solid black' : '1.5px dotted rgba(0,0,0,0.25)',
+                      borderLeft: isSameDayET(day, new Date()) ? '3px solid black' : '1.5px dotted rgba(0,0,0,0.25)',
                       backgroundColor: (() => {
                         if (isSameDayET(day, new Date())) return colorSettings.headerBar;
                         if (calendarWeekMode === 'current') {
@@ -32286,7 +32286,7 @@ export default function Dashboard() {
                           key={dayIdx} 
                           className={`relative p-0.5 ${dragOverSlot && isSameDayET(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "ring-2 ring-primary ring-inset" : ""}`}
                           style={{
-                            borderLeft: isSameDayET(day, new Date()) ? '3px solid #64b5f6' : day.getDay() === 6 ? '3px solid black' : '1.5px dotted rgba(0,0,0,0.25)',
+                            borderLeft: isSameDayET(day, new Date()) ? '3px solid #64b5f6' : '1.5px dotted rgba(0,0,0,0.25)',
                             borderRight: isSameDayET(day, new Date()) ? '2px solid rgba(100,181,246,0.35)' : undefined,
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined,
                             overflow: 'hidden',
