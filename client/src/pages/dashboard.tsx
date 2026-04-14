@@ -10,6 +10,7 @@ import OtherRowEditDialog from "@/components/OtherRowEditDialog";
 import { FastInput, FastTextarea } from "@/components/FastInput";
 import { SemesterChecklistDialog } from "@/components/SemesterChecklistDialog";
 import LibraryView from "@/components/LibraryView";
+import { AiChatBubble } from "@/components/AiChatBubble";
 import { Document, Page, pdfjs } from 'react-pdf';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -39999,6 +40000,7 @@ export default function Dashboard() {
 
       </main>
       </div>
+      {authLevel === '5747' && <AiChatBubble colorSettings={colorSettings} />}
     </div>
   );
 }
