@@ -16165,12 +16165,12 @@ export default function Dashboard() {
 
       {/* Upload Files Dialog - Windows Explorer Style */}
       <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
-        <DialogContent className="max-w-4xl h-[70vh] p-0 overflow-hidden text-white shadow-2xl">
+        <DialogContent className="max-w-4xl h-[70vh] p-0 overflow-hidden text-white [&_*]:text-white [&>button.absolute]:hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
           <VisuallyHidden.Root><DialogTitle>Upload Files</DialogTitle></VisuallyHidden.Root>
           {/* Title Bar */}
-          <div className="flex items-center gap-2 px-3 py-2 bg-[#323232] border-b border-[#3c3c3c]">
-            <Upload className="h-4 w-4 text-blue-400" />
-            <span className="text-sm font-medium">Upload Files</span>
+          <div className="flex items-center gap-2 px-3 py-2 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+            <Upload className="text-white" style={{ width: '15px', height: '15px' }} />
+            <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>UPLOAD FILES</h2>
           </div>
           
           {/* Address Bar */}
@@ -17484,7 +17484,7 @@ export default function Dashboard() {
 
           {/* Radio Dialog */}
           <Dialog open={isRadioDialogOpen} onOpenChange={setIsRadioDialogOpen}>
-            <DialogContent className="max-w-[260px] text-[10px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '55%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` }}>
+            <DialogContent className="max-w-[260px] text-[10px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden overflow-hidden" style={{ top: '55%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
               <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)', margin: '0', width: '100%' }}>
                 <div className="flex items-center gap-2">
                   <Radio className="text-white" style={{ width: '15px', height: '15px' }} />
@@ -18481,11 +18481,11 @@ export default function Dashboard() {
 
           {/* Share Link Dialog */}
           <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
-            <DialogContent className="max-w-[360px] text-[11px] text-white p-0 [&>button.absolute]:hidden">
-              <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
+            <DialogContent className="max-w-[360px] text-[11px] text-white [&_*]:text-white p-0 [&>button.absolute]:hidden overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                 <div className="flex items-center gap-2">
-                  <Share2 className="h-3 w-3 text-white" />
-                  <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+                  <Share2 className="text-white" style={{ width: '15px', height: '15px' }} />
+                  <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
                     SHARE ACCESS
                   </h2>
                 </div>
@@ -21533,7 +21533,7 @@ export default function Dashboard() {
         
         {/* Completed Tasks Popup */}
           <Dialog open={isCompletedTasksOpen} onOpenChange={setIsCompletedTasksOpen}>
-            <DialogContent className="max-w-md max-h-[80vh] overflow-hidden flex flex-col text-[11px] border-0 text-white shadow-[0_8px_32px_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.3),inset_0_-1px_0_rgba(0,0,0,0.05)] [&_*]:text-white [&_label]:text-white [&_input]:text-white p-0 [&>button.absolute]:hidden" style={{ top: 'calc(55% - 30px)', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)' }}>
+            <DialogContent className="max-w-md max-h-[80vh] overflow-hidden flex flex-col text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white p-0 [&>button.absolute]:hidden" style={{ top: 'calc(55% - 30px)', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
               <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)', margin: '0', width: '100%' }}>
                 <div className="flex items-center gap-2">
                   <CheckSquare className="text-white" style={{ width: '15px', height: '15px' }} />
@@ -21999,6 +21999,7 @@ export default function Dashboard() {
                             quiz: { bg: 'rgba(16,200,120,0.35)', border: 'rgba(16,200,120,0.7)', hover: 'rgba(16,200,120,0.45)' },
                             reminder: { bg: 'rgba(80,100,220,0.4)', border: 'rgba(100,120,240,0.7)', hover: 'rgba(80,100,220,0.5)' },
                             meeting: { bg: 'rgba(202,138,4,0.35)', border: 'rgba(202,138,4,0.7)', hover: 'rgba(202,138,4,0.45)' },
+                            phone_call: { bg: 'rgba(13,148,136,0.35)', border: 'rgba(13,148,136,0.7)', hover: 'rgba(13,148,136,0.45)' },
                             scholarship: { bg: 'rgba(224,76,23,0.35)', border: 'rgba(224,76,23,0.70)', hover: 'rgba(224,76,23,0.45)' },
                             other: { bg: 'rgba(180,160,40,0.35)', border: 'rgba(180,160,40,0.7)', hover: 'rgba(180,160,40,0.45)' },
                           };
@@ -23299,6 +23300,7 @@ export default function Dashboard() {
             open={isCourseDocWizardOpen}
             onClose={() => setIsCourseDocWizardOpen(false)}
             coursesData={coursesData}
+            colorSettings={{ mainBackground: colorSettings.mainBackground, mainBackgroundGradientEnd: colorSettings.mainBackgroundGradientEnd, headerBar: colorSettings.headerBar }}
             semesters={(() => {
               const map: Record<string, any> = {};
               const allSems = allSemesterSettingsRef.current || [];
@@ -23889,11 +23891,11 @@ export default function Dashboard() {
 
           {/* Scholarship Add/Edit Wizard */}
           <Dialog open={scholarshipWizardOpen} onOpenChange={(open) => { if (!open) { setScholarshipWizardOpen(false); setScholarshipWizardStep(0); setEditingScholarshipId(null); } }}>
-            <DialogContent className="max-w-sm text-[11px] text-white [&_*]:text-white p-0 [&>button.absolute]:hidden overflow-hidden" style={{ top: '45%', borderRadius: '12px', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.48), inset 0 -1px 0 rgba(255,255,255,0.08)', border: '1px solid white' }}>
-              <div className="flex items-center justify-between px-4 py-3 border-b border-white/20 rounded-t-xl" style={{ backgroundColor: colorSettings.headerBar }}>
+            <DialogContent className="max-w-sm text-[11px] text-white [&_*]:text-white p-0 [&>button.absolute]:hidden overflow-hidden" style={{ top: '45%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                 <div className="flex items-center gap-2">
-                  <Award className="h-3.5 w-3.5 text-white" />
-                  <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                  <Award className="text-white" style={{ width: '15px', height: '15px' }} />
+                  <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
                     {editingScholarshipId ? 'EDIT SCHOLARSHIP' : 'ADD SCHOLARSHIP'} — Step {scholarshipWizardStep + 1}/{wizardSteps.length}
                   </h2>
                 </div>
@@ -24107,7 +24109,7 @@ export default function Dashboard() {
             return (
             <>
           <Dialog open={isEmailWizardOpen && desktopIsFull} onOpenChange={(open) => { if (!open) { setIsEmailWizardOpen(false); } }}>
-            <DialogContent className="max-w-[520px] max-h-[80vh] overflow-y-auto overflow-x-hidden text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', zIndex: 10003 }}>
+            <DialogContent className="max-w-[520px] max-h-[80vh] overflow-y-auto overflow-x-hidden text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', zIndex: 10003 }}>
               <DialogTitle className="sr-only">Email Management</DialogTitle>
               <div className="flex items-center justify-between px-4 py-2 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                 <div className="flex items-center gap-2">
@@ -24647,7 +24649,7 @@ export default function Dashboard() {
           )}
 
           <Dialog open={isFeedbackOpen && desktopIsFull} onOpenChange={setIsFeedbackOpen}>
-            <DialogContent className="max-w-[680px] text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_textarea]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '45%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', zIndex: 10003 }}>
+            <DialogContent className="max-w-[680px] text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_textarea]:text-white p-0 [&>button.absolute]:hidden overflow-hidden" style={{ top: '45%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', zIndex: 10003 }}>
               <DialogTitle className="sr-only">Send Feedback</DialogTitle>
               <div className="flex items-center justify-between px-4 py-2 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                 <div className="flex items-center gap-2">
@@ -24910,11 +24912,11 @@ export default function Dashboard() {
 
           {/* Key Contact Add/Edit Form */}
           <Dialog open={contactFormOpen} onOpenChange={(open) => { if (!open) { setContactFormOpen(false); setEditingContactId(null); } }}>
-            <DialogContent className="max-w-sm text-[11px] text-white [&_*]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '45%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.48), inset 0 -1px 0 rgba(255,255,255,0.08)', border: '1px solid white' }}>
-              <div className="flex items-center justify-between px-4 py-3 border-b border-white/20" style={{ backgroundColor: colorSettings.headerBar }}>
+            <DialogContent className="max-w-sm text-[11px] text-white [&_*]:text-white p-0 [&>button.absolute]:hidden overflow-hidden" style={{ top: '45%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                 <div className="flex items-center gap-2">
-                  <Contact className="h-3.5 w-3.5 text-white" />
-                  <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                  <Contact className="text-white" style={{ width: '15px', height: '15px' }} />
+                  <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
                     {editingContactId ? 'EDIT CONTACT' : 'ADD CONTACT'}
                   </h2>
                 </div>
@@ -24978,11 +24980,11 @@ export default function Dashboard() {
 
           {/* AAS Reminder Popup */}
           <Dialog open={showAasReminder} onOpenChange={setShowAasReminder}>
-            <DialogContent className="max-w-sm text-[11px] text-white [&_*]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '45%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.48), inset 0 -1px 0 rgba(255,255,255,0.08)', border: '1px solid white', borderRadius: '12px', overflow: 'hidden' }}>
-              <div className="flex items-center justify-between px-4 py-3 border-b border-white/20" style={{ backgroundColor: colorSettings.headerBar, borderRadius: '12px 12px 0 0' }}>
+            <DialogContent className="max-w-sm text-[11px] text-white [&_*]:text-white p-0 [&>button.absolute]:hidden overflow-hidden" style={{ top: '45%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', borderRadius: '12px' }}>
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                 <div className="flex items-center gap-2">
                   <AlertCircle className="h-3.5 w-3.5 text-amber-400" />
-                  <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                  <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
                     AAS REMINDER
                   </h2>
                 </div>
@@ -25035,11 +25037,11 @@ export default function Dashboard() {
 
           {/* Rank Courses Reminder */}
           <Dialog open={showRankCoursesReminder && desktopIsFull} onOpenChange={setShowRankCoursesReminder}>
-            <DialogContent className="max-w-sm text-[11px] text-white [&_*]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '45%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.48), inset 0 -1px 0 rgba(255,255,255,0.08)', border: '1px solid white', borderRadius: '12px', overflow: 'hidden' }}>
-              <div className="flex items-center justify-between px-4 py-3 border-b border-white/20" style={{ backgroundColor: colorSettings.headerBar, borderRadius: '12px 12px 0 0' }}>
+            <DialogContent className="max-w-sm text-[11px] text-white [&_*]:text-white p-0 [&>button.absolute]:hidden overflow-hidden" style={{ top: '45%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', borderRadius: '12px' }}>
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                 <div className="flex items-center gap-2">
                   <AlertCircle className="h-3.5 w-3.5 text-amber-400" />
-                  <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                  <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
                     RANK YOUR COURSES
                   </h2>
                 </div>
@@ -26194,12 +26196,11 @@ export default function Dashboard() {
           
           {/* Courses Dialog */}
           <Dialog open={isCoursesDialogOpen} onOpenChange={setIsCoursesDialogOpen}>
-            <DialogContent className="max-w-xl text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '55%' }}>
-              {/* Header bar matching flyouts */}
-              <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
+            <DialogContent className="max-w-xl text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden overflow-hidden" style={{ top: '55%', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', borderRadius: '12px' }}>
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                 <div className="flex items-center gap-2">
                   <GraduationCap className="h-3 w-3 text-white" />
-                  <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                  <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
                     COURSES & SCHEDULE
                   </h2>
                 </div>
@@ -27854,6 +27855,7 @@ export default function Dashboard() {
           <Dialog open={isRemainingCoursesDialogOpen} onOpenChange={setIsRemainingCoursesDialogOpen}>
             <DialogContent
               className="overflow-hidden flex flex-col max-w-3xl max-h-[85vh] text-[11px] text-white [&_*]:text-white [&_label]:text-white p-0 [&>button.absolute]:hidden"
+              style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', borderRadius: '12px' }}
             >
               <div className="flex items-center justify-between px-4 py-1.5 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                 <div className="flex items-center gap-2">
@@ -27985,13 +27987,15 @@ export default function Dashboard() {
           {/* New Course Dialog (opened from grad cap menu) */}
           <Dialog open={isNewCourseDialogOpen} onOpenChange={(open) => { if (!open) { newCourseDialogClosingRef.current = true; setIsNewCourseDialogOpen(false); setTimeout(() => { newCourseDialogClosingRef.current = false; }, 300); } }}>
             <DialogContent 
-              className="overflow-hidden flex flex-col w-[520px] max-h-[85vh] text-[11px] bg-gradient-to-br from-gray-800 via-[#111] to-gray-900 text-white shadow-2xl p-0 [&>button.absolute]:hidden"
+              className="overflow-hidden flex flex-col w-[520px] max-h-[85vh] text-[11px] text-white p-0 [&>button.absolute]:hidden"
+              style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', borderRadius: '12px' }}
               onInteractOutside={(e) => e.preventDefault()}
               onPointerDownOutside={(e) => e.preventDefault()}
               aria-describedby={undefined}
             >
               <DialogTitle className="sr-only">New Course</DialogTitle>
               <NewCourseDialogInner
+                headerBar={colorSettings.headerBar}
                 onSave={(courseData) => {
                   const fullName = `${courseData.courseCode} - ${courseData.courseName}`;
                   const updatedCourses = [...coursesData.courses];
@@ -38716,10 +38720,11 @@ export default function Dashboard() {
 
         {/* Attachment Save Prompt Dialog */}
         <Dialog open={!!attachmentDeletePrompt} onOpenChange={(open) => !open && setAttachmentDeletePrompt(null)}>
-          <DialogContent className="max-w-sm text-white !z-[10050]" overlayClassName="!z-[10050]" style={{ zIndex: 10050, background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.25)' }}>
-            <DialogHeader className="flex flex-row items-center gap-2 px-4 py-3 -mx-6 -mt-6 rounded-t-lg border-b border-white/40" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
-              <DialogTitle className="text-white text-sm font-normal" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>Task Has Attachments</DialogTitle>
-            </DialogHeader>
+          <DialogContent className="max-w-sm text-white p-0 [&>button.absolute]:hidden overflow-hidden !z-[10050]" overlayClassName="!z-[10050]" style={{ zIndex: 10050, background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', borderRadius: '12px' }}>
+            <div className="flex items-center gap-2 px-4 py-3 rounded-t-lg border-b border-white/40" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+              <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>TASK HAS ATTACHMENTS</h2>
+            </div>
+            <div className="px-4 py-3">
             <p className="text-white/80 text-xs">
               "{attachmentDeletePrompt?.title}" has {attachmentDeletePrompt?.attachments.length} attachment{(attachmentDeletePrompt?.attachments.length || 0) > 1 ? 's' : ''}. Would you like to save {(attachmentDeletePrompt?.attachments.length || 0) > 1 ? 'them' : 'it'} before deleting?
             </p>
@@ -38792,15 +38797,17 @@ export default function Dashboard() {
             >
               Cancel
             </button>
+            </div>
           </DialogContent>
         </Dialog>
 
         {/* Recurring Delete Dialog */}
         <Dialog open={!!recurringDeleteTask} onOpenChange={(open) => !open && setRecurringDeleteTask(null)}>
-          <DialogContent className="max-w-sm text-white !z-[10050]" overlayClassName="!z-[10050]" style={{ zIndex: 10050, background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.25)' }}>
-            <DialogHeader className="flex flex-row items-center gap-2 px-4 py-3 -mx-6 -mt-6 rounded-t-lg border-b border-white/40" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
-              <DialogTitle className="text-white text-sm font-normal" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>Delete Recurring Task</DialogTitle>
-            </DialogHeader>
+          <DialogContent className="max-w-sm text-white p-0 [&>button.absolute]:hidden overflow-hidden !z-[10050]" overlayClassName="!z-[10050]" style={{ zIndex: 10050, background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', borderRadius: '12px' }}>
+            <div className="flex items-center gap-2 px-4 py-3 rounded-t-lg border-b border-white/40" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+              <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>DELETE RECURRING TASK</h2>
+            </div>
+            <div className="px-4 py-3">
             <p className="text-white/80 text-xs">
               "{recurringDeleteTask?.title}" is a recurring task. What would you like to do?
             </p>
@@ -38875,6 +38882,7 @@ export default function Dashboard() {
               >
                 Cancel
               </button>
+            </div>
             </div>
           </DialogContent>
         </Dialog>
@@ -41992,9 +42000,10 @@ type NewCourseDialogProps = {
     reminders: number[];
   }) => void;
   onClose: () => void;
+  headerBar?: string;
 };
 
-function NewCourseDialogInner({ existingCourse, onSave, onClose }: NewCourseDialogProps) {
+function NewCourseDialogInner({ existingCourse, onSave, onClose, headerBar }: NewCourseDialogProps) {
   const [courseCode, setCourseCode] = useState(existingCourse?.courseCode || '');
   const [courseName, setCourseName] = useState(existingCourse?.courseName || '');
   const [professorName, setProfessorName] = useState(existingCourse?.professorName || '');
@@ -42141,10 +42150,10 @@ function NewCourseDialogInner({ existingCourse, onSave, onClose }: NewCourseDial
 
   return (
     <>
-      <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b flex-shrink-0">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${headerBar || '#1e293b'}cc 40%, ${headerBar || '#1e293b'}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
         <div className="flex items-center gap-2">
           <GraduationCap className="h-3.5 w-3.5 text-white" />
-          <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+          <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
             {existingCourse ? 'EDIT COURSE' : 'NEW COURSE'}
           </h2>
         </div>
@@ -42592,7 +42601,7 @@ function NewCourseDialogInner({ existingCourse, onSave, onClose }: NewCourseDial
 function NewCourseDialog(props: NewCourseDialogProps) {
   return createPortal(
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50" onClick={(e) => { if (e.target === e.currentTarget) props.onClose(); }}>
-      <div className="bg-gradient-to-br from-gray-800 via-[#111] to-gray-900 rounded-lg w-[520px] max-h-[85vh] overflow-hidden flex flex-col text-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
+      <div className="rounded-lg w-[520px] max-h-[85vh] overflow-hidden flex flex-col text-white" style={{ background: `linear-gradient(180deg, ${props.headerBar || '#1e293b'} 0%, #000 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }} onClick={(e) => e.stopPropagation()}>
         <NewCourseDialogInner {...props} />
       </div>
     </div>,

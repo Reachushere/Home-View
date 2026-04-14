@@ -44,6 +44,7 @@ interface Props {
   semesters: Record<string, SemesterInfo>;
   semesterKeyOrder: string[];
   healthData?: HealthData | null;
+  colorSettings?: { mainBackground: string; mainBackgroundGradientEnd: string; headerBar: string };
 }
 
 function getSemLabel(key: string) {
@@ -69,7 +70,7 @@ function formatDate(d: Date) {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
-export default function CourseDocumentsWizard({ open, onClose, coursesData, semesters, semesterKeyOrder, healthData }: Props) {
+export default function CourseDocumentsWizard({ open, onClose, coursesData, semesters, semesterKeyOrder, healthData, colorSettings }: Props) {
   const { toast } = useToast();
   const [step, setStep] = useState(0);
   const [selectedCourse, setSelectedCourse] = useState('');
@@ -265,16 +266,16 @@ export default function CourseDocumentsWizard({ open, onClose, coursesData, seme
         className="flex flex-col text-white rounded-xl overflow-hidden"
         style={{
           width: '720px', maxWidth: '95vw', height: '85vh',
-          background: 'linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
-          border: '1.5px solid rgba(255,255,255,0.2)',
+          background: colorSettings ? `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)` : 'linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
+          border: '1.5px solid rgba(255,255,255,0.35)',
           boxShadow: '0 16px 64px rgba(0,0,0,0.4)',
         }}
         data-testid="course-documents-wizard"
       >
-        <div className="flex items-center justify-between px-5 py-3 border-b border-white/15" style={{ background: 'rgba(255,255,255,0.08)' }}>
+        <div className="flex items-center justify-between px-5 py-3 border-b border-white/40 rounded-t-xl" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: colorSettings ? `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)` : 'rgba(255,255,255,0.08)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
           <div className="flex items-center gap-2">
-            <FileText className="h-4 w-4 text-blue-400" />
-            <span className="text-[13px] font-semibold tracking-wide uppercase">Course Documents</span>
+            <FileText className="h-4 w-4 text-white" />
+            <span className="font-normal text-white uppercase" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>Course Documents</span>
             {selectedCourse && <span className="text-[10px] text-white/50 ml-2">{courseCode}</span>}
           </div>
           <div className="flex items-center gap-3">
