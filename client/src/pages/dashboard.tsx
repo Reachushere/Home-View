@@ -34552,7 +34552,7 @@ export default function Dashboard() {
           className="rounded-[12px] flex flex-col fixed"
           style={{
             zIndex: 35,
-            overflow: homeworkAnimating || homeworkMinimized || blankBoxOpen ? 'hidden' : 'visible',
+            overflow: homeworkAnimating || blankBoxAnimating || homeworkMinimized || blankBoxOpen ? 'hidden' : 'visible',
             right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1 + 3}px`,
             width: `${Math.max(0, calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4 - 1 - 1 + 1 - 5 - 2 - 1 - 3 + 2)}px`,
             top: `${(calendarBorderTop || (calendarTop + 15))}px`,
@@ -34562,7 +34562,7 @@ export default function Dashboard() {
             WebkitBackdropFilter: 'blur(40px)',
             boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)',
             border: 'none',
-            transition: 'none',
+            transition: (homeworkAnimating || blankBoxAnimating) ? 'right 0.35s cubic-bezier(0.4,0,0.2,1), width 0.35s cubic-bezier(0.4,0,0.2,1)' : 'none',
             opacity: (isPillMenuOpen && !sidePillIdle) ? 0 : 1,
             pointerEvents: (isPillMenuOpen && !sidePillIdle) ? 'none' : 'auto',
           }}
@@ -36446,16 +36446,12 @@ export default function Dashboard() {
             onClick={() => {
               if (homeworkAnimating || blankBoxAnimating) return;
               if (blankBoxOpen) {
-                setBlankBoxAnimating(true);
+                setHomeworkAnimating(true);
                 setBlankBoxOpen(false);
                 localStorage.removeItem('blankBoxOpen');
-                setTimeout(() => {
-                  setBlankBoxAnimating(false);
-                  setHomeworkAnimating(true);
-                  setHomeworkMinimized(false);
-                  localStorage.removeItem('homeworkMinimized');
-                  setTimeout(() => setHomeworkAnimating(false), 400);
-                }, 50);
+                setHomeworkMinimized(false);
+                localStorage.removeItem('homeworkMinimized');
+                setTimeout(() => setHomeworkAnimating(false), 400);
                 return;
               }
               setHomeworkAnimating(true);
@@ -36464,11 +36460,11 @@ export default function Dashboard() {
                 localStorage.setItem('savedCalendarReduction', String(calendarReduction));
                 localStorage.setItem('homeworkMinimized', '1');
                 setHomeworkMinimized(true);
-                setTimeout(() => {
+                requestAnimationFrame(() => {
                   setCalendarReduction(0);
                   localStorage.setItem('calendarReduction', '0');
-                  setTimeout(() => setHomeworkAnimating(false), 350);
-                }, 50);
+                });
+                setTimeout(() => setHomeworkAnimating(false), 400);
               } else {
                 const restore = savedCalendarReductionRef.current ?? (parseFloat(localStorage.getItem('savedCalendarReduction') || '0') || 260);
                 localStorage.removeItem('homeworkMinimized');
@@ -36501,30 +36497,26 @@ export default function Dashboard() {
           <button
             onClick={() => {
               if (homeworkAnimating || blankBoxAnimating) return;
-              if (!homeworkMinimized) {
+              if (!homeworkMinimized && !blankBoxOpen) {
                 setHomeworkAnimating(true);
                 setHomeworkMinimized(true);
                 localStorage.setItem('homeworkMinimized', '1');
-                setTimeout(() => {
-                  setHomeworkAnimating(false);
-                  setBlankBoxAnimating(true);
-                  setBlankBoxOpen(true);
-                  localStorage.setItem('blankBoxOpen', '1');
-                  setTimeout(() => setBlankBoxAnimating(false), 400);
-                }, 50);
+                setBlankBoxOpen(true);
+                localStorage.setItem('blankBoxOpen', '1');
+                setTimeout(() => setHomeworkAnimating(false), 400);
                 return;
               }
               setBlankBoxAnimating(true);
               if (blankBoxOpen) {
                 setBlankBoxOpen(false);
                 localStorage.removeItem('blankBoxOpen');
-                setTimeout(() => {
-                  savedCalendarReductionRef.current = calendarReduction;
-                  localStorage.setItem('savedCalendarReduction', String(calendarReduction));
+                savedCalendarReductionRef.current = calendarReduction;
+                localStorage.setItem('savedCalendarReduction', String(calendarReduction));
+                requestAnimationFrame(() => {
                   setCalendarReduction(0);
                   localStorage.setItem('calendarReduction', '0');
-                  setTimeout(() => setBlankBoxAnimating(false), 350);
-                }, 50);
+                });
+                setTimeout(() => setBlankBoxAnimating(false), 400);
               } else {
                 const restore = savedCalendarReductionRef.current ?? (parseFloat(localStorage.getItem('savedCalendarReduction') || '0') || 260);
                 setCalendarReduction(restore);
@@ -36552,29 +36544,6 @@ export default function Dashboard() {
               : <ChevronRight className="h-[17px] w-[17px] text-white/70 hover:text-white" />
             }
           </button>
-        )}
-        {desktopShowHomework && blankBoxOpen && !blankBoxAnimating && (
-          <section
-            className="rounded-[12px] flex flex-col fixed"
-            style={{
-              zIndex: 36,
-              overflow: 'hidden',
-              right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1 + 3}px`,
-              width: `${Math.max(0, calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4 - 1 - 1 + 1 - 5 - 2 - 1 - 3 + 2)}px`,
-              top: `${(calendarBorderTop || (calendarTop + 15))}px`,
-              height: `${window.innerHeight - (calendarBorderTop || (calendarTop + 15)) - calendarBottom}px`,
-              background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)',
-              backdropFilter: 'blur(40px)',
-              WebkitBackdropFilter: 'blur(40px)',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)',
-              border: 'none',
-              opacity: (isPillMenuOpen && !sidePillIdle) ? 0 : 1,
-              pointerEvents: (isPillMenuOpen && !sidePillIdle) ? 'none' : 'auto',
-            }}
-            data-testid="section-blank-box"
-          >
-            <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', border: '1.5px solid rgba(255,255,255,0.5)', pointerEvents: 'none', zIndex: 9999 }} />
-          </section>
         )}
 
         {desktopShowHomework && hwFloating.detached && (
