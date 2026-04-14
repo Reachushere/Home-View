@@ -3728,23 +3728,30 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         <button
           onClick={() => { setIsAiChatOpen(prev => !prev); setTimeout(() => aiChatInputRef.current?.focus(), 100); }}
           style={{
-            background: isAiChatOpen ? 'rgba(139,92,246,0.2)' : 'rgba(255,255,255,0.08)',
-            border: `1px solid ${isAiChatOpen ? 'rgba(139,92,246,0.5)' : 'rgba(255,255,255,0.2)'}`,
-            borderRadius: '8px',
-            padding: '6px 12px',
-            color: isAiChatOpen ? '#c4b5fd' : 'rgba(255,255,255,0.7)',
-            fontSize: '12px',
+            position: 'absolute',
+            bottom: '12px',
+            right: '12px',
+            zIndex: 100002,
+            background: isAiChatOpen ? 'linear-gradient(135deg, #1565c0 0%, #42a5f5 50%, #90caf9 100%)' : 'linear-gradient(135deg, #0a3d7a 0%, #1565c0 50%, #42a5f5 100%)',
+            border: `1.5px solid ${isAiChatOpen ? 'rgba(144,202,249,0.6)' : 'rgba(255,255,255,0.3)'}`,
+            borderRadius: '50%',
+            width: '38px',
+            height: '38px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             cursor: 'pointer',
-            display: 'flex', alignItems: 'center', gap: '6px',
+            color: '#fff',
+            fontSize: '12px',
+            boxShadow: '0 4px 12px rgba(10,61,122,0.4)',
             transition: 'all 0.2s',
           }}
-          onMouseEnter={e => { e.currentTarget.style.color = '#c4b5fd'; e.currentTarget.style.borderColor = 'rgba(139,92,246,0.5)'; }}
-          onMouseLeave={e => { if (!isAiChatOpen) { e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; } }}
+          onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 6px 18px rgba(10,61,122,0.55)'; e.currentTarget.style.transform = 'scale(1.05)'; }}
+          onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 4px 12px rgba(10,61,122,0.4)'; e.currentTarget.style.transform = 'scale(1)'; }}
           data-testid="button-ai-study-chat"
           title="AI Study Assistant"
         >
-          <MessageSquare size={14} />
-          <span>Study Chat</span>
+          <MessageSquare size={16} />
         </button>
       )}
 
@@ -4467,18 +4474,17 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       {isAiChatOpen && (
         <div style={{
           position: 'absolute',
-          top: '60px',
-          right: '16px',
+          bottom: '56px',
+          right: '12px',
           width: '400px',
           maxHeight: 'calc(100vh - 140px)',
-          background: 'rgba(15,10,25,0.97)',
-          border: '1px solid rgba(139,92,246,0.3)',
+          background: 'linear-gradient(180deg, #0a2a5e 0%, #0d3a7a 30%, #154B96 60%, #1a5ab0 100%)',
+          border: '1.5px solid rgba(144,202,249,0.3)',
           borderRadius: '14px',
           zIndex: 100005,
           display: 'flex',
           flexDirection: 'column',
-          boxShadow: '0 12px 40px rgba(0,0,0,0.5)',
-          backdropFilter: 'blur(20px)',
+          boxShadow: '0 12px 40px rgba(10,42,94,0.6), 0 4px 12px rgba(0,0,0,0.3)',
         }} data-testid="ai-chat-panel">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -4532,10 +4538,10 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                   maxWidth: '90%',
                   padding: '10px 14px',
                   borderRadius: msg.role === 'user' ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
-                  background: msg.role === 'user' ? 'rgba(99,102,241,0.2)' : 'rgba(255,255,255,0.06)',
-                  border: `1px solid ${msg.role === 'user' ? 'rgba(99,102,241,0.3)' : 'rgba(255,255,255,0.08)'}`,
+                  background: msg.role === 'user' ? 'rgba(99,102,241,0.2)' : 'rgba(255,255,255,0.1)',
+                  border: `1px solid ${msg.role === 'user' ? 'rgba(99,102,241,0.3)' : 'rgba(255,255,255,0.15)'}`,
                   fontSize: '13px',
-                  color: msg.role === 'user' ? '#c4b5fd' : 'rgba(255,255,255,0.85)',
+                  color: '#ffffff',
                   lineHeight: 1.5,
                   whiteSpace: 'pre-wrap',
                   wordBreak: 'break-word',
