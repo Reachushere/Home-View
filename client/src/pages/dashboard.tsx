@@ -36465,8 +36465,8 @@ export default function Dashboard() {
             }}
             className="fixed cursor-pointer hover:opacity-80 transition-opacity"
             style={{
-              right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1 + 3 + 4}px`,
-              bottom: `${calendarBottom + 2}px`,
+              right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1 + 3 + 6}px`,
+              top: `${(calendarBorderTop || (calendarTop + 15)) - 12}px`,
               zIndex: 10000,
               background: 'none',
               border: 'none',
