@@ -293,7 +293,7 @@ export default function CourseDocumentsWizard({ open, onClose, coursesData, seme
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-5 py-4" style={{ scrollbarWidth: 'thin' }}>
+        <div className="flex-1 overflow-y-auto px-5 py-4" style={{ scrollbarWidth: 'none' }}>
           {step === 0 && (
             <div className="flex flex-col gap-4">
               <div className="text-center mb-2">
