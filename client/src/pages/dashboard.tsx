@@ -221,6 +221,10 @@ import {
   TreePine,
   FileCheck,
   Phone,
+  Bold,
+  Italic,
+  Type,
+  CheckSquare2,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import { useAccessMode } from "@/components/access-gate";
@@ -2297,6 +2301,40 @@ export default function Dashboard() {
   const [blankBoxOpen, setBlankBoxOpen] = useState(() => localStorage.getItem('blankBoxOpen') === '1');
   const [blankBoxAnimating, setBlankBoxAnimating] = useState(false);
   const [blankCanvasNotes, setBlankCanvasNotes] = useState(() => localStorage.getItem('blankCanvasNotes') || '');
+  const blankEditorRef = useRef<HTMLDivElement>(null);
+  const [blankShowFontSize, setBlankShowFontSize] = useState(false);
+  const [blankShowFontColor, setBlankShowFontColor] = useState(false);
+  const blankExecCommand = useCallback((cmd: string, value?: string) => {
+    document.execCommand(cmd, false, value);
+    blankEditorRef.current?.focus();
+  }, []);
+  const blankInsertCheckbox = useCallback(() => {
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.style.cssText = 'margin-right:6px;cursor:pointer;vertical-align:middle;';
+    cb.addEventListener('change', () => {
+      const next = cb.nextSibling;
+      if (next && next.nodeType === 3) {
+        const span = document.createElement('span');
+        span.style.textDecoration = cb.checked ? 'line-through' : 'none';
+        span.style.opacity = cb.checked ? '0.5' : '1';
+        span.textContent = next.textContent;
+        next.replaceWith(span);
+      }
+    });
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) {
+      const range = sel.getRangeAt(0);
+      range.collapse(false);
+      range.insertNode(cb);
+      range.setStartAfter(cb);
+      range.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  }, []);
+  const BLANK_FONT_SIZES = ['12px', '14px', '16px', '18px', '24px', '32px'];
+  const BLANK_FONT_COLORS = ['#1a1a2e', '#ffffff', '#ef4444', '#f59e0b', '#22c55e', '#3b82f6', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'];
   const [hwMinimizeAnim, setHwMinimizeAnim] = useState<'idle' | 'minimizing' | 'restoring'>('idle');
   const [blankMinimizeAnim, setBlankMinimizeAnim] = useState<'idle' | 'minimizing' | 'restoring'>('idle');
   const [blankBoxMinimizedToTab, setBlankBoxMinimizedToTab] = useState(() => localStorage.getItem('blankBoxMinimizedToTab') === '1');
@@ -27100,11 +27138,11 @@ export default function Dashboard() {
                             })();
 
                             return (
-                              <div key={c.code} className="rounded-lg border border-white/20 overflow-hidden" data-testid={`expanded-course-${c.code}`}>
-                                <div className="px-4 py-3 flex items-center gap-3 border-b border-white/15" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                              <div key={c.code} className="rounded-lg overflow-hidden" style={{ border: '1.5px solid rgba(255,255,255,0.8)' }} data-testid={`expanded-course-${c.code}`}>
+                                <div className="px-4 py-3 flex items-center gap-3 border-b border-white/30" style={{ background: 'rgba(255,255,255,0.08)' }}>
                                   <div className="w-4 h-4 rounded-full flex-shrink-0" style={{ background: dotBg }} />
-                                  <span className="text-[15px] font-bold text-white">{displayNameResult}</span>
-                                  {c.fullName && <span className="text-[13px] text-white/60">— {c.fullName}</span>}
+                                  <span className="text-[15px] font-bold text-white">{c.code}</span>
+                                  {(c.fullName || (displayNameResult !== c.code && displayNameResult)) && <span className="text-[13px] text-white/70">— {c.fullName || displayNameResult}</span>}
                                   {courseHealth && (
                                     <div className="ml-auto flex items-center gap-3">
                                       <span className="text-[12px] text-white">{courseHealth.totalModules} modules · {courseHealth.totalReadings} readings</span>
@@ -27128,9 +27166,9 @@ export default function Dashboard() {
                                         const libPct = (totalMod + totalRead) > 0 ? 100 : 0;
                                         return [
                                           { label: 'OneDrive', icon: '☁️', path: getOneDrivePath(c.code), status: courseHealth?.oneDriveFolderConfigured ? 'ok' : 'error', issueKey: 'onedrive', pct: odPct },
-                                          { label: 'Folder Sync', icon: '🔄', path: `week-*-${c.code.toLowerCase()}-module/rea...`, status: courseHealth?.totalModules > 0 ? 'ok' : 'warning', issueKey: 'sync', pct: syncPct },
+                                          { label: 'Folder Sync', icon: '🔄', path: `${totalMod} mod · ${totalRead} read`, status: courseHealth?.totalModules > 0 ? 'ok' : 'warning', issueKey: 'sync', pct: syncPct },
                                           { label: 'Local Storage', icon: '💾', path: `persistent-uploads/`, status: 'ok' as const, issueKey: 'storage', pct: storagePct },
-                                          { label: 'TTS', icon: '🔊', path: `TTS → Cat Lights`, status: courseHealth ? (ttsReady === ttsNeeded ? 'ok' : ttsReady > 0 ? 'warning' : 'idle') : 'idle', issueKey: 'tts', pct: ttsPct },
+                                          { label: 'TTS', icon: '🔊', path: ttsNeeded > 0 ? `${ttsReady}/${ttsNeeded} files ready` : `TTS → Cat Lights`, status: courseHealth ? (ttsReady === ttsNeeded ? 'ok' : ttsReady > 0 ? 'warning' : 'idle') : 'idle', issueKey: 'tts', pct: ttsPct },
                                           { label: 'Library Shelf', icon: '📚', path: `BookReader`, status: (totalMod > 0 || totalRead > 0) ? 'ok' : 'idle', issueKey: 'library', pct: libPct },
                                         ];
                                       })().map((step, sIdx, arr) => (
@@ -27145,8 +27183,8 @@ export default function Dashboard() {
                                               onClick={(e) => { if (step.status === 'error' || step.status === 'warning') { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: step.issueKey, step: 0, phase: 'primary' }); } }}
                                             >{step.icon}</div>
                                             <span className="text-[11px] font-semibold text-white mt-1.5 text-center leading-tight">{step.label}</span>
-                                            {step.pct !== null && <span className="text-[9px] text-white/80 text-center mt-0.5">{step.pct}%</span>}
-                                            <span className="text-[9px] text-white/60 text-center leading-tight mt-0.5" style={{ maxWidth: '120px', wordBreak: 'break-all' }}>{step.path}</span>
+                                            {step.pct !== null && <span className="text-[10px] font-bold text-center mt-0.5" style={{ color: step.pct === 100 ? '#4ade80' : step.pct > 0 ? '#fde68a' : '#fca5a5' }}>{step.pct}%</span>}
+                                            <span className="text-[9px] text-white text-center leading-tight mt-0.5" style={{ maxWidth: '120px', wordBreak: 'break-all' }}>{step.path}</span>
                                             {(step.status === 'error' || step.status === 'warning') && <span className="text-[9px] mt-1 px-2 py-0.5 rounded cursor-pointer hover:brightness-125 transition-all" style={{ background: step.status === 'error' ? 'rgba(239,68,68,0.25)' : 'rgba(234,179,8,0.25)', color: step.status === 'error' ? '#fca5a5' : '#fde68a', border: `1px solid ${step.status === 'error' ? 'rgba(239,68,68,0.4)' : 'rgba(234,179,8,0.4)'}` }} onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: step.issueKey, step: 0, phase: 'primary' }); }}>Fix</span>}
                                           </div>
                                           {sIdx < arr.length - 1 && (
