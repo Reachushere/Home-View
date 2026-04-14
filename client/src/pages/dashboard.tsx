@@ -29802,8 +29802,14 @@ export default function Dashboard() {
               const totalDayW = gridSizes.dayColumnWidths.reduce((a: number, b: number) => a + b, 0);
               const beforeW = gridSizes.dayColumnWidths.slice(0, satIdx).reduce((a: number, b: number) => a + b, 0);
               const fixedW = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0);
+              const friDay = weekDays[satIdx - 1];
+              const satDay = weekDays[satIdx];
+              const friShift = friDay ? localShiftMap[getETDateString(friDay)] : undefined;
+              const satShift = satDay ? localShiftMap[getETDateString(satDay)] : undefined;
+              const hasOrangeShift = (friShift === 'day' && !isSameDayET(friDay, subDays(new Date(), 1))) || (satShift === 'day' && !isSameDayET(satDay, subDays(new Date(), 1)));
+              const topOffset = hasOrangeShift ? 4 : 0;
               return (
-                <div className="absolute bottom-0 pointer-events-none" style={{ top: '0px', left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px - ${calScrollbarW}px) - 1.5px)`, width: '3px', backgroundColor: '#000000', zIndex: 57 }} />
+                <div className="absolute bottom-0 pointer-events-none" style={{ top: `${topOffset}px`, left: `calc(${fixedW}px + (${beforeW} / ${totalDayW}) * (100% - ${fixedW}px - ${calScrollbarW}px) - 1.5px)`, width: '3px', backgroundColor: '#000000', zIndex: 57 }} />
               );
             })()}
             
