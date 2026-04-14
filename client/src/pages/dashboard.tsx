@@ -34700,6 +34700,31 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
+            {/* Expansion dock — top-left, matches homework box style */}
+            {!hwFloating.detached ? (
+              <button
+                onClick={hwFloatingHandlers.onDetach}
+                onTouchEnd={(e) => { e.preventDefault(); hwFloatingHandlers.onDetach(); }}
+                className="absolute z-[9999] rounded-tl-[11px] rounded-br-[4px] rounded-tr-[2px] rounded-bl-[2px] flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors"
+                style={{ top: '1px', left: '1px', width: '25px', height: '25px', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)' }}
+                data-testid="blank-detach-button"
+                title="Pop out progress as floating window"
+              >
+                <Maximize2 className="h-3 w-3 text-white" />
+              </button>
+            ) : (
+              <button
+                onClick={hwFloatingHandlers.onDock}
+                onTouchEnd={(e) => { e.preventDefault(); hwFloatingHandlers.onDock(); }}
+                className="absolute z-[9999] rounded-tl-[11px] rounded-br-[4px] rounded-tr-[2px] rounded-bl-[2px] flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors"
+                style={{ top: '1px', left: '1px', width: '25px', height: '25px', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)' }}
+                data-testid="blank-dock-button"
+                title="Dock progress bars back"
+              >
+                <Minimize2 className="h-3 w-3 text-white" />
+              </button>
+            )}
+            {/* Minimize dock — top-right */}
             <button
               onClick={() => {
                 if (blankMinimizeAnim !== 'idle') return;
