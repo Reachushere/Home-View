@@ -27,7 +27,8 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Plus, Loader2 } from "lucide-react";
+import { Plus, Loader2, Settings } from "lucide-react";
+import { getColorSettings, dialogContentStyle, dialogHeaderStyle, DIALOG_CONTENT_CLASS, DIALOG_HEADER_CLASS, DIALOG_TITLE_STYLE } from "@/lib/dialogStyles";
 import { z } from "zod";
 
 const formSchema = insertDeviceSchema.extend({
@@ -60,6 +61,7 @@ export function AddDeviceDialog() {
     });
   }
 
+  const cs = getColorSettings();
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -67,12 +69,13 @@ export function AddDeviceDialog() {
           <Plus className="w-4 h-4" /> Add Device
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] bg-card border-white/10 text-foreground">
-        <DialogHeader>
-          <DialogTitle className="font-display text-xl">Add New Device</DialogTitle>
-        </DialogHeader>
+      <DialogContent className={`sm:max-w-[425px] ${DIALOG_CONTENT_CLASS}`} style={dialogContentStyle(cs)}>
+        <div className={DIALOG_HEADER_CLASS} style={dialogHeaderStyle(cs)}>
+          <Settings className="text-white" style={{ width: '15px', height: '15px' }} />
+          <h2 className="font-normal text-white" style={DIALOG_TITLE_STYLE}>ADD NEW DEVICE</h2>
+        </div>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 px-4 py-3">
             <FormField
               control={form.control}
               name="name"
@@ -80,7 +83,7 @@ export function AddDeviceDialog() {
                 <FormItem>
                   <FormLabel>Device Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Ceiling Fan" className="bg-secondary border-transparent focus:border-primary" {...field} />
+                    <Input placeholder="e.g., Ceiling Fan" className="bg-white/5 border-white/15 text-white placeholder:text-white/30 text-[11px]" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -96,11 +99,11 @@ export function AddDeviceDialog() {
                     <FormLabel>Type</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <SelectTrigger className="bg-secondary border-transparent">
+                        <SelectTrigger className="bg-white/5 border-white/15 text-white text-[11px]">
                           <SelectValue placeholder="Select type" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent className="bg-card border-white/10">
+                      <SelectContent>
                         {DEVICE_TYPES.map((type) => (
                           <SelectItem key={type} value={type} className="capitalize cursor-pointer">
                             {type}
@@ -121,11 +124,11 @@ export function AddDeviceDialog() {
                     <FormLabel>Room</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <SelectTrigger className="bg-secondary border-transparent">
+                        <SelectTrigger className="bg-white/5 border-white/15 text-white text-[11px]">
                           <SelectValue placeholder="Select room" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent className="bg-card border-white/10">
+                      <SelectContent>
                         {ROOMS.map((room) => (
                           <SelectItem key={room} value={room} className="cursor-pointer">
                             {room}
@@ -147,11 +150,11 @@ export function AddDeviceDialog() {
                   <FormLabel>Icon (Lucide Name)</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                      <SelectTrigger className="bg-secondary border-transparent">
+                      <SelectTrigger className="bg-white/5 border-white/15 text-white text-[11px]">
                         <SelectValue placeholder="Select icon" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent className="bg-card border-white/10 h-48">
+                    <SelectContent className="h-48">
                       {["lightbulb", "power", "thermometer", "activity", "fan", "tv", "wifi", "lock"].map((icon) => (
                         <SelectItem key={icon} value={icon} className="capitalize cursor-pointer">
                           {icon}
@@ -173,7 +176,7 @@ export function AddDeviceDialog() {
                     <FormItem>
                       <FormLabel>Initial Value</FormLabel>
                       <FormControl>
-                        <Input type="number" placeholder="20" className="bg-secondary border-transparent" {...field} />
+                        <Input type="number" placeholder="20" className="bg-white/5 border-white/15 text-white placeholder:text-white/30 text-[11px]" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -186,7 +189,7 @@ export function AddDeviceDialog() {
                     <FormItem>
                       <FormLabel>Unit</FormLabel>
                       <FormControl>
-                        <Input placeholder="°C" className="bg-secondary border-transparent" {...field} />
+                        <Input placeholder="°C" className="bg-white/5 border-white/15 text-white placeholder:text-white/30 text-[11px]" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -195,8 +198,11 @@ export function AddDeviceDialog() {
               </div>
             )}
 
-            <div className="flex justify-end pt-4">
-              <Button type="submit" disabled={isPending} className="bg-primary hover:bg-primary/90">
+            <div className="flex justify-end gap-2 pt-3 border-t border-white/20">
+              <Button type="button" variant="outline" className="border-white/30 text-white hover:bg-white/10 text-xs h-8" onClick={() => setOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isPending} className="bg-blue-600 hover:bg-blue-700 text-white text-xs h-8">
                 {isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

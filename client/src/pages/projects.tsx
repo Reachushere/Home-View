@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { getColorSettings, dialogContentStyle, dialogHeaderStyle, DIALOG_CONTENT_CLASS, DIALOG_HEADER_CLASS, DIALOG_TITLE_STYLE } from "@/lib/dialogStyles";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { 
@@ -129,16 +130,18 @@ function ProjectDialog({
     onOpenChange(false);
   };
 
+  const cs = getColorSettings();
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent 
-        className="max-w-lg text-[11px]"
-        style={{ background: '#1a1f2e', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }}
+        className={`max-w-lg text-[11px] ${DIALOG_CONTENT_CLASS}`}
+        style={dialogContentStyle(cs)}
       >
-        <DialogHeader>
-          <DialogTitle className="text-white text-sm">{project ? "Edit Project" : "Create New Project"}</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-3">
+        <div className={DIALOG_HEADER_CLASS} style={dialogHeaderStyle(cs)}>
+          <FolderOpen className="text-white" style={{ width: '15px', height: '15px' }} />
+          <h2 className="font-normal text-white" style={DIALOG_TITLE_STYLE}>{project ? "EDIT PROJECT" : "CREATE NEW PROJECT"}</h2>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-3 px-4 py-3">
           <div className="space-y-2">
             <label className="text-[11px] font-medium text-white/80">Project Name</label>
             <Input 
@@ -276,19 +279,18 @@ function ProjectDialog({
             />
           </div>
 
-          <DialogFooter>
-            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} className="text-white/60 hover:text-white hover:bg-white/10">
+          <div className="flex justify-end gap-2 pt-3 border-t border-white/20">
+            <Button type="button" variant="outline" className="border-white/30 text-white hover:bg-white/10 text-xs h-8" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
             <Button 
               type="submit" 
               data-testid="button-save-project"
-              style={{ background: 'linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%)' }}
-              className="text-white border-0 hover:brightness-110"
+              className="bg-blue-600 hover:bg-blue-700 text-white text-xs h-8"
             >
               {project ? "Save Changes" : "Create Project"}
             </Button>
-          </DialogFooter>
+          </div>
         </form>
       </DialogContent>
     </Dialog>

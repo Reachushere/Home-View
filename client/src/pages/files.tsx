@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { getColorSettings, dialogContentStyle, dialogHeaderStyle, DIALOG_CONTENT_CLASS, DIALOG_HEADER_CLASS, DIALOG_TITLE_STYLE } from "@/lib/dialogStyles";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu";
 import { useToast } from "@/hooks/use-toast";
 import { useUpload } from "@/hooks/use-upload";
@@ -2161,42 +2162,47 @@ export default function FilesPage() {
       </div>
 
       {/* Dialogs */}
+      {(() => { const cs = getColorSettings(); return <>
       <Dialog open={!!editingFile} onOpenChange={() => setEditingFile(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Rename File</DialogTitle>
-          </DialogHeader>
-          <div className="py-4">
+        <DialogContent className={`max-w-md ${DIALOG_CONTENT_CLASS}`} style={dialogContentStyle(cs)}>
+          <div className={DIALOG_HEADER_CLASS} style={dialogHeaderStyle(cs)}>
+            <Edit2 className="text-white" style={{ width: '15px', height: '15px' }} />
+            <h2 className="font-normal text-white" style={DIALOG_TITLE_STYLE}>RENAME FILE</h2>
+          </div>
+          <div className="px-4 py-3">
             <Input
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               placeholder="Enter new file name"
               data-testid="input-rename"
+              className="bg-white/5 border-white/15 text-white placeholder:text-white/30 text-[11px]"
             />
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setEditingFile(null)}>
+          <div className="flex justify-end gap-2 px-4 py-3 border-t border-white/20">
+            <Button variant="outline" className="border-white/30 text-white hover:bg-white/10 text-xs h-8" onClick={() => setEditingFile(null)}>
               Cancel
             </Button>
             <Button 
+              className="bg-blue-600 hover:bg-blue-700 text-white text-xs h-8"
               onClick={handleRename} 
               disabled={renameMutation.isPending}
               data-testid="button-confirm-rename"
             >
               {renameMutation.isPending ? "Renaming..." : "Rename"}
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 
       <Dialog open={!!assigningFile} onOpenChange={() => setAssigningFile(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Assign to Task</DialogTitle>
-          </DialogHeader>
-          <div className="py-4">
+        <DialogContent className={`max-w-md ${DIALOG_CONTENT_CLASS}`} style={dialogContentStyle(cs)}>
+          <div className={DIALOG_HEADER_CLASS} style={dialogHeaderStyle(cs)}>
+            <Link2 className="text-white" style={{ width: '15px', height: '15px' }} />
+            <h2 className="font-normal text-white" style={DIALOG_TITLE_STYLE}>ASSIGN TO TASK</h2>
+          </div>
+          <div className="px-4 py-3">
             <Select value={selectedTaskId} onValueChange={setSelectedTaskId}>
-              <SelectTrigger data-testid="select-task">
+              <SelectTrigger data-testid="select-task" className="bg-white/5 border-white/15 text-white text-[11px]">
                 <SelectValue placeholder="Select a task..." />
               </SelectTrigger>
               <SelectContent>
@@ -2209,29 +2215,31 @@ export default function FilesPage() {
               </SelectContent>
             </Select>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setAssigningFile(null)}>
+          <div className="flex justify-end gap-2 px-4 py-3 border-t border-white/20">
+            <Button variant="outline" className="border-white/30 text-white hover:bg-white/10 text-xs h-8" onClick={() => setAssigningFile(null)}>
               Cancel
             </Button>
             <Button 
+              className="bg-blue-600 hover:bg-blue-700 text-white text-xs h-8"
               onClick={handleAssign}
               disabled={!selectedTaskId || assignMutation.isPending}
               data-testid="button-confirm-assign"
             >
               {assignMutation.isPending ? "Assigning..." : "Assign"}
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 
       <Dialog open={showAssignAfterUpload} onOpenChange={setShowAssignAfterUpload}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Assign Uploaded File to Task</DialogTitle>
-          </DialogHeader>
-          <div className="py-4">
+        <DialogContent className={`max-w-md ${DIALOG_CONTENT_CLASS}`} style={dialogContentStyle(cs)}>
+          <div className={DIALOG_HEADER_CLASS} style={dialogHeaderStyle(cs)}>
+            <Upload className="text-white" style={{ width: '15px', height: '15px' }} />
+            <h2 className="font-normal text-white" style={DIALOG_TITLE_STYLE}>ASSIGN UPLOADED FILE</h2>
+          </div>
+          <div className="px-4 py-3">
             <Select value={selectedTaskId} onValueChange={setSelectedTaskId}>
-              <SelectTrigger data-testid="select-task-after-upload">
+              <SelectTrigger data-testid="select-task-after-upload" className="bg-white/5 border-white/15 text-white text-[11px]">
                 <SelectValue placeholder="Select a task..." />
               </SelectTrigger>
               <SelectContent>
@@ -2244,57 +2252,60 @@ export default function FilesPage() {
               </SelectContent>
             </Select>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAssignAfterUpload(false)}>
+          <div className="flex justify-end gap-2 px-4 py-3 border-t border-white/20">
+            <Button variant="outline" className="border-white/30 text-white hover:bg-white/10 text-xs h-8" onClick={() => setShowAssignAfterUpload(false)}>
               Skip
             </Button>
             <Button 
+              className="bg-blue-600 hover:bg-blue-700 text-white text-xs h-8"
               onClick={handleAssignAfterUpload}
               disabled={!selectedTaskId || assignByPathMutation.isPending}
               data-testid="button-confirm-assign-after-upload"
             >
               {assignByPathMutation.isPending ? "Assigning..." : "Assign"}
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 
       <Dialog open={showDeleteFolderConfirm} onOpenChange={setShowDeleteFolderConfirm}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete Folder Contents</DialogTitle>
-          </DialogHeader>
-          <div className="py-4">
-            <p className="text-sm text-muted-foreground">
+        <DialogContent className={`max-w-md ${DIALOG_CONTENT_CLASS}`} style={dialogContentStyle(cs)}>
+          <div className={DIALOG_HEADER_CLASS} style={dialogHeaderStyle(cs)}>
+            <Trash2 className="text-white" style={{ width: '15px', height: '15px' }} />
+            <h2 className="font-normal text-white" style={DIALOG_TITLE_STYLE}>DELETE FOLDER CONTENTS</h2>
+          </div>
+          <div className="px-4 py-3">
+            <p className="text-sm text-white/70">
               Are you sure you want to delete all files in this folder? This action cannot be undone.
             </p>
             {selectedFolder && (
-              <p className="text-sm font-medium mt-2">
+              <p className="text-sm font-medium mt-2 text-white">
                 Files to delete: {getFilesToDeleteInFolder(selectedFolder).length}
               </p>
             )}
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowDeleteFolderConfirm(false)}>
+          <div className="flex justify-end gap-2 px-4 py-3 border-t border-white/20">
+            <Button variant="outline" className="border-white/30 text-white hover:bg-white/10 text-xs h-8" onClick={() => setShowDeleteFolderConfirm(false)}>
               Cancel
             </Button>
             <Button 
-              variant="destructive"
+              className="bg-red-600 hover:bg-red-700 text-white text-xs h-8"
               onClick={handleDeleteFolder}
               data-testid="button-confirm-delete-folder"
             >
               Delete All Files
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 
       <Dialog open={showAddFolderDialog} onOpenChange={setShowAddFolderDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add New Folder</DialogTitle>
-          </DialogHeader>
-          <div className="py-4">
+        <DialogContent className={`max-w-md ${DIALOG_CONTENT_CLASS}`} style={dialogContentStyle(cs)}>
+          <div className={DIALOG_HEADER_CLASS} style={dialogHeaderStyle(cs)}>
+            <FolderPlus className="text-white" style={{ width: '15px', height: '15px' }} />
+            <h2 className="font-normal text-white" style={DIALOG_TITLE_STYLE}>ADD NEW FOLDER</h2>
+          </div>
+          <div className="px-4 py-3">
             <Input
               placeholder="Folder name"
               value={newFolderName}
@@ -2308,10 +2319,11 @@ export default function FilesPage() {
                 }
               }}
               data-testid="input-new-folder-name"
+              className="bg-white/5 border-white/15 text-white placeholder:text-white/30 text-[11px]"
             />
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => {
+          <div className="flex justify-end gap-2 px-4 py-3 border-t border-white/20">
+            <Button variant="outline" className="border-white/30 text-white hover:bg-white/10 text-xs h-8" onClick={() => {
               setShowAddFolderDialog(false);
               setNewFolderName("");
               setAddFolderParentId(null);
@@ -2319,6 +2331,7 @@ export default function FilesPage() {
               Cancel
             </Button>
             <Button 
+              className="bg-blue-600 hover:bg-blue-700 text-white text-xs h-8"
               onClick={() => {
                 if (newFolderName.trim() && addFolderParentId) {
                   createCustomFolderMutation.mutate({ 
@@ -2332,9 +2345,10 @@ export default function FilesPage() {
             >
               {createCustomFolderMutation.isPending ? "Creating..." : "Create Folder"}
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
+      </>; })()}
 
     </div>
   );
