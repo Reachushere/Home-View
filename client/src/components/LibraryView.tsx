@@ -5150,13 +5150,13 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             const shelfScale = shelfHeight / REF_SHELF_HEIGHT;
             const shelfCalibrationByCode: Record<string, { row: number; label: number; labelRight?: number }> = {
               'CPPA122': { row: 48, label: -4, labelRight: 8 },
-              'CFNF400': { row: 103, label: -16, labelRight: 8 },
-              'CASL101': { row: 98, label: -20, labelRight: 8 },
+              'CFNF400': { row: 103, label: -18, labelRight: 8 },
+              'CASL101': { row: 98, label: -18, labelRight: 8 },
             };
             const shelfCalibrationByIndex: { row: number; label: number; labelRight?: number }[] = [
               { row: 48, label: -4, labelRight: 8 },
-              { row: 103, label: -16, labelRight: 8 },
-              { row: 98, label: -20, labelRight: 8 },
+              { row: 103, label: -18, labelRight: 8 },
+              { row: 98, label: -18, labelRight: 8 },
             ];
             const codeKey = course.code.replace(/\s/g, '').toUpperCase();
             const calib = shelfCalibrationByCode[codeKey] || shelfCalibrationByIndex[courseIdx] || shelfCalibrationByIndex[shelfCalibrationByIndex.length - 1] || { row: 0, label: 0 };
@@ -5220,10 +5220,10 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                       alignItems: 'center',
                       gap: '3px',
                       padding: '2px 6px',
-                      border: hasSyllabus ? '1px solid rgba(255,255,255,0.25)' : '1px dashed rgba(255,255,255,0.2)',
+                      border: hasSyllabus ? '1px solid rgba(0,0,0,0.4)' : '1px dashed rgba(0,0,0,0.25)',
                       borderRadius: '4px',
-                      background: hasSyllabus ? 'rgba(139,105,20,0.35)' : 'rgba(255,255,255,0.06)',
-                      color: hasSyllabus ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.35)',
+                      background: hasSyllabus ? 'rgba(0,0,0,0.7)' : 'rgba(0,0,0,0.4)',
+                      color: hasSyllabus ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.5)',
                       fontSize: '9px',
                       fontWeight: 600,
                       letterSpacing: '0.5px',
@@ -5235,8 +5235,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                       position: 'relative',
                       zIndex: 20,
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.color = '#ffffff'; e.currentTarget.style.background = hasSyllabus ? 'rgba(139,105,20,0.55)' : 'rgba(255,255,255,0.12)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.color = hasSyllabus ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.35)'; e.currentTarget.style.background = hasSyllabus ? 'rgba(139,105,20,0.35)' : 'rgba(255,255,255,0.06)'; }}
+                    onMouseEnter={e => { e.currentTarget.style.color = '#ffffff'; e.currentTarget.style.background = hasSyllabus ? 'rgba(0,0,0,0.85)' : 'rgba(0,0,0,0.55)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.color = hasSyllabus ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.5)'; e.currentTarget.style.background = hasSyllabus ? 'rgba(0,0,0,0.7)' : 'rgba(0,0,0,0.4)'; }}
                     data-testid={`btn-syllabus-${course.code}`}
                     title={hasSyllabus ? `Open ${code} Syllabus` : `Upload ${code} Syllabus`}
                   >
