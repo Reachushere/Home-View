@@ -31260,13 +31260,12 @@ export default function Dashboard() {
                           );
                         })}
                         {(() => {
-                          const firstFilledIdx = slottedItems.findIndex(item => item !== null);
-                          const lastFilledIdx = (() => { for (let i = slottedItems.length - 1; i >= 0; i--) { if (slottedItems[i] !== null) return i; } return -1; })();
-                          return slottedItems.map((item, itemIdx) => {
-                          if (!item) {
-                            if (itemIdx < firstFilledIdx || itemIdx > lastFilledIdx) return null;
-                            return <div key={`empty-${itemIdx}`} style={{ height: '2px' }} />;
-                          }
+                          const filledItems = slottedItems.map((item, itemIdx) => item ? { item, itemIdx } : null).filter(Boolean) as { item: { task: any; isPrep: boolean }; itemIdx: number }[];
+                          if (filledItems.length === 0) return null;
+                          const renderItem = (entry: { item: { task: any; isPrep: boolean }; itemIdx: number }, widthStyle?: React.CSSProperties) => {
+                          const { item, itemIdx } = entry;
+                          const itemStyle = widthStyle || {};
+                          if (!item) return null;
                           const task = item.task;
                           const tomorrow = addDays(stableToday, 1);
                           const isDueToday = !task.isCompleted && isSameDayET(new Date(task.dueDate), stableToday);
@@ -31397,7 +31396,19 @@ export default function Dashboard() {
                             </div>
                             </div>
                           );
-                        });
+                          };
+                          if (filledItems.length <= 1) {
+                            return filledItems.map(entry => renderItem(entry));
+                          }
+                          return (
+                            <div key="multi-task-row" style={{ display: 'flex', flexDirection: 'row', gap: '1px', width: '100%' }}>
+                              {filledItems.map(entry => (
+                                <div key={`slot-${entry.itemIdx}`} style={{ flex: `1 1 ${100 / filledItems.length}%`, minWidth: 0, overflow: 'hidden' }}>
+                                  {renderItem(entry)}
+                                </div>
+                              ))}
+                            </div>
+                          );
                         })()}
                       </div>
                       </div>
