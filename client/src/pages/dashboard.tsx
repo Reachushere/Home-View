@@ -34562,7 +34562,7 @@ export default function Dashboard() {
             WebkitBackdropFilter: 'blur(40px)',
             boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)',
             border: 'none',
-            transition: homeworkAnimating ? 'right 0.35s cubic-bezier(0.4,0,0.2,1), width 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease, background 0.3s ease, backdrop-filter 0.3s ease, box-shadow 0.3s ease' : 'opacity 0.3s ease',
+            transition: 'none',
             opacity: (isPillMenuOpen && !sidePillIdle) ? 0 : 1,
             pointerEvents: (isPillMenuOpen && !sidePillIdle) ? 'none' : 'auto',
           }}
