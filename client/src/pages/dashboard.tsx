@@ -27065,12 +27065,12 @@ export default function Dashboard() {
                   <div className="fixed inset-0 z-[10005] flex items-center justify-center" onClick={() => { if (Date.now() - expandedSemOpenTimeRef.current < 600) return; setExpandedSemKey(null); }} data-testid="expanded-sem-overlay">
                     <div className="fixed inset-0 bg-black/60" />
                     <div
-                      className="relative z-[10006] overflow-y-auto rounded-xl flex flex-col"
+                      className="relative z-[10006] overflow-hidden rounded-xl flex flex-col"
                       style={{ width: 'calc(100% - 60px)', height: 'calc(100% - 60px)', maxWidth: '1200px', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 8px 48px rgba(0,0,0,0.4)' }}
                       onClick={(e) => e.stopPropagation()}
                       data-testid="expanded-sem-panel"
                     >
-                      <div className="flex items-center justify-between px-6 py-4 border-b border-white/30 flex-shrink-0" style={{ background: expIsCurrentSem ? 'rgba(10,15,30,0.9)' : expIsPast || expIsEnded ? 'rgba(160,160,160,0.35)' : `${colorSettings.headerBar}cc` }}>
+                      <div className="flex items-center justify-between px-6 py-4 border-b border-white/40 flex-shrink-0 rounded-t-xl" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: expIsCurrentSem ? `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, rgba(10,15,30,0.9) 40%, rgba(10,15,30,0.95) 100%)` : expIsPast || expIsEnded ? `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, rgba(160,160,160,0.35) 40%, rgba(160,160,160,0.4) 100%)` : `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                         <div className="flex items-center gap-3">
                           <span className="text-[16px] font-bold text-white">{expandedSem.label}</span>
                           <span className="text-[11px] text-white/70">{fmtDate(semStartDatesLocal[expandedSemKey] || '')} – {fmtDate(semEndDatesLocal[expandedSemKey] || '')}</span>
@@ -27106,7 +27106,7 @@ export default function Dashboard() {
                                   {c.fullName && <span className="text-[13px] text-white/60">— {c.fullName}</span>}
                                   {courseHealth && (
                                     <div className="ml-auto flex items-center gap-3">
-                                      <span className="text-[12px] text-white/60">{courseHealth.totalModules} modules · {courseHealth.totalReadings} readings</span>
+                                      <span className="text-[12px] text-white">{courseHealth.totalModules} modules · {courseHealth.totalReadings} readings</span>
                                       {courseHealth.syllabusLinked ? <span className="text-[11px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Syllabus ✓</span> : <span className="text-[11px] px-2 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30 cursor-pointer hover:bg-red-500/30" onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: 'syllabus', step: 0, phase: 'primary' }); }}>No Syllabus — Fix</span>}
                                     </div>
                                   )}
@@ -27114,16 +27114,27 @@ export default function Dashboard() {
                                 <div className="p-4 space-y-4">
                                   <div>
                                     <div className="text-[13px] font-semibold text-white uppercase tracking-wider mb-3">Automation Flow</div>
-                                    <div className="flex items-center gap-0 flex-wrap">
-                                      {[
-                                        { label: 'OneDrive', icon: '☁️', path: getOneDrivePath(c.code), status: courseHealth?.oneDriveFolderConfigured ? 'ok' : 'error', issueKey: 'onedrive' },
-                                        { label: 'Folder Sync', icon: '🔄', path: `week-*-${c.code.toLowerCase()}-module/reading`, status: courseHealth?.totalModules > 0 ? 'ok' : 'warning', issueKey: 'sync' },
-                                        { label: 'Local Storage', icon: '💾', path: `persistent-uploads/`, status: 'ok', issueKey: 'storage' },
-                                        { label: 'TTS Processing', icon: '🔊', path: `TTS chunks → Cat Lights`, status: courseHealth ? (courseHealth.totalTtsReady === courseHealth.totalTtsNeeded ? 'ok' : courseHealth.totalTtsReady > 0 ? 'warning' : 'idle') : 'idle', issueKey: 'tts' },
-                                        { label: 'Library Shelf', icon: '📚', path: `LibraryView → BookReader`, status: courseHealth?.totalModules > 0 || courseHealth?.totalReadings > 0 ? 'ok' : 'idle', issueKey: 'library' },
-                                      ].map((step, sIdx, arr) => (
-                                        <div key={step.label} className="flex items-center" style={{ flexShrink: 0 }}>
-                                          <div className="flex flex-col items-center" style={{ width: '110px' }}>
+                                    <div className="flex items-start gap-0 flex-wrap">
+                                      {(() => {
+                                        const totalMod = courseHealth?.totalModules || 0;
+                                        const totalRead = courseHealth?.totalReadings || 0;
+                                        const ttsReady = courseHealth?.totalTtsReady || 0;
+                                        const ttsNeeded = courseHealth?.totalTtsNeeded || 0;
+                                        const odPct = courseHealth?.oneDriveFolderConfigured ? 100 : 0;
+                                        const syncPct = (totalMod + totalRead) > 0 ? 100 : 0;
+                                        const storagePct = syncPct > 0 ? 100 : 0;
+                                        const ttsPct = ttsNeeded > 0 ? Math.round((ttsReady / ttsNeeded) * 100) : (totalMod > 0 ? 0 : null);
+                                        const libPct = (totalMod + totalRead) > 0 ? 100 : 0;
+                                        return [
+                                          { label: 'OneDrive', icon: '☁️', path: getOneDrivePath(c.code), status: courseHealth?.oneDriveFolderConfigured ? 'ok' : 'error', issueKey: 'onedrive', pct: odPct },
+                                          { label: 'Folder Sync', icon: '🔄', path: `week-*-${c.code.toLowerCase()}-module/rea...`, status: courseHealth?.totalModules > 0 ? 'ok' : 'warning', issueKey: 'sync', pct: syncPct },
+                                          { label: 'Local Storage', icon: '💾', path: `persistent-uploads/`, status: 'ok' as const, issueKey: 'storage', pct: storagePct },
+                                          { label: 'TTS', icon: '🔊', path: `TTS → Cat Lights`, status: courseHealth ? (ttsReady === ttsNeeded ? 'ok' : ttsReady > 0 ? 'warning' : 'idle') : 'idle', issueKey: 'tts', pct: ttsPct },
+                                          { label: 'Library Shelf', icon: '📚', path: `BookReader`, status: (totalMod > 0 || totalRead > 0) ? 'ok' : 'idle', issueKey: 'library', pct: libPct },
+                                        ];
+                                      })().map((step, sIdx, arr) => (
+                                        <div key={step.label} className="flex items-start" style={{ flexShrink: 0 }}>
+                                          <div className="flex flex-col items-center" style={{ width: '130px' }}>
                                             <div
                                               className={`w-10 h-10 rounded-full flex items-center justify-center text-[16px] border ${(step.status === 'error' || step.status === 'warning') ? 'cursor-pointer hover:scale-110 transition-transform' : ''}`}
                                               style={{
@@ -27133,11 +27144,12 @@ export default function Dashboard() {
                                               onClick={(e) => { if (step.status === 'error' || step.status === 'warning') { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: step.issueKey, step: 0, phase: 'primary' }); } }}
                                             >{step.icon}</div>
                                             <span className="text-[11px] font-semibold text-white mt-1.5 text-center leading-tight">{step.label}</span>
-                                            <span className="text-[9px] text-white/60 text-center leading-tight mt-0.5 break-all" style={{ maxWidth: '100px' }}>{step.path}</span>
+                                            {step.pct !== null && <span className="text-[9px] text-white/80 text-center mt-0.5">{step.pct}%</span>}
+                                            <span className="text-[9px] text-white/60 text-center leading-tight mt-0.5" style={{ maxWidth: '120px', wordBreak: 'break-all' }}>{step.path}</span>
                                             {(step.status === 'error' || step.status === 'warning') && <span className="text-[9px] mt-1 px-2 py-0.5 rounded cursor-pointer hover:brightness-125 transition-all" style={{ background: step.status === 'error' ? 'rgba(239,68,68,0.25)' : 'rgba(234,179,8,0.25)', color: step.status === 'error' ? '#fca5a5' : '#fde68a', border: `1px solid ${step.status === 'error' ? 'rgba(239,68,68,0.4)' : 'rgba(234,179,8,0.4)'}` }} onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: step.issueKey, step: 0, phase: 'primary' }); }}>Fix</span>}
                                           </div>
                                           {sIdx < arr.length - 1 && (
-                                            <div className="flex items-center" style={{ width: '24px', height: '2px', marginTop: '-16px' }}>
+                                            <div className="flex items-center" style={{ width: '24px', height: '2px', marginTop: '18px' }}>
                                               <div style={{ flex: 1, height: '2px', background: step.status === 'ok' ? '#22c55e' : step.status === 'warning' ? '#eab308' : step.status === 'error' ? '#ef4444' : 'rgba(255,255,255,0.2)' }} />
                                               <div style={{ width: 0, height: 0, borderTop: '4px solid transparent', borderBottom: '4px solid transparent', borderLeft: `6px solid ${step.status === 'ok' ? '#22c55e' : step.status === 'warning' ? '#eab308' : step.status === 'error' ? '#ef4444' : 'rgba(255,255,255,0.2)'}` }} />
                                             </div>
@@ -27153,27 +27165,32 @@ export default function Dashboard() {
                                       <table className="w-full text-[13px] text-white">
                                         <thead>
                                           <tr style={{ background: 'rgba(255,255,255,0.06)' }}>
-                                            <th className="text-left px-3 py-2 font-semibold text-white/80 border-b border-white/15">Connection</th>
-                                            <th className="text-left px-3 py-2 font-semibold text-white/80 border-b border-white/15">Path / Pattern</th>
-                                            <th className="text-center px-3 py-2 font-semibold text-white/80 border-b border-white/15 w-16">Status</th>
+                                            <th className="text-left px-3 py-2 font-semibold text-white border-b border-white/15">Connection</th>
+                                            <th className="text-left px-3 py-2 font-semibold text-white border-b border-white/15">Path / Pattern</th>
+                                            <th className="text-center px-3 py-2 font-semibold text-white border-b border-white/15 w-20">Status</th>
                                           </tr>
                                         </thead>
                                         <tbody>
                                           {[
-                                            { label: 'OneDrive Root', path: getOneDrivePath(c.code), ok: courseHealth?.oneDriveFolderConfigured },
-                                            { label: 'Module Folder', path: `${getOneDrivePath(c.code)}/Week {n}/Module/`, ok: courseHealth?.totalModules > 0 },
-                                            { label: 'Reading Folder', path: `${getOneDrivePath(c.code)}/Week {n}/Reading/`, ok: courseHealth?.totalReadings > 0 },
-                                            { label: 'Local Sync', path: `persistent-uploads/week-{n}-${c.code.toLowerCase()}-module|reading/`, ok: courseHealth?.totalModules > 0 || courseHealth?.totalReadings > 0 },
-                                            { label: 'Syllabus', path: courseHealth?.syllabusPath || `syllabi/${c.code.toLowerCase()}_syllabus.pdf`, ok: courseHealth?.syllabusLinked },
-                                            { label: 'TTS Audio', path: `TTS chunks (${courseHealth?.totalTtsReady || 0}/${courseHealth?.totalTtsNeeded || 0} ready)`, ok: courseHealth ? courseHealth.totalTtsReady === courseHealth.totalTtsNeeded : undefined },
+                                            { label: 'OneDrive Root', path: getOneDrivePath(c.code), ok: courseHealth?.oneDriveFolderConfigured, issueKey: 'onedrive_root' },
+                                            { label: 'Module Folder', path: `${getOneDrivePath(c.code)}/Week {n}/Module/`, ok: courseHealth?.totalModules > 0, issueKey: 'module_folder' },
+                                            { label: 'Reading Folder', path: `${getOneDrivePath(c.code)}/Week {n}/Reading/`, ok: courseHealth?.totalReadings > 0, issueKey: 'reading_folder' },
+                                            { label: 'Local Sync', path: `persistent-uploads/week-{n}-${c.code.toLowerCase()}-module|reading/`, ok: courseHealth?.totalModules > 0 || courseHealth?.totalReadings > 0, issueKey: 'local_sync' },
+                                            { label: 'Syllabus', path: courseHealth?.syllabusPath || `syllabi/${c.code.toLowerCase()}_syllabus.pdf`, ok: courseHealth?.syllabusLinked, issueKey: 'syllabus' },
+                                            { label: 'TTS Audio', path: `TTS chunks (${courseHealth?.totalTtsReady || 0}/${courseHealth?.totalTtsNeeded || 0} ready)`, ok: courseHealth ? courseHealth.totalTtsReady === courseHealth.totalTtsNeeded : undefined, issueKey: 'tts_audio' },
                                           ].map((row) => (
                                             <tr key={row.label} className="hover:bg-white/5 transition-colors">
                                               <td className="px-3 py-2 font-medium text-white border-b border-white/5">{row.label}</td>
-                                              <td className="px-3 py-2 font-mono text-[11px] text-white/70 border-b border-white/5">{row.path}</td>
+                                              <td className="px-3 py-2 font-mono text-[11px] text-white border-b border-white/5">
+                                                <span className="inline-flex items-center gap-2">
+                                                  <span>{row.path}</span>
+                                                  <Pencil className="w-3 h-3 text-white/40 hover:text-white/80 cursor-pointer flex-shrink-0 transition-colors" onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: row.issueKey, step: 0, phase: 'primary' }); }} />
+                                                </span>
+                                              </td>
                                               <td className="px-3 py-2 text-center border-b border-white/5">
                                                 {row.ok === true && <span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500" title="Connected" />}
                                                 {row.ok === false && (
-                                                  <span className="inline-flex items-center gap-1.5 cursor-pointer" onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: row.label.toLowerCase().replace(/\s/g, '_'), step: 0, phase: 'primary' }); }}>
+                                                  <span className="inline-flex items-center gap-1.5 cursor-pointer" onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: row.issueKey, step: 0, phase: 'primary' }); }}>
                                                     <span className="inline-block w-2.5 h-2.5 rounded-full bg-red-500" title="Not connected" />
                                                     <span className="text-[10px] text-red-400 hover:text-red-300 underline">Fix</span>
                                                   </span>
@@ -27198,8 +27215,8 @@ export default function Dashboard() {
                                           const hasContent = mCount > 0 || rCount > 0;
                                           return (
                                             <div key={w} className="rounded border text-center py-1.5" style={{ background: hasContent ? 'rgba(34,197,94,0.1)' : 'rgba(255,255,255,0.03)', borderColor: hasContent ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.1)' }}>
-                                              <div className="text-[10px] font-bold text-white/70">W{w}</div>
-                                              <div className="text-[9px] text-white/50">{mCount}M {rCount}R</div>
+                                              <div className="text-[10px] font-bold text-white">W{w}</div>
+                                              <div className="text-[9px] text-white/80">{mCount}M {rCount}R</div>
                                               {mCount > 0 && mTts < mCount && <div className="text-[8px] text-yellow-400">TTS {mTts}/{mCount}</div>}
                                             </div>
                                           );
@@ -27220,7 +27237,7 @@ export default function Dashboard() {
                               </div>
                               <div className="p-4 space-y-2">
                                 {expHealth.issues.map((issue: string, idx: number) => {
-                                  const issueKey = issue.includes('Syllabus') ? 'syllabus' : issue.includes('OneDrive') || issue.includes('onedrive') ? 'onedrive' : issue.includes('TTS') ? 'tts' : issue.includes('modules') || issue.includes('Missing modules') ? 'sync' : issue.includes('not active') ? 'activate' : issue.includes('dates') ? 'dates' : 'general';
+                                  const issueKey = issue.includes('Syllabus') ? 'syllabus' : issue.includes('OneDrive') || issue.includes('onedrive') ? 'onedrive' : issue.includes('TTS') ? 'tts' : issue.includes('Missing modules') ? 'sync' : issue.includes('Missing readings') ? 'reading_folder' : issue.includes('not active') ? 'activate' : issue.includes('dates') ? 'dates' : 'general';
                                   const courseMatch = issue.match(/^([A-Z]{3,5}\d{2,4})/);
                                   const courseCode = courseMatch ? courseMatch[1] : expandedSem.courses[0]?.code || '';
                                   return (
@@ -27239,8 +27256,12 @@ export default function Dashboard() {
                             </div>
                           )}
 
-                          <div style={{ height: '200px' }} />
+                          <div style={{ height: '40px' }} />
                         </div>
+                      </div>
+
+                      <div className="flex items-center justify-end px-4 py-[10px] border-t border-white/40 shrink-0 rounded-b-xl" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, ${colorSettings.headerBar}bb 0%, ${colorSettings.headerBar}cc 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15), 0 -2px 8px rgba(0,0,0,0.08)' }}>
+                        <button className="px-5 py-[5px] rounded text-[11px] font-medium text-white/80 hover:text-white transition-colors" style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)' }} onClick={() => setExpandedSemKey(null)} data-testid="button-close-expanded-sem-footer">Close</button>
                       </div>
 
                       {semFlowWizard && (() => {

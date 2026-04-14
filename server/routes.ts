@@ -4108,6 +4108,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         if (missingModWeeks.length > 0) {
           issues.push(`${c.code}: Missing modules for weeks ${missingModWeeks.join(', ')}`);
         }
+        const missingReadWeeks: number[] = [];
+        for (let w = 1; w <= numberOfWeeks; w++) {
+          if (!c.readingWeeks[w] || c.readingWeeks[w].count === 0) missingReadWeeks.push(w);
+        }
+        if (missingReadWeeks.length > 0) {
+          issues.push(`${c.code}: Missing readings for weeks ${missingReadWeeks.join(', ')}`);
+        }
         if (c.totalTtsNeeded > 0 && c.totalTtsReady < c.totalTtsNeeded) {
           issues.push(`${c.code}: TTS not ready for ${c.totalTtsNeeded - c.totalTtsReady} files`);
         }
