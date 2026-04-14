@@ -2261,8 +2261,10 @@ export default function Dashboard() {
   const savedCalendarReductionRef = useRef<number | null>(null);
   const savedGlassRightRef = useRef<number | null>(null);
   const savedGlassWidthRef = useRef<number | null>(null);
+  const [hwWipeClipped, setHwWipeClipped] = useState(() => localStorage.getItem('homeworkMinimized') === '1');
   const [blankBoxOpen, setBlankBoxOpen] = useState(() => localStorage.getItem('blankBoxOpen') === '1');
   const [blankBoxAnimating, setBlankBoxAnimating] = useState(false);
+  const [blankWipeClipped, setBlankWipeClipped] = useState(() => localStorage.getItem('blankBoxOpen') !== '1');
   const [isResizingHomework, setIsResizingHomework] = useState(false);
   const resizingHomeworkRef = useRef<{ startX: number; startReduction: number } | null>(null);
   const [originalCalendarLeft, setOriginalCalendarLeft] = useState(27); // Original left before reduction
@@ -34599,14 +34601,15 @@ export default function Dashboard() {
             WebkitBackdropFilter: 'blur(40px)',
             boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)',
             border: 'none',
-            transition: 'none',
+            clipPath: hwWipeClipped ? 'inset(0 0 0 100%)' : 'inset(0 0 0 0)',
+            transition: (homeworkAnimating || blankBoxAnimating) ? 'clip-path 0.35s cubic-bezier(0.4,0,0.2,1)' : 'none',
             opacity: (isPillMenuOpen && !sidePillIdle) ? 0 : 1,
             pointerEvents: (isPillMenuOpen && !sidePillIdle) ? 'none' : 'auto',
           }}
           data-testid="section-coming-up"
         >
           <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', border: '1.5px solid rgba(255,255,255,0.5)', pointerEvents: 'none', zIndex: 9999 }} />
-          {(blankBoxOpen || homeworkMinimized) && <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', zIndex: 9998, pointerEvents: blankBoxOpen ? 'auto' : 'none' }} />}
+          {(blankBoxOpen || blankBoxAnimating) && <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', zIndex: 9998, pointerEvents: blankBoxOpen ? 'auto' : 'none', clipPath: blankWipeClipped ? 'inset(0 0 0 100%)' : 'inset(0 0 0 0)', transition: blankBoxAnimating ? 'clip-path 0.35s cubic-bezier(0.4,0,0.2,1)' : 'none' }} />}
           {/* Date navigation tab above glass box */}
           <div
             className="absolute z-[60]"
@@ -36493,21 +36496,23 @@ export default function Dashboard() {
                 localStorage.setItem('homeworkMinimized', '1');
                 setHomeworkMinimized(true);
                 requestAnimationFrame(() => {
+                  setHwWipeClipped(true);
                   setCalendarReduction(0);
                   localStorage.setItem('calendarReduction', '0');
                 });
                 setTimeout(() => setHomeworkAnimating(false), 400);
               } else if (homeworkMinimized && blankBoxOpen) {
                 setBlankBoxAnimating(true);
-                setBlankBoxOpen(false);
-                localStorage.removeItem('blankBoxOpen');
+                setHomeworkMinimized(false);
+                localStorage.removeItem('homeworkMinimized');
+                requestAnimationFrame(() => {
+                  setBlankWipeClipped(true);
+                });
                 setTimeout(() => {
                   setBlankBoxAnimating(false);
-                  setHomeworkAnimating(true);
-                  setHomeworkMinimized(false);
-                  localStorage.removeItem('homeworkMinimized');
-                  setTimeout(() => setHomeworkAnimating(false), 400);
-                }, 350);
+                  setBlankBoxOpen(false);
+                  localStorage.removeItem('blankBoxOpen');
+                }, 400);
               } else if (homeworkMinimized && !blankBoxOpen) {
                 setHomeworkAnimating(true);
                 const restore = savedCalendarReductionRef.current ?? (parseFloat(localStorage.getItem('savedCalendarReduction') || '0') || 260);
@@ -36515,6 +36520,9 @@ export default function Dashboard() {
                 setCalendarReduction(restore);
                 localStorage.setItem('calendarReduction', String(restore));
                 setHomeworkMinimized(false);
+                requestAnimationFrame(() => {
+                  setHwWipeClipped(false);
+                });
                 setTimeout(() => setHomeworkAnimating(false), 400);
               }
             }}
@@ -36543,26 +36551,44 @@ export default function Dashboard() {
               if (homeworkAnimating || blankBoxAnimating) return;
               if (blankBoxOpen) {
                 setBlankBoxAnimating(true);
-                setBlankBoxOpen(false);
-                localStorage.removeItem('blankBoxOpen');
                 savedCalendarReductionRef.current = calendarReduction;
                 localStorage.setItem('savedCalendarReduction', String(calendarReduction));
                 requestAnimationFrame(() => {
+                  setBlankWipeClipped(true);
+                  setHwWipeClipped(true);
                   setCalendarReduction(0);
                   localStorage.setItem('calendarReduction', '0');
                 });
-                setTimeout(() => setBlankBoxAnimating(false), 400);
+                setTimeout(() => {
+                  setBlankBoxAnimating(false);
+                  setBlankBoxOpen(false);
+                  localStorage.removeItem('blankBoxOpen');
+                }, 400);
               } else if (!homeworkMinimized && !blankBoxOpen) {
                 setHomeworkAnimating(true);
-                setHomeworkMinimized(true);
+                savedCalendarReductionRef.current = calendarReduction;
+                localStorage.setItem('savedCalendarReduction', String(calendarReduction));
                 localStorage.setItem('homeworkMinimized', '1');
+                setHomeworkMinimized(true);
+                requestAnimationFrame(() => {
+                  setHwWipeClipped(true);
+                  setCalendarReduction(0);
+                  localStorage.setItem('calendarReduction', '0');
+                });
                 setTimeout(() => {
                   setHomeworkAnimating(false);
                   setBlankBoxAnimating(true);
+                  setHwWipeClipped(false);
                   setBlankBoxOpen(true);
                   localStorage.setItem('blankBoxOpen', '1');
+                  const restore = savedCalendarReductionRef.current ?? (parseFloat(localStorage.getItem('savedCalendarReduction') || '0') || 260);
+                  setCalendarReduction(restore);
+                  localStorage.setItem('calendarReduction', String(restore));
+                  requestAnimationFrame(() => {
+                    setBlankWipeClipped(false);
+                  });
                   setTimeout(() => setBlankBoxAnimating(false), 400);
-                }, 350);
+                }, 400);
               } else {
                 setBlankBoxAnimating(true);
                 const restore = savedCalendarReductionRef.current ?? (parseFloat(localStorage.getItem('savedCalendarReduction') || '0') || 260);
@@ -36570,6 +36596,10 @@ export default function Dashboard() {
                 localStorage.setItem('calendarReduction', String(restore));
                 setBlankBoxOpen(true);
                 localStorage.setItem('blankBoxOpen', '1');
+                setHwWipeClipped(false);
+                requestAnimationFrame(() => {
+                  setBlankWipeClipped(false);
+                });
                 setTimeout(() => setBlankBoxAnimating(false), 400);
               }
             }}
