@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { X, ChevronLeft, ChevronRight, ChevronDown, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2, Printer, Volume2, Square, Pause, Play, RefreshCw, Pencil, FileText, Minus, Loader2, ListOrdered, RotateCcw, StickyNote, Clock, ArrowLeft, Upload } from 'lucide-react';
 import * as pdfjsLib from 'pdfjs-dist';
 import { apiRequest, queryClient } from '@/lib/queryClient';
+import { useAccessMode } from '@/components/access-gate';
 import shelfBgImage from '@assets/Bookshelf10_1776107329434.jpg';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
@@ -2473,6 +2474,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
 }
 
 export default function LibraryView({ isOpen, onClose, semesters: semestersProp, initialSemesterKey, isSharedView, onOpenNotepad, courseDisplayNames }: LibraryViewProps) {
+  const { isAdmin: isFullAccess } = useAccessMode();
   const [currentSemIdx, setCurrentSemIdx] = useState(0);
   const [syncingSemKey, setSyncingSemKey] = useState<string | null>(null);
   const [selectedBook, setSelectedBook] = useState<FileRecord | null>(null);
@@ -3507,7 +3509,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         <X size={18} />
       </button>
 
-      {!isSharedView && (
+      {!isSharedView && isFullAccess && (
         <button
           onClick={() => { setAiSearchOpen(true); setAiPreview(null); setAiResult(null); setAiError(''); setAiNoteTitle(''); }}
           style={{
@@ -4312,7 +4314,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       </div>
 
       {/* Search box - top left compact */}
-      <div style={{
+      {isFullAccess ? <div style={{
         position: 'absolute',
         top: '34px',
         left: '28px',
@@ -4593,7 +4595,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           </div>
           </div>
         )}
-      </div>
+      </div> : null}
 
       <div
         ref={scrollRef}

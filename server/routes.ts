@@ -27,6 +27,15 @@ import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles, createOneDrive
 import * as spotifyApi from "./spotify";
 import { hasOpenAI, getApprovedOpenAIConfig, resolveApproval, getPendingApprovals, getRecentApprovals, subscribeToApprovals } from "./openai-approval";
 
+function getRequestAuthLevel(req: any): string {
+  const cookie = req.cookies?.uni_cal_session;
+  if (!cookie) return '';
+  const parts = cookie.split('.');
+  if (parts.length === 3) return parts[0];
+  if (parts.length === 2) return '5747';
+  return '';
+}
+
 // Helper function to generate repeated task due dates
 function generateRepeatDates(
   startDueDate: Date,
@@ -5449,6 +5458,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 
   app.get("/api/library/search-fts", async (req, res) => {
     try {
+      if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ results: [], error: 'Search restricted' });
       const q = (req.query.q as string || '').trim();
       if (!q || q.length < 2) return res.json({ results: [] });
       const { sql } = await import("drizzle-orm");
@@ -5906,6 +5916,7 @@ ${fileContents.join('\n\n')}`;
 
   app.post("/api/library/ai-search/preview", async (req, res) => {
     try {
+      if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ error: 'Search restricted' });
       const { prompt } = req.body;
       if (!prompt || typeof prompt !== 'string' || prompt.trim().length < 5) {
         return res.status(400).json({ error: "Prompt must be at least 5 characters" });
@@ -5992,6 +6003,7 @@ ${fileContents.join('\n\n')}`;
 
   app.post("/api/library/ai-search/execute", async (req, res) => {
     try {
+      if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ error: 'Search restricted' });
       const { prompt, fileIds, createNote, noteTitle } = req.body;
       if (!prompt || !Array.isArray(fileIds) || fileIds.length === 0) {
         return res.status(400).json({ error: "Missing prompt or fileIds" });
