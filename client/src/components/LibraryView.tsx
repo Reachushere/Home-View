@@ -4462,26 +4462,27 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           position: 'absolute',
           bottom: '56px',
           right: '12px',
-          width: '400px',
-          maxHeight: 'calc(100vh - 140px)',
-          background: 'linear-gradient(180deg, #0a2a5e 0%, #0d3a7a 30%, #154B96 60%, #1a5ab0 100%)',
-          border: '1.5px solid rgba(144,202,249,0.3)',
+          width: '520px',
+          maxWidth: '95vw',
+          maxHeight: 'calc(100vh - 100px)',
+          background: 'linear-gradient(180deg, #0a2a5e 0%, #0d3a7a 20%, #154B96 50%, #1a5ab0 80%, #ACD6F2 100%)',
+          border: '1.5px solid rgba(144,202,249,0.35)',
           borderRadius: '14px',
           zIndex: 100005,
           display: 'flex',
           flexDirection: 'column',
           boxShadow: '0 12px 40px rgba(10,42,94,0.6), 0 4px 12px rgba(0,0,0,0.3)',
         }} data-testid="ai-chat-panel">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <MessageSquare size={16} color="#c4b5fd" />
-              <span style={{ fontSize: '14px', fontWeight: 600, color: '#fff' }}>Study Assistant</span>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', borderBottom: '1px solid rgba(255,255,255,0.15)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <MessageSquare size={18} color="#ffffff" />
+              <span style={{ fontSize: '15px', fontWeight: 700, color: '#fff', letterSpacing: '0.3px' }}>Study Assistant</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <select
                 value={aiChatCourseFilter}
                 onChange={e => setAiChatCourseFilter(e.target.value)}
-                style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '6px', color: '#fff', fontSize: '11px', padding: '3px 6px', cursor: 'pointer' }}
+                style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: '6px', color: '#fff', fontSize: '11px', padding: '4px 8px', cursor: 'pointer' }}
                 data-testid="select-ai-chat-course"
               >
                 <option value="all">All courses</option>
@@ -4489,30 +4490,30 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                   <option key={c} value={c}>{c}</option>
                 ))}
               </select>
-              <button onClick={() => { setAiChatMessages([]); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.4)', padding: '2px' }} title="Clear chat" data-testid="button-ai-chat-clear">
-                <RotateCcw size={14} />
+              <button onClick={() => { setAiChatMessages([]); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ffffff', padding: '2px' }} title="Clear chat" data-testid="button-ai-chat-clear">
+                <RotateCcw size={15} />
               </button>
-              <button onClick={() => setIsAiChatOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.4)', padding: '2px' }} data-testid="button-ai-chat-close">
-                <X size={14} />
+              <button onClick={() => setIsAiChatOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ffffff', padding: '2px' }} data-testid="button-ai-chat-close">
+                <X size={15} />
               </button>
             </div>
           </div>
 
-          <div ref={aiChatScrollRef} style={{ flex: 1, overflowY: 'auto', padding: '12px 16px', minHeight: '200px', maxHeight: '400px' }}>
+          <div ref={aiChatScrollRef} style={{ flex: 1, overflowY: 'auto', padding: '16px 20px', minHeight: '280px', maxHeight: '500px' }}>
             {aiChatMessages.length === 0 && (
-              <div style={{ textAlign: 'center', padding: '30px 10px', color: 'rgba(255,255,255,0.3)' }}>
-                <MessageSquare size={28} style={{ margin: '0 auto 10px', opacity: 0.3 }} />
-                <div style={{ fontSize: '13px', marginBottom: '12px' }}>Ask questions about your course materials</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', textAlign: 'left' }}>
+              <div style={{ textAlign: 'center', padding: '40px 14px', color: 'rgba(255,255,255,0.5)' }}>
+                <MessageSquare size={32} style={{ margin: '0 auto 12px', opacity: 0.4, color: '#fff' }} />
+                <div style={{ fontSize: '14px', marginBottom: '16px', color: '#fff' }}>Ask questions about your course materials</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', textAlign: 'left' }}>
                   {['Summarize the key concepts from CFNF module 3', 'Generate flashcards for CPPA122 week 5', 'What are the main arguments in the CASL reading?', 'Compare the theories discussed in CPHL110'].map(ex => (
                     <div
                       key={ex}
                       onClick={() => { setAiChatInput(ex); aiChatInputRef.current?.focus(); }}
-                      style={{ fontSize: '11px', padding: '6px 10px', borderRadius: '8px', cursor: 'pointer', background: 'rgba(139,92,246,0.06)', border: '1px solid rgba(139,92,246,0.1)', transition: 'all 0.15s' }}
-                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(139,92,246,0.12)'; e.currentTarget.style.borderColor = 'rgba(139,92,246,0.25)'; }}
-                      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(139,92,246,0.06)'; e.currentTarget.style.borderColor = 'rgba(139,92,246,0.1)'; }}
+                      style={{ fontSize: '12px', padding: '8px 12px', borderRadius: '8px', cursor: 'pointer', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', transition: 'all 0.15s', color: '#fff' }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.15)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'; }}
                     >
-                      <span style={{ color: 'rgba(167,139,250,0.6)' }}>→</span> {ex}
+                      <span style={{ color: 'rgba(255,255,255,0.5)' }}>→</span> {ex}
                     </div>
                   ))}
                 </div>
@@ -4543,7 +4544,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             )}
           </div>
 
-          <div style={{ padding: '10px 12px', borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', gap: '8px' }}>
+          <div style={{ padding: '12px 16px', borderTop: '1px solid rgba(255,255,255,0.12)', display: 'flex', gap: '10px', alignItems: 'flex-end' }}>
             <textarea
               ref={aiChatInputRef}
               value={aiChatInput}
@@ -4552,10 +4553,10 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
               placeholder="Ask about your readings..."
               rows={1}
               style={{
-                flex: 1, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
-                borderRadius: '10px', padding: '10px 14px', color: '#fff', fontSize: '13px',
+                flex: 1, background: '#ffffff', border: '1px solid rgba(255,255,255,0.3)',
+                borderRadius: '12px', padding: '12px 16px', color: '#1a1a2e', fontSize: '14px',
                 resize: 'none', outline: 'none', fontFamily: 'inherit',
-                minHeight: '40px', maxHeight: '80px',
+                minHeight: '44px', maxHeight: '90px',
               }}
               data-testid="input-ai-chat"
             />
@@ -4563,15 +4564,16 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
               onClick={sendAiChat}
               disabled={!aiChatInput.trim() || aiChatLoading}
               style={{
-                background: aiChatInput.trim() ? '#6366f1' : 'rgba(255,255,255,0.06)',
-                border: 'none', borderRadius: '10px', padding: '0 14px',
+                background: aiChatInput.trim() ? 'linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%)' : 'rgba(255,255,255,0.15)',
+                border: 'none', borderRadius: '12px', padding: '0 16px',
                 color: '#fff', cursor: aiChatInput.trim() ? 'pointer' : 'default',
-                opacity: aiChatInput.trim() && !aiChatLoading ? 1 : 0.4,
+                opacity: aiChatInput.trim() && !aiChatLoading ? 1 : 0.5,
                 transition: 'all 0.15s',
+                minHeight: '44px',
               }}
               data-testid="button-ai-chat-send"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#ffffff"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
             </button>
           </div>
         </div>
