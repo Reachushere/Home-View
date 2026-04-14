@@ -4954,10 +4954,10 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             borderRadius: '10px',
             padding: '10px 12px',
             boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
-            maxWidth: '500px',
+            maxWidth: '620px',
           }}>
           <div style={{
-            maxHeight: '50vh',
+            maxHeight: 'calc(100vh - 180px)',
             overflowY: 'auto',
           }}>
             <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -5007,7 +5007,9 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                     borderRadius: '8px',
                     cursor: 'pointer',
                     transition: 'background 0.15s',
-                    marginBottom: '2px',
+                    marginBottom: '0px',
+                    borderBottom: '1px solid rgba(255,255,255,0.08)',
+                    paddingBottom: '10px',
                   }}
                   onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.08)')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
