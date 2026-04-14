@@ -3821,7 +3821,8 @@ export default function Dashboard() {
   const [expandedSemKey, setExpandedSemKey] = useState<string | null>(null);
   const [expandedSemHealth, setExpandedSemHealth] = useState<any>(null);
   const [expandedSemHealthLoading, setExpandedSemHealthLoading] = useState(false);
-  const [semFlowWizard, setSemFlowWizard] = useState<{ courseCode: string; issue: string; step: number } | null>(null);
+  const [semFlowWizard, setSemFlowWizard] = useState<{ courseCode: string; issue: string; step: number; phase: 'primary' | 'testing' | 'test-result' | 'secondary' | 'testing2' | 'test-result2' | 'chatgpt'; testResult?: any } | null>(null);
+  const expandedSemOpenTimeRef = useRef<number>(0);
   useEffect(() => {
     if (!expandedSemKey) { setExpandedSemHealth(null); return; }
     setExpandedSemHealthLoading(true);
@@ -26827,7 +26828,7 @@ export default function Dashboard() {
                                 const shadow = isCurrentSem ? (needsRedBorder ? { boxShadow: '0 0 6px rgba(239,68,68,0.6), 0 0 12px rgba(239,68,68,0.4), 0 0 18px rgba(239,68,68,0.3)' } : {}) : {};
                                 return { background: bgCol, borderColor: borderCol, ...shadow, position: 'relative' as const, borderWidth: isCurrentSem ? '2px' : undefined };
                               })()}>
-                                <div className="px-2 py-1.5 flex items-center justify-between cursor-pointer" onClick={(e) => { const t = e.target as HTMLElement; if (t.closest('[data-testid^="button-"], [data-testid^="dates-pill"], [data-testid^="pencil-"]')) return; e.stopPropagation(); setExpandedSemKey(sem.key); }} onDoubleClick={(e) => { e.stopPropagation(); setExpandedSemKey(sem.key); }}>
+                                <div className="px-2 py-1.5 flex items-center justify-between cursor-pointer" onClick={(e) => { const t = e.target as HTMLElement; if (t.closest('[data-testid^="button-"], [data-testid^="dates-pill"], [data-testid^="pencil-"]')) return; e.stopPropagation(); expandedSemOpenTimeRef.current = Date.now(); setExpandedSemKey(sem.key); }} onDoubleClick={(e) => { e.stopPropagation(); expandedSemOpenTimeRef.current = Date.now(); setExpandedSemKey(sem.key); }}>
                                 <div className="flex items-center gap-1.5 flex-wrap" style={{ flexWrap: 'nowrap', overflow: 'hidden', minWidth: 0 }}>
                                   <Settings
                                     className="text-white/50 hover:text-white cursor-pointer transition-colors flex-shrink-0"
@@ -27060,7 +27061,7 @@ export default function Dashboard() {
                 const healthLevel = getHealthLevel(expHealth);
 
                 return createPortal(
-                  <div className="fixed inset-0 z-[10005] flex items-center justify-center" onClick={() => setExpandedSemKey(null)} data-testid="expanded-sem-overlay">
+                  <div className="fixed inset-0 z-[10005] flex items-center justify-center" onClick={() => { if (Date.now() - expandedSemOpenTimeRef.current < 600) return; setExpandedSemKey(null); }} data-testid="expanded-sem-overlay">
                     <div className="fixed inset-0 bg-black/60" />
                     <div
                       className="relative z-[10006] overflow-y-auto rounded-xl flex flex-col"
@@ -27105,7 +27106,7 @@ export default function Dashboard() {
                                   {courseHealth && (
                                     <div className="ml-auto flex items-center gap-3">
                                       <span className="text-[12px] text-white/60">{courseHealth.totalModules} modules · {courseHealth.totalReadings} readings</span>
-                                      {courseHealth.syllabusLinked ? <span className="text-[11px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Syllabus ✓</span> : <span className="text-[11px] px-2 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30 cursor-pointer hover:bg-red-500/30" onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: 'syllabus', step: 0 }); }}>No Syllabus — Fix</span>}
+                                      {courseHealth.syllabusLinked ? <span className="text-[11px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Syllabus ✓</span> : <span className="text-[11px] px-2 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30 cursor-pointer hover:bg-red-500/30" onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: 'syllabus', step: 0, phase: 'primary' }); }}>No Syllabus — Fix</span>}
                                     </div>
                                   )}
                                 </div>
@@ -27128,11 +27129,11 @@ export default function Dashboard() {
                                                 background: step.status === 'ok' ? 'rgba(34,197,94,0.15)' : step.status === 'warning' ? 'rgba(234,179,8,0.15)' : step.status === 'error' ? 'rgba(239,68,68,0.15)' : 'rgba(255,255,255,0.05)',
                                                 borderColor: step.status === 'ok' ? 'rgba(34,197,94,0.4)' : step.status === 'warning' ? 'rgba(234,179,8,0.4)' : step.status === 'error' ? 'rgba(239,68,68,0.4)' : 'rgba(255,255,255,0.15)',
                                               }}
-                                              onClick={(e) => { if (step.status === 'error' || step.status === 'warning') { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: step.issueKey, step: 0 }); } }}
+                                              onClick={(e) => { if (step.status === 'error' || step.status === 'warning') { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: step.issueKey, step: 0, phase: 'primary' }); } }}
                                             >{step.icon}</div>
                                             <span className="text-[11px] font-semibold text-white mt-1.5 text-center leading-tight">{step.label}</span>
                                             <span className="text-[9px] text-white/60 text-center leading-tight mt-0.5 break-all" style={{ maxWidth: '100px' }}>{step.path}</span>
-                                            {(step.status === 'error' || step.status === 'warning') && <span className="text-[9px] mt-1 px-2 py-0.5 rounded cursor-pointer hover:brightness-125 transition-all" style={{ background: step.status === 'error' ? 'rgba(239,68,68,0.25)' : 'rgba(234,179,8,0.25)', color: step.status === 'error' ? '#fca5a5' : '#fde68a', border: `1px solid ${step.status === 'error' ? 'rgba(239,68,68,0.4)' : 'rgba(234,179,8,0.4)'}` }} onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: step.issueKey, step: 0 }); }}>Fix</span>}
+                                            {(step.status === 'error' || step.status === 'warning') && <span className="text-[9px] mt-1 px-2 py-0.5 rounded cursor-pointer hover:brightness-125 transition-all" style={{ background: step.status === 'error' ? 'rgba(239,68,68,0.25)' : 'rgba(234,179,8,0.25)', color: step.status === 'error' ? '#fca5a5' : '#fde68a', border: `1px solid ${step.status === 'error' ? 'rgba(239,68,68,0.4)' : 'rgba(234,179,8,0.4)'}` }} onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: step.issueKey, step: 0, phase: 'primary' }); }}>Fix</span>}
                                           </div>
                                           {sIdx < arr.length - 1 && (
                                             <div className="flex items-center" style={{ width: '24px', height: '2px', marginTop: '-16px' }}>
@@ -27171,7 +27172,7 @@ export default function Dashboard() {
                                               <td className="px-3 py-2 text-center border-b border-white/5">
                                                 {row.ok === true && <span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500" title="Connected" />}
                                                 {row.ok === false && (
-                                                  <span className="inline-flex items-center gap-1.5 cursor-pointer" onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: row.label.toLowerCase().replace(/\s/g, '_'), step: 0 }); }}>
+                                                  <span className="inline-flex items-center gap-1.5 cursor-pointer" onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: row.label.toLowerCase().replace(/\s/g, '_'), step: 0, phase: 'primary' }); }}>
                                                     <span className="inline-block w-2.5 h-2.5 rounded-full bg-red-500" title="Not connected" />
                                                     <span className="text-[10px] text-red-400 hover:text-red-300 underline">Fix</span>
                                                   </span>
@@ -27228,7 +27229,7 @@ export default function Dashboard() {
                                       <button
                                         className="text-[11px] px-2.5 py-1 rounded hover:brightness-125 transition-all flex-shrink-0"
                                         style={{ background: 'rgba(234,179,8,0.2)', color: '#fde68a', border: '1px solid rgba(234,179,8,0.35)' }}
-                                        onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode, issue: issueKey, step: 0 }); }}
+                                        onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode, issue: issueKey, step: 0, phase: 'primary' }); }}
                                       >Resolve</button>
                                     </div>
                                   );
@@ -27242,130 +27243,245 @@ export default function Dashboard() {
                       </div>
 
                       {semFlowWizard && (() => {
-                        const wizardSteps: Record<string, { title: string; steps: { heading: string; body: string; action?: string }[] }> = {
-                          onedrive: {
-                            title: 'Fix OneDrive Connection',
-                            steps: [
-                              { heading: 'Check OneDrive Folder', body: `Make sure you have a folder at:\n${getOneDrivePath(semFlowWizard.courseCode)}\n\nThis should contain subfolders for each week (Week 1, Week 2, etc.) with Module and Reading subfolders inside each.` },
-                              { heading: 'Create Missing Folders', body: `In OneDrive, navigate to:\n/School/1. TMU/Courses/${expandedSemKey.replace(/^(ss|f|w)/, '')}/${expandedSemKey.startsWith('ss') ? 'Spring & Summer' : expandedSemKey.startsWith('f') ? 'Fall' : 'Winter'}/\n\nCreate a folder named after your course code (e.g. ${semFlowWizard.courseCode}).` },
-                              { heading: 'Verify Sync', body: 'Once the folder exists, the system will automatically detect it on the next sync cycle. You can trigger a manual sync from the Settings panel if needed.', action: 'Done' },
-                            ],
-                          },
-                          sync: {
-                            title: 'Fix Folder Sync',
-                            steps: [
-                              { heading: 'Upload Course Files', body: `Upload your module and reading files to the OneDrive folder:\n${getOneDrivePath(semFlowWizard.courseCode)}/Week {n}/Module/\n${getOneDrivePath(semFlowWizard.courseCode)}/Week {n}/Reading/\n\nFiles should be PDF, DOCX, or PPTX format.` },
-                              { heading: 'Wait for Sync', body: 'The system syncs files from OneDrive automatically. After uploading, files should appear within a few minutes. Check the Weekly Content Status grid above to confirm.', action: 'Done' },
-                            ],
-                          },
-                          tts: {
-                            title: 'Fix TTS Processing',
-                            steps: [
-                              { heading: 'About TTS', body: 'Text-to-Speech (TTS) converts your course materials into audio chunks for Cat Lights playback. This happens automatically when files are synced.' },
-                              { heading: 'Trigger Processing', body: 'If TTS is stuck, go to the Library page, find the file, and click "Prepare Audio." The system will re-process the file into audio chunks.', action: 'Done' },
-                            ],
-                          },
-                          syllabus: {
-                            title: 'Link Course Syllabus',
-                            steps: [
-                              { heading: 'Upload Syllabus', body: `Upload your syllabus PDF to OneDrive at:\n${getOneDrivePath(semFlowWizard.courseCode)}/\n\nName it something like "${semFlowWizard.courseCode}_syllabus.pdf"` },
-                              { heading: 'Link in Settings', body: 'Open the course settings (pencil icon on the semester box) and use the Syllabus field to link the uploaded file.', action: 'Done' },
-                            ],
-                          },
-                          onedrive_root: {
-                            title: 'Fix OneDrive Root',
-                            steps: [
-                              { heading: 'Verify Root Path', body: `Your OneDrive root for this course should be:\n${getOneDrivePath(semFlowWizard.courseCode)}\n\nMake sure this folder exists and contains week subfolders.` },
-                              { heading: 'Create Structure', body: 'Inside the course folder, create folders named "Week 1", "Week 2", etc. Inside each week, create "Module" and "Reading" subfolders.', action: 'Done' },
-                            ],
-                          },
-                          module_folder: {
-                            title: 'Fix Module Folder',
-                            steps: [
-                              { heading: 'Add Module Files', body: `Upload your module files (PDF, DOCX, PPTX) to:\n${getOneDrivePath(semFlowWizard.courseCode)}/Week {n}/Module/\n\nEach week should have at least one module file.` },
-                              { heading: 'Verify', body: 'After uploading, the sync will pick up new files automatically. Check the Weekly Content Status grid to confirm.', action: 'Done' },
-                            ],
-                          },
-                          reading_folder: {
-                            title: 'Fix Reading Folder',
-                            steps: [
-                              { heading: 'Add Reading Files', body: `Upload your reading files to:\n${getOneDrivePath(semFlowWizard.courseCode)}/Week {n}/Reading/\n\nSupported formats: PDF, DOCX, PPTX.` },
-                              { heading: 'Verify', body: 'After uploading, check the Weekly Content Status grid to confirm files appear.', action: 'Done' },
-                            ],
-                          },
-                          local_sync: {
-                            title: 'Fix Local Sync',
-                            steps: [
-                              { heading: 'Check Source', body: 'Local sync copies files from OneDrive to the Pi\'s persistent storage. Make sure OneDrive folders have files first.' },
-                              { heading: 'Manual Sync', body: 'You can trigger a manual sync from the Settings panel. The system will re-download all files from OneDrive.', action: 'Done' },
-                            ],
-                          },
-                          tts_audio: {
-                            title: 'Fix TTS Audio',
-                            steps: [
-                              { heading: 'About TTS Audio', body: 'TTS audio is generated automatically when files are synced. If some files show as not ready, they may still be processing.' },
-                              { heading: 'Re-process', body: 'Go to the Library page, find the file, and click "Prepare Audio" to re-generate TTS chunks.', action: 'Done' },
-                            ],
-                          },
-                          activate: {
-                            title: 'Activate Semester',
-                            steps: [
-                              { heading: 'Mark as Active', body: 'This semester is not marked as active. Open the semester settings (gear icon on the semester header) and toggle it to active.' },
-                              { heading: 'Set Dates', body: 'Make sure the semester start and end dates are configured correctly. You can set these by clicking the date pill on the semester header.', action: 'Done' },
-                            ],
-                          },
-                          dates: {
-                            title: 'Configure Semester Dates',
-                            steps: [
-                              { heading: 'Set Dates', body: 'Click the date pill on the semester header to set the start and end dates for this semester.' },
-                              { heading: 'Verify', body: 'Once dates are set, the semester will show the correct date range and week numbers.', action: 'Done' },
-                            ],
-                          },
-                          library: {
-                            title: 'Library Not Ready',
-                            steps: [
-                              { heading: 'Add Content First', body: 'The Library Shelf requires module or reading files to be synced. Make sure you have uploaded files to OneDrive and they have been synced.' },
-                              { heading: 'Check Library', body: 'Once files are synced, visit the Library page to see your course materials organized by week.', action: 'Done' },
-                            ],
-                          },
-                          general: {
-                            title: 'Resolve Issue',
-                            steps: [
-                              { heading: 'Review', body: 'Check your semester settings and OneDrive folder structure to ensure everything is configured correctly.' },
-                              { heading: 'Need Help?', body: 'If the issue persists, try re-syncing from the Settings panel or checking the OneDrive connection.', action: 'Done' },
-                            ],
-                          },
+                        const odPath = getOneDrivePath(semFlowWizard.courseCode);
+                        const semYear = expandedSemKey.replace(/^(ss|f|w)/, '');
+                        const semType = expandedSemKey.startsWith('ss') ? 'Spring & Summer' : expandedSemKey.startsWith('f') ? 'Fall' : 'Winter';
+                        const wizardDefs: Record<string, { title: string; steps: string[][]; secondary: string[][]; testCheck: string }> = {
+                          onedrive: { title: 'Fix OneDrive Connection', testCheck: 'oneDriveFolderConfigured', steps: [
+                            ['Check OneDrive Folder', `Make sure you have a folder at:\n${odPath}\n\nIt should contain subfolders for each week (Week 1, Week 2, etc.) with Module and Reading subfolders inside each.`],
+                            ['Create Missing Folders', `In OneDrive, navigate to:\n/School/1. TMU/Courses/${semYear}/${semType}/\n\nCreate a folder named after your course code (e.g. ${semFlowWizard.courseCode}).`],
+                          ], secondary: [
+                            ['Check OneDrive Connection', 'Open the Settings panel and verify your OneDrive account is connected. Try disconnecting and reconnecting if needed.'],
+                            ['Check Folder Naming', `The folder name must match EXACTLY what the system expects. Check for extra spaces, special characters, or mismatched case.\n\nExpected path: ${odPath}`],
+                            ['Restart Sync', 'Go to Settings > Automation and click "Force Full Sync" to re-scan all OneDrive folders.'],
+                          ] },
+                          sync: { title: 'Fix Folder Sync', testCheck: 'totalModules', steps: [
+                            ['Upload Course Files', `Upload your module and reading files to:\n${odPath}/Week {n}/Module/\n${odPath}/Week {n}/Reading/\n\nFiles should be PDF, DOCX, or PPTX format.`],
+                            ['Wait for Sync', 'The system syncs files from OneDrive automatically. After uploading, files should appear within a few minutes.'],
+                          ], secondary: [
+                            ['Check File Format', 'Only PDF, DOCX, and PPTX files are supported. Make sure your files have the correct extension.'],
+                            ['Check Folder Structure', `Each week folder must contain a "Module" or "Reading" subfolder. Example:\n${odPath}/Week 1/Module/lecture.pdf`],
+                            ['Manual Upload', 'If OneDrive sync is not working, you can manually upload files through the Library page using the upload button.'],
+                          ] },
+                          tts: { title: 'Fix TTS Processing', testCheck: 'ttsReady', steps: [
+                            ['About TTS', 'Text-to-Speech converts your course materials into audio chunks for Cat Lights playback. This happens automatically when files are synced.'],
+                            ['Trigger Processing', 'Go to the Library page, find the file, and click "Prepare Audio" to re-process the file into audio chunks.'],
+                          ], secondary: [
+                            ['Check File Content', 'TTS requires readable text. If the PDF is scanned images, TTS cannot extract text. Try uploading a text-based PDF instead.'],
+                            ['Check Server Status', 'Make sure the Pi is connected to the internet. TTS uses Edge TTS which requires an internet connection.'],
+                            ['Clear and Retry', 'Delete the prepared audio for this file in the Library, then click "Prepare Audio" again to start fresh.'],
+                          ] },
+                          syllabus: { title: 'Link Course Syllabus', testCheck: 'syllabusLinked', steps: [
+                            ['Upload Syllabus', `Upload your syllabus PDF to OneDrive at:\n${odPath}/\n\nName it something like "${semFlowWizard.courseCode}_syllabus.pdf"`],
+                            ['Link in Settings', 'Open the course settings (pencil icon on the semester box) and use the Syllabus field to link the uploaded file.'],
+                          ], secondary: [
+                            ['Check File Location', `The syllabus PDF should be directly in:\n${odPath}/\n\nNot inside a week subfolder.`],
+                            ['Manual Link', 'Go to Settings > Semesters, find this course, and paste the full path to the syllabus file.'],
+                          ] },
+                          onedrive_root: { title: 'Fix OneDrive Root', testCheck: 'oneDriveFolderConfigured', steps: [
+                            ['Verify Root Path', `Your OneDrive root should be:\n${odPath}\n\nMake sure this folder exists and contains week subfolders.`],
+                            ['Create Structure', 'Create folders named "Week 1", "Week 2", etc. Inside each week, create "Module" and "Reading" subfolders.'],
+                          ], secondary: [
+                            ['Check Full Path', `Navigate through OneDrive manually:\nSchool > 1. TMU > Courses > ${semYear} > ${semType} > ${semFlowWizard.courseCode}`],
+                            ['Check Permissions', 'Make sure the OneDrive integration has permission to read this folder. Try reconnecting OneDrive in Settings.'],
+                          ] },
+                          module_folder: { title: 'Fix Module Folder', testCheck: 'totalModules', steps: [
+                            ['Add Module Files', `Upload module files (PDF, DOCX, PPTX) to:\n${odPath}/Week {n}/Module/`],
+                            ['Verify', 'After uploading, check the Weekly Content Status grid to confirm files appear.'],
+                          ], secondary: [
+                            ['Check Naming', 'The folder must be named exactly "Module" (capital M). Check for typos.'],
+                            ['Check Sync Status', 'Open Settings > Automation to see if sync is running. Try "Force Full Sync".'],
+                          ] },
+                          reading_folder: { title: 'Fix Reading Folder', testCheck: 'totalReadings', steps: [
+                            ['Add Reading Files', `Upload reading files to:\n${odPath}/Week {n}/Reading/`],
+                            ['Verify', 'After uploading, check the Weekly Content Status grid to confirm files appear.'],
+                          ], secondary: [
+                            ['Check Naming', 'The folder must be named exactly "Reading" (capital R). Check for typos.'],
+                            ['Check Sync Status', 'Open Settings > Automation to see if sync is running. Try "Force Full Sync".'],
+                          ] },
+                          local_sync: { title: 'Fix Local Sync', testCheck: 'totalModules', steps: [
+                            ['Check Source', 'Local sync copies files from OneDrive to the Pi. Make sure OneDrive folders have files first.'],
+                            ['Manual Sync', 'Go to Settings > Automation and click "Force Full Sync" to re-download all files.'],
+                          ], secondary: [
+                            ['Check Disk Space', 'Make sure the Pi has enough storage space. Check with the system status in Settings.'],
+                            ['Check Network', 'The Pi needs internet access to download from OneDrive. Check your network connection.'],
+                          ] },
+                          tts_audio: { title: 'Fix TTS Audio', testCheck: 'ttsReady', steps: [
+                            ['About TTS Audio', 'TTS audio is generated automatically when files are synced. Files may still be processing.'],
+                            ['Re-process', 'Go to the Library page, find the file, and click "Prepare Audio" to re-generate TTS chunks.'],
+                          ], secondary: [
+                            ['Check Edge TTS', 'TTS uses Microsoft Edge TTS. Make sure the Pi has internet access.'],
+                            ['Process One at a Time', 'If multiple files are stuck, try processing them one at a time from the Library page.'],
+                          ] },
+                          activate: { title: 'Activate Semester', testCheck: 'isActive', steps: [
+                            ['Mark as Active', 'Open the semester settings (gear icon on the semester header) and toggle it to active.'],
+                            ['Set Dates', 'Make sure the semester start and end dates are configured correctly.'],
+                          ], secondary: [
+                            ['Check Database', 'The semester may not exist in the database yet. Open semester settings and save to create it.'],
+                            ['Add Courses', 'A semester needs at least one course assigned. Use the pencil icon to add courses.'],
+                          ] },
+                          dates: { title: 'Configure Dates', testCheck: 'hasDates', steps: [
+                            ['Set Dates', 'Click the date pill on the semester header to set the start and end dates.'],
+                            ['Verify', 'Once dates are set, the semester will show the correct date range and week numbers.'],
+                          ], secondary: [
+                            ['Default Dates', 'If you are unsure, use the TMU academic calendar dates for this semester.'],
+                            ['Save Settings', 'After changing dates, make sure to click Save in the settings dialog.'],
+                          ] },
+                          library: { title: 'Library Not Ready', testCheck: 'totalModules', steps: [
+                            ['Add Content First', 'The Library requires module or reading files. Upload files to OneDrive and wait for sync.'],
+                            ['Check Library', 'Once files are synced, visit the Library page to see your course materials.'],
+                          ], secondary: [
+                            ['Manual Upload', 'You can upload files directly on the Library page using the upload button.'],
+                            ['Check File Processing', 'Files need to be processed (text extracted) before they appear. This may take a few minutes.'],
+                          ] },
+                          general: { title: 'Resolve Issue', testCheck: 'healthScore', steps: [
+                            ['Review', 'Check your semester settings and OneDrive folder structure.'],
+                            ['Re-sync', 'Try re-syncing from the Settings panel or checking the OneDrive connection.'],
+                          ], secondary: [
+                            ['Full Reset', 'Try disconnecting and reconnecting OneDrive, then running a Force Full Sync.'],
+                            ['Check Logs', 'Check the server logs for specific error messages about this course.'],
+                          ] },
                         };
-                        const wiz = wizardSteps[semFlowWizard.issue] || wizardSteps.general;
-                        const currentStep = Math.min(semFlowWizard.step, wiz.steps.length - 1);
-                        const step = wiz.steps[currentStep];
-                        const isLast = currentStep >= wiz.steps.length - 1;
+                        const def = wizardDefs[semFlowWizard.issue] || wizardDefs.general;
+                        const phase = semFlowWizard.phase;
+                        const stepsArr = phase === 'secondary' ? def.secondary : def.steps;
+                        const currentStep = Math.min(semFlowWizard.step, stepsArr.length - 1);
+                        const stepData = stepsArr[currentStep];
+                        const isLast = currentStep >= stepsArr.length - 1;
+
+                        const runTest = async () => {
+                          setSemFlowWizard({ ...semFlowWizard, phase: phase === 'secondary' ? 'testing2' : 'testing' });
+                          try {
+                            const res = await fetch(`/api/semester-health-check/${expandedSemKey}`, { credentials: 'include' });
+                            const data = await res.json();
+                            const course = data.courses?.find((ch: any) => ch.code.replace(/\s/g, '').toUpperCase() === semFlowWizard.courseCode.replace(/\s/g, '').toUpperCase());
+                            let passed = false;
+                            if (def.testCheck === 'oneDriveFolderConfigured') passed = !!course?.oneDriveFolderConfigured;
+                            else if (def.testCheck === 'totalModules') passed = (course?.totalModules || 0) > 0;
+                            else if (def.testCheck === 'totalReadings') passed = (course?.totalReadings || 0) > 0;
+                            else if (def.testCheck === 'ttsReady') passed = course ? course.totalTtsReady === course.totalTtsNeeded && course.totalTtsNeeded > 0 : false;
+                            else if (def.testCheck === 'syllabusLinked') passed = !!course?.syllabusLinked;
+                            else if (def.testCheck === 'isActive') passed = !!data.isActive;
+                            else if (def.testCheck === 'hasDates') passed = !!data.hasDates;
+                            else if (def.testCheck === 'healthScore') passed = (data.healthScore || 0) >= 80;
+                            setExpandedSemHealth(data);
+                            setSemFlowWizard({ ...semFlowWizard, phase: phase === 'secondary' ? 'test-result2' : 'test-result', testResult: { passed, details: data, course } });
+                          } catch (err: any) {
+                            setSemFlowWizard({ ...semFlowWizard, phase: phase === 'secondary' ? 'test-result2' : 'test-result', testResult: { passed: false, error: err.message } });
+                          }
+                        };
+
+                        const chatGptPrompt = `I'm running a self-hosted academic dashboard called UniCal on a Raspberry Pi. I have a course "${semFlowWizard.courseCode}" in the ${expandedSem.label} semester.\n\nI'm having an issue with: ${def.title}\n\nWhat I've tried:\n${def.steps.map((s, i) => `${i + 1}. ${s[0]}: ${s[1]}`).join('\n')}\n\nSecondary troubleshooting I also tried:\n${def.secondary.map((s, i) => `${i + 1}. ${s[0]}: ${s[1]}`).join('\n')}\n\nThe system expects files at: ${odPath}\nSemester key: ${expandedSemKey}\nTest result: ${semFlowWizard.testResult ? JSON.stringify({ passed: semFlowWizard.testResult.passed, healthScore: semFlowWizard.testResult.details?.healthScore, courses: semFlowWizard.testResult.details?.courses?.length, issues: semFlowWizard.testResult.details?.issues }) : 'not available'}\n\nWhat else can I try to fix this?`;
+
+                        const phaseTitle = phase === 'secondary' || phase === 'testing2' || phase === 'test-result2' ? `${def.title} — Advanced` : phase === 'chatgpt' ? `${def.title} — Get Help` : def.title;
+                        const phaseIcon = phase === 'chatgpt' ? '💬' : phase === 'secondary' || phase === 'testing2' || phase === 'test-result2' ? '🔍' : '🔧';
 
                         return (
                           <div className="fixed inset-0 z-[10010] flex items-center justify-center" onClick={() => setSemFlowWizard(null)}>
                             <div className="fixed inset-0 bg-black/50" />
-                            <div className="relative z-[10011] rounded-xl overflow-hidden flex flex-col" style={{ width: '480px', maxWidth: '90%', maxHeight: '70vh', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 8px 48px rgba(0,0,0,0.5)' }} onClick={(e) => e.stopPropagation()}>
+                            <div className="relative z-[10011] rounded-xl overflow-hidden flex flex-col" style={{ width: '520px', maxWidth: '92%', maxHeight: '80vh', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 8px 48px rgba(0,0,0,0.5)' }} onClick={(e) => e.stopPropagation()}>
                               <div className="px-5 py-3 border-b border-white/30 flex items-center gap-3" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 -1px 0 rgba(255,255,255,0.1)' }}>
-                                <span className="text-[14px]">🔧</span>
-                                <span className="text-[13px] font-bold text-white uppercase tracking-wider" style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}>{wiz.title}</span>
-                                <span className="ml-auto text-[11px] text-white/60">Step {currentStep + 1} of {wiz.steps.length}</span>
+                                <span className="text-[14px]">{phaseIcon}</span>
+                                <span className="text-[13px] font-bold text-white uppercase tracking-wider" style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}>{phaseTitle}</span>
+                                {(phase === 'primary' || phase === 'secondary') && <span className="ml-auto text-[11px] text-white/60">Step {currentStep + 1} of {stepsArr.length}</span>}
                               </div>
                               <div className="flex-1 overflow-y-auto p-6">
-                                <div className="flex gap-2 mb-4">
-                                  {wiz.steps.map((_, si) => (
-                                    <div key={si} className="h-1.5 flex-1 rounded-full" style={{ background: si <= currentStep ? 'rgba(34,197,94,0.6)' : 'rgba(255,255,255,0.15)' }} />
-                                  ))}
-                                </div>
-                                <h3 className="text-[16px] font-bold text-white mb-3">{step.heading}</h3>
-                                <div className="text-[14px] text-white/80 leading-relaxed whitespace-pre-wrap">{step.body}</div>
+
+                                {(phase === 'primary' || phase === 'secondary') && (
+                                  <>
+                                    <div className="flex gap-2 mb-4">
+                                      {stepsArr.map((_, si) => (
+                                        <div key={si} className="h-1.5 flex-1 rounded-full" style={{ background: si <= currentStep ? 'rgba(34,197,94,0.6)' : 'rgba(255,255,255,0.15)' }} />
+                                      ))}
+                                      <div className="h-1.5 flex-1 rounded-full" style={{ background: 'rgba(59,130,246,0.3)', border: '1px dashed rgba(59,130,246,0.5)' }} title="Test step" />
+                                    </div>
+                                    <h3 className="text-[16px] font-bold text-white mb-3">{stepData[0]}</h3>
+                                    <div className="text-[14px] text-white/80 leading-relaxed whitespace-pre-wrap">{stepData[1]}</div>
+                                  </>
+                                )}
+
+                                {(phase === 'testing' || phase === 'testing2') && (
+                                  <div className="flex flex-col items-center justify-center py-8">
+                                    <div className="w-10 h-10 rounded-full border-2 border-blue-400 border-t-transparent animate-spin mb-4" />
+                                    <div className="text-[15px] text-white font-semibold mb-2">Running Test...</div>
+                                    <div className="text-[13px] text-white/60">Checking {def.title.toLowerCase()} status</div>
+                                  </div>
+                                )}
+
+                                {(phase === 'test-result' || phase === 'test-result2') && semFlowWizard.testResult && (
+                                  <div className="space-y-4">
+                                    <div className="flex items-center gap-3 p-4 rounded-lg" style={{ background: semFlowWizard.testResult.passed ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)', border: `1px solid ${semFlowWizard.testResult.passed ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}` }}>
+                                      <span className="text-[24px]">{semFlowWizard.testResult.passed ? '✅' : '❌'}</span>
+                                      <div>
+                                        <div className="text-[15px] font-bold text-white">{semFlowWizard.testResult.passed ? 'Test Passed!' : 'Test Failed'}</div>
+                                        <div className="text-[13px] text-white/70">{semFlowWizard.testResult.passed ? 'The issue appears to be resolved.' : semFlowWizard.testResult.error ? `Error: ${semFlowWizard.testResult.error}` : 'The issue is still present. Additional troubleshooting may be needed.'}</div>
+                                      </div>
+                                    </div>
+                                    {!semFlowWizard.testResult.passed && semFlowWizard.testResult.details?.issues && (
+                                      <div className="rounded-lg p-3 space-y-1" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                        <div className="text-[12px] font-semibold text-white/60 uppercase tracking-wider mb-2">Remaining Issues</div>
+                                        {semFlowWizard.testResult.details.issues.filter((iss: string) => iss.toLowerCase().includes(semFlowWizard.courseCode.toLowerCase()) || !iss.match(/^[A-Z]{3,5}\d/)).map((iss: string, i: number) => (
+                                          <div key={i} className="text-[13px] text-yellow-200 flex items-start gap-2">
+                                            <span className="text-yellow-500 flex-shrink-0">•</span>
+                                            <span>{iss}</span>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    )}
+                                    {!semFlowWizard.testResult.passed && phase === 'test-result' && (
+                                      <div className="text-[13px] text-white/60 mt-2">The primary fix didn't resolve the issue. You can try advanced troubleshooting next.</div>
+                                    )}
+                                    {!semFlowWizard.testResult.passed && phase === 'test-result2' && (
+                                      <div className="text-[13px] text-white/60 mt-2">Advanced troubleshooting also didn't resolve the issue. You can generate a prompt to get help from ChatGPT.</div>
+                                    )}
+                                  </div>
+                                )}
+
+                                {phase === 'chatgpt' && (
+                                  <div className="space-y-4">
+                                    <div className="text-[14px] text-white/80 mb-3">Copy the text below and paste it into ChatGPT to get personalized help with this issue:</div>
+                                    <div className="rounded-lg p-4 font-mono text-[12px] text-white/90 leading-relaxed whitespace-pre-wrap select-all cursor-text" style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.15)', maxHeight: '300px', overflowY: 'auto' }}>{chatGptPrompt}</div>
+                                    <button
+                                      className="w-full px-4 py-2.5 rounded text-[13px] font-semibold text-white hover:brightness-110 transition-all flex items-center justify-center gap-2"
+                                      style={{ background: 'rgba(59,130,246,0.3)', border: '1px solid rgba(59,130,246,0.5)' }}
+                                      onClick={() => { navigator.clipboard.writeText(chatGptPrompt).then(() => { const btn = document.querySelector('[data-testid="wizard-copy-btn"]') as HTMLElement; if (btn) { btn.textContent = 'Copied!'; setTimeout(() => { btn.textContent = 'Copy to Clipboard'; }, 2000); } }); }}
+                                      data-testid="wizard-copy-btn"
+                                    >Copy to Clipboard</button>
+                                  </div>
+                                )}
+
                               </div>
                               <div className="px-5 py-3 border-t border-white/20 flex items-center justify-between" style={{ background: `${colorSettings.headerBar}88` }}>
                                 <button className="px-4 py-1.5 rounded text-[12px] font-medium text-white/70 hover:text-white transition-colors" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }} onClick={() => setSemFlowWizard(null)}>Close</button>
                                 <div className="flex gap-2">
-                                  {currentStep > 0 && <button className="px-4 py-1.5 rounded text-[12px] font-medium text-white/70 hover:text-white transition-colors" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }} onClick={() => setSemFlowWizard({ ...semFlowWizard, step: currentStep - 1 })}>Back</button>}
-                                  {!isLast ? (
+
+                                  {(phase === 'primary' || phase === 'secondary') && currentStep > 0 && (
+                                    <button className="px-4 py-1.5 rounded text-[12px] font-medium text-white/70 hover:text-white transition-colors" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }} onClick={() => setSemFlowWizard({ ...semFlowWizard, step: currentStep - 1 })}>Back</button>
+                                  )}
+
+                                  {(phase === 'primary' || phase === 'secondary') && !isLast && (
                                     <button className="px-4 py-1.5 rounded text-[12px] font-medium text-white hover:brightness-110 transition-all" style={{ background: 'rgba(34,197,94,0.3)', border: '1px solid rgba(34,197,94,0.5)' }} onClick={() => setSemFlowWizard({ ...semFlowWizard, step: currentStep + 1 })}>Next</button>
-                                  ) : (
+                                  )}
+
+                                  {(phase === 'primary' || phase === 'secondary') && isLast && (
+                                    <button className="px-4 py-2 rounded text-[13px] font-semibold text-white hover:brightness-110 transition-all" style={{ background: 'rgba(59,130,246,0.3)', border: '1px solid rgba(59,130,246,0.5)' }} onClick={runTest}>Test It</button>
+                                  )}
+
+                                  {phase === 'test-result' && semFlowWizard.testResult?.passed && (
+                                    <button className="px-4 py-1.5 rounded text-[12px] font-medium text-white hover:brightness-110 transition-all" style={{ background: 'rgba(34,197,94,0.3)', border: '1px solid rgba(34,197,94,0.5)' }} onClick={() => setSemFlowWizard(null)}>Done</button>
+                                  )}
+                                  {phase === 'test-result' && !semFlowWizard.testResult?.passed && (
+                                    <button className="px-4 py-2 rounded text-[13px] font-semibold text-white hover:brightness-110 transition-all" style={{ background: 'rgba(234,179,8,0.3)', border: '1px solid rgba(234,179,8,0.5)' }} onClick={() => setSemFlowWizard({ ...semFlowWizard, phase: 'secondary', step: 0, testResult: undefined })}>Advanced Troubleshooting</button>
+                                  )}
+
+                                  {phase === 'test-result2' && semFlowWizard.testResult?.passed && (
+                                    <button className="px-4 py-1.5 rounded text-[12px] font-medium text-white hover:brightness-110 transition-all" style={{ background: 'rgba(34,197,94,0.3)', border: '1px solid rgba(34,197,94,0.5)' }} onClick={() => setSemFlowWizard(null)}>Done</button>
+                                  )}
+                                  {phase === 'test-result2' && !semFlowWizard.testResult?.passed && (
+                                    <button className="px-4 py-2 rounded text-[13px] font-semibold text-white hover:brightness-110 transition-all" style={{ background: 'rgba(147,51,234,0.3)', border: '1px solid rgba(147,51,234,0.5)' }} onClick={() => setSemFlowWizard({ ...semFlowWizard, phase: 'chatgpt' })}>Get ChatGPT Help</button>
+                                  )}
+
+                                  {phase === 'chatgpt' && (
                                     <button className="px-4 py-1.5 rounded text-[12px] font-medium text-white hover:brightness-110 transition-all" style={{ background: 'rgba(34,197,94,0.3)', border: '1px solid rgba(34,197,94,0.5)' }} onClick={() => setSemFlowWizard(null)}>Done</button>
                                   )}
                                 </div>
