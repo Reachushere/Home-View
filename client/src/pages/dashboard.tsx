@@ -22059,11 +22059,11 @@ export default function Dashboard() {
                               }}
                               onMouseEnter={(e) => { e.currentTarget.style.background = tc.hover; }}
                               onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = tc.bg; }}
-                              onClick={() => { if (type === 'scholarship') { setIsQuickAddOpen(false); setTimeout(() => setIsScholarshipsOpen(true), 50); } else { setQuickAddData(p => ({ ...p, type, taskLabel: '' })); } }}
+                              onClick={() => { if (type === 'scholarship') { setIsQuickAddOpen(false); setTimeout(() => setIsScholarshipsOpen(true), 50); } else { setQuickAddData(p => ({ ...p, type, taskLabel: '' })); setQuickAddStep(1); } }}
                               data-testid={`quick-add-type-${type}`}
                             >
                               <TypeIcon className="h-3.5 w-3.5" />
-                              {type.charAt(0).toUpperCase() + type.slice(1)}
+                              {type === 'phone_call' ? 'Phone Call' : type.charAt(0).toUpperCase() + type.slice(1)}
                             </button>
                           );
                         })}
