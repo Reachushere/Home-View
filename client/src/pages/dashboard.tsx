@@ -40220,11 +40220,31 @@ function ProfileForm({
   const [showOsapPassword, setShowOsapPassword] = useState(false);
   const [ouacUsername, setOuacUsername] = useState(() => localStorage.getItem('ouacUsername') || '');
   const [oenNumber, setOenNumber] = useState(() => localStorage.getItem('oenNumber') || '');
+  const closingRef = useRef(false);
+
+  const initialSnap = useRef({
+    firstName: profileData.firstName,
+    lastName: profileData.lastName,
+    birthdate: profileData.birthdate,
+    timezone: profileData.timezone,
+    travelTimezone: profileData.travelTimezone,
+    postalCode: profileData.postalCode || '',
+    location: profileData.location || '',
+    phoneNumber: profileData.phoneNumber || '',
+    email: profileData.email || '',
+    address: profileData.address || '',
+    country: profileData.country || '',
+    provinceState: profileData.provinceState || '',
+    emergencyContactName: profileData.emergencyContactName || '',
+    emergencyContactPhone: profileData.emergencyContactPhone || '',
+    allergies: profileData.allergies || '',
+  });
 
   useEffect(() => {
-    const dirty = firstName !== profileData.firstName || lastName !== profileData.lastName || birthdate !== profileData.birthdate || timezone !== profileData.timezone || (isTraveling ? travelTimezone : null) !== profileData.travelTimezone || postalCode !== (profileData.postalCode || '') || location !== (profileData.location || '') || phoneNumber !== (profileData.phoneNumber || '') || email !== (profileData.email || '') || address !== (profileData.address || '') || country !== (profileData.country || '') || provinceState !== (profileData.provinceState || '') || emergencyContactName !== (profileData.emergencyContactName || '') || emergencyContactPhone !== (profileData.emergencyContactPhone || '') || allergies !== (profileData.allergies || '');
+    const s = initialSnap.current;
+    const dirty = firstName !== s.firstName || lastName !== s.lastName || birthdate !== s.birthdate || timezone !== s.timezone || (isTraveling ? travelTimezone : null) !== s.travelTimezone || postalCode !== s.postalCode || location !== s.location || phoneNumber !== s.phoneNumber || email !== s.email || address !== s.address || country !== s.country || provinceState !== s.provinceState || emergencyContactName !== s.emergencyContactName || emergencyContactPhone !== s.emergencyContactPhone || allergies !== s.allergies;
     onDirtyChange?.(dirty);
-  }, [firstName, lastName, birthdate, timezone, travelTimezone, isTraveling, postalCode, location, phoneNumber, email, address, country, provinceState, emergencyContactName, emergencyContactPhone, allergies]);
+  }, [firstName, lastName, birthdate, timezone, travelTimezone, isTraveling, postalCode, location, phoneNumber, email, address, country, provinceState, emergencyContactName, emergencyContactPhone, allergies, onDirtyChange]);
 
   useEffect(() => {
     fetch('/api/ui-settings/osapNumber').then(r => r.json()).then(d => { if (d.value) setOsapNumber(d.value); }).catch(() => {});
@@ -40313,11 +40333,21 @@ function ProfileForm({
     img.src = url;
   };
 
+  const handleClose = () => {
+    closingRef.current = true;
+    onCancel();
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave({ firstName, lastName, birthdate, timezone, travelTimezone: isTraveling ? travelTimezone : null, postalCode, location, phoneNumber, email, address, country, provinceState, emergencyContactName, emergencyContactPhone, allergies });
     const finalSchoolName = schoolName === 'Other' ? customSchoolName : schoolName;
     onSchoolSave({ schoolLogo: schoolLogoPreview, schoolName: finalSchoolName });
+    localStorage.setItem('studentNumber', studentNumber); fetch('/api/ui-settings/studentNumber', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: studentNumber }) }).catch(() => {});
+    localStorage.setItem('ouacUsername', ouacUsername); fetch('/api/ui-settings/ouacUsername', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: ouacUsername }) }).catch(() => {});
+    localStorage.setItem('osapNumber', osapNumber); fetch('/api/ui-settings/osapNumber', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: osapNumber }) }).catch(() => {});
+    localStorage.setItem('osapPassword', osapPassword); fetch('/api/ui-settings/osapPassword', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: osapPassword }) }).catch(() => {});
+    localStorage.setItem('oenNumber', oenNumber); fetch('/api/ui-settings/oenNumber', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: oenNumber }) }).catch(() => {});
   };
 
   const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40704,7 +40734,7 @@ function ProfileForm({
             id="studentNumber"
             value={studentNumber}
             onChange={(e) => { setStudentNumber(e.target.value); }}
-            onBlur={() => { localStorage.setItem('studentNumber', studentNumber); fetch('/api/ui-settings/studentNumber', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: studentNumber }) }).catch(() => {}); }}
+            onBlur={(e) => { if (closingRef.current || (e.relatedTarget as HTMLElement)?.dataset?.testid === 'button-close-profile') { closingRef.current = true; return; } localStorage.setItem('studentNumber', studentNumber); fetch('/api/ui-settings/studentNumber', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: studentNumber }) }).catch(() => {}); }}
             placeholder="e.g. 501234567"
             className="bg-white !text-black !text-[10px] h-8"
             style={{ fontSize: '10px', color: 'black' }}
@@ -40717,7 +40747,7 @@ function ProfileForm({
             id="ouacUsername"
             value={ouacUsername}
             onChange={(e) => { setOuacUsername(e.target.value); }}
-            onBlur={() => { localStorage.setItem('ouacUsername', ouacUsername); fetch('/api/ui-settings/ouacUsername', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: ouacUsername }) }).catch(() => {}); }}
+            onBlur={(e) => { if (closingRef.current || (e.relatedTarget as HTMLElement)?.dataset?.testid === 'button-close-profile') { closingRef.current = true; return; } localStorage.setItem('ouacUsername', ouacUsername); fetch('/api/ui-settings/ouacUsername', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: ouacUsername }) }).catch(() => {}); }}
             placeholder="Enter OUAC username"
             className="bg-white !text-black !text-[10px] h-8"
             style={{ fontSize: '10px', color: 'black' }}
@@ -40732,7 +40762,7 @@ function ProfileForm({
             id="osapNumber"
             value={osapNumber}
             onChange={(e) => { setOsapNumber(e.target.value); }}
-            onBlur={() => { localStorage.setItem('osapNumber', osapNumber); fetch('/api/ui-settings/osapNumber', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: osapNumber }) }).catch(() => {}); }}
+            onBlur={(e) => { if (closingRef.current || (e.relatedTarget as HTMLElement)?.dataset?.testid === 'button-close-profile') { closingRef.current = true; return; } localStorage.setItem('osapNumber', osapNumber); fetch('/api/ui-settings/osapNumber', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: osapNumber }) }).catch(() => {}); }}
             placeholder="e.g. 1234567890"
             className="bg-white !text-black !text-[10px] h-8"
             style={{ fontSize: '10px', color: 'black' }}
@@ -40747,7 +40777,7 @@ function ProfileForm({
               type={showOsapPassword ? 'text' : 'password'}
               value={osapPassword}
               onChange={(e) => { setOsapPassword(e.target.value); }}
-              onBlur={() => { localStorage.setItem('osapPassword', osapPassword); fetch('/api/ui-settings/osapPassword', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: osapPassword }) }).catch(() => {}); }}
+              onBlur={(e) => { if (closingRef.current || (e.relatedTarget as HTMLElement)?.dataset?.testid === 'button-close-profile') { closingRef.current = true; return; } localStorage.setItem('osapPassword', osapPassword); fetch('/api/ui-settings/osapPassword', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: osapPassword }) }).catch(() => {}); }}
               placeholder="Enter password"
               className="bg-white !text-black !text-[10px] h-8 pr-8"
               style={{ fontSize: '10px', color: 'black' }}
@@ -40769,7 +40799,7 @@ function ProfileForm({
             id="oenNumber"
             value={oenNumber}
             onChange={(e) => { setOenNumber(e.target.value); }}
-            onBlur={() => { localStorage.setItem('oenNumber', oenNumber); fetch('/api/ui-settings/oenNumber', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: oenNumber }) }).catch(() => {}); }}
+            onBlur={(e) => { if (closingRef.current || (e.relatedTarget as HTMLElement)?.dataset?.testid === 'button-close-profile') { closingRef.current = true; return; } localStorage.setItem('oenNumber', oenNumber); fetch('/api/ui-settings/oenNumber', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: oenNumber }) }).catch(() => {}); }}
             placeholder="e.g. 123456789"
             className="bg-white !text-black !text-[10px] h-8"
             style={{ fontSize: '10px', color: 'black' }}
