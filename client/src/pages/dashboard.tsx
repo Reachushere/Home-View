@@ -12755,6 +12755,7 @@ export default function Dashboard() {
         const sM = eStart.getMinutes();
         const eH = getETHours(eEnd);
         const eM = eEnd.getMinutes();
+        if (eH <= sH + 1 && eM === 0) continue;
         if (eH <= sH) continue;
         const titleClean = e.title.replace(/^\[PREP\]\s*/, '').replace(/^PREP\s+/, '').replace(/^\[.*?\]\s*/g, '').toLowerCase().trim();
         const isDup = dayTasks.some(t => {
@@ -12791,10 +12792,10 @@ export default function Dashboard() {
         for (let h = item.startHour; h <= item.endHour; h++) {
           const hStart = h * 60;
           const hEnd = (h + 1) * 60;
-          if (iStart < hEnd && iEnd >= hStart) {
+          if (iStart < hEnd && iEnd > hStart) {
             let colsAtH = 0;
             for (const col of columns) {
-              if (col.some(o => { const oEnd = o.endHour * 60 + o.endMin; return o.startHour * 60 + o.startMin < hEnd && oEnd >= hStart; })) colsAtH++;
+              if (col.some(o => { const oEnd = o.endHour * 60 + o.endMin; return o.startHour * 60 + o.startMin < hEnd && oEnd > hStart; })) colsAtH++;
             }
             const key = `${dIdx}-${h}`;
             map.set(key, Math.max(map.get(key) || 0, colsAtH));
