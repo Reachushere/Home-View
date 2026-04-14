@@ -29631,7 +29631,7 @@ export default function Dashboard() {
                   }
                 }}
                 className="absolute cursor-pointer hover:opacity-80 transition-opacity"
-                style={{ left: '5px', top: '-14px', zIndex: 60, background: 'none', border: 'none', padding: 0 }}
+                style={{ right: '-15px', top: '-14px', zIndex: 60, background: 'none', border: 'none', padding: 0 }}
                 data-testid="button-toggle-homework"
                 title={homeworkMinimized ? 'Show homework panel' : 'Hide homework panel'}
               >
@@ -34440,19 +34440,18 @@ export default function Dashboard() {
             width: `${calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4 - 1 - 1 + 1 - 5 - 2 - 1 - 3 + 2}px`,
             top: `${(calendarBorderTop || (calendarTop + 15))}px`,
             height: `${window.innerHeight - (calendarBorderTop || (calendarTop + 15)) - calendarBottom}px`,
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)',
-            backdropFilter: 'blur(40px)',
-            WebkitBackdropFilter: 'blur(40px)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)',
+            background: homeworkMinimized && !homeworkAnimating ? 'transparent' : 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)',
+            backdropFilter: homeworkMinimized && !homeworkAnimating ? 'none' : 'blur(40px)',
+            WebkitBackdropFilter: homeworkMinimized && !homeworkAnimating ? 'none' : 'blur(40px)',
+            boxShadow: homeworkMinimized && !homeworkAnimating ? 'none' : '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)',
             border: 'none',
-            clipPath: homeworkMinimized ? 'inset(0 0 100% 0)' : 'inset(0 0 0% 0)',
-            transition: homeworkAnimating ? 'clip-path 0.35s cubic-bezier(0.4,0,0.2,1), right 0.35s cubic-bezier(0.4,0,0.2,1), width 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease' : 'opacity 0.3s ease',
-            opacity: (isPillMenuOpen && !sidePillIdle) ? 0 : (homeworkMinimized && !homeworkAnimating) ? 0 : 1,
-            pointerEvents: (isPillMenuOpen && !sidePillIdle) ? 'none' : (homeworkMinimized && !homeworkAnimating) ? 'none' : 'auto',
+            transition: homeworkAnimating ? 'right 0.35s cubic-bezier(0.4,0,0.2,1), width 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease, background 0.3s ease, backdrop-filter 0.3s ease, box-shadow 0.3s ease' : 'opacity 0.3s ease',
+            opacity: (isPillMenuOpen && !sidePillIdle) ? 0 : 1,
+            pointerEvents: (isPillMenuOpen && !sidePillIdle) ? 'none' : 'auto',
           }}
           data-testid="section-coming-up"
         >
-          <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', border: '1.5px solid rgba(255,255,255,0.5)', pointerEvents: 'none', zIndex: 9999 }} />
+          <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', border: homeworkMinimized && !homeworkAnimating ? 'none' : '1.5px solid rgba(255,255,255,0.5)', pointerEvents: 'none', zIndex: 9999, opacity: homeworkMinimized && !homeworkAnimating ? 0 : 1, transition: 'opacity 0.3s ease' }} />
           {/* Date navigation tab above glass box */}
           <div
             className="absolute z-[60]"

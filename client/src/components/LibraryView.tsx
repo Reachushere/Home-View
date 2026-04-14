@@ -3059,6 +3059,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             }
           }
 
+          if (addedFileIds.has(f.id)) return;
           addedFileIds.add(f.id);
           results.push({ file: f, semLabel: sem.label, semKey: sem.key, courseCode: course.code, courseName: course.name, weekNum: info.wn, fileType: info.fType, fileFormat: info.ext, contentSnippet, matchedTokenCount, proximitySnippet });
         });
@@ -3100,6 +3101,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             if (fullContentResult.proximitySnippet) contentSnippet = fullContentResult.proximitySnippet;
           }
         }
+        if (addedFileIds.has(f.id)) return;
         addedFileIds.add(f.id);
         results.push({ file: f, semLabel: 'Document Dump', semKey: 'docdump', courseCode: 'DOCS', courseName: 'Document Dump', weekNum: 0, fileType: 'reading', fileFormat: ext, contentSnippet, matchedTokenCount, proximitySnippet });
       });
