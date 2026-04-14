@@ -30728,10 +30728,13 @@ export default function Dashboard() {
                               const rainColors = ['rgba(100,180,255,0.9)','rgba(120,200,255,0.85)','rgba(80,160,240,0.9)','rgba(140,210,255,0.8)','rgba(60,150,255,0.85)','rgba(100,190,250,0.9)'];
                               if (wCode >= 95) {
                                 const drops = Array.from({ length: 22 }, (_, i) => {
-                                  const left = (i * 37 + 13) % 100;
-                                  const delay = ((i * 0.13) % 0.8).toFixed(2);
+                                  const left = ((i * 47 + i * i * 7 + 11) % 97) + 1;
+                                  const delay = (((i * 31 + i * i * 3) % 80) / 100).toFixed(2);
+                                  const speed = (0.5 + ((i * 17 + 7) % 30) / 100).toFixed(2);
                                   const color = rainColors[i % rainColors.length];
-                                  return `<div style="position:absolute;left:${left}%;top:0;width:1px;height:4px;background:linear-gradient(180deg,${color},rgba(80,140,255,0.5));animation:rainDrop 0.65s ${delay}s linear infinite;border-radius:0 0 2px 2px"></div>`;
+                                  const angle = -12 + ((i * 19) % 15);
+                                  const h = 3 + ((i * 13 + 5) % 5);
+                                  return `<div style="position:absolute;left:${left}%;top:0;width:1px;height:${h}px;background:linear-gradient(180deg,${color},rgba(80,140,255,0.5));animation:rainDrop ${speed}s ${delay}s linear infinite;border-radius:0 0 2px 2px;transform:rotate(${angle}deg)"></div>`;
                                 }).join('');
                                 return drops + `<div style="position:absolute;inset:0;background:rgba(255,255,200,0.2);animation:lightningFlash 15s 3s ease-in-out infinite"></div>`;
                               }
@@ -30820,7 +30823,7 @@ export default function Dashboard() {
                               const warmth = p < 0.5 ? p * 2 : 1;
                               const fade = p > 0.5 ? (p - 0.5) * 2 : 0;
                               const sunBottom = Math.max(-6, 20 - p * 28);
-                              const sunRight = 10 + p * 30;
+                              const sunRight = 3 + p * 8;
                               const sunOpacity = Math.max(0, 1 - fade * 1.5);
                               const horizonR = Math.round(255 - fade * 60);
                               const horizonG = Math.round(120 - fade * 80);
@@ -30870,11 +30873,13 @@ export default function Dashboard() {
                             const forecastEffectsHtml = (() => {
                               if (wc >= 95) {
                                 const drops = Array.from({ length: 30 }, (_, i) => {
-                                  const left = (i * 13 + 3) % 100;
-                                  const delay = ((i * 0.08) % 0.6).toFixed(2);
-                                  const h = 4 + (i % 4) * 2;
-                                  const w = 1 + (i % 3) * 0.3;
-                                  return `<div style="position:absolute;left:${left}%;top:-8px;width:${w}px;height:${h}px;background:linear-gradient(180deg,rgba(180,220,255,0.95),rgba(100,170,255,0.3));animation:rainDrop 0.55s ${delay}s linear infinite;border-radius:0 0 2px 2px;transform:rotate(-8deg)"></div>`;
+                                  const left = ((i * 47 + i * i * 7 + 11) % 97) + 1;
+                                  const delay = (((i * 31 + i * i * 3) % 80) / 100).toFixed(2);
+                                  const speed = (0.45 + ((i * 17 + 7) % 25) / 100).toFixed(2);
+                                  const h = 4 + ((i * 13 + 5) % 5);
+                                  const w = 0.8 + ((i * 11 + 3) % 4) * 0.15;
+                                  const angle = -14 + ((i * 23) % 18);
+                                  return `<div style="position:absolute;left:${left}%;top:-8px;width:${w}px;height:${h}px;background:linear-gradient(180deg,rgba(180,220,255,0.95),rgba(100,170,255,0.3));animation:rainDrop ${speed}s ${delay}s linear infinite;border-radius:0 0 2px 2px;transform:rotate(${angle}deg)"></div>`;
                                 }).join('');
                                 return drops + `<div style="position:absolute;inset:0;background:rgba(200,180,255,0.2);animation:lightningFlash 5s 1.5s ease-in-out infinite"></div><div style="position:absolute;inset:0;background:rgba(255,240,200,0.12);animation:lightningFlash 7s 4s ease-in-out infinite"></div>`;
                               }
