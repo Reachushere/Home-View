@@ -3273,11 +3273,10 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           const f = fts.file;
           const folder = f.folder?.toLowerCase() || '';
           const fMatch = folder.match(/^week-(\d+)-(.+?)-(module|reading)$/i);
-          if (!fMatch && folder !== 'week-0-documentdump-reading') continue;
           const wn = fMatch ? parseInt(fMatch[1]) : 0;
           const fType = folder === 'week-0-documentdump-reading' ? 'reading' : (fMatch?.[3]?.toLowerCase() || 'reading');
           const ext = f.originalName?.match(/\.(\w+)$/)?.[1]?.toLowerCase() || '';
-          const courseCodeNorm = fMatch ? fMatch[2].toLowerCase() : 'DOCS';
+          const courseCodeNorm = fMatch ? fMatch[2].toLowerCase() : (folder === 'week-0-documentdump-reading' ? 'DOCS' : folder.replace(/[^a-z0-9]/g, ''));
 
           let semLabel = '', semKey = '', courseCode = '', courseName = '';
           for (const sem of semesters) {
@@ -3293,7 +3292,22 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           if (!courseCode && folder === 'week-0-documentdump-reading') {
             semLabel = 'Document Dump'; semKey = 'docdump'; courseCode = 'DOCS'; courseName = 'Document Dump';
           }
-          if (!courseCode) continue;
+          if (!courseCode) {
+            const codeParts = courseCodeNorm.replace(/_/g, '').toUpperCase();
+            courseCode = codeParts || 'UNKNOWN';
+            courseName = courseCode;
+            semLabel = 'Other';
+            semKey = 'other';
+          }
+
+          if (masterSemFilter !== 'all' && semKey !== masterSemFilter) continue;
+          if (masterCourseFilter !== 'all' && courseCode !== masterCourseFilter) continue;
+          if (masterWeekFilter !== 'all' && wn !== parseInt(masterWeekFilter)) continue;
+          if (masterTypeFilter !== 'all' && fType !== masterTypeFilter) continue;
+          if (masterFormatFilter !== 'all' && ext !== masterFormatFilter) continue;
+
+          if (addedFileIds.has(f.id)) continue;
+          addedFileIds.add(f.id);
 
           const hl = (fts.headline || '').replace(/<<([^>]*?)>>/g, '**$1**');
           results.push({
