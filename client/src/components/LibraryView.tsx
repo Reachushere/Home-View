@@ -2552,6 +2552,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
   const [masterFormatFilter, setMasterFormatFilter] = useState('all');
   const [masterSortBy, setMasterSortBy] = useState<'relevance' | 'date_added' | 'name' | 'week'>('relevance');
   const [showFilters, setShowFilters] = useState(false);
+  const [fullSearchView, setFullSearchView] = useState(false);
   const [shareLink, setShareLink] = useState('');
   const [shareCopied, setShareCopied] = useState(false);
   const [renamingFile, setRenamingFile] = useState<FileRecord | null>(null);
@@ -3193,6 +3194,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       results.sort((a, b) => (a.file.displayName || a.file.originalName).localeCompare(b.file.displayName || b.file.originalName));
     } else if (masterSortBy === 'week') {
       results.sort((a, b) => a.weekNum - b.weekNum || a.courseCode.localeCompare(b.courseCode));
+    } else if (masterSortBy === 'date_added') {
+      results.sort((a, b) => (b.file.id || 0) - (a.file.id || 0));
     } else {
       if (tokens.length >= 2) {
         results.sort((a, b) => {
@@ -3483,6 +3486,160 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       `}</style>
 
       <div className="library-ambience" />
+
+      {fullSearchView && (
+        <div style={{ position: 'absolute', inset: 0, zIndex: 100006, background: 'rgba(10,8,5,0.98)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }} data-testid="full-search-page">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 20px', borderBottom: '1px solid rgba(255,255,255,0.12)', flexShrink: 0, background: 'rgba(20,16,10,0.95)' }}>
+            <button onClick={() => setFullSearchView(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.6)', padding: '4px', display: 'flex' }} data-testid="btn-close-full-search"><ArrowLeft size={20} /></button>
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '10px', padding: '8px 14px' }}>
+              <Search size={16} color="rgba(255,255,255,0.4)" />
+              <input
+                type="text"
+                value={masterSearch}
+                onChange={e => setMasterSearch(e.target.value)}
+                placeholder="Search documents..."
+                autoFocus
+                style={{ background: 'transparent', border: 'none', color: '#fff', fontSize: '15px', outline: 'none', flex: 1, width: '100%' }}
+                data-testid="input-full-search"
+              />
+              {masterSearch && (
+                <button onClick={() => setMasterSearch('')} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', cursor: 'pointer', padding: '3px', display: 'flex', borderRadius: '50%' }}>
+                  <X size={14} color="rgba(255,255,255,0.5)" />
+                </button>
+              )}
+            </div>
+            <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', flexShrink: 0 }}>{combinedSearchResults ? combinedSearchResults.length : 0} results</span>
+          </div>
+
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', padding: '10px 20px', borderBottom: '1px solid rgba(255,255,255,0.08)', flexShrink: 0, background: 'rgba(15,12,8,0.9)' }}>
+            {(() => {
+              const fs: React.CSSProperties = { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '8px', padding: '6px 10px', color: '#fff', fontSize: '12px', outline: 'none', cursor: 'pointer', minWidth: '120px' };
+              const as = (v: string) => v !== 'all' ? { ...fs, border: '1px solid rgba(218,165,32,0.5)', background: 'rgba(218,165,32,0.12)' } : fs;
+              return (
+                <>
+                  <select value={masterSemFilter} onChange={e => setMasterSemFilter(e.target.value)} style={as(masterSemFilter)} data-testid="full-search-sem-filter">
+                    <option value="all">All Semesters</option>
+                    {semesters.map(s => (<option key={s.key} value={s.key}>{s.label}</option>))}
+                  </select>
+                  <select value={masterCourseFilter} onChange={e => setMasterCourseFilter(e.target.value)} style={as(masterCourseFilter)} data-testid="full-search-course-filter">
+                    <option value="all">All Courses</option>
+                    {allCoursesForSearch.map(c => (<option key={c} value={c}>{courseDisplayNames?.[c] || c}</option>))}
+                  </select>
+                  <select value={masterWeekFilter} onChange={e => setMasterWeekFilter(e.target.value)} style={as(masterWeekFilter)} data-testid="full-search-week-filter">
+                    <option value="all">All Weeks</option>
+                    {availableWeeks.map(w => (<option key={w} value={String(w)}>Week {w}</option>))}
+                  </select>
+                  <select value={masterTypeFilter} onChange={e => setMasterTypeFilter(e.target.value as any)} style={as(masterTypeFilter)} data-testid="full-search-type-filter">
+                    <option value="all">All Types</option>
+                    <option value="module">Modules</option>
+                    <option value="reading">Readings</option>
+                  </select>
+                  <select value={masterFormatFilter} onChange={e => setMasterFormatFilter(e.target.value)} style={as(masterFormatFilter)} data-testid="full-search-format-filter">
+                    <option value="all">All Formats</option>
+                    {availableFormats.map(f => (<option key={f} value={f}>.{f.toUpperCase()}</option>))}
+                  </select>
+                  <select value={masterSortBy} onChange={e => setMasterSortBy(e.target.value as any)} style={{ ...fs, borderColor: masterSortBy !== 'relevance' ? 'rgba(218,165,32,0.5)' : undefined, background: masterSortBy !== 'relevance' ? 'rgba(218,165,32,0.12)' : fs.background }} data-testid="full-search-sort">
+                    <option value="relevance">Sort: Relevance</option>
+                    <option value="name">Sort: Name</option>
+                    <option value="week">Sort: Week</option>
+                    <option value="date_added">Sort: Date Added</option>
+                  </select>
+                  {(masterSemFilter !== 'all' || masterCourseFilter !== 'all' || masterWeekFilter !== 'all' || masterTypeFilter !== 'all' || masterFormatFilter !== 'all' || masterSortBy !== 'relevance') && (
+                    <button onClick={() => { setMasterSemFilter('all'); setMasterCourseFilter('all'); setMasterWeekFilter('all'); setMasterTypeFilter('all'); setMasterFormatFilter('all'); setMasterSortBy('relevance'); }} style={{ ...fs, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', color: '#fca5a5', minWidth: 'auto' }} data-testid="btn-clear-all-filters">Clear Filters</button>
+                  )}
+                </>
+              );
+            })()}
+          </div>
+
+          {masterSearch.trim() && (parsedQuery.phrases.length > 0 || parsedQuery.required.length > 0 || parsedQuery.optional.length > 1) && (
+            <div style={{ padding: '6px 20px', fontSize: '11px', color: 'rgba(130,200,255,0.6)', borderBottom: '1px solid rgba(255,255,255,0.06)', flexShrink: 0 }}>
+              Searching: {parsedQuery.phrases.map((ph, i) => <span key={`ph${i}`}>{i > 0 && ' + '}<span style={{ color: 'rgba(255,200,100,0.9)' }}>&quot;{ph}&quot;</span></span>)}
+              {parsedQuery.required.length > 0 && <>{parsedQuery.phrases.length > 0 && ' + '}{parsedQuery.required.map((r, i) => <span key={`r${i}`}>{i > 0 && ' + '}<span style={{ color: 'rgba(100,220,100,0.9)' }}>+{r}</span></span>)}</>}
+              {parsedQuery.optional.length > 0 && <>{(parsedQuery.phrases.length > 0 || parsedQuery.required.length > 0) ? ', also ' : 'any of: '}{parsedQuery.optional.map((o, i) => <span key={`o${i}`}>{i > 0 && ', '}<span style={{ color: 'rgba(130,200,255,0.9)' }}>{o}</span></span>)}</>}
+              {ftsLoading && <span style={{ marginLeft: '10px', color: 'rgba(218,165,32,0.7)' }}>searching content...</span>}
+            </div>
+          )}
+
+          <div style={{ flex: 1, overflowY: 'auto', padding: '10px 20px' }}>
+            {!combinedSearchResults || !hasAnyFilter ? (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '50%', color: 'rgba(255,255,255,0.3)', gap: '12px' }}>
+                <Search size={40} strokeWidth={1} />
+                <span style={{ fontSize: '14px' }}>Type a search query or select filters to find documents</span>
+                <span style={{ fontSize: '11px', opacity: 0.6 }}>Use &quot;quotes&quot; for exact phrases, +word for required terms</span>
+              </div>
+            ) : combinedSearchResults.length === 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '40%', color: 'rgba(255,255,255,0.35)', gap: '8px' }}>
+                <Search size={32} strokeWidth={1} />
+                <span style={{ fontSize: '14px' }}>No documents match your search</span>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                {combinedSearchResults.map(r => {
+                  const wColor = getBookColor(0, r.courseCode, r.weekNum);
+                  return (
+                    <div
+                      key={r.file.id}
+                      onClick={() => {
+                        const sq = masterSearch.trim();
+                        if (sq) addSearchHistory(sq);
+                        handleBookClick(r.file, wColor, undefined, undefined, undefined, sq || undefined, r.ftsPageNum || undefined);
+                        setFullSearchView(false);
+                      }}
+                      style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', padding: '12px 14px', borderRadius: '10px', cursor: 'pointer', transition: 'background 0.15s', border: '1px solid transparent' }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'transparent'; }}
+                      data-testid={`full-search-result-${r.file.id}`}
+                    >
+                      <div style={{ width: '5px', minHeight: '48px', borderRadius: '3px', backgroundColor: wColor, flexShrink: 0, marginTop: '2px' }} />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                          <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', backgroundColor: r.fileType === 'module' ? 'rgba(76,175,80,0.25)' : 'rgba(33,150,243,0.25)', color: r.fileType === 'module' ? '#81C784' : '#64B5F6', flexShrink: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{r.fileType === 'module' ? 'MOD' : 'READ'}</span>
+                          {r.fileFormat && (
+                            <span style={{ fontSize: '9px', fontWeight: 700, padding: '2px 5px', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.45)', flexShrink: 0, textTransform: 'uppercase', letterSpacing: '0.3px' }}>{r.fileFormat}</span>
+                          )}
+                          <span style={{ fontSize: '14px', color: '#fff', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {searchTokens.length ? highlightTokens((r.file.displayName || r.file.originalName).replace(/\.pdf$/i, ''), searchTokens) : (r.file.displayName || r.file.originalName).replace(/\.pdf$/i, '')}
+                          </span>
+                        </div>
+                        <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                          <span style={{ padding: '1px 6px', borderRadius: '4px', background: 'rgba(255,255,255,0.06)', fontSize: '10px', fontWeight: 600 }}>{r.courseCode}</span>
+                          <span>{courseDisplayNames?.[r.courseCode] || r.courseName}</span>
+                          <span style={{ opacity: 0.5 }}>·</span>
+                          <span>Week {r.weekNum}</span>
+                          <span style={{ opacity: 0.5 }}>·</span>
+                          <span>{r.semLabel}</span>
+                          {r.ftsPageNum && r.ftsPageNum > 0 && (
+                            <span style={{ fontSize: '10px', fontWeight: 700, padding: '1px 5px', borderRadius: '3px', backgroundColor: 'rgba(218,165,32,0.2)', color: '#DAA520', border: '1px solid rgba(218,165,32,0.3)' }}>p.{r.ftsPageNum}</span>
+                          )}
+                        </div>
+                        {r.contentSnippet && (
+                          <div style={{ fontSize: '12px', color: r.proximitySnippet ? 'rgba(130,255,130,0.75)' : 'rgba(255,200,100,0.65)', marginTop: '6px', fontStyle: 'italic', lineHeight: 1.5, maxHeight: '3em', overflow: 'hidden' }}>
+                            {r.proximitySnippet ? (
+                              <span style={{ fontSize: '9px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', backgroundColor: 'rgba(100,255,100,0.15)', color: 'rgba(130,255,130,0.9)', marginRight: '6px', textTransform: 'uppercase', letterSpacing: '0.3px', border: '1px solid rgba(100,255,100,0.2)', fontStyle: 'normal' }}>both found</span>
+                            ) : (
+                              <span style={{ fontSize: '9px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', backgroundColor: 'rgba(255,200,100,0.15)', color: 'rgba(255,200,100,0.8)', marginRight: '6px', textTransform: 'uppercase', letterSpacing: '0.3px', fontStyle: 'normal' }}>content match</span>
+                            )}
+                            {searchTokens.length ? highlightTokens(r.contentSnippet!, searchTokens, r.proximitySnippet ? 'rgba(130,255,130,0.3)' : 'rgba(255,200,100,0.3)') : r.contentSnippet}
+                          </div>
+                        )}
+                        {r.ftsHeadline && !r.contentSnippet && (
+                          <div style={{ fontSize: '12px', color: 'rgba(218,165,32,0.7)', marginTop: '6px', fontStyle: 'italic', lineHeight: 1.5, maxHeight: '3em', overflow: 'hidden' }} dangerouslySetInnerHTML={{ __html: r.ftsHeadline.replace(/<<(\w+)>>/g, '<mark style="background:rgba(218,165,32,0.3);color:#fff;border-radius:2px;padding:0 2px">$1</mark>').replace(/<</g, '<mark style="background:rgba(218,165,32,0.3);color:#fff;border-radius:2px;padding:0 2px">').replace(/>>/g, '</mark>') }} />
+                        )}
+                        {!r.contentSnippet && !r.ftsHeadline && r.matchedTokenCount !== undefined && r.matchedTokenCount >= 2 && searchTokens.length >= 2 && (
+                          <div style={{ marginTop: '4px' }}>
+                            <span style={{ fontSize: '9px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', backgroundColor: 'rgba(100,200,255,0.15)', color: 'rgba(100,200,255,0.9)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>all terms matched</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       <button
         onClick={onClose}
@@ -4494,7 +4651,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             maxHeight: '50vh',
             overflowY: 'auto',
           }}>
-            <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', marginBottom: '8px' }}>
+            <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span>
               {combinedSearchResults.length} result{combinedSearchResults.length !== 1 ? 's' : ''} found
               {ftsLoading && <span style={{ marginLeft: '8px', fontSize: '10px', color: 'rgba(218,165,32,0.7)' }}>searching content...</span>}
               {masterSearch.trim() && (parsedQuery.phrases.length > 0 || parsedQuery.required.length > 0 || parsedQuery.optional.length > 1) && (
@@ -4509,6 +4667,12 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                   ({combinedSearchResults.filter(r => r.contentSnippet).length} from content{combinedSearchResults.some(r => r.proximitySnippet) ? `, ${combinedSearchResults.filter(r => r.proximitySnippet).length} nearby` : ''})
                 </span>
               )}
+              </span>
+              <button
+                onClick={(e) => { e.stopPropagation(); setFullSearchView(true); }}
+                style={{ background: 'rgba(139,92,246,0.2)', border: '1px solid rgba(139,92,246,0.4)', borderRadius: '6px', padding: '3px 8px', cursor: 'pointer', color: '#c4b5fd', fontSize: '10px', fontWeight: 600, whiteSpace: 'nowrap', flexShrink: 0 }}
+                data-testid="btn-open-full-search"
+              >Full Page</button>
             </div>
             {combinedSearchResults.length === 0 && (
               <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '14px', textAlign: 'center', padding: '20px' }}>
