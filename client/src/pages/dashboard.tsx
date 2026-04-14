@@ -2337,6 +2337,7 @@ export default function Dashboard() {
   const [floatingNotes, setFloatingNotes] = useState<Array<{ id: number; title: string; content: string; x: number; y: number; width: number; height: number }>>([]);
   const [isMobileNotepadOpen, setIsMobileNotepadOpen] = useState(false);
   const [isMobileLibraryOpen, setIsMobileLibraryOpen] = useState(false);
+  const [mobileLibraryAiSearch, setMobileLibraryAiSearch] = useState(false);
   const [librarySemesterKey, setLibrarySemesterKey] = useState<string | undefined>(undefined);
   const [mobileNotepadText, setMobileNotepadText] = useState('');
   const [mobileNotepadImages, setMobileNotepadImages] = useState<{file: File; preview: string}[]>([]);
@@ -14162,6 +14163,17 @@ export default function Dashboard() {
             </button>
           )}
 
+          {isFull && (
+            <button
+              onClick={() => { setMobileLibraryAiSearch(true); setIsMobileLibraryOpen(true); }}
+              data-testid="mobile-button-study-assistant"
+              style={{...mobileBtnStyle(btnSize), display: 'flex', flexDirection: 'column', gap: '2px'}}
+            >
+              <Sparkles style={{ height: `${iconSize * 0.7}px`, width: `${iconSize * 0.7}px`, color: '#a78bfa' }} />
+              <span style={{ fontSize: '7px', fontWeight: 600, fontFamily: "system-ui, -apple-system, sans-serif", lineHeight: 1 }}>Study AI</span>
+            </button>
+          )}
+
           {isMobilePortrait && (
             <div style={{ marginTop: '12px', color: 'rgba(255,255,255,0.4)', fontSize: '10px', textAlign: 'center', fontFamily: "system-ui, -apple-system, sans-serif" }}>
               Rotate for calendar
@@ -14710,11 +14722,12 @@ export default function Dashboard() {
       {isMobileLibraryOpen && (
         <LibraryView
           isOpen={isMobileLibraryOpen}
-          onClose={() => { setIsMobileLibraryOpen(false); setLibrarySemesterKey(undefined); }}
+          onClose={() => { setIsMobileLibraryOpen(false); setLibrarySemesterKey(undefined); setMobileLibraryAiSearch(false); }}
           semesters={[]}
           initialSemesterKey={librarySemesterKey}
           onOpenNotepad={() => setIsNotepadOpen(true)}
           courseDisplayNames={courseDisplayNames}
+          initialAiSearch={mobileLibraryAiSearch}
         />
       )}
 

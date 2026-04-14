@@ -113,6 +113,7 @@ interface LibraryViewProps {
   isSharedView?: boolean;
   onOpenNotepad?: () => void;
   courseDisplayNames?: Record<string, string>;
+  initialAiSearch?: boolean;
 }
 
 const WEEK_COLOR_PALETTE: Record<number, string> = {
@@ -2473,7 +2474,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
   );
 }
 
-export default function LibraryView({ isOpen, onClose, semesters: semestersProp, initialSemesterKey, isSharedView, onOpenNotepad, courseDisplayNames }: LibraryViewProps) {
+export default function LibraryView({ isOpen, onClose, semesters: semestersProp, initialSemesterKey, isSharedView, onOpenNotepad, courseDisplayNames, initialAiSearch }: LibraryViewProps) {
   const { isAdmin: isFullAccess } = useAccessMode();
   const [currentSemIdx, setCurrentSemIdx] = useState(0);
   const [syncingSemKey, setSyncingSemKey] = useState<string | null>(null);
@@ -2586,7 +2587,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
   const newReadingRenameRef = useRef<HTMLInputElement>(null);
   const newReadingQueueRef = useRef<FileRecord[]>([]);
 
-  const [aiSearchOpen, setAiSearchOpen] = useState(false);
+  const [aiSearchOpen, setAiSearchOpen] = useState(!!initialAiSearch);
   const [aiPrompt, setAiPrompt] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
   const [aiPreview, setAiPreview] = useState<any>(null);
