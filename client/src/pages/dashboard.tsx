@@ -3862,6 +3862,9 @@ export default function Dashboard() {
   const [expandedSemHealth, setExpandedSemHealth] = useState<any>(null);
   const [expandedSemHealthLoading, setExpandedSemHealthLoading] = useState(false);
   const [semFlowWizard, setSemFlowWizard] = useState<{ courseCode: string; issue: string; step: number; phase: 'primary' | 'testing' | 'test-result' | 'secondary' | 'testing2' | 'test-result2' | 'chatgpt'; testResult?: any } | null>(null);
+  const [wizActionLoading, setWizActionLoading] = useState(false);
+  const [wizActionDone, setWizActionDone] = useState<string | null>(null);
+  const wizUploadRef = useRef<HTMLInputElement>(null);
   const expandedSemOpenTimeRef = useRef<number>(0);
   useEffect(() => {
     if (!expandedSemKey) { setExpandedSemHealth(null); return; }
@@ -27308,100 +27311,101 @@ export default function Dashboard() {
                         const odPath = getOneDrivePath(semFlowWizard.courseCode);
                         const semYear = expandedSemKey.replace(/^(ss|f|w)/, '');
                         const semType = expandedSemKey.startsWith('ss') ? 'Spring & Summer' : expandedSemKey.startsWith('f') ? 'Fall' : 'Winter';
-                        const wizardDefs: Record<string, { title: string; steps: string[][]; secondary: string[][]; testCheck: string }> = {
+                        type WizStep = [string, string, string?];
+                        const wizardDefs: Record<string, { title: string; steps: WizStep[]; secondary: WizStep[]; testCheck: string }> = {
                           onedrive: { title: 'Fix OneDrive Connection', testCheck: 'oneDriveFolderConfigured', steps: [
-                            ['Check OneDrive Folder', `Make sure you have a folder at:\n${odPath}\n\nIt should contain subfolders for each week (Week 1, Week 2, etc.) with Module and Reading subfolders inside each.`],
-                            ['Create Missing Folders', `In OneDrive, navigate to:\n/School/1. TMU/Courses/${semYear}/${semType}/\n\nCreate a folder named after your course code (e.g. ${semFlowWizard.courseCode}).`],
+                            ['Check OneDrive Folder', `Make sure you have a folder at:\n${odPath}\n\nIt should contain subfolders for each week (Week 1, Week 2, etc.) with Module and Reading subfolders inside each.`, 'open_onedrive'],
+                            ['Create Missing Folders', `If the folder doesn't exist, click "Create Folders" below to auto-create the full OneDrive folder structure for ${semFlowWizard.courseCode}.`, 'create_folders'],
                           ], secondary: [
-                            ['Check OneDrive Connection', 'Open the Settings panel and verify your OneDrive account is connected. Try disconnecting and reconnecting if needed.'],
-                            ['Check Folder Naming', `The folder name must match EXACTLY what the system expects. Check for extra spaces, special characters, or mismatched case.\n\nExpected path: ${odPath}`],
-                            ['Restart Sync', 'Go to Settings > Automation and click "Force Full Sync" to re-scan all OneDrive folders.'],
+                            ['Check OneDrive Connection', 'Open Settings and verify your OneDrive account is connected. Reconnect if needed.', 'open_settings'],
+                            ['Check Folder Naming', `The folder name must match EXACTLY.\n\nExpected path: ${odPath}`, 'open_onedrive'],
+                            ['Force Full Sync', 'Click below to force a complete re-scan of all OneDrive folders.', 'force_sync'],
                           ] },
                           sync: { title: 'Fix Folder Sync', testCheck: 'totalModules', steps: [
-                            ['Upload Course Files', `Upload your module and reading files to:\n${odPath}/Week {n}/Module/\n${odPath}/Week {n}/Reading/\n\nFiles should be PDF, DOCX, or PPTX format.`],
-                            ['Wait for Sync', 'The system syncs files from OneDrive automatically. After uploading, files should appear within a few minutes.'],
+                            ['Upload Course Files', `Upload module and reading files for ${semFlowWizard.courseCode}. Click "Upload Files" to select PDFs, DOCX, or PPTX files.`, 'upload_file'],
+                            ['Sync from OneDrive', `Or sync automatically from OneDrive. Click below to trigger a sync for this course.`, 'sync_course'],
                           ], secondary: [
                             ['Check File Format', 'Only PDF, DOCX, and PPTX files are supported. Make sure your files have the correct extension.'],
-                            ['Check Folder Structure', `Each week folder must contain a "Module" or "Reading" subfolder. Example:\n${odPath}/Week 1/Module/lecture.pdf`],
-                            ['Manual Upload', 'If OneDrive sync is not working, you can manually upload files through the Library page using the upload button.'],
+                            ['Check Folder Structure', `Each week folder must contain a "Module" or "Reading" subfolder. Example:\n${odPath}/Week 1/Module/lecture.pdf`, 'open_onedrive'],
+                            ['Manual Upload', 'Upload files directly using the button below.', 'upload_file'],
                           ] },
                           tts: { title: 'Fix TTS Processing', testCheck: 'ttsReady', steps: [
-                            ['About TTS', 'Text-to-Speech converts your course materials into audio chunks for Cat Lights playback. This happens automatically when files are synced.'],
-                            ['Trigger Processing', 'Go to the Library page, find the file, and click "Prepare Audio" to re-process the file into audio chunks.'],
+                            ['Prepare Audio', 'Click below to start TTS processing for all unprocessed files in this course.', 'prepare_tts'],
+                            ['Check Status', 'After processing, click "Test It" below to verify TTS status.'],
                           ], secondary: [
-                            ['Check File Content', 'TTS requires readable text. If the PDF is scanned images, TTS cannot extract text. Try uploading a text-based PDF instead.'],
-                            ['Check Server Status', 'Make sure the Pi is connected to the internet. TTS uses Edge TTS which requires an internet connection.'],
-                            ['Clear and Retry', 'Delete the prepared audio for this file in the Library, then click "Prepare Audio" again to start fresh.'],
+                            ['Check File Content', 'TTS requires readable text. Scanned image PDFs cannot be processed. Upload text-based PDFs instead.', 'upload_file'],
+                            ['Reset TTS', 'Click below to clear all TTS audio for this course and re-process from scratch.', 'reset_tts'],
+                            ['Check Internet', 'TTS uses Edge TTS which requires an internet connection on the Pi.'],
                           ] },
                           syllabus: { title: 'Link Course Syllabus', testCheck: 'syllabusLinked', steps: [
-                            ['Upload Syllabus', `Upload your syllabus PDF to OneDrive at:\n${odPath}/\n\nName it something like "${semFlowWizard.courseCode}_syllabus.pdf"`],
-                            ['Link in Settings', 'Open the course settings (pencil icon on the semester box) and use the Syllabus field to link the uploaded file.'],
+                            ['Upload Syllabus', `Click below to upload a syllabus PDF for ${semFlowWizard.courseCode}.`, 'upload_syllabus'],
+                            ['Verify Link', 'After uploading, click "Test It" to confirm the syllabus is linked.'],
                           ], secondary: [
                             ['Check File Location', `The syllabus PDF should be directly in:\n${odPath}/\n\nNot inside a week subfolder.`],
-                            ['Manual Link', 'Go to Settings > Semesters, find this course, and paste the full path to the syllabus file.'],
+                            ['Manual Link', 'Open the course edit dialog and paste the syllabus file path.', 'open_settings'],
                           ] },
                           onedrive_root: { title: 'Fix OneDrive Root', testCheck: 'oneDriveFolderConfigured', steps: [
-                            ['Verify Root Path', `Your OneDrive root should be:\n${odPath}\n\nMake sure this folder exists and contains week subfolders.`],
-                            ['Create Structure', 'Create folders named "Week 1", "Week 2", etc. Inside each week, create "Module" and "Reading" subfolders.'],
+                            ['Verify Root Path', `Your OneDrive root should be:\n${odPath}\n\nClick below to browse OneDrive and check.`, 'open_onedrive'],
+                            ['Create Structure', 'Click below to auto-create the full folder structure (Week 1–14 with Module/Reading subfolders).', 'create_folders'],
                           ], secondary: [
-                            ['Check Full Path', `Navigate through OneDrive manually:\nSchool > 1. TMU > Courses > ${semYear} > ${semType} > ${semFlowWizard.courseCode}`],
-                            ['Check Permissions', 'Make sure the OneDrive integration has permission to read this folder. Try reconnecting OneDrive in Settings.'],
+                            ['Check Full Path', `Navigate through OneDrive manually:\nSchool > 1. TMU > Courses > ${semYear} > ${semType} > ${semFlowWizard.courseCode}`, 'open_onedrive'],
+                            ['Reconnect OneDrive', 'Open Settings and try reconnecting your OneDrive account.', 'open_settings'],
                           ] },
                           module_folder: { title: 'Fix Module Folder', testCheck: 'totalModules', steps: [
-                            ['Add Module Files', `Upload module files (PDF, DOCX, PPTX) to:\n${odPath}/Week {n}/Module/`],
-                            ['Verify', 'After uploading, check the Weekly Content Status grid to confirm files appear.'],
+                            ['Upload Module Files', `Upload module files (PDF, DOCX, PPTX) for ${semFlowWizard.courseCode}. Click below to select files.`, 'upload_file'],
+                            ['Or Sync from OneDrive', `Trigger a sync to pull files from OneDrive at:\n${odPath}/Week {n}/Module/`, 'sync_course'],
                           ], secondary: [
-                            ['Check Naming', 'The folder must be named exactly "Module" (capital M). Check for typos.'],
-                            ['Check Sync Status', 'Open Settings > Automation to see if sync is running. Try "Force Full Sync".'],
+                            ['Check Naming', 'The folder must be named exactly "Module" (capital M). Check for typos.', 'open_onedrive'],
+                            ['Force Sync', 'Force a complete re-scan of all OneDrive folders.', 'force_sync'],
                           ] },
                           reading_folder: { title: 'Fix Reading Folder', testCheck: 'totalReadings', steps: [
-                            ['Add Reading Files', `Upload reading files to:\n${odPath}/Week {n}/Reading/`],
-                            ['Verify', 'After uploading, check the Weekly Content Status grid to confirm files appear.'],
+                            ['Upload Reading Files', `Upload reading files for ${semFlowWizard.courseCode}. Click below to select files.`, 'upload_file'],
+                            ['Or Sync from OneDrive', `Trigger a sync to pull files from:\n${odPath}/Week {n}/Reading/`, 'sync_course'],
                           ], secondary: [
-                            ['Check Naming', 'The folder must be named exactly "Reading" (capital R). Check for typos.'],
-                            ['Check Sync Status', 'Open Settings > Automation to see if sync is running. Try "Force Full Sync".'],
+                            ['Check Naming', 'The folder must be named exactly "Reading" (capital R). Check for typos.', 'open_onedrive'],
+                            ['Force Sync', 'Force a complete re-scan of all OneDrive folders.', 'force_sync'],
                           ] },
                           local_sync: { title: 'Fix Local Sync', testCheck: 'totalModules', steps: [
-                            ['Check Source', 'Local sync copies files from OneDrive to the Pi. Make sure OneDrive folders have files first.'],
-                            ['Manual Sync', 'Go to Settings > Automation and click "Force Full Sync" to re-download all files.'],
+                            ['Sync from OneDrive', 'Click below to trigger a sync for this course from OneDrive.', 'sync_course'],
+                            ['Force Full Sync', 'If individual sync doesn\'t work, force a complete re-scan.', 'force_sync'],
                           ], secondary: [
-                            ['Check Disk Space', 'Make sure the Pi has enough storage space. Check with the system status in Settings.'],
-                            ['Check Network', 'The Pi needs internet access to download from OneDrive. Check your network connection.'],
+                            ['Check Disk Space', 'Make sure the Pi has enough storage space.'],
+                            ['Upload Manually', 'Bypass OneDrive entirely and upload files directly.', 'upload_file'],
                           ] },
                           tts_audio: { title: 'Fix TTS Audio', testCheck: 'ttsReady', steps: [
-                            ['About TTS Audio', 'TTS audio is generated automatically when files are synced. Files may still be processing.'],
-                            ['Re-process', 'Go to the Library page, find the file, and click "Prepare Audio" to re-generate TTS chunks.'],
+                            ['Prepare Audio', 'Click below to start TTS processing for all unprocessed files in this course.', 'prepare_tts'],
+                            ['Check Status', 'After processing, click "Test It" to verify all audio is ready.'],
                           ], secondary: [
-                            ['Check Edge TTS', 'TTS uses Microsoft Edge TTS. Make sure the Pi has internet access.'],
-                            ['Process One at a Time', 'If multiple files are stuck, try processing them one at a time from the Library page.'],
+                            ['Reset & Retry', 'Clear all TTS audio for this course and re-process from scratch.', 'reset_tts'],
+                            ['Upload New Files', 'If files are unreadable, upload text-based PDFs instead.', 'upload_file'],
                           ] },
                           activate: { title: 'Activate Semester', testCheck: 'isActive', steps: [
-                            ['Mark as Active', 'Open the semester settings (gear icon on the semester header) and toggle it to active.'],
-                            ['Set Dates', 'Make sure the semester start and end dates are configured correctly.'],
+                            ['Activate Now', 'Click below to activate this semester immediately.', 'activate_semester'],
+                            ['Verify', 'After activation, the semester will appear on the main dashboard.'],
                           ], secondary: [
-                            ['Check Database', 'The semester may not exist in the database yet. Open semester settings and save to create it.'],
-                            ['Add Courses', 'A semester needs at least one course assigned. Use the pencil icon to add courses.'],
+                            ['Open Settings', 'Open semester settings to configure manually.', 'open_settings'],
+                            ['Add Courses', 'A semester needs at least one course. Use the edit button to add courses.', 'open_settings'],
                           ] },
                           dates: { title: 'Configure Dates', testCheck: 'hasDates', steps: [
-                            ['Set Dates', 'Click the date pill on the semester header to set the start and end dates.'],
-                            ['Verify', 'Once dates are set, the semester will show the correct date range and week numbers.'],
+                            ['Open TMU Calendar', 'Click below to look up the official TMU academic calendar for semester dates.', 'open_tmu_calendar'],
+                            ['Set Dates', 'Open semester settings and enter the start/end dates.', 'open_settings'],
                           ], secondary: [
-                            ['Default Dates', 'If you are unsure, use the TMU academic calendar dates for this semester.'],
-                            ['Save Settings', 'After changing dates, make sure to click Save in the settings dialog.'],
+                            ['Default Dates', 'If you are unsure, use the TMU academic calendar dates for this semester.', 'open_tmu_calendar'],
+                            ['Save Settings', 'After changing dates, make sure to click Save in the settings dialog.', 'open_settings'],
                           ] },
                           library: { title: 'Library Not Ready', testCheck: 'totalModules', steps: [
-                            ['Add Content First', 'The Library requires module or reading files. Upload files to OneDrive and wait for sync.'],
-                            ['Check Library', 'Once files are synced, visit the Library page to see your course materials.'],
+                            ['Upload Files', 'Upload module or reading files to get started. Click below to select files.', 'upload_file'],
+                            ['Open Library', 'Or open the Library page to manage existing files.', 'open_library'],
                           ], secondary: [
-                            ['Manual Upload', 'You can upload files directly on the Library page using the upload button.'],
-                            ['Check File Processing', 'Files need to be processed (text extracted) before they appear. This may take a few minutes.'],
+                            ['Sync from OneDrive', 'Pull files automatically from your OneDrive course folder.', 'sync_course'],
+                            ['Force Sync', 'Trigger a complete re-scan of all OneDrive folders.', 'force_sync'],
                           ] },
                           general: { title: 'Resolve Issue', testCheck: 'healthScore', steps: [
-                            ['Review', 'Check your semester settings and OneDrive folder structure.'],
-                            ['Re-sync', 'Try re-syncing from the Settings panel or checking the OneDrive connection.'],
+                            ['Open Settings', 'Review your semester settings and course configuration.', 'open_settings'],
+                            ['Force Sync', 'Trigger a full re-sync of all OneDrive folders.', 'force_sync'],
                           ], secondary: [
-                            ['Full Reset', 'Try disconnecting and reconnecting OneDrive, then running a Force Full Sync.'],
-                            ['Check Logs', 'Check the server logs for specific error messages about this course.'],
+                            ['Open OneDrive', 'Check your OneDrive folder structure directly.', 'open_onedrive'],
+                            ['Upload Files', 'Upload files manually to bypass sync issues.', 'upload_file'],
                           ] },
                         };
                         const def = wizardDefs[semFlowWizard.issue] || wizardDefs.general;
@@ -27442,6 +27446,21 @@ export default function Dashboard() {
                           <div className="fixed inset-0 z-[10010] flex items-center justify-center" onClick={() => setSemFlowWizard(null)}>
                             <div className="fixed inset-0 bg-black/50" />
                             <div className="relative z-[10011] rounded-xl overflow-hidden flex flex-col" style={{ width: '520px', maxWidth: '92%', maxHeight: '80vh', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 8px 48px rgba(0,0,0,0.5)' }} onClick={(e) => e.stopPropagation()}>
+                              <input type="file" ref={wizUploadRef} className="hidden" multiple accept=".pdf,.docx,.pptx,.doc,.ppt,.txt" onChange={async (e) => {
+                                const files = e.target.files;
+                                if (!files || files.length === 0) return;
+                                setWizActionLoading(true); setWizActionDone(null);
+                                try {
+                                  const formData = new FormData();
+                                  for (let i = 0; i < files.length; i++) formData.append('files', files[i]);
+                                  formData.append('courseCode', semFlowWizard!.courseCode);
+                                  formData.append('semesterKey', expandedSemKey || '');
+                                  const res = await fetch('/api/files/upload', { method: 'POST', body: formData, credentials: 'include' });
+                                  if (res.ok) setWizActionDone(`${files.length} file(s) uploaded successfully!`);
+                                  else setWizActionDone('Error: Upload failed. Please try again.');
+                                } catch (err: any) { setWizActionDone(`Error: ${err.message}`); }
+                                finally { setWizActionLoading(false); if (wizUploadRef.current) wizUploadRef.current.value = ''; }
+                              }} />
                               <div className="px-5 py-3 border-b border-white/30 flex items-center gap-3" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 -1px 0 rgba(255,255,255,0.1)' }}>
                                 <span className="text-[14px]">{phaseIcon}</span>
                                 <span className="text-[13px] font-bold text-white uppercase tracking-wider" style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}>{phaseTitle}</span>
@@ -27459,6 +27478,80 @@ export default function Dashboard() {
                                     </div>
                                     <h3 className="text-[16px] font-bold text-white mb-3">{stepData[0]}</h3>
                                     <div className="text-[14px] text-white/80 leading-relaxed whitespace-pre-wrap">{stepData[1]}</div>
+                                    {stepData[2] && (() => {
+                                      const action = stepData[2]!;
+                                      const actionLabels: Record<string, { label: string; icon: string }> = {
+                                        open_onedrive: { label: 'Open OneDrive', icon: '☁️' },
+                                        create_folders: { label: 'Create Folders', icon: '📁' },
+                                        open_settings: { label: 'Open Settings', icon: '⚙️' },
+                                        force_sync: { label: 'Force Full Sync', icon: '🔄' },
+                                        upload_file: { label: 'Upload Files', icon: '📤' },
+                                        upload_syllabus: { label: 'Upload Syllabus', icon: '📄' },
+                                        sync_course: { label: 'Sync This Course', icon: '🔄' },
+                                        prepare_tts: { label: 'Prepare Audio', icon: '🔊' },
+                                        reset_tts: { label: 'Reset TTS', icon: '🗑️' },
+                                        open_library: { label: 'Open Library', icon: '📚' },
+                                        activate_semester: { label: 'Activate Now', icon: '✅' },
+                                        open_tmu_calendar: { label: 'TMU Calendar', icon: '📅' },
+                                      };
+                                      const aInfo = actionLabels[action] || { label: action, icon: '▶️' };
+                                      const handleWizAction = async () => {
+                                        if (action === 'open_onedrive') { window.open('/onedrive', '_blank'); return; }
+                                        if (action === 'open_settings') { setSemFlowWizard(null); return; }
+                                        if (action === 'open_library') { window.open('/', '_blank'); return; }
+                                        if (action === 'open_tmu_calendar') { window.open('https://www.torontomu.ca/calendar/dates/', '_blank'); return; }
+                                        if (action === 'upload_file' || action === 'upload_syllabus') { wizUploadRef.current?.click(); return; }
+                                        setWizActionLoading(true);
+                                        setWizActionDone(null);
+                                        try {
+                                          if (action === 'force_sync') {
+                                            await fetch('/api/onedrive/force-sync', { method: 'POST', credentials: 'include' });
+                                            setWizActionDone('Sync started! Files will appear in a few minutes.');
+                                          } else if (action === 'sync_course') {
+                                            await fetch(`/api/onedrive/sync-course/${semFlowWizard!.courseCode}`, { method: 'POST', credentials: 'include' });
+                                            setWizActionDone('Course sync triggered!');
+                                          } else if (action === 'create_folders') {
+                                            await fetch(`/api/onedrive/create-folders/${expandedSemKey}/${semFlowWizard!.courseCode}`, { method: 'POST', credentials: 'include' });
+                                            setWizActionDone('Folder structure created on OneDrive!');
+                                          } else if (action === 'prepare_tts') {
+                                            await fetch(`/api/tts/prepare-course/${semFlowWizard!.courseCode}`, { method: 'POST', credentials: 'include' });
+                                            setWizActionDone('TTS processing started!');
+                                          } else if (action === 'reset_tts') {
+                                            await fetch(`/api/tts/reset-course/${semFlowWizard!.courseCode}`, { method: 'POST', credentials: 'include' });
+                                            setWizActionDone('TTS audio cleared. Click "Prepare Audio" to re-process.');
+                                          } else if (action === 'activate_semester') {
+                                            await fetch(`/api/semester-settings/${expandedSemKey}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ isActive: true }) });
+                                            setWizActionDone('Semester activated!');
+                                          }
+                                        } catch (err: any) {
+                                          setWizActionDone(`Error: ${err.message}`);
+                                        } finally {
+                                          setWizActionLoading(false);
+                                        }
+                                      };
+                                      return (
+                                        <div className="mt-4 space-y-2">
+                                          <button
+                                            className="w-full px-4 py-3 rounded-lg text-[14px] font-semibold text-white transition-all duration-200 flex items-center justify-center gap-2"
+                                            style={{
+                                              background: wizActionDone && !wizActionDone.startsWith('Error') ? 'rgba(34,197,94,0.2)' : 'linear-gradient(135deg, rgba(59,130,246,0.4) 0%, rgba(99,102,241,0.4) 100%)',
+                                              border: `1px solid ${wizActionDone && !wizActionDone.startsWith('Error') ? 'rgba(34,197,94,0.4)' : 'rgba(99,102,241,0.5)'}`,
+                                              boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                                            }}
+                                            onClick={handleWizAction}
+                                            disabled={wizActionLoading}
+                                            data-testid={`wiz-action-${action}`}
+                                          >
+                                            {wizActionLoading ? (
+                                              <><div className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin" /> Processing...</>
+                                            ) : (
+                                              <><span className="text-[16px]">{aInfo.icon}</span> {aInfo.label}</>
+                                            )}
+                                          </button>
+                                          {wizActionDone && <div className={`text-[13px] text-center py-1 ${wizActionDone.startsWith('Error') ? 'text-red-400' : 'text-emerald-400'}`}>{wizActionDone}</div>}
+                                        </div>
+                                      );
+                                    })()}
                                   </>
                                 )}
 
@@ -27518,11 +27611,11 @@ export default function Dashboard() {
                                 <div className="flex gap-2">
 
                                   {(phase === 'primary' || phase === 'secondary') && currentStep > 0 && (
-                                    <button className="px-4 py-1.5 rounded text-[12px] font-medium text-white/70 hover:text-white transition-colors" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }} onClick={() => setSemFlowWizard({ ...semFlowWizard, step: currentStep - 1 })}>Back</button>
+                                    <button className="px-4 py-1.5 rounded text-[12px] font-medium text-white/70 hover:text-white transition-colors" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }} onClick={() => { setWizActionDone(null); setSemFlowWizard({ ...semFlowWizard, step: currentStep - 1 }); }}>Back</button>
                                   )}
 
                                   {(phase === 'primary' || phase === 'secondary') && !isLast && (
-                                    <button className="px-4 py-1.5 rounded text-[12px] font-medium text-white hover:brightness-110 transition-all" style={{ background: 'rgba(34,197,94,0.3)', border: '1px solid rgba(34,197,94,0.5)' }} onClick={() => setSemFlowWizard({ ...semFlowWizard, step: currentStep + 1 })}>Next</button>
+                                    <button className="px-4 py-1.5 rounded text-[12px] font-medium text-white hover:brightness-110 transition-all" style={{ background: 'rgba(34,197,94,0.3)', border: '1px solid rgba(34,197,94,0.5)' }} onClick={() => { setWizActionDone(null); setSemFlowWizard({ ...semFlowWizard, step: currentStep + 1 }); }}>Next</button>
                                   )}
 
                                   {(phase === 'primary' || phase === 'secondary') && isLast && (
