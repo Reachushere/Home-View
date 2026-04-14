@@ -34570,6 +34570,7 @@ export default function Dashboard() {
         >
           <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', border: '1.5px solid rgba(255,255,255,0.5)', pointerEvents: 'none', zIndex: 9999 }} />
           {(blankBoxOpen || homeworkMinimized) && <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', zIndex: 9998, pointerEvents: blankBoxOpen ? 'auto' : 'none' }} />}
+          <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: `${Math.max(0, (savedCalendarReductionRef.current ?? (parseFloat(localStorage.getItem('savedCalendarReduction') || '0') || calendarReduction)) + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4 - 1 - 1 + 1 - 5 - 2 - 1 - 3 + 2)}px`, display: 'flex', flexDirection: 'column' }}>
           {/* Date navigation tab above glass box */}
           <div
             className="absolute z-[60]"
@@ -36438,6 +36439,7 @@ export default function Dashboard() {
                 })()}
               </div>
             )}
+          </div>
           </div>
           </div>
           </div>
