@@ -12759,10 +12759,10 @@ export default function Dashboard() {
         for (let h = item.startHour; h <= item.endHour; h++) {
           const hStart = h * 60;
           const hEnd = (h + 1) * 60;
-          if (iStart < hEnd && iEnd > hStart) {
+          if (iStart < hEnd && iEnd >= hStart) {
             let colsAtH = 0;
             for (const col of columns) {
-              if (col.some(o => { const oEnd = o.endHour * 60 + o.endMin; return o.startHour * 60 + o.startMin < hEnd && oEnd > hStart; })) colsAtH++;
+              if (col.some(o => { const oEnd = o.endHour * 60 + o.endMin; return o.startHour * 60 + o.startMin < hEnd && oEnd >= hStart; })) colsAtH++;
             }
             const key = `${dIdx}-${h}`;
             map.set(key, Math.max(map.get(key) || 0, colsAtH));
@@ -33239,6 +33239,51 @@ export default function Dashboard() {
                       overlapInfo.set(allItems[i].item.task.id, { col: allItems[i].col, totalCols: groupCols.get(root)!.size });
                     }
                   }
+
+                  const taskGroupMax = new Map<number, number>();
+                  const dayMhGroups = new Map<number, typeof allMultiHour>();
+                  for (const mhItem of allMultiHour) {
+                    if (!dayMhGroups.has(mhItem.dayIdx)) dayMhGroups.set(mhItem.dayIdx, []);
+                    dayMhGroups.get(mhItem.dayIdx)!.push(mhItem);
+                  }
+                  for (const [, dayMhItems] of dayMhGroups) {
+                    const sortedMh = [...dayMhItems].sort((a, b) => a.startHour * 60 + a.startMin - (b.startHour * 60 + b.startMin));
+                    const mhParent = sortedMh.map((_, i) => i);
+                    const mhFind = (x: number): number => { while (mhParent[x] !== x) { mhParent[x] = mhParent[mhParent[x]]; x = mhParent[x]; } return x; };
+                    const mhUnion = (a: number, b: number) => { mhParent[mhFind(a)] = mhFind(b); };
+                    for (let i = 0; i < sortedMh.length; i++) {
+                      const aS = sortedMh[i].startHour * 60 + sortedMh[i].startMin;
+                      const aE = sortedMh[i].endHour * 60 + sortedMh[i].endMin;
+                      for (let j = i + 1; j < sortedMh.length; j++) {
+                        const bS = sortedMh[j].startHour * 60 + sortedMh[j].startMin;
+                        const bE = sortedMh[j].endHour * 60 + sortedMh[j].endMin;
+                        if (aS < bE - 1 && bS < aE - 1) mhUnion(i, j);
+                      }
+                    }
+                    const perTaskMax = new Map<number, number>();
+                    for (let i = 0; i < sortedMh.length; i++) {
+                      const mhItem = sortedMh[i];
+                      const mhOi = overlapInfo.get(mhItem.task.id) || { col: 0, totalCols: 1 };
+                      let localMax = mhOi.totalCols;
+                      for (let hh = mhItem.startHour; hh < (mhItem.endMin === 0 ? mhItem.endHour : mhItem.endHour + 1); hh++) {
+                        const key = `${mhItem.dayIdx}-${hh}`;
+                        const iC = inlineCountPerSlot.get(key) || 0;
+                        const oC = multiHourOverlayCols.get(key) || mhOi.totalCols;
+                        localMax = Math.max(localMax, oC + iC);
+                      }
+                      perTaskMax.set(i, localMax);
+                    }
+                    const groupMax = new Map<number, number>();
+                    for (let i = 0; i < sortedMh.length; i++) {
+                      const root = mhFind(i);
+                      groupMax.set(root, Math.max(groupMax.get(root) || 0, perTaskMax.get(i) || 1));
+                    }
+                    for (let i = 0; i < sortedMh.length; i++) {
+                      const root = mhFind(i);
+                      taskGroupMax.set(sortedMh[i].task.id, groupMax.get(root) || 1);
+                    }
+                  }
+
                   return allMultiHour.map(({ task, dayIdx, startHour, startMin, endHour, endMin }) => {
                   const oi = overlapInfo.get(task.id) || { col: 0, totalCols: 1 };
                   const taskDurMin = (endHour * 60 + endMin) - (startHour * 60 + startMin);
@@ -33346,8 +33391,8 @@ export default function Dashboard() {
                         const borderColor = task.isCompleted ? '#d1d5db' : hasCourseGrad ? gradColors.start : otherRowColors.borderColor;
                         return {
                           top: `${topPx}px`,
-                          left: (() => { const sidebarPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0); const dayFrac = `(${gridSizes.dayColumnWidths.slice(0, dayIdx).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)})`; let maxTotalCols = oi.totalCols; for (let hh = startHour; hh < (endMin === 0 ? endHour : endHour + 1); hh++) { const key = `${dayIdx}-${hh}`; const inlineC = inlineCountPerSlot.get(key) || 0; const overlayC = multiHourOverlayCols.get(key) || oi.totalCols; maxTotalCols = Math.max(maxTotalCols, overlayC + inlineC); } if (maxTotalCols > 1) { const dayW = `(${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${sidebarPx}px)`; return `calc(${sidebarPx}px + ${dayFrac} * (100% - ${sidebarPx}px) + (${dayW}) * ${oi.col} / ${maxTotalCols} + 2px)`; } return `calc(${sidebarPx}px + ${dayFrac} * (100% - ${sidebarPx}px) + 2px)`; })(),
-                          width: (() => { const sidebarPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0); const dayW = `(${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${sidebarPx}px)`; let maxTotalCols = oi.totalCols; for (let hh = startHour; hh < (endMin === 0 ? endHour : endHour + 1); hh++) { const key = `${dayIdx}-${hh}`; const inlineC = inlineCountPerSlot.get(key) || 0; const overlayC = multiHourOverlayCols.get(key) || oi.totalCols; maxTotalCols = Math.max(maxTotalCols, overlayC + inlineC); } const colDivisor = Math.max(maxTotalCols, 1); return `calc((${dayW}) / ${colDivisor} - 4px)`; })(),
+                          left: (() => { const sidebarPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0); const dayFrac = `(${gridSizes.dayColumnWidths.slice(0, dayIdx).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)})`; const maxTotalCols = taskGroupMax.get(task.id) || oi.totalCols; if (maxTotalCols > 1) { const dayW = `(${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${sidebarPx}px)`; return `calc(${sidebarPx}px + ${dayFrac} * (100% - ${sidebarPx}px) + (${dayW}) * ${oi.col} / ${maxTotalCols} + 2px)`; } return `calc(${sidebarPx}px + ${dayFrac} * (100% - ${sidebarPx}px) + 2px)`; })(),
+                          width: (() => { const sidebarPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0); const dayW = `(${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${sidebarPx}px)`; const maxTotalCols = taskGroupMax.get(task.id) || oi.totalCols; const colDivisor = Math.max(maxTotalCols, 1); return `calc((${dayW}) / ${colDivisor} - 4px)`; })(),
                           height: `${heightPx}px`,
                           zIndex: selectedTaskId === task.id ? 55 : (draggedTask?.id === task.id ? 53 : (51 + oi.col)),
                           transition: 'left 0.15s ease, width 0.15s ease',
@@ -33367,8 +33412,8 @@ export default function Dashboard() {
                       data-testid={`multi-hour-task-${task.id}`}
                       data-cal-task-id={task.id}
                       data-cal-date={format(taskDay, 'yyyy-MM-dd')}
-                      data-orig-left={(() => { const sidebarPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0); const dayFrac = `(${gridSizes.dayColumnWidths.slice(0, dayIdx).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)})`; let maxTotalCols = oi.totalCols; for (let hh = startHour; hh < (endMin === 0 ? endHour : endHour + 1); hh++) { const key = `${dayIdx}-${hh}`; const inlineC = inlineCountPerSlot.get(key) || 0; const overlayC = multiHourOverlayCols.get(key) || oi.totalCols; maxTotalCols = Math.max(maxTotalCols, overlayC + inlineC); } if (maxTotalCols > 1) { const dayW = `(${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${sidebarPx}px)`; return `calc(${sidebarPx}px + ${dayFrac} * (100% - ${sidebarPx}px) + (${dayW}) * ${oi.col} / ${maxTotalCols} + 2px)`; } return `calc(${sidebarPx}px + ${dayFrac} * (100% - ${sidebarPx}px) + 2px)`; })()}
-                      data-orig-width={(() => { const sidebarPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0); const dayW = `(${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${sidebarPx}px)`; let maxTotalCols = oi.totalCols; for (let hh = startHour; hh < (endMin === 0 ? endHour : endHour + 1); hh++) { const key = `${dayIdx}-${hh}`; const inlineC = inlineCountPerSlot.get(key) || 0; const overlayC = multiHourOverlayCols.get(key) || oi.totalCols; maxTotalCols = Math.max(maxTotalCols, overlayC + inlineC); } const colDivisor = Math.max(maxTotalCols, 1); return `calc((${dayW}) / ${colDivisor} - 4px)`; })()}
+                      data-orig-left={(() => { const sidebarPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0); const dayFrac = `(${gridSizes.dayColumnWidths.slice(0, dayIdx).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)})`; const maxTotalCols = taskGroupMax.get(task.id) || oi.totalCols; if (maxTotalCols > 1) { const dayW = `(${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${sidebarPx}px)`; return `calc(${sidebarPx}px + ${dayFrac} * (100% - ${sidebarPx}px) + (${dayW}) * ${oi.col} / ${maxTotalCols} + 2px)`; } return `calc(${sidebarPx}px + ${dayFrac} * (100% - ${sidebarPx}px) + 2px)`; })()}
+                      data-orig-width={(() => { const sidebarPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0); const dayW = `(${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${sidebarPx}px)`; const maxTotalCols = taskGroupMax.get(task.id) || oi.totalCols; const colDivisor = Math.max(maxTotalCols, 1); return `calc((${dayW}) / ${colDivisor} - 4px)`; })()}
                       data-hover-left={(() => { const sidebarPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0); const dayFrac = `(${gridSizes.dayColumnWidths.slice(0, dayIdx).reduce((a, b) => a + b, 0)} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)})`; return `calc(${sidebarPx}px + ${dayFrac} * (100% - ${sidebarPx}px) + 4px)`; })()}
                       data-hover-width={(() => { const sidebarPx = gridSizes.timeColumnWidth + (gridSizes.moduleColumnWidth > 0 ? gridSizes.moduleColumnWidth + 9 : 0); const dayW = `(${gridSizes.dayColumnWidths[dayIdx]} / ${gridSizes.dayColumnWidths.reduce((a, b) => a + b, 0)}) * (100% - ${sidebarPx}px)`; return `calc(${dayW} - 8px)`; })()}
                       data-is-very-long={isVeryLong ? 'true' : undefined}
