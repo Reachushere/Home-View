@@ -2258,12 +2258,14 @@ export default function Dashboard() {
     if (val) localStorage.setItem('calendarReductionUserSet', '1');
   };
   const [homeworkMinimized, setHomeworkMinimized] = useState(() => localStorage.getItem('homeworkMinimized') === '1');
-  const [homeworkAnimating] = useState(false);
+  const [homeworkAnimating, setHomeworkAnimating] = useState(false);
   const savedCalendarReductionRef = useRef<number | null>(null);
   const savedGlassRightRef = useRef<number | null>(null);
   const savedGlassWidthRef = useRef<number | null>(null);
   const [blankBoxOpen, setBlankBoxOpen] = useState(() => localStorage.getItem('blankBoxOpen') === '1');
-  const [blankBoxAnimating] = useState(false);
+  const [blankBoxAnimating, setBlankBoxAnimating] = useState(false);
+  const [hwMinimizeAnim, setHwMinimizeAnim] = useState<'idle' | 'minimizing' | 'restoring'>('idle');
+  const [blankMinimizeAnim, setBlankMinimizeAnim] = useState<'idle' | 'minimizing'>('idle');
   const hwWipeClipped = homeworkMinimized && !blankBoxOpen;
   const blankWipeClipped = !blankBoxOpen;
   const [isResizingHomework, setIsResizingHomework] = useState(false);
@@ -21364,6 +21366,13 @@ export default function Dashboard() {
             localStorage.removeItem('blankBoxOpen');
             localStorage.removeItem('homeworkMinimized');
             setHomeworkMinimized(false);
+            setHwMinimizeAnim('minimizing');
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                setHwMinimizeAnim('restoring');
+                setTimeout(() => setHwMinimizeAnim('idle'), 380);
+              });
+            });
           }}
           className="fixed cursor-pointer"
           style={{
@@ -34665,14 +34674,16 @@ export default function Dashboard() {
             boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)',
             border: 'none',
             clipPath: hwWipeClipped ? 'inset(0 0 0 100%)' : 'inset(0 0 0 0)',
-            transition: (homeworkAnimating || blankBoxAnimating) ? 'clip-path 0.35s cubic-bezier(0.4,0,0.2,1)' : 'none',
-            opacity: (isPillMenuOpen && !sidePillIdle) ? 0 : 1,
-            pointerEvents: (isPillMenuOpen && !sidePillIdle) ? 'none' : 'auto',
+            transform: hwMinimizeAnim === 'minimizing' ? 'scale(0.15) translateY(120vh)' : hwMinimizeAnim === 'restoring' ? 'scale(1) translateY(0)' : 'none',
+            opacity: hwMinimizeAnim === 'minimizing' ? 0 : (isPillMenuOpen && !sidePillIdle) ? 0 : 1,
+            transition: hwMinimizeAnim !== 'idle' ? 'transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
+            transformOrigin: 'bottom center',
+            pointerEvents: (isPillMenuOpen && !sidePillIdle) || hwMinimizeAnim === 'minimizing' ? 'none' : 'auto',
           }}
           data-testid="section-coming-up"
         >
           <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', border: '1.5px solid rgba(255,255,255,0.5)', pointerEvents: 'none', zIndex: 9999 }} />
-          {blankBoxOpen && <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', zIndex: 9998, pointerEvents: 'auto', display: 'flex', flexDirection: 'column' }}>
+          {(blankBoxOpen || blankMinimizeAnim === 'minimizing') && <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', zIndex: 9998, pointerEvents: blankMinimizeAnim === 'minimizing' ? 'none' : 'auto', display: 'flex', flexDirection: 'column', transform: blankMinimizeAnim === 'minimizing' ? 'scale(0.15) translateY(120vh)' : 'none', opacity: blankMinimizeAnim === 'minimizing' ? 0 : 1, transition: blankMinimizeAnim === 'minimizing' ? 'transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1)' : 'none', transformOrigin: 'bottom center' }}>
             <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', border: '1.5px solid rgba(255,255,255,0.5)', pointerEvents: 'none', zIndex: 9999 }} />
             <div style={{ padding: '0 8px', height: courseRowRects.length > 0 ? `${courseRowRects[0].top - (calendarBorderTop || (calendarTop + 15)) - 1}px` : '45px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 46, overflow: 'hidden', borderRadius: '12px 12px 0 0', boxShadow: '0 3px 6px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3)' }}>
               <div style={{ position: 'absolute', top: '21px', left: '25px', right: '8px', height: '0.5px', backgroundColor: 'rgba(255,255,255,0.3)', zIndex: 2 }} />
@@ -34691,10 +34702,15 @@ export default function Dashboard() {
             </div>
             <button
               onClick={() => {
-                setBlankBoxOpen(false);
-                localStorage.removeItem('blankBoxOpen');
-                localStorage.removeItem('homeworkMinimized');
-                setHomeworkMinimized(false);
+                if (blankMinimizeAnim !== 'idle') return;
+                setBlankMinimizeAnim('minimizing');
+                setTimeout(() => {
+                  setBlankBoxOpen(false);
+                  localStorage.removeItem('blankBoxOpen');
+                  localStorage.removeItem('homeworkMinimized');
+                  setHomeworkMinimized(false);
+                  setBlankMinimizeAnim('idle');
+                }, 350);
               }}
               className="absolute z-[9999] rounded-tr-[11px] rounded-bl-[4px] rounded-tl-[2px] rounded-br-[2px] flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors"
               style={{ top: '1px', right: '1px', width: '25px', height: '25px', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)' }}
@@ -34769,10 +34785,15 @@ export default function Dashboard() {
           {/* Minimize dock button — top-right, mirrors expansion dock style */}
           <button
             onClick={() => {
-              localStorage.setItem('homeworkMinimized', '1');
-              setHomeworkMinimized(true);
-              setBlankBoxOpen(true);
-              localStorage.setItem('blankBoxOpen', '1');
+              if (hwMinimizeAnim !== 'idle') return;
+              setHwMinimizeAnim('minimizing');
+              setTimeout(() => {
+                localStorage.setItem('homeworkMinimized', '1');
+                setHomeworkMinimized(true);
+                setBlankBoxOpen(true);
+                localStorage.setItem('blankBoxOpen', '1');
+                setHwMinimizeAnim('idle');
+              }, 350);
             }}
             className="absolute z-[70] rounded-tr-[11px] rounded-bl-[4px] rounded-tl-[2px] rounded-br-[2px] flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors"
             style={{ top: '1px', right: '1px', width: '25px', height: '25px', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', display: 'flex', opacity: (homeworkMinimized || blankBoxOpen) ? 0 : 1, pointerEvents: (homeworkMinimized || blankBoxOpen) ? 'none' : 'auto' }}
