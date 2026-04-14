@@ -20765,8 +20765,18 @@ export default function Dashboard() {
         const isDetailToday = isSameDayET(detailDate, new Date());
         const dayTasksRaw = allTasks.filter(t => {
           if (!t.dueDate) return false;
-          return isSameDayET(new Date(t.dueDate), detailDate);
+          if (isSameDayET(new Date(t.dueDate), detailDate)) return true;
+          if (t.startDate && t.prepDays && t.prepDays > 0) {
+            const taskStart = startOfDayET(new Date(t.startDate));
+            const taskDue = startOfDayET(new Date(t.dueDate));
+            const cellDate = startOfDayET(detailDate);
+            if (cellDate >= taskStart && cellDate < taskDue) return true;
+          }
+          return false;
         }).sort((a, b) => {
+          const aIsPrep = !isSameDayET(new Date(a.dueDate), detailDate);
+          const bIsPrep = !isSameDayET(new Date(b.dueDate), detailDate);
+          if (aIsPrep !== bIsPrep) return aIsPrep ? 1 : -1;
           const da = a.dueDate ? new Date(a.dueDate).getTime() : 0;
           const db = b.dueDate ? new Date(b.dueDate).getTime() : 0;
           return da - db;
