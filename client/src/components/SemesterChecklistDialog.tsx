@@ -18,6 +18,7 @@ interface SemesterChecklistDialogProps {
   items: ChecklistItem[];
   onItemsChange: (items: ChecklistItem[]) => void;
   semesterSettingsId?: number;
+  colorSettings?: { mainBackground: string; mainBackgroundGradientEnd: string; headerBar: string };
 }
 
 export const SemesterChecklistDialog = memo(function SemesterChecklistDialog({
@@ -26,6 +27,7 @@ export const SemesterChecklistDialog = memo(function SemesterChecklistDialog({
   items,
   onItemsChange,
   semesterSettingsId,
+  colorSettings = { mainBackground: '#1a1a2e', mainBackgroundGradientEnd: '#16213e', headerBar: '#1a1a2e' },
 }: SemesterChecklistDialogProps) {
   const { toast } = useToast();
   const [snoozeValue, setSnoozeValue] = useState(30);
@@ -84,12 +86,13 @@ export const SemesterChecklistDialog = memo(function SemesterChecklistDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md text-white" data-testid="semester-checklist-dialog">
-        <DialogHeader>
-          <DialogTitle className="text-white text-lg font-semibold">Hey Bryn, have you...</DialogTitle>
-          <DialogDescription className="text-white/60 text-sm">Complete these items to get your semester started right.</DialogDescription>
-        </DialogHeader>
-        <div className="flex flex-col gap-4 mt-2">
+      <DialogContent className="max-w-md text-white [&_*]:text-white p-0 [&>button.absolute]:hidden overflow-hidden" data-testid="semester-checklist-dialog" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
+        <div className="flex items-center gap-2 px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+          <Check className="text-white" style={{ width: '15px', height: '15px' }} />
+          <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>HEY BRYN, HAVE YOU...</h2>
+        </div>
+        <div className="px-4 py-1.5 text-white/60 text-xs">Complete these items to get your semester started right.</div>
+        <div className="flex flex-col gap-4 px-4 py-2">
           {Object.entries(grouped).map(([courseCode, courseItems]) => (
             <div key={courseCode} className="flex flex-col gap-1">
               <span className="text-xs font-bold text-white/80 uppercase tracking-wider">{courseCode}</span>
@@ -123,7 +126,7 @@ export const SemesterChecklistDialog = memo(function SemesterChecklistDialog({
             </div>
           ))}
         </div>
-        <DialogFooter className="mt-4 flex flex-col gap-3 sm:flex-col">
+        <DialogFooter className="flex flex-col gap-3 sm:flex-col px-4 py-3 border-t border-white/20">
           <div className="flex items-center gap-2 w-full" data-testid="checklist-snooze-section">
             <button
               className="px-4 py-2 text-sm font-medium bg-amber-600 hover:bg-amber-500 text-white rounded transition-colors whitespace-nowrap"

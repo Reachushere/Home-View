@@ -15711,51 +15711,45 @@ export default function Dashboard() {
 
       {/* Partner Away Popup - Kitchen Reading Prompt */}
       <Dialog open={showPartnerAwayPopup} onOpenChange={(open) => {
-        if (!open) handleDismissPartnerPopup(); // Any close action dismisses for 4 hours
+        if (!open) handleDismissPartnerPopup();
       }}>
-        <DialogContent className="max-w-[340px] p-4 text-white [&_*]:text-white">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-base text-white">
-              <Volume2 className="h-5 w-5 text-blue-400" />
-              Play Readings?
-            </DialogTitle>
-          </DialogHeader>
-          <div className="text-sm text-white/80 py-3">
+        <DialogContent className="max-w-[340px] text-white [&_*]:text-white p-0 [&>button.absolute]:hidden overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
+          <div className="flex items-center gap-2 px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+            <Volume2 className="text-white" style={{ width: '15px', height: '15px' }} />
+            <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>PLAY READINGS?</h2>
+          </div>
+          <div className="px-4 py-3 text-sm text-white/80">
             Your partner is at work. Would you like to play your readings on the Kitchen Echo?
           </div>
-          <DialogFooter className="flex gap-2 justify-end">
+          <div className="flex justify-end gap-2 px-4 py-3 border-t border-white/20">
             <Button
               variant="outline"
-              className="border-white/30 text-white hover:bg-white/10"
+              className="border-white/30 text-white hover:bg-white/10 text-xs h-8"
               onClick={handleDismissPartnerPopup}
               data-testid="button-dismiss-partner-popup"
             >
               No, not now
             </Button>
             <Button
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-blue-600 hover:bg-blue-700 text-white text-xs h-8"
               onClick={handleKitchenReadingTrigger}
               disabled={isKitchenReadingLoading}
               data-testid="button-play-kitchen-reading"
             >
               {isKitchenReadingLoading ? 'Starting...' : 'Yes, play readings'}
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 
       <Dialog open={showPreparedDialog} onOpenChange={(open) => { if (!open) acknowledgePreparedFiles(); }}>
-        <DialogContent className="max-w-[400px] p-5 text-white [&_*]:text-white" data-testid="dialog-prepared-files">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-base text-white">
-              <CheckCircle2 className="h-5 w-5 text-green-400" />
-              Files Uploaded & Player Ready
-            </DialogTitle>
-            <DialogDescription className="text-white/70 text-sm">
-              New files have been synced from OneDrive and prepared for the TTS player.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-2 py-3 max-h-[300px] overflow-y-auto">
+        <DialogContent className="max-w-[400px] text-white [&_*]:text-white p-0 [&>button.absolute]:hidden overflow-hidden" data-testid="dialog-prepared-files" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
+          <div className="flex items-center gap-2 px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+            <CheckCircle2 className="text-white" style={{ width: '15px', height: '15px' }} />
+            <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>FILES UPLOADED & PLAYER READY</h2>
+          </div>
+          <div className="px-4 py-1.5 text-white/70 text-xs">New files have been synced from OneDrive and prepared for the TTS player.</div>
+          <div className="space-y-2 px-4 py-2 max-h-[300px] overflow-y-auto">
             {preparedFilesDialog.map((file) => {
               const folderParts = file.folder.match(/week-(\d+)-(\w+)-(module|reading)/);
               const weekNum = folderParts ? folderParts[1] : '?';
@@ -15776,32 +15770,29 @@ export default function Dashboard() {
               );
             })}
           </div>
-          <DialogFooter>
+          <div className="flex justify-end px-4 py-3 border-t border-white/20">
             <Button
-              className="bg-green-600 hover:bg-green-700 text-white w-full"
+              className="bg-blue-600 hover:bg-blue-700 text-white text-xs h-8 w-full"
               onClick={acknowledgePreparedFiles}
               data-testid="button-acknowledge-prepared"
             >
               OK
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 
       {/* Readings Popup Dialog - OneDrive Files */}
       <Dialog open={!!readingsPopupCourse} onOpenChange={(open) => !open && setReadingsPopupCourse(null)}>
-        <DialogContent className="max-w-[420px] p-4 text-white [&_*]:text-white">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-base text-white">
-              <FolderOpen 
-                className={`h-4 w-4 ${readingsPopupCourse === 'cppa122' ? 'text-green-400 fill-green-200/50' : readingsPopupCourse === 'cfnf400' ? 'text-pink-400 fill-pink-200/50' : 'text-indigo-400 fill-indigo-200/50'}`} 
-                strokeWidth={1.5}
-              />
-              {readingsPopupCourse === 'cppa122' ? 'CPPA122 Local Politics and Government' : readingsPopupCourse === 'cfnf400' ? 'CFNF400 Human Sexuality' : 'CASL101 Sign Language'}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="text-xs text-white/60 mb-2">Week {selectedWeek} Readings</div>
-          <div className="flex flex-col gap-1 max-h-[250px] overflow-y-auto">
+        <DialogContent className="max-w-[420px] text-white [&_*]:text-white p-0 [&>button.absolute]:hidden overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
+          <div className="flex items-center gap-2 px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+            <FolderOpen className="text-white" style={{ width: '15px', height: '15px' }} strokeWidth={1.5} />
+            <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
+              {readingsPopupCourse === 'cppa122' ? 'CPPA122 LOCAL POLITICS AND GOVERNMENT' : readingsPopupCourse === 'cfnf400' ? 'CFNF400 HUMAN SEXUALITY' : 'CASL101 SIGN LANGUAGE'}
+            </h2>
+          </div>
+          <div className="text-xs text-white/60 px-4 pt-2 pb-1">Week {selectedWeek} Readings</div>
+          <div className="flex flex-col gap-1 max-h-[250px] overflow-y-auto px-4 pb-3">
             {oneDriveReadingFiles.map(file => {
               const fullName = file.name || '';
               let cleanName = fullName
@@ -15872,68 +15863,34 @@ export default function Dashboard() {
       
 
       <Dialog open={showConfirmSemesterDialog} onOpenChange={setShowConfirmSemesterDialog}>
-        <DialogContent className="max-w-md text-white" data-testid="confirm-semester-dialog">
-          <DialogHeader>
-            <DialogTitle className="text-white text-lg font-semibold flex items-center gap-2">
-              <GraduationCap className="h-5 w-5" />
-              Upcoming: {upcomingSemester?.label}
-            </DialogTitle>
-            <DialogDescription className="text-white/60 text-sm">
-              Please confirm or update the dates for your upcoming semester. These are the dates we have on file:
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex flex-col gap-3 mt-2">
+        <DialogContent className="max-w-md text-white [&_*]:text-white p-0 [&>button.absolute]:hidden overflow-hidden" data-testid="confirm-semester-dialog" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
+          <div className="flex items-center gap-2 px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+            <GraduationCap className="text-white" style={{ width: '15px', height: '15px' }} />
+            <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>UPCOMING: {upcomingSemester?.label?.toUpperCase()}</h2>
+          </div>
+          <div className="px-4 py-1.5 text-white/60 text-xs">Please confirm or update the dates for your upcoming semester.</div>
+          <div className="flex flex-col gap-3 px-4 py-2">
             <div className="flex flex-col gap-1">
               <label className="text-xs font-medium text-white/70">Semester Start Date</label>
-              <input
-                type="date"
-                className="bg-white/10 rounded px-3 py-1.5 text-sm text-white"
-                value={confirmSemesterForm.startDate}
-                onChange={(e) => { const v = e.target.value; startTransition(() => setConfirmSemesterForm(prev => ({ ...prev, startDate: v }))); }}
-                data-testid="input-confirm-start-date"
-              />
+              <input type="date" className="bg-white/10 rounded px-3 py-1.5 text-sm text-white" value={confirmSemesterForm.startDate} onChange={(e) => { const v = e.target.value; startTransition(() => setConfirmSemesterForm(prev => ({ ...prev, startDate: v }))); }} data-testid="input-confirm-start-date" />
             </div>
             <div className="flex flex-col gap-1">
               <label className="text-xs font-medium text-white/70">Semester End Date</label>
-              <input
-                type="date"
-                className="bg-white/10 rounded px-3 py-1.5 text-sm text-white"
-                value={confirmSemesterForm.endDate}
-                onChange={(e) => { const v = e.target.value; startTransition(() => setConfirmSemesterForm(prev => ({ ...prev, endDate: v }))); }}
-                data-testid="input-confirm-end-date"
-              />
+              <input type="date" className="bg-white/10 rounded px-3 py-1.5 text-sm text-white" value={confirmSemesterForm.endDate} onChange={(e) => { const v = e.target.value; startTransition(() => setConfirmSemesterForm(prev => ({ ...prev, endDate: v }))); }} data-testid="input-confirm-end-date" />
             </div>
             <div className="flex flex-col gap-1">
               <label className="text-xs font-medium text-white/70">Reading Week Start</label>
-              <input
-                type="date"
-                className="bg-white/10 rounded px-3 py-1.5 text-sm text-white"
-                value={confirmSemesterForm.breakStart}
-                onChange={(e) => { const v = e.target.value; startTransition(() => setConfirmSemesterForm(prev => ({ ...prev, breakStart: v }))); }}
-                data-testid="input-confirm-break-start"
-              />
+              <input type="date" className="bg-white/10 rounded px-3 py-1.5 text-sm text-white" value={confirmSemesterForm.breakStart} onChange={(e) => { const v = e.target.value; startTransition(() => setConfirmSemesterForm(prev => ({ ...prev, breakStart: v }))); }} data-testid="input-confirm-break-start" />
             </div>
             <div className="flex flex-col gap-1">
               <label className="text-xs font-medium text-white/70">Reading Week End</label>
-              <input
-                type="date"
-                className="bg-white/10 rounded px-3 py-1.5 text-sm text-white"
-                value={confirmSemesterForm.breakEnd}
-                onChange={(e) => { const v = e.target.value; startTransition(() => setConfirmSemesterForm(prev => ({ ...prev, breakEnd: v }))); }}
-                data-testid="input-confirm-break-end"
-              />
+              <input type="date" className="bg-white/10 rounded px-3 py-1.5 text-sm text-white" value={confirmSemesterForm.breakEnd} onChange={(e) => { const v = e.target.value; startTransition(() => setConfirmSemesterForm(prev => ({ ...prev, breakEnd: v }))); }} data-testid="input-confirm-break-end" />
             </div>
           </div>
-          <DialogFooter className="mt-4 flex gap-2">
+          <div className="flex justify-end gap-2 px-4 py-3 border-t border-white/20">
+            <button className="px-4 py-2 text-xs font-medium text-white/70 hover:text-white transition-colors" onClick={() => setShowConfirmSemesterDialog(false)} data-testid="button-dismiss-confirm-semester">Cancel</button>
             <button
-              className="px-4 py-2 text-sm font-medium text-white/70 hover:text-white transition-colors"
-              onClick={() => setShowConfirmSemesterDialog(false)}
-              data-testid="button-dismiss-confirm-semester"
-            >
-              Remind me later
-            </button>
-            <button
-              className="px-4 py-2 text-sm font-semibold bg-white/20 hover:bg-white/30 rounded transition-colors text-white"
+              className="px-4 py-2 text-xs font-semibold bg-blue-600 hover:bg-blue-700 rounded transition-colors text-white"
               onClick={() => {
                 if (upcomingSemester) {
                   const idx = FUTURE_SEMESTER_SCHEDULE.findIndex(s => s.label === upcomingSemester.label);
@@ -15951,25 +15908,24 @@ export default function Dashboard() {
               }}
               data-testid="button-confirm-semester-dates"
             >
-              Confirm dates
+              Confirm Dates
             </button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 
       <Dialog open={showPdfUploadDialog} onOpenChange={setShowPdfUploadDialog}>
-        <DialogContent className="sm:max-w-[480px]">
-          <DialogHeader>
-            <DialogTitle className="text-lg font-bold text-center">
-              📋 Update Course Offerings List
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-3 text-sm">
-            <p className="text-white">
+        <DialogContent className="sm:max-w-[480px] text-white [&_*]:text-white p-0 [&>button.absolute]:hidden overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
+          <div className="flex items-center gap-2 px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+            <Upload className="text-white" style={{ width: '15px', height: '15px' }} />
+            <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>UPDATE COURSE OFFERINGS LIST</h2>
+          </div>
+          <div className="space-y-3 text-sm px-4 py-3">
+            <p className="text-white text-xs">
               Hey Bryn, the new semester is starting soon! Time to upload the latest <strong>PAG Elective Course List Offerings PDF</strong> so your degree planner stays up to date.
             </p>
             <p className="text-white/60 text-xs">
-              You can get the latest PDF from the PAG program office or your advisor. Upload it here and I'll update the elective dropdowns in your degree tracker.
+              You can get the latest PDF from the PAG program office or your advisor.
             </p>
             <div className="border-2 border-dashed border-white/30 rounded-lg p-6 text-center bg-white/10 hover:bg-white/20 transition-colors cursor-pointer" onClick={() => {
               const input = document.createElement('input');
@@ -15989,22 +15945,21 @@ export default function Dashboard() {
               <p className="text-xs text-white/40 mt-1">PAG Registration Package (.pdf)</p>
             </div>
           </div>
-          <DialogFooter>
-            <button
-              className="px-4 py-2 text-sm bg-white/15 rounded-md hover:bg-white/25 text-white"
-              onClick={() => setShowPdfUploadDialog(false)}
-              data-testid="btn-dismiss-pdf-upload"
-            >
-              Remind Me Later
-            </button>
-          </DialogFooter>
+          <div className="flex justify-end px-4 py-3 border-t border-white/20">
+            <button className="px-4 py-2 text-xs bg-white/15 rounded-md hover:bg-white/25 text-white" onClick={() => setShowPdfUploadDialog(false)} data-testid="btn-dismiss-pdf-upload">Cancel</button>
+          </div>
         </DialogContent>
       </Dialog>
 
       {/* New Semester Setup Dialog */}
       <Dialog open={isNewSemesterDialogOpen} onOpenChange={setIsNewSemesterDialogOpen}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white">
-          <DialogHeader>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-hidden flex flex-col text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white p-0 [&>button.absolute]:hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
+          <div className="flex items-center gap-2 px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+            <GraduationCap className="text-white" style={{ width: '15px', height: '15px' }} />
+            <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>SET UP NEW SEMESTER</h2>
+          </div>
+          <div className="flex-1 overflow-y-auto px-4 py-3">
+          <DialogHeader className="hidden">
             <DialogTitle className="flex items-center gap-2 text-white">
               <GraduationCap className="h-5 w-5" />
               Set Up New Semester
@@ -16199,6 +16154,7 @@ export default function Dashboard() {
               )}
             </Button>
           </form>
+          </div>
         </DialogContent>
       </Dialog>
 
@@ -16631,80 +16587,50 @@ export default function Dashboard() {
 
       {/* Rename File Dialog */}
       <Dialog open={renameFileId !== null} onOpenChange={(open) => !open && setRenameFileId(null)}>
-        <DialogContent className="max-w-md text-white">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-sm">
-              <Pencil className="h-4 w-4" />
-              Rename File
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
+        <DialogContent className="max-w-md text-white [&_*]:text-white p-0 [&>button.absolute]:hidden overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
+          <div className="flex items-center gap-2 px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+            <Pencil className="text-white" style={{ width: '15px', height: '15px' }} />
+            <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>RENAME FILE</h2>
+          </div>
+          <div className="px-4 py-3">
             <Input
               value={renameFileName}
               onChange={(e) => { const v = e.target.value; startTransition(() => setRenameFileName(v)); }}
               placeholder="Enter new name..."
-              className="bg-[#3c3c3c] border-[#5c5c5c] text-white"
+              className="bg-white/10 border-white/20 text-white"
               data-testid="input-rename-file"
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && renameFileName.trim() && renameFileId) {
-                  fetch(`/api/files/${renameFileId}`, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ displayName: renameFileName.trim() })
-                  }).then(() => {
-                    queryClient.invalidateQueries({ queryKey: ['/api/files'] });
-                    setRenameFileId(null);
-                    toast({ title: "File renamed" });
-                  }).catch(() => {
-                    toast({ title: "Failed to rename file", variant: "destructive" });
-                  });
+                  fetch(`/api/files/${renameFileId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ displayName: renameFileName.trim() }) }).then(() => { queryClient.invalidateQueries({ queryKey: ['/api/files'] }); setRenameFileId(null); toast({ title: "File renamed" }); }).catch(() => { toast({ title: "Failed to rename file", variant: "destructive" }); });
                 }
               }}
             />
-            <div className="flex justify-end gap-2">
-              <Button
-                variant="ghost"
-                onClick={() => setRenameFileId(null)}
-                className="text-white/70 hover:text-white hover:bg-white/10"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={() => {
-                  if (renameFileName.trim() && renameFileId) {
-                    fetch(`/api/files/${renameFileId}`, {
-                      method: 'PATCH',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ displayName: renameFileName.trim() })
-                    }).then(() => {
-                      queryClient.invalidateQueries({ queryKey: ['/api/files'] });
-                      setRenameFileId(null);
-                      toast({ title: "File renamed" });
-                    }).catch(() => {
-                      toast({ title: "Failed to rename file", variant: "destructive" });
-                    });
-                  }
-                }}
-                className="bg-blue-600 hover:bg-blue-500"
-                data-testid="button-confirm-rename"
-              >
-                Rename
-              </Button>
-            </div>
+          </div>
+          <div className="flex justify-end gap-2 px-4 py-3 border-t border-white/20">
+            <button className="px-4 py-2 text-xs font-medium text-white/70 hover:text-white transition-colors" onClick={() => setRenameFileId(null)}>Cancel</button>
+            <Button
+              onClick={() => {
+                if (renameFileName.trim() && renameFileId) {
+                  fetch(`/api/files/${renameFileId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ displayName: renameFileName.trim() }) }).then(() => { queryClient.invalidateQueries({ queryKey: ['/api/files'] }); setRenameFileId(null); toast({ title: "File renamed" }); }).catch(() => { toast({ title: "Failed to rename file", variant: "destructive" }); });
+                }
+              }}
+              className="bg-blue-600 hover:bg-blue-700 text-white text-xs h-8"
+              data-testid="button-confirm-rename"
+            >
+              Rename
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
 
       {/* Move File Dialog */}
       <Dialog open={moveFileId !== null} onOpenChange={(open) => !open && setMoveFileId(null)}>
-        <DialogContent className="max-w-md text-white">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-sm">
-              <Folder className="h-4 w-4" />
-              Move File to Folder
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-2 py-4 max-h-[400px] overflow-y-auto">
+        <DialogContent className="max-w-md text-white [&_*]:text-white p-0 [&>button.absolute]:hidden overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
+          <div className="flex items-center gap-2 px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+            <Folder className="text-white" style={{ width: '15px', height: '15px' }} />
+            <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>MOVE FILE TO FOLDER</h2>
+          </div>
+          <div className="space-y-1 px-4 py-3 max-h-[400px] overflow-y-auto">
             {(() => {
               const folders = allFiles
                 .map(f => f.folder)
@@ -16726,11 +16652,7 @@ export default function Dashboard() {
                     onClick={async () => {
                       if (moveFileId) {
                         try {
-                          await fetch(`/api/files/${moveFileId}`, {
-                            method: 'PATCH',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ folder })
-                          });
+                          await fetch(`/api/files/${moveFileId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ folder }) });
                           queryClient.invalidateQueries({ queryKey: ['/api/files'] });
                           setMoveFileId(null);
                           toast({ title: "File moved successfully" });
@@ -16747,14 +16669,8 @@ export default function Dashboard() {
               });
             })()}
           </div>
-          <div className="flex justify-end">
-            <Button
-              variant="ghost"
-              onClick={() => setMoveFileId(null)}
-              className="text-white/70 hover:text-white hover:bg-white/10"
-            >
-              Cancel
-            </Button>
+          <div className="flex justify-end px-4 py-3 border-t border-white/20">
+            <button className="px-4 py-2 text-xs font-medium text-white/70 hover:text-white transition-colors" onClick={() => setMoveFileId(null)}>Cancel</button>
           </div>
         </DialogContent>
       </Dialog>
@@ -16882,44 +16798,32 @@ export default function Dashboard() {
 
       {/* New Folder Dialog */}
       <Dialog open={newFolderDialogOpen} onOpenChange={setNewFolderDialogOpen}>
-        <DialogContent className="text-white [&>button]:text-white">
-          <DialogHeader>
-            <DialogTitle>Create New Folder</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-2">
-            <p className="text-sm text-white/60">
+        <DialogContent className="text-white [&_*]:text-white p-0 [&>button.absolute]:hidden overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
+          <div className="flex items-center gap-2 px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+            <FolderPlus className="text-white" style={{ width: '15px', height: '15px' }} />
+            <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>CREATE NEW FOLDER</h2>
+          </div>
+          <div className="px-4 py-3 space-y-3">
+            <p className="text-xs text-white/60">
               Creating folder in: <span className="text-white/90 font-medium">{newFolderParent}</span>
             </p>
             <div>
-              <Label htmlFor="folderName" className="text-white/80">Folder Name</Label>
+              <Label htmlFor="folderName" className="text-white/80 text-xs">Folder Name</Label>
               <Input
                 id="folderName"
                 value={newFolderName}
                 onChange={(e) => { const v = e.target.value; startTransition(() => setNewFolderName(v)); }}
                 placeholder="Enter folder name"
-                className="bg-[#2a2d2e] text-white mt-1"
+                className="bg-white/10 border-white/20 text-white mt-1"
                 onKeyDown={(e) => e.key === 'Enter' && handleCreateFolder()}
                 autoFocus
                 data-testid="input-new-folder-name"
               />
             </div>
           </div>
-          <div className="flex justify-end gap-2">
-            <Button
-              variant="ghost"
-              onClick={() => setNewFolderDialogOpen(false)}
-              className="text-white/70 hover:text-white hover:bg-white/10"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleCreateFolder}
-              disabled={!newFolderName.trim()}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-              data-testid="button-create-folder"
-            >
-              Create
-            </Button>
+          <div className="flex justify-end gap-2 px-4 py-3 border-t border-white/20">
+            <button className="px-4 py-2 text-xs font-medium text-white/70 hover:text-white transition-colors" onClick={() => setNewFolderDialogOpen(false)}>Cancel</button>
+            <Button onClick={handleCreateFolder} disabled={!newFolderName.trim()} className="bg-blue-600 hover:bg-blue-700 text-white text-xs h-8" data-testid="button-create-folder">Create</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -19797,13 +19701,11 @@ export default function Dashboard() {
       )}
 
       <Dialog open={icsImportOpen} onOpenChange={(open) => { if (!open) { setIcsImportOpen(false); setIcsImportEvents([]); } }}>
-        <DialogContent className="max-w-[640px] max-h-[85vh] bg-gradient-to-br from-gray-900/98 via-black/95 to-gray-800/98 text-white p-0 overflow-hidden" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
-          <DialogHeader className="px-5 py-3 border-b border-white/15" style={{ background: 'rgba(139, 92, 246, 0.15)' }}>
-            <DialogTitle className="text-sm font-normal text-white flex items-center gap-2">
-              <Upload className="h-4 w-4 text-violet-400" />
-              Import ICS Events ({icsImportEvents.filter(e => e.selected).length} of {icsImportEvents.length} selected)
-            </DialogTitle>
-          </DialogHeader>
+        <DialogContent className="max-w-[640px] max-h-[85vh] text-white [&_*]:text-white p-0 [&>button.absolute]:hidden overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
+          <div className="flex items-center gap-2 px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+            <Upload className="text-white" style={{ width: '15px', height: '15px' }} />
+            <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>IMPORT ICS EVENTS ({icsImportEvents.filter(e => e.selected).length} OF {icsImportEvents.length} SELECTED)</h2>
+          </div>
           <div className="overflow-y-auto px-4 py-3 flex-1" style={{ maxHeight: 'calc(85vh - 140px)', scrollbarWidth: 'thin' }}>
             <div className="flex items-center justify-between mb-3">
               <button
@@ -29342,11 +29244,12 @@ export default function Dashboard() {
           
           {/* Calendar Settings Dialog */}
           <Dialog open={isCalendarSettingsOpen} onOpenChange={setIsCalendarSettingsOpen}>
-            <DialogContent className={`${shiftScheduleOpen ? 'max-w-2xl' : 'max-w-md'} text-white [&_*]:text-white [&_p]:!text-white [&_span]:!text-white [&_div]:!text-white [&_label]:!text-white [&_h1]:!text-white [&_h2]:!text-white [&_h3]:!text-white [&_h4]:!text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white transition-opacity duration-300`} style={{ paddingTop: '30px', paddingBottom: '30px', maxHeight: '85vh', overflowY: 'auto' }}>
-              <DialogHeader>
-                <DialogTitle className="text-white">Calendar Settings</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
+            <DialogContent className={`${shiftScheduleOpen ? 'max-w-2xl' : 'max-w-md'} text-white [&_*]:text-white [&_p]:!text-white [&_span]:!text-white [&_div]:!text-white [&_label]:!text-white [&_h1]:!text-white [&_h2]:!text-white [&_h3]:!text-white [&_h4]:!text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white transition-opacity duration-300 p-0 [&>button.absolute]:hidden overflow-hidden flex flex-col`} style={{ maxHeight: '85vh', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
+              <div className="flex items-center gap-2 px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+                <Settings className="text-white" style={{ width: '15px', height: '15px' }} />
+                <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>CALENDAR SETTINGS</h2>
+              </div>
+              <div className="space-y-4 flex-1 overflow-y-auto px-4 py-3">
                 {/* Second Google Account Connection */}
                 <div className="border rounded-lg p-3 space-y-2">
                   <Label className="text-[10px] font-medium">Second Google Account</Label>
@@ -29893,13 +29796,14 @@ export default function Dashboard() {
           
           {/* Module Media Controls Dialog */}
           <Dialog open={moduleMediaControlCourse !== null} onOpenChange={(open) => !open && setModuleMediaControlCourse(null)}>
-            <DialogContent className="max-w-[320px] p-4 text-white [&_*]:text-white">
-              <DialogHeader>
-                <DialogTitle className="text-sm font-medium">
-                  {moduleMediaControlCourse === 'cppa122' ? 'CPPA122' : moduleMediaControlCourse === 'cfnf400' ? 'CFNF400' : 'CASL101'} Module Media
-                </DialogTitle>
-              </DialogHeader>
-              <div className="flex flex-col gap-3 mt-2">
+            <DialogContent className="max-w-[320px] text-white [&_*]:text-white p-0 [&>button.absolute]:hidden overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
+              <div className="flex items-center gap-2 px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+                <Play className="text-white" style={{ width: '15px', height: '15px' }} />
+                <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
+                  {moduleMediaControlCourse === 'cppa122' ? 'CPPA122' : moduleMediaControlCourse === 'cfnf400' ? 'CFNF400' : 'CASL101'} MODULE MEDIA
+                </h2>
+              </div>
+              <div className="flex flex-col gap-3 px-4 py-3">
                 <div className="flex items-center justify-between bg-white/10 rounded-lg p-3">
                   <span className="text-xs">Week {selectedWeek} Module</span>
                   <div className="flex items-center gap-2">
@@ -38946,12 +38850,13 @@ export default function Dashboard() {
 
         {/* Similar Tasks Dialog */}
         <Dialog open={similarTasksOpen} onOpenChange={(open) => { if (!open) { setSimilarTasksOpen(false); setSimilarDeleting(false); } }}>
-          <DialogContent className="max-w-md text-white" style={{ maxHeight: '70vh', display: 'flex', flexDirection: 'column' }}>
-            <DialogHeader>
-              <DialogTitle className="text-white text-sm">Similar Tasks ({similarTasks.length})</DialogTitle>
-            </DialogHeader>
-            <p className="text-white/60 text-[10px]">Uncheck any tasks you want to keep, then press Delete Selected.</p>
-            <div style={{ flex: 1, overflowY: 'auto', maxHeight: '45vh' }} className="space-y-1 pr-1">
+          <DialogContent className="max-w-md text-white [&_*]:text-white p-0 [&>button.absolute]:hidden overflow-hidden" style={{ maxHeight: '70vh', display: 'flex', flexDirection: 'column', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
+            <div className="flex items-center gap-2 px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+              <AlertTriangle className="text-white" style={{ width: '15px', height: '15px' }} />
+              <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>SIMILAR TASKS ({similarTasks.length})</h2>
+            </div>
+            <p className="text-white/60 text-[10px] px-4 pt-2">Uncheck any tasks you want to keep, then press Delete Selected.</p>
+            <div style={{ flex: 1, overflowY: 'auto', maxHeight: '45vh' }} className="space-y-1 px-4 py-2">
               {similarTasks.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()).map((t) => (
                 <label key={t.id} className="flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer hover:bg-white/5 transition-colors" data-testid={`similar-task-${t.id}`}>
                   <input
@@ -38979,7 +38884,7 @@ export default function Dashboard() {
                 </label>
               ))}
             </div>
-            <div className="flex gap-2 pt-2 border-t border-white/10">
+            <div className="flex gap-2 px-4 py-3 border-t border-white/20">
               <button
                 className="flex-1 inline-flex items-center justify-center rounded-md px-3 py-2 text-white/60 text-xs hover:text-white/80 transition-colors"
                 onClick={() => {
@@ -39028,14 +38933,15 @@ export default function Dashboard() {
 
         {/* Recurring Edit Confirmation Dialog */}
         <Dialog open={!!recurringEditPending} onOpenChange={(open) => !open && setRecurringEditPending(null)}>
-          <DialogContent className="max-w-sm text-white">
-            <DialogHeader>
-              <DialogTitle className="text-white text-sm">Edit Recurring Task</DialogTitle>
-            </DialogHeader>
-            <p className="text-white/80 text-xs">
+          <DialogContent className="max-w-sm text-white [&_*]:text-white p-0 [&>button.absolute]:hidden overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
+            <div className="flex items-center gap-2 px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+              <Pencil className="text-white" style={{ width: '15px', height: '15px' }} />
+              <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>EDIT RECURRING TASK</h2>
+            </div>
+            <p className="text-white/80 text-xs px-4 pt-3">
               "{recurringEditPending?.title}" is a recurring task. Apply changes to:
             </p>
-            <div className="flex flex-col gap-2 pt-2">
+            <div className="flex flex-col gap-2 px-4 py-3">
               <button
                 className="inline-flex items-center justify-center rounded-md px-4 py-2 text-white transition-opacity duration-200 text-xs"
                 style={{
@@ -39113,10 +39019,12 @@ export default function Dashboard() {
 
         {/* Reschedule Dialog */}
         <Dialog open={!!rescheduleTask} onOpenChange={(open) => !open && setRescheduleTask(null)}>
-          <DialogContent className="max-w-[95vw] sm:max-w-md max-h-[90vh] overflow-y-auto text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white">
-            <DialogHeader>
-              <DialogTitle className="text-white">Reschedule Task</DialogTitle>
-            </DialogHeader>
+          <DialogContent className="max-w-[95vw] sm:max-w-md max-h-[90vh] overflow-y-auto text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white p-0 [&>button.absolute]:hidden overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
+            <div className="flex items-center gap-2 px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+              <Calendar className="text-white" style={{ width: '15px', height: '15px' }} />
+              <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>RESCHEDULE TASK</h2>
+            </div>
+            <div className="px-4 py-3">
             {rescheduleTask && (
               <RescheduleForm 
                 task={rescheduleTask}
@@ -39124,6 +39032,7 @@ export default function Dashboard() {
                 onUndoPush={(action) => pushUndo(action as UndoAction)}
               />
             )}
+            </div>
           </DialogContent>
         </Dialog>
 
@@ -39537,18 +39446,20 @@ export default function Dashboard() {
 
 
         <Dialog open={isCourseListUploadOpen} onOpenChange={setIsCourseListUploadOpen}>
-          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto" data-testid="dialog-course-list-changes">
-            <DialogHeader>
-              <DialogTitle className="text-base">Course List Changes</DialogTitle>
-            </DialogHeader>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col text-white [&_*]:text-white p-0 [&>button.absolute]:hidden" data-testid="dialog-course-list-changes" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
+            <div className="flex items-center gap-2 px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+              <FileText className="text-white" style={{ width: '15px', height: '15px' }} />
+              <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>COURSE LIST CHANGES</h2>
+            </div>
+            <div className="flex-1 overflow-y-auto px-4 py-3">
             {courseListChanges.length === 0 && !courseListUploadCourse ? (
               <div className="space-y-3">
-                <p className="text-sm text-gray-600">Select which course this list belongs to:</p>
+                <p className="text-sm text-white/70">Select which course this list belongs to:</p>
                 <div className="grid gap-2">
                   {coursesData.courses.filter(c => c.name.trim()).map((course, idx) => (
                     <button
                       key={idx}
-                      className="text-left px-3 py-2 border rounded hover:bg-gray-50 text-sm"
+                      className="text-left px-3 py-2 border border-white/20 rounded hover:bg-white/10 text-sm"
                       data-testid={`button-select-course-${idx}`}
                       onClick={() => {
                         if (courseListPendingFile) {
@@ -39565,11 +39476,11 @@ export default function Dashboard() {
               </div>
             ) : courseListChanges.length === 0 ? (
               <div className="py-8 text-center">
-                <p className="text-sm text-gray-500">No changes detected between the uploaded list and existing tasks.</p>
+                <p className="text-sm text-white/50">No changes detected between the uploaded list and existing tasks.</p>
               </div>
             ) : (
               <div className="space-y-3">
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-white/50">
                   {courseListUploadCourse} — {courseListChanges.length} change{courseListChanges.length !== 1 ? 's' : ''} detected
                 </p>
                 <div className="flex gap-2 mb-2">
@@ -39581,7 +39492,7 @@ export default function Dashboard() {
                     Accept All
                   </button>
                   <button
-                    className="text-[10px] text-gray-500 hover:underline"
+                    className="text-[10px] text-white/50 hover:underline"
                     onClick={() => setCourseListChanges(prev => prev.map(c => ({ ...c, accepted: false })))}
                     data-testid="button-decline-all-changes"
                   >
@@ -39602,8 +39513,8 @@ export default function Dashboard() {
                       {items.map(change => (
                         <label
                           key={change.id}
-                          className="flex items-start gap-2 px-2 py-1.5 rounded border cursor-pointer hover:bg-gray-50"
-                          style={{ borderColor: change.accepted ? color : '#e5e7eb', opacity: change.accepted ? 1 : 0.5 }}
+                          className="flex items-start gap-2 px-2 py-1.5 rounded border cursor-pointer hover:bg-white/10"
+                          style={{ borderColor: change.accepted ? color : 'rgba(255,255,255,0.2)', opacity: change.accepted ? 1 : 0.5 }}
                           data-testid={`change-item-${change.id}`}
                         >
                           <input
@@ -39618,7 +39529,7 @@ export default function Dashboard() {
                             {Object.entries(change.details).length > 0 && (
                               <div className="mt-0.5 space-y-0.5">
                                 {Object.entries(change.details).map(([field, diff]) => (
-                                  <p key={field} className="text-[10px] text-gray-500">
+                                  <p key={field} className="text-[10px] text-white/50">
                                     {field}: <span className="line-through text-red-400">{(diff as { old: string; new: string }).old || '(empty)'}</span> → <span className="text-green-600">{(diff as { old: string; new: string }).new}</span>
                                   </p>
                                 ))}
@@ -39650,6 +39561,7 @@ export default function Dashboard() {
                 </div>
               </div>
             )}
+            </div>
           </DialogContent>
         </Dialog>
 
