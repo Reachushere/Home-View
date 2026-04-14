@@ -27002,6 +27002,22 @@ export default function Dashboard() {
                   return courses.length > 0 ? courses : (semesterCourseAssignments[semKey] || []);
                 };
                 const expandedSem = { ...semMeta, courses: buildCoursesLocal(expandedSemKey) };
+                const currentSemKey = (() => {
+                  const now = new Date();
+                  if (now >= new Date('2025-05-05') && now <= new Date('2025-08-08')) return 'ss2025';
+                  if (now >= new Date('2025-09-08') && now <= new Date('2025-12-12')) return 'f2025';
+                  if (now >= new Date('2026-01-12') && now <= new Date('2026-04-17')) return 'w2026';
+                  if (now >= new Date('2026-05-04') && now <= new Date('2026-08-07')) return 'ss2026';
+                  if (now >= new Date('2026-09-14') && now <= new Date('2026-12-11')) return 'f2026';
+                  if (now >= new Date('2027-01-11') && now <= new Date('2027-04-16')) return 'w2027';
+                  if (now >= new Date('2027-05-03') && now <= new Date('2027-08-06')) return 'ss2027';
+                  if (now >= new Date('2027-09-13') && now <= new Date('2027-12-17')) return 'f2027';
+                  if (now >= new Date('2028-01-10') && now <= new Date('2028-04-14')) return 'w2028';
+                  if (now >= new Date('2028-05-01') && now <= new Date('2028-08-04')) return 'ss2028';
+                  if (now >= new Date('2028-09-11') && now <= new Date('2028-12-15')) return 'f2028';
+                  if (now >= new Date('2029-01-15') && now <= new Date('2029-04-13')) return 'w2029';
+                  return 'w2026';
+                })();
                 const expIsCurrentSem = expandedSemKey === currentSemKey;
                 const expIsPast = !expIsCurrentSem && hasSemStarted(expandedSemKey) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(expandedSemKey); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })();
                 const expIsEnded = semesterEndConfirmed[expandedSemKey];
@@ -27038,7 +27054,7 @@ export default function Dashboard() {
 
                 const healthLevel = getHealthLevel(expHealth);
 
-                return (
+                return createPortal(
                   <div className="fixed inset-0 z-[10005] flex items-center justify-center" onClick={() => setExpandedSemKey(null)} data-testid="expanded-sem-overlay">
                     <div className="fixed inset-0 bg-black/60" />
                     <div
@@ -27201,7 +27217,7 @@ export default function Dashboard() {
                       </div>
                     </div>
                   </div>
-                );
+                , document.body);
               })()}
 
               <div className="flex items-center justify-end px-4 py-[10px] border-t border-white/40 shrink-0 rounded-b-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, ${colorSettings.headerBar}bb 0%, ${colorSettings.headerBar}cc 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15), 0 -2px 8px rgba(0,0,0,0.08)' }}>
