@@ -1337,19 +1337,21 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
       const results: { page: number; matches: number }[] = [];
       const tokens = searchQuery.toLowerCase().trim().split(/\s+/).filter(t => t.length >= 2);
       if (tokens.length === 0) { setSearchResults([]); setSearching(false); return; }
+      const escapedTokens = tokens.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+      const pattern = new RegExp(`(${escapedTokens.join('|')})`, 'gi');
       for (let i = 1; i <= pdfDoc.numPages; i++) {
         const page = await pdfDoc.getPage(i);
         const textContent = await page.getTextContent();
-        const fullText = textContent.items.map((item: any) => {
+        const spans = textContent.items.map((item: any) => {
           let s = item.str || '';
           if (item.hasEOL) s += ' ';
           return s;
-        }).join('');
-        const normalized = fullText.replace(/\s+/g, ' ').toLowerCase();
+        });
         let count = 0;
-        for (const tok of tokens) {
-          let pos = 0;
-          while ((pos = normalized.indexOf(tok, pos)) !== -1) { count++; pos += tok.length; }
+        for (const spanText of spans) {
+          if (!spanText.trim()) continue;
+          const matches = spanText.match(pattern);
+          if (matches) count += matches.length;
         }
         if (count > 0) results.push({ page: i, matches: count });
       }
@@ -1443,21 +1445,24 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
     const runSearch = async () => {
       setSearching(true);
       try {
-        const tokens = initialSearchQuery.toLowerCase().trim().split(/\s+/).filter(Boolean);
+        const tokens = initialSearchQuery.toLowerCase().trim().split(/\s+/).filter(t => t.length >= 2);
+        if (tokens.length === 0) { setSearching(false); return; }
+        const escapedTokens = tokens.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+        const pattern = new RegExp(`(${escapedTokens.join('|')})`, 'gi');
         const results: { page: number; matches: number }[] = [];
         for (let i = 1; i <= pdfDoc.numPages; i++) {
           const page = await pdfDoc.getPage(i);
           const textContent = await page.getTextContent();
-          const fullText = textContent.items.map((item: any) => {
+          const spans = textContent.items.map((item: any) => {
             let s = item.str || '';
             if (item.hasEOL) s += ' ';
             return s;
-          }).join('');
-          const normalized = fullText.replace(/\s+/g, ' ').toLowerCase();
+          });
           let count = 0;
-          for (const tok of tokens) {
-            let pos = 0;
-            while ((pos = normalized.indexOf(tok, pos)) !== -1) { count++; pos += tok.length; }
+          for (const spanText of spans) {
+            if (!spanText.trim()) continue;
+            const matches = spanText.match(pattern);
+            if (matches) count += matches.length;
           }
           if (count > 0) results.push({ page: i, matches: count });
         }
