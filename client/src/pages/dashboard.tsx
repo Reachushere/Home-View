@@ -29562,7 +29562,7 @@ export default function Dashboard() {
           <div
             className="fixed"
             data-tpo data-tpo-opacity="1"
-            style={{ bottom: `${calendarBottom - 16}px`, left: `${calendarLeft + 9}px`, height: '14px', zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'center' }}
+            style={{ bottom: `${calendarBottom - 13}px`, left: `${calendarLeft + 9}px`, height: '14px', zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'center' }}
             data-testid="controls-tab"
           >
             <div style={{ height: '14px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)', padding: '0 2px', gap: '0px' }}>
@@ -33937,7 +33937,7 @@ export default function Dashboard() {
           <div
             className="fixed"
             data-tpo data-tpo-opacity="1"
-            style={{ bottom: `${calendarBottom - 16}px`, left: `${calendarLeft + 9}px`, height: '14px', zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'center' }}
+            style={{ bottom: `${calendarBottom - 13}px`, left: `${calendarLeft + 9}px`, height: '14px', zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'center' }}
             data-testid="controls-tab-month"
           >
             <div style={{ height: '14px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)', padding: '0 2px', gap: '0px' }}>
@@ -34554,16 +34554,12 @@ export default function Dashboard() {
             zIndex: 35,
             overflow: homeworkAnimating || blankBoxAnimating || homeworkMinimized || blankBoxOpen ? 'hidden' : 'visible',
             right: (() => {
-              const effectiveReduction = (homeworkMinimized || blankBoxOpen) && !homeworkAnimating && !blankBoxAnimating
-                ? (savedCalendarReductionRef.current ?? (parseFloat(localStorage.getItem('savedCalendarReduction') || '0') || calendarReduction))
-                : calendarReduction;
-              return `${calendarRight - effectiveReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1 + 3}px`;
+              const stableReduction = calendarReduction > 0 ? calendarReduction : (savedCalendarReductionRef.current ?? (parseFloat(localStorage.getItem('savedCalendarReduction') || '0') || 260));
+              return `${calendarRight - stableReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1 + 3}px`;
             })(),
             width: (() => {
-              const effectiveReduction = (homeworkMinimized || blankBoxOpen) && !homeworkAnimating && !blankBoxAnimating
-                ? (savedCalendarReductionRef.current ?? (parseFloat(localStorage.getItem('savedCalendarReduction') || '0') || calendarReduction))
-                : calendarReduction;
-              return `${Math.max(0, effectiveReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4 - 1 - 1 + 1 - 5 - 2 - 1 - 3 + 2)}px`;
+              const stableReduction = calendarReduction > 0 ? calendarReduction : (savedCalendarReductionRef.current ?? (parseFloat(localStorage.getItem('savedCalendarReduction') || '0') || 260));
+              return `${Math.max(0, stableReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4 - 1 - 1 + 1 - 5 - 2 - 1 - 3 + 2)}px`;
             })(),
             top: `${(calendarBorderTop || (calendarTop + 15))}px`,
             height: `${window.innerHeight - (calendarBorderTop || (calendarTop + 15)) - calendarBottom}px`,
@@ -34572,7 +34568,7 @@ export default function Dashboard() {
             WebkitBackdropFilter: 'blur(40px)',
             boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)',
             border: 'none',
-            transition: (homeworkAnimating || blankBoxAnimating) ? 'right 0.35s cubic-bezier(0.4,0,0.2,1), width 0.35s cubic-bezier(0.4,0,0.2,1)' : 'none',
+            transition: 'none',
             opacity: (isPillMenuOpen && !sidePillIdle) ? 0 : 1,
             pointerEvents: (isPillMenuOpen && !sidePillIdle) ? 'none' : 'auto',
           }}
