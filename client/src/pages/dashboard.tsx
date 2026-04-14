@@ -2262,9 +2262,9 @@ export default function Dashboard() {
   const savedCalendarReductionRef = useRef<number | null>(null);
   const savedGlassRightRef = useRef<number | null>(null);
   const savedGlassWidthRef = useRef<number | null>(null);
-  const hwWipeClipped = homeworkMinimized && !blankBoxOpen;
   const [blankBoxOpen, setBlankBoxOpen] = useState(() => localStorage.getItem('blankBoxOpen') === '1');
   const [blankBoxAnimating] = useState(false);
+  const hwWipeClipped = homeworkMinimized && !blankBoxOpen;
   const blankWipeClipped = !blankBoxOpen;
   const [isResizingHomework, setIsResizingHomework] = useState(false);
   const resizingHomeworkRef = useRef<{ startX: number; startReduction: number } | null>(null);
