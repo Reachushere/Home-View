@@ -29582,7 +29582,7 @@ export default function Dashboard() {
           <div
             className="fixed"
             data-tpo data-tpo-opacity="1"
-            style={{ bottom: `${calendarBottom - 16}px`, left: `${calendarLeft + 9}px`, height: '14px', zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'center' }}
+            style={{ bottom: `${calendarBottom - 20}px`, left: `${calendarLeft + 9}px`, height: '14px', zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'center' }}
             data-testid="controls-tab"
           >
             <div style={{ height: '14px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)', padding: '0 2px', gap: '0px' }}>
@@ -33961,7 +33961,7 @@ export default function Dashboard() {
           <div
             className="fixed"
             data-tpo data-tpo-opacity="1"
-            style={{ bottom: `${calendarBottom - 16}px`, left: `${calendarLeft + 9}px`, height: '14px', zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'center' }}
+            style={{ bottom: `${calendarBottom - 20}px`, left: `${calendarLeft + 9}px`, height: '14px', zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'center' }}
             data-testid="controls-tab-month"
           >
             <div style={{ height: '14px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)', padding: '0 2px', gap: '0px' }}>
