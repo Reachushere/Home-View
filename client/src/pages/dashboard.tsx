@@ -29633,8 +29633,8 @@ export default function Dashboard() {
           </div>
           
           <div className="grid w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), height: '16px', marginTop: '-3px', paddingRight: calScrollbarW > 0 ? `${calScrollbarW}px` : undefined, gap: 0 }}>
-              <div style={{ minWidth: 0, backgroundColor: colorSettings.headerBar }} />
-              {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: colorSettings.headerBar }} />}
+              <div style={{ minWidth: 0 }} />
+              {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0 }} />}
               {weekDays.map((day, idx) => {
                 if (!weatherData?.daily) return <div key={idx} style={{ minWidth: 0, backgroundColor: colorSettings.headerBar }} />;
                 const dateStr = format(day, 'yyyy-MM-dd');
