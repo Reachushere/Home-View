@@ -34634,7 +34634,7 @@ export default function Dashboard() {
           {/* Joint Resize Handle — controls both calendar+homework width and calendar height */}
           {!hwFloating.detached && <div
             className="absolute z-[60]"
-            style={{ left: '-17px', top: '50%', transform: 'translateY(-50%)', width: '17px', height: '181px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: (homeworkMinimized || homeworkAnimating || blankBoxOpen) ? 'none' : 'auto', opacity: (homeworkMinimized || homeworkAnimating || blankBoxOpen) ? 0 : 1, transition: 'opacity 0.25s ease' }}
+            style={{ left: '-17px', top: '50%', transform: 'translateY(-50%)', width: '17px', height: '181px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: ((homeworkMinimized && !blankBoxOpen) || homeworkAnimating || blankBoxAnimating) ? 'none' : 'auto', opacity: ((homeworkMinimized && !blankBoxOpen) || homeworkAnimating || blankBoxAnimating) ? 0 : 1, transition: 'opacity 0.25s ease' }}
             data-testid="resize-handle-homework"
           >
             <div className="grab-tab-press" style={{ width: '17px', height: '181px', borderRadius: '0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderRight: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', backdropFilter: 'blur(8px)', transition: 'filter 0.1s ease' }}>
@@ -36529,7 +36529,7 @@ export default function Dashboard() {
             className="fixed cursor-pointer hover:opacity-80 transition-opacity"
             style={{
               right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1 + 3 + 6 - 22}px`,
-              bottom: `${calendarBottom - 16}px`,
+              bottom: `${calendarBottom - 13}px`,
               zIndex: 10000,
               background: 'none',
               border: 'none',
