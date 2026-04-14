@@ -3786,6 +3786,40 @@ export default function Dashboard() {
   }, []);
   const [schoolCoursesOpenSource, setSchoolCoursesOpenSource] = useState<'pill' | 'degree'>('degree');
   const [semSettingsDialogKey, setSemSettingsDialogKey] = useState<string | null>(null);
+  const [expandedSemKey, setExpandedSemKey] = useState<string | null>(null);
+  const [expandedSemHealth, setExpandedSemHealth] = useState<any>(null);
+  const [expandedSemHealthLoading, setExpandedSemHealthLoading] = useState(false);
+  useEffect(() => {
+    if (!expandedSemKey) { setExpandedSemHealth(null); return; }
+    setExpandedSemHealthLoading(true);
+    fetch(`/api/semester-health-check/${expandedSemKey}`, { credentials: 'include' })
+      .then(r => r.json())
+      .then(data => { setExpandedSemHealth(data); setExpandedSemHealthLoading(false); })
+      .catch(() => setExpandedSemHealthLoading(false));
+  }, [expandedSemKey]);
+  const [semBoxHealthCache, setSemBoxHealthCache] = useState<Record<string, { score: number; level: 'ok' | 'warning' | 'critical' }>>({});
+  useEffect(() => {
+    if (!isSchoolCoursesDialogOpen) return;
+    const semKeys = ['ss2025', 'f2025', 'w2026', 'ss2026', 'f2026', 'w2027', 'ss2027', 'f2027', 'w2028', 'ss2028', 'f2028', 'w2029'];
+    const currentIdx = semKeys.indexOf(semesterKeyOrder.find(k => {
+      const now = new Date();
+      const starts: Record<string, string> = { 'ss2025': '2025-05-05', 'f2025': '2025-09-08', 'w2026': '2026-01-12', 'ss2026': '2026-05-04', 'f2026': '2026-09-14', 'w2027': '2027-01-11', 'ss2027': '2027-05-03', 'f2027': '2027-09-13', 'w2028': '2028-01-10', 'ss2028': '2028-05-01', 'f2028': '2028-09-11', 'w2029': '2029-01-15' };
+      const ends: Record<string, string> = { 'ss2025': '2025-08-08', 'f2025': '2025-12-12', 'w2026': '2026-04-17', 'ss2026': '2026-08-07', 'f2026': '2026-12-11', 'w2027': '2027-04-16', 'ss2027': '2027-08-06', 'f2027': '2027-12-17', 'w2028': '2028-04-14', 'ss2028': '2028-08-04', 'f2028': '2028-12-15', 'w2029': '2029-04-13' };
+      return starts[k] && ends[k] && now >= new Date(starts[k]) && now <= new Date(ends[k]);
+    }) || '');
+    const relevantKeys = semKeys.filter((_, i) => i >= currentIdx - 1 && i <= currentIdx + 2);
+    relevantKeys.forEach(sk => {
+      if (semBoxHealthCache[sk]) return;
+      fetch(`/api/semester-health-check/${sk}`, { credentials: 'include' })
+        .then(r => r.json())
+        .then(data => {
+          const score = data.healthScore || 0;
+          const level = score >= 80 ? 'ok' as const : score >= 50 ? 'warning' as const : 'critical' as const;
+          setSemBoxHealthCache(prev => ({ ...prev, [sk]: { score, level } }));
+        })
+        .catch(() => {});
+    });
+  }, [isSchoolCoursesDialogOpen]);
   const [endEarlyNextSemPicker, setEndEarlyNextSemPicker] = useState<string | null>(null);
   const [semHealthCheckKey, setSemHealthCheckKey] = useState<string | null>(null);
   const [semHealthData, setSemHealthData] = useState<any>(null);
@@ -26778,7 +26812,7 @@ export default function Dashboard() {
                           const isCurrentSem = sem.key === currentSemKey;
                           const colMap: Record<string, number> = { 'ss2025': 2, 'f2025': 3 };
                           return (
-                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'transparent', borderColor: isCurrentSem ? 'rgba(10,15,30,0.85)' : 'rgba(255,255,255,0.45)', borderWidth: isCurrentSem ? '3px' : '1px', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), minHeight: `${28 + 12 + 3 * 40}px`, alignSelf: 'stretch' }}
+                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'transparent', borderColor: isCurrentSem ? 'rgba(10,15,30,0.85)' : 'rgba(255,255,255,0.45)', borderWidth: isCurrentSem ? '3px' : '1px', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), minHeight: `${28 + 12 + 3 * 40}px`, alignSelf: 'stretch', ...(semBoxHealthCache[sem.key]?.level === 'critical' ? { boxShadow: '0 0 8px rgba(239,68,68,0.5), 0 0 16px rgba(239,68,68,0.3), 0 0 24px rgba(239,68,68,0.2)' } : semBoxHealthCache[sem.key]?.level === 'warning' ? { boxShadow: '0 0 8px rgba(234,179,8,0.4), 0 0 16px rgba(234,179,8,0.25), 0 0 24px rgba(234,179,8,0.15)' } : {}) }}
                               onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; e.currentTarget.style.boxShadow = '0 0 8px rgba(255,255,255,0.5)'; }}
                               onDragLeave={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
                               onDrop={(e) => {
@@ -26819,8 +26853,8 @@ export default function Dashboard() {
                                 const shadow = isCurrentSem ? (needsRedBorder ? { boxShadow: '0 0 6px rgba(239,68,68,0.6), 0 0 12px rgba(239,68,68,0.4), 0 0 18px rgba(239,68,68,0.3)' } : {}) : {};
                                 return { background: bgCol, borderColor: borderCol, ...shadow, position: 'relative' as const, borderWidth: isCurrentSem ? '2px' : undefined };
                               })()}>
-                                <div className="px-2 py-1.5 flex items-center justify-between">
-                                <div className="flex items-center gap-1.5 flex-wrap">
+                                <div className="px-2 py-1.5 flex items-center justify-between" onDoubleClick={(e) => { e.stopPropagation(); setExpandedSemKey(sem.key); }}>
+                                <div className="flex items-center gap-1.5 flex-wrap" style={{ flexWrap: 'nowrap', overflow: 'hidden', minWidth: 0 }}>
                                   <Settings
                                     className="text-white/50 hover:text-white cursor-pointer transition-colors flex-shrink-0"
                                     style={{ width: '11px', height: '11px' }}
@@ -26858,7 +26892,7 @@ export default function Dashboard() {
                                     );
                                   })()}
                                   {isCurrentSem && <span className="text-[7px] font-bold text-white bg-emerald-500/20 px-1 py-0.5 rounded-full border border-white">CURRENT</span>}
-                                  {(() => { const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })(); const isConfirmedEnded = semesterEndConfirmed[sem.key]; return (isPast || isConfirmedEnded) ? <span className="text-[7px] font-bold tracking-wider uppercase px-1 py-0 rounded border" style={{ color: '#ffffff', background: colorSettings.headerBar, borderColor: 'rgba(255,255,255,0.2)', lineHeight: '14px' }}>COMPLETE</span> : null; })()}
+                                  {(() => { const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })(); const isConfirmedEnded = semesterEndConfirmed[sem.key]; return (isPast || isConfirmedEnded) ? <span className="font-bold tracking-wider uppercase rounded border flex-shrink" style={{ color: '#ffffff', background: colorSettings.headerBar, borderColor: 'rgba(255,255,255,0.2)', lineHeight: '14px', fontSize: 'clamp(5px, 1.2vw, 7px)', padding: '0 clamp(2px, 0.5vw, 4px)', whiteSpace: 'nowrap', flexShrink: 1, minWidth: 0 }}>COMPLETE</span> : null; })()}
                                 </div>
                                 <span className="text-[10px] text-white whitespace-nowrap ml-1">{(() => {
                                   const letterToGpa: Record<string, number> = { 'A+': 4.33, 'A': 4.0, 'A-': 3.67, 'B+': 3.33, 'B': 3.0, 'B-': 2.67, 'C+': 2.33, 'C': 2.0, 'C-': 1.67, 'D': 1.0, 'F': 0 };
@@ -26965,6 +26999,212 @@ export default function Dashboard() {
                 })()}
               </div>
               
+              {expandedSemKey && (() => {
+                const semMeta = semesterMeta.find(m => m.key === expandedSemKey);
+                if (!semMeta) return null;
+                const expandedSem = { ...semMeta, courses: buildCoursesFromDb(expandedSemKey) };
+                const expIsCurrentSem = expandedSemKey === currentSemKey;
+                const expIsPast = !expIsCurrentSem && hasSemStarted(expandedSemKey) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(expandedSemKey); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })();
+                const expIsEnded = semesterEndConfirmed[expandedSemKey];
+                const expHealth = expandedSemHealth;
+
+                const semStartDatesLocal: Record<string, string> = {
+                  'ss2025': '2025-05-05', 'f2025': '2025-09-08', 'w2026': '2026-01-12',
+                  'ss2026': '2026-05-04', 'f2026': '2026-09-14', 'w2027': '2027-01-11',
+                  'ss2027': '2027-05-03', 'f2027': '2027-09-13', 'w2028': '2028-01-10',
+                  'ss2028': '2028-05-01', 'f2028': '2028-09-11', 'w2029': '2029-01-15',
+                };
+                const semEndDatesLocal: Record<string, string> = {
+                  'ss2025': '2025-08-08', 'f2025': '2025-12-12', 'w2026': '2026-04-17',
+                  'ss2026': '2026-08-07', 'f2026': '2026-12-11', 'w2027': '2027-04-16',
+                  'ss2027': '2027-08-06', 'f2027': '2027-12-17', 'w2028': '2028-04-14',
+                  'ss2028': '2028-08-04', 'f2028': '2028-12-15', 'w2029': '2029-04-13',
+                };
+                const fmtDate = (d: string) => { if (!d) return '?'; const dt = new Date(d + 'T12:00:00'); return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); };
+
+                const getOneDrivePath = (courseCode: string, weekNum?: number) => {
+                  const yearStr = expandedSemKey.replace(/^(ss|f|w)/, '');
+                  const semType = expandedSemKey.startsWith('ss') ? 'Spring & Summer' : expandedSemKey.startsWith('f') ? 'Fall' : 'Winter';
+                  const base = `/School/1. TMU/Courses/${yearStr}/${semType}/${courseCode}`;
+                  return weekNum ? `${base}/Week ${weekNum}` : base;
+                };
+
+                const getHealthLevel = (health: any): 'ok' | 'warning' | 'critical' => {
+                  if (!health) return 'ok';
+                  const score = health.healthScore || 0;
+                  if (score >= 80) return 'ok';
+                  if (score >= 50) return 'warning';
+                  return 'critical';
+                };
+
+                const healthLevel = getHealthLevel(expHealth);
+
+                return (
+                  <div className="fixed inset-0 z-[10005] flex items-center justify-center" onClick={() => setExpandedSemKey(null)} data-testid="expanded-sem-overlay">
+                    <div className="fixed inset-0 bg-black/60" />
+                    <div
+                      className="relative z-[10006] overflow-y-auto rounded-xl flex flex-col"
+                      style={{ width: 'calc(100% - 60px)', height: 'calc(100% - 60px)', maxWidth: '1200px', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 8px 48px rgba(0,0,0,0.4)' }}
+                      onClick={(e) => e.stopPropagation()}
+                      data-testid="expanded-sem-panel"
+                    >
+                      <div className="flex items-center justify-between px-6 py-4 border-b border-white/30 flex-shrink-0" style={{ background: expIsCurrentSem ? 'rgba(10,15,30,0.9)' : expIsPast || expIsEnded ? 'rgba(160,160,160,0.35)' : `${colorSettings.headerBar}cc` }}>
+                        <div className="flex items-center gap-3">
+                          <span className="text-[16px] font-bold text-white">{expandedSem.label}</span>
+                          <span className="text-[11px] text-white/70">{fmtDate(semStartDatesLocal[expandedSemKey] || '')} – {fmtDate(semEndDatesLocal[expandedSemKey] || '')}</span>
+                          {expIsCurrentSem && <span className="text-[9px] font-bold text-white bg-emerald-500/30 px-2 py-0.5 rounded-full border border-emerald-400/50">CURRENT</span>}
+                          {(expIsPast || expIsEnded) && <span className="text-[9px] font-bold text-white uppercase px-2 py-0.5 rounded border" style={{ background: colorSettings.headerBar, borderColor: 'rgba(255,255,255,0.3)' }}>COMPLETE</span>}
+                          {expHealth && <span className="text-[9px] font-medium px-2 py-0.5 rounded-full" style={{ background: healthLevel === 'ok' ? 'rgba(34,197,94,0.2)' : healthLevel === 'warning' ? 'rgba(234,179,8,0.2)' : 'rgba(239,68,68,0.2)', color: healthLevel === 'ok' ? '#22c55e' : healthLevel === 'warning' ? '#eab308' : '#ef4444', border: `1px solid ${healthLevel === 'ok' ? 'rgba(34,197,94,0.4)' : healthLevel === 'warning' ? 'rgba(234,179,8,0.4)' : 'rgba(239,68,68,0.4)'}` }}>Health: {expHealth.healthScore}%</span>}
+                        </div>
+                        <button className="text-white/60 hover:text-white transition-colors text-[18px] font-light" onClick={() => setExpandedSemKey(null)} data-testid="button-close-expanded-sem">&times;</button>
+                      </div>
+
+                      <div className="flex-1 overflow-y-auto p-6" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.2) transparent' }}>
+                        <div className="space-y-6">
+                          {expandedSem.courses.length === 0 && <div className="text-[14px] text-white/40 text-center py-12">No courses assigned to this semester</div>}
+                          {expandedSem.courses.map((c, cIdx) => {
+                            const codeNorm = c.code.toUpperCase().replace(/\s/g, '');
+                            const gc = getCourseGradientColors(c.code);
+                            const dotBg = gc.start !== gc.end ? `linear-gradient(180deg, ${gc.start}, ${gc.end})` : gc.start;
+                            const courseHealth = expHealth?.courses?.find((ch: any) => ch.code.replace(/\s/g, '').toUpperCase() === codeNorm);
+                            const displayNameResult = (() => {
+                              const dnMatch = findSemSlot(expandedSemKey, c.code, allSemesterSettings);
+                              if (dnMatch) {
+                                const dbDN = (dnMatch.sem as any)[`course${dnMatch.slot}DisplayName`];
+                                if (dbDN) return dbDN;
+                              }
+                              return c.name;
+                            })();
+
+                            return (
+                              <div key={c.code} className="rounded-lg border border-white/20 overflow-hidden" data-testid={`expanded-course-${c.code}`}>
+                                <div className="px-4 py-3 flex items-center gap-3 border-b border-white/15" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                                  <div className="w-4 h-4 rounded-full flex-shrink-0" style={{ background: dotBg }} />
+                                  <span className="text-[13px] font-bold text-white">{displayNameResult}</span>
+                                  {c.fullName && <span className="text-[11px] text-white/50">— {c.fullName}</span>}
+                                  {courseHealth && (
+                                    <div className="ml-auto flex items-center gap-2">
+                                      <span className="text-[9px] text-white/50">{courseHealth.totalModules} modules · {courseHealth.totalReadings} readings</span>
+                                      {courseHealth.syllabusLinked ? <span className="text-[8px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Syllabus ✓</span> : <span className="text-[8px] px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30">No Syllabus</span>}
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="p-4 space-y-4">
+                                  <div>
+                                    <div className="text-[10px] font-semibold text-white/70 uppercase tracking-wider mb-2">Automation Flow</div>
+                                    <div className="flex items-center gap-0 flex-wrap">
+                                      {[
+                                        { label: 'OneDrive', icon: '☁️', path: getOneDrivePath(c.code), status: courseHealth?.oneDriveFolderConfigured ? 'ok' : 'error' },
+                                        { label: 'Folder Sync', icon: '🔄', path: `week-*-${c.code.toLowerCase()}-module/reading`, status: courseHealth?.totalModules > 0 ? 'ok' : 'warning' },
+                                        { label: 'Local Storage', icon: '💾', path: `persistent-uploads/`, status: 'ok' },
+                                        { label: 'TTS Processing', icon: '🔊', path: `TTS chunks → Cat Lights`, status: courseHealth ? (courseHealth.totalTtsReady === courseHealth.totalTtsNeeded ? 'ok' : courseHealth.totalTtsReady > 0 ? 'warning' : 'idle') : 'idle' },
+                                        { label: 'Library Shelf', icon: '📚', path: `LibraryView → BookReader`, status: courseHealth?.totalModules > 0 || courseHealth?.totalReadings > 0 ? 'ok' : 'idle' },
+                                      ].map((step, sIdx, arr) => (
+                                        <div key={step.label} className="flex items-center" style={{ flexShrink: 0 }}>
+                                          <div className="flex flex-col items-center" style={{ width: '90px' }}>
+                                            <div className="w-8 h-8 rounded-full flex items-center justify-center text-[14px] border" style={{
+                                              background: step.status === 'ok' ? 'rgba(34,197,94,0.15)' : step.status === 'warning' ? 'rgba(234,179,8,0.15)' : step.status === 'error' ? 'rgba(239,68,68,0.15)' : 'rgba(255,255,255,0.05)',
+                                              borderColor: step.status === 'ok' ? 'rgba(34,197,94,0.4)' : step.status === 'warning' ? 'rgba(234,179,8,0.4)' : step.status === 'error' ? 'rgba(239,68,68,0.4)' : 'rgba(255,255,255,0.15)',
+                                            }}>{step.icon}</div>
+                                            <span className="text-[8px] font-semibold text-white/80 mt-1 text-center leading-tight">{step.label}</span>
+                                            <span className="text-[7px] text-white/40 text-center leading-tight mt-0.5 break-all" style={{ maxWidth: '85px' }}>{step.path}</span>
+                                          </div>
+                                          {sIdx < arr.length - 1 && (
+                                            <div className="flex items-center" style={{ width: '24px', height: '2px', marginTop: '-16px' }}>
+                                              <div style={{ flex: 1, height: '2px', background: step.status === 'ok' ? '#22c55e' : step.status === 'warning' ? '#eab308' : step.status === 'error' ? '#ef4444' : 'rgba(255,255,255,0.2)' }} />
+                                              <div style={{ width: 0, height: 0, borderTop: '4px solid transparent', borderBottom: '4px solid transparent', borderLeft: `6px solid ${step.status === 'ok' ? '#22c55e' : step.status === 'warning' ? '#eab308' : step.status === 'error' ? '#ef4444' : 'rgba(255,255,255,0.2)'}` }} />
+                                            </div>
+                                          )}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+
+                                  <div>
+                                    <div className="text-[10px] font-semibold text-white/70 uppercase tracking-wider mb-2">Naming Convention & File Paths</div>
+                                    <div className="rounded border border-white/10 overflow-hidden" style={{ background: 'rgba(0,0,0,0.2)' }}>
+                                      <table className="w-full text-[10px] text-white/80">
+                                        <thead>
+                                          <tr style={{ background: 'rgba(255,255,255,0.06)' }}>
+                                            <th className="text-left px-3 py-1.5 font-semibold text-white/60 border-b border-white/10">Connection</th>
+                                            <th className="text-left px-3 py-1.5 font-semibold text-white/60 border-b border-white/10">Path / Pattern</th>
+                                            <th className="text-center px-3 py-1.5 font-semibold text-white/60 border-b border-white/10 w-16">Status</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          {[
+                                            { label: 'OneDrive Root', path: getOneDrivePath(c.code), ok: courseHealth?.oneDriveFolderConfigured },
+                                            { label: 'Module Folder', path: `${getOneDrivePath(c.code)}/Week {n}/Module/`, ok: courseHealth?.totalModules > 0 },
+                                            { label: 'Reading Folder', path: `${getOneDrivePath(c.code)}/Week {n}/Reading/`, ok: courseHealth?.totalReadings > 0 },
+                                            { label: 'Local Sync', path: `persistent-uploads/week-{n}-${c.code.toLowerCase()}-module|reading/`, ok: courseHealth?.totalModules > 0 || courseHealth?.totalReadings > 0 },
+                                            { label: 'Syllabus', path: courseHealth?.syllabusPath || `syllabi/${c.code.toLowerCase()}_syllabus.pdf`, ok: courseHealth?.syllabusLinked },
+                                            { label: 'TTS Audio', path: `TTS chunks (${courseHealth?.totalTtsReady || 0}/${courseHealth?.totalTtsNeeded || 0} ready)`, ok: courseHealth ? courseHealth.totalTtsReady === courseHealth.totalTtsNeeded : undefined },
+                                          ].map((row) => (
+                                            <tr key={row.label} className="hover:bg-white/5 transition-colors">
+                                              <td className="px-3 py-1.5 font-medium border-b border-white/5">{row.label}</td>
+                                              <td className="px-3 py-1.5 font-mono text-[9px] text-white/60 border-b border-white/5">{row.path}</td>
+                                              <td className="px-3 py-1.5 text-center border-b border-white/5">
+                                                {row.ok === true && <span className="inline-block w-2 h-2 rounded-full bg-emerald-500" title="Connected" />}
+                                                {row.ok === false && <span className="inline-block w-2 h-2 rounded-full bg-red-500" title="Not connected" />}
+                                                {row.ok === undefined && <span className="inline-block w-2 h-2 rounded-full bg-white/20" title="Unknown" />}
+                                              </td>
+                                            </tr>
+                                          ))}
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                  </div>
+
+                                  {courseHealth && (
+                                    <div>
+                                      <div className="text-[10px] font-semibold text-white/70 uppercase tracking-wider mb-2">Weekly Content Status</div>
+                                      <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${Math.min(courseHealth.moduleWeeks ? Object.keys(courseHealth.moduleWeeks).length : 13, 13)}, 1fr)` }}>
+                                        {Array.from({ length: expHealth?.numberOfWeeks || 13 }, (_, i) => i + 1).map(w => {
+                                          const mCount = courseHealth.moduleWeeks?.[w]?.count || 0;
+                                          const rCount = courseHealth.readingWeeks?.[w]?.count || 0;
+                                          const mTts = courseHealth.moduleWeeks?.[w]?.ttsReady || 0;
+                                          const hasContent = mCount > 0 || rCount > 0;
+                                          return (
+                                            <div key={w} className="rounded border text-center py-1" style={{ background: hasContent ? 'rgba(34,197,94,0.1)' : 'rgba(255,255,255,0.03)', borderColor: hasContent ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.1)' }}>
+                                              <div className="text-[8px] font-bold text-white/50">W{w}</div>
+                                              <div className="text-[7px] text-white/40">{mCount}M {rCount}R</div>
+                                              {mCount > 0 && mTts < mCount && <div className="text-[6px] text-yellow-400">TTS {mTts}/{mCount}</div>}
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+
+                          {expHealth?.issues && expHealth.issues.length > 0 && (
+                            <div className="rounded-lg border border-yellow-500/30 overflow-hidden" style={{ background: 'rgba(234,179,8,0.05)' }}>
+                              <div className="px-4 py-2 border-b border-yellow-500/20 flex items-center gap-2" style={{ background: 'rgba(234,179,8,0.1)' }}>
+                                <span className="text-[12px]">⚠️</span>
+                                <span className="text-[11px] font-semibold text-yellow-400">Issues ({expHealth.issues.length})</span>
+                              </div>
+                              <div className="p-3 space-y-1">
+                                {expHealth.issues.map((issue: string, idx: number) => (
+                                  <div key={idx} className="text-[10px] text-yellow-300/80 flex items-start gap-2">
+                                    <span className="text-yellow-500 flex-shrink-0 mt-0.5">•</span>
+                                    <span>{issue}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          <div style={{ height: '200px' }} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+
               <div className="flex items-center justify-end px-4 py-[10px] border-t border-white/40 shrink-0 rounded-b-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, ${colorSettings.headerBar}bb 0%, ${colorSettings.headerBar}cc 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15), 0 -2px 8px rgba(0,0,0,0.08)' }}>
                 <div className="flex gap-2">
                   <button className="px-5 py-[5px] rounded text-[11px] font-medium text-white/80 hover:text-white transition-colors" style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)' }} onClick={() => startTransition(() => setIsSchoolCoursesDialogOpen(false))} data-testid="button-cancel-school-courses">Cancel</button>
@@ -29643,7 +29883,7 @@ export default function Dashboard() {
           <div
             className="fixed"
             data-tpo data-tpo-opacity="1"
-            style={{ bottom: `${calendarBottom - 12}px`, left: `${calendarLeft + 9}px`, height: '14px', zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'center' }}
+            style={{ bottom: `${calendarBottom - 12}px`, left: `${calendarLeft + 9}px`, height: '14px', zIndex: 100, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'center' }}
             data-testid="controls-tab"
           >
             <div style={{ height: '14px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)', padding: '0 2px', gap: '0px' }}>
@@ -34033,7 +34273,7 @@ export default function Dashboard() {
           <div
             className="fixed"
             data-tpo data-tpo-opacity="1"
-            style={{ bottom: `${calendarBottom - 12}px`, left: `${calendarLeft + 9}px`, height: '14px', zIndex: 60, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'center' }}
+            style={{ bottom: `${calendarBottom - 12}px`, left: `${calendarLeft + 9}px`, height: '14px', zIndex: 100, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen) ? 'none' : 'flex', opacity: isTopPillOpen ? 0 : 1, transition: isTopPillOpen ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: isTopPillOpen ? 'none' : 'auto', alignItems: 'center' }}
             data-testid="controls-tab-month"
           >
             <div style={{ height: '14px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)', padding: '0 2px', gap: '0px' }}>
