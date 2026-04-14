@@ -29742,41 +29742,6 @@ export default function Dashboard() {
             >
               <Settings className="h-[17px] w-[17px] text-white/70 hover:text-white" />
             </button>
-            {desktopShowHomework && (
-              <button
-                onClick={() => {
-                  if (homeworkAnimating) return;
-                  setHomeworkAnimating(true);
-                  if (!homeworkMinimized) {
-                    savedCalendarReductionRef.current = calendarReduction;
-                    localStorage.setItem('savedCalendarReduction', String(calendarReduction));
-                    localStorage.setItem('homeworkMinimized', '1');
-                    setHomeworkMinimized(true);
-                    setTimeout(() => {
-                      setCalendarReduction(0);
-                      localStorage.setItem('calendarReduction', '0');
-                      setTimeout(() => setHomeworkAnimating(false), 350);
-                    }, 50);
-                  } else {
-                    const restore = savedCalendarReductionRef.current ?? (parseFloat(localStorage.getItem('savedCalendarReduction') || '0') || 260);
-                    localStorage.removeItem('homeworkMinimized');
-                    setCalendarReduction(restore);
-                    localStorage.setItem('calendarReduction', String(restore));
-                    setHomeworkMinimized(false);
-                    setTimeout(() => setHomeworkAnimating(false), 400);
-                  }
-                }}
-                className="absolute cursor-pointer hover:opacity-80 transition-opacity"
-                style={{ right: '-15px', top: '-14px', zIndex: 60, background: 'none', border: 'none', padding: 0 }}
-                data-testid="button-toggle-homework"
-                title={homeworkMinimized ? 'Show homework panel' : 'Hide homework panel'}
-              >
-                {homeworkMinimized
-                  ? <ChevronLeft className="h-[17px] w-[17px] text-white/70 hover:text-white" />
-                  : <ChevronRight className="h-[17px] w-[17px] text-white/70 hover:text-white" />
-                }
-              </button>
-            )}
             <div
               style={{ position: 'absolute', left: '9px', top: '-31px', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto' }}
               data-testid="calendar-top-resize-handle"
@@ -34596,6 +34561,39 @@ export default function Dashboard() {
           data-testid="section-coming-up"
         >
           <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', border: homeworkMinimized && !homeworkAnimating ? 'none' : '1.5px solid rgba(255,255,255,0.5)', pointerEvents: 'none', zIndex: 9999, opacity: homeworkMinimized && !homeworkAnimating ? 0 : 1, transition: 'opacity 0.3s ease' }} />
+          <button
+            onClick={() => {
+              if (homeworkAnimating) return;
+              setHomeworkAnimating(true);
+              if (!homeworkMinimized) {
+                savedCalendarReductionRef.current = calendarReduction;
+                localStorage.setItem('savedCalendarReduction', String(calendarReduction));
+                localStorage.setItem('homeworkMinimized', '1');
+                setHomeworkMinimized(true);
+                setTimeout(() => {
+                  setCalendarReduction(0);
+                  localStorage.setItem('calendarReduction', '0');
+                  setTimeout(() => setHomeworkAnimating(false), 350);
+                }, 50);
+              } else {
+                const restore = savedCalendarReductionRef.current ?? (parseFloat(localStorage.getItem('savedCalendarReduction') || '0') || 260);
+                localStorage.removeItem('homeworkMinimized');
+                setCalendarReduction(restore);
+                localStorage.setItem('calendarReduction', String(restore));
+                setHomeworkMinimized(false);
+                setTimeout(() => setHomeworkAnimating(false), 400);
+              }
+            }}
+            className="absolute cursor-pointer hover:opacity-80 transition-opacity"
+            style={{ right: '4px', bottom: '-15px', zIndex: 10000, background: 'none', border: 'none', padding: 0 }}
+            data-testid="button-toggle-homework"
+            title={homeworkMinimized ? 'Show homework panel' : 'Hide homework panel'}
+          >
+            {homeworkMinimized
+              ? <ChevronRight className="h-[17px] w-[17px] text-white/70 hover:text-white" />
+              : <ChevronDown className="h-[17px] w-[17px] text-white/70 hover:text-white" />
+            }
+          </button>
           {/* Date navigation tab above glass box */}
           <div
             className="absolute z-[60]"
