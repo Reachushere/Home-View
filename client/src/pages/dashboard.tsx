@@ -2258,6 +2258,32 @@ export default function Dashboard() {
     if (val) localStorage.setItem('calendarReductionUserSet', '1');
   };
   const [homeworkMinimized, setHomeworkMinimized] = useState(() => localStorage.getItem('homeworkMinimized') === '1');
+  const [hwCalPairedScroll, setHwCalPairedScroll] = useState(() => localStorage.getItem('hwCalPairedScroll') === '1');
+  const pairedScrollingRef = useRef(false);
+  useEffect(() => {
+    if (!hwCalPairedScroll) return;
+    const calEl = calendarScrollRef.current;
+    const hwEl = homeworkScrollRef.current;
+    if (!calEl || !hwEl) return;
+    let syncing = false;
+    const syncCalToHw = () => {
+      if (syncing) return;
+      syncing = true;
+      const calPct = calEl.scrollHeight > calEl.clientHeight ? calEl.scrollTop / (calEl.scrollHeight - calEl.clientHeight) : 0;
+      hwEl.scrollTop = calPct * (hwEl.scrollHeight - hwEl.clientHeight);
+      requestAnimationFrame(() => { syncing = false; });
+    };
+    const syncHwToCal = () => {
+      if (syncing) return;
+      syncing = true;
+      const hwPct = hwEl.scrollHeight > hwEl.clientHeight ? hwEl.scrollTop / (hwEl.scrollHeight - hwEl.clientHeight) : 0;
+      calEl.scrollTop = hwPct * (calEl.scrollHeight - calEl.clientHeight);
+      requestAnimationFrame(() => { syncing = false; });
+    };
+    calEl.addEventListener('scroll', syncCalToHw, { passive: true });
+    hwEl.addEventListener('scroll', syncHwToCal, { passive: true });
+    return () => { calEl.removeEventListener('scroll', syncCalToHw); hwEl.removeEventListener('scroll', syncHwToCal); };
+  }, [hwCalPairedScroll]);
   const [homeworkAnimating, setHomeworkAnimating] = useState(false);
   const savedCalendarReductionRef = useRef<number | null>(null);
   const savedGlassRightRef = useRef<number | null>(null);
@@ -34967,6 +34993,18 @@ export default function Dashboard() {
           }}
           data-testid="section-coming-up"
         >
+          {/* Paired scroll toggle — above the homework box */}
+          {!hwFloating.detached && !homeworkMinimized && !blankBoxOpen && !homeworkAnimating && !blankBoxAnimating && (
+            <button
+              onClick={() => { const next = !hwCalPairedScroll; setHwCalPairedScroll(next); localStorage.setItem('hwCalPairedScroll', next ? '1' : '0'); }}
+              className="absolute flex items-center justify-center hover:bg-white/20 active:bg-white/30 transition-colors"
+              style={{ top: '-20px', left: '50%', transform: 'translateX(-50%)', width: '36px', height: '16px', borderRadius: '8px 8px 0 0', background: hwCalPairedScroll ? 'rgba(59,130,246,0.7)' : 'rgba(255,255,255,0.25)', border: '1px solid rgba(255,255,255,0.4)', borderBottom: 'none', zIndex: 110, backdropFilter: 'blur(8px)', cursor: 'pointer' }}
+              title={hwCalPairedScroll ? 'Paired scrolling ON — click to unlink' : 'Paired scrolling OFF — click to link'}
+              data-testid="toggle-paired-scroll"
+            >
+              <Link2 size={10} style={{ color: hwCalPairedScroll ? '#fff' : 'rgba(0,0,0,0.5)', transform: hwCalPairedScroll ? 'none' : 'rotate(45deg)', transition: 'transform 0.2s' }} />
+            </button>
+          )}
           <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', border: '1.5px solid rgba(255,255,255,0.5)', pointerEvents: 'none', zIndex: 9999 }} />
           {(blankBoxOpen || blankMinimizeAnim === 'minimizing') && <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', background: `linear-gradient(180deg, ${colorSettings.headerBar}e6 0%, ${colorSettings.headerBar}cc 30%, ${colorSettings.headerBar}b3 60%, ${colorSettings.headerBar}99 100%)`, backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', zIndex: 9998, pointerEvents: blankMinimizeAnim === 'minimizing' ? 'none' : 'auto', display: 'flex', flexDirection: 'column', transform: blankMinimizeAnim === 'minimizing' ? 'scale(0.15) translateY(120vh)' : 'none', opacity: blankMinimizeAnim === 'minimizing' ? 0 : 1, transition: blankMinimizeAnim === 'minimizing' ? 'transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1)' : 'none', transformOrigin: 'bottom center' }}>
             <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', border: '1.5px solid rgba(255,255,255,0.5)', pointerEvents: 'none', zIndex: 9999 }} />
@@ -35114,7 +35152,7 @@ export default function Dashboard() {
           </button>
           {/* Joint Resize Handle — controls both calendar+homework width and calendar height */}
           {!hwFloating.detached && <div
-            className="absolute z-[60]"
+            className="absolute z-[110]"
             style={{ left: '-17px', top: '50%', transform: 'translateY(-50%)', width: '17px', height: '181px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: ((homeworkMinimized && !blankBoxOpen) || homeworkAnimating || blankBoxAnimating) ? 'none' : 'auto', opacity: ((homeworkMinimized && !blankBoxOpen) || homeworkAnimating || blankBoxAnimating) ? 0 : 1, transition: 'opacity 0.25s ease' }}
             data-testid="resize-handle-homework"
           >
