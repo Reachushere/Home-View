@@ -3720,8 +3720,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             background: aiSearchOpen ? 'rgba(139,92,246,0.3)' : 'rgba(0,0,0,0.5)',
             border: aiSearchOpen ? '1px solid rgba(139,92,246,0.5)' : '1px solid rgba(255,255,255,0.2)',
             borderRadius: '50%',
-            width: '36px',
-            height: '36px',
+            width: '44px',
+            height: '44px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -3734,7 +3734,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           data-testid="button-ai-search"
           title="AI Document Search"
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/></svg>
         </button>
       )}
 
@@ -3917,8 +3917,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           border: '1px solid rgba(139,92,246,0.3)',
           borderRadius: '16px',
           padding: '20px',
-          width: '420px',
-          maxHeight: 'calc(100vh - 100px)',
+          width: '500px',
+          maxHeight: 'calc(100vh - 80px)',
           overflowY: 'auto',
           boxShadow: '0 12px 48px rgba(0,0,0,0.7), 0 0 30px rgba(139,92,246,0.1)',
           backdropFilter: 'blur(20px)',
@@ -3933,7 +3933,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
 
           {!aiPreview && !aiResult && (
             <>
-              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', marginBottom: '12px', lineHeight: '1.5' }}>
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.85)', marginBottom: '12px', lineHeight: '1.5' }}>
                 Describe what you want to find. Include course codes (CPPA, CFNF, CASL) and file types (Module, Reading) to narrow the search.
               </div>
               <textarea
@@ -3944,10 +3944,10 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 style={{
                   width: '100%',
                   minHeight: '80px',
-                  background: 'rgba(255,255,255,0.06)',
-                  border: '1px solid rgba(255,255,255,0.15)',
+                  background: '#ffffff',
+                  border: '1px solid rgba(139,92,246,0.3)',
                   borderRadius: '10px',
-                  color: '#fff',
+                  color: '#000000',
                   fontSize: '13px',
                   padding: '12px',
                   resize: 'vertical',
@@ -3955,8 +3955,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                   fontFamily: 'inherit',
                   lineHeight: '1.5',
                 }}
-                onFocus={e => e.currentTarget.style.borderColor = 'rgba(139,92,246,0.5)'}
-                onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'}
+                onFocus={e => e.currentTarget.style.borderColor = 'rgba(139,92,246,0.7)'}
+                onBlur={e => e.currentTarget.style.borderColor = 'rgba(139,92,246,0.3)'}
                 data-testid="ai-search-prompt"
               />
               {aiError && <div style={{ color: '#ef4444', fontSize: '11px', marginTop: '8px', padding: '8px', background: 'rgba(239,68,68,0.1)', borderRadius: '8px', border: '1px solid rgba(239,68,68,0.2)' }} data-testid="ai-search-error">{aiError}</div>}
@@ -4015,7 +4015,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
               {aiError === 'NO_KEY' && (
                 <div style={{ marginTop: '16px', padding: '14px', background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.25)', borderRadius: '10px' }}>
                   <div style={{ fontSize: '12px', fontWeight: 600, color: '#f59e0b', marginBottom: '8px' }}>OpenAI API Key Required</div>
-                  <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', marginBottom: '10px', lineHeight: '1.5' }}>
+                  <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.85)', marginBottom: '10px', lineHeight: '1.5' }}>
                     Paste your API key from platform.openai.com. It will be stored locally on this device and never shared.
                   </div>
                   <div style={{ display: 'flex', gap: '6px' }}>
@@ -4084,10 +4084,10 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
               </div>
               <div style={{ maxHeight: '140px', overflowY: 'auto', marginBottom: '12px', borderRadius: '8px', background: 'rgba(0,0,0,0.2)', padding: '8px' }}>
                 {aiPreview.matchingFiles.map((f: any) => (
-                  <div key={f.id} style={{ fontSize: '10px', color: 'rgba(255,255,255,0.6)', padding: '3px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <div key={f.id} style={{ fontSize: '10px', color: 'rgba(255,255,255,0.9)', padding: '3px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <FileText size={10} style={{ flexShrink: 0 }} />
                     <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{f.name}</span>
-                    <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: '9px', flexShrink: 0 }}>{Math.round(f.textLength / 1000)}k chars</span>
+                    <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '9px', flexShrink: 0 }}>{Math.round(f.textLength / 1000)}k chars</span>
                   </div>
                 ))}
               </div>
@@ -4101,19 +4101,19 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
               }}>
                 <div style={{ fontSize: '12px', fontWeight: 700, color: '#f59e0b', marginBottom: '8px' }}>Cost Estimate</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 12px', fontSize: '11px' }}>
-                  <span style={{ color: 'rgba(255,255,255,0.5)' }}>Model:</span>
+                  <span style={{ color: 'rgba(255,255,255,0.85)' }}>Model:</span>
                   <span style={{ color: '#fff' }}>{aiPreview.model}</span>
-                  <span style={{ color: 'rgba(255,255,255,0.5)' }}>Input tokens:</span>
+                  <span style={{ color: 'rgba(255,255,255,0.85)' }}>Input tokens:</span>
                   <span style={{ color: '#fff' }}>~{aiPreview.estimatedInputTokens?.toLocaleString()}</span>
-                  <span style={{ color: 'rgba(255,255,255,0.5)' }}>Output tokens:</span>
+                  <span style={{ color: 'rgba(255,255,255,0.85)' }}>Output tokens:</span>
                   <span style={{ color: '#fff' }}>~{aiPreview.estimatedOutputTokens?.toLocaleString()}</span>
-                  <span style={{ color: 'rgba(255,255,255,0.5)' }}>Estimated cost:</span>
+                  <span style={{ color: 'rgba(255,255,255,0.85)' }}>Estimated cost:</span>
                   <span style={{ color: '#f59e0b', fontWeight: 700, fontSize: '13px' }}>{aiPreview.estimatedCost}</span>
                 </div>
               </div>
 
               <div style={{ marginBottom: '14px' }}>
-                <label style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', display: 'block', marginBottom: '4px' }}>Note title (saved to Notepad)</label>
+                <label style={{ fontSize: '10px', color: 'rgba(255,255,255,0.85)', display: 'block', marginBottom: '4px' }}>Note title (saved to Notepad)</label>
                 <input
                   type="text"
                   value={aiNoteTitle}
