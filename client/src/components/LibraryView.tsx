@@ -114,6 +114,7 @@ interface LibraryViewProps {
   onOpenNotepad?: () => void;
   courseDisplayNames?: Record<string, string>;
   initialAiSearch?: boolean;
+  initialApaCheck?: boolean;
 }
 
 const WEEK_COLOR_PALETTE: Record<number, string> = {
@@ -2474,7 +2475,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
   );
 }
 
-export default function LibraryView({ isOpen, onClose, semesters: semestersProp, initialSemesterKey, isSharedView, onOpenNotepad, courseDisplayNames, initialAiSearch }: LibraryViewProps) {
+export default function LibraryView({ isOpen, onClose, semesters: semestersProp, initialSemesterKey, isSharedView, onOpenNotepad, courseDisplayNames, initialAiSearch, initialApaCheck }: LibraryViewProps) {
   const { isAdmin: isFullAccess } = useAccessMode();
   const [currentSemIdx, setCurrentSemIdx] = useState(0);
   const [syncingSemKey, setSyncingSemKey] = useState<string | null>(null);
@@ -2597,6 +2598,33 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
   const [aiError, setAiError] = useState('');
   const [aiNoteTitle, setAiNoteTitle] = useState('');
   const aiPromptRef = useRef<HTMLTextAreaElement>(null);
+
+  const [apaCheckerOpen, setApaCheckerOpen] = useState(!!initialApaCheck);
+  const [apaFile, setApaFile] = useState<File | null>(null);
+  const [apaLoading, setApaLoading] = useState(false);
+  const [apaResult, setApaResult] = useState<any>(null);
+  const [apaError, setApaError] = useState('');
+  const apaFileInputRef = useRef<HTMLInputElement>(null);
+  const [apaDragOver, setApaDragOver] = useState(false);
+  const [apaExpandedCats, setApaExpandedCats] = useState<Set<string>>(new Set());
+
+  const runApaCheck = useCallback(async (file: File) => {
+    setApaLoading(true);
+    setApaError('');
+    setApaResult(null);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const resp = await fetch('/api/apa-check', { method: 'POST', body: formData });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || 'APA check failed');
+      setApaResult(data);
+    } catch (err: any) {
+      setApaError(err.message || 'Failed to check document');
+    } finally {
+      setApaLoading(false);
+    }
+  }, []);
 
   const { data: allFiles = [], refetch: refetchFiles } = useQuery<FileRecord[]>({
     queryKey: ['/api/files'],
@@ -3696,7 +3724,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         </button>
       )}
 
-      {!isSharedView && (
+      {!isSharedView && isFullAccess && (
         <button
           onClick={() => { setIsAiChatOpen(prev => !prev); setTimeout(() => aiChatInputRef.current?.focus(), 100); }}
           style={{
@@ -3717,6 +3745,35 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         >
           <MessageSquare size={14} />
           <span>Study Chat</span>
+        </button>
+      )}
+
+      {!isSharedView && isFullAccess && (
+        <button
+          onClick={() => { setApaCheckerOpen(true); setApaResult(null); setApaError(''); setApaFile(null); }}
+          style={{
+            position: 'absolute',
+            top: '33px',
+            right: '156px',
+            zIndex: 100002,
+            background: apaCheckerOpen ? 'rgba(34,197,94,0.3)' : 'rgba(0,0,0,0.5)',
+            border: apaCheckerOpen ? '1px solid rgba(34,197,94,0.5)' : '1px solid rgba(255,255,255,0.2)',
+            borderRadius: '50%',
+            width: '36px',
+            height: '36px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            color: apaCheckerOpen ? '#86efac' : 'rgba(255,255,255,0.7)',
+            transition: 'all 0.2s',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.color = '#86efac'; e.currentTarget.style.borderColor = 'rgba(34,197,94,0.5)'; }}
+          onMouseLeave={e => { if (!apaCheckerOpen) { e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; } }}
+          data-testid="button-apa-checker"
+          title="APA 7th Edition Checker"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15l2 2 4-4"/></svg>
         </button>
       )}
 
@@ -4169,6 +4226,239 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 }}
                 data-testid="ai-search-new-btn"
               >New Search</button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {apaCheckerOpen && (
+        <div style={{
+          position: 'absolute',
+          top: '60px',
+          right: '16px',
+          zIndex: 100004,
+          background: 'rgba(10,15,10,0.97)',
+          border: '1px solid rgba(34,197,94,0.3)',
+          borderRadius: '16px',
+          padding: '20px',
+          width: '480px',
+          maxHeight: 'calc(100vh - 100px)',
+          overflowY: 'auto',
+          boxShadow: '0 12px 48px rgba(0,0,0,0.7), 0 0 30px rgba(34,197,94,0.08)',
+          backdropFilter: 'blur(20px)',
+        }} data-testid="apa-checker-panel">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#86efac" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15l2 2 4-4"/></svg>
+              <span style={{ color: '#fff', fontSize: '15px', fontWeight: 700, letterSpacing: '0.5px' }}>APA 7th Edition Checker</span>
+            </div>
+            <button onClick={() => setApaCheckerOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.5)', padding: '2px' }} data-testid="apa-checker-close"><X size={16} /></button>
+          </div>
+
+          {!apaResult && !apaLoading && (
+            <>
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', marginBottom: '14px', lineHeight: '1.5' }}>
+                Upload your essay or paper (.docx or .txt) and get a detailed APA 7th Edition compliance report with specific issues and fixes.
+              </div>
+              <div
+                onDragOver={e => { e.preventDefault(); setApaDragOver(true); }}
+                onDragLeave={() => setApaDragOver(false)}
+                onDrop={e => { e.preventDefault(); setApaDragOver(false); const f = e.dataTransfer.files[0]; if (f) { setApaFile(f); } }}
+                onClick={() => apaFileInputRef.current?.click()}
+                style={{
+                  border: `2px dashed ${apaDragOver ? 'rgba(34,197,94,0.7)' : apaFile ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.15)'}`,
+                  borderRadius: '12px',
+                  padding: '32px 20px',
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  background: apaDragOver ? 'rgba(34,197,94,0.08)' : apaFile ? 'rgba(34,197,94,0.05)' : 'rgba(255,255,255,0.02)',
+                  transition: 'all 0.2s',
+                  marginBottom: '16px',
+                }}
+                data-testid="apa-drop-zone"
+              >
+                <input
+                  ref={apaFileInputRef}
+                  type="file"
+                  accept=".docx,.txt"
+                  style={{ display: 'none' }}
+                  onChange={e => { const f = e.target.files?.[0]; if (f) setApaFile(f); e.target.value = ''; }}
+                  data-testid="apa-file-input"
+                />
+                {apaFile ? (
+                  <div>
+                    <div style={{ color: '#86efac', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>{apaFile.name}</div>
+                    <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px' }}>{(apaFile.size / 1024).toFixed(1)} KB — Click to change</div>
+                  </div>
+                ) : (
+                  <div>
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '8px' }}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', fontWeight: 500 }}>Drop your document here</div>
+                    <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: '11px', marginTop: '4px' }}>or click to browse (.docx, .txt)</div>
+                  </div>
+                )}
+              </div>
+              {apaError && <div style={{ color: '#ef4444', fontSize: '11px', marginBottom: '12px', padding: '8px', background: 'rgba(239,68,68,0.1)', borderRadius: '8px', border: '1px solid rgba(239,68,68,0.2)' }} data-testid="apa-error">{apaError}</div>}
+              <button
+                onClick={() => { if (apaFile) runApaCheck(apaFile); }}
+                disabled={!apaFile}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  borderRadius: '10px',
+                  border: 'none',
+                  background: apaFile ? 'linear-gradient(135deg, #22c55e, #16a34a)' : 'rgba(255,255,255,0.1)',
+                  color: apaFile ? '#fff' : 'rgba(255,255,255,0.3)',
+                  fontWeight: 700,
+                  fontSize: '14px',
+                  cursor: apaFile ? 'pointer' : 'not-allowed',
+                  transition: 'all 0.2s',
+                  letterSpacing: '0.5px',
+                }}
+                data-testid="apa-check-btn"
+              >
+                Check APA Formatting
+              </button>
+            </>
+          )}
+
+          {apaLoading && (
+            <div style={{ textAlign: 'center', padding: '40px 0' }}>
+              <div style={{
+                width: '40px', height: '40px', border: '3px solid rgba(34,197,94,0.2)', borderTopColor: '#22c55e',
+                borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 16px',
+              }} />
+              <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>Analyzing your document...</div>
+              <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: '11px', marginTop: '6px' }}>Checking citations, formatting, and references</div>
+            </div>
+          )}
+
+          {apaResult && (
+            <div data-testid="apa-result">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                <div style={{
+                  width: '56px', height: '56px', borderRadius: '50%',
+                  background: `conic-gradient(${apaResult.overallScore >= 80 ? '#22c55e' : apaResult.overallScore >= 50 ? '#f59e0b' : '#ef4444'} ${apaResult.overallScore * 3.6}deg, rgba(255,255,255,0.1) 0deg)`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'rgba(10,15,10,0.97)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ color: apaResult.overallScore >= 80 ? '#86efac' : apaResult.overallScore >= 50 ? '#fcd34d' : '#fca5a5', fontSize: '16px', fontWeight: 800 }}>{apaResult.overallScore}</span>
+                  </div>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ color: '#fff', fontSize: '14px', fontWeight: 700, marginBottom: '2px' }}>{apaResult.fileName}</div>
+                  <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px' }}>{apaResult.wordCount?.toLocaleString()} words</div>
+                </div>
+              </div>
+
+              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', marginBottom: '16px', lineHeight: '1.5', padding: '10px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px' }}>
+                {apaResult.summary}
+              </div>
+
+              {(() => {
+                const issues = apaResult.issues || [];
+                const errors = issues.filter((i: any) => i.severity === 'error');
+                const warnings = issues.filter((i: any) => i.severity === 'warning');
+                const suggestions = issues.filter((i: any) => i.severity === 'suggestion');
+                return (
+                  <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                    <div style={{ flex: 1, padding: '8px', borderRadius: '8px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', textAlign: 'center' }}>
+                      <div style={{ color: '#fca5a5', fontSize: '18px', fontWeight: 800 }}>{errors.length}</div>
+                      <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Errors</div>
+                    </div>
+                    <div style={{ flex: 1, padding: '8px', borderRadius: '8px', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)', textAlign: 'center' }}>
+                      <div style={{ color: '#fcd34d', fontSize: '18px', fontWeight: 800 }}>{warnings.length}</div>
+                      <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Warnings</div>
+                    </div>
+                    <div style={{ flex: 1, padding: '8px', borderRadius: '8px', background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', textAlign: 'center' }}>
+                      <div style={{ color: '#93c5fd', fontSize: '18px', fontWeight: 800 }}>{suggestions.length}</div>
+                      <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Tips</div>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {(apaResult.strengths || []).length > 0 && (
+                <div style={{ marginBottom: '16px', padding: '10px', background: 'rgba(34,197,94,0.08)', borderRadius: '10px', border: '1px solid rgba(34,197,94,0.15)' }}>
+                  <div style={{ color: '#86efac', fontSize: '11px', fontWeight: 700, marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Strengths</div>
+                  {(apaResult.strengths as string[]).map((s: string, i: number) => (
+                    <div key={i} style={{ color: 'rgba(255,255,255,0.6)', fontSize: '11px', lineHeight: '1.5', paddingLeft: '12px', position: 'relative', marginBottom: '3px' }}>
+                      <span style={{ position: 'absolute', left: 0, color: '#86efac' }}>✓</span> {s}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {(() => {
+                const issues = apaResult.issues || [];
+                const categories = [...new Set(issues.map((i: any) => i.category))];
+                return categories.map((cat: string) => {
+                  const catIssues = issues.filter((i: any) => i.category === cat);
+                  const isExpanded = apaExpandedCats.has(cat);
+                  const hasErrors = catIssues.some((i: any) => i.severity === 'error');
+                  const hasWarnings = catIssues.some((i: any) => i.severity === 'warning');
+                  return (
+                    <div key={cat} style={{ marginBottom: '8px', borderRadius: '10px', border: `1px solid ${hasErrors ? 'rgba(239,68,68,0.2)' : hasWarnings ? 'rgba(245,158,11,0.15)' : 'rgba(59,130,246,0.15)'}`, overflow: 'hidden' }}>
+                      <button
+                        onClick={() => setApaExpandedCats(prev => { const next = new Set(prev); if (next.has(cat)) next.delete(cat); else next.add(cat); return next; })}
+                        style={{
+                          width: '100%', padding: '10px 12px', background: hasErrors ? 'rgba(239,68,68,0.06)' : hasWarnings ? 'rgba(245,158,11,0.06)' : 'rgba(59,130,246,0.06)',
+                          border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                          color: '#fff', fontSize: '12px', fontWeight: 600,
+                        }}
+                        data-testid={`apa-cat-${cat.replace(/\s/g, '-').toLowerCase()}`}
+                      >
+                        <span>{cat} ({catIssues.length})</span>
+                        <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '10px', transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>▼</span>
+                      </button>
+                      {isExpanded && catIssues.map((issue: any, idx: number) => (
+                        <div key={idx} style={{ padding: '10px 12px', borderTop: '1px solid rgba(255,255,255,0.05)', background: 'rgba(0,0,0,0.2)' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                            <span style={{
+                              fontSize: '9px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', textTransform: 'uppercase',
+                              background: issue.severity === 'error' ? 'rgba(239,68,68,0.2)' : issue.severity === 'warning' ? 'rgba(245,158,11,0.2)' : 'rgba(59,130,246,0.2)',
+                              color: issue.severity === 'error' ? '#fca5a5' : issue.severity === 'warning' ? '#fcd34d' : '#93c5fd',
+                            }}>{issue.severity}</span>
+                          </div>
+                          <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '11px', lineHeight: '1.5', marginBottom: '4px' }}>{issue.description}</div>
+                          {issue.location && (
+                            <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: '10px', fontStyle: 'italic', marginBottom: '4px', padding: '4px 8px', background: 'rgba(255,255,255,0.03)', borderRadius: '4px', borderLeft: '2px solid rgba(255,255,255,0.1)' }}>
+                              "{issue.location.length > 100 ? issue.location.slice(0, 100) + '...' : issue.location}"
+                            </div>
+                          )}
+                          <div style={{ color: '#86efac', fontSize: '10px', lineHeight: '1.4' }}>
+                            <strong>Fix:</strong> {issue.fix}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                });
+              })()}
+
+              <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
+                <button
+                  onClick={() => { setApaResult(null); setApaFile(null); setApaError(''); setApaExpandedCats(new Set()); }}
+                  style={{
+                    flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.15)',
+                    background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.7)', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
+                  }}
+                  data-testid="apa-new-check-btn"
+                >Check Another</button>
+                <button
+                  onClick={() => {
+                    const issues = apaResult.issues || [];
+                    let text = `APA 7th Edition Check — ${apaResult.fileName}\nScore: ${apaResult.overallScore}/100\n${apaResult.summary}\n\n`;
+                    issues.forEach((i: any) => { text += `[${i.severity.toUpperCase()}] ${i.category}: ${i.description}\n  Fix: ${i.fix}\n\n`; });
+                    navigator.clipboard.writeText(text);
+                  }}
+                  style={{
+                    flex: 1, padding: '10px', borderRadius: '8px', border: 'none',
+                    background: 'linear-gradient(135deg, #22c55e, #16a34a)', color: '#fff', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
+                  }}
+                  data-testid="apa-copy-btn"
+                >Copy Report</button>
+              </div>
             </div>
           )}
         </div>

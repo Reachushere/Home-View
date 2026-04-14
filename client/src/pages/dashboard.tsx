@@ -217,6 +217,7 @@ import {
   Printer,
   DollarSign,
   TreePine,
+  FileCheck,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import { useAccessMode } from "@/components/access-gate";
@@ -2338,6 +2339,7 @@ export default function Dashboard() {
   const [isMobileNotepadOpen, setIsMobileNotepadOpen] = useState(false);
   const [isMobileLibraryOpen, setIsMobileLibraryOpen] = useState(false);
   const [mobileLibraryAiSearch, setMobileLibraryAiSearch] = useState(false);
+  const [mobileLibraryApaCheck, setMobileLibraryApaCheck] = useState(false);
   const [librarySemesterKey, setLibrarySemesterKey] = useState<string | undefined>(undefined);
   const [mobileNotepadText, setMobileNotepadText] = useState('');
   const [mobileNotepadImages, setMobileNotepadImages] = useState<{file: File; preview: string}[]>([]);
@@ -7833,6 +7835,25 @@ export default function Dashboard() {
   useEffect(() => { (window as any).__allTasksCache = allTasksRaw; }, [allTasksRaw]);
 
   const hasUnackedReminders = allTasks.some((t: any) => t.type === 'reminder' && t.isAcknowledged === false && !t.isCompleted);
+
+  const [essayReminderTask, setEssayReminderTask] = useState<Task | null>(null);
+  useEffect(() => {
+    if (authLevel !== '5747') return;
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
+    const fiveDaysFromNow = new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000);
+    const essaysDueSoon = (allTasks || []).filter(t =>
+      t.type === 'essay' && !t.isCompleted && t.dueDate &&
+      new Date(t.dueDate) > now && new Date(t.dueDate) <= fiveDaysFromNow
+    );
+    const undismissed = essaysDueSoon.find(t => {
+      const key = `essay-reminder-dismissed-${t.id}-${todayStr}`;
+      return !localStorage.getItem(key);
+    });
+    if (undismissed && !essayReminderTask) {
+      setEssayReminderTask(undismissed);
+    }
+  }, [allTasks, authLevel]);
 
   const countdownBarsByRow = useMemo(() => {
     const twoWeeksOut = new Date(stableToday.getTime() + 14 * 24 * 60 * 60 * 1000);
@@ -14174,6 +14195,17 @@ export default function Dashboard() {
             </button>
           )}
 
+          {isFull && (
+            <button
+              onClick={() => { setMobileLibraryApaCheck(true); setIsMobileLibraryOpen(true); }}
+              data-testid="mobile-button-apa-checker"
+              style={{...mobileBtnStyle(btnSize), display: 'flex', flexDirection: 'column', gap: '2px'}}
+            >
+              <FileCheck style={{ height: `${iconSize * 0.7}px`, width: `${iconSize * 0.7}px`, color: '#86efac' }} />
+              <span style={{ fontSize: '7px', fontWeight: 600, fontFamily: "system-ui, -apple-system, sans-serif", lineHeight: 1 }}>APA Check</span>
+            </button>
+          )}
+
           {isMobilePortrait && (
             <div style={{ marginTop: '12px', color: 'rgba(255,255,255,0.4)', fontSize: '10px', textAlign: 'center', fontFamily: "system-ui, -apple-system, sans-serif" }}>
               Rotate for calendar
@@ -14722,13 +14754,100 @@ export default function Dashboard() {
       {isMobileLibraryOpen && (
         <LibraryView
           isOpen={isMobileLibraryOpen}
-          onClose={() => { setIsMobileLibraryOpen(false); setLibrarySemesterKey(undefined); setMobileLibraryAiSearch(false); }}
+          onClose={() => { setIsMobileLibraryOpen(false); setLibrarySemesterKey(undefined); setMobileLibraryAiSearch(false); setMobileLibraryApaCheck(false); }}
           semesters={[]}
           initialSemesterKey={librarySemesterKey}
           onOpenNotepad={() => setIsNotepadOpen(true)}
           courseDisplayNames={courseDisplayNames}
           initialAiSearch={mobileLibraryAiSearch}
+          initialApaCheck={mobileLibraryApaCheck}
         />
+      )}
+
+      {essayReminderTask && createPortal(
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 999998,
+          background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }} data-testid="essay-reminder-overlay">
+          <div style={{
+            background: 'linear-gradient(135deg, #1a1a2e, #16213e)',
+            border: '1px solid rgba(255,180,30,0.3)',
+            borderRadius: '16px', padding: '28px', width: '400px', maxWidth: '90vw',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(255,180,30,0.1)',
+          }} data-testid="essay-reminder-dialog">
+            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+              <div style={{ fontSize: '36px', marginBottom: '8px' }}>📝</div>
+              <div style={{ color: '#fcd34d', fontSize: '16px', fontWeight: 700, marginBottom: '4px' }}>Essay Reminder</div>
+              <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px' }}>
+                Due {(() => {
+                  const days = Math.ceil((new Date(essayReminderTask.dueDate!).getTime() - Date.now()) / (24*60*60*1000));
+                  return days === 1 ? 'tomorrow' : `in ${days} days`;
+                })()}
+              </div>
+            </div>
+            <div style={{
+              background: 'rgba(255,180,30,0.08)', border: '1px solid rgba(255,180,30,0.15)',
+              borderRadius: '10px', padding: '14px', marginBottom: '20px',
+            }}>
+              <div style={{ color: '#fff', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>{essayReminderTask.title}</div>
+              {essayReminderTask.courseName && (
+                <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px' }}>{essayReminderTask.courseName}</div>
+              )}
+              <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', marginTop: '4px' }}>
+                Due: {new Date(essayReminderTask.dueDate!).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+              </div>
+            </div>
+            <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px', textAlign: 'center', marginBottom: '20px' }}>
+              Would you like to start working on this essay now?
+            </div>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button
+                onClick={() => {
+                  const todayStr = new Date().toISOString().split('T')[0];
+                  localStorage.setItem(`essay-reminder-dismissed-${essayReminderTask.id}-${todayStr}`, '1');
+                  const now = new Date();
+                  const fiveDaysFromNow = new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000);
+                  const nextEssay = (allTasks || []).filter(t =>
+                    t.type === 'essay' && !t.isCompleted && t.dueDate && t.id !== essayReminderTask.id &&
+                    new Date(t.dueDate) > now && new Date(t.dueDate) <= fiveDaysFromNow &&
+                    !localStorage.getItem(`essay-reminder-dismissed-${t.id}-${todayStr}`)
+                  )[0];
+                  setEssayReminderTask(nextEssay || null);
+                }}
+                style={{
+                  flex: 1, padding: '12px', borderRadius: '10px',
+                  border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.05)',
+                  color: 'rgba(255,255,255,0.7)', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+                }}
+                data-testid="essay-reminder-dismiss"
+              >Not Now</button>
+              <button
+                onClick={() => {
+                  const attachments = essayReminderTask.attachments || [];
+                  const oneDriveAttachment = attachments.find((a: any) => {
+                    try { const p = typeof a === 'string' ? JSON.parse(a) : a; return p.type === 'onedrive'; } catch { return false; }
+                  });
+                  if (oneDriveAttachment) {
+                    const parsed = typeof oneDriveAttachment === 'string' ? JSON.parse(oneDriveAttachment) : oneDriveAttachment;
+                    const webUrl = parsed.webUrl || parsed.url;
+                    if (webUrl) window.open(webUrl, '_blank');
+                  }
+                  const todayStr = new Date().toISOString().split('T')[0];
+                  localStorage.setItem(`essay-reminder-dismissed-${essayReminderTask.id}-${todayStr}`, '1');
+                  setEssayReminderTask(null);
+                }}
+                style={{
+                  flex: 1, padding: '12px', borderRadius: '10px', border: 'none',
+                  background: 'linear-gradient(135deg, #f59e0b, #d97706)', color: '#fff',
+                  fontSize: '13px', fontWeight: 700, cursor: 'pointer',
+                }}
+                data-testid="essay-reminder-start"
+              >Start Essay</button>
+            </div>
+          </div>
+        </div>,
+        document.body
       )}
 
       {pomodoroAlertVisible && <div className="pomodoro-alert-border" />}

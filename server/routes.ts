@@ -26,6 +26,7 @@ import { fetchTMUCalendarEvents } from "./tmuCalendar";
 import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles, createOneDriveFolder, getOneDriveFileContentAsText, getOneDriveItemByPath, createOneDriveTextFile, updateOneDriveFileContent, deleteOneDriveItem, resolveSharedNotebookUrl, getSharedNotebookSections, getPagesBySectionId, startDeviceCodeFlow, pollDeviceCodeAuth, isOneDriveConnected } from "./onedrive";
 import * as spotifyApi from "./spotify";
 import { hasOpenAI, getApprovedOpenAIConfig, resolveApproval, getPendingApprovals, getRecentApprovals, subscribeToApprovals } from "./openai-approval";
+import multer from "multer";
 
 function getRequestAuthLevel(req: any): string {
   const cookie = req.cookies?.uni_cal_session;
@@ -4643,6 +4644,115 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     } catch (err: any) {
       console.error("Error creating essay template:", err);
       res.status(500).json({ error: "Failed to create essay template: " + (err.message || err) });
+    }
+  });
+
+  const apaUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
+
+  app.post("/api/apa-check", apaUpload.single("file"), async (req: any, res) => {
+    try {
+      const authLevel = getRequestAuthLevel(req);
+      if (authLevel !== '5747') {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      if (!process.env.OPENAI_API_KEY) {
+        return res.status(503).json({ error: "OpenAI API key not configured" });
+      }
+
+      const file = req.file;
+      if (!file) {
+        return res.status(400).json({ error: "No file uploaded" });
+      }
+
+      let documentText = "";
+      const ext = (file.originalname || "").toLowerCase();
+
+      if (ext.endsWith(".docx")) {
+        const mammoth = await import("mammoth");
+        const result = await mammoth.extractRawText({ buffer: file.buffer });
+        documentText = result.value;
+      } else if (ext.endsWith(".txt")) {
+        documentText = file.buffer.toString("utf-8");
+      } else {
+        return res.status(400).json({ error: "Unsupported file type. Please upload a .docx or .txt file." });
+      }
+
+      if (!documentText.trim()) {
+        return res.status(400).json({ error: "Document appears to be empty or could not be parsed." });
+      }
+
+      const truncated = documentText.slice(0, 12000);
+
+      const OpenAI = (await import("openai")).default;
+      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+      const systemPrompt = `You are an expert APA 7th Edition formatting checker for academic papers. Analyze the provided document text and identify ALL formatting, citation, and style issues according to APA 7th Edition guidelines.
+
+Check for these categories:
+1. **Title Page**: Running head, title formatting, author name, institutional affiliation, course info, instructor name, due date
+2. **In-Text Citations**: Proper (Author, Year) format, et al. usage (3+ authors), page numbers for direct quotes, semicolons between multiple citations, narrative vs parenthetical format
+3. **Reference List**: "References" header centered and bold, hanging indent, alphabetical order, italicization of titles, proper DOI/URL formatting, correct punctuation, edition/volume formatting
+4. **General Formatting**: Double spacing, 1-inch margins (note if can't verify), Times New Roman 12pt (note if can't verify), page numbers, heading levels (bold centered for Level 1, bold left-aligned for Level 2, etc.)
+5. **Writing Style**: Third person usage, past tense for literature review, avoiding contractions, proper use of "they" as singular pronoun
+6. **Quotations**: Block quotes for 40+ words (indented, no quotation marks), short quotes with page numbers, proper integration of quotes
+7. **Numbers & Statistics**: Numbers under 10 spelled out (with exceptions), proper statistical notation
+8. **Cross-Reference Check**: Citations in text that don't appear in references, references not cited in text
+
+For each issue found, provide:
+- The category
+- Severity: "error" (definite APA violation), "warning" (likely issue), or "suggestion" (style improvement)  
+- A clear description of the issue
+- The specific text from the document if applicable
+- How to fix it
+
+Return your analysis as JSON with this exact structure:
+{
+  "overallScore": <number 0-100>,
+  "summary": "<brief overall assessment>",
+  "issues": [
+    {
+      "category": "<category name>",
+      "severity": "error" | "warning" | "suggestion",
+      "description": "<what the issue is>",
+      "location": "<quoted text or section where issue occurs, or null>",
+      "fix": "<how to fix it>"
+    }
+  ],
+  "strengths": ["<things done well>"]
+}
+
+Be thorough but practical. Focus on real issues, not false positives. If the document is clearly not an academic paper, still check what you can and note it in the summary.`;
+
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: `Please analyze this document for APA 7th Edition compliance:\n\n${truncated}` }
+        ],
+        temperature: 0.2,
+        max_tokens: 4000,
+        response_format: { type: "json_object" },
+      });
+
+      const raw = completion.choices[0]?.message?.content || "{}";
+      let parsed;
+      try {
+        parsed = JSON.parse(raw);
+      } catch {
+        parsed = { overallScore: 0, summary: "Failed to parse AI response", issues: [], strengths: [] };
+      }
+
+      res.json({
+        success: true,
+        fileName: file.originalname,
+        fileSize: file.size,
+        wordCount: documentText.split(/\s+/).length,
+        ...parsed,
+      });
+    } catch (err: any) {
+      console.error("APA check error:", err);
+      res.status(500).json({ error: "APA check failed: " + (err.message || err) });
     }
   });
 
