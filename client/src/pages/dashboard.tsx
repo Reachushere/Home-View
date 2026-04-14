@@ -2291,7 +2291,8 @@ export default function Dashboard() {
   const [blankBoxOpen, setBlankBoxOpen] = useState(() => localStorage.getItem('blankBoxOpen') === '1');
   const [blankBoxAnimating, setBlankBoxAnimating] = useState(false);
   const [hwMinimizeAnim, setHwMinimizeAnim] = useState<'idle' | 'minimizing' | 'restoring'>('idle');
-  const [blankMinimizeAnim, setBlankMinimizeAnim] = useState<'idle' | 'minimizing'>('idle');
+  const [blankMinimizeAnim, setBlankMinimizeAnim] = useState<'idle' | 'minimizing' | 'restoring'>('idle');
+  const [blankBoxMinimizedToTab, setBlankBoxMinimizedToTab] = useState(() => localStorage.getItem('blankBoxMinimizedToTab') === '1');
   const hwWipeClipped = homeworkMinimized && !blankBoxOpen;
   const blankWipeClipped = !blankBoxOpen;
   const [isResizingHomework, setIsResizingHomework] = useState(false);
@@ -21453,6 +21454,43 @@ export default function Dashboard() {
           </svg>
         </button>
       )}
+      {/* Bottom tab for minimized blank box */}
+      {desktopShowHomework && blankBoxMinimizedToTab && !blankBoxOpen && !homeworkMinimized && (
+        <button
+          onClick={() => {
+            setBlankBoxMinimizedToTab(false);
+            localStorage.removeItem('blankBoxMinimizedToTab');
+            setHomeworkMinimized(true);
+            localStorage.setItem('homeworkMinimized', '1');
+            setBlankMinimizeAnim('minimizing');
+            setBlankBoxOpen(true);
+            localStorage.setItem('blankBoxOpen', '1');
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                setBlankMinimizeAnim('restoring');
+                setTimeout(() => setBlankMinimizeAnim('idle'), 380);
+              });
+            });
+          }}
+          className="fixed cursor-pointer"
+          style={{
+            bottom: '29px',
+            left: 'calc(50% - 42px)',
+            display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : 'block',
+            zIndex: 10002,
+            background: 'none',
+            border: 'none',
+            padding: 0,
+          }}
+          data-testid="bottom-tab-blankbox"
+          title="Restore blank canvas"
+        >
+          <svg width="84" height="25" viewBox="0 0 84 25" style={{ display: 'block' }}>
+            <path d="M0,25 L84,25 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+            <text x="42" y="13" textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.85)" fontSize="9" fontWeight="500" fontFamily="system-ui, -apple-system, sans-serif">Blank Box</text>
+          </svg>
+        </button>
+      )}
       {showNewSemChecklist && newSemChecklistKey && (
         <NewSemesterChecklist
           semesterKey={newSemChecklistKey}
@@ -35006,7 +35044,7 @@ export default function Dashboard() {
             </button>
           )}
           <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', border: '1.5px solid rgba(255,255,255,0.5)', pointerEvents: 'none', zIndex: 9999 }} />
-          {(blankBoxOpen || blankMinimizeAnim === 'minimizing') && <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', background: `linear-gradient(180deg, ${colorSettings.headerBar}e6 0%, ${colorSettings.headerBar}cc 30%, ${colorSettings.headerBar}b3 60%, ${colorSettings.headerBar}99 100%)`, backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', zIndex: 9998, pointerEvents: blankMinimizeAnim === 'minimizing' ? 'none' : 'auto', display: 'flex', flexDirection: 'column', transform: blankMinimizeAnim === 'minimizing' ? 'scale(0.15) translateY(120vh)' : 'none', opacity: blankMinimizeAnim === 'minimizing' ? 0 : 1, transition: blankMinimizeAnim === 'minimizing' ? 'transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1)' : 'none', transformOrigin: 'bottom center' }}>
+          {(blankBoxOpen || blankMinimizeAnim === 'minimizing' || blankMinimizeAnim === 'restoring') && <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', background: `linear-gradient(180deg, ${colorSettings.headerBar}e6 0%, ${colorSettings.headerBar}cc 30%, ${colorSettings.headerBar}b3 60%, ${colorSettings.headerBar}99 100%)`, backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', zIndex: 9998, pointerEvents: blankMinimizeAnim !== 'idle' ? 'none' : 'auto', display: 'flex', flexDirection: 'column', transform: blankMinimizeAnim === 'minimizing' ? 'scale(0.08) translateY(180%)' : blankMinimizeAnim === 'restoring' ? 'none' : 'none', opacity: blankMinimizeAnim === 'minimizing' ? 0 : 1, transition: blankMinimizeAnim === 'minimizing' ? 'transform 0.38s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.38s cubic-bezier(0.4, 0, 0.2, 1)' : blankMinimizeAnim === 'restoring' ? 'transform 0.35s cubic-bezier(0.0, 0, 0.2, 1), opacity 0.35s cubic-bezier(0.0, 0, 0.2, 1)' : 'none', transformOrigin: 'bottom center' }}>
             <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', border: '1.5px solid rgba(255,255,255,0.5)', pointerEvents: 'none', zIndex: 9999 }} />
             <div style={{ padding: '0 8px', height: courseRowRects.length > 0 ? `${courseRowRects[0].top - (calendarBorderTop || (calendarTop + 15)) - 1}px` : '45px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 46, overflow: 'hidden', borderRadius: '12px 12px 0 0', boxShadow: '0 3px 6px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3)' }}>
               <div style={{ position: 'absolute', top: '21px', left: '25px', right: '8px', height: '0.5px', backgroundColor: 'rgba(255,255,255,0.3)', zIndex: 2 }} />
@@ -35057,13 +35095,15 @@ export default function Dashboard() {
                   localStorage.removeItem('blankBoxOpen');
                   localStorage.removeItem('homeworkMinimized');
                   setHomeworkMinimized(false);
+                  setBlankBoxMinimizedToTab(true);
+                  localStorage.setItem('blankBoxMinimizedToTab', '1');
                   setBlankMinimizeAnim('idle');
-                }, 350);
+                }, 380);
               }}
               className="absolute z-[9999] rounded-tr-[11px] rounded-bl-[4px] rounded-tl-[2px] rounded-br-[2px] flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors"
               style={{ top: '1px', right: '1px', width: '25px', height: '25px', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)' }}
               data-testid="blank-minimize-dock"
-              title="Minimize blank box, restore homework"
+              title="Minimize blank box to tab"
             >
               <ArrowDownRight className="h-3 w-3 text-white" />
             </button>
@@ -35140,6 +35180,8 @@ export default function Dashboard() {
                 setHomeworkMinimized(true);
                 setBlankBoxOpen(true);
                 localStorage.setItem('blankBoxOpen', '1');
+                setBlankBoxMinimizedToTab(false);
+                localStorage.removeItem('blankBoxMinimizedToTab');
                 setHwMinimizeAnim('idle');
               }, 350);
             }}
