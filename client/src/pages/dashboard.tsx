@@ -34553,8 +34553,18 @@ export default function Dashboard() {
           style={{
             zIndex: 35,
             overflow: homeworkAnimating || blankBoxAnimating || homeworkMinimized || blankBoxOpen ? 'hidden' : 'visible',
-            right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1 + 3}px`,
-            width: `${Math.max(0, calendarReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4 - 1 - 1 + 1 - 5 - 2 - 1 - 3 + 2)}px`,
+            right: (() => {
+              const effectiveReduction = (homeworkMinimized || blankBoxOpen) && !homeworkAnimating && !blankBoxAnimating
+                ? (savedCalendarReductionRef.current ?? (parseFloat(localStorage.getItem('savedCalendarReduction') || '0') || calendarReduction))
+                : calendarReduction;
+              return `${calendarRight - effectiveReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1 + 3}px`;
+            })(),
+            width: (() => {
+              const effectiveReduction = (homeworkMinimized || blankBoxOpen) && !homeworkAnimating && !blankBoxAnimating
+                ? (savedCalendarReductionRef.current ?? (parseFloat(localStorage.getItem('savedCalendarReduction') || '0') || calendarReduction))
+                : calendarReduction;
+              return `${Math.max(0, effectiveReduction + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4 - 1 - 1 + 1 - 5 - 2 - 1 - 3 + 2)}px`;
+            })(),
             top: `${(calendarBorderTop || (calendarTop + 15))}px`,
             height: `${window.innerHeight - (calendarBorderTop || (calendarTop + 15)) - calendarBottom}px`,
             background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)',
@@ -34569,6 +34579,7 @@ export default function Dashboard() {
           data-testid="section-coming-up"
         >
           <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', border: '1.5px solid rgba(255,255,255,0.5)', pointerEvents: 'none', zIndex: 9999 }} />
+          {(blankBoxOpen || (homeworkMinimized && !homeworkAnimating && !blankBoxAnimating)) && <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', zIndex: 9998, pointerEvents: blankBoxOpen ? 'auto' : 'none' }} />}
           {/* Date navigation tab above glass box */}
           <div
             className="absolute z-[60]"
