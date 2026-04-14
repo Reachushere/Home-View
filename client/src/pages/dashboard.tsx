@@ -42936,12 +42936,28 @@ function TaskForm({
           console.error("Essay template creation failed:", essayErr);
         }
       }
+
+      if (data.type === 'phone_call' && newTask?.id && !task) {
+        try {
+          const dueDateObj = new Date(finalDueDate);
+          const dateStr = dueDateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+          const tickerBody = `📞 ${data.title}${data.courseName ? ` (${data.courseName.split(' - ')[0]?.trim()})` : ''} — ${dateStr}`;
+          await apiRequest("POST", "/api/announcements", {
+            body: tickerBody,
+            courseName: 'REMINDER',
+            visibleTo: ['5747', '4201', '1010'],
+          });
+        } catch (tickerErr) {
+          console.error("Phone call ticker item creation failed:", tickerErr);
+        }
+      }
       
       return newTask;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
       queryClient.invalidateQueries({ queryKey: ["/api/weeks"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/announcements"] });
       setPendingSubtasks([]); // Clear pending subtasks after successful creation
       onSuccess();
     },
