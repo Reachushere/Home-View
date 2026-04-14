@@ -32767,21 +32767,29 @@ export default function Dashboard() {
                         columns.push([item]);
                       }
                     }
-                    for (let c = 0; c < columns.length; c++) {
-                      for (const item of columns[c]) {
-                        const itemStart = item.startHour * 60 + item.startMin;
-                        const itemEnd = item.endHour * 60 + item.endMin;
-                        let colsOverlapping = 0;
-                        for (let cc = 0; cc < columns.length; cc++) {
-                          const hasOverlap = columns[cc].some(other => {
-                            const otherStart = other.startHour * 60 + other.startMin;
-                            const otherEnd = other.endHour * 60 + other.endMin;
-                            return otherStart < itemEnd - 1 && otherEnd - 1 > itemStart;
-                          });
-                          if (hasOverlap) colsOverlapping++;
-                        }
-                        overlapInfo.set(item.task.id, { col: c, totalCols: colsOverlapping });
+                    const allItems = columns.flatMap((col, ci) => col.map(item => ({ item, col: ci })));
+                    const itemCount = allItems.length;
+                    const parent = allItems.map((_, i) => i);
+                    const find = (x: number): number => { while (parent[x] !== x) { parent[x] = parent[parent[x]]; x = parent[x]; } return x; };
+                    const union = (a: number, b: number) => { parent[find(a)] = find(b); };
+                    for (let i = 0; i < itemCount; i++) {
+                      const aStart = allItems[i].item.startHour * 60 + allItems[i].item.startMin;
+                      const aEnd = allItems[i].item.endHour * 60 + allItems[i].item.endMin;
+                      for (let j = i + 1; j < itemCount; j++) {
+                        const bStart = allItems[j].item.startHour * 60 + allItems[j].item.startMin;
+                        const bEnd = allItems[j].item.endHour * 60 + allItems[j].item.endMin;
+                        if (aStart < bEnd - 1 && bStart < aEnd - 1) union(i, j);
                       }
+                    }
+                    const groupCols = new Map<number, Set<number>>();
+                    for (let i = 0; i < itemCount; i++) {
+                      const root = find(i);
+                      if (!groupCols.has(root)) groupCols.set(root, new Set());
+                      groupCols.get(root)!.add(allItems[i].col);
+                    }
+                    for (let i = 0; i < itemCount; i++) {
+                      const root = find(i);
+                      overlapInfo.set(allItems[i].item.task.id, { col: allItems[i].col, totalCols: groupCols.get(root)!.size });
                     }
                   }
                   return allMultiHour.map(({ task, dayIdx, startHour, startMin, endHour, endMin }) => {

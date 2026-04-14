@@ -1121,6 +1121,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
   const [activeToolPanel, setActiveToolPanel] = useState<'none' | 'highlight' | 'comment' | 'bookmark'>('none');
   const [saved, setSaved] = useState(false);
   const initialSearchApplied = useRef(false);
+  const [textLayerRenderCount, setTextLayerRenderCount] = useState(0);
   const [pendingComment, setPendingComment] = useState<{ x: number; y: number } | null>(null);
   const [pendingCommentText, setPendingCommentText] = useState('');
   const [expandedCommentId, setExpandedCommentId] = useState<number | null>(null);
@@ -1327,6 +1328,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
       if (rightPage && canvasRightRef.current) {
         await renderPageToCanvas(pdfDoc, rightPage, canvasRightRef.current, textLayerRightRef.current, containerWidth, containerHeight);
       }
+      if (!cancelled) setTextLayerRenderCount(c => c + 1);
     })();
     return () => { cancelled = true; };
   }, [pdfDoc, currentPage, phase, zoom, rightPage, renderPageToCanvas, readerWidth]);
@@ -1390,10 +1392,9 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
       if (span.querySelector('mark.search-mark')) return;
       const origText = span.textContent || '';
       if (!origText.trim()) return;
-      if (!pattern.test(origText.toLowerCase())) { pattern.lastIndex = 0; return; }
       pattern.lastIndex = 0;
       const html = origText.replace(pattern, '<mark class="search-mark">$1</mark>');
-      span.innerHTML = html;
+      if (html !== origText) span.innerHTML = html;
     });
   }, []);
 
@@ -1438,7 +1439,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
     };
     tryApply(0);
     return () => { cancelled = true; };
-  }, [searchQuery, currentPage, pdfDoc, zoom, applySearchHighlights, searchResults, searchCurrentIdx, searchMatchIdx]);
+  }, [searchQuery, currentPage, pdfDoc, zoom, applySearchHighlights, searchResults, searchCurrentIdx, searchMatchIdx, textLayerRenderCount]);
 
   useEffect(() => {
     if (!initialSearchQuery || !pdfDoc || initialSearchApplied.current) return;
@@ -3534,7 +3535,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           position: 'absolute',
           top: '60px',
           right: '16px',
-          zIndex: 100003,
+          zIndex: 100008,
           background: 'rgba(0,0,0,0.92)',
           border: '1px solid rgba(255,255,255,0.2)',
           borderRadius: '12px',
@@ -4242,7 +4243,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         position: 'absolute',
         top: '34px',
         left: '28px',
-        zIndex: 100002,
+        zIndex: 100008,
       }}>
         <div style={{
           display: 'flex',
