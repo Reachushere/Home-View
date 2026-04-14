@@ -1245,6 +1245,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
     }
     if (textLayer) {
       textLayer.innerHTML = '';
+      textLayer.setAttribute('data-rendered-page', '');
       textLayer.style.width = `${viewport.width}px`;
       textLayer.style.height = `${viewport.height}px`;
       const textContent = await page.getTextContent();
@@ -1309,6 +1310,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
         frag.appendChild(span);
       }
       textLayer.appendChild(frag);
+      textLayer.setAttribute('data-rendered-page', String(pageNum));
     }
   }, [zoom, moduleFiles, onOpenModuleFile, isSyllabus]);
 
@@ -1408,9 +1410,10 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
     }
     let cancelled = false;
     const tryApply = (attempt: number) => {
-      if (cancelled || attempt > 10) return;
-      const leftReady = textLayerRef.current && textLayerRef.current.querySelectorAll('span').length > 0;
-      if (!leftReady && attempt < 10) {
+      if (cancelled || attempt > 20) return;
+      const leftRenderedPage = textLayerRef.current?.getAttribute('data-rendered-page');
+      const leftReady = leftRenderedPage === String(currentPage) && textLayerRef.current!.querySelectorAll('span').length > 0;
+      if (!leftReady && attempt < 20) {
         setTimeout(() => tryApply(attempt + 1), 150);
         return;
       }
