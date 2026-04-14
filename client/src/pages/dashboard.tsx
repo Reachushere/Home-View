@@ -20867,8 +20867,8 @@ export default function Dashboard() {
           <div className="fixed inset-0 z-[10002]" onClick={() => setDayDetailDate(null)} data-testid="day-detail-overlay">
             <div className="fixed inset-0 bg-black/50" />
             <div
-              className="fixed left-[50%] translate-x-[-50%] z-[10002] overflow-hidden flex flex-col text-[11px] text-white p-0 sm:rounded-lg"
-              style={{ top: 'calc(3vh - 6px)', width: 'calc(96vw + 24px)', maxWidth: 'calc(96vw + 24px)', bottom: 'calc(3vh + 32px)', color: 'white', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}
+              className="fixed z-[10002] overflow-hidden flex flex-col text-[11px] text-white p-0 sm:rounded-lg"
+              style={{ top: `${(calendarBorderTop || (calendarTop + 15))}px`, left: `${calendarLeft}px`, right: `${(() => { const frozen = savedCalendarReductionRef.current ?? (parseFloat(localStorage.getItem('savedCalendarReduction') || '0') || 260); return calendarRight - frozen + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1 + 3; })()}px`, bottom: `${calendarBottom}px`, color: 'white', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}
               onClick={(e) => e.stopPropagation()}
               data-testid="day-detail-panel"
             >
@@ -21012,6 +21012,19 @@ export default function Dashboard() {
               )}
               <div className="flex justify-end px-4 py-[10px] border-t border-white/40 shrink-0 rounded-b-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, ${colorSettings.headerBar}bb 0%, ${colorSettings.headerBar}cc 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15), 0 -2px 8px rgba(0,0,0,0.08)' }}>
                 <button onClick={() => setDayDetailDate(null)} className="px-5 py-[5px] rounded text-[11px] font-medium text-white/80 hover:text-white transition-colors" style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)' }} data-testid="day-detail-close-bottom">Close</button>
+              </div>
+            </div>
+            <div
+              className="fixed z-[10003]"
+              style={{ bottom: `${calendarBottom - 12}px`, left: `${calendarLeft + 9}px`, height: '14px', display: 'flex', alignItems: 'center' }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div style={{ height: '14px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)', padding: '0 2px', gap: '0px' }}>
+                <div className="controls-tab-btn" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 6px', height: '100%', borderRadius: '0 0 4px 4px', fontSize: '9px', fontWeight: 600, color: 'rgba(0,0,0,0.65)', whiteSpace: 'nowrap', letterSpacing: '0.3px' }} onClick={() => { setDayDetailDate(null); }} data-testid="button-day-detail-close-tab">Today</div>
+                <span style={{ width: '1px', height: '8px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
+                <div className="controls-tab-btn" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 6px', height: '100%', borderRadius: '0 0 4px 4px', fontSize: '9px', fontWeight: 600, color: 'rgba(0,0,0,0.65)', whiteSpace: 'nowrap', letterSpacing: '0.3px' }} onClick={() => { setDayDetailDate(null); setCalendarView("month"); }} data-testid="button-day-to-month">Month</div>
+                <span style={{ width: '1px', height: '8px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
+                <div className="controls-tab-btn" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 6px', height: '100%', borderRadius: '0 0 4px 4px', fontSize: '9px', fontWeight: 600, color: 'rgba(0,0,0,0.65)', whiteSpace: 'nowrap', letterSpacing: '0.3px' }} onClick={() => { setDayDetailDate(null); setCalendarView("week"); }} data-testid="button-day-to-week">Week</div>
               </div>
             </div>
           </div>
