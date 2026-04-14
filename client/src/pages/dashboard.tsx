@@ -6084,7 +6084,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     const handleNlShortcut = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k' && authLevel === '5747') {
         e.preventDefault();
         setIsNlTaskOpen(prev => !prev);
         setNlTaskResult(null);
@@ -6095,7 +6095,7 @@ export default function Dashboard() {
     };
     window.addEventListener('keydown', handleNlShortcut);
     return () => window.removeEventListener('keydown', handleNlShortcut);
-  }, []);
+  }, [authLevel]);
 
   // Restore pomodoro state from server on mount
   useEffect(() => {
@@ -7845,12 +7845,16 @@ export default function Dashboard() {
     const essaysDueSoon = (allTasks || []).filter(t =>
       t.type === 'essay' && !t.isCompleted && t.dueDate &&
       new Date(t.dueDate) > now && new Date(t.dueDate) <= fiveDaysFromNow
-    );
+    ).sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime());
     const undismissed = essaysDueSoon.find(t => {
       const key = `essay-reminder-dismissed-${t.id}-${todayStr}`;
       return !localStorage.getItem(key);
     });
-    if (undismissed && !essayReminderTask) {
+    if (essayReminderTask) {
+      if (essayReminderTask.isCompleted || !essayReminderTask.dueDate || new Date(essayReminderTask.dueDate) <= now) {
+        setEssayReminderTask(undismissed || null);
+      }
+    } else if (undismissed) {
       setEssayReminderTask(undismissed);
     }
   }, [allTasks, authLevel]);
@@ -14781,7 +14785,7 @@ export default function Dashboard() {
               <div style={{ color: '#fcd34d', fontSize: '16px', fontWeight: 700, marginBottom: '4px' }}>Essay Reminder</div>
               <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px' }}>
                 Due {(() => {
-                  const days = Math.ceil((new Date(essayReminderTask.dueDate!).getTime() - Date.now()) / (24*60*60*1000));
+                  const days = Math.max(1, Math.ceil((new Date(essayReminderTask.dueDate!).getTime() - Date.now()) / (24*60*60*1000)));
                   return days === 1 ? 'tomorrow' : `in ${days} days`;
                 })()}
               </div>

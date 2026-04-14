@@ -5826,6 +5826,7 @@ Be thorough but practical. Focus on real issues, not false positives. If the doc
 
   app.post("/api/ai/set-key", async (req, res) => {
     try {
+      if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ error: "Access denied" });
       const { apiKey } = req.body;
       if (!apiKey || typeof apiKey !== 'string' || !apiKey.startsWith('sk-')) {
         return res.status(400).json({ error: "Invalid API key format. Must start with 'sk-'" });
@@ -5849,6 +5850,7 @@ Be thorough but practical. Focus on real issues, not false positives. If the doc
 
   app.post("/api/ai/parse-task", async (req, res) => {
     try {
+      if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ error: "Access denied" });
       const { text } = req.body;
       if (!text || typeof text !== 'string' || text.trim().length < 3) {
         return res.status(400).json({ error: "Input too short" });
@@ -5938,6 +5940,7 @@ Return ONLY valid JSON (no markdown):
 
   app.post("/api/ai/chat-materials", async (req, res) => {
     try {
+      if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ error: "Access denied" });
       const { message, courseFilter, history } = req.body;
       if (!message || typeof message !== 'string' || message.trim().length < 3) {
         return res.status(400).json({ error: "Message too short" });
