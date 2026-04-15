@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Zap, Send, X, Loader2, CheckCircle, XCircle, AlertTriangle, Trash2, RotateCcw, Maximize2, Minimize2, Pencil, Circle, ArrowRight, Undo2, Check, Scissors } from 'lucide-react';
+import { Zap, Send, X, Loader2, CheckCircle, XCircle, AlertTriangle, Trash2, RotateCcw, Maximize2, Minimize2, Pencil, Circle, ArrowRight, Undo2, Check, Scissors, Square } from 'lucide-react';
 import { queryClient } from '@/lib/queryClient';
 
 type MarkupTool = 'draw' | 'circle' | 'arrow';
@@ -259,6 +259,8 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
+  const queuedMessageRef = useRef<string | null>(null);
   const [pendingConfirm, setPendingConfirm] = useState<any[] | null>(null);
   const [expanded, setExpanded] = useState(false);
   const [position, setPosition] = useState<{ x: number; y: number } | null>(null);
@@ -410,11 +412,14 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
     setMessages(prev => [...prev, userMsg]);
     if (!overrideMsg) { setInput(''); setPastedImage(null); }
     setLoading(true);
+    const controller = new AbortController();
+    abortRef.current = controller;
 
     try {
       const resp = await fetch('/api/ai/command', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-AI-Session': sessionId },
+        signal: controller.signal,
         body: JSON.stringify({
           message: finalMsg,
           image: currentImage || undefined,
@@ -526,8 +531,13 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       }
     } catch (err: any) {
       setThinkingPhase(null);
-      setMessages(prev => [...prev, { role: 'assistant', content: `Error: ${err.message}` }]);
+      if (err.name === 'AbortError') {
+        setMessages(prev => [...prev, { role: 'assistant', content: 'Stopped.' }]);
+      } else {
+        setMessages(prev => [...prev, { role: 'assistant', content: `Error: ${err.message}` }]);
+      }
     } finally {
+      abortRef.current = null;
       setLoading(false);
       setThinkingPhase(null);
       setTimeout(() => {
@@ -541,6 +551,11 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
           return curr;
         });
       }, 100);
+      const queued = queuedMessageRef.current;
+      if (queued) {
+        queuedMessageRef.current = null;
+        setTimeout(() => sendMessage(queued), 300);
+      }
     }
   }, [input, loading, messages, invalidateAll, pastedImage]);
 
@@ -587,9 +602,15 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      sendMessage();
+      if (loading && input.trim()) {
+        queuedMessageRef.current = (queuedMessageRef.current ? queuedMessageRef.current + '\n' : '') + input.trim();
+        setMessages(prev => [...prev, { role: 'user', content: input.trim() }]);
+        setInput('');
+      } else {
+        sendMessage();
+      }
     }
-  }, [sendMessage]);
+  }, [sendMessage, loading, input]);
 
   const handlePaste = useCallback((e: React.ClipboardEvent) => {
     const items = e.clipboardData?.items;
@@ -1116,23 +1137,32 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
               <Scissors size={16} />
             </button>
             <button
-              onClick={() => sendMessage()}
-              disabled={loading || (!input.trim() && !pastedImage)}
+              onClick={() => {
+                if (loading && input.trim()) {
+                  queuedMessageRef.current = (queuedMessageRef.current ? queuedMessageRef.current + '\n' : '') + input.trim();
+                  setMessages(prev => [...prev, { role: 'user', content: input.trim() }]);
+                  setInput('');
+                } else {
+                  sendMessage();
+                }
+              }}
+              disabled={!input.trim() && !pastedImage}
               style={{
-                background: loading || (!input.trim() && !pastedImage) ? 'rgba(100,160,255,0.15)' : 'linear-gradient(135deg, #1d4ed8, #2563eb)',
+                background: (!input.trim() && !pastedImage) ? 'rgba(100,160,255,0.15)' : loading ? 'linear-gradient(135deg, #d97706, #f59e0b)' : 'linear-gradient(135deg, #1d4ed8, #2563eb)',
                 border: '1px solid rgba(96,165,250,0.3)',
                 borderRadius: '10px',
                 padding: '10px',
-                cursor: loading || (!input.trim() && !pastedImage) ? 'not-allowed' : 'pointer',
+                cursor: (!input.trim() && !pastedImage) ? 'not-allowed' : 'pointer',
                 color: '#fff',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                opacity: loading || (!input.trim() && !pastedImage) ? 0.5 : 1,
+                opacity: (!input.trim() && !pastedImage) ? 0.5 : 1,
               }}
+              title={loading ? 'Add context (will be included in next response)' : 'Send message'}
               data-testid="button-ai-command-send"
             >
-              <Send size={16} />
+              {loading ? <ArrowRight size={16} /> : <Send size={16} />}
             </button>
           </div>
           </div>
