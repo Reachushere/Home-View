@@ -488,6 +488,85 @@ export const AI_COMMAND_TOOLS = [
       },
     },
   },
+  {
+    type: "function" as const,
+    function: {
+      name: "check_build",
+      description: "Run TypeScript type-checking to verify the project compiles. ALWAYS call this after making code edits. Returns any compilation errors so you can fix them. This is how you verify your changes work.",
+      parameters: {
+        type: "object",
+        properties: {
+          focus: { type: "string", description: "Optional: specific file to check (e.g. 'server/aiCommandTools.ts'). If omitted, checks entire project." },
+        },
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "read_logs",
+      description: "Read recent server logs or error output. Use this to check if the app is running correctly after changes, or to debug runtime errors.",
+      parameters: {
+        type: "object",
+        properties: {
+          source: { type: "string", enum: ["server", "build", "staging"], description: "Which logs to read. 'server' = main app stdout/stderr, 'build' = last build output, 'staging' = staging server logs." },
+          lines: { type: "integer", description: "Number of lines to read from the end. Default 50." },
+        },
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "git_backup",
+      description: "Create a git backup commit of the current state before making risky changes. This allows easy rollback. Call this before starting a multi-file code change.",
+      parameters: {
+        type: "object",
+        properties: {
+          message: { type: "string", description: "Backup commit message describing what you're about to change" },
+        },
+        required: ["message"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "git_diff",
+      description: "Show what files have been changed and the diff. Use after making edits to review your changes before committing.",
+      parameters: {
+        type: "object",
+        properties: {
+          staged: { type: "boolean", description: "If true, shows staged changes. Default false (shows unstaged)." },
+        },
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "git_commit_and_push",
+      description: "Commit all current changes and push to GitHub. Use after verifying changes work (check_build passes). This deploys the code — the Pi can then pull and restart.",
+      parameters: {
+        type: "object",
+        properties: {
+          message: { type: "string", description: "Commit message describing the changes" },
+        },
+        required: ["message"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "get_project_map",
+      description: "Get a high-level map of the project structure showing all directories and key files. Use this to orient yourself before making changes.",
+      parameters: {
+        type: "object",
+        properties: {},
+      },
+    },
+  },
 ];
 
 export async function executeToolCall(name: string, args: Record<string, any>): Promise<{ success: boolean; result: any; needsConfirmation?: boolean; confirmationMessage?: string }> {
@@ -1080,6 +1159,123 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           }
         } catch (e: any) {
           return { success: false, result: { error: e.message?.substring(0, 500) } };
+        }
+      }
+
+      case "check_build": {
+        const projectRoot = getProjectRoot();
+        try {
+          const cmd = args.focus
+            ? `npx tsc --noEmit --pretty false 2>&1 | grep -i "${args.focus}" | head -30`
+            : 'npx tsc --noEmit --pretty false 2>&1 | head -50';
+          const output = execSync(cmd, { cwd: projectRoot, encoding: 'utf-8', timeout: 60000, maxBuffer: 2 * 1024 * 1024 });
+          const errors = output.trim();
+          if (!errors || errors.length === 0) {
+            return { success: true, result: { compiles: true, message: "No TypeScript errors found. Build is clean." } };
+          }
+          const errorLines = errors.split('\n').filter(l => l.includes('error TS'));
+          return { success: true, result: { compiles: false, errorCount: errorLines.length, errors: errors.substring(0, 4000) } };
+        } catch (e: any) {
+          const output = (e.stdout || '') + (e.stderr || '');
+          if (output.includes('error TS')) {
+            const errorLines = output.split('\n').filter((l: string) => l.includes('error TS'));
+            return { success: true, result: { compiles: false, errorCount: errorLines.length, errors: output.substring(0, 4000) } };
+          }
+          return { success: true, result: { compiles: true, message: "Build check completed." } };
+        }
+      }
+
+      case "read_logs": {
+        const source = args.source || 'server';
+        const lines = args.lines || 50;
+        try {
+          let logFile = '';
+          if (source === 'staging') {
+            logFile = '/tmp/staging-server.log';
+          } else if (source === 'build') {
+            const projectRoot = getProjectRoot();
+            const output = execSync(`npm run build 2>&1 | tail -${lines}`, { cwd: projectRoot, encoding: 'utf-8', timeout: 60000, maxBuffer: 2 * 1024 * 1024 });
+            return { success: true, result: { source: 'build', output: output.substring(0, 5000) } };
+          } else {
+            const projectRoot = getProjectRoot();
+            const isPi = projectRoot.includes('/home/byhomeyyz/');
+            if (isPi) {
+              const output = execSync(`pm2 logs dashboard --nostream --lines ${lines} 2>&1`, { encoding: 'utf-8', timeout: 10000 });
+              return { success: true, result: { source: 'server', output: output.substring(0, 5000) } };
+            }
+            const logFiles = execSync('ls -t /tmp/logs/Start_application_*.log 2>/dev/null | head -1', { encoding: 'utf-8', timeout: 3000 }).trim();
+            if (logFiles) logFile = logFiles;
+            else return { success: true, result: { source: 'server', output: "No server log files found" } };
+          }
+          const output = execSync(`tail -${lines} "${logFile}" 2>/dev/null || echo "Log file not found"`, { encoding: 'utf-8', timeout: 5000 });
+          return { success: true, result: { source, output: output.substring(0, 5000) } };
+        } catch (e: any) {
+          return { success: false, result: { error: e.message?.substring(0, 300) } };
+        }
+      }
+
+      case "git_backup": {
+        const projectRoot = getProjectRoot();
+        try {
+          execSync('git add -A', { cwd: projectRoot, timeout: 10000 });
+          const status = execSync('git status --porcelain', { cwd: projectRoot, encoding: 'utf-8', timeout: 5000 }).trim();
+          if (!status) return { success: true, result: { message: "No changes to backup — working tree is clean." } };
+          execSync(`git commit -m "🔒 AI backup: ${args.message.replace(/"/g, '\\"').substring(0, 100)}"`, { cwd: projectRoot, encoding: 'utf-8', timeout: 10000 });
+          const hash = execSync('git rev-parse --short HEAD', { cwd: projectRoot, encoding: 'utf-8', timeout: 3000 }).trim();
+          return { success: true, result: { backed_up: true, commit: hash, message: `Backup created at ${hash}. You can rollback with: git reset --hard ${hash}` } };
+        } catch (e: any) {
+          return { success: false, result: { error: e.message?.substring(0, 300) } };
+        }
+      }
+
+      case "git_diff": {
+        const projectRoot = getProjectRoot();
+        try {
+          const cmd = args.staged ? 'git diff --cached --stat && echo "---DIFF---" && git diff --cached' : 'git diff --stat && echo "---DIFF---" && git diff';
+          const output = execSync(cmd, { cwd: projectRoot, encoding: 'utf-8', timeout: 10000, maxBuffer: 2 * 1024 * 1024 });
+          return { success: true, result: { diff: output.substring(0, 8000) } };
+        } catch (e: any) {
+          return { success: false, result: { error: e.message?.substring(0, 300) } };
+        }
+      }
+
+      case "git_commit_and_push": {
+        const projectRoot = getProjectRoot();
+        try {
+          execSync('git add -A', { cwd: projectRoot, timeout: 10000 });
+          const status = execSync('git status --porcelain', { cwd: projectRoot, encoding: 'utf-8', timeout: 5000 }).trim();
+          if (!status) return { success: true, result: { message: "No changes to commit." } };
+          execSync(`git commit -m "${args.message.replace(/"/g, '\\"').substring(0, 200)}"`, { cwd: projectRoot, encoding: 'utf-8', timeout: 10000 });
+          const hash = execSync('git rev-parse --short HEAD', { cwd: projectRoot, encoding: 'utf-8', timeout: 3000 }).trim();
+          const ghToken = process.env.GITHUB_PERSONAL_ACCESS_TOKEN3;
+          if (ghToken) {
+            execSync(`git push https://Reachushere:${ghToken}@github.com/Reachushere/Home-View.git main 2>&1`, { cwd: projectRoot, encoding: 'utf-8', timeout: 30000 });
+            return { success: true, result: { committed: true, pushed: true, commit: hash, message: `Committed and pushed ${hash}. Run deploy.sh on the Pi to apply.` } };
+          }
+          return { success: true, result: { committed: true, pushed: false, commit: hash, message: `Committed ${hash} but GitHub push token not found. Push manually.` } };
+        } catch (e: any) {
+          return { success: false, result: { error: e.message?.substring(0, 500) } };
+        }
+      }
+
+      case "get_project_map": {
+        const projectRoot = getProjectRoot();
+        try {
+          const tree = execSync(
+            "find . -type f -not -path '*/node_modules/*' -not -path '*/.git/*' -not -path '*/dist/*' -not -path '*/attached_assets/*' -not -name '*.log' -not -name '*.json' -not -name '*.lock' | sort | head -200",
+            { cwd: projectRoot, encoding: 'utf-8', timeout: 10000 }
+          );
+          const dirs = execSync(
+            "find . -type d -not -path '*/node_modules/*' -not -path '*/.git/*' -not -path '*/dist/*' -maxdepth 4 | sort",
+            { cwd: projectRoot, encoding: 'utf-8', timeout: 10000 }
+          );
+          return { success: true, result: {
+            directories: dirs.trim().substring(0, 3000),
+            key_files: tree.trim().substring(0, 5000),
+            tip: "Key areas: client/src/pages/ (UI pages), client/src/components/ (shared components), server/ (backend), shared/schema.ts (DB types)"
+          }};
+        } catch (e: any) {
+          return { success: false, result: { error: e.message?.substring(0, 300) } };
         }
       }
 

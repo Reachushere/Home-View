@@ -97,12 +97,12 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 const toolLabel = event.name.replace(/_/g, ' ');
                 setMessages(prev => {
                   const updated = [...prev];
-                  updated[updated.length - 1] = { role: 'assistant', content: `⚙️ ${toolLabel}...`, toolResults, actionTaken };
+                  updated[updated.length - 1] = { role: 'assistant', content: streamedContent + `⚙️ ${toolLabel}...`, toolResults, actionTaken };
                   return updated;
                 });
               } else if (event.type === 'tool_done') {
                 const toolLabel = event.name.replace(/_/g, ' ');
-                const icon = event.success ? '✓' : '✗';
+                const icon = event.success ? '✅' : '❌';
                 streamedContent += `${icon} ${toolLabel}\n`;
                 setMessages(prev => {
                   const updated = [...prev];
