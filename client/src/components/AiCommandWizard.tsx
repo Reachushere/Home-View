@@ -255,6 +255,37 @@ const defaultWizardStyle: WizardStyle = {
   wizardAssistantBubble: 'rgba(30,50,90,0.7)',
 };
 
+function HeaderBtn({ tip, onClick, testId, children }: { tip: string; onClick: () => void; testId: string; children: React.ReactNode }) {
+  const [show, setShow] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hide = () => { setShow(false); if (timerRef.current) clearTimeout(timerRef.current); };
+  return (
+    <div style={{ position: 'relative', display: 'inline-flex' }}
+      onMouseEnter={() => { timerRef.current = setTimeout(() => setShow(true), 400); }}
+      onMouseLeave={hide}
+      onTouchStart={() => { setShow(true); timerRef.current = setTimeout(hide, 1800); }}
+    >
+      <button
+        onClick={() => { hide(); onClick(); }}
+        style={{ background: 'none', border: 'none', color: '#ffffff', cursor: 'pointer', padding: '4px', borderRadius: '6px', display: 'flex', alignItems: 'center' }}
+        data-testid={testId}
+      >
+        {children}
+      </button>
+      {show && (
+        <div style={{
+          position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)',
+          marginTop: '6px', background: 'rgba(0,0,0,0.85)', color: '#fff', fontSize: '11px',
+          fontWeight: 600, padding: '4px 10px', borderRadius: '6px', whiteSpace: 'nowrap',
+          pointerEvents: 'none', zIndex: 10,
+        }}>
+          {tip}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -870,22 +901,10 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
             <span style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.3px' }}>BrynAssist</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <button
-              onClick={clearChat}
-              style={{ background: 'none', border: 'none', color: '#ffffff', cursor: 'pointer', padding: '4px', borderRadius: '6px', display: 'flex', alignItems: 'center' }}
-              title="Clear chat"
-              data-testid="button-ai-command-clear"
-            >
-              <RotateCcw size={15} />
-            </button>
-            <button
-              onClick={() => { setExpanded(!expanded); if (expanded) setPosition(null); }}
-              style={{ background: 'none', border: 'none', color: '#ffffff', cursor: 'pointer', padding: '4px', borderRadius: '6px', display: 'flex', alignItems: 'center' }}
-              title={expanded ? 'Minimize' : 'Expand'}
-              data-testid="button-ai-command-expand"
-            >
+            <HeaderBtn tip="Clear conversation" onClick={clearChat} testId="button-ai-command-clear"><RotateCcw size={15} /></HeaderBtn>
+            <HeaderBtn tip={expanded ? 'Minimize' : 'Expand'} onClick={() => { setExpanded(!expanded); if (expanded) setPosition(null); }} testId="button-ai-command-expand">
               {expanded ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
-            </button>
+            </HeaderBtn>
             <button
               onClick={onClose}
               style={{ background: 'none', border: 'none', color: '#ffffff', cursor: 'pointer', padding: '4px', borderRadius: '6px', display: 'flex', alignItems: 'center' }}
