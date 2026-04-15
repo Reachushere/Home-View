@@ -970,6 +970,123 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
         return { success: true, result: { id: note.id, title: note.title } };
       }
 
+      case "ha_discover": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+          return { success: false, result: { error: "Home Assistant not configured. Needs rebuild: npm run build && pm2 restart all" } };
+        }
+        const haUrlDisc = HOME_ASSISTANT_URL.replace(/\/$/, '');
+        try {
+          const include = args.include || 'all';
+          const result: any = {};
+
+          const statesResp = await fetch(`${haUrlDisc}/api/states`, {
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          });
+          if (!statesResp.ok) return { success: false, result: { error: `HA API error: ${statesResp.status}` } };
+          const allStates: any[] = await statesResp.json();
+
+          const domainCounts: Record<string, number> = {};
+          for (const e of allStates) {
+            const d = e.entity_id.split('.')[0];
+            domainCounts[d] = (domainCounts[d] || 0) + 1;
+          }
+          result.totalEntities = allStates.length;
+          result.domainCounts = domainCounts;
+
+          if (include === 'all' || include === 'automations') {
+            const automations = allStates.filter((e: any) => e.entity_id.startsWith('automation.'));
+            result.automations = automations.map((e: any) => ({
+              entity_id: e.entity_id,
+              name: e.attributes?.friendly_name || '',
+              state: e.state,
+              last_triggered: e.attributes?.last_triggered || null,
+            }));
+          }
+
+          if (include === 'all' || include === 'scenes') {
+            const scenes = allStates.filter((e: any) => e.entity_id.startsWith('scene.'));
+            result.scenes = scenes.map((e: any) => ({
+              entity_id: e.entity_id,
+              name: e.attributes?.friendly_name || '',
+            }));
+          }
+
+          if (include === 'all' || include === 'areas') {
+            try {
+              const areasResp = await fetch(`${haUrlDisc}/api/config/areas/list`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+                body: '{}',
+              });
+              if (areasResp.ok) {
+                const areas = await areasResp.json();
+                result.areas = Array.isArray(areas) ? areas.map((a: any) => ({
+                  id: a.area_id || a.id,
+                  name: a.name,
+                })) : areas?.result?.map((a: any) => ({ id: a.area_id || a.id, name: a.name })) || [];
+              }
+            } catch {}
+          }
+
+          if (include === 'all' || include === 'summary') {
+            const lights = allStates.filter((e: any) => e.entity_id.startsWith('light.'));
+            const lightsOn = lights.filter((e: any) => e.state === 'on');
+            result.lightsSummary = { total: lights.length, on: lightsOn.length, off: lights.length - lightsOn.length };
+
+            const groups = allStates.filter((e: any) =>
+              e.entity_id.includes('group') || e.entity_id.includes('all_') ||
+              (e.attributes?.entity_id && Array.isArray(e.attributes.entity_id))
+            );
+            result.groups = groups.slice(0, 30).map((e: any) => ({
+              entity_id: e.entity_id,
+              name: e.attributes?.friendly_name || '',
+              state: e.state,
+              members: e.attributes?.entity_id || [],
+            }));
+          }
+
+          result.tip = "Use memory_write to save key findings (room groups, common entities, automation names) so you remember them next time.";
+          return { success: true, result };
+        } catch (err: any) {
+          return { success: false, result: { error: `HA discovery failed: ${err.message}` } };
+        }
+      }
+
+      case "ha_get_state": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+          return { success: false, result: { error: "Home Assistant not configured" } };
+        }
+        const haUrlState = HOME_ASSISTANT_URL.replace(/\/$/, '');
+        try {
+          const resp = await fetch(`${haUrlState}/api/states/${args.entity_id}`, {
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          });
+          if (!resp.ok) {
+            if (resp.status === 404) return { success: false, result: { error: `Entity '${args.entity_id}' not found in HA. Use ha_list_entities to search for the correct entity.` } };
+            return { success: false, result: { error: `HA API error: ${resp.status}` } };
+          }
+          const state: any = await resp.json();
+          return { success: true, result: {
+            entity_id: state.entity_id,
+            state: state.state,
+            name: state.attributes?.friendly_name || '',
+            attributes: {
+              brightness: state.attributes?.brightness,
+              color_temp: state.attributes?.color_temp,
+              rgb_color: state.attributes?.rgb_color,
+              temperature: state.attributes?.temperature,
+              unit: state.attributes?.unit_of_measurement,
+              device_class: state.attributes?.device_class,
+              entity_id: state.attributes?.entity_id,
+            },
+            last_changed: state.last_changed,
+            last_updated: state.last_updated,
+          }};
+        } catch (err: any) {
+          return { success: false, result: { error: `HA connection failed: ${err.message}` } };
+        }
+      }
+
       case "ha_list_entities": {
         if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
           return { success: false, result: { error: "Home Assistant not configured. Needs rebuild: npm run build && pm2 restart all" } };

@@ -6171,7 +6171,15 @@ Bryn has 400+ smart devices. NEVER guess entity IDs. Use ha_list_entities to sea
 1. If you're not 100% sure of the entity_id → ha_list_entities(search:"kitchen", domain:"light") FIRST
 2. Find the right entity (look for groups first — they control multiple devices at once)
 3. THEN ha_service_call with the correct entity_id
-4. Only skip step 1 for entities you've used successfully before in this conversation
+4. Only skip step 1 for entities you've confirmed work in this conversation
+5. After controlling a device, use ha_get_state to VERIFY it actually changed
+
+⚡ LEARNING BRYN'S HA SETUP:
+• "learn my HA" / "what devices do I have?" → ha_discover(include:"all") → then memory_write the key findings
+• "what automations do I have?" → ha_discover(include:"automations")
+• "is the kitchen light on?" → ha_get_state(entity_id:"...") — look up entity first if unsure
+• "what lights are on?" → ha_list_entities(domain:"light") → check states
+• After discovering entities, ALWAYS memory_write the important ones so you remember next time
 
 SPEAKERS (these are fixed — no lookup needed):
 • media_player.byhome — Main speaker group (everywhere)
@@ -6280,7 +6288,7 @@ TOOL REFERENCE
 ═══════════════════════════════════════════════════
 TASKS: create_task, update_task, search_tasks, get_upcoming_tasks, complete_task, bulk_complete_tasks, bulk_delete_tasks
 COURSES: get_semester_info, get_course_list, update_semester_settings
-HOME: ha_service_call, ha_announce, spotify_control
+HOME: ha_list_entities (search devices), ha_discover (learn full HA setup), ha_get_state (check device state), ha_service_call (control devices), ha_announce (Alexa announcements), spotify_control
 NOTES: create_notepad_note, notepad_crud, manage_sticky_note
 THEME: update_app_theme (dashboard + wizard styles — ALWAYS use for appearance changes)
 CODE: read_file, write_file, edit_file, list_directory, search_code, get_project_map, analyze_ui
