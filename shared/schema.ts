@@ -947,5 +947,23 @@ export type ProfileSettings = typeof profileSettings.$inferSelect;
 export const insertProfileSettingsSchema = createInsertSchema(profileSettings).omit({ id: true });
 export type InsertProfileSettings = z.infer<typeof insertProfileSettingsSchema>;
 
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  username: text("username").notNull().unique(),
+  email: text("email"),
+  displayName: text("display_name").notNull(),
+  passwordHash: text("password_hash"),
+  authLevel: text("auth_level").notNull().default('5747'),
+  profileName: text("profile_name"),
+  mustChangePassword: boolean("must_change_password").default(false),
+  enabled: boolean("enabled").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  lastLogin: timestamp("last_login"),
+});
+
+export type User = typeof users.$inferSelect;
+export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true, lastLogin: true });
+export type InsertUser = z.infer<typeof insertUserSchema>;
+
 // Export chat models for AI integrations
 export * from "./models/chat";

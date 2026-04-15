@@ -1,5 +1,7 @@
 import fs from 'fs';
 import path from 'path';
+import bcrypt from 'bcryptjs';
+import { Pool as PgPool } from 'pg';
 
 for (const envFile of ['.env', '.env.local']) {
   const envPath = path.resolve(process.cwd(), envFile);
@@ -340,6 +342,128 @@ app.post("/api/admin/restart", (req: Request, res: Response) => {
   if (!getAdminAuth(req)) return res.status(403).json({ error: "Admin access required" });
   res.json({ success: true, message: 'Restarting...' });
   setTimeout(() => process.exit(0), 1000);
+});
+
+const adminDb = new PgPool({ connectionString: process.env.DATABASE_URL });
+
+app.get("/api/admin/users", async (req: Request, res: Response) => {
+  if (!getAdminAuth(req)) return res.status(403).json({ error: "Admin access required" });
+  try {
+    const result = await adminDb.query('SELECT id, username, email, display_name, auth_level, profile_name, must_change_password, enabled, created_at, last_login FROM users ORDER BY id');
+    res.json(result.rows);
+  } catch (e: any) { res.status(500).json({ error: e.message }); }
+});
+
+app.post("/api/admin/users", async (req: Request, res: Response) => {
+  if (!getAdminAuth(req)) return res.status(403).json({ error: "Admin access required" });
+  const { username, email, displayName, authLevel, password } = req.body;
+  if (!username || !displayName) return res.status(400).json({ error: "Username and display name required" });
+  try {
+    const hash = password ? await bcrypt.hash(password, 10) : null;
+    const result = await adminDb.query(
+      'INSERT INTO users (username, email, display_name, password_hash, auth_level, must_change_password, enabled) VALUES ($1, $2, $3, $4, $5, $6, true) RETURNING id, username, email, display_name, auth_level, must_change_password, enabled, created_at',
+      [username, email || null, displayName, hash, authLevel || '1010']
+    );
+    res.json(result.rows[0]);
+  } catch (e: any) { res.status(500).json({ error: e.message }); }
+});
+
+app.patch("/api/admin/users/:id", async (req: Request, res: Response) => {
+  if (!getAdminAuth(req)) return res.status(403).json({ error: "Admin access required" });
+  const { id } = req.params;
+  const { displayName, authLevel, enabled, password, email } = req.body;
+  try {
+    const sets: string[] = [];
+    const vals: any[] = [];
+    let idx = 1;
+    if (displayName !== undefined) { sets.push(`display_name = $${idx++}`); vals.push(displayName); }
+    if (authLevel !== undefined) { sets.push(`auth_level = $${idx++}`); vals.push(authLevel); }
+    if (enabled !== undefined) { sets.push(`enabled = $${idx++}`); vals.push(enabled); }
+    if (email !== undefined) { sets.push(`email = $${idx++}`); vals.push(email); }
+    if (password) { sets.push(`password_hash = $${idx++}`); vals.push(await bcrypt.hash(password, 10)); sets.push(`must_change_password = false`); }
+    if (sets.length === 0) return res.json({ success: true });
+    vals.push(id);
+    await adminDb.query(`UPDATE users SET ${sets.join(', ')} WHERE id = $${idx}`, vals);
+    res.json({ success: true });
+  } catch (e: any) { res.status(500).json({ error: e.message }); }
+});
+
+app.delete("/api/admin/users/:id", async (req: Request, res: Response) => {
+  if (!getAdminAuth(req)) return res.status(403).json({ error: "Admin access required" });
+  const { id } = req.params;
+  try {
+    await adminDb.query('DELETE FROM users WHERE id = $1', [id]);
+    res.json({ success: true });
+  } catch (e: any) { res.status(500).json({ error: e.message }); }
+});
+
+app.get("/api/admin/profiles", async (req: Request, res: Response) => {
+  if (!getAdminAuth(req)) return res.status(403).json({ error: "Admin access required" });
+  try {
+    const result = await adminDb.query('SELECT * FROM profile_settings ORDER BY id');
+    res.json(result.rows);
+  } catch (e: any) { res.status(500).json({ error: e.message }); }
+});
+
+app.patch("/api/admin/profiles/:id", async (req: Request, res: Response) => {
+  if (!getAdminAuth(req)) return res.status(403).json({ error: "Admin access required" });
+  const { id } = req.params;
+  const updates = req.body;
+  try {
+    const sets: string[] = [];
+    const vals: any[] = [];
+    let idx = 1;
+    const allowedFields = ['profile_name', 'show_outlook_calendar', 'show_google_calendar', 'show_second_google_calendar', 'show_tasks', 'show_weather', 'show_news_ticker', 'show_homework_panel', 'show_degree_tracking', 'show_bryn_assist', 'show_notepad', 'show_radio', 'can_edit_tasks', 'can_add_calendar_events', 'can_access_settings', 'can_view_library', 'custom_calendars', 'enabled'];
+    for (const [key, value] of Object.entries(updates)) {
+      if (allowedFields.includes(key)) {
+        sets.push(`${key} = $${idx++}`);
+        vals.push(value);
+      }
+    }
+    if (sets.length === 0) return res.json({ success: true });
+    vals.push(id);
+    await adminDb.query(`UPDATE profile_settings SET ${sets.join(', ')} WHERE id = $${idx}`, vals);
+    res.json({ success: true });
+  } catch (e: any) { res.status(500).json({ error: e.message }); }
+});
+
+app.post("/api/auth/login-user", async (req: Request, res: Response) => {
+  const { username, password } = req.body;
+  if (!username || !password) return res.status(400).json({ success: false, message: "Username and password required" });
+  try {
+    const result = await adminDb.query('SELECT * FROM users WHERE username = $1 AND enabled = true', [username]);
+    if (result.rows.length === 0) return res.status(401).json({ success: false, message: "Invalid credentials" });
+    const user = result.rows[0];
+    if (!user.password_hash) {
+      return res.status(401).json({ success: false, message: "Password not set. Use your access code to log in, then set a password in Admin settings." });
+    }
+    const valid = await bcrypt.compare(password, user.password_hash);
+    if (!valid) return res.status(401).json({ success: false, message: "Invalid credentials" });
+    const token = createSessionToken(user.auth_level);
+    trackSession(token, user.auth_level, req);
+    await adminDb.query('UPDATE users SET last_login = NOW() WHERE id = $1', [user.id]);
+    res.cookie("uni_cal_session", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 10 * 365 * 24 * 60 * 60 * 1000,
+    });
+    return res.json({ success: true, token, level: user.auth_level, mustChangePassword: user.must_change_password, displayName: user.display_name });
+  } catch (e: any) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+app.post("/api/auth/set-password", async (req: Request, res: Response) => {
+  const token = getAuthToken(req);
+  if (!token) return res.status(401).json({ error: "Not authenticated" });
+  const parsed = parseToken(token);
+  if (!parsed.valid) return res.status(401).json({ error: "Invalid token" });
+  const { username, newPassword } = req.body;
+  if (!newPassword || newPassword.length < 4) return res.status(400).json({ error: "Password must be at least 4 characters" });
+  try {
+    const hash = await bcrypt.hash(newPassword, 10);
+    await adminDb.query('UPDATE users SET password_hash = $1, must_change_password = false WHERE username = $2', [hash, username]);
+    res.json({ success: true });
+  } catch (e: any) { res.status(500).json({ error: e.message }); }
 });
 
 app.use((req: Request, res: Response, next: NextFunction) => {

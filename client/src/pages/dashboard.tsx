@@ -4,6 +4,7 @@ import Cropper from "react-easy-crop";
 import { NewCourseWizard } from "@/components/NewCourseWizard";
 import { CourseDetailDialog } from "@/components/CourseDetailDialog";
 import { CalendarSettingsDialog } from "@/components/CalendarSettingsDialog";
+import AdminPanel from "@/components/AdminPanel";
 import CourseDocumentsWizard from "@/components/CourseDocumentsWizard";
 import NotepadDialog from "@/components/NotepadDialog";
 import FloatingPostIt from "@/components/FloatingPostIt";
@@ -218,6 +219,7 @@ import {
   Italic,
   Type,
   CheckSquare2,
+  Shield,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import { useAccessMode } from "@/components/access-gate";
@@ -1596,6 +1598,7 @@ export default function Dashboard() {
     return startOfDayET(addDays(currentTime, dow === 6 ? 7 : (6 - dow)));
   }, [currentTime.getDate()]);
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
+  const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
   const [showNewSemChecklist, setShowNewSemChecklist] = useState(false);
   const [newSemChecklistKey, setNewSemChecklistKey] = useState('');
   const [newSemChecklistLabel, setNewSemChecklistLabel] = useState('');
@@ -17106,6 +17109,30 @@ export default function Dashboard() {
             </Button>
           </div>
 
+          {isAdmin && (
+          <div className="pill-button-hover" style={{ 
+            marginTop: '0px', width: '44px', height: '43px', borderRadius: '50%',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
+            position: 'relative' as const, zIndex: 1,
+            border: '1.5px solid rgba(255,255,255,0.35)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
+            <Button 
+              size="icon"
+              variant="ghost"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
+              style={{ background: 'transparent' }}
+              data-testid="button-admin-panel"
+              title="Admin Panel"
+              onClick={() => {
+                startTransition(() => setIsAdminPanelOpen(true));
+              }}
+            >
+              <Shield style={{ width: '20px', height: '20px', color: 'rgba(255,255,255,0.85)' }} />
+            </Button>
+          </div>
+          )}
 
           {/* Scholarships Button */}
           <div className="pill-button-hover" style={{ 
@@ -29279,6 +29306,11 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
           
+          <AdminPanel
+            open={isAdminPanelOpen}
+            onClose={() => setIsAdminPanelOpen(false)}
+            colorSettings={colorSettings}
+          />
           
           {/* Calendar wrapper - leaves space for honeycombs on right */}
           <div ref={calendarWrapperRef} style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction - 2}px` : ' - 12px'})`, height: 'calc(100% - 18px)', marginTop: '18px', marginLeft: '12px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 - 2 - 2 - 2 : 12}px`, display: desktopShowCalendar ? 'flex' : 'none', flexDirection: 'column', transition: (homeworkAnimating || blankBoxAnimating) ? 'width 0.35s cubic-bezier(0.4,0,0.2,1), margin-right 0.35s cubic-bezier(0.4,0,0.2,1)' : 'none' }} className="relative overflow-visible">
