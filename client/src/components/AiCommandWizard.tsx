@@ -930,26 +930,34 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                   if (last < text.length) parts.push(text.slice(last));
                   return parts;
                 })()}
-                {msg.actionTaken && msg.toolResults && msg.toolResults.length > 0 && (
-                  <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    {msg.toolResults.map((tr: any, j: number) => (
-                      <div key={j} style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        fontSize: '11px',
-                        padding: '4px 8px',
-                        borderRadius: '6px',
-                        background: tr.success ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)',
-                        border: `1px solid ${tr.success ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}`,
-                        color: tr.success ? '#86efac' : '#fca5a5',
-                      }}>
-                        {tr.success ? <CheckCircle size={12} /> : <XCircle size={12} />}
-                        <span>{tr.name}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                {msg.actionTaken && msg.toolResults && msg.toolResults.length > 0 && (() => {
+                  const failed = msg.toolResults.filter((tr: any) => !tr.success);
+                  const successCount = msg.toolResults.length - failed.length;
+                  return (
+                    <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      {successCount > 0 && (
+                        <div style={{
+                          display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px',
+                          padding: '4px 8px', borderRadius: '6px',
+                          background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)', color: '#86efac',
+                        }}>
+                          <CheckCircle size={12} />
+                          <span>{successCount} action{successCount !== 1 ? 's' : ''} completed</span>
+                        </div>
+                      )}
+                      {failed.map((tr: any, j: number) => (
+                        <div key={j} style={{
+                          display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px',
+                          padding: '4px 8px', borderRadius: '6px',
+                          background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', color: '#fca5a5',
+                        }}>
+                          <XCircle size={12} />
+                          <span>{tr.name} failed</span>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
               </div>
             </div>
           ))}
