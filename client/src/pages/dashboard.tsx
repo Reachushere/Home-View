@@ -33892,9 +33892,8 @@ export default function Dashboard() {
                       let localMax = mhOi.totalCols;
                       for (let hh = mhItem.startHour; hh < (mhItem.endMin === 0 ? mhItem.endHour : mhItem.endHour + 1); hh++) {
                         const key = `${mhItem.dayIdx}-${hh}`;
-                        const iC = inlineCountPerSlot.get(key) || 0;
                         const oC = multiHourOverlayCols.get(key) || mhOi.totalCols;
-                        localMax = Math.max(localMax, oC + iC);
+                        localMax = Math.max(localMax, oC);
                       }
                       perTaskMax.set(i, localMax);
                     }
