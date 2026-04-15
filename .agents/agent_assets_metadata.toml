@@ -222,6 +222,12 @@ uri = "file://attached_assets/bryn_tv_popcorn_v19.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "A3ZP2S0NRUh6BnmcDojrw"
+uri = "file://attached_assets/bryn_tv_popcorn_v20.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "YFf1AFzLkqTG8aZXkvxoF"
 uri = "file://.local/cat-washroom-automation-report.md"
@@ -467,3 +473,9 @@ id = "W0yYMZcPM5VWEgZ0YDAWk"
 uri = "file://attached_assets/bryn_tv_popcorn_v19.png"
 type = "image"
 title = "Bryn TV Popcorn v19 - One Popcorn"
+
+[[outputs]]
+id = "hurBr6KNJc-P8cIfx6PJu"
+uri = "file://attached_assets/bryn_tv_popcorn_v20.png"
+type = "image"
+title = "Bryn TV Popcorn v20 - One Hand, Better TV"
