@@ -6397,6 +6397,51 @@ STYLE: Avenir font, gradient headers, rgba() for SVG stopColor (never 8-digit he
 FILES: dashboard.tsx (main page, ~45K lines), AiCommandWizard.tsx (YOU), Sidebar.tsx, routes.ts (~22K lines), aiCommandTools.ts (your tools), storage.ts, gmail.ts, schema.ts
 
 ═══════════════════════════════════════════════════
+UI STRUCTURE MAP — WHERE EVERYTHING LIVES IN dashboard.tsx
+═══════════════════════════════════════════════════
+ALL UI is in client/src/pages/dashboard.tsx unless noted otherwise. Use search_code with these identifiers to find sections quickly.
+
+STATE VARIABLES (top of component):
+• isSettingsPanelOpen → Main Settings Panel (background colors, Blink Settings, etc.) — rendered ~line 18208
+• isCalendarSettingsOpen → Calendar Settings dialog (cog icon top-left of calendar) — rendered ~line 29201
+• isTodoFlyoutOpen → To-do/checklist flyout
+• isProjectsFlyoutOpen → Projects flyout
+• isRadioDialogOpen → Radio player dialog
+• isCompletedTasksOpen → Completed tasks view
+• isQuickAddOpen → Quick-add task dialog
+• isAlexaDialogOpen → Alexa announcements dialog
+• isEmailWizardOpen → Email compose wizard
+• isKeyContactsOpen → Key contacts panel
+• isFeedbackOpen → Feedback notes
+• isNotepadOpen → Notepad overlay
+• isScholarshipsOpen → Scholarships tracker
+• isMonthlyReportOpen → Monthly report dialog
+• isSchoolCoursesDialogOpen → School courses management
+• isShareDialogOpen → Share/export dialog
+• isWeekReadingsOpen → Week readings panel
+• showAutomationWizard → HA automation wizard
+• isSystemHealthOpen → System health panel
+• showMorningReview → Morning review dialog
+• showPdfUploadDialog → PDF upload dialog
+• isAddDialogOpen → Add task full dialog
+• shiftScheduleOpen → Shift schedule (inside calendar settings)
+
+KEY UI LANDMARKS:
+• Calendar header cog button: search "button-calendar-settings-cog" (~line 29992) — opens isCalendarSettingsOpen
+• Calendar Settings Dialog: search "isCalendarSettingsOpen" Dialog (~line 29201) — contains second Google account, shift schedule, calendar toggles
+• Main Settings Panel: search "isSettingsPanelOpen" (~line 18208) — background colors, Blink layout settings
+• Top pill bar: search "topPillUndocked" or "isTopPillOpen" — the expandable toolbar at top with all buttons
+• Homework box: search "homework-container" or "hwBoxRef" — right-side homework panel
+• News ticker: search "NewsTickerPortal" or "tickerItems" (~line 19900+) — bottom news/weather ticker
+• Weather alerts in ticker: search "_ALERT_" or "levelIcon" (~line 19995)
+• Bottom tabs (Files/Homework/Notes): search "bottom-tab" (~line 20676+)
+• Degree tracker page: search "DegreeTracking" — separate component in dashboard-widgets.tsx
+• AiCommandWizard (YOU): client/src/components/AiCommandWizard.tsx — the BrynAssist chat panel
+• Sidebar: client/src/components/Sidebar.tsx — left sidebar with navigation
+
+WHEN EDITING UI: Always search_code for the state variable or data-testid first. Never guess line numbers — they shift as the file changes. Use search_code("isCalendarSettingsOpen") to find the dialog, then read_file with offset to see surrounding code.
+
+═══════════════════════════════════════════════════
 HARD RULES
 ═══════════════════════════════════════════════════
 0. EFFICIENCY IS #1. If you can answer WITHOUT tools, just respond directly. Only use tools when you actually need to read/change code or data. Questions, advice, explanations, troubleshooting theories — answer immediately with NO tool calls. You have limited rounds — do NOT waste them reading code "just in case."
