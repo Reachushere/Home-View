@@ -18,10 +18,11 @@ fuser -k $PORT/tcp 2>/dev/null || true
 sleep 2
 
 echo "[2/7] Pulling latest from GitHub..."
+export GIT_PAGER=cat
 git fetch origin
 echo ""
 echo "Changes incoming:"
-git diff --stat HEAD origin/main
+git diff --stat HEAD origin/main | tail -30
 echo ""
 
 OLD_HEAD=$(git rev-parse HEAD 2>/dev/null || echo "none")

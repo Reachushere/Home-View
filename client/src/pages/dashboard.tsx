@@ -5,6 +5,7 @@ import { NewCourseWizard } from "@/components/NewCourseWizard";
 import { CourseDetailDialog } from "@/components/CourseDetailDialog";
 import { CalendarSettingsDialog } from "@/components/CalendarSettingsDialog";
 import AdminPanel from "@/components/AdminPanel";
+import UniCalLogo from "@/components/UniCalLogo";
 import CourseDocumentsWizard from "@/components/CourseDocumentsWizard";
 import NotepadDialog from "@/components/NotepadDialog";
 import FloatingPostIt from "@/components/FloatingPostIt";
@@ -20,7 +21,7 @@ import { Document, Page, pdfjs } from 'react-pdf';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 import tmuLogo from "@assets/Chang-School2_1775779674508.png";
-import unicalLogo from "@assets/ChatGPT_Image_Jan_22,_2026,_02_34_52_PM_1769110943463.png";
+
 import changSchoolLogo from "@assets/Chang-School2_1770607146365.png";
 import campusBg from "@assets/TMU_1769151150961.jpg";
 import tmuDialogBg from "@assets/TMU2_1772839789326.png";
@@ -29590,7 +29591,7 @@ export default function Dashboard() {
             {/* Day Headers - Fixed, not scrollable */}
             <div data-calendar-grid="true" className="grid z-[44] h-[60px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), borderBottom: '1px solid #666', paddingRight: calScrollbarW > 0 ? `${calScrollbarW}px` : undefined }}>
               <div className="flex items-center justify-center relative" style={{ backgroundColor: colorSettings.headerBar }}>
-                <img src={unicalLogo} alt="Uni-Cal" className="rounded" style={{ height: '34px', width: '34px', marginLeft: '3px' }} />
+                <UniCalLogo size={34} style={{ marginLeft: '3px' }} />
                 {/* Time column resize handle - right edge */}
                 <div
                   className="absolute right-0 top-0 bottom-0 w-[2px] cursor-col-resize bg-black/20 hover:bg-black/50"

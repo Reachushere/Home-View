@@ -1,0 +1,55 @@
+byhomeyyz@raspberrypi:~/Home-View $ ./deploy.sh
+=== UniCal Deploy ===
+
+[1/7] Stopping old process FIRST...
+ 56827[2/7] Pulling latest from GitHub...
+remote: Enumerating objects: 94, done.
+remote: Counting objects: 100% (94/94), done.
+remote: Compressing objects: 100% (23/23), done.
+remote: Total 94 (delta 71), reused 94 (delta 71), pack-reused 0 (from 0)
+Unpacking objects: 100% (94/94), 1.42 MiB | 3.94 MiB/s, done.
+From https://github.com/Reachushere/Home-View
+   d2c99ffbf..4923d704b  main       -> origin/main
+
+Changes incoming:
+ .agents/agent_assets_metadata.toml                                          | 408 +++++++++++++++++++++++
+ attached_assets/IMG_2885_1776288119584.png                                  | Bin 0 -> 289014 bytes
+ ...yhomeyyz-raspberrypi-Home-View-cd-Home-View-deploy-sh-_1776288981507.txt |  68 ++++
+ attached_assets/bryn_popcorn_animoji.png                                    | Bin 0 -> 787153 bytes
+ attached_assets/bryn_popcorn_animoji_v2.png                                 | Bin 0 -> 788886 bytes
+ attached_assets/bryn_popcorn_memoji.png                                     | Bin 0 -> 1063215 bytes
+ attached_assets/bryn_popcorn_memoji_v10.png                                 | Bin 0 -> 1168520 bytes
+ attached_assets/bryn_popcorn_memoji_v11.png                                 | Bin 0 -> 1150586 bytes
+ attached_assets/bryn_popcorn_memoji_v12.png                                 | Bin 0 -> 1115157 bytes
+ attached_assets/bryn_popcorn_memoji_v13.png                                 | Bin 0 -> 1129308 bytes
+ attached_assets/bryn_popcorn_memoji_v14.png                                 | Bin 0 -> 1141562 bytes
+ attached_assets/bryn_popcorn_memoji_v15.png                                 | Bin 0 -> 1179252 bytes
+ attached_assets/bryn_popcorn_memoji_v2.png                                  | Bin 0 -> 1076095 bytes
+ attached_assets/bryn_popcorn_memoji_v3.png                                  | Bin 0 -> 1136706 bytes
+ attached_assets/bryn_popcorn_memoji_v4.png                                  | Bin 0 -> 1116111 bytes
+ attached_assets/bryn_popcorn_memoji_v5.png                                  | Bin 0 -> 1195861 bytes
+ attached_assets/bryn_popcorn_memoji_v6.png                                  | Bin 0 -> 1283132 bytes
+ attached_assets/bryn_popcorn_memoji_v7.png                                  | Bin 0 -> 1227855 bytes
+ attached_assets/bryn_popcorn_memoji_v8.png                                  | Bin 0 -> 1123548 bytes
+ attached_assets/bryn_popcorn_memoji_v9.png                                  | Bin 0 -> 1084840 bytes
+ attached_assets/bryn_tv_popcorn_v1.png                                      | Bin 0 -> 1113184 bytes
+ attached_assets/bryn_tv_popcorn_v10.png                                     | Bin 0 -> 1171193 bytes
+ attached_assets/bryn_tv_popcorn_v11.png                                     | Bin 0 -> 1214135 bytes
+ attached_assets/bryn_tv_popcorn_v12.png                                     | Bin 0 -> 1220589 bytes
+ attached_assets/bryn_tv_popcorn_v13.png                                     | Bin 0 -> 1269086 bytes
+ attached_assets/bryn_tv_popcorn_v14.png                                     | Bin 0 -> 1167233 bytes
+ attached_assets/bryn_tv_popcorn_v15.png                                     | Bin 0 -> 1120430 bytes
+ attached_assets/bryn_tv_popcorn_v16.png                                     | Bin 0 -> 1278122 bytes
+ attached_assets/bryn_tv_popcorn_v17.png                                     | Bin 0 -> 1209892 bytes
+ attached_assets/bryn_tv_popcorn_v18.png                                     | Bin 0 -> 1195296 bytes
+ attached_assets/bryn_tv_popcorn_v19.png                                     | Bin 0 -> 1217996 bytes
+ attached_assets/bryn_tv_popcorn_v2.png                                      | Bin 0 -> 1215114 bytes
+ attached_assets/bryn_tv_popcorn_v20.png                                     | Bin 0 -> 1260989 bytes
+ attached_assets/bryn_tv_popcorn_v3.png                                      | Bin 0 -> 1183432 bytes
+ attached_assets/bryn_tv_popcorn_v4.png                                      | Bin 0 -> 1101847 bytes
+ attached_assets/bryn_tv_popcorn_v5.png                                      | Bin 0 -> 1189162 bytes
+ attached_assets/bryn_tv_popcorn_v6.png                                      | Bin 0 -> 1184516 bytes
+ attached_assets/bryn_tv_popcorn_v7.png                                      | Bin 0 -> 1187227 bytes
+ attached_assets/bryn_tv_popcorn_v8.png                                      | Bin 0 -> 1275943 bytes
+ attached_assets/bryn_tv_popcorn_v9.png                                      | Bin 0 -> 1198836 bytes
+:
