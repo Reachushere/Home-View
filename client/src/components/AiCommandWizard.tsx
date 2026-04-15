@@ -857,12 +857,12 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
               border: '1px solid rgba(96,165,250,0.3)',
               borderRadius: '10px',
               padding: '10px',
-              cursor: loading || !input.trim() ? 'not-allowed' : 'pointer',
+              cursor: loading || (!input.trim() && !pastedImage) ? 'not-allowed' : 'pointer',
               color: '#fff',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              opacity: loading || !input.trim() ? 0.5 : 1,
+              opacity: loading || (!input.trim() && !pastedImage) ? 0.5 : 1,
             }}
             data-testid="button-ai-command-send"
           >
