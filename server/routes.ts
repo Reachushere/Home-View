@@ -6083,7 +6083,7 @@ ${fileContents.join('\n\n')}`;
         if (memContent.trim()) memoryContext = `\n\nYOUR PERSISTENT MEMORY (from previous sessions):\n${memContent.substring(0, 3000)}\n`;
       } catch {}
 
-      const systemPrompt = `You are a senior full-stack developer embedded in UniCal, a personal academic task management app for Bryn (a TMU student). You operate autonomously like a real developer — read code, understand context, make changes, verify they compile, and fix errors yourself. You have up to 12 rounds of tool calls per request.
+      const systemPrompt = `You are a senior full-stack developer embedded in UniCal, a personal academic task management app for Bryn (a TMU student). You operate autonomously like a real developer — read code, understand context, make changes, verify they compile, and fix errors yourself. You have up to 16 rounds of tool calls per request.
 
 CURRENT APP STATE:
 ${appContext}
@@ -6103,6 +6103,14 @@ KEY FILES (read these to understand how things work):
 - shared/schema.ts — Database schema definitions + Zod schemas
 - server/aiCommandTools.ts — Your own tool definitions (this file)
 - client/src/index.css — Theme CSS variables and Tailwind config
+
+DATABASE TABLES: tasks, subtasks, semesters, semester_settings, files, file_pages, sticky_notes, degree_tracking_data, feedback_notes, app_state, announcements, scheduled_alexa_announcements, ha_automations, notepad_notes, notepad_attachments, shift_schedule, weather_alert_history
+
+AUTH LEVELS: 5747=full access (Bryn), 4201=partner, 1010=guest
+TIMEZONE: Always America/Toronto, use server/timezone.ts functions (easternNow, easternDateStr, easternHour, easternMidnight)
+SEMESTER KEY FORMAT: w2026 (winter), ss2026 (spring-summer), f2026 (fall)
+EMAIL: FROM Gmail (homeworkbryn@gmail.com) TO Outlook (bryn.kai-hendricks@outlook.com), use sendGmail() in server/gmail.ts
+STYLING: Avenir font, gradient headers, rgba SVG stopColor (not 8-digit hex), follow Degree Tracking panel style for new dialogs
 
 PATTERNS TO FOLLOW:
 - API endpoints: app.get/post/patch/delete("/api/...", async (req, res) => { ... })
@@ -6189,7 +6197,7 @@ RULES:
       const openai = new OpenAI({ apiKey: config.apiKey });
 
       const readOnlyTools = new Set(["read_file", "list_directory", "search_code", "search_tasks", "get_semester_info", "check_build", "read_logs", "git_diff", "get_project_map", "db_schema", "http_check", "memory_read", "process_check", "analyze_ui", "smoke_test", "take_screenshot", "browser_test", "check_performance", "conversation_history", "health_check"]);
-      const destructiveTools = new Set(["delete_task", "bulk_delete_tasks", "bulk_complete_tasks", "write_file", "edit_file", "run_shell_command", "restart_application", "git_commit_and_push", "install_package", "run_node_script", "generate_image"]);
+      const destructiveTools = new Set(["delete_task", "bulk_delete_tasks", "bulk_complete_tasks", "run_shell_command", "git_commit_and_push", "install_package", "generate_image"]);
 
       function isToolDestructive(fnName: string, fnArgs: any): boolean {
         if (destructiveTools.has(fnName)) return true;
@@ -6201,7 +6209,7 @@ RULES:
         return false;
       }
 
-      const MAX_ROUNDS = 12;
+      const MAX_ROUNDS = 16;
       let totalTokens = 0;
       let allToolResults: any[] = [];
       let actionTaken = false;
