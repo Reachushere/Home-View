@@ -20636,9 +20636,8 @@ export default function Dashboard() {
         className={`fixed${tabBounceEnabled ? ' bottom-tab-bounce' : ''}`}
         style={{
           bottom: '29px',
-          left: weatherAlerts.length > 0 ? 'calc(50% + 35px)' : '50%',
+          left: '50%',
           transform: 'translateX(-50%)',
-          transition: 'left 0.3s ease-in-out',
           display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : 'block',
           textDecoration: 'none',
           zIndex: 10002,
