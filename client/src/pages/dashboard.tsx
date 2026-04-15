@@ -1908,6 +1908,7 @@ export default function Dashboard() {
   const [showPreparedDialog, setShowPreparedDialog] = useState(false);
 
   useEffect(() => {
+    if (authLevel !== '5747') return;
     const checkPreparedFiles = async () => {
       try {
         const res = await fetch('/api/files/recently-prepared');
@@ -1921,7 +1922,7 @@ export default function Dashboard() {
     checkPreparedFiles();
     const interval = setInterval(checkPreparedFiles, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [authLevel]);
 
   const acknowledgePreparedFiles = async () => {
     const fileIds = preparedFilesDialog.map(f => f.id);
@@ -3426,6 +3427,19 @@ export default function Dashboard() {
   });
   const [semStartDialogKey, setSemStartDialogKey] = useState<string | null>(null);
   const [bulkSyncLoaded, setBulkSyncLoaded] = useState(false);
+  const [dialogDismissals, setDialogDismissals] = useState<Record<string, string>>(() => {
+    try { const s = localStorage.getItem('dialogDismissals'); return s ? JSON.parse(s) : {}; } catch { return {}; }
+  });
+  const dismissDialog = (key: string) => {
+    const ts = new Date().toISOString();
+    setDialogDismissals(prev => {
+      const updated = { ...prev, [key]: ts };
+      localStorage.setItem('dialogDismissals', JSON.stringify(updated));
+      fetch('/api/degree-tracking/bulk', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ dialogDismissals: updated }) }).catch(() => {});
+      return updated;
+    });
+  };
+  const isDialogDismissed = (key: string) => !!dialogDismissals[key];
   const [weeklyPlanningOpen, setWeeklyPlanningOpen] = useState(false);
   const [wpSettingsOpen, setWpSettingsOpen] = useState(false);
   const [greyClassifyOpen, setGreyClassifyOpen] = useState(false);
@@ -3501,7 +3515,7 @@ export default function Dashboard() {
       return;
     }
     const dismissKey = `rankCoursesReminderDismissed_${activeSem.key}`;
-    const dismissed = localStorage.getItem(dismissKey);
+    const dismissed = localStorage.getItem(dismissKey) || isDialogDismissed(`rankCourses_${activeSem.key}`);
     if (!dismissed) {
       const timer = setTimeout(() => setShowRankCoursesReminder(true), 3000);
       return () => clearTimeout(timer);
@@ -5803,10 +5817,24 @@ export default function Dashboard() {
             return merged;
           });
         }
+        if (data.semesterStartConfirmed) {
+          setSemesterStartConfirmed(prev => {
+            const merged = { ...prev, ...data.semesterStartConfirmed };
+            localStorage.setItem('semesterStartConfirmed', JSON.stringify(merged));
+            return merged;
+          });
+        }
         if (data.semEndDialogDismissUntil) {
           setSemEndDialogDismissUntil(prev => {
             const merged = { ...prev, ...data.semEndDialogDismissUntil };
             localStorage.setItem('semEndDialogDismissUntil', JSON.stringify(merged));
+            return merged;
+          });
+        }
+        if (data.dialogDismissals) {
+          setDialogDismissals(prev => {
+            const merged = { ...prev, ...data.dialogDismissals };
+            localStorage.setItem('dialogDismissals', JSON.stringify(merged));
             return merged;
           });
         }
@@ -5820,7 +5848,7 @@ export default function Dashboard() {
           'coursePlayPriority', 'courseDisplayNames', 'profileData',
           'checkedCourses', 'inProgressCourses', 'courseGrades', 'openElectives',
           'gridSizes', 'calendarHeight', 'calendarReduction', 'showAllDayRow',
-          'otherRowColors', 'semesterEndConfirmed', 'semEndDialogDismissUntil',
+          'otherRowColors', 'semesterEndConfirmed', 'semesterStartConfirmed', 'semEndDialogDismissUntil', 'dialogDismissals',
         ];
         const payload: Record<string, any> = {};
         for (const key of syncKeys) {
@@ -7235,7 +7263,7 @@ export default function Dashboard() {
     ).sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime());
     const undismissed = essaysDueSoon.find(t => {
       const key = `essay-reminder-dismissed-${t.id}-${todayStr}`;
-      return !localStorage.getItem(key);
+      return !localStorage.getItem(key) && !isDialogDismissed(`essay_reminder_${t.id}_${todayStr}`);
     });
     if (essayReminderTask) {
       if (essayReminderTask.isCompleted || !essayReminderTask.dueDate || new Date(essayReminderTask.dueDate) <= now) {
@@ -7318,13 +7346,14 @@ export default function Dashboard() {
     if (authLevel !== '5747') return;
     const params = new URLSearchParams(window.location.search);
     if (params.get('catWashFollow') || params.get('followOnly') || params.get('fullscreen')) return;
-    const stored = localStorage.getItem('grey_classify_prompts');
-    const promptData: { dates: string[] } = stored ? (() => { try { return JSON.parse(stored); } catch { return { dates: [] }; } })() : { dates: [] };
-    if (promptData.dates.length >= 2) return;
     const now = new Date();
     const etStr = now.toLocaleString('en-US', { timeZone: getAppTz() });
     const et = new Date(etStr);
     const todayStr = `${et.getFullYear()}-${String(et.getMonth()+1).padStart(2,'0')}-${String(et.getDate()).padStart(2,'0')}`;
+    if (isDialogDismissed(`grey_classify_${todayStr}`)) return;
+    const stored = localStorage.getItem('grey_classify_prompts');
+    const promptData: { dates: string[] } = stored ? (() => { try { return JSON.parse(stored); } catch { return { dates: [] }; } })() : { dates: [] };
+    if (promptData.dates.length >= 2) return;
     if (promptData.dates.includes(todayStr)) return;
     const todayStart = new Date(`${todayStr}T00:00:00`);
     const greyTasks = allTasksRaw.filter(t => {
@@ -7940,6 +7969,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (isKioskMode) return;
+    if (authLevel !== '5747') return;
     if (!allSemesterSettings || allSemesterSettings.length === 0) return;
     const now = startOfDayET(new Date());
     const typePrefix: Record<string, string> = { winter: 'w', fall: 'f', spring_summer: 'ss' };
@@ -7962,7 +7992,7 @@ export default function Dashboard() {
         const yr = new Date(sem.semesterStartDate).getFullYear();
         const prefix = typePrefix[sem.semesterType] || sem.semesterType?.charAt(0) || 's';
         const semKey = `${prefix}${yr}`;
-        const dismissed = localStorage.getItem(`newSemChecklist_dismissed_${semKey}`);
+        const dismissed = localStorage.getItem(`newSemChecklist_dismissed_${semKey}`) || isDialogDismissed(`newSemChecklist_${semKey}`);
         if (!dismissed) {
           const label = `${semLabels[sem.semesterType] || sem.semesterType || 'Semester'} ${yr}`;
           setNewSemChecklistKey(semKey);
@@ -8142,13 +8172,14 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (isKioskMode) return;
+    if (authLevel !== '5747') return;
     if (confirmSemesterShownRef.current) return;
     const upcoming = getUpcomingSemesterToConfirm();
     if (!upcoming) return;
 
     const dismissedKey = `semConfirm_dismissed_${upcoming.label}`;
     const dismissed = localStorage.getItem(dismissedKey);
-    if (dismissed === 'confirmed') return;
+    if (dismissed === 'confirmed' || isDialogDismissed(`semConfirm_${upcoming.label}`)) return;
 
     const lastShownKey = `semConfirm_lastShown_${upcoming.label}`;
     const lastShown = parseInt(localStorage.getItem(lastShownKey) || '0', 10);
@@ -14183,12 +14214,13 @@ export default function Dashboard() {
                 onClick={() => {
                   const todayStr = new Date().toISOString().split('T')[0];
                   localStorage.setItem(`essay-reminder-dismissed-${essayReminderTask.id}-${todayStr}`, '1');
+                  dismissDialog(`essay_reminder_${essayReminderTask.id}_${todayStr}`);
                   const now = new Date();
                   const fiveDaysFromNow = new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000);
                   const nextEssay = (allTasks || []).filter(t =>
                     t.type === 'essay' && !t.isCompleted && t.dueDate && t.id !== essayReminderTask.id &&
                     new Date(t.dueDate) > now && new Date(t.dueDate) <= fiveDaysFromNow &&
-                    !localStorage.getItem(`essay-reminder-dismissed-${t.id}-${todayStr}`)
+                    !localStorage.getItem(`essay-reminder-dismissed-${t.id}-${todayStr}`) && !isDialogDismissed(`essay_reminder_${t.id}_${todayStr}`)
                   )[0];
                   setEssayReminderTask(nextEssay || null);
                 }}
@@ -14218,6 +14250,7 @@ export default function Dashboard() {
                   }
                   const todayStr = new Date().toISOString().split('T')[0];
                   localStorage.setItem(`essay-reminder-dismissed-${essayReminderTask.id}-${todayStr}`, '1');
+                  dismissDialog(`essay_reminder_${essayReminderTask.id}_${todayStr}`);
                   setEssayReminderTask(null);
                 }}
                 style={{
@@ -14736,6 +14769,7 @@ export default function Dashboard() {
           const promptData: { dates: string[] } = stored ? (() => { try { return JSON.parse(stored); } catch { return { dates: [] }; } })() : { dates: [] };
           if (!promptData.dates.includes(todayStr)) promptData.dates.push(todayStr);
           localStorage.setItem('grey_classify_prompts', JSON.stringify(promptData));
+          dismissDialog(`grey_classify_${todayStr}`);
           setGreyClassifySelections({});
           setGreyClassifyOpen(false);
         };
@@ -14744,6 +14778,7 @@ export default function Dashboard() {
           const promptData: { dates: string[] } = stored ? (() => { try { return JSON.parse(stored); } catch { return { dates: [] }; } })() : { dates: [] };
           if (!promptData.dates.includes(todayStr)) promptData.dates.push(todayStr);
           localStorage.setItem('grey_classify_prompts', JSON.stringify(promptData));
+          dismissDialog(`grey_classify_${todayStr}`);
           setGreyClassifySelections({});
           setGreyClassifyOpen(false);
         };
@@ -15219,6 +15254,7 @@ export default function Dashboard() {
                     FUTURE_SEMESTER_SCHEDULE[idx].breakEnd = confirmSemesterForm.breakEnd;
                   }
                   localStorage.setItem(`semConfirm_dismissed_${upcomingSemester.label}`, 'confirmed');
+                  dismissDialog(`semConfirm_${upcomingSemester.label}`);
                   localStorage.setItem(`semConfirm_dates_${upcomingSemester.label}`, JSON.stringify(confirmSemesterForm));
                   toast({ title: "Dates confirmed", description: `${upcomingSemester.label} dates saved.` });
                 }
@@ -20757,6 +20793,7 @@ export default function Dashboard() {
           colorSettings={colorSettings}
           onDismiss={() => {
             localStorage.setItem(`newSemChecklist_dismissed_${newSemChecklistKey}`, 'true');
+            dismissDialog(`newSemChecklist_${newSemChecklistKey}`);
             setShowNewSemChecklist(false);
           }}
           printerIconRight={calendarRight - calendarReduction + 72 + 3}
@@ -24456,7 +24493,10 @@ export default function Dashboard() {
                     onClick={() => {
                       const now = new Date();
                       const activeSem = SEMESTER_COURSE_DEFS.find(s => now >= new Date(s.start) && now <= new Date(s.end));
-                      if (activeSem) localStorage.setItem(`rankCoursesReminderDismissed_${activeSem.key}`, 'true');
+                      if (activeSem) {
+                        localStorage.setItem(`rankCoursesReminderDismissed_${activeSem.key}`, 'true');
+                        dismissDialog(`rankCourses_${activeSem.key}`);
+                      }
                       setShowRankCoursesReminder(false);
                     }}
                     data-testid="button-dismiss-rank-courses-reminder"
@@ -27288,6 +27328,7 @@ export default function Dashboard() {
                       const updated = { ...semesterStartConfirmed, [sk]: true };
                       setSemesterStartConfirmed(updated);
                       localStorage.setItem('semesterStartConfirmed', JSON.stringify(updated));
+                      fetch('/api/degree-tracking/bulk', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ semesterStartConfirmed: updated }) }).catch(() => {});
                       setSemStartDialogKey(null);
                       setSemHealthCheckKey(sk);
                       setSemHealthLoading(true);
