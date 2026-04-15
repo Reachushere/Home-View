@@ -635,6 +635,53 @@ export const AI_COMMAND_TOOLS = [
   {
     type: "function" as const,
     function: {
+      name: "take_screenshot",
+      description: "Take a screenshot of a page in the running app using a headless browser. This is your REAL eyes — you can see exactly what the user sees. The screenshot is saved as a PNG file. After taking it, use analyze_ui or read the image path to reference it. Use this to verify UI changes, check layout, debug visual issues.",
+      parameters: {
+        type: "object",
+        properties: {
+          path: { type: "string", description: "URL path to screenshot (e.g. '/' for dashboard, '/m' for mobile). Default '/'." },
+          filename: { type: "string", description: "Output filename without extension (e.g. 'dashboard-after-fix'). Saved to /generated/ folder." },
+          width: { type: "integer", description: "Viewport width in pixels. Default 1280." },
+          height: { type: "integer", description: "Viewport height in pixels. Default 800." },
+          fullPage: { type: "boolean", description: "If true, captures the entire scrollable page. Default false (viewport only)." },
+          waitFor: { type: "string", description: "CSS selector to wait for before capturing (e.g. '[data-testid=\"task-list\"]'). Ensures content is loaded." },
+          delay: { type: "integer", description: "Extra milliseconds to wait after page load before capturing. Default 2000." },
+        },
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "browser_test",
+      description: "Run a browser-level test using Puppeteer. Opens a real headless browser, navigates pages, clicks buttons, fills forms, and verifies results. This is the equivalent of a real user testing the app. Write test steps as a series of actions. Returns pass/fail with details.",
+      parameters: {
+        type: "object",
+        properties: {
+          steps: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                action: { type: "string", enum: ["goto", "click", "type", "select", "wait", "screenshot", "check_text", "check_element", "check_url", "evaluate"], description: "Action to perform" },
+                selector: { type: "string", description: "CSS selector for click/type/select/check_element/wait" },
+                value: { type: "string", description: "Value for type/select/goto(url path)/check_text(expected text)/evaluate(JS code)" },
+                description: { type: "string", description: "Human-readable description of what this step does" },
+              },
+              required: ["action"],
+            },
+            description: "Ordered list of test steps to execute in the browser",
+          },
+          name: { type: "string", description: "Name for this test (e.g. 'task creation flow')" },
+        },
+        required: ["steps"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
       name: "run_sql",
       description: "Execute a SQL query against the PostgreSQL database. Use for checking data, debugging, understanding schema. SELECT queries run freely. INSERT/UPDATE/DELETE require confirmation.",
       parameters: {
@@ -1560,6 +1607,196 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           }};
         } catch (e: any) {
           return { success: false, result: { error: e.message?.substring(0, 300) } };
+        }
+      }
+
+      case "take_screenshot": {
+        const projectRoot = getProjectRoot();
+        try {
+          const puppeteer = await import('puppeteer-core');
+          const isPi = projectRoot.includes('/home/byhomeyyz/');
+          const chromiumPath = isPi
+            ? '/usr/bin/chromium'
+            : (await (async () => { try { return execSync('which chromium || which chromium-browser || which google-chrome 2>/dev/null', { encoding: 'utf-8' }).trim(); } catch { return '/usr/bin/chromium'; } })());
+          
+          const browser = await puppeteer.default.launch({
+            executablePath: chromiumPath,
+            headless: true,
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu', '--disable-extensions'],
+          });
+          
+          const page = await browser.newPage();
+          const width = args.width || 1280;
+          const height = args.height || 800;
+          await page.setViewport({ width, height });
+          
+          const urlPath = args.path || '/';
+          const port = isPi ? 5000 : 5000;
+          await page.goto(`http://localhost:${port}${urlPath}`, { waitUntil: 'networkidle2', timeout: 30000 });
+          
+          if (args.waitFor) {
+            try { await page.waitForSelector(args.waitFor, { timeout: 10000 }); } catch {}
+          }
+          
+          const delay = args.delay ?? 2000;
+          if (delay > 0) await new Promise(r => setTimeout(r, delay));
+          
+          const outputDir = path.join(projectRoot, 'client', 'public', 'generated');
+          await fs.mkdir(outputDir, { recursive: true });
+          const filename = (args.filename || `screenshot-${Date.now()}`).replace(/[^a-zA-Z0-9_-]/g, '_');
+          const outputPath = path.join(outputDir, `${filename}.png`);
+          
+          await page.screenshot({ path: outputPath, fullPage: args.fullPage || false });
+          
+          const title = await page.title();
+          const elementCount = await page.evaluate(() => document.querySelectorAll('*').length);
+          const visibleText = await page.evaluate(() => {
+            const body = document.body;
+            if (!body) return '';
+            const walker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT);
+            const texts: string[] = [];
+            let node;
+            while (node = walker.nextNode()) {
+              const t = (node.textContent || '').trim();
+              if (t.length > 2) texts.push(t);
+            }
+            return texts.slice(0, 50).join(' | ');
+          });
+          
+          const testIds = await page.evaluate(() => {
+            return Array.from(document.querySelectorAll('[data-testid]'))
+              .map(el => (el as HTMLElement).dataset.testid)
+              .slice(0, 40);
+          });
+          
+          await browser.close();
+          
+          const relativePath = `/generated/${filename}.png`;
+          return { success: true, result: {
+            saved: relativePath,
+            viewport: `${width}x${height}`,
+            pageTitle: title,
+            elementCount,
+            testIds,
+            visibleTextPreview: (visibleText as string).substring(0, 2000),
+            hint: `Screenshot saved. View at http://localhost:5000${relativePath}`,
+          }};
+        } catch (e: any) {
+          return { success: false, result: { error: e.message?.substring(0, 500), hint: "Chromium may not be installed. Run: sudo apt install chromium" } };
+        }
+      }
+
+      case "browser_test": {
+        const projectRoot = getProjectRoot();
+        const testName = args.name || 'Unnamed test';
+        const steps = args.steps || [];
+        if (!steps.length) return { success: false, result: { error: "No test steps provided" } };
+
+        try {
+          const puppeteer = await import('puppeteer-core');
+          const isPi = projectRoot.includes('/home/byhomeyyz/');
+          const chromiumPath = isPi
+            ? '/usr/bin/chromium'
+            : (await (async () => { try { return execSync('which chromium || which chromium-browser || which google-chrome 2>/dev/null', { encoding: 'utf-8' }).trim(); } catch { return '/usr/bin/chromium'; } })());
+          
+          const browser = await puppeteer.default.launch({
+            executablePath: chromiumPath,
+            headless: true,
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu'],
+          });
+          
+          const page = await browser.newPage();
+          await page.setViewport({ width: 1280, height: 800 });
+          
+          const port = 5000;
+          const baseUrl = `http://localhost:${port}`;
+          const results: { step: number; action: string; description?: string; passed: boolean; detail?: string }[] = [];
+          let stepNum = 0;
+
+          for (const step of steps) {
+            stepNum++;
+            const desc = step.description || `${step.action} ${step.selector || step.value || ''}`;
+            try {
+              switch (step.action) {
+                case 'goto':
+                  await page.goto(`${baseUrl}${step.value || '/'}`, { waitUntil: 'networkidle2', timeout: 15000 });
+                  results.push({ step: stepNum, action: 'goto', description: desc, passed: true, detail: `Navigated to ${step.value || '/'}` });
+                  break;
+                case 'click':
+                  await page.waitForSelector(step.selector!, { timeout: 8000 });
+                  await page.click(step.selector!);
+                  results.push({ step: stepNum, action: 'click', description: desc, passed: true });
+                  break;
+                case 'type':
+                  await page.waitForSelector(step.selector!, { timeout: 8000 });
+                  await page.type(step.selector!, step.value || '');
+                  results.push({ step: stepNum, action: 'type', description: desc, passed: true });
+                  break;
+                case 'select':
+                  await page.waitForSelector(step.selector!, { timeout: 8000 });
+                  await page.select(step.selector!, step.value || '');
+                  results.push({ step: stepNum, action: 'select', description: desc, passed: true });
+                  break;
+                case 'wait':
+                  if (step.selector) {
+                    await page.waitForSelector(step.selector, { timeout: 10000 });
+                    results.push({ step: stepNum, action: 'wait', description: desc, passed: true, detail: `Found ${step.selector}` });
+                  } else {
+                    await new Promise(r => setTimeout(r, parseInt(step.value || '1000')));
+                    results.push({ step: stepNum, action: 'wait', description: desc, passed: true });
+                  }
+                  break;
+                case 'screenshot': {
+                  const outputDir = path.join(projectRoot, 'client', 'public', 'generated');
+                  await fs.mkdir(outputDir, { recursive: true });
+                  const fname = `test-${testName.replace(/[^a-zA-Z0-9]/g, '_')}-step${stepNum}`;
+                  await page.screenshot({ path: path.join(outputDir, `${fname}.png`) });
+                  results.push({ step: stepNum, action: 'screenshot', description: desc, passed: true, detail: `/generated/${fname}.png` });
+                  break;
+                }
+                case 'check_text': {
+                  const bodyText = await page.evaluate(() => document.body?.innerText || '');
+                  const found = bodyText.includes(step.value || '');
+                  results.push({ step: stepNum, action: 'check_text', description: desc, passed: found, detail: found ? `Found "${step.value}"` : `"${step.value}" not found on page` });
+                  break;
+                }
+                case 'check_element': {
+                  const el = await page.$(step.selector!);
+                  results.push({ step: stepNum, action: 'check_element', description: desc, passed: !!el, detail: el ? `Found ${step.selector}` : `${step.selector} not found` });
+                  break;
+                }
+                case 'check_url': {
+                  const currentUrl = page.url();
+                  const matches = currentUrl.includes(step.value || '');
+                  results.push({ step: stepNum, action: 'check_url', description: desc, passed: matches, detail: `Current URL: ${currentUrl}` });
+                  break;
+                }
+                case 'evaluate': {
+                  const evalResult = await page.evaluate(step.value || 'true');
+                  results.push({ step: stepNum, action: 'evaluate', description: desc, passed: !!evalResult, detail: JSON.stringify(evalResult).substring(0, 300) });
+                  break;
+                }
+                default:
+                  results.push({ step: stepNum, action: step.action, description: desc, passed: false, detail: `Unknown action: ${step.action}` });
+              }
+            } catch (e: any) {
+              results.push({ step: stepNum, action: step.action, description: desc, passed: false, detail: e.message?.substring(0, 200) });
+            }
+          }
+
+          await browser.close();
+
+          const passed = results.filter(r => r.passed).length;
+          const failed = results.filter(r => !r.passed).length;
+          return { success: true, result: {
+            testName,
+            summary: `${passed}/${results.length} steps passed${failed > 0 ? ` — ${failed} FAILED` : ''}`,
+            passed, failed, total: results.length,
+            allPassed: failed === 0,
+            results,
+          }};
+        } catch (e: any) {
+          return { success: false, result: { error: e.message?.substring(0, 500), hint: "Chromium may not be installed. Run: sudo apt install chromium" } };
         }
       }
 

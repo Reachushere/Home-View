@@ -6126,10 +6126,12 @@ DATABASE:
 - run_sql — Execute SELECT freely. INSERT/UPDATE/DELETE require confirmation.
 - Use storage interface methods when available (create_task, etc). Use raw SQL for complex queries or data exploration.
 
-UI ANALYSIS (your 'eyes'):
-- analyze_ui file="..." — Parse a React component to see its structure: elements, Tailwind classes, test IDs, event handlers, conditional renders, visible text. Use search_term to find specific elements.
-- analyze_ui + http_check together = you can see both what the code renders AND what the server returns.
+UI ANALYSIS & VISUAL TESTING (your 'eyes'):
+- take_screenshot path="/" — Opens a real headless browser and captures a PNG screenshot of the page. Returns visible text, element count, and data-testids. This is your REAL eyes — use after UI changes to verify they look right.
+- browser_test — Run full browser-level tests: navigate pages, click buttons, fill forms, check text appears, verify URLs. Like a real user testing the app.
+- analyze_ui file="..." — Parse a React component to see its JSX structure: elements, Tailwind classes, test IDs, event handlers, conditional renders, visible text.
 - smoke_test — Hit all critical API endpoints at once and get a pass/fail report. Run after any code change.
+- WORKFLOW AFTER UI CHANGES: edit code → check_build → take_screenshot → verify the screenshot shows expected changes.
 
 DEBUGGING & VERIFICATION:
 - check_build — TypeScript type-checker. Run after EVERY code edit. Fix errors in a loop until clean.
@@ -6181,7 +6183,7 @@ RULES:
       const OpenAI = (await import("openai")).default;
       const openai = new OpenAI({ apiKey: config.apiKey });
 
-      const readOnlyTools = new Set(["read_file", "list_directory", "search_code", "search_tasks", "get_semester_info", "check_build", "read_logs", "git_diff", "get_project_map", "db_schema", "http_check", "memory_read", "process_check", "analyze_ui", "smoke_test"]);
+      const readOnlyTools = new Set(["read_file", "list_directory", "search_code", "search_tasks", "get_semester_info", "check_build", "read_logs", "git_diff", "get_project_map", "db_schema", "http_check", "memory_read", "process_check", "analyze_ui", "smoke_test", "take_screenshot", "browser_test"]);
       const destructiveTools = new Set(["delete_task", "bulk_delete_tasks", "bulk_complete_tasks", "write_file", "edit_file", "run_shell_command", "restart_application", "git_commit_and_push", "install_package", "run_node_script", "generate_image"]);
 
       function isToolDestructive(fnName: string, fnArgs: any): boolean {
