@@ -650,7 +650,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <Zap size={18} color="#60a5fa" />
-            <span style={{ fontSize: '15px', fontWeight: 700, color: '#e0ecff', letterSpacing: '0.3px' }}>Bryn Assist</span>
+            <span style={{ fontSize: '15px', fontWeight: 700, color: '#e0ecff', letterSpacing: '0.3px' }}>BrynAssist</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <button

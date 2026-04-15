@@ -336,7 +336,7 @@ export const AI_COMMAND_TOOLS = [
     type: "function" as const,
     function: {
       name: "update_app_theme",
-      description: "Change the app's visual theme/colors OR the Bryn Assist dialog's appearance. Updates stored in DB and take effect on next page load/refresh. For dashboard: use headerBar, mainBackground, etc. For the Bryn Assist dialog (this window): use wizardBackground, wizardBorder, wizardHeaderBg, wizardInputBg.",
+      description: "Change the app's visual theme/colors OR the BrynAssist dialog's appearance. Updates stored in DB and take effect on next page load/refresh. For dashboard: use headerBar, mainBackground, etc. For the BrynAssist dialog (this window): use wizardBackground, wizardBorder, wizardHeaderBg, wizardInputBg.",
       parameters: {
         type: "object",
         properties: {
@@ -347,12 +347,12 @@ export const AI_COMMAND_TOOLS = [
           todayCellBackground: { type: "string", description: "Today cell highlight color (hex code)" },
           boxTransparency: { type: "integer", description: "Box transparency level 0-100" },
           boxGlassEffect: { type: "boolean", description: "Enable/disable glass effect" },
-          wizardBackground: { type: "string", description: "Bryn Assist dialog background CSS (e.g. 'linear-gradient(180deg, #0a1628 0%, #0f2347 100%)' or a hex color)" },
-          wizardBorder: { type: "string", description: "Bryn Assist dialog border CSS (e.g. '1.5px solid rgba(100,160,255,0.3)')" },
-          wizardHeaderBg: { type: "string", description: "Bryn Assist header area background CSS" },
-          wizardInputBg: { type: "string", description: "Bryn Assist input area background CSS" },
-          wizardUserBubble: { type: "string", description: "Bryn Assist user message bubble background CSS" },
-          wizardAssistantBubble: { type: "string", description: "Bryn Assist assistant message bubble background CSS" },
+          wizardBackground: { type: "string", description: "BrynAssist dialog background CSS (e.g. 'linear-gradient(180deg, #0a1628 0%, #0f2347 100%)' or a hex color)" },
+          wizardBorder: { type: "string", description: "BrynAssist dialog border CSS (e.g. '1.5px solid rgba(100,160,255,0.3)')" },
+          wizardHeaderBg: { type: "string", description: "BrynAssist header area background CSS" },
+          wizardInputBg: { type: "string", description: "BrynAssist input area background CSS" },
+          wizardUserBubble: { type: "string", description: "BrynAssist user message bubble background CSS" },
+          wizardAssistantBubble: { type: "string", description: "BrynAssist assistant message bubble background CSS" },
         },
       },
     },
@@ -1432,10 +1432,10 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           } else {
             await db.insert(appStateTable).values({ key, value });
           }
-          results.push(`Bryn Assist: ${Object.keys(wizardUpdates).join(', ')}`);
+          results.push(`BrynAssist: ${Object.keys(wizardUpdates).join(', ')}`);
         }
 
-        return { success: true, result: { updated: results, note: "Changes apply on page refresh. For Bryn Assist changes, close and reopen the dialog." } };
+        return { success: true, result: { updated: results, note: "Changes apply on page refresh. For BrynAssist changes, close and reopen the dialog." } };
       }
 
       case "update_ui_setting": {

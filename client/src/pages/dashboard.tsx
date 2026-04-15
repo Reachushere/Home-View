@@ -13,6 +13,7 @@ import { SystemSetupWizard } from "@/components/SystemSetupWizard";
 import LibraryView from "@/components/LibraryView";
 import { AiChatBubble } from "@/components/AiChatBubble";
 import { AiCommandWizard } from "@/components/AiCommandWizard";
+import { ChangelogPopup } from "@/components/ChangelogPopup";
 import { Document, Page, pdfjs } from 'react-pdf';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -40420,6 +40421,7 @@ export default function Dashboard() {
       </div>
       {authLevel === '5747' && <AiChatBubble colorSettings={colorSettings} />}
       {authLevel === '5747' && <AiCommandWizard isOpen={isAiCommandOpen} onClose={() => setIsAiCommandOpen(false)} />}
+      <ChangelogPopup />
       {showSystemSetupWizard && authLevel === '5747' && (
         <SystemSetupWizard
           open={showSystemSetupWizard}

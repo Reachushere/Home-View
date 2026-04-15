@@ -122,7 +122,7 @@ export function HomeScreen({
             <button onClick={onOpenBrynAssist} data-testid="mobile-app-btn-bryn-assist" style={{ ...glassBtnStyle(btnSize), background: 'linear-gradient(180deg, rgba(100,160,255,0.5) 0%, rgba(60,100,200,0.35) 50%, rgba(40,80,180,0.25) 100%)' }}>
               <Zap style={{ height: `${iconSize * 0.7}px`, width: `${iconSize * 0.7}px`, color: '#93b5ff' }} />
             </button>
-            <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '10px', fontWeight: 500, fontFamily: "system-ui, -apple-system, sans-serif" }}>Bryn Assist</span>
+            <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '10px', fontWeight: 500, fontFamily: "system-ui, -apple-system, sans-serif" }}>BrynAssist</span>
           </div>
         )}
       </div>

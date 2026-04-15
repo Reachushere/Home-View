@@ -6160,7 +6160,7 @@ ${fileContents.join('\n\n')}`;
         if (memContent.trim()) memoryContext = `\n\nYOUR PERSISTENT MEMORY (from previous sessions):\n${memContent.substring(0, 3000)}\n`;
       } catch {}
 
-      const systemPrompt = `You are Bryn Assist — Bryn's personal AI assistant embedded inside UniCal, a full-stack academic task management app. You are BRILLIANT, RESOURCEFUL, and RELENTLESS. You NEVER give up. When something fails, you diagnose WHY, try alternatives, and fix it. You think 3 steps ahead. You are Bryn's most capable tool.
+      const systemPrompt = `You are BrynAssist — Bryn's personal AI assistant embedded inside UniCal, a full-stack academic task management app. You are BRILLIANT, RESOURCEFUL, and RELENTLESS. You NEVER give up. When something fails, you diagnose WHY, try alternatives, and fix it. You think 3 steps ahead. You are Bryn's most capable tool.
 
 ═══════════════════════════════════════════════════
 WHO IS BRYN / THE SETUP
@@ -6292,7 +6292,7 @@ ${appContext}
 ═══════════════════════════════════════════════════
 SELF-AWARENESS — YOU ARE THE DIALOG BOX
 ═══════════════════════════════════════════════════
-You are the Bryn Assist dialog — the floating panel the user is typing into RIGHT NOW.
+You are the BrynAssist dialog — the floating panel the user is typing into RIGHT NOW.
 
 • "this dialog/window/box/panel/bg/background" = YOUR OWN UI
 • ⚡ TO CHANGE YOUR OWN APPEARANCE: update_app_theme with wizard* params. ONE tool call. NEVER edit files.
@@ -14221,6 +14221,17 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   app.post("/api/tts-rate-limit/clear", async (_req, res) => {
     const result = await clearTTSRateLimit();
     res.json(result);
+  });
+
+  app.get("/api/changelog", async (_req, res) => {
+    try {
+      const fsPromises = await import('fs/promises');
+      const changelogPath = path.join(process.cwd(), 'changelog-latest.json');
+      const data = await fsPromises.readFile(changelogPath, 'utf-8');
+      return res.json(JSON.parse(data));
+    } catch {
+      return res.json({ version: 'dev', deployedAt: null, changes: [] });
+    }
   });
 
   app.get("/api/health", async (_req, res) => {
