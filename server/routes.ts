@@ -6089,7 +6089,7 @@ ${fileContents.join('\n\n')}`;
 
       const codeKeywords = /\b(change|modify|edit|update|fix|add|remove|refactor|style|css|color|button|component|page|layout|font|move|rename|code|file|build|install|npm|import|debug|error|bug|break|broken|crash|log|deploy|push|commit)\b/i;
       const isCodeTask = codeKeywords.test(message) && /\b(file|code|component|page|css|style|button|header|sidebar|layout|function|route|api|div|class|import|export|server|client|schema|database|build|compile|deploy|error|bug|log)\b/i.test(message);
-      const model = "gpt-5-mini";
+      const model = "gpt-4.1-mini";
       const estCost = isCodeTask ? "~$0.05-0.30" : "~$0.02-0.10";
 
       const apiKey = process.env.OPENAI_API_KEY;
