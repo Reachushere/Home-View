@@ -20706,7 +20706,7 @@ export default function Dashboard() {
           className="fixed cursor-pointer"
           style={{
             bottom: '29px',
-            left: weatherAlerts.length > 0 ? 'calc(50% + 202px + 35px)' : 'calc(50% + 202px)',
+            left: weatherAlerts.length > 0 ? 'calc(50% + 302px + 35px)' : 'calc(50% + 302px)',
             transition: 'left 0.3s ease-in-out',
             display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : 'block',
             zIndex: 10002,
@@ -20744,7 +20744,7 @@ export default function Dashboard() {
           className="fixed cursor-pointer"
           style={{
             bottom: '29px',
-            left: weatherAlerts.length > 0 ? 'calc(50% + 202px + 45px)' : 'calc(50% + 202px)',
+            left: weatherAlerts.length > 0 ? 'calc(50% + 302px + 45px)' : 'calc(50% + 302px)',
             transition: 'left 0.3s ease-in-out',
             display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : 'block',
             zIndex: 10002,
