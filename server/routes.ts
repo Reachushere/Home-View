@@ -6297,9 +6297,10 @@ RULES:
             confirmMsg = `I need your confirmation to proceed:\n${details}`;
           }
           if (stream) {
-            res.write(`data: ${JSON.stringify({ type: 'meta', toolResults: allToolResults, actionTaken, model, rounds: round })}\n\n`);
+            res.write(`data: ${JSON.stringify({ type: 'confirm', message: confirmMsg, pendingConfirmations, toolResults: allToolResults })}\n\n`);
             res.write(`data: ${JSON.stringify({ type: 'done', reply: confirmMsg, actionTaken: false })}\n\n`);
             res.end();
+            return;
           }
           return res.json({ reply: confirmMsg, pendingConfirmations, toolResults: allToolResults, actionTaken: false, model, rounds: round });
         }

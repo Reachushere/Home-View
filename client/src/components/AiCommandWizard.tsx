@@ -151,6 +151,10 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                   updated[updated.length - 1] = { role: 'assistant', content: streamedContent, toolResults, actionTaken };
                   return updated;
                 });
+              } else if (event.type === 'confirm') {
+                if (event.pendingConfirmations) {
+                  setPendingConfirm(event.pendingConfirmations);
+                }
               } else if (event.type === 'done') {
                 if (event.actionTaken) actionTaken = true;
                 if (event.reply && !streamedContent.includes(event.reply)) streamedContent = event.reply;
