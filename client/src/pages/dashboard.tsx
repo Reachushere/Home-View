@@ -20733,7 +20733,7 @@ export default function Dashboard() {
           className="fixed cursor-pointer"
           style={{
             bottom: '29px',
-            left: weatherAlerts.length > 0 ? 'calc(50% + 52px + 35px)' : 'calc(50% + 52px)',
+            left: weatherAlerts.length > 0 ? 'calc(50% + 52px + 45px)' : 'calc(50% + 52px)',
             transition: 'left 0.3s ease-in-out',
             display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : 'block',
             zIndex: 10002,
@@ -32460,10 +32460,9 @@ export default function Dashboard() {
                         const isSevere = isThunder || isFog || wc === 65 || wc === 67 || wc === 82 || wc === 75 || wc === 86;
                         const hasAlert = weatherAlerts.length > 0;
                         return (
-                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1, gap: '1px', marginRight: '29px', position: 'relative' }} data-testid={`weather-cell-${hour}`}>
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1, gap: '1px', marginRight: '29px', position: 'relative', ...(hasAlert && isSevere ? { border: '2px solid rgba(255,60,60,0.8)', borderRadius: '4px', padding: '1px 3px' } : {}) }} className={hasAlert && isSevere ? 'time-cell-alert-border' : ''} data-testid={`weather-cell-${hour}`}>
                             {isThunder && <div className="time-cell-lightning" style={{ position: 'absolute', inset: '-4px -8px', borderRadius: '4px', zIndex: 0, animationDelay: `${(hour * 1.3) % 6}s` }} />}
                             {isFog && <div style={{ position: 'absolute', inset: '-4px -8px', borderRadius: '4px', zIndex: 0, background: 'linear-gradient(180deg, rgba(180,185,200,0.4) 0%, rgba(160,170,190,0.25) 100%)', animation: 'timeCellFogPulse 4s ease-in-out infinite', animationDelay: `${(hour * 0.7) % 4}s` }} />}
-                            {hasAlert && isSevere && <div className="time-cell-alert-border" style={{ position: 'absolute', inset: '-2px -3px', borderRadius: '4px', zIndex: 1, pointerEvents: 'none', animationDelay: `${(hour * 0.5) % 3}s` }} />}
                             <span style={{ fontSize: '16px', lineHeight: 1, filter: `drop-shadow(0 0 3px rgba(255,255,255,0.3))${isThunder ? ' drop-shadow(0 0 6px rgba(255,255,100,0.6))' : ''}`, position: 'relative', zIndex: 2 }}>{getWmoEmoji(wc, isDayHour)}</span>
                             <span style={{ fontSize: '11px', color: '#fff', lineHeight: 1, fontWeight: 700, textShadow: `0 0 4px rgba(100,180,255,0.35)${isThunder ? ', 0 0 8px rgba(255,255,100,0.4)' : ''}`, position: 'relative', zIndex: 2 }}>{hourlyEntry.temp}°</span>
                           </div>
@@ -34923,7 +34922,7 @@ export default function Dashboard() {
             <button
               onClick={() => { const next = !hwCalPairedScroll; setHwCalPairedScroll(next); localStorage.setItem('hwCalPairedScroll', next ? '1' : '0'); }}
               className="absolute flex items-center justify-center hover:bg-white/20 active:bg-white/30 transition-colors"
-              style={{ top: '-20px', left: '50%', transform: 'translateX(-50%)', width: '36px', height: '16px', borderRadius: '8px 8px 0 0', background: hwCalPairedScroll ? 'rgba(59,130,246,0.7)' : 'rgba(255,255,255,0.25)', border: '1px solid rgba(255,255,255,0.4)', borderBottom: 'none', zIndex: 110, backdropFilter: 'blur(8px)', cursor: 'pointer' }}
+              style={{ top: '2px', right: '4px', left: 'auto', transform: 'none', width: '28px', height: '14px', borderRadius: '4px', background: hwCalPairedScroll ? 'rgba(59,130,246,0.6)' : 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', zIndex: 110, backdropFilter: 'blur(8px)', cursor: 'pointer' }}
               title={hwCalPairedScroll ? 'Paired scrolling ON — click to unlink' : 'Paired scrolling OFF — click to link'}
               data-testid="toggle-paired-scroll"
             >
