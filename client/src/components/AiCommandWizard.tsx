@@ -609,15 +609,76 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
     setSnippingEnd(null);
     const overlay = document.querySelector('[data-testid="ai-command-overlay"]') as HTMLElement | null;
     if (overlay) overlay.style.visibility = 'hidden';
-    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(r, 50))));
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(r, 80))));
+    let captured = false;
     try {
       const { default: html2canvas } = await import('html2canvas');
-      const canvas = await html2canvas(document.body, { useCORS: true, scale: window.devicePixelRatio || 1, logging: false });
-      snippingCanvasRef.current = canvas;
-    } catch {
+      const canvas = await html2canvas(document.body, {
+        useCORS: true,
+        allowTaint: true,
+        scale: 1,
+        logging: false,
+        width: window.innerWidth,
+        height: window.innerHeight,
+        x: window.scrollX,
+        y: window.scrollY,
+        imageTimeout: 3000,
+        onclone: (clonedDoc: Document) => {
+          const s = clonedDoc.createElement('style');
+          s.textContent = [
+            '* { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }',
+            '[style*="backdrop-filter"] { background-color: rgba(30,40,60,0.85) !important; }',
+          ].join('\n');
+          clonedDoc.head.appendChild(s);
+          clonedDoc.querySelectorAll('video, iframe, canvas').forEach(el => {
+            const he = el as HTMLElement;
+            if (el.tagName === 'CANVAS') {
+              try {
+                const orig = el as HTMLCanvasElement;
+                const img = clonedDoc.createElement('img');
+                img.src = orig.toDataURL();
+                img.style.cssText = he.style.cssText;
+                img.style.width = he.offsetWidth + 'px';
+                img.style.height = he.offsetHeight + 'px';
+                he.parentNode?.replaceChild(img, he);
+              } catch { he.style.visibility = 'hidden'; }
+            } else {
+              he.style.visibility = 'hidden';
+            }
+          });
+        },
+      });
+      const ctx = canvas.getContext('2d');
+      let blank = true;
+      if (ctx) {
+        const sw = Math.min(canvas.width, 300);
+        const sh = Math.min(canvas.height, 300);
+        const sample = ctx.getImageData(Math.floor(canvas.width / 2 - sw / 2), Math.floor(canvas.height / 2 - sh / 2), sw, sh).data;
+        for (let i = 0; i < sample.length; i += 16) {
+          if (sample[i] !== 0 || sample[i+1] !== 0 || sample[i+2] !== 0) { blank = false; break; }
+        }
+      }
+      if (!blank && canvas.width > 0 && canvas.height > 0) {
+        snippingCanvasRef.current = canvas;
+        captured = true;
+      }
+    } catch (e) {
+      console.warn('[Snip] html2canvas error:', e);
+    }
+    if (!captured) {
       const canvas = document.createElement('canvas');
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        const computedBg = getComputedStyle(document.body).backgroundColor || '#1a1a2e';
+        ctx.fillStyle = computedBg;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = 'rgba(255,255,255,0.7)';
+        ctx.font = '14px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Screenshot capture unavailable — select an area to annotate', canvas.width / 2, canvas.height / 2);
+      }
       snippingCanvasRef.current = canvas;
     }
     setSnipping(true);
@@ -637,11 +698,12 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       return;
     }
     const srcCanvas = snippingCanvasRef.current;
-    const dpr = window.devicePixelRatio || 1;
-    const x = Math.min(snippingStart.x, snippingEnd.x) * dpr;
-    const y = Math.min(snippingStart.y, snippingEnd.y) * dpr;
-    const w = Math.abs(snippingEnd.x - snippingStart.x) * dpr;
-    const h = Math.abs(snippingEnd.y - snippingStart.y) * dpr;
+    const scaleX = srcCanvas.width / window.innerWidth;
+    const scaleY = srcCanvas.height / window.innerHeight;
+    const x = Math.min(snippingStart.x, snippingEnd.x) * scaleX;
+    const y = Math.min(snippingStart.y, snippingEnd.y) * scaleY;
+    const w = Math.abs(snippingEnd.x - snippingStart.x) * scaleX;
+    const h = Math.abs(snippingEnd.y - snippingStart.y) * scaleY;
     if (w < 10 || h < 10) {
       setSnipping(false);
       setSnippingStart(null);
