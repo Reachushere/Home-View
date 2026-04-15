@@ -1,4 +1,4 @@
-import { Megaphone, Settings, StickyNote, Calendar, Library, Sparkles, FileCheck } from "lucide-react";
+import { Megaphone, Settings, StickyNote, Calendar, Library, Sparkles, FileCheck, Zap } from "lucide-react";
 import type { MobileTab } from "./types";
 import { glassBtnStyle } from "./types";
 
@@ -13,6 +13,7 @@ interface HomeScreenProps {
   onOpenLibrary: () => void;
   onOpenStudyAI: () => void;
   onOpenAPA: () => void;
+  onOpenBrynAssist?: () => void;
 }
 
 export function HomeScreen({
@@ -25,6 +26,7 @@ export function HomeScreen({
   onOpenLibrary,
   onOpenStudyAI,
   onOpenAPA,
+  onOpenBrynAssist,
 }: HomeScreenProps) {
   const isFull = mobileAuth === '5747';
   const hasAddTask = mobileAuth === '5747';
@@ -112,6 +114,15 @@ export function HomeScreen({
               <FileCheck style={{ height: `${iconSize * 0.7}px`, width: `${iconSize * 0.7}px`, color: '#86efac' }} />
             </button>
             <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '10px', fontWeight: 500, fontFamily: "system-ui, -apple-system, sans-serif" }}>APA Check</span>
+          </div>
+        )}
+
+        {isFull && onOpenBrynAssist && (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+            <button onClick={onOpenBrynAssist} data-testid="mobile-app-btn-bryn-assist" style={{ ...glassBtnStyle(btnSize), background: 'linear-gradient(180deg, rgba(100,160,255,0.5) 0%, rgba(60,100,200,0.35) 50%, rgba(40,80,180,0.25) 100%)' }}>
+              <Zap style={{ height: `${iconSize * 0.7}px`, width: `${iconSize * 0.7}px`, color: '#93b5ff' }} />
+            </button>
+            <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '10px', fontWeight: 500, fontFamily: "system-ui, -apple-system, sans-serif" }}>Bryn Assist</span>
           </div>
         )}
       </div>

@@ -1,7 +1,8 @@
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Library, Sparkles, FileCheck, Megaphone, Settings, Calendar } from "lucide-react";
+import { Library, Sparkles, FileCheck, Megaphone, Settings, Calendar, Zap } from "lucide-react";
 import LibraryView from "@/components/LibraryView";
+import { AiCommandWizard } from "@/components/AiCommandWizard";
 import MobileNotesPage from "@/pages/mobile-notes";
 import MobileUploadPage from "@/pages/mobile-upload";
 import type { MobileTab, SemesterSettings, CoursesData } from "./mobile/types";
@@ -28,6 +29,19 @@ interface MoreItem {
   iconColor?: string;
 }
 
+interface ColorSettings {
+  mainBackground: string;
+  mainBackgroundGradientEnd: string;
+  mainBackgroundOverlay?: boolean;
+  [key: string]: unknown;
+}
+
+function safeHex(val: unknown, fallback: string): string {
+  if (typeof val !== 'string' || !val) return fallback;
+  const h = val.startsWith('#') ? val : `#${val}`;
+  return /^#[0-9a-fA-F]{3,8}$/.test(h) ? h : fallback;
+}
+
 export default function MobileApp() {
   const [mobileAuth, setMobileAuth] = useState<string | null>(() => {
     const urlAuth = new URLSearchParams(window.location.search).get('auth');
@@ -50,6 +64,16 @@ export default function MobileApp() {
   const [showLibrary, setShowLibrary] = useState(false);
   const [libraryAiSearch, setLibraryAiSearch] = useState(false);
   const [libraryApaCheck, setLibraryApaCheck] = useState(false);
+  const [showBrynAssist, setShowBrynAssist] = useState(false);
+
+  const { data: colorData } = useQuery<{ value: ColorSettings }>({
+    queryKey: ["/api/app-state", "colorSettings"],
+    queryFn: () => fetch('/api/app-state/colorSettings').then(r => r.ok ? r.json() : { value: null }),
+    staleTime: 60000,
+  });
+  const bgColor = colorData?.value?.mainBackgroundOverlay !== false
+    ? safeHex(colorData?.value?.mainBackground, '#3a8bbf')
+    : '#3a8bbf';
 
   const { data: semesterSettings } = useQuery<SemesterSettings>({
     queryKey: ["/api/semester"],
@@ -102,6 +126,7 @@ export default function MobileApp() {
           onOpenLibrary={() => { setLibraryAiSearch(false); setLibraryApaCheck(false); setShowLibrary(true); }}
           onOpenStudyAI={() => { setLibraryAiSearch(true); setLibraryApaCheck(false); setShowLibrary(true); }}
           onOpenAPA={() => { setLibraryAiSearch(false); setLibraryApaCheck(true); setShowLibrary(true); }}
+          onOpenBrynAssist={() => setShowBrynAssist(true)}
         />
       )}
       {safeTab === 'calendar' && <CalendarPage mobileAuth={mobileAuth} />}
@@ -145,6 +170,26 @@ export default function MobileApp() {
     </>
   );
 
+  const renderBrynAssistFab = () => isFull ? (
+    <button
+      onClick={() => setShowBrynAssist(true)}
+      style={{
+        position: 'fixed', bottom: isLandscape ? '16px' : '76px', right: '16px',
+        width: '52px', height: '52px', borderRadius: '50%',
+        background: 'linear-gradient(135deg, rgba(100,160,255,0.4) 0%, rgba(60,100,200,0.6) 100%)',
+        backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+        border: '1.5px solid rgba(100,160,255,0.5)',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.3), 0 0 15px rgba(100,160,255,0.2)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        cursor: 'pointer', zIndex: 50, color: '#fff',
+        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+      }}
+      data-testid="mobile-app-bryn-assist-fab"
+    >
+      <Zap style={{ width: 24, height: 24 }} />
+    </button>
+  ) : null;
+
   const renderDialogs = () => (
     <>
       {showAddTask && <AddTaskDialog onClose={() => setShowAddTask(false)} />}
@@ -161,6 +206,12 @@ export default function MobileApp() {
           initialApaCheck={libraryApaCheck}
         />
       )}
+      {showBrynAssist && (
+        <AiCommandWizard
+          isOpen={showBrynAssist}
+          onClose={() => setShowBrynAssist(false)}
+        />
+      )}
     </>
   );
 
@@ -169,7 +220,7 @@ export default function MobileApp() {
       <div
         style={{
           width: '100vw', height: '100dvh', overflow: 'hidden',
-          backgroundColor: '#3a8bbf',
+          backgroundColor: bgColor,
           display: 'flex', flexDirection: 'row',
           position: 'relative',
           fontFamily: "system-ui, -apple-system, sans-serif",
@@ -222,6 +273,7 @@ export default function MobileApp() {
           </div>
         </div>
 
+        {renderBrynAssistFab()}
         {renderDialogs()}
       </div>
     );
@@ -231,7 +283,7 @@ export default function MobileApp() {
     <div
       style={{
         width: '100vw', height: '100dvh', overflow: 'hidden',
-        backgroundColor: '#3a8bbf',
+        backgroundColor: bgColor,
         display: 'flex', flexDirection: 'column',
         position: 'relative',
         fontFamily: "system-ui, -apple-system, sans-serif",
@@ -246,6 +298,7 @@ export default function MobileApp() {
 
       <BottomTabBar activeTab={safeTab} onTabChange={setActiveTab} tabs={availableTabs} />
 
+      {renderBrynAssistFab()}
       {renderDialogs()}
     </div>
   );
