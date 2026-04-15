@@ -30005,11 +30005,11 @@ export default function Dashboard() {
                                 }
                                 const nextSem = semDefs.find(s => satDate < new Date(s.start + 'T00:00:00'));
                                 if (nextSem) {
-                                  return `Break 🏖️`;
+                                  return `Break ⛱️`;
                                 }
                                 const lastSem = semDefs[semDefs.length - 1];
                                 if (lastSem && satDate > new Date(lastSem.end + 'T23:59:59')) {
-                                  return `Break 🏖️`;
+                                  return `Break ⛱️`;
                                 }
                                 return `New School Week (${selectedWeek + 1})`;
                               })()}</span>
@@ -30048,20 +30048,20 @@ export default function Dashboard() {
                                     const wk = getWeekNumber(dayDate, semStartD, rwStart);
                                     if (wk === -1) return 'Reading Week';
                                     const clampedWk = Math.max(wk, 1);
-                                    return clampedWk > activeSem.weeks ? 'Break 🏖️' : `Week ${clampedWk}`;
+                                    return clampedWk > activeSem.weeks ? 'Break ⛱️' : `Week ${clampedWk}`;
                                   }
                                   const calcDate = dayDate.getDay() === 0 ? new Date(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate() + 1, 12, 0, 0) : dayDate;
                                   const daysDiff = Math.round((calcDate.getTime() - semStartD.getTime()) / (1000*60*60*24));
                                   const rawWeek = Math.max(1, Math.floor(daysDiff / 7) + 1);
-                                  if (rawWeek > activeSem.weeks) return 'Break 🏖️';
+                                  if (rawWeek > activeSem.weeks) return 'Break ⛱️';
                                   const isSS = activeSem.key.startsWith('ss');
                                   const ssLabel = isSS && rawWeek > 7 ? `/${rawWeek - 7}` : '';
                                   return `Week ${rawWeek}${ssLabel}`;
                                 }
                                 const nextSem = semDefs.find(s => dayDate < new Date(s.start + 'T00:00:00'));
-                                if (nextSem) return 'Break 🏖️';
+                                if (nextSem) return 'Break ⛱️';
                                 const lastSem1 = semDefs[semDefs.length - 1];
-                                if (lastSem1 && dayDate > new Date(lastSem1.end + 'T23:59:59')) return 'Break 🏖️';
+                                if (lastSem1 && dayDate > new Date(lastSem1.end + 'T23:59:59')) return 'Break ⛱️';
                                 return `Week ${Math.min(selectedWeek + 1, currentMaxWeek)}`;
                               })()}</span>
                             </div>
@@ -30100,20 +30100,20 @@ export default function Dashboard() {
                                     const wk = getWeekNumber(dayDate, semStartD, rwStart);
                                     if (wk === -1) return 'Reading Week';
                                     const clampedWk = Math.max(wk, 1);
-                                    return clampedWk > activeSem.weeks ? 'Break 🏖️' : `Week ${clampedWk}`;
+                                    return clampedWk > activeSem.weeks ? 'Break ⛱️' : `Week ${clampedWk}`;
                                   }
                                   const calcDate = dayDate.getDay() === 0 ? new Date(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate() + 1, 12, 0, 0) : dayDate;
                                   const daysDiff = Math.round((calcDate.getTime() - semStartD.getTime()) / (1000*60*60*24));
                                   const rawWeek = Math.max(1, Math.floor(daysDiff / 7) + 1);
-                                  if (rawWeek > activeSem.weeks) return 'Break 🏖️';
+                                  if (rawWeek > activeSem.weeks) return 'Break ⛱️';
                                   const isSS = activeSem.key.startsWith('ss');
                                   const ssLabel = isSS && rawWeek > 7 ? `/${rawWeek - 7}` : '';
                                   return `Week ${rawWeek}${ssLabel}`;
                                 }
                                 const nextSem = semDefs.find(s => dayDate < new Date(s.start + 'T00:00:00'));
-                                if (nextSem) return 'Break 🏖️';
+                                if (nextSem) return 'Break ⛱️';
                                 const lastSem2 = semDefs[semDefs.length - 1];
-                                if (lastSem2 && dayDate > new Date(lastSem2.end + 'T23:59:59')) return 'Break 🏖️';
+                                if (lastSem2 && dayDate > new Date(lastSem2.end + 'T23:59:59')) return 'Break ⛱️';
                                 return `Week ${Math.min(selectedWeek, currentMaxWeek)}`;
                               })()}</span>
                             </div>
