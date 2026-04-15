@@ -6039,11 +6039,27 @@ ${fileContents.join('\n\n')}`;
   });
 
   const aiSessionStore = new Map<string, { summary: string; filesModified: string[]; toolsUsed: string[]; lastActive: number }>();
+  const aiSessionFile = path.join(process.cwd(), '.ai-sessions.json');
+  try {
+    const stored = JSON.parse(require('fs').readFileSync(aiSessionFile, 'utf-8'));
+    const now = Date.now();
+    for (const [k, v] of Object.entries(stored)) {
+      if (now - (v as any).lastActive < 2 * 60 * 60 * 1000) aiSessionStore.set(k, v as any);
+    }
+  } catch {}
+  function persistSessions() {
+    try {
+      const obj: any = {};
+      for (const [k, v] of aiSessionStore) obj[k] = v;
+      require('fs').writeFileSync(aiSessionFile, JSON.stringify(obj), 'utf-8');
+    } catch {}
+  }
   setInterval(() => {
     const now = Date.now();
     for (const [k, v] of aiSessionStore) {
-      if (now - v.lastActive > 30 * 60 * 1000) aiSessionStore.delete(k);
+      if (now - v.lastActive > 2 * 60 * 60 * 1000) aiSessionStore.delete(k);
     }
+    persistSessions();
   }, 5 * 60 * 1000);
 
   app.post("/api/ai/command", async (req, res) => {
@@ -6114,8 +6130,10 @@ PROJECT ARCHITECTURE:
 - Runs on Raspberry Pi at :5000 (PM2 managed), also developed on Replit
 
 KEY FILES (read these to understand how things work):
-- client/src/pages/dashboard.tsx — Main dashboard UI (very large, ~500KB, always use offset/limit)
-- client/src/components/ — Shared React components (AiCommandWizard, panels, modals)
+- client/src/pages/dashboard.tsx — Main dashboard UI (very large, ~45K lines, always use offset/limit and search_code)
+- client/src/components/AiCommandWizard.tsx — YOUR OWN UI (Bryn Assist dialog). Edit THIS file to change your appearance/behavior.
+- client/src/components/ — Shared React components (panels, modals)
+- client/src/components/ui/ — shadcn/ui base components (DO NOT edit these for app-specific styling)
 - client/src/pages/mobile/ — Mobile-optimized version at /m
 - server/routes.ts — ALL API endpoints (very large, use search_code to find specific routes)
 - server/storage.ts — Database CRUD operations (IStorage interface)
@@ -6362,6 +6380,7 @@ RULES:
         toolsUsed: [...(existingSession?.toolsUsed || []), ...toolNames],
         lastActive: Date.now(),
       });
+      persistSessions();
 
       const correctionPatterns = /\b(no,?\s*(that's wrong|not that|don't|stop|undo|wrong|incorrect|bad)|fix that|that broke|you broke|revert|go back|roll back)\b/i;
       if (correctionPatterns.test(message)) {

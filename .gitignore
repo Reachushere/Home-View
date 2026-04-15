@@ -10,4 +10,5 @@ vite.config.ts.*
 .env
 .env.local
 .ai-conversations
+.ai-sessions.json
 .ai-temp-script.mjs
