@@ -19952,12 +19952,12 @@ export default function Dashboard() {
       {/* Weather / Alert labels on D2L ticker, flanking center tab */}
       {weatherAlerts.length > 0 && (
         <>
-          <div className="fixed z-[9999]" style={{ top: '25px', left: '50%', transform: 'translateX(calc(-50% - 81px))', pointerEvents: 'none' }} data-testid="weather-alert-label-left">
+          <a href={weatherAlerts[0]?.url || 'https://weather.gc.ca/warnings/index_e.html'} target="_blank" rel="noopener noreferrer" className="fixed z-[9999] cursor-pointer hover:opacity-80 transition-opacity" style={{ top: '25px', left: '50%', transform: 'translateX(calc(-50% - 81px))', textDecoration: 'none' }} data-testid="weather-alert-label-left">
             <span style={{ color: '#ffffff', fontSize: '12px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", letterSpacing: '0.5px' }}>WEATHER</span>
-          </div>
-          <div className="fixed z-[9999]" style={{ top: '25px', left: '50%', transform: 'translateX(calc(-50% + 73px))', pointerEvents: 'none' }} data-testid="weather-alert-label-right">
+          </a>
+          <a href={weatherAlerts[0]?.url || 'https://weather.gc.ca/warnings/index_e.html'} target="_blank" rel="noopener noreferrer" className="fixed z-[9999] cursor-pointer hover:opacity-80 transition-opacity" style={{ top: '25px', left: '50%', transform: 'translateX(calc(-50% + 73px))', textDecoration: 'none' }} data-testid="weather-alert-label-right">
             <span style={{ color: '#ffffff', fontSize: '12px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", letterSpacing: '0.5px' }}>ALERT</span>
-          </div>
+          </a>
           {createPortal(
             <div className="fixed" style={{ bottom: '25px', left: '50%', transform: 'translateX(calc(-50% - 81px))', display: isSchoolCoursesDialogOpen ? 'none' : undefined, pointerEvents: 'none', zIndex: 10003 }} data-testid="weather-alert-label-bottom-left">
               <span style={{ color: '#ffffff', fontSize: '12px', fontWeight: 900, fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", letterSpacing: '0.5px' }}>WEATHER</span>
@@ -19974,8 +19974,20 @@ export default function Dashboard() {
       )}
 
       {/* News Ticker */}
-      <NewsTickerPortal headlines={[
-        ...weatherAlerts.map((a, ai) => { const tm = a.title.match(/(Thunderstorm|Lightning|Tornado|Fog|Freezing Rain|Blizzard|Winter Storm|Heat|Wind|Snowfall|Rainfall|Hurricane|Tropical|Ice|Hail|Snow Squall|Frost|Cold|Dust|Smoke|Smog)\s*(Warning|Watch|Advisory|Statement)?/i); const brief = tm ? `${tm[1]}${tm[2] ? ' ' + tm[2] : ''}` : a.title.split(' — ')[0].split(' in ')[0].split(' for ')[0]; return { title: `⚠️ ${brief}: ${a.title}${a.summary ? ` — ${a.summary}` : ''}`, source: '_ALERT_', link: '', alertIndex: ai }; }),
+      <NewsTickerPortal headlines={(() => {
+        const alertItems = weatherAlerts.map((a, ai) => {
+          const tm = a.title.match(/(Thunderstorm|Lightning|Tornado|Fog|Freezing Rain|Blizzard|Winter Storm|Heat|Wind|Snowfall|Rainfall|Hurricane|Tropical|Ice|Hail|Snow Squall|Frost|Cold|Dust|Smoke|Smog)/i);
+          const hazard = tm ? tm[1].charAt(0).toUpperCase() + tm[1].slice(1).toLowerCase() : 'Weather';
+          const typeUpper = (a.type || 'info').toUpperCase();
+          const typeLabel = typeUpper === 'WARNING' ? 'WARNING' : typeUpper === 'WATCH' ? 'WATCH' : typeUpper === 'ADVISORY' ? 'ADVISORY' : 'STATEMENT';
+          const levelColor = typeUpper === 'WARNING' ? '#ff4444' : typeUpper === 'WATCH' ? '#ff8800' : '#ffcc00';
+          const levelIcon = typeUpper === 'WARNING' ? '🔴' : typeUpper === 'WATCH' ? '🟠' : '🟡';
+          const levelLabel = typeUpper === 'WARNING' ? 'Red Warning' : typeUpper === 'WATCH' ? 'Orange Watch' : 'Yellow Advisory';
+          const issueDateMatch = a.summary ? a.summary.match(/(\d{1,2}:\d{2}\s*[ap]\.?m\.?\s*E\.?[DS]\.?T\.?\s+\w+\s+\w+\s+\d{1,2},?\s*\d{4})/i) : null;
+          const issueStr = issueDateMatch ? issueDateMatch[1] : (a.summary || '').slice(0, 60);
+          return { title: `${typeLabel}: for the City of Toronto — ${issueStr} — <span style="color:${levelColor};font-weight:bold">${levelIcon} ${levelLabel} - ${hazard}</span>`, source: '_ALERT_', link: '', alertIndex: ai };
+        });
+        const otherItems: { title: string; source: string; link: string; publishedAt?: string; alertIndex?: number }[] = [
         ...(weatherData ? (() => {
           const WMO_DESC: Record<number, string> = { 0:'Clear',1:'Mainly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',48:'Rime Fog',51:'Light Drizzle',53:'Drizzle',55:'Heavy Drizzle',61:'Light Rain',63:'Rain',65:'Heavy Rain',66:'Freezing Rain',67:'Heavy Freezing Rain',71:'Light Snow',73:'Snow',75:'Heavy Snow',77:'Snow Grains',80:'Light Showers',81:'Showers',82:'Heavy Showers',85:'Light Snow Showers',86:'Heavy Snow Showers',95:'Thunderstorm',96:'Thunderstorm w/ Hail',99:'Severe Thunderstorm' };
           const desc = WMO_DESC[weatherData.code] || 'Mixed';
@@ -20023,7 +20035,19 @@ export default function Dashboard() {
           }
           return interleaved;
         })(),
-      ]} onAlertClick={(idx) => {
+        ];
+        if (alertItems.length === 0) return otherItems;
+        const result: typeof otherItems = [];
+        let alertIdx = 0;
+        for (let i = 0; i < otherItems.length; i++) {
+          if (i > 0 && i % 6 === 0) {
+            result.push(alertItems[alertIdx % alertItems.length]);
+            alertIdx++;
+          }
+          result.push(otherItems[i]);
+        }
+        return [alertItems[0], ...result];
+      })()} onAlertClick={(idx) => {
         if (weatherAlerts[idx]) {
           setSelectedWeatherAlert(weatherAlerts[idx]);
           setWeatherAlertDialogOpen(true);
