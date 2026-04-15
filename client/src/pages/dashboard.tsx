@@ -16748,10 +16748,10 @@ export default function Dashboard() {
           {isAdmin && (
           <div className="pill-button-hover" style={{ 
             marginTop: '0px', width: '44px', height: '43px', borderRadius: '50%',
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
+            background: 'linear-gradient(180deg, rgba(212,175,55,0.45) 0%, rgba(180,140,30,0.3) 100%)',
             position: 'relative' as const, zIndex: 1,
-            border: '1.5px solid rgba(255,255,255,0.35)',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
+            border: '1.5px solid rgba(212,175,55,0.55)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,220,100,0.3), inset 0 -1px 0 rgba(0,0,0,0.05)',
             display: 'flex', alignItems: 'center', justifyContent: 'center'
           }}>
             <Button 
@@ -16765,7 +16765,7 @@ export default function Dashboard() {
                 startTransition(() => setIsAdminPanelOpen(true));
               }}
             >
-              <Shield style={{ width: '20px', height: '20px', color: 'rgba(255,255,255,0.85)' }} />
+              <Shield style={{ width: '20px', height: '20px', color: 'rgba(255,215,0,0.9)' }} />
             </Button>
           </div>
           )}
