@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Zap, Send, X, Loader2, CheckCircle, XCircle, AlertTriangle, Trash2, RotateCcw, Maximize2, Minimize2, Pencil, Circle, ArrowRight, Undo2, Check, Scissors } from 'lucide-react';
 import { queryClient } from '@/lib/queryClient';
 
@@ -591,9 +592,11 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   }, []);
 
   const startSnipping = useCallback(async () => {
-    setSnipping(true);
     setSnippingStart(null);
     setSnippingEnd(null);
+    const overlay = document.querySelector('[data-testid="ai-command-overlay"]') as HTMLElement | null;
+    if (overlay) overlay.style.visibility = 'hidden';
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(r, 50))));
     try {
       const { default: html2canvas } = await import('html2canvas');
       const canvas = await html2canvas(document.body, { useCORS: true, scale: window.devicePixelRatio || 1, logging: false });
@@ -604,6 +607,12 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       canvas.height = window.innerHeight;
       snippingCanvasRef.current = canvas;
     }
+    setSnipping(true);
+  }, []);
+
+  const restoreOverlay = useCallback(() => {
+    const overlay = document.querySelector('[data-testid="ai-command-overlay"]') as HTMLElement | null;
+    if (overlay) overlay.style.visibility = '';
   }, []);
 
   const finishSnipping = useCallback(() => {
@@ -611,6 +620,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       setSnipping(false);
       setSnippingStart(null);
       setSnippingEnd(null);
+      restoreOverlay();
       return;
     }
     const srcCanvas = snippingCanvasRef.current;
@@ -623,6 +633,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       setSnipping(false);
       setSnippingStart(null);
       setSnippingEnd(null);
+      restoreOverlay();
       return;
     }
     const cropCanvas = document.createElement('canvas');
@@ -637,7 +648,8 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
     setSnipping(false);
     setSnippingStart(null);
     setSnippingEnd(null);
-  }, [snippingStart, snippingEnd]);
+    restoreOverlay();
+  }, [snippingStart, snippingEnd, restoreOverlay]);
 
   useEffect(() => {
     if (!snipping) return;
@@ -646,6 +658,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
         setSnipping(false);
         setSnippingStart(null);
         setSnippingEnd(null);
+        restoreOverlay();
       }
     };
     window.addEventListener('keydown', handleEsc);
@@ -1008,7 +1021,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
           onCancel={() => setMarkupImage(null)}
         />
       )}
-      {snipping && (
+      {snipping && createPortal(
         <div
           style={{
             position: 'fixed',
@@ -1018,7 +1031,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
             height: '100vh',
             zIndex: 999999,
             cursor: 'crosshair',
-            background: 'rgba(0,0,0,0.3)',
+            background: 'rgba(0,0,0,0.15)',
           }}
           onMouseDown={e => {
             e.preventDefault();
@@ -1074,7 +1087,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
             }} />
           )}
           <button
-            onClick={() => { setSnipping(false); setSnippingStart(null); setSnippingEnd(null); }}
+            onClick={() => { setSnipping(false); setSnippingStart(null); setSnippingEnd(null); restoreOverlay(); }}
             style={{
               position: 'absolute',
               top: '20px',
@@ -1092,7 +1105,8 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
           >
             Cancel
           </button>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
