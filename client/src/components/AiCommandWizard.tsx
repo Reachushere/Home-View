@@ -3,13 +3,13 @@ import { Zap, Send, X, Loader2, CheckCircle, XCircle, AlertTriangle, Trash2, Rot
 import { queryClient } from '@/lib/queryClient';
 
 const thinkingKeyframes = `
-@keyframes ai-grid-pulse {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 1; }
+@keyframes ai-dot-bounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+  40% { transform: translateY(-6px); opacity: 1; }
 }
-@keyframes ai-think-spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+@keyframes ai-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 `;
 
@@ -479,18 +479,30 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
           ))}
 
           {(thinkingPhase || (loading && !messages.some(m => m.role === 'assistant' && m.content))) && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 4px' }}>
-              <div style={{
-                width: '24px', height: '24px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px',
-                animation: 'ai-think-spin 3s linear infinite',
-              }}>
-                <div style={{ width: '9px', height: '9px', borderRadius: '2px', background: '#a855f7', animation: 'ai-grid-pulse 1.2s ease-in-out infinite', animationDelay: '0s' }} />
-                <div style={{ width: '9px', height: '9px', borderRadius: '2px', background: '#8b5cf6', animation: 'ai-grid-pulse 1.2s ease-in-out infinite', animationDelay: '0.15s' }} />
-                <div style={{ width: '9px', height: '9px', borderRadius: '2px', background: '#7c3aed', animation: 'ai-grid-pulse 1.2s ease-in-out infinite', animationDelay: '0.3s' }} />
-                <div style={{ width: '9px', height: '9px', borderRadius: '2px', background: '#9333ea', animation: 'ai-grid-pulse 1.2s ease-in-out infinite', animationDelay: '0.45s' }} />
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              padding: '10px 14px',
+              borderRadius: '14px 14px 14px 4px',
+              background: 'rgba(30,50,90,0.7)',
+              border: '1px solid rgba(100,160,255,0.15)',
+            }}>
+              <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#60a5fa', animation: 'ai-dot-bounce 1.4s ease-in-out infinite', animationDelay: '0s' }} />
+                <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#818cf8', animation: 'ai-dot-bounce 1.4s ease-in-out infinite', animationDelay: '0.2s' }} />
+                <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#a78bfa', animation: 'ai-dot-bounce 1.4s ease-in-out infinite', animationDelay: '0.4s' }} />
               </div>
-              <span style={{ fontSize: '13px', color: 'rgba(200,180,255,0.85)', fontWeight: 500 }}>
-                {thinkingPhase || 'Working...'}
+              <span style={{
+                fontSize: '13px',
+                fontWeight: 500,
+                background: 'linear-gradient(90deg, rgba(160,180,255,0.9), rgba(200,180,255,0.6), rgba(160,180,255,0.9))',
+                backgroundSize: '200% auto',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                animation: 'ai-shimmer 2s linear infinite',
+              }}>
+                {thinkingPhase || 'Thinking...'}
               </span>
             </div>
           )}
