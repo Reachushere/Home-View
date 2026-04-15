@@ -12,6 +12,12 @@ uri = "file://attached_assets/bryn_popcorn_animoji.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "NV1sdbQcuqFw4GmKURJSi"
+uri = "file://attached_assets/bryn_popcorn_animoji_v2.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "YFf1AFzLkqTG8aZXkvxoF"
 uri = "file://.local/cat-washroom-automation-report.md"
@@ -83,3 +89,9 @@ id = "tYAmrcJXDRu7s7mcnZpQB"
 uri = "file://attached_assets/bryn_popcorn_animoji.png"
 type = "image"
 title = "Bryn Popcorn Animoji"
+
+[[outputs]]
+id = "vK7bhnpDFHyaMQDX_h_ay"
+uri = "file://attached_assets/bryn_popcorn_animoji_v2.png"
+type = "image"
+title = "Bryn Popcorn Animoji v2"
