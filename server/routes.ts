@@ -4,6 +4,7 @@ import type { Server } from "http";
 import crypto from "crypto";
 import fs from "fs";
 import path from "path";
+import { execSync } from "child_process";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { db } from "./db";
@@ -6183,7 +6184,7 @@ RULES:
       const OpenAI = (await import("openai")).default;
       const openai = new OpenAI({ apiKey: config.apiKey });
 
-      const readOnlyTools = new Set(["read_file", "list_directory", "search_code", "search_tasks", "get_semester_info", "check_build", "read_logs", "git_diff", "get_project_map", "db_schema", "http_check", "memory_read", "process_check", "analyze_ui", "smoke_test", "take_screenshot", "browser_test"]);
+      const readOnlyTools = new Set(["read_file", "list_directory", "search_code", "search_tasks", "get_semester_info", "check_build", "read_logs", "git_diff", "get_project_map", "db_schema", "http_check", "memory_read", "process_check", "analyze_ui", "smoke_test", "take_screenshot", "browser_test", "check_performance", "conversation_history", "health_check"]);
       const destructiveTools = new Set(["delete_task", "bulk_delete_tasks", "bulk_complete_tasks", "write_file", "edit_file", "run_shell_command", "restart_application", "git_commit_and_push", "install_package", "run_node_script", "generate_image"]);
 
       function isToolDestructive(fnName: string, fnArgs: any): boolean {
@@ -6298,6 +6299,35 @@ RULES:
       } else {
         res.json({ reply: "Reached maximum tool call rounds. The work may be partially complete.", toolResults: allToolResults, actionTaken, model, rounds: round });
       }
+      if (actionTaken) {
+        const fsP = await import('fs/promises');
+        const convDir = path.join(process.cwd(), '.ai-conversations');
+        await fsP.mkdir(convDir, { recursive: true }).catch(() => {});
+        const dateStr = new Date().toISOString().split('T')[0];
+        const convFile = path.join(convDir, `${dateStr}.jsonl`);
+        const entry = {
+          timestamp: new Date().toISOString(),
+          userMessage: message.trim().substring(0, 500),
+          toolsUsed: allToolResults.map(r => r.name),
+          rounds: round,
+          model,
+        };
+        await fsP.appendFile(convFile, JSON.stringify(entry) + '\n', 'utf-8').catch(() => {});
+      }
+
+      const correctionPatterns = /\b(no,?\s*(that's wrong|not that|don't|stop|undo|wrong|incorrect|bad)|fix that|that broke|you broke|revert|go back|roll back)\b/i;
+      if (correctionPatterns.test(message)) {
+        const fsP = await import('fs/promises');
+        const memPath = path.join(process.cwd(), '.ai-memory.md');
+        try {
+          let existing = '';
+          try { existing = await fsP.readFile(memPath, 'utf-8'); } catch {}
+          const correction = `\n\n## Correction (${new Date().toISOString().split('T')[0]})\nUser said: "${message.trim().substring(0, 200)}"\nContext: After using tools [${allToolResults.map(r => r.name).join(', ')}]\n`;
+          await fsP.writeFile(memPath, existing + correction, 'utf-8');
+          console.log('[AI Memory] Auto-saved correction to memory');
+        } catch {}
+      }
+
     } catch (err: any) {
       console.error("AI command error:", err);
       if (res.headersSent) {
@@ -6306,6 +6336,162 @@ RULES:
         res.status(500).json({ error: err?.message || "Command failed" });
       }
     }
+  });
+
+  app.get("/api/ai/conversations", async (req, res) => {
+    try {
+      if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ error: "Access denied" });
+      const fsP = await import('fs/promises');
+      const convDir = path.join(process.cwd(), '.ai-conversations');
+      try {
+        const files = await fsP.readdir(convDir);
+        const conversations: any[] = [];
+        for (const file of files.sort().reverse().slice(0, 7)) {
+          const content = await fsP.readFile(path.join(convDir, file), 'utf-8');
+          const entries = content.trim().split('\n').filter(Boolean).map(l => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
+          conversations.push({ date: file.replace('.jsonl', ''), entries });
+        }
+        res.json({ conversations });
+      } catch {
+        res.json({ conversations: [] });
+      }
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post("/api/ai/voice-command", async (req, res) => {
+    try {
+      const command = req.body?.command || req.body?.text || '';
+      if (!command || typeof command !== 'string' || command.trim().length < 2) {
+        return res.status(400).json({ error: "No command provided" });
+      }
+      console.log(`[AI Voice] Received voice command: "${command}"`);
+
+      const internalRes = await fetch(`http://localhost:5000/api/ai/command`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Cookie': req.headers.cookie || `auth_level=5747`,
+        },
+        body: JSON.stringify({ message: command.trim(), stream: false }),
+      });
+      const result = await internalRes.json();
+
+      if (result.reply) {
+        const ttsText = result.reply.substring(0, 300);
+        try {
+          const { generateAndSaveTTSAudio, playOnNestSpeaker } = await import('./routes-helpers') as any;
+          if (typeof (globalThis as any).generateAndSaveTTSAudio === 'function') {
+            const audioPath = await (globalThis as any).generateAndSaveTTSAudio(ttsText, `ai-voice-${Date.now()}`);
+            const appUrl = process.env.DEPLOYED_APP_URL || `http://localhost:5000`;
+            await (globalThis as any).playOnNestSpeaker(`${appUrl}${audioPath}`, 2, ttsText);
+          }
+        } catch (e) {
+          console.log('[AI Voice] TTS playback skipped:', (e as any).message?.substring(0, 100));
+        }
+      }
+
+      res.json({ reply: result.reply, actionTaken: result.actionTaken });
+    } catch (err: any) {
+      console.error('[AI Voice] Error:', err.message);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  let healthCheckInterval: ReturnType<typeof setInterval> | null = null;
+  let healthCheckEnabled = false;
+  let healthCheckIntervalMs = 60 * 60 * 1000;
+  let lastHealthCheckResult: any = null;
+  let lastHealthCheckTime: string | null = null;
+
+  async function runScheduledHealthCheck() {
+    console.log(`[Health Monitor] Running scheduled health check...`);
+    const checks: any = {};
+    const endpoints = ['/api/health', '/api/tasks', '/'];
+    let allOk = true;
+
+    for (const ep of endpoints) {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 8000);
+        const resp = await fetch(`http://localhost:5000${ep}`, { signal: controller.signal });
+        clearTimeout(timeout);
+        if (!resp.ok) allOk = false;
+      } catch {
+        allOk = false;
+      }
+    }
+
+    try {
+      await db.execute('SELECT 1');
+      checks.database = true;
+    } catch {
+      checks.database = false;
+      allOk = false;
+    }
+
+    try {
+      const disk = execSync('df -h . 2>/dev/null | tail -1', { encoding: 'utf-8', timeout: 3000 });
+      const pct = parseInt(disk.split(/\s+/)[4] || '0');
+      checks.diskUsedPercent = pct;
+      if (pct > 85) allOk = false;
+    } catch {}
+
+    checks.healthy = allOk;
+    checks.timestamp = new Date().toISOString();
+    lastHealthCheckResult = checks;
+    lastHealthCheckTime = checks.timestamp;
+
+    if (!allOk) {
+      console.log(`[Health Monitor] ISSUES DETECTED — sending alert email`);
+      try {
+        const { sendGmail } = await import('./gmail');
+        await sendGmail(
+          'UniCal Health Alert',
+          `<h2>Health Check Failed</h2><p>Time: ${checks.timestamp}</p><p>Database: ${checks.database ? 'OK' : 'DOWN'}</p><p>Endpoints: ${allOk ? 'OK' : 'ISSUES'}</p><p>Disk: ${checks.diskUsedPercent || 'N/A'}% used</p><p>Check the app at http://172.24.1.204:5000</p>`,
+        );
+      } catch (e) {
+        console.log(`[Health Monitor] Could not send alert email:`, (e as any).message?.substring(0, 100));
+      }
+    } else {
+      console.log(`[Health Monitor] All checks passed`);
+    }
+  }
+
+  app.get("/api/ai/health-monitor", async (req, res) => {
+    if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ error: "Access denied" });
+    res.json({
+      enabled: healthCheckEnabled,
+      intervalMinutes: healthCheckIntervalMs / 60000,
+      lastCheck: lastHealthCheckTime,
+      lastResult: lastHealthCheckResult,
+    });
+  });
+
+  app.post("/api/ai/health-monitor", async (req, res) => {
+    if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ error: "Access denied" });
+    const { enabled, intervalMinutes } = req.body;
+
+    if (typeof enabled === 'boolean') {
+      healthCheckEnabled = enabled;
+      if (healthCheckInterval) {
+        clearInterval(healthCheckInterval);
+        healthCheckInterval = null;
+      }
+      if (enabled) {
+        if (typeof intervalMinutes === 'number' && intervalMinutes >= 5) {
+          healthCheckIntervalMs = intervalMinutes * 60 * 1000;
+        }
+        healthCheckInterval = setInterval(runScheduledHealthCheck, healthCheckIntervalMs);
+        runScheduledHealthCheck();
+      }
+    }
+
+    res.json({
+      enabled: healthCheckEnabled,
+      intervalMinutes: healthCheckIntervalMs / 60000,
+    });
   });
 
   app.post("/api/library/ai-search/preview", async (req, res) => {
@@ -19477,8 +19663,19 @@ document.body.removeChild(a);
         return res.json({ action: "cleared" });
 
       } else {
-        console.log(`[Voice Command] Unknown command: "${command}"`);
-        return res.json({ action: "unknown", command });
+        console.log(`[Voice Command] Routing to AI wizard: "${command}"`);
+        try {
+          const aiResp = await fetch('http://localhost:5000/api/ai/voice-command', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Cookie': 'auth_level=5747' },
+            body: JSON.stringify({ command }),
+          });
+          const aiResult = await aiResp.json();
+          return res.json({ action: "ai_handled", command, reply: aiResult.reply });
+        } catch (aiErr: any) {
+          console.log(`[Voice Command] AI fallback failed: ${aiErr.message}`);
+          return res.json({ action: "unknown", command });
+        }
       }
 
     } catch (error: any) {

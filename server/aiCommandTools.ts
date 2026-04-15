@@ -771,6 +771,43 @@ export const AI_COMMAND_TOOLS = [
       },
     },
   },
+  {
+    type: "function" as const,
+    function: {
+      name: "check_performance",
+      description: "Check app performance metrics: bundle size, build time, page load speed, and memory usage. Use after making changes to verify nothing degraded.",
+      parameters: {
+        type: "object",
+        properties: {
+          url: { type: "string", description: "Page URL path to test load speed. Default: /" },
+        },
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "conversation_history",
+      description: "Read recent conversation history with the wizard. Shows what commands were run, tools used, and timestamps from the last 7 days.",
+      parameters: {
+        type: "object",
+        properties: {
+          days: { type: "number", description: "Number of days of history to retrieve. Default: 7, max: 30." },
+        },
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "health_check",
+      description: "Run a comprehensive health check: tests key endpoints, checks database connectivity, verifies disk space, and reports overall system status.",
+      parameters: {
+        type: "object",
+        properties: {},
+      },
+    },
+  },
 ];
 
 export async function executeToolCall(name: string, args: Record<string, any>): Promise<{ success: boolean; result: any; needsConfirmation?: boolean; confirmationMessage?: string }> {
@@ -1454,6 +1491,15 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           const ghToken = process.env.GITHUB_PERSONAL_ACCESS_TOKEN3;
           if (ghToken) {
             execSync(`git push https://Reachushere:${ghToken}@github.com/Reachushere/Home-View.git main 2>&1`, { cwd: projectRoot, encoding: 'utf-8', timeout: 30000 });
+            const isPi = projectRoot.includes('/home/byhomeyyz/');
+            if (isPi) {
+              try {
+                const deployOut = execSync('bash deploy.sh 2>&1', { cwd: projectRoot, encoding: 'utf-8', timeout: 120000 });
+                return { success: true, result: { committed: true, pushed: true, deployed: true, commit: hash, message: `Committed, pushed ${hash}, and auto-deployed on Pi.`, deployLog: deployOut.substring(deployOut.length - 500) } };
+              } catch (deployErr: any) {
+                return { success: true, result: { committed: true, pushed: true, deployed: false, commit: hash, message: `Committed and pushed ${hash}, but auto-deploy failed.`, deployError: deployErr.message?.substring(0, 300) } };
+              }
+            }
             return { success: true, result: { committed: true, pushed: true, commit: hash, message: `Committed and pushed ${hash}. Run deploy.sh on the Pi to apply.` } };
           }
           return { success: true, result: { committed: true, pushed: false, commit: hash, message: `Committed ${hash} but GitHub push token not found. Push manually.` } };
@@ -1995,6 +2041,131 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           const output = (e.stdout || '') + '\n' + (e.stderr || '');
           return { success: false, result: { error: output.substring(0, 3000) } };
         }
+      }
+
+      case "check_performance": {
+        const projectRoot = getProjectRoot();
+        const results: Record<string, any> = {};
+        try {
+          const distPath = path.join(projectRoot, 'dist', 'public');
+          try {
+            const duOutput = execSync(`du -sh "${distPath}" 2>/dev/null`, { encoding: 'utf-8', timeout: 5000 }).trim();
+            results.bundleSize = duOutput;
+            const jsFiles = execSync(`find "${distPath}" -name "*.js" -exec ls -lh {} \\; 2>/dev/null | head -10`, { encoding: 'utf-8', timeout: 5000 });
+            results.jsFiles = jsFiles.trim();
+            const cssFiles = execSync(`find "${distPath}" -name "*.css" -exec ls -lh {} \\; 2>/dev/null | head -5`, { encoding: 'utf-8', timeout: 5000 });
+            results.cssFiles = cssFiles.trim();
+          } catch { results.bundleSize = 'Build not found — run a build first'; }
+
+          const memInfo = execSync('free -h 2>/dev/null | head -2 || echo "N/A"', { encoding: 'utf-8', timeout: 3000 }).trim();
+          results.memory = memInfo;
+          const loadAvg = execSync('cat /proc/loadavg 2>/dev/null || echo "N/A"', { encoding: 'utf-8', timeout: 3000 }).trim();
+          results.loadAverage = loadAvg;
+          const diskUsage = execSync('df -h . 2>/dev/null | tail -1 || echo "N/A"', { encoding: 'utf-8', timeout: 3000 }).trim();
+          results.diskUsage = diskUsage;
+
+          const testUrl = `http://localhost:5000${args.url || '/'}`;
+          const loadStart = Date.now();
+          try {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 10000);
+            const resp = await fetch(testUrl, { signal: controller.signal });
+            clearTimeout(timeout);
+            const body = await resp.text();
+            results.pageLoad = {
+              url: testUrl,
+              status: resp.status,
+              timeMs: Date.now() - loadStart,
+              sizeBytes: body.length,
+              sizeKb: Math.round(body.length / 1024),
+            };
+          } catch (e: any) {
+            results.pageLoad = { url: testUrl, error: e.message?.substring(0, 200) };
+          }
+
+          return { success: true, result: results };
+        } catch (e: any) {
+          return { success: false, result: { error: e.message?.substring(0, 300) } };
+        }
+      }
+
+      case "conversation_history": {
+        const projectRoot = getProjectRoot();
+        const convDir = path.join(projectRoot, '.ai-conversations');
+        try {
+          const files = await fs.readdir(convDir);
+          const daysBack = Math.min(args.days || 7, 30);
+          const cutoff = new Date();
+          cutoff.setDate(cutoff.getDate() - daysBack);
+          const cutoffStr = cutoff.toISOString().split('T')[0];
+
+          const conversations: any[] = [];
+          for (const file of files.sort().reverse()) {
+            const dateStr = file.replace('.jsonl', '');
+            if (dateStr < cutoffStr) continue;
+            const content = await fs.readFile(path.join(convDir, file), 'utf-8');
+            const entries = content.trim().split('\n').filter(Boolean).map(l => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
+            conversations.push({ date: dateStr, entryCount: entries.length, entries: entries.slice(-20) });
+          }
+          return { success: true, result: {
+            daysRetrieved: daysBack,
+            totalDays: conversations.length,
+            conversations,
+          }};
+        } catch {
+          return { success: true, result: { daysRetrieved: 0, conversations: [], note: "No conversation history yet." } };
+        }
+      }
+
+      case "health_check": {
+        const checks: Record<string, any> = {};
+
+        const endpoints = ['/api/health', '/api/tasks', '/api/semesters', '/'];
+        const endpointResults: { endpoint: string; ok: boolean; status: number | string; ms: number }[] = [];
+        for (const ep of endpoints) {
+          const start = Date.now();
+          try {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 8000);
+            const resp = await fetch(`http://localhost:5000${ep}`, { signal: controller.signal });
+            clearTimeout(timeout);
+            endpointResults.push({ endpoint: ep, ok: resp.ok, status: resp.status, ms: Date.now() - start });
+          } catch (e: any) {
+            endpointResults.push({ endpoint: ep, ok: false, status: e.message?.substring(0, 80) || 'error', ms: Date.now() - start });
+          }
+        }
+        checks.endpoints = endpointResults;
+        checks.endpointsHealthy = endpointResults.every(r => r.ok);
+
+        try {
+          const dbResult = await db.execute('SELECT 1 as alive');
+          checks.database = { connected: true };
+        } catch (e: any) {
+          checks.database = { connected: false, error: e.message?.substring(0, 200) };
+        }
+
+        try {
+          const disk = execSync('df -h . 2>/dev/null | tail -1', { encoding: 'utf-8', timeout: 3000 }).trim();
+          const parts = disk.split(/\s+/);
+          checks.disk = { total: parts[1], used: parts[2], available: parts[3], usedPercent: parts[4] };
+          const pct = parseInt(parts[4] || '0');
+          checks.diskWarning = pct > 85 ? `Disk usage at ${parts[4]} — getting full!` : null;
+        } catch { checks.disk = { error: 'Could not check' }; }
+
+        try {
+          const mem = execSync('free -h 2>/dev/null | head -2', { encoding: 'utf-8', timeout: 3000 }).trim();
+          checks.memory = mem;
+        } catch { checks.memory = 'N/A'; }
+
+        try {
+          const uptime = execSync('uptime 2>/dev/null', { encoding: 'utf-8', timeout: 3000 }).trim();
+          checks.uptime = uptime;
+        } catch { checks.uptime = 'N/A'; }
+
+        const allOk = checks.endpointsHealthy && checks.database?.connected && !checks.diskWarning;
+        checks.overallStatus = allOk ? 'HEALTHY' : 'ISSUES DETECTED';
+
+        return { success: true, result: checks };
       }
 
       default:

@@ -9,3 +9,5 @@ vite.config.ts.*
 .spotify-token.json
 .env
 .env.local
+.ai-conversations
+.ai-temp-script.mjs
