@@ -346,6 +346,41 @@ app.post("/api/admin/restart", (req: Request, res: Response) => {
 
 const adminDb = new PgPool({ connectionString: process.env.DATABASE_URL });
 
+(async () => {
+  try {
+    await adminDb.query(`CREATE TABLE IF NOT EXISTS profile_settings (
+      id SERIAL PRIMARY KEY,
+      profile_level TEXT NOT NULL UNIQUE,
+      profile_name TEXT NOT NULL,
+      show_outlook_calendar BOOLEAN DEFAULT true,
+      show_google_calendar BOOLEAN DEFAULT true,
+      show_second_google_calendar BOOLEAN DEFAULT true,
+      show_tasks BOOLEAN DEFAULT true,
+      show_weather BOOLEAN DEFAULT true,
+      show_news_ticker BOOLEAN DEFAULT true,
+      show_homework_panel BOOLEAN DEFAULT true,
+      show_degree_tracking BOOLEAN DEFAULT false,
+      show_bryn_assist BOOLEAN DEFAULT false,
+      show_notepad BOOLEAN DEFAULT false,
+      show_radio BOOLEAN DEFAULT true,
+      can_edit_tasks BOOLEAN DEFAULT false,
+      can_add_calendar_events BOOLEAN DEFAULT false,
+      can_access_settings BOOLEAN DEFAULT false,
+      can_view_library BOOLEAN DEFAULT false,
+      custom_calendars TEXT DEFAULT '[]',
+      enabled BOOLEAN DEFAULT true
+    )`);
+    const existing = await adminDb.query('SELECT COUNT(*) FROM profile_settings');
+    if (parseInt(existing.rows[0].count) === 0) {
+      await adminDb.query(`INSERT INTO profile_settings (profile_level, profile_name, show_degree_tracking, show_bryn_assist, show_notepad, can_edit_tasks, can_add_calendar_events, can_access_settings, can_view_library) VALUES
+        ('5747', 'Admin', true, true, true, true, true, true, true),
+        ('4201', 'Partner', false, false, false, false, true, false, false),
+        ('1010', 'Guest', false, false, false, false, false, false, false)`);
+    }
+    console.log('[Admin] profile_settings table ready');
+  } catch (e: any) { console.error('[Admin] profile_settings init error:', e.message); }
+})();
+
 app.get("/api/admin/users", async (req: Request, res: Response) => {
   if (!getAdminAuth(req)) return res.status(403).json({ error: "Admin access required" });
   try {

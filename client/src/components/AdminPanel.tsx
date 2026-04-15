@@ -106,6 +106,8 @@ export default function AdminPanel({ open, onClose, colorSettings }: AdminPanelP
   const [editingPassword, setEditingPassword] = useState<{ admin: string; partner: string; guest: string }>({ admin: '', partner: '', guest: '' });
   const [showPasswords, setShowPasswords] = useState<Record<string, boolean>>({});
   const [expandedProfile, setExpandedProfile] = useState<number | null>(null);
+  const [settingPasswordForUser, setSettingPasswordForUser] = useState<number | null>(null);
+  const [userPasswordInput, setUserPasswordInput] = useState('');
   const { toast } = useToast();
 
   const fetchAll = useCallback(async () => {
@@ -182,6 +184,26 @@ export default function AdminPanel({ open, onClose, colorSettings }: AdminPanelP
       toast({ title: 'Passwords updated', description: 'Restart the app for changes to take effect.' });
       setEditingPassword({ admin: '', partner: '', guest: '' });
       fetchAll();
+    }
+  };
+
+  const handleSetUserPassword = async (userId: number) => {
+    if (!userPasswordInput || userPasswordInput.length < 4) {
+      toast({ title: 'Error', description: 'Password must be at least 4 characters', variant: 'destructive' });
+      return;
+    }
+    const res = await fetch(`/api/admin/users/${userId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: userPasswordInput }),
+    });
+    if (res.ok) {
+      toast({ title: 'Password set successfully' });
+      setSettingPasswordForUser(null);
+      setUserPasswordInput('');
+      fetchAll();
+    } else {
+      toast({ title: 'Error', description: 'Failed to set password', variant: 'destructive' });
     }
   };
 
@@ -421,6 +443,9 @@ export default function AdminPanel({ open, onClose, colorSettings }: AdminPanelP
                             )}
                           </div>
                           <div className="flex items-center gap-1">
+                            <button onClick={() => { setSettingPasswordForUser(settingPasswordForUser === user.id ? null : user.id); setUserPasswordInput(''); }} className="p-1.5 rounded hover:bg-white/10" title="Set Password" data-testid={`button-set-password-${user.id}`}>
+                              <Key style={{ width: 13, height: 13, color: settingPasswordForUser === user.id ? '#fbbf24' : 'rgba(255,255,255,0.5)' }} />
+                            </button>
                             <button onClick={() => handleToggleUser(user)} className="p-1.5 rounded hover:bg-white/10" title={user.enabled ? 'Disable' : 'Enable'} data-testid={`button-toggle-user-${user.id}`}>
                               {user.enabled ? <Eye style={{ width: 13, height: 13, color: 'rgba(255,255,255,0.5)' }} /> : <EyeOff style={{ width: 13, height: 13, color: '#f87171' }} />}
                             </button>
@@ -431,6 +456,27 @@ export default function AdminPanel({ open, onClose, colorSettings }: AdminPanelP
                             )}
                           </div>
                         </div>
+                        {settingPasswordForUser === user.id && (
+                          <div className="flex items-center gap-2 mt-2" style={{ background: 'rgba(251,191,36,0.08)', borderRadius: '6px', padding: '8px 10px', border: '1px solid rgba(251,191,36,0.2)' }}>
+                            <Key style={{ width: 12, height: 12, color: '#fbbf24', flexShrink: 0 }} />
+                            <input
+                              type="password"
+                              placeholder="New password (min 4 chars)"
+                              value={userPasswordInput}
+                              onChange={e => setUserPasswordInput(e.target.value)}
+                              onKeyDown={e => { if (e.key === 'Enter') handleSetUserPassword(user.id); }}
+                              style={{ ...inputStyle, flex: 1, border: '1px solid rgba(251,191,36,0.3)' }}
+                              autoFocus
+                              data-testid={`input-password-${user.id}`}
+                            />
+                            <Button size="sm" onClick={() => handleSetUserPassword(user.id)} style={{ background: 'rgba(251,191,36,0.2)', border: '1px solid rgba(251,191,36,0.4)', color: '#fbbf24', fontSize: '10px', height: '26px', padding: '0 10px' }} data-testid={`button-save-password-${user.id}`}>
+                              Save
+                            </Button>
+                            <Button size="sm" onClick={() => { setSettingPasswordForUser(null); setUserPasswordInput(''); }} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', fontSize: '10px', height: '26px', padding: '0 8px' }}>
+                              Cancel
+                            </Button>
+                          </div>
+                        )}
                         <div className="text-white/30 text-[9px] mt-1.5">
                           Created: {user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}
                           {user.last_login && <> &nbsp;|&nbsp; Last login: {new Date(user.last_login).toLocaleDateString()}</>}
