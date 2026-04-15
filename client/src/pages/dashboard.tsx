@@ -3861,10 +3861,29 @@ export default function Dashboard() {
   const [expandedSemKey, setExpandedSemKey] = useState<string | null>(null);
   const [expandedSemHealth, setExpandedSemHealth] = useState<any>(null);
   const [expandedSemHealthLoading, setExpandedSemHealthLoading] = useState(false);
-  const [semFlowWizard, setSemFlowWizard] = useState<{ courseCode: string; issue: string; step: number; phase: 'primary' | 'testing' | 'test-result' | 'secondary' | 'testing2' | 'test-result2' | 'chatgpt'; testResult?: any } | null>(null);
+  const [semFlowWizard, setSemFlowWizard] = useState<{ courseCode: string; issue: string; step: number; phase: 'primary' | 'testing' | 'test-result' | 'secondary' | 'testing2' | 'test-result2' | 'chatgpt'; testResult?: any; weekNum?: number; uploadType?: 'module' | 'reading' } | null>(null);
   const [wizActionLoading, setWizActionLoading] = useState(false);
   const [wizActionDone, setWizActionDone] = useState<string | null>(null);
   const wizUploadRef = useRef<HTMLInputElement>(null);
+  const [weekDetailOpen, setWeekDetailOpen] = useState<{ courseCode: string; week: number } | null>(null);
+  const [readingExemptWeeks, setReadingExemptWeeks] = useState<Record<string, number[]>>(() => {
+    try { return JSON.parse(localStorage.getItem('unical_readingExemptWeeks') || '{}'); } catch { return {}; }
+  });
+  const updateReadingExempt = (courseCode: string, week: number, exempt: boolean) => {
+    setReadingExemptWeeks(prev => {
+      const key = courseCode.replace(/\s/g, '').toUpperCase();
+      const weeks = prev[key] || [];
+      const next = exempt ? [...weeks.filter(w => w !== week), week] : weeks.filter(w => w !== week);
+      const updated = { ...prev, [key]: next };
+      localStorage.setItem('unical_readingExemptWeeks', JSON.stringify(updated));
+      return updated;
+    });
+  };
+  const isReadingExempt = (courseCode: string, week: number) => {
+    const key = courseCode.replace(/\s/g, '').toUpperCase();
+    return (readingExemptWeeks[key] || []).includes(week);
+  };
+  const weekUploadRef = useRef<HTMLInputElement>(null);
   const expandedSemOpenTimeRef = useRef<number>(0);
   useEffect(() => {
     if (!expandedSemKey) { setExpandedSemHealth(null); return; }
@@ -27170,10 +27189,10 @@ export default function Dashboard() {
                                         const libPct = (totalMod + totalRead) > 0 ? 100 : 0;
                                         return [
                                           { label: 'OneDrive', icon: '☁️', path: getOneDrivePath(c.code), status: courseHealth?.oneDriveFolderConfigured ? 'ok' : 'error', issueKey: 'onedrive', pct: odPct },
-                                          { label: 'Folder Sync', icon: '🔄', path: `${totalMod} mod · ${totalRead} read`, status: courseHealth?.totalModules > 0 ? 'ok' : 'warning', issueKey: 'sync', pct: syncPct },
+                                          { label: 'Folder Sync', icon: '🔄', path: `${totalMod} mod · ${totalRead} read`, status: (totalMod > 0 || totalRead > 0) ? 'ok' : 'error', issueKey: 'sync', pct: syncPct },
                                           { label: 'Local Storage', icon: '💾', path: `persistent-uploads/`, status: 'ok' as const, issueKey: 'storage', pct: storagePct },
-                                          { label: 'TTS', icon: '🔊', path: ttsNeeded > 0 ? `${ttsReady}/${ttsNeeded} files ready` : `TTS → Cat Lights`, status: courseHealth ? (ttsReady === ttsNeeded ? 'ok' : ttsReady > 0 ? 'warning' : 'idle') : 'idle', issueKey: 'tts', pct: ttsPct },
-                                          { label: 'Library Shelf', icon: '📚', path: `BookReader`, status: (totalMod > 0 || totalRead > 0) ? 'ok' : 'idle', issueKey: 'library', pct: libPct },
+                                          { label: 'TTS', icon: '🔊', path: ttsNeeded > 0 ? `${ttsReady}/${ttsNeeded} files ready` : `TTS → Cat Lights`, status: courseHealth ? (ttsNeeded === 0 ? 'ok' : ttsReady === ttsNeeded ? 'ok' : ttsReady > 0 ? 'warning' : 'error') : 'error', issueKey: 'tts', pct: ttsPct !== null ? ttsPct : 0 },
+                                          { label: 'Library Shelf', icon: '📚', path: `BookReader`, status: (totalMod > 0 || totalRead > 0) ? 'ok' : 'error', issueKey: 'library', pct: libPct },
                                         ];
                                       })().map((step, sIdx, arr) => (
                                         <div key={step.label} className="flex items-start" style={{ flexShrink: 0 }}>
@@ -27214,14 +27233,21 @@ export default function Dashboard() {
                                           </tr>
                                         </thead>
                                         <tbody>
-                                          {[
-                                            { label: 'OneDrive Root', path: getOneDrivePath(c.code), ok: courseHealth?.oneDriveFolderConfigured, issueKey: 'onedrive_root' },
-                                            { label: 'Module Folder', path: `${getOneDrivePath(c.code)}/Week {n}/Module/`, ok: courseHealth?.totalModules > 0, issueKey: 'module_folder' },
-                                            { label: 'Reading Folder', path: `${getOneDrivePath(c.code)}/Week {n}/Reading/`, ok: courseHealth?.totalReadings > 0, issueKey: 'reading_folder' },
-                                            { label: 'Local Sync', path: `persistent-uploads/week-{n}-${c.code.toLowerCase()}-module|reading/`, ok: courseHealth?.totalModules > 0 || courseHealth?.totalReadings > 0, issueKey: 'local_sync' },
-                                            { label: 'Syllabus', path: courseHealth?.syllabusPath || `syllabi/${c.code.toLowerCase()}_syllabus.pdf`, ok: courseHealth?.syllabusLinked, issueKey: 'syllabus' },
-                                            { label: 'TTS Audio', path: `TTS chunks (${courseHealth?.totalTtsReady || 0}/${courseHealth?.totalTtsNeeded || 0} ready)`, ok: courseHealth ? courseHealth.totalTtsReady === courseHealth.totalTtsNeeded : undefined, issueKey: 'tts_audio' },
-                                          ].map((row) => (
+                                          {(() => {
+                                            const allReadingExempt = Array.from({ length: expHealth?.numberOfWeeks || 13 }, (_, i) => i + 1).every(w => isReadingExempt(c.code, w));
+                                            const hasAnyReadingContent = courseHealth?.totalReadings > 0;
+                                            const readingOk = hasAnyReadingContent || allReadingExempt;
+                                            const ttsOk = courseHealth ? (courseHealth.totalTtsNeeded === 0 || courseHealth.totalTtsReady === courseHealth.totalTtsNeeded) : true;
+                                            const localSyncOk = courseHealth ? (courseHealth.totalModules > 0 || courseHealth.totalReadings > 0) : false;
+                                            return [
+                                              { label: 'OneDrive Root', path: getOneDrivePath(c.code), ok: courseHealth ? !!courseHealth.oneDriveFolderConfigured : false, issueKey: 'onedrive_root' },
+                                              { label: 'Module Folder', path: `${getOneDrivePath(c.code)}/Week {n}/Module/`, ok: courseHealth ? courseHealth.totalModules > 0 : false, issueKey: 'module_folder' },
+                                              { label: 'Reading Folder', path: `${getOneDrivePath(c.code)}/Week {n}/Reading/`, ok: readingOk, issueKey: 'reading_folder' },
+                                              { label: 'Local Sync', path: `persistent-uploads/week-{n}-${c.code.toLowerCase()}-module|reading/`, ok: localSyncOk, issueKey: 'local_sync' },
+                                              { label: 'Syllabus', path: courseHealth?.syllabusPath || `syllabi/${c.code.toLowerCase()}_syllabus.pdf`, ok: courseHealth ? !!courseHealth.syllabusLinked : false, issueKey: 'syllabus' },
+                                              { label: 'TTS Audio', path: `TTS chunks (${courseHealth?.totalTtsReady || 0}/${courseHealth?.totalTtsNeeded || 0} ready)`, ok: ttsOk, issueKey: 'tts_audio' },
+                                            ];
+                                          })().map((row) => (
                                             <tr key={row.label} className="hover:bg-white/5 transition-colors">
                                               <td className="px-3 py-2 font-medium text-white border-b border-white/5">{row.label}</td>
                                               <td className="px-3 py-2 font-mono text-[11px] text-white border-b border-white/5">
@@ -27238,7 +27264,6 @@ export default function Dashboard() {
                                                     <span className="text-[10px] text-red-400 hover:text-red-300 underline">Fix</span>
                                                   </span>
                                                 )}
-                                                {row.ok === undefined && <span className="inline-block w-2.5 h-2.5 rounded-full bg-white/20" title="Unknown" />}
                                               </td>
                                             </tr>
                                           ))}
@@ -27255,18 +27280,96 @@ export default function Dashboard() {
                                           const mCount = courseHealth.moduleWeeks?.[w]?.count || 0;
                                           const rCount = courseHealth.readingWeeks?.[w]?.count || 0;
                                           const mTts = courseHealth.moduleWeeks?.[w]?.ttsReady || 0;
-                                          const hasContent = mCount > 0 || rCount > 0;
+                                          const rExempt = isReadingExempt(c.code, w);
+                                          const moduleOk = mCount > 0;
+                                          const readingOk = rCount > 0 || rExempt;
+                                          const weekGreen = moduleOk && readingOk;
+                                          const weekRed = !moduleOk || !readingOk;
                                           return (
-                                            <div key={w} className="rounded border text-center py-1.5" style={{ background: hasContent ? 'rgba(34,197,94,0.1)' : 'rgba(255,255,255,0.03)', borderColor: hasContent ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.1)' }}>
+                                            <div
+                                              key={w}
+                                              className="rounded border text-center py-1.5 cursor-pointer hover:brightness-125 transition-all"
+                                              style={{
+                                                background: weekGreen ? 'rgba(34,197,94,0.15)' : weekRed ? 'rgba(239,68,68,0.08)' : 'rgba(255,255,255,0.03)',
+                                                borderColor: weekGreen ? 'rgba(34,197,94,0.4)' : weekRed ? 'rgba(239,68,68,0.25)' : 'rgba(255,255,255,0.1)',
+                                              }}
+                                              onClick={(e) => { e.stopPropagation(); setWeekDetailOpen({ courseCode: c.code, week: w }); }}
+                                              data-testid={`week-cell-${c.code}-${w}`}
+                                            >
                                               <div className="text-[10px] font-bold text-white">W{w}</div>
-                                              <div className="text-[9px] text-white/80">{mCount}M {rCount}R</div>
+                                              <div className="text-[9px] text-white/80">{mCount}M {rCount}R{rExempt && rCount === 0 ? '*' : ''}</div>
                                               {mCount > 0 && mTts < mCount && <div className="text-[8px] text-yellow-400">TTS {mTts}/{mCount}</div>}
                                             </div>
                                           );
                                         })}
                                       </div>
+                                      <div className="text-[10px] text-white/40 mt-1">* = reading not expected for this week. Click a week to upload files or toggle reading requirement.</div>
                                     </div>
                                   )}
+
+                                  {weekDetailOpen && weekDetailOpen.courseCode === c.code && (() => {
+                                    const wd = weekDetailOpen;
+                                    const mCount = courseHealth?.moduleWeeks?.[wd.week]?.count || 0;
+                                    const rCount = courseHealth?.readingWeeks?.[wd.week]?.count || 0;
+                                    const rExempt = isReadingExempt(wd.courseCode, wd.week);
+                                    const cleanCode = wd.courseCode.replace(/\s/g, '').toLowerCase();
+                                    return (
+                                      <div className="rounded-lg overflow-hidden mt-2" style={{ border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(0,0,0,0.25)' }}>
+                                        <div className="px-4 py-2.5 flex items-center justify-between border-b border-white/15" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                                          <span className="text-[13px] font-bold text-white">Week {wd.week} — {wd.courseCode}</span>
+                                          <button className="text-[11px] text-white/60 hover:text-white" onClick={() => setWeekDetailOpen(null)} data-testid="close-week-detail">Close</button>
+                                        </div>
+                                        <div className="p-4 grid grid-cols-2 gap-4">
+                                          <div className="space-y-2">
+                                            <div className="flex items-center gap-2">
+                                              <span className={`inline-block w-2 h-2 rounded-full ${mCount > 0 ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                                              <span className="text-[12px] font-semibold text-white">Module Files ({mCount})</span>
+                                            </div>
+                                            <button
+                                              className="w-full px-3 py-2.5 rounded text-[12px] font-medium text-white/80 hover:text-white hover:brightness-110 transition-all flex items-center justify-center gap-2"
+                                              style={{ background: 'rgba(59,130,246,0.15)', border: '1px solid rgba(59,130,246,0.3)' }}
+                                              onClick={() => {
+                                                setSemFlowWizard({ courseCode: wd.courseCode, issue: 'week_upload', step: 0, phase: 'primary', weekNum: wd.week, uploadType: 'module' });
+                                              }}
+                                              data-testid={`upload-module-w${wd.week}`}
+                                            >
+                                              <span>📤</span> Upload Module
+                                            </button>
+                                            <div className="text-[10px] text-white/50 font-mono">week-{wd.week}-{cleanCode}-module/</div>
+                                          </div>
+                                          <div className="space-y-2">
+                                            <div className="flex items-center gap-2">
+                                              <span className={`inline-block w-2 h-2 rounded-full ${rCount > 0 ? 'bg-emerald-500' : rExempt ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                                              <span className="text-[12px] font-semibold text-white">Reading Files ({rCount})</span>
+                                            </div>
+                                            <button
+                                              className="w-full px-3 py-2.5 rounded text-[12px] font-medium text-white/80 hover:text-white hover:brightness-110 transition-all flex items-center justify-center gap-2"
+                                              style={{ background: rExempt ? 'rgba(255,255,255,0.06)' : 'rgba(59,130,246,0.15)', border: `1px solid ${rExempt ? 'rgba(255,255,255,0.15)' : 'rgba(59,130,246,0.3)'}`, opacity: rExempt ? 0.5 : 1 }}
+                                              onClick={() => {
+                                                if (!rExempt) setSemFlowWizard({ courseCode: wd.courseCode, issue: 'week_upload', step: 0, phase: 'primary', weekNum: wd.week, uploadType: 'reading' });
+                                              }}
+                                              data-testid={`upload-reading-w${wd.week}`}
+                                            >
+                                              <span>📤</span> Upload Reading
+                                            </button>
+                                            <div className="flex items-center gap-2 mt-1">
+                                              <label className="flex items-center gap-1.5 cursor-pointer select-none" data-testid={`toggle-reading-exempt-w${wd.week}`}>
+                                                <div
+                                                  className="w-7 h-4 rounded-full relative transition-colors duration-200"
+                                                  style={{ background: rExempt ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.15)', border: `1px solid ${rExempt ? 'rgba(34,197,94,0.5)' : 'rgba(255,255,255,0.2)'}` }}
+                                                  onClick={() => updateReadingExempt(wd.courseCode, wd.week, !rExempt)}
+                                                >
+                                                  <div className="absolute top-0.5 w-2.5 h-2.5 rounded-full bg-white transition-all duration-200" style={{ left: rExempt ? '14px' : '2px' }} />
+                                                </div>
+                                                <span className="text-[10px] text-white/60">No reading file expected</span>
+                                              </label>
+                                            </div>
+                                            <div className="text-[10px] text-white/50 font-mono">week-{wd.week}-{cleanCode}-reading/</div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    );
+                                  })()}
                                 </div>
                               </div>
                             );
@@ -27400,6 +27503,14 @@ export default function Dashboard() {
                             ['Sync from OneDrive', 'Pull files automatically from your OneDrive course folder.', 'sync_course'],
                             ['Force Sync', 'Trigger a complete re-scan of all OneDrive folders.', 'force_sync'],
                           ] },
+                          week_upload: { title: `Upload Week ${semFlowWizard.weekNum || ''} ${(semFlowWizard.uploadType || 'module').charAt(0).toUpperCase() + (semFlowWizard.uploadType || 'module').slice(1)}`, testCheck: semFlowWizard.uploadType === 'reading' ? 'totalReadings' : 'totalModules', steps: [
+                            ['Select Files', `Choose ${semFlowWizard.uploadType || 'module'} files (PDF, DOCX, PPTX) to upload for Week ${semFlowWizard.weekNum || ''} of ${semFlowWizard.courseCode}.\n\nFiles will be placed in the correct folder automatically.`, 'upload_week_file'],
+                          ], secondary: [
+                            ['Sync from OneDrive', `Alternatively, sync from OneDrive. Files should be at:\n${odPath}/Week ${semFlowWizard.weekNum || '{n}'}/Module/`, 'sync_course'],
+                          ] },
+                          storage: { title: 'Local Storage', testCheck: 'totalModules', steps: [
+                            ['Storage Active', 'Local storage is always available. Files are stored in the persistent-uploads folder on this device.'],
+                          ], secondary: [] },
                           general: { title: 'Resolve Issue', testCheck: 'healthScore', steps: [
                             ['Open Settings', 'Review your semester settings and course configuration.', 'open_settings'],
                             ['Force Sync', 'Trigger a full re-sync of all OneDrive folders.', 'force_sync'],
@@ -27451,13 +27562,49 @@ export default function Dashboard() {
                                 if (!files || files.length === 0) return;
                                 setWizActionLoading(true); setWizActionDone(null);
                                 try {
-                                  const formData = new FormData();
-                                  for (let i = 0; i < files.length; i++) formData.append('files', files[i]);
-                                  formData.append('courseCode', semFlowWizard!.courseCode);
-                                  formData.append('semesterKey', expandedSemKey || '');
-                                  const res = await fetch('/api/files/upload', { method: 'POST', body: formData, credentials: 'include' });
-                                  if (res.ok) setWizActionDone(`${files.length} file(s) uploaded successfully!`);
-                                  else setWizActionDone('Error: Upload failed. Please try again.');
+                                  const wiz = semFlowWizard!;
+                                  const cleanCode = wiz.courseCode.replace(/\s/g, '').toLowerCase();
+                                  let uploadFolder: string | undefined;
+                                  if (wiz.weekNum && wiz.uploadType) {
+                                    uploadFolder = `week-${wiz.weekNum}-${cleanCode}-${wiz.uploadType}`;
+                                  } else if (wiz.issue === 'syllabus' || wiz.issue === 'upload_syllabus') {
+                                    uploadFolder = `syllabi`;
+                                  } else if (wiz.issue === 'module_folder' || wiz.issue === 'sync') {
+                                    uploadFolder = `week-1-${cleanCode}-module`;
+                                  } else if (wiz.issue === 'reading_folder') {
+                                    uploadFolder = `week-1-${cleanCode}-reading`;
+                                  }
+                                  let successCount = 0;
+                                  for (let i = 0; i < files.length; i++) {
+                                    const file = files[i];
+                                    const buf = await file.arrayBuffer();
+                                    const res = await fetch('/api/uploads/direct', {
+                                      method: 'POST',
+                                      headers: {
+                                        'Content-Type': file.type || 'application/octet-stream',
+                                        'x-file-name': encodeURIComponent(file.name),
+                                        ...(uploadFolder ? { 'x-upload-folder': uploadFolder } : {}),
+                                      },
+                                      body: buf,
+                                      credentials: 'include',
+                                    });
+                                    if (res.ok) successCount++;
+                                  }
+                                  if (successCount === files.length) {
+                                    setWizActionDone(`${files.length} file(s) uploaded successfully!`);
+                                    if (uploadFolder === 'syllabi' && files.length > 0) {
+                                      try {
+                                        const syllabusRes = await fetch('/api/syllabus/paths', { credentials: 'include' });
+                                        const existing = syllabusRes.ok ? await syllabusRes.json() : {};
+                                        existing[wiz.courseCode] = `syllabi/${files[0].name}`;
+                                        await fetch('/api/syllabus/paths', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify(existing) });
+                                      } catch {}
+                                    }
+                                    const healthRes = await fetch(`/api/semester-health-check/${expandedSemKey}`, { credentials: 'include' });
+                                    if (healthRes.ok) setExpandedSemHealth(await healthRes.json());
+                                  } else {
+                                    setWizActionDone(`Uploaded ${successCount}/${files.length} files. Some failed.`);
+                                  }
                                 } catch (err: any) { setWizActionDone(`Error: ${err.message}`); }
                                 finally { setWizActionLoading(false); if (wizUploadRef.current) wizUploadRef.current.value = ''; }
                               }} />
@@ -27487,6 +27634,7 @@ export default function Dashboard() {
                                         force_sync: { label: 'Force Full Sync', icon: '🔄' },
                                         upload_file: { label: 'Upload Files', icon: '📤' },
                                         upload_syllabus: { label: 'Upload Syllabus', icon: '📄' },
+                                        upload_week_file: { label: `Upload ${(semFlowWizard?.uploadType || 'module').charAt(0).toUpperCase() + (semFlowWizard?.uploadType || 'module').slice(1)} Files`, icon: '📤' },
                                         sync_course: { label: 'Sync This Course', icon: '🔄' },
                                         prepare_tts: { label: 'Prepare Audio', icon: '🔊' },
                                         reset_tts: { label: 'Reset TTS', icon: '🗑️' },
@@ -27500,6 +27648,7 @@ export default function Dashboard() {
                                         if (action === 'open_settings') { setSemFlowWizard(null); return; }
                                         if (action === 'open_library') { window.open('/', '_blank'); return; }
                                         if (action === 'open_tmu_calendar') { window.open('https://www.torontomu.ca/calendar/dates/', '_blank'); return; }
+                                        if (action === 'upload_week_file') { wizUploadRef.current?.click(); return; }
                                         if (action === 'upload_file' || action === 'upload_syllabus') { wizUploadRef.current?.click(); return; }
                                         setWizActionLoading(true);
                                         setWizActionDone(null);
@@ -27523,6 +27672,10 @@ export default function Dashboard() {
                                             await fetch(`/api/semester-settings/${expandedSemKey}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ isActive: true }) });
                                             setWizActionDone('Semester activated!');
                                           }
+                                          try {
+                                            const healthRes = await fetch(`/api/semester-health-check/${expandedSemKey}`, { credentials: 'include' });
+                                            if (healthRes.ok) setExpandedSemHealth(await healthRes.json());
+                                          } catch {}
                                         } catch (err: any) {
                                           setWizActionDone(`Error: ${err.message}`);
                                         } finally {
