@@ -6460,7 +6460,7 @@ HARD RULES
 4b. STOP EARLY. Once you have the answer or have completed the fix, respond IMMEDIATELY. Do not keep reading more files.
 5. NEVER modify: .env, package-lock.json, .git/, schema.ts primary key types
 6. Large files: ALWAYS search_code first, then read_file with offset+limit.
-7. After code changes: check_build → restart_application
+7. After code changes: check_build → restart_application → git_commit_and_push (ALWAYS commit and push every code change to GitHub so it's preserved)
 8. For complex tasks: memory_read first, memory_write after.
 9. Destructive actions auto-require user confirmation.
 10. Screenshots: look at the image, identify the problem, find the code, fix it. No asking.
