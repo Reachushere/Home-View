@@ -1232,7 +1232,7 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           const content = await fs.readFile(safePath, 'utf-8');
           const lines = content.split('\n');
           const offset = (args.offset || 1) - 1;
-          const limit = args.limit || 500;
+          const limit = args.limit || 1000;
           const slice = lines.slice(offset, offset + limit);
           const totalLines = lines.length;
           const numbered = slice.map((line, i) => `${offset + i + 1}: ${line}`).join('\n');

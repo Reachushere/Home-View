@@ -6065,7 +6065,7 @@ ${fileContents.join('\n\n')}`;
 
       const codeKeywords = /\b(change|modify|edit|update|fix|add|remove|refactor|style|css|color|button|component|page|layout|font|move|rename|code|file|build|install|npm|import|debug|error|bug|break|broken|crash|log|deploy|push|commit)\b/i;
       const isCodeTask = codeKeywords.test(message) && /\b(file|code|component|page|css|style|button|header|sidebar|layout|function|route|api|div|class|import|export|server|client|schema|database|build|compile|deploy|error|bug|log)\b/i.test(message);
-      const model = "gpt-4.1-mini";
+      const model = "gpt-5-mini";
       const estCost = isCodeTask ? "~$0.05-0.30" : "~$0.02-0.10";
 
       const apiKey = process.env.OPENAI_API_KEY;
@@ -6083,7 +6083,7 @@ ${fileContents.join('\n\n')}`;
         if (memContent.trim()) memoryContext = `\n\nYOUR PERSISTENT MEMORY (from previous sessions):\n${memContent.substring(0, 3000)}\n`;
       } catch {}
 
-      const systemPrompt = `You are a senior full-stack developer embedded in UniCal, a personal academic task management app for Bryn (a TMU student). You operate autonomously like a real developer — read code, understand context, make changes, verify they compile, and fix errors yourself. You have up to 16 rounds of tool calls per request.
+      const systemPrompt = `You are a senior full-stack developer embedded in UniCal, a personal academic task management app for Bryn (a TMU student). You operate autonomously like a real developer — read code, understand context, make changes, verify they compile, and fix errors yourself. You have up to 30 rounds of tool calls per request. You can read up to 1000 lines per file read and see up to 30,000 characters per tool result. Use search_code to find what you need in large files instead of reading entire files.
 
 CURRENT APP STATE:
 ${appContext}
@@ -6209,7 +6209,7 @@ RULES:
         return false;
       }
 
-      const MAX_ROUNDS = 16;
+      const MAX_ROUNDS = 30;
       let totalTokens = 0;
       let allToolResults: any[] = [];
       let actionTaken = false;
@@ -6246,7 +6246,7 @@ RULES:
             res.write(`data: ${JSON.stringify({ type: 'done', reply, actionTaken })}\n\n`);
             res.end();
           } else {
-            const cost = totalTokens > 0 ? ((totalTokens / 1_000_000) * (model === 'gpt-4o' ? 10.0 : model === 'gpt-4.1-mini' ? 1.6 : 0.30)) : 0;
+            const cost = totalTokens > 0 ? ((totalTokens / 1_000_000) * (model === 'gpt-4o' ? 10.0 : model === 'gpt-5-mini' ? 1.5 : model === 'gpt-4.1-mini' ? 1.6 : 0.30)) : 0;
             res.json({ reply, toolResults: allToolResults, actionTaken, usage: { totalTokens }, cost: `$${cost.toFixed(4)}`, model, rounds: round });
           }
           return;
@@ -6276,7 +6276,7 @@ RULES:
             const result = await executeToolCall(fnName, fnArgs);
             if (!readOnlyTools.has(fnName)) actionTaken = true;
             const resultStr = JSON.stringify(result.result);
-            const truncated = resultStr.length > 8000 ? resultStr.substring(0, 8000) + '...[truncated]' : resultStr;
+            const truncated = resultStr.length > 30000 ? resultStr.substring(0, 30000) + '...[truncated]' : resultStr;
             messages.push({ role: "tool", tool_call_id: tc.id, content: truncated });
             allToolResults.push({ name: fnName, ...result, tool_call_id: tc.id });
             if (stream) {
