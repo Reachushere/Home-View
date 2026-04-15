@@ -6130,9 +6130,8 @@ ${fileContents.join('\n\n')}`;
       }
 
       const isCodeTask = /\b(change|modify|edit|update|fix|add|remove|refactor|style|css|color|button|component|page|layout|font|move|rename|code|file|build|install|npm|import|debug|error|bug|break|broken|crash|log|deploy|push|commit|background|bg|gradient|dialog|dialogue|box|panel|window|sidebar|header|theme|border|padding|margin|opacity|animation|hover|width|height|size|position|align|display|flex|grid|icon|image|text|shadow|rounded|radius)\b/i.test(message);
-      let model = "gpt-4.1-mini";
-      const upgradeModel = "gpt-5-mini";
-      const estCost = isCodeTask ? "~$0.05-0.30" : "~$0.02-0.10";
+      let model = "gpt-4.1";
+      const estCost = isCodeTask ? "~$0.10-0.50" : "~$0.05-0.20";
 
       const apiKey = process.env.OPENAI_API_KEY;
       if (!apiKey) {
@@ -6399,10 +6398,12 @@ FILES: dashboard.tsx (main page, ~45K lines), AiCommandWizard.tsx (YOU), Sidebar
 ═══════════════════════════════════════════════════
 HARD RULES
 ═══════════════════════════════════════════════════
-1. ACT FIRST, TALK SECOND. Tools immediately. No narrating plans.
+0. EFFICIENCY IS #1. If you can answer WITHOUT tools, just respond directly. Only use tools when you actually need to read/change code or data. Questions, advice, explanations, troubleshooting theories — answer immediately with NO tool calls. You have limited rounds — do NOT waste them reading code "just in case."
+1. ACT FIRST, TALK SECOND. When tools ARE needed, use them immediately. No narrating plans.
 2. NEVER give up. Tool failed? Diagnose. Try alternative. Suggest fix. NEVER say "I can't."
 3. NEVER ask unnecessary questions. Figure it out from context.
 4. Be concise. 1-2 sentences after completing work. MAXIMUM 3 sentences in any reply.
+4b. STOP EARLY. Once you have the answer or have completed the fix, respond IMMEDIATELY. Do not keep reading more files.
 5. NEVER modify: .env, package-lock.json, .git/, schema.ts primary key types
 6. Large files: ALWAYS search_code first, then read_file with offset+limit.
 7. After code changes: check_build → restart_application
@@ -6434,15 +6435,15 @@ HARD RULES
         console.log(`[AI] Image received: ${image.substring(0, 50)}... (${Math.round(image.length / 1024)}KB)`);
         try {
           const visionResp = await openai.chat.completions.create({
-            model: "gpt-4.1-mini",
+            model: "gpt-4.1",
             messages: [{
               role: "user",
               content: [
                 { type: "text", text: "Briefly describe this screenshot: visible UI elements, text, colors, layout, errors. Focus on what's actionable. Be concise (under 500 words)." },
-                { type: "image_url", image_url: { url: image, detail: "auto" } },
+                { type: "image_url", image_url: { url: image, detail: "high" } },
               ],
             }],
-            max_tokens: 800,
+            max_tokens: 1000,
           });
           imageDescription = visionResp.choices[0]?.message?.content || '';
           console.log(`[AI] Vision analysis: ${imageDescription.substring(0, 200)}...`);
@@ -6475,6 +6476,7 @@ HARD RULES
       let allToolResults: any[] = [];
       let actionTaken = false;
       let round = 0;
+      let consecutiveReadOnlyRounds = 0;
 
       if (stream && !res.headersSent) {
         res.setHeader('Content-Type', 'text/event-stream');
@@ -6489,7 +6491,8 @@ HARD RULES
           messages,
           tools: AI_COMMAND_TOOLS,
           tool_choice: "auto",
-          max_completion_tokens: isCodeTask ? 4096 : 2048,
+          parallel_tool_calls: true,
+          max_completion_tokens: isCodeTask ? 8192 : 4096,
         });
         totalTokens += completion.usage?.total_tokens || 0;
 
@@ -6507,7 +6510,7 @@ HARD RULES
             res.write(`data: ${JSON.stringify({ type: 'done', reply, actionTaken })}\n\n`);
             res.end();
           } else {
-            const cost = totalTokens > 0 ? ((totalTokens / 1_000_000) * (model === 'gpt-4o' ? 10.0 : model === 'gpt-5-mini' ? 1.5 : model === 'gpt-4.1-mini' ? 1.6 : 0.30)) : 0;
+            const cost = totalTokens > 0 ? ((totalTokens / 1_000_000) * (model === 'gpt-4.1' ? 8.0 : model === 'gpt-4o' ? 10.0 : model === 'gpt-5-mini' ? 1.5 : model === 'gpt-4.1-mini' ? 1.6 : 0.30)) : 0;
             res.json({ reply, toolResults: allToolResults, actionTaken, usage: { totalTokens }, cost: `$${cost.toFixed(4)}`, model, rounds: round });
           }
           return;
@@ -6564,6 +6567,17 @@ HARD RULES
             return;
           }
           return res.json({ reply: confirmMsg, pendingConfirmations, toolResults: allToolResults, actionTaken: false, model, rounds: round });
+        }
+
+        const roundToolNames = toolCalls.map((tc: any) => tc.function?.name || '');
+        const allReadOnly = roundToolNames.every((n: string) => readOnlyTools.has(n));
+        if (allReadOnly) {
+          consecutiveReadOnlyRounds++;
+          if (consecutiveReadOnlyRounds >= 8) {
+            messages.push({ role: "user", content: "[SYSTEM] You have spent 8 rounds reading without acting. You MUST respond to Bryn NOW with what you know. Do NOT call any more tools. Summarize your findings and respond." });
+          }
+        } else {
+          consecutiveReadOnlyRounds = 0;
         }
       }
 
