@@ -6214,11 +6214,12 @@ RULES:
         }
       }
       if (image && typeof image === 'string' && image.startsWith('data:image/')) {
+        console.log(`[AI] Image received: ${image.substring(0, 50)}... (${Math.round(image.length / 1024)}KB)`);
         messages.push({
           role: "user",
           content: [
-            { type: "text", text: message.trim() },
-            { type: "image_url", image_url: { url: image, detail: "low" } },
+            { type: "text", text: message.trim() + "\n\n[A screenshot image is attached above. Analyze it visually.]" },
+            { type: "image_url", image_url: { url: image, detail: "auto" } },
           ],
         });
       } else {
