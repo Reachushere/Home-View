@@ -19,6 +19,10 @@ sleep 2
 
 echo "[2/6] Pulling latest from GitHub..."
 git fetch origin
+echo ""
+echo "Changes incoming:"
+git diff --stat HEAD origin/main
+echo ""
 git reset --hard origin/main
 
 echo "[3/6] Installing dependencies..."
