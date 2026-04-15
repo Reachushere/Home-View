@@ -102,6 +102,12 @@ uri = "file://attached_assets/bryn_popcorn_memoji_v14.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "-5gIcm4zDqTh2wSDYHpTM"
+uri = "file://attached_assets/bryn_popcorn_memoji_v15.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "YFf1AFzLkqTG8aZXkvxoF"
 uri = "file://.local/cat-washroom-automation-report.md"
@@ -251,3 +257,9 @@ id = "HENQL8Sn--tqTVSTKGwVG"
 uri = "file://attached_assets/bryn_popcorn_memoji_v14.png"
 type = "image"
 title = "Bryn Popcorn Memoji v14 - No Glasses, Cuter"
+
+[[outputs]]
+id = "9EzedOz1on2JwUhZxRqvY"
+uri = "file://attached_assets/bryn_popcorn_memoji_v15.png"
+type = "image"
+title = "Bryn Popcorn Memoji v15 - Pixar Style, No Glasses"
