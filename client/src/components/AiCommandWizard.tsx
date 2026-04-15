@@ -2,6 +2,17 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { Zap, Send, X, Loader2, CheckCircle, XCircle, AlertTriangle, Trash2, RotateCcw, Maximize2, Minimize2 } from 'lucide-react';
 import { queryClient } from '@/lib/queryClient';
 
+const thinkingKeyframes = `
+@keyframes ai-think-pulse {
+  0%, 100% { opacity: 0.4; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+@keyframes ai-think-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(168,85,247,0.3), 0 0 20px rgba(168,85,247,0.1); }
+  50% { box-shadow: 0 0 16px rgba(168,85,247,0.6), 0 0 40px rgba(168,85,247,0.2); }
+}
+`;
+
 interface Message {
   role: 'user' | 'assistant' | 'system';
   content: string;
@@ -24,6 +35,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   const [position, setPosition] = useState<{ x: number; y: number } | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [thinkingPhase, setThinkingPhase] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -112,7 +124,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
         let actionTaken = false;
         let pendingConfs: any[] | undefined;
 
-        setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
+        setThinkingPhase('Thinking...');
 
         let buffer = '';
         while (true) {
@@ -129,30 +141,38 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 toolResults = event.toolResults;
                 actionTaken = event.actionTaken || false;
               } else if (event.type === 'tool_start') {
-                const toolLabel = event.name.replace(/_/g, ' ');
-                setMessages(prev => {
-                  const updated = [...prev];
-                  updated[updated.length - 1] = { role: 'assistant', content: streamedContent + `⚙️ ${toolLabel}...`, toolResults, actionTaken };
-                  return updated;
-                });
+                const friendlyNames: Record<string, string> = {
+                  read_file: 'Reading files', list_files: 'Browsing files', search_code: 'Searching code',
+                  write_file: 'Writing code', edit_file: 'Editing code', run_sql: 'Querying database',
+                  memory_read: 'Checking memory', memory_write: 'Saving to memory',
+                  create_task: 'Creating task', update_task: 'Updating task', delete_task: 'Deleting task',
+                  get_tasks: 'Looking up tasks', run_shell_command: 'Running command',
+                  restart_application: 'Restarting app', git_commit_and_push: 'Deploying changes',
+                  conversation_history: 'Checking history', health_check: 'Checking health',
+                  ha_control: 'Controlling devices', get_calendar: 'Checking calendar',
+                };
+                const label = friendlyNames[event.name] || event.name.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
+                setThinkingPhase(label + '...');
               } else if (event.type === 'tool_done') {
-                const toolLabel = event.name.replace(/_/g, ' ');
-                const icon = event.success ? '✅' : '❌';
-                streamedContent += `${icon} ${toolLabel}\n`;
-                setMessages(prev => {
-                  const updated = [...prev];
-                  updated[updated.length - 1] = { role: 'assistant', content: streamedContent, toolResults, actionTaken };
-                  return updated;
-                });
+                if (!event.success) {
+                  const toolLabel = event.name.replace(/_/g, ' ');
+                  streamedContent += `Failed: ${toolLabel}\n`;
+                }
               } else if (event.type === 'token') {
+                if (thinkingPhase) setThinkingPhase(null);
                 streamedContent += event.content;
                 setMessages(prev => {
-                  const updated = [...prev];
-                  updated[updated.length - 1] = { role: 'assistant', content: streamedContent, toolResults, actionTaken };
-                  return updated;
+                  const last = prev[prev.length - 1];
+                  if (last && last.role === 'assistant') {
+                    const updated = [...prev];
+                    updated[updated.length - 1] = { role: 'assistant', content: streamedContent, toolResults, actionTaken };
+                    return updated;
+                  }
+                  return [...prev, { role: 'assistant', content: streamedContent, toolResults, actionTaken }];
                 });
               } else if (event.type === 'confirm') {
                 if (event.pendingConfirmations) {
+                  setThinkingPhase(null);
                   setPendingConfirm(event.pendingConfirmations);
                 }
               } else if (event.type === 'done') {
@@ -165,13 +185,22 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
           }
         }
 
+        setThinkingPhase(null);
         if (actionTaken) invalidateAll();
 
-        setMessages(prev => {
-          const updated = [...prev];
-          updated[updated.length - 1] = { role: 'assistant', content: streamedContent || 'Done!', toolResults, actionTaken };
-          return updated;
-        });
+        if (streamedContent.trim()) {
+          setMessages(prev => {
+            const last = prev[prev.length - 1];
+            if (last && last.role === 'assistant') {
+              const updated = [...prev];
+              updated[updated.length - 1] = { role: 'assistant', content: streamedContent, toolResults, actionTaken };
+              return updated;
+            }
+            return [...prev, { role: 'assistant', content: streamedContent, toolResults, actionTaken }];
+          });
+        } else {
+          setMessages(prev => [...prev, { role: 'assistant', content: 'Done!', toolResults, actionTaken }]);
+        }
       } else {
         const data = await resp.json();
 
@@ -192,9 +221,11 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
         }]);
       }
     } catch (err: any) {
+      setThinkingPhase(null);
       setMessages(prev => [...prev, { role: 'assistant', content: `Error: ${err.message}` }]);
     } finally {
       setLoading(false);
+      setThinkingPhase(null);
     }
   }, [input, loading, messages, invalidateAll]);
 
@@ -248,6 +279,16 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   const clearChat = useCallback(() => {
     setMessages([]);
     setPendingConfirm(null);
+  }, []);
+
+  useEffect(() => {
+    const styleId = 'ai-thinking-keyframes';
+    if (!document.getElementById(styleId)) {
+      const style = document.createElement('style');
+      style.id = styleId;
+      style.textContent = thinkingKeyframes;
+      document.head.appendChild(style);
+    }
   }, []);
 
   if (!isOpen) return null;
@@ -408,7 +449,28 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
             </div>
           ))}
 
-          {loading && (
+          {thinkingPhase && (
+            <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+              <div style={{
+                padding: '12px 18px',
+                borderRadius: '14px 14px 14px 4px',
+                background: 'linear-gradient(135deg, rgba(88,28,135,0.4), rgba(126,34,206,0.3))',
+                border: '1px solid rgba(168,85,247,0.35)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                animation: 'ai-think-glow 2s ease-in-out infinite',
+              }}>
+                <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '2px', background: 'rgba(192,132,252,0.9)', animation: 'ai-think-pulse 1.4s ease-in-out infinite', animationDelay: '0s' }} />
+                  <div style={{ width: '8px', height: '8px', borderRadius: '2px', background: 'rgba(168,85,247,0.9)', animation: 'ai-think-pulse 1.4s ease-in-out infinite', animationDelay: '0.2s' }} />
+                  <div style={{ width: '8px', height: '8px', borderRadius: '2px', background: 'rgba(139,92,246,0.9)', animation: 'ai-think-pulse 1.4s ease-in-out infinite', animationDelay: '0.4s' }} />
+                </div>
+                <span style={{ fontSize: '13px', color: 'rgba(216,180,254,0.9)', fontWeight: 500 }}>{thinkingPhase}</span>
+              </div>
+            </div>
+          )}
+          {loading && !thinkingPhase && !messages.some(m => m.role === 'assistant' && m.content === '') && (
             <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
               <div style={{
                 padding: '10px 14px',
@@ -421,8 +483,8 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 color: 'rgba(160,190,255,0.6)',
                 fontSize: '13px',
               }}>
-                <Loader2 size={14} className="animate-spin" style={{ animation: 'spin 1s linear infinite' }} />
-                Processing...
+                <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />
+                Connecting...
               </div>
             </div>
           )}
