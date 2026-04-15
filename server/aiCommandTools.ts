@@ -930,10 +930,11 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
       }
 
       case "ha_service_call": {
-        console.log(`[AI HA] URL="${HOME_ASSISTANT_URL.substring(0, 30)}..." TOKEN="${HOME_ASSISTANT_TOKEN ? HOME_ASSISTANT_TOKEN.substring(0, 10) + '...' : 'EMPTY'}"`);
+        console.log(`[AI HA] URL="${HOME_ASSISTANT_URL ? HOME_ASSISTANT_URL.substring(0, 40) : 'EMPTY'}..." TOKEN="${HOME_ASSISTANT_TOKEN ? 'SET(' + HOME_ASSISTANT_TOKEN.length + ' chars)' : 'EMPTY'}"`);
         if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
-          console.log(`[AI HA] FAILED: URL empty=${!HOME_ASSISTANT_URL}, TOKEN empty=${!HOME_ASSISTANT_TOKEN}`);
-          return { success: false, result: { error: "Home Assistant not configured" } };
+          const diag = `URL=${HOME_ASSISTANT_URL ? 'set' : 'MISSING'}, TOKEN=${HOME_ASSISTANT_TOKEN ? 'set' : 'MISSING'}. env HOME_ASSISTANT_URL=${process.env.HOME_ASSISTANT_URL ? 'set' : 'missing'}, env HOME_ASSISTANT_TOKEN=${process.env.HOME_ASSISTANT_TOKEN ? 'set' : 'missing'}. The app needs HOME_ASSISTANT_URL and HOME_ASSISTANT_TOKEN environment variables, or the code needs rebuilding (npm run build && pm2 restart all).`;
+          console.log(`[AI HA] FAILED: ${diag}`);
+          return { success: false, result: { error: `Home Assistant not configured. Diagnostic: ${diag}` } };
         }
         const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
         const serviceData: any = { entity_id: args.entity_id };
@@ -952,7 +953,8 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
 
       case "ha_announce": {
         if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
-          return { success: false, result: { error: "Home Assistant not configured" } };
+          const diag = `URL=${HOME_ASSISTANT_URL ? 'set' : 'MISSING'}, TOKEN=${HOME_ASSISTANT_TOKEN ? 'set' : 'MISSING'}. env HOME_ASSISTANT_URL=${process.env.HOME_ASSISTANT_URL ? 'set' : 'missing'}, env HOME_ASSISTANT_TOKEN=${process.env.HOME_ASSISTANT_TOKEN ? 'set' : 'missing'}. Needs rebuild: npm run build && pm2 restart all`;
+          return { success: false, result: { error: `Home Assistant not configured. Diagnostic: ${diag}` } };
         }
         const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
         const targetMap: Record<string, string[]> = {
