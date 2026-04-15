@@ -138,6 +138,12 @@ uri = "file://attached_assets/bryn_tv_popcorn_v5.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "RGbllUwi2ZZh7iehXtQHe"
+uri = "file://attached_assets/bryn_tv_popcorn_v6.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "YFf1AFzLkqTG8aZXkvxoF"
 uri = "file://.local/cat-washroom-automation-report.md"
@@ -317,3 +323,9 @@ id = "G5TcSL_8yUngIAcG-S5g3"
 uri = "file://attached_assets/bryn_tv_popcorn_v5.png"
 type = "image"
 title = "Bryn TV Popcorn v5 - Semi-Realistic"
+
+[[outputs]]
+id = "Ac4t4LcoWtYlyvPSJT0ps"
+uri = "file://attached_assets/bryn_tv_popcorn_v6.png"
+type = "image"
+title = "Bryn TV Popcorn v6 - Shorter Hawk, No Streak"
