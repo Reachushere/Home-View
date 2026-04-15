@@ -48,6 +48,12 @@ uri = "file://attached_assets/bryn_popcorn_memoji_v5.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "cL6L0tnBPKH6mGT33qq_w"
+uri = "file://attached_assets/bryn_popcorn_memoji_v6.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "YFf1AFzLkqTG8aZXkvxoF"
 uri = "file://.local/cat-washroom-automation-report.md"
@@ -149,3 +155,9 @@ id = "RdS7tJZqp9AkNKmmNgC-m"
 uri = "file://attached_assets/bryn_popcorn_memoji_v5.png"
 type = "image"
 title = "Bryn Popcorn Memoji v5 - Zoomed Out"
+
+[[outputs]]
+id = "4lswTfidyt__ndYMAcwcU"
+uri = "file://attached_assets/bryn_popcorn_memoji_v6.png"
+type = "image"
+title = "Bryn Popcorn Memoji v6 - Watching TV"
