@@ -60,6 +60,12 @@ uri = "file://attached_assets/bryn_popcorn_memoji_v7.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "xGPqlpqb9Wsirwyh6qWdM"
+uri = "file://attached_assets/bryn_popcorn_memoji_v8.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "YFf1AFzLkqTG8aZXkvxoF"
 uri = "file://.local/cat-washroom-automation-report.md"
@@ -173,3 +179,9 @@ id = "5HZqGTlwZ73MbpTYKlKRC"
 uri = "file://attached_assets/bryn_popcorn_memoji_v7.png"
 type = "image"
 title = "Bryn Popcorn Memoji v7 - Wide Shot with TV"
+
+[[outputs]]
+id = "L8WJ2qSNQotG2BA5dgEyV"
+uri = "file://attached_assets/bryn_popcorn_memoji_v8.png"
+type = "image"
+title = "Bryn Popcorn Memoji v8 - Eyes on TV"
