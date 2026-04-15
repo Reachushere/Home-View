@@ -6206,10 +6206,16 @@ WORKFLOW FOR HA DASHBOARD CHANGES:
 5. Tell Bryn to refresh the HA page
 
 WORKFLOW FOR HA AUTOMATION CHANGES:
-1. ha_config_entries(method:"GET", path:"/api/config/automation/config") → list automations
-2. Read specific: ha_config_entries(method:"GET", path:"/api/config/automation/config/AUTOMATION_ID")
-3. Update: ha_config_entries(method:"POST", path:"/api/config/automation/config/AUTOMATION_ID", body:{...})
-4. Create new: ha_config_entries(method:"POST", path:"/api/config/automation/config/NEW_ID", body:{...})
+1. First find the automation entity: ha_list_entities(search:"automation meds") → returns entity like automation.meds_alarm_yasu
+2. Get its state/attributes: ha_get_state(entity_id:"automation.meds_alarm_yasu") → attributes include id, friendly_name, last_triggered
+3. Get full config: ha_config_entries(method:"GET", path:"/api/services") to see available services
+4. Trigger: ha_service_call(domain:"automation", service:"trigger", entity_id:"automation.meds_alarm_yasu")
+5. Toggle on/off: ha_service_call(domain:"automation", service:"turn_on"/"turn_off", entity_id:"automation.meds_alarm_yasu")
+6. To READ the actual automation config YAML, use: ha_config_entries(method:"GET", path:"/api/config/automation/config/AUTOMATION_UNIQUE_ID")
+   - The AUTOMATION_UNIQUE_ID is found in the entity's attributes.id field (NOT the entity_id)
+   - So: first ha_get_state to get attributes.id, then use THAT id in the config path
+7. To UPDATE: ha_config_entries(method:"PUT", path:"/api/config/automation/config/AUTOMATION_UNIQUE_ID", body:{...trigger, condition, action...})
+8. To CREATE new: ha_config_entries(method:"POST", path:"/api/config/automation/config/NEW_UNIQUE_ID", body:{alias, trigger, condition, action})
 
 TIPS:
 • Look for "group" or "all" entities first — they control whole rooms at once
