@@ -180,6 +180,18 @@ uri = "file://attached_assets/bryn_tv_popcorn_v12.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "zaQoloVFPWqArXhxifi6q"
+uri = "file://attached_assets/bryn_tv_popcorn_v13.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "EMVHPcr6loWflfSBiMJB7"
+uri = "file://attached_assets/bryn_tv_popcorn_v14.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "YFf1AFzLkqTG8aZXkvxoF"
 uri = "file://.local/cat-washroom-automation-report.md"
@@ -389,3 +401,9 @@ id = "NfzTn5L5VK8WRGADsMZmK"
 uri = "file://attached_assets/bryn_tv_popcorn_v12.png"
 type = "image"
 title = "Bryn TV Popcorn v12 - Between Realistic & Stylized"
+
+[[outputs]]
+id = "4C6L51LJmPYxz7qPmM-0m"
+uri = "file://attached_assets/bryn_tv_popcorn_v14.png"
+type = "image"
+title = "Bryn TV Popcorn v14 - TV in Front, Short Faux Hawk"
