@@ -416,7 +416,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
         let actionTaken = false;
         let pendingConfs: any[] | undefined;
 
-        setThinkingPhase('Thinking...');
+        setThinkingPhase('Working...');
 
         let buffer = '';
         while (true) {
@@ -433,18 +433,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 toolResults = event.toolResults;
                 actionTaken = event.actionTaken || false;
               } else if (event.type === 'tool_start') {
-                const friendlyNames: Record<string, string> = {
-                  read_file: 'Reading files', list_files: 'Browsing files', search_code: 'Searching code',
-                  write_file: 'Writing code', edit_file: 'Editing code', run_sql: 'Querying database',
-                  memory_read: 'Checking memory', memory_write: 'Saving to memory',
-                  create_task: 'Creating task', update_task: 'Updating task', delete_task: 'Deleting task',
-                  get_tasks: 'Looking up tasks', run_shell_command: 'Running command',
-                  restart_application: 'Restarting app', git_commit_and_push: 'Deploying changes',
-                  conversation_history: 'Checking history', health_check: 'Checking health',
-                  ha_control: 'Controlling devices', get_calendar: 'Checking calendar',
-                };
-                const label = friendlyNames[event.name] || event.name.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
-                setThinkingPhase(label + '...');
+                setThinkingPhase('Working...');
               } else if (event.type === 'tool_done') {
                 if (!event.success) {
                   const toolLabel = event.name.replace(/_/g, ' ');
@@ -928,10 +917,10 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
               background: 'rgba(30,50,90,0.7)',
               border: '1px solid rgba(100,160,255,0.15)',
             }}>
-              <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#60a5fa', animation: 'ai-dot-bounce 1.4s ease-in-out infinite', animationDelay: '0s' }} />
-                <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#818cf8', animation: 'ai-dot-bounce 1.4s ease-in-out infinite', animationDelay: '0.2s' }} />
-                <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#a78bfa', animation: 'ai-dot-bounce 1.4s ease-in-out infinite', animationDelay: '0.4s' }} />
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '3px', alignItems: 'center' }}>
+                {[0, 1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+                  <div key={i} style={{ width: '5px', height: '5px', borderRadius: '50%', background: ['#60a5fa','#818cf8','#a78bfa','#818cf8','#60a5fa','#818cf8','#a78bfa','#818cf8','#60a5fa'][i], animation: 'ai-dot-bounce 1.4s ease-in-out infinite', animationDelay: `${i * 0.12}s`, opacity: 0.85 }} />
+                ))}
               </div>
               <span style={{
                 fontSize: '13px',
@@ -942,7 +931,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 WebkitTextFillColor: 'transparent',
                 animation: 'ai-shimmer 2s linear infinite',
               }}>
-                {thinkingPhase || 'Thinking...'}
+                {thinkingPhase || 'Working...'}
               </span>
             </div>
           )}

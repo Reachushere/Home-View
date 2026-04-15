@@ -6470,7 +6470,7 @@ HARD RULES
         return false;
       }
 
-      const MAX_ROUNDS = isCodeTask ? 25 : 15;
+      const MAX_ROUNDS = isCodeTask ? 35 : 25;
       let totalTokens = 0;
       let allToolResults: any[] = [];
       let actionTaken = false;
@@ -6568,10 +6568,12 @@ HARD RULES
       }
 
       if (stream) {
-        res.write(`data: ${JSON.stringify({ type: 'done', reply: "Reached maximum tool call rounds. The work may be partially complete.", actionTaken })}\n\n`);
+        const maxMsg = actionTaken ? "Done — I've completed what I could. Let me know if there's anything else." : "I wasn't able to finish this request. Could you try rephrasing or breaking it into smaller steps?";
+        res.write(`data: ${JSON.stringify({ type: 'done', reply: maxMsg, actionTaken })}\n\n`);
         res.end();
       } else {
-        res.json({ reply: "Reached maximum tool call rounds. The work may be partially complete.", toolResults: allToolResults, actionTaken, model, rounds: round });
+        const maxMsg = actionTaken ? "Done — I've completed what I could. Let me know if there's anything else." : "I wasn't able to finish this request. Could you try rephrasing or breaking it into smaller steps?";
+        res.json({ reply: maxMsg, toolResults: allToolResults, actionTaken, model, rounds: round });
       }
       if (actionTaken) {
         const fsP = await import('fs/promises');
