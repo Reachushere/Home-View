@@ -30,6 +30,18 @@ uri = "file://attached_assets/bryn_popcorn_memoji_v2.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "wyI15r6D-hm-Rt0_bVfFL"
+uri = "file://attached_assets/bryn_popcorn_memoji_v3.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "3vBvMmK_Bi4T6DTloBRvA"
+uri = "file://attached_assets/bryn_popcorn_memoji_v4.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "YFf1AFzLkqTG8aZXkvxoF"
 uri = "file://.local/cat-washroom-automation-report.md"
@@ -119,3 +131,9 @@ id = "x3hCrPKZu-fnwIdqi4SNG"
 uri = "file://attached_assets/bryn_popcorn_memoji_v2.png"
 type = "image"
 title = "Bryn Popcorn Memoji v2 - Faux Hawk"
+
+[[outputs]]
+id = "EBdj2I9KnH9LlKaUsN0go"
+uri = "file://attached_assets/bryn_popcorn_memoji_v4.png"
+type = "image"
+title = "Bryn Popcorn Memoji v4"
