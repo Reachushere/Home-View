@@ -32,17 +32,36 @@ echo "[3/7] Generating changelog..."
 NEW_HEAD=$(git rev-parse --short HEAD)
 DEPLOY_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 if [ "$OLD_HEAD" != "none" ]; then
-  CHANGES=$(git log --pretty=format:'%s' "$OLD_HEAD..HEAD" 2>/dev/null | head -15)
+  RAW_LOG=$(git log --pretty=format:'---COMMIT---%n%s%n%b' "$OLD_HEAD..HEAD" 2>/dev/null | head -80)
 else
-  CHANGES=$(git log --pretty=format:'%s' -10 2>/dev/null)
+  RAW_LOG=$(git log --pretty=format:'---COMMIT---%n%s%n%b' -10 2>/dev/null | head -80)
 fi
 
 CHANGES_JSON="[]"
-if [ -n "$CHANGES" ]; then
-  CHANGES_JSON=$(echo "$CHANGES" | python3 -c "
-import sys, json
-lines = [l.strip() for l in sys.stdin if l.strip()]
-print(json.dumps(lines))
+if [ -n "$RAW_LOG" ]; then
+  CHANGES_JSON=$(echo "$RAW_LOG" | python3 -c "
+import sys, json, re
+raw = sys.stdin.read()
+commits = [c.strip() for c in raw.split('---COMMIT---') if c.strip()]
+result = []
+for commit in commits:
+    lines = [l.strip() for l in commit.splitlines() if l.strip()]
+    if not lines:
+        continue
+    subject = lines[0]
+    body_lines = []
+    for bl in lines[1:]:
+        if bl.startswith('Co-authored-by') or bl.startswith('Signed-off-by'):
+            continue
+        if bl.startswith('- ') or bl.startswith('* '):
+            body_lines.append(bl.lstrip('-* ').strip())
+        elif len(bl) > 10 and not bl.startswith('(') and not re.match(r'^[a-f0-9]{7,}$', bl):
+            body_lines.append(bl)
+    if body_lines:
+        result.append(subject + ':\n' + '\n'.join('  - ' + b for b in body_lines[:6]))
+    else:
+        result.append(subject)
+print(json.dumps(result[:15]))
 " 2>/dev/null || echo "[]")
 fi
 

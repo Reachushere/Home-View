@@ -233,6 +233,17 @@ interface WizardStyle {
   wizardAssistantBubble?: string;
 }
 
+function isLightBg(bg: string | undefined): boolean {
+  if (!bg) return false;
+  const l = bg.toLowerCase().replace(/\s/g, '');
+  if (l.includes('white') || l === '#fff' || l === '#ffffff') return true;
+  const rgb = l.match(/rgba?\((\d+),(\d+),(\d+)/);
+  if (rgb) return (+rgb[1] * 0.299 + +rgb[2] * 0.587 + +rgb[3] * 0.114) > 160;
+  const hex = l.match(/^#([0-9a-f]{6})$/);
+  if (hex) { const r = parseInt(hex[1].slice(0,2),16), g = parseInt(hex[1].slice(2,4),16), b = parseInt(hex[1].slice(4,6),16); return (r*0.299+g*0.587+b*0.114) > 160; }
+  return false;
+}
+
 const defaultWizardStyle: WizardStyle = {
   wizardBackground: 'linear-gradient(180deg, #0d1b3e 0%, #0f2347 30%, #132d5a 60%, #162f5e 100%)',
   wizardBorder: '1.5px solid rgba(100,160,255,0.3)',
@@ -801,7 +812,13 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                   : msg.role === 'system'
                   ? '1px solid rgba(255,200,50,0.3)'
                   : '1px solid rgba(100,160,255,0.15)',
-                color: msg.role === 'system' ? 'rgba(255,220,100,0.9)' : '#ffffff',
+                color: msg.role === 'system' ? 'rgba(255,220,100,0.9)'
+                  : msg.role === 'user'
+                  ? (isLightBg(wizStyle.wizardUserBubble) ? '#1a1a2e' : '#ffffff')
+                  : (isLightBg(wizStyle.wizardAssistantBubble) ? '#1a1a2e' : '#ffffff'),
+                textShadow: msg.role !== 'system'
+                  ? (isLightBg(msg.role === 'user' ? wizStyle.wizardUserBubble : wizStyle.wizardAssistantBubble) ? 'none' : '0 1px 2px rgba(0,0,0,0.3)')
+                  : undefined,
                 fontSize: '13px',
                 lineHeight: '1.5',
                 whiteSpace: 'pre-wrap',
