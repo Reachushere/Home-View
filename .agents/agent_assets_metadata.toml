@@ -216,6 +216,12 @@ uri = "file://attached_assets/bryn_tv_popcorn_v18.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "twBz8LfqrURvgsIsY-Tc8"
+uri = "file://attached_assets/bryn_tv_popcorn_v19.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "YFf1AFzLkqTG8aZXkvxoF"
 uri = "file://.local/cat-washroom-automation-report.md"
@@ -455,3 +461,9 @@ id = "Pa17LlhKm9yjgZy8auGMb"
 uri = "file://attached_assets/bryn_tv_popcorn_v18.png"
 type = "image"
 title = "Bryn TV Popcorn v18 - Faux Hawk Fix"
+
+[[outputs]]
+id = "W0yYMZcPM5VWEgZ0YDAWk"
+uri = "file://attached_assets/bryn_tv_popcorn_v19.png"
+type = "image"
+title = "Bryn TV Popcorn v19 - One Popcorn"
