@@ -29,6 +29,24 @@ interface AiCommandWizardProps {
 
 const sessionId = `bryn-${Date.now().toString(36)}`;
 
+interface WizardStyle {
+  wizardBackground?: string;
+  wizardBorder?: string;
+  wizardHeaderBg?: string;
+  wizardInputBg?: string;
+  wizardUserBubble?: string;
+  wizardAssistantBubble?: string;
+}
+
+const defaultWizardStyle: WizardStyle = {
+  wizardBackground: 'linear-gradient(180deg, #0d1b3e 0%, #0f2347 30%, #132d5a 60%, #162f5e 100%)',
+  wizardBorder: '1.5px solid rgba(100,160,255,0.3)',
+  wizardHeaderBg: 'rgba(10,20,50,0.8)',
+  wizardInputBg: 'rgba(10,20,50,0.5)',
+  wizardUserBubble: 'linear-gradient(135deg, #1d4ed8, #2563eb)',
+  wizardAssistantBubble: 'rgba(30,50,90,0.7)',
+};
+
 export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -40,12 +58,38 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [thinkingPhase, setThinkingPhase] = useState<string | null>(null);
   const [pastedImage, setPastedImage] = useState<string | null>(null);
+  const [wizStyle, setWizStyle] = useState<WizardStyle>(defaultWizardStyle);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    fetch('/api/app-state/ui_wizardStyle')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.value) {
+          try {
+            const parsed = JSON.parse(data.value);
+            setWizStyle(prev => ({ ...prev, ...parsed }));
+          } catch {}
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
     if (isOpen) {
+      fetch('/api/app-state/ui_wizardStyle')
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+          if (data?.value) {
+            try {
+              const parsed = JSON.parse(data.value);
+              setWizStyle(prev => ({ ...prev, ...parsed }));
+            } catch {}
+          }
+        })
+        .catch(() => {});
       setTimeout(() => inputRef.current?.focus(), 150);
     }
   }, [isOpen]);
@@ -327,8 +371,8 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
     maxWidth: expanded ? '1200px' : '95vw',
     maxHeight: panelMaxHeight,
     height: expanded ? '90vh' : undefined,
-    background: 'linear-gradient(180deg, #0d1b3e 0%, #0f2347 30%, #132d5a 60%, #162f5e 100%)',
-    border: '1.5px solid rgba(100,160,255,0.3)',
+    background: wizStyle.wizardBackground || defaultWizardStyle.wizardBackground,
+    border: wizStyle.wizardBorder || defaultWizardStyle.wizardBorder,
     borderRadius: '16px',
     display: 'flex',
     flexDirection: 'column',
@@ -435,10 +479,10 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 padding: msg.role === 'system' ? '6px 14px' : '10px 14px',
                 borderRadius: msg.role === 'user' ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
                 background: msg.role === 'user'
-                  ? 'linear-gradient(135deg, #1d4ed8, #2563eb)'
+                  ? (wizStyle.wizardUserBubble || defaultWizardStyle.wizardUserBubble)
                   : msg.role === 'system'
                   ? 'rgba(255,200,50,0.15)'
-                  : 'rgba(30,50,90,0.7)',
+                  : (wizStyle.wizardAssistantBubble || defaultWizardStyle.wizardAssistantBubble),
                 border: msg.role === 'user'
                   ? '1px solid rgba(96,165,250,0.3)'
                   : msg.role === 'system'

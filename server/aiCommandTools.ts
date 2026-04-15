@@ -249,17 +249,23 @@ export const AI_COMMAND_TOOLS = [
     type: "function" as const,
     function: {
       name: "update_app_theme",
-      description: "Change the app's visual theme/colors. Updates stored in app state and takes effect on next page load. Examples: 'make the app darker', 'change header to navy blue', 'set background to purple'.",
+      description: "Change the app's visual theme/colors OR the Bryn Assist dialog's appearance. Updates stored in DB and take effect on next page load/refresh. For dashboard: use headerBar, mainBackground, etc. For the Bryn Assist dialog (this window): use wizardBackground, wizardBorder, wizardHeaderBg, wizardInputBg.",
       parameters: {
         type: "object",
         properties: {
-          headerBar: { type: "string", description: "Header bar color (hex code, e.g. #051729)" },
-          mainBackground: { type: "string", description: "Main background color (hex code, e.g. #3a8bbf)" },
-          mainBackgroundGradientEnd: { type: "string", description: "Background gradient end color (hex code)" },
-          boxBackground: { type: "string", description: "Content box background color (hex code, e.g. #ffffff)" },
+          headerBar: { type: "string", description: "Dashboard header bar color (hex code)" },
+          mainBackground: { type: "string", description: "Dashboard main background color (hex code)" },
+          mainBackgroundGradientEnd: { type: "string", description: "Dashboard background gradient end color (hex code)" },
+          boxBackground: { type: "string", description: "Dashboard content box background color (hex code)" },
           todayCellBackground: { type: "string", description: "Today cell highlight color (hex code)" },
-          boxTransparency: { type: "integer", description: "Box transparency level 0-100 (higher = more transparent)" },
-          boxGlassEffect: { type: "boolean", description: "Enable/disable glass/frosted effect on boxes" },
+          boxTransparency: { type: "integer", description: "Box transparency level 0-100" },
+          boxGlassEffect: { type: "boolean", description: "Enable/disable glass effect" },
+          wizardBackground: { type: "string", description: "Bryn Assist dialog background CSS (e.g. 'linear-gradient(180deg, #0a1628 0%, #0f2347 100%)' or a hex color)" },
+          wizardBorder: { type: "string", description: "Bryn Assist dialog border CSS (e.g. '1.5px solid rgba(100,160,255,0.3)')" },
+          wizardHeaderBg: { type: "string", description: "Bryn Assist header area background CSS" },
+          wizardInputBg: { type: "string", description: "Bryn Assist input area background CSS" },
+          wizardUserBubble: { type: "string", description: "Bryn Assist user message bubble background CSS" },
+          wizardAssistantBubble: { type: "string", description: "Bryn Assist assistant message bubble background CSS" },
         },
       },
     },
@@ -1057,26 +1063,51 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
 
       case "update_app_theme": {
         const { appState: appStateTable } = await import("@shared/schema");
-        const themeUpdates: any = {};
-        const fields = ['headerBar', 'mainBackground', 'mainBackgroundGradientEnd', 'boxBackground', 'todayCellBackground', 'boxTransparency', 'boxGlassEffect'];
-        for (const f of fields) {
-          if (args[f] !== undefined) themeUpdates[f] = args[f];
+        const dashboardFields = ['headerBar', 'mainBackground', 'mainBackgroundGradientEnd', 'boxBackground', 'todayCellBackground', 'boxTransparency', 'boxGlassEffect'];
+        const wizardFields = ['wizardBackground', 'wizardBorder', 'wizardHeaderBg', 'wizardInputBg', 'wizardUserBubble', 'wizardAssistantBubble'];
+
+        const dashboardUpdates: any = {};
+        const wizardUpdates: any = {};
+        for (const f of dashboardFields) { if (args[f] !== undefined) dashboardUpdates[f] = args[f]; }
+        for (const f of wizardFields) { if (args[f] !== undefined) wizardUpdates[f] = args[f]; }
+
+        if (Object.keys(dashboardUpdates).length === 0 && Object.keys(wizardUpdates).length === 0) {
+          return { success: false, result: { error: "No theme updates specified" } };
         }
-        if (Object.keys(themeUpdates).length === 0) return { success: false, result: { error: "No theme updates specified" } };
-        const key = 'ui_colorSettings';
-        const existingRows = await db.select().from(appStateTable).where(eq(appStateTable.key, key)).limit(1);
-        let current: any = {};
-        if (existingRows.length > 0 && existingRows[0].value) {
-          try { current = JSON.parse(existingRows[0].value); } catch {}
+
+        const results: string[] = [];
+
+        if (Object.keys(dashboardUpdates).length > 0) {
+          const key = 'ui_colorSettings';
+          const existingRows = await db.select().from(appStateTable).where(eq(appStateTable.key, key)).limit(1);
+          let current: any = {};
+          if (existingRows.length > 0 && existingRows[0].value) { try { current = JSON.parse(existingRows[0].value); } catch {} }
+          const merged = { ...current, ...dashboardUpdates };
+          const value = JSON.stringify(merged);
+          if (existingRows.length > 0) {
+            await db.update(appStateTable).set({ value, updatedAt: new Date() }).where(eq(appStateTable.key, key));
+          } else {
+            await db.insert(appStateTable).values({ key, value });
+          }
+          results.push(`Dashboard: ${Object.keys(dashboardUpdates).join(', ')}`);
         }
-        const merged = { ...current, ...themeUpdates };
-        const value = JSON.stringify(merged);
-        if (existingRows.length > 0) {
-          await db.update(appStateTable).set({ value, updatedAt: new Date() }).where(eq(appStateTable.key, key));
-        } else {
-          await db.insert(appStateTable).values({ key, value });
+
+        if (Object.keys(wizardUpdates).length > 0) {
+          const key = 'ui_wizardStyle';
+          const existingRows = await db.select().from(appStateTable).where(eq(appStateTable.key, key)).limit(1);
+          let current: any = {};
+          if (existingRows.length > 0 && existingRows[0].value) { try { current = JSON.parse(existingRows[0].value); } catch {} }
+          const merged = { ...current, ...wizardUpdates };
+          const value = JSON.stringify(merged);
+          if (existingRows.length > 0) {
+            await db.update(appStateTable).set({ value, updatedAt: new Date() }).where(eq(appStateTable.key, key));
+          } else {
+            await db.insert(appStateTable).values({ key, value });
+          }
+          results.push(`Bryn Assist: ${Object.keys(wizardUpdates).join(', ')}`);
         }
-        return { success: true, result: { updated: Object.keys(themeUpdates), note: "Theme changes will apply on next page load or refresh" } };
+
+        return { success: true, result: { updated: results, note: "Changes apply on page refresh. For Bryn Assist changes, close and reopen the dialog." } };
       }
 
       case "update_ui_setting": {
