@@ -84,6 +84,12 @@ uri = "file://attached_assets/bryn_popcorn_memoji_v11.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "fR4vzBzm5IBnNNO3Tja24"
+uri = "file://attached_assets/bryn_popcorn_memoji_v12.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "YFf1AFzLkqTG8aZXkvxoF"
 uri = "file://.local/cat-washroom-automation-report.md"
@@ -215,3 +221,9 @@ id = "R_2_ZCPQkOTzceuKvjSGk"
 uri = "file://attached_assets/bryn_popcorn_memoji_v11.png"
 type = "image"
 title = "Bryn Popcorn Memoji v11 - Wide Angle with TV"
+
+[[outputs]]
+id = "cHzRGnRGhp1KrO7uDcuLG"
+uri = "file://attached_assets/bryn_popcorn_memoji_v12.png"
+type = "image"
+title = "Bryn Popcorn Memoji v12 - Laughing, Catching Popcorn"
