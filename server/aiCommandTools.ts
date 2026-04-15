@@ -407,15 +407,17 @@ export const AI_COMMAND_TOOLS = [
     type: "function" as const,
     function: {
       name: "edit_file",
-      description: "Make a targeted edit to a file by replacing an exact string match. DESTRUCTIVE — always confirm with user first. Use read_file first to find the exact text to replace. The oldText must match exactly (including whitespace).",
+      description: "Make a targeted edit to a file. Two modes: (1) String replace: provide oldText+newText for exact match replacement. (2) Line replace: provide startLine+endLine+newText to replace a line range. Always read_file first to see exact content and line numbers. String mode: oldText must match exactly (including whitespace). Line mode: use when string matching is difficult (long lines, special chars).",
       parameters: {
         type: "object",
         properties: {
           filePath: { type: "string", description: "Relative path to the file to edit" },
-          oldText: { type: "string", description: "Exact text to find and replace (must be unique in the file)" },
+          oldText: { type: "string", description: "Exact text to find and replace (must be unique in the file). Use this OR startLine+endLine." },
           newText: { type: "string", description: "Replacement text" },
+          startLine: { type: "integer", description: "Start line number (1-indexed, inclusive). Use with endLine as alternative to oldText." },
+          endLine: { type: "integer", description: "End line number (1-indexed, inclusive). Use with startLine." },
         },
-        required: ["filePath", "oldText", "newText"],
+        required: ["filePath", "newText"],
       },
     },
   },
@@ -1259,9 +1261,38 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
         if (isProtectedFile(args.filePath)) return { success: false, result: { error: `Protected file — cannot modify: ${args.filePath}` } };
         try {
           const content = await fs.readFile(safePath, 'utf-8');
+
+          if (args.startLine && args.endLine) {
+            const lines = content.split('\n');
+            const start = Math.max(1, args.startLine) - 1;
+            const end = Math.min(lines.length, args.endLine);
+            if (start >= lines.length) return { success: false, result: { error: `startLine ${args.startLine} exceeds file length (${lines.length} lines)` } };
+            const replaced = lines.slice(start, end).join('\n');
+            const before = lines.slice(0, start);
+            const after = lines.slice(end);
+            const newContent = [...before, args.newText, ...after].join('\n');
+            await fs.writeFile(safePath, newContent, 'utf-8');
+            return { success: true, result: { edited: args.filePath, mode: 'line-replace', linesReplaced: `${args.startLine}-${args.endLine}`, oldSnippet: replaced.substring(0, 200) } };
+          }
+
+          if (!args.oldText) return { success: false, result: { error: "Provide either oldText or startLine+endLine" } };
+
           const occurrences = content.split(args.oldText).length - 1;
-          if (occurrences === 0) return { success: false, result: { error: "oldText not found in file. Read the file first to get exact text." } };
-          if (occurrences > 1) return { success: false, result: { error: `oldText found ${occurrences} times — must be unique. Add more context to make it unique.` } };
+          if (occurrences === 0) {
+            const trimmedSearch = args.oldText.trim();
+            const lines = content.split('\n');
+            const closeMatches: string[] = [];
+            for (let i = 0; i < lines.length; i++) {
+              if (lines[i].includes(trimmedSearch.split('\n')[0].trim())) {
+                closeMatches.push(`Line ${i + 1}: ${lines[i].substring(0, 150)}`);
+              }
+            }
+            const hint = closeMatches.length > 0
+              ? ` Possible matches:\n${closeMatches.slice(0, 5).join('\n')}\nTip: Use startLine+endLine mode for tricky edits.`
+              : ' Tip: Use search_code to find the right text, or use startLine+endLine mode.';
+            return { success: false, result: { error: `oldText not found in file.${hint}` } };
+          }
+          if (occurrences > 1) return { success: false, result: { error: `oldText found ${occurrences} times — must be unique. Add more surrounding context to make it unique.` } };
           const newContent = content.replace(args.oldText, args.newText);
           await fs.writeFile(safePath, newContent, 'utf-8');
           return { success: true, result: { edited: args.filePath, replacements: 1 } };
