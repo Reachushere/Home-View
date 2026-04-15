@@ -204,6 +204,12 @@ uri = "file://attached_assets/bryn_tv_popcorn_v16.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "U6J_ChI6zaMo-snM0JA8v"
+uri = "file://attached_assets/bryn_tv_popcorn_v17.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "YFf1AFzLkqTG8aZXkvxoF"
 uri = "file://.local/cat-washroom-automation-report.md"
@@ -431,3 +437,9 @@ id = "BCnk9-xvPZHdkTwyGoa0L"
 uri = "file://attached_assets/bryn_tv_popcorn_v16.png"
 type = "image"
 title = "Bryn TV Popcorn v16 - Slightly Behind Angle"
+
+[[outputs]]
+id = "EVAe6zZdwP_qPW7JinJIc"
+uri = "file://attached_assets/bryn_tv_popcorn_v17.png"
+type = "image"
+title = "Bryn TV Popcorn v17 - TV in Line of Sight"
