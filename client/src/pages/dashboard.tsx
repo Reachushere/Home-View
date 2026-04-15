@@ -31903,7 +31903,7 @@ export default function Dashboard() {
                     const taskOffset = maxTasksInBarCols * 20 + (maxTasksInBarCols > 0 ? 4 : 0);
                     return (
                       <div style={{ position: 'absolute', left: `${fixedPx}px`, right: 0, bottom: '1px', top: '1px', pointerEvents: 'none', zIndex: 30 }}>
-                        <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `${widthFrac * 100}%`, bottom: 0, top: `${taskOffset}px`, overflowY: 'auto', overflowX: 'hidden', pointerEvents: 'none', scrollbarWidth: 'none' as any }}>
+                        <div style={{ position: 'absolute', left: `${leftFrac * 100}%`, width: `calc(${widthFrac * 100}% - ${todayDow === 3 ? 7 : 0}px)`, bottom: 0, top: `${taskOffset}px`, overflowY: 'auto', overflowX: 'hidden', pointerEvents: 'none', scrollbarWidth: 'none' as any }}>
                           <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', minHeight: '100%' }}>
                             {courseBars.filter(cd => cd.daysLeft > 0 && (todayDow === 6 || weekDays.some(wd => isSameDayET(wd, startOfDayET(new Date(cd.task.dueDate)))))).map((cd, idx) => {
                               const t = cd.task;
