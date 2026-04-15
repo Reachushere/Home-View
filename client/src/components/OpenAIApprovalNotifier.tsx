@@ -36,6 +36,28 @@ export default function OpenAIApprovalNotifier() {
 
     let eventSource: EventSource | null = null;
     let reconnectTimer: ReturnType<typeof setTimeout>;
+    let pollTimer: ReturnType<typeof setInterval>;
+
+    function handleNewApproval(approval: PendingApproval) {
+      setApprovals((prev) => {
+        if (prev.find((a) => a.id === approval.id)) return prev;
+        return [...prev, approval];
+      });
+      setHidden(false);
+
+      if ("Notification" in window && Notification.permission === "granted") {
+        new Notification("UniCal: OpenAI Charge Approval", {
+          body: `${approval.feature}: ${approval.detail}\nEst. cost: ${approval.estimatedCost}`,
+          icon: "/favicon.ico",
+          tag: approval.id,
+          requireInteraction: true,
+        });
+      }
+
+      if ("vibrate" in navigator) {
+        navigator.vibrate([200, 100, 200]);
+      }
+    }
 
     function connect() {
       eventSource = new EventSource("/api/openai-approval/stream");
@@ -44,24 +66,7 @@ export default function OpenAIApprovalNotifier() {
         try {
           const data = JSON.parse(event.data);
           if (data.type === "approval" && data.data?.status === "pending") {
-            setApprovals((prev) => {
-              if (prev.find((a) => a.id === data.data.id)) return prev;
-              return [...prev, data.data];
-            });
-            setHidden(false);
-
-            if ("Notification" in window && Notification.permission === "granted") {
-              new Notification("UniCal: OpenAI Charge Approval", {
-                body: `${data.data.feature}: ${data.data.detail}\nEst. cost: ${data.data.estimatedCost}`,
-                icon: "/favicon.ico",
-                tag: data.data.id,
-                requireInteraction: true,
-              });
-            }
-
-            if ("vibrate" in navigator) {
-              navigator.vibrate([200, 100, 200]);
-            }
+            handleNewApproval(data.data);
           }
         } catch {}
       };
@@ -72,7 +77,21 @@ export default function OpenAIApprovalNotifier() {
       };
     }
 
+    async function pollForApprovals() {
+      try {
+        const resp = await fetch("/api/openai-approval/pending");
+        if (resp.ok) {
+          const data = await resp.json();
+          if (Array.isArray(data) && data.length > 0) {
+            data.filter((a: any) => a.status === "pending").forEach(handleNewApproval);
+          }
+        }
+      } catch {}
+    }
+
     connect();
+    pollForApprovals();
+    pollTimer = setInterval(pollForApprovals, 3000);
 
     if ("Notification" in window && Notification.permission === "default") {
       Notification.requestPermission();
@@ -81,6 +100,7 @@ export default function OpenAIApprovalNotifier() {
     return () => {
       eventSource?.close();
       clearTimeout(reconnectTimer);
+      clearInterval(pollTimer);
     };
   }, [isTabletDevice]);
 
