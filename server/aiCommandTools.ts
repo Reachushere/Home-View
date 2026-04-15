@@ -336,7 +336,7 @@ export const AI_COMMAND_TOOLS = [
     type: "function" as const,
     function: {
       name: "update_app_theme",
-      description: "Change the app's visual theme/colors OR the BrynAssist dialog's appearance. Updates stored in DB and take effect on next page load/refresh. For dashboard: use headerBar, mainBackground, etc. For the BrynAssist dialog (this window): use wizardBackground, wizardBorder, wizardHeaderBg, wizardInputBg.",
+      description: "Change the app's visual theme/colors OR the BrynAssist dialog's appearance. Updates stored in DB and take effect on next page load/refresh. For dashboard: use headerBar, mainBackground, etc. For BrynAssist dialog (this window): use wizard* properties. IMPORTANT: When user asks to change 'text color', use wizardTextColor for message text or wizardBodyTextColor for the prompt examples/body text. Do NOT change bubble backgrounds (wizardUserBubble/wizardAssistantBubble) unless the user specifically asks to change bubble/message background colors. Set wizardReset to true to reset ALL BrynAssist styles back to defaults.",
       parameters: {
         type: "object",
         properties: {
@@ -351,8 +351,11 @@ export const AI_COMMAND_TOOLS = [
           wizardBorder: { type: "string", description: "BrynAssist dialog border CSS (e.g. '1.5px solid rgba(100,160,255,0.3)')" },
           wizardHeaderBg: { type: "string", description: "BrynAssist header area background CSS" },
           wizardInputBg: { type: "string", description: "BrynAssist input area background CSS" },
-          wizardUserBubble: { type: "string", description: "BrynAssist user message bubble background CSS" },
-          wizardAssistantBubble: { type: "string", description: "BrynAssist assistant message bubble background CSS" },
+          wizardUserBubble: { type: "string", description: "BrynAssist user message bubble BACKGROUND CSS (not text). Only change when user asks about bubble/message background color" },
+          wizardAssistantBubble: { type: "string", description: "BrynAssist assistant message bubble BACKGROUND CSS (not text). Only change when user asks about bubble/message background color" },
+          wizardTextColor: { type: "string", description: "BrynAssist message text color (hex code, e.g. '#ffffff'). Use this when user asks to change the text/font color in messages" },
+          wizardBodyTextColor: { type: "string", description: "BrynAssist body/prompt example text color (hex code, e.g. '#ffffff'). Use this when user asks to change the welcome text or prompt example colors" },
+          wizardReset: { type: "boolean", description: "Set to true to reset ALL BrynAssist wizard styles back to defaults. Use when user asks to reset/fix BrynAssist appearance" },
         },
       },
     },
@@ -1392,7 +1395,16 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
       case "update_app_theme": {
         const { appState: appStateTable } = await import("@shared/schema");
         const dashboardFields = ['headerBar', 'mainBackground', 'mainBackgroundGradientEnd', 'boxBackground', 'todayCellBackground', 'boxTransparency', 'boxGlassEffect'];
-        const wizardFields = ['wizardBackground', 'wizardBorder', 'wizardHeaderBg', 'wizardInputBg', 'wizardUserBubble', 'wizardAssistantBubble'];
+        const wizardFields = ['wizardBackground', 'wizardBorder', 'wizardHeaderBg', 'wizardInputBg', 'wizardUserBubble', 'wizardAssistantBubble', 'wizardTextColor', 'wizardBodyTextColor'];
+
+        if (args.wizardReset) {
+          const key = 'ui_wizardStyle';
+          const existingRows = await db.select().from(appStateTable).where(eq(appStateTable.key, key)).limit(1);
+          if (existingRows.length > 0) {
+            await db.update(appStateTable).set({ value: '{}', updatedAt: new Date() }).where(eq(appStateTable.key, key));
+          }
+          return { success: true, result: { updated: ['BrynAssist: reset to defaults'], note: "Close and reopen BrynAssist to see changes." } };
+        }
 
         const dashboardUpdates: any = {};
         const wizardUpdates: any = {};

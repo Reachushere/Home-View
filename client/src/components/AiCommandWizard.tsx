@@ -231,6 +231,8 @@ interface WizardStyle {
   wizardInputBg?: string;
   wizardUserBubble?: string;
   wizardAssistantBubble?: string;
+  wizardTextColor?: string;
+  wizardBodyTextColor?: string;
 }
 
 function isLightBg(bg: string | undefined): boolean {
@@ -779,10 +781,10 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
           minHeight: '200px',
         }}>
           {messages.length === 0 && (
-            <div style={{ textAlign: 'center', padding: '30px 20px', color: '#ffffff' }}>
-              <Zap size={32} color="#ffffff" style={{ margin: '0 auto 12px', opacity: 0.7 }} />
+            <div style={{ textAlign: 'center', padding: '30px 20px', color: wizStyle.wizardBodyTextColor || '#ffffff' }}>
+              <Zap size={32} color={wizStyle.wizardBodyTextColor || '#ffffff'} style={{ margin: '0 auto 12px', opacity: 0.7 }} />
               <div style={{ fontSize: '14px', marginBottom: '8px' }}>What can I help with?</div>
-              <div style={{ fontSize: '12px', lineHeight: '1.8', color: 'rgba(255,255,255,0.6)' }}>
+              <div style={{ fontSize: '12px', lineHeight: '1.8', opacity: 0.6 }}>
                 "Add a quiz for CPPA122 next Friday"<br />
                 "What's due this week?"<br />
                 "Turn on the cat lights"<br />
@@ -813,6 +815,8 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                   ? '1px solid rgba(255,200,50,0.3)'
                   : '1px solid rgba(100,160,255,0.15)',
                 color: msg.role === 'system' ? 'rgba(255,220,100,0.9)'
+                  : wizStyle.wizardTextColor
+                  ? wizStyle.wizardTextColor
                   : msg.role === 'user'
                   ? (isLightBg(wizStyle.wizardUserBubble) ? '#1a1a2e' : '#ffffff')
                   : (isLightBg(wizStyle.wizardAssistantBubble) ? '#1a1a2e' : '#ffffff'),
