@@ -265,6 +265,27 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [thinkingPhase, setThinkingPhase] = useState<string | null>(null);
+  const playDing = useCallback(() => {
+    try {
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const playTone = (freq: number, start: number, dur: number, vol: number) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(vol, ctx.currentTime + start);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(ctx.currentTime + start);
+        osc.stop(ctx.currentTime + start + dur);
+      };
+      playTone(880, 0, 0.15, 0.3);
+      playTone(1318.5, 0.08, 0.2, 0.25);
+      playTone(1760, 0.16, 0.3, 0.15);
+      setTimeout(() => ctx.close(), 1000);
+    } catch {}
+  }, []);
   const [pastedImage, setPastedImage] = useState<string | null>(null);
   const [markupImage, setMarkupImage] = useState<string | null>(null);
   const [wizStyle, setWizStyle] = useState<WizardStyle>(defaultWizardStyle);
@@ -468,6 +489,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
 
         setThinkingPhase(null);
         if (actionTaken) invalidateAll();
+        playDing();
 
         if (streamedContent.trim()) {
           setMessages(prev => {
@@ -492,6 +514,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
         if (data.actionTaken) {
           invalidateAll();
         }
+        playDing();
 
         setMessages(prev => [...prev, {
           role: 'assistant',
