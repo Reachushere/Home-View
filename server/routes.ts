@@ -3252,6 +3252,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
   const newsCache: { data: any[] | null; timestamp: number } = { data: null, timestamp: 0 };
 
   app.use('/api/ticker-assets', express.static(path.join(process.cwd(), 'attached_assets')));
+  app.use('/generated', express.static(path.join(process.cwd(), 'client', 'public', 'generated')));
 
   app.get("/api/ticker", async (req, res) => {
     try {

@@ -905,7 +905,31 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 {msg.image && (
                   <img src={msg.image} alt="Screenshot" style={{ maxWidth: '100%', maxHeight: '150px', borderRadius: '6px', marginBottom: '6px', border: '1px solid rgba(100,160,255,0.2)' }} />
                 )}
-                {msg.content}
+                {msg.toolResults?.some((tr: any) => tr.name === 'generate_image' && tr.success && tr.result?.webPath) && (
+                  <div style={{ marginBottom: '8px' }}>
+                    {msg.toolResults.filter((tr: any) => tr.name === 'generate_image' && tr.success && tr.result?.webPath).map((tr: any, j: number) => (
+                      <a key={j} href={tr.result.webPath} target="_blank" rel="noopener noreferrer" download>
+                        <img src={tr.result.webPath} alt="Generated" style={{ maxWidth: '100%', maxHeight: '250px', borderRadius: '10px', border: '1px solid rgba(100,160,255,0.3)', cursor: 'pointer' }} />
+                      </a>
+                    ))}
+                  </div>
+                )}
+                {(() => {
+                  const text = msg.content || '';
+                  const mdImgRe = /!\[([^\]]*)\]\((https?:\/\/[^)]+)\)/g;
+                  if (!mdImgRe.test(text)) return text;
+                  mdImgRe.lastIndex = 0;
+                  const parts: (string | JSX.Element)[] = [];
+                  let last = 0;
+                  let m;
+                  while ((m = mdImgRe.exec(text)) !== null) {
+                    if (m.index > last) parts.push(text.slice(last, m.index));
+                    parts.push(<a key={m.index} href={m[2]} target="_blank" rel="noopener noreferrer" download><img src={m[2]} alt={m[1]} style={{ maxWidth: '100%', maxHeight: '250px', borderRadius: '10px', border: '1px solid rgba(100,160,255,0.3)', marginTop: '6px', cursor: 'pointer' }} /></a>);
+                    last = m.index + m[0].length;
+                  }
+                  if (last < text.length) parts.push(text.slice(last));
+                  return parts;
+                })()}
                 {msg.actionTaken && msg.toolResults && msg.toolResults.length > 0 && (
                   <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                     {msg.toolResults.map((tr: any, j: number) => (
