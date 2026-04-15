@@ -23,6 +23,7 @@ import CodeCheckerPage from "@/pages/code-checker";
 import TickerPage from "@/pages/ticker";
 import SharedLibraryPage from "@/pages/shared-library";
 import EssayEditorPage from "@/pages/essay-editor";
+import MobileApp from "@/pages/mobile-app";
 
 function useAutoFullscreen() {
   const [requested, setRequested] = useState(false);
@@ -172,6 +173,15 @@ function App() {
     return (
       <QueryClientProvider client={queryClient}>
         <TickerPage />
+      </QueryClientProvider>
+    );
+  }
+
+  if (location === '/m' || location.startsWith('/m?')) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <Toaster />
+        <MobileApp />
       </QueryClientProvider>
     );
   }
