@@ -362,7 +362,7 @@ app.post("/api/admin/users", async (req: Request, res: Response) => {
     const hash = password ? await bcrypt.hash(password, 10) : null;
     const result = await adminDb.query(
       'INSERT INTO users (username, email, display_name, password_hash, auth_level, must_change_password, enabled) VALUES ($1, $2, $3, $4, $5, $6, true) RETURNING id, username, email, display_name, auth_level, must_change_password, enabled, created_at',
-      [username, email || null, displayName, hash, authLevel || '1010']
+      [username, email || null, displayName, hash, authLevel || '1010', true]
     );
     res.json(result.rows[0]);
   } catch (e: any) { res.status(500).json({ error: e.message }); }
