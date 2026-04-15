@@ -290,8 +290,24 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   }, [isOpen]);
 
   useEffect(() => {
-    setTimeout(() => scrollRef.current?.scrollTo({ top: scrollRef.current?.scrollHeight || 0, behavior: 'smooth' }), 50);
+    const el = scrollRef.current;
+    if (!el) return;
+    const scroll = () => el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+    scroll();
+    const t1 = setTimeout(scroll, 50);
+    const t2 = setTimeout(scroll, 150);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
   }, [messages]);
+
+  useEffect(() => {
+    if (!loading) return;
+    const el = scrollRef.current;
+    if (!el) return;
+    const iv = setInterval(() => {
+      el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+    }, 300);
+    return () => clearInterval(iv);
+  }, [loading]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest('button')) return;
