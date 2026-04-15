@@ -19992,7 +19992,7 @@ export default function Dashboard() {
           const typeUpper = (a.type || 'info').toUpperCase();
           const typeLabel = typeUpper === 'WARNING' ? 'WARNING' : typeUpper === 'WATCH' ? 'WATCH' : typeUpper === 'ADVISORY' ? 'ADVISORY' : 'STATEMENT';
           const levelColor = typeUpper === 'WARNING' ? '#ff4444' : typeUpper === 'WATCH' ? '#ff8800' : '#ffcc00';
-          const levelIcon = typeUpper === 'WARNING' ? '🔴' : typeUpper === 'WATCH' ? '🟠' : '🟡';
+          const levelIcon = typeUpper === 'WARNING' ? '🔴' : typeUpper === 'WATCH' ? '🟠' : '⚠️';
           const levelLabel = typeUpper === 'WARNING' ? 'Red Warning' : typeUpper === 'WATCH' ? 'Orange Watch' : 'Yellow Advisory';
           const issueDateMatch = a.summary ? a.summary.match(/(\d{1,2}:\d{2}\s*[ap]\.?m\.?\s*E\.?[DS]\.?T\.?\s+\w+\s+\w+\s+\d{1,2},?\s*\d{4})/i) : null;
           const issueStr = issueDateMatch ? issueDateMatch[1] : (a.summary || '').slice(0, 60);
