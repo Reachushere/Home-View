@@ -77,3 +77,9 @@ id = "VbzzfhHm25lvgn5jISOwJ"
 uri = "file://home_assistant_rascal_insulin.yaml"
 type = "unspecified"
 title = "Rascal Insulin Reminder — Home Assistant YAML"
+
+[[outputs]]
+id = "tYAmrcJXDRu7s7mcnZpQB"
+uri = "file://attached_assets/bryn_popcorn_animoji.png"
+type = "image"
+title = "Bryn Popcorn Animoji"
