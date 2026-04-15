@@ -1,0 +1,31 @@
+byhomeyyz@raspberrypi:~/Home-View $ ^C
+byhomeyyz@raspberrypi:~/Home-View $ fuser -k 5000/tcp; sleep 2; pm2 delete dashboard 2>/dev/null; pm2 start dist/index.cjs --name dashboard --cwd /home/byhomeyyz/Home-View --node-args="-r /home/byhomeyyz/Home-View/preload.cjs" && sleep 5 && pm2 logs dashboard --lines 5 --nostream
+5000/tcp:            37962
+[PM2] Applying action deleteProcessId on app [dashboard](ids: [ 0 ])
+[PM2] [dashboard](0) ✓
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+[PM2] Starting /home/byhomeyyz/Home-View/dist/index.cjs in fork_mode (1 instance)
+[PM2] Done.
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+├────┼────────────────────┼──────────┼──────┼───────────┼──────────┼──────────┤
+│ 0  │ dashboard          │ fork     │ 0    │ online    │ 0%       │ 5.6mb    │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+[TAILING] Tailing last 5 lines for [dashboard] process (change the value with --lines option)
+/home/byhomeyyz/.pm2/logs/dashboard-error.log last 5 lines:
+0|dashboar | [Edge TTS] Attempt 1 failed: Timed out
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+
+/home/byhomeyyz/.pm2/logs/dashboard-out.log last 5 lines:
+0|dashboar | [Email Router] Unified email intake ready at POST /api/webhook/email
+0|dashboar | [Gmail Ticker] Webhook endpoint ready at POST /api/webhook/ticker
+0|dashboar | === [Alexa Scheduler] Started (checking every 30 seconds) ===
+0|dashboar | [DegreeSync] f2027 assignments: [{"code":"TBD1","name":"TBD1","fullName":"TBD1","period":""},{"code":"TBD2","name":"TBD2","fullName":"TBD2","period":""},{"code":"TBD3","name":"TBD3","fullName":"TBD3","period":""}]
+0|dashboar | [DegreeSync] Synced semesterCourseAssignments and coursesData from DB semesters
+
+byhomeyyz@raspberrypi:~/Home-View $
