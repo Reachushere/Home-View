@@ -1185,8 +1185,8 @@ export default function Dashboard() {
             localStorage.setItem(`calendarHeight_${did}`, String(v));
           }
           if (saved.calendarReduction !== undefined) {
-            const minReduction = 220;
-            const safeReduction = saved.calendarReduction > 0 && saved.calendarReduction < minReduction ? minReduction : saved.calendarReduction;
+            const minReduction = 260;
+            const safeReduction = saved.calendarReduction < minReduction ? minReduction : saved.calendarReduction;
             calendarReductionUserSetRef.current = true;
             setCalendarReduction(safeReduction);
             setCalendarReductionUserSet(true);
@@ -1225,8 +1225,8 @@ export default function Dashboard() {
                 localStorage.setItem('calendarHeight', String(v));
               }
               if (saved.calendarReduction !== undefined) {
-                const minReduction = 220;
-                const safeReduction = saved.calendarReduction > 0 && saved.calendarReduction < minReduction ? minReduction : saved.calendarReduction;
+                const minReduction = 260;
+                const safeReduction = saved.calendarReduction < minReduction ? minReduction : saved.calendarReduction;
                 calendarReductionUserSetRef.current = true;
                 setCalendarReduction(safeReduction);
                 setCalendarReductionUserSet(true);
@@ -1463,17 +1463,17 @@ export default function Dashboard() {
     const sh = window.screen.height;
     const pr = window.devicePixelRatio || 1;
     const did = `device_${sw}x${sh}@${pr}`;
-    const minReduction = 220;
+    const minReduction = 260;
     const deviceSaved = localStorage.getItem(`calendarReduction_${did}`);
     if (deviceSaved) {
       const dv = parseInt(deviceSaved, 10);
-      if (!isNaN(dv)) { const safe = dv > 0 && dv < minReduction ? minReduction : dv; calendarReductionRef.current = safe; return safe; }
+      if (!isNaN(dv) && dv >= minReduction) { calendarReductionRef.current = dv; return dv; }
     }
     const saved = localStorage.getItem('calendarReduction');
     const v = saved ? parseInt(saved, 10) : 0;
-    const safe = v > 0 && v < minReduction ? minReduction : v;
-    calendarReductionRef.current = safe;
-    return safe;
+    if (v >= minReduction) { calendarReductionRef.current = v; return v; }
+    calendarReductionRef.current = minReduction;
+    return minReduction;
   });
   const setCalendarReduction: typeof setCalendarReductionRaw = (val) => {
     setCalendarReductionRaw(prev => {
@@ -3054,7 +3054,7 @@ export default function Dashboard() {
   }>(() => {
     try {
       const saved = localStorage.getItem('otherRowColors');
-      if (saved) { const p = JSON.parse(saved); return { ...p, courseRowColor: p.courseRowColor || '#3a3f4a' }; }
+      if (saved) { const p = JSON.parse(saved); return { ...p, borderColor: p.borderColor || '#5c6370', courseRowColor: p.courseRowColor || '#3a3f4a' }; }
     } catch {}
     return { labelStart: '#374151', labelEnd: '#9ca3af', labelStops: '', cellBg: '#4a5060', borderColor: '#5c6370', taskBgColor: '#363b44', courseRowColor: '#4a5060' };
   });
@@ -35077,8 +35077,8 @@ export default function Dashboard() {
                 right: 0,
                 height: `${expandedHeight}px`,
                 zIndex: 41,
-                borderTop: `1.5px dotted ${otherRowColors.borderColor}`,
-                borderBottom: `3px solid ${otherRowColors.borderColor}`,
+                borderTop: `1.5px dotted ${otherRowColors.borderColor || '#5c6370'}`,
+                borderBottom: `3px solid ${otherRowColors.borderColor || '#5c6370'}`,
                 display: 'flex',
                 alignItems: 'stretch',
                 overflowX: 'hidden',
@@ -35528,8 +35528,8 @@ export default function Dashboard() {
                     right: 0,
                     height: `${otherRowHeight}px`,
                     zIndex: 41,
-                    borderTop: `1.5px dotted ${otherRowColors.borderColor}`,
-                    borderBottom: `3px solid ${otherRowColors.borderColor}`,
+                    borderTop: `1.5px dotted ${otherRowColors.borderColor || '#5c6370'}`,
+                    borderBottom: `3px solid ${otherRowColors.borderColor || '#5c6370'}`,
                     display: 'flex',
                     alignItems: 'stretch',
                     overflowX: 'hidden',
