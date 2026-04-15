@@ -156,6 +156,18 @@ uri = "file://attached_assets/bryn_tv_popcorn_v8.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "lDURbyCv2ZsQlbpeXLep0"
+uri = "file://attached_assets/bryn_tv_popcorn_v9.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "Jbcg2aJO8VIUsCjyAkccf"
+uri = "file://attached_assets/bryn_tv_popcorn_v10.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "YFf1AFzLkqTG8aZXkvxoF"
 uri = "file://.local/cat-washroom-automation-report.md"
@@ -347,3 +359,9 @@ id = "FR4zG2b3u8Ou3bQBTOaq2"
 uri = "file://attached_assets/bryn_tv_popcorn_v8.png"
 type = "image"
 title = "Bryn TV Popcorn v8 - Model Style"
+
+[[outputs]]
+id = "G5vqd_abPv2YN1f_IK-tP"
+uri = "file://attached_assets/bryn_tv_popcorn_v10.png"
+type = "image"
+title = "Bryn TV Popcorn v10 - Realistic Render"
