@@ -1,6 +1,200 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { Zap, Send, X, Loader2, CheckCircle, XCircle, AlertTriangle, Trash2, RotateCcw, Maximize2, Minimize2 } from 'lucide-react';
+import { Zap, Send, X, Loader2, CheckCircle, XCircle, AlertTriangle, Trash2, RotateCcw, Maximize2, Minimize2, Pencil, Circle, ArrowRight, Undo2, Check } from 'lucide-react';
 import { queryClient } from '@/lib/queryClient';
+
+type MarkupTool = 'draw' | 'circle' | 'arrow';
+interface MarkupStroke {
+  tool: MarkupTool;
+  color: string;
+  width: number;
+  points?: { x: number; y: number }[];
+  start?: { x: number; y: number };
+  end?: { x: number; y: number };
+}
+
+function ImageMarkup({ imageSrc, onDone, onCancel }: { imageSrc: string; onDone: (annotated: string) => void; onCancel: () => void }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [tool, setTool] = useState<MarkupTool>('draw');
+  const [color, setColor] = useState('#ff3333');
+  const [strokeWidth] = useState(3);
+  const [strokes, setStrokes] = useState<MarkupStroke[]>([]);
+  const [currentStroke, setCurrentStroke] = useState<MarkupStroke | null>(null);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [imgDimensions, setImgDimensions] = useState({ w: 0, h: 0, scale: 1 });
+  const imgRef = useRef<HTMLImageElement | null>(null);
+
+  useEffect(() => {
+    const img = new Image();
+    img.onload = () => {
+      imgRef.current = img;
+      const maxW = Math.min(window.innerWidth * 0.85, 800);
+      const maxH = window.innerHeight * 0.65;
+      const scale = Math.min(maxW / img.width, maxH / img.height, 1);
+      setImgDimensions({ w: img.width * scale, h: img.height * scale, scale });
+    };
+    img.src = imageSrc;
+  }, [imageSrc]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const img = imgRef.current;
+    if (!canvas || !img || !imgDimensions.w) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    canvas.width = imgDimensions.w;
+    canvas.height = imgDimensions.h;
+    ctx.drawImage(img, 0, 0, imgDimensions.w, imgDimensions.h);
+
+    const allStrokes = currentStroke ? [...strokes, currentStroke] : strokes;
+    for (const s of allStrokes) {
+      ctx.strokeStyle = s.color;
+      ctx.lineWidth = s.width;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      if (s.tool === 'draw' && s.points && s.points.length > 1) {
+        ctx.beginPath();
+        ctx.moveTo(s.points[0].x, s.points[0].y);
+        for (let i = 1; i < s.points.length; i++) {
+          ctx.lineTo(s.points[i].x, s.points[i].y);
+        }
+        ctx.stroke();
+      } else if (s.tool === 'circle' && s.start && s.end) {
+        const cx = (s.start.x + s.end.x) / 2;
+        const cy = (s.start.y + s.end.y) / 2;
+        const rx = Math.abs(s.end.x - s.start.x) / 2;
+        const ry = Math.abs(s.end.y - s.start.y) / 2;
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+        ctx.stroke();
+      } else if (s.tool === 'arrow' && s.start && s.end) {
+        const dx = s.end.x - s.start.x;
+        const dy = s.end.y - s.start.y;
+        const angle = Math.atan2(dy, dx);
+        const headLen = 14;
+        ctx.beginPath();
+        ctx.moveTo(s.start.x, s.start.y);
+        ctx.lineTo(s.end.x, s.end.y);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(s.end.x, s.end.y);
+        ctx.lineTo(s.end.x - headLen * Math.cos(angle - Math.PI / 6), s.end.y - headLen * Math.sin(angle - Math.PI / 6));
+        ctx.moveTo(s.end.x, s.end.y);
+        ctx.lineTo(s.end.x - headLen * Math.cos(angle + Math.PI / 6), s.end.y - headLen * Math.sin(angle + Math.PI / 6));
+        ctx.stroke();
+      }
+    }
+  }, [strokes, currentStroke, imgDimensions]);
+
+  const getPos = (e: React.MouseEvent | React.TouchEvent) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return { x: 0, y: 0 };
+    const rect = canvas.getBoundingClientRect();
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    return { x: clientX - rect.left, y: clientY - rect.top };
+  };
+
+  const startDraw = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    const pos = getPos(e);
+    setIsDrawing(true);
+    if (tool === 'draw') {
+      setCurrentStroke({ tool, color, width: strokeWidth, points: [pos] });
+    } else {
+      setCurrentStroke({ tool, color, width: strokeWidth, start: pos, end: pos });
+    }
+  };
+
+  const moveDraw = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!isDrawing || !currentStroke) return;
+    e.preventDefault();
+    const pos = getPos(e);
+    if (tool === 'draw') {
+      setCurrentStroke(prev => prev ? { ...prev, points: [...(prev.points || []), pos] } : null);
+    } else {
+      setCurrentStroke(prev => prev ? { ...prev, end: pos } : null);
+    }
+  };
+
+  const endDraw = () => {
+    if (!isDrawing || !currentStroke) return;
+    setIsDrawing(false);
+    setStrokes(prev => [...prev, currentStroke]);
+    setCurrentStroke(null);
+  };
+
+  const undo = () => setStrokes(prev => prev.slice(0, -1));
+
+  const finish = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    onDone(canvas.toDataURL('image/png'));
+  };
+
+  if (!imgDimensions.w) return null;
+
+  const btnStyle = (active: boolean): React.CSSProperties => ({
+    background: active ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.08)',
+    border: active ? '2px solid #fff' : '1px solid rgba(255,255,255,0.2)',
+    borderRadius: '8px',
+    padding: '6px 10px',
+    cursor: 'pointer',
+    color: '#fff',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
+    fontSize: '12px',
+  });
+
+  const colorBtnStyle = (c: string): React.CSSProperties => ({
+    width: '22px',
+    height: '22px',
+    borderRadius: '50%',
+    background: c,
+    border: color === c ? '2px solid #fff' : '2px solid rgba(255,255,255,0.2)',
+    cursor: 'pointer',
+    padding: 0,
+  });
+
+  return (
+    <div style={{
+      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+      zIndex: 10010, background: 'rgba(0,0,0,0.85)',
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      gap: '10px',
+    }} data-testid="markup-overlay">
+      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
+        <button onClick={() => setTool('draw')} style={btnStyle(tool === 'draw')} data-testid="button-markup-draw"><Pencil size={14} /> Draw</button>
+        <button onClick={() => setTool('circle')} style={btnStyle(tool === 'circle')} data-testid="button-markup-circle"><Circle size={14} /> Circle</button>
+        <button onClick={() => setTool('arrow')} style={btnStyle(tool === 'arrow')} data-testid="button-markup-arrow"><ArrowRight size={14} /> Arrow</button>
+        <div style={{ width: '1px', height: '24px', background: 'rgba(255,255,255,0.2)' }} />
+        <button onClick={() => setColor('#ff3333')} style={colorBtnStyle('#ff3333')} data-testid="button-markup-red" />
+        <button onClick={() => setColor('#33ff33')} style={colorBtnStyle('#33ff33')} data-testid="button-markup-green" />
+        <button onClick={() => setColor('#ffff33')} style={colorBtnStyle('#ffff33')} data-testid="button-markup-yellow" />
+        <button onClick={() => setColor('#3399ff')} style={colorBtnStyle('#3399ff')} data-testid="button-markup-blue" />
+        <div style={{ width: '1px', height: '24px', background: 'rgba(255,255,255,0.2)' }} />
+        <button onClick={undo} disabled={strokes.length === 0} style={{ ...btnStyle(false), opacity: strokes.length === 0 ? 0.4 : 1 }} data-testid="button-markup-undo"><Undo2 size={14} /> Undo</button>
+      </div>
+      <canvas
+        ref={canvasRef}
+        style={{ borderRadius: '8px', cursor: 'crosshair', touchAction: 'none', border: '1px solid rgba(255,255,255,0.2)' }}
+        onMouseDown={startDraw}
+        onMouseMove={moveDraw}
+        onMouseUp={endDraw}
+        onMouseLeave={endDraw}
+        onTouchStart={startDraw}
+        onTouchMove={moveDraw}
+        onTouchEnd={endDraw}
+        data-testid="canvas-markup"
+      />
+      <div style={{ display: 'flex', gap: '10px' }}>
+        <button onClick={onCancel} style={{ ...btnStyle(false), padding: '8px 20px', fontSize: '13px' }} data-testid="button-markup-cancel"><X size={14} /> Cancel</button>
+        <button onClick={finish} style={{ ...btnStyle(false), padding: '8px 20px', fontSize: '13px', background: 'linear-gradient(135deg, #1d4ed8, #2563eb)' }} data-testid="button-markup-done"><Check size={14} /> Send</button>
+      </div>
+    </div>
+  );
+}
 
 const thinkingKeyframes = `
 @keyframes ai-dot-bounce {
@@ -58,6 +252,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [thinkingPhase, setThinkingPhase] = useState<string | null>(null);
   const [pastedImage, setPastedImage] = useState<string | null>(null);
+  const [markupImage, setMarkupImage] = useState<string | null>(null);
   const [wizStyle, setWizStyle] = useState<WizardStyle>(defaultWizardStyle);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -339,7 +534,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
         const reader = new FileReader();
         reader.onload = () => {
           const base64 = reader.result as string;
-          setPastedImage(base64);
+          setMarkupImage(base64);
         };
         reader.readAsDataURL(file);
         break;
@@ -612,13 +807,20 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
           gap: '8px',
         }}>
           {pastedImage && (
-            <div style={{ position: 'relative', width: 'fit-content' }}>
-              <img src={pastedImage} alt="Pasted" style={{ maxWidth: '120px', maxHeight: '80px', borderRadius: '8px', border: '1px solid rgba(100,160,255,0.3)' }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ position: 'relative', width: 'fit-content' }}>
+                <img src={pastedImage} alt="Pasted" style={{ maxWidth: '120px', maxHeight: '80px', borderRadius: '8px', border: '1px solid rgba(100,160,255,0.3)' }} />
+                <button
+                  onClick={() => setPastedImage(null)}
+                  style={{ position: 'absolute', top: '-6px', right: '-6px', background: 'rgba(220,50,50,0.9)', border: 'none', borderRadius: '50%', width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#fff', fontSize: '11px', lineHeight: 1, padding: 0 }}
+                  data-testid="button-remove-pasted-image"
+                >x</button>
+              </div>
               <button
-                onClick={() => setPastedImage(null)}
-                style={{ position: 'absolute', top: '-6px', right: '-6px', background: 'rgba(220,50,50,0.9)', border: 'none', borderRadius: '50%', width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#fff', fontSize: '11px', lineHeight: 1, padding: 0 }}
-                data-testid="button-remove-pasted-image"
-              >x</button>
+                onClick={() => setMarkupImage(pastedImage)}
+                style={{ background: 'rgba(100,160,255,0.15)', border: '1px solid rgba(100,160,255,0.3)', borderRadius: '8px', padding: '4px 10px', cursor: 'pointer', color: '#93b5ff', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px' }}
+                data-testid="button-edit-markup"
+              ><Pencil size={12} /> Markup</button>
             </div>
           )}
           <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
@@ -669,6 +871,16 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
           </div>
         </div>
       </div>
+      {markupImage && (
+        <ImageMarkup
+          imageSrc={markupImage}
+          onDone={(annotated) => {
+            setPastedImage(annotated);
+            setMarkupImage(null);
+          }}
+          onCancel={() => setMarkupImage(null)}
+        />
+      )}
     </div>
   );
 }
