@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { Shield, Users, Eye, EyeOff, Key, Monitor, RefreshCw, Trash2, Plus, Save, Power, ChevronDown, ChevronRight, UserPlus, Lock, Unlock, Settings, Calendar, MessageSquare, BookOpen, Cloud, Wifi, WifiOff, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -241,7 +242,7 @@ export default function AdminPanel({ open, onClose, colorSettings }: AdminPanelP
     { field: 'can_view_library', label: 'View Library' },
   ];
 
-  return (
+  return createPortal(
     <>
       <div className="fixed inset-0 z-[10010] bg-black/50" onClick={onClose} />
       <div
@@ -624,6 +625,7 @@ export default function AdminPanel({ open, onClose, colorSettings }: AdminPanelP
           </div>
         </div>
       </div>
-    </>
+    </>,
+    document.body
   );
 }
