@@ -431,11 +431,7 @@ export default function Dashboard() {
     return () => { window.removeEventListener('resize', handleResize); window.removeEventListener('orientationchange', handleResize); };
   }, []);
   
-  const [selectedWeek, setSelectedWeek] = useState<number>(() => {
-    const saved = localStorage.getItem('unical_selectedWeek');
-    if (saved) { const n = parseInt(saved, 10); if (!isNaN(n) && n >= 1) return n; }
-    return 12;
-  });
+  const [selectedWeek, setSelectedWeek] = useState<number>(12);
   useEffect(() => {
     localStorage.setItem('unical_selectedWeek', String(selectedWeek));
   }, [selectedWeek]);
@@ -7166,13 +7162,6 @@ export default function Dashboard() {
   useEffect(() => {
     if (weeks.length > 0 && !initialWeekSetRef.current) {
       initialWeekSetRef.current = true;
-      const savedWeek = localStorage.getItem('unical_selectedWeek');
-      const savedN = savedWeek ? parseInt(savedWeek, 10) : NaN;
-      if (!isNaN(savedN) && savedN >= 1) {
-        setSelectedWeek(savedN);
-        lastAutoWeekDateRef.current = new Date().getDate();
-        return;
-      }
       const today = new Date();
       const currentWeek = findCurrentWeekFromList(weeks, today);
       if (currentWeek) {
@@ -32451,7 +32440,7 @@ export default function Dashboard() {
                           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1, gap: '1px', marginRight: '29px', position: 'relative' }} data-testid={`weather-cell-${hour}`}>
                             {isThunder && <div className="time-cell-lightning" style={{ position: 'absolute', inset: '-4px -8px', borderRadius: '4px', zIndex: 0, animationDelay: `${(hour * 1.3) % 6}s` }} />}
                             {isFog && <div style={{ position: 'absolute', inset: '-4px -8px', borderRadius: '4px', zIndex: 0, background: 'linear-gradient(180deg, rgba(180,185,200,0.4) 0%, rgba(160,170,190,0.25) 100%)', animation: 'timeCellFogPulse 4s ease-in-out infinite', animationDelay: `${(hour * 0.7) % 4}s` }} />}
-                            {hasAlert && isSevere && <div className="time-cell-alert-border" style={{ position: 'absolute', inset: '-4px -8px', borderRadius: '4px', zIndex: 1, animationDelay: `${(hour * 0.5) % 3}s` }} />}
+                            {hasAlert && isSevere && <div className="time-cell-alert-border" style={{ position: 'absolute', inset: '-2px -3px', borderRadius: '4px', zIndex: 1, pointerEvents: 'none', animationDelay: `${(hour * 0.5) % 3}s` }} />}
                             <span style={{ fontSize: '16px', lineHeight: 1, filter: `drop-shadow(0 0 3px rgba(255,255,255,0.3))${isThunder ? ' drop-shadow(0 0 6px rgba(255,255,100,0.6))' : ''}`, position: 'relative', zIndex: 2 }}>{getWmoEmoji(wc, isDayHour)}</span>
                             <span style={{ fontSize: '11px', color: '#fff', lineHeight: 1, fontWeight: 700, textShadow: `0 0 4px rgba(100,180,255,0.35)${isThunder ? ', 0 0 8px rgba(255,255,100,0.4)' : ''}`, position: 'relative', zIndex: 2 }}>{hourlyEntry.temp}°</span>
                           </div>
@@ -35453,12 +35442,6 @@ export default function Dashboard() {
             {(weatherData && weatherData.code >= 95 && weatherData.code <= 99) || weatherAlerts.some(a => /thunder|lightning|storm/i.test(a.title)) ? (
               <div className="absolute inset-0 weather-sheet-lightning" style={{ zIndex: 15, opacity: 0.5 }} />
             ) : null}
-            {weatherAlerts.length > 0 && (
-              <div style={{ position: 'absolute', top: '2px', right: '8px', zIndex: 20, display: 'flex', alignItems: 'center', gap: '3px', padding: '1px 5px', borderRadius: '3px', background: 'rgba(255,60,60,0.25)', border: '1px solid rgba(255,60,60,0.5)', animation: 'alertBorderPulse 3s ease-in-out infinite' }}>
-                <span style={{ fontSize: '8px', lineHeight: 1 }}>⚠️</span>
-                <span style={{ fontSize: '7.5px', color: '#ff6666', fontWeight: 700, lineHeight: 1, letterSpacing: '0.2px' }}>{(() => { const t = weatherAlerts[0].title; const m = t.match(/(thunderstorm|lightning|tornado|fog|freezing rain|blizzard|winter storm|heat|wind|snowfall|rainfall|hurricane|tropical|ice|hail|snow squall|frost|cold|dust|smoke|smog)/i); return m ? m[1].charAt(0).toUpperCase() + m[1].slice(1) : t.split(' ')[0]; })()}</span>
-              </div>
-            )}
             <div style={{ position: 'absolute', top: '21px', left: '25px', right: '8px', height: '0.5px', backgroundColor: 'rgba(255,255,255,0.3)', zIndex: 2 }} />
             <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: '6px', bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap', zIndex: 2 }}>Homework Progress</span>
             <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: `${effectiveDividerPct}%`, bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap', paddingLeft: '6px', zIndex: 2 }}>Most Urgent Assignments</span>
