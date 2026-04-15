@@ -19973,7 +19973,7 @@ export default function Dashboard() {
 
       {/* News Ticker */}
       <NewsTickerPortal headlines={[
-        ...weatherAlerts.map((a, ai) => ({ title: `⚠️ ${a.title}${a.summary ? ` — ${a.summary}` : ''}`, source: '_ALERT_', link: '', alertIndex: ai })),
+        ...weatherAlerts.map((a, ai) => { const tm = a.title.match(/(Thunderstorm|Lightning|Tornado|Fog|Freezing Rain|Blizzard|Winter Storm|Heat|Wind|Snowfall|Rainfall|Hurricane|Tropical|Ice|Hail|Snow Squall|Frost|Cold|Dust|Smoke|Smog)\s*(Warning|Watch|Advisory|Statement)?/i); const brief = tm ? `${tm[1]}${tm[2] ? ' ' + tm[2] : ''}` : a.title.split(' — ')[0].split(' in ')[0].split(' for ')[0]; return { title: `⚠️ ${brief}: ${a.title}${a.summary ? ` — ${a.summary}` : ''}`, source: '_ALERT_', link: '', alertIndex: ai }; }),
         ...(weatherData ? (() => {
           const WMO_DESC: Record<number, string> = { 0:'Clear',1:'Mainly Clear',2:'Partly Cloudy',3:'Overcast',45:'Fog',48:'Rime Fog',51:'Light Drizzle',53:'Drizzle',55:'Heavy Drizzle',61:'Light Rain',63:'Rain',65:'Heavy Rain',66:'Freezing Rain',67:'Heavy Freezing Rain',71:'Light Snow',73:'Snow',75:'Heavy Snow',77:'Snow Grains',80:'Light Showers',81:'Showers',82:'Heavy Showers',85:'Light Snow Showers',86:'Heavy Snow Showers',95:'Thunderstorm',96:'Thunderstorm w/ Hail',99:'Severe Thunderstorm' };
           const desc = WMO_DESC[weatherData.code] || 'Mixed';
@@ -30056,7 +30056,7 @@ export default function Dashboard() {
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     
-                    {isToday && weatherData && weatherData.code >= 95 && weatherData.code <= 99 && (
+                    {isToday && ((weatherData && weatherData.code >= 95 && weatherData.code <= 99) || weatherAlerts.some(a => /thunder|lightning|storm/i.test(a.title))) && (
                       <div className="absolute inset-0 weather-sheet-lightning" style={{ zIndex: 15 }} />
                     )}
                     {!isSameDayET(day, subDays(new Date(), 1)) && shiftForDay && (
@@ -32426,10 +32426,18 @@ export default function Dashboard() {
                         const sunriseH = weatherData?.sunrise ? new Date(weatherData.sunrise).getHours() : 6;
                         const sunsetH = weatherData?.sunset ? new Date(weatherData.sunset).getHours() : 20;
                         const isDayHour = hour >= sunriseH && hour < sunsetH;
+                        const wc = hourlyEntry.weatherCode;
+                        const isThunder = wc >= 95;
+                        const isFog = wc === 45 || wc === 48;
+                        const isSevere = isThunder || isFog || wc === 65 || wc === 67 || wc === 82 || wc === 75 || wc === 86;
+                        const hasAlert = weatherAlerts.length > 0;
                         return (
-                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1, gap: '1px', marginRight: '29px' }} data-testid={`weather-cell-${hour}`}>
-                            <span style={{ fontSize: '16px', lineHeight: 1, filter: 'drop-shadow(0 0 3px rgba(255,255,255,0.3))' }}>{getWmoEmoji(hourlyEntry.weatherCode, isDayHour)}</span>
-                            <span style={{ fontSize: '11px', color: '#fff', lineHeight: 1, fontWeight: 700, textShadow: '0 0 4px rgba(100,180,255,0.35)' }}>{hourlyEntry.temp}°</span>
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1, gap: '1px', marginRight: '29px', position: 'relative' }} data-testid={`weather-cell-${hour}`}>
+                            {isThunder && <div className="time-cell-lightning" style={{ position: 'absolute', inset: '-4px -8px', borderRadius: '4px', zIndex: 0, animationDelay: `${(hour * 1.3) % 6}s` }} />}
+                            {isFog && <div style={{ position: 'absolute', inset: '-4px -8px', borderRadius: '4px', zIndex: 0, background: 'linear-gradient(180deg, rgba(180,185,200,0.4) 0%, rgba(160,170,190,0.25) 100%)', animation: 'timeCellFogPulse 4s ease-in-out infinite', animationDelay: `${(hour * 0.7) % 4}s` }} />}
+                            {hasAlert && isSevere && <div className="time-cell-alert-border" style={{ position: 'absolute', inset: '-4px -8px', borderRadius: '4px', zIndex: 1, animationDelay: `${(hour * 0.5) % 3}s` }} />}
+                            <span style={{ fontSize: '16px', lineHeight: 1, filter: `drop-shadow(0 0 3px rgba(255,255,255,0.3))${isThunder ? ' drop-shadow(0 0 6px rgba(255,255,100,0.6))' : ''}`, position: 'relative', zIndex: 2 }}>{getWmoEmoji(wc, isDayHour)}</span>
+                            <span style={{ fontSize: '11px', color: '#fff', lineHeight: 1, fontWeight: 700, textShadow: `0 0 4px rgba(100,180,255,0.35)${isThunder ? ', 0 0 8px rgba(255,255,100,0.4)' : ''}`, position: 'relative', zIndex: 2 }}>{hourlyEntry.temp}°</span>
                           </div>
                         );
                       })()}
@@ -35426,8 +35434,14 @@ export default function Dashboard() {
           <div className="absolute inset-0 rounded-[12px] pointer-events-none" style={{ zIndex: 2, border: '0.5px solid rgba(255,255,255,0.5)', borderTop: '0.5px solid rgba(255,255,255,0.7)' }} />
           <div className="absolute inset-0 rounded-[12px] overflow-hidden flex flex-col" style={{ pointerEvents: 'auto', zIndex: 1 }}>
           <div style={{ padding: '0 8px', height: courseRowRects.length > 0 ? `${courseRowRects[0].top - (calendarBorderTop || (calendarTop + 15)) - 1}px` : '45px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 46, overflow: 'hidden', marginBottom: '0px', boxShadow: '0 3px 6px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3)' }}>
-            {weatherData && weatherData.code >= 95 && weatherData.code <= 99 && (
+            {(weatherData && weatherData.code >= 95 && weatherData.code <= 99) || weatherAlerts.some(a => /thunder|lightning|storm/i.test(a.title)) ? (
               <div className="absolute inset-0 weather-sheet-lightning" style={{ zIndex: 15, opacity: 0.5 }} />
+            ) : null}
+            {weatherAlerts.length > 0 && (
+              <div style={{ position: 'absolute', top: '2px', right: '8px', zIndex: 20, display: 'flex', alignItems: 'center', gap: '3px', padding: '1px 5px', borderRadius: '3px', background: 'rgba(255,60,60,0.25)', border: '1px solid rgba(255,60,60,0.5)', animation: 'alertBorderPulse 3s ease-in-out infinite' }}>
+                <span style={{ fontSize: '8px', lineHeight: 1 }}>⚠️</span>
+                <span style={{ fontSize: '7.5px', color: '#ff6666', fontWeight: 700, lineHeight: 1, letterSpacing: '0.2px' }}>{(() => { const t = weatherAlerts[0].title; const m = t.match(/(thunderstorm|lightning|tornado|fog|freezing rain|blizzard|winter storm|heat|wind|snowfall|rainfall|hurricane|tropical|ice|hail|snow squall|frost|cold|dust|smoke|smog)/i); return m ? m[1].charAt(0).toUpperCase() + m[1].slice(1) : t.split(' ')[0]; })()}</span>
+              </div>
             )}
             <div style={{ position: 'absolute', top: '21px', left: '25px', right: '8px', height: '0.5px', backgroundColor: 'rgba(255,255,255,0.3)', zIndex: 2 }} />
             <span className="text-[10px] font-medium text-white" style={{ position: 'absolute', left: '6px', bottom: '4px', letterSpacing: '0.3px', whiteSpace: 'nowrap', zIndex: 2 }}>Homework Progress</span>
