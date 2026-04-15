@@ -23225,7 +23225,8 @@ export default function Dashboard() {
             <>
           <Dialog open={isScholarshipsOpen} onOpenChange={(open) => { if (!scholarshipWizardOpen) setIsScholarshipsOpen(open); }}>
             <DialogContent className="overflow-hidden flex flex-col text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white p-0 [&>button.absolute]:hidden max-w-none" style={{ width: 'calc(96vw + 28px)', maxWidth: 'calc(96vw + 28px)', height: 'calc(94vh + 16px)', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }} onInteractOutside={(e) => { if (scholarshipWizardOpen) e.preventDefault(); }}>
-              <div className="flex items-center justify-between px-4 py-1.5 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+              <DialogTitle className="sr-only">Scholarships</DialogTitle>
+              <div className="flex items-center justify-between px-4 py-1.5 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ background: `linear-gradient(180deg, ${colorSettings.headerBar} 0%, ${colorSettings.headerBar} 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                 <div className="flex items-center gap-2">
                   <Award className="h-3.5 w-3.5 text-white" />
                   <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>Scholarships</h2>
@@ -23315,6 +23316,24 @@ export default function Dashboard() {
                   </table>
                 )}
               </div>
+              <DialogFooter className="flex justify-end gap-3 border-t border-white/10 px-4 py-2" style={{ flexShrink: 0 }}>
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center rounded-md px-4 py-1.5 text-white transition-opacity duration-200"
+                  style={{
+                    fontSize: '11px',
+                    border: '1.5px solid rgba(255,255,255,0.6)',
+                    background: 'linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.15) 48%, rgba(255,255,255,0.06) 52%, rgba(255,255,255,0.22) 100%)',
+                    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)'
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.22) 48%, rgba(255,255,255,0.1) 52%, rgba(255,255,255,0.3) 100%)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.15) 48%, rgba(255,255,255,0.06) 52%, rgba(255,255,255,0.22) 100%)'; }}
+                  onClick={() => setIsScholarshipsOpen(false)}
+                  data-testid="button-close-scholarships-footer"
+                >
+                  Close
+                </button>
+              </DialogFooter>
             </DialogContent>
           </Dialog>
 
