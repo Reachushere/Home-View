@@ -3883,6 +3883,22 @@ export default function Dashboard() {
     const key = courseCode.replace(/\s/g, '').toUpperCase();
     return (readingExemptWeeks[key] || []).includes(week);
   };
+  const [healthItemDisabled, setHealthItemDisabled] = useState<Record<string, string[]>>(() => {
+    try { return JSON.parse(localStorage.getItem('unical_healthItemDisabled') || '{}'); } catch { return {}; }
+  });
+  const toggleHealthItem = (courseCode: string, issueKey: string) => {
+    setHealthItemDisabled(prev => {
+      const key = courseCode;
+      const cur = prev[key] || [];
+      const updated = cur.includes(issueKey) ? cur.filter(k => k !== issueKey) : [...cur, issueKey];
+      const next = { ...prev, [key]: updated };
+      localStorage.setItem('unical_healthItemDisabled', JSON.stringify(next));
+      return next;
+    });
+  };
+  const isHealthItemDisabled = (courseCode: string, issueKey: string) => {
+    return (healthItemDisabled[courseCode] || []).includes(issueKey);
+  };
   const weekUploadRef = useRef<HTMLInputElement>(null);
   const expandedSemOpenTimeRef = useRef<number>(0);
   useEffect(() => {
@@ -3910,7 +3926,8 @@ export default function Dashboard() {
         .then(r => r.json())
         .then(data => {
           const score = data.healthScore || 0;
-          const level = score >= 80 ? 'ok' as const : score >= 50 ? 'warning' as const : 'critical' as const;
+          const issueCount = (data.issues || []).length;
+          const level = issueCount > 0 ? (score >= 50 ? 'warning' as const : 'critical' as const) : score >= 80 ? 'ok' as const : score >= 50 ? 'warning' as const : 'critical' as const;
           setSemBoxHealthCache(prev => ({ ...prev, [sk]: { score, level } }));
         })
         .catch(() => {});
@@ -27116,6 +27133,8 @@ export default function Dashboard() {
                 const getHealthLevel = (health: any): 'ok' | 'warning' | 'critical' => {
                   if (!health) return 'ok';
                   const score = health.healthScore || 0;
+                  const issueCount = (health.issues || []).length;
+                  if (issueCount > 0) return score >= 50 ? 'warning' : 'critical';
                   if (score >= 80) return 'ok';
                   if (score >= 50) return 'warning';
                   return 'critical';
@@ -27227,9 +27246,10 @@ export default function Dashboard() {
                                       <table className="w-full text-[13px] text-white">
                                         <thead>
                                           <tr style={{ background: 'rgba(255,255,255,0.06)' }}>
+                                            <th className="px-1 py-2 border-b border-white/15 w-8"></th>
                                             <th className="text-left px-3 py-2 font-semibold text-white border-b border-white/15">Connection</th>
                                             <th className="text-left px-3 py-2 font-semibold text-white border-b border-white/15">Path / Pattern</th>
-                                            <th className="text-center px-3 py-2 font-semibold text-white border-b border-white/15 w-20">Status</th>
+                                            <th className="text-left px-3 py-2 font-semibold text-white border-b border-white/15" style={{ width: '70px', minWidth: '70px' }}>Status</th>
                                           </tr>
                                         </thead>
                                         <tbody>
@@ -27247,8 +27267,13 @@ export default function Dashboard() {
                                               { label: 'Syllabus', path: courseHealth?.syllabusPath || `syllabi/${c.code.toLowerCase()}_syllabus.pdf`, ok: courseHealth ? !!courseHealth.syllabusLinked : false, issueKey: 'syllabus' },
                                               { label: 'TTS Audio', path: `TTS chunks (${courseHealth?.totalTtsReady || 0}/${courseHealth?.totalTtsNeeded || 0} ready)`, ok: ttsOk, issueKey: 'tts_audio' },
                                             ];
-                                          })().map((row) => (
-                                            <tr key={row.label} className="hover:bg-white/5 transition-colors">
+                                          })().map((row) => {
+                                            const disabled = isHealthItemDisabled(c.code, row.issueKey);
+                                            return (
+                                            <tr key={row.label} className="hover:bg-white/5 transition-colors" style={{ opacity: disabled ? 0.45 : 1 }}>
+                                              <td className="px-1 py-2 border-b border-white/5 w-8">
+                                                <input type="checkbox" checked={!disabled} onChange={() => toggleHealthItem(c.code, row.issueKey)} className="w-3.5 h-3.5 rounded cursor-pointer accent-emerald-500" title={disabled ? 'Enable for health reporting' : 'Disable from health reporting'} data-testid={`health-toggle-${row.issueKey}`} />
+                                              </td>
                                               <td className="px-3 py-2 font-medium text-white border-b border-white/5">{row.label}</td>
                                               <td className="px-3 py-2 font-mono text-[11px] text-white border-b border-white/5">
                                                 <span className="inline-flex items-center gap-2">
@@ -27256,17 +27281,16 @@ export default function Dashboard() {
                                                   <Pencil className="w-3 h-3 text-white/40 hover:text-white/80 cursor-pointer flex-shrink-0 transition-colors" onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: row.issueKey, step: 0, phase: 'primary' }); }} />
                                                 </span>
                                               </td>
-                                              <td className="px-3 py-2 text-center border-b border-white/5">
-                                                {row.ok === true && <span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500" title="Connected" />}
-                                                {row.ok === false && (
-                                                  <span className="inline-flex items-center gap-1.5 cursor-pointer" onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: row.issueKey, step: 0, phase: 'primary' }); }}>
-                                                    <span className="inline-block w-2.5 h-2.5 rounded-full bg-red-500" title="Not connected" />
-                                                    <span className="text-[10px] text-red-400 hover:text-red-300 underline">Fix</span>
-                                                  </span>
-                                                )}
+                                              <td className="px-3 py-2 border-b border-white/5" style={{ width: '70px', minWidth: '70px' }}>
+                                                <div className="flex items-center" style={{ gap: '8px' }}>
+                                                  <span className={`inline-block w-2.5 h-2.5 rounded-full flex-shrink-0 ${row.ok ? 'bg-emerald-500' : 'bg-red-500'}`} title={row.ok ? 'Connected' : 'Not connected'} />
+                                                  {!row.ok && (
+                                                    <span className="text-[10px] text-red-400 hover:text-red-300 underline cursor-pointer flex-shrink-0" onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: row.issueKey, step: 0, phase: 'primary' }); }}>Fix</span>
+                                                  )}
+                                                </div>
                                               </td>
                                             </tr>
-                                          ))}
+                                          );})}
                                         </tbody>
                                       </table>
                                     </div>
