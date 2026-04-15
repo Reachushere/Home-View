@@ -930,7 +930,9 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
       }
 
       case "ha_service_call": {
+        console.log(`[AI HA] URL="${HOME_ASSISTANT_URL.substring(0, 30)}..." TOKEN="${HOME_ASSISTANT_TOKEN ? HOME_ASSISTANT_TOKEN.substring(0, 10) + '...' : 'EMPTY'}"`);
         if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+          console.log(`[AI HA] FAILED: URL empty=${!HOME_ASSISTANT_URL}, TOKEN empty=${!HOME_ASSISTANT_TOKEN}`);
           return { success: false, result: { error: "Home Assistant not configured" } };
         }
         const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
