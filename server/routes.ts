@@ -6038,6 +6038,14 @@ ${fileContents.join('\n\n')}`;
     }
   });
 
+  const aiSessionStore = new Map<string, { summary: string; filesModified: string[]; toolsUsed: string[]; lastActive: number }>();
+  setInterval(() => {
+    const now = Date.now();
+    for (const [k, v] of aiSessionStore) {
+      if (now - v.lastActive > 30 * 60 * 1000) aiSessionStore.delete(k);
+    }
+  }, 5 * 60 * 1000);
+
   app.post("/api/ai/command", async (req, res) => {
     try {
       if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ error: "Access denied" });
@@ -6075,6 +6083,17 @@ ${fileContents.join('\n\n')}`;
       const config = { apiKey };
 
       const appContext = await getAppContext();
+
+      const sessionId = req.headers['x-ai-session'] as string || 'default';
+      let sessionCtx = '';
+      const session = aiSessionStore.get(sessionId);
+      if (session) {
+        session.lastActive = Date.now();
+        const parts: string[] = [];
+        if (session.summary) parts.push(`Previous work this session: ${session.summary}`);
+        if (session.filesModified.length > 0) parts.push(`Files modified this session: ${[...new Set(session.filesModified)].join(', ')}`);
+        if (parts.length > 0) sessionCtx = `\n\nSESSION CONTEXT (what you did in previous messages this conversation):\n${parts.join('\n')}\n`;
+      }
 
       let memoryContext = '';
       try {
@@ -6179,7 +6198,7 @@ RULES:
 11. For staging preview: staging_manage setup → edits → staging_manage start → user checks :5001 → staging_manage apply.
 12. When you create or modify a function, verify the types match by checking surrounding code context.
 13. After completing a code change, use http_check to verify the endpoint/page still works.
-14. For complex tasks: call memory_read first to load context from past sessions. Call memory_write to save learnings after.${memoryContext}`;
+14. For complex tasks: call memory_read first to load context from past sessions. Call memory_write to save learnings after.${memoryContext}${sessionCtx}`;
 
       const messages: any[] = [{ role: "system", content: systemPrompt }];
       if (Array.isArray(history)) {
@@ -6205,7 +6224,6 @@ RULES:
         if (fnName === "notepad_crud" && fnArgs.action === "delete") return true;
         if (fnName === "staging_manage" && ["apply", "discard"].includes(fnArgs.action)) return true;
         if (fnName === "run_sql" && /^\s*(INSERT|UPDATE|DELETE|DROP|ALTER|TRUNCATE|CREATE)/i.test(fnArgs.query || '')) return true;
-        if (fnName === "memory_write") return true;
         return false;
       }
 
@@ -6327,6 +6345,23 @@ RULES:
         };
         await fsP.appendFile(convFile, JSON.stringify(entry) + '\n', 'utf-8').catch(() => {});
       }
+
+      const filesModified = allToolResults
+        .filter(r => ['write_file', 'edit_file'].includes(r.name) && r.success)
+        .map(r => r.result?.edited || r.result?.written || '')
+        .filter(Boolean);
+      const toolNames = [...new Set(allToolResults.map(r => r.name))];
+      const existingSession = aiSessionStore.get(sessionId);
+      const lastReply = messages.filter(m => m.role === 'assistant' && m.content).pop()?.content || '';
+      const summarySnippet = lastReply.substring(0, 300);
+      aiSessionStore.set(sessionId, {
+        summary: existingSession?.summary
+          ? (existingSession.summary + ' | ' + summarySnippet).substring(0, 1000)
+          : summarySnippet,
+        filesModified: [...(existingSession?.filesModified || []), ...filesModified],
+        toolsUsed: [...(existingSession?.toolsUsed || []), ...toolNames],
+        lastActive: Date.now(),
+      });
 
       const correctionPatterns = /\b(no,?\s*(that's wrong|not that|don't|stop|undo|wrong|incorrect|bad)|fix that|that broke|you broke|revert|go back|roll back)\b/i;
       if (correctionPatterns.test(message)) {

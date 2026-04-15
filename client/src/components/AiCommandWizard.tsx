@@ -26,6 +26,8 @@ interface AiCommandWizardProps {
   onClose: () => void;
 }
 
+const sessionId = `bryn-${Date.now().toString(36)}`;
+
 export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -102,10 +104,10 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
     try {
       const resp = await fetch('/api/ai/command', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-AI-Session': sessionId },
         body: JSON.stringify({
           message: msg,
-          history: messages.slice(-10).map(m => ({ role: m.role, content: m.content })),
+          history: messages.slice(-20).map(m => ({ role: m.role, content: m.content })),
           stream: true,
         }),
       });
@@ -243,7 +245,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       for (const pc of pendingConfirm) {
         const resp = await fetch('/api/ai/command', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'X-AI-Session': sessionId },
           body: JSON.stringify({
             message: 'confirmed',
             confirmToolCall: { token: pc.token },
