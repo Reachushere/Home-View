@@ -126,6 +126,12 @@ uri = "file://attached_assets/bryn_tv_popcorn_v3.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "Yulehz1h-lMTDQJcouEiW"
+uri = "file://attached_assets/bryn_tv_popcorn_v4.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "YFf1AFzLkqTG8aZXkvxoF"
 uri = "file://.local/cat-washroom-automation-report.md"
@@ -293,3 +299,9 @@ id = "yKLjYKijXd8pX6VMHx0Mr"
 uri = "file://attached_assets/bryn_tv_popcorn_v3.png"
 type = "image"
 title = "Bryn TV Popcorn v3 - TV in Front"
+
+[[outputs]]
+id = "pvU_5q8Y4XBDhBeBnLCNa"
+uri = "file://attached_assets/bryn_tv_popcorn_v4.png"
+type = "image"
+title = "Bryn TV Popcorn v4 - Bare Face, Faux Hawk"
