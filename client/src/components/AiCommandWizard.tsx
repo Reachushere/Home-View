@@ -16,6 +16,7 @@ const thinkingKeyframes = `
 interface Message {
   role: 'user' | 'assistant' | 'system';
   content: string;
+  image?: string;
   toolResults?: any[];
   actionTaken?: boolean;
   pendingConfirmations?: any[];
@@ -38,6 +39,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [thinkingPhase, setThinkingPhase] = useState<string | null>(null);
+  const [pastedImage, setPastedImage] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -95,10 +97,13 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
 
   const sendMessage = useCallback(async (overrideMsg?: string) => {
     const msg = overrideMsg || input.trim();
-    if (!msg || loading) return;
-    const userMsg: Message = { role: 'user', content: msg };
+    if ((!msg && !pastedImage) || loading) return;
+    const finalMsg = msg || (pastedImage ? 'What do you see in this screenshot?' : '');
+    if (!finalMsg) return;
+    const currentImage = pastedImage;
+    const userMsg: Message = { role: 'user', content: finalMsg, image: currentImage || undefined };
     setMessages(prev => [...prev, userMsg]);
-    if (!overrideMsg) setInput('');
+    if (!overrideMsg) { setInput(''); setPastedImage(null); }
     setLoading(true);
 
     try {
@@ -106,7 +111,8 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-AI-Session': sessionId },
         body: JSON.stringify({
-          message: msg,
+          message: finalMsg,
+          image: currentImage || undefined,
           history: messages.slice(-20).map(m => ({ role: m.role, content: m.content })),
           stream: true,
         }),
@@ -229,7 +235,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       setLoading(false);
       setThinkingPhase(null);
     }
-  }, [input, loading, messages, invalidateAll]);
+  }, [input, loading, messages, invalidateAll, pastedImage]);
 
   const handleConfirm = useCallback(async (confirm: boolean) => {
     if (!pendingConfirm) return;
@@ -277,6 +283,25 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       sendMessage();
     }
   }, [sendMessage]);
+
+  const handlePaste = useCallback((e: React.ClipboardEvent) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.startsWith('image/')) {
+        e.preventDefault();
+        const file = items[i].getAsFile();
+        if (!file) continue;
+        const reader = new FileReader();
+        reader.onload = () => {
+          const base64 = reader.result as string;
+          setPastedImage(base64);
+        };
+        reader.readAsDataURL(file);
+        break;
+      }
+    }
+  }, []);
 
   const clearChat = useCallback(() => {
     setMessages([]);
@@ -425,6 +450,9 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 whiteSpace: 'pre-wrap',
                 wordBreak: 'break-word',
               }}>
+                {msg.image && (
+                  <img src={msg.image} alt="Screenshot" style={{ maxWidth: '100%', maxHeight: '150px', borderRadius: '6px', marginBottom: '6px', border: '1px solid rgba(100,160,255,0.2)' }} />
+                )}
                 {msg.content}
                 {msg.actionTaken && msg.toolResults && msg.toolResults.length > 0 && (
                   <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -524,15 +552,27 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
           borderTop: '1px solid rgba(100,160,255,0.2)',
           background: 'rgba(10,20,50,0.5)',
           display: 'flex',
+          flexDirection: 'column',
           gap: '8px',
-          alignItems: 'flex-end',
         }}>
+          {pastedImage && (
+            <div style={{ position: 'relative', width: 'fit-content' }}>
+              <img src={pastedImage} alt="Pasted" style={{ maxWidth: '120px', maxHeight: '80px', borderRadius: '8px', border: '1px solid rgba(100,160,255,0.3)' }} />
+              <button
+                onClick={() => setPastedImage(null)}
+                style={{ position: 'absolute', top: '-6px', right: '-6px', background: 'rgba(220,50,50,0.9)', border: 'none', borderRadius: '50%', width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#fff', fontSize: '11px', lineHeight: 1, padding: 0 }}
+                data-testid="button-remove-pasted-image"
+              >x</button>
+            </div>
+          )}
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
           <textarea
             ref={inputRef}
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Type a command..."
+            onPaste={handlePaste}
+            placeholder={pastedImage ? "Describe what to do with this screenshot..." : "Type a command..."}
             rows={3}
             style={{
               flex: 1,
@@ -553,9 +593,9 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
           />
           <button
             onClick={() => sendMessage()}
-            disabled={loading || !input.trim()}
+            disabled={loading || (!input.trim() && !pastedImage)}
             style={{
-              background: loading || !input.trim() ? 'rgba(100,160,255,0.15)' : 'linear-gradient(135deg, #1d4ed8, #2563eb)',
+              background: loading || (!input.trim() && !pastedImage) ? 'rgba(100,160,255,0.15)' : 'linear-gradient(135deg, #1d4ed8, #2563eb)',
               border: '1px solid rgba(96,165,250,0.3)',
               borderRadius: '10px',
               padding: '10px',
@@ -570,6 +610,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
           >
             <Send size={16} />
           </button>
+          </div>
         </div>
       </div>
     </div>

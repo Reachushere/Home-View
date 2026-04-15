@@ -6065,7 +6065,7 @@ ${fileContents.join('\n\n')}`;
   app.post("/api/ai/command", async (req, res) => {
     try {
       if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ error: "Access denied" });
-      const { message, history, confirmToolCall, stream } = req.body;
+      const { message, history, confirmToolCall, stream, image } = req.body;
       if (!message || typeof message !== 'string' || message.trim().length < 2) {
         return res.status(400).json({ error: "Message too short" });
       }
@@ -6213,7 +6213,17 @@ RULES:
           }
         }
       }
-      messages.push({ role: "user", content: message.trim() });
+      if (image && typeof image === 'string' && image.startsWith('data:image/')) {
+        messages.push({
+          role: "user",
+          content: [
+            { type: "text", text: message.trim() },
+            { type: "image_url", image_url: { url: image, detail: "low" } },
+          ],
+        });
+      } else {
+        messages.push({ role: "user", content: message.trim() });
+      }
 
       const OpenAI = (await import("openai")).default;
       const openai = new OpenAI({ apiKey: config.apiKey });
