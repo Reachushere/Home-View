@@ -6059,37 +6059,52 @@ ${fileContents.join('\n\n')}`;
         });
       }
 
-      const config = await getApprovedOpenAIConfig("AI Command", `Command: "${message.slice(0, 60)}..."`, "~$0.01-0.05");
+      const codeKeywords = /\b(change|modify|edit|update|fix|add|remove|create|delete|refactor|style|css|color|button|component|page|layout|font|move|rename|code|file|build|install|npm|import)\b/i;
+      const isCodeTask = codeKeywords.test(message) && /\b(file|code|component|page|css|style|button|header|sidebar|layout|function|route|api|div|class|import|export)\b/i.test(message);
+      const model = isCodeTask ? "gpt-4o" : "gpt-4o-mini";
+      const estCost = isCodeTask ? "~$0.05-0.30" : "~$0.01-0.05";
+
+      const config = await getApprovedOpenAIConfig("AI Command", `Command: "${message.slice(0, 60)}..." [${model}]`, estCost);
       if (!config) {
         return res.status(503).json({ error: "OpenAI not available or approval denied" });
       }
 
       const appContext = await getAppContext();
 
-      const systemPrompt = `You are the AI Command Assistant for UniCal, a personal academic task management app for Bryn, a TMU student. You can control the app and smart home through tool calls.
+      const systemPrompt = `You are the AI Development Assistant for UniCal, a personal academic task management app for Bryn, a TMU student. You have FULL capabilities: app control, smart home control, AND code modification.
 
 CURRENT APP STATE:
 ${appContext}
 
+ARCHITECTURE:
+- React + TypeScript frontend in client/src/ (Vite, shadcn/ui, TanStack Query, wouter routing, Tailwind CSS)
+- Express backend in server/ (Drizzle ORM, PostgreSQL)
+- Shared types in shared/schema.ts
+- Key files: client/src/pages/dashboard.tsx (main UI), server/routes.ts (API), server/storage.ts (DB), shared/schema.ts (types)
+- Mobile app at client/src/pages/mobile/ (accessible at /m)
+
 RULES:
-1. When the user asks to do something, use the appropriate tool to execute it.
-2. For destructive actions (delete, bulk changes), describe what you'll do and ask for confirmation BEFORE executing.
-3. When searching for tasks, always use search_tasks first to find the ID, then use update_task/delete_task/complete_task.
-4. Resolve course references: "politics" = CPPA courses, "sexuality" = CFNF400, "sign language" or "ASL" = CASL101, "photoshop" = CGCM738, "economics" = CECN210, "philosophy" = CPHL110, "popular culture" = CHIS105.
-5. When creating tasks, auto-calculate reasonable due dates/times. Bryn is in Eastern Time (America/Toronto).
-6. Be concise. After executing an action, confirm what you did in 1-2 sentences.
-7. For Home Assistant commands, known entities include: light.cat_lights (cat room lights). For other lights/switches, construct entity IDs like light.<room>_light or switch.<room>_<device>.
-8. For announcements, use ha_announce tool. The "everywhere" target reaches all speakers.
-9. CODE MODIFICATION: You can read, write, and edit project files. ALWAYS read a file first before editing it. Use edit_file for targeted changes (preferred) and write_file only for new files.
-10. For code changes, follow these steps: (a) read the relevant files, (b) understand the existing patterns, (c) make the minimal change needed, (d) confirm with the user before writing.
-11. STAGING: For risky changes, set up a staging environment first (staging_manage setup → make changes → staging_manage start → user previews on port 5001 → staging_manage apply). For small/safe changes, edit files directly.
-12. After code changes, the dev server auto-restarts. On the Pi, use restart_application.
-13. The project uses: React + TypeScript frontend (client/src/), Express backend (server/), Drizzle ORM, shadcn/ui, TanStack Query, wouter routing. Main files: dashboard.tsx, routes.ts, storage.ts, schema.ts.
-14. NEVER modify .env files, package-lock.json, or .git/ contents directly.`;
+1. Execute tool calls to fulfill requests. You can call multiple tools in sequence — keep going until the task is complete.
+2. For destructive actions (delete, bulk changes, file writes), the system will ask the user for confirmation automatically.
+3. Resolve course references: "politics" = CPPA courses, "sexuality" = CFNF400, "ASL/sign language" = CASL101, "photoshop" = CGCM738, "economics" = CECN210, "philosophy" = CPHL110, "popular culture" = CHIS105.
+4. Bryn is in Eastern Time (America/Toronto). Auto-calculate dates when needed.
+5. Be concise. After completing work, summarize what you did.
+6. HA entities: light.cat_lights, media_player.byhome (everywhere), media_player.echo_kitchen_studio_black_am, media_player.bathroom_speaker.
+
+CODE MODIFICATION WORKFLOW:
+7. ALWAYS read files before editing them. Use search_code to find where things are defined.
+8. Use edit_file for targeted changes (preferred). Use write_file only for new files.
+9. For multi-step code changes, work autonomously: read → understand → edit → verify. You have up to 8 rounds of tool calls.
+10. Match existing code patterns. Use TypeScript, follow the project's naming conventions.
+11. After code changes, the dev server auto-restarts. On the Pi, use restart_application.
+12. For risky/large changes, use staging: staging_manage setup → make changes → staging_manage start → user previews :5001 → staging_manage apply.
+13. NEVER modify .env files, package-lock.json, or .git/ contents.
+14. When editing large files (dashboard.tsx is 500KB+), use offset/limit params on read_file. Read only the relevant section.
+15. For UI changes: edit the relevant .tsx component. For styling: prefer Tailwind classes. For new API endpoints: add to server/routes.ts.`;
 
       const messages: any[] = [{ role: "system", content: systemPrompt }];
       if (Array.isArray(history)) {
-        for (const h of history.slice(-10)) {
+        for (const h of history.slice(-20)) {
           if (h.role === 'tool') {
             messages.push({ role: "tool", content: h.content, tool_call_id: h.tool_call_id });
           } else {
@@ -6102,152 +6117,126 @@ RULES:
       const OpenAI = (await import("openai")).default;
       const openai = new OpenAI({ apiKey: config.apiKey });
 
-      const completion = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages,
-        tools: AI_COMMAND_TOOLS,
-        tool_choice: "auto",
-        max_completion_tokens: 2048,
-      });
+      const readOnlyTools = new Set(["read_file", "list_directory", "search_code", "search_tasks", "get_semester_info"]);
+      const destructiveTools = new Set(["delete_task", "bulk_delete_tasks", "bulk_complete_tasks", "write_file", "edit_file", "run_shell_command", "restart_application"]);
 
-      const choice = completion.choices[0];
-      const toolCalls = choice?.message?.tool_calls;
+      function isToolDestructive(fnName: string, fnArgs: any): boolean {
+        if (destructiveTools.has(fnName)) return true;
+        if (fnName === "manage_sticky_note" && fnArgs.action === "delete") return true;
+        if (fnName === "notepad_crud" && fnArgs.action === "delete") return true;
+        if (fnName === "staging_manage" && ["apply", "discard"].includes(fnArgs.action)) return true;
+        return false;
+      }
 
-      if (toolCalls && toolCalls.length > 0) {
-        const destructiveTools = ["delete_task", "bulk_delete_tasks", "bulk_complete_tasks"];
-        const toolResults: any[] = [];
+      const MAX_ROUNDS = 8;
+      let totalTokens = 0;
+      let allToolResults: any[] = [];
+      let actionTaken = false;
+      let round = 0;
+
+      if (stream) {
+        res.setHeader('Content-Type', 'text/event-stream');
+        res.setHeader('Cache-Control', 'no-cache');
+        res.setHeader('Connection', 'keep-alive');
+      }
+
+      while (round < MAX_ROUNDS) {
+        round++;
+        const completion = await openai.chat.completions.create({
+          model,
+          messages,
+          tools: AI_COMMAND_TOOLS,
+          tool_choice: "auto",
+          max_completion_tokens: isCodeTask ? 4096 : 2048,
+        });
+        totalTokens += completion.usage?.total_tokens || 0;
+
+        const choice = completion.choices[0];
+        const toolCalls = choice?.message?.tool_calls;
+
+        if (!toolCalls || toolCalls.length === 0) {
+          const reply = choice?.message?.content || "Done!";
+          if (stream) {
+            res.write(`data: ${JSON.stringify({ type: 'meta', toolResults: allToolResults, actionTaken, model, rounds: round })}\n\n`);
+            for (let i = 0; i < reply.length; i += 20) {
+              const chunk = reply.substring(i, i + 20);
+              res.write(`data: ${JSON.stringify({ type: 'token', content: chunk })}\n\n`);
+            }
+            res.write(`data: ${JSON.stringify({ type: 'done', reply, actionTaken })}\n\n`);
+            res.end();
+          } else {
+            const cost = totalTokens > 0 ? ((totalTokens / 1_000_000) * (model === 'gpt-4o' ? 10.0 : 0.30)) : 0;
+            res.json({ reply, toolResults: allToolResults, actionTaken, usage: { totalTokens }, cost: `$${cost.toFixed(4)}`, model, rounds: round });
+          }
+          return;
+        }
+
         const pendingConfirmations: any[] = [];
+        messages.push(choice.message);
 
         for (const tc of toolCalls) {
           const fnName = tc.function.name;
           let fnArgs: any;
-          try {
-            fnArgs = JSON.parse(tc.function.arguments);
-          } catch {
-            toolResults.push({ name: fnName, success: false, result: { error: "Invalid tool arguments" }, tool_call_id: tc.id });
+          try { fnArgs = JSON.parse(tc.function.arguments); } catch {
+            const errResult = { error: "Invalid tool arguments" };
+            messages.push({ role: "tool", tool_call_id: tc.id, content: JSON.stringify(errResult) });
+            allToolResults.push({ name: fnName, success: false, result: errResult, tool_call_id: tc.id });
             continue;
           }
 
-          const codeModTools = ["write_file", "edit_file", "run_shell_command", "restart_application"];
-          const isDestructive = destructiveTools.includes(fnName)
-            || codeModTools.includes(fnName)
-            || (fnName === "manage_sticky_note" && fnArgs.action === "delete")
-            || (fnName === "notepad_crud" && fnArgs.action === "delete")
-            || (fnName === "staging_manage" && ["apply", "discard"].includes(fnArgs.action));
-
-          if (isDestructive) {
+          if (isToolDestructive(fnName, fnArgs)) {
             const token = createPendingConfirmation(fnName, fnArgs);
             pendingConfirmations.push({ id: tc.id, name: fnName, arguments: fnArgs, token });
+            messages.push({ role: "tool", tool_call_id: tc.id, content: JSON.stringify({ pending_confirmation: true, message: "Awaiting user confirmation" }) });
           } else {
+            if (stream) {
+              res.write(`data: ${JSON.stringify({ type: 'tool_start', name: fnName, round })}\n\n`);
+            }
             const result = await executeToolCall(fnName, fnArgs);
-            toolResults.push({ name: fnName, ...result, tool_call_id: tc.id });
+            if (!readOnlyTools.has(fnName)) actionTaken = true;
+            const resultStr = JSON.stringify(result.result);
+            const truncated = resultStr.length > 8000 ? resultStr.substring(0, 8000) + '...[truncated]' : resultStr;
+            messages.push({ role: "tool", tool_call_id: tc.id, content: truncated });
+            allToolResults.push({ name: fnName, ...result, tool_call_id: tc.id });
+            if (stream) {
+              res.write(`data: ${JSON.stringify({ type: 'tool_done', name: fnName, success: result.success, round })}\n\n`);
+            }
           }
         }
 
         if (pendingConfirmations.length > 0) {
           let confirmMsg = choice.message?.content || "";
           if (!confirmMsg) {
-            const details = pendingConfirmations.map(p => `${p.name}(${JSON.stringify(p.arguments)})`).join(", ");
-            confirmMsg = `I need your confirmation to proceed with: ${details}. Should I go ahead?`;
+            const details = pendingConfirmations.map(p => {
+              if (p.name === 'edit_file') return `Edit ${p.arguments.filePath}`;
+              if (p.name === 'write_file') return `Write ${p.arguments.filePath}`;
+              if (p.name === 'run_shell_command') return `Run: ${p.arguments.command}`;
+              return `${p.name}(${JSON.stringify(p.arguments).substring(0, 100)})`;
+            }).join(", ");
+            confirmMsg = `I need your confirmation to proceed:\n${details}`;
           }
-          return res.json({
-            reply: confirmMsg,
-            pendingConfirmations,
-            toolResults,
-            actionTaken: false,
-          });
-        }
-
-        const toolMsgs: any[] = [choice.message];
-        for (const tr of toolResults) {
-          toolMsgs.push({ role: "tool", tool_call_id: tr.tool_call_id, content: JSON.stringify(tr.result) });
-        }
-
-        if (stream) {
-          res.setHeader('Content-Type', 'text/event-stream');
-          res.setHeader('Cache-Control', 'no-cache');
-          res.setHeader('Connection', 'keep-alive');
-
-          const sseStream = await openai.chat.completions.create({
-            model: "gpt-4o-mini",
-            messages: [...messages, ...toolMsgs],
-            max_completion_tokens: 1024,
-            stream: true,
-          });
-
-          res.write(`data: ${JSON.stringify({ type: 'meta', toolResults, actionTaken: true })}\n\n`);
-          let fullReply = '';
-          for await (const chunk of sseStream) {
-            const delta = chunk.choices[0]?.delta?.content;
-            if (delta) {
-              fullReply += delta;
-              res.write(`data: ${JSON.stringify({ type: 'token', content: delta })}\n\n`);
-            }
+          if (stream) {
+            res.write(`data: ${JSON.stringify({ type: 'meta', toolResults: allToolResults, actionTaken, model, rounds: round })}\n\n`);
+            res.write(`data: ${JSON.stringify({ type: 'done', reply: confirmMsg, actionTaken: false })}\n\n`);
+            res.end();
           }
-          res.write(`data: ${JSON.stringify({ type: 'done', reply: fullReply })}\n\n`);
-          res.end();
-          return;
+          return res.json({ reply: confirmMsg, pendingConfirmations, toolResults: allToolResults, actionTaken: false, model, rounds: round });
         }
-
-        const followUp = await openai.chat.completions.create({
-          model: "gpt-4o-mini",
-          messages: [...messages, ...toolMsgs],
-          max_completion_tokens: 1024,
-        });
-
-        const reply = followUp.choices[0]?.message?.content || "Done!";
-        const usage = completion.usage;
-        const usage2 = followUp.usage;
-        const totalTokens = (usage?.total_tokens || 0) + (usage2?.total_tokens || 0);
-        const cost = totalTokens > 0 ? ((totalTokens / 1_000_000) * 0.30) : 0;
-
-        return res.json({
-          reply,
-          toolResults,
-          actionTaken: true,
-          usage: { totalTokens },
-          cost: `$${cost.toFixed(4)}`,
-        });
       }
 
       if (stream) {
-        res.setHeader('Content-Type', 'text/event-stream');
-        res.setHeader('Cache-Control', 'no-cache');
-        res.setHeader('Connection', 'keep-alive');
-
-        const sseStream = await openai.chat.completions.create({
-          model: "gpt-4o-mini",
-          messages,
-          max_completion_tokens: 2048,
-          stream: true,
-        });
-
-        let fullReply = '';
-        for await (const chunk of sseStream) {
-          const delta = chunk.choices[0]?.delta?.content;
-          if (delta) {
-            fullReply += delta;
-            res.write(`data: ${JSON.stringify({ type: 'token', content: delta })}\n\n`);
-          }
-        }
-        res.write(`data: ${JSON.stringify({ type: 'done', reply: fullReply, actionTaken: false })}\n\n`);
+        res.write(`data: ${JSON.stringify({ type: 'done', reply: "Reached maximum tool call rounds. The work may be partially complete.", actionTaken })}\n\n`);
         res.end();
-        return;
+      } else {
+        res.json({ reply: "Reached maximum tool call rounds. The work may be partially complete.", toolResults: allToolResults, actionTaken, model, rounds: round });
       }
-
-      const reply = choice?.message?.content || "I'm not sure what you want me to do. Try being more specific.";
-      const usage = completion.usage;
-      const cost = usage ? ((usage.prompt_tokens / 1_000_000) * 0.15 + (usage.completion_tokens / 1_000_000) * 0.60) : 0;
-
-      res.json({
-        reply,
-        actionTaken: false,
-        usage: usage ? { totalTokens: usage.total_tokens } : null,
-        cost: `$${cost.toFixed(4)}`,
-      });
     } catch (err: any) {
       console.error("AI command error:", err);
-      res.status(500).json({ error: err?.message || "Command failed" });
+      if (res.headersSent) {
+        try { res.write(`data: ${JSON.stringify({ type: 'error', error: err.message })}\n\n`); res.end(); } catch {}
+      } else {
+        res.status(500).json({ error: err?.message || "Command failed" });
+      }
     }
   });
 

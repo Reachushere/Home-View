@@ -382,7 +382,7 @@ export const AI_COMMAND_TOOLS = [
         properties: {
           filePath: { type: "string", description: "Relative path to the file (e.g. 'client/src/pages/dashboard.tsx', 'server/routes.ts')" },
           offset: { type: "integer", description: "Line number to start reading from (1-indexed). Use for large files." },
-          limit: { type: "integer", description: "Max number of lines to read. Default 200. Use for large files." },
+          limit: { type: "integer", description: "Max number of lines to read. Default 500. Use for large files." },
         },
         required: ["filePath"],
       },
@@ -912,7 +912,7 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           const content = await fs.readFile(safePath, 'utf-8');
           const lines = content.split('\n');
           const offset = (args.offset || 1) - 1;
-          const limit = args.limit || 200;
+          const limit = args.limit || 500;
           const slice = lines.slice(offset, offset + limit);
           const totalLines = lines.length;
           const numbered = slice.map((line, i) => `${offset + i + 1}: ${line}`).join('\n');

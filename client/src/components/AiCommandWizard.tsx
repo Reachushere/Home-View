@@ -93,6 +93,22 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
               if (event.type === 'meta') {
                 toolResults = event.toolResults;
                 actionTaken = event.actionTaken || false;
+              } else if (event.type === 'tool_start') {
+                const toolLabel = event.name.replace(/_/g, ' ');
+                setMessages(prev => {
+                  const updated = [...prev];
+                  updated[updated.length - 1] = { role: 'assistant', content: `⚙️ ${toolLabel}...`, toolResults, actionTaken };
+                  return updated;
+                });
+              } else if (event.type === 'tool_done') {
+                const toolLabel = event.name.replace(/_/g, ' ');
+                const icon = event.success ? '✓' : '✗';
+                streamedContent += `${icon} ${toolLabel}\n`;
+                setMessages(prev => {
+                  const updated = [...prev];
+                  updated[updated.length - 1] = { role: 'assistant', content: streamedContent, toolResults, actionTaken };
+                  return updated;
+                });
               } else if (event.type === 'token') {
                 streamedContent += event.content;
                 setMessages(prev => {
@@ -102,6 +118,9 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 });
               } else if (event.type === 'done') {
                 if (event.actionTaken) actionTaken = true;
+                if (event.reply && !streamedContent.includes(event.reply)) streamedContent = event.reply;
+              } else if (event.type === 'error') {
+                streamedContent += `\nError: ${event.error}`;
               }
             } catch {}
           }
