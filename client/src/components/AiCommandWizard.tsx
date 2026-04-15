@@ -38,6 +38,10 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
     queryClient.invalidateQueries({ queryKey: ['/api/notepad'] });
     queryClient.invalidateQueries({ queryKey: ['/api/semester'] });
     queryClient.invalidateQueries({ queryKey: ['/api/semesters'] });
+    queryClient.invalidateQueries({ queryKey: ['/api/sticky-notes'] });
+    queryClient.invalidateQueries({ queryKey: ['/api/calendar'] });
+    queryClient.invalidateQueries({ queryKey: ['/api/ui-settings'] });
+    queryClient.invalidateQueries({ queryKey: ['/api/degree-tracking'] });
   }, []);
 
   const sendMessage = useCallback(async (overrideMsg?: string) => {

@@ -576,6 +576,15 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
               await spotifyApi.previous();
               return { success: true, result: { action: "previous" } };
             }
+            case "search_and_play": {
+              if (!args.query) return { success: false, result: { error: "Search query required" } };
+              const results = await spotifyApi.search(args.query, 'track', 5);
+              const tracks = results?.tracks?.items;
+              if (!tracks || tracks.length === 0) return { success: false, result: { error: `No results found for "${args.query}"` } };
+              const trackUris = tracks.map((t: any) => t.uri);
+              await spotifyApi.playTracks(trackUris);
+              return { success: true, result: { action: "search_and_play", query: args.query, playing: tracks[0]?.name, artist: tracks[0]?.artists?.[0]?.name } };
+            }
             default:
               return { success: false, result: { error: `Unknown spotify action: ${args.action}` } };
           }

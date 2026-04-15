@@ -6042,11 +6042,6 @@ ${fileContents.join('\n\n')}`;
         return res.status(400).json({ error: "Message too short" });
       }
 
-      const config = await getApprovedOpenAIConfig("AI Command", `Command: "${message.slice(0, 60)}..."`, "~$0.01-0.05");
-      if (!config) {
-        return res.status(503).json({ error: "OpenAI not available or approval denied" });
-      }
-
       const { AI_COMMAND_TOOLS, executeToolCall, getAppContext, consumePendingConfirmation, createPendingConfirmation } = await import("./aiCommandTools");
 
       if (confirmToolCall && confirmToolCall.token) {
@@ -6062,6 +6057,11 @@ ${fileContents.join('\n\n')}`;
           toolResults: [{ name: pending.name, ...result }],
           actionTaken: true,
         });
+      }
+
+      const config = await getApprovedOpenAIConfig("AI Command", `Command: "${message.slice(0, 60)}..."`, "~$0.01-0.05");
+      if (!config) {
+        return res.status(503).json({ error: "OpenAI not available or approval denied" });
       }
 
       const appContext = await getAppContext();
