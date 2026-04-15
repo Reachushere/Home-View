@@ -1242,6 +1242,32 @@ export async function registerRoutes(
     res.json({ version: BUILD_VERSION });
   });
 
+  app.get('/api/screen-capture', async (_req, res) => {
+    const tmpPath = '/tmp/unical_screencap.png';
+    try {
+      try {
+        execSync(`scrot -o "${tmpPath}"`, { timeout: 5000 });
+      } catch {
+        try {
+          execSync(`import -window root "${tmpPath}"`, { timeout: 5000 });
+        } catch {
+          execSync(`DISPLAY=:0 xdotool key --clearmodifiers "Print" 2>/dev/null; sleep 0.3; xclip -selection clipboard -t image/png -o > "${tmpPath}" 2>/dev/null`, { timeout: 5000 });
+        }
+      }
+      if (fs.existsSync(tmpPath)) {
+        const imgBuf = fs.readFileSync(tmpPath);
+        res.setHeader('Content-Type', 'image/png');
+        res.setHeader('Cache-Control', 'no-store');
+        res.send(imgBuf);
+        try { fs.unlinkSync(tmpPath); } catch {}
+      } else {
+        res.status(500).json({ error: 'capture_failed' });
+      }
+    } catch (e: any) {
+      res.status(500).json({ error: 'capture_failed', message: e.message });
+    }
+  });
+
   app.get('/tablet', (req, res) => {
     const baseUrl = DEPLOYED_APP_URL;
     const targetUrl = req.query.target ? decodeURIComponent(String(req.query.target)) : `${baseUrl}/?auth=5747`;
@@ -6436,7 +6462,7 @@ STATE VARIABLES (top of component):
 
 KEY UI LANDMARKS:
 • Calendar header cog button: search "button-calendar-settings-cog" (~line 29992) — opens isCalendarSettingsOpen
-• Calendar Settings Dialog: search "isCalendarSettingsOpen" Dialog (~line 29201) — contains second Google account, shift schedule, calendar toggles
+• Calendar Settings Dialog: EXTRACTED to client/src/components/CalendarSettingsDialog.tsx (~416 lines) — contains second Google account, shift schedule, calendar toggles, semesters, week variants
 • Main Settings Panel: search "isSettingsPanelOpen" (~line 18208) — background colors, Blink layout settings
 • Top pill bar: search "topPillUndocked" or "isTopPillOpen" — the expandable toolbar at top with all buttons
 • Homework box: search "homework-container" or "hwBoxRef" — right-side homework panel

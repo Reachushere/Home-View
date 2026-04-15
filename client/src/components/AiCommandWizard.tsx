@@ -644,60 +644,90 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
     if (overlay) overlay.style.visibility = 'hidden';
     await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(r, 80))));
     let captured = false;
+
     try {
-      const { default: html2canvas } = await import('html2canvas');
-      const canvas = await html2canvas(document.body, {
-        useCORS: true,
-        allowTaint: true,
-        scale: 1,
-        logging: false,
-        width: window.innerWidth,
-        height: window.innerHeight,
-        x: window.scrollX,
-        y: window.scrollY,
-        imageTimeout: 3000,
-        onclone: (clonedDoc: Document) => {
-          const s = clonedDoc.createElement('style');
-          s.textContent = [
-            '* { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }',
-            '[style*="backdrop-filter"] { background-color: rgba(30,40,60,0.85) !important; }',
-          ].join('\n');
-          clonedDoc.head.appendChild(s);
-          clonedDoc.querySelectorAll('video, iframe, canvas').forEach(el => {
-            const he = el as HTMLElement;
-            if (el.tagName === 'CANVAS') {
-              try {
-                const orig = el as HTMLCanvasElement;
-                const img = clonedDoc.createElement('img');
-                img.src = orig.toDataURL();
-                img.style.cssText = he.style.cssText;
-                img.style.width = he.offsetWidth + 'px';
-                img.style.height = he.offsetHeight + 'px';
-                he.parentNode?.replaceChild(img, he);
-              } catch { he.style.visibility = 'hidden'; }
-            } else {
-              he.style.visibility = 'hidden';
-            }
-          });
-        },
-      });
-      const ctx = canvas.getContext('2d');
-      let blank = true;
-      if (ctx) {
-        const sw = Math.min(canvas.width, 300);
-        const sh = Math.min(canvas.height, 300);
-        const sample = ctx.getImageData(Math.floor(canvas.width / 2 - sw / 2), Math.floor(canvas.height / 2 - sh / 2), sw, sh).data;
-        for (let i = 0; i < sample.length; i += 16) {
-          if (sample[i] !== 0 || sample[i+1] !== 0 || sample[i+2] !== 0) { blank = false; break; }
+      const resp = await fetch('/api/screen-capture');
+      if (resp.ok) {
+        const blob = await resp.blob();
+        const img = new Image();
+        const url = URL.createObjectURL(blob);
+        await new Promise<void>((resolve, reject) => {
+          img.onload = () => resolve();
+          img.onerror = () => reject(new Error('img load failed'));
+          img.src = url;
+        });
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0);
+          snippingCanvasRef.current = canvas;
+          captured = true;
         }
-      }
-      if (!blank && canvas.width > 0 && canvas.height > 0) {
-        snippingCanvasRef.current = canvas;
-        captured = true;
+        URL.revokeObjectURL(url);
       }
     } catch (e) {
-      console.warn('[Snip] html2canvas error:', e);
+      console.warn('[Snip] server capture unavailable, trying html2canvas:', e);
     }
+
+    if (!captured) {
+      try {
+        const { default: html2canvas } = await import('html2canvas');
+        const canvas = await html2canvas(document.body, {
+          useCORS: true,
+          allowTaint: true,
+          scale: 1,
+          logging: false,
+          width: window.innerWidth,
+          height: window.innerHeight,
+          x: window.scrollX,
+          y: window.scrollY,
+          imageTimeout: 3000,
+          onclone: (clonedDoc: Document) => {
+            const s = clonedDoc.createElement('style');
+            s.textContent = [
+              '* { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }',
+              '[style*="backdrop-filter"] { background-color: rgba(30,40,60,0.85) !important; }',
+            ].join('\n');
+            clonedDoc.head.appendChild(s);
+            clonedDoc.querySelectorAll('video, iframe, canvas').forEach(el => {
+              const he = el as HTMLElement;
+              if (el.tagName === 'CANVAS') {
+                try {
+                  const orig = el as HTMLCanvasElement;
+                  const imgEl = clonedDoc.createElement('img');
+                  imgEl.src = orig.toDataURL();
+                  imgEl.style.cssText = he.style.cssText;
+                  imgEl.style.width = he.offsetWidth + 'px';
+                  imgEl.style.height = he.offsetHeight + 'px';
+                  he.parentNode?.replaceChild(imgEl, he);
+                } catch { he.style.visibility = 'hidden'; }
+              } else {
+                he.style.visibility = 'hidden';
+              }
+            });
+          },
+        });
+        const ctx = canvas.getContext('2d');
+        let blank = true;
+        if (ctx) {
+          const sw = Math.min(canvas.width, 300);
+          const sh = Math.min(canvas.height, 300);
+          const sample = ctx.getImageData(Math.floor(canvas.width / 2 - sw / 2), Math.floor(canvas.height / 2 - sh / 2), sw, sh).data;
+          for (let i = 0; i < sample.length; i += 16) {
+            if (sample[i] !== 0 || sample[i+1] !== 0 || sample[i+2] !== 0) { blank = false; break; }
+          }
+        }
+        if (!blank && canvas.width > 0 && canvas.height > 0) {
+          snippingCanvasRef.current = canvas;
+          captured = true;
+        }
+      } catch (e) {
+        console.warn('[Snip] html2canvas error:', e);
+      }
+    }
+
     if (!captured) {
       const canvas = document.createElement('canvas');
       canvas.width = window.innerWidth;
