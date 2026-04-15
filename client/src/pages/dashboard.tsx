@@ -19986,8 +19986,9 @@ export default function Dashboard() {
       {/* News Ticker */}
       <NewsTickerPortal headlines={(() => {
         const alertItems = weatherAlerts.map((a, ai) => {
-          const tm = a.title.match(/(Thunderstorm|Lightning|Tornado|Fog|Freezing Rain|Blizzard|Winter Storm|Heat|Wind|Snowfall|Rainfall|Hurricane|Tropical|Ice|Hail|Snow Squall|Frost|Cold|Dust|Smoke|Smog)/i);
-          const hazard = tm ? tm[1].charAt(0).toUpperCase() + tm[1].slice(1).toLowerCase() : 'Weather';
+          const hazardRe = /(Thunderstorm|Lightning|Tornado|Fog|Freezing Rain|Blizzard|Winter Storm|Heat|Wind|Snowfall|Rainfall|Hurricane|Tropical|Ice|Hail|Snow Squall|Frost|Cold|Dust|Smoke|Smog|Flood|Freezing Drizzle|Freezing Spray|Extreme Cold|Arctic Outflow|Storm Surge)/i;
+          const tm = a.title.match(hazardRe) || (a.description || '').match(hazardRe) || (a.summary || '').match(hazardRe);
+          const hazard = tm ? tm[1].split(' ').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ') : 'Weather';
           const typeUpper = (a.type || 'info').toUpperCase();
           const typeLabel = typeUpper === 'WARNING' ? 'WARNING' : typeUpper === 'WATCH' ? 'WATCH' : typeUpper === 'ADVISORY' ? 'ADVISORY' : 'STATEMENT';
           const levelColor = typeUpper === 'WARNING' ? '#ff4444' : typeUpper === 'WATCH' ? '#ff8800' : '#ffcc00';
