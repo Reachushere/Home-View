@@ -570,6 +570,54 @@ export const AI_COMMAND_TOOLS = [
   {
     type: "function" as const,
     function: {
+      name: "analyze_ui",
+      description: "Analyze a React component's UI structure by reading its JSX. Returns all visible elements, text content, CSS/Tailwind classes, conditional renders, event handlers, and data-testid attributes. This is your 'eyes' — use it to understand what the user sees on any page or component before and after changes.",
+      parameters: {
+        type: "object",
+        properties: {
+          file: { type: "string", description: "Component file path relative to project root (e.g. 'client/src/pages/dashboard.tsx')" },
+          search_term: { type: "string", description: "Optional: search for a specific element, text, or class name within the component. Returns surrounding context." },
+          offset: { type: "integer", description: "Line offset to start reading from (for large files). Default 1." },
+          limit: { type: "integer", description: "Max lines to read. Default 300." },
+        },
+        required: ["file"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "smoke_test",
+      description: "Run a comprehensive smoke test: checks server health, hits all critical API endpoints, verifies responses. Returns pass/fail for each. Use after code changes to ensure nothing is broken.",
+      parameters: {
+        type: "object",
+        properties: {
+          endpoints: {
+            type: "array",
+            items: { type: "string" },
+            description: "Optional list of specific API paths to test (e.g. ['/api/tasks', '/api/health']). If omitted, tests all known critical endpoints."
+          },
+        },
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "run_node_script",
+      description: "Write and execute a Node.js script for custom testing or data processing. The script runs in the project directory with full access to the Node.js API. Use for: complex validation logic, data transformations, API integration tests, or anything that needs custom code. Script has a 30-second timeout.",
+      parameters: {
+        type: "object",
+        properties: {
+          script: { type: "string", description: "Node.js script content to execute. Use console.log for output." },
+        },
+        required: ["script"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
       name: "run_sql",
       description: "Execute a SQL query against the PostgreSQL database. Use for checking data, debugging, understanding schema. SELECT queries run freely. INSERT/UPDATE/DELETE require confirmation.",
       parameters: {
@@ -1495,6 +1543,160 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           }};
         } catch (e: any) {
           return { success: false, result: { error: e.message?.substring(0, 300) } };
+        }
+      }
+
+      case "analyze_ui": {
+        const filePath = args.file;
+        const safePath = resolveProjectPath(filePath);
+        if (!safePath) return { success: false, result: { error: "Invalid file path" } };
+        try {
+          const content = await fs.readFile(safePath, 'utf-8');
+          const lines = content.split('\n');
+          
+          if (args.search_term) {
+            const term = args.search_term.toLowerCase();
+            const matches: { line: number; content: string; context: string }[] = [];
+            for (let i = 0; i < lines.length; i++) {
+              if (lines[i].toLowerCase().includes(term)) {
+                const start = Math.max(0, i - 3);
+                const end = Math.min(lines.length, i + 4);
+                matches.push({
+                  line: i + 1,
+                  content: lines[i].trim(),
+                  context: lines.slice(start, end).map((l, idx) => `${start + idx + 1}: ${l}`).join('\n'),
+                });
+              }
+            }
+            return { success: true, result: { file: filePath, matchCount: matches.length, matches: matches.slice(0, 15) } };
+          }
+
+          const offset = (args.offset || 1) - 1;
+          const limit = args.limit || 300;
+          const slice = lines.slice(offset, offset + limit);
+
+          const elements: string[] = [];
+          const testIds: string[] = [];
+          const classNames: Set<string> = new Set();
+          const eventHandlers: string[] = [];
+          const conditionals: string[] = [];
+          const textContent: string[] = [];
+
+          for (const line of slice) {
+            const trimmed = line.trim();
+            const testIdMatch = trimmed.match(/data-testid=["']([^"']+)["']/);
+            if (testIdMatch) testIds.push(testIdMatch[1]);
+
+            const classMatch = trimmed.match(/className=["']([^"']+)["']/);
+            if (classMatch) classMatch[1].split(/\s+/).forEach(c => classNames.add(c));
+
+            const dynClassMatch = trimmed.match(/className=\{[^}]*\}/);
+            if (dynClassMatch) classNames.add(dynClassMatch[0]);
+
+            if (/on(Click|Change|Submit|KeyDown|MouseEnter|Focus)=/.test(trimmed)) {
+              eventHandlers.push(trimmed.substring(0, 120));
+            }
+
+            if (/\{.*\?.*:/.test(trimmed) || /\{.*&&/.test(trimmed) || /isLoading|isError|isPending/.test(trimmed)) {
+              conditionals.push(trimmed.substring(0, 150));
+            }
+
+            const tagMatch = trimmed.match(/<([\w.]+)/);
+            if (tagMatch && !['div', 'span', 'p', 'Fragment'].includes(tagMatch[1])) {
+              elements.push(tagMatch[1]);
+            }
+
+            if (/>\s*[A-Z][\w\s]+<\//.test(trimmed)) {
+              const textMatch = trimmed.match(/>([^<>{]+)</);
+              if (textMatch && textMatch[1].trim().length > 2) textContent.push(textMatch[1].trim());
+            }
+          }
+
+          return { success: true, result: {
+            file: filePath,
+            totalLines: lines.length,
+            showing: `${offset + 1}-${Math.min(offset + limit, lines.length)}`,
+            summary: {
+              uniqueComponents: [...new Set(elements)].slice(0, 50),
+              testIds: testIds.slice(0, 30),
+              tailwindClasses: [...classNames].slice(0, 40),
+              eventHandlers: eventHandlers.slice(0, 20),
+              conditionalRenders: conditionals.slice(0, 15),
+              visibleText: textContent.slice(0, 20),
+            },
+            code: slice.map((l, i) => `${offset + i + 1}: ${l}`).join('\n').substring(0, 8000),
+          }};
+        } catch (e: any) {
+          return { success: false, result: { error: e.message?.substring(0, 300) } };
+        }
+      }
+
+      case "smoke_test": {
+        const defaultEndpoints = [
+          '/api/health',
+          '/api/tasks',
+          '/api/semesters',
+          '/api/notepad-notes',
+          '/api/sticky-notes',
+          '/api/spotify/now-playing',
+          '/api/theme',
+          '/api/ui-settings',
+          '/',
+        ];
+        const endpoints = (args.endpoints && args.endpoints.length > 0) ? args.endpoints : defaultEndpoints;
+        const results: { endpoint: string; status: number | string; ok: boolean; time: number; preview?: string }[] = [];
+
+        for (const ep of endpoints) {
+          const start = Date.now();
+          try {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 8000);
+            const resp = await fetch(`http://localhost:5000${ep}`, { signal: controller.signal });
+            clearTimeout(timeout);
+            const elapsed = Date.now() - start;
+            let preview = '';
+            const ct = resp.headers.get('content-type') || '';
+            if (ct.includes('json')) {
+              const json = await resp.json();
+              preview = JSON.stringify(json).substring(0, 200);
+            }
+            results.push({ endpoint: ep, status: resp.status, ok: resp.ok, time: elapsed, preview });
+          } catch (e: any) {
+            results.push({ endpoint: ep, status: e.message?.substring(0, 100) || 'error', ok: false, time: Date.now() - start });
+          }
+        }
+
+        const passed = results.filter(r => r.ok).length;
+        const failed = results.filter(r => !r.ok).length;
+        return { success: true, result: {
+          summary: `${passed}/${results.length} endpoints passed${failed > 0 ? `, ${failed} FAILED` : ''}`,
+          passed, failed, total: results.length,
+          results,
+        }};
+      }
+
+      case "run_node_script": {
+        const script = args.script;
+        if (!script || typeof script !== 'string') return { success: false, result: { error: "No script provided" } };
+        if (script.length > 10000) return { success: false, result: { error: "Script too long (max 10000 chars)" } };
+
+        const projectRoot = getProjectRoot();
+        const scriptPath = path.join(projectRoot, '.ai-temp-script.mjs');
+        try {
+          await fs.writeFile(scriptPath, script, 'utf-8');
+          const output = execSync(`node "${scriptPath}" 2>&1`, {
+            cwd: projectRoot,
+            encoding: 'utf-8',
+            timeout: 30000,
+            maxBuffer: 2 * 1024 * 1024,
+            env: { ...process.env, NODE_PATH: path.join(projectRoot, 'node_modules') },
+          });
+          await fs.unlink(scriptPath).catch(() => {});
+          return { success: true, result: { output: output.substring(0, 8000) } };
+        } catch (e: any) {
+          await fs.unlink(scriptPath).catch(() => {});
+          const output = (e.stdout || '') + '\n' + (e.stderr || '');
+          return { success: false, result: { error: output.substring(0, 3000) } };
         }
       }
 

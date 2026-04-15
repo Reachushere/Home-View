@@ -6126,12 +6126,18 @@ DATABASE:
 - run_sql — Execute SELECT freely. INSERT/UPDATE/DELETE require confirmation.
 - Use storage interface methods when available (create_task, etc). Use raw SQL for complex queries or data exploration.
 
+UI ANALYSIS (your 'eyes'):
+- analyze_ui file="..." — Parse a React component to see its structure: elements, Tailwind classes, test IDs, event handlers, conditional renders, visible text. Use search_term to find specific elements.
+- analyze_ui + http_check together = you can see both what the code renders AND what the server returns.
+- smoke_test — Hit all critical API endpoints at once and get a pass/fail report. Run after any code change.
+
 DEBUGGING & VERIFICATION:
 - check_build — TypeScript type-checker. Run after EVERY code edit. Fix errors in a loop until clean.
 - read_logs source="server" — See recent server output, errors, crash messages
 - http_check path="/api/..." — Fetch a URL from the app to verify endpoints work. This is how you test your changes.
 - process_check — Check if server is running, what ports are active, system resources
 - search_code — Find where functions, variables, or strings are defined/used
+- run_node_script — Write and run arbitrary Node.js scripts for custom tests, data processing, or complex validation (requires confirmation)
 
 MEMORY:
 - memory_read — Load your persistent memory file at the start of complex tasks
@@ -6171,8 +6177,8 @@ RULES:
       const OpenAI = (await import("openai")).default;
       const openai = new OpenAI({ apiKey: config.apiKey });
 
-      const readOnlyTools = new Set(["read_file", "list_directory", "search_code", "search_tasks", "get_semester_info", "check_build", "read_logs", "git_diff", "get_project_map", "db_schema", "http_check", "memory_read", "process_check"]);
-      const destructiveTools = new Set(["delete_task", "bulk_delete_tasks", "bulk_complete_tasks", "write_file", "edit_file", "run_shell_command", "restart_application", "git_commit_and_push", "install_package"]);
+      const readOnlyTools = new Set(["read_file", "list_directory", "search_code", "search_tasks", "get_semester_info", "check_build", "read_logs", "git_diff", "get_project_map", "db_schema", "http_check", "memory_read", "process_check", "analyze_ui", "smoke_test"]);
+      const destructiveTools = new Set(["delete_task", "bulk_delete_tasks", "bulk_complete_tasks", "write_file", "edit_file", "run_shell_command", "restart_application", "git_commit_and_push", "install_package", "run_node_script"]);
 
       function isToolDestructive(fnName: string, fnArgs: any): boolean {
         if (destructiveTools.has(fnName)) return true;
