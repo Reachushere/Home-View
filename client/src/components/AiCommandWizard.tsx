@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { Zap, Send, X, Loader2, CheckCircle, XCircle, AlertTriangle, Trash2, RotateCcw, Maximize2, Minimize2, Pencil, Circle, ArrowRight, Undo2, Check } from 'lucide-react';
+import { Zap, Send, X, Loader2, CheckCircle, XCircle, AlertTriangle, Trash2, RotateCcw, Maximize2, Minimize2, Pencil, Circle, ArrowRight, Undo2, Check, Scissors } from 'lucide-react';
 import { queryClient } from '@/lib/queryClient';
 
 type MarkupTool = 'draw' | 'circle' | 'arrow';
@@ -254,9 +254,13 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   const [pastedImage, setPastedImage] = useState<string | null>(null);
   const [markupImage, setMarkupImage] = useState<string | null>(null);
   const [wizStyle, setWizStyle] = useState<WizardStyle>(defaultWizardStyle);
+  const [snipping, setSnipping] = useState(false);
+  const [snippingStart, setSnippingStart] = useState<{ x: number; y: number } | null>(null);
+  const [snippingEnd, setSnippingEnd] = useState<{ x: number; y: number } | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const snippingCanvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     fetch('/api/app-state/ui_wizardStyle')
@@ -586,6 +590,68 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
     fetch('/api/ai/conversation', { method: 'DELETE' }).catch(() => {});
   }, []);
 
+  const startSnipping = useCallback(async () => {
+    setSnipping(true);
+    setSnippingStart(null);
+    setSnippingEnd(null);
+    try {
+      const { default: html2canvas } = await import('html2canvas');
+      const canvas = await html2canvas(document.body, { useCORS: true, scale: window.devicePixelRatio || 1, logging: false });
+      snippingCanvasRef.current = canvas;
+    } catch {
+      const canvas = document.createElement('canvas');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      snippingCanvasRef.current = canvas;
+    }
+  }, []);
+
+  const finishSnipping = useCallback(() => {
+    if (!snippingStart || !snippingEnd || !snippingCanvasRef.current) {
+      setSnipping(false);
+      setSnippingStart(null);
+      setSnippingEnd(null);
+      return;
+    }
+    const srcCanvas = snippingCanvasRef.current;
+    const dpr = window.devicePixelRatio || 1;
+    const x = Math.min(snippingStart.x, snippingEnd.x) * dpr;
+    const y = Math.min(snippingStart.y, snippingEnd.y) * dpr;
+    const w = Math.abs(snippingEnd.x - snippingStart.x) * dpr;
+    const h = Math.abs(snippingEnd.y - snippingStart.y) * dpr;
+    if (w < 10 || h < 10) {
+      setSnipping(false);
+      setSnippingStart(null);
+      setSnippingEnd(null);
+      return;
+    }
+    const cropCanvas = document.createElement('canvas');
+    cropCanvas.width = w;
+    cropCanvas.height = h;
+    const ctx = cropCanvas.getContext('2d');
+    if (ctx) {
+      ctx.drawImage(srcCanvas, x, y, w, h, 0, 0, w, h);
+      const dataUrl = cropCanvas.toDataURL('image/png');
+      setPastedImage(dataUrl);
+    }
+    setSnipping(false);
+    setSnippingStart(null);
+    setSnippingEnd(null);
+  }, [snippingStart, snippingEnd]);
+
+  useEffect(() => {
+    if (!snipping) return;
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSnipping(false);
+        setSnippingStart(null);
+        setSnippingEnd(null);
+      }
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [snipping]);
+
   useEffect(() => {
     const styleId = 'ai-thinking-keyframes';
     if (!document.getElementById(styleId)) {
@@ -649,13 +715,13 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Zap size={18} color="#60a5fa" />
-            <span style={{ fontSize: '15px', fontWeight: 700, color: '#e0ecff', letterSpacing: '0.3px' }}>BrynAssist</span>
+            <Zap size={18} color="#ffffff" />
+            <span style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.3px' }}>BrynAssist</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <button
               onClick={clearChat}
-              style={{ background: 'none', border: 'none', color: 'rgba(160,190,255,0.6)', cursor: 'pointer', padding: '4px', borderRadius: '6px', display: 'flex', alignItems: 'center' }}
+              style={{ background: 'none', border: 'none', color: '#ffffff', cursor: 'pointer', padding: '4px', borderRadius: '6px', display: 'flex', alignItems: 'center' }}
               title="Clear chat"
               data-testid="button-ai-command-clear"
             >
@@ -663,7 +729,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
             </button>
             <button
               onClick={() => { setExpanded(!expanded); if (expanded) setPosition(null); }}
-              style={{ background: 'none', border: 'none', color: 'rgba(160,190,255,0.6)', cursor: 'pointer', padding: '4px', borderRadius: '6px', display: 'flex', alignItems: 'center' }}
+              style={{ background: 'none', border: 'none', color: '#ffffff', cursor: 'pointer', padding: '4px', borderRadius: '6px', display: 'flex', alignItems: 'center' }}
               title={expanded ? 'Minimize' : 'Expand'}
               data-testid="button-ai-command-expand"
             >
@@ -671,7 +737,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
             </button>
             <button
               onClick={onClose}
-              style={{ background: 'none', border: 'none', color: 'rgba(160,190,255,0.6)', cursor: 'pointer', padding: '4px', borderRadius: '6px', display: 'flex', alignItems: 'center' }}
+              style={{ background: 'none', border: 'none', color: '#ffffff', cursor: 'pointer', padding: '4px', borderRadius: '6px', display: 'flex', alignItems: 'center' }}
               data-testid="button-ai-command-close"
             >
               <X size={18} />
@@ -689,10 +755,10 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
           minHeight: '200px',
         }}>
           {messages.length === 0 && (
-            <div style={{ textAlign: 'center', padding: '30px 20px', color: 'rgba(160,190,255,0.5)' }}>
-              <Zap size={32} style={{ margin: '0 auto 12px', opacity: 0.4 }} />
+            <div style={{ textAlign: 'center', padding: '30px 20px', color: '#ffffff' }}>
+              <Zap size={32} color="#ffffff" style={{ margin: '0 auto 12px', opacity: 0.7 }} />
               <div style={{ fontSize: '14px', marginBottom: '8px' }}>What can I help with?</div>
-              <div style={{ fontSize: '12px', lineHeight: '1.8', color: 'rgba(160,190,255,0.35)' }}>
+              <div style={{ fontSize: '12px', lineHeight: '1.8', color: 'rgba(255,255,255,0.6)' }}>
                 "Add a quiz for CPPA122 next Friday"<br />
                 "What's due this week?"<br />
                 "Turn on the cat lights"<br />
@@ -722,7 +788,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                   : msg.role === 'system'
                   ? '1px solid rgba(255,200,50,0.3)'
                   : '1px solid rgba(100,160,255,0.15)',
-                color: msg.role === 'system' ? 'rgba(255,220,100,0.9)' : '#dce8ff',
+                color: msg.role === 'system' ? 'rgba(255,220,100,0.9)' : '#ffffff',
                 fontSize: '13px',
                 lineHeight: '1.5',
                 whiteSpace: 'pre-wrap',
@@ -873,11 +939,11 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
             rows={3}
             style={{
               flex: 1,
-              background: 'rgba(20,40,80,0.6)',
-              border: '1px solid rgba(100,160,255,0.2)',
+              background: '#ffffff',
+              border: '1px solid rgba(100,160,255,0.3)',
               borderRadius: '10px',
               padding: '10px 14px',
-              color: '#dce8ff',
+              color: '#000000',
               fontSize: '13px',
               resize: 'vertical',
               outline: 'none',
@@ -888,25 +954,47 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
             }}
             data-testid="input-ai-command"
           />
-          <button
-            onClick={() => sendMessage()}
-            disabled={loading || (!input.trim() && !pastedImage)}
-            style={{
-              background: loading || (!input.trim() && !pastedImage) ? 'rgba(100,160,255,0.15)' : 'linear-gradient(135deg, #1d4ed8, #2563eb)',
-              border: '1px solid rgba(96,165,250,0.3)',
-              borderRadius: '10px',
-              padding: '10px',
-              cursor: loading || (!input.trim() && !pastedImage) ? 'not-allowed' : 'pointer',
-              color: '#fff',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              opacity: loading || (!input.trim() && !pastedImage) ? 0.5 : 1,
-            }}
-            data-testid="button-ai-command-send"
-          >
-            <Send size={16} />
-          </button>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <button
+              onClick={startSnipping}
+              disabled={loading}
+              style={{
+                background: 'rgba(100,160,255,0.15)',
+                border: '1px solid rgba(96,165,250,0.3)',
+                borderRadius: '10px',
+                padding: '10px',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                color: '#fff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                opacity: loading ? 0.5 : 1,
+              }}
+              title="Screen capture"
+              data-testid="button-ai-snip"
+            >
+              <Scissors size={16} />
+            </button>
+            <button
+              onClick={() => sendMessage()}
+              disabled={loading || (!input.trim() && !pastedImage)}
+              style={{
+                background: loading || (!input.trim() && !pastedImage) ? 'rgba(100,160,255,0.15)' : 'linear-gradient(135deg, #1d4ed8, #2563eb)',
+                border: '1px solid rgba(96,165,250,0.3)',
+                borderRadius: '10px',
+                padding: '10px',
+                cursor: loading || (!input.trim() && !pastedImage) ? 'not-allowed' : 'pointer',
+                color: '#fff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                opacity: loading || (!input.trim() && !pastedImage) ? 0.5 : 1,
+              }}
+              data-testid="button-ai-command-send"
+            >
+              <Send size={16} />
+            </button>
+          </div>
           </div>
         </div>
       </div>
@@ -919,6 +1007,92 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
           }}
           onCancel={() => setMarkupImage(null)}
         />
+      )}
+      {snipping && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            zIndex: 999999,
+            cursor: 'crosshair',
+            background: 'rgba(0,0,0,0.3)',
+          }}
+          onMouseDown={e => {
+            e.preventDefault();
+            setSnippingStart({ x: e.clientX, y: e.clientY });
+            setSnippingEnd({ x: e.clientX, y: e.clientY });
+          }}
+          onMouseMove={e => {
+            if (snippingStart) setSnippingEnd({ x: e.clientX, y: e.clientY });
+          }}
+          onMouseUp={() => {
+            if (snippingStart && snippingEnd) finishSnipping();
+          }}
+          onTouchStart={e => {
+            e.preventDefault();
+            const t = e.touches[0];
+            setSnippingStart({ x: t.clientX, y: t.clientY });
+            setSnippingEnd({ x: t.clientX, y: t.clientY });
+          }}
+          onTouchMove={e => {
+            const t = e.touches[0];
+            if (snippingStart) setSnippingEnd({ x: t.clientX, y: t.clientY });
+          }}
+          onTouchEnd={() => {
+            if (snippingStart && snippingEnd) finishSnipping();
+          }}
+          data-testid="snipping-overlay"
+        >
+          <div style={{
+            position: 'absolute',
+            top: '20px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            background: 'rgba(0,0,0,0.7)',
+            color: '#fff',
+            padding: '8px 20px',
+            borderRadius: '8px',
+            fontSize: '14px',
+            fontWeight: 600,
+            pointerEvents: 'none',
+          }}>
+            Drag to select area — ESC to cancel
+          </div>
+          {snippingStart && snippingEnd && (
+            <div style={{
+              position: 'absolute',
+              left: `${Math.min(snippingStart.x, snippingEnd.x)}px`,
+              top: `${Math.min(snippingStart.y, snippingEnd.y)}px`,
+              width: `${Math.abs(snippingEnd.x - snippingStart.x)}px`,
+              height: `${Math.abs(snippingEnd.y - snippingStart.y)}px`,
+              border: '2px solid #60a5fa',
+              background: 'rgba(96,165,250,0.1)',
+              pointerEvents: 'none',
+            }} />
+          )}
+          <button
+            onClick={() => { setSnipping(false); setSnippingStart(null); setSnippingEnd(null); }}
+            style={{
+              position: 'absolute',
+              top: '20px',
+              right: '20px',
+              background: 'rgba(220,50,50,0.8)',
+              border: 'none',
+              borderRadius: '8px',
+              padding: '8px 16px',
+              color: '#fff',
+              cursor: 'pointer',
+              fontSize: '13px',
+              fontWeight: 600,
+            }}
+            data-testid="button-snip-cancel"
+          >
+            Cancel
+          </button>
+        </div>
       )}
     </div>
   );
