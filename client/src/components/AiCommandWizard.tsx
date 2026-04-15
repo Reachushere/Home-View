@@ -3,13 +3,13 @@ import { Zap, Send, X, Loader2, CheckCircle, XCircle, AlertTriangle, Trash2, Rot
 import { queryClient } from '@/lib/queryClient';
 
 const thinkingKeyframes = `
-@keyframes ai-think-pulse {
-  0%, 100% { opacity: 0.4; transform: scale(0.85); }
-  50% { opacity: 1; transform: scale(1.1); }
+@keyframes ai-grid-pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
 }
-@keyframes ai-think-glow {
-  0%, 100% { box-shadow: 0 0 8px rgba(168,85,247,0.3), 0 0 20px rgba(168,85,247,0.1); }
-  50% { box-shadow: 0 0 16px rgba(168,85,247,0.6), 0 0 40px rgba(168,85,247,0.2); }
+@keyframes ai-think-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 `;
 
@@ -345,8 +345,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <Zap size={18} color="#60a5fa" />
-            <span style={{ fontSize: '15px', fontWeight: 700, color: '#e0ecff', letterSpacing: '0.3px' }}>AI Command</span>
-            <span style={{ fontSize: '11px', color: 'rgba(160,190,255,0.6)', fontWeight: 400 }}>natural language control</span>
+            <span style={{ fontSize: '15px', fontWeight: 700, color: '#e0ecff', letterSpacing: '0.3px' }}>Bryn Assist</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <button
@@ -387,7 +386,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
           {messages.length === 0 && (
             <div style={{ textAlign: 'center', padding: '30px 20px', color: 'rgba(160,190,255,0.5)' }}>
               <Zap size={32} style={{ margin: '0 auto 12px', opacity: 0.4 }} />
-              <div style={{ fontSize: '14px', marginBottom: '8px' }}>Type a command to control UniCal</div>
+              <div style={{ fontSize: '14px', marginBottom: '8px' }}>What can I help with?</div>
               <div style={{ fontSize: '12px', lineHeight: '1.8', color: 'rgba(160,190,255,0.35)' }}>
                 "Add a quiz for CPPA122 next Friday"<br />
                 "What's due this week?"<br />
@@ -449,43 +448,20 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
             </div>
           ))}
 
-          {thinkingPhase && (
-            <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+          {(thinkingPhase || (loading && !messages.some(m => m.role === 'assistant' && m.content))) && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 4px' }}>
               <div style={{
-                padding: '12px 18px',
-                borderRadius: '14px 14px 14px 4px',
-                background: 'linear-gradient(135deg, rgba(88,28,135,0.4), rgba(126,34,206,0.3))',
-                border: '1px solid rgba(168,85,247,0.35)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                animation: 'ai-think-glow 2s ease-in-out infinite',
+                width: '24px', height: '24px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px',
+                animation: 'ai-think-spin 3s linear infinite',
               }}>
-                <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
-                  <div style={{ width: '8px', height: '8px', borderRadius: '2px', background: 'rgba(192,132,252,0.9)', animation: 'ai-think-pulse 1.4s ease-in-out infinite', animationDelay: '0s' }} />
-                  <div style={{ width: '8px', height: '8px', borderRadius: '2px', background: 'rgba(168,85,247,0.9)', animation: 'ai-think-pulse 1.4s ease-in-out infinite', animationDelay: '0.2s' }} />
-                  <div style={{ width: '8px', height: '8px', borderRadius: '2px', background: 'rgba(139,92,246,0.9)', animation: 'ai-think-pulse 1.4s ease-in-out infinite', animationDelay: '0.4s' }} />
-                </div>
-                <span style={{ fontSize: '13px', color: 'rgba(216,180,254,0.9)', fontWeight: 500 }}>{thinkingPhase}</span>
+                <div style={{ width: '9px', height: '9px', borderRadius: '2px', background: '#a855f7', animation: 'ai-grid-pulse 1.2s ease-in-out infinite', animationDelay: '0s' }} />
+                <div style={{ width: '9px', height: '9px', borderRadius: '2px', background: '#8b5cf6', animation: 'ai-grid-pulse 1.2s ease-in-out infinite', animationDelay: '0.15s' }} />
+                <div style={{ width: '9px', height: '9px', borderRadius: '2px', background: '#7c3aed', animation: 'ai-grid-pulse 1.2s ease-in-out infinite', animationDelay: '0.3s' }} />
+                <div style={{ width: '9px', height: '9px', borderRadius: '2px', background: '#9333ea', animation: 'ai-grid-pulse 1.2s ease-in-out infinite', animationDelay: '0.45s' }} />
               </div>
-            </div>
-          )}
-          {loading && !thinkingPhase && !messages.some(m => m.role === 'assistant' && m.content === '') && (
-            <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-              <div style={{
-                padding: '10px 14px',
-                borderRadius: '14px 14px 14px 4px',
-                background: 'rgba(30,50,90,0.7)',
-                border: '1px solid rgba(100,160,255,0.15)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                color: 'rgba(160,190,255,0.6)',
-                fontSize: '13px',
-              }}>
-                <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />
-                Connecting...
-              </div>
+              <span style={{ fontSize: '13px', color: 'rgba(200,180,255,0.85)', fontWeight: 500 }}>
+                {thinkingPhase || 'Working...'}
+              </span>
             </div>
           )}
 
