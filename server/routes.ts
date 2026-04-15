@@ -6071,6 +6071,13 @@ ${fileContents.join('\n\n')}`;
 
       const appContext = await getAppContext();
 
+      let memoryContext = '';
+      try {
+        const fsPromises = await import('fs/promises');
+        const memContent = await fsPromises.readFile(path.join(process.cwd(), '.ai-memory.md'), 'utf-8');
+        if (memContent.trim()) memoryContext = `\n\nYOUR PERSISTENT MEMORY (from previous sessions):\n${memContent.substring(0, 3000)}\n`;
+      } catch {}
+
       const systemPrompt = `You are a senior full-stack developer embedded in UniCal, a personal academic task management app for Bryn (a TMU student). You operate autonomously like a real developer — read code, understand context, make changes, verify they compile, and fix errors yourself. You have up to 12 rounds of tool calls per request.
 
 CURRENT APP STATE:
@@ -6114,10 +6121,24 @@ GIT WORKFLOW:
 - git_diff: Review your changes before committing
 - git_commit_and_push: Commits and pushes to GitHub (requires confirmation). After this, Bryn can deploy on Pi.
 
-DEBUGGING:
+DATABASE:
+- db_schema — Shows all tables, columns, types. Always check before writing SQL.
+- run_sql — Execute SELECT freely. INSERT/UPDATE/DELETE require confirmation.
+- Use storage interface methods when available (create_task, etc). Use raw SQL for complex queries or data exploration.
+
+DEBUGGING & VERIFICATION:
+- check_build — TypeScript type-checker. Run after EVERY code edit. Fix errors in a loop until clean.
 - read_logs source="server" — See recent server output, errors, crash messages
-- check_build — See TypeScript compilation errors with file/line numbers
+- http_check path="/api/..." — Fetch a URL from the app to verify endpoints work. This is how you test your changes.
+- process_check — Check if server is running, what ports are active, system resources
 - search_code — Find where functions, variables, or strings are defined/used
+
+MEMORY:
+- memory_read — Load your persistent memory file at the start of complex tasks
+- memory_write — Save important context, decisions, learned patterns for future sessions. Requires confirmation.
+
+PACKAGES:
+- install_package — Install npm packages (requires confirmation)
 
 RULES:
 1. Work autonomously. Read → plan → edit → verify → fix errors → done. Keep going until the task is FULLY complete.
@@ -6131,7 +6152,9 @@ RULES:
 9. For UI: edit .tsx component files. For styling: prefer Tailwind classes. For APIs: add to server/routes.ts + server/storage.ts.
 10. When the dev server auto-restarts (Replit), no restart needed. On Pi, call restart_application.
 11. For staging preview: staging_manage setup → edits → staging_manage start → user checks :5001 → staging_manage apply.
-12. When you create or modify a function, verify the types match by checking surrounding code context.`;
+12. When you create or modify a function, verify the types match by checking surrounding code context.
+13. After completing a code change, use http_check to verify the endpoint/page still works.
+14. For complex tasks: call memory_read first to load context from past sessions. Call memory_write to save learnings after.${memoryContext}`;
 
       const messages: any[] = [{ role: "system", content: systemPrompt }];
       if (Array.isArray(history)) {
@@ -6148,14 +6171,16 @@ RULES:
       const OpenAI = (await import("openai")).default;
       const openai = new OpenAI({ apiKey: config.apiKey });
 
-      const readOnlyTools = new Set(["read_file", "list_directory", "search_code", "search_tasks", "get_semester_info", "check_build", "read_logs", "git_diff", "get_project_map"]);
-      const destructiveTools = new Set(["delete_task", "bulk_delete_tasks", "bulk_complete_tasks", "write_file", "edit_file", "run_shell_command", "restart_application", "git_commit_and_push"]);
+      const readOnlyTools = new Set(["read_file", "list_directory", "search_code", "search_tasks", "get_semester_info", "check_build", "read_logs", "git_diff", "get_project_map", "db_schema", "http_check", "memory_read", "process_check"]);
+      const destructiveTools = new Set(["delete_task", "bulk_delete_tasks", "bulk_complete_tasks", "write_file", "edit_file", "run_shell_command", "restart_application", "git_commit_and_push", "install_package"]);
 
       function isToolDestructive(fnName: string, fnArgs: any): boolean {
         if (destructiveTools.has(fnName)) return true;
         if (fnName === "manage_sticky_note" && fnArgs.action === "delete") return true;
         if (fnName === "notepad_crud" && fnArgs.action === "delete") return true;
         if (fnName === "staging_manage" && ["apply", "discard"].includes(fnArgs.action)) return true;
+        if (fnName === "run_sql" && /^\s*(INSERT|UPDATE|DELETE|DROP|ALTER|TRUNCATE|CREATE)/i.test(fnArgs.query || '')) return true;
+        if (fnName === "memory_write") return true;
         return false;
       }
 

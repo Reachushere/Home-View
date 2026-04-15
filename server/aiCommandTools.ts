@@ -567,6 +567,98 @@ export const AI_COMMAND_TOOLS = [
       },
     },
   },
+  {
+    type: "function" as const,
+    function: {
+      name: "run_sql",
+      description: "Execute a SQL query against the PostgreSQL database. Use for checking data, debugging, understanding schema. SELECT queries run freely. INSERT/UPDATE/DELETE require confirmation.",
+      parameters: {
+        type: "object",
+        properties: {
+          query: { type: "string", description: "SQL query to execute. Use SELECT for reads, INSERT/UPDATE/DELETE for writes." },
+        },
+        required: ["query"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "db_schema",
+      description: "Show the current database schema — all tables, columns, and types. Use this before writing SQL queries or modifying shared/schema.ts.",
+      parameters: {
+        type: "object",
+        properties: {},
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "install_package",
+      description: "Install an npm package. Runs 'npm install <package>'. Use when you need a new dependency for a feature.",
+      parameters: {
+        type: "object",
+        properties: {
+          package_name: { type: "string", description: "Package name (e.g. 'lodash' or 'dayjs@1.11.0')" },
+          dev: { type: "boolean", description: "Install as devDependency. Default false." },
+        },
+        required: ["package_name"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "http_check",
+      description: "Fetch a URL from the running app and return the HTTP status, headers, and a content preview. Use this to verify the app is running, check API responses, or test endpoints after changes. This is how you 'see' if the app works.",
+      parameters: {
+        type: "object",
+        properties: {
+          path: { type: "string", description: "URL path to check, e.g. '/api/tasks' or '/'. Will be prepended with http://localhost:5000" },
+          method: { type: "string", enum: ["GET", "POST", "PATCH", "DELETE"], description: "HTTP method. Default GET." },
+          body: { type: "string", description: "JSON body for POST/PATCH requests." },
+        },
+        required: ["path"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "memory_read",
+      description: "Read your persistent memory file. This contains notes, preferences, and context from previous sessions. Load this at the start of complex tasks to remember past work.",
+      parameters: {
+        type: "object",
+        properties: {},
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "memory_write",
+      description: "Write to your persistent memory file. Save important context, decisions, patterns, and notes here so you remember them in future sessions. Append new info — don't overwrite everything.",
+      parameters: {
+        type: "object",
+        properties: {
+          content: { type: "string", description: "Content to write to memory. Will replace the entire memory file, so include existing content you want to keep." },
+        },
+        required: ["content"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "process_check",
+      description: "Check if the app server is running, what port it's on, and system resource usage. Use after restart_application or when debugging crashes.",
+      parameters: {
+        type: "object",
+        properties: {},
+      },
+    },
+  },
 ];
 
 export async function executeToolCall(name: string, args: Record<string, any>): Promise<{ success: boolean; result: any; needsConfirmation?: boolean; confirmationMessage?: string }> {
@@ -1273,6 +1365,133 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
             directories: dirs.trim().substring(0, 3000),
             key_files: tree.trim().substring(0, 5000),
             tip: "Key areas: client/src/pages/ (UI pages), client/src/components/ (shared components), server/ (backend), shared/schema.ts (DB types)"
+          }};
+        } catch (e: any) {
+          return { success: false, result: { error: e.message?.substring(0, 300) } };
+        }
+      }
+
+      case "run_sql": {
+        const query = (args.query || '').trim();
+        if (!query) return { success: false, result: { error: "No SQL query provided" } };
+        try {
+          const result = await db.execute(query);
+          const rows = (result as any).rows || result;
+          const rowArray = Array.isArray(rows) ? rows : [];
+          return { success: true, result: { rowCount: rowArray.length, rows: rowArray.slice(0, 50), truncated: rowArray.length > 50 } };
+        } catch (e: any) {
+          return { success: false, result: { error: e.message?.substring(0, 500) } };
+        }
+      }
+
+      case "db_schema": {
+        try {
+          const result = await db.execute(`
+            SELECT table_name, column_name, data_type, is_nullable, column_default
+            FROM information_schema.columns
+            WHERE table_schema = 'public'
+            ORDER BY table_name, ordinal_position
+          `);
+          const rows = (result as any).rows || result;
+          const tables: Record<string, any[]> = {};
+          for (const row of rows as any[]) {
+            if (!tables[row.table_name]) tables[row.table_name] = [];
+            tables[row.table_name].push({ column: row.column_name, type: row.data_type, nullable: row.is_nullable, default: row.column_default });
+          }
+          return { success: true, result: { tables, tableCount: Object.keys(tables).length } };
+        } catch (e: any) {
+          return { success: false, result: { error: e.message?.substring(0, 500) } };
+        }
+      }
+
+      case "install_package": {
+        const pkgName = args.package_name;
+        if (!pkgName || pkgName.includes('&&') || pkgName.includes(';') || pkgName.includes('|')) {
+          return { success: false, result: { error: "Invalid package name" } };
+        }
+        const projectRoot = getProjectRoot();
+        try {
+          const devFlag = args.dev ? ' --save-dev' : '';
+          const output = execSync(`npm install ${pkgName}${devFlag} 2>&1`, { cwd: projectRoot, encoding: 'utf-8', timeout: 60000, maxBuffer: 2 * 1024 * 1024 });
+          return { success: true, result: { installed: pkgName, output: output.substring(0, 1000) } };
+        } catch (e: any) {
+          return { success: false, result: { error: e.message?.substring(0, 500) } };
+        }
+      }
+
+      case "http_check": {
+        const urlPath = args.path || '/';
+        const method = args.method || 'GET';
+        const port = 5000;
+        try {
+          const url = `http://localhost:${port}${urlPath}`;
+          const options: any = {
+            method,
+            headers: { 'Accept': 'application/json, text/html' },
+          };
+          if (args.body && (method === 'POST' || method === 'PATCH')) {
+            options.headers['Content-Type'] = 'application/json';
+            options.body = args.body;
+          }
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 10000);
+          options.signal = controller.signal;
+          const response = await fetch(url, options);
+          clearTimeout(timeout);
+          const contentType = response.headers.get('content-type') || '';
+          let body = '';
+          if (contentType.includes('json')) {
+            const json = await response.json();
+            body = JSON.stringify(json, null, 2).substring(0, 5000);
+          } else {
+            const text = await response.text();
+            body = text.substring(0, 3000);
+          }
+          return { success: true, result: { status: response.status, statusText: response.statusText, contentType, bodyPreview: body } };
+        } catch (e: any) {
+          return { success: false, result: { error: e.message?.substring(0, 300), hint: "Server may not be running. Try read_logs or process_check." } };
+        }
+      }
+
+      case "memory_read": {
+        const projectRoot = getProjectRoot();
+        const memPath = path.join(projectRoot, '.ai-memory.md');
+        try {
+          const content = await fs.readFile(memPath, 'utf-8');
+          return { success: true, result: { content } };
+        } catch {
+          return { success: true, result: { content: "(No memory file exists yet. Use memory_write to create one.)" } };
+        }
+      }
+
+      case "memory_write": {
+        const projectRoot = getProjectRoot();
+        const memPath = path.join(projectRoot, '.ai-memory.md');
+        try {
+          await fs.writeFile(memPath, args.content, 'utf-8');
+          return { success: true, result: { written: true, size: args.content.length } };
+        } catch (e: any) {
+          return { success: false, result: { error: e.message?.substring(0, 300) } };
+        }
+      }
+
+      case "process_check": {
+        try {
+          const projectRoot = getProjectRoot();
+          const isPi = projectRoot.includes('/home/byhomeyyz/');
+          let processInfo = '';
+          if (isPi) {
+            processInfo = execSync('pm2 jlist 2>/dev/null | head -3000', { encoding: 'utf-8', timeout: 5000 });
+          } else {
+            processInfo = execSync('ps aux | grep -E "(node|tsx|vite)" | grep -v grep | head -10', { encoding: 'utf-8', timeout: 5000 });
+          }
+          const portCheck = execSync('ss -tlnp 2>/dev/null | grep -E ":5000|:5001" || netstat -tlnp 2>/dev/null | grep -E ":5000|:5001" || echo "Port check unavailable"', { encoding: 'utf-8', timeout: 5000 });
+          const memInfo = execSync('free -h 2>/dev/null | head -2 || echo "Memory info unavailable"', { encoding: 'utf-8', timeout: 3000 });
+          return { success: true, result: {
+            processes: processInfo.substring(0, 2000),
+            ports: portCheck.trim(),
+            memory: memInfo.trim(),
+            environment: isPi ? 'raspberry-pi' : 'replit',
           }};
         } catch (e: any) {
           return { success: false, result: { error: e.message?.substring(0, 300) } };
