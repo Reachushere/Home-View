@@ -6045,15 +6045,19 @@ ${fileContents.join('\n\n')}`;
         return res.status(503).json({ error: "OpenAI API key not configured" });
       }
 
-      const { AI_COMMAND_TOOLS, executeToolCall, getAppContext } = await import("./aiCommandTools");
+      const { AI_COMMAND_TOOLS, executeToolCall, getAppContext, consumePendingConfirmation, createPendingConfirmation } = await import("./aiCommandTools");
 
-      if (confirmToolCall) {
-        const result = await executeToolCall(confirmToolCall.name, confirmToolCall.arguments);
+      if (confirmToolCall && confirmToolCall.token) {
+        const pending = consumePendingConfirmation(confirmToolCall.token);
+        if (!pending) {
+          return res.status(400).json({ error: "Confirmation expired or invalid. Please try the action again." });
+        }
+        const result = await executeToolCall(pending.name, pending.arguments);
         return res.json({
           reply: result.success
             ? `Done! ${JSON.stringify(result.result)}`
             : `Failed: ${JSON.stringify(result.result)}`,
-          toolResults: [{ name: confirmToolCall.name, ...result }],
+          toolResults: [{ name: pending.name, ...result }],
           actionTaken: true,
         });
       }
@@ -6102,16 +6106,23 @@ RULES:
       const toolCalls = choice?.message?.tool_calls;
 
       if (toolCalls && toolCalls.length > 0) {
-        const destructiveTools = ["delete_task"];
+        const destructiveTools = ["delete_task", "bulk_delete_tasks", "bulk_complete_tasks"];
         const toolResults: any[] = [];
         const pendingConfirmations: any[] = [];
 
         for (const tc of toolCalls) {
           const fnName = tc.function.name;
-          const fnArgs = JSON.parse(tc.function.arguments);
+          let fnArgs: any;
+          try {
+            fnArgs = JSON.parse(tc.function.arguments);
+          } catch {
+            toolResults.push({ name: fnName, success: false, result: { error: "Invalid tool arguments" }, tool_call_id: tc.id });
+            continue;
+          }
 
           if (destructiveTools.includes(fnName)) {
-            pendingConfirmations.push({ id: tc.id, name: fnName, arguments: fnArgs });
+            const token = createPendingConfirmation(fnName, fnArgs);
+            pendingConfirmations.push({ id: tc.id, name: fnName, arguments: fnArgs, token });
           } else {
             const result = await executeToolCall(fnName, fnArgs);
             toolResults.push({ name: fnName, ...result, tool_call_id: tc.id });

@@ -99,16 +99,20 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             message: 'confirmed',
-            confirmToolCall: { name: pc.name, arguments: pc.arguments },
+            confirmToolCall: { token: pc.token },
           }),
         });
         const data = await resp.json();
-        setMessages(prev => [...prev, {
-          role: 'assistant',
-          content: data.reply,
-          toolResults: data.toolResults,
-          actionTaken: true,
-        }]);
+        if (!resp.ok) {
+          setMessages(prev => [...prev, { role: 'assistant', content: `Error: ${data.error || 'Confirmation failed'}` }]);
+        } else {
+          setMessages(prev => [...prev, {
+            role: 'assistant',
+            content: data.reply,
+            toolResults: data.toolResults,
+            actionTaken: data.actionTaken,
+          }]);
+        }
       }
       invalidateAll();
     } catch (err: any) {

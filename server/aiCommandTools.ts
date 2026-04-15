@@ -3,11 +3,34 @@ import { db } from "./db";
 import { eq } from "drizzle-orm";
 import { notepadNotes, getWeekNumber, COURSES } from "@shared/schema";
 import { easternNow } from "./timezone";
+import * as spotifyApi from "./spotify";
+import crypto from "crypto";
 
-const HOME_ASSISTANT_URL = process.env.HOME_ASSISTANT_URL_OVERRIDE || "https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa";
-const tokenFromEnv = process.env.HOME_ASSISTANT_TOKEN || "";
-const urlFromEnv = process.env.HOME_ASSISTANT_URL || "";
-const HOME_ASSISTANT_TOKEN = tokenFromEnv.startsWith("eyJ") ? tokenFromEnv : (urlFromEnv.startsWith("eyJ") ? urlFromEnv : tokenFromEnv);
+const HOME_ASSISTANT_URL = process.env.HOME_ASSISTANT_URL_OVERRIDE || process.env.HOME_ASSISTANT_URL || "";
+const HOME_ASSISTANT_TOKEN = process.env.HOME_ASSISTANT_TOKEN || "";
+
+const pendingConfirmations = new Map<string, { name: string; arguments: any; createdAt: number }>();
+const CONFIRM_TTL_MS = 5 * 60 * 1000;
+
+export function createPendingConfirmation(name: string, args: any): string {
+  const token = crypto.randomBytes(16).toString('hex');
+  pendingConfirmations.set(token, { name, arguments: args, createdAt: Date.now() });
+  for (const [k, v] of pendingConfirmations) {
+    if (Date.now() - v.createdAt > CONFIRM_TTL_MS) pendingConfirmations.delete(k);
+  }
+  return token;
+}
+
+export function consumePendingConfirmation(token: string): { name: string; arguments: any } | null {
+  const entry = pendingConfirmations.get(token);
+  if (!entry) return null;
+  if (Date.now() - entry.createdAt > CONFIRM_TTL_MS) {
+    pendingConfirmations.delete(token);
+    return null;
+  }
+  pendingConfirmations.delete(token);
+  return { name: entry.name, arguments: entry.arguments };
+}
 
 export const AI_COMMAND_TOOLS = [
   {
@@ -197,6 +220,123 @@ export const AI_COMMAND_TOOLS = [
       },
     },
   },
+  {
+    type: "function" as const,
+    function: {
+      name: "update_semester_settings",
+      description: "Update semester settings like course details, professor info, class days/times, zoom links, colors, display names, etc. Use get_semester_info first to see current values.",
+      parameters: {
+        type: "object",
+        properties: {
+          courseNumber: { type: "integer", enum: [1, 2, 3], description: "Which course slot to update (1, 2, or 3)" },
+          professor: { type: "string", description: "Professor name" },
+          professorEmail: { type: "string", description: "Professor email" },
+          classDay: { type: "string", description: "Primary class day (e.g. monday, tuesday)" },
+          classTime: { type: "string", description: "Class start time in HH:mm format" },
+          classEndTime: { type: "string", description: "Class end time in HH:mm format" },
+          zoomLink: { type: "string", description: "Zoom/meeting link" },
+          displayName: { type: "string", description: "Custom display name for the course" },
+          color: { type: "string", description: "Course color (hex code)" },
+          semesterName: { type: "string", description: "Change the semester display name" },
+        },
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "update_app_theme",
+      description: "Change the app's visual theme/colors. Updates stored in app state and takes effect on next page load. Examples: 'make the app darker', 'change header to navy blue', 'set background to purple'.",
+      parameters: {
+        type: "object",
+        properties: {
+          headerBar: { type: "string", description: "Header bar color (hex code, e.g. #051729)" },
+          mainBackground: { type: "string", description: "Main background color (hex code, e.g. #3a8bbf)" },
+          mainBackgroundGradientEnd: { type: "string", description: "Background gradient end color (hex code)" },
+          boxBackground: { type: "string", description: "Content box background color (hex code, e.g. #ffffff)" },
+          todayCellBackground: { type: "string", description: "Today cell highlight color (hex code)" },
+          boxTransparency: { type: "integer", description: "Box transparency level 0-100 (higher = more transparent)" },
+          boxGlassEffect: { type: "boolean", description: "Enable/disable glass/frosted effect on boxes" },
+        },
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "update_ui_setting",
+      description: "Change a UI setting stored in app state. Used for various app preferences and configuration values.",
+      parameters: {
+        type: "object",
+        properties: {
+          key: { type: "string", description: "Setting key name" },
+          value: { type: "string", description: "Setting value (will be stored as string)" },
+        },
+        required: ["key", "value"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "bulk_complete_tasks",
+      description: "Mark multiple tasks as completed at once. DESTRUCTIVE — confirm with user first. Use search_tasks to find the task IDs.",
+      parameters: {
+        type: "object",
+        properties: {
+          taskIds: { type: "array", items: { type: "integer" }, description: "Array of task IDs to mark as completed" },
+        },
+        required: ["taskIds"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "bulk_delete_tasks",
+      description: "Delete multiple tasks at once. VERY DESTRUCTIVE — always confirm with user first.",
+      parameters: {
+        type: "object",
+        properties: {
+          taskIds: { type: "array", items: { type: "integer" }, description: "Array of task IDs to delete" },
+        },
+        required: ["taskIds"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "manage_sticky_note",
+      description: "Create, update, or delete a sticky note on the dashboard.",
+      parameters: {
+        type: "object",
+        properties: {
+          action: { type: "string", enum: ["create", "update", "delete"], description: "Action to perform" },
+          id: { type: "integer", description: "Sticky note ID (required for update/delete)" },
+          title: { type: "string", description: "Note title" },
+          content: { type: "string", description: "Note content" },
+          color: { type: "string", description: "Note color (yellow, blue, green, pink, purple, orange)" },
+        },
+        required: ["action"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "send_email",
+      description: "Send an email from the app's Gmail account (homeworkbryn@gmail.com) to Bryn's Outlook (bryn.kai-hendricks@outlook.com). Good for sending yourself reminders or notes.",
+      parameters: {
+        type: "object",
+        properties: {
+          subject: { type: "string", description: "Email subject line" },
+          body: { type: "string", description: "Email body text" },
+        },
+        required: ["subject", "body"],
+      },
+    },
+  },
 ];
 
 export async function executeToolCall(name: string, args: Record<string, any>): Promise<{ success: boolean; result: any; needsConfirmation?: boolean; confirmationMessage?: string }> {
@@ -342,14 +482,22 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           queen_bedroom: ["media_player.queen_bedroom_media_group"],
         };
         const targets = targetMap[args.target || "everywhere"] || targetMap.everywhere;
+        const errors: string[] = [];
         for (const target of targets) {
-          await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+          const announceResp = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({ message: args.message, target, data: { type: "announce" } }),
           });
+          if (!announceResp.ok) {
+            const errText = await announceResp.text().catch(() => '');
+            errors.push(`${target}: ${announceResp.status} ${errText.substring(0, 100)}`);
+          }
         }
-        return { success: true, result: { announced: true, message: args.message, target: args.target || "everywhere" } };
+        if (errors.length === targets.length) {
+          return { success: false, result: { error: `All announcements failed: ${errors.join('; ')}` } };
+        }
+        return { success: true, result: { announced: true, message: args.message, target: args.target || "everywhere", ...(errors.length > 0 ? { partialErrors: errors } : {}) } };
       }
 
       case "get_semester_info": {
@@ -378,27 +526,163 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
       }
 
       case "spotify_control": {
-        const base = '';
+        try {
+          switch (args.action) {
+            case "play": {
+              await spotifyApi.play();
+              return { success: true, result: { action: "play" } };
+            }
+            case "pause": {
+              await spotifyApi.pause();
+              return { success: true, result: { action: "pause" } };
+            }
+            case "next": {
+              await spotifyApi.next();
+              return { success: true, result: { action: "next" } };
+            }
+            case "previous": {
+              await spotifyApi.previous();
+              return { success: true, result: { action: "previous" } };
+            }
+            default:
+              return { success: false, result: { error: `Unknown spotify action: ${args.action}` } };
+          }
+        } catch (spotErr: any) {
+          return { success: false, result: { error: `Spotify error: ${spotErr.message || 'Unknown error'}` } };
+        }
+      }
+
+      case "update_semester_settings": {
+        const settings = await storage.getActiveSemesterSettings();
+        if (!settings) return { success: false, result: { error: "No active semester found" } };
+        const updates: any = {};
+        if (args.semesterName) updates.semesterName = args.semesterName;
+        if (args.courseNumber) {
+          const n = args.courseNumber;
+          if (args.professor) updates[`course${n}Professor`] = args.professor;
+          if (args.professorEmail) updates[`course${n}ProfessorEmail`] = args.professorEmail;
+          if (args.classDay) updates[`course${n}ClassDay`] = args.classDay;
+          if (args.classTime) updates[`course${n}ClassTime`] = args.classTime;
+          if (args.classEndTime) updates[`course${n}ClassEndTime`] = args.classEndTime;
+          if (args.zoomLink) updates[`course${n}ZoomLink`] = args.zoomLink;
+          if (args.displayName) updates[`course${n}DisplayName`] = args.displayName;
+          if (args.color) updates[`course${n}Color`] = args.color;
+        }
+        if (Object.keys(updates).length === 0) return { success: false, result: { error: "No updates specified" } };
+        const updated = await storage.updateSemesterSettings(settings.id, updates);
+        return { success: true, result: { updated: Object.keys(updates), semesterName: updated.semesterName } };
+      }
+
+      case "update_app_theme": {
+        const { appState: appStateTable } = await import("@shared/schema");
+        const themeUpdates: any = {};
+        const fields = ['headerBar', 'mainBackground', 'mainBackgroundGradientEnd', 'boxBackground', 'todayCellBackground', 'boxTransparency', 'boxGlassEffect'];
+        for (const f of fields) {
+          if (args[f] !== undefined) themeUpdates[f] = args[f];
+        }
+        if (Object.keys(themeUpdates).length === 0) return { success: false, result: { error: "No theme updates specified" } };
+        const key = 'ui_colorSettings';
+        const existingRows = await db.select().from(appStateTable).where(eq(appStateTable.key, key)).limit(1);
+        let current: any = {};
+        if (existingRows.length > 0 && existingRows[0].value) {
+          try { current = JSON.parse(existingRows[0].value); } catch {}
+        }
+        const merged = { ...current, ...themeUpdates };
+        const value = JSON.stringify(merged);
+        if (existingRows.length > 0) {
+          await db.update(appStateTable).set({ value, updatedAt: new Date() }).where(eq(appStateTable.key, key));
+        } else {
+          await db.insert(appStateTable).values({ key, value });
+        }
+        return { success: true, result: { updated: Object.keys(themeUpdates), note: "Theme changes will apply on next page load or refresh" } };
+      }
+
+      case "update_ui_setting": {
+        const { appState: appStateTable } = await import("@shared/schema");
+        const key = `ui_${args.key}`;
+        const existingRows = await db.select().from(appStateTable).where(eq(appStateTable.key, key)).limit(1);
+        if (existingRows.length > 0) {
+          await db.update(appStateTable).set({ value: String(args.value), updatedAt: new Date() }).where(eq(appStateTable.key, key));
+        } else {
+          await db.insert(appStateTable).values({ key, value: String(args.value) });
+        }
+        return { success: true, result: { key: args.key, value: args.value } };
+      }
+
+      case "bulk_complete_tasks": {
+        if (!Array.isArray(args.taskIds) || args.taskIds.length === 0) {
+          return { success: false, result: { error: "No task IDs provided" } };
+        }
+        const completed: number[] = [];
+        const failed: number[] = [];
+        for (const id of args.taskIds) {
+          try {
+            await storage.updateTask(id, { isCompleted: true });
+            completed.push(id);
+          } catch {
+            failed.push(id);
+          }
+        }
+        return { success: true, result: { completed: completed.length, failed: failed.length, completedIds: completed } };
+      }
+
+      case "bulk_delete_tasks": {
+        if (!Array.isArray(args.taskIds) || args.taskIds.length === 0) {
+          return { success: false, result: { error: "No task IDs provided" } };
+        }
+        const deleted: number[] = [];
+        const failedDel: number[] = [];
+        for (const id of args.taskIds) {
+          try {
+            await storage.deleteTask(id);
+            deleted.push(id);
+          } catch {
+            failedDel.push(id);
+          }
+        }
+        return { success: true, result: { deleted: deleted.length, failed: failedDel.length, deletedIds: deleted } };
+      }
+
+      case "manage_sticky_note": {
         switch (args.action) {
-          case "play": {
-            await fetch('/api/spotify/play', { method: 'PUT' }).catch(() => {});
-            return { success: true, result: { action: "play" } };
+          case "create": {
+            const note = await storage.createStickyNote({
+              title: args.title || "Note",
+              content: args.content || "",
+              color: args.color || "yellow",
+            });
+            return { success: true, result: { id: note.id, title: note.title, action: "created" } };
           }
-          case "pause": {
-            await fetch('/api/spotify/pause', { method: 'PUT' }).catch(() => {});
-            return { success: true, result: { action: "pause" } };
+          case "update": {
+            if (!args.id) return { success: false, result: { error: "Sticky note ID required for update" } };
+            const updates: any = {};
+            if (args.title) updates.title = args.title;
+            if (args.content) updates.content = args.content;
+            if (args.color) updates.color = args.color;
+            const updated = await storage.updateStickyNote(args.id, updates);
+            return { success: true, result: { id: updated.id, title: updated.title, action: "updated" } };
           }
-          case "next": {
-            await fetch('/api/spotify/next', { method: 'POST' }).catch(() => {});
-            return { success: true, result: { action: "next" } };
-          }
-          case "previous": {
-            await fetch('/api/spotify/previous', { method: 'POST' }).catch(() => {});
-            return { success: true, result: { action: "previous" } };
+          case "delete": {
+            if (!args.id) return { success: false, result: { error: "Sticky note ID required for delete" } };
+            await storage.deleteStickyNote(args.id);
+            return { success: true, result: { id: args.id, action: "deleted" } };
           }
           default:
-            return { success: false, result: { error: `Unknown spotify action: ${args.action}` } };
+            return { success: false, result: { error: `Unknown sticky note action: ${args.action}` } };
         }
+      }
+
+      case "send_email": {
+        const { sendGmail } = await import("./gmail");
+        const result = await sendGmail(
+          "bryn.kai-hendricks@outlook.com",
+          args.subject,
+          args.body
+        );
+        if (result.success) {
+          return { success: true, result: { sent: true, to: "bryn.kai-hendricks@outlook.com", subject: args.subject } };
+        }
+        return { success: false, result: { error: result.error || "Email failed" } };
       }
 
       default:
