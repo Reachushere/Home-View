@@ -6264,11 +6264,11 @@ HARD RULES
             messages: [{
               role: "user",
               content: [
-                { type: "text", text: "Describe this screenshot in detail. Include: all visible UI elements, text content, colors, layout, button labels, any error messages, and the overall structure. Be thorough — your description will be used by another AI to understand what the user is looking at." },
+                { type: "text", text: "Briefly describe this screenshot: visible UI elements, text, colors, layout, errors. Focus on what's actionable. Be concise (under 500 words)." },
                 { type: "image_url", image_url: { url: image, detail: "auto" } },
               ],
             }],
-            max_tokens: 1500,
+            max_tokens: 800,
           });
           imageDescription = visionResp.choices[0]?.message?.content || '';
           console.log(`[AI] Vision analysis: ${imageDescription.substring(0, 200)}...`);
@@ -6296,7 +6296,7 @@ HARD RULES
         return false;
       }
 
-      const MAX_ROUNDS = 30;
+      const MAX_ROUNDS = isCodeTask ? 20 : 10;
       let totalTokens = 0;
       let allToolResults: any[] = [];
       let actionTaken = false;
@@ -6315,7 +6315,7 @@ HARD RULES
           messages,
           tools: AI_COMMAND_TOOLS,
           tool_choice: "auto",
-          max_completion_tokens: isCodeTask ? 8192 : 4096,
+          max_completion_tokens: isCodeTask ? 4096 : 2048,
         });
         totalTokens += completion.usage?.total_tokens || 0;
 
@@ -6326,8 +6326,8 @@ HARD RULES
           const reply = choice?.message?.content || "Done!";
           if (stream) {
             res.write(`data: ${JSON.stringify({ type: 'meta', toolResults: allToolResults, actionTaken, model, rounds: round })}\n\n`);
-            for (let i = 0; i < reply.length; i += 20) {
-              const chunk = reply.substring(i, i + 20);
+            for (let i = 0; i < reply.length; i += 80) {
+              const chunk = reply.substring(i, i + 80);
               res.write(`data: ${JSON.stringify({ type: 'token', content: chunk })}\n\n`);
             }
             res.write(`data: ${JSON.stringify({ type: 'done', reply, actionTaken })}\n\n`);
