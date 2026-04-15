@@ -132,6 +132,12 @@ uri = "file://attached_assets/bryn_tv_popcorn_v4.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "i3b2UgxhcdDUK7dD2csyL"
+uri = "file://attached_assets/bryn_tv_popcorn_v5.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "YFf1AFzLkqTG8aZXkvxoF"
 uri = "file://.local/cat-washroom-automation-report.md"
@@ -305,3 +311,9 @@ id = "pvU_5q8Y4XBDhBeBnLCNa"
 uri = "file://attached_assets/bryn_tv_popcorn_v4.png"
 type = "image"
 title = "Bryn TV Popcorn v4 - Bare Face, Faux Hawk"
+
+[[outputs]]
+id = "G5TcSL_8yUngIAcG-S5g3"
+uri = "file://attached_assets/bryn_tv_popcorn_v5.png"
+type = "image"
+title = "Bryn TV Popcorn v5 - Semi-Realistic"
