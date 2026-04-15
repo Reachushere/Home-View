@@ -20209,7 +20209,7 @@ export default function Dashboard() {
             <div className="fixed inset-0 bg-black/50" />
             <div
               className="fixed z-[10002] overflow-hidden flex flex-col text-[11px] text-white p-0 sm:rounded-lg"
-              style={{ top: `${(calendarBorderTop || (calendarTop + 15))}px`, left: `${calendarLeft}px`, right: `${(() => { const frozen = savedCalendarReductionRef.current ?? (parseFloat(localStorage.getItem('savedCalendarReduction') || '0') || 260); return calendarRight - frozen + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1 + 3; })()}px`, bottom: `${calendarBottom}px`, color: 'white', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}
+              style={{ top: `${(calendarBorderTop || (calendarTop + 15))}px`, left: `${calendarLeft}px`, right: `${(() => { const frozen = savedCalendarReductionRef.current ?? (parseFloat(localStorage.getItem('savedCalendarReduction') || '0') || 260); return calendarRight - frozen + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1 + 3; })()}px`, bottom: `${calendarBottom}px`, color: 'white', background: `linear-gradient(90deg, #1a3a5c 0%, #1e3d5f 25%, #1b3355 50%, #1a2744 75%, #151d35 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}
               onClick={(e) => e.stopPropagation()}
               data-testid="day-detail-panel"
             >
@@ -20336,9 +20336,15 @@ export default function Dashboard() {
                   };
                   return (
                     <>
-                      {renderColumn(amHours, 'AM')}
+                      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', height: '100%' }}>
+                        <div style={{ padding: '4px 0', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#fbbf24', letterSpacing: '1px', textTransform: 'uppercase', borderBottom: '1px solid rgba(255,255,255,0.15)', flexShrink: 0, background: 'rgba(251,191,36,0.08)' }} data-testid="day-detail-morning-label">☀️ Morning</div>
+                        {renderColumn(amHours, 'AM')}
+                      </div>
                       <div style={{ width: '1px', background: 'rgba(255,255,255,0.3)', flexShrink: 0 }} />
-                      {renderColumn(pmHours, 'PM')}
+                      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', height: '100%' }}>
+                        <div style={{ padding: '4px 0', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: '#c084fc', letterSpacing: '1px', textTransform: 'uppercase', borderBottom: '1px solid rgba(255,255,255,0.15)', flexShrink: 0, background: 'rgba(192,132,252,0.08)' }} data-testid="day-detail-afternoon-label">🌙 Afternoon / Evening</div>
+                        {renderColumn(pmHours, 'PM')}
+                      </div>
                     </>
                   );
                 })()}
