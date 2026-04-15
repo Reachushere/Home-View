@@ -1,0 +1,106 @@
+[TAILING] Tailing last 50 lines for [dashboard] process (change the value with --lines option)
+/home/byhomeyyz/.pm2/logs/dashboard-error.log last 50 lines:
+0|dashboar | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboar | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboar | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboar | Require stack:
+0|dashboar | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboar | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboar | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboar | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboar | Require stack:
+0|dashboar | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboar | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboar | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboar | [OCR] Missing dependency (install canvas, pdfjs-dist, tesseract.js): Cannot find module '../build/Release/canvas.node'
+0|dashboar | Require stack:
+0|dashboar | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/bindings.js
+0|dashboar | - /home/byhomeyyz/Home-View/node_modules/canvas/lib/canvas.js
+0|dashboar | - /home/byhomeyyz/Home-View/node_modules/canvas/index.js
+0|dashboar | [Gmail] Error fetching D2L announcements: Gmail API error 403: {
+0|dashboar |   "error": {
+0|dashboar |     "code": 403,
+0|dashboar |     "message": "Request had insufficient authentication scopes.",
+0|dashboar |     "errors": [
+0|dashboar |       {
+0|dashboar |         "message": "Insufficient Permission",
+0|dashboar |         "domain": "global",
+0|dashboar |         "reason": "insufficientPermissions"
+0|dashboar |       }
+0|dashboar |     ],
+0|dashboar |     "status": "PERMISSION_DENIED",
+0|dashboar |     "details": [
+0|dashboar |       {
+0|dashboar |         "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+0|dashboar |         "reason": "ACCESS_TOKEN_SCOPE_INSUFFICIENT",
+0|dashboar |         "domain": "googleapis.com",
+0|dashboar |         "metadata": {
+0|dashboar |           "method": "caribou.api.proto.MailboxService.ListMessages",
+0|dashboar |           "service": "gmail.googleapis.com"
+0|dashboar |         }
+0|dashboar |       }
+0|dashboar |     ]
+0|dashboar |   }
+0|dashboar | }
+0|dashboar |
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Edge TTS] Attempt 1 failed: Timed out
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+
+/home/byhomeyyz/.pm2/logs/dashboard-out.log last 50 lines:
+0|dashboar | [Cleanup] Turned off automation: automation.cat_water_rascal_announcement
+0|dashboar | [Cleanup] Found Rascal entity: automation.rascal_cat_food_low (Rascal Cat Food Low)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3598s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [Cleanup] Turned off automation: automation.rascal_cat_food_low
+0|dashboar | [Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_today_s_feeding_quantity (Today's Feeding Quantity)
+0|dashboar | [Cleanup] Found Rascal entity: number.feeder_lr_rascal_desiccant_frequency (Desiccant Frequency)
+0|dashboar | [Cleanup] Found Rascal entity: sensor.feeder_lr_rascal_last_feed_quantity (Last Feed Quantity)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 1 - Jan 12-16
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3598s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3598s)
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3598s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 1 - Jan 12-16/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3597s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3597s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 1 - Jan 12-16/Reading
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3597s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3597s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 10 - Mar 21-27
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3596s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | Edge TTS completed in 12190ms, 469152 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-365-chunk-3-1776228626564.mp3
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3596s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 10 - Mar 21-27/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3596s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3596s)
+0|dashboar | [AudioPrep] Generating chunk 5/28 for CPPA122, Module 2 - Introduction.pdf (1471 chars)
+0|dashboar | Generating Edge TTS for 1471 chars, file: prep-365-chunk-4
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 10 - Mar 21-27/Reading
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3595s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3595s)
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 11 - Mar 28-Apr 3
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3595s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | Edge TTS completed in 947ms, 520704 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-365-chunk-4-1776228628314.mp3
+0|dashboar | [OneDrive][TRACE] listOneDriveItems called for path: /School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics/Week 11 - Mar 28-Apr 3/Module
+0|dashboar | [OneDrive][TRACE] Using cached access token (expires in 3594s)
+0|dashboar | [OneDrive][TRACE] Got OneDrive client, making API call...
+0|dashboar | [AudioPrep] Generating chunk 6/28 for CPPA122, Module 2 - Introduction.pdf (1274 chars)
+0|dashboar | Generating Edge TTS for 1274 chars, file: prep-365-chunk-5
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+
+byhomeyyz@raspberrypi:~/Home-View $
