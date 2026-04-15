@@ -12,6 +12,7 @@ import { SemesterChecklistDialog } from "@/components/SemesterChecklistDialog";
 import { SystemSetupWizard } from "@/components/SystemSetupWizard";
 import LibraryView from "@/components/LibraryView";
 import { AiChatBubble } from "@/components/AiChatBubble";
+import { AiCommandWizard } from "@/components/AiCommandWizard";
 import { Document, Page, pdfjs } from 'react-pdf';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -5379,6 +5380,7 @@ export default function Dashboard() {
   const courseListFileRef = useRef<HTMLInputElement>(null);
   const [isNewCourseWizardOpen, setIsNewCourseWizardOpen] = useState(false);
   const newCourseDialogClosingRef = useRef(false);
+  const [isAiCommandOpen, setIsAiCommandOpen] = useState(false);
 
   useEffect(() => {
     const anyDialogOpen = isSettingsPanelOpen || isTodoFlyoutOpen || isProjectsFlyoutOpen || isRadioDialogOpen || isCompletedTasksOpen || isQuickAddOpen || isAlexaDialogOpen || isEmailWizardOpen || isKeyContactsOpen || isFeedbackOpen || isSystemHealthOpen || isSchoolCoursesDialogOpen || isNewCourseWizardOpen;
@@ -6259,6 +6261,17 @@ export default function Dashboard() {
     };
     window.addEventListener('keydown', handleNlShortcut);
     return () => window.removeEventListener('keydown', handleNlShortcut);
+  }, [authLevel]);
+
+  useEffect(() => {
+    const handleAiCommandShortcut = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'j' && authLevel === '5747') {
+        e.preventDefault();
+        setIsAiCommandOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleAiCommandShortcut);
+    return () => window.removeEventListener('keydown', handleAiCommandShortcut);
   }, [authLevel]);
 
   // Restore pomodoro state from server on mount
@@ -22075,6 +22088,17 @@ export default function Dashboard() {
                         >
                           <FileText className="h-3.5 w-3.5" />
                           Course Documents
+                        </button>
+                        <button
+                          className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 text-white flex items-center gap-1.5"
+                          style={{ background: 'rgba(96,165,250,0.35)', border: '1px solid rgba(96,165,250,0.7)' }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(96,165,250,0.45)'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(96,165,250,0.35)'; }}
+                          onClick={(e) => { e.stopPropagation(); setIsQuickAddOpen(false); setTimeout(() => setIsAiCommandOpen(true), 50); }}
+                          data-testid="quick-add-type-ai-command"
+                        >
+                          <Zap className="h-3.5 w-3.5" />
+                          AI Command
                         </button>
                         {(["module", "reading", "essay", "discussion", "poll", "quiz", "exam", "other", "reminder", "meeting", "phone_call", "scholarship", "project"] as const).map(type => {
                           const TypeIcon = iconMap[type] || FileText;
@@ -40395,6 +40419,7 @@ export default function Dashboard() {
       </main>
       </div>
       {authLevel === '5747' && <AiChatBubble colorSettings={colorSettings} />}
+      {authLevel === '5747' && <AiCommandWizard isOpen={isAiCommandOpen} onClose={() => setIsAiCommandOpen(false)} />}
       {showSystemSetupWizard && authLevel === '5747' && (
         <SystemSetupWizard
           open={showSystemSetupWizard}

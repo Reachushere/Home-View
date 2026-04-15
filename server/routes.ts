@@ -6034,6 +6034,146 @@ ${fileContents.join('\n\n')}`;
     }
   });
 
+  app.post("/api/ai/command", async (req, res) => {
+    try {
+      if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ error: "Access denied" });
+      const { message, history, confirmToolCall } = req.body;
+      if (!message || typeof message !== 'string' || message.trim().length < 2) {
+        return res.status(400).json({ error: "Message too short" });
+      }
+      if (!process.env.OPENAI_API_KEY) {
+        return res.status(503).json({ error: "OpenAI API key not configured" });
+      }
+
+      const { AI_COMMAND_TOOLS, executeToolCall, getAppContext } = await import("./aiCommandTools");
+
+      if (confirmToolCall) {
+        const result = await executeToolCall(confirmToolCall.name, confirmToolCall.arguments);
+        return res.json({
+          reply: result.success
+            ? `Done! ${JSON.stringify(result.result)}`
+            : `Failed: ${JSON.stringify(result.result)}`,
+          toolResults: [{ name: confirmToolCall.name, ...result }],
+          actionTaken: true,
+        });
+      }
+
+      const appContext = await getAppContext();
+
+      const systemPrompt = `You are the AI Command Assistant for UniCal, a personal academic task management app for Bryn, a TMU student. You can control the app and smart home through tool calls.
+
+CURRENT APP STATE:
+${appContext}
+
+RULES:
+1. When the user asks to do something, use the appropriate tool to execute it.
+2. For destructive actions (delete, bulk changes), describe what you'll do and ask for confirmation BEFORE executing.
+3. When searching for tasks, always use search_tasks first to find the ID, then use update_task/delete_task/complete_task.
+4. Resolve course references: "politics" = CPPA courses, "sexuality" = CFNF400, "sign language" or "ASL" = CASL101, "photoshop" = CGCM738, "economics" = CECN210, "philosophy" = CPHL110, "popular culture" = CHIS105.
+5. When creating tasks, auto-calculate reasonable due dates/times. Bryn is in Eastern Time (America/Toronto).
+6. Be concise. After executing an action, confirm what you did in 1-2 sentences.
+7. For Home Assistant commands, known entities include: light.cat_lights (cat room lights). For other lights/switches, construct entity IDs like light.<room>_light or switch.<room>_<device>.
+8. For announcements, use ha_announce tool. The "everywhere" target reaches all speakers.`;
+
+      const messages: any[] = [{ role: "system", content: systemPrompt }];
+      if (Array.isArray(history)) {
+        for (const h of history.slice(-10)) {
+          if (h.role === 'tool') {
+            messages.push({ role: "tool", content: h.content, tool_call_id: h.tool_call_id });
+          } else {
+            messages.push({ role: h.role, content: h.content });
+          }
+        }
+      }
+      messages.push({ role: "user", content: message.trim() });
+
+      const OpenAI = (await import("openai")).default;
+      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages,
+        tools: AI_COMMAND_TOOLS,
+        tool_choice: "auto",
+        max_completion_tokens: 2048,
+      });
+
+      const choice = completion.choices[0];
+      const toolCalls = choice?.message?.tool_calls;
+
+      if (toolCalls && toolCalls.length > 0) {
+        const destructiveTools = ["delete_task"];
+        const toolResults: any[] = [];
+        const pendingConfirmations: any[] = [];
+
+        for (const tc of toolCalls) {
+          const fnName = tc.function.name;
+          const fnArgs = JSON.parse(tc.function.arguments);
+
+          if (destructiveTools.includes(fnName)) {
+            pendingConfirmations.push({ id: tc.id, name: fnName, arguments: fnArgs });
+          } else {
+            const result = await executeToolCall(fnName, fnArgs);
+            toolResults.push({ name: fnName, ...result, tool_call_id: tc.id });
+          }
+        }
+
+        if (pendingConfirmations.length > 0) {
+          let confirmMsg = choice.message?.content || "";
+          if (!confirmMsg) {
+            const details = pendingConfirmations.map(p => `${p.name}(${JSON.stringify(p.arguments)})`).join(", ");
+            confirmMsg = `I need your confirmation to proceed with: ${details}. Should I go ahead?`;
+          }
+          return res.json({
+            reply: confirmMsg,
+            pendingConfirmations,
+            toolResults,
+            actionTaken: false,
+          });
+        }
+
+        const toolMsgs: any[] = [choice.message];
+        for (const tr of toolResults) {
+          toolMsgs.push({ role: "tool", tool_call_id: tr.tool_call_id, content: JSON.stringify(tr.result) });
+        }
+
+        const followUp = await openai.chat.completions.create({
+          model: "gpt-4o-mini",
+          messages: [...messages, ...toolMsgs],
+          max_completion_tokens: 1024,
+        });
+
+        const reply = followUp.choices[0]?.message?.content || "Done!";
+        const usage = completion.usage;
+        const usage2 = followUp.usage;
+        const totalTokens = (usage?.total_tokens || 0) + (usage2?.total_tokens || 0);
+        const cost = totalTokens > 0 ? ((totalTokens / 1_000_000) * 0.30) : 0;
+
+        return res.json({
+          reply,
+          toolResults,
+          actionTaken: true,
+          usage: { totalTokens },
+          cost: `$${cost.toFixed(4)}`,
+        });
+      }
+
+      const reply = choice?.message?.content || "I'm not sure what you want me to do. Try being more specific.";
+      const usage = completion.usage;
+      const cost = usage ? ((usage.prompt_tokens / 1_000_000) * 0.15 + (usage.completion_tokens / 1_000_000) * 0.60) : 0;
+
+      res.json({
+        reply,
+        actionTaken: false,
+        usage: usage ? { totalTokens: usage.total_tokens } : null,
+        cost: `$${cost.toFixed(4)}`,
+      });
+    } catch (err: any) {
+      console.error("AI command error:", err);
+      res.status(500).json({ error: err?.message || "Command failed" });
+    }
+  });
+
   app.post("/api/library/ai-search/preview", async (req, res) => {
     try {
       if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ error: 'Search restricted' });
