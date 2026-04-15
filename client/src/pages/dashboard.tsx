@@ -20647,8 +20647,9 @@ export default function Dashboard() {
         className={`fixed${tabBounceEnabled ? ' bottom-tab-bounce' : ''}`}
         style={{
           bottom: '29px',
-          left: '50%',
+          left: weatherAlerts.length > 0 ? 'calc(50% + 35px)' : '50%',
           transform: 'translateX(-50%)',
+          transition: 'left 0.3s ease-in-out',
           display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : 'block',
           textDecoration: 'none',
           zIndex: 10002,
@@ -20682,7 +20683,8 @@ export default function Dashboard() {
           className="fixed cursor-pointer"
           style={{
             bottom: '29px',
-            left: 'calc(50% + 52px)',
+            left: weatherAlerts.length > 0 ? 'calc(50% + 52px + 35px)' : 'calc(50% + 52px)',
+            transition: 'left 0.3s ease-in-out',
             display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : 'block',
             zIndex: 10002,
             background: 'none',
@@ -20719,7 +20721,8 @@ export default function Dashboard() {
           className="fixed cursor-pointer"
           style={{
             bottom: '29px',
-            left: 'calc(50% + 52px)',
+            left: weatherAlerts.length > 0 ? 'calc(50% + 52px + 35px)' : 'calc(50% + 52px)',
+            transition: 'left 0.3s ease-in-out',
             display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : 'block',
             zIndex: 10002,
             background: 'none',
