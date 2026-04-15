@@ -9,8 +9,10 @@ import path from "path";
 import fs from "fs/promises";
 import { execSync } from "child_process";
 
-const HOME_ASSISTANT_URL = process.env.HOME_ASSISTANT_URL_OVERRIDE || process.env.HOME_ASSISTANT_URL || "";
-const HOME_ASSISTANT_TOKEN = process.env.HOME_ASSISTANT_TOKEN || "";
+const HOME_ASSISTANT_URL = process.env.HOME_ASSISTANT_URL_OVERRIDE || process.env.HOME_ASSISTANT_URL || "https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa";
+const tokenFromEnvAi = process.env.HOME_ASSISTANT_TOKEN || "";
+const urlFromEnvAi = process.env.HOME_ASSISTANT_URL || "";
+const HOME_ASSISTANT_TOKEN = tokenFromEnvAi.startsWith("eyJ") ? tokenFromEnvAi : (urlFromEnvAi.startsWith("eyJ") ? urlFromEnvAi : tokenFromEnvAi);
 
 const pendingConfirmations = new Map<string, { name: string; arguments: any; createdAt: number }>();
 const CONFIRM_TTL_MS = 5 * 60 * 1000;
