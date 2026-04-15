@@ -21404,7 +21404,7 @@ export default function Dashboard() {
             requestAnimationFrame(() => {
               requestAnimationFrame(() => {
                 setHwMinimizeAnim('restoring');
-                setTimeout(() => setHwMinimizeAnim('idle'), 380);
+                setTimeout(() => setHwMinimizeAnim('idle'), 580);
               });
             });
           }}
@@ -21441,7 +21441,7 @@ export default function Dashboard() {
             requestAnimationFrame(() => {
               requestAnimationFrame(() => {
                 setBlankMinimizeAnim('restoring');
-                setTimeout(() => setBlankMinimizeAnim('idle'), 380);
+                setTimeout(() => setBlankMinimizeAnim('idle'), 580);
               });
             });
           }}
@@ -35601,7 +35601,7 @@ export default function Dashboard() {
             clipPath: hwWipeClipped ? 'inset(0 0 0 100%)' : 'inset(0 0 0 0)',
             transform: hwMinimizeAnim === 'minimizing' ? 'scale(0.15) translateY(120vh)' : hwMinimizeAnim === 'restoring' ? 'scale(1) translateY(0)' : 'none',
             opacity: hwMinimizeAnim === 'minimizing' ? 0 : (isPillMenuOpen && !sidePillIdle) ? 0 : 1,
-            transition: hwMinimizeAnim !== 'idle' ? 'transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
+            transition: hwMinimizeAnim !== 'idle' ? 'transform 0.55s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
             transformOrigin: 'bottom center',
             pointerEvents: (isPillMenuOpen && !sidePillIdle) || hwMinimizeAnim === 'minimizing' ? 'none' : 'auto',
           }}
@@ -35620,7 +35620,7 @@ export default function Dashboard() {
             </button>
           )}
           <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', border: '1.5px solid rgba(255,255,255,0.5)', pointerEvents: 'none', zIndex: 9999 }} />
-          {(blankBoxOpen || blankMinimizeAnim === 'minimizing' || blankMinimizeAnim === 'restoring') && <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', zIndex: 9998, pointerEvents: blankMinimizeAnim !== 'idle' ? 'none' : 'auto', display: 'flex', flexDirection: 'column', transform: blankMinimizeAnim === 'minimizing' ? 'scale(0.08) translateY(180%)' : blankMinimizeAnim === 'restoring' ? 'none' : 'none', opacity: blankMinimizeAnim === 'minimizing' ? 0 : 1, transition: blankMinimizeAnim === 'minimizing' ? 'transform 0.38s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.38s cubic-bezier(0.4, 0, 0.2, 1)' : blankMinimizeAnim === 'restoring' ? 'transform 0.35s cubic-bezier(0.0, 0, 0.2, 1), opacity 0.35s cubic-bezier(0.0, 0, 0.2, 1)' : 'none', transformOrigin: 'bottom center' }}>
+          {(blankBoxOpen || blankMinimizeAnim === 'minimizing' || blankMinimizeAnim === 'restoring') && <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', zIndex: 9998, pointerEvents: blankMinimizeAnim !== 'idle' ? 'none' : 'auto', display: 'flex', flexDirection: 'column', transform: blankMinimizeAnim === 'minimizing' ? 'scale(0.08) translateY(180%)' : blankMinimizeAnim === 'restoring' ? 'none' : 'none', opacity: blankMinimizeAnim === 'minimizing' ? 0 : 1, transition: blankMinimizeAnim === 'minimizing' ? 'transform 0.55s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1)' : blankMinimizeAnim === 'restoring' ? 'transform 0.55s cubic-bezier(0.0, 0, 0.2, 1), opacity 0.55s cubic-bezier(0.0, 0, 0.2, 1)' : 'none', transformOrigin: 'bottom center' }}>
             <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', border: '1.5px solid rgba(255,255,255,0.5)', pointerEvents: 'none', zIndex: 9999 }} />
             <div style={{ padding: '0 8px', height: courseRowRects.length > 0 ? `${courseRowRects[0].top - (calendarBorderTop || (calendarTop + 15)) - 1}px` : '45px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 46, overflow: 'hidden', borderRadius: '12px 12px 0 0', boxShadow: '0 3px 6px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3)' }}>
               <div style={{ position: 'absolute', top: '21px', left: '25px', right: '8px', height: '0.5px', backgroundColor: 'rgba(255,255,255,0.3)', zIndex: 2 }} />
@@ -35733,7 +35733,7 @@ export default function Dashboard() {
                   setBlankBoxMinimizedToTab(true);
                   localStorage.setItem('blankBoxMinimizedToTab', '1');
                   setBlankMinimizeAnim('idle');
-                }, 380);
+                }, 580);
               }}
               className="absolute z-[9999] rounded-tr-[11px] rounded-bl-[4px] rounded-tl-[2px] rounded-br-[2px] flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors"
               style={{ top: '0px', right: '0px', width: '26px', height: '26px', background: colorSettings.headerBar, border: '1px solid rgba(255,255,255,0.3)', borderTop: 'none', borderRight: 'none' }}
@@ -35818,7 +35818,7 @@ export default function Dashboard() {
                 setBlankBoxMinimizedToTab(false);
                 localStorage.removeItem('blankBoxMinimizedToTab');
                 setHwMinimizeAnim('idle');
-              }, 350);
+              }, 580);
             }}
             className="absolute z-[70] rounded-tr-[11px] rounded-bl-[4px] rounded-tl-[2px] rounded-br-[2px] flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors"
             style={{ top: '0px', right: '0px', width: '26px', height: '26px', background: colorSettings.headerBar, border: '1px solid rgba(255,255,255,0.3)', borderTop: 'none', borderRight: 'none', display: 'flex', opacity: (homeworkMinimized || blankBoxOpen) ? 0 : 1, pointerEvents: (homeworkMinimized || blankBoxOpen) ? 'none' : 'auto' }}
