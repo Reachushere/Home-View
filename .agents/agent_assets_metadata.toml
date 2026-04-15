@@ -114,6 +114,18 @@ uri = "file://attached_assets/bryn_tv_popcorn_v1.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "kYFPNbBlx3g3AbPtNxSj_"
+uri = "file://attached_assets/bryn_tv_popcorn_v2.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "ROPP6N_UmOUKhnUU9iQmx"
+uri = "file://attached_assets/bryn_tv_popcorn_v3.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "YFf1AFzLkqTG8aZXkvxoF"
 uri = "file://.local/cat-washroom-automation-report.md"
@@ -275,3 +287,9 @@ id = "ff8q_Zolw8D4zdqR73Mzs"
 uri = "file://attached_assets/bryn_tv_popcorn_v1.png"
 type = "image"
 title = "Bryn TV Popcorn - Fresh Start v1"
+
+[[outputs]]
+id = "yKLjYKijXd8pX6VMHx0Mr"
+uri = "file://attached_assets/bryn_tv_popcorn_v3.png"
+type = "image"
+title = "Bryn TV Popcorn v3 - TV in Front"
