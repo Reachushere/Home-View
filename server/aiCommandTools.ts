@@ -206,6 +206,50 @@ export const AI_COMMAND_TOOLS = [
   {
     type: "function" as const,
     function: {
+      name: "ha_dashboard_read",
+      description: "Read the current Home Assistant Lovelace dashboard configuration. Returns the full YAML/JSON config of dashboard cards, views, and layout. Use to understand the current dashboard before making changes.",
+      parameters: {
+        type: "object",
+        properties: {
+          dashboard: { type: "string", description: "Dashboard URL path (e.g. 'lovelace' for default, or 'lovelace-rooms', etc.). Default: 'lovelace'." },
+        },
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "ha_dashboard_write",
+      description: "Update the Home Assistant Lovelace dashboard configuration. ALWAYS read the current config first with ha_dashboard_read, modify it, then write it back. Be careful — this overwrites the entire dashboard config.",
+      parameters: {
+        type: "object",
+        properties: {
+          dashboard: { type: "string", description: "Dashboard URL path (default: 'lovelace')" },
+          config: { type: "object", description: "The full Lovelace config object to write. Must include 'views' array with all views/cards." },
+        },
+        required: ["config"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "ha_config_entries",
+      description: "List HA config entries, integrations, or call any HA REST API endpoint. For advanced HA interactions like reading/writing automations, scripts, helpers, etc.",
+      parameters: {
+        type: "object",
+        properties: {
+          method: { type: "string", enum: ["GET", "POST", "PUT", "DELETE"], description: "HTTP method" },
+          path: { type: "string", description: "HA API path after the base URL, e.g. '/api/config/automation/config/automation_id', '/api/template', '/api/services'" },
+          body: { type: "object", description: "Request body for POST/PUT" },
+        },
+        required: ["method", "path"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
       name: "ha_service_call",
       description: "Call a Home Assistant service. Use for controlling lights, switches, media players, etc. IMPORTANT: If you don't know the exact entity_id, use ha_list_entities first to find it.",
       parameters: {
@@ -968,6 +1012,91 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           color: args.color || null,
         }).returning();
         return { success: true, result: { id: note.id, title: note.title } };
+      }
+
+      case "ha_dashboard_read": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+          return { success: false, result: { error: "Home Assistant not configured" } };
+        }
+        const haUrlDash = HOME_ASSISTANT_URL.replace(/\/$/, '');
+        const dashPath = args.dashboard || 'lovelace';
+        try {
+          const resp = await fetch(`${haUrlDash}/api/lovelace/config/${dashPath}`, {
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          });
+          if (resp.status === 404) {
+            const defaultResp = await fetch(`${haUrlDash}/api/lovelace/config`, {
+              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+            });
+            if (!defaultResp.ok) return { success: false, result: { error: `HA dashboard API error: ${defaultResp.status}` } };
+            const config = await defaultResp.json();
+            return { success: true, result: { dashboard: 'default', viewCount: config.views?.length || 0, config } };
+          }
+          if (!resp.ok) return { success: false, result: { error: `HA dashboard API error: ${resp.status}` } };
+          const config = await resp.json();
+          return { success: true, result: { dashboard: dashPath, viewCount: config.views?.length || 0, config } };
+        } catch (err: any) {
+          return { success: false, result: { error: `HA dashboard read failed: ${err.message}` } };
+        }
+      }
+
+      case "ha_dashboard_write": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+          return { success: false, result: { error: "Home Assistant not configured" } };
+        }
+        const haUrlDashW = HOME_ASSISTANT_URL.replace(/\/$/, '');
+        const dashPathW = args.dashboard || 'lovelace';
+        try {
+          const url = dashPathW === 'lovelace'
+            ? `${haUrlDashW}/api/lovelace/config`
+            : `${haUrlDashW}/api/lovelace/config/${dashPathW}`;
+          const resp = await fetch(url, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify(args.config),
+          });
+          if (!resp.ok) {
+            const errText = await resp.text().catch(() => '');
+            return { success: false, result: { error: `HA dashboard write failed: ${resp.status} ${errText.substring(0, 300)}` } };
+          }
+          return { success: true, result: { message: "Dashboard updated successfully. Refresh your HA browser to see changes.", dashboard: dashPathW } };
+        } catch (err: any) {
+          return { success: false, result: { error: `HA dashboard write failed: ${err.message}` } };
+        }
+      }
+
+      case "ha_config_entries": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+          return { success: false, result: { error: "Home Assistant not configured" } };
+        }
+        const haUrlCfg = HOME_ASSISTANT_URL.replace(/\/$/, '');
+        try {
+          const fetchOpts: any = {
+            method: args.method || 'GET',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          };
+          if (args.body && (args.method === 'POST' || args.method === 'PUT')) {
+            fetchOpts.body = JSON.stringify(args.body);
+          }
+          const resp = await fetch(`${haUrlCfg}${args.path}`, fetchOpts);
+          if (!resp.ok) {
+            const errText = await resp.text().catch(() => '');
+            return { success: false, result: { error: `HA API ${args.method} ${args.path} failed: ${resp.status} ${errText.substring(0, 300)}` } };
+          }
+          const contentType = resp.headers.get('content-type') || '';
+          if (contentType.includes('json')) {
+            const data = await resp.json();
+            const str = JSON.stringify(data);
+            if (str.length > 15000) {
+              return { success: true, result: { note: "Response truncated (too large)", data: JSON.parse(str.substring(0, 15000) + '..."') } };
+            }
+            return { success: true, result: data };
+          }
+          const text = await resp.text();
+          return { success: true, result: { text: text.substring(0, 5000) } };
+        } catch (err: any) {
+          return { success: false, result: { error: `HA API call failed: ${err.message}` } };
+        }
       }
 
       case "ha_discover": {

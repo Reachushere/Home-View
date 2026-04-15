@@ -6192,11 +6192,31 @@ COMMON COMMANDS:
 • "kitchen announcement" → ha_announce(message:"...", target:"kitchen")
 • "play spotify" → spotify_control(action:"play")
 
+HA DASHBOARD EDITING:
+• ha_dashboard_read — reads the current Lovelace dashboard config (cards, views, layout)
+• ha_dashboard_write — overwrites the dashboard config. ALWAYS read first, modify, then write back.
+• ha_config_entries — call ANY HA REST API endpoint (read/write automations, scripts, helpers, etc.)
+• You CAN edit HA dashboards, create/modify automations, add helpers, change scripts — you have full API access.
+
+WORKFLOW FOR HA DASHBOARD CHANGES:
+1. ha_dashboard_read → get current config
+2. Understand the structure (views, cards, entities)
+3. Modify the config as requested
+4. ha_dashboard_write → save changes
+5. Tell Bryn to refresh the HA page
+
+WORKFLOW FOR HA AUTOMATION CHANGES:
+1. ha_config_entries(method:"GET", path:"/api/config/automation/config") → list automations
+2. Read specific: ha_config_entries(method:"GET", path:"/api/config/automation/config/AUTOMATION_ID")
+3. Update: ha_config_entries(method:"POST", path:"/api/config/automation/config/AUTOMATION_ID", body:{...})
+4. Create new: ha_config_entries(method:"POST", path:"/api/config/automation/config/NEW_ID", body:{...})
+
 TIPS:
 • Look for "group" or "all" entities first — they control whole rooms at once
 • HA returns success even for nonexistent entities — so getting the right entity_id matters
 • After finding an entity, remember it for the rest of the conversation
 • If Bryn says "list my [room] devices" → ha_list_entities and format nicely
+• You have FULL HA API access — dashboards, automations, scripts, scenes, helpers, templates, everything
 
 IF HA FAILS:
 1. Check the error — is it "not configured" or a 401/403 or a 404?
