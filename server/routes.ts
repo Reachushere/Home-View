@@ -6089,7 +6089,8 @@ ${fileContents.join('\n\n')}`;
 
       const codeKeywords = /\b(change|modify|edit|update|fix|add|remove|refactor|style|css|color|button|component|page|layout|font|move|rename|code|file|build|install|npm|import|debug|error|bug|break|broken|crash|log|deploy|push|commit)\b/i;
       const isCodeTask = codeKeywords.test(message) && /\b(file|code|component|page|css|style|button|header|sidebar|layout|function|route|api|div|class|import|export|server|client|schema|database|build|compile|deploy|error|bug|log)\b/i.test(message);
-      const model = "gpt-5-mini";
+      let model = "gpt-5-mini";
+      const fallbackModel = "gpt-4.1-mini";
       const estCost = isCodeTask ? "~$0.05-0.30" : "~$0.02-0.10";
 
       const apiKey = process.env.OPENAI_API_KEY;
@@ -6259,13 +6260,30 @@ RULES:
 
       while (round < MAX_ROUNDS) {
         round++;
-        const completion = await openai.chat.completions.create({
-          model,
-          messages,
-          tools: AI_COMMAND_TOOLS,
-          tool_choice: "auto",
-          max_completion_tokens: isCodeTask ? 8192 : 4096,
-        });
+        let completion: any;
+        try {
+          completion = await openai.chat.completions.create({
+            model,
+            messages,
+            tools: AI_COMMAND_TOOLS,
+            tool_choice: "auto",
+            max_completion_tokens: isCodeTask ? 8192 : 4096,
+          });
+        } catch (modelErr: any) {
+          if (model !== fallbackModel && (modelErr?.status === 404 || modelErr?.message?.includes('verified'))) {
+            console.log(`[AI] ${model} unavailable, falling back to ${fallbackModel}`);
+            model = fallbackModel;
+            completion = await openai.chat.completions.create({
+              model: fallbackModel,
+              messages,
+              tools: AI_COMMAND_TOOLS,
+              tool_choice: "auto",
+              max_completion_tokens: isCodeTask ? 8192 : 4096,
+            });
+          } else {
+            throw modelErr;
+          }
+        }
         totalTokens += completion.usage?.total_tokens || 0;
 
         const choice = completion.choices[0];
