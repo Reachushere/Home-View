@@ -6062,6 +6062,48 @@ ${fileContents.join('\n\n')}`;
     persistSessions();
   }, 5 * 60 * 1000);
 
+  app.get("/api/ai/conversation", async (req, res) => {
+    try {
+      if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ error: "Access denied" });
+      const row = await db.select().from(appState).where(eq(appState.key, 'bryn_assist_history')).limit(1);
+      if (row.length > 0) {
+        return res.json({ messages: JSON.parse(row[0].value) });
+      }
+      return res.json({ messages: [] });
+    } catch (e: any) {
+      return res.json({ messages: [] });
+    }
+  });
+
+  app.post("/api/ai/conversation", async (req, res) => {
+    try {
+      if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ error: "Access denied" });
+      const { messages } = req.body;
+      if (!Array.isArray(messages)) return res.status(400).json({ error: "messages required" });
+      const last50 = messages.slice(-50);
+      const value = JSON.stringify(last50);
+      const existing = await db.select().from(appState).where(eq(appState.key, 'bryn_assist_history')).limit(1);
+      if (existing.length > 0) {
+        await db.update(appState).set({ value, updatedAt: new Date() }).where(eq(appState.key, 'bryn_assist_history'));
+      } else {
+        await db.insert(appState).values({ key: 'bryn_assist_history', value });
+      }
+      return res.json({ ok: true });
+    } catch (e: any) {
+      return res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.delete("/api/ai/conversation", async (req, res) => {
+    try {
+      if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ error: "Access denied" });
+      await db.delete(appState).where(eq(appState.key, 'bryn_assist_history'));
+      return res.json({ ok: true });
+    } catch (e: any) {
+      return res.status(500).json({ error: e.message });
+    }
+  });
+
   app.post("/api/ai/command", async (req, res) => {
     try {
       if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ error: "Access denied" });

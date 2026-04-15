@@ -272,6 +272,8 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       .catch(() => {});
   }, []);
 
+  const conversationLoaded = useRef(false);
+
   useEffect(() => {
     if (isOpen) {
       fetch('/api/app-state/ui_wizardStyle')
@@ -285,6 +287,15 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
           }
         })
         .catch(() => {});
+      if (!conversationLoaded.current) {
+        fetch('/api/ai/conversation')
+          .then(r => r.ok ? r.json() : null)
+          .then(data => {
+            if (data?.messages?.length > 0) setMessages(data.messages);
+          })
+          .catch(() => {});
+        conversationLoaded.current = true;
+      }
       setTimeout(() => inputRef.current?.focus(), 150);
     }
   }, [isOpen]);
@@ -489,6 +500,17 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
     } finally {
       setLoading(false);
       setThinkingPhase(null);
+      setTimeout(() => {
+        setMessages(curr => {
+          const saveable = curr.map(m => ({ role: m.role, content: m.content }));
+          fetch('/api/ai/conversation', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ messages: saveable }),
+          }).catch(() => {});
+          return curr;
+        });
+      }, 100);
     }
   }, [input, loading, messages, invalidateAll, pastedImage]);
 
@@ -561,6 +583,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   const clearChat = useCallback(() => {
     setMessages([]);
     setPendingConfirm(null);
+    fetch('/api/ai/conversation', { method: 'DELETE' }).catch(() => {});
   }, []);
 
   useEffect(() => {
