@@ -1185,11 +1185,13 @@ export default function Dashboard() {
             localStorage.setItem(`calendarHeight_${did}`, String(v));
           }
           if (saved.calendarReduction !== undefined) {
+            const minReduction = 220;
+            const safeReduction = saved.calendarReduction > 0 && saved.calendarReduction < minReduction ? minReduction : saved.calendarReduction;
             calendarReductionUserSetRef.current = true;
-            setCalendarReduction(saved.calendarReduction);
+            setCalendarReduction(safeReduction);
             setCalendarReductionUserSet(true);
-            localStorage.setItem('calendarReduction', String(saved.calendarReduction));
-            localStorage.setItem(`calendarReduction_${did}`, String(saved.calendarReduction));
+            localStorage.setItem('calendarReduction', String(safeReduction));
+            localStorage.setItem(`calendarReduction_${did}`, String(safeReduction));
             localStorage.setItem('calendarReductionUserSet', '1');
           }
           if (saved.gridSizes) {
@@ -1223,10 +1225,12 @@ export default function Dashboard() {
                 localStorage.setItem('calendarHeight', String(v));
               }
               if (saved.calendarReduction !== undefined) {
+                const minReduction = 220;
+                const safeReduction = saved.calendarReduction > 0 && saved.calendarReduction < minReduction ? minReduction : saved.calendarReduction;
                 calendarReductionUserSetRef.current = true;
-                setCalendarReduction(saved.calendarReduction);
+                setCalendarReduction(safeReduction);
                 setCalendarReductionUserSet(true);
-                localStorage.setItem('calendarReduction', String(saved.calendarReduction));
+                localStorage.setItem('calendarReduction', String(safeReduction));
                 localStorage.setItem('calendarReductionUserSet', '1');
               }
               if (saved.gridSizes) {
@@ -1459,15 +1463,17 @@ export default function Dashboard() {
     const sh = window.screen.height;
     const pr = window.devicePixelRatio || 1;
     const did = `device_${sw}x${sh}@${pr}`;
+    const minReduction = 220;
     const deviceSaved = localStorage.getItem(`calendarReduction_${did}`);
     if (deviceSaved) {
       const dv = parseInt(deviceSaved, 10);
-      if (!isNaN(dv)) { calendarReductionRef.current = dv; return dv; }
+      if (!isNaN(dv)) { const safe = dv > 0 && dv < minReduction ? minReduction : dv; calendarReductionRef.current = safe; return safe; }
     }
     const saved = localStorage.getItem('calendarReduction');
     const v = saved ? parseInt(saved, 10) : 0;
-    calendarReductionRef.current = v;
-    return v;
+    const safe = v > 0 && v < minReduction ? minReduction : v;
+    calendarReductionRef.current = safe;
+    return safe;
   });
   const setCalendarReduction: typeof setCalendarReductionRaw = (val) => {
     setCalendarReductionRaw(prev => {
