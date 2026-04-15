@@ -243,9 +243,9 @@ export default function AdminPanel({ open, onClose, colorSettings }: AdminPanelP
 
   return (
     <>
-      <div className="fixed inset-0 z-[10001] bg-black/50" onClick={onClose} />
+      <div className="fixed inset-0 z-[10010] bg-black/50" onClick={onClose} />
       <div
-        className="fixed z-[10001] overflow-hidden flex flex-col text-[11px] p-0 sm:rounded-lg"
+        className="fixed z-[10010] overflow-hidden flex flex-col text-[11px] p-0 sm:rounded-lg"
         style={{
           left: '50%', transform: 'translateX(-50%)', top: 'calc(3vh - 6px)',
           width: 'calc(96vw + 24px)', maxWidth: '900px', bottom: 'calc(3vh + 32px)',
@@ -281,7 +281,7 @@ export default function AdminPanel({ open, onClose, colorSettings }: AdminPanelP
                 onClick={() => setActiveTab(tab.id)}
                 className="w-full text-left px-3 py-2 flex items-center gap-2 transition-colors"
                 style={{
-                  color: activeTab === tab.id ? '#fff' : 'rgba(255,255,255,0.5)',
+                  color: '#fff',
                   background: activeTab === tab.id ? 'rgba(255,255,255,0.1)' : 'transparent',
                   fontSize: '11px',
                   borderLeft: activeTab === tab.id ? '2px solid rgba(255,255,255,0.7)' : '2px solid transparent',

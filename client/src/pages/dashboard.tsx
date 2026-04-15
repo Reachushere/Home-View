@@ -17110,31 +17110,6 @@ export default function Dashboard() {
             </Button>
           </div>
 
-          {isAdmin && (
-          <div className="pill-button-hover" style={{ 
-            marginTop: '0px', width: '44px', height: '43px', borderRadius: '50%',
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
-            position: 'relative' as const, zIndex: 1,
-            border: '1.5px solid rgba(255,255,255,0.35)',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center'
-          }}>
-            <Button 
-              size="icon"
-              variant="ghost"
-              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
-              style={{ background: 'transparent' }}
-              data-testid="button-admin-panel"
-              title="Admin Panel"
-              onClick={() => {
-                startTransition(() => setIsAdminPanelOpen(true));
-              }}
-            >
-              <Shield style={{ width: '20px', height: '20px', color: 'rgba(255,255,255,0.85)' }} />
-            </Button>
-          </div>
-          )}
-
           {/* Scholarships Button */}
           <div className="pill-button-hover" style={{ 
             marginTop: '0px', width: '44px', height: '43px', borderRadius: '50%',
@@ -17729,6 +17704,31 @@ export default function Dashboard() {
           >
             <RefreshCw className="h-[18px] w-[18px] text-white" />
           </div>
+
+          {isAdmin && (
+          <div className="pill-button-hover" style={{ 
+            marginTop: '0px', width: '44px', height: '43px', borderRadius: '50%',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
+            position: 'relative' as const, zIndex: 1,
+            border: '1.5px solid rgba(255,255,255,0.35)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
+            <Button 
+              size="icon"
+              variant="ghost"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-opacity duration-200"
+              style={{ background: 'transparent' }}
+              data-testid="button-admin-panel"
+              title="Admin Panel"
+              onClick={() => {
+                startTransition(() => setIsAdminPanelOpen(true));
+              }}
+            >
+              <Shield style={{ width: '20px', height: '20px', color: 'rgba(255,255,255,0.85)' }} />
+            </Button>
+          </div>
+          )}
 
           </div>
 
