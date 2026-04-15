@@ -6,6 +6,12 @@ uri = "file://attached_assets/selby_building_night.png"
 type = "image"
 title = "The Selby building night"
 
+[[generated]]
+id = "s6rEmlin1xF2Fpe45U59-"
+uri = "file://attached_assets/bryn_popcorn_animoji.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "YFf1AFzLkqTG8aZXkvxoF"
 uri = "file://.local/cat-washroom-automation-report.md"
