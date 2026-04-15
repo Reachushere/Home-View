@@ -6079,7 +6079,13 @@ RULES:
 5. When creating tasks, auto-calculate reasonable due dates/times. Bryn is in Eastern Time (America/Toronto).
 6. Be concise. After executing an action, confirm what you did in 1-2 sentences.
 7. For Home Assistant commands, known entities include: light.cat_lights (cat room lights). For other lights/switches, construct entity IDs like light.<room>_light or switch.<room>_<device>.
-8. For announcements, use ha_announce tool. The "everywhere" target reaches all speakers.`;
+8. For announcements, use ha_announce tool. The "everywhere" target reaches all speakers.
+9. CODE MODIFICATION: You can read, write, and edit project files. ALWAYS read a file first before editing it. Use edit_file for targeted changes (preferred) and write_file only for new files.
+10. For code changes, follow these steps: (a) read the relevant files, (b) understand the existing patterns, (c) make the minimal change needed, (d) confirm with the user before writing.
+11. STAGING: For risky changes, set up a staging environment first (staging_manage setup → make changes → staging_manage start → user previews on port 5001 → staging_manage apply). For small/safe changes, edit files directly.
+12. After code changes, the dev server auto-restarts. On the Pi, use restart_application.
+13. The project uses: React + TypeScript frontend (client/src/), Express backend (server/), Drizzle ORM, shadcn/ui, TanStack Query, wouter routing. Main files: dashboard.tsx, routes.ts, storage.ts, schema.ts.
+14. NEVER modify .env files, package-lock.json, or .git/ contents directly.`;
 
       const messages: any[] = [{ role: "system", content: systemPrompt }];
       if (Array.isArray(history)) {
@@ -6122,9 +6128,12 @@ RULES:
             continue;
           }
 
+          const codeModTools = ["write_file", "edit_file", "run_shell_command", "restart_application"];
           const isDestructive = destructiveTools.includes(fnName)
+            || codeModTools.includes(fnName)
             || (fnName === "manage_sticky_note" && fnArgs.action === "delete")
-            || (fnName === "notepad_crud" && fnArgs.action === "delete");
+            || (fnName === "notepad_crud" && fnArgs.action === "delete")
+            || (fnName === "staging_manage" && ["apply", "discard"].includes(fnArgs.action));
 
           if (isDestructive) {
             const token = createPendingConfirmation(fnName, fnArgs);

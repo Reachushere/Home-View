@@ -5,6 +5,9 @@ import { notepadNotes, getWeekNumber, COURSES } from "@shared/schema";
 import { easternNow } from "./timezone";
 import * as spotifyApi from "./spotify";
 import crypto from "crypto";
+import path from "path";
+import fs from "fs/promises";
+import { execSync } from "child_process";
 
 const HOME_ASSISTANT_URL = process.env.HOME_ASSISTANT_URL_OVERRIDE || process.env.HOME_ASSISTANT_URL || "";
 const HOME_ASSISTANT_TOKEN = process.env.HOME_ASSISTANT_TOKEN || "";
@@ -366,6 +369,122 @@ export const AI_COMMAND_TOOLS = [
           taskId: { type: "integer", description: "The task ID to sync to Google Calendar" },
         },
         required: ["taskId"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "read_file",
+      description: "Read a file from the project. Returns the file contents. Use this to understand existing code before making changes. Can read partial files with offset/limit for large files.",
+      parameters: {
+        type: "object",
+        properties: {
+          filePath: { type: "string", description: "Relative path to the file (e.g. 'client/src/pages/dashboard.tsx', 'server/routes.ts')" },
+          offset: { type: "integer", description: "Line number to start reading from (1-indexed). Use for large files." },
+          limit: { type: "integer", description: "Max number of lines to read. Default 200. Use for large files." },
+        },
+        required: ["filePath"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "write_file",
+      description: "Write or create a file in the project. DESTRUCTIVE — always confirm with user first. Use read_file first to understand what exists, then use edit_file for targeted changes. Only use write_file for new files or complete rewrites.",
+      parameters: {
+        type: "object",
+        properties: {
+          filePath: { type: "string", description: "Relative path for the file" },
+          content: { type: "string", description: "Complete file content to write" },
+        },
+        required: ["filePath", "content"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "edit_file",
+      description: "Make a targeted edit to a file by replacing an exact string match. DESTRUCTIVE — always confirm with user first. Use read_file first to find the exact text to replace. The oldText must match exactly (including whitespace).",
+      parameters: {
+        type: "object",
+        properties: {
+          filePath: { type: "string", description: "Relative path to the file to edit" },
+          oldText: { type: "string", description: "Exact text to find and replace (must be unique in the file)" },
+          newText: { type: "string", description: "Replacement text" },
+        },
+        required: ["filePath", "oldText", "newText"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "list_directory",
+      description: "List files and directories at a given path. Returns names, types (file/directory), and sizes.",
+      parameters: {
+        type: "object",
+        properties: {
+          dirPath: { type: "string", description: "Relative path to list (e.g. 'client/src/pages', 'server'). Default is project root." },
+        },
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "search_code",
+      description: "Search for a pattern across project files using grep. Returns matching file paths and line content. Use this to find where things are defined or used.",
+      parameters: {
+        type: "object",
+        properties: {
+          pattern: { type: "string", description: "Search pattern (regex supported)" },
+          fileGlob: { type: "string", description: "File glob to filter (e.g. '*.tsx', '*.ts', 'server/**/*.ts'). Default searches all code files." },
+          maxResults: { type: "integer", description: "Max results to return. Default 20." },
+        },
+        required: ["pattern"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "run_shell_command",
+      description: "Execute a shell command in the project directory. DESTRUCTIVE — always confirm with user first. Use for: npm install, git operations, build commands, etc. Has a 30-second timeout. Dangerous commands are blocked.",
+      parameters: {
+        type: "object",
+        properties: {
+          command: { type: "string", description: "Shell command to execute" },
+          cwd: { type: "string", description: "Working directory relative to project root. Default is project root." },
+        },
+        required: ["command"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "staging_manage",
+      description: "Manage the staging environment. Staging lets you preview code changes on port 5001 before deploying to production (port 5000). Actions: 'setup' creates staging worktree + branch, 'start' launches staging server, 'stop' stops staging server, 'status' checks if staging is running, 'apply' merges staging changes into main and restarts production, 'discard' removes staging changes.",
+      parameters: {
+        type: "object",
+        properties: {
+          action: { type: "string", enum: ["setup", "start", "stop", "status", "apply", "discard"], description: "Staging action to perform" },
+        },
+        required: ["action"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "restart_application",
+      description: "Restart the running application. Use after making code changes to apply them. On the Pi this uses PM2, in development it restarts the dev server.",
+      parameters: {
+        type: "object",
+        properties: {},
       },
     },
   },
@@ -786,12 +905,217 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
         return { success: false, result: { error: result.error || "Email failed" } };
       }
 
+      case "read_file": {
+        const safePath = resolveProjectPath(args.filePath);
+        if (!safePath) return { success: false, result: { error: "Invalid file path — must be within the project directory" } };
+        try {
+          const content = await fs.readFile(safePath, 'utf-8');
+          const lines = content.split('\n');
+          const offset = (args.offset || 1) - 1;
+          const limit = args.limit || 200;
+          const slice = lines.slice(offset, offset + limit);
+          const totalLines = lines.length;
+          const numbered = slice.map((line, i) => `${offset + i + 1}: ${line}`).join('\n');
+          return { success: true, result: { content: numbered, totalLines, showing: `${offset + 1}-${Math.min(offset + limit, totalLines)}` } };
+        } catch (e: any) {
+          if (e.code === 'ENOENT') return { success: false, result: { error: `File not found: ${args.filePath}` } };
+          return { success: false, result: { error: e.message } };
+        }
+      }
+
+      case "write_file": {
+        const safePath = resolveProjectPath(args.filePath);
+        if (!safePath) return { success: false, result: { error: "Invalid file path — must be within the project directory" } };
+        if (isProtectedFile(args.filePath)) return { success: false, result: { error: `Protected file — cannot modify: ${args.filePath}` } };
+        const dir = path.dirname(safePath);
+        await fs.mkdir(dir, { recursive: true });
+        await fs.writeFile(safePath, args.content, 'utf-8');
+        return { success: true, result: { written: args.filePath, bytes: Buffer.byteLength(args.content) } };
+      }
+
+      case "edit_file": {
+        const safePath = resolveProjectPath(args.filePath);
+        if (!safePath) return { success: false, result: { error: "Invalid file path — must be within the project directory" } };
+        if (isProtectedFile(args.filePath)) return { success: false, result: { error: `Protected file — cannot modify: ${args.filePath}` } };
+        try {
+          const content = await fs.readFile(safePath, 'utf-8');
+          const occurrences = content.split(args.oldText).length - 1;
+          if (occurrences === 0) return { success: false, result: { error: "oldText not found in file. Read the file first to get exact text." } };
+          if (occurrences > 1) return { success: false, result: { error: `oldText found ${occurrences} times — must be unique. Add more context to make it unique.` } };
+          const newContent = content.replace(args.oldText, args.newText);
+          await fs.writeFile(safePath, newContent, 'utf-8');
+          return { success: true, result: { edited: args.filePath, replacements: 1 } };
+        } catch (e: any) {
+          if (e.code === 'ENOENT') return { success: false, result: { error: `File not found: ${args.filePath}` } };
+          return { success: false, result: { error: e.message } };
+        }
+      }
+
+      case "list_directory": {
+        const safePath = resolveProjectPath(args.dirPath || '.');
+        if (!safePath) return { success: false, result: { error: "Invalid directory path" } };
+        try {
+          const entries = await fs.readdir(safePath, { withFileTypes: true });
+          const filtered = entries.filter(e => !e.name.startsWith('.') && e.name !== 'node_modules' && e.name !== 'dist');
+          const items = await Promise.all(filtered.map(async (e) => {
+            const fullPath = path.join(safePath, e.name);
+            let size = 0;
+            if (e.isFile()) {
+              try { const stat = await fs.stat(fullPath); size = stat.size; } catch {}
+            }
+            return { name: e.name, type: e.isDirectory() ? 'directory' : 'file', size: e.isFile() ? size : undefined };
+          }));
+          return { success: true, result: { path: args.dirPath || '.', items } };
+        } catch (e: any) {
+          return { success: false, result: { error: e.message } };
+        }
+      }
+
+      case "search_code": {
+        const projectRoot = getProjectRoot();
+        const maxResults = args.maxResults || 20;
+        const globArg = args.fileGlob ? `--include='${args.fileGlob}'` : "--include='*.ts' --include='*.tsx' --include='*.css' --include='*.json' --include='*.html'";
+        try {
+          const cmd = `grep -rn ${globArg} --exclude-dir=node_modules --exclude-dir=dist --exclude-dir=.git -m ${maxResults} ${JSON.stringify(args.pattern)} .`;
+          const output = execSync(cmd, { cwd: projectRoot, encoding: 'utf-8', timeout: 10000, maxBuffer: 1024 * 1024 }).trim();
+          const matches = output.split('\n').slice(0, maxResults).map(line => {
+            const match = line.match(/^\.\/(.+?):(\d+):(.*)$/);
+            if (match) return { file: match[1], line: parseInt(match[2]), content: match[3].substring(0, 200) };
+            return { raw: line.substring(0, 200) };
+          });
+          return { success: true, result: { matches, count: matches.length } };
+        } catch (e: any) {
+          if (e.status === 1) return { success: true, result: { matches: [], count: 0, message: "No matches found" } };
+          return { success: false, result: { error: e.message?.substring(0, 200) || "Search failed" } };
+        }
+      }
+
+      case "run_shell_command": {
+        const projectRoot = getProjectRoot();
+        const cmd = args.command;
+        if (isDangerousCommand(cmd)) return { success: false, result: { error: "Command blocked for safety. Dangerous commands like rm -rf, format, shutdown, etc. are not allowed." } };
+        const cwd = args.cwd ? resolveProjectPath(args.cwd) || projectRoot : projectRoot;
+        try {
+          const output = execSync(cmd, { cwd, encoding: 'utf-8', timeout: 30000, maxBuffer: 2 * 1024 * 1024, env: { ...process.env, FORCE_COLOR: '0' } });
+          return { success: true, result: { output: output.substring(0, 5000), exitCode: 0 } };
+        } catch (e: any) {
+          return { success: false, result: { output: (e.stdout || '').substring(0, 3000), stderr: (e.stderr || '').substring(0, 2000), exitCode: e.status } };
+        }
+      }
+
+      case "staging_manage": {
+        const projectRoot = getProjectRoot();
+        const stagingDir = path.join(path.dirname(projectRoot), 'Home-View-staging');
+        switch (args.action) {
+          case "setup": {
+            try {
+              execSync('git stash --include-untracked 2>/dev/null || true', { cwd: projectRoot, encoding: 'utf-8', timeout: 10000 });
+              try { execSync(`git branch -D staging 2>/dev/null`, { cwd: projectRoot, timeout: 5000 }); } catch {}
+              try { execSync(`git worktree remove "${stagingDir}" --force 2>/dev/null`, { cwd: projectRoot, timeout: 5000 }); } catch {}
+              execSync(`git branch staging HEAD`, { cwd: projectRoot, encoding: 'utf-8', timeout: 5000 });
+              execSync(`git worktree add "${stagingDir}" staging`, { cwd: projectRoot, encoding: 'utf-8', timeout: 10000 });
+              execSync('npm install --ignore-scripts 2>/dev/null || true', { cwd: stagingDir, encoding: 'utf-8', timeout: 60000 });
+              execSync('git stash pop 2>/dev/null || true', { cwd: projectRoot, encoding: 'utf-8', timeout: 10000 });
+              return { success: true, result: { action: "setup", stagingDir, message: "Staging environment created. Make file changes, then use staging_manage start to preview on port 5001." } };
+            } catch (e: any) {
+              execSync('git stash pop 2>/dev/null || true', { cwd: projectRoot, encoding: 'utf-8', timeout: 5000 });
+              return { success: false, result: { error: e.message?.substring(0, 500) } };
+            }
+          }
+          case "start": {
+            try {
+              try { execSync('fuser -k 5001/tcp 2>/dev/null', { timeout: 5000 }); } catch {}
+              execSync(`cd "${stagingDir}" && PORT=5001 NODE_ENV=development nohup npx tsx server/index.ts > /tmp/staging-server.log 2>&1 &`, { timeout: 5000, shell: '/bin/bash' });
+              return { success: true, result: { action: "start", port: 5001, url: "http://172.24.1.204:5001", message: "Staging server starting on port 5001. Check status in a few seconds." } };
+            } catch (e: any) {
+              return { success: false, result: { error: e.message?.substring(0, 500) } };
+            }
+          }
+          case "stop": {
+            try { execSync('fuser -k 5001/tcp 2>/dev/null', { timeout: 5000 }); } catch {}
+            return { success: true, result: { action: "stop", message: "Staging server stopped." } };
+          }
+          case "status": {
+            let running = false;
+            try { execSync('fuser 5001/tcp 2>/dev/null', { timeout: 3000 }); running = true; } catch {}
+            let worktreeExists = false;
+            try { await fs.access(stagingDir); worktreeExists = true; } catch {}
+            let recentLog = '';
+            try { recentLog = execSync('tail -20 /tmp/staging-server.log 2>/dev/null || echo "No log"', { encoding: 'utf-8', timeout: 3000 }).substring(0, 1000); } catch {}
+            return { success: true, result: { running, worktreeExists, stagingDir, port: 5001, recentLog } };
+          }
+          case "apply": {
+            try {
+              try { execSync('fuser -k 5001/tcp 2>/dev/null', { timeout: 5000 }); } catch {}
+              execSync('git add -A && git commit -m "Staging changes" --allow-empty', { cwd: stagingDir, encoding: 'utf-8', timeout: 10000 });
+              execSync('git checkout main', { cwd: projectRoot, encoding: 'utf-8', timeout: 5000 });
+              execSync('git merge staging --no-ff -m "Merge staging changes"', { cwd: projectRoot, encoding: 'utf-8', timeout: 10000 });
+              try { execSync(`git worktree remove "${stagingDir}" --force`, { cwd: projectRoot, timeout: 5000 }); } catch {}
+              try { execSync('git branch -D staging', { cwd: projectRoot, timeout: 5000 }); } catch {}
+              return { success: true, result: { action: "apply", message: "Staging changes merged into main. Use restart_application to apply." } };
+            } catch (e: any) {
+              return { success: false, result: { error: e.message?.substring(0, 500) } };
+            }
+          }
+          case "discard": {
+            try { execSync('fuser -k 5001/tcp 2>/dev/null', { timeout: 5000 }); } catch {}
+            try { execSync(`git worktree remove "${stagingDir}" --force`, { cwd: projectRoot, timeout: 5000 }); } catch {}
+            try { execSync('git branch -D staging', { cwd: projectRoot, timeout: 5000 }); } catch {}
+            return { success: true, result: { action: "discard", message: "Staging environment discarded. All staging changes removed." } };
+          }
+          default:
+            return { success: false, result: { error: `Unknown staging action: ${args.action}` } };
+        }
+      }
+
+      case "restart_application": {
+        const projectRoot = getProjectRoot();
+        try {
+          const isPi = projectRoot.includes('/home/byhomeyyz/');
+          if (isPi) {
+            const output = execSync('pm2 restart dashboard 2>&1 || (npm run build && pm2 restart dashboard)', { cwd: projectRoot, encoding: 'utf-8', timeout: 60000 });
+            return { success: true, result: { restarted: true, env: "pi", output: output.substring(0, 500) } };
+          } else {
+            return { success: true, result: { restarted: false, env: "replit", message: "In development, the dev server auto-restarts on file changes. No manual restart needed." } };
+          }
+        } catch (e: any) {
+          return { success: false, result: { error: e.message?.substring(0, 500) } };
+        }
+      }
+
       default:
         return { success: false, result: { error: `Unknown tool: ${name}` } };
     }
   } catch (err: any) {
     return { success: false, result: { error: err.message || "Tool execution failed" } };
   }
+}
+
+function getProjectRoot(): string {
+  return process.cwd();
+}
+
+function resolveProjectPath(relativePath: string): string | null {
+  const projectRoot = getProjectRoot();
+  const resolved = path.resolve(projectRoot, relativePath);
+  if (!resolved.startsWith(projectRoot)) return null;
+  if (resolved.includes('..')) return null;
+  return resolved;
+}
+
+function isProtectedFile(filePath: string): boolean {
+  const protected_patterns = ['.env', 'package-lock.json', '.git/'];
+  const normalized = filePath.replace(/\\/g, '/');
+  return protected_patterns.some(p => normalized.includes(p));
+}
+
+function isDangerousCommand(cmd: string): boolean {
+  const dangerous = [
+    /rm\s+-rf\s+\//, /rm\s+-rf\s+~/, /mkfs/, /dd\s+if=/, /shutdown/, /reboot/,
+    /:(){ :|:& };:/, />\s*\/dev\/sd/, /chmod\s+-R\s+777\s+\//, /chown\s+-R.*\/$/,
+    /curl.*\|\s*(bash|sh)/, /wget.*\|\s*(bash|sh)/, /eval\s*\(/, /FORMAT\s+C:/i,
+  ];
+  return dangerous.some(pattern => pattern.test(cmd));
 }
 
 export async function getAppContext(): Promise<string> {
