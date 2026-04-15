@@ -9,6 +9,7 @@ import FloatingPostIt from "@/components/FloatingPostIt";
 import OtherRowEditDialog from "@/components/OtherRowEditDialog";
 import { FastInput, FastTextarea } from "@/components/FastInput";
 import { SemesterChecklistDialog } from "@/components/SemesterChecklistDialog";
+import { SystemSetupWizard } from "@/components/SystemSetupWizard";
 import LibraryView from "@/components/LibraryView";
 import { AiChatBubble } from "@/components/AiChatBubble";
 import { Document, Page, pdfjs } from 'react-pdf';
@@ -3797,6 +3798,12 @@ export default function Dashboard() {
   // Profile state
   const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
   const [isProfileDirty, setIsProfileDirty] = useState(false);
+  const [showSystemSetupWizard, setShowSystemSetupWizard] = useState(() => {
+    if (localStorage.getItem('unical_setup_complete')) return false;
+    const existing = localStorage.getItem('coursesData');
+    if (existing) { try { const d = JSON.parse(existing); if (d.courses?.some((c: any) => c.name?.trim())) { localStorage.setItem('unical_setup_complete', 'true'); return false; } } catch {} }
+    return false;
+  });
   const [isSystemHealthOpen, setIsSystemHealthOpen] = useState(false);
   const [systemHealthData, setSystemHealthData] = useState<any>(null);
   const [isNlTaskOpen, setIsNlTaskOpen] = useState(false);
@@ -40388,6 +40395,31 @@ export default function Dashboard() {
       </main>
       </div>
       {authLevel === '5747' && <AiChatBubble colorSettings={colorSettings} />}
+      {showSystemSetupWizard && authLevel === '5747' && (
+        <SystemSetupWizard
+          open={showSystemSetupWizard}
+          onClose={() => setShowSystemSetupWizard(false)}
+          onComplete={(result) => {
+            setProfileData(prev => ({ ...prev, firstName: result.profile.firstName, lastName: result.profile.lastName }));
+            setSchoolData(prev => ({ ...prev, schoolName: result.school.schoolName, numberOfWeeks: result.school.numberOfWeeks, week1StartDate: result.school.startDate, timezone: result.school.timezone }));
+            const newCourses = result.courses.map(c => ({ name: `${c.code} - ${c.fullName}`, color: c.color, colorEnd: c.colorEnd, professor: c.professor, professorEmail: c.professorEmail }));
+            setCoursesData({ courses: newCourses });
+            localStorage.setItem('coursesData', JSON.stringify({ courses: newCourses }));
+            const existingColor = localStorage.getItem('colorSettings');
+            if (existingColor) {
+              try { setColorSettings(prev => ({ ...prev, ...JSON.parse(existingColor) })); } catch {}
+            }
+            queryClient.invalidateQueries({ queryKey: ["/api/semester"] });
+            queryClient.invalidateQueries({ queryKey: ["/api/semesters"] });
+            setShowSystemSetupWizard(false);
+            toast({ title: "Setup complete!", description: "UniCal is ready. Welcome aboard!" });
+          }}
+          colorSettings={colorSettings}
+          existingProfile={profileData}
+          existingSchool={schoolData}
+          existingCourses={coursesData?.courses}
+        />
+      )}
     </div>
   );
 }
