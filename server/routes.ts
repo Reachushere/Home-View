@@ -31,7 +31,10 @@ import multer from "multer";
 
 function getRequestAuthLevel(req: any): string {
   const cookie = req.cookies?.uni_cal_session;
-  if (!cookie) return '';
+  if (!cookie) {
+    if (!process.env.SITE_PASSWORD) return '5747';
+    return '';
+  }
   const parts = cookie.split('.');
   if (parts.length === 3) return parts[0];
   if (parts.length === 2) return '5747';
