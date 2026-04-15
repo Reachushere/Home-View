@@ -658,6 +658,8 @@ export const scholarships = pgTable("scholarships", {
   amount: text("amount"),
   applicationsOpen: text("applications_open"),
   deadline: text("deadline"),
+  documentsDeadline: text("documents_deadline"),
+  interviewDate: text("interview_date"),
   winnersAnnounced: text("winners_announced"),
   applicationUrl: text("application_url"),
   contactInfo: text("contact_info"),

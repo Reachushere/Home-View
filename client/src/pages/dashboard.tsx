@@ -23125,7 +23125,7 @@ export default function Dashboard() {
             const [scholarshipsList, setScholarshipsList] = useState<Array<{ id: number; name: string; organization: string; amount: string | null; applicationsOpen: string | null; deadline: string | null; winnersAnnounced: string | null; applicationUrl: string | null; contactInfo: string | null; additionalInfo: string | null; status: string | null }>>([]);
             const [scholarshipWizardOpen, setScholarshipWizardOpen] = useState(false);
             const [scholarshipWizardStep, setScholarshipWizardStep] = useState(0);
-            const [scholarshipForm, setScholarshipForm] = useState({ name: '', organization: '', amount: '', applicationsOpen: '', deadline: '', winnersAnnounced: '', applicationUrl: '', contactInfo: '', additionalInfo: '', recurring: true });
+            const [scholarshipForm, setScholarshipForm] = useState({ name: '', organization: '', amount: '', applicationsOpen: '', deadline: '', documentsDeadline: '', interviewDate: '', winnersAnnounced: '', applicationUrl: '', contactInfo: '', additionalInfo: '', recurring: true });
             const [editingScholarshipId, setEditingScholarshipId] = useState<number | null>(null);
 
             useEffect(() => {
@@ -23147,24 +23147,33 @@ export default function Dashboard() {
                   scholarshipForm.contactInfo ? `Contact: ${scholarshipForm.contactInfo}` : '',
                   scholarshipForm.additionalInfo || '',
                 ].filter(Boolean).join('\n');
-                if (scholarshipForm.deadline) {
-                  try {
-                    const dueDate = new Date(scholarshipForm.deadline + 'T18:00:00');
-                    const weekNum = getWeekNumber(dueDate, semStart, readingWeekStart);
-                    await apiRequest("POST", "/api/tasks", {
-                      title: `Scholarship: ${scholarshipForm.name}`,
-                      type: "other",
-                      dueDate: dueDate.toISOString(),
-                      weekNumber: Math.max(2, Math.min(currentMaxWeek, weekNum)),
-                      priority: "high",
-                      description: calDescription,
-                      referenceLink: scholarshipForm.applicationUrl || '',
-                    });
-                    queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
-                  } catch (e) {
-                    console.error('Failed to create scholarship task:', e);
+                const scholarshipDateTasks: Array<{ dateStr: string; label: string; priority: string }> = [
+                  { dateStr: scholarshipForm.applicationsOpen, label: 'Applications Open', priority: 'medium' },
+                  { dateStr: scholarshipForm.deadline, label: 'Deadline', priority: 'high' },
+                  { dateStr: scholarshipForm.documentsDeadline, label: 'Documents Due', priority: 'high' },
+                  { dateStr: scholarshipForm.interviewDate, label: 'Interview', priority: 'high' },
+                  { dateStr: scholarshipForm.winnersAnnounced, label: 'Winners Announced', priority: 'low' },
+                ];
+                for (const sdt of scholarshipDateTasks) {
+                  if (sdt.dateStr) {
+                    try {
+                      const dueDate = new Date(sdt.dateStr + 'T18:00:00');
+                      const weekNum = getWeekNumber(dueDate, semStart, readingWeekStart);
+                      await apiRequest("POST", "/api/tasks", {
+                        title: `${scholarshipForm.name} — ${sdt.label}`,
+                        type: "scholarship",
+                        dueDate: dueDate.toISOString(),
+                        weekNumber: Math.max(2, Math.min(currentMaxWeek, weekNum)),
+                        priority: sdt.priority,
+                        description: calDescription,
+                        referenceLink: scholarshipForm.applicationUrl || '',
+                      });
+                    } catch (e) {
+                      console.error('Failed to create scholarship task:', e);
+                    }
                   }
                 }
+                queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
                 if (scholarshipForm.applicationsOpen || scholarshipForm.deadline) {
                   try {
                     await fetch('/api/scholarships/calendar-events', {
@@ -23174,6 +23183,9 @@ export default function Dashboard() {
                         name: scholarshipForm.name,
                         applicationsOpen: scholarshipForm.applicationsOpen,
                         deadline: scholarshipForm.deadline,
+                        documentsDeadline: scholarshipForm.documentsDeadline,
+                        interviewDate: scholarshipForm.interviewDate,
+                        winnersAnnounced: scholarshipForm.winnersAnnounced,
                         description: calDescription,
                         recurring: scholarshipForm.recurring,
                       }),
@@ -23187,7 +23199,7 @@ export default function Dashboard() {
               setScholarshipsList(updated);
               setScholarshipWizardOpen(false);
               setScholarshipWizardStep(0);
-              setScholarshipForm({ name: '', organization: '', amount: '', applicationsOpen: '', deadline: '', winnersAnnounced: '', applicationUrl: '', contactInfo: '', additionalInfo: '', recurring: true });
+              setScholarshipForm({ name: '', organization: '', amount: '', applicationsOpen: '', deadline: '', documentsDeadline: '', interviewDate: '', winnersAnnounced: '', applicationUrl: '', contactInfo: '', additionalInfo: '', recurring: true });
               setEditingScholarshipId(null);
             };
 
@@ -23202,6 +23214,8 @@ export default function Dashboard() {
               { title: 'Amount', field: 'amount' as const, placeholder: 'e.g. 2,000', required: false, isCurrency: true },
               { title: 'Applications Open', field: 'applicationsOpen' as const, placeholder: '', required: false, isDate: true },
               { title: 'Application Deadline', field: 'deadline' as const, placeholder: '', required: false, isDate: true },
+              { title: 'Documents Deadline', field: 'documentsDeadline' as const, placeholder: '', required: false, isDate: true },
+              { title: 'Interview Date', field: 'interviewDate' as const, placeholder: '', required: false, isDate: true },
               { title: 'Winners Announced', field: 'winnersAnnounced' as const, placeholder: '', required: false, isDate: true },
               { title: 'Application URL & Contact', field: 'applicationUrl' as const, placeholder: 'https://...', required: false, isMulti: true },
               { title: 'Additional Information', field: 'additionalInfo' as const, placeholder: 'Notes, eligibility criteria, etc.', required: false, isTextarea: true },
@@ -23218,7 +23232,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => { setScholarshipWizardOpen(true); setScholarshipWizardStep(0); setEditingScholarshipId(null); setScholarshipForm({ name: '', organization: '', amount: '', applicationsOpen: '', deadline: '', winnersAnnounced: '', applicationUrl: '', contactInfo: '', additionalInfo: '', recurring: true }); }}
+                    onClick={() => { setScholarshipWizardOpen(true); setScholarshipWizardStep(0); setEditingScholarshipId(null); setScholarshipForm({ name: '', organization: '', amount: '', applicationsOpen: '', deadline: '', documentsDeadline: '', interviewDate: '', winnersAnnounced: '', applicationUrl: '', contactInfo: '', additionalInfo: '', recurring: true }); }}
                     className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium bg-white/10 hover:bg-white/20 transition-colors border border-white/20"
                     data-testid="button-add-scholarship"
                   >
@@ -23270,7 +23284,7 @@ export default function Dashboard() {
                         const pct = totalSpan && totalSpan > 0 ? Math.min(100, Math.max(0, (elapsed / totalSpan) * 100)) : daysRemaining !== null && daysRemaining <= 0 ? 100 : 0;
                         const barColor = daysRemaining === null ? 'rgba(255,255,255,0.2)' : daysRemaining <= 0 ? '#ef4444' : daysRemaining <= 3 ? '#ef4444' : daysRemaining <= 7 ? '#f97316' : daysRemaining <= 14 ? '#eab308' : '#22c55e';
                         return (
-                        <tr key={s.id} className="border-b border-white/10 hover:bg-white/5 transition-colors cursor-pointer" onClick={() => { setEditingScholarshipId(s.id); setScholarshipForm({ name: s.name, organization: s.organization, amount: s.amount || '', applicationsOpen: s.applicationsOpen || '', deadline: s.deadline || '', winnersAnnounced: s.winnersAnnounced || '', applicationUrl: s.applicationUrl || '', contactInfo: s.contactInfo || '', additionalInfo: s.additionalInfo || '', recurring: true }); setScholarshipWizardStep(0); setScholarshipWizardOpen(true); }} data-testid={`scholarship-row-${s.id}`}>
+                        <tr key={s.id} className="border-b border-white/10 hover:bg-white/5 transition-colors cursor-pointer" onClick={() => { setEditingScholarshipId(s.id); setScholarshipForm({ name: s.name, organization: s.organization, amount: (s as any).amount || '', applicationsOpen: (s as any).applicationsOpen || '', deadline: (s as any).deadline || '', documentsDeadline: (s as any).documentsDeadline || (s as any).documents_deadline || '', interviewDate: (s as any).interviewDate || (s as any).interview_date || '', winnersAnnounced: (s as any).winnersAnnounced || '', applicationUrl: (s as any).applicationUrl || '', contactInfo: (s as any).contactInfo || '', additionalInfo: (s as any).additionalInfo || '', recurring: true }); setScholarshipWizardStep(0); setScholarshipWizardOpen(true); }} data-testid={`scholarship-row-${s.id}`}>
                           <td className="px-3 py-2.5 font-medium">{s.name}</td>
                           <td className="px-3 py-2.5 text-white/70">{s.organization}</td>
                           <td className="px-3 py-2.5 text-white/70">{s.amount ? (s.amount.startsWith('$') ? s.amount : `$${s.amount}`) : '—'}</td>
