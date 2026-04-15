@@ -165,8 +165,49 @@ export const AI_COMMAND_TOOLS = [
   {
     type: "function" as const,
     function: {
+      name: "ha_list_entities",
+      description: "Search Home Assistant for available entities. Use this BEFORE ha_service_call when you don't know the exact entity_id. Also use for 'what lights do I have?', 'list devices', 'show automations', etc. Bryn has 400+ devices — always search, never guess.",
+      parameters: {
+        type: "object",
+        properties: {
+          search: { type: "string", description: "Search term to filter entities (e.g. 'kitchen', 'light', 'bedroom', 'fan'). Searches entity_id and friendly_name." },
+          domain: { type: "string", description: "Filter by domain: light, switch, media_player, climate, fan, sensor, automation, scene, script, input_boolean, binary_sensor, cover, lock, etc." },
+        },
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "ha_discover",
+      description: "Deep-discover the Home Assistant setup. Returns areas/rooms, automation list, scene list, and entity counts by domain. Use this to learn about Bryn's smart home setup. Call this once, then save findings to memory with memory_write.",
+      parameters: {
+        type: "object",
+        properties: {
+          include: { type: "string", enum: ["all", "areas", "automations", "scenes", "summary"], description: "What to discover. 'all' returns everything, 'summary' returns domain counts + areas. Default: 'all'." },
+        },
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "ha_get_state",
+      description: "Get the current state of a specific HA entity. Use to check if a light is on/off, a sensor value, automation status, etc. Example: 'is the kitchen light on?' → ha_get_state(entity_id:'light.light_kitchen_rings')",
+      parameters: {
+        type: "object",
+        properties: {
+          entity_id: { type: "string", description: "The entity ID to check, e.g. light.cat_lights, sensor.temperature" },
+        },
+        required: ["entity_id"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
       name: "ha_service_call",
-      description: "Call a Home Assistant service. Use for controlling lights, switches, media players, etc. Examples: 'turn on the cat lights', 'turn off bathroom light'.",
+      description: "Call a Home Assistant service. Use for controlling lights, switches, media players, etc. IMPORTANT: If you don't know the exact entity_id, use ha_list_entities first to find it.",
       parameters: {
         type: "object",
         properties: {
@@ -927,6 +968,41 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           color: args.color || null,
         }).returning();
         return { success: true, result: { id: note.id, title: note.title } };
+      }
+
+      case "ha_list_entities": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+          return { success: false, result: { error: "Home Assistant not configured. Needs rebuild: npm run build && pm2 restart all" } };
+        }
+        const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+        try {
+          const resp = await fetch(`${haUrl}/api/states`, {
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          });
+          if (!resp.ok) {
+            return { success: false, result: { error: `HA API error: ${resp.status}` } };
+          }
+          const states: any[] = await resp.json();
+          let filtered = states;
+          if (args.domain) {
+            filtered = filtered.filter((e: any) => e.entity_id.startsWith(args.domain + '.'));
+          }
+          if (args.search) {
+            const s = args.search.toLowerCase();
+            filtered = filtered.filter((e: any) =>
+              e.entity_id.toLowerCase().includes(s) ||
+              (e.attributes?.friendly_name || '').toLowerCase().includes(s)
+            );
+          }
+          const results = filtered.slice(0, 50).map((e: any) => ({
+            entity_id: e.entity_id,
+            name: e.attributes?.friendly_name || '',
+            state: e.state,
+          }));
+          return { success: true, result: { count: filtered.length, showing: results.length, entities: results } };
+        } catch (err: any) {
+          return { success: false, result: { error: `HA connection failed: ${err.message}` } };
+        }
       }
 
       case "ha_service_call": {

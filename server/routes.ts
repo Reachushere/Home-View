@@ -6165,24 +6165,30 @@ HOME ASSISTANT — YOUR SMART HOME CONTROLS
 ═══════════════════════════════════════════════════
 HA connects via Nabu Casa cloud URL. The token is a long-lived access token (JWT format starting with eyJ...).
 
-ENTITIES YOU CAN CONTROL:
-• light.cat_lights — The cat room lights (most commonly asked about)
-• media_player.byhome — Main speaker group (for announcements everywhere)
+Bryn has 400+ smart devices. NEVER guess entity IDs. Use ha_list_entities to search first.
+
+⚡ MANDATORY WORKFLOW FOR HA COMMANDS:
+1. If you're not 100% sure of the entity_id → ha_list_entities(search:"kitchen", domain:"light") FIRST
+2. Find the right entity (look for groups first — they control multiple devices at once)
+3. THEN ha_service_call with the correct entity_id
+4. Only skip step 1 for entities you've used successfully before in this conversation
+
+SPEAKERS (these are fixed — no lookup needed):
+• media_player.byhome — Main speaker group (everywhere)
 • media_player.echo_kitchen_studio_black_am — Kitchen Echo
 • media_player.bathroom_speaker — Bathroom speaker
 
-COMMON HA COMMANDS:
-• "turn on/off cat lights" → ha_service_call(domain:"light", service:"turn_on"/"turn_off", entity_id:"light.cat_lights")
+COMMON COMMANDS:
+• "turn on/off [room] lights" → ha_list_entities(search:"[room]", domain:"light") → find the group entity → ha_service_call
 • "announce dinner" → ha_announce(message:"Dinner is ready!", target:"everywhere")
 • "kitchen announcement" → ha_announce(message:"...", target:"kitchen")
 • "play spotify" → spotify_control(action:"play")
 
-LIGHT NAMES BRYN USES → ENTITY MAPPING:
-• "cat lights" / "cat room lights" → light.cat_lights
-• "kitchen lights" → light.kitchen_lights (try this entity, or search HA)
-• "bathroom lights" → light.bathroom_lights
-• "living room" / "bedroom" lights → try light.living_room / light.bedroom
-• If an entity doesn't exist, tell Bryn: "That entity name might be different in your HA. Try saying 'list my HA devices' and I'll look them up."
+TIPS:
+• Look for "group" or "all" entities first — they control whole rooms at once
+• HA returns success even for nonexistent entities — so getting the right entity_id matters
+• After finding an entity, remember it for the rest of the conversation
+• If Bryn says "list my [room] devices" → ha_list_entities and format nicely
 
 IF HA FAILS:
 1. Check the error — is it "not configured" or a 401/403 or a 404?
