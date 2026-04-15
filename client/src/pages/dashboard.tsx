@@ -1487,32 +1487,6 @@ export default function Dashboard() {
     if (val) localStorage.setItem('calendarReductionUserSet', '1');
   };
   const [homeworkMinimized, setHomeworkMinimized] = useState(() => localStorage.getItem('homeworkMinimized') === '1');
-  const [hwCalPairedScroll, setHwCalPairedScroll] = useState(() => localStorage.getItem('hwCalPairedScroll') === '1');
-  const pairedScrollingRef = useRef(false);
-  useEffect(() => {
-    if (!hwCalPairedScroll) return;
-    const calEl = calendarScrollRef.current;
-    const hwEl = homeworkScrollRef.current;
-    if (!calEl || !hwEl) return;
-    let syncing = false;
-    const syncCalToHw = () => {
-      if (syncing) return;
-      syncing = true;
-      const calPct = calEl.scrollHeight > calEl.clientHeight ? calEl.scrollTop / (calEl.scrollHeight - calEl.clientHeight) : 0;
-      hwEl.scrollTop = calPct * (hwEl.scrollHeight - hwEl.clientHeight);
-      requestAnimationFrame(() => { syncing = false; });
-    };
-    const syncHwToCal = () => {
-      if (syncing) return;
-      syncing = true;
-      const hwPct = hwEl.scrollHeight > hwEl.clientHeight ? hwEl.scrollTop / (hwEl.scrollHeight - hwEl.clientHeight) : 0;
-      calEl.scrollTop = hwPct * (calEl.scrollHeight - calEl.clientHeight);
-      requestAnimationFrame(() => { syncing = false; });
-    };
-    calEl.addEventListener('scroll', syncCalToHw, { passive: true });
-    hwEl.addEventListener('scroll', syncHwToCal, { passive: true });
-    return () => { calEl.removeEventListener('scroll', syncCalToHw); hwEl.removeEventListener('scroll', syncHwToCal); };
-  }, [hwCalPairedScroll]);
   const [homeworkAnimating, setHomeworkAnimating] = useState(false);
   const savedCalendarReductionRef = useRef<number | null>(null);
   const savedGlassRightRef = useRef<number | null>(null);
@@ -34958,18 +34932,6 @@ export default function Dashboard() {
           }}
           data-testid="section-coming-up"
         >
-          {/* Paired scroll toggle — above the homework box */}
-          {!hwFloating.detached && !homeworkMinimized && !blankBoxOpen && !homeworkAnimating && !blankBoxAnimating && (
-            <button
-              onClick={() => { const next = !hwCalPairedScroll; setHwCalPairedScroll(next); localStorage.setItem('hwCalPairedScroll', next ? '1' : '0'); }}
-              className="absolute flex items-center justify-center hover:bg-white/20 active:bg-white/30 transition-colors"
-              style={{ top: '2px', right: '4px', left: 'auto', transform: 'none', width: '28px', height: '14px', borderRadius: '4px', background: hwCalPairedScroll ? 'rgba(59,130,246,0.6)' : 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', zIndex: 110, backdropFilter: 'blur(8px)', cursor: 'pointer' }}
-              title={hwCalPairedScroll ? 'Paired scrolling ON — click to unlink' : 'Paired scrolling OFF — click to link'}
-              data-testid="toggle-paired-scroll"
-            >
-              <Link2 size={10} style={{ color: hwCalPairedScroll ? '#fff' : 'rgba(0,0,0,0.5)', transform: hwCalPairedScroll ? 'none' : 'rotate(45deg)', transition: 'transform 0.2s' }} />
-            </button>
-          )}
           <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', border: '1.5px solid rgba(255,255,255,0.5)', pointerEvents: 'none', zIndex: 9999 }} />
           {(blankBoxOpen || blankMinimizeAnim === 'minimizing' || blankMinimizeAnim === 'restoring') && <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', zIndex: 9998, pointerEvents: blankMinimizeAnim !== 'idle' ? 'none' : 'auto', display: 'flex', flexDirection: 'column', transform: blankMinimizeAnim === 'minimizing' ? 'scale(0.08) translateY(180%)' : blankMinimizeAnim === 'restoring' ? 'none' : 'none', opacity: blankMinimizeAnim === 'minimizing' ? 0 : 1, transition: blankMinimizeAnim === 'minimizing' ? 'transform 0.55s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1)' : blankMinimizeAnim === 'restoring' ? 'transform 0.55s cubic-bezier(0.0, 0, 0.2, 1), opacity 0.55s cubic-bezier(0.0, 0, 0.2, 1)' : 'none', transformOrigin: 'bottom center' }}>
             <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', border: '1.5px solid rgba(255,255,255,0.5)', pointerEvents: 'none', zIndex: 9999 }} />
@@ -35101,8 +35063,8 @@ export default function Dashboard() {
             data-testid="date-nav-tab"
           >
             <div style={{ width: '280px', height: '15px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)', padding: '0 2px', gap: '5px' }}>
-              <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 4px', margin: '-8px 0', height: 'calc(100% + 16px)', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => { const newWeek = selectedWeek - 4; calendarDrivingScrollRef.current = true; setTimeout(() => { calendarDrivingScrollRef.current = false; }, 1200); startTransition(() => setSelectedWeek(newWeek)); if (newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }} data-testid="button-pill-prev-month"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000', letterSpacing: '-2px', marginRight: '1px' }}>◀◀</span></div>
-              <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 4px', margin: '-8px 0', height: 'calc(100% + 16px)', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => { const newWeek = selectedWeek - 1; calendarDrivingScrollRef.current = true; setTimeout(() => { calendarDrivingScrollRef.current = false; }, 1200); startTransition(() => setSelectedWeek(newWeek)); if (newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }} data-testid="button-pill-prev-week"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>◀</span></div>
+              <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 4px', margin: '-8px 0', height: 'calc(100% + 16px)', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => { const newWeek = selectedWeek - 4; calendarDrivingScrollRef.current = true; setTimeout(() => { calendarDrivingScrollRef.current = false; }, 1200); startTransition(() => setSelectedWeek(newWeek)); if (timelineSyncRef.current && newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }} data-testid="button-pill-prev-month"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000', letterSpacing: '-2px', marginRight: '1px' }}>◀◀</span></div>
+              <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 4px', margin: '-8px 0', height: 'calc(100% + 16px)', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => { const newWeek = selectedWeek - 1; calendarDrivingScrollRef.current = true; setTimeout(() => { calendarDrivingScrollRef.current = false; }, 1200); startTransition(() => setSelectedWeek(newWeek)); if (timelineSyncRef.current && newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }} data-testid="button-pill-prev-week"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>◀</span></div>
               <span data-testid="text-week-dates" style={{ fontSize: '10px', fontWeight: 500, color: '#000', whiteSpace: 'nowrap', lineHeight: 1, letterSpacing: '0.3px', flex: 1, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px' }}>
                 {(() => {
                   const startMonth = format(weekStartDate, 'MMMM');
@@ -35115,24 +35077,19 @@ export default function Dashboard() {
                   return `${startDow} ${startMonth} ${startDay} - ${endDow} ${endMonth} ${endDay}, ${year}`;
                 })()}
               </span>
-              <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 4px', margin: '-8px 0', height: 'calc(100% + 16px)', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => { const newWeek = selectedWeek + 1; calendarDrivingScrollRef.current = true; setTimeout(() => { calendarDrivingScrollRef.current = false; }, 1200); startTransition(() => setSelectedWeek(newWeek)); if (newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }} data-testid="button-pill-next-week"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▶</span></div>
-              <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 4px', margin: '-8px 0', height: 'calc(100% + 16px)', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => { const newWeek = selectedWeek + 4; calendarDrivingScrollRef.current = true; setTimeout(() => { calendarDrivingScrollRef.current = false; }, 1200); startTransition(() => setSelectedWeek(newWeek)); if (newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }} data-testid="button-pill-next-month"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000', letterSpacing: '-2px', marginLeft: '1px' }}>▶▶</span></div>
+              <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 4px', margin: '-8px 0', height: 'calc(100% + 16px)', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => { const newWeek = selectedWeek + 1; calendarDrivingScrollRef.current = true; setTimeout(() => { calendarDrivingScrollRef.current = false; }, 1200); startTransition(() => setSelectedWeek(newWeek)); if (timelineSyncRef.current && newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }} data-testid="button-pill-next-week"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▶</span></div>
+              <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 4px', margin: '-8px 0', height: 'calc(100% + 16px)', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => { const newWeek = selectedWeek + 4; calendarDrivingScrollRef.current = true; setTimeout(() => { calendarDrivingScrollRef.current = false; }, 1200); startTransition(() => setSelectedWeek(newWeek)); if (timelineSyncRef.current && newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }} data-testid="button-pill-next-month"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000', letterSpacing: '-2px', marginLeft: '1px' }}>▶▶</span></div>
             </div>
           </div>
-          <div
+          <button
             onClick={(e) => { e.stopPropagation(); const next = !timelineSyncCalendar; setTimelineSyncCalendar(next); localStorage.setItem('timelineSyncCalendar', String(next)); fetch('/api/ui-settings/timelineSyncCalendar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: next }) }).catch(() => {}); }}
-            className="absolute z-[71]"
-            style={{ top: '-13px', left: '1px', display: 'flex', alignItems: 'center', gap: '3px', cursor: 'pointer', padding: '1px 4px 1px 2px', borderRadius: '4px 4px 0 0', opacity: (homeworkMinimized || homeworkAnimating || blankBoxOpen) ? 0 : 1, pointerEvents: (homeworkMinimized || homeworkAnimating || blankBoxOpen) ? 'none' : 'auto', transition: 'opacity 0.25s ease' }}
-            data-testid="timeline-sync-toggle-container"
+            className="absolute z-[71] flex items-center justify-center hover:bg-white/20 active:bg-white/30 transition-colors"
+            style={{ top: '-13px', left: '1px', width: '26px', height: '12px', borderRadius: '4px 4px 0 0', background: timelineSyncCalendar ? 'rgba(59,130,246,0.6)' : 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', borderBottom: 'none', cursor: 'pointer', opacity: (homeworkMinimized || homeworkAnimating || blankBoxOpen) ? 0 : 1, pointerEvents: (homeworkMinimized || homeworkAnimating || blankBoxOpen) ? 'none' : 'auto', transition: 'opacity 0.25s ease, background 0.2s ease' }}
+            title={timelineSyncCalendar ? 'Paired scrolling ON — date nav syncs homework timeline' : 'Paired scrolling OFF — click to link'}
+            data-testid="toggle-paired-scroll"
           >
-            <div
-              style={{ width: '20px', height: '10px', borderRadius: '5px', background: timelineSyncCalendar ? '#22c55e' : 'rgba(255,255,255,0.3)', position: 'relative', transition: 'background 0.2s ease', flexShrink: 0 }}
-              data-testid="button-timeline-sync-toggle"
-            >
-              <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#fff', position: 'absolute', top: '2px', left: timelineSyncCalendar ? '12px' : '2px', transition: 'left 0.2s ease', boxShadow: '0 1px 2px rgba(0,0,0,0.3)' }} />
-            </div>
-            <span style={{ fontSize: '9px', color: '#ffffff', fontWeight: 500, letterSpacing: '0.3px', whiteSpace: 'nowrap', lineHeight: 1, position: 'relative', top: '1px' }}>Pair Scroll</span>
-          </div>
+            <Link2 size={8} style={{ color: timelineSyncCalendar ? '#fff' : 'rgba(255,255,255,0.5)', transform: timelineSyncCalendar ? 'none' : 'rotate(45deg)', transition: 'transform 0.2s, color 0.2s' }} />
+          </button>
           {!hwFloating.detached ? (
             <button
               onClick={hwFloatingHandlers.onDetach}
