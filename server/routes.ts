@@ -6037,12 +6037,14 @@ ${fileContents.join('\n\n')}`;
   app.post("/api/ai/command", async (req, res) => {
     try {
       if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ error: "Access denied" });
-      const { message, history, confirmToolCall } = req.body;
+      const { message, history, confirmToolCall, stream } = req.body;
       if (!message || typeof message !== 'string' || message.trim().length < 2) {
         return res.status(400).json({ error: "Message too short" });
       }
-      if (!process.env.OPENAI_API_KEY) {
-        return res.status(503).json({ error: "OpenAI API key not configured" });
+
+      const config = await getApprovedOpenAIConfig("AI Command", `Command: "${message.slice(0, 60)}..."`, "~$0.01-0.05");
+      if (!config) {
+        return res.status(503).json({ error: "OpenAI not available or approval denied" });
       }
 
       const { AI_COMMAND_TOOLS, executeToolCall, getAppContext, consumePendingConfirmation, createPendingConfirmation } = await import("./aiCommandTools");
@@ -6092,7 +6094,7 @@ RULES:
       messages.push({ role: "user", content: message.trim() });
 
       const OpenAI = (await import("openai")).default;
-      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+      const openai = new OpenAI({ apiKey: config.apiKey });
 
       const completion = await openai.chat.completions.create({
         model: "gpt-4o-mini",
@@ -6120,7 +6122,11 @@ RULES:
             continue;
           }
 
-          if (destructiveTools.includes(fnName)) {
+          const isDestructive = destructiveTools.includes(fnName)
+            || (fnName === "manage_sticky_note" && fnArgs.action === "delete")
+            || (fnName === "notepad_crud" && fnArgs.action === "delete");
+
+          if (isDestructive) {
             const token = createPendingConfirmation(fnName, fnArgs);
             pendingConfirmations.push({ id: tc.id, name: fnName, arguments: fnArgs, token });
           } else {
@@ -6148,6 +6154,32 @@ RULES:
           toolMsgs.push({ role: "tool", tool_call_id: tr.tool_call_id, content: JSON.stringify(tr.result) });
         }
 
+        if (stream) {
+          res.setHeader('Content-Type', 'text/event-stream');
+          res.setHeader('Cache-Control', 'no-cache');
+          res.setHeader('Connection', 'keep-alive');
+
+          const sseStream = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [...messages, ...toolMsgs],
+            max_completion_tokens: 1024,
+            stream: true,
+          });
+
+          res.write(`data: ${JSON.stringify({ type: 'meta', toolResults, actionTaken: true })}\n\n`);
+          let fullReply = '';
+          for await (const chunk of sseStream) {
+            const delta = chunk.choices[0]?.delta?.content;
+            if (delta) {
+              fullReply += delta;
+              res.write(`data: ${JSON.stringify({ type: 'token', content: delta })}\n\n`);
+            }
+          }
+          res.write(`data: ${JSON.stringify({ type: 'done', reply: fullReply })}\n\n`);
+          res.end();
+          return;
+        }
+
         const followUp = await openai.chat.completions.create({
           model: "gpt-4o-mini",
           messages: [...messages, ...toolMsgs],
@@ -6167,6 +6199,31 @@ RULES:
           usage: { totalTokens },
           cost: `$${cost.toFixed(4)}`,
         });
+      }
+
+      if (stream) {
+        res.setHeader('Content-Type', 'text/event-stream');
+        res.setHeader('Cache-Control', 'no-cache');
+        res.setHeader('Connection', 'keep-alive');
+
+        const sseStream = await openai.chat.completions.create({
+          model: "gpt-4o-mini",
+          messages,
+          max_completion_tokens: 2048,
+          stream: true,
+        });
+
+        let fullReply = '';
+        for await (const chunk of sseStream) {
+          const delta = chunk.choices[0]?.delta?.content;
+          if (delta) {
+            fullReply += delta;
+            res.write(`data: ${JSON.stringify({ type: 'token', content: delta })}\n\n`);
+          }
+        }
+        res.write(`data: ${JSON.stringify({ type: 'done', reply: fullReply, actionTaken: false })}\n\n`);
+        res.end();
+        return;
       }
 
       const reply = choice?.message?.content || "I'm not sure what you want me to do. Try being more specific.";

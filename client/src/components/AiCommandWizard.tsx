@@ -55,26 +55,80 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
         body: JSON.stringify({
           message: msg,
           history: messages.slice(-10).map(m => ({ role: m.role, content: m.content })),
+          stream: true,
         }),
       });
-      const data = await resp.json();
-      if (!resp.ok) throw new Error(data.error || 'Command failed');
 
-      if (data.pendingConfirmations && data.pendingConfirmations.length > 0) {
-        setPendingConfirm(data.pendingConfirmations);
+      if (!resp.ok) {
+        const data = await resp.json();
+        throw new Error(data.error || 'Command failed');
       }
 
-      if (data.actionTaken) {
-        invalidateAll();
-      }
+      const contentType = resp.headers.get('content-type') || '';
+      if (contentType.includes('text/event-stream') && resp.body) {
+        const reader = resp.body.getReader();
+        const decoder = new TextDecoder();
+        let streamedContent = '';
+        let toolResults: any[] | undefined;
+        let actionTaken = false;
+        let pendingConfs: any[] | undefined;
 
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: data.reply,
-        toolResults: data.toolResults,
-        actionTaken: data.actionTaken,
-        pendingConfirmations: data.pendingConfirmations,
-      }]);
+        setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
+
+        let buffer = '';
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue;
+            try {
+              const event = JSON.parse(line.slice(6));
+              if (event.type === 'meta') {
+                toolResults = event.toolResults;
+                actionTaken = event.actionTaken || false;
+              } else if (event.type === 'token') {
+                streamedContent += event.content;
+                setMessages(prev => {
+                  const updated = [...prev];
+                  updated[updated.length - 1] = { role: 'assistant', content: streamedContent, toolResults, actionTaken };
+                  return updated;
+                });
+              } else if (event.type === 'done') {
+                if (event.actionTaken) actionTaken = true;
+              }
+            } catch {}
+          }
+        }
+
+        if (actionTaken) invalidateAll();
+
+        setMessages(prev => {
+          const updated = [...prev];
+          updated[updated.length - 1] = { role: 'assistant', content: streamedContent || 'Done!', toolResults, actionTaken };
+          return updated;
+        });
+      } else {
+        const data = await resp.json();
+
+        if (data.pendingConfirmations && data.pendingConfirmations.length > 0) {
+          setPendingConfirm(data.pendingConfirmations);
+        }
+
+        if (data.actionTaken) {
+          invalidateAll();
+        }
+
+        setMessages(prev => [...prev, {
+          role: 'assistant',
+          content: data.reply,
+          toolResults: data.toolResults,
+          actionTaken: data.actionTaken,
+          pendingConfirmations: data.pendingConfirmations,
+        }]);
+      }
     } catch (err: any) {
       setMessages(prev => [...prev, { role: 'assistant', content: `Error: ${err.message}` }]);
     } finally {

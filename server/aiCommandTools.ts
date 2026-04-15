@@ -337,6 +337,38 @@ export const AI_COMMAND_TOOLS = [
       },
     },
   },
+  {
+    type: "function" as const,
+    function: {
+      name: "notepad_crud",
+      description: "Full notepad note management — list, get, create, update, or delete notepad notes. Notepad is for longer-form notes with rich text content.",
+      parameters: {
+        type: "object",
+        properties: {
+          action: { type: "string", enum: ["list", "get", "create", "update", "delete"], description: "Action to perform" },
+          id: { type: "integer", description: "Note ID (required for get/update/delete)" },
+          title: { type: "string", description: "Note title (for create/update)" },
+          content: { type: "string", description: "Note content/body text (for create/update)" },
+          color: { type: "string", description: "Note color (for create/update)" },
+        },
+        required: ["action"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "sync_task_to_calendar",
+      description: "Sync a task to Google Calendar. Creates a calendar event for the task and stores the event ID.",
+      parameters: {
+        type: "object",
+        properties: {
+          taskId: { type: "integer", description: "The task ID to sync to Google Calendar" },
+        },
+        required: ["taskId"],
+      },
+    },
+  },
 ];
 
 export async function executeToolCall(name: string, args: Record<string, any>): Promise<{ success: boolean; result: any; needsConfirmation?: boolean; confirmationMessage?: string }> {
@@ -670,6 +702,66 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           default:
             return { success: false, result: { error: `Unknown sticky note action: ${args.action}` } };
         }
+      }
+
+      case "notepad_crud": {
+        switch (args.action) {
+          case "list": {
+            const notes = await db.select().from(notepadNotes).orderBy(notepadNotes.sortOrder);
+            return { success: true, result: notes.map(n => ({ id: n.id, title: n.title, color: n.color, updatedAt: n.updatedAt })) };
+          }
+          case "get": {
+            if (!args.id) return { success: false, result: { error: "Note ID required" } };
+            const [note] = await db.select().from(notepadNotes).where(eq(notepadNotes.id, args.id));
+            if (!note) return { success: false, result: { error: "Note not found" } };
+            return { success: true, result: note };
+          }
+          case "create": {
+            const [note] = await db.insert(notepadNotes).values({
+              title: args.title || "Untitled",
+              content: args.content || "",
+              color: args.color || null,
+            }).returning();
+            return { success: true, result: { id: note.id, title: note.title, action: "created" } };
+          }
+          case "update": {
+            if (!args.id) return { success: false, result: { error: "Note ID required for update" } };
+            const updates: any = {};
+            if (args.title) updates.title = args.title;
+            if (args.content !== undefined) updates.content = args.content;
+            if (args.color) updates.color = args.color;
+            updates.updatedAt = new Date();
+            const [updated] = await db.update(notepadNotes).set(updates).where(eq(notepadNotes.id, args.id)).returning();
+            if (!updated) return { success: false, result: { error: "Note not found" } };
+            return { success: true, result: { id: updated.id, title: updated.title, action: "updated" } };
+          }
+          case "delete": {
+            if (!args.id) return { success: false, result: { error: "Note ID required for delete" } };
+            await db.delete(notepadNotes).where(eq(notepadNotes.id, args.id));
+            return { success: true, result: { id: args.id, action: "deleted" } };
+          }
+          default:
+            return { success: false, result: { error: `Unknown notepad action: ${args.action}` } };
+        }
+      }
+
+      case "sync_task_to_calendar": {
+        const task = await storage.getTask(args.taskId);
+        if (!task) return { success: false, result: { error: `Task #${args.taskId} not found` } };
+        const { createCalendarEvent } = await import("./googleCalendar");
+        const event = await createCalendarEvent({
+          title: task.title,
+          dueDate: new Date(task.dueDate),
+          startTime: task.eventStartTime || undefined,
+          endTime: task.eventEndTime || undefined,
+          description: task.description || undefined,
+          courseName: task.courseName || undefined,
+        });
+        if (event?.id) {
+          await storage.updateTask(args.taskId, { calendarEventId: event.id });
+          return { success: true, result: { taskId: args.taskId, calendarEventId: event.id, synced: true } };
+        }
+        return { success: false, result: { error: "Calendar event creation returned no ID" } };
       }
 
       case "send_email": {
