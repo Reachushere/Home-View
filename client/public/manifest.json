@@ -4,7 +4,7 @@
   "description": "Academic task management companion",
   "start_url": "http://172.24.1.204:5000/m",
   "scope": "http://172.24.1.204:5000/",
-  "display": "standalone",
+  "display": "browser",
   "orientation": "any",
   "background_color": "#1a3a5c",
   "theme_color": "#2a5a8a",
