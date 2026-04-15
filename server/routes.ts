@@ -6143,6 +6143,10 @@ MEMORY:
 - memory_read — Load your persistent memory file at the start of complex tasks
 - memory_write — Save important context, decisions, learned patterns for future sessions. Requires confirmation.
 
+IMAGE GENERATION:
+- generate_image — Create images using DALL-E 3. Costs ~$0.04 (standard) or ~$0.08 (HD) per image. Saved to /generated/ folder. Requires confirmation.
+- Supports 1024x1024 (square), 1792x1024 (landscape), 1024x1792 (portrait)
+
 PACKAGES:
 - install_package — Install npm packages (requires confirmation)
 
@@ -6178,7 +6182,7 @@ RULES:
       const openai = new OpenAI({ apiKey: config.apiKey });
 
       const readOnlyTools = new Set(["read_file", "list_directory", "search_code", "search_tasks", "get_semester_info", "check_build", "read_logs", "git_diff", "get_project_map", "db_schema", "http_check", "memory_read", "process_check", "analyze_ui", "smoke_test"]);
-      const destructiveTools = new Set(["delete_task", "bulk_delete_tasks", "bulk_complete_tasks", "write_file", "edit_file", "run_shell_command", "restart_application", "git_commit_and_push", "install_package", "run_node_script"]);
+      const destructiveTools = new Set(["delete_task", "bulk_delete_tasks", "bulk_complete_tasks", "write_file", "edit_file", "run_shell_command", "restart_application", "git_commit_and_push", "install_package", "run_node_script", "generate_image"]);
 
       function isToolDestructive(fnName: string, fnArgs: any): boolean {
         if (destructiveTools.has(fnName)) return true;

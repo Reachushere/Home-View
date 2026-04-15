@@ -618,6 +618,23 @@ export const AI_COMMAND_TOOLS = [
   {
     type: "function" as const,
     function: {
+      name: "generate_image",
+      description: "Generate an image using DALL-E 3. Creates a JPG/PNG from a text description. Costs ~$0.04-0.08 per image from the OpenAI account. The image is saved to the project's public assets folder and returns the file path. Use for: creating graphics, icons, illustrations, backgrounds, concept art, or any visual content Bryn requests.",
+      parameters: {
+        type: "object",
+        properties: {
+          prompt: { type: "string", description: "Detailed description of the image to generate. Be specific about style, colors, composition, and subject matter." },
+          size: { type: "string", enum: ["1024x1024", "1792x1024", "1024x1792"], description: "Image dimensions. 1024x1024 (square), 1792x1024 (landscape), 1024x1792 (portrait). Default 1024x1024." },
+          quality: { type: "string", enum: ["standard", "hd"], description: "Image quality. 'standard' (~$0.04) or 'hd' (~$0.08) for more detail. Default standard." },
+          filename: { type: "string", description: "Output filename without extension (e.g. 'cat-graduation'). Will be saved as PNG." },
+        },
+        required: ["prompt"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
       name: "run_sql",
       description: "Execute a SQL query against the PostgreSQL database. Use for checking data, debugging, understanding schema. SELECT queries run freely. INSERT/UPDATE/DELETE require confirmation.",
       parameters: {
@@ -1543,6 +1560,49 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           }};
         } catch (e: any) {
           return { success: false, result: { error: e.message?.substring(0, 300) } };
+        }
+      }
+
+      case "generate_image": {
+        try {
+          const OpenAI = (await import("openai")).default;
+          const apiKey = process.env.OPENAI_API_KEY;
+          if (!apiKey) return { success: false, result: { error: "OPENAI_API_KEY not configured" } };
+          const openai = new OpenAI({ apiKey });
+          const size = args.size || "1024x1024";
+          const quality = args.quality || "standard";
+          const response = await openai.images.generate({
+            model: "dall-e-3",
+            prompt: args.prompt,
+            n: 1,
+            size: size as any,
+            quality: quality as any,
+            response_format: "url",
+          });
+          const imageUrl = response.data[0]?.url;
+          if (!imageUrl) return { success: false, result: { error: "No image URL returned from DALL-E" } };
+          const revisedPrompt = response.data[0]?.revised_prompt || args.prompt;
+          const projectRoot = getProjectRoot();
+          const outputDir = path.join(projectRoot, 'client', 'public', 'generated');
+          await fs.mkdir(outputDir, { recursive: true });
+          const filename = (args.filename || `ai-image-${Date.now()}`).replace(/[^a-zA-Z0-9_-]/g, '_');
+          const outputPath = path.join(outputDir, `${filename}.png`);
+          const imageResponse = await fetch(imageUrl);
+          const arrayBuffer = await imageResponse.arrayBuffer();
+          await fs.writeFile(outputPath, Buffer.from(arrayBuffer));
+          const relativePath = `/generated/${filename}.png`;
+          const cost = quality === 'hd' ? '$0.080' : '$0.040';
+          return { success: true, result: {
+            saved: outputPath,
+            webPath: relativePath,
+            size,
+            quality,
+            cost,
+            revisedPrompt: revisedPrompt.substring(0, 300),
+            hint: `Image accessible at http://localhost:5000${relativePath} or on Pi at http://172.24.1.204:5000${relativePath}`,
+          }};
+        } catch (e: any) {
+          return { success: false, result: { error: e.message?.substring(0, 500) } };
         }
       }
 
