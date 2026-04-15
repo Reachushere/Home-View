@@ -196,6 +196,7 @@ app.post("/api/auth/login", (req: Request, res: Response) => {
   }
   if (VALID_PASSWORDS.includes(password)) {
     const token = createSessionToken(password);
+    trackSession(token, password, req);
     res.cookie("uni_cal_session", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -214,6 +215,7 @@ app.get("/api/auth/check", (req: Request, res: Response) => {
   if (isAutoAuthRequest(req)) {
     const level = getAutoAuthLevel(req);
     const token = createSessionToken(level);
+    trackSession(token, level, req);
     res.cookie("uni_cal_session", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -227,6 +229,7 @@ app.get("/api/auth/check", (req: Request, res: Response) => {
     try {
       const parsed = parseToken(token);
       if (parsed.valid) {
+        trackSession(token, parsed.level, req);
         return res.json({ authenticated: true, level: parsed.level });
       }
     } catch (e) {}
@@ -239,10 +242,111 @@ app.post("/api/auth/logout", (_req: Request, res: Response) => {
   return res.json({ success: true });
 });
 
+const activeSessions: Map<string, { level: string; loginTime: number; lastActive: number; userAgent: string; ip: string }> = new Map();
+
+function trackSession(token: string, level: string, req: Request) {
+  const ua = req.headers['user-agent'] || 'Unknown';
+  const ip = req.headers['x-forwarded-for'] as string || req.socket.remoteAddress || 'Unknown';
+  const existing = activeSessions.get(token);
+  if (existing) {
+    existing.lastActive = Date.now();
+  } else {
+    activeSessions.set(token, { level, loginTime: Date.now(), lastActive: Date.now(), userAgent: ua, ip: typeof ip === 'string' ? ip : ip });
+  }
+}
+
+function getAdminAuth(req: Request): boolean {
+  const token = getAuthToken(req);
+  if (!token) return !SITE_PASSWORD;
+  const parsed = parseToken(token);
+  return parsed.valid && parsed.level === '5747';
+}
+
+app.get("/api/admin/status", (req: Request, res: Response) => {
+  if (!getAdminAuth(req)) return res.status(403).json({ error: "Admin access required" });
+  const uptime = process.uptime();
+  const sessions = Array.from(activeSessions.entries()).map(([tokenKey, s]) => ({
+    id: tokenKey.substring(0, 8) + '...',
+    level: s.level,
+    levelName: s.level === '5747' ? 'Bryn (Admin)' : s.level === '4201' ? 'Partner' : s.level === '1010' ? 'Guest' : 'Unknown',
+    loginTime: s.loginTime,
+    lastActive: s.lastActive,
+    userAgent: s.userAgent,
+    ip: s.ip,
+  }));
+  const staleThreshold = Date.now() - (24 * 60 * 60 * 1000);
+  for (const [key, s] of activeSessions) {
+    if (s.lastActive < staleThreshold) activeSessions.delete(key);
+  }
+  res.json({
+    uptime,
+    sitePasswordSet: !!SITE_PASSWORD,
+    guestAccessEnabled: !!process.env.SITE_PASSWORD_1010,
+    partnerAccessEnabled: !!process.env.SITE_PASSWORD_4201,
+    sessions: sessions.filter(s => s.lastActive > staleThreshold),
+    passwords: {
+      admin: SITE_PASSWORD || '(not set)',
+      partner: process.env.SITE_PASSWORD_4201 || '(not set)',
+      guest: process.env.SITE_PASSWORD_1010 || '(not set)',
+    },
+    tunnel: {
+      configured: true,
+      domain: 'uni-cal.app',
+    },
+    nodeVersion: process.version,
+    memoryUsage: process.memoryUsage(),
+    pid: process.pid,
+  });
+});
+
+app.post("/api/admin/update-passwords", (req: Request, res: Response) => {
+  if (!getAdminAuth(req)) return res.status(403).json({ error: "Admin access required" });
+  const { adminPassword, partnerPassword, guestPassword } = req.body;
+  const envPath = path.resolve(process.cwd(), '.env');
+  let envContent = '';
+  if (fs.existsSync(envPath)) {
+    envContent = fs.readFileSync(envPath, 'utf-8');
+  }
+  const updateEnvVar = (content: string, key: string, value: string | null): string => {
+    const regex = new RegExp(`^${key}=.*$`, 'm');
+    if (value === null || value === '') {
+      return content.replace(regex, '').replace(/\n{2,}/g, '\n').trim() + '\n';
+    }
+    if (regex.test(content)) {
+      return content.replace(regex, `${key}=${value}`);
+    }
+    return content.trim() + `\n${key}=${value}\n`;
+  };
+  if (adminPassword !== undefined) envContent = updateEnvVar(envContent, 'SITE_PASSWORD', adminPassword);
+  if (partnerPassword !== undefined) envContent = updateEnvVar(envContent, 'SITE_PASSWORD_4201', partnerPassword);
+  if (guestPassword !== undefined) envContent = updateEnvVar(envContent, 'SITE_PASSWORD_1010', guestPassword);
+  fs.writeFileSync(envPath, envContent);
+  res.json({ success: true, message: 'Passwords updated in .env file. Restart the app for changes to take effect.' });
+});
+
+app.post("/api/admin/revoke-session", (req: Request, res: Response) => {
+  if (!getAdminAuth(req)) return res.status(403).json({ error: "Admin access required" });
+  const { sessionId } = req.body;
+  for (const [key] of activeSessions) {
+    if (key.substring(0, 8) + '...' === sessionId) {
+      activeSessions.delete(key);
+      return res.json({ success: true });
+    }
+  }
+  res.status(404).json({ error: "Session not found" });
+});
+
+app.post("/api/admin/restart", (req: Request, res: Response) => {
+  if (!getAdminAuth(req)) return res.status(403).json({ error: "Admin access required" });
+  res.json({ success: true, message: 'Restarting...' });
+  setTimeout(() => process.exit(0), 1000);
+});
+
 app.use((req: Request, res: Response, next: NextFunction) => {
   if (!SITE_PASSWORD) return next();
   if (process.env.NODE_ENV !== "production") return next();
   if (req.path.startsWith("/api/auth/")) return next();
+  if (req.path.startsWith("/api/admin/")) return next();
   if (req.path.startsWith("/api/webhook/")) return next();
   if (req.path.startsWith("/api/shower/")) return next();
   if (req.path.startsWith("/api/cat-wash/")) return next();

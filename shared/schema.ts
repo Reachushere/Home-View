@@ -920,5 +920,32 @@ export const sharedLibraryTokens = pgTable("shared_library_tokens", {
 
 export type SharedLibraryToken = typeof sharedLibraryTokens.$inferSelect;
 
+export const profileSettings = pgTable("profile_settings", {
+  id: serial("id").primaryKey(),
+  profileLevel: text("profile_level").notNull(),
+  profileName: text("profile_name").notNull(),
+  showOutlookCalendar: boolean("show_outlook_calendar").default(true),
+  showGoogleCalendar: boolean("show_google_calendar").default(true),
+  showSecondGoogleCalendar: boolean("show_second_google_calendar").default(true),
+  showTasks: boolean("show_tasks").default(true),
+  showWeather: boolean("show_weather").default(true),
+  showNewsTicker: boolean("show_news_ticker").default(true),
+  showHomeworkPanel: boolean("show_homework_panel").default(true),
+  showDegreeTracking: boolean("show_degree_tracking").default(false),
+  showBrynAssist: boolean("show_bryn_assist").default(false),
+  showNotepad: boolean("show_notepad").default(false),
+  showRadio: boolean("show_radio").default(true),
+  canEditTasks: boolean("can_edit_tasks").default(false),
+  canAddCalendarEvents: boolean("can_add_calendar_events").default(false),
+  canAccessSettings: boolean("can_access_settings").default(false),
+  canViewLibrary: boolean("can_view_library").default(false),
+  customCalendars: text("custom_calendars").default('[]'),
+  enabled: boolean("enabled").default(true),
+});
+
+export type ProfileSettings = typeof profileSettings.$inferSelect;
+export const insertProfileSettingsSchema = createInsertSchema(profileSettings).omit({ id: true });
+export type InsertProfileSettings = z.infer<typeof insertProfileSettingsSchema>;
+
 // Export chat models for AI integrations
 export * from "./models/chat";
