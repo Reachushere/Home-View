@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { Zap, Send, X, Loader2, CheckCircle, XCircle, AlertTriangle, Trash2, RotateCcw } from 'lucide-react';
+import { Zap, Send, X, Loader2, CheckCircle, XCircle, AlertTriangle, Trash2, RotateCcw, Maximize2, Minimize2 } from 'lucide-react';
 import { queryClient } from '@/lib/queryClient';
 
 interface Message {
@@ -20,8 +20,13 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [pendingConfirm, setPendingConfirm] = useState<any[] | null>(null);
+  const [expanded, setExpanded] = useState(false);
+  const [position, setPosition] = useState<{ x: number; y: number } | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -32,6 +37,36 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   useEffect(() => {
     setTimeout(() => scrollRef.current?.scrollTo({ top: scrollRef.current?.scrollHeight || 0, behavior: 'smooth' }), 50);
   }, [messages]);
+
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest('button')) return;
+    setIsDragging(true);
+    const panel = panelRef.current;
+    if (panel) {
+      const rect = panel.getBoundingClientRect();
+      setDragOffset({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+      if (!position) {
+        setPosition({ x: rect.left, y: rect.top });
+      }
+    }
+  }, [position]);
+
+  useEffect(() => {
+    if (!isDragging) return;
+    const handleMove = (e: MouseEvent) => {
+      setPosition({
+        x: Math.max(0, Math.min(window.innerWidth - 100, e.clientX - dragOffset.x)),
+        y: Math.max(0, Math.min(window.innerHeight - 100, e.clientY - dragOffset.y)),
+      });
+    };
+    const handleUp = () => setIsDragging(false);
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('mouseup', handleUp);
+    return () => {
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('mouseup', handleUp);
+    };
+  }, [isDragging, dragOffset]);
 
   const invalidateAll = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
@@ -213,6 +248,28 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
 
   if (!isOpen) return null;
 
+  const panelWidth = expanded ? '90vw' : '600px';
+  const panelMaxHeight = expanded ? '90vh' : '80vh';
+  const panelStyle: React.CSSProperties = {
+    width: panelWidth,
+    maxWidth: expanded ? '1200px' : '95vw',
+    maxHeight: panelMaxHeight,
+    height: expanded ? '90vh' : undefined,
+    background: 'linear-gradient(180deg, #0d1b3e 0%, #0f2347 30%, #132d5a 60%, #162f5e 100%)',
+    border: '1.5px solid rgba(100,160,255,0.3)',
+    borderRadius: '16px',
+    display: 'flex',
+    flexDirection: 'column',
+    boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(50,120,220,0.15)',
+    overflow: 'hidden',
+    ...(position ? {
+      position: 'fixed' as const,
+      left: position.x,
+      top: position.y,
+    } : {}),
+    transition: isDragging ? 'none' : 'width 0.2s, max-height 0.2s, height 0.2s',
+  };
+
   return (
     <div style={{
       position: 'fixed',
@@ -222,32 +279,25 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       bottom: 0,
       zIndex: 10002,
       display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
+      alignItems: position ? 'flex-start' : 'center',
+      justifyContent: position ? 'flex-start' : 'center',
       background: 'rgba(0,0,0,0.5)',
       backdropFilter: 'blur(4px)',
     }} data-testid="ai-command-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div style={{
-        width: '600px',
-        maxWidth: '95vw',
-        maxHeight: '80vh',
-        background: 'linear-gradient(180deg, #0d1b3e 0%, #0f2347 30%, #132d5a 60%, #162f5e 100%)',
-        border: '1.5px solid rgba(100,160,255,0.3)',
-        borderRadius: '16px',
-        display: 'flex',
-        flexDirection: 'column',
-        boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(50,120,220,0.15)',
-        overflow: 'hidden',
-      }} data-testid="ai-command-panel">
-        {/* Header */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '14px 18px',
-          borderBottom: '1px solid rgba(100,160,255,0.2)',
-          background: 'rgba(15,35,71,0.8)',
-        }}>
+      <div ref={panelRef} style={panelStyle} data-testid="ai-command-panel">
+        <div
+          onMouseDown={handleMouseDown}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '14px 18px',
+            borderBottom: '1px solid rgba(100,160,255,0.2)',
+            background: 'rgba(15,35,71,0.8)',
+            cursor: 'grab',
+            userSelect: 'none',
+          }}
+        >
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <Zap size={18} color="#60a5fa" />
             <span style={{ fontSize: '15px', fontWeight: 700, color: '#e0ecff', letterSpacing: '0.3px' }}>AI Command</span>
@@ -263,6 +313,14 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
               <RotateCcw size={15} />
             </button>
             <button
+              onClick={() => { setExpanded(!expanded); if (expanded) setPosition(null); }}
+              style={{ background: 'none', border: 'none', color: 'rgba(160,190,255,0.6)', cursor: 'pointer', padding: '4px', borderRadius: '6px', display: 'flex', alignItems: 'center' }}
+              title={expanded ? 'Minimize' : 'Expand'}
+              data-testid="button-ai-command-expand"
+            >
+              {expanded ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
+            </button>
+            <button
               onClick={onClose}
               style={{ background: 'none', border: 'none', color: 'rgba(160,190,255,0.6)', cursor: 'pointer', padding: '4px', borderRadius: '6px', display: 'flex', alignItems: 'center' }}
               data-testid="button-ai-command-close"
@@ -272,7 +330,6 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
           </div>
         </div>
 
-        {/* Messages */}
         <div ref={scrollRef} style={{
           flex: 1,
           overflowY: 'auto',
@@ -418,7 +475,6 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
           )}
         </div>
 
-        {/* Input */}
         <div style={{
           padding: '12px 16px',
           borderTop: '1px solid rgba(100,160,255,0.2)',
@@ -433,7 +489,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Type a command..."
-            rows={1}
+            rows={3}
             style={{
               flex: 1,
               background: 'rgba(20,40,80,0.6)',
@@ -442,10 +498,11 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
               padding: '10px 14px',
               color: '#dce8ff',
               fontSize: '13px',
-              resize: 'none',
+              resize: 'vertical',
               outline: 'none',
               fontFamily: 'inherit',
-              maxHeight: '100px',
+              minHeight: '60px',
+              maxHeight: '200px',
               overflowY: 'auto',
             }}
             data-testid="input-ai-command"
