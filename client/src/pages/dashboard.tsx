@@ -18136,7 +18136,7 @@ export default function Dashboard() {
       <div style={{
         position: 'fixed',
         right: `${calendarRight - calendarReduction + 7}px`,
-        top: `${3 + d2lTickerHeight - 1}px`,
+        top: `${3 + d2lTickerHeight + 2}px`,
         zIndex: 100,
         display: 'flex',
         flexDirection: 'column',
