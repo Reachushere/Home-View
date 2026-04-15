@@ -6068,9 +6068,22 @@ ${fileContents.join('\n\n')}`;
       const model = "gpt-4o";
       const estCost = isCodeTask ? "~$0.05-0.30" : "~$0.02-0.10";
 
+      if (stream) {
+        res.writeHead(200, { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', 'Connection': 'keep-alive' });
+        res.write(`data: ${JSON.stringify({ type: 'token', content: '⏳ Waiting for OpenAI approval...\n' })}\n\n`);
+      }
+
       const config = await getApprovedOpenAIConfig("AI Command", `Command: "${message.slice(0, 60)}..." [${model}]`, estCost);
       if (!config) {
+        if (stream && res.headersSent) {
+          res.write(`data: ${JSON.stringify({ type: 'done', reply: 'OpenAI approval denied or timed out.' })}\n\n`);
+          return res.end();
+        }
         return res.status(503).json({ error: "OpenAI not available or approval denied" });
+      }
+
+      if (stream && res.headersSent) {
+        res.write(`data: ${JSON.stringify({ type: 'token', content: '✅ Approved! Working on it...\n' })}\n\n`);
       }
 
       const appContext = await getAppContext();
@@ -6206,7 +6219,7 @@ RULES:
       let actionTaken = false;
       let round = 0;
 
-      if (stream) {
+      if (stream && !res.headersSent) {
         res.setHeader('Content-Type', 'text/event-stream');
         res.setHeader('Cache-Control', 'no-cache');
         res.setHeader('Connection', 'keep-alive');
