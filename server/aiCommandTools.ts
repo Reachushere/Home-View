@@ -206,12 +206,20 @@ export const AI_COMMAND_TOOLS = [
   {
     type: "function" as const,
     function: {
+      name: "ha_list_dashboards",
+      description: "List all available Home Assistant Lovelace dashboards. Returns each dashboard's url_path (the value to pass as 'dashboard' to ha_dashboard_read/write), title, and mode. Use this FIRST if you're unsure which dashboard to target.",
+      parameters: { type: "object", properties: {} },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
       name: "ha_dashboard_read",
-      description: "Read the current Home Assistant Lovelace dashboard configuration. Returns the full YAML/JSON config of dashboard cards, views, and layout. Use to understand the current dashboard before making changes.",
+      description: "Read the current Home Assistant Lovelace dashboard configuration. Returns the full YAML/JSON config of dashboard cards, views, and layout. Use to understand the current dashboard before making changes. IMPORTANT: For custom dashboards, pass the url_path from ha_list_dashboards (e.g. 'test-home'). The 'lovelace-' prefix in the browser URL is automatic — do NOT include it.",
       parameters: {
         type: "object",
         properties: {
-          dashboard: { type: "string", description: "Dashboard URL path (e.g. 'lovelace' for default, or 'lovelace-rooms', etc.). Default: 'lovelace'." },
+          dashboard: { type: "string", description: "Dashboard url_path from ha_list_dashboards (e.g. 'test-home', NOT 'lovelace-test-home'). Omit or use 'lovelace' for the default dashboard." },
         },
       },
     },
@@ -220,11 +228,11 @@ export const AI_COMMAND_TOOLS = [
     type: "function" as const,
     function: {
       name: "ha_dashboard_write",
-      description: "Update the Home Assistant Lovelace dashboard configuration. ALWAYS read the current config first with ha_dashboard_read, modify it, then write it back. Be careful — this overwrites the entire dashboard config.",
+      description: "Update the Home Assistant Lovelace dashboard configuration. ALWAYS read the current config first with ha_dashboard_read, modify it, then write it back. Be careful — this overwrites the entire dashboard config. IMPORTANT: For custom dashboards, pass the url_path from ha_list_dashboards (e.g. 'test-home'). The 'lovelace-' prefix in the browser URL is automatic — do NOT include it.",
       parameters: {
         type: "object",
         properties: {
-          dashboard: { type: "string", description: "Dashboard URL path (default: 'lovelace')" },
+          dashboard: { type: "string", description: "Dashboard url_path from ha_list_dashboards (e.g. 'test-home'). Default: 'lovelace'." },
           config: { type: "object", description: "The full Lovelace config object to write. Must include 'views' array with all views/cards." },
         },
         required: ["config"],
@@ -1482,25 +1490,45 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
         return { success: true, result: { id: note.id, title: note.title } };
       }
 
+      case "ha_list_dashboards": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+          return { success: false, result: { error: "Home Assistant not configured" } };
+        }
+        const haUrlList = HOME_ASSISTANT_URL.replace(/\/$/, '');
+        try {
+          const resp = await fetch(`${haUrlList}/api/lovelace/dashboards`, {
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+          });
+          if (!resp.ok) return { success: false, result: { error: `HA list dashboards error: ${resp.status}` } };
+          const dashboards = await resp.json();
+          const summary = (dashboards as any[]).map((d: any) => ({
+            url_path: d.url_path,
+            title: d.title,
+            mode: d.mode,
+            require_admin: d.require_admin || false,
+          }));
+          summary.unshift({ url_path: 'lovelace', title: 'Default (Overview)', mode: 'storage', require_admin: false });
+          return { success: true, result: { dashboards: summary, hint: "Pass url_path to ha_dashboard_read/write. Do NOT add 'lovelace-' prefix — HA adds it automatically in the browser URL." } };
+        } catch (err: any) {
+          return { success: false, result: { error: `HA list dashboards failed: ${err.message}` } };
+        }
+      }
+
       case "ha_dashboard_read": {
         if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
           return { success: false, result: { error: "Home Assistant not configured" } };
         }
         const haUrlDash = HOME_ASSISTANT_URL.replace(/\/$/, '');
-        const dashPath = args.dashboard || 'lovelace';
+        let dashPath = args.dashboard || 'lovelace';
+        if (dashPath.startsWith('lovelace-')) dashPath = dashPath.replace('lovelace-', '');
         try {
-          const resp = await fetch(`${haUrlDash}/api/lovelace/config/${dashPath}`, {
+          const url = dashPath === 'lovelace'
+            ? `${haUrlDash}/api/lovelace/config`
+            : `${haUrlDash}/api/lovelace/config/${dashPath}`;
+          const resp = await fetch(url, {
             headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
           });
-          if (resp.status === 404) {
-            const defaultResp = await fetch(`${haUrlDash}/api/lovelace/config`, {
-              headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-            });
-            if (!defaultResp.ok) return { success: false, result: { error: `HA dashboard API error: ${defaultResp.status}` } };
-            const config = await defaultResp.json();
-            return { success: true, result: { dashboard: 'default', viewCount: config.views?.length || 0, config } };
-          }
-          if (!resp.ok) return { success: false, result: { error: `HA dashboard API error: ${resp.status}` } };
+          if (!resp.ok) return { success: false, result: { error: `HA dashboard '${dashPath}' not found or API error: ${resp.status}. Use ha_list_dashboards to find the correct url_path.` } };
           const config = await resp.json();
           return { success: true, result: { dashboard: dashPath, viewCount: config.views?.length || 0, config } };
         } catch (err: any) {
@@ -1513,7 +1541,8 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           return { success: false, result: { error: "Home Assistant not configured" } };
         }
         const haUrlDashW = HOME_ASSISTANT_URL.replace(/\/$/, '');
-        const dashPathW = args.dashboard || 'lovelace';
+        let dashPathW = args.dashboard || 'lovelace';
+        if (dashPathW.startsWith('lovelace-')) dashPathW = dashPathW.replace('lovelace-', '');
         try {
           const url = dashPathW === 'lovelace'
             ? `${haUrlDashW}/api/lovelace/config`
@@ -1525,7 +1554,7 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           });
           if (!resp.ok) {
             const errText = await resp.text().catch(() => '');
-            return { success: false, result: { error: `HA dashboard write failed: ${resp.status} ${errText.substring(0, 300)}` } };
+            return { success: false, result: { error: `HA dashboard write failed: ${resp.status} ${errText.substring(0, 300)}. Use ha_list_dashboards to verify the correct url_path.` } };
           }
           return { success: true, result: { message: "Dashboard updated successfully. Refresh your HA browser to see changes.", dashboard: dashPathW } };
         } catch (err: any) {
