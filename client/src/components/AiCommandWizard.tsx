@@ -475,16 +475,17 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   }, [messages]);
 
   useEffect(() => {
-    if (!loading) return;
+    if (!loading && !thinkingPhase && !activeToolName) return;
     const el = scrollRef.current;
     if (!el) return;
     if (userScrolledRef.current) return;
+    el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
     const iv = setInterval(() => {
       if (userScrolledRef.current) return;
       el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
     }, 300);
     return () => clearInterval(iv);
-  }, [loading]);
+  }, [loading, thinkingPhase, activeToolName]);
 
   const scrollToBottom = useCallback(() => {
     const el = scrollRef.current;
