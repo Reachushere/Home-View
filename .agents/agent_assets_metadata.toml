@@ -479,3 +479,9 @@ id = "hurBr6KNJc-P8cIfx6PJu"
 uri = "file://attached_assets/bryn_tv_popcorn_v20.png"
 type = "image"
 title = "Bryn TV Popcorn v20 - One Hand, Better TV"
+
+[[outputs]]
+id = "SLVmGHQxigtzfnhc5FriQ"
+uri = "file://attached_assets/Pasted-swipe-nav-swipe-amount-200-resources-url-local-communit_1776350885566.txt"
+type = "text"
+title = "Working HA Dashboard Config (paste into Raw config editor)"
