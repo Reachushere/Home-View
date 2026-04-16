@@ -1,0 +1,28 @@
+byhomeyyz@raspberrypi:~ $ killall -9 node; cd ~/Home-View && NODE_OPTIONS="--max-old-space-size=384" npm run build && pm2 restart all
+node: no process found
+
+> rest-express@1.0.0 build
+> tsx script/build.ts
+
+building client...
+vite v7.3.0 building client environment for production...
+transforming (2131) ../node_modules/react-pdf/dist/Ref.js
+<--- Last few GCs --->
+
+[2037:0x5555cd210000]    12268 ms: Mark-Compact (reduce) 380.3 (387.3) -> 378.9 (384.6) MB, pooled: 0.0 MB, 146.38 / 0.00 ms (+ 0.4 ms in 50 steps since start of marking, biggest step 0.0 ms, walltime since start of marking 171 ms) (average mu = 0.513, cu[2037:0x5555cd210000]    12470 ms: Mark-Compact 380.0 (384.6) -> 379.6 (384.8) MB, pooled: 0.0 MB, 193.76 / 0.00 ms (average mu = 0.306, current mu = 0.043) allocation failure; scavenge might not succeed
+
+FATAL ERROR: Reached heap limit Allocation failed - JavaScript heap out of memory
+----- Native stack trace -----
+
+ 1: 0x7ffec8a420d8 node::OOMErrorHandler(char const*, v8::OOMDetails const&) [/home/linuxbrew/.linuxbrew/Cellar/node/25.9.0_2/bin/../lib/libnode.so.141]
+ 2: 0x7ffec95e0170  [/home/linuxbrew/.linuxbrew/Cellar/node/25.9.0_2/bin/../lib/libnode.so.141]
+ 3: 0x7ffec95e0274  [/home/linuxbrew/.linuxbrew/Cellar/node/25.9.0_2/bin/../lib/libnode.so.141]
+ 4: 0x7ffec9840864  [/home/linuxbrew/.linuxbrew/Cellar/node/25.9.0_2/bin/../lib/libnode.so.141]
+ 5: 0x7ffec9840b10  [/home/linuxbrew/.linuxbrew/Cellar/node/25.9.0_2/bin/../lib/libnode.so.141]
+ 6: 0x7ffec984f688  [/home/linuxbrew/.linuxbrew/Cellar/node/25.9.0_2/bin/../lib/libnode.so.141]
+ 7: 0x7ffec982ab50  [/home/linuxbrew/.linuxbrew/Cellar/node/25.9.0_2/bin/../lib/libnode.so.141]
+ 8: 0x7ffec982ad0c  [/home/linuxbrew/.linuxbrew/Cellar/node/25.9.0_2/bin/../lib/libnode.so.141]
+ 9: 0x7ffec9807e38  [/home/linuxbrew/.linuxbrew/Cellar/node/25.9.0_2/bin/../lib/libnode.so.141]
+10: 0x7ffec9c34180  [/home/linuxbrew/.linuxbrew/Cellar/node/25.9.0_2/bin/../lib/libnode.so.141]
+11: 0x7ffec947e674  [/home/linuxbrew/.linuxbrew/Cellar/node/25.9.0_2/bin/../lib/libnode.so.141]
+byhomeyyz@raspberrypi:~/Home-View $
