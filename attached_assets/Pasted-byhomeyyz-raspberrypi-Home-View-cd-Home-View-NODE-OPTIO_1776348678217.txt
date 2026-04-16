@@ -1,0 +1,120 @@
+byhomeyyz@raspberrypi:~/Home-View $ cd ~/Home-View && NODE_OPTIONS="--max-old-space-size=1024" npm run build && pm2 restart all
+
+> rest-express@1.0.0 build
+> tsx script/build.ts
+
+building client...
+vite v7.3.0 building client environment for production...
+✓ 3059 modules transformed.
+
+<--- Last few GCs --->
+
+[2326:0x55565b880000]    29783 ms: Mark-Compact 1013.1 (1028.9) -> 1007.4 (1028.9) MB, pooled: 0.0 MB, 546.31 / 0.00 ms (average mu = 0.387, current mu = 0.424) allocation failure; scavenge might not succeed
+[2326:0x55565b880000]    30526 ms: Mark-Compact 1011.4 (1028.9) -> 1007.4 (1027.9) MB, pooled: 2.8 MB, 720.30 / 0.00 ms (average mu = 0.221, current mu = 0.031) allocation failure; scavenge might not succeed
+
+FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory
+----- Native stack trace -----
+
+ 1: 0x7fff15cf20d8 node::OOMErrorHandler(char const*, v8::OOMDetails const&) [/home/linuxbrew/.linuxbrew/Cellar/node/25.9.0_2/bin/../lib/libnode.so.141]
+ 2: 0x7fff16890170  [/home/linuxbrew/.linuxbrew/Cellar/node/25.9.0_2/bin/../lib/libnode.so.141]
+ 3: 0x7fff16890274  [/home/linuxbrew/.linuxbrew/Cellar/node/25.9.0_2/bin/../lib/libnode.so.141]
+ 4: 0x7fff16af0864  [/home/linuxbrew/.linuxbrew/Cellar/node/25.9.0_2/bin/../lib/libnode.so.141]
+ 5: 0x7fff16af0930  [/home/linuxbrew/.linuxbrew/Cellar/node/25.9.0_2/bin/../lib/libnode.so.141]
+ 6: 0x7fff16af0a00  [/home/linuxbrew/.linuxbrew/Cellar/node/25.9.0_2/bin/../lib/libnode.so.141]
+ 7: 0x7fff16afede0  [/home/linuxbrew/.linuxbrew/Cellar/node/25.9.0_2/bin/../lib/libnode.so.141]
+ 8: 0x7fff16b01ae8  [/home/linuxbrew/.linuxbrew/Cellar/node/25.9.0_2/bin/../lib/libnode.so.141]
+ 9: 0x7fff174afb18  [/home/linuxbrew/.linuxbrew/Cellar/node/25.9.0_2/bin/../lib/libnode.so.141]
+byhomeyyz@raspberrypi:~/Home-View $ ./deploy.sh^C
+byhomeyyz@raspberrypi:~/Home-View $ cd ~/Home-View && git fetch origin && git reset --hard origin/main && pm2 restart all
+remote: Enumerating objects: 124, done.
+remote: Counting objects: 100% (124/124), done.
+remote: Compressing objects: 100% (98/98), done.
+remote: Total 117 (delta 19), reused 116 (delta 19), pack-reused 0 (from 0)
+Receiving objects: 100% (117/117), 38.06 MiB | 9.87 MiB/s, done.
+Resolving deltas: 100% (19/19), completed with 7 local objects.
+From https://github.com/Reachushere/Home-View
+   5738490b5..d266953b2  main       -> origin/main
+HEAD is now at d266953b2 Remove TTS audio files from dist (generated at runtime on Pi)
+Use --update-env to update environment variables
+[PM2] Applying action restartProcessId on app [all](ids: [ 0 ])
+[PM2] [dashboard](0) ✓
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+├────┼────────────────────┼──────────┼──────┼───────────┼──────────┼──────────┤
+│ 0  │ dashboard          │ fork     │ 200  │ online    │ 0%       │ 10.3mb   │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs dashboard --lines 30
+[TAILING] Tailing last 30 lines for [dashboard] process (change the value with --lines option)
+/home/byhomeyyz/.pm2/logs/dashboard-error.log last 30 lines:
+0|dashboar | [OneDrive] Refresh token failed: Error: Token refresh failed (400): {"error":"invalid_grant","error_description":"AADSTS7000012: The grant was obtained for a different tenant. Trace ID: e287a997-66a2-4b76-ac65-7659074f3c03 Correlation ID: 75d5fcfd-468f-4615-bd70-c59196524bef Timestamp: 2026-04-16 14:10:50Z","error_codes":[7000012],"timestamp":"2026-04-16 14:10:50Z","trace_id":"e287a997-66a2-4b76-ac65-7659074f3c03","correlation_id":"75d5fcfd-468f-4615-bd70-c59196524bef"}
+0|dashboar |     at gRr (/home/byhomeyyz/Home-View/dist/index.cjs:291:5619)
+0|dashboar |     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+0|dashboar |     at async Dbt (/home/byhomeyyz/Home-View/dist/index.cjs:291:7376)
+0|dashboar |     at async Oa (/home/byhomeyyz/Home-View/dist/index.cjs:291:8463)
+0|dashboar |     at async Lm (/home/byhomeyyz/Home-View/dist/index.cjs:291:8660)
+0|dashboar |     at async At (/home/byhomeyyz/Home-View/dist/index.cjs:1866:8748)
+0|dashboar |     at async ef (/home/byhomeyyz/Home-View/dist/index.cjs:1866:8834)
+0|dashboar |     at async zd (/home/byhomeyyz/Home-View/dist/index.cjs:1866:11007)
+0|dashboar | [OneDrive] Refresh token failed: Error: Token refresh failed (400): {"error":"invalid_grant","error_description":"AADSTS7000012: The grant was obtained for a different tenant. Trace ID: aa52b267-7cfd-4c3f-b778-4a548b90f102 Correlation ID: ded0d3f5-d64c-4416-8211-2e58185053ce Timestamp: 2026-04-16 14:10:50Z","error_codes":[7000012],"timestamp":"2026-04-16 14:10:50Z","trace_id":"aa52b267-7cfd-4c3f-b778-4a548b90f102","correlation_id":"ded0d3f5-d64c-4416-8211-2e58185053ce"}
+0|dashboar |     at gRr (/home/byhomeyyz/Home-View/dist/index.cjs:291:5619)
+0|dashboar |     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+0|dashboar |     at async Dbt (/home/byhomeyyz/Home-View/dist/index.cjs:291:7376)
+0|dashboar |     at async Oa (/home/byhomeyyz/Home-View/dist/index.cjs:291:8463)
+0|dashboar |     at async Lm (/home/byhomeyyz/Home-View/dist/index.cjs:291:8660)
+0|dashboar |     at async zd (/home/byhomeyyz/Home-View/dist/index.cjs:1866:11075)
+0|dashboar | [OneDrive] Refresh token failed: Error: Token refresh failed (400): {"error":"invalid_grant","error_description":"AADSTS7000012: The grant was obtained for a different tenant. Trace ID: 6ece5782-f3aa-47ff-b4f6-eab0bf1cf100 Correlation ID: e31a4eea-4187-4ecf-83c3-4da1b327887f Timestamp: 2026-04-16 14:10:50Z","error_codes":[7000012],"timestamp":"2026-04-16 14:10:50Z","trace_id":"6ece5782-f3aa-47ff-b4f6-eab0bf1cf100","correlation_id":"e31a4eea-4187-4ecf-83c3-4da1b327887f"}
+0|dashboar |     at gRr (/home/byhomeyyz/Home-View/dist/index.cjs:291:5619)
+0|dashboar |     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+0|dashboar |     at async Dbt (/home/byhomeyyz/Home-View/dist/index.cjs:291:7376)
+0|dashboar |     at async Oa (/home/byhomeyyz/Home-View/dist/index.cjs:291:8463)
+0|dashboar |     at async Lm (/home/byhomeyyz/Home-View/dist/index.cjs:291:8660)
+0|dashboar |     at async zd (/home/byhomeyyz/Home-View/dist/index.cjs:1866:11075)
+0|dashboar | [OneDrive] Refresh token failed: Error: Token refresh failed (400): {"error":"invalid_grant","error_description":"AADSTS7000012: The grant was obtained for a different tenant. Trace ID: 2bf4173a-3e5b-4953-b71c-1f7010949a00 Correlation ID: a3284fe6-3358-465d-8e58-0c29a1ab8c82 Timestamp: 2026-04-16 14:10:51Z","error_codes":[7000012],"timestamp":"2026-04-16 14:10:51Z","trace_id":"2bf4173a-3e5b-4953-b71c-1f7010949a00","correlation_id":"a3284fe6-3358-465d-8e58-0c29a1ab8c82"}
+0|dashboar |     at gRr (/home/byhomeyyz/Home-View/dist/index.cjs:291:5619)
+0|dashboar |     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+0|dashboar |     at async Dbt (/home/byhomeyyz/Home-View/dist/index.cjs:291:7376)
+0|dashboar |     at async Oa (/home/byhomeyyz/Home-View/dist/index.cjs:291:8463)
+0|dashboar |     at async Lm (/home/byhomeyyz/Home-View/dist/index.cjs:291:8660)
+0|dashboar |     at async zd (/home/byhomeyyz/Home-View/dist/index.cjs:1866:11075)
+
+/home/byhomeyyz/.pm2/logs/dashboard-out.log last 30 lines:
+0|dashboar | 10:10:57 AM [express] GET /api/openai-approval/pending 304 in 1ms :: []
+0|dashboar | 10:10:57 AM [express] GET /api/automation-cooldown 200 in 1ms :: {"active":true,"remaining":18,"reason":"startup"}
+0|dashboar | 10:10:57 AM [express] GET /api/automation-cooldown 304 in 1ms :: {"active":true,"remaining":18,"reason":"startup"}
+0|dashboar | [AudioPrep] Generating chunk 3/15 for CFNF400, Module 12 - Learning Objectives.pdf (1424 chars)
+0|dashboar | Generating Edge TTS for 1424 chars, file: prep-232-chunk-2
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | 10:10:58 AM [express] GET /api/automation-cooldown 200 in 1ms :: {"active":true,"remaining":17,"reason":"startup"}
+0|dashboar | Edge TTS completed in 895ms, 556272 bytes
+0|dashboar | TTS audio saved locally: /tts-audio/prep-232-chunk-2-1776348658969.mp3
+0|dashboar | 10:10:59 AM [express] GET /api/automation-cooldown 200 in 1ms :: {"active":true,"remaining":16,"reason":"startup"}
+0|dashboar | [AudioPrep] Generating chunk 4/15 for CFNF400, Module 12 - Learning Objectives.pdf (1485 chars)
+0|dashboar | Generating Edge TTS for 1485 chars, file: prep-232-chunk-3
+0|dashboar | [TTS] Using Edge TTS (free, no charges)
+0|dashboar | 10:10:59 AM [express] GET /api/automation-cooldown 304 in 1ms :: {"active":true,"remaining":16,"reason":"startup"}
+0|dashboar | 10:11:00 AM [express] GET /api/openai-approval/pending 304 in 1ms :: []
+0|dashboar | 10:11:00 AM [express] GET /api/automation-cooldown 200 in 2ms :: {"active":true,"remaining":15,"reason":"startup"}
+0|dashboar | 10:11:01 AM [express] GET /api/health 200 in 1ms :: {"status":"ok","uptime":46,"ha":{"connected":true,"lastSuccessAt":"2026-04-16T14:10:45.346Z","lastFailureAt":null,"consecutiveFailures":0,"totalChecks":1,"totalFailures":0,"lastError":null,"downSince":null,"commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-16T14:11:01.367Z"}
+0|dashboar | 10:11:01 AM [express] GET /api/automation-cooldown 200 in 1ms :: {"active":true,"remaining":14,"reason":"startup"}
+0|dashboar | 10:11:01 AM [express] GET /api/automation-cooldown 304 in 1ms :: {"active":true,"remaining":14,"reason":"startup"}
+0|dashboar | 10:11:02 AM [express] GET /api/automation-cooldown 200 in 0ms :: {"active":true,"remaining":13,"reason":"startup"}
+0|dashboar | 10:11:03 AM [express] GET /api/openai-approval/pending 304 in 1ms :: []
+0|dashboar | 10:11:03 AM [express] GET /api/automation-cooldown 200 in 1ms :: {"active":true,"remaining":12,"reason":"startup"}
+0|dashboar | 10:11:03 AM [express] GET /api/automation-cooldown 304 in 1ms :: {"active":true,"remaining":12,"reason":"startup"}
+0|dashboar | 10:11:04 AM [express] GET /api/automation-cooldown 200 in 1ms :: {"active":true,"remaining":11,"reason":"startup"}
+0|dashboar | 10:11:05 AM [express] GET /api/automation-cooldown 200 in 1ms :: {"active":true,"remaining":10,"reason":"startup"}
+0|dashboar | 10:11:05 AM [express] GET /api/automation-cooldown 304 in 1ms :: {"active":true,"remaining":10,"reason":"startup"}
+0|dashboar | 10:11:06 AM [express] GET /api/openai-approval/pending 304 in 1ms :: []
+0|dashboar | 10:11:06 AM [express] GET /api/automation-cooldown 200 in 1ms :: {"active":true,"remaining":9,"reason":"startup"}
+0|dashboar | 10:11:07 AM [express] GET /api/automation-cooldown 200 in 1ms :: {"active":true,"remaining":8,"reason":"startup"}
+0|dashboar | 10:11:07 AM [express] GET /api/automation-cooldown 304 in 1ms :: {"active":true,"remaining":8,"reason":"startup"}
+
+0|dashboard  | 10:11:08 AM [express] GET /api/automation-cooldown 200 in 1ms :: {"active":true,"remaining":7,"reason":"startup"}
+0|dashboard  | 10:11:09 AM [express] GET /api/openai-approval/pending 304 in 1ms :: []
+0|dashboard  | 10:11:09 AM [express] GET /api/automation-cooldown 200 in 0ms :: {"active":true,"remaining":6,"reason":"startup"}
+0|dashboard  | [Edge TTS] Attempt 1 failed: Timed out
+0|dashboard  | 10:11:09 AM [express] GET /api/automation-cooldown 304 in 1ms :: {"active":true,"remaining":6,"reason":"startup"}
+0|dashboard  | 10:11:10 AM [express] GET /api/automation-cooldown 200 in 1ms :: {"active":true,"remaining":5,"reason":"startup"}
+0|dashboard  | 10:11:11 AM [express] GET /api/health 200 in 1ms :: {"status":"ok","uptime":56,"ha":{"connected":true,"lastSuccessAt":"2026-04-16T14:10:45.346Z","lastFailureAt":null,"consecutiveFailures":0,"totalChecks":1,"totalFailures":0,"lastError":null,"downSince":null,"commandQueue":{"pending":0,"processing":false,"oldest":null}},"heartbeat":{"interval_seconds":30,"sensor":"sensor.study_dashboard_heartbeat"},"timestamp":"2026-04-16T14:11:11.364Z"}
+0|dashboard  | 10:11:11 AM [express] GET /api/automation-cooldown 200 in 0ms :: {"active":true,"remaining":4,"reason":"startup"}
+0|dashboard  
