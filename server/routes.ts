@@ -6572,9 +6572,30 @@ KEY BACKEND ROUTES:
 
       const messages: any[] = [{ role: "system", content: systemPrompt }];
       if (Array.isArray(history)) {
-        for (const h of history.slice(-50)) {
+        const recent = history.slice(-100);
+        const recentCount = recent.length;
+        for (let i = 0; i < recentCount; i++) {
+          const h = recent[i];
+          const isOlder = i < recentCount - 20;
           if (h.role === 'tool') {
-            messages.push({ role: "tool", content: h.content, tool_call_id: h.tool_call_id });
+            let content = h.content;
+            if (isOlder && typeof content === 'string' && content.length > 500) {
+              try {
+                const parsed = JSON.parse(content);
+                if (parsed.result) {
+                  const keys = Object.keys(parsed.result);
+                  const summary: Record<string, any> = {};
+                  if (parsed.result.error) summary.error = String(parsed.result.error).substring(0, 200);
+                  else if (parsed.result.rows) summary.rowCount = parsed.result.rows?.length ?? 0;
+                  else if (parsed.result.content) summary.contentPreview = String(parsed.result.content).substring(0, 300) + '...';
+                  else if (parsed.result.matches) summary.matchCount = parsed.result.matches?.length ?? parsed.result.count ?? 0;
+                  else { for (const k of keys.slice(0, 5)) summary[k] = typeof parsed.result[k] === 'string' ? parsed.result[k].substring(0, 150) : parsed.result[k]; }
+                  summary._compressed = true;
+                  content = JSON.stringify({ success: parsed.success, result: summary });
+                }
+              } catch {}
+            }
+            messages.push({ role: "tool", content, tool_call_id: h.tool_call_id });
           } else {
             messages.push({ role: h.role, content: h.content });
           }
@@ -6645,7 +6666,7 @@ KEY BACKEND ROUTES:
           tools: AI_COMMAND_TOOLS,
           tool_choice: "auto",
           parallel_tool_calls: true,
-          max_completion_tokens: 8192,
+          max_completion_tokens: 16384,
         });
         totalTokens += completion.usage?.total_tokens || 0;
 
