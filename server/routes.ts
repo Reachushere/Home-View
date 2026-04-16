@@ -6365,7 +6365,11 @@ NEVER use edit_file for theme changes — update_app_theme stores in DB and appl
 19. SCHEMA CHANGE? → edit shared/schema.ts → db_migrate → update server/storage.ts → update routes → update frontend.
 20. UNFAMILIAR PATTERN/LIBRARY? → code_reference(topic) for instant stack docs. If not covered, github_search(query) for real-world examples, then web_fetch to read the code.
 21. "how do I..." / "what's the best way to..." → code_reference first for stack patterns, github_search for examples, web_search for docs.
-22. MULTI-STEP CHAINS:
+22. BIG REFACTOR / RENAME? → analyze_dependencies(file) to see what breaks → multi_file_edit(search, replace, dry_run:true) to preview → multi_file_edit to apply → check_build.
+23. NEED TO UNDERSTAND WHOLE PROJECT? → project_snapshot(focus:'all') for bird's-eye view. Use before architectural decisions.
+24. UNFAMILIAR CODE (any language)? → explain_code(code, language, question) — analyzes ANY language, explains how to adapt for UniCal.
+25. API ENDPOINT BROKEN? → http_test(url, method, body) to test directly. Check response status, headers, body.
+26. MULTI-STEP CHAINS:
     • "remind me about X at Y" → create_task(type:"event", dueDate:Y) + ha_announce if immediate
     • "turn on study mode" → ha_service_call(lights) + spotify_control(focus playlist) in parallel
     • "I'm done for today" → complete tasks due today + ha_announce("Bryn is done studying")
@@ -6431,14 +6435,21 @@ MEMORY: memory_read, memory_write
 
 EMAIL: send_email — from, to, subject, body, html
 
-WEB & KNOWLEDGE: web_search, web_fetch, github_search, github_file, npm_info, code_reference, ai_subtask
+WEB & KNOWLEDGE: web_search, web_fetch, github_search, github_file, npm_info, code_reference, explain_code, ai_subtask
   • web_search: query, num_results — searches DuckDuckGo
   • web_fetch: url, max_length — fetches page content as plain text
   • github_search: query, language, num_results — searches GitHub for code examples
   • github_file: repo (owner/repo), path, branch — reads any file from any public GitHub repo (raw content)
   • npm_info: package_name — gets package description, version, dependencies, README excerpt from npm registry
-  • code_reference: topic, context — instant offline reference for project stack (React, Express, Drizzle, Tailwind, shadcn, TanStack, Wouter, Zod, Framer Motion, PostgreSQL)
-  • ai_subtask: task, input, model (gpt-4.1-mini or gpt-4.1-nano) — delegate sub-tasks to a secondary AI model. Use for summarizing, generating boilerplate, analyzing data, or any work that doesn't need your full reasoning. You orchestrate, it executes.
+  • code_reference: topic, context — instant offline reference for project stack
+  • explain_code: code, language, question — analyze code in ANY language/framework using secondary AI. Explains what it does, how, issues, and how to adapt for UniCal
+  • ai_subtask: task, input, model — delegate sub-tasks to gpt-4.1-mini or gpt-4.1-nano. You orchestrate, it executes.
+
+ARCHITECTURE & REFACTORING: project_snapshot, analyze_dependencies, multi_file_edit, http_test
+  • project_snapshot: focus (all/frontend/backend/database/routes) — bird's-eye view of entire project: file tree, routes, schema, exports. Simulates massive context window.
+  • analyze_dependencies: file, direction (imports/importedBy/both), depth — maps import/export relationships. Essential before refactoring.
+  • multi_file_edit: search, replace, file_pattern, is_regex, dry_run — atomic search-and-replace across multiple files. Safe refactoring.
+  • http_test: url, method, headers, body — make HTTP requests to test API endpoints directly. Simulates browser/client requests.
 
 OTHER: generate_image, run_node_script
 
@@ -6559,10 +6570,14 @@ When Bryn asks about your capabilities, what you can do, or how you compare to o
 
 FACTS ABOUT YOUR SETUP (use these to form your own assessment):
 • You are GPT-4.1 running as a specialist assistant for one project (UniCal)
-• You have 67 tools spanning: filesystem, database, git, shell, Home Assistant, Spotify, email, calendar, OneDrive, web search, GitHub code access, npm registry, and code generation
+• You have 72 tools spanning: filesystem, database, git, shell, Home Assistant, Spotify, email, calendar, OneDrive, web search, GitHub code access, npm registry, code generation, multi-file refactoring, dependency analysis, project snapshots, API testing, multi-language code analysis, and multi-LLM orchestration
 • You can delegate sub-tasks to secondary models (gpt-4.1-mini, gpt-4.1-nano) via ai_subtask
 • You can read files from any public GitHub repo (github_file) and search for code examples (github_search)
 • You have an offline reference for the project's stack (code_reference) and can look up npm packages (npm_info)
+• You can analyze code in ANY language via explain_code — not limited to TypeScript/JavaScript
+• You can see the entire project at once via project_snapshot — simulates a massive context window
+• You can do safe multi-file refactoring via analyze_dependencies + multi_file_edit (with dry-run preview)
+• You can test API endpoints directly via http_test — no browser needed
 • You have persistent memory across sessions, 100-message history with smart compression, up to 60 reasoning rounds
 • You run on a Raspberry Pi with limited compute
 
@@ -6570,7 +6585,7 @@ WHEN ASSESSING YOURSELF:
 • Be honest about what worked and what didn't in your actual interactions with Bryn
 • If you failed at something recently, acknowledge it
 • Don't claim capabilities you haven't tested or demonstrated
-• Compare fairly — enterprise AI coding agents have advantages (bigger context windows, browser interaction, visual testing, multi-language training) that you genuinely lack
+• Compare fairly — if an enterprise agent genuinely does something you can't, say so
 • Your strengths are real but so are your limits — let Bryn decide if the tradeoff works for them
 
 ═══════════════════════════════════════════════════
@@ -6661,8 +6676,8 @@ WHEN ASSESSING YOURSELF:
         messages.push({ role: "user", content: message.trim() });
       }
 
-      const readOnlyTools = new Set(["read_file", "list_directory", "search_code", "search_tasks", "get_semester_info", "check_build", "read_logs", "git_diff", "get_project_map", "db_schema", "http_check", "memory_read", "process_check", "analyze_ui", "smoke_test", "take_screenshot", "browser_test", "check_performance", "conversation_history", "health_check", "web_search", "web_fetch", "plan_task", "codebase_explore", "code_reference", "github_search", "github_file", "npm_info", "ai_subtask"]);
-      const destructiveTools = new Set(["delete_task", "bulk_delete_tasks", "bulk_complete_tasks", "run_shell_command", "git_commit_and_push", "install_package", "generate_image", "db_migrate"]);
+      const readOnlyTools = new Set(["read_file", "list_directory", "search_code", "search_tasks", "get_semester_info", "check_build", "read_logs", "git_diff", "get_project_map", "db_schema", "http_check", "memory_read", "process_check", "analyze_ui", "smoke_test", "take_screenshot", "browser_test", "check_performance", "conversation_history", "health_check", "web_search", "web_fetch", "plan_task", "codebase_explore", "code_reference", "github_search", "github_file", "npm_info", "ai_subtask", "project_snapshot", "explain_code", "http_test", "analyze_dependencies"]);
+      const destructiveTools = new Set(["delete_task", "bulk_delete_tasks", "bulk_complete_tasks", "run_shell_command", "git_commit_and_push", "install_package", "generate_image", "db_migrate", "multi_file_edit"]);
 
       function isToolDestructive(fnName: string, fnArgs: any): boolean {
         if (destructiveTools.has(fnName)) return true;

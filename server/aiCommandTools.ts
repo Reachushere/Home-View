@@ -1018,6 +1018,89 @@ export const AI_COMMAND_TOOLS = [
   {
     type: "function" as const,
     function: {
+      name: "project_snapshot",
+      description: "Generate a comprehensive bird's-eye view of the entire project. Returns: file tree with sizes, all exports/components, route map (API + frontend), database schema summary, and dependency graph. Use this to understand the full codebase before making architectural decisions or large refactors. Simulates having the entire project in context at once.",
+      parameters: {
+        type: "object",
+        properties: {
+          focus: { type: "string", description: "Optional focus area: 'frontend', 'backend', 'database', 'routes', 'all'. Default: 'all'" },
+          include_sizes: { type: "boolean", description: "Include file sizes and line counts. Default true." },
+        },
+        required: [],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "multi_file_edit",
+      description: "Apply search-and-replace across multiple files atomically. Use for refactoring: renaming variables/components/functions across the whole project, updating import paths, changing API endpoint names, etc. Shows a preview of all changes before applying. Much safer than editing files one at a time.",
+      parameters: {
+        type: "object",
+        properties: {
+          search: { type: "string", description: "Text or regex pattern to find" },
+          replace: { type: "string", description: "Replacement text (supports $1, $2 for regex groups)" },
+          file_pattern: { type: "string", description: "Glob pattern for files to search (e.g. '**/*.tsx', 'server/**/*.ts', 'client/src/**/*'). Default: '**/*.{ts,tsx}'" },
+          is_regex: { type: "boolean", description: "Treat search as regex. Default false (literal match)." },
+          dry_run: { type: "boolean", description: "Preview changes without applying. Default false." },
+        },
+        required: ["search", "replace"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "explain_code",
+      description: "Analyze and explain code in ANY language or framework — not just this project's stack. Uses a secondary AI model to provide: what it does, how it works, potential issues, and how to adapt it for UniCal. Use when Bryn pastes code from Stack Overflow, another project, or a language you're less familiar with.",
+      parameters: {
+        type: "object",
+        properties: {
+          code: { type: "string", description: "The code to analyze" },
+          language: { type: "string", description: "Programming language (e.g. 'python', 'rust', 'go', 'swift'). Auto-detected if not specified." },
+          question: { type: "string", description: "Specific question about the code (e.g. 'how would I port this to TypeScript?', 'is this safe?')" },
+        },
+        required: ["code"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "http_test",
+      description: "Make HTTP requests to test API endpoints directly. Simulates what a browser or client would do. Use to verify endpoints work, test error handling, check response formats, or debug API issues. Supports GET, POST, PUT, PATCH, DELETE with headers and body.",
+      parameters: {
+        type: "object",
+        properties: {
+          url: { type: "string", description: "URL to request (e.g. 'http://localhost:3000/api/tasks', or relative path '/api/tasks')" },
+          method: { type: "string", enum: ["GET", "POST", "PUT", "PATCH", "DELETE"], description: "HTTP method. Default GET." },
+          headers: { type: "object", description: "Request headers as key-value pairs" },
+          body: { type: "string", description: "Request body (JSON string for POST/PUT/PATCH)" },
+          timeout: { type: "integer", description: "Timeout in ms. Default 10000." },
+        },
+        required: ["url"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "analyze_dependencies",
+      description: "Map import/export relationships between files. Shows which files depend on which, what each file exports, and the full dependency chain for any given file. Essential before refactoring to know what will break. Use to understand how components, routes, and utilities connect.",
+      parameters: {
+        type: "object",
+        properties: {
+          file: { type: "string", description: "File to analyze (e.g. 'client/src/pages/dashboard.tsx'). Shows what it imports and what imports it." },
+          direction: { type: "string", enum: ["imports", "importedBy", "both"], description: "Direction: 'imports' (what this file uses), 'importedBy' (what uses this file), 'both'. Default 'both'." },
+          depth: { type: "integer", description: "How many levels deep to trace. Default 1. Max 3." },
+        },
+        required: ["file"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
       name: "plan_task",
       description: "Decompose a complex task into ordered steps BEFORE executing. Use this when Bryn asks for something that involves 3+ files or multiple logical stages (e.g. 'add a new page with API endpoint and database table', 'refactor the homework box'). Creates a plan, then execute each step in order. Also use to show Bryn what you're about to do for transparency.",
       parameters: {
@@ -2952,6 +3035,294 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           };
         } catch (e: any) {
           return { success: false, result: { error: `AI subtask failed: ${e.message?.substring(0, 300)}` } };
+        }
+      }
+
+      case "project_snapshot": {
+        const focus = args.focus || 'all';
+        const includeSizes = args.include_sizes !== false;
+        try {
+          const { execSync } = await import('child_process');
+          const sections: string[] = [];
+
+          if (focus === 'all' || focus === 'frontend' || focus === 'backend') {
+            const treeCmd = includeSizes
+              ? `find . -type f \\( -name '*.ts' -o -name '*.tsx' -o -name '*.css' \\) -not -path '*/node_modules/*' -not -path '*/.git/*' -not -path '*/dist/*' | head -200 | while read f; do wc -l "$f" 2>/dev/null; done | sort -rn`
+              : `find . -type f \\( -name '*.ts' -o -name '*.tsx' -o -name '*.css' \\) -not -path '*/node_modules/*' -not -path '*/.git/*' -not -path '*/dist/*' | sort | head -200`;
+            const tree = execSync(treeCmd, { cwd: projectRoot, timeout: 15000, encoding: 'utf-8' }).trim();
+            sections.push(`=== FILE TREE (by size) ===\n${tree}`);
+          }
+
+          if (focus === 'all' || focus === 'routes') {
+            const apiRoutes = execSync(`grep -rn 'app\\.\(get\\|post\\|put\\|patch\\|delete\\)\\|router\\.\(get\\|post\\|put\\|patch\\|delete\\)' server/routes.ts 2>/dev/null | head -80 | sed 's/^.*://' | sed 's/^[ ]*//'`, { cwd: projectRoot, timeout: 10000, encoding: 'utf-8' }).trim();
+            sections.push(`=== API ROUTES ===\n${apiRoutes}`);
+
+            try {
+              const frontendRoutes = execSync(`grep -rn 'Route\\|path=\\|<Route' client/src/App.tsx 2>/dev/null | head -30`, { cwd: projectRoot, timeout: 5000, encoding: 'utf-8' }).trim();
+              sections.push(`=== FRONTEND ROUTES ===\n${frontendRoutes}`);
+            } catch {}
+          }
+
+          if (focus === 'all' || focus === 'database') {
+            try {
+              const schema = execSync(`grep -n 'export const\\|pgTable\\|serial\\|varchar\\|text\\|integer\\|boolean\\|timestamp\\|json' shared/schema.ts 2>/dev/null | head -60`, { cwd: projectRoot, timeout: 5000, encoding: 'utf-8' }).trim();
+              sections.push(`=== DATABASE SCHEMA ===\n${schema}`);
+            } catch {}
+          }
+
+          if (focus === 'all' || focus === 'frontend') {
+            try {
+              const components = execSync(`find client/src -name '*.tsx' -not -path '*/node_modules/*' | head -60 | while read f; do echo "--- $f ---"; grep -m5 'export\\|function\\|const.*=' "$f" 2>/dev/null | head -5; done`, { cwd: projectRoot, timeout: 15000, encoding: 'utf-8' }).trim();
+              sections.push(`=== COMPONENTS & EXPORTS ===\n${components.substring(0, 6000)}`);
+            } catch {}
+          }
+
+          if (focus === 'all' || focus === 'backend') {
+            try {
+              const serverExports = execSync(`grep -rn 'export\\|function\\|interface IStorage' server/*.ts 2>/dev/null | grep -v node_modules | head -40`, { cwd: projectRoot, timeout: 5000, encoding: 'utf-8' }).trim();
+              sections.push(`=== SERVER EXPORTS ===\n${serverExports}`);
+            } catch {}
+          }
+
+          const snapshot = sections.join('\n\n');
+          return { success: true, result: { focus, totalLength: snapshot.length, snapshot: snapshot.substring(0, 15000) } };
+        } catch (e: any) {
+          return { success: false, result: { error: `Snapshot failed: ${e.message?.substring(0, 300)}` } };
+        }
+      }
+
+      case "multi_file_edit": {
+        const search = args.search;
+        const replace = args.replace;
+        const filePattern = args.file_pattern || '**/*.{ts,tsx}';
+        const isRegex = args.is_regex || false;
+        const dryRun = args.dry_run || false;
+        try {
+          const { execSync } = await import('child_process');
+          const { readFileSync, writeFileSync } = await import('fs');
+          const path = await import('path');
+
+          const globCmd = `find . -type f -name '*.ts' -o -name '*.tsx' | grep -v node_modules | grep -v .git | grep -v dist`;
+          const files = execSync(globCmd, { cwd: projectRoot, timeout: 10000, encoding: 'utf-8' }).trim().split('\n').filter(Boolean);
+
+          const changes: Array<{ file: string; lineNum: number; before: string; after: string }> = [];
+          const regex = isRegex ? new RegExp(search, 'g') : null;
+
+          for (const relFile of files) {
+            const fullPath = path.default.join(projectRoot, relFile);
+            let content: string;
+            try { content = readFileSync(fullPath, 'utf-8'); } catch { continue; }
+            const lines = content.split('\n');
+            let hasMatch = false;
+
+            for (let i = 0; i < lines.length; i++) {
+              const line = lines[i];
+              let newLine: string;
+              if (isRegex && regex) {
+                regex.lastIndex = 0;
+                if (!regex.test(line)) continue;
+                regex.lastIndex = 0;
+                newLine = line.replace(regex, replace);
+              } else {
+                if (!line.includes(search)) continue;
+                newLine = line.split(search).join(replace);
+              }
+              if (newLine !== line) {
+                changes.push({ file: relFile, lineNum: i + 1, before: line.trim(), after: newLine.trim() });
+                lines[i] = newLine;
+                hasMatch = true;
+              }
+            }
+
+            if (hasMatch && !dryRun) {
+              writeFileSync(fullPath, lines.join('\n'), 'utf-8');
+            }
+          }
+
+          if (changes.length === 0) {
+            return { success: true, result: { message: 'No matches found', search, filePattern, filesSearched: files.length } };
+          }
+
+          const preview = changes.slice(0, 30).map(c => `${c.file}:${c.lineNum}\n  - ${c.before}\n  + ${c.after}`).join('\n');
+          return {
+            success: true,
+            result: {
+              applied: !dryRun,
+              totalChanges: changes.length,
+              filesAffected: [...new Set(changes.map(c => c.file))].length,
+              preview: preview + (changes.length > 30 ? `\n... and ${changes.length - 30} more changes` : ''),
+            },
+          };
+        } catch (e: any) {
+          return { success: false, result: { error: `Multi-file edit failed: ${e.message?.substring(0, 300)}` } };
+        }
+      }
+
+      case "explain_code": {
+        const code = args.code;
+        const language = args.language || 'auto-detect';
+        const question = args.question || '';
+        try {
+          const OpenAI = (await import("openai")).default;
+          const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+          const prompt = `Analyze this ${language} code:
+
+\`\`\`${language}
+${code.substring(0, 8000)}
+\`\`\`
+
+Provide:
+1. **What it does** (1-2 sentences)
+2. **How it works** (step by step, concise)
+3. **Potential issues** (bugs, security, performance)
+4. **UniCal adaptation** (how to port/use this in a TypeScript/React/Express/PostgreSQL project)
+${question ? `5. **Specific answer**: ${question}` : ''}
+
+Be concise and practical.`;
+
+          const completion = await openai.chat.completions.create({
+            model: 'gpt-4.1-mini',
+            messages: [
+              { role: 'system', content: 'You are a polyglot code analyst. You understand every programming language and framework. Be concise, precise, and practical. Focus on actionable insights.' },
+              { role: 'user', content: prompt },
+            ],
+            max_completion_tokens: 2000,
+          });
+          return {
+            success: true,
+            result: {
+              language,
+              analysis: completion.choices[0]?.message?.content || 'No analysis generated',
+              tokens: completion.usage?.total_tokens,
+            },
+          };
+        } catch (e: any) {
+          return { success: false, result: { error: `Code analysis failed: ${e.message?.substring(0, 300)}` } };
+        }
+      }
+
+      case "http_test": {
+        let url = args.url;
+        const method = args.method || 'GET';
+        const headers = args.headers || {};
+        const body = args.body;
+        const timeout = args.timeout || 10000;
+        try {
+          if (url.startsWith('/')) url = `http://localhost:3000${url}`;
+          const controller = new AbortController();
+          const timer = setTimeout(() => controller.abort(), timeout);
+          const fetchOpts: any = {
+            method,
+            signal: controller.signal,
+            headers: { 'Content-Type': 'application/json', ...headers },
+          };
+          if (body && method !== 'GET') fetchOpts.body = body;
+          const resp = await fetch(url, fetchOpts);
+          clearTimeout(timer);
+          const contentType = resp.headers.get('content-type') || '';
+          let responseBody: any;
+          if (contentType.includes('json')) {
+            responseBody = await resp.json();
+          } else {
+            const text = await resp.text();
+            responseBody = text.substring(0, 5000);
+          }
+          return {
+            success: true,
+            result: {
+              status: resp.status,
+              statusText: resp.statusText,
+              headers: Object.fromEntries([...resp.headers.entries()].slice(0, 15)),
+              body: responseBody,
+              bodyLength: typeof responseBody === 'string' ? responseBody.length : JSON.stringify(responseBody).length,
+            },
+          };
+        } catch (e: any) {
+          return { success: false, result: { error: `HTTP request failed: ${e.message?.substring(0, 300)}`, url, method } };
+        }
+      }
+
+      case "analyze_dependencies": {
+        const targetFile = args.file;
+        const direction = args.direction || 'both';
+        const depth = Math.min(args.depth || 1, 3);
+        try {
+          const { execSync } = await import('child_process');
+          const { readFileSync } = await import('fs');
+          const path = await import('path');
+          const result: Record<string, any> = { file: targetFile };
+
+          if (direction === 'imports' || direction === 'both') {
+            const fullPath = path.default.join(projectRoot, targetFile);
+            let content: string;
+            try { content = readFileSync(fullPath, 'utf-8'); } catch { return { success: false, result: { error: `File not found: ${targetFile}` } }; }
+            const importRegex = /(?:import|from)\s+['"]([^'"]+)['"]/g;
+            const imports: string[] = [];
+            let match;
+            while ((match = importRegex.exec(content)) !== null) {
+              imports.push(match[1]);
+            }
+            const localImports = imports.filter(i => i.startsWith('.') || i.startsWith('@/') || i.startsWith('@shared'));
+            const externalImports = imports.filter(i => !i.startsWith('.') && !i.startsWith('@/') && !i.startsWith('@shared'));
+            result.imports = { local: localImports, external: externalImports, total: imports.length };
+
+            if (depth >= 2) {
+              const secondLevel: Record<string, string[]> = {};
+              for (const imp of localImports.slice(0, 15)) {
+                try {
+                  let resolved = imp;
+                  if (imp.startsWith('@/')) resolved = `client/src/${imp.slice(2)}`;
+                  else if (imp.startsWith('@shared')) resolved = imp.replace('@shared', 'shared');
+                  else resolved = path.default.join(path.default.dirname(targetFile), imp);
+                  const extensions = ['', '.ts', '.tsx', '/index.ts', '/index.tsx'];
+                  for (const ext of extensions) {
+                    try {
+                      const c = readFileSync(path.default.join(projectRoot, resolved + ext), 'utf-8');
+                      const subImports: string[] = [];
+                      let m;
+                      const r = /(?:import|from)\s+['"]([^'"]+)['"]/g;
+                      while ((m = r.exec(c)) !== null) { if (m[1].startsWith('.') || m[1].startsWith('@/')) subImports.push(m[1]); }
+                      if (subImports.length > 0) secondLevel[imp] = subImports.slice(0, 10);
+                      break;
+                    } catch {}
+                  }
+                } catch {}
+              }
+              result.secondLevelImports = secondLevel;
+            }
+          }
+
+          if (direction === 'importedBy' || direction === 'both') {
+            try {
+              const basename = path.default.basename(targetFile).replace(/\.(ts|tsx)$/, '');
+              const searchPatterns = [
+                path.default.basename(targetFile),
+                basename,
+              ];
+              const grepPattern = searchPatterns.map(p => `'${p}'`).join('\\|');
+              const cmd = `grep -rln "${grepPattern}" --include='*.ts' --include='*.tsx' . 2>/dev/null | grep -v node_modules | grep -v .git | grep -v dist | head -30`;
+              const importedBy = execSync(cmd, { cwd: projectRoot, timeout: 10000, encoding: 'utf-8' }).trim().split('\n').filter(f => f && f !== `./${targetFile}`);
+              result.importedBy = importedBy;
+            } catch {
+              result.importedBy = [];
+            }
+          }
+
+          const lineCount = (() => { try { return readFileSync(path.default.join(projectRoot, targetFile), 'utf-8').split('\n').length; } catch { return 0; } })();
+          result.lineCount = lineCount;
+
+          const exports = (() => {
+            try {
+              const c = readFileSync(path.default.join(projectRoot, targetFile), 'utf-8');
+              const exportMatches = c.match(/export\s+(default\s+)?(function|const|class|interface|type|enum)\s+(\w+)/g) || [];
+              return exportMatches.map(e => e.replace(/export\s+(default\s+)?/, '').trim()).slice(0, 30);
+            } catch { return []; }
+          })();
+          result.exports = exports;
+
+          return { success: true, result };
+        } catch (e: any) {
+          return { success: false, result: { error: `Dependency analysis failed: ${e.message?.substring(0, 300)}` } };
         }
       }
 
