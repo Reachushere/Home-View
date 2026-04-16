@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Zap, Send, X, Loader2, CheckCircle, XCircle, AlertTriangle, Trash2, RotateCcw, Maximize2, Minimize2, Pencil, Circle, ArrowRight, ArrowDown, Undo2, Check, Scissors, Square, Copy } from 'lucide-react';
+import { Zap, Send, X, Loader2, CheckCircle, XCircle, AlertTriangle, Trash2, RotateCcw, Maximize2, Minimize2, Pencil, Circle, ArrowRight, ArrowDown, Undo2, Check, Scissors, Square, Copy, Download, FileText, BookOpen } from 'lucide-react';
 import { queryClient } from '@/lib/queryClient';
 
 function CodeBlock({ code, lang }: { code: string; lang: string }) {
@@ -781,6 +781,81 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
     fetch('/api/ai/conversation', { method: 'DELETE' }).catch(() => {});
   }, []);
 
+  const [showExportMenu, setShowExportMenu] = useState(false);
+  const [exportStatus, setExportStatus] = useState<string | null>(null);
+
+  const formatConversation = useCallback((format: 'text' | 'markdown') => {
+    const timestamp = new Date().toLocaleString();
+    const header = format === 'markdown'
+      ? `# BrynAssist Conversation\n_Exported: ${timestamp}_\n\n---\n\n`
+      : `BrynAssist Conversation\nExported: ${timestamp}\n${'='.repeat(50)}\n\n`;
+
+    return header + messages.map(msg => {
+      const role = msg.role === 'user' ? 'Bryn' : msg.role === 'assistant' ? 'BrynAssist' : 'System';
+      if (format === 'markdown') {
+        return `### ${role}\n${msg.content}\n`;
+      }
+      return `[${role}]\n${msg.content}\n${'—'.repeat(30)}\n`;
+    }).join('\n');
+  }, [messages]);
+
+  const exportAsFile = useCallback((format: 'text' | 'markdown') => {
+    const content = formatConversation(format);
+    const ext = format === 'markdown' ? 'md' : 'txt';
+    const dateStr = new Date().toISOString().slice(0, 10);
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `brynassist-${dateStr}.${ext}`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setShowExportMenu(false);
+    setExportStatus('Downloaded!');
+    setTimeout(() => setExportStatus(null), 2000);
+  }, [formatConversation]);
+
+  const saveToNotepad = useCallback(async () => {
+    const content = formatConversation('markdown');
+    const dateStr = new Date().toLocaleString();
+    try {
+      const resp = await fetch('/api/notepad', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: `BrynAssist Chat — ${dateStr}`, content }),
+      });
+      if (!resp.ok) throw new Error('Save failed');
+      queryClient.invalidateQueries({ queryKey: ['/api/notepad'] });
+      setShowExportMenu(false);
+      setExportStatus('Saved to Notepad!');
+      setTimeout(() => setExportStatus(null), 2500);
+    } catch {
+      setExportStatus('Save failed');
+      setTimeout(() => setExportStatus(null), 2500);
+    }
+  }, [formatConversation]);
+
+  const copyConversation = useCallback(() => {
+    const content = formatConversation('text');
+    navigator.clipboard.writeText(content).then(() => {
+      setShowExportMenu(false);
+      setExportStatus('Copied to clipboard!');
+      setTimeout(() => setExportStatus(null), 2000);
+    });
+  }, [formatConversation]);
+
+  useEffect(() => {
+    if (!showExportMenu) return;
+    const close = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('[data-testid="export-menu"]') && !target.closest('[data-testid="button-ai-command-export"]')) {
+        setShowExportMenu(false);
+      }
+    };
+    setTimeout(() => document.addEventListener('click', close), 0);
+    return () => document.removeEventListener('click', close);
+  }, [showExportMenu]);
+
   const startSnipping = useCallback(async () => {
     setSnippingStart(null);
     setSnippingEnd(null);
@@ -1043,6 +1118,59 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
             <span style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.3px' }}>BrynAssist</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ position: 'relative' }}>
+              <HeaderBtn tip="Save / Export" onClick={() => setShowExportMenu(!showExportMenu)} testId="button-ai-command-export"><Download size={15} /></HeaderBtn>
+              {showExportMenu && (
+                <div
+                  style={{
+                    position: 'absolute', top: '100%', right: 0, marginTop: '6px',
+                    background: 'rgba(15,25,55,0.97)', border: '1px solid rgba(100,160,255,0.3)',
+                    borderRadius: '10px', padding: '4px', minWidth: '190px', zIndex: 50,
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+                    backdropFilter: 'blur(12px)',
+                  }}
+                  data-testid="export-menu"
+                >
+                  {[
+                    { icon: <Copy size={14} />, label: 'Copy all', action: copyConversation, id: 'copy' },
+                    { icon: <BookOpen size={14} />, label: 'Save to Notepad', action: saveToNotepad, id: 'notepad' },
+                    { icon: <FileText size={14} />, label: 'Download .txt', action: () => exportAsFile('text'), id: 'txt' },
+                    { icon: <FileText size={14} />, label: 'Download .md', action: () => exportAsFile('markdown'), id: 'md' },
+                  ].map(item => (
+                    <button
+                      key={item.id}
+                      onClick={item.action}
+                      data-testid={`button-export-${item.id}`}
+                      disabled={messages.length === 0}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: '10px', width: '100%',
+                        padding: '8px 12px', border: 'none', borderRadius: '7px',
+                        background: 'transparent', color: messages.length === 0 ? 'rgba(150,170,200,0.4)' : 'rgba(200,215,255,0.9)',
+                        fontSize: '12.5px', fontWeight: 500, cursor: messages.length === 0 ? 'default' : 'pointer',
+                        textAlign: 'left', transition: 'background 0.15s',
+                      }}
+                      onMouseEnter={(e) => { if (messages.length > 0) e.currentTarget.style.background = 'rgba(100,160,255,0.15)'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                    >
+                      {item.icon}
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {exportStatus && (
+                <div style={{
+                  position: 'absolute', top: '100%', right: 0, marginTop: '6px',
+                  background: 'rgba(34,197,94,0.2)', border: '1px solid rgba(34,197,94,0.4)',
+                  borderRadius: '8px', padding: '6px 12px', whiteSpace: 'nowrap', zIndex: 50,
+                  color: '#86efac', fontSize: '12px', fontWeight: 600,
+                  display: 'flex', alignItems: 'center', gap: '6px',
+                }}>
+                  <Check size={13} />
+                  {exportStatus}
+                </div>
+              )}
+            </div>
             <HeaderBtn tip="Clear conversation" onClick={clearChat} testId="button-ai-command-clear"><RotateCcw size={15} /></HeaderBtn>
             <HeaderBtn tip={expanded ? 'Minimize' : 'Expand'} onClick={() => { setExpanded(!expanded); setCustomWidth(null); if (expanded) setPosition(null); }} testId="button-ai-command-expand">
               {expanded ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
