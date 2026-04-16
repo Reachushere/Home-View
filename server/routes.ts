@@ -6369,7 +6369,8 @@ NEVER use edit_file for theme changes — update_app_theme stores in DB and appl
 23. NEED TO UNDERSTAND WHOLE PROJECT? → project_snapshot(focus:'all') for bird's-eye view. Use before architectural decisions.
 24. UNFAMILIAR CODE (any language)? → explain_code(code, language, question) — analyzes ANY language, explains how to adapt for UniCal.
 25. API ENDPOINT BROKEN? → http_test(url, method, body) to test directly. Check response status, headers, body.
-26. MULTI-STEP CHAINS:
+26. UNFAMILIAR PROJECT/STACK? → github_tree(repo) to see structure → stack_analyze(repo) for full tech stack detection → github_file(repo, path) to read key files. You can onboard to ANY public project.
+27. MULTI-STEP CHAINS:
     • "remind me about X at Y" → create_task(type:"event", dueDate:Y) + ha_announce if immediate
     • "turn on study mode" → ha_service_call(lights) + spotify_control(focus playlist) in parallel
     • "I'm done for today" → complete tasks due today + ha_announce("Bryn is done studying")
@@ -6440,16 +6441,18 @@ WEB & KNOWLEDGE: web_search, web_fetch, github_search, github_file, npm_info, co
   • web_fetch: url, max_length — fetches page content as plain text
   • github_search: query, language, num_results — searches GitHub for code examples
   • github_file: repo (owner/repo), path, branch — reads any file from any public GitHub repo (raw content)
+  • github_tree: repo, path, max_depth — list full directory structure of any public GitHub repo. Onboard to ANY codebase instantly.
   • npm_info: package_name — gets package description, version, dependencies, README excerpt from npm registry
   • code_reference: topic, context — instant offline reference for project stack
   • explain_code: code, language, question — analyze code in ANY language/framework using secondary AI. Explains what it does, how, issues, and how to adapt for UniCal
   • ai_subtask: task, input, model — delegate sub-tasks to gpt-4.1-mini or gpt-4.1-nano. You orchestrate, it executes.
 
-ARCHITECTURE & REFACTORING: project_snapshot, analyze_dependencies, multi_file_edit, http_test
+ARCHITECTURE & REFACTORING: project_snapshot, analyze_dependencies, multi_file_edit, http_test, stack_analyze
   • project_snapshot: focus (all/frontend/backend/database/routes) — bird's-eye view of entire project: file tree, routes, schema, exports. Simulates massive context window.
   • analyze_dependencies: file, direction (imports/importedBy/both), depth — maps import/export relationships. Essential before refactoring.
   • multi_file_edit: search, replace, file_pattern, is_regex, dry_run — atomic search-and-replace across multiple files. Safe refactoring.
   • http_test: url, method, headers, body — make HTTP requests to test API endpoints directly. Simulates browser/client requests.
+  • stack_analyze: repo OR local_path — auto-detect tech stack, architecture, entry points, patterns for ANY project. Reads config files and uses AI to summarize. Onboard to unfamiliar stacks instantly.
 
 OTHER: generate_image, run_node_script
 
@@ -6570,11 +6573,12 @@ When Bryn asks about your capabilities, what you can do, or how you compare to o
 
 FACTS ABOUT YOUR SETUP (use these to form your own assessment):
 • You are GPT-4.1 running as a specialist assistant for one project (UniCal)
-• You have 72 tools spanning: filesystem, database, git, shell, Home Assistant, Spotify, email, calendar, OneDrive, web search, GitHub code access, npm registry, code generation, multi-file refactoring, dependency analysis, project snapshots, API testing, multi-language code analysis, and multi-LLM orchestration
+• You have 74 tools spanning: filesystem, database, git, shell, Home Assistant, Spotify, email, calendar, OneDrive, web search, GitHub code/tree/search access, npm registry, code generation, multi-file refactoring, dependency analysis, project snapshots, API testing, multi-language code analysis, stack detection for ANY project, and multi-LLM orchestration
 • You can delegate sub-tasks to secondary models (gpt-4.1-mini, gpt-4.1-nano) via ai_subtask
-• You can read files from any public GitHub repo (github_file) and search for code examples (github_search)
+• You can read files from any public GitHub repo (github_file), see full repo structure (github_tree), and search for code examples (github_search)
+• You can auto-detect the tech stack of ANY project — local or remote — via stack_analyze. You're not limited to TypeScript.
 • You have an offline reference for the project's stack (code_reference) and can look up npm packages (npm_info)
-• You can analyze code in ANY language via explain_code — not limited to TypeScript/JavaScript
+• You can analyze and explain code in ANY language via explain_code — Python, Rust, Go, Swift, Java, C++, anything
 • You can see the entire project at once via project_snapshot — simulates a massive context window
 • You can do safe multi-file refactoring via analyze_dependencies + multi_file_edit (with dry-run preview)
 • You can test API endpoints directly via http_test — no browser needed
@@ -6676,7 +6680,7 @@ WHEN ASSESSING YOURSELF:
         messages.push({ role: "user", content: message.trim() });
       }
 
-      const readOnlyTools = new Set(["read_file", "list_directory", "search_code", "search_tasks", "get_semester_info", "check_build", "read_logs", "git_diff", "get_project_map", "db_schema", "http_check", "memory_read", "process_check", "analyze_ui", "smoke_test", "take_screenshot", "browser_test", "check_performance", "conversation_history", "health_check", "web_search", "web_fetch", "plan_task", "codebase_explore", "code_reference", "github_search", "github_file", "npm_info", "ai_subtask", "project_snapshot", "explain_code", "http_test", "analyze_dependencies"]);
+      const readOnlyTools = new Set(["read_file", "list_directory", "search_code", "search_tasks", "get_semester_info", "check_build", "read_logs", "git_diff", "get_project_map", "db_schema", "http_check", "memory_read", "process_check", "analyze_ui", "smoke_test", "take_screenshot", "browser_test", "check_performance", "conversation_history", "health_check", "web_search", "web_fetch", "plan_task", "codebase_explore", "code_reference", "github_search", "github_file", "github_tree", "npm_info", "ai_subtask", "project_snapshot", "explain_code", "http_test", "analyze_dependencies", "stack_analyze"]);
       const destructiveTools = new Set(["delete_task", "bulk_delete_tasks", "bulk_complete_tasks", "run_shell_command", "git_commit_and_push", "install_package", "generate_image", "db_migrate", "multi_file_edit"]);
 
       function isToolDestructive(fnName: string, fnArgs: any): boolean {

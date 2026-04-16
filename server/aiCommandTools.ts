@@ -1018,6 +1018,39 @@ export const AI_COMMAND_TOOLS = [
   {
     type: "function" as const,
     function: {
+      name: "github_tree",
+      description: "List the full directory structure of any public GitHub repository. Returns the file/folder tree so you can understand how an unfamiliar project is organized before reading specific files. Use this to onboard to ANY codebase — see the architecture at a glance, then use github_file to read specific files.",
+      parameters: {
+        type: "object",
+        properties: {
+          repo: { type: "string", description: "GitHub repo in 'owner/repo' format (e.g. 'vercel/next.js', 'drizzle-team/drizzle-orm')" },
+          branch: { type: "string", description: "Branch name. Default 'main'." },
+          path: { type: "string", description: "Subdirectory to list (e.g. 'src', 'packages/core'). Default: root." },
+          max_depth: { type: "integer", description: "Max directory depth. Default 3. Max 5." },
+        },
+        required: ["repo"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "stack_analyze",
+      description: "Analyze any codebase or GitHub repo to identify its tech stack, architecture patterns, entry points, and how to work with it. Use when encountering an unfamiliar project — this tool reads package.json, config files, and key source files to build a complete picture. Can analyze local files or remote repos.",
+      parameters: {
+        type: "object",
+        properties: {
+          repo: { type: "string", description: "GitHub repo in 'owner/repo' format. If provided, analyzes the remote repo." },
+          local_path: { type: "string", description: "Local directory path to analyze. If provided, analyzes local files. Default: project root." },
+          branch: { type: "string", description: "Branch for remote repos. Default 'main'." },
+        },
+        required: [],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
       name: "project_snapshot",
       description: "Generate a comprehensive bird's-eye view of the entire project. Returns: file tree with sizes, all exports/components, route map (API + frontend), database schema summary, and dependency graph. Use this to understand the full codebase before making architectural decisions or large refactors. Simulates having the entire project in context at once.",
       parameters: {
@@ -3035,6 +3068,170 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           };
         } catch (e: any) {
           return { success: false, result: { error: `AI subtask failed: ${e.message?.substring(0, 300)}` } };
+        }
+      }
+
+      case "github_tree": {
+        const repo = args.repo;
+        const branch = args.branch || 'main';
+        const subPath = args.path || '';
+        const maxDepth = Math.min(args.max_depth || 3, 5);
+        try {
+          const apiUrl = `https://api.github.com/repos/${repo}/git/trees/${branch}?recursive=1`;
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 15000);
+          const resp = await fetch(apiUrl, {
+            signal: controller.signal,
+            headers: { 'User-Agent': 'BrynAssist/1.0', 'Accept': 'application/vnd.github.v3+json' },
+          });
+          clearTimeout(timeout);
+          if (!resp.ok) {
+            if (resp.status === 404) {
+              const altBranch = branch === 'main' ? 'master' : 'main';
+              const altUrl = `https://api.github.com/repos/${repo}/git/trees/${altBranch}?recursive=1`;
+              const ctrl2 = new AbortController();
+              const t2 = setTimeout(() => ctrl2.abort(), 10000);
+              const resp2 = await fetch(altUrl, { signal: ctrl2.signal, headers: { 'User-Agent': 'BrynAssist/1.0', 'Accept': 'application/vnd.github.v3+json' } });
+              clearTimeout(t2);
+              if (!resp2.ok) return { success: false, result: { error: `Repo not found or private: ${repo}` } };
+              const data2 = await resp2.json() as any;
+              const tree = (data2.tree || [])
+                .filter((item: any) => {
+                  if (subPath && !item.path.startsWith(subPath)) return false;
+                  const relPath = subPath ? item.path.slice(subPath.length + 1) : item.path;
+                  const depth = relPath.split('/').length;
+                  return depth <= maxDepth;
+                })
+                .map((item: any) => ({ path: item.path, type: item.type === 'blob' ? 'file' : 'dir', size: item.size || 0 }))
+                .slice(0, 500);
+              return { success: true, result: { repo, branch: altBranch, totalItems: tree.length, tree } };
+            }
+            return { success: false, result: { error: `GitHub API error: ${resp.status} ${resp.statusText}` } };
+          }
+          const data = await resp.json() as any;
+          const tree = (data.tree || [])
+            .filter((item: any) => {
+              if (subPath && !item.path.startsWith(subPath)) return false;
+              const relPath = subPath ? item.path.slice(subPath.length + 1) : item.path;
+              const depth = relPath.split('/').length;
+              return depth <= maxDepth;
+            })
+            .map((item: any) => ({ path: item.path, type: item.type === 'blob' ? 'file' : 'dir', size: item.size || 0 }))
+            .slice(0, 500);
+          return { success: true, result: { repo, branch, totalItems: tree.length, truncated: data.truncated || false, tree } };
+        } catch (e: any) {
+          return { success: false, result: { error: `GitHub tree fetch failed: ${e.message?.substring(0, 300)}` } };
+        }
+      }
+
+      case "stack_analyze": {
+        const repo = args.repo;
+        const localPath = args.local_path;
+        const branch = args.branch || 'main';
+        try {
+          const configFiles = ['package.json', 'tsconfig.json', 'vite.config.ts', 'vite.config.js', 'next.config.js', 'next.config.ts', 'nuxt.config.ts', 'angular.json', 'Cargo.toml', 'go.mod', 'requirements.txt', 'pyproject.toml', 'Gemfile', 'build.gradle', 'pom.xml', 'docker-compose.yml', 'Dockerfile', '.env.example', 'drizzle.config.ts', 'prisma/schema.prisma', 'tailwind.config.ts', 'tailwind.config.js', 'webpack.config.js'];
+          const analysis: Record<string, any> = { source: repo ? `github:${repo}` : (localPath || 'local project') };
+          const fileContents: Record<string, string> = {};
+
+          if (repo) {
+            for (const cf of configFiles) {
+              try {
+                const rawUrl = `https://raw.githubusercontent.com/${repo}/${branch}/${cf}`;
+                const ctrl = new AbortController();
+                const t = setTimeout(() => ctrl.abort(), 5000);
+                const r = await fetch(rawUrl, { signal: ctrl.signal, headers: { 'User-Agent': 'BrynAssist/1.0' } });
+                clearTimeout(t);
+                if (r.ok) {
+                  const text = await r.text();
+                  fileContents[cf] = text.substring(0, 3000);
+                }
+              } catch {}
+            }
+          } else {
+            const { readFileSync } = await import('fs');
+            const path = await import('path');
+            const root = localPath || projectRoot;
+            for (const cf of configFiles) {
+              try {
+                const content = readFileSync(path.default.join(root, cf), 'utf-8');
+                fileContents[cf] = content.substring(0, 3000);
+              } catch {}
+            }
+          }
+
+          if (fileContents['package.json']) {
+            try {
+              const pkg = JSON.parse(fileContents['package.json']);
+              analysis.name = pkg.name;
+              analysis.scripts = Object.keys(pkg.scripts || {});
+              const allDeps = { ...pkg.dependencies, ...pkg.devDependencies };
+              const depNames = Object.keys(allDeps);
+
+              const stack: string[] = [];
+              if (depNames.some(d => d.includes('react'))) stack.push('React');
+              if (depNames.some(d => d.includes('vue'))) stack.push('Vue');
+              if (depNames.some(d => d.includes('angular') || d.includes('@angular'))) stack.push('Angular');
+              if (depNames.some(d => d.includes('svelte'))) stack.push('Svelte');
+              if (depNames.some(d => d === 'next')) stack.push('Next.js');
+              if (depNames.some(d => d === 'nuxt')) stack.push('Nuxt');
+              if (depNames.some(d => d === 'express')) stack.push('Express');
+              if (depNames.some(d => d === 'fastify')) stack.push('Fastify');
+              if (depNames.some(d => d === 'hono')) stack.push('Hono');
+              if (depNames.some(d => d.includes('drizzle'))) stack.push('Drizzle ORM');
+              if (depNames.some(d => d.includes('prisma'))) stack.push('Prisma');
+              if (depNames.some(d => d.includes('typeorm'))) stack.push('TypeORM');
+              if (depNames.some(d => d.includes('sequelize'))) stack.push('Sequelize');
+              if (depNames.some(d => d.includes('tailwind'))) stack.push('Tailwind CSS');
+              if (depNames.some(d => d.includes('vite'))) stack.push('Vite');
+              if (depNames.some(d => d.includes('webpack'))) stack.push('Webpack');
+              if (depNames.some(d => d === 'typescript')) stack.push('TypeScript');
+              if (depNames.some(d => d.includes('tanstack') || d.includes('react-query'))) stack.push('TanStack Query');
+              if (depNames.some(d => d.includes('redux'))) stack.push('Redux');
+              if (depNames.some(d => d.includes('zustand'))) stack.push('Zustand');
+              if (depNames.some(d => d === 'zod')) stack.push('Zod');
+              if (depNames.some(d => d.includes('socket.io'))) stack.push('Socket.IO');
+              if (depNames.some(d => d.includes('graphql'))) stack.push('GraphQL');
+              if (depNames.some(d => d.includes('trpc'))) stack.push('tRPC');
+              if (depNames.some(d => d.includes('stripe'))) stack.push('Stripe');
+              if (depNames.some(d => d.includes('supabase'))) stack.push('Supabase');
+              if (depNames.some(d => d.includes('firebase'))) stack.push('Firebase');
+              if (depNames.some(d => d.includes('mongoose') || d.includes('mongodb'))) stack.push('MongoDB');
+              if (depNames.some(d => d === 'pg' || d === 'postgres')) stack.push('PostgreSQL');
+
+              analysis.detectedStack = stack;
+              analysis.dependencies = depNames.slice(0, 40);
+              analysis.totalDependencies = depNames.length;
+            } catch {}
+          }
+
+          if (fileContents['Cargo.toml']) analysis.language = 'Rust';
+          else if (fileContents['go.mod']) analysis.language = 'Go';
+          else if (fileContents['requirements.txt'] || fileContents['pyproject.toml']) analysis.language = 'Python';
+          else if (fileContents['Gemfile']) analysis.language = 'Ruby';
+          else if (fileContents['build.gradle'] || fileContents['pom.xml']) analysis.language = 'Java/Kotlin';
+          else if (fileContents['tsconfig.json']) analysis.language = 'TypeScript';
+          else if (fileContents['package.json']) analysis.language = 'JavaScript';
+
+          analysis.configFilesFound = Object.keys(fileContents);
+
+          if (Object.keys(fileContents).length > 0) {
+            const OpenAI = (await import("openai")).default;
+            const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+            const configSummary = Object.entries(fileContents).map(([f, c]) => `--- ${f} ---\n${c}`).join('\n\n').substring(0, 8000);
+            const completion = await openai.chat.completions.create({
+              model: 'gpt-4.1-nano',
+              messages: [
+                { role: 'system', content: 'You are a senior architect. Analyze these config files and provide a concise architecture summary. Include: 1) Tech stack, 2) Project structure pattern, 3) Entry points, 4) Build/dev commands, 5) Key patterns/conventions. Be concise — max 500 words.' },
+                { role: 'user', content: configSummary },
+              ],
+              max_completion_tokens: 800,
+            });
+            analysis.architectureSummary = completion.choices[0]?.message?.content || '';
+          }
+
+          return { success: true, result: analysis };
+        } catch (e: any) {
+          return { success: false, result: { error: `Stack analysis failed: ${e.message?.substring(0, 300)}` } };
         }
       }
 
