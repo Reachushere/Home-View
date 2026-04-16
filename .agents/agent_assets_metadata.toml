@@ -485,3 +485,9 @@ id = "SLVmGHQxigtzfnhc5FriQ"
 uri = "file://attached_assets/Pasted-swipe-nav-swipe-amount-200-resources-url-local-communit_1776350885566.txt"
 type = "text"
 title = "Working HA Dashboard Config (paste into Raw config editor)"
+
+[[outputs]]
+id = "PIbcQv9ObHxZdo-vLx44H"
+uri = "file://attached_assets/new_dashboard_merged.yaml"
+type = "unspecified"
+title = "Merged dashboard config (old coords + Rascal timer)"
