@@ -13411,24 +13411,10 @@ async function pollStatus(timeout){
 
       const { ObjectStorageService } = await import("./replit_integrations/object_storage");
       const objectStorageService = new ObjectStorageService();
-      const privateDir = process.env.PRIVATE_OBJECT_DIR;
-      if (!privateDir) throw new Error("PRIVATE_OBJECT_DIR not set");
-
       const { randomUUID } = await import("crypto");
       const objectId = randomUUID();
-      const fullPath = `${privateDir}/transcripts/${objectId}`;
-      const pathParts = fullPath.replace(/^\//, '').split('/');
-      const bucketName = pathParts[0];
-      const objectName = pathParts.slice(1).join('/');
 
-      const bucket = objectStorageClient.bucket(bucketName);
-      const file = bucket.file(objectName);
-      await new Promise<void>((resolve, reject) => {
-        const stream = file.createWriteStream({ contentType, resumable: false });
-        stream.on('finish', resolve);
-        stream.on('error', reject);
-        stream.end(fileBuffer);
-      });
+      const savedPath = await objectStorageService.saveLocal(`/objects/transcripts/${objectId}`, fileBuffer, contentType);
 
       const existingRaw = await storage.getUiSetting('transcripts');
       let transcripts: any[] = [];
@@ -13465,15 +13451,10 @@ async function pollStatus(timeout){
       await storage.setUiSetting('transcripts', JSON.stringify(transcripts));
 
       try {
-        const privateDir = process.env.PRIVATE_OBJECT_DIR;
-        if (privateDir) {
-          const fullPath = `${privateDir}/transcripts/${id}`;
-          const pathParts = fullPath.replace(/^\//, '').split('/');
-          const bucketName = pathParts[0];
-          const objectName = pathParts.slice(1).join('/');
-          const bucket = objectStorageClient.bucket(bucketName);
-          await bucket.file(objectName).delete().catch(() => {});
-        }
+        const { ObjectStorageService } = await import("./replit_integrations/object_storage");
+        const svc = new ObjectStorageService();
+        const file = await svc.getObjectEntityFile(`/objects/transcripts/${id}`);
+        if (file && typeof file.delete === 'function') await file.delete().catch(() => {});
       } catch {}
 
       res.json({ success: true });
@@ -13490,16 +13471,9 @@ async function pollStatus(timeout){
       const entry = transcripts.find(t => t.id === id);
       if (!entry) return res.status(404).json({ error: "Transcript not found" });
 
-      const privateDir = process.env.PRIVATE_OBJECT_DIR;
-      if (!privateDir) throw new Error("PRIVATE_OBJECT_DIR not set");
-
-      const fullPath = `${privateDir}/transcripts/${id}`;
-      const pathParts = fullPath.replace(/^\//, '').split('/');
-      const bucketName = pathParts[0];
-      const objectName = pathParts.slice(1).join('/');
-
-      const bucket = objectStorageClient.bucket(bucketName);
-      const file = bucket.file(objectName);
+      const { ObjectStorageService } = await import("./replit_integrations/object_storage");
+      const svc = new ObjectStorageService();
+      const file = await svc.getObjectEntityFile(`/objects/transcripts/${id}`);
       const [buffer] = await file.download();
 
       res.setHeader('Content-Type', entry.contentType || 'application/octet-stream');
@@ -13525,47 +13499,12 @@ async function pollStatus(timeout){
       const contentType = (req.headers['content-type'] as string) || 'application/octet-stream';
       const uploadFolder = (req.headers['x-upload-folder'] as string) || undefined;
 
-      const privateDir = process.env.PRIVATE_OBJECT_DIR;
-      if (!privateDir) {
-        const { randomUUID } = await import("crypto");
-        const fs = await import("fs");
-        const path = await import("path");
-        const objectId = randomUUID();
-        const localDir = path.join(process.cwd(), 'local-uploads');
-        if (!fs.existsSync(localDir)) fs.mkdirSync(localDir, { recursive: true });
-        const localPath = path.join(localDir, objectId);
-        fs.writeFileSync(localPath, fileBuffer);
-        const objectPath = `/local-uploads/${objectId}`;
-        const createdFile = await storage.createFile({
-          originalName: fileName,
-          displayName: fileName,
-          objectPath,
-          contentType,
-          size: fileBuffer.length,
-          folder: uploadFolder,
-        });
-        console.log(`[Upload] Local file saved: ${localPath} (${fileBuffer.length} bytes)${uploadFolder ? ` [folder=${uploadFolder}]` : ''}`);
-        return res.json({ objectPath, fileId: createdFile.id, fileName });
-      }
-
+      const { ObjectStorageService } = await import("./replit_integrations/object_storage");
+      const svc = new ObjectStorageService();
       const { randomUUID } = await import("crypto");
       const objectId = randomUUID();
-      const fullPath = `${privateDir}/uploads/${objectId}`;
 
-      const pathParts = fullPath.replace(/^\//, '').split('/');
-      const bucketName = pathParts[0];
-      const objectName = pathParts.slice(1).join('/');
-
-      const bucket = objectStorageClient.bucket(bucketName);
-      const file = bucket.file(objectName);
-      await new Promise<void>((resolve, reject) => {
-        const stream = file.createWriteStream({ contentType, resumable: false });
-        stream.on('finish', resolve);
-        stream.on('error', reject);
-        stream.end(fileBuffer);
-      });
-
-      const objectPath = `/objects/uploads/${objectId}`;
+      const objectPath = await svc.saveLocal(`/objects/uploads/${objectId}`, fileBuffer, contentType);
       const createdFile = await storage.createFile({
         originalName: fileName,
         displayName: fileName,
@@ -13576,7 +13515,7 @@ async function pollStatus(timeout){
       });
 
       console.log(`[Upload] Direct upload success: ${fileName} -> ${objectPath} (${fileBuffer.length} bytes)${uploadFolder ? ` [folder=${uploadFolder}]` : ''}`);
-      res.json({ objectPath, fileId: createdFile?.id, metadata: { name: fileName, size: fileBuffer.length, contentType } });
+      res.json({ objectPath, fileId: createdFile?.id, metadata: { name: fileName, size: fileBuffer.length, contentType }, fileName });
     } catch (error: any) {
       console.error("[Upload] Direct upload error:", error);
       res.status(500).json({ error: error.message || "Failed to upload file" });
