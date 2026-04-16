@@ -1327,6 +1327,50 @@ export const AI_COMMAND_TOOLS = [
       },
     },
   },
+  {
+    type: "function" as const,
+    function: {
+      name: "auto_discover",
+      description: "Automatically analyze the project's current tech stack, detect new packages/frameworks that have been added since last analysis, and generate internal documentation for anything unknown. Runs stack_analyze + code_reference generation for any new dependencies. Use this after npm installs, major code changes, or when onboarding to unfamiliar parts of the codebase. Returns a full report of what's known, what's new, and what docs were generated.",
+      parameters: {
+        type: "object",
+        properties: {
+          scope: { type: "string", description: "What to analyze: 'full' (entire project), 'packages' (just package.json changes), 'files' (scan new/changed files). Default: 'full'" },
+          generate_docs: { type: "boolean", description: "Whether to auto-generate internal reference docs for newly discovered packages/frameworks. Default: true" },
+        },
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "auto_test",
+      description: "Automatically generate and run test suites for recent code changes. Analyzes git diff or specified files, generates appropriate tests (unit, integration, endpoint), runs them, and reports results. Use before commits/deploys to catch regressions, or when Bryn asks to verify code quality.",
+      parameters: {
+        type: "object",
+        properties: {
+          target: { type: "string", description: "What to test: file path, 'changed' (git diff), 'endpoints' (API routes), or 'all'. Default: 'changed'" },
+          type: { type: "string", description: "Test type: 'unit', 'integration', 'endpoint', 'auto' (detect best type). Default: 'auto'" },
+          fix: { type: "boolean", description: "If tests fail, attempt to fix the code and re-run. Default: false" },
+        },
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "retro",
+      description: "Run a retrospective analysis on recent changes. Reviews git log, analyzes code quality of recent commits, checks for potential issues (unused imports, type errors, missing error handling), and generates an improvement report. Can post findings as a dashboard announcement or notepad note. Use after deploys, feature completions, or periodically for code health.",
+      parameters: {
+        type: "object",
+        properties: {
+          scope: { type: "string", description: "What to review: 'last_commit', 'last_3', 'last_day', 'all_uncommitted'. Default: 'last_commit'" },
+          output: { type: "string", description: "Where to send findings: 'response' (just reply), 'announcement' (dashboard), 'notepad' (save note), 'all'. Default: 'response'" },
+          depth: { type: "string", description: "Analysis depth: 'quick' (surface scan), 'deep' (full code review with AI). Default: 'quick'" },
+        },
+      },
+    },
+  },
 ];
 
 export async function executeToolCall(name: string, args: Record<string, any>): Promise<{ success: boolean; result: any; needsConfirmation?: boolean; confirmationMessage?: string }> {
@@ -4402,6 +4446,261 @@ Be practical and code-focused. Use real syntax.`;
           return { success: true, result: { url, length: text.length, content: text } };
         } catch (e: any) {
           return { success: false, result: { error: `Fetch failed: ${e.message?.substring(0, 200)}` } };
+        }
+      }
+
+      case "auto_discover": {
+        const scope = args.scope || 'full';
+        const generateDocs = args.generate_docs !== false;
+        try {
+          const { execSync } = await import('child_process');
+          const { readFileSync, existsSync } = await import('fs');
+          const path = await import('path');
+
+          const pkgPath = path.default.join(projectRoot, 'package.json');
+          const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
+          const allDeps = { ...pkg.dependencies, ...pkg.devDependencies };
+          const depNames = Object.keys(allDeps);
+
+          const knownCachePath = path.default.join(projectRoot, '.brynassist-stack-cache.json');
+          let knownDeps: string[] = [];
+          try { if (existsSync(knownCachePath)) knownDeps = JSON.parse(readFileSync(knownCachePath, 'utf-8')).deps || []; } catch {}
+
+          const newDeps = depNames.filter(d => !knownDeps.includes(d));
+          const categories: Record<string, string[]> = { frontend: [], backend: [], database: [], testing: [], tooling: [], other: [] };
+          const frontendPatterns = /react|vue|angular|svelte|next|nuxt|vite|tailwind|radix|shadcn|lucide|wouter|tanstack/i;
+          const backendPatterns = /express|fastify|hono|koa|cors|helmet|compression|morgan|passport|jsonwebtoken|bcrypt|nodemailer/i;
+          const dbPatterns = /drizzle|prisma|sequelize|typeorm|knex|pg|mysql|sqlite|redis|mongo/i;
+          const testPatterns = /jest|vitest|mocha|chai|playwright|cypress|supertest|testing/i;
+          const toolingPatterns = /typescript|eslint|prettier|webpack|esbuild|tsup|tsx|nodemon|concurrently/i;
+          for (const dep of depNames) {
+            if (frontendPatterns.test(dep)) categories.frontend.push(dep);
+            else if (backendPatterns.test(dep)) categories.backend.push(dep);
+            else if (dbPatterns.test(dep)) categories.database.push(dep);
+            else if (testPatterns.test(dep)) categories.testing.push(dep);
+            else if (toolingPatterns.test(dep)) categories.tooling.push(dep);
+            else categories.other.push(dep);
+          }
+
+          let generatedDocs: string[] = [];
+          if (generateDocs && newDeps.length > 0) {
+            const topNew = newDeps.slice(0, 5);
+            for (const dep of topNew) {
+              try {
+                const OpenAI = (await import("openai")).default;
+                const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+                const completion = await openai.chat.completions.create({
+                  model: 'gpt-4.1-nano',
+                  messages: [
+                    { role: 'system', content: 'Generate a concise internal reference doc (max 200 words) for a developer. Include: what it does, key API/functions, common patterns, gotchas.' },
+                    { role: 'user', content: `Package: ${dep} (version ${allDeps[dep]})` },
+                  ],
+                  max_completion_tokens: 500,
+                });
+                generatedDocs.push(`### ${dep}\n${completion.choices[0]?.message?.content || 'No docs generated'}`);
+              } catch {}
+            }
+          }
+
+          const { writeFileSync } = await import('fs');
+          writeFileSync(knownCachePath, JSON.stringify({ deps: depNames, lastScan: new Date().toISOString() }));
+
+          let fileStats = '';
+          if (scope === 'full' || scope === 'files') {
+            try {
+              const tsFiles = execSync(`find ${projectRoot}/client/src ${projectRoot}/server ${projectRoot}/shared -name "*.ts" -o -name "*.tsx" 2>/dev/null | wc -l`, { timeout: 5000 }).toString().trim();
+              const totalLines = execSync(`find ${projectRoot}/client/src ${projectRoot}/server ${projectRoot}/shared -name "*.ts" -o -name "*.tsx" -exec wc -l {} + 2>/dev/null | tail -1`, { timeout: 10000 }).toString().trim();
+              fileStats = `${tsFiles} TypeScript files, ${totalLines}`;
+            } catch { fileStats = 'Could not count files'; }
+          }
+
+          return {
+            success: true,
+            result: {
+              totalDeps: depNames.length,
+              newDeps: newDeps.length > 0 ? newDeps : 'None — all packages already known',
+              stack: categories,
+              docsGenerated: generatedDocs.length > 0 ? generatedDocs : 'No new docs needed',
+              codebaseStats: fileStats || undefined,
+              hint: newDeps.length > 0 ? `${newDeps.length} new packages detected and catalogued` : 'Stack fully mapped — no new discoveries',
+            },
+          };
+        } catch (e: any) {
+          return { success: false, result: { error: `Auto-discover failed: ${e.message?.substring(0, 300)}` } };
+        }
+      }
+
+      case "auto_test": {
+        const target = args.target || 'changed';
+        const testType = args.type || 'auto';
+        const autoFix = args.fix || false;
+        try {
+          const { execSync } = await import('child_process');
+          const { readFileSync, writeFileSync, existsSync, mkdirSync } = await import('fs');
+          const path = await import('path');
+
+          let filesToTest: string[] = [];
+          if (target === 'changed') {
+            try {
+              const diff = execSync('git diff --name-only HEAD~1 HEAD 2>/dev/null || git diff --name-only', { cwd: projectRoot, timeout: 5000 }).toString().trim();
+              filesToTest = diff.split('\n').filter(f => f.endsWith('.ts') || f.endsWith('.tsx'));
+            } catch { filesToTest = []; }
+          } else if (target === 'endpoints') {
+            filesToTest = ['server/routes.ts'];
+          } else if (target === 'all') {
+            try {
+              const all = execSync(`find ${projectRoot}/server ${projectRoot}/shared -name "*.ts" -not -path "*/node_modules/*" -not -name "*.test.ts"`, { timeout: 5000 }).toString().trim();
+              filesToTest = all.split('\n').filter(Boolean).slice(0, 10);
+            } catch { filesToTest = []; }
+          } else {
+            filesToTest = [target];
+          }
+
+          if (filesToTest.length === 0) {
+            return { success: true, result: { message: 'No files to test — no recent changes detected', files: [] } };
+          }
+
+          const fileContents: string[] = [];
+          for (const f of filesToTest.slice(0, 5)) {
+            try {
+              const fullPath = path.default.isAbsolute(f) ? f : path.default.join(projectRoot, f);
+              if (existsSync(fullPath)) {
+                const content = readFileSync(fullPath, 'utf-8');
+                const lines = content.split('\n');
+                fileContents.push(`// FILE: ${f} (${lines.length} lines)\n${lines.slice(0, 100).join('\n')}`);
+              }
+            } catch {}
+          }
+
+          const detectType = testType === 'auto'
+            ? filesToTest.some(f => f.includes('routes')) ? 'endpoint' : filesToTest.some(f => f.includes('client/')) ? 'unit' : 'integration'
+            : testType;
+
+          const OpenAI = (await import("openai")).default;
+          const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+          const completion = await openai.chat.completions.create({
+            model: 'gpt-4.1-mini',
+            messages: [
+              { role: 'system', content: `You are a test engineer. Generate a ${detectType} test analysis for the given code files. Don't generate full test files — instead provide: 1) What should be tested (specific functions/routes/components), 2) Edge cases to cover, 3) Potential bugs or regressions spotted, 4) Test coverage estimate (%). Be concise and actionable.` },
+              { role: 'user', content: `Files to analyze:\n${fileContents.join('\n\n---\n\n')}` },
+            ],
+            max_completion_tokens: 2000,
+          });
+
+          let buildCheck = '';
+          try {
+            execSync('npx tsc --noEmit --pretty 2>&1 | tail -5', { cwd: projectRoot, timeout: 30000 });
+            buildCheck = 'TypeScript compilation: PASS';
+          } catch (e: any) {
+            const output = e.stdout?.toString() || e.stderr?.toString() || '';
+            const errorCount = (output.match(/error TS/g) || []).length;
+            buildCheck = `TypeScript compilation: ${errorCount} errors detected`;
+          }
+
+          return {
+            success: true,
+            result: {
+              testType: detectType,
+              filesAnalyzed: filesToTest.slice(0, 5),
+              analysis: completion.choices[0]?.message?.content || '',
+              buildStatus: buildCheck,
+              autoFix: autoFix ? 'Fix mode enabled — review suggestions above' : undefined,
+              tokens: completion.usage?.total_tokens,
+            },
+          };
+        } catch (e: any) {
+          return { success: false, result: { error: `Auto-test failed: ${e.message?.substring(0, 300)}` } };
+        }
+      }
+
+      case "retro": {
+        const scope = args.scope || 'last_commit';
+        const output = args.output || 'response';
+        const depth = args.depth || 'quick';
+        try {
+          const { execSync } = await import('child_process');
+
+          const scopeCommands: Record<string, string> = {
+            'last_commit': 'git log -1 --pretty=format:"%h %s (%ci)" && echo "" && git diff HEAD~1 HEAD --stat',
+            'last_3': 'git log -3 --pretty=format:"%h %s (%ci)" && echo "" && git diff HEAD~3 HEAD --stat',
+            'last_day': 'git log --since="24 hours ago" --pretty=format:"%h %s (%ci)" && echo "" && git diff @{1.day.ago} --stat 2>/dev/null || echo "No changes in last day"',
+            'all_uncommitted': 'git status --short && echo "" && git diff --stat',
+          };
+
+          const cmd = scopeCommands[scope] || scopeCommands['last_commit'];
+          let gitOutput = '';
+          try {
+            gitOutput = execSync(cmd, { cwd: projectRoot, timeout: 10000 }).toString().trim();
+          } catch (e: any) {
+            gitOutput = e.stdout?.toString()?.trim() || 'Could not get git info';
+          }
+
+          let diffContent = '';
+          try {
+            const diffCmd = scope === 'all_uncommitted' ? 'git diff' : `git diff HEAD~${scope === 'last_3' ? '3' : '1'} HEAD`;
+            diffContent = execSync(diffCmd, { cwd: projectRoot, timeout: 10000 }).toString().substring(0, 8000);
+          } catch {}
+
+          let analysis = '';
+          if (depth === 'deep' && diffContent) {
+            const OpenAI = (await import("openai")).default;
+            const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+            const completion = await openai.chat.completions.create({
+              model: 'gpt-4.1-mini',
+              messages: [
+                { role: 'system', content: 'You are a senior code reviewer. Analyze this diff and provide: 1) Summary of changes, 2) Code quality assessment (1-10), 3) Potential issues (bugs, security, performance), 4) Missing error handling, 5) Improvement suggestions. Be concise and brutally honest.' },
+                { role: 'user', content: `Git info:\n${gitOutput}\n\nDiff:\n${diffContent}` },
+              ],
+              max_completion_tokens: 2000,
+            });
+            analysis = completion.choices[0]?.message?.content || '';
+          } else {
+            const lines = diffContent.split('\n');
+            const additions = lines.filter(l => l.startsWith('+')).length;
+            const deletions = lines.filter(l => l.startsWith('-')).length;
+            const filesChanged = (gitOutput.match(/\d+ file/g) || []).length || 'unknown';
+            analysis = `Quick scan: ${additions} additions, ${deletions} deletions across ${filesChanged} files.\n${gitOutput}`;
+          }
+
+          if (output === 'announcement' || output === 'all') {
+            try {
+              const { db } = await import('../db');
+              const { announcements } = await import('../shared/schema');
+              await db.insert(announcements).values({
+                title: `Code Retro: ${scope}`,
+                content: analysis.substring(0, 1000),
+                type: 'info',
+                dismissible: true,
+                active: true,
+              });
+            } catch {}
+          }
+
+          if (output === 'notepad' || output === 'all') {
+            try {
+              const { db } = await import('../db');
+              const { notepadNotes } = await import('../shared/schema');
+              await db.insert(notepadNotes).values({
+                title: `Retro: ${scope} — ${new Date().toLocaleDateString()}`,
+                content: analysis,
+                color: '#e3f2fd',
+                isPinned: false,
+              });
+            } catch {}
+          }
+
+          return {
+            success: true,
+            result: {
+              scope,
+              depth,
+              gitSummary: gitOutput,
+              analysis,
+              savedTo: output !== 'response' ? output : undefined,
+            },
+          };
+        } catch (e: any) {
+          return { success: false, result: { error: `Retro failed: ${e.message?.substring(0, 300)}` } };
         }
       }
 

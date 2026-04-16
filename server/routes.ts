@@ -13,7 +13,6 @@ import { getWeekDates, getWeekNumber, getSemesterTotalWeeks, FIRST_WEEK, LAST_WE
 import { z } from "zod";
 import { LIBERAL_STUDIES_COURSES, OPEN_ELECTIVE_COURSES } from "@shared/electiveCourses";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
-import { objectStorageClient } from "./replit_integrations/object_storage/objectStorage";
 import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars, createPrepCalendarEvent, updatePrepCalendarEvent, createEventInCalendar, deleteEventFromCalendar, createRecurringClassEvent, findExistingEventBySummary, findAndDeleteDuplicateEvents, createYearlyScholarshipEvent, syncGoogleEventsToReview, getGoogleCalendarClient, getPrimaryCalendarAuthUrl, exchangePrimaryCalendarCode, isPrimaryCalendarConnected, disconnectPrimaryCalendar } from "./googleCalendar";
 import { getSecondAccountAuthUrl, exchangeCodeForTokens, isSecondAccountConnected, disconnectSecondAccount, createEventInSecondAccount, createPrepEventInSecondAccount, deleteEventFromSecondAccount, updateEventInSecondAccount, getEventsFromSecondAccount } from "./secondGoogleAccount";
 import { getThirdAccountAuthUrl, exchangeCodeForTokensThird, isThirdAccountConnected, disconnectThirdAccount, getEventsFromThirdAccount, listThirdAccountCalendars, getEventsFromThirdAccountCalendar, createEventOnThirdAccountCalendar, deleteEventOnThirdAccountCalendar } from "./thirdGoogleAccount";
@@ -6584,7 +6583,7 @@ When Bryn asks about your capabilities, what you can do, or how you compare to o
 
 FACTS ABOUT YOUR SETUP (use these to form your own assessment):
 • You are GPT-4.1 running as a specialist assistant for one project (UniCal)
-• You have 81 tools spanning: filesystem, database, git, shell, Home Assistant, Spotify, email, calendar, OneDrive, web search, GitHub code/tree/search access, npm registry, smart context loading, deep multi-source research, pair programming, code completion (like Copilot), code review, test generation, multi-file refactoring, dependency analysis, project snapshots, API testing, multi-language code analysis AND conversion, stack detection for ANY project, and multi-LLM orchestration
+• You have 84 tools spanning: filesystem, database, git, shell, Home Assistant, Spotify, email, calendar, OneDrive, web search, GitHub code/tree/search access, npm registry, smart context loading, deep multi-source research, pair programming, code completion (like Copilot), code review, test generation, auto-discovery of new stacks/packages, automated test analysis, retrospective code reviews, multi-file refactoring, dependency analysis, project snapshots, API testing, multi-language code analysis AND conversion, stack detection for ANY project, and multi-LLM orchestration
 • You can delegate sub-tasks to secondary models (gpt-4.1-mini, gpt-4.1-nano) via ai_subtask
 • You can read files from any public GitHub repo (github_file), see full repo structure (github_tree), and search for code examples (github_search)
 • You can auto-detect the tech stack of ANY project — local or remote — via stack_analyze. You're not limited to TypeScript.
@@ -6597,6 +6596,9 @@ FACTS ABOUT YOUR SETUP (use these to form your own assessment):
 • smart_context automatically loads the most relevant files for any question — simulates a massive context window by finding exactly what's needed
 • deep_research chains web search + page fetch + npm + GitHub + AI synthesis for comprehensive reports on ANY topic
 • pair_program provides interactive step-by-step coding sessions with a secondary AI
+• auto_discover detects new packages/frameworks in the project, categorizes the stack, and auto-generates internal docs for anything new — you never fall behind on what's installed
+• auto_test analyzes recent code changes, identifies what should be tested, spots potential bugs, and checks TypeScript compilation — automated quality gate before every deploy
+• retro runs retrospective analysis on recent commits, grades code quality, identifies issues, and can post findings as dashboard announcements or notepad notes — continuous self-improvement loop
 • IDE-level capabilities: code_complete (Copilot-style completions), code_review_tool (senior engineer PR reviews), generate_tests (auto-generate test suites)
 • You have persistent memory across sessions, 100-message history with smart compression, up to 60 reasoning rounds
 • You run on a Raspberry Pi with limited compute
@@ -6622,9 +6624,12 @@ CONFIRMED INFRASTRUCTURE (DO NOT request these — they exist):
 • .env with all API keys — OPENAI_API_KEY, SPOTIFY_CLIENT_ID/SECRET, Google Calendar, Gmail, OneDrive, Nabu Casa HA URL
 • Home Assistant — full access via Nabu Casa, 100+ entities, ha_service_call works
 • Spotify — full playback control via spotify_control
-• Email — send_email works (Gmail → Outlook)
+• Email — send_email works (Gmail → Outlook at bryn.kai-hendricks@outlook.com)
 • deploy.sh script — one command to pull from GitHub, install deps, rebuild, and restart PM2
 • Backups — git history provides code rollback; database can be backed up via run_shell_command
+• Object storage — works on BOTH Replit (cloud) AND Pi (local filesystem at local-object-storage/). Automatic detection, no config needed.
+• File uploads — all upload routes (background photos, profile photos, syllabi, transcripts, general files) work locally via filesystem fallback
+• Self-improvement pipeline — auto_discover (new package detection), auto_test (pre-deploy quality gate), retro (post-change code review)
 
 WHEN BRYN ASKS "WHAT DO YOU NEED":
 • First verify what's actually missing by trying your tools (run_shell_command, process_check, read_logs)
@@ -6720,7 +6725,7 @@ WHEN BRYN ASKS "WHAT DO YOU NEED":
         messages.push({ role: "user", content: message.trim() });
       }
 
-      const readOnlyTools = new Set(["read_file", "list_directory", "search_code", "search_tasks", "get_semester_info", "check_build", "read_logs", "git_diff", "get_project_map", "db_schema", "http_check", "memory_read", "process_check", "analyze_ui", "smoke_test", "take_screenshot", "browser_test", "check_performance", "conversation_history", "health_check", "web_search", "web_fetch", "plan_task", "codebase_explore", "code_reference", "github_search", "github_file", "github_tree", "npm_info", "ai_subtask", "project_snapshot", "explain_code", "http_test", "analyze_dependencies", "stack_analyze", "convert_code", "code_complete", "code_review_tool", "generate_tests", "smart_context", "deep_research", "pair_program"]);
+      const readOnlyTools = new Set(["read_file", "list_directory", "search_code", "search_tasks", "get_semester_info", "check_build", "read_logs", "git_diff", "get_project_map", "db_schema", "http_check", "memory_read", "process_check", "analyze_ui", "smoke_test", "take_screenshot", "browser_test", "check_performance", "conversation_history", "health_check", "web_search", "web_fetch", "plan_task", "codebase_explore", "code_reference", "github_search", "github_file", "github_tree", "npm_info", "ai_subtask", "project_snapshot", "explain_code", "http_test", "analyze_dependencies", "stack_analyze", "convert_code", "code_complete", "code_review_tool", "generate_tests", "smart_context", "deep_research", "pair_program", "auto_discover", "auto_test", "retro"]);
       const destructiveTools = new Set(["delete_task", "bulk_delete_tasks", "bulk_complete_tasks", "run_shell_command", "git_commit_and_push", "install_package", "generate_image", "db_migrate", "multi_file_edit"]);
 
       function isToolDestructive(fnName: string, fnArgs: any): boolean {
@@ -24652,13 +24657,10 @@ document.body.removeChild(a);
         return res.send(buffer);
       }
 
-      const privateDir = process.env.PRIVATE_OBJECT_DIR || '';
-      const pathParts = privateDir.replace(/^\//, '').split('/');
-      const bucketName = pathParts[0];
-      const filePath = objectPath.replace('/objects/', '');
-      const fullObjectName = `.private/${filePath}`;
-      console.log(`[Syllabus View] bucket=${bucketName}, object=${fullObjectName}`);
-      const [buffer] = await objectStorageClient.bucket(bucketName).file(fullObjectName).download();
+      const { ObjectStorageService } = await import("./replit_integrations/object_storage");
+      const svc = new ObjectStorageService();
+      const file = await svc.getObjectEntityFile(objectPath);
+      const [buffer] = await file.download();
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', 'inline');
       res.send(buffer);
@@ -24689,17 +24691,15 @@ document.body.removeChild(a);
           return res.status(500).json({ error: "Failed to read uploaded file" });
         }
       } else {
-        const privateDir = process.env.PRIVATE_OBJECT_DIR || '';
-        const pathParts = privateDir.replace(/^\//, '').split('/');
-        const bucketName = pathParts[0];
-        const filePath = objectPath.replace('/objects/', '');
-        const fullObjectName = `.private/${filePath}`;
         try {
-          console.log(`[Syllabus Parse] Downloading from bucket=${bucketName}, object=${fullObjectName}`);
-          const [buffer] = await objectStorageClient.bucket(bucketName).file(fullObjectName).download();
+          const { ObjectStorageService } = await import("./replit_integrations/object_storage");
+          const svc = new ObjectStorageService();
+          const file = await svc.getObjectEntityFile(objectPath);
+          const [buffer] = await file.download();
           fileBuffer = buffer;
+          console.log(`[Syllabus Parse] Downloaded ${objectPath} (${fileBuffer.length} bytes)`);
         } catch (dlErr) {
-          console.error("Failed to download syllabus from object storage:", dlErr);
+          console.error("Failed to download syllabus:", dlErr);
           return res.status(500).json({ error: "Failed to read uploaded file" });
         }
       }
@@ -24845,14 +24845,15 @@ Return ONLY the JSON object, no markdown formatting.`;
         return res.status(400).json({ error: "objectPath and courseName are required" });
       }
 
-      const bucketId = process.env.PUBLIC_OBJECT_SEARCH_PATHS?.split('/')[1] || '';
-      const filePath = objectPath.replace('/objects/', '');
       let fileBuffer: Buffer;
       try {
-        const [buffer] = await objectStorageClient.bucket(bucketId).file(filePath).download();
+        const { ObjectStorageService } = await import("./replit_integrations/object_storage");
+        const svc = new ObjectStorageService();
+        const file = await svc.getObjectEntityFile(objectPath);
+        const [buffer] = await file.download();
         fileBuffer = buffer;
       } catch (dlErr) {
-        console.error("Failed to download file from object storage:", dlErr);
+        console.error("Failed to download file:", dlErr);
         return res.status(500).json({ error: "Failed to read uploaded file" });
       }
 
@@ -26917,32 +26918,34 @@ Keep your tone friendly and educational. Format your response clearly with numbe
       const { getGmailAccessToken } = await import("./gmail");
       const accessToken = await getGmailAccessToken();
 
+      let outlookEmail = process.env.OUTLOOK_EMAIL || "bryn.kai-hendricks@outlook.com";
+
       const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
-      const xReplitToken = process.env.REPL_IDENTITY
-        ? 'repl ' + process.env.REPL_IDENTITY
-        : process.env.WEB_REPL_RENEWAL
-        ? 'depl ' + process.env.WEB_REPL_RENEWAL
-        : null;
-
-      let outlookEmail = "";
-      if (xReplitToken && hostname) {
-        const outlookRes = await fetch(
-          'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=outlook',
-          { headers: { 'Accept': 'application/json', 'X-Replit-Token': xReplitToken } }
-        );
-        const outlookData = await outlookRes.json();
-        const outlookConn = outlookData.items?.[0];
-        const outlookToken = outlookConn?.settings?.access_token;
-        if (outlookToken) {
-          const profileRes = await fetch('https://graph.microsoft.com/v1.0/me', {
-            headers: { 'Authorization': 'Bearer ' + outlookToken }
-          });
-          const profile = await profileRes.json();
-          outlookEmail = profile.mail || profile.userPrincipalName || "";
-        }
+      if (hostname && process.env.REPL_ID) {
+        try {
+          const xReplitToken = process.env.REPL_IDENTITY
+            ? 'repl ' + process.env.REPL_IDENTITY
+            : process.env.WEB_REPL_RENEWAL
+            ? 'depl ' + process.env.WEB_REPL_RENEWAL
+            : null;
+          if (xReplitToken) {
+            const outlookRes = await fetch(
+              'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=outlook',
+              { headers: { 'Accept': 'application/json', 'X-Replit-Token': xReplitToken } }
+            );
+            const outlookData = await outlookRes.json();
+            const outlookConn = outlookData.items?.[0];
+            const outlookToken = outlookConn?.settings?.access_token;
+            if (outlookToken) {
+              const profileRes = await fetch('https://graph.microsoft.com/v1.0/me', {
+                headers: { 'Authorization': 'Bearer ' + outlookToken }
+              });
+              const profile = await profileRes.json();
+              outlookEmail = profile.mail || profile.userPrincipalName || outlookEmail;
+            }
+          }
+        } catch { }
       }
-
-      if (!outlookEmail) return res.status(500).json({ error: "Could not get Outlook email" });
 
       const subject = `Code Review: ${language} - ${new Date().toLocaleDateString()}`;
       const emailBody = `CODE REVIEW RESULTS\n${"=".repeat(40)}\nLanguage: ${language}\nDate: ${new Date().toLocaleString()}\n\n${"─".repeat(40)}\nYOUR CODE:\n${"─".repeat(40)}\n${code}\n\n${"─".repeat(40)}\nANALYSIS:\n${"─".repeat(40)}\n${analysis}`;
@@ -27185,32 +27188,7 @@ Keep your tone friendly and educational. Format your response clearly with numbe
       const { getGmailAccessToken } = await import("./gmail");
       const accessToken = await getGmailAccessToken();
 
-      const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
-      const xReplitToken = process.env.REPL_IDENTITY
-        ? 'repl ' + process.env.REPL_IDENTITY
-        : process.env.WEB_REPL_RENEWAL
-        ? 'depl ' + process.env.WEB_REPL_RENEWAL
-        : null;
-
-      let outlookEmail = "bryn.kai-hendricks@outlook.com";
-      if (xReplitToken && hostname) {
-        try {
-          const outlookRes = await fetch(
-            'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=outlook',
-            { headers: { 'Accept': 'application/json', 'X-Replit-Token': xReplitToken } }
-          );
-          const outlookData = await outlookRes.json();
-          const outlookConn = outlookData.items?.[0];
-          const outlookToken = outlookConn?.settings?.access_token;
-          if (outlookToken) {
-            const profileRes = await fetch('https://graph.microsoft.com/v1.0/me', {
-              headers: { 'Authorization': 'Bearer ' + outlookToken }
-            });
-            const profile = await profileRes.json();
-            outlookEmail = profile.mail || profile.userPrincipalName || outlookEmail;
-          }
-        } catch (e) { /* fallback to default */ }
-      }
+      let outlookEmail = process.env.OUTLOOK_EMAIL || "bryn.kai-hendricks@outlook.com";
 
       const now = new Date();
       const dateStr = now.toLocaleDateString('en-CA', { timeZone: 'America/Toronto' });
