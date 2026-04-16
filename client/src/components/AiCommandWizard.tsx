@@ -1085,7 +1085,14 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       justifyContent: position ? 'flex-start' : 'center',
       background: 'rgba(0,0,0,0.5)',
       backdropFilter: 'blur(4px)',
-    }} data-testid="ai-command-overlay" onClick={(e) => { if (e.target === e.currentTarget && !resizeJustEndedRef.current && !isDragging) onClose(); }}>
+    }} data-testid="ai-command-overlay" onPointerDown={(e) => {
+      if (e.target === e.currentTarget) (e.currentTarget as any)._overlayPointerDown = Date.now();
+    }} onClick={(e) => {
+      if (e.target !== e.currentTarget || resizeJustEndedRef.current || isDragging) return;
+      const downTime = (e.currentTarget as any)._overlayPointerDown;
+      if (!downTime || Date.now() - downTime > 400) return;
+      onClose();
+    }}>
       <div ref={panelRef} style={panelStyle} data-testid="ai-command-panel">
         {!expanded && (
           <>
