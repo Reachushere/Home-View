@@ -32037,13 +32037,20 @@ export default function Dashboard() {
                   const eightAmH = gridSizes.timeSlotHeights[8] || gridSizes.timeSlotHeight;
                   const baseRowHeight = gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight;
                   const rowHeight = getEffectiveRowHeight(hour);
+                  const _nowETCell = toET(new Date());
+                  const _todayStrCell = `${_nowETCell.getFullYear()}-${String(_nowETCell.getMonth() + 1).padStart(2, '0')}-${String(_nowETCell.getDate()).padStart(2, '0')}`;
+                  const _hourStrCell = `${_todayStrCell}T${String(hour).padStart(2, '0')}:00`;
+                  const _hourlyEntryCell = weatherData?.hourly?.find(h => h.time === _hourStrCell);
+                  const _wcCell = _hourlyEntryCell?.weatherCode ?? -1;
+                  const _isSevereCell = _wcCell >= 95 || _wcCell === 45 || _wcCell === 48 || _wcCell === 65 || _wcCell === 67 || _wcCell === 82 || _wcCell === 75 || _wcCell === 86;
+                  const _cellHasWeatherAlert = weatherAlerts.length > 0 && _isSevereCell;
                   return (
                   <div 
                     key={hour} 
                     className={`grid relative group/row flex-shrink-0`}
                     style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${rowHeight}px`, minHeight: `${rowHeight}px`, overflow: 'hidden', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '12px' : undefined, borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '12px' : undefined, backgroundColor: '#faf8f5' }}
                   >
-                    <div className={`text-[10px] font-medium tracking-wide flex flex-col items-center justify-center relative ${isCurrentHour && blinkSettings.todayColumnBlink ? "animate-today-time-cell" : ""}`} style={{ backgroundColor: isCurrentHour && blinkSettings.todayColumnBlink ? undefined : (isCurrentHour ? colorSettings.todayCurrentHourCellBackground : colorSettings.headerBar), color: 'white', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '8px' : undefined, borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined, borderBottom: hourIdx < timeSlots.length - 1 ? '1px dotted rgba(255,255,255,0.25)' : undefined, animationDelay: isCurrentHour && blinkSettings.todayColumnBlink ? `-${Date.now() % 7000}ms` : undefined, padding: '1px 2px' }}>
+                    <div className={`text-[10px] font-medium tracking-wide flex flex-col items-center justify-center relative ${isCurrentHour && blinkSettings.todayColumnBlink ? "animate-today-time-cell" : ""} ${_cellHasWeatherAlert ? 'time-cell-alert-border' : ''}`} style={{ backgroundColor: isCurrentHour && blinkSettings.todayColumnBlink ? undefined : (isCurrentHour ? colorSettings.todayCurrentHourCellBackground : colorSettings.headerBar), color: 'white', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '8px' : undefined, borderTop: hour === 12 ? '2.5px solid rgba(150,150,150,0.5)' : undefined, borderBottom: hourIdx < timeSlots.length - 1 ? '1px dotted rgba(255,255,255,0.25)' : undefined, animationDelay: isCurrentHour && blinkSettings.todayColumnBlink ? `-${Date.now() % 7000}ms` : undefined, padding: '1px 2px', ...(_cellHasWeatherAlert ? { boxShadow: 'inset 0 0 0 2px rgba(255,60,60,0.8)' } : {}) }}>
                       <span style={{ position: 'absolute', right: '7px', top: '50%', transform: 'translateY(-50%)', fontSize: '9px', lineHeight: 1, letterSpacing: '0.3px' }} data-testid={`time-label-${hour}`}>{hour === 0 || hour === 24 ? '12AM' : hour === 12 ? '12PM' : hour > 12 ? `${hour - 12}PM` : `${hour}AM`}</span>
                       {(() => {
                         const nowET = toET(new Date());
@@ -32060,7 +32067,7 @@ export default function Dashboard() {
                         const isSevere = isThunder || isFog || wc === 65 || wc === 67 || wc === 82 || wc === 75 || wc === 86;
                         const hasAlert = weatherAlerts.length > 0;
                         return (
-                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1, gap: '1px', marginRight: '29px', position: 'relative', ...(hasAlert && isSevere ? { border: '2px solid rgba(255,60,60,0.8)', borderRadius: '4px', padding: '1px 3px' } : {}) }} className={hasAlert && isSevere ? 'time-cell-alert-border' : ''} data-testid={`weather-cell-${hour}`}>
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1, gap: '1px', marginRight: '29px', position: 'relative' }} data-testid={`weather-cell-${hour}`}>
                             {isThunder && <div className="time-cell-lightning" style={{ position: 'absolute', inset: '-4px -8px', borderRadius: '4px', zIndex: 0, animationDelay: `${(hour * 1.3) % 6}s` }} />}
                             {isFog && <div style={{ position: 'absolute', inset: '-4px -8px', borderRadius: '4px', zIndex: 0, background: 'linear-gradient(180deg, rgba(180,185,200,0.4) 0%, rgba(160,170,190,0.25) 100%)', animation: 'timeCellFogPulse 4s ease-in-out infinite', animationDelay: `${(hour * 0.7) % 4}s` }} />}
                             <span style={{ fontSize: '16px', lineHeight: 1, filter: `drop-shadow(0 0 3px rgba(255,255,255,0.3))${isThunder ? ' drop-shadow(0 0 6px rgba(255,255,100,0.6))' : ''}`, position: 'relative', zIndex: 2 }}>{getWmoEmoji(wc, isDayHour)}</span>
