@@ -1,0 +1,261 @@
+
+Logs
+Home Assistant Core
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.14/asyncio/events.py", line 94, in _run
+    self._context.run(self._callback, *self._args)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.14/asyncio/selector_events.py", line 1255, in _read_ready
+    self._protocol.datagram_received(data, addr)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/config/custom_components/localtuya/discovery.py", line 67, in datagram_received
+    data = data.decode()
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xed in position 4: invalid continuation byte
+2026-04-16 10:47:24.337 ERROR (MainThread) [homeassistant] Error doing job: Exception in callback _SelectorDatagramTransport._read_ready() (task: None)
+Traceback (most recent call last):
+  File "/config/custom_components/localtuya/discovery.py", line 65, in datagram_received
+    data = decrypt_udp(data)
+  File "/config/custom_components/localtuya/discovery.py", line 30, in decrypt_udp
+    return _unpad(decryptor.update(message) + decryptor.finalize()).decode()
+                                              ~~~~~~~~~~~~~~~~~~^^
+ValueError: The length of the provided data is not a multiple of the block length.
+During handling of the above exception, another exception occurred:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.14/asyncio/events.py", line 94, in _run
+    self._context.run(self._callback, *self._args)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.14/asyncio/selector_events.py", line 1255, in _read_ready
+    self._protocol.datagram_received(data, addr)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/config/custom_components/localtuya/discovery.py", line 67, in datagram_received
+    data = data.decode()
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xb1 in position 1: invalid start byte
+2026-04-16 10:47:25.120 ERROR (MainThread) [homeassistant] Error doing job: Exception in callback _SelectorDatagramTransport._read_ready() (task: None)
+Traceback (most recent call last):
+  File "/config/custom_components/localtuya/discovery.py", line 65, in datagram_received
+    data = decrypt_udp(data)
+  File "/config/custom_components/localtuya/discovery.py", line 30, in decrypt_udp
+    return _unpad(decryptor.update(message) + decryptor.finalize()).decode()
+                                              ~~~~~~~~~~~~~~~~~~^^
+ValueError: The length of the provided data is not a multiple of the block length.
+During handling of the above exception, another exception occurred:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.14/asyncio/events.py", line 94, in _run
+    self._context.run(self._callback, *self._args)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.14/asyncio/selector_events.py", line 1255, in _read_ready
+    self._protocol.datagram_received(data, addr)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/config/custom_components/localtuya/discovery.py", line 67, in datagram_received
+    data = data.decode()
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xa7 in position 0: invalid start byte
+2026-04-16 10:47:25.553 ERROR (MainThread) [homeassistant] Error doing job: Exception in callback _SelectorDatagramTransport._read_ready() (task: None)
+Traceback (most recent call last):
+  File "/config/custom_components/localtuya/discovery.py", line 65, in datagram_received
+    data = decrypt_udp(data)
+  File "/config/custom_components/localtuya/discovery.py", line 30, in decrypt_udp
+    return _unpad(decryptor.update(message) + decryptor.finalize()).decode()
+                                              ~~~~~~~~~~~~~~~~~~^^
+ValueError: The length of the provided data is not a multiple of the block length.
+During handling of the above exception, another exception occurred:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.14/asyncio/events.py", line 94, in _run
+    self._context.run(self._callback, *self._args)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.14/asyncio/selector_events.py", line 1255, in _read_ready
+    self._protocol.datagram_received(data, addr)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/config/custom_components/localtuya/discovery.py", line 67, in datagram_received
+    data = data.decode()
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xd2 in position 1: invalid continuation byte
+2026-04-16 10:47:26.412 ERROR (MainThread) [homeassistant] Error doing job: Exception in callback _SelectorDatagramTransport._read_ready() (task: None)
+Traceback (most recent call last):
+  File "/config/custom_components/localtuya/discovery.py", line 65, in datagram_received
+    data = decrypt_udp(data)
+  File "/config/custom_components/localtuya/discovery.py", line 30, in decrypt_udp
+    return _unpad(decryptor.update(message) + decryptor.finalize()).decode()
+                                              ~~~~~~~~~~~~~~~~~~^^
+ValueError: The length of the provided data is not a multiple of the block length.
+During handling of the above exception, another exception occurred:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.14/asyncio/events.py", line 94, in _run
+    self._context.run(self._callback, *self._args)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.14/asyncio/selector_events.py", line 1255, in _read_ready
+    self._protocol.datagram_received(data, addr)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/config/custom_components/localtuya/discovery.py", line 67, in datagram_received
+    data = data.decode()
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xf0 in position 0: invalid continuation byte
+2026-04-16 10:47:26.498 ERROR (MainThread) [homeassistant] Error doing job: Exception in callback _SelectorDatagramTransport._read_ready() (task: None)
+Traceback (most recent call last):
+  File "/config/custom_components/localtuya/discovery.py", line 65, in datagram_received
+    data = decrypt_udp(data)
+  File "/config/custom_components/localtuya/discovery.py", line 30, in decrypt_udp
+    return _unpad(decryptor.update(message) + decryptor.finalize()).decode()
+                                              ~~~~~~~~~~~~~~~~~~^^
+ValueError: The length of the provided data is not a multiple of the block length.
+During handling of the above exception, another exception occurred:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.14/asyncio/events.py", line 94, in _run
+    self._context.run(self._callback, *self._args)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.14/asyncio/selector_events.py", line 1255, in _read_ready
+    self._protocol.datagram_received(data, addr)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/config/custom_components/localtuya/discovery.py", line 67, in datagram_received
+    data = data.decode()
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xe7 in position 0: invalid continuation byte
+2026-04-16 10:47:26.503 ERROR (MainThread) [homeassistant] Error doing job: Exception in callback _SelectorDatagramTransport._read_ready() (task: None)
+Traceback (most recent call last):
+  File "/config/custom_components/localtuya/discovery.py", line 65, in datagram_received
+    data = decrypt_udp(data)
+  File "/config/custom_components/localtuya/discovery.py", line 30, in decrypt_udp
+    return _unpad(decryptor.update(message) + decryptor.finalize()).decode()
+                                              ~~~~~~~~~~~~~~~~~~^^
+ValueError: The length of the provided data is not a multiple of the block length.
+During handling of the above exception, another exception occurred:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.14/asyncio/events.py", line 94, in _run
+    self._context.run(self._callback, *self._args)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.14/asyncio/selector_events.py", line 1255, in _read_ready
+    self._protocol.datagram_received(data, addr)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/config/custom_components/localtuya/discovery.py", line 67, in datagram_received
+    data = data.decode()
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xb1 in position 0: invalid start byte
+2026-04-16 10:47:26.640 ERROR (MainThread) [homeassistant] Error doing job: Exception in callback _SelectorDatagramTransport._read_ready() (task: None)
+Traceback (most recent call last):
+  File "/config/custom_components/localtuya/discovery.py", line 65, in datagram_received
+    data = decrypt_udp(data)
+  File "/config/custom_components/localtuya/discovery.py", line 30, in decrypt_udp
+    return _unpad(decryptor.update(message) + decryptor.finalize()).decode()
+                                              ~~~~~~~~~~~~~~~~~~^^
+ValueError: The length of the provided data is not a multiple of the block length.
+During handling of the above exception, another exception occurred:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.14/asyncio/events.py", line 94, in _run
+    self._context.run(self._callback, *self._args)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.14/asyncio/selector_events.py", line 1255, in _read_ready
+    self._protocol.datagram_received(data, addr)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/config/custom_components/localtuya/discovery.py", line 67, in datagram_received
+    data = data.decode()
+UnicodeDecodeError: 'utf-8' codec can't decode bytes in position 2-3: invalid continuation byte
+2026-04-16 10:47:26.653 ERROR (MainThread) [homeassistant] Error doing job: Exception in callback _SelectorDatagramTransport._read_ready() (task: None)
+Traceback (most recent call last):
+  File "/config/custom_components/localtuya/discovery.py", line 65, in datagram_received
+    data = decrypt_udp(data)
+  File "/config/custom_components/localtuya/discovery.py", line 30, in decrypt_udp
+    return _unpad(decryptor.update(message) + decryptor.finalize()).decode()
+                                              ~~~~~~~~~~~~~~~~~~^^
+ValueError: The length of the provided data is not a multiple of the block length.
+During handling of the above exception, another exception occurred:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.14/asyncio/events.py", line 94, in _run
+    self._context.run(self._callback, *self._args)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.14/asyncio/selector_events.py", line 1255, in _read_ready
+    self._protocol.datagram_received(data, addr)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/config/custom_components/localtuya/discovery.py", line 67, in datagram_received
+    data = data.decode()
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xec in position 0: invalid continuation byte
+2026-04-16 10:47:26.828 ERROR (MainThread) [homeassistant] Error doing job: Exception in callback _SelectorDatagramTransport._read_ready() (task: None)
+Traceback (most recent call last):
+  File "/config/custom_components/localtuya/discovery.py", line 65, in datagram_received
+    data = decrypt_udp(data)
+  File "/config/custom_components/localtuya/discovery.py", line 30, in decrypt_udp
+    return _unpad(decryptor.update(message) + decryptor.finalize()).decode()
+                                              ~~~~~~~~~~~~~~~~~~^^
+ValueError: The length of the provided data is not a multiple of the block length.
+During handling of the above exception, another exception occurred:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.14/asyncio/events.py", line 94, in _run
+    self._context.run(self._callback, *self._args)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.14/asyncio/selector_events.py", line 1255, in _read_ready
+    self._protocol.datagram_received(data, addr)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/config/custom_components/localtuya/discovery.py", line 67, in datagram_received
+    data = data.decode()
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0x99 in position 0: invalid start byte
+2026-04-16 10:47:27.316 ERROR (MainThread) [homeassistant] Error doing job: Exception in callback _SelectorDatagramTransport._read_ready() (task: None)
+Traceback (most recent call last):
+  File "/config/custom_components/localtuya/discovery.py", line 65, in datagram_received
+    data = decrypt_udp(data)
+  File "/config/custom_components/localtuya/discovery.py", line 30, in decrypt_udp
+    return _unpad(decryptor.update(message) + decryptor.finalize()).decode()
+                                              ~~~~~~~~~~~~~~~~~~^^
+ValueError: The length of the provided data is not a multiple of the block length.
+During handling of the above exception, another exception occurred:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.14/asyncio/events.py", line 94, in _run
+    self._context.run(self._callback, *self._args)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.14/asyncio/selector_events.py", line 1255, in _read_ready
+    self._protocol.datagram_received(data, addr)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/config/custom_components/localtuya/discovery.py", line 67, in datagram_received
+    data = data.decode()
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xab in position 0: invalid start byte
+2026-04-16 10:47:27.515 ERROR (MainThread) [homeassistant] Error doing job: Exception in callback _SelectorDatagramTransport._read_ready() (task: None)
+Traceback (most recent call last):
+  File "/config/custom_components/localtuya/discovery.py", line 65, in datagram_received
+    data = decrypt_udp(data)
+  File "/config/custom_components/localtuya/discovery.py", line 30, in decrypt_udp
+    return _unpad(decryptor.update(message) + decryptor.finalize()).decode()
+                                              ~~~~~~~~~~~~~~~~~~^^
+ValueError: The length of the provided data is not a multiple of the block length.
+During handling of the above exception, another exception occurred:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.14/asyncio/events.py", line 94, in _run
+    self._context.run(self._callback, *self._args)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.14/asyncio/selector_events.py", line 1255, in _read_ready
+    self._protocol.datagram_received(data, addr)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/config/custom_components/localtuya/discovery.py", line 67, in datagram_received
+    data = data.decode()
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0x9d in position 0: invalid start byte
+2026-04-16 10:47:27.724 ERROR (MainThread) [homeassistant] Error doing job: Exception in callback _SelectorDatagramTransport._read_ready() (task: None)
+Traceback (most recent call last):
+  File "/config/custom_components/localtuya/discovery.py", line 65, in datagram_received
+    data = decrypt_udp(data)
+  File "/config/custom_components/localtuya/discovery.py", line 30, in decrypt_udp
+    return _unpad(decryptor.update(message) + decryptor.finalize()).decode()
+                                              ~~~~~~~~~~~~~~~~~~^^
+ValueError: The length of the provided data is not a multiple of the block length.
+During handling of the above exception, another exception occurred:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.14/asyncio/events.py", line 94, in _run
+    self._context.run(self._callback, *self._args)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.14/asyncio/selector_events.py", line 1255, in _read_ready
+    self._protocol.datagram_received(data, addr)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/config/custom_components/localtuya/discovery.py", line 67, in datagram_received
+    data = data.decode()
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xa1 in position 0: invalid start byte
+2026-04-16 10:47:27.813 ERROR (MainThread) [homeassistant] Error doing job: Exception in callback _SelectorDatagramTransport._read_ready() (task: None)
+Traceback (most recent call last):
+  File "/config/custom_components/localtuya/discovery.py", line 65, in datagram_received
+    data = decrypt_udp(data)
+  File "/config/custom_components/localtuya/discovery.py", line 30, in decrypt_udp
+    return _unpad(decryptor.update(message) + decryptor.finalize()).decode()
+                                              ~~~~~~~~~~~~~~~~~~^^
+ValueError: The length of the provided data is not a multiple of the block length.
+During handling of the above exception, another exception occurred:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.14/asyncio/events.py", line 94, in _run
+    self._context.run(self._callback, *self._args)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.14/asyncio/selector_events.py", line 1255, in _read_ready
+    self._protocol.datagram_received(data, addr)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/config/custom_components/localtuya/discovery.py", line 67, in datagram_received
+    data = data.decode()
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xed in position 0: invalid continuation byte
+ Live
