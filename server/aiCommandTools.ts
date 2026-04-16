@@ -42,6 +42,24 @@ function haWebSocket(msgType: string, msgData?: Record<string, any>, timeoutMs =
   });
 }
 
+async function openaiRetryUtil<T>(fn: () => Promise<T>, maxRetries = 3): Promise<T> {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (err: any) {
+      if (err?.status === 429 && attempt < maxRetries - 1) {
+        const retryAfter = parseFloat(err?.headers?.['retry-after'] || '0');
+        const waitMs = retryAfter > 0 ? retryAfter * 1000 : Math.min(2000 * (attempt + 1), 10000);
+        console.log(`[AI Tools] Rate limited (429), retrying in ${Math.round(waitMs)}ms (attempt ${attempt + 1}/${maxRetries})`);
+        await new Promise(r => setTimeout(r, waitMs));
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw new Error('openaiRetryUtil exhausted');
+}
+
 const pendingConfirmations = new Map<string, { name: string; arguments: any; createdAt: number }>();
 const CONFIRM_TTL_MS = 5 * 60 * 1000;
 
@@ -3244,14 +3262,14 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           const subtaskPrompt = input
             ? `${task}\n\nInput:\n${input.substring(0, 10000)}`
             : task;
-          const completion = await openai.chat.completions.create({
+          const completion = await openaiRetryUtil(() => openai.chat.completions.create({
             model,
             messages: [
               { role: "system", content: "You are a helpful coding assistant. Be concise, precise, and output-focused. Return code or analysis directly without preamble." },
               { role: "user", content: subtaskPrompt },
             ],
             max_completion_tokens: maxTokens,
-          });
+          }));
           const reply = completion.choices[0]?.message?.content || '';
           const usage = completion.usage;
           return {
@@ -3424,14 +3442,14 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           }
 
           const sourceSummary = sources.map(s => `[${s.type}]: ${JSON.stringify(s.data).substring(0, 2000)}`).join('\n\n');
-          const synthesis = await openai.chat.completions.create({
+          const synthesis = await openaiRetryUtil(() => openai.chat.completions.create({
             model: 'gpt-4.1-mini',
             messages: [
               { role: 'system', content: 'You are a senior technical researcher. Synthesize the following sources into a comprehensive, practical reference. Include: overview, key concepts, code examples, best practices, and gotchas. Be concise but thorough.' },
               { role: 'user', content: `Research topic: ${topic}${goal ? `\nGoal: ${goal}` : ''}\n\nSources:\n${sourceSummary}` },
             ],
             max_completion_tokens: 2500,
-          });
+          }));
 
           return {
             success: true,
@@ -3474,14 +3492,14 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
 
           const OpenAI = (await import("openai")).default;
           const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-          const completion = await openai.chat.completions.create({
+          const completion = await openaiRetryUtil(() => openai.chat.completions.create({
             model: 'gpt-4.1-mini',
             messages: [
               { role: 'system', content: `You are a senior developer pair-programming with Bryn. ${approachPrompts[approach] || approachPrompts['explain-first']} Be thorough but practical. Use TypeScript/React/Express patterns matching this project's conventions.${fileContext}` },
               { role: 'user', content: `Problem: ${problem}${currentCode ? `\n\nCurrent code:\n\`\`\`\n${currentCode.substring(0, 5000)}\n\`\`\`` : ''}` },
             ],
             max_completion_tokens: 3000,
-          });
+          }));
 
           return {
             success: true,
@@ -3515,14 +3533,14 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           }
           const OpenAI = (await import("openai")).default;
           const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-          const completion = await openai.chat.completions.create({
+          const completion = await openaiRetryUtil(() => openai.chat.completions.create({
             model: 'gpt-4.1-mini',
             messages: [
               { role: 'system', content: `You are an expert code completion engine. Generate the most likely continuation of the given code. Match the existing style, patterns, and conventions exactly. Output ONLY the completion code — no explanation, no markdown fences, no preamble. Max ${maxLines} lines.${fileContext}` },
               { role: 'user', content: `${instruction}\n\nCode to complete:\n${code.substring(code.length - 3000)}` },
             ],
             max_completion_tokens: Math.min(maxLines * 50, 2000),
-          });
+          }));
           return {
             success: true,
             result: {
@@ -3551,14 +3569,14 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
             style: 'Focus on naming conventions, code organization, DRY violations, dead code, and readability.',
             all: 'Review for bugs, security, performance, AND style issues.',
           };
-          const completion = await openai.chat.completions.create({
+          const completion = await openaiRetryUtil(() => openai.chat.completions.create({
             model: 'gpt-4.1-mini',
             messages: [
               { role: 'system', content: `You are a senior engineer doing a thorough code review. ${focusInstructions[focus] || focusInstructions.all} For each issue, provide: severity (critical/warning/info), the problematic line/section, what's wrong, and the fix. Be specific and actionable.` },
               { role: 'user', content: `Review this ${language} code from ${filePath}:\n\n\`\`\`${language}\n${code.substring(0, 8000)}\n\`\`\`` },
             ],
             max_completion_tokens: 2000,
-          });
+          }));
           return {
             success: true,
             result: {
@@ -3586,14 +3604,14 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
             thorough: 'Write tests for happy path, error handling, and boundary conditions. 8-15 test cases.',
             'edge-cases': 'Write tests focusing on edge cases, race conditions, and unusual inputs. Include property-based tests if applicable. 15-25 test cases.',
           };
-          const completion = await openai.chat.completions.create({
+          const completion = await openaiRetryUtil(() => openai.chat.completions.create({
             model: 'gpt-4.1-mini',
             messages: [
               { role: 'system', content: `You are a senior test engineer. Generate complete, ready-to-run ${framework} test files. Include proper imports, setup/teardown, mocks where needed, and descriptive test names. ${coverageInstructions[coverage] || coverageInstructions.thorough} Output ONLY the test file code in a code block.` },
               { role: 'user', content: `Generate ${framework} tests for this code${filePath ? ` (from ${filePath})` : ''}:\n\n\`\`\`\n${code.substring(0, 8000)}\n\`\`\`` },
             ],
             max_completion_tokens: 3000,
-          });
+          }));
           return {
             success: true,
             result: {
@@ -3630,14 +3648,14 @@ Provide:
 2. Brief notes on key differences/adaptations (3-5 bullet points)
 3. Any dependencies needed in the target environment`;
 
-          const completion = await openai.chat.completions.create({
+          const completion = await openaiRetryUtil(() => openai.chat.completions.create({
             model: 'gpt-4.1-mini',
             messages: [
               { role: 'system', content: `You are an expert code translator. You convert between any programming languages and frameworks with perfect accuracy. Output clean, idiomatic ${to} code. Include type annotations where applicable.` },
               { role: 'user', content: prompt },
             ],
             max_completion_tokens: 3000,
-          });
+          }));
           return {
             success: true,
             result: {
@@ -3799,14 +3817,14 @@ Provide:
             const OpenAI = (await import("openai")).default;
             const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
             const configSummary = Object.entries(fileContents).map(([f, c]) => `--- ${f} ---\n${c}`).join('\n\n').substring(0, 8000);
-            const completion = await openai.chat.completions.create({
+            const completion = await openaiRetryUtil(() => openai.chat.completions.create({
               model: 'gpt-4.1-nano',
               messages: [
                 { role: 'system', content: 'You are a senior architect. Analyze these config files and provide a concise architecture summary. Include: 1) Tech stack, 2) Project structure pattern, 3) Entry points, 4) Build/dev commands, 5) Key patterns/conventions. Be concise — max 500 words.' },
                 { role: 'user', content: configSummary },
               ],
               max_completion_tokens: 800,
-            });
+            }));
             analysis.architectureSummary = completion.choices[0]?.message?.content || '';
           }
 
@@ -3958,14 +3976,14 @@ ${question ? `5. **Specific answer**: ${question}` : ''}
 
 Be concise and practical.`;
 
-          const completion = await openai.chat.completions.create({
+          const completion = await openaiRetryUtil(() => openai.chat.completions.create({
             model: 'gpt-4.1-mini',
             messages: [
               { role: 'system', content: 'You are a polyglot code analyst. You understand every programming language and framework. Be concise, precise, and practical. Focus on actionable insights.' },
               { role: 'user', content: prompt },
             ],
             max_completion_tokens: 2000,
-          });
+          }));
           return {
             success: true,
             result: {
@@ -4294,14 +4312,14 @@ Be concise and practical.`;
 3. Common gotchas/tips (3-5 items)
 4. How it relates to TypeScript/React/Express/PostgreSQL if applicable
 Be practical and code-focused. Use real syntax.`;
-            const completion = await openai.chat.completions.create({
+            const completion = await openaiRetryUtil(() => openai.chat.completions.create({
               model: 'gpt-4.1-mini',
               messages: [
                 { role: 'system', content: 'You are a polyglot programming expert. Provide concise, accurate, code-heavy reference docs for any language, framework, or library. Cover patterns that a senior developer would need.' },
                 { role: 'user', content: genPrompt },
               ],
               max_completion_tokens: 1500,
-            });
+            }));
             const generated = completion.choices[0]?.message?.content || '';
             return { success: true, result: { found: true, source: 'ai-generated', topic, reference: generated, note: 'Generated on-the-fly — not from built-in cache. Verify critical details with web_search if needed.' } };
           } catch {
@@ -4525,14 +4543,14 @@ Be practical and code-focused. Use real syntax.`;
               try {
                 const OpenAI = (await import("openai")).default;
                 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-                const completion = await openai.chat.completions.create({
+                const completion = await openaiRetryUtil(() => openai.chat.completions.create({
                   model: 'gpt-4.1-nano',
                   messages: [
                     { role: 'system', content: 'Generate a concise internal reference doc (max 200 words) for a developer. Include: what it does, key API/functions, common patterns, gotchas.' },
                     { role: 'user', content: `Package: ${dep} (version ${allDeps[dep]})` },
                   ],
                   max_completion_tokens: 500,
-                });
+                }));
                 generatedDocs.push(`### ${dep}\n${completion.choices[0]?.message?.content || 'No docs generated'}`);
               } catch {}
             }
@@ -4614,14 +4632,14 @@ Be practical and code-focused. Use real syntax.`;
 
           const OpenAI = (await import("openai")).default;
           const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-          const completion = await openai.chat.completions.create({
+          const completion = await openaiRetryUtil(() => openai.chat.completions.create({
             model: 'gpt-4.1-mini',
             messages: [
               { role: 'system', content: `You are a test engineer. Generate a ${detectType} test analysis for the given code files. Don't generate full test files — instead provide: 1) What should be tested (specific functions/routes/components), 2) Edge cases to cover, 3) Potential bugs or regressions spotted, 4) Test coverage estimate (%). Be concise and actionable.` },
               { role: 'user', content: `Files to analyze:\n${fileContents.join('\n\n---\n\n')}` },
             ],
             max_completion_tokens: 2000,
-          });
+          }));
 
           let buildCheck = '';
           try {
@@ -4681,14 +4699,14 @@ Be practical and code-focused. Use real syntax.`;
           if (depth === 'deep' && diffContent) {
             const OpenAI = (await import("openai")).default;
             const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-            const completion = await openai.chat.completions.create({
+            const completion = await openaiRetryUtil(() => openai.chat.completions.create({
               model: 'gpt-4.1-mini',
               messages: [
                 { role: 'system', content: 'You are a senior code reviewer. Analyze this diff and provide: 1) Summary of changes, 2) Code quality assessment (1-10), 3) Potential issues (bugs, security, performance), 4) Missing error handling, 5) Improvement suggestions. Be concise and brutally honest.' },
                 { role: 'user', content: `Git info:\n${gitOutput}\n\nDiff:\n${diffContent}` },
               ],
               max_completion_tokens: 2000,
-            });
+            }));
             analysis = completion.choices[0]?.message?.content || '';
           } else {
             const lines = diffContent.split('\n');

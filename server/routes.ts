@@ -6698,11 +6698,32 @@ WHEN BRYN ASKS "WHAT DO YOU NEED":
       const OpenAI = (await import("openai")).default;
       const openai = new OpenAI({ apiKey: config.apiKey });
 
+      async function openaiRetry<T>(fn: () => Promise<T>, maxRetries = 3): Promise<T> {
+        for (let attempt = 0; attempt < maxRetries; attempt++) {
+          try {
+            return await fn();
+          } catch (err: any) {
+            if (err?.status === 429 && attempt < maxRetries - 1) {
+              const retryAfter = parseFloat(err?.headers?.['retry-after'] || '0');
+              const waitMs = retryAfter > 0 ? retryAfter * 1000 : Math.min(2000 * (attempt + 1), 10000);
+              console.log(`[AI] Rate limited (429), retrying in ${Math.round(waitMs)}ms (attempt ${attempt + 1}/${maxRetries})`);
+              if (stream && !res.headersSent) {
+                res.write(`data: ${JSON.stringify({ type: 'tool_start', name: 'rate_limit_wait', round: 0 })}\n\n`);
+              }
+              await new Promise(r => setTimeout(r, waitMs));
+              continue;
+            }
+            throw err;
+          }
+        }
+        throw new Error('openaiRetry exhausted');
+      }
+
       let imageDescription = '';
       if (image && typeof image === 'string' && image.startsWith('data:image/')) {
         console.log(`[AI] Image received: ${image.substring(0, 50)}... (${Math.round(image.length / 1024)}KB)`);
         try {
-          const visionResp = await openai.chat.completions.create({
+          const visionResp = await openaiRetry(() => openai.chat.completions.create({
             model: "gpt-4.1",
             messages: [{
               role: "user",
@@ -6712,7 +6733,7 @@ WHEN BRYN ASKS "WHAT DO YOU NEED":
               ],
             }],
             max_tokens: 1000,
-          });
+          }));
           imageDescription = visionResp.choices[0]?.message?.content || '';
           console.log(`[AI] Vision analysis: ${imageDescription.substring(0, 200)}...`);
         } catch (visionErr: any) {
@@ -6754,14 +6775,14 @@ WHEN BRYN ASKS "WHAT DO YOU NEED":
 
       while (round < MAX_ROUNDS) {
         round++;
-        const completion = await openai.chat.completions.create({
+        const completion = await openaiRetry(() => openai.chat.completions.create({
           model,
           messages,
           tools: AI_COMMAND_TOOLS,
           tool_choice: "auto",
           parallel_tool_calls: true,
           max_completion_tokens: 16384,
-        });
+        }));
         totalTokens += completion.usage?.total_tokens || 0;
 
         const choice = completion.choices[0];
