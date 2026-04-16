@@ -1,0 +1,457 @@
+swipe_nav:
+  swipe_amount: 200
+resources:
+  - url: /local/community_plugin/mini-media-player/mini-media-player-bundle.js
+    type: js
+kiosk_mode:
+  non_admin_settings:
+    hide_header: true
+views:
+  - type: panel
+    path: test-home
+    title: Test-home
+    cards:
+      - type: picture-elements
+        elements:
+          - type: custom:kanji-clock-card
+            use_24h: true
+            invert_date: false
+            short_weekdays: true
+            kanji_numbers: false
+            style:
+              left: 68.5%
+              top: '-3.5%'
+              width: 22%
+              transform: scale(.56,.56)
+            card_mod:
+              style: |
+                ha-card {
+                  display: flex;
+                  justify-content: flex-end;
+                  align-items: center;
+                }
+                .card-content {
+                  text-align: right;
+                  width: 100%;
+                }
+          - type: image
+            entity: switch.light_kitchen_cat_water_beacon_socket
+            style:
+              left: 0%
+              top: '-0.2%'
+              width: 100%
+              transform: scale(1,.98)
+            tap_action:
+              action: toggle
+            state_image:
+              'on': /local/lovelace/overlays/Round Menu/5/Border6.gif
+          - entity: light.plug_cat_beacon_red_socket
+            tap_action:
+              action: call-service
+              service: automation.trigger
+              data:
+                skip_condition: true
+              target:
+                entity_id:
+                  - automation.air_quality_below_30
+            state_image:
+              'on': /local/lovelace/overlays/Round Menu/5/Border6.gif
+            style:
+              left: 0%
+              top: '-0.2%'
+              width: 100%
+              transform: scale(1,.98)
+            type: image
+          - type: image
+            entity: switch.light_kitchen_cat_food_beacon_socket_1
+            style:
+              left: 0%
+              top: '-0.2%'
+              width: 100%
+              transform: scale(1,.98)
+            tap_action:
+              action: toggle
+            state_image:
+              'on': /local/lovelace/overlays/Round Menu/5/Border6.gif
+          - entity: timer.fish_timer_king
+            description: Fish Icon
+            text-align: center
+            tap_action:
+              action: call-service
+              service: script.fish_timer_start
+              data:
+                skip_condition: true
+              target:
+                entity_id: script.fish_timer_start
+            style:
+              left: 0%
+              top: '-0.2%'
+              width: 100%
+              transform: scale(1,.98)
+            state_image:
+              idle: /local/lovelace/overlays/Round Menu/5/Border6.gif
+            type: image
+          - entity: timer.dogs
+            text-align: center
+            tap_action:
+              action: call-service
+              service: script.dogs_reset_script
+              data:
+                skip_condition: true
+              target:
+                entity_id: script.dogs_reset_script
+            style:
+              left: 0%
+              top: '-0.2%'
+              width: 100%
+              transform: scale(1,.98)
+            state_image:
+              idle: /local/lovelace/overlays/Round Menu/5/Border6.gif
+            type: image
+          - entity: timer.meds_timer_yasu
+            tap_action:
+              action: call-service
+              service: automation.trigger
+              data:
+                skip_condition: true
+              target:
+                entity_id:
+                  - automation.meds_taken_reload_yasu
+            style:
+              left: 0%
+              top: '-0.2%'
+              width: 100%
+              transform: scale(1,.98)
+            state_image:
+              idle: /local/lovelace/overlays/Round Menu/5/Border6.gif
+            type: image
+          - entity: switch.light_kitchen_amber_laundry_beacon_socket_1
+            tap_action:
+              action: call-service
+              service: automation.trigger
+              data:
+                skip_condition: true
+              target:
+                entity_id:
+                  - automation.air_quality_below_30
+            state_image:
+              'on': /local/lovelace/overlays/Round Menu/5/Yellow-Border.gif
+            style:
+              left: 0%
+              top: '-0.2%'
+              width: 100%
+              transform: scale(1,.98)
+            type: image
+          - entity: switch.light_kitchen_amber_laundry_beacon_socket_1
+            tap_action:
+              action: call-service
+              service: automation.trigger
+              data:
+                skip_condition: true
+              target:
+                entity_id:
+                  - automation.air_quality_below_30
+            state_image:
+              'on': /local/lovelace/overlays/Round Menu/5/Yellow-Border.gif
+            style:
+              left: 0%
+              top: '-0.2%'
+              width: 100%
+              transform: scale(1,.98)
+            type: image
+          - entity: switch.light_kitchen_white_beacon_dryer_socket_1
+            tap_action:
+              action: call-service
+              service: automation.trigger
+              data:
+                skip_condition: true
+              target:
+                entity_id:
+                  - automation.air_quality_below_30
+            state_image:
+              'on': /local/lovelace/overlays/Round Menu/5/White-Border.gif
+            style:
+              left: 0%
+              top: '-0.2%'
+              width: 100%
+              transform: scale(1,.98)
+            type: image
+          - entity: timer.bryn_meds
+            tap_action:
+              action: call-service
+              service: automation.trigger
+              data:
+                skip_condition: true
+              target:
+                entity_id:
+                  - automation.meds_reset_bryn
+            style:
+              left: 50%
+              top: 48.3%
+              width: 100%
+            type: image
+          - type: image
+            image: /local/lovelace/overlays/Round Menu/4/gradhat2.png
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace/Uni-Cal
+            style:
+              left: 95.3%
+              top: 28.5%
+              width: 3.8%
+          - type: image
+            style:
+              left: 52.45%
+              top: 50.8%
+              width: 38%
+            image: /local/lovelace/overlays/Round Menu/4/Floorplan11.png
+          - type: image
+            image: /local/lovelace/overlays/Round Menu/5/Tall7-4.png
+            style:
+              top: 54.15%
+              left: 4.65%
+              width: 5.1%
+              opacity: 100%
+          - type: image
+            image: /local/lovelace/overlays/Round Menu/5/Tall7-4.png
+            style:
+              top: 54.15%
+              left: 95.35%
+              width: 5.1%
+              opacity: 100%
+          - type: image
+            image: /local/lovelace/overlays/Round Menu/5/Wide10.png
+            style:
+              top: 5.5%
+              left: 50%
+              width: 50%
+              opacity: 100%
+          - type: image
+            image: /local/lovelace/overlays/Round Menu/5/Circle8.png
+            style:
+              left: 95.32%
+              top: 37.56%
+              width: 4.75%
+              opacity: 100%
+              align: center
+          - type: image
+            image: /local/lovelace/overlays/Round Menu/5/Circle8.png
+            style:
+              left: 95.32%
+              top: 46.4%
+              width: 4.75%
+              opacity: 100%
+          - type: image
+            image: /local/lovelace/overlays/Round Menu/5/Orange Circle4.png
+            style:
+              left: 95.32%
+              top: 28.7%
+              width: 4.74%
+              opacity: 100%
+          - type: custom:mushroom-climate-card
+            entity: climate.nest_new
+            show_temperature_control: true
+            layout: horizontal
+            fill_container: false
+            primary_info: none
+            secondary_info: none
+            collapsible_controls: false
+            icon: none
+            icon_type: none
+            background: transparent
+            style:
+              left: 86%
+              top: 25%
+              width: 30%
+              height: 18%
+            card_mod:
+              style: |
+                ha-card {
+                  background: rgba(255,255,255,0);
+                  --primary-text-color: white;
+                  --secondary-text-color: white;
+                  font-size: 24px;
+                  padding-right: -14px;
+                  padding-left: 14px;
+                  margin-left: 155px;
+                  }
+          - type: custom:mushroom-climate-card
+            entity: climate.nest_new
+            fill_container: true
+            secondary_info: none
+            primary_info: none
+            show_temperature_control: false
+            collapsible_controls: false
+            icon: none
+            icon_type: none
+            hvac_modes:
+              - 'off'
+            style:
+              left: 92.9%
+              top: 23.9%
+              width: 5%
+              transform: scale(1.75,1.75)
+            card_mod:
+              style: |
+                ha-card {
+                  background: rgba(255,255,255,0);
+                  --primary-text-color: white;
+                  --secondary-text-color: white;
+                  font-size: 26px;
+                  }
+          - type: custom:mushroom-climate-card
+            entity: climate.nest_new
+            fill_container: true
+            secondary_info: none
+            primary_info: none
+            show_temperature_control: false
+            collapsible_controls: false
+            icon: none
+            icon_type: none
+            hvac_modes:
+              - heat
+            style:
+              left: 92.9%
+              top: 32.7%
+              width: 5%
+              transform: scale(1.75,1.75)
+            card_mod:
+              style: |
+                mushroom-shape-icon$: |
+                  .shape {
+                    --shape-color: rgba(0,0,0,0);
+                  }
+                ha-card {
+                  background-color: rgba(255,255,255,0);
+                  --primary-text-color: white;
+                  --secondary-text-color: white;
+                  box-shadow: none;
+                  font-size: 24px;
+                  }
+          - type: custom:mushroom-climate-card
+            entity: climate.nest_new
+            fill_container: true
+            secondary_info: none
+            primary_info: none
+            show_temperature_control: false
+            collapsible_controls: false
+            icon: none
+            icon_type: none
+            hvac_modes:
+              - cool
+            style:
+              left: 92.8%
+              top: 41.7%
+              width: 5%
+              transform: scale(1.5,1.5)
+            card_mod:
+              style:
+                mushroom-shape-icon$: |
+                  .shape {
+                    --shape-color: rgba(0,0,0,0);
+                  }
+                  ha-card {
+                    background-color: rgba(255,255,255,0);
+                    --primary-text-color: white;
+                    --secondary-text-color: white;
+                    box-shadow: none;
+                    }
+          - entity: fan.king_room_f9e7c0
+            title: King Vent Fan
+            image: Cacoon On7.png
+            state_image:
+              'on': /local/lovelace/overlays/Round Menu/5/Cacoon Off10.png
+              'off': /local/lovelace/overlays/Round Menu/5/Cacoon On7.png
+            style:
+              left: 95.32%
+              top: 54.8%
+              width: 4.75%
+              opacity: 100%
+              align: center
+            type: image
+          - type: image
+            image: /local/lovelace/overlays/Round Menu/5/Cal Icon.png
+            style:
+              left: 95.32%
+              top: 71.6%
+              width: 4.75%
+              opacity: 100%
+            description: Calendar
+            tap_action:
+              action: fire-dom-event
+              haptic: light
+              browser_mod:
+                service: browser_mod.popup
+                data:
+                  deviceID:
+                    - this
+                  dismissable: true
+                  size: wide
+                  autoclose: false
+                  timeout: 600000
+                  right_button: I'm done
+                  content:
+                    type: picture-elements
+                    elements:
+                      - type: custom:atomic-calendar-revive
+                        name: ''
+                        enableModeChange: true
+                        entities:
+                          - entity: calendar.family
+                            name: Family
+                            showMultiDay: false
+                        firstDayOfWeek: 0
+                        defaultMode: event
+                        disableEventLink: false
+                        showDescription: true
+                        showMonth: true
+                        showCalendarName: false
+                        showWeekNumber: false
+                        showEventIcon: false
+                        showFullDayProgress: false
+                        showCurrentEventLine: true
+                        showTimeRemaining: false
+                        showDatePerEvent: true
+                        hoursOnSameLine: true
+                        showNoEventsForToday: true
+                        showLastCalendarWeek: false
+                        calShowDescription: true
+                        maxDaysToShow: 31
+                        showDeclined: false
+                        showLoader: true
+                        hideDuplicates: true
+                        offsetHeaderDate: true
+                        showProgressBar: false
+                        style:
+                          left: 22.5%
+                          top: 3%
+                          width: 55%
+                          transform: scale(1.05,1.05)
+                        card_mod:
+                          style: |
+                            ha-card {
+                              background: rgba(1,1,1,.65);
+                              border-color: transparent !important;
+                              box-shadow: none !important;
+                              border-style: none !important;
+                              border: none !important;
+                            }  
+                    image: /local/lovelace/overlays/Round Menu/5/Calendar.png
+                    style:
+                      top: 50%
+                      left: 50%
+                      width: 100%
+                      height: 100%
+          - entity: timer.rascal_meds_timer
+            tap_action:
+              action: call-service
+              service: script.rascal_meds_timer_reset_script
+              data:
+                skip_condition: true
+              target:
+                entity_id: script.rascal_meds_timer_reset_script
+            style:
+              left: 55%
+              top: 42%
+              width: 11%
+            type: image
