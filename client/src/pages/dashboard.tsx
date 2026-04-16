@@ -20247,7 +20247,7 @@ export default function Dashboard() {
             <div className="fixed inset-0 bg-black/50" />
             <div
               className="fixed z-[10002] overflow-hidden flex flex-col text-[11px] text-white p-0 sm:rounded-lg"
-              style={{ top: `${(calendarBorderTop || (calendarTop + 15))}px`, left: `${calendarLeft}px`, right: `${(() => { const frozen = savedCalendarReductionRef.current ?? (parseFloat(localStorage.getItem('savedCalendarReduction') || '0') || 260); return calendarRight - frozen + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1 + 3; })()}px`, bottom: `${calendarBottom}px`, color: 'white', background: `linear-gradient(90deg, #2a3a6e 0%, #6e4a6e 15%, #c97355 30%, #e8a55a 45%, #1b3355 55%, #1a2744 75%, #151d35 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}
+              style={{ top: `${(calendarBorderTop || (calendarTop + 15))}px`, left: `${calendarLeft}px`, right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1 + 3}px`, bottom: `${calendarBottom}px`, color: 'white', background: `linear-gradient(90deg, #2a3a6e 0%, #6e4a6e 15%, #c97355 30%, #e8a55a 45%, #1b3355 55%, #1a2744 75%, #151d35 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}
               onClick={(e) => e.stopPropagation()}
               data-testid="day-detail-panel"
             >
@@ -34498,20 +34498,27 @@ export default function Dashboard() {
             zIndex: 35,
             overflow: homeworkAnimating || blankBoxAnimating || homeworkMinimized || blankBoxOpen ? 'hidden' : 'visible',
             right: (() => {
-              const frozen = savedCalendarReductionRef.current ?? (parseFloat(localStorage.getItem('savedCalendarReduction') || '0') || 260);
+              const isAnimatingOrHidden = homeworkAnimating || blankBoxAnimating || homeworkMinimized || blankBoxOpen;
+              const frozen = isAnimatingOrHidden
+                ? (savedCalendarReductionRef.current ?? calendarReduction)
+                : calendarReduction;
               const computedRight = calendarRight - frozen + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1 + 3;
               const computedWidth = Math.max(0, frozen + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4 - 1 - 1 + 1 - 5 - 2 - 1 - 3 + 2);
-              if (!homeworkMinimized && !homeworkAnimating && !blankBoxOpen && !blankBoxAnimating && calendarReduction > 0) {
+              if (!isAnimatingOrHidden && calendarReduction > 0) {
                 savedGlassRightRef.current = computedRight;
                 savedGlassWidthRef.current = computedWidth;
+                savedCalendarReductionRef.current = calendarReduction;
               }
-              const finalRight = (homeworkAnimating || blankBoxAnimating || homeworkMinimized || blankBoxOpen) && savedGlassRightRef.current !== null ? savedGlassRightRef.current : computedRight;
+              const finalRight = isAnimatingOrHidden && savedGlassRightRef.current !== null ? savedGlassRightRef.current : computedRight;
               return `${finalRight}px`;
             })(),
             width: (() => {
-              const frozen = savedCalendarReductionRef.current ?? (parseFloat(localStorage.getItem('savedCalendarReduction') || '0') || 260);
+              const isAnimatingOrHidden = homeworkAnimating || blankBoxAnimating || homeworkMinimized || blankBoxOpen;
+              const frozen = isAnimatingOrHidden
+                ? (savedCalendarReductionRef.current ?? calendarReduction)
+                : calendarReduction;
               const computedWidth = Math.max(0, frozen + 10 - 20 - 2 - 5 - 1 - 2 - 1 - 3 + 1 + 1 - 1 - 3 - 4 - 1 - 1 + 1 - 5 - 2 - 1 - 3 + 2);
-              const finalWidth = (homeworkAnimating || blankBoxAnimating || homeworkMinimized || blankBoxOpen) && savedGlassWidthRef.current !== null ? savedGlassWidthRef.current : computedWidth;
+              const finalWidth = isAnimatingOrHidden && savedGlassWidthRef.current !== null ? savedGlassWidthRef.current : computedWidth;
               return `${finalWidth}px`;
             })(),
             top: `${(calendarBorderTop || (calendarTop + 15))}px`,
