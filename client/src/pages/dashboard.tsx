@@ -8,6 +8,7 @@ import AdminPanel from "@/components/AdminPanel";
 import UniCalLogo from "@/components/UniCalLogo";
 import CourseDocumentsWizard from "@/components/CourseDocumentsWizard";
 import NotepadDialog from "@/components/NotepadDialog";
+import AutomationsReference from "@/components/AutomationsReference";
 import FloatingPostIt from "@/components/FloatingPostIt";
 import OtherRowEditDialog from "@/components/OtherRowEditDialog";
 import { FastInput, FastTextarea } from "@/components/FastInput";
@@ -3573,6 +3574,7 @@ export default function Dashboard() {
     return { ...defaultCourseDisplayNames };
   });
   const [isSettingsDialogOpen, setIsSettingsDialogOpen] = useState(false);
+  const [isAutomationsRefOpen, setIsAutomationsRefOpen] = useState(false);
   const [mobileSettingsPage, setMobileSettingsPage] = useState(-1);
   const mobileSettingsOpen = mobileSettingsPage >= 0;
   // Discussion post checkbox states (persisted per week in localStorage)
@@ -18994,6 +18996,7 @@ export default function Dashboard() {
                 { label: 'Shift Schedule', active: shiftScheduleOpen, close: () => setShiftScheduleOpen(false) },
                 { label: 'New Course Wizard', active: isNewCourseWizardOpen, close: () => setIsNewCourseWizardOpen(false) },
                 { label: 'Calendar Settings', active: isCalendarSettingsOpen, close: () => setIsCalendarSettingsOpen(false) },
+                { label: 'My Automations', active: isAutomationsRefOpen, close: () => setIsAutomationsRefOpen(false) },
                 { label: 'Share Dialog', active: isShareDialogOpen, close: () => setIsShareDialogOpen(false) },
                 { label: 'Semester Checklist', active: showSemesterChecklist, close: () => setShowSemesterChecklist(false) },
                 { label: 'Readings Popup', active: !!readingsPopupCourse, close: () => setReadingsPopupCourse(null) },
@@ -29304,6 +29307,12 @@ export default function Dashboard() {
             toast={toast}
           />
 
+          <AutomationsReference
+            open={isAutomationsRefOpen}
+            onClose={() => setIsAutomationsRefOpen(false)}
+            colorSettings={colorSettings}
+          />
+
         {/* Scrollable Content Area */}
         <div className="flex-1 overflow-visible scrollbar-hidden flex flex-col" style={{ marginTop: '0px', marginLeft: '-25px', marginRight: '-34px', paddingLeft: '25px', paddingRight: '0px' }}>
         {/* Calendar Views */}
@@ -29559,6 +29568,15 @@ export default function Dashboard() {
               title="Calendar Settings"
             >
               <Settings className="h-[17px] w-[17px] text-white/70 hover:text-white" />
+            </button>
+            <button
+              onClick={() => setIsAutomationsRefOpen(true)}
+              className="absolute cursor-pointer hover:opacity-80 transition-opacity"
+              style={{ left: '-15px', top: '4px', zIndex: 60, background: 'none', border: 'none', padding: 0 }}
+              data-testid="button-automations-reference"
+              title="My Automations"
+            >
+              <Zap className="h-[15px] w-[15px] text-white/70 hover:text-white" />
             </button>
             <div
               style={{ position: 'absolute', left: '9px', top: '-31px', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto' }}
@@ -33900,6 +33918,15 @@ export default function Dashboard() {
               title="Calendar Settings"
             >
               <Settings className="h-[17px] w-[17px] text-white/70 hover:text-white" />
+            </button>
+            <button
+              onClick={() => setIsAutomationsRefOpen(true)}
+              className="absolute cursor-pointer hover:opacity-80 transition-opacity"
+              style={{ left: '-15px', top: '7px', zIndex: 60, background: 'none', border: 'none', padding: 0 }}
+              data-testid="button-automations-reference-month"
+              title="My Automations"
+            >
+              <Zap className="h-[15px] w-[15px] text-white/70 hover:text-white" />
             </button>
             <div
               style={{ position: 'absolute', left: '9px', top: '-31px', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto' }}
