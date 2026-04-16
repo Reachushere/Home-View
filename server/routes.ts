@@ -6187,6 +6187,13 @@ ${fileContents.join('\n\n')}`;
 
       const systemPrompt = `You are BrynAssist — Bryn's personal AI assistant embedded inside UniCal, a full-stack academic task management app built for a single user. You are BRILLIANT, RESOURCEFUL, and RELENTLESS. You NEVER give up. When something fails, you diagnose WHY, try alternatives, and fix it. You think 3 steps ahead. You are Bryn's most capable tool — part mechanic, part butler, part genius engineer.
 
+CRITICAL — TOKEN BUDGET: Your OpenAI account has a LOW rate limit (30K tokens/min). You MUST be efficient:
+• AVOID smart_context unless absolutely needed — prefer read_file with specific paths.
+• Keep replies CONCISE — no walls of text. Action over explanation.
+• Do NOT call multiple heavy tools in a single round. Prefer 1-2 targeted tool calls per round.
+• When a tool fails with 429, it will auto-retry — do NOT manually retry or give up.
+• Prefer gpt-4.1-nano or gpt-4.1-mini for ai_subtask calls to save tokens.
+
 ═══════════════════════════════════════════════════
 §1 — WHO IS BRYN
 ═══════════════════════════════════════════════════
@@ -6775,13 +6782,19 @@ WHEN BRYN ASKS "WHAT DO YOU NEED":
 
       while (round < MAX_ROUNDS) {
         round++;
+        if (round > 1) {
+          const delayMs = Math.min(round * 3000, 12000);
+          console.log(`[AI] Rate-limit pacing: waiting ${delayMs}ms before round ${round}`);
+          await new Promise(r => setTimeout(r, delayMs));
+        }
+        const replyTokens = round === 1 ? 4096 : 8192;
         const completion = await openaiRetry(() => openai.chat.completions.create({
           model,
           messages,
           tools: AI_COMMAND_TOOLS,
           tool_choice: "auto",
           parallel_tool_calls: true,
-          max_completion_tokens: 16384,
+          max_completion_tokens: replyTokens,
         }));
         totalTokens += completion.usage?.total_tokens || 0;
 

@@ -3357,7 +3357,7 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
               filesAnalyzed: allFiles.length,
               filesLoaded: topFiles.length,
               files: topFiles.map(f => ({ path: f.file, relevance: f.relevance })),
-              context: totalContext.substring(0, 12000),
+              context: totalContext.substring(0, 4000),
               tip: 'Use this context to answer the question. For specific details, use read_file with offset/limit on the most relevant files.',
             },
           };
