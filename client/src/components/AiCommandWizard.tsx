@@ -1494,7 +1494,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
               ><Pencil size={12} /> Markup</button>
             </div>
           )}
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'stretch' }}>
           <textarea
             ref={inputRef}
             value={input}
@@ -1502,7 +1502,6 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
             onKeyDown={handleKeyDown}
             onPaste={handlePaste}
             placeholder={pastedImage ? "Describe what to do with this screenshot..." : "Type a command..."}
-            rows={3}
             style={{
               flex: 1,
               background: '#ffffff',
@@ -1511,10 +1510,9 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
               padding: '10px 14px',
               color: '#000000',
               fontSize: '13px',
-              resize: 'vertical',
+              resize: 'none',
               outline: 'none',
               fontFamily: 'inherit',
-              minHeight: '60px',
               maxHeight: '200px',
               overflowY: 'auto',
             }}
