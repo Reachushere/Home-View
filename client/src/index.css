@@ -371,6 +371,11 @@ button[role="combobox"] > span {
   transform: translateX(6px) !important;
   filter: brightness(1.15);
 }
+.semester-tab-hover:active {
+  transform: translateX(2px) scale(0.9) !important;
+  filter: brightness(0.8);
+  transition: transform 0.08s ease, filter 0.08s ease !important;
+}
 
 @keyframes semester-tab-nudge {
   0%, 40% { transform: var(--tab-base-transform); }
