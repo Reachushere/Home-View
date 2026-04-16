@@ -6790,7 +6790,7 @@ WHEN BRYN ASKS "WHAT DO YOU NEED":
       const haTool = (n: string) => n.startsWith('ha_');
       const codeTool = (n: string) => ['multi_file_edit','code_complete','code_review_tool','explain_code','generate_tests','convert_code','analyze_dependencies','db_migrate','db_schema','run_sql','install_package','codebase_explore','code_reference','project_snapshot','get_project_map','run_node_script','analyze_ui','pair_program','plan_task','retro','stack_analyze'].includes(n);
       const webTool = (n: string) => ['web_search','web_fetch','deep_research','http_check','http_test','take_screenshot','send_email','generate_image','browser_test','smoke_test','auto_test','auto_discover','health_check','process_check','staging_manage','git_diff','git_backup','github_file','github_search','github_tree','npm_info'].includes(n);
-      const msgLower = (command || '').toLowerCase() + ' ' + (history || []).slice(-3).map((h: any) => h.content || '').join(' ').toLowerCase();
+      const msgLower = (message || '').toLowerCase() + ' ' + (history || []).slice(-3).map((h: any) => h.content || '').join(' ').toLowerCase();
       const wantsHA = /home.?assistant|ha |light|switch|dashboard|lovelace|automat|timer|rascal|yasu|meds|insulin|announce|echo|alexa|thermostat|temperature|sensor|door|lock|camera|plug|fan/i.test(msgLower);
       const wantsCode = isCodeTask || /code|file|edit|bug|fix|deploy|build|schema|database|migrate|sql|git|push|commit|install|package|test|debug/i.test(msgLower);
       const wantsWeb = /search|web|fetch|email|screenshot|image|generate.*image|research|http|url|github/i.test(msgLower);
