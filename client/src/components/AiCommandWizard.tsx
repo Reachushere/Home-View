@@ -250,8 +250,9 @@ function ImageMarkup({ imageSrc, onDone, onCancel }: { imageSrc: string; onDone:
 
 const thinkingKeyframes = `
 @keyframes ai-dot-pulse {
-  0%, 100% { opacity: 0.7; }
-  50% { opacity: 1; }
+  0%, 100% { opacity: 0.7; background: #7c3aed; }
+  33% { opacity: 1; background: #a78bfa; }
+  66% { opacity: 0.85; background: #6d28d9; }
 }
 @keyframes ai-shimmer {
   0% { background-position: -200% 0; }
