@@ -6156,8 +6156,8 @@ ${fileContents.join('\n\n')}`;
       }
 
       const isCodeTask = /\b(change|modify|edit|update|fix|add|remove|refactor|style|css|color|button|component|page|layout|font|move|rename|code|file|build|install|npm|import|debug|error|bug|break|broken|crash|log|deploy|push|commit|background|bg|gradient|dialog|dialogue|box|panel|window|sidebar|header|theme|border|padding|margin|opacity|animation|hover|width|height|size|position|align|display|flex|grid|icon|image|text|shadow|rounded|radius)\b/i.test(message);
-      let model = "gpt-4.1";
-      const estCost = isCodeTask ? "~$0.10-0.50" : "~$0.05-0.20";
+      let model = isCodeTask ? "gpt-4.1" : "gpt-4.1-mini";
+      const estCost = isCodeTask ? "~$0.10-0.50" : "~$0.01-0.05";
 
       const apiKey = process.env.OPENAI_API_KEY;
       if (!apiKey) {
@@ -6703,7 +6703,7 @@ WHEN BRYN ASKS "WHAT DO YOU NEED":
         }
       }
       const OpenAI = (await import("openai")).default;
-      const openai = new OpenAI({ apiKey: config.apiKey });
+      const openai = new OpenAI({ apiKey: config.apiKey, timeout: 90_000 });
 
       async function openaiRetry<T>(fn: () => Promise<T>, maxRetries = 5): Promise<T> {
         for (let attempt = 0; attempt < maxRetries; attempt++) {
@@ -6804,10 +6804,17 @@ WHEN BRYN ASKS "WHAT DO YOU NEED":
       });
       console.log(`[AI] Filtered tools: ${filteredTools.length}/${AI_COMMAND_TOOLS.length} (HA:${wantsHA} Code:${wantsCode} Web:${wantsWeb})`);
 
+      let heartbeatTimer: any = null;
+      if (stream && !res.headersSent) {
+        heartbeatTimer = setInterval(() => {
+          try { res.write(`data: ${JSON.stringify({ type: 'heartbeat' })}\n\n`); } catch {}
+        }, 10_000);
+      }
+
       while (round < MAX_ROUNDS) {
         round++;
         if (round > 1) {
-          const delayMs = Math.min(round * 1500, 6000);
+          const delayMs = Math.min(round * 800, 3000);
           console.log(`[AI] Pacing: ${delayMs / 1000}s before round ${round}`);
           await new Promise(r => setTimeout(r, delayMs));
         }
@@ -6834,9 +6841,11 @@ WHEN BRYN ASKS "WHAT DO YOU NEED":
               res.write(`data: ${JSON.stringify({ type: 'token', content: chunk })}\n\n`);
             }
             res.write(`data: ${JSON.stringify({ type: 'done', reply, actionTaken })}\n\n`);
+            if (heartbeatTimer) clearInterval(heartbeatTimer);
             res.end();
           } else {
             const cost = totalTokens > 0 ? ((totalTokens / 1_000_000) * (model === 'gpt-4.1' ? 8.0 : model === 'gpt-4o' ? 10.0 : model === 'gpt-5-mini' ? 1.5 : model === 'gpt-4.1-mini' ? 1.6 : 0.30)) : 0;
+            if (heartbeatTimer) clearInterval(heartbeatTimer);
             res.json({ reply, toolResults: allToolResults, actionTaken, usage: { totalTokens }, cost: `$${cost.toFixed(4)}`, model, rounds: round });
           }
           return;
@@ -6892,9 +6901,11 @@ WHEN BRYN ASKS "WHAT DO YOU NEED":
           if (stream) {
             res.write(`data: ${JSON.stringify({ type: 'confirm', message: confirmMsg, pendingConfirmations, toolResults: allToolResults })}\n\n`);
             res.write(`data: ${JSON.stringify({ type: 'done', reply: confirmMsg, actionTaken: false })}\n\n`);
+            if (heartbeatTimer) clearInterval(heartbeatTimer);
             res.end();
             return;
           }
+          if (heartbeatTimer) clearInterval(heartbeatTimer);
           return res.json({ reply: confirmMsg, pendingConfirmations, toolResults: allToolResults, actionTaken: false, model, rounds: round });
         }
 
@@ -7010,6 +7021,7 @@ WHEN BRYN ASKS "WHAT DO YOU NEED":
       }
 
     } catch (err: any) {
+      if (heartbeatTimer) clearInterval(heartbeatTimer);
       console.error("AI command error:", err);
       if (res.headersSent) {
         try { res.write(`data: ${JSON.stringify({ type: 'error', error: err.message })}\n\n`); res.end(); } catch {}

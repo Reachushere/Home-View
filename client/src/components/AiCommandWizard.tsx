@@ -577,6 +577,10 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
     setThinkingPhase('Working...');
     const controller = new AbortController();
     abortRef.current = controller;
+    const fetchTimeout = setTimeout(() => {
+      console.log('[BrynAssist] Request timed out after 3 minutes');
+      controller.abort();
+    }, 180_000);
 
     try {
       const resp = await fetch('/api/ai/command', {
@@ -590,6 +594,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
           stream: true,
         }),
       });
+      clearTimeout(fetchTimeout);
 
       if (!resp.ok) {
         const data = await resp.json();
@@ -670,6 +675,8 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 if (event.reply && !streamedContent.includes(event.reply)) streamedContent = event.reply;
               } else if (event.type === 'error') {
                 streamedContent += `\nError: ${event.error}`;
+              } else if (event.type === 'heartbeat') {
+                // keep-alive, no action needed
               }
             } catch {}
           }
@@ -717,11 +724,12 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       setThinkingPhase(null);
       setActiveToolName(null);
       if (err.name === 'AbortError') {
-        setMessages(prev => [...prev, { role: 'assistant', content: 'Stopped.' }]);
+        setMessages(prev => [...prev, { role: 'assistant', content: 'Timed out or stopped. Try again.' }]);
       } else {
         setMessages(prev => [...prev, { role: 'assistant', content: `Error: ${err.message}` }]);
       }
     } finally {
+      clearTimeout(fetchTimeout);
       abortRef.current = null;
       setLoading(false);
       setThinkingPhase(null);
