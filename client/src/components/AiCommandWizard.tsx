@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Zap, Send, X, Loader2, CheckCircle, XCircle, AlertTriangle, Trash2, RotateCcw, Maximize2, Minimize2, Pencil, Circle, ArrowRight, ArrowDown, Undo2, Check, Scissors, Square, Copy, Download, FileText, BookOpen } from 'lucide-react';
+import { Zap, Send, X, Loader2, CheckCircle, XCircle, AlertTriangle, Trash2, RotateCcw, Maximize2, Minimize2, Pencil, Circle, ArrowRight, ArrowDown, Undo2, Check, Scissors, Square, Copy, Download, FileText, BookOpen, Paperclip } from 'lucide-react';
 import { queryClient } from '@/lib/queryClient';
 
 function CodeBlock({ code, lang }: { code: string; lang: string }) {
@@ -376,6 +376,18 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   }, []);
   const [pastedImage, setPastedImage] = useState<string | null>(null);
   const [markupImage, setMarkupImage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = reader.result as string;
+      setPastedImage(base64);
+    };
+    reader.readAsDataURL(file);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  }, []);
   const [wizStyle, setWizStyle] = useState<WizardStyle>(defaultWizardStyle);
   const [snipping, setSnipping] = useState(false);
   const [snippingStart, setSnippingStart] = useState<{ x: number; y: number } | null>(null);
@@ -767,7 +779,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
         const reader = new FileReader();
         reader.onload = () => {
           const base64 = reader.result as string;
-          setMarkupImage(base64);
+          setPastedImage(base64);
         };
         reader.readAsDataURL(file);
         break;
@@ -1509,6 +1521,34 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
             data-testid="input-ai-command"
           />
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileUpload}
+              style={{ display: 'none' }}
+              data-testid="input-ai-file-upload"
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={loading}
+              style={{
+                background: 'rgba(100,160,255,0.15)',
+                border: '1px solid rgba(96,165,250,0.3)',
+                borderRadius: '10px',
+                padding: '10px',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                color: '#fff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                opacity: loading ? 0.5 : 1,
+              }}
+              title="Attach image"
+              data-testid="button-ai-attach"
+            >
+              <Paperclip size={16} />
+            </button>
             <button
               onClick={startSnipping}
               disabled={loading}
