@@ -79,8 +79,18 @@ echo "Changelog written: $NEW_HEAD ($DEPLOY_TIME)"
 echo "[4/7] Installing dependencies..."
 npm install --ignore-scripts
 
-echo "[5/7] Building..."
-npm run build
+echo "[5/7] Building (with swap for memory)..."
+if [ ! -f /swapfile ]; then
+  echo "  Creating 2GB swap file..."
+  sudo fallocate -l 2G /swapfile
+  sudo chmod 600 /swapfile
+  sudo mkswap /swapfile
+  sudo swapon /swapfile
+elif ! swapon --show | grep -q /swapfile; then
+  echo "  Enabling swap..."
+  sudo swapon /swapfile 2>/dev/null || true
+fi
+NODE_OPTIONS="--max-old-space-size=2048" npm run build
 
 echo "[6/7] Verifying build..."
 if [ ! -f dist/index.cjs ]; then
