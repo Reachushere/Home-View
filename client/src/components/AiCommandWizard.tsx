@@ -597,8 +597,9 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       clearTimeout(fetchTimeout);
 
       if (!resp.ok) {
-        const data = await resp.json();
-        throw new Error(data.error || 'Command failed');
+        let errMsg = `Server error (${resp.status})`;
+        try { const data = await resp.json(); errMsg = data.error || errMsg; } catch {}
+        throw new Error(errMsg);
       }
 
       const contentType = resp.headers.get('content-type') || '';
