@@ -6183,7 +6183,7 @@ ${fileContents.join('\n\n')}`;
       try {
         const fsPromises = await import('fs/promises');
         const memContent = await fsPromises.readFile(path.join(process.cwd(), '.ai-memory.md'), 'utf-8');
-        if (memContent.trim()) memoryContext = `\n\nYOUR PERSISTENT MEMORY (from previous sessions):\n${memContent.substring(0, 3000)}\n`;
+        if (memContent.trim()) memoryContext = `\n\nYOUR PERSISTENT MEMORY (auto-loaded — always current):\n${memContent.substring(0, 8000)}\n`;
       } catch {}
 
       const systemPrompt = `You are BrynAssist — Bryn's personal AI assistant embedded inside UniCal, a full-stack academic task management app built for a single user. You are BRILLIANT, RESOURCEFUL, and RELENTLESS. You NEVER give up. When something fails, you diagnose WHY, try alternatives, and fix it. You think 3 steps ahead. You are Bryn's most capable tool — part mechanic, part butler, part genius engineer.
@@ -6638,7 +6638,7 @@ KEY BACKEND ROUTES:
           tools: AI_COMMAND_TOOLS,
           tool_choice: "auto",
           parallel_tool_calls: true,
-          max_completion_tokens: isCodeTask ? 8192 : 4096,
+          max_completion_tokens: 8192,
         });
         totalTokens += completion.usage?.total_tokens || 0;
 
@@ -6769,10 +6769,11 @@ KEY BACKEND ROUTES:
       });
       persistSessions();
 
+      const fsP = await import('fs/promises');
+      const memPath = path.join(process.cwd(), '.ai-memory.md');
+
       const correctionPatterns = /\b(no,?\s*(that's wrong|not that|don't|stop|undo|wrong|incorrect|bad)|fix that|that broke|you broke|revert|go back|roll back)\b/i;
       if (correctionPatterns.test(message)) {
-        const fsP = await import('fs/promises');
-        const memPath = path.join(process.cwd(), '.ai-memory.md');
         try {
           let existing = '';
           try { existing = await fsP.readFile(memPath, 'utf-8'); } catch {}
@@ -6780,6 +6781,49 @@ KEY BACKEND ROUTES:
           await fsP.writeFile(memPath, existing + correction, 'utf-8');
           console.log('[AI Memory] Auto-saved correction to memory');
         } catch {}
+      }
+
+      if (actionTaken && allToolResults.length > 0) {
+        try {
+          let existing = '';
+          try { existing = await fsP.readFile(memPath, 'utf-8'); } catch {}
+          const haTools = allToolResults.filter(r => r.name === 'ha_list_entities' || r.name === 'ha_discover' || r.name === 'ha_get_state');
+          const themeTools = allToolResults.filter(r => r.name === 'update_app_theme' && r.success);
+          const codeTools = allToolResults.filter(r => (r.name === 'edit_file' || r.name === 'write_file') && r.success);
+          const entries: string[] = [];
+          const today = new Date().toISOString().split('T')[0];
+          if (haTools.length > 0) {
+            const entities = haTools.flatMap(r => {
+              if (r.result?.entities) return r.result.entities.map((e: any) => e.entity_id).slice(0, 10);
+              if (r.result?.entity_id) return [r.result.entity_id];
+              return [];
+            });
+            if (entities.length > 0) entries.push(`HA entities used (${today}): ${entities.join(', ')}`);
+          }
+          if (themeTools.length > 0) {
+            entries.push(`Theme changed (${today}): ${themeTools.map(r => JSON.stringify(r.result?.applied || {}).substring(0, 200)).join('; ')}`);
+          }
+          if (codeTools.length > 0) {
+            const files = [...new Set(codeTools.map(r => r.result?.file || r.result?.filePath || '').filter(Boolean))];
+            if (files.length > 0) entries.push(`Code edited (${today}): ${files.join(', ')}`);
+          }
+          if (entries.length > 0) {
+            const autoSection = `\n\n## Auto-log (${today})\n${entries.join('\n')}\n`;
+            const MAX_MEMORY = 15000;
+            let newContent = existing + autoSection;
+            if (newContent.length > MAX_MEMORY) {
+              const sections = newContent.split(/\n## /);
+              while (newContent.length > MAX_MEMORY && sections.length > 2) {
+                sections.splice(1, 1);
+                newContent = sections.join('\n## ');
+              }
+            }
+            await fsP.writeFile(memPath, newContent, 'utf-8');
+            console.log(`[AI Memory] Auto-saved ${entries.length} entries`);
+          }
+        } catch (memErr: any) {
+          console.error('[AI Memory] Auto-save failed:', memErr.message?.substring(0, 100));
+        }
       }
 
     } catch (err: any) {
