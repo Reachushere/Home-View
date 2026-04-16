@@ -6305,12 +6305,16 @@ HA DASHBOARD EDITING:
 4. Tell Bryn to refresh
 
 HA AUTOMATION MANAGEMENT:
-1. ha_list_entities(search:"automation X") → find entity
-2. ha_get_state → get attributes.id (the UNIQUE_ID, NOT entity_id)
-3. ha_config_entries(method:"GET", path:"/api/config/automation/config/UNIQUE_ID") → read config
-4. ha_config_entries(method:"PUT", path:"/api/config/automation/config/UNIQUE_ID", body:{...}) → update
-5. ha_config_entries(method:"POST", path:"/api/config/automation/config/NEW_ID", body:{alias, trigger, condition, action}) → create new
-6. ha_service_call(domain:"automation", service:"trigger"/"turn_on"/"turn_off", entity_id:"automation.X") → control
+• To CREATE a new automation: use ha_create_automation(alias, trigger, action, condition?, mode?, description?)
+  — This is the preferred tool. It handles slug generation and the correct API call.
+• To CLONE/COPY an existing automation:
+  1. ha_list_entities(search:"automation X") → find entity_id
+  2. ha_get_state(entity_id:"automation.xyz") → read attributes (has trigger, action, condition in attributes)
+  3. ha_create_automation with the same trigger/action/condition but a new alias
+  — Do NOT try to read /api/config/automation/config/ — the attributes from ha_get_state contain everything you need.
+• To CONTROL: ha_service_call(domain:"automation", service:"trigger"/"turn_on"/"turn_off", entity_id:"automation.X")
+• To UPDATE: ha_config_entries(method:"PUT", path:"/api/config/automation/config/SLUG", body:{alias, trigger, condition, action})
+  — The SLUG is the lowercase alias with spaces→underscores (e.g. "My Auto" → "my_auto")
 
 ANNOUNCEMENTS:
 • ha_announce(message:"...", target:"everywhere") — all speakers
