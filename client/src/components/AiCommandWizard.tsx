@@ -250,7 +250,7 @@ function ImageMarkup({ imageSrc, onDone, onCancel }: { imageSrc: string; onDone:
 
 const thinkingKeyframes = `
 @keyframes ai-dot-bounce {
-  0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.85; }
   40% { transform: translateY(-6px); opacity: 1; }
 }
 @keyframes ai-shimmer {
