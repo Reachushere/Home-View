@@ -400,6 +400,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   const userScrolledRef = useRef(false);
   const [customWidth, setCustomWidth] = useState<number | null>(null);
   const [isResizing, setIsResizing] = useState(false);
+  const resizeJustEndedRef = useRef(false);
   const resizeStartRef = useRef<{ x: number; width: number } | null>(null);
 
   useEffect(() => {
@@ -1082,7 +1083,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       justifyContent: position ? 'flex-start' : 'center',
       background: 'rgba(0,0,0,0.5)',
       backdropFilter: 'blur(4px)',
-    }} data-testid="ai-command-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+    }} data-testid="ai-command-overlay" onClick={(e) => { if (e.target === e.currentTarget && !resizeJustEndedRef.current && !isDragging) onClose(); }}>
       <div ref={panelRef} style={panelStyle} data-testid="ai-command-panel">
         {!expanded && (
           <>
