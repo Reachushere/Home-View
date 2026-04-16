@@ -9,10 +9,38 @@ import path from "path";
 import fs from "fs/promises";
 import { execSync } from "child_process";
 
+import WebSocket from 'ws';
+
 const HOME_ASSISTANT_URL = process.env.HOME_ASSISTANT_URL_OVERRIDE || process.env.HOME_ASSISTANT_URL || "https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa";
 const tokenFromEnvAi = process.env.HOME_ASSISTANT_TOKEN || "";
 const urlFromEnvAi = process.env.HOME_ASSISTANT_URL || "";
 const HOME_ASSISTANT_TOKEN = tokenFromEnvAi.startsWith("eyJ") ? tokenFromEnvAi : (urlFromEnvAi.startsWith("eyJ") ? urlFromEnvAi : tokenFromEnvAi);
+
+function haWebSocket(msgType: string, msgData?: Record<string, any>, timeoutMs = 15000): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const wsUrl = HOME_ASSISTANT_URL.replace(/^http/, 'ws').replace(/\/$/, '') + '/api/websocket';
+    const ws = new WebSocket(wsUrl);
+    let msgId = 1;
+    const timer = setTimeout(() => { ws.close(); reject(new Error('HA WebSocket timeout')); }, timeoutMs);
+
+    ws.on('open', () => {});
+    ws.on('message', (raw: WebSocket.Data) => {
+      const msg = JSON.parse(raw.toString());
+      if (msg.type === 'auth_required') {
+        ws.send(JSON.stringify({ type: 'auth', access_token: HOME_ASSISTANT_TOKEN }));
+      } else if (msg.type === 'auth_ok') {
+        ws.send(JSON.stringify({ id: msgId, type: msgType, ...msgData }));
+      } else if (msg.type === 'auth_invalid') {
+        clearTimeout(timer); ws.close(); reject(new Error('HA auth invalid'));
+      } else if (msg.type === 'result') {
+        clearTimeout(timer); ws.close();
+        if (msg.success) resolve(msg.result);
+        else reject(new Error(msg.error?.message || 'HA WebSocket error'));
+      }
+    });
+    ws.on('error', (e: Error) => { clearTimeout(timer); reject(e); });
+  });
+}
 
 const pendingConfirmations = new Map<string, { name: string; arguments: any; createdAt: number }>();
 const CONFIRM_TTL_MS = 5 * 60 * 1000;
@@ -1494,21 +1522,15 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
         if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
           return { success: false, result: { error: "Home Assistant not configured" } };
         }
-        const haUrlList = HOME_ASSISTANT_URL.replace(/\/$/, '');
         try {
-          const resp = await fetch(`${haUrlList}/api/lovelace/dashboards`, {
-            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-          });
-          if (!resp.ok) return { success: false, result: { error: `HA list dashboards error: ${resp.status}` } };
-          const dashboards = await resp.json();
+          const dashboards = await haWebSocket('lovelace/dashboards/list');
           const summary = (dashboards as any[]).map((d: any) => ({
             url_path: d.url_path,
             title: d.title,
             mode: d.mode,
             require_admin: d.require_admin || false,
           }));
-          summary.unshift({ url_path: 'lovelace', title: 'Default (Overview)', mode: 'storage', require_admin: false });
-          return { success: true, result: { dashboards: summary, hint: "Pass url_path to ha_dashboard_read/write. Do NOT add 'lovelace-' prefix — HA adds it automatically in the browser URL." } };
+          return { success: true, result: { dashboards: summary, hint: "Pass url_path to ha_dashboard_read/write. Do NOT add 'lovelace-' prefix — HA adds it automatically in the browser URL. Only 'storage' mode dashboards can be read/written via API. 'yaml' mode dashboards are edited via YAML files on the Pi." } };
         } catch (err: any) {
           return { success: false, result: { error: `HA list dashboards failed: ${err.message}` } };
         }
@@ -1518,21 +1540,16 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
         if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
           return { success: false, result: { error: "Home Assistant not configured" } };
         }
-        const haUrlDash = HOME_ASSISTANT_URL.replace(/\/$/, '');
-        let dashPath = args.dashboard || 'lovelace';
-        if (dashPath.startsWith('lovelace-')) dashPath = dashPath.replace('lovelace-', '');
+        let dashPath = args.dashboard || null;
+        if (dashPath?.startsWith('lovelace-')) dashPath = dashPath.replace('lovelace-', '');
         try {
-          const url = dashPath === 'lovelace'
-            ? `${haUrlDash}/api/lovelace/config`
-            : `${haUrlDash}/api/lovelace/config/${dashPath}`;
-          const resp = await fetch(url, {
-            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-          });
-          if (!resp.ok) return { success: false, result: { error: `HA dashboard '${dashPath}' not found or API error: ${resp.status}. Use ha_list_dashboards to find the correct url_path.` } };
-          const config = await resp.json();
-          return { success: true, result: { dashboard: dashPath, viewCount: config.views?.length || 0, config } };
+          const wsMsg: Record<string, any> = {};
+          if (dashPath && dashPath !== 'lovelace') wsMsg.url_path = dashPath;
+          const config = await haWebSocket('lovelace/config', wsMsg);
+          const resolvedPath = dashPath || 'lovelace';
+          return { success: true, result: { dashboard: resolvedPath, viewCount: config.views?.length || 0, config } };
         } catch (err: any) {
-          return { success: false, result: { error: `HA dashboard read failed: ${err.message}` } };
+          return { success: false, result: { error: `HA dashboard '${dashPath || 'default'}' read failed: ${err.message}. Use ha_list_dashboards to find available dashboards. Only 'storage' mode dashboards can be read via API.` } };
         }
       }
 
@@ -1540,25 +1557,15 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
         if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
           return { success: false, result: { error: "Home Assistant not configured" } };
         }
-        const haUrlDashW = HOME_ASSISTANT_URL.replace(/\/$/, '');
-        let dashPathW = args.dashboard || 'lovelace';
-        if (dashPathW.startsWith('lovelace-')) dashPathW = dashPathW.replace('lovelace-', '');
+        let dashPathW = args.dashboard || null;
+        if (dashPathW?.startsWith('lovelace-')) dashPathW = dashPathW.replace('lovelace-', '');
         try {
-          const url = dashPathW === 'lovelace'
-            ? `${haUrlDashW}/api/lovelace/config`
-            : `${haUrlDashW}/api/lovelace/config/${dashPathW}`;
-          const resp = await fetch(url, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify(args.config),
-          });
-          if (!resp.ok) {
-            const errText = await resp.text().catch(() => '');
-            return { success: false, result: { error: `HA dashboard write failed: ${resp.status} ${errText.substring(0, 300)}. Use ha_list_dashboards to verify the correct url_path.` } };
-          }
-          return { success: true, result: { message: "Dashboard updated successfully. Refresh your HA browser to see changes.", dashboard: dashPathW } };
+          const wsMsg: Record<string, any> = { config: args.config };
+          if (dashPathW && dashPathW !== 'lovelace') wsMsg.url_path = dashPathW;
+          await haWebSocket('lovelace/config/save', wsMsg);
+          return { success: true, result: { message: "Dashboard updated successfully. Refresh your HA browser to see changes.", dashboard: dashPathW || 'lovelace' } };
         } catch (err: any) {
-          return { success: false, result: { error: `HA dashboard write failed: ${err.message}` } };
+          return { success: false, result: { error: `HA dashboard write failed: ${err.message}. Use ha_list_dashboards to verify the correct url_path. Only 'storage' mode dashboards can be written via API.` } };
         }
       }
 

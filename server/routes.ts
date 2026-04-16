@@ -6392,8 +6392,8 @@ HOME: ha_list_entities, ha_discover, ha_get_state, ha_list_dashboards, ha_dashbo
   • ha_list_entities: search (text), domain (light/switch/sensor/media_player/etc), limit
   • ha_discover: include (all/devices/entities/automations/areas/scenes)
   • ha_get_state: entity_id (required)
-  • ha_list_dashboards: lists all HA Lovelace dashboards with their url_path — use BEFORE ha_dashboard_read/write if unsure of the dashboard name
-  • ha_dashboard_read/write: pass url_path from ha_list_dashboards (e.g. 'test-home'). The 'lovelace-' prefix in browser URLs is automatic — do NOT include it
+  • ha_list_dashboards: lists all HA Lovelace dashboards with their url_path — use BEFORE ha_dashboard_read/write if unsure of the dashboard name. Uses WebSocket API.
+  • ha_dashboard_read/write: pass url_path from ha_list_dashboards. Uses WebSocket API. IMPORTANT: 'Test-home' is NOT a separate dashboard — it's View 0 (tab) inside the default 'lovelace' dashboard. The default dashboard has 11 views/tabs including Test-home, Home, Pug, Batteries, Media Test, etc. To modify Test-home, read the default dashboard (no url_path), find the view by title, edit its cards, then write back.
   • ha_service_call: domain, service, entity_id, service_data (JSON object with extra params like brightness, color_temp, etc.)
   • ha_announce: message, target (everywhere/kitchen/bathroom/bedroom)
   • spotify_control: action (play/pause/next/previous/volume/search/queue), query, volume (0-100), device
