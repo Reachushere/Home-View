@@ -1403,7 +1403,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
             </div>
           ))}
 
-          {(activeToolName || thinkingPhase) && !pendingConfirm && (
+          {loading && !pendingConfirm && (
             <div style={{
               display: 'flex',
               alignItems: 'center',

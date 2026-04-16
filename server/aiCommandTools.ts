@@ -320,6 +320,26 @@ export const AI_COMMAND_TOOLS = [
   {
     type: "function" as const,
     function: {
+      name: "ha_element_patch",
+      description: "Surgically patch a single element inside a view's cards/elements tree without re-sending the whole view. BEST for small edits like adding/changing state_image, image, style props, tap_action, etc. The server reads the view, finds the target element by matching criteria (entity or index path), applies the patch (shallow merge at the specified key path), then writes only that view back. Much more reliable than ha_view_write for large views.",
+      parameters: {
+        type: "object",
+        properties: {
+          dashboard: { type: "string", description: "Dashboard url_path. Omit or 'lovelace' for the default dashboard." },
+          view_index: { type: "number", description: "Zero-based view index (e.g. 0 for Test-home). Use this OR view_title." },
+          view_title: { type: "string", description: "View title (case-insensitive). Use this OR view_index." },
+          match_entity: { type: "string", description: "Find the element whose 'entity' property equals this value (e.g. 'timer.bryn_meds'). Searches recursively through cards/elements." },
+          match_index_path: { type: "array", items: { type: "number" }, description: "Alternative to match_entity: array of indices to walk into the view tree, e.g. [0,5] means view.cards[0].elements[5]." },
+          patch: { type: "object", description: "Object of properties to set on the matched element (shallow merge). E.g. { state_image: { idle: '/local/x.gif' } } or { style: { left: '50%' } }." },
+          remove_keys: { type: "array", items: { type: "string" }, description: "Optional list of property names to delete from the matched element before applying patch." },
+        },
+        required: ["patch"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
       name: "ha_config_entries",
       description: "List HA config entries, integrations, or call any HA REST API endpoint. For advanced HA interactions like reading/writing automations, scripts, helpers, etc.",
       parameters: {
@@ -1722,6 +1742,83 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           return { success: true, result: { message: `View '${args.view_config.title || viewIdx}' updated successfully. Refresh HA browser to see changes.`, dashboard: dashPathVW || 'lovelace', view_index: viewIdx } };
         } catch (err: any) {
           return { success: false, result: { error: `HA view write failed: ${err.message}` } };
+        }
+      }
+
+      case "ha_element_patch": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+          return { success: false, result: { error: "Home Assistant not configured" } };
+        }
+        let dashPathEP = args.dashboard || null;
+        if (dashPathEP?.startsWith('lovelace-')) dashPathEP = dashPathEP.replace('lovelace-', '');
+        try {
+          const wsMsgR: Record<string, any> = {};
+          if (dashPathEP && dashPathEP !== 'lovelace') wsMsgR.url_path = dashPathEP;
+          const config = await haWebSocket('lovelace/config', wsMsgR);
+          const views = config.views || [];
+          let viewIdx = -1;
+          if (args.view_index !== undefined && args.view_index !== null) {
+            viewIdx = args.view_index;
+          } else if (args.view_title) {
+            viewIdx = views.findIndex((v: any) => v && v.title && typeof v.title === 'string' && v.title.toLowerCase() === args.view_title.toLowerCase());
+          } else {
+            viewIdx = 0;
+          }
+          if (viewIdx < 0 || viewIdx >= views.length || !views[viewIdx]) {
+            const viewList = views.map((v: any, i: number) => `${i}: ${(v && v.title) || '(null)'}`).join(', ');
+            return { success: false, result: { error: `View not found or null. Available views: ${viewList}` } };
+          }
+          const view = views[viewIdx];
+
+          // Find target element
+          let target: any = null;
+          let targetPath: string[] = [];
+          if (args.match_index_path && Array.isArray(args.match_index_path)) {
+            let node: any = view;
+            for (const idx of args.match_index_path) {
+              const container = node.cards || node.elements || node.children || null;
+              if (!container || !Array.isArray(container) || idx < 0 || idx >= container.length) {
+                return { success: false, result: { error: `Index path invalid at ${idx}` } };
+              }
+              node = container[idx];
+              targetPath.push(String(idx));
+            }
+            target = node;
+          } else if (args.match_entity) {
+            const findByEntity = (node: any, path: string[]): { el: any, path: string[] } | null => {
+              if (!node || typeof node !== 'object') return null;
+              if (node.entity === args.match_entity) return { el: node, path };
+              for (const key of ['cards', 'elements', 'children']) {
+                if (Array.isArray(node[key])) {
+                  for (let i = 0; i < node[key].length; i++) {
+                    const found = findByEntity(node[key][i], [...path, `${key}[${i}]`]);
+                    if (found) return found;
+                  }
+                }
+              }
+              return null;
+            };
+            const found = findByEntity(view, []);
+            if (!found) {
+              return { success: false, result: { error: `No element found with entity '${args.match_entity}' in view ${viewIdx}` } };
+            }
+            target = found.el;
+            targetPath = found.path;
+          } else {
+            return { success: false, result: { error: "Must provide match_entity or match_index_path" } };
+          }
+
+          if (Array.isArray(args.remove_keys)) {
+            for (const k of args.remove_keys) delete target[k];
+          }
+          Object.assign(target, args.patch || {});
+
+          const wsMsgW: Record<string, any> = { config };
+          if (dashPathEP && dashPathEP !== 'lovelace') wsMsgW.url_path = dashPathEP;
+          await haWebSocket('lovelace/config/save', wsMsgW);
+          return { success: true, result: { message: `Patched element at ${targetPath.join('.') || '(root)'} in view ${viewIdx}. Refresh HA to see changes.`, view_index: viewIdx, element_path: targetPath, patched_element: target } };
+        } catch (err: any) {
+          return { success: false, result: { error: `ha_element_patch failed: ${err.message}` } };
         }
       }
 
