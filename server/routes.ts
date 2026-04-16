@@ -6645,7 +6645,7 @@ KEY BACKEND ROUTES:
         return false;
       }
 
-      const MAX_ROUNDS = isCodeTask ? 35 : 25;
+      const MAX_ROUNDS = isCodeTask ? 60 : 40;
       let totalTokens = 0;
       let allToolResults: any[] = [];
       let actionTaken = false;
