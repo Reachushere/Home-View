@@ -6448,6 +6448,11 @@ WEB & KNOWLEDGE: web_search, web_fetch, github_search, github_file, github_tree,
   • convert_code: code, from, to — translate code between ANY languages/frameworks (Python→TS, Vue→React, Django→Express, Prisma→Drizzle, etc.)
   • ai_subtask: task, input, model — delegate sub-tasks to gpt-4.1-mini or gpt-4.1-nano. You orchestrate, it executes.
 
+CONTEXT & RESEARCH: smart_context, deep_research, pair_program
+  • smart_context: question, scope (narrow/medium/wide) — intelligently loads the most relevant files into your working context. Scans all project files, ranks by relevance, returns excerpts and exports. Simulates a massive context window.
+  • deep_research: topic, depth (quick/standard/deep), goal — comprehensive multi-source research on ANY technology. Chains web search + page fetch + npm registry + GitHub repos + AI synthesis into a single report.
+  • pair_program: problem, current_code, approach (implement/explain-first/debug) — interactive pair programming with a secondary AI. Walks through the solution step-by-step with explanations and code.
+
 IDE-LEVEL: code_complete, code_review_tool, generate_tests
   • code_complete: code, file_path, instruction, max_lines — intelligent code completion like Copilot. Generates continuations matching existing style.
   • code_review_tool: code, file_path, focus (bugs/security/performance/style/all) — senior-engineer-level code review with line-specific feedback.
@@ -6579,7 +6584,7 @@ When Bryn asks about your capabilities, what you can do, or how you compare to o
 
 FACTS ABOUT YOUR SETUP (use these to form your own assessment):
 • You are GPT-4.1 running as a specialist assistant for one project (UniCal)
-• You have 78 tools spanning: filesystem, database, git, shell, Home Assistant, Spotify, email, calendar, OneDrive, web search, GitHub code/tree/search access, npm registry, code completion (like Copilot), code review, test generation, multi-file refactoring, dependency analysis, project snapshots, API testing, multi-language code analysis AND conversion, stack detection for ANY project, and multi-LLM orchestration
+• You have 81 tools spanning: filesystem, database, git, shell, Home Assistant, Spotify, email, calendar, OneDrive, web search, GitHub code/tree/search access, npm registry, smart context loading, deep multi-source research, pair programming, code completion (like Copilot), code review, test generation, multi-file refactoring, dependency analysis, project snapshots, API testing, multi-language code analysis AND conversion, stack detection for ANY project, and multi-LLM orchestration
 • You can delegate sub-tasks to secondary models (gpt-4.1-mini, gpt-4.1-nano) via ai_subtask
 • You can read files from any public GitHub repo (github_file), see full repo structure (github_tree), and search for code examples (github_search)
 • You can auto-detect the tech stack of ANY project — local or remote — via stack_analyze. You're not limited to TypeScript.
@@ -6589,6 +6594,9 @@ FACTS ABOUT YOUR SETUP (use these to form your own assessment):
 • You can see the entire project at once via project_snapshot — simulates a massive context window
 • You can do safe multi-file refactoring via analyze_dependencies + multi_file_edit (with dry-run preview)
 • You can test API endpoints directly via http_test — no browser needed
+• smart_context automatically loads the most relevant files for any question — simulates a massive context window by finding exactly what's needed
+• deep_research chains web search + page fetch + npm + GitHub + AI synthesis for comprehensive reports on ANY topic
+• pair_program provides interactive step-by-step coding sessions with a secondary AI
 • IDE-level capabilities: code_complete (Copilot-style completions), code_review_tool (senior engineer PR reviews), generate_tests (auto-generate test suites)
 • You have persistent memory across sessions, 100-message history with smart compression, up to 60 reasoning rounds
 • You run on a Raspberry Pi with limited compute
@@ -6688,7 +6696,7 @@ WHEN ASSESSING YOURSELF:
         messages.push({ role: "user", content: message.trim() });
       }
 
-      const readOnlyTools = new Set(["read_file", "list_directory", "search_code", "search_tasks", "get_semester_info", "check_build", "read_logs", "git_diff", "get_project_map", "db_schema", "http_check", "memory_read", "process_check", "analyze_ui", "smoke_test", "take_screenshot", "browser_test", "check_performance", "conversation_history", "health_check", "web_search", "web_fetch", "plan_task", "codebase_explore", "code_reference", "github_search", "github_file", "github_tree", "npm_info", "ai_subtask", "project_snapshot", "explain_code", "http_test", "analyze_dependencies", "stack_analyze", "convert_code", "code_complete", "code_review_tool", "generate_tests"]);
+      const readOnlyTools = new Set(["read_file", "list_directory", "search_code", "search_tasks", "get_semester_info", "check_build", "read_logs", "git_diff", "get_project_map", "db_schema", "http_check", "memory_read", "process_check", "analyze_ui", "smoke_test", "take_screenshot", "browser_test", "check_performance", "conversation_history", "health_check", "web_search", "web_fetch", "plan_task", "codebase_explore", "code_reference", "github_search", "github_file", "github_tree", "npm_info", "ai_subtask", "project_snapshot", "explain_code", "http_test", "analyze_dependencies", "stack_analyze", "convert_code", "code_complete", "code_review_tool", "generate_tests", "smart_context", "deep_research", "pair_program"]);
       const destructiveTools = new Set(["delete_task", "bulk_delete_tasks", "bulk_complete_tasks", "run_shell_command", "git_commit_and_push", "install_package", "generate_image", "db_migrate", "multi_file_edit"]);
 
       function isToolDestructive(fnName: string, fnArgs: any): boolean {

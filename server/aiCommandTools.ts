@@ -1018,6 +1018,54 @@ export const AI_COMMAND_TOOLS = [
   {
     type: "function" as const,
     function: {
+      name: "smart_context",
+      description: "Intelligently load the most relevant files and data into your working context before answering a complex question. Analyzes the question, identifies which files/schemas/routes are relevant, reads them, and returns a compressed summary. Simulates having a massive context window by loading exactly what you need. Use before answering architectural questions, debugging complex issues, or making cross-file changes.",
+      parameters: {
+        type: "object",
+        properties: {
+          question: { type: "string", description: "The question or task you need context for (e.g. 'how does the calendar rendering work?', 'what connects the homework box to the API?')" },
+          scope: { type: "string", enum: ["narrow", "medium", "wide"], description: "How much context to load. narrow=1-3 files, medium=5-8 files, wide=10+ files. Default 'medium'." },
+        },
+        required: ["question"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "deep_research",
+      description: "Perform deep research on ANY topic, technology, or project by automatically chaining multiple knowledge tools. Combines: web_search + web_fetch + github_search + code_reference + npm_info into a single comprehensive research report. Use when Bryn asks about an unfamiliar technology, or when you need to understand something you've never seen before. Returns a thorough, multi-source analysis.",
+      parameters: {
+        type: "object",
+        properties: {
+          topic: { type: "string", description: "What to research (e.g. 'Svelte 5 runes', 'Bun runtime', 'tRPC v11', 'Elixir Phoenix LiveView', 'Rust Axum framework')" },
+          depth: { type: "string", enum: ["quick", "standard", "deep"], description: "Research depth. quick=1-2 sources, standard=3-4, deep=5+ sources with code examples. Default 'standard'." },
+          goal: { type: "string", description: "What you need to know (e.g. 'how to implement SSR', 'compare to Express', 'migrate from X to Y')" },
+        },
+        required: ["topic"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "pair_program",
+      description: "Interactive pair programming mode. Given a problem description, generates a step-by-step implementation plan with code for each step, then walks through it. Simulates having a senior dev pair with you. Use for complex features, debugging sessions, or when Bryn wants to understand the approach before you implement it.",
+      parameters: {
+        type: "object",
+        properties: {
+          problem: { type: "string", description: "What needs to be built/fixed (e.g. 'add real-time notifications', 'fix the calendar rendering bug', 'implement drag-and-drop task reordering')" },
+          current_code: { type: "string", description: "Current relevant code (optional)" },
+          file_path: { type: "string", description: "File being worked on (optional)" },
+          approach: { type: "string", enum: ["implement", "explain-first", "debug"], description: "implement=just do it, explain-first=explain plan then code, debug=diagnose then fix. Default 'explain-first'." },
+        },
+        required: ["problem"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
       name: "code_complete",
       description: "Generate intelligent code completions, like an IDE autocomplete/Copilot. Given a partial code snippet and optional surrounding context, generates the most likely continuation. Use when Bryn shares incomplete code and wants you to finish it, or when you need to generate boilerplate that fits the existing patterns.",
       parameters: {
@@ -3136,6 +3184,236 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           };
         } catch (e: any) {
           return { success: false, result: { error: `AI subtask failed: ${e.message?.substring(0, 300)}` } };
+        }
+      }
+
+      case "smart_context": {
+        const question = args.question;
+        const scope = args.scope || 'medium';
+        try {
+          const { execSync } = await import('child_process');
+          const { readFileSync } = await import('fs');
+          const path = await import('path');
+
+          const keywords = question.toLowerCase().split(/\s+/).filter((w: string) => w.length > 3 && !['what', 'how', 'does', 'the', 'this', 'that', 'with', 'from', 'have', 'been', 'when', 'where', 'which', 'would', 'could', 'should'].includes(w));
+
+          const maxFiles = scope === 'narrow' ? 3 : scope === 'wide' ? 12 : 6;
+          const relevantFiles: Array<{ file: string; relevance: number; excerpt: string }> = [];
+
+          const allFiles = execSync(`find . -type f \\( -name '*.ts' -o -name '*.tsx' \\) -not -path '*/node_modules/*' -not -path '*/.git/*' -not -path '*/dist/*' | head -100`, { cwd: projectRoot, timeout: 10000, encoding: 'utf-8' }).trim().split('\n').filter(Boolean);
+
+          for (const file of allFiles) {
+            try {
+              const content = readFileSync(path.default.join(projectRoot, file), 'utf-8');
+              const lower = content.toLowerCase();
+              let relevance = 0;
+              const matchedKeywords: string[] = [];
+
+              for (const kw of keywords) {
+                const count = (lower.match(new RegExp(kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || []).length;
+                if (count > 0) {
+                  relevance += Math.min(count, 10);
+                  matchedKeywords.push(kw);
+                }
+              }
+
+              if (file.includes('dashboard')) relevance += 3;
+              if (file.includes('route')) relevance += 2;
+              if (file.includes('schema')) relevance += 2;
+              if (file.includes('storage')) relevance += 1;
+
+              if (relevance > 0) {
+                const lines = content.split('\n');
+                const excerptLines: string[] = [];
+                for (let i = 0; i < lines.length && excerptLines.length < 20; i++) {
+                  const lineLower = lines[i].toLowerCase();
+                  if (matchedKeywords.some(kw => lineLower.includes(kw)) || lines[i].match(/^(export|function|const|interface|type|class)\s/)) {
+                    excerptLines.push(`L${i + 1}: ${lines[i].substring(0, 150)}`);
+                  }
+                }
+                relevantFiles.push({ file, relevance, excerpt: excerptLines.join('\n') });
+              }
+            } catch {}
+          }
+
+          relevantFiles.sort((a, b) => b.relevance - a.relevance);
+          const topFiles = relevantFiles.slice(0, maxFiles);
+
+          const contextSections: string[] = [];
+          for (const f of topFiles) {
+            const fullPath = path.default.join(projectRoot, f.file);
+            try {
+              const content = readFileSync(fullPath, 'utf-8');
+              const lines = content.split('\n');
+              const exportLines = lines.filter(l => l.match(/^(export|function|const\s+\w+\s*=|interface|type|class)\s/)).slice(0, 15).map(l => l.substring(0, 200));
+              contextSections.push(`=== ${f.file} (${lines.length} lines, relevance: ${f.relevance}) ===\nExports/Key lines:\n${exportLines.join('\n')}\n\nRelevant excerpts:\n${f.excerpt}`);
+            } catch {}
+          }
+
+          const totalContext = contextSections.join('\n\n');
+          return {
+            success: true,
+            result: {
+              question,
+              scope,
+              filesAnalyzed: allFiles.length,
+              filesLoaded: topFiles.length,
+              files: topFiles.map(f => ({ path: f.file, relevance: f.relevance })),
+              context: totalContext.substring(0, 12000),
+              tip: 'Use this context to answer the question. For specific details, use read_file with offset/limit on the most relevant files.',
+            },
+          };
+        } catch (e: any) {
+          return { success: false, result: { error: `Smart context failed: ${e.message?.substring(0, 300)}` } };
+        }
+      }
+
+      case "deep_research": {
+        const topic = args.topic;
+        const depth = args.depth || 'standard';
+        const goal = args.goal || '';
+        try {
+          const OpenAI = (await import("openai")).default;
+          const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+          const sources: Array<{ type: string; data: any }> = [];
+
+          const searchUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(topic + ' programming guide')}`;
+          try {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 10000);
+            const resp = await fetch(searchUrl, {
+              signal: controller.signal,
+              headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' },
+            });
+            clearTimeout(timeout);
+            const html = await resp.text();
+            const resultMatches = html.match(/class="result__a"[^>]*href="([^"]+)"[^>]*>([^<]+)/g) || [];
+            const webResults = resultMatches.slice(0, depth === 'quick' ? 2 : depth === 'deep' ? 6 : 4).map(m => {
+              const urlMatch = m.match(/href="([^"]+)"/);
+              const titleMatch = m.match(/>([^<]+)$/);
+              return { url: urlMatch?.[1] || '', title: titleMatch?.[1] || '' };
+            });
+            sources.push({ type: 'web_search', data: webResults });
+          } catch {}
+
+          if (depth !== 'quick') {
+            const topUrl = sources[0]?.data?.[0]?.url;
+            if (topUrl) {
+              try {
+                let fetchUrl = topUrl;
+                if (fetchUrl.includes('duckduckgo.com/l/?')) {
+                  const uddg = new URL(fetchUrl).searchParams.get('uddg');
+                  if (uddg) fetchUrl = uddg;
+                }
+                const ctrl = new AbortController();
+                const t = setTimeout(() => ctrl.abort(), 10000);
+                const r = await fetch(fetchUrl, { signal: ctrl.signal, headers: { 'User-Agent': 'Mozilla/5.0' } });
+                clearTimeout(t);
+                const text = await r.text();
+                const stripped = text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').substring(0, 4000);
+                sources.push({ type: 'web_page', data: { url: fetchUrl, content: stripped } });
+              } catch {}
+            }
+          }
+
+          const pkgName = topic.toLowerCase().replace(/\s+/g, '-');
+          try {
+            const ctrl = new AbortController();
+            const t = setTimeout(() => ctrl.abort(), 5000);
+            const r = await fetch(`https://registry.npmjs.org/${encodeURIComponent(pkgName)}`, { signal: ctrl.signal });
+            clearTimeout(t);
+            if (r.ok) {
+              const pkg = await r.json() as any;
+              sources.push({ type: 'npm', data: { name: pkg.name, description: pkg.description, version: pkg['dist-tags']?.latest, readme: (pkg.readme || '').substring(0, 2000) } });
+            }
+          } catch {}
+
+          if (depth === 'deep') {
+            try {
+              const ghSearch = `https://api.github.com/search/repositories?q=${encodeURIComponent(topic)}&sort=stars&per_page=3`;
+              const ctrl = new AbortController();
+              const t = setTimeout(() => ctrl.abort(), 8000);
+              const r = await fetch(ghSearch, { signal: ctrl.signal, headers: { 'User-Agent': 'BrynAssist/1.0', 'Accept': 'application/vnd.github.v3+json' } });
+              clearTimeout(t);
+              if (r.ok) {
+                const data = await r.json() as any;
+                const repos = (data.items || []).slice(0, 3).map((r: any) => ({ name: r.full_name, stars: r.stargazers_count, description: r.description, language: r.language, url: r.html_url }));
+                sources.push({ type: 'github_repos', data: repos });
+              }
+            } catch {}
+          }
+
+          const sourceSummary = sources.map(s => `[${s.type}]: ${JSON.stringify(s.data).substring(0, 2000)}`).join('\n\n');
+          const synthesis = await openai.chat.completions.create({
+            model: 'gpt-4.1-mini',
+            messages: [
+              { role: 'system', content: 'You are a senior technical researcher. Synthesize the following sources into a comprehensive, practical reference. Include: overview, key concepts, code examples, best practices, and gotchas. Be concise but thorough.' },
+              { role: 'user', content: `Research topic: ${topic}${goal ? `\nGoal: ${goal}` : ''}\n\nSources:\n${sourceSummary}` },
+            ],
+            max_completion_tokens: 2500,
+          });
+
+          return {
+            success: true,
+            result: {
+              topic,
+              depth,
+              sourcesUsed: sources.length,
+              sourceTypes: sources.map(s => s.type),
+              report: synthesis.choices[0]?.message?.content || '',
+              tokens: synthesis.usage?.total_tokens,
+            },
+          };
+        } catch (e: any) {
+          return { success: false, result: { error: `Deep research failed: ${e.message?.substring(0, 300)}` } };
+        }
+      }
+
+      case "pair_program": {
+        const problem = args.problem;
+        const currentCode = args.current_code || '';
+        const filePath = args.file_path || '';
+        const approach = args.approach || 'explain-first';
+        try {
+          let fileContext = '';
+          if (filePath) {
+            try {
+              const { readFileSync } = await import('fs');
+              const path = await import('path');
+              const content = readFileSync(path.default.join(projectRoot, filePath), 'utf-8');
+              const lines = content.split('\n');
+              fileContext = `\nFile: ${filePath} (${lines.length} lines)\nFirst 80 lines:\n${lines.slice(0, 80).join('\n')}`;
+            } catch {}
+          }
+
+          const approachPrompts: Record<string, string> = {
+            'implement': `Provide the complete implementation. For each step: 1) What you're doing, 2) The code, 3) Why this approach. Output working code ready to paste.`,
+            'explain-first': `First explain your approach (numbered steps with rationale). Then provide the code for each step. Walk through it like pair programming — explain your thinking at each decision point.`,
+            'debug': `Diagnose the issue step by step: 1) What symptoms suggest, 2) Most likely root causes (ranked), 3) How to verify each, 4) The fix with code. Think out loud like debugging together.`,
+          };
+
+          const OpenAI = (await import("openai")).default;
+          const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+          const completion = await openai.chat.completions.create({
+            model: 'gpt-4.1-mini',
+            messages: [
+              { role: 'system', content: `You are a senior developer pair-programming with Bryn. ${approachPrompts[approach] || approachPrompts['explain-first']} Be thorough but practical. Use TypeScript/React/Express patterns matching this project's conventions.${fileContext}` },
+              { role: 'user', content: `Problem: ${problem}${currentCode ? `\n\nCurrent code:\n\`\`\`\n${currentCode.substring(0, 5000)}\n\`\`\`` : ''}` },
+            ],
+            max_completion_tokens: 3000,
+          });
+
+          return {
+            success: true,
+            result: {
+              approach,
+              session: completion.choices[0]?.message?.content || '',
+              file: filePath || undefined,
+              tokens: completion.usage?.total_tokens,
+            },
+          };
+        } catch (e: any) {
+          return { success: false, result: { error: `Pair programming failed: ${e.message?.substring(0, 300)}` } };
         }
       }
 
