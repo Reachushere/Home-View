@@ -541,6 +541,8 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
     const handleUp = () => {
       setIsResizing(false);
       resizeStartRef.current = null;
+      resizeJustEndedRef.current = true;
+      setTimeout(() => { resizeJustEndedRef.current = false; }, 200);
       window.removeEventListener('mousemove', handleMove);
       window.removeEventListener('mouseup', handleUp);
     };
