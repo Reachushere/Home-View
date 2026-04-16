@@ -1,4 +1,8 @@
 type: picture-elements
+tap_action:
+  action: none
+hold_action:
+  action: none
 elements:
   - entity: timer.meds_timer_yasu
     tap_action:
