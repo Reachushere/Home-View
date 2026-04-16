@@ -6361,7 +6361,9 @@ NEVER use edit_file for theme changes — update_app_theme stores in DB and appl
 15. "what's due?" / "what should I work on?" → Already in APP STATE. Summarize overdue + today + this week. Prioritize by urgency.
 16. "morning briefing" / "catch me up" → Combine: overdue warnings, today's tasks, upcoming deadlines, weather mention, any HA status.
 17. EXTERNAL INFO / RESEARCH? → web_search(query) → web_fetch(url) for details. Use for: course info, TMU schedules, error solutions, general knowledge, current events.
-18. MULTI-STEP CHAINS:
+18. COMPLEX MULTI-FILE TASK? → plan_task first to decompose, then execute step-by-step. Use codebase_explore to understand cross-file connections before editing.
+19. SCHEMA CHANGE? → edit shared/schema.ts → db_migrate → update server/storage.ts → update routes → update frontend.
+20. MULTI-STEP CHAINS:
     • "remind me about X at Y" → create_task(type:"event", dueDate:Y) + ha_announce if immediate
     • "turn on study mode" → ha_service_call(lights) + spotify_control(focus playlist) in parallel
     • "I'm done for today" → complete tasks due today + ha_announce("Bryn is done studying")
@@ -6400,12 +6402,17 @@ THEME: update_app_theme
 UI: update_ui_setting, analyze_ui
   • update_ui_setting: key (any ui-settings key like hwDividerPercent, hwFloating, etc.), value
 
-CODE: read_file, write_file, edit_file, list_directory, search_code, get_project_map
+CODE: read_file, write_file, edit_file, list_directory, search_code, get_project_map, codebase_explore
   • edit_file: file (path), oldText + newText (string mode, include 3-5 context lines for unique match) OR startLine + endLine + newText (line mode)
   • search_code: query (text to search), path (optional dir/file to search in)
   • read_file: file (path), offset (line number), limit (number of lines)
+  • codebase_explore: searches (up to 5 regex patterns across the codebase) + read_sections (up to 5 file sections) in ONE call. Use for broad investigation.
 
-BUILD/DEPLOY: check_build, restart_application, install_package
+PLANNING: plan_task
+  • plan_task: objective, steps (array of {step, action, tools, files}), risk_level — decompose complex tasks before executing
+
+BUILD/DEPLOY: check_build, restart_application, install_package, db_migrate
+  • db_migrate: force (boolean) — runs drizzle-kit push to sync schema changes to DB
 GIT: git_backup, git_diff, git_commit_and_push
   • git_commit_and_push: message (commit message) — ALWAYS push after code changes
 
@@ -6605,8 +6612,8 @@ KEY BACKEND ROUTES:
         messages.push({ role: "user", content: message.trim() });
       }
 
-      const readOnlyTools = new Set(["read_file", "list_directory", "search_code", "search_tasks", "get_semester_info", "check_build", "read_logs", "git_diff", "get_project_map", "db_schema", "http_check", "memory_read", "process_check", "analyze_ui", "smoke_test", "take_screenshot", "browser_test", "check_performance", "conversation_history", "health_check", "web_search", "web_fetch"]);
-      const destructiveTools = new Set(["delete_task", "bulk_delete_tasks", "bulk_complete_tasks", "run_shell_command", "git_commit_and_push", "install_package", "generate_image"]);
+      const readOnlyTools = new Set(["read_file", "list_directory", "search_code", "search_tasks", "get_semester_info", "check_build", "read_logs", "git_diff", "get_project_map", "db_schema", "http_check", "memory_read", "process_check", "analyze_ui", "smoke_test", "take_screenshot", "browser_test", "check_performance", "conversation_history", "health_check", "web_search", "web_fetch", "plan_task", "codebase_explore"]);
+      const destructiveTools = new Set(["delete_task", "bulk_delete_tasks", "bulk_complete_tasks", "run_shell_command", "git_commit_and_push", "install_package", "generate_image", "db_migrate"]);
 
       function isToolDestructive(fnName: string, fnArgs: any): boolean {
         if (destructiveTools.has(fnName)) return true;

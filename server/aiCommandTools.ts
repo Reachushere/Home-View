@@ -936,6 +936,86 @@ export const AI_COMMAND_TOOLS = [
       },
     },
   },
+  {
+    type: "function" as const,
+    function: {
+      name: "plan_task",
+      description: "Decompose a complex task into ordered steps BEFORE executing. Use this when Bryn asks for something that involves 3+ files or multiple logical stages (e.g. 'add a new page with API endpoint and database table', 'refactor the homework box'). Creates a plan, then execute each step in order. Also use to show Bryn what you're about to do for transparency.",
+      parameters: {
+        type: "object",
+        properties: {
+          objective: { type: "string", description: "What you're trying to accomplish (1-2 sentences)" },
+          steps: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                step: { type: "integer", description: "Step number (1-based)" },
+                action: { type: "string", description: "What to do in this step (1-2 sentences)" },
+                tools: { type: "string", description: "Which tools you'll use (e.g. 'read_file, edit_file, check_build')" },
+                files: { type: "string", description: "Files involved (e.g. 'server/routes.ts, shared/schema.ts')" },
+              },
+              required: ["step", "action"],
+            },
+            description: "Ordered list of steps to complete the task",
+          },
+          risk_level: { type: "string", enum: ["low", "medium", "high"], description: "How risky is this change? Low = cosmetic/text. Medium = logic/feature. High = schema/architecture." },
+        },
+        required: ["objective", "steps"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "codebase_explore",
+      description: "Explore multiple files and code patterns in ONE call. Use this instead of calling read_file and search_code separately when you need broad codebase awareness. Can search for patterns across the entire project AND read specific file sections simultaneously. Returns a combined view of the codebase. Use when investigating bugs, planning refactors, or understanding how features connect across files.",
+      parameters: {
+        type: "object",
+        properties: {
+          searches: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                pattern: { type: "string", description: "Regex pattern to search for across the codebase" },
+                file_glob: { type: "string", description: "Optional file filter (e.g. '*.tsx', 'server/**/*.ts')" },
+              },
+              required: ["pattern"],
+            },
+            description: "Code patterns to search for (up to 5 simultaneous searches)",
+          },
+          read_sections: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                file: { type: "string", description: "File path to read" },
+                offset: { type: "integer", description: "Start line (1-indexed)" },
+                limit: { type: "integer", description: "Number of lines to read (default 100)" },
+              },
+              required: ["file"],
+            },
+            description: "File sections to read simultaneously (up to 5)",
+          },
+          summary_question: { type: "string", description: "Optional: a question to guide what to focus on in the results (e.g. 'How does the homework box get its width?')" },
+        },
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "db_migrate",
+      description: "Run database migration (drizzle push) to sync schema changes. Use after modifying shared/schema.ts to apply changes to the database. Equivalent to 'npm run db:push'.",
+      parameters: {
+        type: "object",
+        properties: {
+          force: { type: "boolean", description: "Use --force flag for destructive changes. Default false. DANGEROUS — confirm with user first." },
+        },
+      },
+    },
+  },
 ];
 
 export async function executeToolCall(name: string, args: Record<string, any>): Promise<{ success: boolean; result: any; needsConfirmation?: boolean; confirmationMessage?: string }> {
@@ -2598,6 +2678,93 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
         checks.overallStatus = allOk ? 'HEALTHY' : 'ISSUES DETECTED';
 
         return { success: true, result: checks };
+      }
+
+      case "plan_task": {
+        const plan = {
+          objective: args.objective,
+          steps: args.steps || [],
+          risk_level: args.risk_level || 'medium',
+          created: new Date().toISOString(),
+          status: 'planned',
+        };
+        console.log(`[AI Plan] ${plan.objective} — ${plan.steps.length} steps (risk: ${plan.risk_level})`);
+        return {
+          success: true,
+          result: {
+            plan,
+            instruction: "Plan created. Now execute each step in order. After each step, verify before moving to the next. If a step fails, diagnose and retry before continuing.",
+          },
+        };
+      }
+
+      case "codebase_explore": {
+        const projectRoot = getProjectRoot();
+        const results: Record<string, any> = {};
+        const searches = (args.searches || []).slice(0, 5);
+        const readSections = (args.read_sections || []).slice(0, 5);
+
+        for (let i = 0; i < searches.length; i++) {
+          const s = searches[i];
+          try {
+            const globArg = s.file_glob ? ` --include='${s.file_glob}'` : '';
+            const grepResult = execSync(
+              `grep -rn '${s.pattern.replace(/'/g, "'\\''")}' --include='*.ts' --include='*.tsx' --include='*.js' --include='*.jsx' --include='*.css'${globArg} . 2>/dev/null | grep -v node_modules | grep -v dist | grep -v '.git/' | head -30`,
+              { cwd: projectRoot, encoding: 'utf-8', timeout: 10000, maxBuffer: 1024 * 1024 }
+            ).trim();
+            const matches = grepResult.split('\n').filter(Boolean).map(line => {
+              const parts = line.match(/^\.\/(.+?):(\d+):(.*)$/);
+              return parts ? { file: parts[1], line: parseInt(parts[2]), content: parts[3].trim().substring(0, 200) } : { raw: line.substring(0, 200) };
+            });
+            results[`search_${i + 1}`] = { pattern: s.pattern, matches, count: matches.length };
+          } catch {
+            results[`search_${i + 1}`] = { pattern: s.pattern, matches: [], count: 0 };
+          }
+        }
+
+        for (let i = 0; i < readSections.length; i++) {
+          const r = readSections[i];
+          try {
+            const filePath = path.join(projectRoot, r.file);
+            const content = await fs.readFile(filePath, 'utf-8');
+            const lines = content.split('\n');
+            const offset = Math.max(0, (r.offset || 1) - 1);
+            const limit = r.limit || 100;
+            const section = lines.slice(offset, offset + limit);
+            results[`file_${i + 1}`] = {
+              file: r.file,
+              fromLine: offset + 1,
+              toLine: offset + section.length,
+              totalLines: lines.length,
+              content: section.map((l, idx) => `${offset + idx + 1}: ${l}`).join('\n').substring(0, 8000),
+            };
+          } catch (e: any) {
+            results[`file_${i + 1}`] = { file: r.file, error: e.message?.substring(0, 200) };
+          }
+        }
+
+        if (args.summary_question) {
+          results.focus = args.summary_question;
+        }
+
+        return { success: true, result: results };
+      }
+
+      case "db_migrate": {
+        const projectRoot = getProjectRoot();
+        try {
+          const forceFlag = args.force ? ' --force' : '';
+          const output = execSync(`npx drizzle-kit push${forceFlag} 2>&1`, {
+            cwd: projectRoot,
+            encoding: 'utf-8',
+            timeout: 30000,
+            maxBuffer: 2 * 1024 * 1024,
+            env: { ...process.env },
+          });
+          return { success: true, result: { output: output.substring(0, 2000), migrated: true } };
+        } catch (e: any) {
+          return { success: false, result: { error: e.message?.substring(0, 500) } };
+        }
       }
 
       case "web_search": {
