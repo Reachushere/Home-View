@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Zap, Send, X, Loader2, CheckCircle, XCircle, AlertTriangle, Trash2, RotateCcw, Maximize2, Minimize2, Pencil, Circle, ArrowRight, Undo2, Check, Scissors, Square, Copy } from 'lucide-react';
+import { Zap, Send, X, Loader2, CheckCircle, XCircle, AlertTriangle, Trash2, RotateCcw, Maximize2, Minimize2, Pencil, Circle, ArrowRight, ArrowDown, Undo2, Check, Scissors, Square, Copy } from 'lucide-react';
 import { queryClient } from '@/lib/queryClient';
 
 function CodeBlock({ code, lang }: { code: string; lang: string }) {
@@ -14,15 +14,15 @@ function CodeBlock({ code, lang }: { code: string; lang: string }) {
   return (
     <div style={{
       position: 'relative', margin: '8px 0', borderRadius: '10px',
-      background: 'rgba(0,0,0,0.45)', border: '1px solid rgba(100,160,255,0.2)',
+      background: '#1a1a2e', border: '1px solid rgba(100,160,255,0.25)',
       overflow: 'hidden',
     }}>
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '4px 10px', background: 'rgba(100,160,255,0.1)',
-        borderBottom: '1px solid rgba(100,160,255,0.15)',
+        padding: '5px 10px', background: 'rgba(100,160,255,0.08)',
+        borderBottom: '1px solid rgba(100,160,255,0.2)',
       }}>
-        <span style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(160,190,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+        <span style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(130,170,255,0.8)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
           {lang || 'code'}
         </span>
         <button
@@ -43,9 +43,10 @@ function CodeBlock({ code, lang }: { code: string; lang: string }) {
       </div>
       <pre style={{
         margin: 0, padding: '10px 12px', overflowX: 'auto',
-        fontSize: '12px', lineHeight: '1.5',
+        fontSize: '12.5px', lineHeight: '1.6',
         fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
-        color: 'rgba(220,230,255,0.95)', whiteSpace: 'pre-wrap', wordBreak: 'break-all',
+        color: '#e8f0ff', whiteSpace: 'pre-wrap', wordBreak: 'break-all',
+        textShadow: '0 0 1px rgba(200,220,255,0.15)',
       }}>
         <code>{code}</code>
       </pre>
@@ -256,6 +257,10 @@ const thinkingKeyframes = `
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
+@keyframes ai-scroll-btn-in {
+  0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
 `;
 
 interface Message {
@@ -379,6 +384,11 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const snippingCanvasRef = useRef<HTMLCanvasElement>(null);
+  const [showScrollBtn, setShowScrollBtn] = useState(false);
+  const userScrolledRef = useRef(false);
+  const [customWidth, setCustomWidth] = useState<number | null>(null);
+  const [isResizing, setIsResizing] = useState(false);
+  const resizeStartRef = useRef<{ x: number; width: number } | null>(null);
 
   useEffect(() => {
     fetch('/api/app-state/ui_wizardStyle')
@@ -425,6 +435,22 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
+    const onScroll = () => {
+      const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+      userScrolledRef.current = !atBottom;
+      setShowScrollBtn(!atBottom);
+    };
+    el.addEventListener('scroll', onScroll);
+    return () => el.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    if (userScrolledRef.current) {
+      setShowScrollBtn(true);
+      return;
+    }
     const scroll = () => el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
     scroll();
     const t1 = setTimeout(scroll, 50);
@@ -436,11 +462,21 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
     if (!loading) return;
     const el = scrollRef.current;
     if (!el) return;
+    if (userScrolledRef.current) return;
     const iv = setInterval(() => {
+      if (userScrolledRef.current) return;
       el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
     }, 300);
     return () => clearInterval(iv);
   }, [loading]);
+
+  const scrollToBottom = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    userScrolledRef.current = false;
+    setShowScrollBtn(false);
+    el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+  }, []);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest('button')) return;
@@ -471,6 +507,33 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       window.removeEventListener('mouseup', handleUp);
     };
   }, [isDragging, dragOffset]);
+
+  const handleResizeStart = useCallback((e: React.MouseEvent, side: 'left' | 'right') => {
+    e.preventDefault();
+    e.stopPropagation();
+    const panel = panelRef.current;
+    if (!panel) return;
+    const rect = panel.getBoundingClientRect();
+    resizeStartRef.current = { x: e.clientX, width: rect.width };
+    setIsResizing(true);
+
+    const handleMove = (ev: MouseEvent) => {
+      if (!resizeStartRef.current) return;
+      const delta = side === 'right'
+        ? ev.clientX - resizeStartRef.current.x
+        : resizeStartRef.current.x - ev.clientX;
+      const newWidth = Math.max(340, Math.min(window.innerWidth * 0.95, resizeStartRef.current.width + delta));
+      setCustomWidth(newWidth);
+    };
+    const handleUp = () => {
+      setIsResizing(false);
+      resizeStartRef.current = null;
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('mouseup', handleUp);
+    };
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('mouseup', handleUp);
+  }, []);
 
   const invalidateAll = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
@@ -896,9 +959,10 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
 
   if (!isOpen) return null;
 
-  const panelWidth = expanded ? '90vw' : '600px';
+  const panelWidth = expanded ? '90vw' : (customWidth ? `${customWidth}px` : '600px');
   const panelMaxHeight = expanded ? '90vh' : '80vh';
   const panelStyle: React.CSSProperties = {
+    position: 'relative' as const,
     width: panelWidth,
     maxWidth: expanded ? '1200px' : '95vw',
     maxHeight: panelMaxHeight,
@@ -915,7 +979,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       left: position.x,
       top: position.y,
     } : {}),
-    transition: isDragging ? 'none' : 'width 0.2s, max-height 0.2s, height 0.2s',
+    transition: (isDragging || isResizing) ? 'none' : 'width 0.2s, max-height 0.2s, height 0.2s',
   };
 
   return (
@@ -933,6 +997,34 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       backdropFilter: 'blur(4px)',
     }} data-testid="ai-command-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div ref={panelRef} style={panelStyle} data-testid="ai-command-panel">
+        {!expanded && (
+          <>
+            <div
+              onMouseDown={(e) => handleResizeStart(e, 'left')}
+              style={{
+                position: 'absolute', left: 0, top: 0, bottom: 0, width: '6px',
+                cursor: 'ew-resize', zIndex: 20,
+                background: isResizing ? 'rgba(100,160,255,0.3)' : 'transparent',
+                borderRadius: '16px 0 0 16px',
+                transition: 'background 0.15s',
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(100,160,255,0.2)')}
+              onMouseLeave={(e) => { if (!isResizing) e.currentTarget.style.background = 'transparent'; }}
+            />
+            <div
+              onMouseDown={(e) => handleResizeStart(e, 'right')}
+              style={{
+                position: 'absolute', right: 0, top: 0, bottom: 0, width: '6px',
+                cursor: 'ew-resize', zIndex: 20,
+                background: isResizing ? 'rgba(100,160,255,0.3)' : 'transparent',
+                borderRadius: '0 16px 16px 0',
+                transition: 'background 0.15s',
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(100,160,255,0.2)')}
+              onMouseLeave={(e) => { if (!isResizing) e.currentTarget.style.background = 'transparent'; }}
+            />
+          </>
+        )}
         <div
           onMouseDown={handleMouseDown}
           style={{
@@ -952,7 +1044,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <HeaderBtn tip="Clear conversation" onClick={clearChat} testId="button-ai-command-clear"><RotateCcw size={15} /></HeaderBtn>
-            <HeaderBtn tip={expanded ? 'Minimize' : 'Expand'} onClick={() => { setExpanded(!expanded); if (expanded) setPosition(null); }} testId="button-ai-command-expand">
+            <HeaderBtn tip={expanded ? 'Minimize' : 'Expand'} onClick={() => { setExpanded(!expanded); setCustomWidth(null); if (expanded) setPosition(null); }} testId="button-ai-command-expand">
               {expanded ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
             </HeaderBtn>
             <button
@@ -1049,9 +1141,9 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                       if (iMatch.index > iLast) inlineParts.push(seg.slice(iLast, iMatch.index));
                       inlineParts.push(
                         <code key={`ic-${keyBase}-${iMatch.index}`} style={{
-                          background: 'rgba(0,0,0,0.35)', padding: '1px 5px', borderRadius: '4px',
+                          background: 'rgba(10,15,30,0.6)', padding: '2px 6px', borderRadius: '4px',
                           fontSize: '12px', fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
-                          border: '1px solid rgba(100,160,255,0.2)',
+                          border: '1px solid rgba(100,160,255,0.25)', color: '#e0ecff',
                         }}>{iMatch[1]}</code>
                       );
                       iLast = iMatch.index + iMatch[0].length;
@@ -1204,6 +1296,38 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
             </div>
           )}
         </div>
+
+        {showScrollBtn && (
+          <button
+            onClick={scrollToBottom}
+            data-testid="button-scroll-to-latest"
+            style={{
+              position: 'absolute',
+              bottom: '90px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '6px 14px',
+              borderRadius: '20px',
+              background: 'rgba(30,60,120,0.92)',
+              border: '1px solid rgba(100,160,255,0.4)',
+              color: 'rgba(180,210,255,0.95)',
+              fontSize: '12px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              backdropFilter: 'blur(8px)',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
+              zIndex: 10,
+              transition: 'all 0.2s ease',
+              animation: 'ai-scroll-btn-in 0.2s ease-out',
+            }}
+          >
+            <ArrowDown size={14} />
+            Latest
+          </button>
+        )}
 
         <div style={{
           padding: '12px 16px',
