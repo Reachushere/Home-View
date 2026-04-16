@@ -6431,11 +6431,14 @@ MEMORY: memory_read, memory_write
 
 EMAIL: send_email — from, to, subject, body, html
 
-WEB: web_search, web_fetch, github_search, code_reference
-  • web_search: query (search text), num_results (default 5, max 10) — searches DuckDuckGo, returns titles/URLs/snippets
-  • web_fetch: url (full URL), max_length (default 5000) — fetches page content as plain text
-  • github_search: query, language (default typescript), num_results — searches GitHub for real-world code examples from public repos
-  • code_reference: topic, context — instant offline reference for the project's stack (React, Express, Drizzle, Tailwind, shadcn, TanStack Query, Wouter, Zod, Framer Motion, PostgreSQL). Faster than web search for stack-specific patterns.
+WEB & KNOWLEDGE: web_search, web_fetch, github_search, github_file, npm_info, code_reference, ai_subtask
+  • web_search: query, num_results — searches DuckDuckGo
+  • web_fetch: url, max_length — fetches page content as plain text
+  • github_search: query, language, num_results — searches GitHub for code examples
+  • github_file: repo (owner/repo), path, branch — reads any file from any public GitHub repo (raw content)
+  • npm_info: package_name — gets package description, version, dependencies, README excerpt from npm registry
+  • code_reference: topic, context — instant offline reference for project stack (React, Express, Drizzle, Tailwind, shadcn, TanStack, Wouter, Zod, Framer Motion, PostgreSQL)
+  • ai_subtask: task, input, model (gpt-4.1-mini or gpt-4.1-nano) — delegate sub-tasks to a secondary AI model. Use for summarizing, generating boilerplate, analyzing data, or any work that doesn't need your full reasoning. You orchestrate, it executes.
 
 OTHER: generate_image, run_node_script
 
@@ -6637,7 +6640,7 @@ KEY BACKEND ROUTES:
         messages.push({ role: "user", content: message.trim() });
       }
 
-      const readOnlyTools = new Set(["read_file", "list_directory", "search_code", "search_tasks", "get_semester_info", "check_build", "read_logs", "git_diff", "get_project_map", "db_schema", "http_check", "memory_read", "process_check", "analyze_ui", "smoke_test", "take_screenshot", "browser_test", "check_performance", "conversation_history", "health_check", "web_search", "web_fetch", "plan_task", "codebase_explore", "code_reference", "github_search"]);
+      const readOnlyTools = new Set(["read_file", "list_directory", "search_code", "search_tasks", "get_semester_info", "check_build", "read_logs", "git_diff", "get_project_map", "db_schema", "http_check", "memory_read", "process_check", "analyze_ui", "smoke_test", "take_screenshot", "browser_test", "check_performance", "conversation_history", "health_check", "web_search", "web_fetch", "plan_task", "codebase_explore", "code_reference", "github_search", "github_file", "npm_info", "ai_subtask"]);
       const destructiveTools = new Set(["delete_task", "bulk_delete_tasks", "bulk_complete_tasks", "run_shell_command", "git_commit_and_push", "install_package", "generate_image", "db_migrate"]);
 
       function isToolDestructive(fnName: string, fnArgs: any): boolean {

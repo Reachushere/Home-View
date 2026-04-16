@@ -970,6 +970,54 @@ export const AI_COMMAND_TOOLS = [
   {
     type: "function" as const,
     function: {
+      name: "github_file",
+      description: "Read a specific file from any public GitHub repository. Use to study how other projects implement features, read library source code, or grab example configs. Returns the raw file content.",
+      parameters: {
+        type: "object",
+        properties: {
+          repo: { type: "string", description: "GitHub repo in 'owner/repo' format (e.g. 'drizzle-team/drizzle-orm', 'shadcn-ui/ui', 'TanStack/query')" },
+          path: { type: "string", description: "File path within the repo (e.g. 'src/index.ts', 'README.md', 'examples/basic/src/App.tsx')" },
+          branch: { type: "string", description: "Branch name. Default 'main'." },
+          max_length: { type: "integer", description: "Max characters to return. Default 8000." },
+        },
+        required: ["repo", "path"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "npm_info",
+      description: "Get package information from the npm registry. Returns: description, latest version, dependencies, README excerpt, homepage, and repository URL. Use when you need to understand a package before using it, check compatibility, or read its docs.",
+      parameters: {
+        type: "object",
+        properties: {
+          package_name: { type: "string", description: "npm package name (e.g. 'drizzle-orm', '@tanstack/react-query', 'framer-motion')" },
+        },
+        required: ["package_name"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "ai_subtask",
+      description: "Delegate a sub-task to a secondary AI model for parallel processing. The secondary model (gpt-4.1-mini) is faster and cheaper — use it for: summarizing large text, generating boilerplate code, analyzing data, translating content, formatting output, or any task that doesn't need your full reasoning power. You stay in control — review the result and use it in your response.",
+      parameters: {
+        type: "object",
+        properties: {
+          task: { type: "string", description: "Clear instruction for the secondary model (e.g. 'Summarize this error log and identify the root cause', 'Generate a TypeScript interface for this JSON data', 'Write a SQL query that finds all overdue tasks grouped by course')" },
+          input: { type: "string", description: "Input data for the secondary model (e.g. error log text, JSON data, code snippet). Keep under 10000 chars." },
+          model: { type: "string", enum: ["gpt-4.1-mini", "gpt-4.1-nano"], description: "Which model to use. gpt-4.1-mini for moderate tasks, gpt-4.1-nano for simple/fast tasks. Default: gpt-4.1-mini." },
+          max_tokens: { type: "integer", description: "Max response tokens. Default 2000." },
+        },
+        required: ["task"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
       name: "plan_task",
       description: "Decompose a complex task into ordered steps BEFORE executing. Use this when Bryn asks for something that involves 3+ files or multiple logical stages (e.g. 'add a new page with API endpoint and database table', 'refactor the homework box'). Creates a plan, then execute each step in order. Also use to show Bryn what you're about to do for transparency.",
       parameters: {
@@ -2795,6 +2843,115 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           return { success: true, result: { output: output.substring(0, 2000), migrated: true } };
         } catch (e: any) {
           return { success: false, result: { error: e.message?.substring(0, 500) } };
+        }
+      }
+
+      case "github_file": {
+        const repo = args.repo;
+        const filePath = args.path;
+        const branch = args.branch || 'main';
+        const maxLength = args.max_length || 8000;
+        try {
+          const rawUrl = `https://raw.githubusercontent.com/${repo}/${branch}/${filePath}`;
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 15000);
+          const resp = await fetch(rawUrl, {
+            signal: controller.signal,
+            headers: { 'User-Agent': 'BrynAssist/1.0' },
+          });
+          clearTimeout(timeout);
+          if (!resp.ok) {
+            if (resp.status === 404) {
+              const altBranch = branch === 'main' ? 'master' : 'main';
+              const altUrl = `https://raw.githubusercontent.com/${repo}/${altBranch}/${filePath}`;
+              const ctrl2 = new AbortController();
+              const t2 = setTimeout(() => ctrl2.abort(), 10000);
+              const resp2 = await fetch(altUrl, { signal: ctrl2.signal, headers: { 'User-Agent': 'BrynAssist/1.0' } });
+              clearTimeout(t2);
+              if (!resp2.ok) return { success: false, result: { error: `File not found: ${repo}/${filePath} (tried ${branch} and ${altBranch} branches)` } };
+              let content = await resp2.text();
+              if (content.length > maxLength) content = content.substring(0, maxLength) + '\n... [truncated]';
+              return { success: true, result: { repo, path: filePath, branch: altBranch, length: content.length, content } };
+            }
+            return { success: false, result: { error: `HTTP ${resp.status}: ${resp.statusText}` } };
+          }
+          let content = await resp.text();
+          if (content.length > maxLength) content = content.substring(0, maxLength) + '\n... [truncated]';
+          return { success: true, result: { repo, path: filePath, branch, length: content.length, content } };
+        } catch (e: any) {
+          return { success: false, result: { error: `Failed to fetch file: ${e.message?.substring(0, 200)}` } };
+        }
+      }
+
+      case "npm_info": {
+        const pkgName = args.package_name;
+        try {
+          const registryUrl = `https://registry.npmjs.org/${encodeURIComponent(pkgName)}`;
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 10000);
+          const resp = await fetch(registryUrl, {
+            signal: controller.signal,
+            headers: { 'Accept': 'application/json' },
+          });
+          clearTimeout(timeout);
+          if (!resp.ok) return { success: false, result: { error: `Package not found: ${pkgName}` } };
+          const data = await resp.json() as any;
+          const latest = data['dist-tags']?.latest;
+          const latestVersion = latest ? data.versions?.[latest] : null;
+          const result: Record<string, any> = {
+            name: data.name,
+            description: data.description,
+            latestVersion: latest,
+            license: data.license,
+            homepage: data.homepage || latestVersion?.homepage,
+            repository: typeof data.repository === 'string' ? data.repository : data.repository?.url,
+            keywords: (data.keywords || []).slice(0, 10),
+          };
+          if (latestVersion) {
+            result.dependencies = Object.keys(latestVersion.dependencies || {}).slice(0, 20);
+            result.peerDependencies = Object.keys(latestVersion.peerDependencies || {}).slice(0, 10);
+          }
+          const readme = data.readme || '';
+          if (readme) {
+            result.readmeExcerpt = readme.substring(0, 3000) + (readme.length > 3000 ? '\n... [truncated — use web_fetch on homepage for full docs]' : '');
+          }
+          return { success: true, result };
+        } catch (e: any) {
+          return { success: false, result: { error: `npm lookup failed: ${e.message?.substring(0, 200)}` } };
+        }
+      }
+
+      case "ai_subtask": {
+        const task = args.task;
+        const input = args.input || '';
+        const model = args.model || 'gpt-4.1-mini';
+        const maxTokens = Math.min(args.max_tokens || 2000, 4000);
+        try {
+          const OpenAI = (await import("openai")).default;
+          const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+          const subtaskPrompt = input
+            ? `${task}\n\nInput:\n${input.substring(0, 10000)}`
+            : task;
+          const completion = await openai.chat.completions.create({
+            model,
+            messages: [
+              { role: "system", content: "You are a helpful coding assistant. Be concise, precise, and output-focused. Return code or analysis directly without preamble." },
+              { role: "user", content: subtaskPrompt },
+            ],
+            max_completion_tokens: maxTokens,
+          });
+          const reply = completion.choices[0]?.message?.content || '';
+          const usage = completion.usage;
+          return {
+            success: true,
+            result: {
+              model,
+              response: reply,
+              tokens: { prompt: usage?.prompt_tokens, completion: usage?.completion_tokens, total: usage?.total_tokens },
+            },
+          };
+        } catch (e: any) {
+          return { success: false, result: { error: `AI subtask failed: ${e.message?.substring(0, 300)}` } };
         }
       }
 
