@@ -1375,13 +1375,10 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 ))}
               </div>
               <span style={{
-                fontSize: '13px',
-                fontWeight: 500,
-                background: 'linear-gradient(90deg, rgba(160,180,255,0.9), rgba(200,180,255,0.6), rgba(160,180,255,0.9))',
-                backgroundSize: '200% auto',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                animation: 'ai-shimmer 2s linear infinite',
+                fontSize: '14px',
+                fontWeight: 700,
+                color: '#ffffff',
+                textShadow: '0 0 8px rgba(139,92,246,0.5)',
               }}>
                 {thinkingPhase || 'Working...'}
               </span>
