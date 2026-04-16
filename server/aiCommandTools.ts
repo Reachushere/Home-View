@@ -940,7 +940,7 @@ export const AI_COMMAND_TOOLS = [
     type: "function" as const,
     function: {
       name: "code_reference",
-      description: "Get instant reference docs and common patterns for the project's tech stack. Use when you need to know how a library works, best practices for a pattern, or example code. Much faster than web_search for stack-specific questions. Covers: React, Express, Drizzle ORM, Tailwind CSS, shadcn/ui, TanStack Query, Wouter, Zod, Framer Motion, PostgreSQL, and Node.js patterns.",
+      description: "Get instant reference docs and common patterns for ANY programming topic. Has built-in expert knowledge for the project stack (React, Express, Drizzle, Tailwind, shadcn, TanStack, Wouter, Zod, Framer Motion, PostgreSQL). For topics NOT in the built-in cache, automatically generates expert reference docs on-the-fly using a secondary AI — so it works for Python, Rust, Go, Swift, Django, Flask, Rails, Vue, Angular, Svelte, Next.js, or ANY language/framework.",
       parameters: {
         type: "object",
         properties: {
@@ -1012,6 +1012,23 @@ export const AI_COMMAND_TOOLS = [
           max_tokens: { type: "integer", description: "Max response tokens. Default 2000." },
         },
         required: ["task"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "convert_code",
+      description: "Convert/translate code between ANY programming languages or frameworks. Use when Bryn finds code in Python, Go, Rust, Java, etc. and wants it in TypeScript, or when migrating patterns between frameworks (e.g., Vue→React, Django→Express, Prisma→Drizzle). Uses a secondary AI model for accurate translation.",
+      parameters: {
+        type: "object",
+        properties: {
+          code: { type: "string", description: "Source code to convert" },
+          from: { type: "string", description: "Source language/framework (e.g. 'python', 'go', 'rust', 'vue', 'django', 'prisma')" },
+          to: { type: "string", description: "Target language/framework (e.g. 'typescript', 'react', 'express', 'drizzle'). Default: 'typescript'" },
+          preserve_logic: { type: "boolean", description: "Keep exact logic (true) or adapt to target idioms (false). Default: true." },
+        },
+        required: ["code", "from"],
       },
     },
   },
@@ -3071,6 +3088,49 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
         }
       }
 
+      case "convert_code": {
+        const code = args.code;
+        const from = args.from;
+        const to = args.to || 'typescript';
+        const preserveLogic = args.preserve_logic !== false;
+        try {
+          const OpenAI = (await import("openai")).default;
+          const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+          const prompt = `Convert this ${from} code to ${to}.
+${preserveLogic ? 'Preserve exact logic and behavior.' : 'Adapt to idiomatic patterns in the target language/framework.'}
+
+Source (${from}):
+\`\`\`${from}
+${code.substring(0, 8000)}
+\`\`\`
+
+Provide:
+1. The converted code in a code block
+2. Brief notes on key differences/adaptations (3-5 bullet points)
+3. Any dependencies needed in the target environment`;
+
+          const completion = await openai.chat.completions.create({
+            model: 'gpt-4.1-mini',
+            messages: [
+              { role: 'system', content: `You are an expert code translator. You convert between any programming languages and frameworks with perfect accuracy. Output clean, idiomatic ${to} code. Include type annotations where applicable.` },
+              { role: 'user', content: prompt },
+            ],
+            max_completion_tokens: 3000,
+          });
+          return {
+            success: true,
+            result: {
+              from,
+              to,
+              conversion: completion.choices[0]?.message?.content || '',
+              tokens: completion.usage?.total_tokens,
+            },
+          };
+        } catch (e: any) {
+          return { success: false, result: { error: `Code conversion failed: ${e.message?.substring(0, 300)}` } };
+        }
+      }
+
       case "github_tree": {
         const repo = args.repo;
         const branch = args.branch || 'main';
@@ -3704,10 +3764,31 @@ Be concise and practical.`;
         }
 
         if (matches.length === 0) {
-          return { success: true, result: { found: false, suggestion: `No built-in reference for "${topic}". Try web_search or github_search for external examples.`, availableTopics: Object.keys(knowledgeBase) } };
+          try {
+            const OpenAI = (await import("openai")).default;
+            const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+            const genPrompt = `Provide a concise expert reference for "${topic}"${context ? ` (context: ${context})` : ''}. Include:
+1. Summary (what it is, when to use it)
+2. Key patterns/idioms (5-8 code examples)
+3. Common gotchas/tips (3-5 items)
+4. How it relates to TypeScript/React/Express/PostgreSQL if applicable
+Be practical and code-focused. Use real syntax.`;
+            const completion = await openai.chat.completions.create({
+              model: 'gpt-4.1-mini',
+              messages: [
+                { role: 'system', content: 'You are a polyglot programming expert. Provide concise, accurate, code-heavy reference docs for any language, framework, or library. Cover patterns that a senior developer would need.' },
+                { role: 'user', content: genPrompt },
+              ],
+              max_completion_tokens: 1500,
+            });
+            const generated = completion.choices[0]?.message?.content || '';
+            return { success: true, result: { found: true, source: 'ai-generated', topic, reference: generated, note: 'Generated on-the-fly — not from built-in cache. Verify critical details with web_search if needed.' } };
+          } catch {
+            return { success: true, result: { found: false, suggestion: `No built-in reference for "${topic}". Try web_search or github_search for external examples.`, availableTopics: Object.keys(knowledgeBase) } };
+          }
         }
 
-        return { success: true, result: { found: true, references: matches.map(m => ({ topic: m.topic, ...m.data })), tip: context ? `For your goal (${context}), focus on the patterns most relevant to your use case.` : undefined } };
+        return { success: true, result: { found: true, source: 'built-in', references: matches.map(m => ({ topic: m.topic, ...m.data })), tip: context ? `For your goal (${context}), focus on the patterns most relevant to your use case.` : undefined } };
       }
 
       case "github_search": {

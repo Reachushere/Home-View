@@ -6436,15 +6436,16 @@ MEMORY: memory_read, memory_write
 
 EMAIL: send_email — from, to, subject, body, html
 
-WEB & KNOWLEDGE: web_search, web_fetch, github_search, github_file, npm_info, code_reference, explain_code, ai_subtask
+WEB & KNOWLEDGE: web_search, web_fetch, github_search, github_file, github_tree, npm_info, code_reference, explain_code, convert_code, ai_subtask
   • web_search: query, num_results — searches DuckDuckGo
   • web_fetch: url, max_length — fetches page content as plain text
   • github_search: query, language, num_results — searches GitHub for code examples
   • github_file: repo (owner/repo), path, branch — reads any file from any public GitHub repo (raw content)
   • github_tree: repo, path, max_depth — list full directory structure of any public GitHub repo. Onboard to ANY codebase instantly.
   • npm_info: package_name — gets package description, version, dependencies, README excerpt from npm registry
-  • code_reference: topic, context — instant offline reference for project stack
+  • code_reference: topic, context — instant reference for ANY language/framework. Built-in cache for project stack; auto-generates expert docs on-the-fly for everything else (Python, Rust, Go, Vue, Django, etc.)
   • explain_code: code, language, question — analyze code in ANY language/framework using secondary AI. Explains what it does, how, issues, and how to adapt for UniCal
+  • convert_code: code, from, to — translate code between ANY languages/frameworks (Python→TS, Vue→React, Django→Express, Prisma→Drizzle, etc.)
   • ai_subtask: task, input, model — delegate sub-tasks to gpt-4.1-mini or gpt-4.1-nano. You orchestrate, it executes.
 
 ARCHITECTURE & REFACTORING: project_snapshot, analyze_dependencies, multi_file_edit, http_test, stack_analyze
@@ -6573,11 +6574,12 @@ When Bryn asks about your capabilities, what you can do, or how you compare to o
 
 FACTS ABOUT YOUR SETUP (use these to form your own assessment):
 • You are GPT-4.1 running as a specialist assistant for one project (UniCal)
-• You have 74 tools spanning: filesystem, database, git, shell, Home Assistant, Spotify, email, calendar, OneDrive, web search, GitHub code/tree/search access, npm registry, code generation, multi-file refactoring, dependency analysis, project snapshots, API testing, multi-language code analysis, stack detection for ANY project, and multi-LLM orchestration
+• You have 75 tools spanning: filesystem, database, git, shell, Home Assistant, Spotify, email, calendar, OneDrive, web search, GitHub code/tree/search access, npm registry, code generation, multi-file refactoring, dependency analysis, project snapshots, API testing, multi-language code analysis AND conversion, stack detection for ANY project, and multi-LLM orchestration
 • You can delegate sub-tasks to secondary models (gpt-4.1-mini, gpt-4.1-nano) via ai_subtask
 • You can read files from any public GitHub repo (github_file), see full repo structure (github_tree), and search for code examples (github_search)
 • You can auto-detect the tech stack of ANY project — local or remote — via stack_analyze. You're not limited to TypeScript.
-• You have an offline reference for the project's stack (code_reference) and can look up npm packages (npm_info)
+• code_reference now generates expert docs on-the-fly for ANY topic not in its built-in cache — covers every language and framework, not just TypeScript
+• You can translate/convert code between ANY languages via convert_code (Python→TS, Vue→React, Django→Express, etc.)
 • You can analyze and explain code in ANY language via explain_code — Python, Rust, Go, Swift, Java, C++, anything
 • You can see the entire project at once via project_snapshot — simulates a massive context window
 • You can do safe multi-file refactoring via analyze_dependencies + multi_file_edit (with dry-run preview)
@@ -6680,7 +6682,7 @@ WHEN ASSESSING YOURSELF:
         messages.push({ role: "user", content: message.trim() });
       }
 
-      const readOnlyTools = new Set(["read_file", "list_directory", "search_code", "search_tasks", "get_semester_info", "check_build", "read_logs", "git_diff", "get_project_map", "db_schema", "http_check", "memory_read", "process_check", "analyze_ui", "smoke_test", "take_screenshot", "browser_test", "check_performance", "conversation_history", "health_check", "web_search", "web_fetch", "plan_task", "codebase_explore", "code_reference", "github_search", "github_file", "github_tree", "npm_info", "ai_subtask", "project_snapshot", "explain_code", "http_test", "analyze_dependencies", "stack_analyze"]);
+      const readOnlyTools = new Set(["read_file", "list_directory", "search_code", "search_tasks", "get_semester_info", "check_build", "read_logs", "git_diff", "get_project_map", "db_schema", "http_check", "memory_read", "process_check", "analyze_ui", "smoke_test", "take_screenshot", "browser_test", "check_performance", "conversation_history", "health_check", "web_search", "web_fetch", "plan_task", "codebase_explore", "code_reference", "github_search", "github_file", "github_tree", "npm_info", "ai_subtask", "project_snapshot", "explain_code", "http_test", "analyze_dependencies", "stack_analyze", "convert_code"]);
       const destructiveTools = new Set(["delete_task", "bulk_delete_tasks", "bulk_complete_tasks", "run_shell_command", "git_commit_and_push", "install_package", "generate_image", "db_migrate", "multi_file_edit"]);
 
       function isToolDestructive(fnName: string, fnArgs: any): boolean {
