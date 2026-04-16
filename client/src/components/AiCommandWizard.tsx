@@ -454,7 +454,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
     };
     el.addEventListener('scroll', onScroll);
     return () => el.removeEventListener('scroll', onScroll);
-  }, []);
+  }, [isOpen]);
 
   useEffect(() => {
     const el = scrollRef.current;
