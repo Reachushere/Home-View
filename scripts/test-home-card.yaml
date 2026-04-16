@@ -1,8 +1,4 @@
 type: picture-elements
-tap_action:
-  action: none
-hold_action:
-  action: none
 elements:
   - entity: timer.meds_timer_yasu
     tap_action:
@@ -143,8 +139,6 @@ elements:
       top: 50.8%
       width: 38%
     image: /local/lovelace/overlays/Round Menu/4/Floorplan11.png
-    tap_action:
-      action: none
   - type: image
     image: /local/lovelace/overlays/Round Menu/5/Tall7-4.png
     style:
@@ -152,8 +146,6 @@ elements:
       left: 4.65%
       width: 5.1%
       opacity: 100%
-    tap_action:
-      action: none
   - type: image
     image: /local/lovelace/overlays/Round Menu/5/Tall7-4.png
     style:
@@ -161,8 +153,6 @@ elements:
       left: 95.35%
       width: 5.1%
       opacity: 100%
-    tap_action:
-      action: none
   - type: image
     image: /local/lovelace/overlays/Round Menu/5/Wide10.png
     style:
@@ -170,8 +160,6 @@ elements:
       left: 50%
       width: 50%
       opacity: 100%
-    tap_action:
-      action: none
   - type: image
     image: /local/lovelace/overlays/Round Menu/5/Circle8.png
     style:
@@ -180,8 +168,6 @@ elements:
       width: 4.75%
       opacity: 100%
       align: center
-    tap_action:
-      action: none
   - type: image
     image: /local/lovelace/overlays/Round Menu/5/Circle8.png
     style:
@@ -189,8 +175,6 @@ elements:
       top: 46.4%
       width: 4.75%
       opacity: 100%
-    tap_action:
-      action: none
   - type: image
     image: /local/lovelace/overlays/Round Menu/5/Orange Circle4.png
     style:
@@ -198,8 +182,6 @@ elements:
       top: 28.7%
       width: 4.74%
       opacity: 100%
-    tap_action:
-      action: none
   - type: custom:mushroom-climate-card
     entity: climate.nest_new
     show_temperature_control: true
@@ -227,8 +209,6 @@ elements:
           padding-left: 14px;
           margin-left: 155px;
           }
-    tap_action:
-      action: none
   - type: custom:mushroom-climate-card
     entity: climate.nest_new
     fill_container: true
@@ -252,8 +232,6 @@ elements:
           --secondary-text-color: white;
           font-size: 26px;
           }
-    tap_action:
-      action: none
   - type: custom:mushroom-climate-card
     entity: climate.nest_new
     fill_container: true
@@ -285,8 +263,6 @@ elements:
         ha-state-icon {
           color: rgba(0,0,0,0);
         }
-    tap_action:
-      action: none
   - type: custom:mushroom-climate-card
     entity: climate.nest_new
     fill_container: true
@@ -308,8 +284,6 @@ elements:
           .shape {
             --shape-color: rgba(0,0,0,0);
           }
-    tap_action:
-      action: none
   - entity: fan.king_room_f9e7c0
     title: King Vent Fan
     image: null
@@ -323,8 +297,6 @@ elements:
       opacity: 100%
       align: center
     type: image
-    tap_action:
-      action: none
   - type: image
     image: /local/lovelace/overlays/Round Menu/5/Cal Icon.png
     style:
@@ -2313,7 +2285,8 @@ elements:
                             entity: media_player.spotifyplus_byhomeyyz
                             artwork: full-cover
                             background: >-
-                              /local/lovelace/overlays/Round Menu/5/Echo Idle.png
+                              /local/lovelace/overlays/Round Menu/5/Echo
+                              Idle.png
                             name: Spotify
                             icon: none
                             hide:
@@ -3081,8 +3054,6 @@ elements:
       left: 14.2%
       top: 3.2%
       width: 29.5%
-    tap_action:
-      action: none
   - type: image
     image: /local/lovelace/overlays/Round Menu/5/Circle8.png
     description: Purifier Circle
@@ -3091,8 +3062,6 @@ elements:
       top: 5.5%
       width: 4.75%
       opacity: 100%
-    tap_action:
-      action: none
   - entity: light.plug_cat_beacon_red_socket
     tap_action:
       action: call-service
@@ -3139,8 +3108,6 @@ elements:
         }
     state_display: |
       [[[ return Math.round(entity.state | 0) ]]]
-    tap_action:
-      action: none
   - type: image
     image: /local/lovelace/overlays/Round Menu/5/Circle8.png
     style:
@@ -3148,8 +3115,6 @@ elements:
       top: 5.5%
       width: 4.75%
       opacity: 100%
-    tap_action:
-      action: none
   - entity: timer.meds_timer_yasu
     tap_action:
       action: call-service
@@ -3210,8 +3175,6 @@ elements:
       left: 32.8%
       top: 8.6%
       width: 0.5%
-    tap_action:
-      action: none
   - type: image
     image: /local/lovelace/overlays/Round Menu/5/Circle8.png
     style:
@@ -3219,8 +3182,6 @@ elements:
       top: 5.5%
       width: 4.75%
       opacity: 100%
-    tap_action:
-      action: none
   - entity: timer.bryn_meds
     tap_action:
       action: call-service
@@ -3281,8 +3242,6 @@ elements:
       left: 37.8%
       top: 8.6%
       width: 0.4%
-    tap_action:
-      action: none
   - type: image
     image: /local/lovelace/overlays/Round Menu/5/Food Icon2.png
     entity: switch.light_kitchen_cat_food_beacon_socket_1
@@ -4566,7 +4525,7 @@ elements:
                         show_header_toggle: false
                         show_state: false
                         card_mod:
-                          style: |+
+                          style: |
                             ha-card {
                               border: none !important;
                               --card-background-color: rgba(255,255,255,0);
@@ -4751,7 +4710,8 @@ elements:
                       --secondary-card-background-color: rgba(255,0,255,1);
                       }
             image: >-
-              /local/lovelace/overlays/Round Menu/4/Radio Player Background78.png
+              /local/lovelace/overlays/Round Menu/4/Radio Player
+              Background78.png
             style:
               top: 50%
               left: 50%
@@ -4920,8 +4880,6 @@ elements:
       top: 5.5%
       width: 4.75%
       opacity: 100%
-    tap_action:
-      action: none
   - type: image
     description: Cat Litter Icon
     image: /local/lovelace/overlays/Round Menu/5/Litter Icon2.png
@@ -4945,8 +4903,6 @@ elements:
       width: 4.75%
       opacity: 100%
       align: center
-    tap_action:
-      action: none
   - type: image
     description: Pet Snowy
     image: /local/lovelace/overlays/Round Menu/5/Snow Icon5.png
@@ -5455,8 +5411,6 @@ elements:
           border-radius: 6px;
           font-family: raleway-light.woff2;
         }
-    tap_action:
-      action: none
   - type: custom:button-card
     entity: sensor.door_sensor_queen_device_temperature_2
     show_name: false
@@ -5494,8 +5448,6 @@ elements:
           border-radius: 6px;
           font-family: raleway-light.woff2;
         }
-    tap_action:
-      action: none
   - entity: sensor.nest_new_temperature
     show_name: false
     show_badge: false
@@ -5533,8 +5485,6 @@ elements:
           font-family: raleway-light.woff2;
         }
     type: custom:button-card
-    tap_action:
-      action: none
   - type: custom:button-card
     entity: sensor.fan_cat_new_temperature
     show_name: false
@@ -5576,8 +5526,6 @@ elements:
       [[[
         return entity.state ? parseFloat(entity.state).toFixed(1) + ' °C' : 'N/A';
       ]]]
-    tap_action:
-      action: none
   - entity: sensor.temperature_sensor_king_temperature
     show_name: false
     show_badge: false
@@ -5614,8 +5562,6 @@ elements:
           font-family: raleway-light.woff2;
         }
     type: custom:button-card
-    tap_action:
-      action: none
   - entity: sensor.formaldehyde_detector_kitchen_temperature
     show_name: false
     show_badge: false
@@ -5652,8 +5598,6 @@ elements:
           font-family: raleway-light.woff2;
         }
     type: custom:button-card
-    tap_action:
-      action: none
   - entity: sensor.bedroom_temperature
     show_name: false
     show_badge: false
@@ -5692,8 +5636,6 @@ elements:
           font-family: raleway-light.woff2;
         }
     type: custom:button-card
-    tap_action:
-      action: none
   - entity: sensor.sensor_lr_air_monitor_vocs
     show_name: false
     show_badge: false
@@ -5731,8 +5673,6 @@ elements:
           font-family: raleway-light.woff2;
         }
     type: custom:button-card
-    tap_action:
-      action: none
   - entity: sensor.sensor_lr_air_monitor_temperature
     show_name: false
     show_badge: false
@@ -5769,8 +5709,6 @@ elements:
           font-family: raleway-light.woff2;
         }
     type: custom:button-card
-    tap_action:
-      action: none
   - entity: sensor.door_sensor_hallway_entrance_device_temperature
     description: Entrance Door
     show_name: false
@@ -5809,8 +5747,6 @@ elements:
           font-family: raleway-light.woff2;
         }
     type: custom:button-card
-    tap_action:
-      action: none
   - entity: light.hallway_light_group
     tap_action:
       action: toggle
@@ -8701,7 +8637,7 @@ elements:
               width: 125%
               height: 125%
           card_mod:
-            style: |+
+            style: |
               .: |
                 #states > * {
                   margin: 0px 0px !important;
@@ -9292,33 +9228,7 @@ elements:
                             padding-left: -2px !important; 
                             border: none;
                              }
-                      .: "#states > * {
-
-                        \  margin: 0px 0px !important;
-
-                        \  margin-top: -8px !important;
-
-                        \  margin-bottom: -8px !important;
-
-                        \  padding-right: 0px !important;\ 
-
-                        \  padding-left: 0px !important;\ 
-
-                        \  padding-top: -8px !important;\ 
-
-                        \  padding-bottom: -8px !important;\ 
-
-                        \  margin-left: -5px !important;\ 
-
-                        \  margin-right: -0px !important;\ 
-
-                        \  font-size: 14px;
-
-                        \  --mdc-icon-size: 16px;
-
-                        \  border: none;
-
-                        }\t\t\t\t\n"
+                      .: "#states > * {\n  margin: 0px 0px !important;\n  margin-top: -8px !important;\n  margin-bottom: -8px !important;\n  padding-right: 0px !important; \n  padding-left: 0px !important; \n  padding-top: -8px !important; \n  padding-bottom: -8px !important; \n  margin-left: -5px !important; \n  margin-right: -0px !important; \n  font-size: 14px;\n  --mdc-icon-size: 16px;\n  border: none;\n}\t\t\t\t\n"
             image: /local/lovelace/overlays/Round Menu/5/Closet BG59.png
             style:
               top: 50%
@@ -9621,8 +9531,6 @@ elements:
       left: 27%
       width: 8%
       image-rendering: crisp
-    tap_action:
-      action: none
   - type: image
     entity: sensor.lg_dryer_run_state
     image: /local/lovelace/overlays/Round Menu/3/laundry/Drying/Dryer7-Blank.png
@@ -9633,8 +9541,6 @@ elements:
       left: 32.5%
       width: 1.5%
       image-rendering: crisp
-    tap_action:
-      action: none
   - entity: sensor.lg_dryer_run_state
     image: /local/lovelace/overlays/Round Menu/3/laundry/Drying/Dryer7-Blank.png
     state_image:
@@ -9645,8 +9551,6 @@ elements:
       width: 8%
       image-rendering: crisp
     type: image
-    tap_action:
-      action: none
   - type: image
     entity: sensor.lg_dryer_run_state
     image: /local/lovelace/overlays/Round Menu/3/laundry/Drying/Dryer7-Blank.png
@@ -9657,8 +9561,6 @@ elements:
       left: 32.5%
       width: 1.5%
       image-rendering: crisp
-    tap_action:
-      action: none
   - entity: sensor.lg_dryer_run_state
     image: /local/lovelace/overlays/Round Menu/3/laundry/Drying/Dryer7-Blank.png
     state_image:
@@ -9669,8 +9571,6 @@ elements:
       width: 8%
       image-rendering: crisp
     type: image
-    tap_action:
-      action: none
   - type: custom:button-card
     entity: sensor.lg_dryer_remaining_time
     show_name: false
@@ -9695,8 +9595,6 @@ elements:
           font-weight: 400;
           width: 25%;
         }
-    tap_action:
-      action: none
   - type: image
     entity: sensor.lg_washer
     image: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Washer8-Blank.png
@@ -9707,8 +9605,6 @@ elements:
       left: 18.1%
       width: 8.2%
       image-rendering: crisp
-    tap_action:
-      action: none
   - type: image
     entity: sensor.lg_washer
     image: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Washer8-Blank.png
@@ -9719,8 +9615,6 @@ elements:
       width: 2%
       left: 12.25%
       image-rendering: crisp
-    tap_action:
-      action: none
   - entity: sensor.lg_washer_run_state
     image: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Washer8-Blank.png
     state_image:
@@ -9731,8 +9625,6 @@ elements:
       width: 11.8%
       image-rendering: crisp
     type: image
-    tap_action:
-      action: none
   - type: image
     entity: sensor.lg_washer
     image: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Washer8-Blank.png
@@ -9743,8 +9635,6 @@ elements:
       width: 2%
       left: 12.25%
       image-rendering: crisp
-    tap_action:
-      action: none
   - entity: sensor.lg_washer_run_state
     image: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Washer8-Blank.png
     state_image:
@@ -9755,8 +9645,6 @@ elements:
       width: 11.8%
       image-rendering: crisp
     type: image
-    tap_action:
-      action: none
   - type: image
     entity: sensor.lg_washer
     image: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Washer8-Blank.png
@@ -9767,8 +9655,6 @@ elements:
       width: 2%
       left: 12.25%
       image-rendering: crisp
-    tap_action:
-      action: none
   - type: image
     entity: sensor.lg_washer_run_state
     image: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Washer8-Blank.png
@@ -9779,8 +9665,6 @@ elements:
       left: 18.1%
       width: 11.8%
       image-rendering: crisp
-    tap_action:
-      action: none
   - type: custom:button-card
     entity: sensor.lg_washer_remaining_time
     show_name: false
@@ -9805,8 +9689,6 @@ elements:
           font-weight: 400;
           width: 25%;
         }
-    tap_action:
-      action: none
   - type: image
     entity: binary_sensor.lg_washer_door_lock
     image: /local/lg-icons/lock.png
@@ -9818,8 +9700,6 @@ elements:
       width: 2%
       left: 12.7%
       image-rendering: crisp
-    tap_action:
-      action: none
   - type: image
     image: /local/lovelace/overlays/Round Menu/5/More10.png
     description: laundry card
@@ -11058,8 +10938,6 @@ elements:
               if (entity.state > 0) return 'red';
               return 'green';
             ]]]
-    tap_action:
-      action: none
   - type: custom:button-card
     entity: sensor.last_automation_triggered2
     show_name: false
@@ -11096,8 +10974,6 @@ elements:
           animation: blink 1s step-start infinite;
           color: red;
         }
-    tap_action:
-      action: none
   - type: custom:button-card
     entity: sensor.water_level
     show_name: false
@@ -11125,8 +11001,6 @@ elements:
           font-weight: bold;
           width: 25%;
         }
-    tap_action:
-      action: none
   - type: custom:button-card
     entity: sensor.food_shortages
     show_name: false
@@ -11153,24 +11027,18 @@ elements:
           font-weight: bold;
           width: 25%;
         }
-    tap_action:
-      action: none
   - type: image
     image: /local/lovelace/overlays/Round Menu/4/Bryn3.png
     style:
       top: 22%
       left: 13.5%
       width: 2.8%
-    tap_action:
-      action: none
   - type: image
     image: /local/lovelace/overlays/Round Menu/4/Yasu3.png
     style:
       top: 21.5%
       left: 86.2%
       width: 2.9%
-    tap_action:
-      action: none
   - type: custom:auto-entities
     title: Chore Status - Bryn
     filter:
@@ -11258,8 +11126,6 @@ elements:
              secondary-background-color: rgba(1,1,1,0);
              border: none;
            }
-    tap_action:
-      action: none
   - type: custom:auto-entities
     title: Chore Status - Yasu
     filter:
@@ -11343,8 +11209,6 @@ elements:
              secondary-background-color: rgba(1,1,1,0);
              border: none;
            }
-    tap_action:
-      action: none
   - entity: light.light_group_closet
     tap_action:
       action: fire-dom-event
@@ -11618,8 +11482,6 @@ elements:
       height: 5%
       opacity: 100%
       transform: scale(75%, 75%);
-    tap_action:
-      action: none
   - type: custom:mini-media-player
     entity: media_player.spotifyplus_byhomeyyz
     name: Now Playing
@@ -11641,8 +11503,6 @@ elements:
         ha-card {
           --ha-card-border-radius: 4px
         }
-    tap_action:
-      action: none
   - type: custom:digital-clock
     dateFormat:
       weekday: long
@@ -11679,8 +11539,6 @@ elements:
         {
           text-align: right;
         }
-    tap_action:
-      action: none
   - type: custom:kanji-clock-card
     use_24h: true
     invert_date: false
@@ -11702,21 +11560,4 @@ elements:
           text-align: right;
           width: 100%;
         }
-    tap_action:
-      action: none
-  - entity: timer.rascal_meds_timer
-    tap_action:
-      action: call-service
-      service: script.rascal_meds_timer_reset_script
-      data:
-        skip_condition: true
-      target:
-        entity_id: script.rascal_meds_timer_reset_script
-    style:
-      left: 55%
-      top: 42%
-      width: 11%
-    type: image
-    state_image:
-      idle: /local/lovelace/overlays/Round Menu/5/Border6.gif
 image: /local/lovelace/overlays/Round Menu/5/Main BG11.png
