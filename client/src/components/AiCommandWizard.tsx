@@ -618,7 +618,13 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 toolResults = event.toolResults;
                 actionTaken = event.actionTaken || false;
               } else if (event.type === 'tool_start') {
-                setThinkingPhase('Working...');
+                const rawName = event.name || '';
+                if (rawName === 'rate_limit_wait') {
+                  setThinkingPhase('Waiting for API...');
+                } else {
+                  const toolLabel = rawName.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
+                  setThinkingPhase(toolLabel || 'Working...');
+                }
               } else if (event.type === 'tool_done') {
                 if (!event.success) {
                   const toolLabel = event.name.replace(/_/g, ' ');
