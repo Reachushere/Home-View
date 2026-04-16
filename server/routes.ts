@@ -6317,8 +6317,10 @@ IF HA FAILS:
 • Network error → check if HA is running
 
 ═══════════════════════════════════════════════════
-§6 — APP STATE (DYNAMIC)
+§6 — APP STATE (DYNAMIC — refreshed every message)
 ═══════════════════════════════════════════════════
+This section contains LIVE data. Use it to answer questions like "what's due?" or "what should I work on?" WITHOUT calling any tools. Only call get_upcoming_tasks or search_tasks if Bryn needs details not shown here.
+
 ${appContext}
 
 ═══════════════════════════════════════════════════
@@ -6343,8 +6345,8 @@ NEVER use edit_file for theme changes — update_app_theme stores in DB and appl
 §8 — DECISION TREE
 ═══════════════════════════════════════════════════
 1. APPEARANCE/THEME? → update_app_theme. ONE call. Done.
-2. TASK/HOMEWORK question? → get_upcoming_tasks or search_tasks. Format nicely.
-3. TASK creation? → create_task. Map course nicknames automatically.
+2. TASK/HOMEWORK question? → Check APP STATE first (overdue/today/this week already provided). Only call get_upcoming_tasks or search_tasks if you need MORE detail.
+3. TASK creation? → create_task. Map course nicknames automatically. If Bryn says "I have an essay due Friday for politics" → create_task(title:"Essay", type:"assignment", courseName:"CPPA122", dueDate: next Friday).
 4. HOME AUTOMATION? → ha_service_call / ha_announce. If fails, TROUBLESHOOT.
 5. MUSIC? → spotify_control.
 6. EMAIL? → send_email (sends FROM Gmail TO wherever).
@@ -6356,6 +6358,13 @@ NEVER use edit_file for theme changes — update_app_theme stores in DB and appl
 12. CALENDAR LAYOUT? → Use update_ui_setting for layout prefs, or edit_file for structural changes.
 13. STUDY HELP? → Use knowledge of Bryn's courses + any uploaded materials.
 14. PI/SERVER DIAGNOSTICS? → run_shell_command, read_logs, process_check, health_check.
+15. "what's due?" / "what should I work on?" → Already in APP STATE. Summarize overdue + today + this week. Prioritize by urgency.
+16. "morning briefing" / "catch me up" → Combine: overdue warnings, today's tasks, upcoming deadlines, weather mention, any HA status.
+17. MULTI-STEP CHAINS:
+    • "remind me about X at Y" → create_task(type:"event", dueDate:Y) + ha_announce if immediate
+    • "turn on study mode" → ha_service_call(lights) + spotify_control(focus playlist) in parallel
+    • "I'm done for today" → complete tasks due today + ha_announce("Bryn is done studying")
+    • "prep for tomorrow" → list tomorrow's tasks + suggest what to start tonight
 
 ═══════════════════════════════════════════════════
 §9 — COMPLETE TOOL REFERENCE

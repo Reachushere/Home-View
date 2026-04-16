@@ -2608,35 +2608,101 @@ function isDangerousCommand(cmd: string): boolean {
 export async function getAppContext(): Promise<string> {
   const now = easternNow();
   const currentWeek = getWeekNumber(now);
+  const todayStr = now.toISOString().split('T')[0];
   const settings = await storage.getActiveSemesterSettings();
 
-  let context = `Current date/time (Eastern): ${now.toISOString()}\nCurrent semester week: ${currentWeek}\n`;
+  let context = `Current date/time (Eastern): ${now.toLocaleString('en-US', { timeZone: 'America/Toronto', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })}\nCurrent semester week: ${currentWeek}\nToday: ${todayStr} (${now.toLocaleDateString('en-US', { timeZone: 'America/Toronto', weekday: 'long' })})\n`;
 
   if (settings) {
     context += `\nActive semester: ${settings.semesterName}\n`;
     context += `Semester start: ${settings.semesterStartDate?.toISOString().split('T')[0]}\n`;
     if (settings.semesterEndDate) context += `Semester end: ${settings.semesterEndDate.toISOString().split('T')[0]}\n`;
+    if ((settings as any).readingWeekStart) context += `Reading week: ${(settings as any).readingWeekStart} to ${(settings as any).readingWeekEnd || '?'}\n`;
+    if ((settings as any).examPeriodStart) context += `Exam period: ${(settings as any).examPeriodStart} to ${(settings as any).examPeriodEnd || '?'}\n`;
+    const courses: string[] = [];
     for (let i = 1; i <= 3; i++) {
       const code = (settings as any)[`course${i}Code`];
       const name = (settings as any)[`course${i}Name`];
-      if (code) context += `Course ${i}: ${code} — ${name}\n`;
+      if (code) { context += `Course ${i}: ${code} — ${name}\n`; courses.push(code); }
     }
   }
 
-  const upcomingTasks = await storage.getTasks({ weekNumber: currentWeek, showCompleted: false });
-  const incomplete = upcomingTasks.filter(t => !t.isCompleted).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()).slice(0, 10);
-  if (incomplete.length > 0) {
-    context += `\nUpcoming tasks (${incomplete.length}):\n`;
-    for (const t of incomplete) {
-      context += `  - [#${t.id}] "${t.title}" (${t.type}${t.courseName ? ', ' + t.courseName : ''}) due ${new Date(t.dueDate).toISOString().split('T')[0]} week ${t.weekNumber}\n`;
+  const allTasks = await storage.getTasks({ showCompleted: false });
+  const allIncomplete = allTasks.filter(t => !t.isCompleted);
+
+  const overdue = allIncomplete.filter(t => {
+    const due = new Date(t.dueDate);
+    return due < now && due.toISOString().split('T')[0] !== todayStr;
+  }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+
+  const dueToday = allIncomplete.filter(t => new Date(t.dueDate).toISOString().split('T')[0] === todayStr);
+
+  const tomorrow = new Date(now); tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowStr = tomorrow.toISOString().split('T')[0];
+  const dueTomorrow = allIncomplete.filter(t => new Date(t.dueDate).toISOString().split('T')[0] === tomorrowStr);
+
+  const thisWeek = allIncomplete.filter(t => t.weekNumber === currentWeek).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+
+  const nextWeek = allIncomplete.filter(t => t.weekNumber === currentWeek + 1).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+
+  if (overdue.length > 0) {
+    context += `\n⚠️ OVERDUE (${overdue.length}):\n`;
+    for (const t of overdue.slice(0, 8)) {
+      const daysLate = Math.floor((now.getTime() - new Date(t.dueDate).getTime()) / 86400000);
+      context += `  - [#${t.id}] "${t.title}" (${t.type}${t.courseName ? ', ' + t.courseName : ''}) was due ${new Date(t.dueDate).toISOString().split('T')[0]} (${daysLate}d late) priority:${t.priority}\n`;
     }
   }
 
-  context += `\nKnown HA entities:\n`;
-  context += `  - light.cat_lights (Cat room lights)\n`;
-  context += `  - media_player.byhome (Everywhere speaker group)\n`;
-  context += `  - media_player.echo_kitchen_studio_black_am (Kitchen Echo)\n`;
-  context += `  - media_player.bathroom_speaker (Bathroom speaker)\n`;
+  if (dueToday.length > 0) {
+    context += `\n🔴 DUE TODAY (${dueToday.length}):\n`;
+    for (const t of dueToday) {
+      context += `  - [#${t.id}] "${t.title}" (${t.type}${t.courseName ? ', ' + t.courseName : ''}) priority:${t.priority}\n`;
+    }
+  } else {
+    context += `\nNothing due today.\n`;
+  }
+
+  if (dueTomorrow.length > 0) {
+    context += `\nDue tomorrow (${dueTomorrow.length}):\n`;
+    for (const t of dueTomorrow) {
+      context += `  - [#${t.id}] "${t.title}" (${t.type}${t.courseName ? ', ' + t.courseName : ''}) priority:${t.priority}\n`;
+    }
+  }
+
+  if (thisWeek.length > 0) {
+    context += `\nThis week — week ${currentWeek} (${thisWeek.length} tasks):\n`;
+    for (const t of thisWeek.slice(0, 12)) {
+      context += `  - [#${t.id}] "${t.title}" (${t.type}${t.courseName ? ', ' + t.courseName : ''}) due ${new Date(t.dueDate).toISOString().split('T')[0]} priority:${t.priority}\n`;
+    }
+  }
+
+  if (nextWeek.length > 0) {
+    context += `\nNext week — week ${currentWeek + 1} (${nextWeek.length} tasks):\n`;
+    for (const t of nextWeek.slice(0, 6)) {
+      context += `  - [#${t.id}] "${t.title}" (${t.type}${t.courseName ? ', ' + t.courseName : ''}) due ${new Date(t.dueDate).toISOString().split('T')[0]}\n`;
+    }
+  }
+
+  const totalActive = allIncomplete.length;
+  const completedTasks = allTasks.filter(t => t.isCompleted);
+  context += `\nTask stats: ${totalActive} active, ${completedTasks.length} completed, ${overdue.length} overdue\n`;
+
+  const courseCounts: Record<string, number> = {};
+  for (const t of allIncomplete) {
+    if (t.courseName) courseCounts[t.courseName] = (courseCounts[t.courseName] || 0) + 1;
+  }
+  if (Object.keys(courseCounts).length > 0) {
+    context += `Tasks by course: ${Object.entries(courseCounts).map(([c, n]) => `${c}(${n})`).join(', ')}\n`;
+  }
+
+  context += `\nKnown HA entities (use ha_list_entities for full discovery):\n`;
+  context += `  Speakers: media_player.byhome (everywhere), media_player.kitchen_media_group, media_player.king_bedroom_media_group, media_player.queen_bedroom_media_group, media_player.cat_washroom_media_group\n`;
+  context += `  Echos: media_player.echo_kitchen_studio_black_am (kitchen), media_player.echo_king_l_am, media_player.echo_king_r_am, media_player.echo_queen_bed_l_am\n`;
+  context += `  Nest: media_player.bathroom_speaker\n`;
+  context += `  Lights: light.cat_lights\n`;
+  context += `  TVs: media_player.tv_living_room_70, media_player.tv_king, media_player.tv_kitchen, media_player.tv_cat_wr\n`;
+  context += `  Spotify: media_player.spotifyplus_byhomeyyz\n`;
+  context += `  Fire TV: media_player.fire_tv_172_24_0_88 (ADB control)\n`;
 
   return context;
 }
