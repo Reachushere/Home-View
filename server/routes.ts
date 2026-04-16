@@ -6820,6 +6820,9 @@ WHEN BRYN ASKS "WHAT DO YOU NEED":
         }
 
         const pendingConfirmations: any[] = [];
+        if (stream && choice.message?.content) {
+          res.write(`data: ${JSON.stringify({ type: 'thinking', content: choice.message.content, round })}\n\n`);
+        }
         messages.push(choice.message);
 
         for (const tc of toolCalls) {

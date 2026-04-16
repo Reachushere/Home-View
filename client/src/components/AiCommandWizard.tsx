@@ -618,6 +618,16 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
               if (event.type === 'meta') {
                 toolResults = event.toolResults;
                 actionTaken = event.actionTaken || false;
+              } else if (event.type === 'thinking') {
+                const thinkText = (event.content || '').trim();
+                if (thinkText) {
+                  setMessages(prev => {
+                    const thinkMsg = { role: 'system' as const, content: `💭 ${thinkText}` };
+                    return [...prev, thinkMsg];
+                  });
+                  setThinkingPhase(null);
+                  setActiveToolName(null);
+                }
               } else if (event.type === 'tool_start') {
                 const rawName = event.name || '';
                 if (rawName === 'rate_limit_wait') {
