@@ -574,6 +574,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
     setMessages(prev => [...prev, userMsg]);
     if (!overrideMsg) { setInput(''); setPastedImage(null); }
     setLoading(true);
+    setThinkingPhase('Working...');
     const controller = new AbortController();
     abortRef.current = controller;
 
@@ -1392,7 +1393,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
             </div>
           ))}
 
-          {(activeToolName || thinkingPhase || (loading && !messages.some(m => m.role === 'assistant' && m.content))) && !pendingConfirm && (
+          {(activeToolName || thinkingPhase) && !pendingConfirm && (
             <div style={{
               display: 'flex',
               alignItems: 'center',
