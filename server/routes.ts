@@ -6705,15 +6705,16 @@ WHEN BRYN ASKS "WHAT DO YOU NEED":
       const OpenAI = (await import("openai")).default;
       const openai = new OpenAI({ apiKey: config.apiKey });
 
-      async function openaiRetry<T>(fn: () => Promise<T>, maxRetries = 3): Promise<T> {
+      async function openaiRetry<T>(fn: () => Promise<T>, maxRetries = 5): Promise<T> {
         for (let attempt = 0; attempt < maxRetries; attempt++) {
           try {
             return await fn();
           } catch (err: any) {
             if (err?.status === 429 && attempt < maxRetries - 1) {
-              const retryAfter = parseFloat(err?.headers?.['retry-after'] || '0');
-              const waitMs = retryAfter > 0 ? retryAfter * 1000 : Math.min(2000 * (attempt + 1), 10000);
-              console.log(`[AI] Rate limited (429), retrying in ${Math.round(waitMs)}ms (attempt ${attempt + 1}/${maxRetries})`);
+              const retryAfterHeader = err?.headers?.['retry-after'] || err?.error?.message?.match(/try again in ([\d.]+)s/)?.[1] || '0';
+              const retryAfter = parseFloat(retryAfterHeader);
+              const waitMs = retryAfter > 0 ? Math.ceil(retryAfter * 1000) + 500 : Math.min(5000 * (attempt + 1), 30000);
+              console.log(`[AI] Rate limited (429), waiting ${Math.round(waitMs / 1000)}s before retry ${attempt + 1}/${maxRetries}`);
               if (stream && !res.headersSent) {
                 res.write(`data: ${JSON.stringify({ type: 'tool_start', name: 'rate_limit_wait', round: 0 })}\n\n`);
               }
@@ -6783,8 +6784,8 @@ WHEN BRYN ASKS "WHAT DO YOU NEED":
       while (round < MAX_ROUNDS) {
         round++;
         if (round > 1) {
-          const delayMs = Math.min(round * 3000, 12000);
-          console.log(`[AI] Rate-limit pacing: waiting ${delayMs}ms before round ${round}`);
+          const delayMs = Math.min(round * 5000, 20000);
+          console.log(`[AI] Rate-limit pacing: waiting ${delayMs / 1000}s before round ${round}`);
           await new Promise(r => setTimeout(r, delayMs));
         }
         const replyTokens = round === 1 ? 4096 : 8192;
