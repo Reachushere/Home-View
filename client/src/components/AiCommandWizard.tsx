@@ -1531,18 +1531,16 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
             />
             <button
               onClick={() => fileInputRef.current?.click()}
-              disabled={loading}
               style={{
                 background: 'rgba(100,160,255,0.15)',
                 border: '1px solid rgba(96,165,250,0.3)',
                 borderRadius: '10px',
                 padding: '10px',
-                cursor: loading ? 'not-allowed' : 'pointer',
+                cursor: 'pointer',
                 color: '#fff',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                opacity: loading ? 0.5 : 1,
               }}
               title="Attach image"
               data-testid="button-ai-attach"
@@ -1551,18 +1549,16 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
             </button>
             <button
               onClick={startSnipping}
-              disabled={loading}
               style={{
                 background: 'rgba(100,160,255,0.15)',
                 border: '1px solid rgba(96,165,250,0.3)',
                 borderRadius: '10px',
                 padding: '10px',
-                cursor: loading ? 'not-allowed' : 'pointer',
+                cursor: 'pointer',
                 color: '#fff',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                opacity: loading ? 0.5 : 1,
               }}
               title="Screen capture"
               data-testid="button-ai-snip"
