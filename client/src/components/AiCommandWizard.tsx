@@ -354,6 +354,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [thinkingPhase, setThinkingPhase] = useState<string | null>(null);
   const [activeToolName, setActiveToolName] = useState<string | null>(null);
+  const [toolSteps, setToolSteps] = useState<{ name: string; status: 'running' | 'done' | 'failed' | 'thinking' }[]>([]);
   const playDing = useCallback(() => {
     try {
       const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -603,6 +604,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
         let pendingConfs: any[] | undefined;
 
         setThinkingPhase('Working...');
+        setToolSteps([]);
 
         let buffer = '';
         while (true) {
