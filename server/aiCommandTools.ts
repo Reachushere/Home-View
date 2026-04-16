@@ -1018,6 +1018,57 @@ export const AI_COMMAND_TOOLS = [
   {
     type: "function" as const,
     function: {
+      name: "code_complete",
+      description: "Generate intelligent code completions, like an IDE autocomplete/Copilot. Given a partial code snippet and optional surrounding context, generates the most likely continuation. Use when Bryn shares incomplete code and wants you to finish it, or when you need to generate boilerplate that fits the existing patterns.",
+      parameters: {
+        type: "object",
+        properties: {
+          code: { type: "string", description: "The partial code to complete (cursor position is at the end)" },
+          file_path: { type: "string", description: "File path for context (optional — helps match project patterns)" },
+          instruction: { type: "string", description: "What to generate (e.g. 'complete this function', 'add error handling', 'implement the missing cases')" },
+          max_lines: { type: "integer", description: "Max lines to generate. Default 30." },
+        },
+        required: ["code"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "code_review_tool",
+      description: "Review code for bugs, security issues, performance problems, and style improvements. Like having a senior engineer review your PR. Analyzes the code and returns actionable feedback with specific line-level suggestions. Can review code in any language.",
+      parameters: {
+        type: "object",
+        properties: {
+          code: { type: "string", description: "Code to review" },
+          file_path: { type: "string", description: "File path for context" },
+          focus: { type: "string", enum: ["bugs", "security", "performance", "style", "all"], description: "What to focus on. Default 'all'." },
+          language: { type: "string", description: "Language if not TypeScript. Auto-detected if omitted." },
+        },
+        required: ["code"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "generate_tests",
+      description: "Generate unit tests or integration tests for any code. Produces ready-to-run test files with proper imports, mocks, and assertions. Supports any testing framework (Jest, Vitest, Mocha, pytest, etc.). Use after writing new functions, API endpoints, or components.",
+      parameters: {
+        type: "object",
+        properties: {
+          code: { type: "string", description: "Code to generate tests for" },
+          file_path: { type: "string", description: "Source file path (helps determine test file location and imports)" },
+          framework: { type: "string", description: "Testing framework (e.g. 'vitest', 'jest', 'mocha', 'pytest'). Default: auto-detect from project." },
+          coverage: { type: "string", enum: ["basic", "thorough", "edge-cases"], description: "Test coverage level. Default 'thorough'." },
+        },
+        required: ["code"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
       name: "convert_code",
       description: "Convert/translate code between ANY programming languages or frameworks. Use when Bryn finds code in Python, Go, Rust, Java, etc. and wants it in TypeScript, or when migrating patterns between frameworks (e.g., Vue→React, Django→Express, Prisma→Drizzle). Uses a secondary AI model for accurate translation.",
       parameters: {
@@ -3085,6 +3136,118 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           };
         } catch (e: any) {
           return { success: false, result: { error: `AI subtask failed: ${e.message?.substring(0, 300)}` } };
+        }
+      }
+
+      case "code_complete": {
+        const code = args.code;
+        const filePath = args.file_path || '';
+        const instruction = args.instruction || 'Complete this code naturally';
+        const maxLines = args.max_lines || 30;
+        try {
+          let fileContext = '';
+          if (filePath) {
+            try {
+              const { readFileSync } = await import('fs');
+              const path = await import('path');
+              const fullContent = readFileSync(path.default.join(projectRoot, filePath), 'utf-8');
+              const lines = fullContent.split('\n');
+              fileContext = `\nFile: ${filePath} (${lines.length} lines total)\nFirst 50 lines for context:\n${lines.slice(0, 50).join('\n')}`;
+            } catch {}
+          }
+          const OpenAI = (await import("openai")).default;
+          const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+          const completion = await openai.chat.completions.create({
+            model: 'gpt-4.1-mini',
+            messages: [
+              { role: 'system', content: `You are an expert code completion engine. Generate the most likely continuation of the given code. Match the existing style, patterns, and conventions exactly. Output ONLY the completion code — no explanation, no markdown fences, no preamble. Max ${maxLines} lines.${fileContext}` },
+              { role: 'user', content: `${instruction}\n\nCode to complete:\n${code.substring(code.length - 3000)}` },
+            ],
+            max_completion_tokens: Math.min(maxLines * 50, 2000),
+          });
+          return {
+            success: true,
+            result: {
+              completion: completion.choices[0]?.message?.content || '',
+              instruction,
+              tokens: completion.usage?.total_tokens,
+            },
+          };
+        } catch (e: any) {
+          return { success: false, result: { error: `Code completion failed: ${e.message?.substring(0, 300)}` } };
+        }
+      }
+
+      case "code_review_tool": {
+        const code = args.code;
+        const filePath = args.file_path || 'unknown';
+        const focus = args.focus || 'all';
+        const language = args.language || 'TypeScript';
+        try {
+          const OpenAI = (await import("openai")).default;
+          const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+          const focusInstructions: Record<string, string> = {
+            bugs: 'Focus on logic errors, null/undefined risks, race conditions, off-by-one errors, and incorrect assumptions.',
+            security: 'Focus on XSS, SQL injection, auth bypasses, secret exposure, insecure defaults, and input validation.',
+            performance: 'Focus on unnecessary re-renders, N+1 queries, missing indexes, memory leaks, large bundle sizes, and slow algorithms.',
+            style: 'Focus on naming conventions, code organization, DRY violations, dead code, and readability.',
+            all: 'Review for bugs, security, performance, AND style issues.',
+          };
+          const completion = await openai.chat.completions.create({
+            model: 'gpt-4.1-mini',
+            messages: [
+              { role: 'system', content: `You are a senior engineer doing a thorough code review. ${focusInstructions[focus] || focusInstructions.all} For each issue, provide: severity (critical/warning/info), the problematic line/section, what's wrong, and the fix. Be specific and actionable.` },
+              { role: 'user', content: `Review this ${language} code from ${filePath}:\n\n\`\`\`${language}\n${code.substring(0, 8000)}\n\`\`\`` },
+            ],
+            max_completion_tokens: 2000,
+          });
+          return {
+            success: true,
+            result: {
+              file: filePath,
+              focus,
+              review: completion.choices[0]?.message?.content || '',
+              tokens: completion.usage?.total_tokens,
+            },
+          };
+        } catch (e: any) {
+          return { success: false, result: { error: `Code review failed: ${e.message?.substring(0, 300)}` } };
+        }
+      }
+
+      case "generate_tests": {
+        const code = args.code;
+        const filePath = args.file_path || '';
+        const framework = args.framework || 'vitest';
+        const coverage = args.coverage || 'thorough';
+        try {
+          const OpenAI = (await import("openai")).default;
+          const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+          const coverageInstructions: Record<string, string> = {
+            basic: 'Write tests for the happy path only. 3-5 test cases.',
+            thorough: 'Write tests for happy path, error handling, and boundary conditions. 8-15 test cases.',
+            'edge-cases': 'Write tests focusing on edge cases, race conditions, and unusual inputs. Include property-based tests if applicable. 15-25 test cases.',
+          };
+          const completion = await openai.chat.completions.create({
+            model: 'gpt-4.1-mini',
+            messages: [
+              { role: 'system', content: `You are a senior test engineer. Generate complete, ready-to-run ${framework} test files. Include proper imports, setup/teardown, mocks where needed, and descriptive test names. ${coverageInstructions[coverage] || coverageInstructions.thorough} Output ONLY the test file code in a code block.` },
+              { role: 'user', content: `Generate ${framework} tests for this code${filePath ? ` (from ${filePath})` : ''}:\n\n\`\`\`\n${code.substring(0, 8000)}\n\`\`\`` },
+            ],
+            max_completion_tokens: 3000,
+          });
+          return {
+            success: true,
+            result: {
+              framework,
+              coverage,
+              tests: completion.choices[0]?.message?.content || '',
+              suggestedPath: filePath ? filePath.replace(/\.(ts|tsx|js|jsx)$/, `.test.$1`) : `tests/generated.test.ts`,
+              tokens: completion.usage?.total_tokens,
+            },
+          };
+        } catch (e: any) {
+          return { success: false, result: { error: `Test generation failed: ${e.message?.substring(0, 300)}` } };
         }
       }
 
