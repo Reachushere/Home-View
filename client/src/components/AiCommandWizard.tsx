@@ -1,7 +1,57 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Zap, Send, X, Loader2, CheckCircle, XCircle, AlertTriangle, Trash2, RotateCcw, Maximize2, Minimize2, Pencil, Circle, ArrowRight, Undo2, Check, Scissors, Square } from 'lucide-react';
+import { Zap, Send, X, Loader2, CheckCircle, XCircle, AlertTriangle, Trash2, RotateCcw, Maximize2, Minimize2, Pencil, Circle, ArrowRight, Undo2, Check, Scissors, Square, Copy } from 'lucide-react';
 import { queryClient } from '@/lib/queryClient';
+
+function CodeBlock({ code, lang }: { code: string; lang: string }) {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = () => {
+    navigator.clipboard.writeText(code).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+  return (
+    <div style={{
+      position: 'relative', margin: '8px 0', borderRadius: '10px',
+      background: 'rgba(0,0,0,0.45)', border: '1px solid rgba(100,160,255,0.2)',
+      overflow: 'hidden',
+    }}>
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '4px 10px', background: 'rgba(100,160,255,0.1)',
+        borderBottom: '1px solid rgba(100,160,255,0.15)',
+      }}>
+        <span style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(160,190,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          {lang || 'code'}
+        </span>
+        <button
+          onClick={handleCopy}
+          data-testid="button-code-copy"
+          style={{
+            display: 'flex', alignItems: 'center', gap: '4px',
+            background: copied ? 'rgba(34,197,94,0.2)' : 'rgba(100,160,255,0.15)',
+            border: copied ? '1px solid rgba(34,197,94,0.4)' : '1px solid rgba(100,160,255,0.25)',
+            borderRadius: '6px', padding: '3px 8px', cursor: 'pointer',
+            color: copied ? '#86efac' : 'rgba(180,200,255,0.9)',
+            fontSize: '11px', fontWeight: 500, transition: 'all 0.2s ease',
+          }}
+        >
+          {copied ? <Check size={12} /> : <Copy size={12} />}
+          {copied ? 'Copied!' : 'Copy'}
+        </button>
+      </div>
+      <pre style={{
+        margin: 0, padding: '10px 12px', overflowX: 'auto',
+        fontSize: '12px', lineHeight: '1.5',
+        fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
+        color: 'rgba(220,230,255,0.95)', whiteSpace: 'pre-wrap', wordBreak: 'break-all',
+      }}>
+        <code>{code}</code>
+      </pre>
+    </div>
+  );
+}
 
 type MarkupTool = 'draw' | 'circle' | 'arrow';
 interface MarkupStroke {
@@ -986,18 +1036,60 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 )}
                 {(() => {
                   const text = msg.content || '';
+                  const codeBlockRe = /```(\w*)\n?([\s\S]*?)```/g;
                   const mdImgRe = /!\[([^\]]*)\]\((https?:\/\/[^)]+)\)/g;
-                  if (!mdImgRe.test(text)) return text;
-                  mdImgRe.lastIndex = 0;
+                  const inlineCodeRe = /`([^`\n]+)`/g;
+
+                  const renderInlineSegment = (seg: string, keyBase: number) => {
+                    const inlineParts: (string | JSX.Element)[] = [];
+                    let iLast = 0;
+                    let iMatch;
+                    const inRe = new RegExp(inlineCodeRe.source, 'g');
+                    while ((iMatch = inRe.exec(seg)) !== null) {
+                      if (iMatch.index > iLast) inlineParts.push(seg.slice(iLast, iMatch.index));
+                      inlineParts.push(
+                        <code key={`ic-${keyBase}-${iMatch.index}`} style={{
+                          background: 'rgba(0,0,0,0.35)', padding: '1px 5px', borderRadius: '4px',
+                          fontSize: '12px', fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
+                          border: '1px solid rgba(100,160,255,0.2)',
+                        }}>{iMatch[1]}</code>
+                      );
+                      iLast = iMatch.index + iMatch[0].length;
+                    }
+                    if (iLast < seg.length) inlineParts.push(seg.slice(iLast));
+                    return inlineParts.length > 0 ? inlineParts : [seg];
+                  };
+
+                  const renderTextWithImages = (seg: string, keyBase: number) => {
+                    const imgParts: (string | JSX.Element)[] = [];
+                    let imgLast = 0;
+                    let imgMatch;
+                    const imgRe = new RegExp(mdImgRe.source, 'g');
+                    while ((imgMatch = imgRe.exec(seg)) !== null) {
+                      if (imgMatch.index > imgLast) imgParts.push(...renderInlineSegment(seg.slice(imgLast, imgMatch.index), keyBase + imgMatch.index));
+                      imgParts.push(<a key={`img-${keyBase}-${imgMatch.index}`} href={imgMatch[2]} target="_blank" rel="noopener noreferrer" download><img src={imgMatch[2]} alt={imgMatch[1]} style={{ maxWidth: '100%', maxHeight: '250px', borderRadius: '10px', border: '1px solid rgba(100,160,255,0.3)', marginTop: '6px', cursor: 'pointer' }} /></a>);
+                      imgLast = imgMatch.index + imgMatch[0].length;
+                    }
+                    if (imgLast < seg.length) imgParts.push(...renderInlineSegment(seg.slice(imgLast), keyBase + imgLast));
+                    return imgParts;
+                  };
+
+                  if (!codeBlockRe.test(text)) return renderTextWithImages(text, 0);
+                  codeBlockRe.lastIndex = 0;
+
                   const parts: (string | JSX.Element)[] = [];
                   let last = 0;
-                  let m;
-                  while ((m = mdImgRe.exec(text)) !== null) {
-                    if (m.index > last) parts.push(text.slice(last, m.index));
-                    parts.push(<a key={m.index} href={m[2]} target="_blank" rel="noopener noreferrer" download><img src={m[2]} alt={m[1]} style={{ maxWidth: '100%', maxHeight: '250px', borderRadius: '10px', border: '1px solid rgba(100,160,255,0.3)', marginTop: '6px', cursor: 'pointer' }} /></a>);
-                    last = m.index + m[0].length;
+                  let match;
+                  while ((match = codeBlockRe.exec(text)) !== null) {
+                    if (match.index > last) parts.push(...renderTextWithImages(text.slice(last, match.index), match.index));
+                    const lang = match[1] || '';
+                    const code = match[2].replace(/\n$/, '');
+                    parts.push(
+                      <CodeBlock key={`cb-${match.index}`} code={code} lang={lang} />
+                    );
+                    last = match.index + match[0].length;
                   }
-                  if (last < text.length) parts.push(text.slice(last));
+                  if (last < text.length) parts.push(...renderTextWithImages(text.slice(last), last));
                   return parts;
                 })()}
                 {msg.actionTaken && msg.toolResults && msg.toolResults.length > 0 && (() => {
