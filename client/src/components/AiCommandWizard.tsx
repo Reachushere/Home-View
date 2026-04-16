@@ -353,6 +353,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [thinkingPhase, setThinkingPhase] = useState<string | null>(null);
+  const [activeToolName, setActiveToolName] = useState<string | null>(null);
   const playDing = useCallback(() => {
     try {
       const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -620,18 +621,21 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
               } else if (event.type === 'tool_start') {
                 const rawName = event.name || '';
                 if (rawName === 'rate_limit_wait') {
-                  setThinkingPhase('Waiting for API...');
+                  setActiveToolName('Waiting for API...');
                 } else {
                   const toolLabel = rawName.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
-                  setThinkingPhase(toolLabel || 'Working...');
+                  setActiveToolName(toolLabel || 'Working...');
                 }
+                setThinkingPhase(null);
               } else if (event.type === 'tool_done') {
+                setActiveToolName(null);
                 if (!event.success) {
                   const toolLabel = event.name.replace(/_/g, ' ');
                   streamedContent += `Failed: ${toolLabel}\n`;
                 }
               } else if (event.type === 'token') {
-                if (thinkingPhase) setThinkingPhase(null);
+                setThinkingPhase(null);
+                setActiveToolName(null);
                 streamedContent += event.content;
                 setMessages(prev => {
                   const last = prev[prev.length - 1];
@@ -658,6 +662,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
         }
 
         setThinkingPhase(null);
+        setActiveToolName(null);
         if (actionTaken) invalidateAll();
         playDing();
 
@@ -696,6 +701,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       }
     } catch (err: any) {
       setThinkingPhase(null);
+      setActiveToolName(null);
       if (err.name === 'AbortError') {
         setMessages(prev => [...prev, { role: 'assistant', content: 'Stopped.' }]);
       } else {
@@ -705,6 +711,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       abortRef.current = null;
       setLoading(false);
       setThinkingPhase(null);
+      setActiveToolName(null);
       setTimeout(() => {
         setMessages(curr => {
           const saveable = curr.map(m => ({ role: m.role, content: m.content }));
@@ -1372,7 +1379,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
             </div>
           ))}
 
-          {(thinkingPhase || (loading && !messages.some(m => m.role === 'assistant' && m.content))) && (
+          {(activeToolName || thinkingPhase || (loading && !messages.some(m => m.role === 'assistant' && m.content))) && !pendingConfirm && (
             <div style={{
               display: 'flex',
               alignItems: 'center',
@@ -1393,7 +1400,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 color: '#ffffff',
                 textShadow: '0 0 8px rgba(139,92,246,0.5)',
               }}>
-                {thinkingPhase || 'Working...'}
+                {activeToolName || thinkingPhase || 'Working...'}
               </span>
             </div>
           )}
