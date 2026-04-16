@@ -15,7 +15,7 @@ function getOAuth2Client() {
     throw new Error('Google OAuth credentials not configured for third account');
   }
   
-  const domain = process.env.REPLIT_DEV_DOMAIN || process.env.REPLIT_DOMAINS?.split(',')[0];
+  const domain = process.env.APP_DOMAIN || process.env.REPLIT_DEV_DOMAIN || process.env.REPLIT_DOMAINS?.split(',')[0];
   const redirectUri = domain 
     ? `https://${domain}/api/google/third-account/callback`
     : 'http://localhost:5000/api/google/third-account/callback';

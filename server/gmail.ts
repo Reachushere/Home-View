@@ -61,8 +61,8 @@ async function getAccessToken(): Promise<string> {
     ? 'depl ' + process.env.WEB_REPL_RENEWAL
     : null;
 
-  if (!xReplitToken) {
-    throw new Error('Gmail not connected - run connect_google.js on the Pi');
+  if (!xReplitToken || !hostname) {
+    throw new Error('Gmail not connected — authenticate via /api/google/primary-calendar/auth (shares Google tokens)');
   }
 
   connectionSettings = await fetch(

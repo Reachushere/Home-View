@@ -35,7 +35,7 @@ function getPrimaryOAuth2Client(reqHost?: string) {
   const clientId = process.env.GOOGLE_SECOND_ACCOUNT_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_SECOND_ACCOUNT_CLIENT_SECRET;
   if (!clientId || !clientSecret) throw new Error('Google OAuth credentials not configured');
-  const domain = process.env.REPLIT_DEV_DOMAIN || process.env.REPLIT_DOMAINS?.split(',')[0];
+  const domain = process.env.APP_DOMAIN || process.env.REPLIT_DEV_DOMAIN || process.env.REPLIT_DOMAINS?.split(',')[0];
   let redirectUri: string;
   if (domain) {
     redirectUri = `https://${domain}/api/google/primary-calendar/callback`;
@@ -125,26 +125,30 @@ async function getAccessToken() {
     ? 'depl ' + process.env.WEB_REPL_RENEWAL 
     : null;
 
-  if (!xReplitToken) {
-    throw new Error('Google Calendar not connected - run connect_google.js on the Pi');
+  if (!xReplitToken || !hostname) {
+    throw new Error('Google Calendar not connected — visit /api/google/primary-calendar/auth to authenticate');
   }
 
-  connectionSettings = await fetch(
-    'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=google-calendar',
-    {
-      headers: {
-        'Accept': 'application/json',
-        'X_REPLIT_TOKEN': xReplitToken
+  try {
+    connectionSettings = await fetch(
+      'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=google-calendar',
+      {
+        headers: {
+          'Accept': 'application/json',
+          'X_REPLIT_TOKEN': xReplitToken
+        }
       }
+    ).then(res => res.json()).then(data => data.items?.[0]);
+
+    const accessToken = connectionSettings?.settings?.access_token || connectionSettings?.settings?.oauth?.credentials?.access_token;
+
+    if (!connectionSettings || !accessToken) {
+      throw new Error('Google Calendar not connected — visit /api/google/primary-calendar/auth to authenticate');
     }
-  ).then(res => res.json()).then(data => data.items?.[0]);
-
-  const accessToken = connectionSettings?.settings?.access_token || connectionSettings?.settings?.oauth?.credentials?.access_token;
-
-  if (!connectionSettings || !accessToken) {
-    throw new Error('Google Calendar not connected');
+    return accessToken;
+  } catch (e: any) {
+    throw new Error('Google Calendar not connected — visit /api/google/primary-calendar/auth to authenticate');
   }
-  return accessToken;
 }
 
 // WARNING: Never cache this client.

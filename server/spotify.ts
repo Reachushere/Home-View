@@ -30,7 +30,7 @@ export function getAuthUrl(): string {
   const clientId = process.env.SPOTIFY_CLIENT_ID;
   if (!clientId) throw new Error('SPOTIFY_CLIENT_ID not set');
 
-  const host = process.env.REPLIT_DOMAINS?.split(',')[0] || process.env.REPL_SLUG + '.' + process.env.REPL_OWNER + '.repl.co';
+  const host = process.env.APP_DOMAIN || process.env.REPLIT_DOMAINS?.split(',')[0] || 'uni-cal.app';
   const redirectUri = `https://${host}/api/spotify/callback`;
 
   const scopes = [
@@ -63,7 +63,7 @@ export async function handleCallback(code: string): Promise<void> {
   const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
   if (!clientId || !clientSecret) throw new Error('Spotify credentials not configured');
 
-  const host = process.env.REPLIT_DOMAINS?.split(',')[0] || process.env.REPL_SLUG + '.' + process.env.REPL_OWNER + '.repl.co';
+  const host = process.env.APP_DOMAIN || process.env.REPLIT_DOMAINS?.split(',')[0] || 'uni-cal.app';
   const redirectUri = `https://${host}/api/spotify/callback`;
 
   const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');

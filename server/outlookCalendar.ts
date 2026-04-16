@@ -53,26 +53,32 @@ async function getOutlookAccessToken() {
     ? 'depl ' + process.env.WEB_REPL_RENEWAL
     : null;
 
-  if (!xReplitToken) {
-    throw new Error('Outlook not connected');
-  }
+  if (xReplitToken && hostname) {
+    try {
+      outlookConnectionSettings = await fetch(
+        'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=outlook',
+        {
+          headers: {
+            'Accept': 'application/json',
+            'X-Replit-Token': xReplitToken
+          }
+        }
+      ).then(res => res.json()).then(data => data.items?.[0]);
 
-  outlookConnectionSettings = await fetch(
-    'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=outlook',
-    {
-      headers: {
-        'Accept': 'application/json',
-        'X-Replit-Token': xReplitToken
+      const accessToken = outlookConnectionSettings?.settings?.access_token || outlookConnectionSettings?.settings?.oauth?.credentials?.access_token;
+      if (accessToken) {
+        const refreshToken = outlookConnectionSettings?.settings?.refresh_token || outlookConnectionSettings?.settings?.oauth?.credentials?.refresh_token;
+        if (refreshToken) {
+          saveMsTokens({ refresh_token: refreshToken, access_token: accessToken, expires_at: Date.now() + 3600 * 1000 });
+        }
+        return accessToken;
       }
+    } catch (e) {
+      console.error('[Outlook] Replit connector failed, no local tokens available:', e);
     }
-  ).then(res => res.json()).then(data => data.items?.[0]);
-
-  const accessToken = outlookConnectionSettings?.settings?.access_token || outlookConnectionSettings?.settings?.oauth?.credentials?.access_token;
-
-  if (!outlookConnectionSettings || !accessToken) {
-    throw new Error('Outlook not connected');
   }
-  return accessToken;
+
+  throw new Error('Outlook not connected — authenticate via OneDrive OAuth at /api/onedrive/auth (shares Microsoft tokens)');
 }
 
 export async function getOutlookClient() {
