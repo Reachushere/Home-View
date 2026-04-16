@@ -1673,15 +1673,19 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           if (args.view_index !== undefined && args.view_index !== null) {
             viewIdx = args.view_index;
           } else if (args.view_title) {
-            viewIdx = views.findIndex((v: any) => v.title?.toLowerCase() === args.view_title.toLowerCase());
+            viewIdx = views.findIndex((v: any) => v && v.title && typeof v.title === 'string' && v.title.toLowerCase() === args.view_title.toLowerCase());
           } else {
             viewIdx = 0;
           }
           if (viewIdx < 0 || viewIdx >= views.length) {
-            const viewList = views.map((v: any, i: number) => `${i}: ${v.title || '(untitled)'}`).join(', ');
+            const viewList = views.map((v: any, i: number) => `${i}: ${(v && v.title) || '(null or untitled)'}`).join(', ');
             return { success: false, result: { error: `View not found. Available views: ${viewList}` } };
           }
-          return { success: true, result: { dashboard: dashPathVR || 'lovelace', view_index: viewIdx, view_title: views[viewIdx].title || '(untitled)', total_views: views.length, view: views[viewIdx] } };
+          const targetView = views[viewIdx];
+          if (!targetView) {
+            return { success: false, result: { error: `View at index ${viewIdx} is null/corrupted. Use ha_dashboard_read to see the full config, or try a different view_index.` } };
+          }
+          return { success: true, result: { dashboard: dashPathVR || 'lovelace', view_index: viewIdx, view_title: targetView.title || '(untitled)', total_views: views.length, view: targetView } };
         } catch (err: any) {
           return { success: false, result: { error: `HA view read failed: ${err.message}` } };
         }
@@ -1702,12 +1706,12 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           if (args.view_index !== undefined && args.view_index !== null) {
             viewIdx = args.view_index;
           } else if (args.view_title) {
-            viewIdx = views.findIndex((v: any) => v.title?.toLowerCase() === args.view_title.toLowerCase());
+            viewIdx = views.findIndex((v: any) => v && v.title && typeof v.title === 'string' && v.title.toLowerCase() === args.view_title.toLowerCase());
           } else {
             return { success: false, result: { error: "Must specify view_index or view_title" } };
           }
           if (viewIdx < 0 || viewIdx >= views.length) {
-            const viewList = views.map((v: any, i: number) => `${i}: ${v.title || '(untitled)'}`).join(', ');
+            const viewList = views.map((v: any, i: number) => `${i}: ${(v && v.title) || '(null or untitled)'}`).join(', ');
             return { success: false, result: { error: `View not found. Available views: ${viewList}` } };
           }
           views[viewIdx] = args.view_config;
