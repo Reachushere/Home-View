@@ -304,7 +304,7 @@ export const AI_COMMAND_TOOLS = [
     type: "function" as const,
     function: {
       name: "ha_view_write",
-      description: "Update a SINGLE view/tab in a Home Assistant dashboard. The server reads the full dashboard, replaces only the target view with your config, and writes it back. Much safer and more reliable than ha_dashboard_write for large dashboards. ALWAYS read the view first with ha_view_read, modify it, then write it back.",
+      description: "DESTRUCTIVE: Replaces an entire view/tab. AVOID for any view with more than ~10 elements — it will drop items because the LLM can't echo back many nested elements perfectly. Use ha_element_patch instead for single-element edits (state_image, image, style, tap_action, etc). Use ha_view_write ONLY for creating NEW views from scratch or replacing truly small views. Will REFUSE large overwrites unless force=true.",
       parameters: {
         type: "object",
         properties: {
@@ -312,6 +312,7 @@ export const AI_COMMAND_TOOLS = [
           view_index: { type: "number", description: "Zero-based view index. Use this OR view_title." },
           view_title: { type: "string", description: "View title to find (case-insensitive). Use this OR view_index." },
           view_config: { type: "object", description: "The complete view object to replace the existing view with. Must include title, cards/elements, etc." },
+          force: { type: "boolean", description: "Set true to bypass safety guardrails that prevent accidental element deletion. Only use if you have the FULL current view with every nested element." },
         },
         required: ["view_config"],
       },
@@ -1733,6 +1734,25 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           if (viewIdx < 0 || viewIdx >= views.length) {
             const viewList = views.map((v: any, i: number) => `${i}: ${(v && v.title) || '(null or untitled)'}`).join(', ');
             return { success: false, result: { error: `View not found. Available views: ${viewList}` } };
+          }
+          // GUARDRAIL: refuse to overwrite a large existing view unless force=true.
+          // Large view overwrites reliably drop elements because the LLM can't echo back 50+ nested items perfectly.
+          const existingView = views[viewIdx];
+          const countElements = (node: any): number => {
+            if (!node || typeof node !== 'object') return 0;
+            let n = 1;
+            for (const k of ['cards', 'elements', 'children']) {
+              if (Array.isArray(node[k])) for (const c of node[k]) n += countElements(c);
+            }
+            return n;
+          };
+          const existingCount = countElements(existingView);
+          const newCount = countElements(args.view_config);
+          if (!args.force && existingCount > 15 && newCount < existingCount * 0.9) {
+            return { success: false, result: { error: `REFUSED: Existing view has ${existingCount} nested items but you only sent ${newCount}. This would delete elements. Use ha_element_patch for surgical edits instead — it won't drop anything. If you REALLY need to overwrite the whole view, re-call with force=true (only do this if you have the complete view config including every element).` } };
+          }
+          if (!args.force && existingCount > 30) {
+            return { success: false, result: { error: `REFUSED: View has ${existingCount} nested items — too large for safe overwrite. Use ha_element_patch to change individual elements surgically. ha_view_write on large views has a history of dropping elements. If you truly need a full overwrite, pass force=true.` } };
           }
           views[viewIdx] = args.view_config;
           config.views = views;

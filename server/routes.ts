@@ -6157,7 +6157,8 @@ ${fileContents.join('\n\n')}`;
       }
 
       const isCodeTask = /\b(change|modify|edit|update|fix|add|remove|refactor|style|css|color|button|component|page|layout|font|move|rename|code|file|build|install|npm|import|debug|error|bug|break|broken|crash|log|deploy|push|commit|background|bg|gradient|dialog|dialogue|box|panel|window|sidebar|header|theme|border|padding|margin|opacity|animation|hover|width|height|size|position|align|display|flex|grid|icon|image|text|shadow|rounded|radius)\b/i.test(message);
-      let model = isCodeTask ? "gpt-4.1" : "gpt-4.1-mini";
+      const isHaTask = /\b(home\s*assistant|lovelace|dashboard|view|element|entity|automation|script|helper|picture-elements|state_image|hass|ha\b|repair)\b/i.test(message);
+      let model = (isCodeTask || isHaTask) ? "gpt-4.1" : "gpt-4.1-mini";
       const estCost = isCodeTask ? "~$0.10-0.50" : "~$0.01-0.05";
 
       const apiKey = process.env.OPENAI_API_KEY;
