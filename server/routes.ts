@@ -6300,10 +6300,13 @@ HA DISCOVERY:
 • Always memory_write important entities after discovering them
 
 HA DASHBOARD EDITING:
-1. ha_dashboard_read → get current config
-2. Modify the structure
-3. ha_dashboard_write → save
+For the default 'lovelace' dashboard (11 views, very large):
+1. ha_view_read(view_title:'Test-home') → get ONLY that view's config
+2. Modify the view structure (add/remove cards, elements, etc.)
+3. ha_view_write(view_title:'Test-home', view_config: modifiedView) → saves ONLY that view
 4. Tell Bryn to refresh
+NEVER use ha_dashboard_write on the default 'lovelace' dashboard — it's too large and will corrupt the config.
+For small custom dashboards (uni-cal, spotify-bryn, etc.): ha_dashboard_read → modify → ha_dashboard_write is fine.
 
 HA AUTOMATION MANAGEMENT:
 • To CREATE a new automation: use ha_create_automation(alias, trigger, action, condition?, mode?, description?)
@@ -6400,12 +6403,14 @@ COURSES: get_semester_info, get_course_list, update_semester_settings
   • get_semester_info: returns current semester, dates, courses, week number
   • update_semester_settings: semesterStartDate, semesterEndDate, readingWeekStart, readingWeekEnd, examPeriodStart, examPeriodEnd
 
-HOME: ha_list_entities, ha_discover, ha_get_state, ha_list_dashboards, ha_dashboard_read, ha_dashboard_write, ha_config_entries, ha_service_call, ha_announce, spotify_control
+HOME: ha_list_entities, ha_discover, ha_get_state, ha_list_dashboards, ha_dashboard_read, ha_dashboard_write, ha_view_read, ha_view_write, ha_config_entries, ha_service_call, ha_announce, spotify_control
   • ha_list_entities: search (text), domain (light/switch/sensor/media_player/etc), limit
   • ha_discover: include (all/devices/entities/automations/areas/scenes)
   • ha_get_state: entity_id (required)
   • ha_list_dashboards: lists all HA Lovelace dashboards with their url_path — use BEFORE ha_dashboard_read/write if unsure of the dashboard name. Uses WebSocket API.
-  • ha_dashboard_read/write: pass url_path from ha_list_dashboards. Uses WebSocket API. IMPORTANT: 'Test-home' is NOT a separate dashboard — it's View 0 (tab) inside the default 'lovelace' dashboard. The default dashboard has 11 views/tabs including Test-home, Home, Pug, Batteries, Media Test, etc. To modify Test-home, read the default dashboard (no url_path), find the view by title, edit its cards, then write back.
+  • ha_dashboard_read/write: reads/writes the FULL dashboard config. Fine for small dashboards. For the default 'lovelace' dashboard (11 views, very large), use ha_view_read/write instead.
+  • ha_view_read: read a SINGLE view from a dashboard by view_index or view_title. PREFERRED for the default 'lovelace' dashboard. 'Test-home' is view 0. Pass view_title='Test-home' to read just that view.
+  • ha_view_write: update a SINGLE view — server reads the full config internally, replaces just the target view, and saves. ALWAYS use this instead of ha_dashboard_write for the default 'lovelace' dashboard. Pass view_title='Test-home' and view_config with the modified view object.
   • ha_service_call: domain, service, entity_id, service_data (JSON object with extra params like brightness, color_temp, etc.)
   • ha_announce: message, target (everywhere/kitchen/bathroom/bedroom)
   • spotify_control: action (play/pause/next/previous/volume/search/queue), query, volume (0-100), device

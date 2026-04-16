@@ -288,6 +288,38 @@ export const AI_COMMAND_TOOLS = [
   {
     type: "function" as const,
     function: {
+      name: "ha_view_read",
+      description: "Read a SINGLE view/tab from a Home Assistant dashboard. Much more efficient than ha_dashboard_read for large dashboards like 'lovelace' (which has 11 views). Returns only the specified view's config (cards, elements, etc). Use view_index or view_title to identify the view. 'Test-home' is view 0 of the default lovelace dashboard.",
+      parameters: {
+        type: "object",
+        properties: {
+          dashboard: { type: "string", description: "Dashboard url_path. Omit or 'lovelace' for the default dashboard." },
+          view_index: { type: "number", description: "Zero-based view index (e.g. 0 for the first tab). Use this OR view_title." },
+          view_title: { type: "string", description: "View title to search for (case-insensitive, e.g. 'Test-home'). Use this OR view_index." },
+        },
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "ha_view_write",
+      description: "Update a SINGLE view/tab in a Home Assistant dashboard. The server reads the full dashboard, replaces only the target view with your config, and writes it back. Much safer and more reliable than ha_dashboard_write for large dashboards. ALWAYS read the view first with ha_view_read, modify it, then write it back.",
+      parameters: {
+        type: "object",
+        properties: {
+          dashboard: { type: "string", description: "Dashboard url_path. Omit or 'lovelace' for the default dashboard." },
+          view_index: { type: "number", description: "Zero-based view index. Use this OR view_title." },
+          view_title: { type: "string", description: "View title to find (case-insensitive). Use this OR view_index." },
+          view_config: { type: "object", description: "The complete view object to replace the existing view with. Must include title, cards/elements, etc." },
+        },
+        required: ["view_config"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
       name: "ha_config_entries",
       description: "List HA config entries, integrations, or call any HA REST API endpoint. For advanced HA interactions like reading/writing automations, scripts, helpers, etc.",
       parameters: {
@@ -1623,6 +1655,69 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           return { success: true, result: { message: "Dashboard updated successfully. Refresh your HA browser to see changes.", dashboard: dashPathW || 'lovelace' } };
         } catch (err: any) {
           return { success: false, result: { error: `HA dashboard write failed: ${err.message}. Use ha_list_dashboards to verify the correct url_path. Only 'storage' mode dashboards can be written via API.` } };
+        }
+      }
+
+      case "ha_view_read": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+          return { success: false, result: { error: "Home Assistant not configured" } };
+        }
+        let dashPathVR = args.dashboard || null;
+        if (dashPathVR?.startsWith('lovelace-')) dashPathVR = dashPathVR.replace('lovelace-', '');
+        try {
+          const wsMsg: Record<string, any> = {};
+          if (dashPathVR && dashPathVR !== 'lovelace') wsMsg.url_path = dashPathVR;
+          const config = await haWebSocket('lovelace/config', wsMsg);
+          const views = config.views || [];
+          let viewIdx = -1;
+          if (args.view_index !== undefined && args.view_index !== null) {
+            viewIdx = args.view_index;
+          } else if (args.view_title) {
+            viewIdx = views.findIndex((v: any) => v.title?.toLowerCase() === args.view_title.toLowerCase());
+          } else {
+            viewIdx = 0;
+          }
+          if (viewIdx < 0 || viewIdx >= views.length) {
+            const viewList = views.map((v: any, i: number) => `${i}: ${v.title || '(untitled)'}`).join(', ');
+            return { success: false, result: { error: `View not found. Available views: ${viewList}` } };
+          }
+          return { success: true, result: { dashboard: dashPathVR || 'lovelace', view_index: viewIdx, view_title: views[viewIdx].title || '(untitled)', total_views: views.length, view: views[viewIdx] } };
+        } catch (err: any) {
+          return { success: false, result: { error: `HA view read failed: ${err.message}` } };
+        }
+      }
+
+      case "ha_view_write": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+          return { success: false, result: { error: "Home Assistant not configured" } };
+        }
+        let dashPathVW = args.dashboard || null;
+        if (dashPathVW?.startsWith('lovelace-')) dashPathVW = dashPathVW.replace('lovelace-', '');
+        try {
+          const wsMsgR: Record<string, any> = {};
+          if (dashPathVW && dashPathVW !== 'lovelace') wsMsgR.url_path = dashPathVW;
+          const config = await haWebSocket('lovelace/config', wsMsgR);
+          const views = config.views || [];
+          let viewIdx = -1;
+          if (args.view_index !== undefined && args.view_index !== null) {
+            viewIdx = args.view_index;
+          } else if (args.view_title) {
+            viewIdx = views.findIndex((v: any) => v.title?.toLowerCase() === args.view_title.toLowerCase());
+          } else {
+            return { success: false, result: { error: "Must specify view_index or view_title" } };
+          }
+          if (viewIdx < 0 || viewIdx >= views.length) {
+            const viewList = views.map((v: any, i: number) => `${i}: ${v.title || '(untitled)'}`).join(', ');
+            return { success: false, result: { error: `View not found. Available views: ${viewList}` } };
+          }
+          views[viewIdx] = args.view_config;
+          config.views = views;
+          const wsMsgW: Record<string, any> = { config };
+          if (dashPathVW && dashPathVW !== 'lovelace') wsMsgW.url_path = dashPathVW;
+          await haWebSocket('lovelace/config/save', wsMsgW);
+          return { success: true, result: { message: `View '${args.view_config.title || viewIdx}' updated successfully. Refresh HA browser to see changes.`, dashboard: dashPathVW || 'lovelace', view_index: viewIdx } };
+        } catch (err: any) {
+          return { success: false, result: { error: `HA view write failed: ${err.message}` } };
         }
       }
 
