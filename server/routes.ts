@@ -6360,7 +6360,8 @@ NEVER use edit_file for theme changes — update_app_theme stores in DB and appl
 14. PI/SERVER DIAGNOSTICS? → run_shell_command, read_logs, process_check, health_check.
 15. "what's due?" / "what should I work on?" → Already in APP STATE. Summarize overdue + today + this week. Prioritize by urgency.
 16. "morning briefing" / "catch me up" → Combine: overdue warnings, today's tasks, upcoming deadlines, weather mention, any HA status.
-17. MULTI-STEP CHAINS:
+17. EXTERNAL INFO / RESEARCH? → web_search(query) → web_fetch(url) for details. Use for: course info, TMU schedules, error solutions, general knowledge, current events.
+18. MULTI-STEP CHAINS:
     • "remind me about X at Y" → create_task(type:"event", dueDate:Y) + ha_announce if immediate
     • "turn on study mode" → ha_service_call(lights) + spotify_control(focus playlist) in parallel
     • "I'm done for today" → complete tasks due today + ha_announce("Bryn is done studying")
@@ -6420,6 +6421,10 @@ MEMORY: memory_read, memory_write
   • Persistent across sessions. Use for HA entities, user preferences, learned patterns.
 
 EMAIL: send_email — from, to, subject, body, html
+
+WEB: web_search, web_fetch
+  • web_search: query (search text), num_results (default 5, max 10) — searches DuckDuckGo, returns titles/URLs/snippets
+  • web_fetch: url (full URL), max_length (default 5000) — fetches page content as plain text
 
 OTHER: generate_image, run_node_script
 
@@ -6560,7 +6565,7 @@ KEY BACKEND ROUTES:
 
       const messages: any[] = [{ role: "system", content: systemPrompt }];
       if (Array.isArray(history)) {
-        for (const h of history.slice(-20)) {
+        for (const h of history.slice(-50)) {
           if (h.role === 'tool') {
             messages.push({ role: "tool", content: h.content, tool_call_id: h.tool_call_id });
           } else {
@@ -6600,7 +6605,7 @@ KEY BACKEND ROUTES:
         messages.push({ role: "user", content: message.trim() });
       }
 
-      const readOnlyTools = new Set(["read_file", "list_directory", "search_code", "search_tasks", "get_semester_info", "check_build", "read_logs", "git_diff", "get_project_map", "db_schema", "http_check", "memory_read", "process_check", "analyze_ui", "smoke_test", "take_screenshot", "browser_test", "check_performance", "conversation_history", "health_check"]);
+      const readOnlyTools = new Set(["read_file", "list_directory", "search_code", "search_tasks", "get_semester_info", "check_build", "read_logs", "git_diff", "get_project_map", "db_schema", "http_check", "memory_read", "process_check", "analyze_ui", "smoke_test", "take_screenshot", "browser_test", "check_performance", "conversation_history", "health_check", "web_search", "web_fetch"]);
       const destructiveTools = new Set(["delete_task", "bulk_delete_tasks", "bulk_complete_tasks", "run_shell_command", "git_commit_and_push", "install_package", "generate_image"]);
 
       function isToolDestructive(fnName: string, fnArgs: any): boolean {

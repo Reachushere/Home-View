@@ -906,6 +906,36 @@ export const AI_COMMAND_TOOLS = [
       },
     },
   },
+  {
+    type: "function" as const,
+    function: {
+      name: "web_search",
+      description: "Search the web for current information. Use for: looking up facts, checking documentation, finding solutions to errors, getting current news/weather details, researching topics for Bryn's courses, or any question requiring external knowledge. Returns top search results with titles, URLs, and snippets.",
+      parameters: {
+        type: "object",
+        properties: {
+          query: { type: "string", description: "Search query (e.g. 'TMU Chang School exam schedule 2026', 'Node.js pm2 restart command', 'Toronto weather this week')" },
+          num_results: { type: "integer", description: "Number of results to return. Default 5, max 10." },
+        },
+        required: ["query"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "web_fetch",
+      description: "Fetch the text content of a web page. Use after web_search to read a specific page for detailed information. Returns the page's main text content (HTML stripped). Has a 15-second timeout.",
+      parameters: {
+        type: "object",
+        properties: {
+          url: { type: "string", description: "Full URL to fetch (e.g. 'https://example.com/page')" },
+          max_length: { type: "integer", description: "Max characters to return. Default 5000." },
+        },
+        required: ["url"],
+      },
+    },
+  },
 ];
 
 export async function executeToolCall(name: string, args: Record<string, any>): Promise<{ success: boolean; result: any; needsConfirmation?: boolean; confirmationMessage?: string }> {
@@ -2568,6 +2598,97 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
         checks.overallStatus = allOk ? 'HEALTHY' : 'ISSUES DETECTED';
 
         return { success: true, result: checks };
+      }
+
+      case "web_search": {
+        const query = args.query;
+        const numResults = Math.min(args.num_results || 5, 10);
+        try {
+          const searchUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`;
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 15000);
+          const resp = await fetch(searchUrl, {
+            signal: controller.signal,
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            },
+          });
+          clearTimeout(timeout);
+          const html = await resp.text();
+          const results: { title: string; url: string; snippet: string }[] = [];
+          const resultBlocks = html.split(/class="result__body"/g).slice(1, numResults + 1);
+          for (const block of resultBlocks) {
+            const titleMatch = block.match(/class="result__a"[^>]*>([^<]*(?:<[^>]*>[^<]*)*)<\/a>/);
+            const urlMatch = block.match(/class="result__url"[^>]*href="([^"]*)"/) || block.match(/class="result__a"[^>]*href="([^"]*)"/);
+            const snippetMatch = block.match(/class="result__snippet"[^>]*>([\s\S]*?)<\/td>/) || block.match(/class="result__snippet"[^>]*>([\s\S]*?)<\/span>/);
+            const title = (titleMatch?.[1] || '').replace(/<[^>]*>/g, '').trim();
+            let url = (urlMatch?.[1] || '').trim();
+            if (url.startsWith('//duckduckgo.com/l/?uddg=')) {
+              try { url = decodeURIComponent(url.split('uddg=')[1]?.split('&')[0] || url); } catch {}
+            }
+            const snippet = (snippetMatch?.[1] || '').replace(/<[^>]*>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#x27;/g, "'").trim();
+            if (title && url) {
+              results.push({ title, url, snippet });
+            }
+          }
+          if (results.length === 0) {
+            const fallbackTitles = [...html.matchAll(/class="result__a"[^>]*>([^<]+)<\/a>/g)].slice(0, numResults);
+            const fallbackUrls = [...html.matchAll(/class="result__a"[^>]*href="([^"]*)"/g)].slice(0, numResults);
+            for (let i = 0; i < Math.min(fallbackTitles.length, fallbackUrls.length); i++) {
+              let fUrl = fallbackUrls[i][1].trim();
+              if (fUrl.startsWith('//duckduckgo.com/l/?uddg=')) {
+                try { fUrl = decodeURIComponent(fUrl.split('uddg=')[1]?.split('&')[0] || fUrl); } catch {}
+              }
+              results.push({ title: fallbackTitles[i][1].trim(), url: fUrl, snippet: '' });
+            }
+          }
+          return { success: true, result: { query, results, count: results.length } };
+        } catch (e: any) {
+          return { success: false, result: { error: `Web search failed: ${e.message?.substring(0, 200)}` } };
+        }
+      }
+
+      case "web_fetch": {
+        const url = args.url;
+        const maxLength = args.max_length || 5000;
+        try {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 15000);
+          const resp = await fetch(url, {
+            signal: controller.signal,
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+              'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            },
+            redirect: 'follow',
+          });
+          clearTimeout(timeout);
+          if (!resp.ok) {
+            return { success: false, result: { error: `HTTP ${resp.status}: ${resp.statusText}` } };
+          }
+          const html = await resp.text();
+          let text = html
+            .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+            .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+            .replace(/<nav[^>]*>[\s\S]*?<\/nav>/gi, '')
+            .replace(/<footer[^>]*>[\s\S]*?<\/footer>/gi, '')
+            .replace(/<header[^>]*>[\s\S]*?<\/header>/gi, '')
+            .replace(/<[^>]+>/g, ' ')
+            .replace(/&nbsp;/g, ' ')
+            .replace(/&amp;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&#x27;/g, "'")
+            .replace(/\s+/g, ' ')
+            .trim();
+          if (text.length > maxLength) {
+            text = text.substring(0, maxLength) + '... [truncated]';
+          }
+          return { success: true, result: { url, length: text.length, content: text } };
+        } catch (e: any) {
+          return { success: false, result: { error: `Fetch failed: ${e.message?.substring(0, 200)}` } };
+        }
       }
 
       default:
