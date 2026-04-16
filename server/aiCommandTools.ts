@@ -939,6 +939,37 @@ export const AI_COMMAND_TOOLS = [
   {
     type: "function" as const,
     function: {
+      name: "code_reference",
+      description: "Get instant reference docs and common patterns for the project's tech stack. Use when you need to know how a library works, best practices for a pattern, or example code. Much faster than web_search for stack-specific questions. Covers: React, Express, Drizzle ORM, Tailwind CSS, shadcn/ui, TanStack Query, Wouter, Zod, Framer Motion, PostgreSQL, and Node.js patterns.",
+      parameters: {
+        type: "object",
+        properties: {
+          topic: { type: "string", description: "What you need help with (e.g. 'drizzle relations', 'tanstack mutation', 'shadcn dialog', 'express middleware', 'zod validation', 'tailwind animation', 'framer motion variants')" },
+          context: { type: "string", description: "Optional: what you're trying to accomplish, so the reference can be more targeted" },
+        },
+        required: ["topic"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "github_search",
+      description: "Search GitHub for real-world code examples and patterns. Use when you need to see how other projects implement something, find library usage examples, or solve an unfamiliar problem. Returns code snippets from public repos.",
+      parameters: {
+        type: "object",
+        properties: {
+          query: { type: "string", description: "Code search query (e.g. 'drizzle-orm postgres array column', 'react-hook-form nested fields', 'express rate limiting middleware')" },
+          language: { type: "string", description: "Filter by language: typescript, javascript, css, sql. Default: typescript." },
+          num_results: { type: "integer", description: "Number of results. Default 5, max 10." },
+        },
+        required: ["query"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
       name: "plan_task",
       description: "Decompose a complex task into ordered steps BEFORE executing. Use this when Bryn asks for something that involves 3+ files or multiple logical stages (e.g. 'add a new page with API endpoint and database table', 'refactor the homework box'). Creates a plan, then execute each step in order. Also use to show Bryn what you're about to do for transparency.",
       parameters: {
@@ -2764,6 +2795,275 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           return { success: true, result: { output: output.substring(0, 2000), migrated: true } };
         } catch (e: any) {
           return { success: false, result: { error: e.message?.substring(0, 500) } };
+        }
+      }
+
+      case "code_reference": {
+        const topic = (args.topic || '').toLowerCase();
+        const context = args.context || '';
+        const knowledgeBase: Record<string, { summary: string; patterns: string[]; tips: string[] }> = {
+          'drizzle': {
+            summary: 'Drizzle ORM — type-safe SQL toolkit for TypeScript. This project uses PostgreSQL with drizzle-orm and drizzle-kit.',
+            patterns: [
+              "Schema: pgTable('name', { id: serial('id').primaryKey(), title: text('title').notNull() })",
+              "Array columns: text('tags').array() — call .array() as method, not wrapper",
+              "Insert schema: createInsertSchema(table).omit({ id: true, createdAt: true })",
+              "Select type: typeof table.$inferSelect",
+              "Query: db.select().from(table).where(eq(table.id, id))",
+              "Insert: db.insert(table).values({ title: 'test' }).returning()",
+              "Update: db.update(table).set({ title: 'new' }).where(eq(table.id, id))",
+              "Delete: db.delete(table).where(eq(table.id, id))",
+              "Relations: relations(table, ({ one, many }) => ({ author: one(users, { fields: [table.authorId], references: [users.id] }) }))",
+              "Migration: npx drizzle-kit push (use db_migrate tool)",
+              "JSON column: jsonb('data').$type<MyType>()",
+              "Timestamp: timestamp('created_at').defaultNow()",
+              "Enum: pgEnum('status', ['active', 'inactive'])",
+            ],
+            tips: [
+              'Always use .array() as a method call, never as wrapper: text().array() NOT array(text())',
+              'Use createInsertSchema from drizzle-zod for validation',
+              'After schema changes, run db_migrate to push to DB',
+              'Use .returning() on insert/update to get the created/updated row back',
+            ],
+          },
+          'tanstack': {
+            summary: 'TanStack Query v5 — data fetching/caching for React. Object-form only for all hooks.',
+            patterns: [
+              "Query: useQuery({ queryKey: ['/api/tasks'], queryFn: undefined }) — default fetcher is pre-configured",
+              "Typed query: useQuery<Task[]>({ queryKey: ['/api/tasks'] })",
+              "Variable key: useQuery({ queryKey: ['/api/tasks', id] }) — use array segments for cache invalidation",
+              "Mutation: useMutation({ mutationFn: (data) => apiRequest('POST', '/api/tasks', data), onSuccess: () => queryClient.invalidateQueries({ queryKey: ['/api/tasks'] }) })",
+              "Loading state: if (query.isLoading) return <Skeleton />",
+              "Error state: if (query.error) return <Error />",
+              "Invalidate: queryClient.invalidateQueries({ queryKey: ['/api/tasks'] })",
+              "Prefetch: queryClient.prefetchQuery({ queryKey: ['/api/tasks'] })",
+            ],
+            tips: [
+              'NEVER use string template queryKeys like [`/api/tasks/${id}`] — use array: ["/api/tasks", id]',
+              'Queries dont need queryFn — default fetcher handles it',
+              'Always invalidate cache after mutations',
+              'Use isPending for mutation loading state, isLoading for query loading state',
+              'Import apiRequest from @lib/queryClient for POST/PATCH/DELETE',
+            ],
+          },
+          'react': {
+            summary: 'React 18 with TypeScript, Vite, no explicit React import needed.',
+            patterns: [
+              "State: const [value, setValue] = useState<Type>(initial)",
+              "Effect: useEffect(() => { /* setup */ return () => { /* cleanup */ } }, [deps])",
+              "Ref: const ref = useRef<HTMLDivElement>(null)",
+              "Memo: const computed = useMemo(() => expensive(a, b), [a, b])",
+              "Callback: const handler = useCallback((e) => { }, [deps])",
+              "Context: const ctx = useContext(MyContext)",
+              "Portal: createPortal(<Component />, document.body)",
+              "Lazy: const Page = lazy(() => import('./pages/Page'))",
+            ],
+            tips: [
+              'Do NOT import React — Vite JSX transform does it automatically',
+              'Use import.meta.env.VITE_* for frontend env vars (not process.env)',
+              'Always add data-testid to interactive and display elements',
+            ],
+          },
+          'shadcn': {
+            summary: 'shadcn/ui — Radix-based component library with Tailwind styling.',
+            patterns: [
+              "Import: import { Button } from '@/components/ui/button'",
+              "Form: import { Form, FormField, FormItem, FormLabel, FormControl } from '@/components/ui/form'",
+              "Dialog: <Dialog open={open} onOpenChange={setOpen}><DialogTrigger><DialogContent><DialogTitle>",
+              "Select: <Select><SelectTrigger><SelectValue /><SelectContent><SelectItem value='opt1'>Option</SelectItem>",
+              "Toast: const { toast } = useToast() — import from '@/hooks/use-toast'",
+              "Form hook: const form = useForm({ resolver: zodResolver(schema), defaultValues: {} })",
+            ],
+            tips: [
+              'useToast is from @/hooks/use-toast NOT from shadcn',
+              'SelectItem MUST have a value prop or it throws',
+              'Always provide defaultValues to useForm',
+              'Use zodResolver from @hookform/resolvers/zod',
+            ],
+          },
+          'express': {
+            summary: 'Express v5 backend with TypeScript.',
+            patterns: [
+              "Route: app.get('/api/items', async (req, res) => { const items = await storage.getItems(); res.json(items); })",
+              "POST: app.post('/api/items', async (req, res) => { const parsed = insertSchema.safeParse(req.body); if (!parsed.success) return res.status(400).json(parsed.error); const item = await storage.createItem(parsed.data); res.json(item); })",
+              "Middleware: app.use((req, res, next) => { /* logic */ next(); })",
+              "Error handling: app.use((err, req, res, next) => { res.status(500).json({ error: err.message }); })",
+            ],
+            tips: [
+              'Always validate request body with Zod before passing to storage',
+              'Keep routes thin — business logic goes in storage interface',
+              'Use try/catch in async route handlers',
+            ],
+          },
+          'tailwind': {
+            summary: 'Tailwind CSS with custom properties for theming.',
+            patterns: [
+              "Custom color: --my-var: 23 10% 23% (HSL space-separated, no hsl() wrapper)",
+              "Dark mode: className='bg-white dark:bg-gray-900 text-black dark:text-white'",
+              "Responsive: className='w-full md:w-1/2 lg:w-1/3'",
+              "Animation: className='transition-all duration-300 ease-in-out'",
+              "Glass: className='backdrop-blur-md bg-white/10 border border-white/20'",
+              "Grid: className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'",
+            ],
+            tips: [
+              'Custom properties in index.css must use H S% L% format (space-separated with %)',
+              'darkMode: ["class"] in tailwind.config.ts',
+              'Always use explicit dark: variants for visual properties when not using utility classes',
+            ],
+          },
+          'wouter': {
+            summary: 'Wouter — lightweight React router.',
+            patterns: [
+              "Route: <Route path='/page' component={Page} />",
+              "Link: <Link href='/page'>Go</Link>",
+              "Hook: const [location, setLocation] = useLocation()",
+              "Params: <Route path='/items/:id'>{(params) => <Item id={params.id} />}</Route>",
+              "Navigate: setLocation('/page')",
+            ],
+            tips: ['Use Link component or useLocation, never modify window.location directly'],
+          },
+          'zod': {
+            summary: 'Zod — TypeScript-first schema validation.',
+            patterns: [
+              "Schema: const schema = z.object({ name: z.string().min(1), age: z.number().int().positive() })",
+              "Optional: z.string().optional()",
+              "Enum: z.enum(['a', 'b', 'c'])",
+              "Array: z.array(z.string())",
+              "Extend: insertSchema.extend({ confirmPassword: z.string() })",
+              "Parse: const result = schema.safeParse(data); if (!result.success) handleErrors(result.error)",
+              "Infer type: type MyType = z.infer<typeof schema>",
+            ],
+            tips: ['Use .safeParse() instead of .parse() to avoid throwing', 'Use createInsertSchema from drizzle-zod for DB schemas'],
+          },
+          'framer': {
+            summary: 'Framer Motion — animation library for React.',
+            patterns: [
+              "Animate: <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>",
+              "Transition: transition={{ duration: 0.3, ease: 'easeInOut' }}",
+              "Variants: const variants = { hidden: { opacity: 0 }, visible: { opacity: 1 } }",
+              "Gesture: <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>",
+              "AnimatePresence: <AnimatePresence>{show && <motion.div key='modal' exit={{ opacity: 0 }}>}</AnimatePresence>",
+              "Layout: <motion.div layout> — auto-animates layout changes",
+            ],
+            tips: ['Always wrap conditional renders in AnimatePresence for exit animations', 'Use layout prop for smooth reflow animations'],
+          },
+          'postgres': {
+            summary: 'PostgreSQL database accessed via Drizzle ORM.',
+            patterns: [
+              "Raw SQL: db.execute('SELECT * FROM tasks WHERE id = $1', [id])",
+              "JSON query: SELECT data->>'name' FROM items WHERE data->>'type' = 'book'",
+              "Array contains: WHERE 'tag' = ANY(tags)",
+              "Date range: WHERE due_date BETWEEN $1 AND $2",
+              "Upsert: INSERT INTO ... ON CONFLICT (id) DO UPDATE SET ...",
+              "Count: SELECT COUNT(*) FROM tasks WHERE is_completed = false",
+            ],
+            tips: ['Use parameterized queries ($1, $2) to prevent SQL injection', 'Use run_sql tool for quick queries, db_schema to see structure'],
+          },
+        };
+
+        const matches: { topic: string; data: typeof knowledgeBase[string] }[] = [];
+        for (const [key, data] of Object.entries(knowledgeBase)) {
+          if (topic.includes(key) || key.includes(topic.split(' ')[0])) {
+            matches.push({ topic: key, data });
+          }
+        }
+
+        const topicWords = topic.split(/\s+/);
+        if (matches.length === 0) {
+          for (const [key, data] of Object.entries(knowledgeBase)) {
+            const allText = (data.summary + ' ' + data.patterns.join(' ') + ' ' + data.tips.join(' ')).toLowerCase();
+            if (topicWords.some(w => allText.includes(w))) {
+              matches.push({ topic: key, data });
+            }
+          }
+        }
+
+        if (matches.length === 0) {
+          return { success: true, result: { found: false, suggestion: `No built-in reference for "${topic}". Try web_search or github_search for external examples.`, availableTopics: Object.keys(knowledgeBase) } };
+        }
+
+        return { success: true, result: { found: true, references: matches.map(m => ({ topic: m.topic, ...m.data })), tip: context ? `For your goal (${context}), focus on the patterns most relevant to your use case.` : undefined } };
+      }
+
+      case "github_search": {
+        const query = args.query;
+        const language = args.language || 'typescript';
+        const numResults = Math.min(args.num_results || 5, 10);
+        try {
+          const searchUrl = `https://github.com/search?q=${encodeURIComponent(query)}+language:${language}&type=code`;
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 15000);
+          const resp = await fetch(searchUrl, {
+            signal: controller.signal,
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+              'Accept': 'text/html,application/xhtml+xml',
+            },
+          });
+          clearTimeout(timeout);
+          const html = await resp.text();
+
+          const results: { repo: string; file: string; snippet: string; url: string }[] = [];
+          const codeBlocks = html.split(/data-testid="results-list"/).slice(1);
+          const itemPattern = /href="\/([^"]+\/blob\/[^"]+)"[^>]*>[\s\S]*?<td[^>]*class="[^"]*blob-code[^"]*"[^>]*>([\s\S]*?)<\/td>/g;
+          let match;
+          const searchHtml = codeBlocks[0] || html;
+          const repoPattern = /href="\/([^"]+?)\/blob\/([^"]+?)"[^>]*>/g;
+          let repoMatch;
+          while ((repoMatch = repoPattern.exec(searchHtml)) !== null && results.length < numResults) {
+            const fullPath = repoMatch[1];
+            const filePath = repoMatch[2];
+            const repoParts = fullPath.split('/');
+            const repo = repoParts.slice(0, 2).join('/');
+            results.push({
+              repo,
+              file: filePath,
+              snippet: '',
+              url: `https://github.com/${fullPath}/blob/${filePath}`,
+            });
+          }
+
+          if (results.length === 0) {
+            const fallbackUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(`site:github.com ${query} ${language}`)}`;
+            const ctrl2 = new AbortController();
+            const t2 = setTimeout(() => ctrl2.abort(), 10000);
+            const resp2 = await fetch(fallbackUrl, { signal: ctrl2.signal, headers: { 'User-Agent': 'Mozilla/5.0' } });
+            clearTimeout(t2);
+            const html2 = await resp2.text();
+            const linkPattern = /class="result__a"[^>]*href="([^"]*github\.com[^"]*)"[^>]*>([^<]*)/g;
+            let linkMatch;
+            while ((linkMatch = linkPattern.exec(html2)) !== null && results.length < numResults) {
+              let url = linkMatch[1];
+              if (url.startsWith('//duckduckgo.com/l/?uddg=')) {
+                try { url = decodeURIComponent(url.split('uddg=')[1]?.split('&')[0] || url); } catch {}
+              }
+              results.push({ repo: '', file: '', snippet: linkMatch[2].trim(), url });
+            }
+          }
+
+          return { success: true, result: { query, language, results, count: results.length, tip: results.length > 0 ? 'Use web_fetch on a result URL to read the full file content.' : 'No results found. Try broadening your search terms.' } };
+        } catch (e: any) {
+          const fallbackUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(`site:github.com ${query} ${language}`)}`;
+          try {
+            const ctrl = new AbortController();
+            const t = setTimeout(() => ctrl.abort(), 10000);
+            const resp = await fetch(fallbackUrl, { signal: ctrl.signal, headers: { 'User-Agent': 'Mozilla/5.0' } });
+            clearTimeout(t);
+            const html = await resp.text();
+            const results: { repo: string; file: string; snippet: string; url: string }[] = [];
+            const linkPattern = /class="result__a"[^>]*href="([^"]*github\.com[^"]*)"[^>]*>([^<]*)/g;
+            let linkMatch;
+            while ((linkMatch = linkPattern.exec(html)) !== null && results.length < numResults) {
+              let url = linkMatch[1];
+              if (url.startsWith('//duckduckgo.com/l/?uddg=')) {
+                try { url = decodeURIComponent(url.split('uddg=')[1]?.split('&')[0] || url); } catch {}
+              }
+              results.push({ repo: '', file: '', snippet: linkMatch[2].trim(), url });
+            }
+            return { success: true, result: { query, language, results, count: results.length, fallback: true } };
+          } catch (e2: any) {
+            return { success: false, result: { error: `GitHub search failed: ${e.message?.substring(0, 200)}. Fallback also failed.` } };
+          }
         }
       }
 

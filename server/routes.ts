@@ -6363,7 +6363,9 @@ NEVER use edit_file for theme changes — update_app_theme stores in DB and appl
 17. EXTERNAL INFO / RESEARCH? → web_search(query) → web_fetch(url) for details. Use for: course info, TMU schedules, error solutions, general knowledge, current events.
 18. COMPLEX MULTI-FILE TASK? → plan_task first to decompose, then execute step-by-step. Use codebase_explore to understand cross-file connections before editing.
 19. SCHEMA CHANGE? → edit shared/schema.ts → db_migrate → update server/storage.ts → update routes → update frontend.
-20. MULTI-STEP CHAINS:
+20. UNFAMILIAR PATTERN/LIBRARY? → code_reference(topic) for instant stack docs. If not covered, github_search(query) for real-world examples, then web_fetch to read the code.
+21. "how do I..." / "what's the best way to..." → code_reference first for stack patterns, github_search for examples, web_search for docs.
+22. MULTI-STEP CHAINS:
     • "remind me about X at Y" → create_task(type:"event", dueDate:Y) + ha_announce if immediate
     • "turn on study mode" → ha_service_call(lights) + spotify_control(focus playlist) in parallel
     • "I'm done for today" → complete tasks due today + ha_announce("Bryn is done studying")
@@ -6429,9 +6431,11 @@ MEMORY: memory_read, memory_write
 
 EMAIL: send_email — from, to, subject, body, html
 
-WEB: web_search, web_fetch
+WEB: web_search, web_fetch, github_search, code_reference
   • web_search: query (search text), num_results (default 5, max 10) — searches DuckDuckGo, returns titles/URLs/snippets
   • web_fetch: url (full URL), max_length (default 5000) — fetches page content as plain text
+  • github_search: query, language (default typescript), num_results — searches GitHub for real-world code examples from public repos
+  • code_reference: topic, context — instant offline reference for the project's stack (React, Express, Drizzle, Tailwind, shadcn, TanStack Query, Wouter, Zod, Framer Motion, PostgreSQL). Faster than web search for stack-specific patterns.
 
 OTHER: generate_image, run_node_script
 
@@ -6633,7 +6637,7 @@ KEY BACKEND ROUTES:
         messages.push({ role: "user", content: message.trim() });
       }
 
-      const readOnlyTools = new Set(["read_file", "list_directory", "search_code", "search_tasks", "get_semester_info", "check_build", "read_logs", "git_diff", "get_project_map", "db_schema", "http_check", "memory_read", "process_check", "analyze_ui", "smoke_test", "take_screenshot", "browser_test", "check_performance", "conversation_history", "health_check", "web_search", "web_fetch", "plan_task", "codebase_explore"]);
+      const readOnlyTools = new Set(["read_file", "list_directory", "search_code", "search_tasks", "get_semester_info", "check_build", "read_logs", "git_diff", "get_project_map", "db_schema", "http_check", "memory_read", "process_check", "analyze_ui", "smoke_test", "take_screenshot", "browser_test", "check_performance", "conversation_history", "health_check", "web_search", "web_fetch", "plan_task", "codebase_explore", "code_reference", "github_search"]);
       const destructiveTools = new Set(["delete_task", "bulk_delete_tasks", "bulk_complete_tasks", "run_shell_command", "git_commit_and_push", "install_package", "generate_image", "db_migrate"]);
 
       function isToolDestructive(fnName: string, fnArgs: any): boolean {
