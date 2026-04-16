@@ -6781,6 +6781,29 @@ WHEN BRYN ASKS "WHAT DO YOU NEED":
         res.setHeader('Connection', 'keep-alive');
       }
 
+      const coreTool = (n: string) => ['create_task','update_task','delete_task','complete_task','search_tasks','get_upcoming_tasks','bulk_complete_tasks','bulk_delete_tasks','get_semester_info','get_course_list','update_semester_settings','read_file','edit_file','write_file','search_code','list_directory','smart_context','memory_read','memory_write','run_shell_command','read_logs','check_build','restart_application','git_commit_and_push','manage_sticky_note','notepad_crud','create_notepad_note','update_app_theme','update_ui_setting','conversation_history'].includes(n);
+      const haTool = (n: string) => n.startsWith('ha_');
+      const codeTool = (n: string) => ['multi_file_edit','code_complete','code_review_tool','explain_code','generate_tests','convert_code','analyze_dependencies','db_migrate','db_schema','run_sql','install_package','codebase_explore','code_reference','project_snapshot','get_project_map','run_node_script','analyze_ui','pair_program','plan_task','retro','stack_analyze'].includes(n);
+      const webTool = (n: string) => ['web_search','web_fetch','deep_research','http_check','http_test','take_screenshot','send_email','generate_image','browser_test','smoke_test','auto_test','auto_discover','health_check','process_check','staging_manage','git_diff','git_backup','github_file','github_search','github_tree','npm_info'].includes(n);
+      const msgLower = (command || '').toLowerCase() + ' ' + (history || []).slice(-3).map((h: any) => h.content || '').join(' ').toLowerCase();
+      const wantsHA = /home.?assistant|ha |light|switch|dashboard|lovelace|automat|timer|rascal|yasu|meds|insulin|announce|echo|alexa|thermostat|temperature|sensor|door|lock|camera|plug|fan/i.test(msgLower);
+      const wantsCode = isCodeTask || /code|file|edit|bug|fix|deploy|build|schema|database|migrate|sql|git|push|commit|install|package|test|debug/i.test(msgLower);
+      const wantsWeb = /search|web|fetch|email|screenshot|image|generate.*image|research|http|url|github/i.test(msgLower);
+      const wantsSpotify = /spotify|music|song|play|pause|skip|track|album|playlist/i.test(msgLower);
+      const wantsCalendar = /calendar|sync.*cal|event/i.test(msgLower);
+      const filteredTools = AI_COMMAND_TOOLS.filter((t: any) => {
+        const n = t.function.name;
+        if (coreTool(n)) return true;
+        if (n === 'spotify_control') return wantsSpotify;
+        if (n === 'sync_task_to_calendar') return wantsCalendar;
+        if (n === 'ai_subtask') return true;
+        if (haTool(n)) return wantsHA;
+        if (codeTool(n)) return wantsCode;
+        if (webTool(n)) return wantsWeb || wantsCode;
+        return false;
+      });
+      console.log(`[AI] Filtered tools: ${filteredTools.length}/${AI_COMMAND_TOOLS.length} (HA:${wantsHA} Code:${wantsCode} Web:${wantsWeb})`);
+
       while (round < MAX_ROUNDS) {
         round++;
         if (round > 1) {
@@ -6792,7 +6815,7 @@ WHEN BRYN ASKS "WHAT DO YOU NEED":
         const completion = await openaiRetry(() => openai.chat.completions.create({
           model,
           messages,
-          tools: AI_COMMAND_TOOLS,
+          tools: filteredTools,
           tool_choice: "auto",
           parallel_tool_calls: true,
           max_completion_tokens: replyTokens,
