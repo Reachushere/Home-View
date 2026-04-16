@@ -6784,8 +6784,8 @@ WHEN BRYN ASKS "WHAT DO YOU NEED":
       while (round < MAX_ROUNDS) {
         round++;
         if (round > 1) {
-          const delayMs = Math.min(round * 5000, 20000);
-          console.log(`[AI] Rate-limit pacing: waiting ${delayMs / 1000}s before round ${round}`);
+          const delayMs = Math.min(round * 1500, 6000);
+          console.log(`[AI] Pacing: ${delayMs / 1000}s before round ${round}`);
           await new Promise(r => setTimeout(r, delayMs));
         }
         const replyTokens = round === 1 ? 4096 : 8192;
