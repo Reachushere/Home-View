@@ -6131,6 +6131,7 @@ ${fileContents.join('\n\n')}`;
   });
 
   app.post("/api/ai/command", async (req, res) => {
+    let heartbeatTimer: any = null;
     try {
       if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ error: "Access denied" });
       const { message, history, confirmToolCall, stream, image } = req.body;
@@ -6808,7 +6809,6 @@ WHEN BRYN ASKS "WHAT DO YOU NEED":
       });
       console.log(`[AI] Filtered tools: ${filteredTools.length}/${AI_COMMAND_TOOLS.length} (HA:${wantsHA} Code:${wantsCode} Web:${wantsWeb})`);
 
-      let heartbeatTimer: any = null;
       if (stream && !res.headersSent) {
         heartbeatTimer = setInterval(() => {
           try { res.write(`data: ${JSON.stringify({ type: 'heartbeat' })}\n\n`); } catch {}
