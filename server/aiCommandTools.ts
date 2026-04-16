@@ -336,6 +336,45 @@ export const AI_COMMAND_TOOLS = [
   {
     type: "function" as const,
     function: {
+      name: "ha_create_helper",
+      description: "Create a Home Assistant helper entity (timer, input_boolean, input_number, input_text, input_select, counter, input_datetime) via WebSocket. Use this to create new helper entities that don't exist yet.",
+      parameters: {
+        type: "object",
+        properties: {
+          helper_type: { type: "string", enum: ["timer", "input_boolean", "input_number", "input_text", "input_select", "counter", "input_datetime"], description: "Type of helper to create" },
+          name: { type: "string", description: "Display name for the helper, e.g. 'Meds Timer Rascal'" },
+          icon: { type: "string", description: "MDI icon, e.g. 'mdi:cat', 'mdi:pill'. Optional." },
+          duration: { type: "string", description: "For timer type only: duration in HH:MM:SS format, e.g. '12:00:00'" },
+          options: { type: "array", items: { type: "string" }, description: "For input_select only: list of options" },
+          min_value: { type: "number", description: "For input_number only: minimum value" },
+          max_value: { type: "number", description: "For input_number only: maximum value" },
+        },
+        required: ["helper_type", "name"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "ha_create_automation",
+      description: "Create a new Home Assistant automation via REST API. Use this to create automations that trigger on events, states, time, etc.",
+      parameters: {
+        type: "object",
+        properties: {
+          alias: { type: "string", description: "Name/alias for the automation" },
+          description: { type: "string", description: "Description of what it does" },
+          trigger: { type: "array", items: { type: "object" }, description: "Array of trigger objects" },
+          condition: { type: "array", items: { type: "object" }, description: "Array of condition objects (optional)" },
+          action: { type: "array", items: { type: "object" }, description: "Array of action objects" },
+          mode: { type: "string", enum: ["single", "restart", "queued", "parallel"], description: "Automation mode. Default 'single'" },
+        },
+        required: ["alias", "trigger", "action"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
       name: "get_semester_info",
       description: "Get current semester information including courses, dates, and settings. Use when user asks about their courses, semester dates, etc.",
       parameters: { type: "object", properties: {} },
@@ -1827,6 +1866,84 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           return { success: false, result: { error: `All announcements failed: ${errors.join('; ')}` } };
         }
         return { success: true, result: { announced: true, message: args.message, target: args.target || "everywhere", ...(errors.length > 0 ? { partialErrors: errors } : {}) } };
+      }
+
+      case "ha_create_helper": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+          return { success: false, result: { error: "Home Assistant not configured" } };
+        }
+        try {
+          const helperType = args.helper_type;
+          const slug = (args.name as string).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+          const wsPayload: Record<string, any> = { name: args.name };
+          if (args.icon) wsPayload.icon = args.icon;
+
+          if (helperType === 'timer') {
+            wsPayload.duration = args.duration || '00:00:00';
+            await haWebSocket('timer/create', wsPayload);
+            return { success: true, result: { created: true, entity_id: `timer.${slug}`, type: 'timer', duration: wsPayload.duration } };
+          } else if (helperType === 'input_boolean') {
+            await haWebSocket('input_boolean/create', wsPayload);
+            return { success: true, result: { created: true, entity_id: `input_boolean.${slug}`, type: 'input_boolean' } };
+          } else if (helperType === 'input_number') {
+            wsPayload.min = args.min_value ?? 0;
+            wsPayload.max = args.max_value ?? 100;
+            wsPayload.mode = 'slider';
+            await haWebSocket('input_number/create', wsPayload);
+            return { success: true, result: { created: true, entity_id: `input_number.${slug}`, type: 'input_number' } };
+          } else if (helperType === 'input_text') {
+            wsPayload.min = 0;
+            wsPayload.max = 255;
+            await haWebSocket('input_text/create', wsPayload);
+            return { success: true, result: { created: true, entity_id: `input_text.${slug}`, type: 'input_text' } };
+          } else if (helperType === 'input_select') {
+            wsPayload.options = args.options || ['option1'];
+            await haWebSocket('input_select/create', wsPayload);
+            return { success: true, result: { created: true, entity_id: `input_select.${slug}`, type: 'input_select' } };
+          } else if (helperType === 'counter') {
+            await haWebSocket('counter/create', wsPayload);
+            return { success: true, result: { created: true, entity_id: `counter.${slug}`, type: 'counter' } };
+          } else if (helperType === 'input_datetime') {
+            wsPayload.has_date = true;
+            wsPayload.has_time = true;
+            await haWebSocket('input_datetime/create', wsPayload);
+            return { success: true, result: { created: true, entity_id: `input_datetime.${slug}`, type: 'input_datetime' } };
+          }
+          return { success: false, result: { error: `Unknown helper type: ${helperType}` } };
+        } catch (err: any) {
+          return { success: false, result: { error: `Failed to create helper: ${err.message}` } };
+        }
+      }
+
+      case "ha_create_automation": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+          return { success: false, result: { error: "Home Assistant not configured" } };
+        }
+        try {
+          const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+          const automationConfig: Record<string, any> = {
+            alias: args.alias,
+            trigger: args.trigger,
+            action: args.action,
+            mode: args.mode || 'single',
+          };
+          if (args.description) automationConfig.description = args.description;
+          if (args.condition) automationConfig.condition = args.condition;
+          const slug = (args.alias as string).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+          const resp = await fetch(`${haUrl}/api/config/automation/config/${slug}`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify(automationConfig),
+          });
+          if (!resp.ok) {
+            const errText = await resp.text().catch(() => '');
+            return { success: false, result: { error: `Failed to create automation: ${resp.status} ${errText.substring(0, 300)}` } };
+          }
+          const result = await resp.json().catch(() => ({}));
+          return { success: true, result: { created: true, automation_id: slug, alias: args.alias, ...result } };
+        } catch (err: any) {
+          return { success: false, result: { error: `Failed to create automation: ${err.message}` } };
+        }
       }
 
       case "get_semester_info": {
