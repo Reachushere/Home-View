@@ -34747,7 +34747,7 @@ export default function Dashboard() {
               <div className="cursor-pointer controls-tab-btn" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', pointerEvents: 'auto' }} onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => { const v = Math.max(0, prev - 2); localStorage.setItem('calendarReduction', String(v)); return v; }); }} onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setCalendarReductionUserSet(true); setCalendarReduction(prev => { const v = Math.max(0, prev - 2); localStorage.setItem('calendarReduction', String(v)); return v; }); }}><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▶</span></div>
             </div>
           </div>}
-          {(() => {
+          {(() => { try {
             const now = new Date();
             const hb = colorSettings.headerBar;
             const yearColors: Record<number, [string, string]> = {
@@ -35053,7 +35053,7 @@ export default function Dashboard() {
                 })()}
               </div>
             );
-          })()}
+          } catch (e) { console.error('[HW] Semester tabs render error:', e); return null; } })()}
           <div className="absolute inset-0 rounded-[12px] pointer-events-none" style={{ zIndex: 2, border: '0.5px solid rgba(255,255,255,0.5)', borderTop: '0.5px solid rgba(255,255,255,0.7)' }} />
           <div className="absolute inset-0 rounded-[12px] overflow-hidden flex flex-col" style={{ pointerEvents: 'auto', zIndex: 1 }}>
           <div style={{ padding: '0 8px', height: courseRowRects.length > 0 ? `${courseRowRects[0].top - (calendarBorderTop || (calendarTop + 15)) - 1}px` : '45px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 46, overflow: 'hidden', marginBottom: '0px', boxShadow: '0 3px 6px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3)' }}>
@@ -35089,7 +35089,7 @@ export default function Dashboard() {
               <span className="text-[11px] text-white/50 italic text-center" data-testid="text-no-courses">No active courses this week</span>
             </div>
           )}
-          {courseRowRects.length === 0 && otherRowRect && (() => {
+          {courseRowRects.length === 0 && otherRowRect && (() => { try {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
             const hwSection = homeworkSectionRef.current;
             if (!hwSection) return null;
@@ -35190,8 +35190,8 @@ export default function Dashboard() {
                 </div>
               </div>
             );
-          })()}
-          {courseRowRects.length > 0 && courseProgressDataRef.current.length > 0 && (() => {
+          } catch (e) { console.error('[HW] Other row render error:', e); return null; } })()}
+          {courseRowRects.length > 0 && courseProgressDataRef.current.length > 0 && (() => { try {
             const upcomingTop = calendarBorderTop || (calendarTop + 15);
             const firstRowOffset = 0;
             const leftWidth = (() => {
@@ -35633,8 +35633,8 @@ export default function Dashboard() {
             }
 
             return rows;
-          })()}
-          <div className="flex-1 flex flex-col" style={{ paddingLeft: '0px', paddingRight: '0px', position: 'absolute', left: 0, right: 0, top: (() => { if (courseRowRects.length > 0) { const lastRect = courseRowRects[courseRowRects.length - 1]; if (lastRect) { const upcomingTopLocal = calendarBorderTop || (calendarTop + 15); const otherTop = lastRect.top + lastRect.height - upcomingTopLocal; const baseOtherH = Math.max(57, gridSizes.otherRowHeight || 57); const missingCourseRows = Math.max(0, 3 - courseRowRects.length); const otherRowH = baseOtherH + missingCourseRows * (3 * 20 + 2 * 2 + 4); return `${otherTop + otherRowH - 2}px`; } } if (lastKnownOtherBottomRef.current) return `${lastKnownOtherBottomRef.current - 2}px`; return '261px'; })(), bottom: '0px', minHeight: 0, paddingBottom: '0px', overflow: 'hidden', zIndex: 2, display: 'flex', flexDirection: 'column' as const }}>
+          } catch (e) { console.error('[HW] Course progress render error:', e); return null; } })()}
+          <div className="flex-1 flex flex-col" style={{ paddingLeft: '0px', paddingRight: '0px', position: 'absolute', left: 0, right: 0, top: (() => { if (courseRowRects.length > 0) { const lastRect = courseRowRects[courseRowRects.length - 1]; if (lastRect) { const upcomingTopLocal = calendarBorderTop || (calendarTop + 15); const otherTop = lastRect.top + lastRect.height - upcomingTopLocal; const baseOtherH = Math.max(57, gridSizes.otherRowHeight || 57); const missingCourseRows = Math.max(0, 3 - courseRowRects.length); const otherRowH = baseOtherH + missingCourseRows * (3 * 20 + 2 * 2 + 4); return `${otherTop + otherRowH - 2}px`; } } if (lastKnownOtherBottomRef.current) return `${lastKnownOtherBottomRef.current - 2}px`; const hwEl = homeworkSectionRef.current; const hwH = hwEl ? hwEl.offsetHeight : window.innerHeight; return `${Math.min(261, Math.floor(hwH * 0.45))}px`; })(), bottom: '0px', minHeight: 0, paddingBottom: '0px', overflow: 'hidden', zIndex: 2, display: 'flex', flexDirection: 'column' as const }}>
           <div style={{ width: '100%', height: '15px', backgroundColor: colorSettings.headerBar, borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', flexShrink: 0, position: 'relative', zIndex: 3, border: '0.5px solid rgba(255,255,255,0.15)' }}>
             <span style={{ fontSize: '10px', fontWeight: 500, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1 }}>Timeline</span>
           </div>
