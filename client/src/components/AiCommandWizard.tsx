@@ -249,9 +249,9 @@ function ImageMarkup({ imageSrc, onDone, onCancel }: { imageSrc: string; onDone:
 }
 
 const thinkingKeyframes = `
-@keyframes ai-dot-bounce {
-  0%, 80%, 100% { transform: translateY(0); opacity: 0.85; }
-  40% { transform: translateY(-6px); opacity: 1; }
+@keyframes ai-dot-pulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
 }
 @keyframes ai-shimmer {
   0% { background-position: -200% 0; }
@@ -1403,7 +1403,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
             }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '3.5px', alignItems: 'center', padding: '2px' }}>
                 {[0, 1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-                  <div key={i} style={{ width: '6px', height: '6px', borderRadius: '50%', background: ['#7c3aed','#8b5cf6','#7c3aed','#8b5cf6','#6d28d9','#8b5cf6','#7c3aed','#8b5cf6','#7c3aed'][i], animation: 'ai-dot-bounce 1.4s ease-in-out infinite', animationDelay: `${i * 0.1}s`, opacity: 1 }} />
+                  <div key={i} style={{ width: '6px', height: '6px', borderRadius: '50%', background: ['#7c3aed','#8b5cf6','#7c3aed','#8b5cf6','#6d28d9','#8b5cf6','#7c3aed','#8b5cf6','#7c3aed'][i], animation: 'ai-dot-pulse 2s ease-in-out infinite', animationDelay: `${i * 0.15}s`, opacity: 1 }} />
                 ))}
               </div>
               <span style={{
