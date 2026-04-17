@@ -20748,8 +20748,8 @@ export default function Dashboard() {
           }}
           className="fixed cursor-pointer"
           style={{
-            bottom: '29px',
-            left: weatherAlerts.length > 0 ? 'calc(50% + 302px + 35px + 55px)' : 'calc(50% + 302px + 55px)',
+            bottom: '49px',
+            left: weatherAlerts.length > 0 ? 'calc(50% + 302px + 35px + 100px)' : 'calc(50% + 302px + 100px)',
             transition: 'left 0.3s ease-in-out',
             display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : 'block',
             zIndex: 10002,
@@ -20786,10 +20786,10 @@ export default function Dashboard() {
           }}
           className="fixed cursor-pointer"
           style={{
-            bottom: '29px',
+            bottom: '49px',
             left: weatherAlerts.length > 0
-              ? (homeworkMinimized ? 'calc(50% + 302px + 45px + 55px)' : 'calc(50% + 302px + 45px)')
-              : (homeworkMinimized ? 'calc(50% + 302px + 55px)' : 'calc(50% + 302px)'),
+              ? (homeworkMinimized ? 'calc(50% + 302px + 45px + 100px)' : 'calc(50% + 302px + 45px + 45px)')
+              : (homeworkMinimized ? 'calc(50% + 302px + 100px)' : 'calc(50% + 302px + 45px)'),
             transition: 'left 0.3s ease-in-out',
             display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : 'block',
             zIndex: 10002,
@@ -34742,7 +34742,7 @@ export default function Dashboard() {
           {/* Date navigation tab above glass box */}
           <div
             className="absolute z-[60]"
-            style={{ top: '-29px', right: '7px', left: '10px', display: calendarView === 'month' ? 'none' : 'flex', alignItems: 'center', justifyContent: 'flex-end', height: '15px', pointerEvents: (homeworkAnimating || blankBoxAnimating || blankBoxOpen) ? 'none' : 'auto', opacity: (homeworkAnimating || blankBoxAnimating || blankBoxOpen || isTopPillOpen) ? 0 : 1, transition: 'opacity 0.25s ease' }}
+            style={{ top: '-29px', right: '7px', left: '10px', display: calendarView === 'month' ? 'none' : 'flex', alignItems: 'center', justifyContent: 'flex-end', height: '15px', pointerEvents: (homeworkAnimating || blankBoxAnimating) ? 'none' : 'auto', opacity: (homeworkAnimating || blankBoxAnimating || isTopPillOpen) ? 0 : 1, transition: 'opacity 0.25s ease' }}
             data-testid="date-nav-tab"
           >
             <div style={{ width: '280px', height: '15px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)', padding: '0 2px', gap: '5px' }}>
@@ -34767,7 +34767,7 @@ export default function Dashboard() {
           <button
             onClick={(e) => { e.stopPropagation(); const next = !timelineSyncCalendar; setTimelineSyncCalendar(next); localStorage.setItem('timelineSyncCalendar', String(next)); fetch('/api/ui-settings/timelineSyncCalendar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: next }) }).catch(() => {}); }}
             className="absolute z-[71] flex items-center justify-center hover:bg-white/20 active:bg-white/30 transition-colors"
-            style={{ top: '-13px', left: '1px', width: '26px', height: '12px', borderRadius: '4px 4px 0 0', background: timelineSyncCalendar ? 'rgba(59,130,246,0.6)' : 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', borderBottom: 'none', cursor: 'pointer', opacity: (homeworkAnimating || blankBoxAnimating || blankBoxOpen) ? 0 : 1, pointerEvents: (homeworkAnimating || blankBoxAnimating || blankBoxOpen) ? 'none' : 'auto', transition: 'opacity 0.25s ease, background 0.2s ease' }}
+            style={{ top: '-13px', left: '1px', width: '26px', height: '12px', borderRadius: '4px 4px 0 0', background: timelineSyncCalendar ? 'rgba(59,130,246,0.6)' : 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', borderBottom: 'none', cursor: 'pointer', opacity: (homeworkAnimating || blankBoxAnimating) ? 0 : 1, pointerEvents: (homeworkAnimating || blankBoxAnimating) ? 'none' : 'auto', transition: 'opacity 0.25s ease, background 0.2s ease' }}
             title={timelineSyncCalendar ? 'Paired scrolling ON — date nav syncs homework timeline' : 'Paired scrolling OFF — click to link'}
             data-testid="toggle-paired-scroll"
           >
@@ -34821,7 +34821,7 @@ export default function Dashboard() {
           {/* Joint Resize Handle — controls both calendar+homework width and calendar height */}
           {!hwFloating.detached && <div
             className="absolute z-[110]"
-            style={{ left: '-17px', top: '50%', transform: 'translateY(-50%)', width: '17px', height: '181px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: (blankBoxOpen || homeworkAnimating || blankBoxAnimating) ? 'none' : 'auto', opacity: (blankBoxOpen || homeworkAnimating || blankBoxAnimating) ? 0 : 1, transition: 'opacity 0.25s ease' }}
+            style={{ left: '-17px', top: '50%', transform: 'translateY(-50%)', width: '17px', height: '181px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: (homeworkAnimating || blankBoxAnimating) ? 'none' : 'auto', opacity: (homeworkAnimating || blankBoxAnimating) ? 0 : 1, transition: 'opacity 0.25s ease' }}
             data-testid="resize-handle-homework"
           >
             <div className="grab-tab-press" style={{ width: '17px', height: '181px', borderRadius: '0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderRight: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', backdropFilter: 'blur(8px)', transition: 'filter 0.1s ease' }}>
