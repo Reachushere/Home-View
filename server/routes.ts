@@ -6032,7 +6032,8 @@ ${fileContents.join('\n\n')}`;
 
       const messages: any[] = [{ role: "system", content: systemPrompt }];
       if (Array.isArray(history)) {
-        for (const h of history.slice(-6)) {
+        const allowedRoles = new Set(['system', 'assistant', 'user', 'tool', 'function', 'developer']);
+        for (const h of history.slice(-6).filter((h: any) => h && allowedRoles.has(h.role))) {
           messages.push({ role: h.role, content: h.content });
         }
       }
@@ -6088,12 +6089,16 @@ ${fileContents.join('\n\n')}`;
     persistSessions();
   }, 5 * 60 * 1000);
 
+  const OPENAI_ALLOWED_ROLES = new Set(['system', 'assistant', 'user', 'tool', 'function', 'developer']);
+
   app.get("/api/ai/conversation", async (req, res) => {
     try {
       if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ error: "Access denied" });
       const row = await db.select().from(appState).where(eq(appState.key, 'bryn_assist_history')).limit(1);
       if (row.length > 0) {
-        return res.json({ messages: JSON.parse(row[0].value) });
+        const stored = JSON.parse(row[0].value);
+        const cleaned = Array.isArray(stored) ? stored.filter((m: any) => m && OPENAI_ALLOWED_ROLES.has(m.role)) : [];
+        return res.json({ messages: cleaned });
       }
       return res.json({ messages: [] });
     } catch (e: any) {
@@ -6106,7 +6111,8 @@ ${fileContents.join('\n\n')}`;
       if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ error: "Access denied" });
       const { messages } = req.body;
       if (!Array.isArray(messages)) return res.status(400).json({ error: "messages required" });
-      const last50 = messages.slice(-50);
+      const cleaned = messages.filter((m: any) => m && OPENAI_ALLOWED_ROLES.has(m.role));
+      const last50 = cleaned.slice(-50);
       const value = JSON.stringify(last50);
       const existing = await db.select().from(appState).where(eq(appState.key, 'bryn_assist_history')).limit(1);
       if (existing.length > 0) {
