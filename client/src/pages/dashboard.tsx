@@ -436,7 +436,14 @@ export default function Dashboard() {
     return () => { window.removeEventListener('resize', handleResize); window.removeEventListener('orientationchange', handleResize); };
   }, []);
   
-  const [selectedWeek, setSelectedWeek] = useState<number>(12);
+  const [selectedWeek, setSelectedWeek] = useState<number>(() => {
+    try {
+      const saved = localStorage.getItem('unical_selectedWeek');
+      const n = saved ? parseInt(saved, 10) : NaN;
+      if (Number.isFinite(n) && n >= 1 && n <= 15) return n;
+    } catch {}
+    return 12;
+  });
   useEffect(() => {
     localStorage.setItem('unical_selectedWeek', String(selectedWeek));
   }, [selectedWeek]);
@@ -7189,8 +7196,10 @@ export default function Dashboard() {
         const semStart = cachedSem?.semesterStartDate ? new Date(cachedSem.semesterStartDate) : undefined;
         const readingWeek = cachedSem?.readingWeekStart || null;
         const computedWeek = getWeekNumber(today, semStart, readingWeek);
-        setSelectedWeek(computedWeek);
-        localStorage.setItem('unical_selectedWeek', String(computedWeek));
+        if (computedWeek >= 1 && computedWeek <= LAST_WEEK) {
+          setSelectedWeek(computedWeek);
+          localStorage.setItem('unical_selectedWeek', String(computedWeek));
+        }
       }
       lastAutoWeekDateRef.current = today.getDate();
     }
@@ -7201,9 +7210,9 @@ export default function Dashboard() {
     const currentDate = currentTime.getDate();
     if (currentDate !== lastAutoWeekDateRef.current) {
       lastAutoWeekDateRef.current = currentDate;
-      setShowActualCurrentWeek(false);
       const currentWeek = findCurrentWeekFromList(weeks, currentTime);
       if (currentWeek) {
+        setShowActualCurrentWeek(false);
         setSelectedWeek(currentWeek.weekNumber);
         localStorage.setItem('unical_selectedWeek', String(currentWeek.weekNumber));
       } else {
@@ -7211,8 +7220,11 @@ export default function Dashboard() {
         const semStart = cachedSem?.semesterStartDate ? new Date(cachedSem.semesterStartDate) : undefined;
         const readingWeek = cachedSem?.readingWeekStart || null;
         const computedWeek = getWeekNumber(currentTime, semStart, readingWeek);
-        setSelectedWeek(computedWeek);
-        localStorage.setItem('unical_selectedWeek', String(computedWeek));
+        if (computedWeek >= 1 && computedWeek <= LAST_WEEK) {
+          setShowActualCurrentWeek(false);
+          setSelectedWeek(computedWeek);
+          localStorage.setItem('unical_selectedWeek', String(computedWeek));
+        }
       }
     }
   }, [currentTime, weeks]);
