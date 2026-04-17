@@ -7200,34 +7200,44 @@ export default function Dashboard() {
     });
   };
   const lastAutoWeekDateRef = useRef(new Date().getDate());
-  const initialWeekSetRef = useRef(false);
+  const lastSyncedSemKeyRef = useRef<string | null>(null);
   useEffect(() => {
-    if (weeks.length > 0 && !initialWeekSetRef.current) {
-      initialWeekSetRef.current = true;
-      const today = new Date();
-      const currentWeek = findCurrentWeekFromList(weeks, today);
-      if (currentWeek) {
-        setSelectedWeek(currentWeek.weekNumber);
-        localStorage.setItem('unical_selectedWeek', String(currentWeek.weekNumber));
+    if (weeks.length === 0) return;
+    // Resync selectedWeek when (a) first load, or (b) the active semester
+    // identity changes (detected via the first week's start date). Without
+    // this, a stale selectedWeek from the previous semester (e.g. week 13 of
+    // Winter) carries into the new semester (Spring/Summer) and renders the
+    // calendar deep in late July / August. We don't override on every refetch
+    // because the user may have intentionally navigated to another week.
+    const semKey = weeks[0]?.startDate || null;
+    const isFirstSync = lastSyncedSemKeyRef.current === null;
+    const semChanged = !isFirstSync && lastSyncedSemKeyRef.current !== semKey;
+    if (!isFirstSync && !semChanged) return;
+    lastSyncedSemKeyRef.current = semKey;
+
+    const today = new Date();
+    const currentWeek = findCurrentWeekFromList(weeks, today);
+    if (currentWeek) {
+      setSelectedWeek(currentWeek.weekNumber);
+      localStorage.setItem('unical_selectedWeek', String(currentWeek.weekNumber));
+    } else {
+      const cachedSem = queryClient.getQueryData<SemesterSettings | null>(["/api/semester"]);
+      const semStart = cachedSem?.semesterStartDate ? new Date(cachedSem.semesterStartDate) : undefined;
+      const readingWeek = cachedSem?.readingWeekStart || null;
+      const computedWeek = getWeekNumber(today, semStart, readingWeek);
+      if (computedWeek >= 1 && computedWeek <= LAST_WEEK) {
+        setSelectedWeek(computedWeek);
+        localStorage.setItem('unical_selectedWeek', String(computedWeek));
       } else {
-        const cachedSem = queryClient.getQueryData<SemesterSettings | null>(["/api/semester"]);
-        const semStart = cachedSem?.semesterStartDate ? new Date(cachedSem.semesterStartDate) : undefined;
-        const readingWeek = cachedSem?.readingWeekStart || null;
-        const computedWeek = getWeekNumber(today, semStart, readingWeek);
-        if (computedWeek >= 1 && computedWeek <= LAST_WEEK) {
-          setSelectedWeek(computedWeek);
-          localStorage.setItem('unical_selectedWeek', String(computedWeek));
-        } else {
-          // Between semesters: today doesn't fall in any week of the active semester.
-          // Default to week 1 of the active semester rather than trusting a stale
-          // localStorage value (which previously persisted the broken default of 12,
-          // landing the calendar deep in the upcoming semester).
-          setSelectedWeek(1);
-          localStorage.setItem('unical_selectedWeek', '1');
-        }
+        // Between semesters: today doesn't fall in any week of the active
+        // semester. Default to week 1 rather than trusting a stale localStorage
+        // value (which previously persisted broken defaults like 12 or 13,
+        // landing the calendar deep in the upcoming semester).
+        setSelectedWeek(1);
+        localStorage.setItem('unical_selectedWeek', '1');
       }
-      lastAutoWeekDateRef.current = today.getDate();
     }
+    lastAutoWeekDateRef.current = today.getDate();
   }, [weeks]);
 
   useEffect(() => {
