@@ -1544,7 +1544,7 @@ export default function Dashboard() {
     setCalendarReductionUserSetRaw(val);
     if (val) localStorage.setItem('calendarReductionUserSet', '1');
   };
-  const [homeworkMinimized, setHomeworkMinimized] = useState(() => localStorage.getItem('homeworkMinimized') === '1');
+  const [homeworkMinimized, setHomeworkMinimized] = useState(() => { try { localStorage.removeItem('homeworkMinimized'); localStorage.removeItem('blankBoxOpen'); localStorage.removeItem('blankBoxMinimizedToTab'); } catch {} return false; });
   const [homeworkAnimating, setHomeworkAnimating] = useState(false);
   const savedCalendarReductionRef = useRef<number | null>(null);
   const savedGlassRightRef = useRef<number | null>(null);
