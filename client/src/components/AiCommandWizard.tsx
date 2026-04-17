@@ -958,7 +958,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       setActiveToolName(null);
       setTimeout(() => {
         setMessages(curr => {
-          const saveable = curr.map(m => ({ role: m.role, content: m.content }));
+          const saveable = curr.filter(m => m.role !== 'thinking').map(m => ({ role: m.role, content: m.content }));
           fetch('/api/ai/conversation', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

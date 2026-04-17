@@ -6803,7 +6803,8 @@ WHEN BRYN ASKS "WHAT DO YOU NEED":
 
       const messages: any[] = [{ role: "system", content: systemPrompt }];
       if (Array.isArray(history)) {
-        const recent = history.slice(-100);
+        const allowedRoles = new Set(['system', 'assistant', 'user', 'tool', 'function', 'developer']);
+        const recent = history.slice(-100).filter((h: any) => h && allowedRoles.has(h.role));
         const recentCount = recent.length;
         for (let i = 0; i < recentCount; i++) {
           const h = recent[i];
