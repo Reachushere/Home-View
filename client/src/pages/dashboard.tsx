@@ -26557,19 +26557,19 @@ export default function Dashboard() {
                             })();
 
                             return (
-                              <div key={c.code} className="rounded-lg overflow-hidden" style={{ border: '1.5px solid rgba(255,255,255,0.8)' }} data-testid={`expanded-course-${c.code}`}>
-                                <div className="px-4 py-3 flex items-center gap-3 border-b border-white/30" style={{ background: 'rgba(255,255,255,0.08)' }}>
-                                  <div className="w-4 h-4 rounded-full flex-shrink-0" style={{ background: dotBg }} />
-                                  <span className="text-[15px] font-bold text-white">{c.code}</span>
-                                  {(c.fullName || (displayNameResult !== c.code && displayNameResult)) && <span className="text-[13px] text-white/70">— {c.fullName || displayNameResult}</span>}
+                              <div key={c.code} className="auto-resolution-card rounded-lg overflow-hidden shadow-sm" style={{ border: '1px solid #cbd5e1', background: '#fff' }} data-testid={`expanded-course-${c.code}`}>
+                                <div className="px-4 py-3 flex items-center gap-3 border-b" style={{ background: 'linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)', borderBottomColor: '#cbd5e1' }}>
+                                  <div className="w-4 h-4 rounded-full flex-shrink-0" style={{ background: dotBg, boxShadow: '0 0 0 2px #fff, 0 0 0 3px #cbd5e1' }} />
+                                  <span className="text-[15px] font-bold" style={{ color: '#0f172a' }}>{c.code}</span>
+                                  {(c.fullName || (displayNameResult !== c.code && displayNameResult)) && <span className="text-[13px]" style={{ color: '#475569' }}>— {c.fullName || displayNameResult}</span>}
                                   {courseHealth && (
                                     <div className="ml-auto flex items-center gap-3">
-                                      <span className="text-[12px] text-white">{courseHealth.totalModules} modules · {courseHealth.totalReadings} readings</span>
-                                      {courseHealth.syllabusLinked ? <span className="text-[11px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Syllabus ✓</span> : <span className="text-[11px] px-2 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30 cursor-pointer hover:bg-red-500/30" onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: 'syllabus', step: 0, phase: 'primary' }); }}>No Syllabus — Fix</span>}
+                                      <span className="text-[12px]" style={{ color: '#334155' }}>{courseHealth.totalModules} modules · {courseHealth.totalReadings} readings</span>
+                                      {courseHealth.syllabusLinked ? <span className="text-[11px] px-2 py-0.5 rounded font-medium" style={{ background: '#dcfce7', color: '#166534', border: '1px solid #86efac' }}>Syllabus ✓</span> : <span className="text-[11px] px-2 py-0.5 rounded font-medium cursor-pointer hover:brightness-95" style={{ background: '#fee2e2', color: '#991b1b', border: '1px solid #fca5a5' }} onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: 'syllabus', step: 0, phase: 'primary' }); }}>No Syllabus — Fix</span>}
                                     </div>
                                   )}
                                 </div>
-                                <div className="p-4 space-y-4">
+                                <div className="p-4 space-y-4 auto-resolution-body">
                                   <div>
                                     <div className="text-[13px] font-semibold text-white uppercase tracking-wider mb-3">Automation Flow</div>
                                     <div className="flex items-start gap-0 flex-wrap">

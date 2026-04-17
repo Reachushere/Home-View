@@ -2810,3 +2810,41 @@ input[type="date"].bg-white::-webkit-datetime-edit-year-field {
   flex-direction: column !important;
   overflow: hidden !important;
 }
+
+/* Automation resolution card — light professional theme inside expanded semester health view */
+.auto-resolution-body { color: #0f172a; }
+.auto-resolution-body .text-white { color: #0f172a !important; }
+.auto-resolution-body .text-white\/80 { color: #334155 !important; }
+.auto-resolution-body .text-white\/70 { color: #475569 !important; }
+.auto-resolution-body .text-white\/60 { color: #64748b !important; }
+.auto-resolution-body .text-white\/50 { color: #94a3b8 !important; }
+.auto-resolution-body .text-white\/40 { color: #94a3b8 !important; }
+.auto-resolution-body .text-white\/30 { color: #cbd5e1 !important; }
+.auto-resolution-body .border-white\/30 { border-color: #cbd5e1 !important; }
+.auto-resolution-body .border-white\/20 { border-color: #cbd5e1 !important; }
+.auto-resolution-body .border-white\/15 { border-color: #e2e8f0 !important; }
+.auto-resolution-body .border-white\/10 { border-color: #e2e8f0 !important; }
+.auto-resolution-body .border-white\/5  { border-color: #f1f5f9 !important; }
+.auto-resolution-body .bg-white\/06,
+.auto-resolution-body [style*="rgba(255,255,255,0.06)"] { background: #f8fafc !important; }
+.auto-resolution-body .bg-white\/5,
+.auto-resolution-body .hover\:bg-white\/5:hover { background: #f1f5f9 !important; }
+.auto-resolution-body [style*="rgba(0,0,0,0.2)"],
+.auto-resolution-body [style*="rgba(0,0,0,0.25)"] { background: #ffffff !important; }
+.auto-resolution-body table { background: #ffffff; }
+.auto-resolution-body table thead tr[style] { background: #eff6ff !important; }
+.auto-resolution-body table thead tr th { color: #1e3a8a !important; border-bottom-color: #bfdbfe !important; font-weight: 600; }
+.auto-resolution-body tbody td { color: #0f172a !important; border-bottom-color: #f1f5f9 !important; }
+.auto-resolution-body tbody tr:hover { background: #f8fafc !important; }
+/* Section headings */
+.auto-resolution-body > div > div.text-\[13px\].font-semibold.uppercase {
+  color: #1e3a8a !important;
+  letter-spacing: 0.08em;
+}
+/* Mono path text in table */
+.auto-resolution-body td.font-mono { color: #475569 !important; }
+/* Weekly content cells: keep colored backgrounds but darken text */
+.auto-resolution-body .grid > div > .text-\[10px\].font-bold,
+.auto-resolution-body .grid > div > .text-\[9px\] { color: #0f172a !important; }
+/* Week cells: lighten the dark transparent backgrounds */
+.auto-resolution-body .grid > div[style*="rgba(255,255,255,0.03)"] { background: #f8fafc !important; border-color: #e2e8f0 !important; }
