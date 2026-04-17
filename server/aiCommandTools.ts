@@ -361,6 +361,24 @@ export const AI_COMMAND_TOOLS = [
   {
     type: "function" as const,
     function: {
+      name: "ha_element_remove",
+      description: "Remove a specific element from a card's elements/cards/children array WITHOUT touching siblings. Safe surgical delete — cannot drop other elements. Match by entity OR by index path.",
+      parameters: {
+        type: "object",
+        properties: {
+          dashboard: { type: "string", description: "Dashboard url_path. Omit or 'lovelace' for default." },
+          view_index: { type: "number", description: "Zero-based view index." },
+          view_title: { type: "string", description: "View title (case-insensitive)." },
+          match_entity: { type: "string", description: "Remove the element whose 'entity' equals this value (e.g. 'timer.bryn_meds'). First match in tree." },
+          match_index_path: { type: "array", items: { type: "number" }, description: "Alternative: array of indices to walk to the element to remove." },
+          remove_all_matching: { type: "boolean", description: "If true with match_entity, removes ALL siblings with that entity (default: only first)." },
+        },
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
       name: "ha_automation_clone",
       description: "Clone an existing automation by its unique id, optionally rename and patch specific top-level fields (e.g. add an Alexa announcement to the actions). Much safer than rewriting the YAML by hand. The server fetches the source automation, applies the patch (deep-merge for objects, replace for arrays you explicitly provide), assigns a new id, and saves it.",
       parameters: {
@@ -2048,6 +2066,94 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           return { success: true, result: { message: `Element added to view ${viewIdx} card ${cardPath.join('.')}.${containerKey}. Length: ${beforeLen} -> ${card[containerKey].length}. Refresh HA.`, view_index: viewIdx, card_path: cardPath, container_key: containerKey, container_length: card[containerKey].length } };
         } catch (err: any) {
           return { success: false, result: { error: `ha_element_add failed: ${err.message}` } };
+        }
+      }
+
+      case "ha_element_remove": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+          return { success: false, result: { error: "Home Assistant not configured" } };
+        }
+        let dashPathER = args.dashboard || null;
+        if (dashPathER?.startsWith('lovelace-')) dashPathER = dashPathER.replace('lovelace-', '');
+        try {
+          const wsMsgR: Record<string, any> = {};
+          if (dashPathER && dashPathER !== 'lovelace') wsMsgR.url_path = dashPathER;
+          const config = await haWebSocket('lovelace/config', wsMsgR);
+          const views = config.views || [];
+          let viewIdx = -1;
+          if (args.view_index !== undefined && args.view_index !== null) viewIdx = args.view_index;
+          else if (args.view_title) viewIdx = views.findIndex((v: any) => v?.title?.toLowerCase() === args.view_title.toLowerCase());
+          else viewIdx = 0;
+          if (viewIdx < 0 || viewIdx >= views.length || !views[viewIdx]) {
+            return { success: false, result: { error: `View not found.` } };
+          }
+          const view = views[viewIdx];
+          let removedCount = 0;
+          let removedFrom = '';
+
+          if (Array.isArray(args.match_index_path) && args.match_index_path.length > 0) {
+            const path = args.match_index_path;
+            let parent: any = view;
+            let parentArr: any[] | null = null;
+            let lastKey = '';
+            for (let i = 0; i < path.length; i++) {
+              const arr = parent.cards || parent.elements || parent.children;
+              const arrKey = parent.cards ? 'cards' : parent.elements ? 'elements' : 'children';
+              if (!Array.isArray(arr) || path[i] < 0 || path[i] >= arr.length) {
+                return { success: false, result: { error: `Invalid path at index ${path[i]}` } };
+              }
+              if (i === path.length - 1) { parentArr = arr; lastKey = arrKey; break; }
+              parent = arr[path[i]];
+            }
+            if (parentArr) {
+              parentArr.splice(path[path.length - 1], 1);
+              removedCount = 1;
+              removedFrom = lastKey;
+            }
+          } else if (args.match_entity) {
+            const removeIn = (node: any): void => {
+              if (!node || typeof node !== 'object') return;
+              for (const k of ['cards', 'elements', 'children']) {
+                if (Array.isArray(node[k])) {
+                  const before = node[k].length;
+                  node[k] = node[k].filter((e: any) => {
+                    if (e?.entity === args.match_entity) {
+                      if (removedCount === 0 || args.remove_all_matching) { removedCount++; removedFrom = k; return false; }
+                    }
+                    return true;
+                  });
+                  for (const c of node[k]) removeIn(c);
+                }
+              }
+            };
+            removeIn(view);
+          } else {
+            return { success: false, result: { error: "Provide match_entity or match_index_path" } };
+          }
+
+          if (removedCount === 0) {
+            return { success: false, result: { error: `No matching element found to remove.` } };
+          }
+
+          // Snapshot
+          try {
+            const fsMod = await import('fs');
+            const pathMod = await import('path');
+            const snapDir = pathMod.resolve(process.cwd(), 'ha-snapshots');
+            if (!fsMod.existsSync(snapDir)) fsMod.mkdirSync(snapDir, { recursive: true });
+            const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+            const snapPath = pathMod.join(snapDir, `lovelace-${dashPathER || 'main'}-${stamp}.json`);
+            const preConfig = await haWebSocket('lovelace/config', wsMsgR);
+            fsMod.writeFileSync(snapPath, JSON.stringify(preConfig, null, 2));
+            console.log(`[ha_element_remove] Snapshot: ${snapPath}`);
+          } catch (e: any) { console.error(`[ha_element_remove] snapshot failed:`, e?.message); }
+
+          const wsMsgW: Record<string, any> = { config };
+          if (dashPathER && dashPathER !== 'lovelace') wsMsgW.url_path = dashPathER;
+          await haWebSocket('lovelace/config/save', wsMsgW);
+          return { success: true, result: { message: `Removed ${removedCount} element(s) from ${removedFrom} in view ${viewIdx}. Refresh HA.`, removed: removedCount, view_index: viewIdx } };
+        } catch (err: any) {
+          return { success: false, result: { error: `ha_element_remove failed: ${err.message}` } };
         }
       }
 
