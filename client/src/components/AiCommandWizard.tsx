@@ -562,6 +562,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   const [isResizing, setIsResizing] = useState(false);
   const resizeJustEndedRef = useRef(false);
   const resizeStartRef = useRef<{ x: number; width: number } | null>(null);
+  const [panelRect, setPanelRect] = useState<{ top: number; left: number; width: number } | null>(null);
 
   useEffect(() => {
     fetch('/api/app-state/ui_wizardStyle')
@@ -604,6 +605,23 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       setTimeout(() => inputRef.current?.focus(), 150);
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const updateRect = () => {
+      const el = panelRef.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      setPanelRect({ top: r.top, left: r.left, width: r.width });
+    };
+    updateRect();
+    const id = window.setInterval(updateRect, 100);
+    window.addEventListener('resize', updateRect);
+    return () => {
+      window.clearInterval(id);
+      window.removeEventListener('resize', updateRect);
+    };
+  }, [isOpen, expanded, customWidth, position]);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -1313,24 +1331,27 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       if (!downTime || Date.now() - downTime > 400) return;
       onClose();
     }}>
-      <div ref={panelRef} style={panelStyle} data-testid="ai-command-panel">
+      {panelRect && createPortal(
         <img
           src={brynAvatar}
           alt="BrynAssist"
           style={{
-            position: 'absolute',
-            top: '-78px',
-            left: '50%',
+            position: 'fixed',
+            top: panelRect.top - 170,
+            left: panelRect.left + panelRect.width / 2,
             transform: 'translateX(-50%)',
             width: '260px',
             height: 'auto',
             objectFit: 'contain',
             pointerEvents: 'none',
-            filter: 'drop-shadow(0 6px 14px rgba(0,0,0,0.55))',
-            zIndex: 10,
+            filter: 'drop-shadow(0 8px 18px rgba(0,0,0,0.6))',
+            zIndex: 10003,
           }}
           data-testid="img-brynassist-avatar"
-        />
+        />,
+        document.body
+      )}
+      <div ref={panelRef} style={panelStyle} data-testid="ai-command-panel">
         {!expanded && (
           <>
             <div
