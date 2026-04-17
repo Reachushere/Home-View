@@ -39497,12 +39497,23 @@ export default function Dashboard() {
           existingCourses={coursesData?.courses}
         />
       )}
-      {odStatus && odStatus.tokenWorks === false && !odReauthOpen && (
-        <button
-          onClick={startOdReauth}
-          data-testid="button-onedrive-reconnect"
-          style={{ position: 'fixed', bottom: 8, left: 8, zIndex: 9998, background: 'rgba(220,38,38,0.92)', color: 'white', border: 'none', padding: '6px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}
-        >OneDrive disconnected — Reconnect</button>
+      {odStatus && !odReauthOpen && (
+        odStatus.tokenWorks === true ? (
+          <div
+            data-testid="indicator-onedrive-ok"
+            title="OneDrive connected"
+            style={{ position: 'fixed', bottom: 8, left: 8, zIndex: 9998, display: 'flex', alignItems: 'center', gap: 5, background: 'rgba(20,40,30,0.55)', color: '#86efac', border: '1px solid rgba(34,197,94,0.35)', padding: '3px 7px', borderRadius: 10, fontSize: 9, fontWeight: 500, pointerEvents: 'none', backdropFilter: 'blur(4px)' }}
+          >
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 4px rgba(34,197,94,0.8)' }} />
+            OneDrive
+          </div>
+        ) : (
+          <button
+            onClick={startOdReauth}
+            data-testid="button-onedrive-reconnect"
+            style={{ position: 'fixed', bottom: 8, left: 8, zIndex: 9998, background: 'rgba(220,38,38,0.92)', color: 'white', border: 'none', padding: '6px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}
+          >OneDrive disconnected — Reconnect</button>
+        )
       )}
       {odReauthOpen && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }} data-testid="modal-onedrive-reauth">

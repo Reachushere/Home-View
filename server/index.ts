@@ -653,6 +653,28 @@ app.use((req, res, next) => {
     console.error('[Startup] OneDrive resume check failed:', err);
   }
 
+  // OneDrive background keep-alive: every 25 min, ping listOneDriveItems('/')
+  // to refresh the access token before expiry and update the verify cache so
+  // /api/onedrive/status reflects truth without on-demand verification cost.
+  const onedriveKeepAlive = async () => {
+    try {
+      const { isOneDriveConnected, listOneDriveItems } = await import("./onedrive");
+      if (!isOneDriveConnected()) {
+        (globalThis as any).__odLastVerify = { ts: Date.now(), result: { connected: false, hasToken: false, tokenWorks: false, reason: "No refresh token stored" } };
+        return;
+      }
+      await listOneDriveItems('/');
+      (globalThis as any).__odLastVerify = { ts: Date.now(), result: { connected: true, hasToken: true, tokenWorks: true } };
+      console.log('[OneDrive][KeepAlive] OK');
+    } catch (e: any) {
+      const msg = e?.message || String(e);
+      (globalThis as any).__odLastVerify = { ts: Date.now(), result: { connected: false, hasToken: true, tokenWorks: false, reason: `Token rejected by Microsoft: ${msg.substring(0, 200)}` } };
+      console.warn('[OneDrive][KeepAlive] FAILED:', msg.substring(0, 160));
+    }
+  };
+  setTimeout(onedriveKeepAlive, 8000);
+  setInterval(onedriveKeepAlive, 25 * 60 * 1000);
+
   app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
