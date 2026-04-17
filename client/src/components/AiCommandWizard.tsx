@@ -525,6 +525,20 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       setTimeout(() => setCopiedOrbId(prev => (prev === key ? null : prev)), 1400);
     }).catch(() => {});
   }, []);
+  const [screenCopied, setScreenCopied] = useState(false);
+  const copyScreen = useCallback(() => {
+    const lines = (messages || []).map((m: any) => {
+      const role = m.role === 'user' ? 'YOU' : m.role === 'assistant' ? 'BA' : (m.role || '').toUpperCase();
+      const tools = (m.toolResults && m.toolResults.length)
+        ? '\n  [tools: ' + m.toolResults.map((t: any) => `${t.name}${t.success ? '✓' : '✗'}`).join(', ') + ']'
+        : '';
+      return `${role}: ${m.content || ''}${tools}`;
+    }).join('\n\n');
+    navigator.clipboard.writeText(lines || '(empty conversation)').then(() => {
+      setScreenCopied(true);
+      setTimeout(() => setScreenCopied(false), 1400);
+    }).catch(() => {});
+  }, [messages]);
   const playDing = useCallback(() => {
     try {
       const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -1479,6 +1493,9 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 </div>
               )}
             </div>
+            <HeaderBtn tip={screenCopied ? 'Copied!' : 'Copy entire chat'} onClick={copyScreen} testId="button-ai-command-copy-screen">
+              {screenCopied ? <Check size={15} color="#4ade80" /> : <Copy size={15} />}
+            </HeaderBtn>
             <HeaderBtn tip="Clear conversation" onClick={clearChat} testId="button-ai-command-clear"><RotateCcw size={15} /></HeaderBtn>
             <HeaderBtn tip={expanded ? 'Minimize' : 'Expand'} onClick={() => { setExpanded(!expanded); setCustomWidth(null); if (expanded) setPosition(null); }} testId="button-ai-command-expand">
               {expanded ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
