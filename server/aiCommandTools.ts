@@ -482,6 +482,174 @@ export const AI_COMMAND_TOOLS = [
   {
     type: "function" as const,
     function: {
+      name: "ha_automation_list",
+      description: "List all automations with their entity_id, unique_id, alias, last_triggered, and enabled state.",
+      parameters: { type: "object", properties: {} },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "ha_automation_get",
+      description: "Get the full YAML config of a single automation by its unique id (NOT entity_id). Use ha_automation_list to find ids.",
+      parameters: { type: "object", properties: { automation_id: { type: "string", description: "Unique automation id." } }, required: ["automation_id"] },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "ha_automation_update",
+      description: "Update (overwrite) an existing automation's full config by its unique id. ALWAYS read first with ha_automation_get, then send the modified full config back.",
+      parameters: {
+        type: "object",
+        properties: {
+          automation_id: { type: "string", description: "Unique id of the automation to update." },
+          config: { type: "object", description: "Full automation config (alias, trigger, action, etc)." },
+        },
+        required: ["automation_id", "config"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "ha_automation_delete",
+      description: "Permanently delete an automation by its unique id.",
+      parameters: { type: "object", properties: { automation_id: { type: "string" } }, required: ["automation_id"] },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "ha_automation_toggle",
+      description: "Enable, disable, or toggle an automation by its entity_id.",
+      parameters: {
+        type: "object",
+        properties: {
+          entity_id: { type: "string", description: "e.g. automation.rascal_meds_timer" },
+          action: { type: "string", enum: ["turn_on", "turn_off", "toggle", "trigger"], description: "What to do." },
+        },
+        required: ["entity_id", "action"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "ha_script_list",
+      description: "List all scripts (entity_id starting with script.).",
+      parameters: { type: "object", properties: {} },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "ha_script_get",
+      description: "Get the full config of a script by its object id (the part after 'script.').",
+      parameters: { type: "object", properties: { script_id: { type: "string" } }, required: ["script_id"] },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "ha_script_run",
+      description: "Run a script immediately by entity_id.",
+      parameters: {
+        type: "object",
+        properties: {
+          entity_id: { type: "string", description: "e.g. script.bedtime_routine" },
+          variables: { type: "object", description: "Optional variables to pass." },
+        },
+        required: ["entity_id"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "ha_template_render",
+      description: "Render a Jinja2 template against current HA state. Useful for testing automation logic before saving (e.g. '{{ states(\"sensor.x\") }}').",
+      parameters: { type: "object", properties: { template: { type: "string" } }, required: ["template"] },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "ha_history",
+      description: "Get state history for one or more entities over a time range. Defaults to last 24 hours.",
+      parameters: {
+        type: "object",
+        properties: {
+          entity_ids: { type: "array", items: { type: "string" } },
+          hours_back: { type: "number", description: "How many hours back from now. Default 24." },
+          minimal: { type: "boolean", description: "Return only state changes (no attributes). Default true." },
+        },
+        required: ["entity_ids"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "ha_logbook",
+      description: "Get human-readable logbook entries for an entity (state changes, automation triggers, etc).",
+      parameters: {
+        type: "object",
+        properties: {
+          entity_id: { type: "string" },
+          hours_back: { type: "number", description: "Default 24." },
+        },
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "ha_reload",
+      description: "Reload a HA component without restarting. Use after editing yaml-based configs.",
+      parameters: {
+        type: "object",
+        properties: {
+          domain: { type: "string", enum: ["automation", "script", "scene", "template", "input_boolean", "input_number", "input_text", "input_select", "input_datetime", "timer", "rest", "rest_command", "shell_command", "homeassistant"], description: "What to reload. 'homeassistant' reloads core config." },
+        },
+        required: ["domain"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "ha_input_set",
+      description: "Set the value of an input_* helper (input_boolean, input_number, input_text, input_select, input_datetime).",
+      parameters: {
+        type: "object",
+        properties: {
+          entity_id: { type: "string", description: "e.g. input_boolean.guest_mode" },
+          value: { description: "New value. Type depends on helper: bool for input_boolean, number for input_number, string for input_text/select, ISO datetime for input_datetime." },
+        },
+        required: ["entity_id", "value"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "ha_scene_apply",
+      description: "Activate a scene by entity_id (e.g. scene.evening_lights).",
+      parameters: { type: "object", properties: { entity_id: { type: "string" } }, required: ["entity_id"] },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "ha_check_config",
+      description: "Validate Home Assistant's configuration.yaml. Returns errors if any.",
+      parameters: { type: "object", properties: {} },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
       name: "get_semester_info",
       description: "Get current semester information including courses, dates, and settings. Use when user asks about their courses, semester dates, etc.",
       parameters: { type: "object", properties: {} },
@@ -2504,6 +2672,224 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
         } catch (err: any) {
           return { success: false, result: { error: `Failed to create automation: ${err.message}` } };
         }
+      }
+
+      case "ha_automation_list": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) return { success: false, result: { error: "HA not configured" } };
+        try {
+          const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+          const headers = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` };
+          const states = await (await fetch(`${haUrl}/api/states`, { headers })).json();
+          const automations = states.filter((s: any) => s.entity_id?.startsWith('automation.')).map((s: any) => ({
+            entity_id: s.entity_id,
+            unique_id: s.attributes?.id,
+            alias: s.attributes?.friendly_name,
+            state: s.state,
+            last_triggered: s.attributes?.last_triggered,
+            mode: s.attributes?.mode,
+          }));
+          return { success: true, result: { count: automations.length, automations } };
+        } catch (err: any) { return { success: false, result: { error: err.message } }; }
+      }
+
+      case "ha_automation_get": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) return { success: false, result: { error: "HA not configured" } };
+        try {
+          const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+          const r = await fetch(`${haUrl}/api/config/automation/config/${args.automation_id}`, { headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` } });
+          if (!r.ok) return { success: false, result: { error: `Not found (HTTP ${r.status})` } };
+          return { success: true, result: { config: await r.json() } };
+        } catch (err: any) { return { success: false, result: { error: err.message } }; }
+      }
+
+      case "ha_automation_update": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) return { success: false, result: { error: "HA not configured" } };
+        try {
+          const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+          const headers = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
+          const r = await fetch(`${haUrl}/api/config/automation/config/${args.automation_id}`, { method: 'POST', headers, body: JSON.stringify(args.config) });
+          if (!r.ok) return { success: false, result: { error: `Update failed: ${r.status} ${(await r.text()).slice(0, 200)}` } };
+          await fetch(`${haUrl}/api/services/automation/reload`, { method: 'POST', headers });
+          return { success: true, result: { updated: true, automation_id: args.automation_id } };
+        } catch (err: any) { return { success: false, result: { error: err.message } }; }
+      }
+
+      case "ha_automation_delete": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) return { success: false, result: { error: "HA not configured" } };
+        try {
+          const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+          const headers = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` };
+          const r = await fetch(`${haUrl}/api/config/automation/config/${args.automation_id}`, { method: 'DELETE', headers });
+          if (!r.ok) return { success: false, result: { error: `Delete failed: ${r.status}` } };
+          await fetch(`${haUrl}/api/services/automation/reload`, { method: 'POST', headers });
+          return { success: true, result: { deleted: true, automation_id: args.automation_id } };
+        } catch (err: any) { return { success: false, result: { error: err.message } }; }
+      }
+
+      case "ha_automation_toggle": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) return { success: false, result: { error: "HA not configured" } };
+        try {
+          const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+          const r = await fetch(`${haUrl}/api/services/automation/${args.action}`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ entity_id: args.entity_id }),
+          });
+          if (!r.ok) return { success: false, result: { error: `${r.status}` } };
+          return { success: true, result: { entity_id: args.entity_id, action: args.action } };
+        } catch (err: any) { return { success: false, result: { error: err.message } }; }
+      }
+
+      case "ha_script_list": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) return { success: false, result: { error: "HA not configured" } };
+        try {
+          const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+          const states = await (await fetch(`${haUrl}/api/states`, { headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` } })).json();
+          const scripts = states.filter((s: any) => s.entity_id?.startsWith('script.')).map((s: any) => ({
+            entity_id: s.entity_id, alias: s.attributes?.friendly_name, last_triggered: s.attributes?.last_triggered,
+          }));
+          return { success: true, result: { count: scripts.length, scripts } };
+        } catch (err: any) { return { success: false, result: { error: err.message } }; }
+      }
+
+      case "ha_script_get": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) return { success: false, result: { error: "HA not configured" } };
+        try {
+          const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+          const r = await fetch(`${haUrl}/api/config/script/config/${args.script_id}`, { headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` } });
+          if (!r.ok) return { success: false, result: { error: `Not found (${r.status})` } };
+          return { success: true, result: { config: await r.json() } };
+        } catch (err: any) { return { success: false, result: { error: err.message } }; }
+      }
+
+      case "ha_script_run": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) return { success: false, result: { error: "HA not configured" } };
+        try {
+          const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+          const body: any = { entity_id: args.entity_id };
+          if (args.variables) Object.assign(body, args.variables);
+          const r = await fetch(`${haUrl}/api/services/script/turn_on`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+          });
+          if (!r.ok) return { success: false, result: { error: `${r.status}` } };
+          return { success: true, result: { ran: args.entity_id } };
+        } catch (err: any) { return { success: false, result: { error: err.message } }; }
+      }
+
+      case "ha_template_render": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) return { success: false, result: { error: "HA not configured" } };
+        try {
+          const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+          const r = await fetch(`${haUrl}/api/template`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ template: args.template }),
+          });
+          if (!r.ok) return { success: false, result: { error: `Render failed: ${r.status} ${(await r.text()).slice(0, 200)}` } };
+          return { success: true, result: { rendered: await r.text() } };
+        } catch (err: any) { return { success: false, result: { error: err.message } }; }
+      }
+
+      case "ha_history": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) return { success: false, result: { error: "HA not configured" } };
+        try {
+          const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+          const hours = args.hours_back || 24;
+          const start = new Date(Date.now() - hours * 3600 * 1000).toISOString();
+          const ids = (Array.isArray(args.entity_ids) ? args.entity_ids : []).join(',');
+          const minimal = args.minimal !== false ? '&minimal_response=true&no_attributes=true' : '';
+          const r = await fetch(`${haUrl}/api/history/period/${start}?filter_entity_id=${ids}${minimal}`, { headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` } });
+          if (!r.ok) return { success: false, result: { error: `${r.status}` } };
+          const history = await r.json();
+          return { success: true, result: { hours_back: hours, series: history } };
+        } catch (err: any) { return { success: false, result: { error: err.message } }; }
+      }
+
+      case "ha_logbook": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) return { success: false, result: { error: "HA not configured" } };
+        try {
+          const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+          const hours = args.hours_back || 24;
+          const start = new Date(Date.now() - hours * 3600 * 1000).toISOString();
+          const filter = args.entity_id ? `?entity=${args.entity_id}` : '';
+          const r = await fetch(`${haUrl}/api/logbook/${start}${filter}`, { headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` } });
+          if (!r.ok) return { success: false, result: { error: `${r.status}` } };
+          return { success: true, result: { entries: await r.json() } };
+        } catch (err: any) { return { success: false, result: { error: err.message } }; }
+      }
+
+      case "ha_reload": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) return { success: false, result: { error: "HA not configured" } };
+        try {
+          const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+          const domain = args.domain;
+          const service = domain === 'homeassistant' ? 'reload_core_config' : 'reload';
+          const r = await fetch(`${haUrl}/api/services/${domain}/${service}`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({}),
+          });
+          if (!r.ok) return { success: false, result: { error: `Reload ${domain} failed: ${r.status}` } };
+          return { success: true, result: { reloaded: domain } };
+        } catch (err: any) { return { success: false, result: { error: err.message } }; }
+      }
+
+      case "ha_input_set": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) return { success: false, result: { error: "HA not configured" } };
+        try {
+          const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+          const eid = args.entity_id as string;
+          const domain = eid.split('.')[0];
+          let service = 'set_value';
+          const data: any = { entity_id: eid };
+          if (domain === 'input_boolean') {
+            service = args.value ? 'turn_on' : 'turn_off';
+          } else if (domain === 'input_select') {
+            service = 'select_option'; data.option = String(args.value);
+          } else if (domain === 'input_datetime') {
+            service = 'set_datetime';
+            const v = String(args.value);
+            if (v.includes('T')) { data.datetime = v; } else if (v.includes(':')) { data.time = v; } else { data.date = v; }
+          } else {
+            data.value = args.value;
+          }
+          const r = await fetch(`${haUrl}/api/services/${domain}/${service}`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+          });
+          if (!r.ok) return { success: false, result: { error: `${r.status} ${(await r.text()).slice(0, 200)}` } };
+          return { success: true, result: { entity_id: eid, value: args.value } };
+        } catch (err: any) { return { success: false, result: { error: err.message } }; }
+      }
+
+      case "ha_scene_apply": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) return { success: false, result: { error: "HA not configured" } };
+        try {
+          const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+          const r = await fetch(`${haUrl}/api/services/scene/turn_on`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ entity_id: args.entity_id }),
+          });
+          if (!r.ok) return { success: false, result: { error: `${r.status}` } };
+          return { success: true, result: { applied: args.entity_id } };
+        } catch (err: any) { return { success: false, result: { error: err.message } }; }
+      }
+
+      case "ha_check_config": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) return { success: false, result: { error: "HA not configured" } };
+        try {
+          const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+          const r = await fetch(`${haUrl}/api/config/core/check_config`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` },
+          });
+          if (!r.ok) return { success: false, result: { error: `${r.status}` } };
+          return { success: true, result: await r.json() };
+        } catch (err: any) { return { success: false, result: { error: err.message } }; }
       }
 
       case "get_semester_info": {
