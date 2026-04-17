@@ -3842,6 +3842,20 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
+  app.post("/api/scholarships/cleanup-duplicates", async (_req, res) => {
+    try {
+      const now = new Date();
+      const start = new Date(now.getFullYear(), 0, 1);
+      const end = new Date(now.getFullYear() + 2, 11, 31);
+      const result = await findAndDeleteDuplicateEvents(start.toISOString(), end.toISOString());
+      console.log(`[Scholarships] Cleanup: deleted ${result.deleted} duplicate events, kept ${result.kept}`);
+      res.json({ success: true, ...result });
+    } catch (err) {
+      console.error("Error cleaning up scholarship duplicates:", err);
+      res.status(500).json({ error: "Failed to cleanup duplicates" });
+    }
+  });
+
   app.post("/api/scholarships/calendar-events", async (req, res) => {
     try {
       const { name, applicationsOpen, deadline, description, recurring } = req.body;

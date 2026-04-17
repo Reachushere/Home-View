@@ -797,6 +797,13 @@ export async function createYearlyScholarshipEvent(info: {
     endDate.setDate(endDate.getDate() + 1);
     const endDateStr = endDate.toISOString().split('T')[0];
 
+    // Dedup: don't create a new event if one with the same summary already exists on this date
+    const existingId = await findExistingEventBySummary(summary, dateStr);
+    if (existingId) {
+      console.log(`[Calendar] Skipping duplicate scholarship ${info.type} event "${summary}" on ${dateStr}; reusing id=${existingId}`);
+      return { id: existingId };
+    }
+
     const isRecurring = info.recurring !== false;
 
     const event: any = {
