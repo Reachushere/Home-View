@@ -2855,7 +2855,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         }
       }
       const startMs = s.semesterStartDate ? new Date(s.semesterStartDate).getTime() : 0;
-      const endMs = s.semesterEndDate ? new Date(s.semesterEndDate).getTime() : startMs + 120 * 24 * 60 * 60 * 1000;
+      const endMs = s.semesterEndDate ? new Date(s.semesterEndDate).getTime() + (24 * 60 * 60 * 1000 - 1) : startMs + 120 * 24 * 60 * 60 * 1000;
       const isCurrent = now >= startMs && now <= endMs;
       const isFuture = now < startMs;
       const isPast = now > endMs;
