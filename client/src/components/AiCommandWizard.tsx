@@ -1637,7 +1637,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 onClick={isOrb ? () => toggleOrbExpanded(orbKey) : undefined}
                 title={isOrb ? (orbExpanded ? 'Click to collapse' : 'Click to scroll full text') : undefined}
                 style={{
-                maxWidth: msg.role === 'system' ? '70%' : (hasCodeBlock ? '78%' : undefined),
+                maxWidth: msg.role === 'system' ? '70%' : (isOrb ? undefined : (hasCodeBlock ? '78%' : '88%')),
                 width: isOrb ? `${orbWidth}px` : (msg.role === 'system' ? 'auto' : (hasCodeBlock ? '78%' : undefined)),
                 height: isOrb ? `${orbHeight}px` : undefined,
                 padding: msg.role === 'system' ? '4px 12px' : (isOrb ? '22px 26px' : '14px 18px'),
