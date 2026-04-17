@@ -294,6 +294,11 @@ const thinkingKeyframes = `
   0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
   100% { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
+@keyframes ai-thinking-ellipsis {
+  0%   { opacity: 0.25; }
+  50%  { opacity: 0.85; }
+  100% { opacity: 0.25; }
+}
 `;
 
 interface Message {
@@ -1782,27 +1787,20 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
 
           {loading && !pendingConfirm && (
             <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-              padding: '6px 12px 6px 6px',
-              fontSize: '12px',
-              color: 'rgba(190,210,240,0.85)',
+              display: 'flex', alignItems: 'flex-start', gap: '6px',
+              maxWidth: '92%', padding: '2px 10px 2px 4px',
+              fontSize: '12px', lineHeight: '1.5',
+              color: 'rgba(180,200,235,0.7)',
               fontStyle: 'italic',
             }}>
-              <div style={{ display: 'inline-flex', gap: '4px', alignItems: 'center', padding: '0 2px' }}>
-                {[0, 1, 2].map(i => (
-                  <div key={i} style={{
-                    width: '5px', height: '5px', borderRadius: '50%',
-                    background: 'rgba(150,180,235,0.85)',
-                    animation: 'ai-wave-dot 1.2s ease-in-out infinite',
-                    animationDelay: `${i * 0.18}s`,
-                  }} />
-                ))}
-              </div>
-              <span style={{ fontWeight: 500, letterSpacing: '0.1px' }}>
+              <span style={{ color: 'rgba(140,175,235,0.55)', fontStyle: 'normal', fontWeight: 600, marginTop: '0px', flexShrink: 0 }}>›</span>
+              <span style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
                 {activeToolName || thinkingPhase || 'Working'}
-                <span style={{ opacity: 0.6 }}>…</span>
+                <span style={{
+                  display: 'inline-block', marginLeft: '2px',
+                  animation: 'ai-thinking-ellipsis 1.4s steps(4, end) infinite',
+                  fontStyle: 'normal',
+                }}>…</span>
               </span>
             </div>
           )}
