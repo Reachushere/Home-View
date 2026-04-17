@@ -16380,7 +16380,7 @@ export default function Dashboard() {
           <span className="text-white font-bold leading-tight" style={{ fontSize: '12.5px' }}>{(() => { const h = new Date().getHours(); return h < 12 ? 'Good morning,' : h < 17 ? 'Good afternoon,' : 'Good evening,'; })()} {profileData.firstName}</span>
           <span className="text-white leading-tight" style={{ fontWeight: 300, fontSize: '11px' }}>{schoolData.schoolName || 'Toronto Metropolitan University'}</span>
         </div>
-        <img src={profilePhotoUrl || profilePhoto} alt="Profile" style={{ width: '45px', height: '45px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, alignSelf: 'flex-start', boxShadow: '0 2px 8px rgba(0,0,0,0.2)', cursor: 'pointer' }} onClick={() => startTransition(() => setIsProfileDialogOpen(true))} data-testid="button-profile-photo" />
+        <img src={profilePhotoUrl || profilePhoto} alt="Profile" style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, alignSelf: 'flex-start', boxShadow: '0 2px 8px rgba(0,0,0,0.2)', cursor: 'pointer' }} onClick={() => startTransition(() => setIsProfileDialogOpen(true))} data-testid="button-profile-photo" />
       </div>
 
 
