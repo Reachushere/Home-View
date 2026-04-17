@@ -25069,7 +25069,7 @@ export default function Dashboard() {
               </div>
               ) : null}
               {healthFolderBrowse && (
-                <div className="fixed inset-0 z-[10005] flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.5)' }}>
+                <div className="fixed inset-0 z-[10050] flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.5)' }}>
                   <div
                     className="flex flex-col text-[11px] text-white rounded-lg overflow-hidden"
                     style={{ width: '440px', maxHeight: '60vh', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}
@@ -26957,7 +26957,7 @@ export default function Dashboard() {
                         return (
                           <div className="fixed inset-0 z-[10010] flex items-center justify-center" onClick={() => setSemFlowWizard(null)}>
                             <div className="fixed inset-0 bg-black/50" />
-                            <div className="relative z-[10011] rounded-xl overflow-hidden flex flex-col" style={{ width: '520px', maxWidth: '92%', maxHeight: '80vh', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 8px 48px rgba(0,0,0,0.5)' }} onClick={(e) => e.stopPropagation()}>
+                            <div className="relative z-[10011] rounded-xl overflow-hidden flex flex-col" style={{ width: '420px', maxWidth: '92%', maxHeight: '70vh', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 8px 48px rgba(0,0,0,0.5)' }} onClick={(e) => e.stopPropagation()}>
                               <input type="file" ref={wizUploadRef} className="hidden" multiple accept=".pdf,.docx,.pptx,.doc,.ppt,.txt" onChange={async (e) => {
                                 const files = e.target.files;
                                 if (!files || files.length === 0) return;
@@ -27014,7 +27014,7 @@ export default function Dashboard() {
                                 <span className="text-[13px] font-bold text-white uppercase tracking-wider" style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}>{phaseTitle}</span>
                                 {(phase === 'primary' || phase === 'secondary') && <span className="ml-auto text-[11px] text-white/60">Step {currentStep + 1} of {stepsArr.length}</span>}
                               </div>
-                              <div className="flex-1 overflow-y-auto p-6">
+                              <div className="flex-1 overflow-y-auto p-4">
 
                                 {(phase === 'primary' || phase === 'secondary') && (
                                   <>
@@ -27024,8 +27024,8 @@ export default function Dashboard() {
                                       ))}
                                       <div className="h-1.5 flex-1 rounded-full" style={{ background: 'rgba(59,130,246,0.3)', border: '1px dashed rgba(59,130,246,0.5)' }} title="Test step" />
                                     </div>
-                                    <h3 className="text-[16px] font-bold text-white mb-3">{stepData[0]}</h3>
-                                    <div className="text-[14px] text-white/80 leading-relaxed whitespace-pre-wrap">{stepData[1]}</div>
+                                    <h3 className="text-[14px] font-bold text-white mb-2">{stepData[0]}</h3>
+                                    <div className="text-[12px] text-white/80 leading-snug whitespace-pre-wrap">{stepData[1]}</div>
                                     {stepData[2] && (() => {
                                       const action = stepData[2]!;
                                       const actionLabels: Record<string, { label: string; icon: string }> = {
