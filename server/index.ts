@@ -644,6 +644,15 @@ app.use((req, res, next) => {
 
   await registerRoutes(httpServer, app);
 
+  try {
+    const { resumePendingDeviceCodeFlow } = await import("./onedrive");
+    if (resumePendingDeviceCodeFlow()) {
+      console.log('[Startup] Resumed in-flight OneDrive device-code session');
+    }
+  } catch (err) {
+    console.error('[Startup] OneDrive resume check failed:', err);
+  }
+
   app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";

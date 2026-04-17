@@ -78,8 +78,32 @@ export async function startDeviceCodeFlow(): Promise<{ user_code: string; verifi
   return response.json();
 }
 
+function getDeviceCodeSessionPath(): string {
+  return path.join(process.cwd(), '.onedrive_devicecode.json');
+}
+
+function saveDeviceCodeSession(s: { device_code: string; deadline: number; interval: number }) {
+  try { fs.writeFileSync(getDeviceCodeSessionPath(), JSON.stringify(s, null, 2)); } catch (err) { console.error('[OneDrive] Failed to save device-code session:', err); }
+}
+
+function clearDeviceCodeSession() {
+  try { if (fs.existsSync(getDeviceCodeSessionPath())) fs.unlinkSync(getDeviceCodeSessionPath()); } catch {}
+}
+
+function loadDeviceCodeSession(): { device_code: string; deadline: number; interval: number } | null {
+  try {
+    const fp = getDeviceCodeSessionPath();
+    if (!fs.existsSync(fp)) return null;
+    const s = JSON.parse(fs.readFileSync(fp, 'utf-8'));
+    if (!s?.device_code || !s?.deadline || s.deadline < Date.now()) { clearDeviceCodeSession(); return null; }
+    return s;
+  } catch { return null; }
+}
+
 export async function pollDeviceCodeAuth(deviceCode: string, interval: number = 5, expiresIn: number = 900): Promise<boolean> {
-  const deadline = Date.now() + expiresIn * 1000;
+  const existing = loadDeviceCodeSession();
+  const deadline = existing && existing.device_code === deviceCode ? existing.deadline : Date.now() + expiresIn * 1000;
+  saveDeviceCodeSession({ device_code: deviceCode, deadline, interval });
 
   while (Date.now() < deadline) {
     await new Promise(r => setTimeout(r, interval * 1000));
@@ -110,6 +134,7 @@ export async function pollDeviceCodeAuth(deviceCode: string, interval: number = 
       });
 
       console.log('[OneDrive] Device code auth successful — tokens saved');
+      clearDeviceCodeSession();
       return true;
     }
 
@@ -119,16 +144,30 @@ export async function pollDeviceCodeAuth(deviceCode: string, interval: number = 
 
     if (data.error === 'slow_down') {
       interval += 5;
+      saveDeviceCodeSession({ device_code: deviceCode, deadline, interval });
       continue;
     }
 
     if (data.error === 'expired_token' || data.error === 'authorization_declined') {
       console.log(`[OneDrive] Device code flow ended: ${data.error}`);
+      clearDeviceCodeSession();
       return false;
     }
   }
 
+  clearDeviceCodeSession();
   return false;
+}
+
+export function resumePendingDeviceCodeFlow(): boolean {
+  const s = loadDeviceCodeSession();
+  if (!s) return false;
+  const remaining = Math.floor((s.deadline - Date.now()) / 1000);
+  console.log(`[OneDrive] Resuming pending device-code session (${remaining}s remaining)`);
+  pollDeviceCodeAuth(s.device_code, s.interval, remaining)
+    .then(ok => console.log(`[OneDrive] Resumed device-code session ended: success=${ok}`))
+    .catch(err => console.error('[OneDrive] Resumed device-code polling error:', err));
+  return true;
 }
 
 export function isOneDriveConnected(): boolean {
