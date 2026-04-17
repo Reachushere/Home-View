@@ -1287,12 +1287,21 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                   : msg.role === 'system'
                   ? '1px solid rgba(255,200,50,0.3)'
                   : '1px solid rgba(100,160,255,0.15)',
-                color: msg.role === 'system' ? 'rgba(255,220,100,0.9)'
-                  : wizStyle.wizardTextColor
-                  ? wizStyle.wizardTextColor
-                  : msg.role === 'user'
-                  ? (isLightBg(wizStyle.wizardUserBubble) ? '#1a1a2e' : '#ffffff')
-                  : (isLightBg(wizStyle.wizardAssistantBubble) ? '#1a1a2e' : '#ffffff'),
+                color: (() => {
+                  if (msg.role === 'system') return 'rgba(255,220,100,0.9)';
+                  const bubbleBg = msg.role === 'user'
+                    ? (wizStyle.wizardUserBubble || defaultWizardStyle.wizardUserBubble)
+                    : (wizStyle.wizardAssistantBubble || defaultWizardStyle.wizardAssistantBubble);
+                  const autoColor = isLightBg(bubbleBg) ? '#1a1a2e' : '#ffffff';
+                  // Honor wizardTextColor only if it provides contrast against the bubble bg.
+                  // Prevents white-on-white / black-on-black from making text invisible.
+                  if (wizStyle.wizardTextColor) {
+                    const textIsLight = isLightBg(wizStyle.wizardTextColor);
+                    const bgIsLight = isLightBg(bubbleBg);
+                    if (textIsLight !== bgIsLight) return wizStyle.wizardTextColor;
+                  }
+                  return autoColor;
+                })(),
                 textShadow: msg.role !== 'system'
                   ? (isLightBg(msg.role === 'user' ? wizStyle.wizardUserBubble : wizStyle.wizardAssistantBubble) ? 'none' : '0 1px 2px rgba(0,0,0,0.3)')
                   : undefined,
