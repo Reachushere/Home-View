@@ -164,7 +164,7 @@ import {
   Radio,
   Minus,
   ArrowDownToLine,
-  ArrowDownRight,
+  ArrowDown,
   Music2,
   ListChecks,
   ZoomIn,
@@ -35082,7 +35082,7 @@ export default function Dashboard() {
               data-testid="blank-minimize-dock"
               title="Minimize blank box to tab"
             >
-              <ArrowDownRight className="h-3 w-3 text-white" />
+              <ArrowDown className="h-3 w-3 text-white" />
             </button>
           </div>}
           {/* Date navigation tab above glass box */}
@@ -35167,7 +35167,7 @@ export default function Dashboard() {
             data-testid="hw-minimize-dock"
             title="Minimize homework panel"
           >
-            <ArrowDownRight className="h-3 w-3 text-white" />
+            <ArrowDown className="h-3 w-3 text-white" />
           </button>
           {/* Joint Resize Handle — controls both calendar+homework width and calendar height */}
           {!hwFloating.detached && <div
