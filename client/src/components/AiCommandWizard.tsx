@@ -704,7 +704,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
         const orbCenterX = r.left + r.width / 2;
         const dist = Math.abs(orbCenter - focalY);
         const g = Math.exp(-(dist * dist) / (2 * sigma * sigma));
-        const scale = 0.62 + g * 0.98;
+        const scale = 0.62 + g * 0.38;
         const opacity = 0.55 + g * 0.45;
         const blur = (1 - g) * 0.7;
         const dx = (containerCenterX - orbCenterX) * g * 0.25;
