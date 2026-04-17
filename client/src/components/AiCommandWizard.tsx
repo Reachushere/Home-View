@@ -1338,7 +1338,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       left: 0,
       right: 0,
       bottom: 0,
-      zIndex: 10002,
+      zIndex: 10020,
       display: 'flex',
       alignItems: position ? 'flex-start' : 'center',
       justifyContent: position ? 'flex-start' : 'center',
@@ -1366,7 +1366,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
             objectFit: 'contain',
             pointerEvents: 'none',
             filter: 'drop-shadow(0 8px 18px rgba(0,0,0,0.6))',
-            zIndex: 10003,
+            zIndex: 10021,
           }}
           data-testid="img-brynassist-avatar"
         />,
