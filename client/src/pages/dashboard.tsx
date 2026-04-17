@@ -20830,15 +20830,20 @@ export default function Dashboard() {
       {desktopShowHomework && !homeworkMinimized && (
         <button
           onClick={() => {
-            if (blankMinimizeAnim !== 'idle') return;
+            if (hwMinimizeAnim !== 'idle' || blankMinimizeAnim !== 'idle') return;
             if (blankBoxOpen) return;
+            applyMinimizeOrigin('hw', 'homework', false);
             applyMinimizeOrigin('blank', 'notes', false);
             setBlankBoxMinimizedToTab(false);
             localStorage.removeItem('blankBoxMinimizedToTab');
+            setHomeworkMinimized(true);
+            localStorage.setItem('homeworkMinimized', '1');
             setBlankBoxOpen(true);
             localStorage.setItem('blankBoxOpen', '1');
+            setHwMinimizeAnim('minimizing');
             setBlankMinimizeAnim('restoring');
             setTimeout(() => {
+              setHwMinimizeAnim('idle');
               setBlankMinimizeAnim('idle');
             }, 580);
           }}
@@ -33581,7 +33586,7 @@ export default function Dashboard() {
           <button
             type="button"
             className="cursor-pointer select-none hover:opacity-80 transition-opacity"
-            style={{ position: 'fixed', bottom: `${calendarBottom - 15}px`, right: `${calendarRight - calendarReduction + 108 + 10 + 10}px`, display: 'flex', alignItems: 'center', gap: '4px', zIndex: 70, background: 'none', border: 'none', padding: '0 4px', pointerEvents: 'auto', WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
+            style={{ position: 'fixed', bottom: `${calendarBottom - 15}px`, right: `${calendarRight - calendarReduction + 108 + 10 + 13}px`, display: 'flex', alignItems: 'center', gap: '4px', zIndex: 70, background: 'none', border: 'none', padding: '0 4px', pointerEvents: 'auto', WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
             onClick={() => {
               localStorage.setItem('calendarHeight', String(calendarHeight));
               localStorage.setItem('calendarReduction', String(calendarReduction));
@@ -35063,11 +35068,11 @@ export default function Dashboard() {
                 }, 580);
               }}
               className="absolute z-[9999] rounded-tr-[11px] rounded-bl-[4px] rounded-tl-[2px] rounded-br-[2px] flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors"
-              style={{ top: '0px', right: '0px', width: '26px', height: '26px', background: colorSettings.headerBar, border: '1px solid rgba(255,255,255,0.3)', borderTop: 'none', borderRight: 'none' }}
+              style={{ top: '0px', right: '2px', width: '26px', height: '26px', background: colorSettings.headerBar, border: '1px solid rgba(255,255,255,0.3)', borderTop: 'none', borderRight: 'none' }}
               data-testid="blank-minimize-dock"
               title="Minimize blank box to tab"
             >
-              <ArrowDown className="h-3 w-3 text-white" />
+              <ArrowDown className="h-3 w-3 text-white" strokeWidth={3.25} />
             </button>
           </div>}
           {/* Date navigation tab above glass box */}
@@ -35141,11 +35146,11 @@ export default function Dashboard() {
               }, 580);
             }}
             className="absolute z-[70] rounded-tr-[11px] rounded-bl-[4px] rounded-tl-[2px] rounded-br-[2px] flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors"
-            style={{ top: '0px', right: '0px', width: '26px', height: '26px', background: colorSettings.headerBar, border: '1px solid rgba(255,255,255,0.3)', borderTop: 'none', borderRight: 'none', display: 'flex', opacity: blankBoxOpen ? 0 : 1, pointerEvents: blankBoxOpen ? 'none' : 'auto' }}
+            style={{ top: '0px', right: '2px', width: '26px', height: '26px', background: colorSettings.headerBar, border: '1px solid rgba(255,255,255,0.3)', borderTop: 'none', borderRight: 'none', display: 'flex', opacity: blankBoxOpen ? 0 : 1, pointerEvents: blankBoxOpen ? 'none' : 'auto' }}
             data-testid="hw-minimize-dock"
             title="Minimize homework panel"
           >
-            <ArrowDown className="h-3 w-3 text-white" />
+            <ArrowDown className="h-3 w-3 text-white" strokeWidth={3.25} />
           </button>
           {/* Joint Resize Handle — controls both calendar+homework width and calendar height */}
           {!hwFloating.detached && <div
