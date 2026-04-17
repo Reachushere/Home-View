@@ -1312,7 +1312,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
     flexDirection: 'column',
     boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(50,120,220,0.15)',
     overflow: 'hidden',
-    marginTop: '45px',
+    marginTop: '55px',
     ...(position ? {
       position: 'fixed' as const,
       left: position.x,
