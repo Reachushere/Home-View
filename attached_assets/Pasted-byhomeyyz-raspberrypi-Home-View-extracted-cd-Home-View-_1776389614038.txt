@@ -1,0 +1,44 @@
+byhomeyyz@raspberrypi:~/Home-View/extracted $ cd ~/Home-View && set -a; . ./.env; set +a; \
+HOME_ASSISTANT_URL="http://homeassistant.local:8123" \
+node scripts/restore-test-home-view.cjs scripts/test-home-card.yaml
+Loaded card with 118 elements
+Fetching current lovelace config...
+Config has 1 views
+View 0 currently: title=Test-home, path=test-home, type=panel
+Old view 0 had 0 elements in cards[0]
+Saving updated config...
+SUCCESS — view 0 restored. Refresh HA browser.
+byhomeyyz@raspberrypi:~/Home-View $ sudo cp ~/Home-View/attached_assets/cat-outline-thin.svg /usr/share/hassio/homeassistant/www/lovelace/icons/cat-outline-thin.svg
+cp: cannot stat '/home/byhomeyyz/Home-View/attached_assets/cat-outline-thin.svg': No such file or directory
+byhomeyyz@raspberrypi:~/Home-View $ cd ~/Home-View && git pull
+sudo mkdir -p /usr/share/hassio/homeassistant/www/lovelace/icons
+sudo cp ~/Home-View/attached_assets/cat-outline-thin.svg /usr/share/hassio/homeassistant/www/lovelace/icons/cat-outline-thin.svg
+remote: Enumerating objects: 41, done.
+remote: Counting objects: 100% (41/41), done.
+remote: Compressing objects: 100% (22/22), done.
+remote: Total 37 (delta 25), reused 27 (delta 15), pack-reused 0 (from 0)
+Unpacking objects: 100% (37/37), 822.49 KiB | 2.98 MiB/s, done.
+From https://github.com/Reachushere/Home-View
+   8739e94d6..6e8801302  main       -> origin/main
+Updating 8739e94d6..6e8801302
+Fast-forward
+ ...S-C-WINDOWS-system32-cd-C-Users-Bryn-Kai-Hendricks-Dow_1776386435414.txt |    92 +
+ ...-C-Users-Bryn-Kai-Hendricks-Downloads-hass-extracted-G_1776387502630.txt |    94 +
+ attached_assets/image_1776372825585.png                                     |   Bin 0 -> 660174 bytes
+ attached_assets/image_1776386786008.png                                     |   Bin 0 -> 16789 bytes
+ scripts/kill-oval.cjs                                                       |    91 +
+ scripts/lovelace-march26.json                                               | 29064 ++++++++++++++++++++++++++++++++++
+ scripts/restore-from-backup.cjs                                             |    79 +
+ scripts/test-home-card.yaml                                                 | 22989 +++++++++++++--------------
+ 8 files changed, 40837 insertions(+), 11572 deletions(-)
+ create mode 100644 attached_assets/Pasted-PS-C-WINDOWS-system32-cd-C-Users-Bryn-Kai-Hendricks-Dow_1776386435414.txt
+ create mode 100644 attached_assets/Pasted-S-C-Users-Bryn-Kai-Hendricks-Downloads-hass-extracted-G_1776387502630.txt
+ create mode 100644 attached_assets/image_1776372825585.png
+ create mode 100644 attached_assets/image_1776386786008.png
+ create mode 100644 scripts/kill-oval.cjs
+ create mode 100644 scripts/lovelace-march26.json
+ create mode 100644 scripts/restore-from-backup.cjs
+cp: cannot stat '/home/byhomeyyz/Home-View/attached_assets/cat-outline-thin.svg': No such file or directory
+byhomeyyz@raspberrypi:~/Home-View $ sudo cp ~/Home-View/attached_assets/cat-outline-thin.svg /usr/share/hassio/homeassistant/www/lovelace/icons/cat-outline-thin.svg
+cp: cannot stat '/home/byhomeyyz/Home-View/attached_assets/cat-outline-thin.svg': No such file or directory
+byhomeyyz@raspberrypi:~/Home-View $
