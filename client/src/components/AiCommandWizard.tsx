@@ -518,6 +518,13 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       return next;
     });
   }, []);
+  const [copiedOrbId, setCopiedOrbId] = useState<string | null>(null);
+  const copyOrbContent = useCallback((key: string, content: string) => {
+    navigator.clipboard.writeText(content || '').then(() => {
+      setCopiedOrbId(key);
+      setTimeout(() => setCopiedOrbId(prev => (prev === key ? null : prev)), 1400);
+    }).catch(() => {});
+  }, []);
   const playDing = useCallback(() => {
     try {
       const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -1686,7 +1693,40 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 lineHeight: isOrb ? '1.3' : '1.5',
                 whiteSpace: 'pre-wrap',
                 wordBreak: 'break-word',
+                position: 'relative',
               }}>
+                {msg.role !== 'system' && (msg.content || '').trim().length > 0 && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); copyOrbContent(String(orbKey), msg.content || ''); }}
+                    title={copiedOrbId === String(orbKey) ? 'Copied!' : 'Copy message'}
+                    data-testid={`button-copy-orb-${orbKey}`}
+                    style={{
+                      position: 'absolute',
+                      top: isOrb ? '8px' : '6px',
+                      right: isOrb ? '8px' : '6px',
+                      width: '22px',
+                      height: '22px',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: copiedOrbId === String(orbKey) ? 'rgba(34,197,94,0.55)' : 'rgba(0,0,0,0.35)',
+                      border: '1px solid rgba(255,255,255,0.35)',
+                      color: '#fff',
+                      cursor: 'pointer',
+                      padding: 0,
+                      zIndex: 5,
+                      backdropFilter: 'blur(4px)',
+                      transition: 'background 0.15s ease, transform 0.15s ease',
+                    }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1.1)'; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)'; }}
+                  >
+                    {copiedOrbId === String(orbKey)
+                      ? <Check size={11} strokeWidth={3} />
+                      : <Copy size={11} strokeWidth={2.5} />}
+                  </button>
+                )}
                 {isOrb && msg.role === 'user' && (
                   <img src={profilePhotoUrl} alt="You" style={{
                     width: orbLen < 30 ? '24px' : orbLen < 70 ? '30px' : '36px',
