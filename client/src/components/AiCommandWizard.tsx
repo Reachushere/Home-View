@@ -619,7 +619,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
         orb.style.transform = `scale(${scale})`;
         orb.style.opacity = String(opacity);
         orb.style.zIndex = String(Math.round(g * 100));
-        orb.style.filter = `blur(${(1 - g) * 1.2}px)`;
+        orb.style.filter = '';
       });
     };
     const onScroll = () => {
