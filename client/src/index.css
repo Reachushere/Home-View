@@ -2849,27 +2849,11 @@ input[type="date"].bg-white::-webkit-datetime-edit-year-field {
 /* Week cells: lighten the dark transparent backgrounds */
 .auto-resolution-body .grid > div[style*="rgba(255,255,255,0.03)"] { background: #f8fafc !important; border-color: #e2e8f0 !important; }
 
-/* === Force white course cards & black automation strip in expanded sem health === */
+/* === White course cards in expanded sem health === */
 .auto-resolution-card { background: #ffffff !important; border: 1px solid #cbd5e1 !important; color: #0f172a !important; }
 .auto-resolution-card .auto-resolution-body { background: #ffffff !important; }
-.auto-flow-strip {
-  background: linear-gradient(180deg, #0b1220 0%, #000000 100%) !important;
-  border: 1px solid #1e293b !important;
-  border-radius: 0.5rem !important;
-  padding: 16px !important;
-  display: flex !important;
-  align-items: flex-start !important;
-  justify-content: space-between !important;
-  flex-wrap: nowrap !important;
-  width: 100% !important;
-}
-/* Keep step text white inside the black strip (override the dark-text rules above) */
-.auto-resolution-body .auto-flow-strip .text-white,
-.auto-resolution-body .auto-flow-strip .text-white\/80,
-.auto-resolution-body .auto-flow-strip .text-white\/70,
-.auto-resolution-body .auto-flow-strip .text-white\/60,
-.auto-resolution-body .auto-flow-strip span { color: #ffffff !important; }
-.auto-resolution-body .auto-flow-strip .text-\[9px\],
-.auto-resolution-body .auto-flow-strip .text-\[10px\] { color: #ffffff !important; }
-/* Section headings (AUTOMATION FLOW, NAMING CONVENTION etc) — keep navy */
+/* Pipeline strip: clean white with subtle border, no overrides on inner content */
+.auto-flow-strip { background: #ffffff !important; border: 1px solid #e2e8f0 !important; }
+/* Section headings — navy */
 .auto-resolution-body > div > .text-\[13px\].font-semibold.uppercase { color: #1e3a8a !important; }
+.auto-resolution-body > div > .text-\[11px\].font-semibold.uppercase { color: #64748b !important; }

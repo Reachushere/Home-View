@@ -26573,8 +26573,26 @@ export default function Dashboard() {
                                 </div>
                                 <div className="p-4 space-y-4 auto-resolution-body">
                                   <div>
-                                    <div className="text-[13px] font-semibold text-white uppercase tracking-wider mb-3">Automation Flow</div>
-                                    <div className="auto-flow-strip rounded-lg px-4 py-4 flex items-start justify-between flex-nowrap" style={{ background: 'linear-gradient(180deg, #0b1220 0%, #000000 100%)', border: '1px solid #1e293b', width: '100%' }}>
+                                    <div className="flex items-center justify-between mb-2">
+                                      <div className="text-[11px] font-semibold uppercase tracking-[0.08em]" style={{ color: '#64748b' }}>Pipeline</div>
+                                      {(() => {
+                                        const total = 5;
+                                        const okCount = [
+                                          courseHealth?.oneDriveFolderConfigured,
+                                          (courseHealth?.totalModules || 0) + (courseHealth?.totalReadings || 0) > 0,
+                                          (courseHealth?.totalModules || 0) + (courseHealth?.totalReadings || 0) > 0,
+                                          courseHealth ? ((courseHealth.totalTtsNeeded || 0) === 0 || (courseHealth.totalTtsReady || 0) === (courseHealth.totalTtsNeeded || 0)) : false,
+                                          (courseHealth?.totalModules || 0) + (courseHealth?.totalReadings || 0) > 0,
+                                        ].filter(Boolean).length;
+                                        const allGood = okCount === total;
+                                        return (
+                                          <span className="text-[10px] font-medium tabular-nums" style={{ color: allGood ? '#15803d' : okCount >= 3 ? '#a16207' : '#b91c1c' }}>
+                                            {okCount}/{total} healthy
+                                          </span>
+                                        );
+                                      })()}
+                                    </div>
+                                    <div className="auto-flow-strip rounded-md flex items-stretch" style={{ background: '#ffffff', border: '1px solid #e2e8f0', padding: '14px 12px', width: '100%' }}>
                                       {(() => {
                                         const totalMod = courseHealth?.totalModules || 0;
                                         const totalRead = courseHealth?.totalReadings || 0;
@@ -26586,36 +26604,52 @@ export default function Dashboard() {
                                         const ttsPct = ttsNeeded > 0 ? Math.round((ttsReady / ttsNeeded) * 100) : (totalMod > 0 ? 0 : null);
                                         const libPct = (totalMod + totalRead) > 0 ? 100 : 0;
                                         return [
-                                          { label: 'OneDrive', icon: '☁️', path: getOneDrivePath(c.code), status: courseHealth?.oneDriveFolderConfigured ? 'ok' : 'error', issueKey: 'onedrive', pct: odPct },
-                                          { label: 'Folder Sync', icon: '🔄', path: `${totalMod} mod · ${totalRead} read`, status: (totalMod > 0 || totalRead > 0) ? 'ok' : 'error', issueKey: 'sync', pct: syncPct },
-                                          { label: 'Local Storage', icon: '💾', path: `persistent-uploads/`, status: 'ok' as const, issueKey: 'storage', pct: storagePct },
-                                          { label: 'TTS', icon: '🔊', path: ttsNeeded > 0 ? `${ttsReady}/${ttsNeeded} files ready` : `TTS → Cat Lights`, status: courseHealth ? (ttsNeeded === 0 ? 'ok' : ttsReady === ttsNeeded ? 'ok' : ttsReady > 0 ? 'warning' : 'error') : 'error', issueKey: 'tts', pct: ttsPct !== null ? ttsPct : 0 },
-                                          { label: 'Library Shelf', icon: '📚', path: `BookReader`, status: (totalMod > 0 || totalRead > 0) ? 'ok' : 'error', issueKey: 'library', pct: libPct },
+                                          { label: 'OneDrive', Icon: Cloud, value: courseHealth?.oneDriveFolderConfigured ? 'Linked' : 'Not linked', status: courseHealth?.oneDriveFolderConfigured ? 'ok' : 'error', issueKey: 'onedrive', pct: odPct },
+                                          { label: 'Sync', Icon: RefreshCw, value: `${totalMod}M · ${totalRead}R`, status: (totalMod > 0 || totalRead > 0) ? 'ok' : 'error', issueKey: 'sync', pct: syncPct },
+                                          { label: 'Storage', Icon: Folder, value: 'persistent', status: 'ok' as const, issueKey: 'storage', pct: storagePct },
+                                          { label: 'TTS', Icon: Volume2, value: ttsNeeded > 0 ? `${ttsReady}/${ttsNeeded}` : '—', status: courseHealth ? (ttsNeeded === 0 ? 'ok' : ttsReady === ttsNeeded ? 'ok' : ttsReady > 0 ? 'warning' : 'error') : 'error', issueKey: 'tts', pct: ttsPct !== null ? ttsPct : 0 },
+                                          { label: 'Library', Icon: BookOpen, value: 'BookReader', status: (totalMod > 0 || totalRead > 0) ? 'ok' : 'error', issueKey: 'library', pct: libPct },
                                         ];
-                                      })().map((step, sIdx, arr) => (
-                                        <div key={step.label} className="flex items-start" style={{ flex: sIdx < arr.length - 1 ? '1 1 0' : '0 0 auto', minWidth: 0 }}>
-                                          <div className="flex flex-col items-center" style={{ width: '130px', flexShrink: 0 }}>
+                                      })().map((step, sIdx, arr) => {
+                                        const Icon = step.Icon;
+                                        const dotColor = step.status === 'ok' ? '#16a34a' : step.status === 'warning' ? '#ca8a04' : '#dc2626';
+                                        const ringColor = step.status === 'ok' ? '#bbf7d0' : step.status === 'warning' ? '#fde68a' : '#fecaca';
+                                        const tintColor = step.status === 'ok' ? '#f0fdf4' : step.status === 'warning' ? '#fefce8' : '#fef2f2';
+                                        const isProblem = step.status === 'error' || step.status === 'warning';
+                                        return (
+                                          <React.Fragment key={step.label}>
                                             <div
-                                              className={`w-10 h-10 rounded-full flex items-center justify-center text-[16px] border ${(step.status === 'error' || step.status === 'warning') ? 'cursor-pointer hover:scale-110 transition-transform' : ''}`}
-                                              style={{
-                                                background: step.status === 'ok' ? 'rgba(34,197,94,0.15)' : step.status === 'warning' ? 'rgba(234,179,8,0.15)' : step.status === 'error' ? 'rgba(239,68,68,0.15)' : 'rgba(255,255,255,0.05)',
-                                                borderColor: step.status === 'ok' ? 'rgba(34,197,94,0.4)' : step.status === 'warning' ? 'rgba(234,179,8,0.4)' : step.status === 'error' ? 'rgba(239,68,68,0.4)' : 'rgba(255,255,255,0.15)',
-                                              }}
-                                              onClick={(e) => { if (step.status === 'error' || step.status === 'warning') { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: step.issueKey, step: 0, phase: 'primary' }); } }}
-                                            >{step.icon}</div>
-                                            <span className="text-[11px] font-semibold text-white mt-1.5 text-center leading-tight">{step.label}</span>
-                                            {step.pct !== null && <span className="text-[10px] font-bold text-center mt-0.5" style={{ color: step.pct === 100 ? '#4ade80' : step.pct > 0 ? '#fde68a' : '#fca5a5' }}>{step.pct}%</span>}
-                                            <span className="text-[9px] text-white text-center leading-tight mt-0.5" style={{ maxWidth: '120px', wordBreak: 'break-all' }}>{step.path}</span>
-                                            {(step.status === 'error' || step.status === 'warning') && <span className="text-[9px] mt-1 px-2 py-0.5 rounded cursor-pointer hover:brightness-125 transition-all" style={{ background: step.status === 'error' ? 'rgba(239,68,68,0.25)' : 'rgba(234,179,8,0.25)', color: step.status === 'error' ? '#fca5a5' : '#fde68a', border: `1px solid ${step.status === 'error' ? 'rgba(239,68,68,0.4)' : 'rgba(234,179,8,0.4)'}` }} onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: step.issueKey, step: 0, phase: 'primary' }); }}>Fix</span>}
-                                          </div>
-                                          {sIdx < arr.length - 1 && (
-                                            <div className="flex items-center" style={{ flex: '1 1 0', minWidth: '24px', height: '2px', marginTop: '18px', padding: '0 6px' }}>
-                                              <div style={{ flex: 1, height: '2px', background: step.status === 'ok' ? '#22c55e' : step.status === 'warning' ? '#eab308' : step.status === 'error' ? '#ef4444' : 'rgba(255,255,255,0.2)' }} />
-                                              <div style={{ width: 0, height: 0, borderTop: '4px solid transparent', borderBottom: '4px solid transparent', borderLeft: `6px solid ${step.status === 'ok' ? '#22c55e' : step.status === 'warning' ? '#eab308' : step.status === 'error' ? '#ef4444' : 'rgba(255,255,255,0.2)'}` }} />
+                                              className="flex flex-col items-center text-center"
+                                              style={{ flex: '1 1 0', minWidth: 0, padding: '4px 6px', cursor: isProblem ? 'pointer' : 'default', borderRadius: '6px', transition: 'background 0.15s ease' }}
+                                              onClick={(e) => { if (isProblem) { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: step.issueKey, step: 0, phase: 'primary' }); } }}
+                                              onMouseEnter={(e) => { if (isProblem) (e.currentTarget as HTMLDivElement).style.background = tintColor; }}
+                                              onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.background = 'transparent'; }}
+                                            >
+                                              <div className="relative flex items-center justify-center" style={{ width: '34px', height: '34px', borderRadius: '50%', background: tintColor, border: `1.5px solid ${ringColor}` }}>
+                                                <Icon size={15} style={{ color: dotColor, strokeWidth: 2 }} />
+                                                <span className="absolute" style={{ top: '-2px', right: '-2px', width: '8px', height: '8px', borderRadius: '50%', background: dotColor, border: '1.5px solid #ffffff', boxShadow: '0 1px 2px rgba(0,0,0,0.1)' }} />
+                                              </div>
+                                              <span className="mt-2 text-[11px] font-semibold leading-none" style={{ color: '#0f172a' }}>{step.label}</span>
+                                              <span className="mt-1 text-[10px] font-medium tabular-nums leading-none" style={{ color: '#475569' }}>{step.value}</span>
+                                              {step.pct !== null && (
+                                                <div className="mt-1.5 w-full" style={{ maxWidth: '70px' }}>
+                                                  <div style={{ height: '3px', borderRadius: '2px', background: '#f1f5f9', overflow: 'hidden' }}>
+                                                    <div style={{ width: `${step.pct}%`, height: '100%', background: dotColor, transition: 'width 0.3s ease' }} />
+                                                  </div>
+                                                </div>
+                                              )}
+                                              {isProblem && (
+                                                <span className="mt-1.5 text-[10px] font-semibold underline decoration-dotted underline-offset-2" style={{ color: dotColor }}>Fix →</span>
+                                              )}
                                             </div>
-                                          )}
-                                        </div>
-                                      ))}
+                                            {sIdx < arr.length - 1 && (
+                                              <div className="flex items-center justify-center" style={{ width: '14px', flexShrink: 0 }}>
+                                                <div style={{ width: '100%', height: '1px', background: '#cbd5e1' }} />
+                                              </div>
+                                            )}
+                                          </React.Fragment>
+                                        );
+                                      })}
                                     </div>
                                   </div>
 
