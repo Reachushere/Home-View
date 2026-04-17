@@ -16372,7 +16372,7 @@ export default function Dashboard() {
           <span className="text-white font-bold text-[11.5px] leading-tight">{(() => { const h = new Date().getHours(); return h < 12 ? 'Good morning,' : h < 17 ? 'Good afternoon,' : 'Good evening,'; })()} {profileData.firstName}</span>
           <span className="text-white text-[10px] leading-tight" style={{ fontWeight: 300 }}>{schoolData.schoolName || 'Toronto Metropolitan University'}</span>
         </div>
-        <img src={profilePhotoUrl || profilePhoto} alt="Profile" style={{ width: '39px', height: '39px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, boxShadow: '0 2px 8px rgba(0,0,0,0.2)', cursor: 'pointer' }} onClick={() => startTransition(() => setIsProfileDialogOpen(true))} data-testid="button-profile-photo" />
+        <img src={profilePhotoUrl || profilePhoto} alt="Profile" style={{ width: '43px', height: '43px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, alignSelf: 'flex-start', boxShadow: '0 2px 8px rgba(0,0,0,0.2)', cursor: 'pointer' }} onClick={() => startTransition(() => setIsProfileDialogOpen(true))} data-testid="button-profile-photo" />
       </div>
 
 
@@ -16429,7 +16429,7 @@ export default function Dashboard() {
           .sort((a, b) => new Date(b.dueDate!).getTime() - new Date(a.dueDate!).getTime()) : [];
         const next = upcoming[0] || overdue[0];
         const pomodoroInline = (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0, marginRight: '10px', marginTop: '-3px', pointerEvents: 'auto' }} data-testid="pomodoro-inline">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0, marginLeft: 'auto', marginRight: '4px', marginTop: '-3px', pointerEvents: 'auto' }} data-testid="pomodoro-inline">
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
               <span style={{ fontSize: '12px', color: '#ffffff', fontWeight: 600, fontVariantNumeric: 'tabular-nums', lineHeight: 1, fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }} data-testid="text-pomodoro-time">{formatPomodoroTime(pomodoroTime)}</span>
               <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -16493,12 +16493,12 @@ export default function Dashboard() {
                       <span className="text-white" style={{ fontSize: '9px', fontWeight: '400', textTransform: 'uppercase', lineHeight: '1', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>{new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}</span>
                     </div>
                   </div>
-                  {pomodoroInline}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginLeft: '2px', flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap' }} data-testid="countdown-empty-state">
                       <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>All tasks completed</span>
                     </div>
                   </div>
+                  {pomodoroInline}
                 </div>
               </div>
             </div>
