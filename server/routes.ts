@@ -4111,7 +4111,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 
         const moduleFolderKey = `course${i}ModuleFolder`;
         const readingFolderKey = `course${i}ReadingFolder`;
-        const hasOneDriveConfig = !!(matchedSem && ((matchedSem as any)[moduleFolderKey] || (matchedSem as any)[readingFolderKey]));
+        const explicitFolder = !!(matchedSem && ((matchedSem as any)[moduleFolderKey] || (matchedSem as any)[readingFolderKey]));
+        const odCache = (globalThis as any).__odLastVerify;
+        const odConnected = odCache?.result?.connected === true && odCache?.result?.tokenWorks === true;
+        const hasOneDriveConfig = explicitFolder || (odConnected && !!code);
         const folderName = matchedSem ? ((matchedSem as any)[`course${i}Name`] || '') : '';
 
         courses.push({

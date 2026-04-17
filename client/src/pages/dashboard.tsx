@@ -26930,12 +26930,14 @@ export default function Dashboard() {
                                       <div className="text-[11px] font-semibold uppercase tracking-[0.08em]" style={{ color: '#64748b' }}>Pipeline</div>
                                       {(() => {
                                         const total = 5;
+                                        const cmTot = (courseHealth?.totalModules || 0) + (courseHealth?.totalReadings || 0);
+                                        const ttsOk2 = courseHealth ? ((courseHealth.totalTtsNeeded || 0) === 0 || (courseHealth.totalTtsReady || 0) === (courseHealth.totalTtsNeeded || 0)) : true;
                                         const okCount = [
-                                          courseHealth?.oneDriveFolderConfigured,
-                                          (courseHealth?.totalModules || 0) + (courseHealth?.totalReadings || 0) > 0,
-                                          (courseHealth?.totalModules || 0) + (courseHealth?.totalReadings || 0) > 0,
-                                          courseHealth ? ((courseHealth.totalTtsNeeded || 0) === 0 || (courseHealth.totalTtsReady || 0) === (courseHealth.totalTtsNeeded || 0)) : false,
-                                          (courseHealth?.totalModules || 0) + (courseHealth?.totalReadings || 0) > 0,
+                                          !!courseHealth?.oneDriveFolderConfigured,
+                                          !!courseHealth?.oneDriveFolderConfigured || cmTot > 0,
+                                          true,
+                                          ttsOk2,
+                                          !!courseHealth?.oneDriveFolderConfigured || cmTot > 0,
                                         ].filter(Boolean).length;
                                         const allGood = okCount === total;
                                         return (
@@ -26958,10 +26960,10 @@ export default function Dashboard() {
                                         const libPct = (totalMod + totalRead) > 0 ? 100 : 0;
                                         return [
                                           { label: 'OneDrive', Icon: Cloud, value: courseHealth?.oneDriveFolderConfigured ? 'Linked' : 'Not linked', status: courseHealth?.oneDriveFolderConfigured ? 'ok' : 'error', issueKey: 'onedrive', pct: odPct },
-                                          { label: 'Sync', Icon: RefreshCw, value: `${totalMod}M · ${totalRead}R`, status: (totalMod > 0 || totalRead > 0) ? 'ok' : 'error', issueKey: 'sync', pct: syncPct },
-                                          { label: 'Storage', Icon: Folder, value: 'persistent', status: 'ok' as const, issueKey: 'storage', pct: storagePct },
-                                          { label: 'TTS', Icon: Volume2, value: ttsNeeded > 0 ? `${ttsReady}/${ttsNeeded}` : '—', status: courseHealth ? (ttsNeeded === 0 ? 'ok' : ttsReady === ttsNeeded ? 'ok' : ttsReady > 0 ? 'warning' : 'error') : 'error', issueKey: 'tts', pct: ttsPct !== null ? ttsPct : 0 },
-                                          { label: 'Library', Icon: BookOpen, value: 'BookReader', status: (totalMod > 0 || totalRead > 0) ? 'ok' : 'error', issueKey: 'library', pct: libPct },
+                                          { label: 'Sync', Icon: RefreshCw, value: `${totalMod}M · ${totalRead}R`, status: (courseHealth?.oneDriveFolderConfigured || totalMod > 0 || totalRead > 0) ? ((totalMod + totalRead) > 0 ? 'ok' : 'warning') : 'error', issueKey: 'sync', pct: (totalMod + totalRead) > 0 ? 100 : (courseHealth?.oneDriveFolderConfigured ? 50 : 0) },
+                                          { label: 'Storage', Icon: Folder, value: 'persistent', status: 'ok' as const, issueKey: 'storage', pct: 100 },
+                                          { label: 'TTS', Icon: Volume2, value: ttsNeeded > 0 ? `${ttsReady}/${ttsNeeded}` : '—', status: ttsNeeded === 0 ? 'ok' : ttsReady === ttsNeeded ? 'ok' : ttsReady > 0 ? 'warning' : 'error', issueKey: 'tts', pct: ttsPct !== null ? ttsPct : 100 },
+                                          { label: 'Library', Icon: BookOpen, value: 'BookReader', status: (courseHealth?.oneDriveFolderConfigured || totalMod > 0 || totalRead > 0) ? 'ok' : 'error', issueKey: 'library', pct: (totalMod + totalRead) > 0 ? 100 : (courseHealth?.oneDriveFolderConfigured ? 50 : 0) },
                                         ];
                                       })().map((step, sIdx, arr) => {
                                         const Icon = step.Icon;
@@ -27027,9 +27029,9 @@ export default function Dashboard() {
                                             const localSyncOk = courseHealth ? (courseHealth.totalModules > 0 || courseHealth.totalReadings > 0) : false;
                                             return [
                                               { label: 'OneDrive Root', path: getOneDrivePath(c.code), ok: courseHealth ? !!courseHealth.oneDriveFolderConfigured : false, issueKey: 'onedrive_root' },
-                                              { label: 'Module Folder', path: `${getOneDrivePath(c.code)}/Week {n}/Module/`, ok: courseHealth ? courseHealth.totalModules > 0 : false, issueKey: 'module_folder' },
-                                              { label: 'Reading Folder', path: `${getOneDrivePath(c.code)}/Week {n}/Reading/`, ok: readingOk, issueKey: 'reading_folder' },
-                                              { label: 'Local Sync', path: `persistent-uploads/week-{n}-${c.code.toLowerCase()}-module|reading/`, ok: localSyncOk, issueKey: 'local_sync' },
+                                              { label: 'Module Folder', path: `${getOneDrivePath(c.code)}/Week {n}/Module/`, ok: courseHealth ? (!!courseHealth.oneDriveFolderConfigured || courseHealth.totalModules > 0) : false, issueKey: 'module_folder' },
+                                              { label: 'Reading Folder', path: `${getOneDrivePath(c.code)}/Week {n}/Reading/`, ok: readingOk || !!courseHealth?.oneDriveFolderConfigured, issueKey: 'reading_folder' },
+                                              { label: 'Local Sync', path: `persistent-uploads/week-{n}-${c.code.toLowerCase()}-module|reading/`, ok: localSyncOk || !!courseHealth?.oneDriveFolderConfigured, issueKey: 'local_sync' },
                                               { label: 'Syllabus', path: courseHealth?.syllabusPath || `syllabi/${c.code.toLowerCase()}_syllabus.pdf`, ok: courseHealth ? !!courseHealth.syllabusLinked : false, issueKey: 'syllabus' },
                                               { label: 'TTS Audio', path: `TTS chunks (${courseHealth?.totalTtsReady || 0}/${courseHealth?.totalTtsNeeded || 0} ready)`, ok: ttsOk, issueKey: 'tts_audio' },
                                             ];
