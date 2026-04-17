@@ -2857,3 +2857,15 @@ input[type="date"].bg-white::-webkit-datetime-edit-year-field {
 /* Section headings — navy */
 .auto-resolution-body > div > .text-\[13px\].font-semibold.uppercase { color: #1e3a8a !important; }
 .auto-resolution-body > div > .text-\[11px\].font-semibold.uppercase { color: #64748b !important; }
+
+/* === Homework / Notes box swap animations — shrink into / grow out of bottom tab === */
+@keyframes hwShrinkToTab {
+  from { transform: none; opacity: 1; }
+  to   { transform: scale(0); opacity: 0; }
+}
+@keyframes hwGrowFromTab {
+  from { transform: scale(0); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
+.hw-anim-minimizing { animation: hwShrinkToTab 0.55s cubic-bezier(0.4,0,0.2,1) forwards; transform-origin: calc(100% - 200px) calc(100% + 150px); }
+.hw-anim-restoring  { animation: hwGrowFromTab  0.55s cubic-bezier(0.4,0,0.2,1) forwards; transform-origin: calc(100% - 200px) calc(100% + 150px); }
