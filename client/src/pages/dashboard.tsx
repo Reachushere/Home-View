@@ -18260,7 +18260,7 @@ export default function Dashboard() {
         <Share 
           className="text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
-          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 14}px`, right: `${calendarRight - calendarReduction + 19 + 46 + 7 + 10}px`, zIndex: 70 }}
+          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 14}px`, right: `${calendarRight - calendarReduction + 19 + 46 + 7 + 14}px`, zIndex: 70 }}
           onClick={() => { generateShareLink('4201'); setIsShareDialogOpen(true); }}
           data-testid="button-share-main"
         />
@@ -18269,7 +18269,7 @@ export default function Dashboard() {
         <Download
           className="text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
-          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 14}px`, right: `${calendarRight - calendarReduction + 19 + 23 + 7 + 10}px`, zIndex: 70 }}
+          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 14}px`, right: `${calendarRight - calendarReduction + 19 + 23 + 7 + 14}px`, zIndex: 70 }}
           onClick={() => {
             window.open('https://github.com/Reachushere/Home-View/archive/refs/heads/main.zip', '_blank');
           }}
@@ -18281,7 +18281,7 @@ export default function Dashboard() {
         <Printer
           className="text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
-          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 14}px`, right: `${calendarRight - calendarReduction + 19 + 7 + 10}px`, zIndex: 70 }}
+          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 14}px`, right: `${calendarRight - calendarReduction + 19 + 7 + 14}px`, zIndex: 70 }}
           onClick={() => {
             const printableIframe = document.querySelector('iframe[src*="pdf-reader"], iframe[src*="/files/"]') as HTMLIFrameElement | null;
             if (printableIframe && printableIframe.contentWindow) {
@@ -18298,7 +18298,7 @@ export default function Dashboard() {
         <Copy
           className="text-white/50 cursor-pointer hover:text-white/90"
           strokeWidth={2.5}
-          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 14}px`, right: `${calendarRight - calendarReduction + 19 + 69 + 7 + 10}px`, zIndex: 70 }}
+          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 14}px`, right: `${calendarRight - calendarReduction + 19 + 69 + 7 + 14}px`, zIndex: 70 }}
           onClick={async () => {
             try {
               const res = await fetch('/api/source-code/all');
@@ -33579,7 +33579,7 @@ export default function Dashboard() {
           <button
             type="button"
             className="cursor-pointer select-none hover:opacity-80 transition-opacity"
-            style={{ position: 'fixed', bottom: `${calendarBottom - 17}px`, right: `${calendarRight - calendarReduction + 108 + 10 + 6}px`, display: 'flex', alignItems: 'center', gap: '4px', zIndex: 70, background: 'none', border: 'none', padding: '0 4px', pointerEvents: 'auto', WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
+            style={{ position: 'fixed', bottom: `${calendarBottom - 15}px`, right: `${calendarRight - calendarReduction + 108 + 10 + 10}px`, display: 'flex', alignItems: 'center', gap: '4px', zIndex: 70, background: 'none', border: 'none', padding: '0 4px', pointerEvents: 'auto', WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
             onClick={() => {
               localStorage.setItem('calendarHeight', String(calendarHeight));
               localStorage.setItem('calendarReduction', String(calendarReduction));
