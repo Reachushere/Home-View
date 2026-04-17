@@ -228,6 +228,12 @@ uri = "file://attached_assets/bryn_tv_popcorn_v20.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "l4Oh2Hpa5D65C13MTP40B"
+uri = "file://attached_assets/generated_images/brynassist_avatar.png"
+type = "image"
+title = "brynassist avatar"
+
 [[outputs]]
 id = "YFf1AFzLkqTG8aZXkvxoF"
 uri = "file://.local/cat-washroom-automation-report.md"

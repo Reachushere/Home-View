@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Zap, Send, X, Loader2, CheckCircle, XCircle, AlertTriangle, Trash2, RotateCcw, Maximize2, Minimize2, Pencil, Circle, ArrowRight, ArrowDown, Undo2, Check, Scissors, Square, Copy, Download, FileText, BookOpen, Paperclip } from 'lucide-react';
 import { queryClient } from '@/lib/queryClient';
+import brynAvatar from '@assets/generated_images/brynassist_avatar.png';
 const waveBgSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 900' preserveAspectRatio='xMidYMid slice'>
   <defs>
     <linearGradient id='bgGrad' x1='0' y1='0' x2='0' y2='1'>
@@ -1349,8 +1350,13 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
             userSelect: 'none',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Zap size={18} color="#ffffff" />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <img
+              src={brynAvatar}
+              alt="BrynAssist"
+              style={{ height: '56px', width: 'auto', objectFit: 'contain', display: 'block', filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.45))', marginTop: '-14px', marginBottom: '-14px' }}
+              data-testid="img-brynassist-avatar"
+            />
             <span style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.3px' }}>BrynAssist</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
