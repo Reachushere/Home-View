@@ -5,34 +5,33 @@ import { queryClient } from '@/lib/queryClient';
 import brynAvatar from '@assets/generated_images/brynassist_avatar.png';
 import defaultProfilePhoto from '@assets/image_1772579486577.png';
 const buildWaveBg = (): string => {
-  const colors = ['%2300e5ff', '%230ea5e9', '%2338bdf8', '%2306b6d4', '%23a855f7', '%23d946ef', '%23ec4899', '%237c3aed', '%23f0abfc'];
+  const colors = ['%2300e5ff', '%2338bdf8', '%2306b6d4', '%23a855f7', '%23d946ef', '%23ec4899', '%237c3aed'];
   const lines: string[] = [];
-  const N = 18;
+  const N = 11;
   for (let i = 0; i < N; i++) {
-    const offset = (i - N / 2) * 28;
-    const baseY = 460 + offset;
-    const wob = (i % 5) * 6 - 12;
-    const c1y = baseY - 220 + wob;
-    const c2y = baseY + 240 - wob;
-    const c3y = baseY - 110 + wob * 0.6;
-    const startX = -120 + (i % 4) * 10;
-    const endX = 720 + (i % 4) * 10;
-    const d = `M${startX},${baseY - 50} C${startX + 220},${c1y} ${startX + 340},${c2y} ${(startX + endX) / 2},${baseY + wob} S${endX - 80},${c3y} ${endX},${baseY + 40}`;
+    const offset = (i - N / 2) * 48;
+    const baseY = 350 + offset;
+    const wob = (i % 5) * 8 - 16;
+    const c1y = baseY - 180 + wob;
+    const c2y = baseY + 200 - wob;
+    const c3y = baseY - 90 + wob * 0.6;
+    const startX = -120 + (i % 4) * 14;
+    const endX = 1020 + (i % 4) * 14;
+    const d = `M${startX},${baseY - 40} C${startX + 280},${c1y} ${startX + 480},${c2y} ${(startX + endX) / 2},${baseY + wob} S${endX - 120},${c3y} ${endX},${baseY + 30}`;
     const color = colors[i % colors.length];
-    const opacity = (0.7 + (i % 5) * 0.06).toFixed(2);
-    const sw = (1.1 + (i % 3) * 0.4).toFixed(2);
+    const opacity = (0.85 + (i % 4) * 0.04).toFixed(2);
+    const sw = (1.6 + (i % 3) * 0.5).toFixed(2);
     lines.push(`<path d='${d}' stroke='${color}' stroke-width='${sw}' stroke-opacity='${opacity}'/>`);
   }
-  const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 900' preserveAspectRatio='xMidYMid slice'>` +
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 700' preserveAspectRatio='none'>` +
     `<defs>` +
-      `<linearGradient id='bgGrad' x1='0' y1='0' x2='0.4' y2='1'>` +
-        `<stop offset='0' stop-color='%23000308'/>` +
-        `<stop offset='0.45' stop-color='%23030f24'/>` +
-        `<stop offset='0.85' stop-color='%23062048'/>` +
-        `<stop offset='1' stop-color='%23010614'/>` +
+      `<linearGradient id='bgGrad' x1='0' y1='0' x2='0.5' y2='1'>` +
+        `<stop offset='0' stop-color='%23000206'/>` +
+        `<stop offset='0.5' stop-color='%23020c1c'/>` +
+        `<stop offset='1' stop-color='%23000206'/>` +
       `</linearGradient>` +
     `</defs>` +
-    `<rect width='600' height='900' fill='url(%23bgGrad)'/>` +
+    `<rect width='900' height='700' fill='url(%23bgGrad)'/>` +
     `<g fill='none' stroke-linecap='round'>${lines.join('')}</g>` +
     `</svg>`;
   return `data:image/svg+xml;utf8,${svg}`;
@@ -1345,10 +1344,10 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
           alt="BrynAssist"
           style={{
             position: 'fixed',
-            top: panelRect.top - 165,
+            top: panelRect.top - 195,
             left: panelRect.left + panelRect.width / 2,
             transform: 'translateX(-50%)',
-            width: '380px',
+            width: '450px',
             height: 'auto',
             objectFit: 'contain',
             pointerEvents: 'none',
@@ -1565,11 +1564,11 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                   : 280;
                 const orbWidth = orbSize;
                 const orbHeight = orbSize;
-                const orbFontSize = orbLen < 30 ? '16px'
-                  : orbLen < 70 ? '14px'
-                  : orbLen < 140 ? '13px'
-                  : orbLen < 240 ? '12px'
-                  : '11px';
+                const orbFontSize = orbLen < 30 ? '13px'
+                  : orbLen < 70 ? '12px'
+                  : orbLen < 140 ? '11px'
+                  : orbLen < 240 ? '10px'
+                  : '9.5px';
                 const isShortOrb = isOrb;
                 const orbPalettes = [
                   'radial-gradient(circle at 32% 28%, #b794f6 0%, #7c3aed 45%, #4c1d95 100%)',
@@ -1624,7 +1623,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                   : undefined,
                 fontSize: isOrb ? orbFontSize : '13px',
                 fontFamily: isOrb ? "'Poppins', 'Nunito', 'Avenir Next', 'SF Pro Rounded', system-ui, sans-serif" : undefined,
-                fontWeight: isOrb ? 500 : undefined,
+                fontWeight: isOrb ? 600 : undefined,
                 letterSpacing: isOrb ? '0.01em' : undefined,
                 lineHeight: isOrb ? '1.35' : '1.5',
                 whiteSpace: 'pre-wrap',
