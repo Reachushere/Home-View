@@ -1,0 +1,39 @@
+../dist/public/assets/Queen_Night_1774008796950-B57EmMzY.png                      228.53 kB
+../dist/public/assets/Living_Room_Night_1774008796948-CTbz7lx7.png                292.86 kB
+../dist/public/assets/King_Night_1774008796946-qs8T8Rav.png                       321.84 kB
+../dist/public/assets/Kitchen_Night_1774008796947-DzGdhLNI.png                    333.69 kB
+../dist/public/assets/Bookshelf10_1776107329434-DXSkg-65.jpg                      422.34 kB
+../dist/public/assets/image_1775263840386-D9P4kHhc.png                            494.62 kB
+../dist/public/assets/TMU2_1772842397746-B9XhF-lv.png                             788.80 kB
+../dist/public/assets/brynassist_avatar-C4-SWJI9.png                              865.03 kB
+../dist/public/assets/Bryn_1774341392117-CfDPXLO2.png                           1,069.12 kB
+../dist/public/assets/mass-background2_1774005959332-mw-YgJzQ.png               1,426.94 kB
+../dist/public/assets/Floorplan11_1774005505273-BEWw-gX1.png                    1,553.36 kB
+../dist/public/assets/Echo_1774213902054-Dum5d4T4.png                           2,055.05 kB
+../dist/public/assets/Music_BG20_1774006032495-CxhBg4I3.png                     2,114.88 kB
+../dist/public/assets/style-DZDeWJdk.css                                          280.75 kB │ gzip:    45.06 kB
+../dist/public/assets/html2canvas.esm-BwnQUXM0.js                                 199.79 kB │ gzip:    46.41 kB
+../dist/public/assets/index-BT2FF82U.js                                         4,103.34 kB │ gzip: 1,045.86 kB
+✓ built in 1m 11s
+building server...
+
+  dist/index.cjs  14.9mb ⚠️
+
+⚡ Done in 1807ms
+[6/7] Verifying build...
+[7/7] Starting with PM2...
+[PM2] Starting /home/byhomeyyz/Home-View/dist/index.cjs in fork_mode (1 instance)
+[PM2] Done.
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+├────┼────────────────────┼──────────┼──────┼───────────┼──────────┼──────────┤
+│ 0  │ dashboard          │ fork     │ 0    │ online    │ 0%       │ 4.7mb    │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+[PM2] Saving current process list...
+[PM2] Successfully saved in /home/byhomeyyz/.pm2/dump.pm2
+
+=== Deploy complete! App running at http://172.24.1.204:5000 ===
+Commit: eb1d20bfe OTHER row line: dual lines (inside zIndex 200 + sibling fallback) + gitignore tokens
+-bash: Updating: command not found
+-bash: Fast-forward: command not found
+byhomeyyz@raspberrypi:~/Home-View $

@@ -16376,7 +16376,7 @@ export default function Dashboard() {
 
       {/* Profile photo + greeting — top-right where pomodoro timer used to sit */}
       <div className="fixed flex items-center" data-tpo data-tpo-opacity="1" style={{ right: `${calendarRight - calendarReduction + 7}px`, top: `${5 + d2lTickerHeight}px`, height: '39px', zIndex: 100, opacity: (isTopPillOpen || isTodoFlyoutOpen) ? 0 : 1, transition: (isTopPillOpen || isTodoFlyoutOpen) ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: (isTopPillOpen || isTodoFlyoutOpen) ? 'none' : 'auto', flexDirection: 'row' }}>
-        <div className="flex flex-col" style={{ marginRight: '8px', textAlign: 'right', alignItems: 'flex-end' }}>
+        <div className="flex flex-col" style={{ marginRight: '8px', textAlign: 'right', alignItems: 'flex-end', gap: '3px' }}>
           <span className="text-white font-bold leading-tight" style={{ fontSize: '12.5px' }}>{(() => { const h = new Date().getHours(); return h < 12 ? 'Good morning,' : h < 17 ? 'Good afternoon,' : 'Good evening,'; })()} {profileData.firstName}</span>
           <span className="text-white leading-tight" style={{ fontWeight: 300, fontSize: '11px' }}>{schoolData.schoolName || 'Toronto Metropolitan University'}</span>
         </div>
@@ -29730,7 +29730,7 @@ export default function Dashboard() {
               top: '-4px', 
               left: '-17px', 
               right: `${-(calendarReduction - 3) - 15 + 6 + 6 + 2}px`, 
-              bottom: '-16px', 
+              bottom: '-19px', 
               background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
               borderRadius: '12px',
               border: '1px solid rgba(255,255,255,0.5)',
@@ -34276,7 +34276,7 @@ export default function Dashboard() {
               top: '-10px', 
               left: '-17px', 
               right: `${-(calendarReduction - 3) - 15 + 6 + 6 + 2}px`, 
-              bottom: '-16px', 
+              bottom: '-19px', 
               background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',
               borderRadius: '12px',
               border: '1px solid rgba(255,255,255,0.5)',
