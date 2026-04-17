@@ -20810,7 +20810,7 @@ export default function Dashboard() {
           }}
           className="fixed cursor-pointer"
           style={{
-            bottom: '62px',
+            bottom: '68px',
             left: weatherAlerts.length > 0 ? 'calc(50% + 302px + 35px + 180px + 30px)' : 'calc(50% + 302px + 180px + 30px)',
             transition: 'left 0.3s ease-in-out',
             display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : 'block',
@@ -20822,9 +20822,9 @@ export default function Dashboard() {
           data-testid="bottom-tab-homework"
           title="Restore homework panel"
         >
-          <svg width="84" height="14" viewBox="0 0 84 14" style={{ display: 'block' }}>
+          <svg width="84" height="11" viewBox="0 0 84 11" style={{ display: 'block', overflow: 'hidden' }}>
             <path d="M0,20 L84,20 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
-            <text x="42" y="9" textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.95)" fontSize="12" fontWeight="600" fontFamily="system-ui, -apple-system, sans-serif">Homework</text>
+            <text x="42" y="7" textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.95)" fontSize="11" fontWeight="600" fontFamily="system-ui, -apple-system, sans-serif">Homework</text>
           </svg>
         </button>
       )}
@@ -20850,7 +20850,7 @@ export default function Dashboard() {
           }}
           className="fixed cursor-pointer"
           style={{
-            bottom: '62px',
+            bottom: '65px',
             left: weatherAlerts.length > 0
               ? (homeworkMinimized ? 'calc(50% + 302px + 45px + 180px - 15px + 30px)' : 'calc(50% + 302px + 45px + 125px - 15px + 30px)')
               : (homeworkMinimized ? 'calc(50% + 302px + 180px - 15px + 30px)' : 'calc(50% + 302px + 125px - 15px + 30px)'),
@@ -20864,9 +20864,9 @@ export default function Dashboard() {
           data-testid="bottom-tab-blankbox"
           title="Restore temporary notes"
         >
-          <svg width="84" height="17" viewBox="0 0 84 17" style={{ display: 'block' }}>
+          <svg width="84" height="14" viewBox="0 0 84 14" style={{ display: 'block', overflow: 'hidden' }}>
             <path d="M0,20 L84,20 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
-            <text x="42" y="9" textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.95)" fontSize="12" fontWeight="600" fontFamily="system-ui, -apple-system, sans-serif">Notes</text>
+            <text x="42" y="8" textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.95)" fontSize="11" fontWeight="600" fontFamily="system-ui, -apple-system, sans-serif">Notes</text>
           </svg>
         </button>
       )}
