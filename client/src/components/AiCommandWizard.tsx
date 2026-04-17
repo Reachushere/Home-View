@@ -1634,11 +1634,11 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
               }}>
                 {isOrb && msg.role === 'user' && (
                   <img src={profilePhotoUrl} alt="You" style={{
-                    width: orbLen < 30 ? '34px' : orbLen < 70 ? '42px' : '50px',
-                    height: orbLen < 30 ? '34px' : orbLen < 70 ? '42px' : '50px',
+                    width: orbLen < 30 ? '24px' : orbLen < 70 ? '30px' : '36px',
+                    height: orbLen < 30 ? '24px' : orbLen < 70 ? '30px' : '36px',
                     borderRadius: '50%',
                     objectFit: 'cover',
-                    border: '2px solid rgba(255,255,255,0.55)',
+                    border: '1px solid rgba(255,255,255,0.4)',
                     boxShadow: '0 2px 8px rgba(0,0,0,0.35)',
                     flexShrink: 0,
                   }} />
