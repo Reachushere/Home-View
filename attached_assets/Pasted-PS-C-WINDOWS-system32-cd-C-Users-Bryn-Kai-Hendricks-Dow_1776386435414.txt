@@ -1,0 +1,92 @@
+PS C:\WINDOWS\system32> cd "C:\Users\Bryn Kai-Hendricks\Downloads\hass"
+PS C:\Users\Bryn Kai-Hendricks\Downloads\hass> mkdir extracted
+
+
+    Directory: C:\Users\Bryn Kai-Hendricks\Downloads\hass
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----        2026-04-16   8:39 PM                extracted
+
+
+PS C:\Users\Bryn Kai-Hendricks\Downloads\hass> tar -xf "Automatic backup 2026.3.4.tar" -C extracted
+PS C:\Users\Bryn Kai-Hendricks\Downloads\hass> cd extracted
+PS C:\Users\Bryn Kai-Hendricks\Downloads\hass\extracted> dir
+
+
+    Directory: C:\Users\Bryn Kai-Hendricks\Downloads\hass\extracted
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----        2026-03-26   5:29 AM           7596 402f1039_eufy_security_ws.tar.gz
+-a----        2026-03-26   5:29 AM           1488 77f1785d_custom_deps.tar.gz
+-a----        2026-03-26   5:28 AM           2884 a0d7b954_appdaemon.tar.gz
+-a----        2026-03-26   5:28 AM           1947 a0d7b954_logviewer.tar.gz
+-a----        2026-03-26   5:28 AM           5647 a0d7b954_ssh.tar.gz
+-a----        2026-03-26   5:28 AM      209987000 a0d7b954_vscode.tar.gz
+-a----        2026-03-26   5:29 AM           2603 backup.json
+-a----        2026-03-26   5:28 AM           5579 cebe7a76_hassio_google_drive_backup.tar.gz
+-a----        2026-03-26   5:28 AM           2020 core_configurator.tar.gz
+-a----        2026-03-26   5:28 AM        1186454 core_mariadb.tar.gz
+-a----        2026-03-26   5:28 AM         249065 core_matter_server.tar.gz
+-a----        2026-03-26   5:28 AM          34604 core_mosquitto.tar.gz
+-a----        2026-03-26   5:28 AM           2717 core_samba.tar.gz
+-a----        2026-03-26   5:29 AM           1626 core_silabs_flasher.tar.gz
+-a----        2026-03-26   5:29 AM           3295 core_silabs_multiprotocol.tar.gz
+-a----        2026-03-26   5:28 AM           6946 core_ssh.tar.gz
+-a----        2026-03-26   5:28 AM        1081822 core_zwave_js.tar.gz
+-a----        2026-03-26   5:29 AM        1342988 d5369777_music_assistant_beta.tar.gz
+-a----        2026-03-26   5:29 AM           1522 e33666f6_rtsp_simple_server.tar.gz
+-a----        2026-03-26   5:28 AM      179183488 f4f71350_ewelink_smart_home_slug.tar.gz
+-a----        2026-03-26   5:26 AM     9835931889 homeassistant.tar.gz
+-a----        2026-03-26   5:29 AM     1018414862 media.tar.gz
+-a----        2026-03-26   5:29 AM            393 share.tar.gz
+-a----        2026-03-26   5:29 AM          16294 ssl.tar.gz
+
+
+PS C:\Users\Bryn Kai-Hendricks\Downloads\hass\extracted> cd extracted
+cd : Cannot find path 'C:\Users\Bryn Kai-Hendricks\Downloads\hass\extracted\extracted' because it does not exist.
+At line:1 char:1
++ cd extracted
++ ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Users\Bryn K...acted\extracted:String) [Set-Location], ItemNotFoundE
+   xception
+    + FullyQualifiedErrorId : PathNotFound,Microsoft.PowerShell.Commands.SetLocationCommand
+
+PS C:\Users\Bryn Kai-Hendricks\Downloads\hass\extracted> dir
+
+
+    Directory: C:\Users\Bryn Kai-Hendricks\Downloads\hass\extracted
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----        2026-03-26   5:29 AM           7596 402f1039_eufy_security_ws.tar.gz
+-a----        2026-03-26   5:29 AM           1488 77f1785d_custom_deps.tar.gz
+-a----        2026-03-26   5:28 AM           2884 a0d7b954_appdaemon.tar.gz
+-a----        2026-03-26   5:28 AM           1947 a0d7b954_logviewer.tar.gz
+-a----        2026-03-26   5:28 AM           5647 a0d7b954_ssh.tar.gz
+-a----        2026-03-26   5:28 AM      209987000 a0d7b954_vscode.tar.gz
+-a----        2026-03-26   5:29 AM           2603 backup.json
+-a----        2026-03-26   5:28 AM           5579 cebe7a76_hassio_google_drive_backup.tar.gz
+-a----        2026-03-26   5:28 AM           2020 core_configurator.tar.gz
+-a----        2026-03-26   5:28 AM        1186454 core_mariadb.tar.gz
+-a----        2026-03-26   5:28 AM         249065 core_matter_server.tar.gz
+-a----        2026-03-26   5:28 AM          34604 core_mosquitto.tar.gz
+-a----        2026-03-26   5:28 AM           2717 core_samba.tar.gz
+-a----        2026-03-26   5:29 AM           1626 core_silabs_flasher.tar.gz
+-a----        2026-03-26   5:29 AM           3295 core_silabs_multiprotocol.tar.gz
+-a----        2026-03-26   5:28 AM           6946 core_ssh.tar.gz
+-a----        2026-03-26   5:28 AM        1081822 core_zwave_js.tar.gz
+-a----        2026-03-26   5:29 AM        1342988 d5369777_music_assistant_beta.tar.gz
+-a----        2026-03-26   5:29 AM           1522 e33666f6_rtsp_simple_server.tar.gz
+-a----        2026-03-26   5:28 AM      179183488 f4f71350_ewelink_smart_home_slug.tar.gz
+-a----        2026-03-26   5:26 AM     9835931889 homeassistant.tar.gz
+-a----        2026-03-26   5:29 AM     1018414862 media.tar.gz
+-a----        2026-03-26   5:29 AM            393 share.tar.gz
+-a----        2026-03-26   5:29 AM          16294 ssl.tar.gz
+
+
+PS C:\Users\Bryn Kai-Hendricks\Downloads\hass\extracted> type backup.json
