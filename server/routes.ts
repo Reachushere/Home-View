@@ -6631,12 +6631,15 @@ OTHER: generate_image, run_node_script
 TABLES (all in PostgreSQL):
 tasks, subtasks, semesters, semester_settings, secondGoogleAccount, thirdGoogleAccount, files, filePages, deletedFolders, customFolders, projects, taskLinks, stickyNotes, accessTokens, appState, shiftSchedule, notepadNotes, notepadAttachments, semesterChecklist, courseWeekMappings, scholarships, keyContacts, degreeTrackingData, feedbackNotes, entityComments, announcements, scheduledAlexaAnnouncements, tabletCommands, haAutomations, pendingReviewItems, dismissedReviewTitles, sharedNotebookLinks, savedEmailSearches, weatherHistory, weatherAlertHistory, newSemesterChecklist, pdfAnnotations, sharedLibraryTokens, profileSettings, users
 
-KEY TABLE STRUCTURES:
+KEY TABLE STRUCTURES (verify with db_schema if unsure — these are the columns that actually exist):
 • tasks: id, title, type, course_name, due_date, priority, description, is_completed, start_date, event_start_time, event_end_time, semester_key, created_at, reminders, repeat settings, countdown bar settings, labels
 • subtasks: id, task_id, title, is_completed, position
 • semesters: id, key (w2026/ss2026/f2026), name, start_date, end_date
-• semester_settings: semester_key, semester_start_date, semester_end_date, reading_week_start, reading_week_end, exam_period_start, exam_period_end
-• files: id, course_code, type (module/reading), week_number, file_name, file_path, semester_key
+• semester_settings: id, semester_name, semester_type (winter/spring_summer/fall), semester_start_date, semester_end_date, is_active, reading_week_start, reading_week_end, exam_period_start, exam_period_end, secondary_calendar_id, PLUS for N in 1..3: course{N}_code, course{N}_name, course{N}_professor, course{N}_professor_email, course{N}_class_day, course{N}_class_day2, course{N}_class_time, course{N}_class_end_time, course{N}_class_time2, course{N}_class_end_time2, course{N}_start_date, course{N}_end_date, course{N}_delivery_mode, course{N}_zoom_link, course{N}_color (+ _color_end, _color_stops, _border_color, _course_row_color, _task_bg_color, _course_font_color, _module_box_color, _reading_box_color), course{N}_module_folder, course{N}_reading_folder, course{N}_display_name, course{N}_final_grade, course{N}_completed
+  ⚠ There is NO separate "courses" table. Courses live as numbered columns on semester_settings.
+• files: id, original_name, display_name, object_path (UNIQUE), content_type, size, folder (text path), listened (bool), last_chunk_index, total_chunks, checked_chunks, tts_audio_url, tts_generated_at, extracted_text, prepared_audio_paths, prepared_at, created_at
+  ⚠ There is NO course_code, NO week_number, NO type, NO semester_key, NO file_name, NO file_path on files. To find files for a course/week, filter by `folder ILIKE '%CFNF400%week 1%'` etc. The course-week mapping is encoded in the folder path string.
+• course_week_mappings: maps OneDrive folder names to (course, week) — query this if you need a structured course/week lookup.
 • degree_tracking_data: id, data (JSON blob with courses, grades, credits)
 • app_state: key, value (JSON string — stores layout prefs, theme, etc.)
 • users: id, username, email, display_name, password_hash, auth_level, must_change_password, enabled, created_at
@@ -6645,6 +6648,10 @@ KEY TABLE STRUCTURES:
 • notepad_notes: id, title, content, course_code, created_at, updated_at
 • projects: id, name, description, color, semester_key
 • ha_automations: id, name, entity_id, description, last_triggered
+
+⚠ BEFORE WRITING ANY SQL: if you're not 100% sure of the column names, call db_schema FIRST. Do not guess. The "column does not exist" error wastes a tool call and makes you look bad.
+
+⚠ "Connect module folders to library" / "link week N folder" → this means setting course{N}_module_folder on semester_settings to the OneDrive path of the course's module root (a single root path, NOT per-week). The library walks that root and indexes each "Week N" subfolder it finds. To verify a course is connected, SELECT course{N}_module_folder FROM semester_settings WHERE is_active. To see what files are indexed for a week, SELECT id, display_name, folder FROM files WHERE folder ILIKE '%<course_code>%week <N>%'.
 
 ═══════════════════════════════════════════════════
 §11 — UI STRUCTURE MAP
