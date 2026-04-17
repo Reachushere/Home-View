@@ -20780,8 +20780,8 @@ export default function Dashboard() {
           }}
           className="fixed cursor-pointer"
           style={{
-            bottom: '59px',
-            left: weatherAlerts.length > 0 ? 'calc(50% + 302px + 35px + 180px)' : 'calc(50% + 302px + 180px)',
+            bottom: '62px',
+            left: weatherAlerts.length > 0 ? 'calc(50% + 302px + 35px + 180px + 30px)' : 'calc(50% + 302px + 180px + 30px)',
             transition: 'left 0.3s ease-in-out',
             display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : 'block',
             zIndex: 10002,
@@ -20818,10 +20818,10 @@ export default function Dashboard() {
           }}
           className="fixed cursor-pointer"
           style={{
-            bottom: '59px',
+            bottom: '62px',
             left: weatherAlerts.length > 0
-              ? (homeworkMinimized ? 'calc(50% + 302px + 45px + 180px - 15px)' : 'calc(50% + 302px + 45px + 125px - 15px)')
-              : (homeworkMinimized ? 'calc(50% + 302px + 180px - 15px)' : 'calc(50% + 302px + 125px - 15px)'),
+              ? (homeworkMinimized ? 'calc(50% + 302px + 45px + 180px - 15px + 30px)' : 'calc(50% + 302px + 45px + 125px - 15px + 30px)')
+              : (homeworkMinimized ? 'calc(50% + 302px + 180px - 15px + 30px)' : 'calc(50% + 302px + 125px - 15px + 30px)'),
             transition: 'left 0.3s ease-in-out',
             display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : 'block',
             zIndex: 10002,
