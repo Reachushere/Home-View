@@ -25141,14 +25141,25 @@ export default function Dashboard() {
                         onClick={() => {
                           if (!healthFolderBrowse) return;
                           const { semId, courseIdx, field } = healthFolderBrowse;
-                          const fieldKey = field === 'module' ? `course${courseIdx}ModuleFolder` : `course${courseIdx}ReadingFolder`;
+                          const isRoot = (healthFolderBrowse as any).isRoot;
+                          const body = isRoot
+                            ? {
+                                [`course${courseIdx}ModuleFolder`]: `${healthBrowsePath}/Week 1/Module`,
+                                [`course${courseIdx}ReadingFolder`]: `${healthBrowsePath}/Week 1/Reading`,
+                              }
+                            : { [field === 'module' ? `course${courseIdx}ModuleFolder` : `course${courseIdx}ReadingFolder`]: healthBrowsePath };
                           fetch(`/api/semesters/${semId}`, {
                             method: 'PATCH',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ [fieldKey]: healthBrowsePath }),
+                            body: JSON.stringify(body),
                           }).then(r => r.json()).then(updated => {
                             setAllSemestersForHealth(prev => prev.map(s => s.id === semId ? updated : s));
                             setHealthFolderBrowse(null);
+                            // If launched from the wizard, refresh wizard's health view + show success
+                            if (semFlowWizard && expandedSemKey) {
+                              setWizActionDone(isRoot ? 'Course folder linked! (Module + Reading set for Week 1)' : `${field === 'module' ? 'Module' : 'Reading'} folder linked!`);
+                              fetch(`/api/semester-health-check/${expandedSemKey}`, { credentials: 'include' }).then(r => r.ok ? r.json() : null).then(h => { if (h) setExpandedSemHealth(h); }).catch(() => {});
+                            }
                           }).catch(() => setHealthFolderBrowse(null));
                         }}
                         style={{ fontSize: '10px', padding: '4px 16px', borderRadius: '4px', background: 'rgba(59,130,246,0.5)', border: '1px solid rgba(59,130,246,0.7)', cursor: 'pointer', color: 'white', fontWeight: 600 }}
@@ -26838,25 +26849,25 @@ export default function Dashboard() {
                             ['Manual Link', 'Open the course edit dialog and paste the syllabus file path.', 'open_settings'],
                           ] },
                           onedrive_root: { title: 'Fix OneDrive Root', testCheck: 'oneDriveFolderConfigured', steps: [
-                            ['Verify Root Path', `Your OneDrive root should be:\n${odPath}\n\nClick below to browse OneDrive and check.`, 'open_onedrive'],
-                            ['Create Structure', 'Click below to auto-create the full folder structure (Week 1–14 with Module/Reading subfolders).', 'create_folders'],
+                            ['Link OneDrive Course Folder', `Browse your OneDrive and pick the course folder for ${semFlowWizard.courseCode}.\nThis will auto-link Week 1 Module + Reading subfolders too.\n\nExpected location:\n${odPath}`, 'link_root_folder'],
+                            ['Create Missing Subfolders', 'If subfolders are missing, click below to auto-create the full Week 1–14 structure.', 'create_folders'],
                           ], secondary: [
-                            ['Check Full Path', `Navigate through OneDrive manually:\nSchool > 1. TMU > Courses > ${semYear} > ${semType} > ${semFlowWizard.courseCode}`, 'open_onedrive'],
+                            ['Sync This Course', 'After linking, run a course sync to pull file metadata.', 'sync_course'],
                             ['Reconnect OneDrive', 'Open Settings and try reconnecting your OneDrive account.', 'open_settings'],
                           ] },
                           module_folder: { title: 'Fix Module Folder', testCheck: 'totalModules', steps: [
-                            ['Upload Module Files', `Upload module files (PDF, DOCX, PPTX) for ${semFlowWizard.courseCode}. Click below to select files.`, 'upload_file'],
-                            ['Or Sync from OneDrive', `Trigger a sync to pull files from OneDrive at:\n${odPath}/Week {n}/Module/`, 'sync_course'],
+                            ['Link Module Folder', `Browse OneDrive and pick the existing Module folder for ${semFlowWizard.courseCode}.\n\nExpected location:\n${odPath}/Week 1/Module/`, 'link_module_folder'],
+                            ['Sync from OneDrive', 'After linking, click below to pull file metadata into the app.', 'sync_course'],
                           ], secondary: [
-                            ['Check Naming', 'The folder must be named exactly "Module" (capital M). Check for typos.', 'open_onedrive'],
-                            ['Force Sync', 'Force a complete re-scan of all OneDrive folders.', 'force_sync'],
+                            ['Upload Module Files', `If files don't yet exist in OneDrive, upload them directly here.`, 'upload_file'],
+                            ['Force Full Sync', 'Force a complete re-scan of all OneDrive folders.', 'force_sync'],
                           ] },
                           reading_folder: { title: 'Fix Reading Folder', testCheck: 'totalReadings', steps: [
-                            ['Upload Reading Files', `Upload reading files for ${semFlowWizard.courseCode}. Click below to select files.`, 'upload_file'],
-                            ['Or Sync from OneDrive', `Trigger a sync to pull files from:\n${odPath}/Week {n}/Reading/`, 'sync_course'],
+                            ['Link Reading Folder', `Browse OneDrive and pick the existing Reading folder for ${semFlowWizard.courseCode}.\n\nExpected location:\n${odPath}/Week 1/Reading/`, 'link_reading_folder'],
+                            ['Sync from OneDrive', 'After linking, click below to pull file metadata into the app.', 'sync_course'],
                           ], secondary: [
-                            ['Check Naming', 'The folder must be named exactly "Reading" (capital R). Check for typos.', 'open_onedrive'],
-                            ['Force Sync', 'Force a complete re-scan of all OneDrive folders.', 'force_sync'],
+                            ['Upload Reading Files', `If files don't yet exist in OneDrive, upload them directly here.`, 'upload_file'],
+                            ['Force Full Sync', 'Force a complete re-scan of all OneDrive folders.', 'force_sync'],
                           ] },
                           local_sync: { title: 'Fix Local Sync', testCheck: 'totalModules', steps: [
                             ['Sync from OneDrive', 'Click below to trigger a sync for this course from OneDrive.', 'sync_course'],
@@ -27019,6 +27030,9 @@ export default function Dashboard() {
                                       const action = stepData[2]!;
                                       const actionLabels: Record<string, { label: string; icon: string }> = {
                                         open_onedrive: { label: 'Open OneDrive', icon: '☁️' },
+                                        link_module_folder: { label: 'Browse & Link Module Folder', icon: '🔗' },
+                                        link_reading_folder: { label: 'Browse & Link Reading Folder', icon: '🔗' },
+                                        link_root_folder: { label: 'Browse & Link Course Folder', icon: '🔗' },
                                         create_folders: { label: 'Create Folders', icon: '📁' },
                                         open_settings: { label: 'Open Settings', icon: '⚙️' },
                                         force_sync: { label: 'Force Full Sync', icon: '🔄' },
@@ -27034,7 +27048,28 @@ export default function Dashboard() {
                                       };
                                       const aInfo = actionLabels[action] || { label: action, icon: '▶️' };
                                       const handleWizAction = async () => {
-                                        if (action === 'open_onedrive') { window.open('/onedrive', '_blank'); return; }
+                                        if (action === 'open_onedrive' || action === 'link_module_folder' || action === 'link_reading_folder' || action === 'link_root_folder') {
+                                          // Resolve current semester DB id + course slot index from wizard context
+                                          const semKeyToType: Record<string, { type: string; year: number }> = {};
+                                          semesterMetaLocal.forEach(m => { const type = m.key.startsWith('ss') ? 'spring_summer' : m.key.startsWith('f') ? 'fall' : 'winter'; semKeyToType[m.key] = { type, year: m.year }; });
+                                          const mapping = semKeyToType[expandedSemKey || ''];
+                                          const dbSem = mapping && allSemesterSettings ? allSemesterSettings.find((s: any) => { const ym = s.semesterName?.match(/\d{4}/); const sy = ym ? parseInt(ym[0]) : 0; return s.semesterType === mapping.type && sy === mapping.year; }) : null;
+                                          if (!dbSem) { setWizActionDone('Error: semester not found in database'); return; }
+                                          const cc = semFlowWizard!.courseCode;
+                                          const courseIdx = dbSem.course1Code === cc ? 1 : dbSem.course2Code === cc ? 2 : dbSem.course3Code === cc ? 3 : 0;
+                                          if (!courseIdx) { setWizActionDone(`Error: ${cc} not found in semester slots`); return; }
+                                          const fieldType: 'module' | 'reading' = action === 'link_reading_folder' ? 'reading' : 'module';
+                                          const existing = fieldType === 'reading' ? dbSem[`course${courseIdx}ReadingFolder`] : dbSem[`course${courseIdx}ModuleFolder`];
+                                          const startPath = existing || '/School/1. TMU/Courses';
+                                          setHealthFolderBrowse({ semId: dbSem.id, courseIdx, field: fieldType, ...(action === 'link_root_folder' ? { isRoot: true } : {}) } as any);
+                                          setHealthBrowsePath(startPath);
+                                          setHealthBrowseLoading(true);
+                                          fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(startPath)}`).then(r => r.json()).then(items => {
+                                            setHealthBrowseItems(Array.isArray(items) ? items : []);
+                                            setHealthBrowseLoading(false);
+                                          }).catch(() => setHealthBrowseLoading(false));
+                                          return;
+                                        }
                                         if (action === 'open_settings') { setSemFlowWizard(null); return; }
                                         if (action === 'open_library') { window.open('/', '_blank'); return; }
                                         if (action === 'open_tmu_calendar') { window.open('https://www.torontomu.ca/calendar/dates/', '_blank'); return; }
