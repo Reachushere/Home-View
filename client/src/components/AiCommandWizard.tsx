@@ -1539,11 +1539,19 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 const hasExtras = !!msg.image || !!msg.toolResults?.length;
                 const isOrb = msg.role !== 'system' && orbContent.length > 0 && !hasExtras;
                 const orbLen = orbContent.length;
-                const orbSize = orbLen < 40 ? 150 : orbLen < 90 ? 180 : orbLen < 180 ? 220 : 260;
-                const orbWide = orbLen >= 180;
-                const orbWidth = orbWide ? 320 : orbSize;
-                const orbHeight = orbWide ? 220 : orbSize;
-                const orbFontSize = orbLen < 40 ? '15px' : orbLen < 120 ? '13px' : '12px';
+                const orbSize = orbLen < 30 ? 150
+                  : orbLen < 70 ? 190
+                  : orbLen < 140 ? 240
+                  : orbLen < 240 ? 290
+                  : orbLen < 380 ? 340
+                  : 390;
+                const orbWidth = orbSize;
+                const orbHeight = orbSize;
+                const orbFontSize = orbLen < 30 ? '16px'
+                  : orbLen < 70 ? '14px'
+                  : orbLen < 140 ? '13px'
+                  : orbLen < 240 ? '12px'
+                  : '11px';
                 const isShortOrb = isOrb;
                 const orbPalettes = [
                   'radial-gradient(circle at 32% 28%, #b794f6 0%, #7c3aed 45%, #4c1d95 100%)',
@@ -1561,7 +1569,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 width: isOrb ? `${orbWidth}px` : undefined,
                 height: isOrb ? `${orbHeight}px` : undefined,
                 padding: msg.role === 'system' ? '6px 14px' : (isOrb ? '22px 26px' : '14px 18px'),
-                borderRadius: msg.role === 'system' ? '14px' : (isOrb ? (orbWide ? '46% / 50%' : '50%') : '24px'),
+                borderRadius: msg.role === 'system' ? '14px' : (isOrb ? '50%' : '24px'),
                 display: isOrb ? 'flex' : undefined,
                 alignItems: isOrb ? 'center' : undefined,
                 justifyContent: isOrb ? 'center' : undefined,
