@@ -1165,6 +1165,20 @@ export const AI_COMMAND_TOOLS = [
   {
     type: "function" as const,
     function: {
+      name: "trigger_library_sync",
+      description: "Walk OneDrive for the given semester, find Week N/Module + Week N/Reading folders inside each course, download any new PDFs, and INSERT them into the files table as `week-{N}-{coursecode}-{module|reading}` rows. THIS IS THE ONLY CORRECT WAY TO SCAN ONEDRIVE FOR NEW COURSE FILES — never use shell+jq+curl against the Graph API. Runs the same code path as POST /api/library/sync-semester. Async on the server: returns immediately with `{status: 'syncing'}`; check progress by polling files table with run_sql a few seconds later.",
+      parameters: {
+        type: "object",
+        properties: {
+          semester_key: { type: "string", description: "Semester key like 'w2026' (winter 2026), 'f2025' (fall 2025), 'ss2026' (spring/summer 2026). Build it from semesterType + year: winter→w, fall→f, spring_summer→ss." },
+        },
+        required: ["semester_key"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
       name: "db_schema",
       description: "Show the current database schema — all tables, columns, and types. Use this before writing SQL queries or modifying shared/schema.ts.",
       parameters: {
@@ -3601,6 +3615,37 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           const rows = (result as any).rows || result;
           const rowArray = Array.isArray(rows) ? rows : [];
           return { success: true, result: { rowCount: rowArray.length, rows: rowArray.slice(0, 50), truncated: rowArray.length > 50 } };
+        } catch (e: any) {
+          return { success: false, result: { error: e.message?.substring(0, 500) } };
+        }
+      }
+
+      case "trigger_library_sync": {
+        const semesterKey = (args.semester_key || '').trim();
+        if (!semesterKey) return { success: false, result: { error: "semester_key required (e.g. 'w2026', 'f2025', 'ss2026')" } };
+        try {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 8000);
+          const response = await fetch(`http://localhost:5000/api/library/sync-semester`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ semesterKey }),
+            signal: controller.signal,
+          });
+          clearTimeout(timeout);
+          const body = await response.text();
+          let parsed: any = body;
+          try { parsed = JSON.parse(body); } catch {}
+          return {
+            success: response.ok,
+            result: {
+              status: response.status,
+              response: parsed,
+              hint: response.ok
+                ? `Sync started for ${semesterKey}. Server walks OneDrive in background. Wait ~10-30s then run: SELECT folder, COUNT(*) FROM files WHERE folder LIKE 'week-%' GROUP BY folder ORDER BY folder; — to see new rows. If still nothing, server logs prefix '[LibrarySync:Semester]' explain why (no courses, missing Week N folders, no Module/Reading subfolder, OneDrive disconnected).`
+                : `Sync request failed.`,
+            },
+          };
         } catch (e: any) {
           return { success: false, result: { error: e.message?.substring(0, 500) } };
         }

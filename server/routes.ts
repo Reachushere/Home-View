@@ -5842,6 +5842,29 @@ Be thorough but practical. Focus on real issues, not false positives. If the doc
     }
   });
 
+  app.get("/api/onedrive/list-raw", async (req, res) => {
+    try {
+      const folderPath = (req.query.path as string) || '';
+      if (!folderPath) return res.status(400).json({ error: "path query param required" });
+      const { listOneDriveItems, isOneDriveConnected } = await import("./onedrive");
+      if (!isOneDriveConnected()) return res.status(503).json({ error: "OneDrive not connected" });
+      const items = await listOneDriveItems(folderPath);
+      const mapped = items.map((item: any) => ({
+        name: item.name,
+        type: item.type,
+        path: item.path,
+        size: item.size,
+        lastModified: item.lastModifiedDateTime,
+      }));
+      const folders = mapped.filter((i: any) => i.type === 'folder').map((i: any) => i.name);
+      const files = mapped.filter((i: any) => i.type === 'file').map((i: any) => i.name);
+      res.json({ path: folderPath, total: mapped.length, folders, files, items: mapped });
+    } catch (err: any) {
+      console.error("[OneDrive list-raw] Error:", err.message);
+      res.status(500).json({ error: err.message?.substring(0, 300) || "Failed to list folder" });
+    }
+  });
+
   app.get("/api/onedrive/documents", async (req, res) => {
     try {
       const folderPath = (req.query.path as string) || '/School/1. TMU/Essays';
@@ -6900,6 +6923,8 @@ Sync triggers:
 - Continuous: monitor-sync POST every 30s (file monitor loop) + folder rename monitor every 30s + mass library sync every 30 min.
 - On demand: viewing a week triggers /api/onedrive/week-counts/:weekNum and /api/files/counts which may call POST /api/files/ensure to backfill DB rows.
 - /api/onedrive/validate-folder?path=... checks if a path exists + returns counts. Use this when Bryn pastes a path — validate before writing.
+- MANUAL FULL SCAN: use the trigger_library_sync tool with semester_key like w2026 / f2025 / ss2026. Walks every course/Week N/Module|Reading folder for that semester and inserts new file rows. THIS IS THE ONLY CORRECT WAY to force a re-scan when weeks look unindexed. DO NOT shell out to curl+jq against graph.microsoft.com (produces "jq: error: null" and accomplishes nothing). DO NOT write a Node script with require(axios) — server is ESM and require is undefined. DO NOT call ha_service_call for OneDrive — Home Assistant has nothing to do with files. The tool returns immediately; wait ~15s then run_sql: SELECT folder, COUNT(*) FROM files WHERE folder LIKE 'week-%' GROUP BY folder ORDER BY folder; — to confirm new rows.
+- LIST UNFILTERED ONEDRIVE SUBFOLDERS (when user asks "what's actually in OneDrive folder X"): use the http_check tool with method=GET and path=/api/onedrive/folder-children?path=<urlencoded_path> — returns every child item, folders AND files, no week-N filter. This is how you answer "list every subfolder under /School/.../CFNF400 - Human Sexuality". Do NOT try to read the OneDrive path from the local filesystem — OneDrive is not mounted on the Pi.
 
 UI to set folders (tell Bryn this when manual is needed): double-click course card → Edit pencil top-right → scroll to "OneDrive File Folders" section → Browse → pick the folder that DIRECTLY contains "Week 1, Week 2, ..." subfolders.
 
