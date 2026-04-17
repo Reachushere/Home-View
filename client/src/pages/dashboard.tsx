@@ -1615,7 +1615,7 @@ export default function Dashboard() {
     }
   };
   const [blankBoxMinimizedToTab, setBlankBoxMinimizedToTab] = useState(() => localStorage.getItem('blankBoxMinimizedToTab') === '1');
-  const hwWipeClipped = homeworkMinimized && !blankBoxOpen;
+  const hwWipeClipped = homeworkMinimized;
   const blankWipeClipped = !blankBoxOpen;
   const [isResizingHomework, setIsResizingHomework] = useState(false);
   const resizingHomeworkRef = useRef<{ startX: number; startReduction: number } | null>(null);
