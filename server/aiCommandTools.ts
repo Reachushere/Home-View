@@ -1854,6 +1854,25 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           }
           Object.assign(target, args.patch || {});
 
+          // SAFETY SNAPSHOT before write
+          try {
+            const fsMod = await import('fs');
+            const pathMod = await import('path');
+            const snapDir = pathMod.resolve(process.cwd(), 'ha-snapshots');
+            if (!fsMod.existsSync(snapDir)) fsMod.mkdirSync(snapDir, { recursive: true });
+            const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+            const snapPath = pathMod.join(snapDir, `lovelace-${dashPathEP || 'main'}-${stamp}.json`);
+            // Re-fetch the pristine config (target was mutated above), so snapshot reflects pre-patch state
+            const preConfig = await haWebSocket('lovelace/config', wsMsgR);
+            fsMod.writeFileSync(snapPath, JSON.stringify(preConfig, null, 2));
+            const prefix = `lovelace-${dashPathEP || 'main'}-`;
+            const all = fsMod.readdirSync(snapDir).filter((f: string) => f.startsWith(prefix)).sort();
+            if (all.length > 50) for (const f of all.slice(0, all.length - 50)) { try { fsMod.unlinkSync(pathMod.join(snapDir, f)); } catch {} }
+            console.log(`[ha_element_patch] Snapshot saved: ${snapPath}`);
+          } catch (snapErr: any) {
+            console.error(`[ha_element_patch] Snapshot failed (proceeding anyway):`, snapErr?.message);
+          }
+
           const wsMsgW: Record<string, any> = { config };
           if (dashPathEP && dashPathEP !== 'lovelace') wsMsgW.url_path = dashPathEP;
           await haWebSocket('lovelace/config/save', wsMsgW);
