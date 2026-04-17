@@ -503,3 +503,9 @@ id = "FEQ8Ue7S4K4Z6IKqBgRQU"
 uri = "file://scripts/test-home-card.yaml"
 type = "unspecified"
 title = "Test-home picture-elements card (March 26 backup, 121 elements)"
+
+[[outputs]]
+id = "A0iyiJRvk_-7rZ50MU_yU"
+uri = "file://attached_assets/generated_images/brynassist_avatar.png"
+type = "image"
+title = "BrynAssist animoji"
