@@ -20796,23 +20796,14 @@ export default function Dashboard() {
       {desktopShowHomework && homeworkMinimized && (
         <button
           onClick={() => {
-            if (hwMinimizeAnim !== 'idle' || blankMinimizeAnim !== 'idle') return;
+            if (hwMinimizeAnim !== 'idle') return;
             if (!homeworkMinimized) return;
             applyMinimizeOrigin('hw', 'homework', false);
-            applyMinimizeOrigin('blank', 'notes', false);
-            // Phase 1: Notes box minimizes into Notes tab
-            setBlankMinimizeAnim('minimizing');
+            setHomeworkMinimized(false);
+            localStorage.removeItem('homeworkMinimized');
+            setHwMinimizeAnim('restoring');
             setTimeout(() => {
-              setBlankBoxOpen(false);
-              localStorage.removeItem('blankBoxOpen');
-              setBlankMinimizeAnim('idle');
-              // Phase 2: HW box opens from HW tab
-              setHomeworkMinimized(false);
-              localStorage.removeItem('homeworkMinimized');
-              setHwMinimizeAnim('restoring');
-              setTimeout(() => {
-                setHwMinimizeAnim('idle');
-              }, 580);
+              setHwMinimizeAnim('idle');
             }, 580);
           }}
           className="fixed cursor-pointer"
@@ -20839,25 +20830,16 @@ export default function Dashboard() {
       {desktopShowHomework && !homeworkMinimized && (
         <button
           onClick={() => {
-            if (hwMinimizeAnim !== 'idle' || blankMinimizeAnim !== 'idle') return;
-            if (blankBoxOpen && !homeworkMinimized) return;
-            applyMinimizeOrigin('hw', 'homework', false);
+            if (blankMinimizeAnim !== 'idle') return;
+            if (blankBoxOpen) return;
             applyMinimizeOrigin('blank', 'notes', false);
-            // Phase 1: HW box minimizes into HW tab
-            setHwMinimizeAnim('minimizing');
+            setBlankBoxMinimizedToTab(false);
+            localStorage.removeItem('blankBoxMinimizedToTab');
+            setBlankBoxOpen(true);
+            localStorage.setItem('blankBoxOpen', '1');
+            setBlankMinimizeAnim('restoring');
             setTimeout(() => {
-              setHomeworkMinimized(true);
-              localStorage.setItem('homeworkMinimized', '1');
-              setHwMinimizeAnim('idle');
-              // Phase 2: Notes box opens from Notes tab
-              setBlankBoxMinimizedToTab(false);
-              localStorage.removeItem('blankBoxMinimizedToTab');
-              setBlankBoxOpen(true);
-              localStorage.setItem('blankBoxOpen', '1');
-              setBlankMinimizeAnim('restoring');
-              setTimeout(() => {
-                setBlankMinimizeAnim('idle');
-              }, 580);
+              setBlankMinimizeAnim('idle');
             }, 580);
           }}
           className="fixed cursor-pointer"
@@ -32010,7 +31992,8 @@ export default function Dashboard() {
                 const baseOtherRowHeight = Math.max(57, gridSizes.otherRowHeight || 57);
                 const otherRowHeight = baseOtherRowHeight + missingRows * courseRowH;
                 return (
-                  <div ref={otherRowRef} className="w-full flex-shrink-0 relative z-[43] group/otherrow" style={{ height: `${otherRowHeight}px`, overflow: 'hidden', borderBottom: '1.5px dotted rgba(0,0,0,0.25)', boxSizing: 'border-box' }}>
+                  <div ref={otherRowRef} className="w-full flex-shrink-0 relative z-[43] group/otherrow" style={{ height: `${otherRowHeight}px`, overflow: 'hidden', boxSizing: 'border-box' }}>
+                    <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: '1.5px', borderTop: '1.5px dotted rgba(0,0,0,0.55)', zIndex: 60, pointerEvents: 'none' }} />
                     <div className="px-1 py-0.5 text-[8px] font-[785] tracking-wide flex items-center justify-center text-white/80 cursor-pointer hover:brightness-110" onClick={() => setOtherRowEditOpen(true)} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${gridSizes.timeColumnWidth}px`, zIndex: 50, background: (() => { const stops = otherRowColors.labelStops ? (() => { try { return JSON.parse(otherRowColors.labelStops); } catch { return []; } })() : []; const allStops = [{ position: 0, color: otherRowColors.labelStart }, ...stops, { position: 100, color: otherRowColors.labelEnd }]; return `linear-gradient(180deg, ${allStops.map((s: any) => `${s.color} ${s.position}%`).join(', ')})`; })(), borderBottom: '1px dotted rgba(0,0,0,0.25)', overflow: 'hidden' }} data-testid="other-row-label">
                       OTHER
                       <div style={{ position: 'absolute', bottom: '3px', right: '1px', zIndex: 2 }} onClick={(e) => { e.stopPropagation(); setOtherRowEditOpen(true); }} data-testid="pencil-edit-other-row"><Pencil className="w-[9px] h-[9px] text-white" strokeWidth={3} /></div>
