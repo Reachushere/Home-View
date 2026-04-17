@@ -657,7 +657,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
         const scale = 0.62 + g * 0.98;
         const opacity = 0.55 + g * 0.45;
         const blur = (1 - g) * 0.7;
-        const dx = (containerCenterX - orbCenterX) * g * 0.85;
+        const dx = (containerCenterX - orbCenterX) * g * 0.25;
         orb.style.transform = `translateX(${dx.toFixed(1)}px) scale(${scale})`;
         orb.style.opacity = String(opacity);
         orb.style.zIndex = String(Math.round(g * 100));
@@ -1489,11 +1489,13 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
         <div ref={scrollRef} style={{
           flex: 1,
           overflowY: 'auto',
+          overflowX: 'hidden',
           padding: '16px',
           display: 'flex',
           flexDirection: 'column',
           gap: '12px',
           minHeight: '200px',
+          minWidth: 0,
         }}>
           {messages.length === 0 && (
             <div style={{
