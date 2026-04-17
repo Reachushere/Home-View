@@ -1550,6 +1550,24 @@ export default function Dashboard() {
   const BLANK_FONT_COLORS = ['#1a1a2e', '#ffffff', '#ef4444', '#f59e0b', '#22c55e', '#3b82f6', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'];
   const [hwMinimizeAnim, setHwMinimizeAnim] = useState<'idle' | 'minimizing' | 'restoring'>('idle');
   const [blankMinimizeAnim, setBlankMinimizeAnim] = useState<'idle' | 'minimizing' | 'restoring'>('idle');
+  const blankOverlayRef = useRef<HTMLDivElement | null>(null);
+  const applyMinimizeOrigin = (target: 'hw' | 'blank', tab: 'homework' | 'notes', willHomeworkBeMinimizedAfter: boolean) => {
+    const el = target === 'hw' ? homeworkSectionRef.current : blankOverlayRef.current;
+    if (!el) return;
+    const w = (typeof weatherAlerts !== 'undefined' && weatherAlerts && weatherAlerts.length > 0);
+    const cx = window.innerWidth / 2;
+    let leftPx: number;
+    if (tab === 'homework') {
+      leftPx = w ? cx + 302 + 35 + 180 + 30 : cx + 302 + 180 + 30;
+    } else {
+      const baseExtra = willHomeworkBeMinimizedAfter ? 180 : 125;
+      leftPx = w ? cx + 302 + 45 + baseExtra - 15 + 30 : cx + 302 + baseExtra - 15 + 30;
+    }
+    const tabCenterX = leftPx + 42;
+    const tabCenterY = window.innerHeight - 70;
+    const r = el.getBoundingClientRect();
+    el.style.setProperty('--anim-origin', `${tabCenterX - r.left}px ${tabCenterY - r.top}px`);
+  };
   const [blankBoxMinimizedToTab, setBlankBoxMinimizedToTab] = useState(() => localStorage.getItem('blankBoxMinimizedToTab') === '1');
   const hwWipeClipped = homeworkMinimized && !blankBoxOpen;
   const blankWipeClipped = !blankBoxOpen;
@@ -20767,6 +20785,8 @@ export default function Dashboard() {
         <button
           onClick={() => {
             if (hwMinimizeAnim !== 'idle' || blankMinimizeAnim !== 'idle') return;
+            applyMinimizeOrigin('hw', 'homework', false);
+            applyMinimizeOrigin('blank', 'notes', false);
             setHomeworkMinimized(false);
             localStorage.removeItem('homeworkMinimized');
             setHwMinimizeAnim('restoring');
@@ -20803,6 +20823,8 @@ export default function Dashboard() {
         <button
           onClick={() => {
             if (hwMinimizeAnim !== 'idle' || blankMinimizeAnim !== 'idle') return;
+            applyMinimizeOrigin('hw', 'homework', false);
+            applyMinimizeOrigin('blank', 'notes', false);
             setBlankBoxMinimizedToTab(false);
             localStorage.removeItem('blankBoxMinimizedToTab');
             setBlankBoxOpen(true);
@@ -34645,7 +34667,7 @@ export default function Dashboard() {
           data-testid="section-coming-up"
         >
           <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', border: '1.5px solid rgba(255,255,255,0.5)', pointerEvents: 'none', zIndex: 9999 }} />
-          {(blankBoxOpen || blankMinimizeAnim === 'minimizing' || blankMinimizeAnim === 'restoring') && <div className={blankMinimizeAnim === 'minimizing' ? 'hw-anim-minimizing' : blankMinimizeAnim === 'restoring' ? 'hw-anim-restoring' : ''} style={{ position: 'absolute', inset: 0, borderRadius: '12px', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', zIndex: 9998, pointerEvents: blankMinimizeAnim !== 'idle' ? 'none' : 'auto', display: 'flex', flexDirection: 'column' }}>
+          {(blankBoxOpen || blankMinimizeAnim === 'minimizing' || blankMinimizeAnim === 'restoring') && <div ref={blankOverlayRef} className={blankMinimizeAnim === 'minimizing' ? 'hw-anim-minimizing' : blankMinimizeAnim === 'restoring' ? 'hw-anim-restoring' : ''} style={{ position: 'absolute', inset: 0, borderRadius: '12px', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', zIndex: 9998, pointerEvents: blankMinimizeAnim !== 'idle' ? 'none' : 'auto', display: 'flex', flexDirection: 'column' }}>
             <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', border: '1.5px solid rgba(255,255,255,0.5)', pointerEvents: 'none', zIndex: 9999 }} />
             <div style={{ padding: '0 8px', height: courseRowRects.length > 0 ? `${courseRowRects[0].top - (calendarBorderTop || (calendarTop + 15)) - 1}px` : '45px', backgroundColor: colorSettings.headerBar, position: 'relative', zIndex: 46, overflow: 'hidden', borderRadius: '12px 12px 0 0', boxShadow: '0 3px 6px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3)' }}>
               <div style={{ position: 'absolute', top: '21px', left: '25px', right: '8px', height: '0.5px', backgroundColor: 'rgba(255,255,255,0.3)', zIndex: 2 }} />
@@ -34749,6 +34771,8 @@ export default function Dashboard() {
             <button
               onClick={() => {
                 if (blankMinimizeAnim !== 'idle' || hwMinimizeAnim !== 'idle') return;
+                applyMinimizeOrigin('hw', 'homework', false);
+                applyMinimizeOrigin('blank', 'notes', false);
                 setHomeworkMinimized(false);
                 localStorage.removeItem('homeworkMinimized');
                 setBlankMinimizeAnim('minimizing');
@@ -34841,6 +34865,8 @@ export default function Dashboard() {
           <button
             onClick={() => {
               if (hwMinimizeAnim !== 'idle' || blankMinimizeAnim !== 'idle') return;
+              applyMinimizeOrigin('hw', 'homework', false);
+              applyMinimizeOrigin('blank', 'notes', false);
               setBlankBoxOpen(true);
               setBlankBoxMinimizedToTab(false);
               localStorage.removeItem('blankBoxMinimizedToTab');

@@ -2867,8 +2867,8 @@ input[type="date"].bg-white::-webkit-datetime-edit-year-field {
   from { transform: scale(0); opacity: 0; }
   to   { transform: none; opacity: 1; }
 }
-.hw-anim-minimizing { animation: hwShrinkToTab 0.55s cubic-bezier(0.4,0,0.2,1) forwards; transform-origin: calc(100% - 200px) calc(100% + 150px); }
-.hw-anim-restoring  { animation: hwGrowFromTab  0.55s cubic-bezier(0.4,0,0.2,1) forwards; transform-origin: calc(100% - 200px) calc(100% + 150px); }
+.hw-anim-minimizing { animation: hwShrinkToTab 0.55s cubic-bezier(0.4,0,0.2,1) forwards; transform-origin: var(--anim-origin, calc(100% - 200px) calc(100% + 150px)); }
+.hw-anim-restoring  { animation: hwGrowFromTab  0.55s cubic-bezier(0.4,0,0.2,1) forwards; transform-origin: var(--anim-origin, calc(100% - 200px) calc(100% + 150px)); }
 
 /* === BrynAssist working-pill wave-dot animation === */
 @keyframes ai-wave-dot {
