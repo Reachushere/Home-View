@@ -29710,7 +29710,7 @@ export default function Dashboard() {
         <div className="flex-1 overflow-visible scrollbar-hidden flex flex-col" style={{ marginTop: '0px', marginLeft: '-25px', marginRight: '-34px', paddingLeft: '25px', paddingRight: '0px' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
-        <div className="mb-[0px] mt-[0px] relative flex gap-4 transition-opacity duration-300" style={{ height: calendarHeight - 50, flexShrink: 0, order: 1, paddingTop: '48px' }}>
+        <div className="mb-[0px] mt-[0px] relative flex gap-4 transition-opacity duration-300" style={{ height: calendarHeight - 12, flexShrink: 0, order: 1, paddingTop: '0px' }}>
           
           {/* Module Media Controls Dialog */}
           <Dialog open={moduleMediaControlCourse !== null} onOpenChange={(open) => !open && setModuleMediaControlCourse(null)}>
@@ -29751,7 +29751,7 @@ export default function Dashboard() {
           />
           
           {/* Calendar wrapper - leaves space for honeycombs on right */}
-          <div ref={calendarWrapperRef} style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction - 2}px` : ' - 12px'})`, height: 'calc(100% - 18px)', marginTop: '18px', marginLeft: '12px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 - 2 - 2 - 2 : 12}px`, display: desktopShowCalendar ? 'flex' : 'none', flexDirection: 'column', transition: (homeworkAnimating || blankBoxAnimating) ? 'width 0.35s cubic-bezier(0.4,0,0.2,1), margin-right 0.35s cubic-bezier(0.4,0,0.2,1)' : 'none' }} className="relative overflow-visible">
+          <div ref={calendarWrapperRef} style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction - 2}px` : ' - 12px'})`, height: '100%', marginTop: '0px', marginLeft: '12px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 - 2 - 2 - 2 : 12}px`, display: desktopShowCalendar ? 'flex' : 'none', flexDirection: 'column', transition: (homeworkAnimating || blankBoxAnimating) ? 'width 0.35s cubic-bezier(0.4,0,0.2,1), margin-right 0.35s cubic-bezier(0.4,0,0.2,1)' : 'none' }} className="relative overflow-visible">
           
           {/* Glass effect backing box - resizes with calendar */}
           <div 
@@ -34297,8 +34297,8 @@ export default function Dashboard() {
           </div>
         </div>
         ) : (
-        <div className="mb-[0px] mt-[0px] relative flex gap-4 transition-opacity duration-300" style={{ height: calendarHeight - 50, flexShrink: 0, order: 1, paddingTop: '48px' }}>
-          <div ref={calendarWrapperRef} className="relative overflow-visible" style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction - 2}px` : ' - 12px'})`, height: 'calc(100% - 24px)', marginTop: '24px', marginLeft: '12px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 - 2 - 2 - 2 : 12}px`, display: 'flex', flexDirection: 'column' as const, transition: (homeworkAnimating || blankBoxAnimating) ? 'width 0.35s cubic-bezier(0.4,0,0.2,1), margin-right 0.35s cubic-bezier(0.4,0,0.2,1)' : 'none' }}>
+        <div className="mb-[0px] mt-[0px] relative flex gap-4 transition-opacity duration-300" style={{ height: calendarHeight - 12, flexShrink: 0, order: 1, paddingTop: '0px' }}>
+          <div ref={calendarWrapperRef} className="relative overflow-visible" style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction - 2}px` : ' - 12px'})`, height: '100%', marginTop: '0px', marginLeft: '12px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 - 2 - 2 - 2 : 12}px`, display: 'flex', flexDirection: 'column' as const, transition: (homeworkAnimating || blankBoxAnimating) ? 'width 0.35s cubic-bezier(0.4,0,0.2,1), margin-right 0.35s cubic-bezier(0.4,0,0.2,1)' : 'none' }}>
           {/* Glass effect backing box - same as main calendar */}
           <div 
             className="absolute pointer-events-none"
