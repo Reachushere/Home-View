@@ -1590,21 +1590,29 @@ export default function Dashboard() {
   const [blankMinimizeAnim, setBlankMinimizeAnim] = useState<'idle' | 'minimizing' | 'restoring'>('idle');
   const blankOverlayRef = useRef<HTMLDivElement | null>(null);
   const applyMinimizeOrigin = (target: 'hw' | 'blank', tab: 'homework' | 'notes', willHomeworkBeMinimizedAfter: boolean) => {
-    const el = target === 'hw' ? homeworkSectionRef.current : blankOverlayRef.current;
-    if (!el) return;
-    const w = (typeof weatherAlerts !== 'undefined' && weatherAlerts && weatherAlerts.length > 0);
-    const cx = window.innerWidth / 2;
-    let leftPx: number;
-    if (tab === 'homework') {
-      leftPx = w ? cx + 302 + 35 + 180 + 30 : cx + 302 + 180 + 30;
-    } else {
-      const baseExtra = willHomeworkBeMinimizedAfter ? 180 : 125;
-      leftPx = w ? cx + 302 + 45 + baseExtra - 15 + 30 : cx + 302 + baseExtra - 15 + 30;
+    const apply = () => {
+      const el = target === 'hw' ? homeworkSectionRef.current : blankOverlayRef.current;
+      if (!el) return false;
+      const w = (typeof weatherAlerts !== 'undefined' && weatherAlerts && weatherAlerts.length > 0);
+      const cx = window.innerWidth / 2;
+      let leftPx: number;
+      if (tab === 'homework') {
+        leftPx = w ? cx + 302 + 35 + 180 + 30 : cx + 302 + 180 + 30;
+      } else {
+        const baseExtra = willHomeworkBeMinimizedAfter ? 180 : 125;
+        leftPx = w ? cx + 302 + 45 + baseExtra - 15 + 30 : cx + 302 + baseExtra - 15 + 30;
+      }
+      const tabCenterX = leftPx + 42;
+      const tabCenterY = window.innerHeight - 70;
+      const r = el.getBoundingClientRect();
+      el.style.setProperty('--anim-origin', `${tabCenterX - r.left}px ${tabCenterY - r.top}px`);
+      return true;
+    };
+    // If the element isn't mounted yet (e.g. notes overlay before blankBoxOpen flips),
+    // defer to after React commits so ref is populated and origin applies before paint.
+    if (!apply()) {
+      requestAnimationFrame(() => { if (!apply()) requestAnimationFrame(apply); });
     }
-    const tabCenterX = leftPx + 42;
-    const tabCenterY = window.innerHeight - 70;
-    const r = el.getBoundingClientRect();
-    el.style.setProperty('--anim-origin', `${tabCenterX - r.left}px ${tabCenterY - r.top}px`);
   };
   const [blankBoxMinimizedToTab, setBlankBoxMinimizedToTab] = useState(() => localStorage.getItem('blankBoxMinimizedToTab') === '1');
   const hwWipeClipped = homeworkMinimized && !blankBoxOpen;
