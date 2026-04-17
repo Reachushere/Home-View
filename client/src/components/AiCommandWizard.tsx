@@ -633,7 +633,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       const containerRect = el.getBoundingClientRect();
       const focalY = containerRect.top + containerRect.height * 0.5;
       const orbs = el.querySelectorAll<HTMLElement>('[data-orb-bubble]');
-      const sigma = containerRect.height * 0.18;
+      const sigma = containerRect.height * 0.32;
       const containerCenterX = containerRect.left + containerRect.width / 2;
       orbs.forEach((orb) => {
         const r = orb.getBoundingClientRect();
@@ -641,9 +641,9 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
         const orbCenterX = r.left + r.width / 2;
         const dist = Math.abs(orbCenter - focalY);
         const g = Math.exp(-(dist * dist) / (2 * sigma * sigma));
-        const scale = 0.35 + g * 1.25;
-        const opacity = 0.22 + g * 0.78;
-        const blur = (1 - g) * 1.4;
+        const scale = 0.62 + g * 0.98;
+        const opacity = 0.55 + g * 0.45;
+        const blur = (1 - g) * 0.7;
         const dx = (containerCenterX - orbCenterX) * g * 0.85;
         orb.style.transform = `translateX(${dx.toFixed(1)}px) scale(${scale})`;
         orb.style.opacity = String(opacity);
