@@ -442,7 +442,7 @@ export default function Dashboard() {
       const n = saved ? parseInt(saved, 10) : NaN;
       if (Number.isFinite(n) && n >= 1 && n <= 15) return n;
     } catch {}
-    return 12;
+    return 1;
   });
   useEffect(() => {
     localStorage.setItem('unical_selectedWeek', String(selectedWeek));
@@ -7199,6 +7199,13 @@ export default function Dashboard() {
         if (computedWeek >= 1 && computedWeek <= LAST_WEEK) {
           setSelectedWeek(computedWeek);
           localStorage.setItem('unical_selectedWeek', String(computedWeek));
+        } else {
+          // Between semesters: today doesn't fall in any week of the active semester.
+          // Default to week 1 of the active semester rather than trusting a stale
+          // localStorage value (which previously persisted the broken default of 12,
+          // landing the calendar deep in the upcoming semester).
+          setSelectedWeek(1);
+          localStorage.setItem('unical_selectedWeek', '1');
         }
       }
       lastAutoWeekDateRef.current = today.getDate();
