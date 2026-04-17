@@ -1482,29 +1482,34 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
               minHeight: '320px',
             }}>
               <div style={{
-                fontSize: '26px',
-                fontWeight: 300,
-                lineHeight: '1.35',
+                fontSize: '30px',
+                fontWeight: 600,
+                lineHeight: '1.3',
                 letterSpacing: '-0.01em',
-                color: 'rgba(235,240,255,0.92)',
-                textShadow: '0 2px 12px rgba(0,0,0,0.4)',
+                color: '#ffffff',
+                textShadow: '0 2px 16px rgba(0,0,0,0.7), 0 0 30px rgba(0,0,0,0.5)',
+                fontFamily: "'Poppins', 'Nunito', 'Avenir Next', 'SF Pro Rounded', system-ui, sans-serif",
               }}>
                 I'm here to help you in<br />
                 your everyday life,<br />
                 <span style={{
-                  background: 'linear-gradient(90deg, #5eead4 0%, #60a5fa 50%, #a78bfa 100%)',
+                  background: 'linear-gradient(90deg, #5eead4 0%, #60a5fa 50%, #c4b5fd 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text',
-                  fontWeight: 500,
-                }}>just ask me</span>...
+                  fontWeight: 700,
+                  textShadow: 'none',
+                }}>just ask me</span><span style={{ color: '#ffffff' }}>...</span>
               </div>
               <div style={{
                 marginTop: '28px',
-                fontSize: '11px',
-                lineHeight: '1.9',
-                opacity: 0.45,
-                color: '#cbd5ff',
+                fontSize: '13px',
+                lineHeight: '1.85',
+                opacity: 1,
+                color: '#ffffff',
+                fontWeight: 500,
+                fontFamily: "'Poppins', 'Nunito', 'Avenir Next', 'SF Pro Rounded', system-ui, sans-serif",
+                textShadow: '0 1px 6px rgba(0,0,0,0.6)',
               }}>
                 "Add a quiz for CPPA122 next Friday"<br />
                 "What's due this week?"<br />
