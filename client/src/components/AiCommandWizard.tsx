@@ -1835,6 +1835,28 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 <AlertTriangle size={16} />
                 Confirmation Required
               </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '12px', color: 'rgba(230,235,250,0.95)', lineHeight: '1.5' }} data-testid="text-ai-confirm-details">
+                {pendingConfirm.map((pc, i) => {
+                  const a = pc.arguments || {};
+                  let summary: React.ReactNode = null;
+                  if (pc.name === 'edit_file') {
+                    summary = <>Edit file <code style={{ background: 'rgba(0,0,0,0.3)', padding: '1px 5px', borderRadius: '3px' }}>{a.filePath}</code>{a.searchString ? <> — replace <code style={{ background: 'rgba(0,0,0,0.3)', padding: '1px 5px', borderRadius: '3px' }}>{String(a.searchString).slice(0, 60)}{String(a.searchString).length > 60 ? '…' : ''}</code></> : null}</>;
+                  } else if (pc.name === 'write_file') {
+                    summary = <>Write file <code style={{ background: 'rgba(0,0,0,0.3)', padding: '1px 5px', borderRadius: '3px' }}>{a.filePath}</code> ({(a.content || '').length} chars)</>;
+                  } else if (pc.name === 'run_shell_command') {
+                    summary = <>Run shell command:<br/><code style={{ background: 'rgba(0,0,0,0.3)', padding: '3px 6px', borderRadius: '3px', display: 'inline-block', marginTop: '2px', wordBreak: 'break-all' }}>{a.command}</code></>;
+                  } else if (pc.name === 'run_sql') {
+                    summary = <>Run SQL:<br/><code style={{ background: 'rgba(0,0,0,0.3)', padding: '3px 6px', borderRadius: '3px', display: 'inline-block', marginTop: '2px', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{a.query}</code></>;
+                  } else if (pc.name === 'update_semester_settings') {
+                    const fields = Object.entries(a).filter(([k]) => k !== 'courseNumber').map(([k, v]) => `${k}=${JSON.stringify(v)}`).join(', ');
+                    summary = <>Update semester settings{a.courseNumber ? ` for course ${a.courseNumber}` : ''}: {fields}</>;
+                  } else {
+                    const argStr = JSON.stringify(a, null, 2);
+                    summary = <>Call <strong>{pc.name}</strong> with:<br/><code style={{ background: 'rgba(0,0,0,0.3)', padding: '3px 6px', borderRadius: '3px', display: 'inline-block', marginTop: '2px', whiteSpace: 'pre-wrap', wordBreak: 'break-word', maxHeight: '180px', overflowY: 'auto' }}>{argStr.length > 800 ? argStr.slice(0, 800) + '\n…[truncated]' : argStr}</code></>;
+                  }
+                  return <div key={i} data-testid={`text-ai-confirm-detail-${i}`}>{pendingConfirm.length > 1 ? `${i + 1}. ` : ''}{summary}</div>;
+                })}
+              </div>
               <div style={{ display: 'flex', gap: '8px' }}>
                 <button
                   onClick={() => handleConfirm(true)}
