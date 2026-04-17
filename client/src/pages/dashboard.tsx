@@ -29947,30 +29947,40 @@ export default function Dashboard() {
               })}
             </div>
           <div className="flex-1 min-h-0 relative" style={{ overflow: 'visible' }}>
-            <button
-              onClick={() => {
-                startTransition(() => {
-                  setOriginalColorSettings({...colorSettings});
-                  setOriginalBlinkSettings({...blinkSettings});
-                  setIsSettingsDialogOpen(true);
-                });
-              }}
-              className="absolute cursor-pointer hover:opacity-80 transition-opacity"
-              style={{ left: '-15px', top: '-14px', zIndex: 60, background: 'none', border: 'none', padding: 0 }}
-              data-testid="button-calendar-settings-cog"
-              title="Calendar Settings"
+            <div
+              className="absolute group"
+              style={{ left: '-15px', top: '-14px', zIndex: 60, width: '17px', height: '17px' }}
             >
-              <Settings className="h-[17px] w-[17px] text-white/70 hover:text-white" />
-            </button>
-            <button
-              onClick={() => setIsAutomationsRefOpen(true)}
-              className="absolute cursor-pointer hover:opacity-80 transition-opacity"
-              style={{ left: '-15px', top: '4px', zIndex: 60, background: 'none', border: 'none', padding: 0 }}
-              data-testid="button-automations-reference"
-              title="My Automations"
-            >
-              <Zap className="h-[15px] w-[15px] text-white/70 hover:text-white" />
-            </button>
+              <button
+                onClick={() => {
+                  startTransition(() => {
+                    setOriginalColorSettings({...colorSettings});
+                    setOriginalBlinkSettings({...blinkSettings});
+                    setIsSettingsDialogOpen(true);
+                  });
+                }}
+                className="cursor-pointer hover:opacity-80 transition-opacity block"
+                style={{ background: 'none', border: 'none', padding: 0 }}
+                data-testid="button-calendar-settings-cog"
+                title="Calendar Settings"
+              >
+                <Settings className="h-[17px] w-[17px] text-white/70 hover:text-white" />
+              </button>
+              <button
+                onClick={() => setIsAutomationsRefOpen(true)}
+                className="absolute cursor-pointer opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all duration-200"
+                style={{ left: '0px', top: '20px', background: 'none', border: 'none', padding: 0, transform: 'translateY(-4px)' }}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
+                data-testid="button-automations-reference"
+                title="My Automations"
+              >
+                <Zap className="h-[15px] w-[15px] text-white/70 hover:text-white" />
+              </button>
+              <div
+                className="absolute opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200"
+                style={{ left: '-4px', top: '17px', width: '25px', height: '24px' }}
+              />
+            </div>
             <div
               style={{ position: 'absolute', left: '9px', top: '-31px', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto' }}
               data-testid="calendar-top-resize-handle"
@@ -34352,30 +34362,35 @@ export default function Dashboard() {
           </div>
 
           <div className="relative" style={{ height: 'calc(100% - 6px)', marginTop: '6px' }}>
-            <button
-              onClick={() => {
-                startTransition(() => {
-                  setOriginalColorSettings({...colorSettings});
-                  setOriginalBlinkSettings({...blinkSettings});
-                  setIsSettingsDialogOpen(true);
-                });
-              }}
-              className="absolute cursor-pointer hover:opacity-80 transition-opacity"
-              style={{ left: '-15px', top: '-11px', zIndex: 60, background: 'none', border: 'none', padding: 0 }}
-              data-testid="button-calendar-settings-cog-month"
-              title="Calendar Settings"
+            <div
+              className="absolute group"
+              style={{ left: '-15px', top: '-11px', zIndex: 60, width: '17px', height: '17px' }}
             >
-              <Settings className="h-[17px] w-[17px] text-white/70 hover:text-white" />
-            </button>
-            <button
-              onClick={() => setIsAutomationsRefOpen(true)}
-              className="absolute cursor-pointer hover:opacity-80 transition-opacity"
-              style={{ left: '-15px', top: '7px', zIndex: 60, background: 'none', border: 'none', padding: 0 }}
-              data-testid="button-automations-reference-month"
-              title="My Automations"
-            >
-              <Zap className="h-[15px] w-[15px] text-white/70 hover:text-white" />
-            </button>
+              <button
+                onClick={() => {
+                  startTransition(() => {
+                    setOriginalColorSettings({...colorSettings});
+                    setOriginalBlinkSettings({...blinkSettings});
+                    setIsSettingsDialogOpen(true);
+                  });
+                }}
+                className="cursor-pointer hover:opacity-80 transition-opacity block"
+                style={{ background: 'none', border: 'none', padding: 0 }}
+                data-testid="button-calendar-settings-cog-month"
+                title="Calendar Settings"
+              >
+                <Settings className="h-[17px] w-[17px] text-white/70 hover:text-white" />
+              </button>
+              <button
+                onClick={() => setIsAutomationsRefOpen(true)}
+                className="absolute cursor-pointer opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all duration-200"
+                style={{ left: '0px', top: '20px', background: 'none', border: 'none', padding: 0 }}
+                data-testid="button-automations-reference-month"
+                title="My Automations"
+              >
+                <Zap className="h-[15px] w-[15px] text-white/70 hover:text-white" />
+              </button>
+            </div>
             <div
               style={{ position: 'absolute', left: '9px', top: '-31px', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto' }}
               data-testid="calendar-top-resize-handle-month"
