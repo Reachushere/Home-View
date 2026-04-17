@@ -3,7 +3,44 @@ import { createPortal } from 'react-dom';
 import { Zap, Send, X, Loader2, CheckCircle, XCircle, AlertTriangle, Trash2, RotateCcw, Maximize2, Minimize2, Pencil, Circle, ArrowRight, ArrowDown, Undo2, Check, Scissors, Square, Copy, Download, FileText, BookOpen, Paperclip } from 'lucide-react';
 import { queryClient } from '@/lib/queryClient';
 import brynAvatar from '@assets/generated_images/brynassist_avatar.png';
-import waveBgImage from '@assets/image_1776402537852.png';
+const waveBgSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 900' preserveAspectRatio='xMidYMid slice'>
+  <defs>
+    <linearGradient id='bgGrad' x1='0' y1='0' x2='0.6' y2='1'>
+      <stop offset='0' stop-color='%23000814'/>
+      <stop offset='0.25' stop-color='%23021a36'/>
+      <stop offset='0.55' stop-color='%23053b6e'/>
+      <stop offset='0.8' stop-color='%23066b8a'/>
+      <stop offset='1' stop-color='%2300253f'/>
+    </linearGradient>
+    <radialGradient id='glowA' cx='25%25' cy='40%25' r='60%25'>
+      <stop offset='0' stop-color='%2367e8f9' stop-opacity='0.45'/>
+      <stop offset='1' stop-color='%2367e8f9' stop-opacity='0'/>
+    </radialGradient>
+    <radialGradient id='glowB' cx='80%25' cy='75%25' r='55%25'>
+      <stop offset='0' stop-color='%230891b2' stop-opacity='0.4'/>
+      <stop offset='1' stop-color='%230891b2' stop-opacity='0'/>
+    </radialGradient>
+  </defs>
+  <rect width='600' height='900' fill='url(%23bgGrad)'/>
+  <rect width='600' height='900' fill='url(%23glowA)'/>
+  <rect width='600' height='900' fill='url(%23glowB)'/>
+  <g fill='none' stroke-linecap='round'>
+    <path d='M-40,140 C140,40 320,240 480,100 C580,40 660,180 720,140' stroke='%23a5f3fc' stroke-width='2.6' stroke-opacity='0.7'/>
+    <path d='M-60,220 C120,160 300,320 480,200 C580,140 680,280 740,220' stroke='%2367e8f9' stroke-width='2' stroke-opacity='0.65'/>
+    <path d='M-40,310 C160,230 360,400 540,280 C640,230 720,360 780,310' stroke='%2322d3ee' stroke-width='3.2' stroke-opacity='0.7'/>
+    <path d='M-60,400 C140,330 320,500 520,370 C640,310 720,460 780,420' stroke='%23ffffff' stroke-width='1.6' stroke-opacity='0.65'/>
+    <path d='M-40,490 C160,410 360,580 560,460 C680,410 760,560 820,510' stroke='%2306b6d4' stroke-width='4' stroke-opacity='0.6'/>
+    <path d='M-60,580 C140,500 340,660 540,540 C660,490 740,630 800,590' stroke='%23a5f3fc' stroke-width='2.2' stroke-opacity='0.6'/>
+    <path d='M-40,670 C160,580 360,750 560,640 C680,580 760,720 820,680' stroke='%23ffffff' stroke-width='1.4' stroke-opacity='0.55'/>
+    <path d='M-60,760 C140,680 340,830 540,720 C660,670 740,810 820,770' stroke='%230891b2' stroke-width='3.2' stroke-opacity='0.55'/>
+    <path d='M-40,830 C140,770 360,890 580,820 C680,790 760,860 820,840' stroke='%2367e8f9' stroke-width='2' stroke-opacity='0.55'/>
+    <path d='M40,80 C200,20 360,160 560,40' stroke='%23bae6fd' stroke-width='1.2' stroke-opacity='0.5'/>
+    <path d='M-20,360 C180,290 380,460 600,360' stroke='%23ffffff' stroke-width='1' stroke-opacity='0.45'/>
+    <path d='M-30,540 C180,470 400,640 600,540' stroke='%23ffffff' stroke-width='1' stroke-opacity='0.45'/>
+    <path d='M-30,720 C180,640 400,810 620,710' stroke='%23ffffff' stroke-width='0.9' stroke-opacity='0.4'/>
+  </g>
+</svg>`;
+const waveBgImage = `data:image/svg+xml;utf8,${waveBgSvg.replace(/\n/g, '').replace(/\s{2,}/g, ' ')}`;
 
 function CodeBlock({ code, lang }: { code: string; lang: string }) {
   const [copied, setCopied] = useState(false);
