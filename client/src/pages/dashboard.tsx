@@ -3196,7 +3196,10 @@ export default function Dashboard() {
       const ends: Record<string, string> = { 'ss2025': '2025-08-08', 'f2025': '2025-12-12', 'w2026': '2026-04-17', 'ss2026': '2026-08-07', 'f2026': '2026-12-11', 'w2027': '2027-04-16', 'ss2027': '2027-08-06', 'f2027': '2027-12-17', 'w2028': '2028-04-14', 'ss2028': '2028-08-04', 'f2028': '2028-12-15', 'w2029': '2029-04-13' };
       return starts[k] && ends[k] && now >= new Date(starts[k]) && now <= new Date(ends[k]);
     }) || '');
-    const relevantKeys = semKeys.filter((_, i) => i >= currentIdx - 1 && i <= currentIdx + 2);
+    // Fetch health for ALL semesters visible in the grid, not just a 4-sem
+    // window. Otherwise far-past or far-future semesters never get a level
+    // computed and the halo silently never renders for them.
+    const relevantKeys = semKeys;
     relevantKeys.forEach(sk => {
       if (semBoxHealthCache[sk]) return;
       fetch(`/api/semester-health-check/${sk}`, { credentials: 'include' })
@@ -26580,7 +26583,7 @@ export default function Dashboard() {
                           const isCurrentSem = sem.key === currentSemKey;
                           const colMap: Record<string, number> = { 'ss2025': 2, 'f2025': 3 };
                           return (
-                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'transparent', borderColor: isCurrentSem ? 'rgba(10,15,30,0.85)' : 'rgba(255,255,255,0.45)', borderWidth: isCurrentSem ? '3px' : '1px', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), minHeight: `${28 + 12 + 3 * 40}px`, alignSelf: 'stretch', ...(semBoxHealthCache[sem.key]?.level === 'critical' ? { boxShadow: '0 0 8px rgba(239,68,68,0.5), 0 0 16px rgba(239,68,68,0.3), 0 0 24px rgba(239,68,68,0.2)' } : semBoxHealthCache[sem.key]?.level === 'warning' ? { boxShadow: '0 0 8px rgba(234,179,8,0.4), 0 0 16px rgba(234,179,8,0.25), 0 0 24px rgba(234,179,8,0.15)' } : {}) }}
+                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'transparent', borderColor: isCurrentSem ? 'rgba(10,15,30,0.85)' : 'rgba(255,255,255,0.45)', borderWidth: isCurrentSem ? '3px' : '1px', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), minHeight: `${28 + 12 + 3 * 40}px`, alignSelf: 'stretch', ...(semBoxHealthCache[sem.key]?.level === 'critical' ? { boxShadow: '0 0 0 2px #ef4444, 0 0 12px 2px rgba(239,68,68,0.85), 0 0 24px 4px rgba(239,68,68,0.5)' } : semBoxHealthCache[sem.key]?.level === 'warning' ? { boxShadow: '0 0 0 2px #facc15, 0 0 12px 2px rgba(250,204,21,0.85), 0 0 24px 4px rgba(250,204,21,0.5)' } : semBoxHealthCache[sem.key]?.level === 'ok' ? { boxShadow: '0 0 0 2px #22c55e, 0 0 12px 2px rgba(34,197,94,0.85), 0 0 24px 4px rgba(34,197,94,0.5)' } : {}) }}
                               onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; e.currentTarget.style.boxShadow = '0 0 8px rgba(255,255,255,0.5)'; }}
                               onDragLeave={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
                               onDrop={(e) => {
