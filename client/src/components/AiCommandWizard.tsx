@@ -4,39 +4,34 @@ import { Zap, Send, X, Loader2, CheckCircle, XCircle, AlertTriangle, Trash2, Rot
 import { queryClient } from '@/lib/queryClient';
 import brynAvatar from '@assets/generated_images/brynassist_avatar.png';
 const buildWaveBg = (): string => {
-  const colors = ['%2322d3ee', '%2367e8f9', '%2306b6d4', '%230891b2', '%2338bdf8', '%23a5f3fc', '%2360a5fa', '%2334d399'];
+  const colors = ['%2300e5ff', '%230ea5e9', '%2338bdf8', '%2306b6d4', '%2300e5ff'];
   const lines: string[] = [];
-  const N = 90;
+  const N = 32;
   for (let i = 0; i < N; i++) {
-    const offset = (i - N / 2) * 8;
-    const baseY = 450 + offset * 0.85;
-    const wob = (i % 7) * 4 - 12;
-    const c1y = baseY - 180 + wob;
-    const c2y = baseY + 200 - wob;
-    const c3y = baseY - 90 + wob * 0.6;
-    const startX = -120 + (i % 5) * 6;
-    const endX = 720 + (i % 5) * 6;
-    const d = `M${startX},${baseY - 40} C${startX + 200},${c1y} ${startX + 320},${c2y} ${(startX + endX) / 2},${baseY + wob} S${endX - 80},${c3y} ${endX},${baseY + 30}`;
+    const offset = (i - N / 2) * 16;
+    const baseY = 460 + offset;
+    const wob = (i % 5) * 6 - 12;
+    const c1y = baseY - 220 + wob;
+    const c2y = baseY + 240 - wob;
+    const c3y = baseY - 110 + wob * 0.6;
+    const startX = -120 + (i % 4) * 10;
+    const endX = 720 + (i % 4) * 10;
+    const d = `M${startX},${baseY - 50} C${startX + 220},${c1y} ${startX + 340},${c2y} ${(startX + endX) / 2},${baseY + wob} S${endX - 80},${c3y} ${endX},${baseY + 40}`;
     const color = colors[i % colors.length];
-    const opacity = (0.28 + (i % 11) * 0.04).toFixed(2);
-    const sw = (0.7 + (i % 4) * 0.25).toFixed(2);
+    const opacity = (0.7 + (i % 5) * 0.06).toFixed(2);
+    const sw = (1.1 + (i % 3) * 0.4).toFixed(2);
     lines.push(`<path d='${d}' stroke='${color}' stroke-width='${sw}' stroke-opacity='${opacity}'/>`);
   }
   const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 900' preserveAspectRatio='xMidYMid slice'>` +
     `<defs>` +
-      `<linearGradient id='bgGrad' x1='0' y1='0' x2='0.5' y2='1'>` +
-        `<stop offset='0' stop-color='%23010a1c'/>` +
-        `<stop offset='0.4' stop-color='%23061f4a'/>` +
-        `<stop offset='0.75' stop-color='%23083a6b'/>` +
-        `<stop offset='1' stop-color='%23021530'/>` +
+      `<linearGradient id='bgGrad' x1='0' y1='0' x2='0.4' y2='1'>` +
+        `<stop offset='0' stop-color='%23000308'/>` +
+        `<stop offset='0.45' stop-color='%23030f24'/>` +
+        `<stop offset='0.85' stop-color='%23062048'/>` +
+        `<stop offset='1' stop-color='%23010614'/>` +
       `</linearGradient>` +
-      `<radialGradient id='glowMid' cx='35%25' cy='50%25' r='55%25'>` +
-        `<stop offset='0' stop-color='%231e3a8a' stop-opacity='0.55'/>` +
-        `<stop offset='1' stop-color='%231e3a8a' stop-opacity='0'/>` +
-      `</radialGradient>` +
     `</defs>` +
     `<rect width='600' height='900' fill='url(%23bgGrad)'/>` +
-    `<rect width='600' height='900' fill='url(%23glowMid)'/>` +
     `<g fill='none' stroke-linecap='round'>${lines.join('')}</g>` +
     `</svg>`;
   return `data:image/svg+xml;utf8,${svg}`;
