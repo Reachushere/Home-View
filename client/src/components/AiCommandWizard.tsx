@@ -4,7 +4,7 @@ import { Zap, Send, X, Loader2, CheckCircle, XCircle, AlertTriangle, Trash2, Rot
 import { queryClient } from '@/lib/queryClient';
 import brynAvatar from '@assets/generated_images/brynassist_avatar.png';
 const buildWaveBg = (): string => {
-  const colors = ['%2300e5ff', '%230ea5e9', '%2338bdf8', '%2306b6d4', '%2300e5ff'];
+  const colors = ['%2300e5ff', '%230ea5e9', '%2338bdf8', '%2306b6d4', '%23a855f7', '%23d946ef', '%23ec4899', '%237c3aed', '%23f0abfc'];
   const lines: string[] = [];
   const N = 32;
   for (let i = 0; i < N; i++) {
@@ -1281,7 +1281,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
 
   if (!isOpen) return null;
 
-  const panelWidth = expanded ? '90vw' : (customWidth ? `${customWidth}px` : '780px');
+  const panelWidth = expanded ? '90vw' : (customWidth ? `${customWidth}px` : '920px');
   const panelMaxHeight = expanded ? '90vh' : '80vh';
   const panelStyle: React.CSSProperties = {
     position: 'relative' as const,
@@ -1539,12 +1539,12 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 const hasExtras = !!msg.image || !!msg.toolResults?.length;
                 const isOrb = msg.role !== 'system' && orbContent.length > 0 && !hasExtras;
                 const orbLen = orbContent.length;
-                const orbSize = orbLen < 30 ? 150
-                  : orbLen < 70 ? 190
-                  : orbLen < 140 ? 240
-                  : orbLen < 240 ? 290
-                  : orbLen < 380 ? 340
-                  : 390;
+                const orbSize = orbLen < 30 ? 110
+                  : orbLen < 70 ? 140
+                  : orbLen < 140 ? 175
+                  : orbLen < 240 ? 210
+                  : orbLen < 380 ? 245
+                  : 280;
                 const orbWidth = orbSize;
                 const orbHeight = orbSize;
                 const orbFontSize = orbLen < 30 ? '16px'
