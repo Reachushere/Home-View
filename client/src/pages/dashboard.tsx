@@ -20749,7 +20749,7 @@ export default function Dashboard() {
           className="fixed cursor-pointer"
           style={{
             bottom: '29px',
-            left: weatherAlerts.length > 0 ? 'calc(50% + 302px + 35px)' : 'calc(50% + 302px)',
+            left: weatherAlerts.length > 0 ? 'calc(50% + 302px + 35px + 55px)' : 'calc(50% + 302px + 55px)',
             transition: 'left 0.3s ease-in-out',
             display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : 'block',
             zIndex: 10002,
@@ -20760,7 +20760,7 @@ export default function Dashboard() {
           data-testid="bottom-tab-homework"
           title="Restore homework panel"
         >
-          <svg width="84" height="25" viewBox="0 0 84 25" style={{ display: 'block', transform: 'translateX(55px)' }}>
+          <svg width="84" height="25" viewBox="0 0 84 25" style={{ display: 'block' }}>
             <path d="M0,25 L84,25 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
             <text x="42" y="7" textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.85)" fontSize="9" fontWeight="500" fontFamily="system-ui, -apple-system, sans-serif">Homework</text>
           </svg>
@@ -20787,7 +20787,9 @@ export default function Dashboard() {
           className="fixed cursor-pointer"
           style={{
             bottom: '29px',
-            left: weatherAlerts.length > 0 ? 'calc(50% + 302px + 45px)' : 'calc(50% + 302px)',
+            left: weatherAlerts.length > 0
+              ? (homeworkMinimized ? 'calc(50% + 302px + 45px + 55px)' : 'calc(50% + 302px + 45px)')
+              : (homeworkMinimized ? 'calc(50% + 302px + 55px)' : 'calc(50% + 302px)'),
             transition: 'left 0.3s ease-in-out',
             display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : 'block',
             zIndex: 10002,
@@ -20798,7 +20800,7 @@ export default function Dashboard() {
           data-testid="bottom-tab-blankbox"
           title="Restore temporary notes"
         >
-          <svg width="84" height="25" viewBox="0 0 84 25" style={{ display: 'block', transform: homeworkMinimized ? 'translateX(55px)' : 'none' }}>
+          <svg width="84" height="25" viewBox="0 0 84 25" style={{ display: 'block' }}>
             <path d="M0,25 L84,25 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
             <text x="42" y="7" textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.85)" fontSize="8" fontWeight="500" fontFamily="system-ui, -apple-system, sans-serif">Notes</text>
           </svg>
@@ -34706,7 +34708,7 @@ export default function Dashboard() {
           {/* Date navigation tab above glass box */}
           <div
             className="absolute z-[60]"
-            style={{ top: '-29px', right: '7px', left: '10px', display: calendarView === 'month' ? 'none' : 'flex', alignItems: 'center', justifyContent: 'flex-end', height: '15px', pointerEvents: (homeworkAnimating || blankBoxAnimating || (homeworkMinimized && !blankBoxOpen)) ? 'none' : 'auto', opacity: (homeworkAnimating || blankBoxAnimating || (homeworkMinimized && !blankBoxOpen) || isTopPillOpen) ? 0 : 1, transition: 'opacity 0.25s ease' }}
+            style={{ top: '-29px', right: '7px', left: '10px', display: calendarView === 'month' ? 'none' : 'flex', alignItems: 'center', justifyContent: 'flex-end', height: '15px', pointerEvents: (homeworkAnimating || blankBoxAnimating || blankBoxOpen) ? 'none' : 'auto', opacity: (homeworkAnimating || blankBoxAnimating || blankBoxOpen || isTopPillOpen) ? 0 : 1, transition: 'opacity 0.25s ease' }}
             data-testid="date-nav-tab"
           >
             <div style={{ width: '280px', height: '15px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)', padding: '0 2px', gap: '5px' }}>
@@ -34731,7 +34733,7 @@ export default function Dashboard() {
           <button
             onClick={(e) => { e.stopPropagation(); const next = !timelineSyncCalendar; setTimelineSyncCalendar(next); localStorage.setItem('timelineSyncCalendar', String(next)); fetch('/api/ui-settings/timelineSyncCalendar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: next }) }).catch(() => {}); }}
             className="absolute z-[71] flex items-center justify-center hover:bg-white/20 active:bg-white/30 transition-colors"
-            style={{ top: '-13px', left: '1px', width: '26px', height: '12px', borderRadius: '4px 4px 0 0', background: timelineSyncCalendar ? 'rgba(59,130,246,0.6)' : 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', borderBottom: 'none', cursor: 'pointer', opacity: (homeworkAnimating || blankBoxAnimating || (homeworkMinimized && !blankBoxOpen)) ? 0 : 1, pointerEvents: (homeworkAnimating || blankBoxAnimating || (homeworkMinimized && !blankBoxOpen)) ? 'none' : 'auto', transition: 'opacity 0.25s ease, background 0.2s ease' }}
+            style={{ top: '-13px', left: '1px', width: '26px', height: '12px', borderRadius: '4px 4px 0 0', background: timelineSyncCalendar ? 'rgba(59,130,246,0.6)' : 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', borderBottom: 'none', cursor: 'pointer', opacity: (homeworkAnimating || blankBoxAnimating || blankBoxOpen) ? 0 : 1, pointerEvents: (homeworkAnimating || blankBoxAnimating || blankBoxOpen) ? 'none' : 'auto', transition: 'opacity 0.25s ease, background 0.2s ease' }}
             title={timelineSyncCalendar ? 'Paired scrolling ON — date nav syncs homework timeline' : 'Paired scrolling OFF — click to link'}
             data-testid="toggle-paired-scroll"
           >
@@ -34742,7 +34744,7 @@ export default function Dashboard() {
               onClick={hwFloatingHandlers.onDetach}
               onTouchEnd={(e) => { e.preventDefault(); hwFloatingHandlers.onDetach(); }}
               className="absolute z-[70] rounded-tl-[11px] rounded-br-[4px] rounded-tr-[2px] rounded-bl-[2px] flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors"
-              style={{ top: '1px', left: '1px', width: '25px', height: '25px', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', display: 'flex', opacity: (homeworkMinimized || homeworkAnimating || blankBoxOpen) ? 0 : 1, pointerEvents: (homeworkMinimized || homeworkAnimating || blankBoxOpen) ? 'none' : 'auto', transition: 'opacity 0.25s ease' }}
+              style={{ top: '1px', left: '1px', width: '25px', height: '25px', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', display: 'flex', opacity: (homeworkAnimating || blankBoxOpen) ? 0 : 1, pointerEvents: (homeworkAnimating || blankBoxOpen) ? 'none' : 'auto', transition: 'opacity 0.25s ease' }}
               data-testid="hw-detach-button"
               title="Pop out progress as floating window"
             >
@@ -34776,7 +34778,7 @@ export default function Dashboard() {
               }, 580);
             }}
             className="absolute z-[70] rounded-tr-[11px] rounded-bl-[4px] rounded-tl-[2px] rounded-br-[2px] flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors"
-            style={{ top: '0px', right: '0px', width: '26px', height: '26px', background: colorSettings.headerBar, border: '1px solid rgba(255,255,255,0.3)', borderTop: 'none', borderRight: 'none', display: 'flex', opacity: (homeworkMinimized || blankBoxOpen) ? 0 : 1, pointerEvents: (homeworkMinimized || blankBoxOpen) ? 'none' : 'auto' }}
+            style={{ top: '0px', right: '0px', width: '26px', height: '26px', background: colorSettings.headerBar, border: '1px solid rgba(255,255,255,0.3)', borderTop: 'none', borderRight: 'none', display: 'flex', opacity: blankBoxOpen ? 0 : 1, pointerEvents: blankBoxOpen ? 'none' : 'auto' }}
             data-testid="hw-minimize-dock"
             title="Minimize homework panel"
           >
@@ -34785,7 +34787,7 @@ export default function Dashboard() {
           {/* Joint Resize Handle — controls both calendar+homework width and calendar height */}
           {!hwFloating.detached && <div
             className="absolute z-[110]"
-            style={{ left: '-17px', top: '50%', transform: 'translateY(-50%)', width: '17px', height: '181px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: ((homeworkMinimized && !blankBoxOpen) || homeworkAnimating || blankBoxAnimating) ? 'none' : 'auto', opacity: ((homeworkMinimized && !blankBoxOpen) || homeworkAnimating || blankBoxAnimating) ? 0 : 1, transition: 'opacity 0.25s ease' }}
+            style={{ left: '-17px', top: '50%', transform: 'translateY(-50%)', width: '17px', height: '181px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: (blankBoxOpen || homeworkAnimating || blankBoxAnimating) ? 'none' : 'auto', opacity: (blankBoxOpen || homeworkAnimating || blankBoxAnimating) ? 0 : 1, transition: 'opacity 0.25s ease' }}
             data-testid="resize-handle-homework"
           >
             <div className="grab-tab-press" style={{ width: '17px', height: '181px', borderRadius: '0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderRight: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', backdropFilter: 'blur(8px)', transition: 'filter 0.1s ease' }}>
@@ -34985,7 +34987,7 @@ export default function Dashboard() {
                   const boxEl = document.querySelector('[data-testid="section-coming-up"]') as HTMLElement | null;
                   const boxH = boxEl ? boxEl.offsetHeight : (window.innerHeight - (calendarBorderTop || (calendarTop + 15)) - calendarBottom);
                   const availH = Math.max(60, boxH + 30);
-                  return { right: '-19px', top: '3px', pointerEvents: (homeworkAnimating || blankBoxAnimating || (homeworkMinimized && !blankBoxOpen) || isSettingsPanelOpen || isSchoolCoursesDialogOpen || hwFloating.detached) ? 'none' as const : 'auto' as const, zIndex: -1, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || hwFloating.detached) ? 'none' : 'block', width: '21px', height: `${availH - 15}px`, overflow: 'visible', opacity: (homeworkAnimating || blankBoxAnimating || (homeworkMinimized && !blankBoxOpen)) ? 0 : 1, transition: 'opacity 0.25s ease' };
+                  return { right: '-19px', top: '3px', pointerEvents: (homeworkAnimating || blankBoxAnimating || blankBoxOpen || isSettingsPanelOpen || isSchoolCoursesDialogOpen || hwFloating.detached) ? 'none' as const : 'auto' as const, zIndex: -1, display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || hwFloating.detached) ? 'none' : 'block', width: '21px', height: `${availH - 15}px`, overflow: 'visible', opacity: (homeworkAnimating || blankBoxAnimating || blankBoxOpen) ? 0 : 1, transition: 'opacity 0.25s ease' };
                 })()}
               >
                 {(() => {
