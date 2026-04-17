@@ -29806,6 +29806,31 @@ export default function Dashboard() {
                 const isNextSchoolWeek = calendarWeekMode === 'current' && day.getDay() !== 6 && (startOfDayET(day) >= thisSaturday || (todayIdx >= 0 && idx < todayIdx && !isToday && !isTodaySaturday));
                 const dayName = format(day, "EEE").toUpperCase();
                 const dayNum = format(day, "d");
+                const isBreakDay = (() => {
+                  const semDefs = [
+                    { key: 'w2026', start: '2026-01-12', end: '2026-04-17', weeks: 13 },
+                    { key: 'ss2026', start: '2026-05-04', end: '2026-08-04', weeks: 14 },
+                    { key: 'f2026', start: '2026-09-14', end: '2026-12-07', weeks: 13 },
+                    { key: 'w2027', start: '2027-01-11', end: '2027-04-09', weeks: 13 },
+                    { key: 'ss2027', start: '2027-05-03', end: '2027-08-03', weeks: 14 },
+                    { key: 'f2027', start: '2027-09-13', end: '2027-12-06', weeks: 13 },
+                    { key: 'w2028', start: '2028-01-10', end: '2028-04-14', weeks: 13 },
+                    { key: 'ss2028', start: '2028-05-01', end: '2028-08-01', weeks: 14 },
+                    { key: 'f2028', start: '2028-09-11', end: '2028-12-04', weeks: 13 },
+                    { key: 'w2029', start: '2029-01-15', end: '2029-04-13', weeks: 13 },
+                  ];
+                  const active = semDefs.find(s => day >= new Date(s.start + 'T00:00:00') && day <= new Date(s.end + 'T23:59:59'));
+                  if (active) {
+                    const semStart = new Date(active.start + 'T12:00:00');
+                    const wk = Math.floor((day.getTime() - semStart.getTime()) / (1000*60*60*24) / 7) + 1;
+                    return wk > active.weeks;
+                  }
+                  const next = semDefs.find(s => day < new Date(s.start + 'T00:00:00'));
+                  if (next) return true;
+                  const last = semDefs[semDefs.length - 1];
+                  if (last && day > new Date(last.end + 'T23:59:59')) return true;
+                  return false;
+                })();
                 const hasTodayTasks = isToday && allTasks.some(t => 
                   !t.isCompleted && isSameDayET(new Date(t.dueDate), day)
                 );
@@ -30186,11 +30211,11 @@ export default function Dashboard() {
                                 }
                                 const nextSem = semDefs.find(s => satDate < new Date(s.start + 'T00:00:00'));
                                 if (nextSem) {
-                                  return `Break ⛱️`;
+                                  return `Break`;
                                 }
                                 const lastSem = semDefs[semDefs.length - 1];
                                 if (lastSem && satDate > new Date(lastSem.end + 'T23:59:59')) {
-                                  return `Break ⛱️`;
+                                  return `Break`;
                                 }
                                 return `New School Week (${selectedWeek + 1})`;
                               })()}</span>
@@ -30229,20 +30254,20 @@ export default function Dashboard() {
                                     const wk = getWeekNumber(dayDate, semStartD, rwStart);
                                     if (wk === -1) return 'Reading Week';
                                     const clampedWk = Math.max(wk, 1);
-                                    return clampedWk > activeSem.weeks ? 'Break ⛱️' : `Week ${clampedWk}`;
+                                    return clampedWk > activeSem.weeks ? 'Break' : `Week ${clampedWk}`;
                                   }
                                   const calcDate = dayDate.getDay() === 0 ? new Date(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate() + 1, 12, 0, 0) : dayDate;
                                   const daysDiff = Math.round((calcDate.getTime() - semStartD.getTime()) / (1000*60*60*24));
                                   const rawWeek = Math.max(1, Math.floor(daysDiff / 7) + 1);
-                                  if (rawWeek > activeSem.weeks) return 'Break ⛱️';
+                                  if (rawWeek > activeSem.weeks) return 'Break';
                                   const isSS = activeSem.key.startsWith('ss');
                                   const ssLabel = isSS && rawWeek > 7 ? `/${rawWeek - 7}` : '';
                                   return `Week ${rawWeek}${ssLabel}`;
                                 }
                                 const nextSem = semDefs.find(s => dayDate < new Date(s.start + 'T00:00:00'));
-                                if (nextSem) return 'Break ⛱️';
+                                if (nextSem) return 'Break';
                                 const lastSem1 = semDefs[semDefs.length - 1];
-                                if (lastSem1 && dayDate > new Date(lastSem1.end + 'T23:59:59')) return 'Break ⛱️';
+                                if (lastSem1 && dayDate > new Date(lastSem1.end + 'T23:59:59')) return 'Break';
                                 return `Week ${Math.min(selectedWeek + 1, currentMaxWeek)}`;
                               })()}</span>
                             </div>
@@ -30281,20 +30306,20 @@ export default function Dashboard() {
                                     const wk = getWeekNumber(dayDate, semStartD, rwStart);
                                     if (wk === -1) return 'Reading Week';
                                     const clampedWk = Math.max(wk, 1);
-                                    return clampedWk > activeSem.weeks ? 'Break ⛱️' : `Week ${clampedWk}`;
+                                    return clampedWk > activeSem.weeks ? 'Break' : `Week ${clampedWk}`;
                                   }
                                   const calcDate = dayDate.getDay() === 0 ? new Date(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate() + 1, 12, 0, 0) : dayDate;
                                   const daysDiff = Math.round((calcDate.getTime() - semStartD.getTime()) / (1000*60*60*24));
                                   const rawWeek = Math.max(1, Math.floor(daysDiff / 7) + 1);
-                                  if (rawWeek > activeSem.weeks) return 'Break ⛱️';
+                                  if (rawWeek > activeSem.weeks) return 'Break';
                                   const isSS = activeSem.key.startsWith('ss');
                                   const ssLabel = isSS && rawWeek > 7 ? `/${rawWeek - 7}` : '';
                                   return `Week ${rawWeek}${ssLabel}`;
                                 }
                                 const nextSem = semDefs.find(s => dayDate < new Date(s.start + 'T00:00:00'));
-                                if (nextSem) return 'Break ⛱️';
+                                if (nextSem) return 'Break';
                                 const lastSem2 = semDefs[semDefs.length - 1];
-                                if (lastSem2 && dayDate > new Date(lastSem2.end + 'T23:59:59')) return 'Break ⛱️';
+                                if (lastSem2 && dayDate > new Date(lastSem2.end + 'T23:59:59')) return 'Break';
                                 return `Week ${Math.min(selectedWeek, currentMaxWeek)}`;
                               })()}</span>
                             </div>
@@ -30383,8 +30408,9 @@ export default function Dashboard() {
                                       {format(day, 'MMM')}
                                     </div>
                                   </div>
-                                  <div style={{ fontSize: '25px', fontWeight: 600, color: '#ffffff', lineHeight: 1 }}>
+                                  <div style={{ fontSize: '25px', fontWeight: 600, color: '#ffffff', lineHeight: 1, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                                     {dayNum}
+                                    {isBreakDay && <span style={{ fontSize: '25px', lineHeight: 1 }}>⛱️</span>}
                                   </div>
                                 </>
                               );
@@ -30394,7 +30420,10 @@ export default function Dashboard() {
                                   <div className="text-[10px] font-medium tracking-wide" style={{ color: isNextSchoolWeek ? 'rgba(255,255,255,0.35)' : '#ffffff', lineHeight: 1 }}>{dayName}</div>
                                   <div className="text-[8px] font-bold tracking-wide" style={{ color: isNextSchoolWeek ? 'rgba(255,255,255,0.4)' : '#ffffff', lineHeight: 1, textTransform: 'uppercase' }}>{format(day, 'MMM')}</div>
                                 </div>
-                                <div style={{ fontSize: '24px', fontWeight: 700, color: isNextSchoolWeek ? 'rgba(255,255,255,0.35)' : '#ffffff', lineHeight: 1 }}>{dayNum}</div>
+                                <div style={{ fontSize: '24px', fontWeight: 700, color: isNextSchoolWeek ? 'rgba(255,255,255,0.35)' : '#ffffff', lineHeight: 1, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                  {dayNum}
+                                  {isBreakDay && <span style={{ fontSize: '24px', lineHeight: 1, opacity: isNextSchoolWeek ? 0.35 : 1 }}>⛱️</span>}
+                                </div>
                               </>
                             )}
                           </div>
