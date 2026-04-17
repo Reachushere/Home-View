@@ -1531,8 +1531,30 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
             </div>
           )}
 
-          {messages.map((msg, i) => (
-            <div key={i} style={{
+          {messages.flatMap((msg, i) => {
+            if (msg.role === 'assistant' && typeof msg.content === 'string') {
+              const failRe = /^[ \t]*(?:Failed|❌\s*Failed|Error)[:\-—]\s*(.+)$/i;
+              const lines = msg.content.split('\n');
+              const leadingFails: string[] = [];
+              let rest = lines;
+              while (rest.length > 0) {
+                const m = rest[0].match(failRe);
+                if (!m) break;
+                leadingFails.push(m[1].trim());
+                rest = rest.slice(1);
+              }
+              while (rest.length > 0 && rest[0].trim() === '') rest = rest.slice(1);
+              if (leadingFails.length > 0) {
+                const expanded: any[] = leadingFails.map((f, k) => ({ role: 'system' as const, content: `Failed: ${f}`, _key: `${i}-fail-${k}` }));
+                if (rest.join('\n').trim().length > 0) {
+                  expanded.push({ ...msg, content: rest.join('\n'), _key: `${i}-rest` });
+                }
+                return expanded.map((m: any, idx: number) => ({ ...m, _idx: `${i}-${idx}` }));
+              }
+            }
+            return [{ ...msg, _idx: `${i}` }];
+          }).map((msg: any, i: number) => (
+            <div key={msg._idx || i} style={{
               display: 'flex',
               justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start',
               ...(msg.role === 'system' || msg.role === 'thinking' ? { justifyContent: 'flex-start' } : {}),
