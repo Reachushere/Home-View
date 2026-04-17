@@ -18252,7 +18252,7 @@ export default function Dashboard() {
         <Share 
           className="text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
-          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 22}px`, right: `${calendarRight - calendarReduction + 19 + 34}px`, zIndex: 70 }}
+          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 14}px`, right: `${calendarRight - calendarReduction + 19 + 36}px`, zIndex: 70 }}
           onClick={() => { generateShareLink('4201'); setIsShareDialogOpen(true); }}
           data-testid="button-share-main"
         />
@@ -18261,7 +18261,7 @@ export default function Dashboard() {
         <Download
           className="text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
-          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 22}px`, right: `${calendarRight - calendarReduction + 19 + 17}px`, zIndex: 70 }}
+          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 14}px`, right: `${calendarRight - calendarReduction + 19 + 18}px`, zIndex: 70 }}
           onClick={() => {
             window.open('https://github.com/Reachushere/Home-View/archive/refs/heads/main.zip', '_blank');
           }}
@@ -18273,7 +18273,7 @@ export default function Dashboard() {
         <Printer
           className="text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
-          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 22}px`, right: `${calendarRight - calendarReduction + 19}px`, zIndex: 70 }}
+          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 14}px`, right: `${calendarRight - calendarReduction + 19}px`, zIndex: 70 }}
           onClick={() => {
             const printableIframe = document.querySelector('iframe[src*="pdf-reader"], iframe[src*="/files/"]') as HTMLIFrameElement | null;
             if (printableIframe && printableIframe.contentWindow) {
@@ -18290,7 +18290,7 @@ export default function Dashboard() {
         <Copy
           className="text-white/50 cursor-pointer hover:text-white/90"
           strokeWidth={2.5}
-          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 22}px`, right: `${calendarRight - calendarReduction + 19 + 51}px`, zIndex: 70 }}
+          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 14}px`, right: `${calendarRight - calendarReduction + 19 + 54}px`, zIndex: 70 }}
           onClick={async () => {
             try {
               const res = await fetch('/api/source-code/all');
@@ -20805,7 +20805,7 @@ export default function Dashboard() {
           }}
           className="fixed cursor-pointer"
           style={{
-            bottom: `${calendarBottom}px`,
+            bottom: `${calendarBottom + 5}px`,
             right: `${calendarRight - 17 - 84 - 10}px`,
             transition: 'right 0.3s ease-in-out, bottom 0.3s ease-in-out',
             display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : 'block',
@@ -20819,7 +20819,7 @@ export default function Dashboard() {
         >
           <svg width="84" height="14" viewBox="0 0 84 14" style={{ display: 'block', overflow: 'hidden' }}>
             <path d="M0,20 L84,20 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill="#1a2332" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
-            <text x="42" y="8" textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.95)" fontSize="11" fontWeight="600" fontFamily="system-ui, -apple-system, sans-serif">Homework</text>
+            <text x="42" y="6" textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.95)" fontSize="11" fontWeight="600" fontFamily="system-ui, -apple-system, sans-serif">Homework</text>
           </svg>
         </button>
       )}
@@ -20860,7 +20860,7 @@ export default function Dashboard() {
         >
           <svg width="84" height="14" viewBox="0 0 84 14" style={{ display: 'block', overflow: 'hidden' }}>
             <path d="M0,20 L84,20 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
-            <text x="42" y="8" textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.95)" fontSize="11" fontWeight="600" fontFamily="system-ui, -apple-system, sans-serif">Notes</text>
+            <text x="42" y="6" textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.95)" fontSize="11" fontWeight="600" fontFamily="system-ui, -apple-system, sans-serif">Notes</text>
           </svg>
         </button>
       )}
