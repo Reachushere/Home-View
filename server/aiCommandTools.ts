@@ -695,6 +695,8 @@ export const AI_COMMAND_TOOLS = [
           zoomLink: { type: "string", description: "Zoom/meeting link" },
           displayName: { type: "string", description: "Custom display name for the course" },
           color: { type: "string", description: "Course color (hex code)" },
+          moduleFolder: { type: "string", description: "OneDrive/library root folder path for this course's MODULES (e.g. '/CFNF400/Modules/' or '/Human Sexuality/'). Single root path — the library walks subfolders for Week 1, Week 2, etc. Pass as moduleFolder (camelCase); will be stored as course{N}_module_folder." },
+          readingFolder: { type: "string", description: "OneDrive/library root folder path for this course's READINGS. Single root path. Pass as readingFolder (camelCase); will be stored as course{N}_reading_folder." },
           semesterName: { type: "string", description: "Change the semester display name" },
         },
       },
@@ -2969,6 +2971,8 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           if (args.zoomLink) updates[`course${n}ZoomLink`] = args.zoomLink;
           if (args.displayName) updates[`course${n}DisplayName`] = args.displayName;
           if (args.color) updates[`course${n}Color`] = args.color;
+          if (args.moduleFolder !== undefined) updates[`course${n}ModuleFolder`] = args.moduleFolder;
+          if (args.readingFolder !== undefined) updates[`course${n}ReadingFolder`] = args.readingFolder;
         }
         if (Object.keys(updates).length === 0) return { success: false, result: { error: "No updates specified" } };
         const updated = await storage.updateSemesterSettings(settings.id, updates);

@@ -6651,7 +6651,7 @@ KEY TABLE STRUCTURES (verify with db_schema if unsure — these are the columns 
 
 ⚠ BEFORE WRITING ANY SQL: if you're not 100% sure of the column names, call db_schema FIRST. Do not guess. The "column does not exist" error wastes a tool call and makes you look bad.
 
-⚠ "Connect module folders to library" / "link week N folder" → this means setting course{N}_module_folder on semester_settings to the OneDrive path of the course's module root (a single root path, NOT per-week). The library walks that root and indexes each "Week N" subfolder it finds. To verify a course is connected, SELECT course{N}_module_folder FROM semester_settings WHERE is_active. To see what files are indexed for a week, SELECT id, display_name, folder FROM files WHERE folder ILIKE '%<course_code>%week <N>%'.
+⚠ "Connect module folders to library" / "link week N folder" → this means setting course{N}_module_folder on semester_settings to the OneDrive path of the course's module ROOT (a single root path, NOT per-week — there is no per-week column). The library walks that root and indexes each "Week N" subfolder it finds. To set it: call update_semester_settings with courseNumber=N and moduleFolder="/path/" (camelCase param — the tool maps it to course{N}_module_folder for you). Same for readingFolder → course{N}_reading_folder. DO NOT try to pass course2ModuleFolder or course{N}_module_folder directly — those param names will be ignored. To verify a course is connected, SELECT course{N}_module_folder FROM semester_settings WHERE is_active. To see what files are indexed for a week, SELECT id, display_name, folder FROM files WHERE folder ILIKE '%<course_code>%week <N>%'.
 
 ═══════════════════════════════════════════════════
 §11 — UI STRUCTURE MAP
