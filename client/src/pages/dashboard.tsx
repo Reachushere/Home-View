@@ -33573,7 +33573,7 @@ export default function Dashboard() {
           </div>
           </div>
           <div
-            style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', bottom: '-12px', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto' }}
+            style={{ position: 'absolute', right: '9px', bottom: '-12px', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto' }}
             data-testid="calendar-bottom-resize-handle"
           >
             <div className="grab-tab-press" style={{ width: '191px', height: '14px', borderRadius: '0 0 6px 6px', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderTop: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)', transition: 'filter 0.1s ease' }}>
@@ -33588,7 +33588,7 @@ export default function Dashboard() {
           <button
             type="button"
             className="cursor-pointer select-none hover:opacity-80 transition-opacity"
-            style={{ position: 'absolute', right: '0px', bottom: '-19px', display: 'flex', alignItems: 'center', gap: '4px', zIndex: 60, background: 'none', border: 'none', padding: '4px 6px', pointerEvents: 'auto', WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
+            style={{ position: 'absolute', left: 'calc(100% + 17px)', bottom: '-19px', display: 'flex', alignItems: 'center', gap: '4px', zIndex: 60, background: 'none', border: 'none', padding: '4px 6px', pointerEvents: 'auto', WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
             onClick={() => {
               localStorage.setItem('calendarHeight', String(calendarHeight));
               localStorage.setItem('calendarReduction', String(calendarReduction));
