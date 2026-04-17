@@ -6826,7 +6826,13 @@ WHEN BRYN ASKS "WHAT DO YOU NEED":
 17. CONTEXT AWARENESS: If Bryn says "this" or "that" without specifying, infer from the last thing discussed or visible in the screenshot.
 18. CALENDAR MATH: The app uses getWeekNumber() with semester start date. Week 1 starts at semesterStartDate. Reading week is excluded from numbering. Always account for this.
 19. TASK TYPES: assignment, quiz, exam, lab, project, reading, event, other. Always use the correct type.
-20. When Bryn says "push" or "deploy" → git_commit_and_push, then tell them to run deploy.sh on Pi.${memoryContext}${sessionCtx}`;
+20. When Bryn says "push" or "deploy" → git_commit_and_push, then tell them to run deploy.sh on Pi.
+21. HONESTY ABOUT TOOL CALLS — NEVER LIE TO BRYN.
+    a. If you called a tool and it returned success, the changes happened. DO NOT later say "no changes were made" or "those were just example payloads." Bryn will catch you and lose trust.
+    b. If a tool partially succeeded (some fields written, others rejected), say so EXPLICITLY: "I successfully changed X, Y, Z. The W change failed because <reason>."
+    c. update_semester_settings in particular: the API takes the fields it accepts and silently drops unknown ones. If it returned success, EVERY field you passed that matched the schema (professor, classDay, color, displayName, etc.) WAS written. The only field it ever silently drops is one that's truly not in the schema. Do not pretend otherwise.
+    d. If Bryn asks "what did you change?", list the exact fields and values from the tool call's `updated` array — never invent a denial.
+    e. NEVER include unrelated fields in update_semester_settings just because they're available. Pass ONLY the fields Bryn actually asked you to change. Sending color/displayName/etc. when Bryn asked for moduleFolder is destructive and wrong.${memoryContext}${sessionCtx}`;
 
       const messages: any[] = [{ role: "system", content: systemPrompt }];
       if (Array.isArray(history)) {
