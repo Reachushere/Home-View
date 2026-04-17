@@ -1234,7 +1234,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
     maxWidth: expanded ? '1200px' : '95vw',
     maxHeight: panelMaxHeight,
     height: expanded ? '90vh' : undefined,
-    background: `linear-gradient(180deg, rgba(10,20,50,0.55) 0%, rgba(10,15,40,0.65) 100%), url(${waveBgImage}) left center / 200% 100% no-repeat, ${wizStyle.wizardBackground || defaultWizardStyle.wizardBackground}`,
+    background: `url(${waveBgImage}) left center / auto 100% no-repeat, #0a1428`,
     border: wizStyle.wizardBorder || defaultWizardStyle.wizardBorder,
     borderRadius: '16px',
     fontFamily: "'Inter', 'Avenir Next', 'SF Pro Display', system-ui, -apple-system, sans-serif",
@@ -1757,31 +1757,18 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
               ><Pencil size={12} /> Markup</button>
             </div>
           )}
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'stretch' }}>
-          <textarea
-            ref={inputRef}
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            onPaste={handlePaste}
-            placeholder={pastedImage ? "Describe what to do with this screenshot..." : "Type a command..."}
-            style={{
-              flex: 1,
-              background: '#ffffff',
-              border: '1px solid rgba(100,160,255,0.3)',
-              borderRadius: '10px',
-              padding: '10px 14px',
-              color: '#000000',
-              fontSize: '13px',
-              resize: 'none',
-              outline: 'none',
-              fontFamily: 'inherit',
-              maxHeight: '200px',
-              overflowY: 'auto',
-            }}
-            data-testid="input-ai-command"
-          />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            background: 'rgba(15,25,55,0.55)',
+            backdropFilter: 'blur(14px)',
+            WebkitBackdropFilter: 'blur(14px)',
+            border: '1px solid rgba(140,180,255,0.25)',
+            borderRadius: '40px',
+            padding: '6px 8px 6px 20px',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.08)',
+          }}>
             <input
               ref={fileInputRef}
               type="file"
@@ -1790,41 +1777,75 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
               style={{ display: 'none' }}
               data-testid="input-ai-file-upload"
             />
+            <textarea
+              ref={inputRef}
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              onPaste={handlePaste}
+              placeholder={pastedImage ? "Describe what to do with this screenshot..." : "ask me anything..."}
+              rows={1}
+              style={{
+                flex: 1,
+                background: 'transparent',
+                border: 'none',
+                padding: '10px 0',
+                color: '#ffffff',
+                fontSize: '14px',
+                lineHeight: '1.4',
+                resize: 'none',
+                outline: 'none',
+                fontFamily: 'inherit',
+                maxHeight: '120px',
+                overflowY: 'auto',
+              }}
+              data-testid="input-ai-command"
+            />
             <button
               onClick={() => fileInputRef.current?.click()}
               style={{
-                background: 'rgba(100,160,255,0.15)',
-                border: '1px solid rgba(96,165,250,0.3)',
-                borderRadius: '10px',
-                padding: '10px',
+                background: 'rgba(255,255,255,0.08)',
+                border: '1px solid rgba(255,255,255,0.15)',
+                borderRadius: '50%',
+                width: '32px',
+                height: '32px',
                 cursor: 'pointer',
-                color: '#fff',
+                color: 'rgba(220,230,255,0.85)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                flexShrink: 0,
+                transition: 'background 0.15s',
               }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.18)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.08)')}
               title="Attach image"
               data-testid="button-ai-attach"
             >
-              <Paperclip size={16} />
+              <Paperclip size={14} />
             </button>
             <button
               onClick={startSnipping}
               style={{
-                background: 'rgba(100,160,255,0.15)',
-                border: '1px solid rgba(96,165,250,0.3)',
-                borderRadius: '10px',
-                padding: '10px',
+                background: 'rgba(255,255,255,0.08)',
+                border: '1px solid rgba(255,255,255,0.15)',
+                borderRadius: '50%',
+                width: '32px',
+                height: '32px',
                 cursor: 'pointer',
-                color: '#fff',
+                color: 'rgba(220,230,255,0.85)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                flexShrink: 0,
+                transition: 'background 0.15s',
               }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.18)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.08)')}
               title="Screen capture"
               data-testid="button-ai-snip"
             >
-              <Scissors size={16} />
+              <Scissors size={14} />
             </button>
             <button
               onClick={() => {
@@ -1838,23 +1859,34 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
               }}
               disabled={!input.trim() && !pastedImage}
               style={{
-                background: (!input.trim() && !pastedImage) ? 'rgba(100,160,255,0.15)' : loading ? 'linear-gradient(135deg, #d97706, #f59e0b)' : 'linear-gradient(135deg, #1d4ed8, #2563eb)',
-                border: '1px solid rgba(96,165,250,0.3)',
-                borderRadius: '10px',
-                padding: '10px',
+                background: (!input.trim() && !pastedImage)
+                  ? 'rgba(255,255,255,0.08)'
+                  : loading
+                    ? 'radial-gradient(circle at 32% 28%, #fbbf24 0%, #d97706 55%, #78350f 100%)'
+                    : 'radial-gradient(circle at 32% 28%, #b794f6 0%, #7c3aed 50%, #4c1d95 100%)',
+                border: '1px solid rgba(255,255,255,0.25)',
+                borderRadius: '50%',
+                width: '44px',
+                height: '44px',
                 cursor: (!input.trim() && !pastedImage) ? 'not-allowed' : 'pointer',
                 color: '#fff',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                flexShrink: 0,
                 opacity: (!input.trim() && !pastedImage) ? 0.5 : 1,
+                boxShadow: (!input.trim() && !pastedImage)
+                  ? 'none'
+                  : '0 6px 24px rgba(124,58,237,0.55), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -4px 10px rgba(0,0,0,0.25)',
+                transition: 'transform 0.15s, box-shadow 0.15s',
               }}
+              onMouseEnter={e => { if (!e.currentTarget.disabled) e.currentTarget.style.transform = 'scale(1.08)'; }}
+              onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
               title={loading ? 'Add context (will be included in next response)' : 'Send message'}
               data-testid="button-ai-command-send"
             >
-              {loading ? <ArrowRight size={16} /> : <Send size={16} />}
+              {loading ? <ArrowRight size={18} /> : <Send size={16} />}
             </button>
-          </div>
           </div>
         </div>
       </div>
