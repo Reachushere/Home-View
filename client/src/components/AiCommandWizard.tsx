@@ -3,42 +3,7 @@ import { createPortal } from 'react-dom';
 import { Zap, Send, X, Loader2, CheckCircle, XCircle, AlertTriangle, Trash2, RotateCcw, Maximize2, Minimize2, Pencil, Circle, ArrowRight, ArrowDown, Undo2, Check, Scissors, Square, Copy, Download, FileText, BookOpen, Paperclip } from 'lucide-react';
 import { queryClient } from '@/lib/queryClient';
 import brynAvatar from '@assets/generated_images/brynassist_avatar.png';
-const waveBgSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 900' preserveAspectRatio='xMidYMid slice'>
-  <defs>
-    <linearGradient id='bgGrad' x1='0' y1='0' x2='0' y2='1'>
-      <stop offset='0' stop-color='%23061226'/>
-      <stop offset='0.35' stop-color='%230a2548'/>
-      <stop offset='0.62' stop-color='%23114d6e'/>
-      <stop offset='0.85' stop-color='%23156d7a'/>
-      <stop offset='1' stop-color='%2308304a'/>
-    </linearGradient>
-    <radialGradient id='glowA' cx='30%25' cy='45%25' r='55%25'>
-      <stop offset='0' stop-color='%2342d6e0' stop-opacity='0.35'/>
-      <stop offset='1' stop-color='%2342d6e0' stop-opacity='0'/>
-    </radialGradient>
-    <radialGradient id='glowB' cx='75%25' cy='65%25' r='50%25'>
-      <stop offset='0' stop-color='%237dd3fc' stop-opacity='0.25'/>
-      <stop offset='1' stop-color='%237dd3fc' stop-opacity='0'/>
-    </radialGradient>
-  </defs>
-  <rect width='600' height='900' fill='url(%23bgGrad)'/>
-  <rect width='600' height='900' fill='url(%23glowA)'/>
-  <rect width='600' height='900' fill='url(%23glowB)'/>
-  <g fill='none' stroke-linecap='round'>
-    <path d='M-40,180 C140,90 320,260 480,140 C560,80 620,200 680,160' stroke='%2367e8f9' stroke-width='2.4' stroke-opacity='0.55'/>
-    <path d='M-60,260 C120,200 280,340 460,240 C580,180 660,300 720,260' stroke='%2322d3ee' stroke-width='1.8' stroke-opacity='0.45'/>
-    <path d='M-40,360 C160,280 340,440 520,340 C620,290 700,400 760,360' stroke='%2306b6d4' stroke-width='3' stroke-opacity='0.6'/>
-    <path d='M-60,470 C140,400 300,560 500,440 C620,380 700,520 760,480' stroke='%23a5f3fc' stroke-width='1.4' stroke-opacity='0.5'/>
-    <path d='M-40,560 C120,490 320,650 540,540 C660,490 740,620 800,580' stroke='%230891b2' stroke-width='4' stroke-opacity='0.5'/>
-    <path d='M-60,660 C160,580 360,740 560,640 C680,590 760,720 820,680' stroke='%2367e8f9' stroke-width='1.8' stroke-opacity='0.5'/>
-    <path d='M-40,760 C140,690 320,840 540,740 C660,690 740,820 800,780' stroke='%23ffffff' stroke-width='1.2' stroke-opacity='0.4'/>
-    <path d='M-60,830 C160,770 360,900 560,820 C680,780 760,880 820,860' stroke='%23bae6fd' stroke-width='1' stroke-opacity='0.45'/>
-    <path d='M40,120 C200,40 360,200 540,80' stroke='%2399f6e4' stroke-width='1' stroke-opacity='0.35'/>
-    <path d='M-20,420 C180,360 360,500 580,400' stroke='%23ffffff' stroke-width='0.8' stroke-opacity='0.3'/>
-    <path d='M-30,620 C180,560 380,700 600,610' stroke='%23ffffff' stroke-width='0.8' stroke-opacity='0.3'/>
-  </g>
-</svg>`;
-const waveBgImage = `data:image/svg+xml;utf8,${waveBgSvg.replace(/\n/g, '').replace(/\s{2,}/g, ' ')}`;
+import waveBgImage from '@assets/image_1776402537852.png';
 
 function CodeBlock({ code, lang }: { code: string; lang: string }) {
   const [copied, setCopied] = useState(false);
@@ -1271,7 +1236,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
     maxWidth: expanded ? '1200px' : '95vw',
     maxHeight: panelMaxHeight,
     height: expanded ? '90vh' : undefined,
-    background: `url("${waveBgImage}") center / cover no-repeat, #061226`,
+    background: `url("${waveBgImage}") center / cover no-repeat, #03101e`,
     border: wizStyle.wizardBorder || defaultWizardStyle.wizardBorder,
     borderRadius: '16px',
     fontFamily: "'Inter', 'Avenir Next', 'SF Pro Display', system-ui, -apple-system, sans-serif",
@@ -1299,7 +1264,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       alignItems: position ? 'flex-start' : 'center',
       justifyContent: position ? 'flex-start' : 'center',
       background: 'rgba(0,0,0,0.5)',
-      backdropFilter: 'blur(4px)',
+      backdropFilter: 'none',
     }} data-testid="ai-command-overlay" onPointerDown={(e) => {
       if (e.target === e.currentTarget) (e.currentTarget as any)._overlayPointerDown = Date.now();
     }} onClick={(e) => {
@@ -1546,12 +1511,11 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 transformOrigin: msg.role === 'user' ? 'right center' : 'left center',
                 color: (() => {
                   if (msg.role === 'system') return 'rgba(255,220,100,0.9)';
+                  if (isOrb) return '#ffffff';
                   const bubbleBg = msg.role === 'user'
                     ? (wizStyle.wizardUserBubble || defaultWizardStyle.wizardUserBubble)
                     : (wizStyle.wizardAssistantBubble || defaultWizardStyle.wizardAssistantBubble);
                   const autoColor = isLightBg(bubbleBg) ? '#1a1a2e' : '#ffffff';
-                  // Honor wizardTextColor only if it provides contrast against the bubble bg.
-                  // Prevents white-on-white / black-on-black from making text invisible.
                   if (wizStyle.wizardTextColor) {
                     const textIsLight = isLightBg(wizStyle.wizardTextColor);
                     const bgIsLight = isLightBg(bubbleBg);
