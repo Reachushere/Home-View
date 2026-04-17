@@ -242,6 +242,39 @@ import { NewsTickerPortal, PrioritySelect, PartnerShiftWizard, WeatherMonthGroup
 import { TaskCard } from "./dashboard-task-card";
 import { FileSelector, ProfileForm, TravelDateTimePicker, SemDatePickerBody, SemesterSettingsFormBody, WeekVariantsSection, CoursesForm, NewCourseDialogInner, NewCourseDialog, TaskForm, SubtasksSection, TaskDependencies, RescheduleForm } from "./dashboard-forms";
 
+const SEMESTER_DATE_RANGES: Array<{ key: string; start: string; end: string }> = [
+  { key: 'ss2025', start: '2025-05-05', end: '2025-08-08' },
+  { key: 'f2025',  start: '2025-09-08', end: '2025-12-12' },
+  { key: 'w2026',  start: '2026-01-12', end: '2026-04-17' },
+  { key: 'ss2026', start: '2026-05-04', end: '2026-08-07' },
+  { key: 'f2026',  start: '2026-09-14', end: '2026-12-11' },
+  { key: 'w2027',  start: '2027-01-11', end: '2027-04-16' },
+  { key: 'ss2027', start: '2027-05-03', end: '2027-08-06' },
+  { key: 'f2027',  start: '2027-09-13', end: '2027-12-17' },
+  { key: 'w2028',  start: '2028-01-10', end: '2028-04-14' },
+  { key: 'ss2028', start: '2028-05-01', end: '2028-08-04' },
+  { key: 'f2028',  start: '2028-09-11', end: '2028-12-15' },
+  { key: 'w2029',  start: '2029-01-15', end: '2029-04-13' },
+];
+
+const semesterActivationMs = (startStr: string): number => {
+  const d = new Date(startStr + 'T00:00:00');
+  const dow = d.getDay();
+  const daysBack = (dow + 1) % 7;
+  d.setDate(d.getDate() - daysBack);
+  return d.getTime();
+};
+
+const getCurrentSemKey = (now: Date = new Date(), fallback = 'w2026'): string => {
+  const t = now.getTime();
+  let active = '';
+  for (const s of SEMESTER_DATE_RANGES) {
+    if (semesterActivationMs(s.start) <= t) active = s.key;
+    else break;
+  }
+  return active || fallback;
+};
+
 export default function Dashboard() {
   const { toast } = useToast();
   
@@ -18379,21 +18412,7 @@ export default function Dashboard() {
               {(() => {
                 const semKeyOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029'];
                 const now = new Date();
-                const currentSemIdx = (() => {
-                  if (now >= new Date('2025-05-05') && now <= new Date('2025-08-08')) return semKeyOrder.indexOf('ss2025');
-                  if (now >= new Date('2025-09-08') && now <= new Date('2025-12-12')) return semKeyOrder.indexOf('f2025');
-                  if (now >= new Date('2026-01-12') && now <= new Date('2026-04-17')) return semKeyOrder.indexOf('w2026');
-                  if (now >= new Date('2026-05-04') && now <= new Date('2026-08-07')) return semKeyOrder.indexOf('ss2026');
-                  if (now >= new Date('2026-09-14') && now <= new Date('2026-12-11')) return semKeyOrder.indexOf('f2026');
-                  if (now >= new Date('2027-01-11') && now <= new Date('2027-04-16')) return semKeyOrder.indexOf('w2027');
-                  if (now >= new Date('2027-05-03') && now <= new Date('2027-08-06')) return semKeyOrder.indexOf('ss2027');
-                  if (now >= new Date('2027-09-13') && now <= new Date('2027-12-17')) return semKeyOrder.indexOf('f2027');
-                  if (now >= new Date('2028-01-10') && now <= new Date('2028-04-14')) return semKeyOrder.indexOf('w2028');
-                  if (now >= new Date('2028-05-01') && now <= new Date('2028-08-04')) return semKeyOrder.indexOf('ss2028');
-                  if (now >= new Date('2028-09-11') && now <= new Date('2028-12-15')) return semKeyOrder.indexOf('f2028');
-                  if (now >= new Date('2029-01-15') && now <= new Date('2029-04-13')) return semKeyOrder.indexOf('w2029');
-                  return -1;
-                })();
+                const currentSemIdx = semKeyOrder.indexOf(getCurrentSemKey(now, ''));
                 const relevantSemKeys = currentSemIdx >= 0 ? semKeyOrder.slice(0, currentSemIdx + 1) : [];
                 const letterToGpa: Record<string, number> = { 'A+': 4.33, 'A': 4.0, 'A-': 3.67, 'B+': 3.33, 'B': 3.0, 'B-': 2.67, 'C+': 2.33, 'C': 2.0, 'C-': 1.67, 'D': 1.0, 'F': 0 };
                 const pToGpa = (p: number) => p >= 90 ? 4.33 : p >= 85 ? 4.0 : p >= 80 ? 3.67 : p >= 77 ? 3.33 : p >= 73 ? 3.0 : p >= 70 ? 2.67 : p >= 67 ? 2.33 : p >= 63 ? 2.0 : p >= 60 ? 1.67 : p >= 50 ? 1.0 : 0;
@@ -26266,22 +26285,7 @@ export default function Dashboard() {
                   const semesterDefs = semesterMeta.map(m => ({ ...m, courses: buildCoursesFromDb(m.key) }));
 
                   const allDefCodes = new Set(semesterDefs.flatMap(s => s.courses.map(c => c.code.toUpperCase().replace(/\s/g, ''))));
-                  const currentSemKey = (() => {
-                    const now = new Date();
-                    if (now >= new Date('2025-05-05') && now <= new Date('2025-08-08')) return 'ss2025';
-                    if (now >= new Date('2025-09-08') && now <= new Date('2025-12-12')) return 'f2025';
-                    if (now >= new Date('2026-01-12') && now <= new Date('2026-04-17')) return 'w2026';
-                    if (now >= new Date('2026-05-04') && now <= new Date('2026-08-07')) return 'ss2026';
-                    if (now >= new Date('2026-09-14') && now <= new Date('2026-12-11')) return 'f2026';
-                    if (now >= new Date('2027-01-11') && now <= new Date('2027-04-16')) return 'w2027';
-                    if (now >= new Date('2027-05-03') && now <= new Date('2027-08-06')) return 'ss2027';
-                    if (now >= new Date('2027-09-13') && now <= new Date('2027-12-17')) return 'f2027';
-                    if (now >= new Date('2028-01-10') && now <= new Date('2028-04-14')) return 'w2028';
-                    if (now >= new Date('2028-05-01') && now <= new Date('2028-08-04')) return 'ss2028';
-                    if (now >= new Date('2028-09-11') && now <= new Date('2028-12-15')) return 'f2028';
-                    if (now >= new Date('2029-01-15') && now <= new Date('2029-04-13')) return 'w2029';
-                    return '';
-                  })();
+                  const currentSemKey = getCurrentSemKey(new Date(), '');
                   if (currentSemKey) {
                     const currentSem = semesterDefs.find(s => s.key === currentSemKey);
                     if (currentSem) {
@@ -26793,22 +26797,7 @@ export default function Dashboard() {
                   return courses.length > 0 ? courses : (semesterCourseAssignments[semKey] || []);
                 };
                 const expandedSem = { ...semMeta, courses: buildCoursesLocal(expandedSemKey) };
-                const currentSemKey = (() => {
-                  const now = new Date();
-                  if (now >= new Date('2025-05-05') && now <= new Date('2025-08-08')) return 'ss2025';
-                  if (now >= new Date('2025-09-08') && now <= new Date('2025-12-12')) return 'f2025';
-                  if (now >= new Date('2026-01-12') && now <= new Date('2026-04-17')) return 'w2026';
-                  if (now >= new Date('2026-05-04') && now <= new Date('2026-08-07')) return 'ss2026';
-                  if (now >= new Date('2026-09-14') && now <= new Date('2026-12-11')) return 'f2026';
-                  if (now >= new Date('2027-01-11') && now <= new Date('2027-04-16')) return 'w2027';
-                  if (now >= new Date('2027-05-03') && now <= new Date('2027-08-06')) return 'ss2027';
-                  if (now >= new Date('2027-09-13') && now <= new Date('2027-12-17')) return 'f2027';
-                  if (now >= new Date('2028-01-10') && now <= new Date('2028-04-14')) return 'w2028';
-                  if (now >= new Date('2028-05-01') && now <= new Date('2028-08-04')) return 'ss2028';
-                  if (now >= new Date('2028-09-11') && now <= new Date('2028-12-15')) return 'f2028';
-                  if (now >= new Date('2029-01-15') && now <= new Date('2029-04-13')) return 'w2029';
-                  return 'w2026';
-                })();
+                const currentSemKey = getCurrentSemKey();
                 const expIsCurrentSem = expandedSemKey === currentSemKey;
                 const expIsEnded = semesterEndConfirmed[expandedSemKey];
                 const expHealth = expandedSemHealth;
