@@ -20796,14 +20796,23 @@ export default function Dashboard() {
       {desktopShowHomework && homeworkMinimized && (
         <button
           onClick={() => {
-            if (hwMinimizeAnim !== 'idle') return;
+            if (hwMinimizeAnim !== 'idle' || blankMinimizeAnim !== 'idle') return;
             if (!homeworkMinimized) return;
             applyMinimizeOrigin('hw', 'homework', false);
+            applyMinimizeOrigin('blank', 'notes', false);
+            if (blankBoxOpen) {
+              setBlankBoxOpen(false);
+              localStorage.removeItem('blankBoxOpen');
+              setBlankBoxMinimizedToTab(true);
+              localStorage.setItem('blankBoxMinimizedToTab', '1');
+              setBlankMinimizeAnim('minimizing');
+            }
             setHomeworkMinimized(false);
             localStorage.removeItem('homeworkMinimized');
             setHwMinimizeAnim('restoring');
             setTimeout(() => {
               setHwMinimizeAnim('idle');
+              setBlankMinimizeAnim('idle');
             }, 580);
           }}
           className="fixed cursor-pointer"
