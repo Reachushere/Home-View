@@ -20800,15 +20800,19 @@ export default function Dashboard() {
             if (!homeworkMinimized) return;
             applyMinimizeOrigin('hw', 'homework', false);
             applyMinimizeOrigin('blank', 'notes', false);
-            setHomeworkMinimized(false);
-            localStorage.removeItem('homeworkMinimized');
-            setHwMinimizeAnim('restoring');
+            // Phase 1: Notes box minimizes into Notes tab
             setBlankMinimizeAnim('minimizing');
             setTimeout(() => {
               setBlankBoxOpen(false);
               localStorage.removeItem('blankBoxOpen');
-              setHwMinimizeAnim('idle');
               setBlankMinimizeAnim('idle');
+              // Phase 2: HW box opens from HW tab
+              setHomeworkMinimized(false);
+              localStorage.removeItem('homeworkMinimized');
+              setHwMinimizeAnim('restoring');
+              setTimeout(() => {
+                setHwMinimizeAnim('idle');
+              }, 580);
             }, 580);
           }}
           className="fixed cursor-pointer"
@@ -20839,17 +20843,21 @@ export default function Dashboard() {
             if (blankBoxOpen && !homeworkMinimized) return;
             applyMinimizeOrigin('hw', 'homework', false);
             applyMinimizeOrigin('blank', 'notes', false);
-            setBlankBoxMinimizedToTab(false);
-            localStorage.removeItem('blankBoxMinimizedToTab');
-            setBlankBoxOpen(true);
-            localStorage.setItem('blankBoxOpen', '1');
-            setBlankMinimizeAnim('restoring');
+            // Phase 1: HW box minimizes into HW tab
             setHwMinimizeAnim('minimizing');
             setTimeout(() => {
               setHomeworkMinimized(true);
               localStorage.setItem('homeworkMinimized', '1');
-              setBlankMinimizeAnim('idle');
               setHwMinimizeAnim('idle');
+              // Phase 2: Notes box opens from Notes tab
+              setBlankBoxMinimizedToTab(false);
+              localStorage.removeItem('blankBoxMinimizedToTab');
+              setBlankBoxOpen(true);
+              localStorage.setItem('blankBoxOpen', '1');
+              setBlankMinimizeAnim('restoring');
+              setTimeout(() => {
+                setBlankMinimizeAnim('idle');
+              }, 580);
             }, 580);
           }}
           className="fixed cursor-pointer"
