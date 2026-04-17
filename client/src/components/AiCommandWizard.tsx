@@ -1647,7 +1647,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 maxWidth: msg.role === 'system' ? '70%' : (isOrb ? undefined : (hasCodeBlock ? '78%' : '88%')),
                 width: isOrb ? `${orbWidth}px` : (msg.role === 'system' ? 'auto' : (hasCodeBlock ? '78%' : undefined)),
                 height: isOrb ? `${orbHeight}px` : undefined,
-                padding: msg.role === 'system' ? '4px 12px' : (isOrb ? '22px 26px' : '14px 18px'),
+                padding: msg.role === 'system' ? '4px 12px' : (isOrb ? '22px 26px' : '10px 14px'),
                 borderRadius: msg.role === 'system' ? '999px' : (isOrb ? '50%' : '24px'),
                 display: isOrb ? 'flex' : undefined,
                 flexDirection: isOrb ? ('column' as const) : undefined,
@@ -1686,7 +1686,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 textShadow: msg.role !== 'system'
                   ? (isLightBg(msg.role === 'user' ? wizStyle.wizardUserBubble : wizStyle.wizardAssistantBubble) ? 'none' : '0 1px 2px rgba(0,0,0,0.3)')
                   : undefined,
-                fontSize: isOrb ? orbFontSize : '13px',
+                fontSize: isOrb ? orbFontSize : '12px',
                 fontFamily: isOrb ? "'Poppins', 'Nunito', 'Avenir Next', 'SF Pro Rounded', system-ui, sans-serif" : undefined,
                 fontWeight: isOrb ? 400 : undefined,
                 letterSpacing: isOrb ? '-0.01em' : undefined,
