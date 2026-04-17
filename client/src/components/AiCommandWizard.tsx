@@ -265,7 +265,7 @@ const thinkingKeyframes = `
 `;
 
 interface Message {
-  role: 'user' | 'assistant' | 'system';
+  role: 'user' | 'assistant' | 'system' | 'thinking';
   content: string;
   image?: string;
   toolResults?: any[];
@@ -632,10 +632,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
               } else if (event.type === 'thinking') {
                 const thinkText = (event.content || '').trim();
                 if (thinkText) {
-                  setMessages(prev => {
-                    const thinkMsg = { role: 'system' as const, content: `💭 ${thinkText}` };
-                    return [...prev, thinkMsg];
-                  });
+                  setMessages(prev => [...prev, { role: 'thinking' as const, content: thinkText }]);
                   setThinkingPhase(null);
                   setActiveToolName(null);
                 }
@@ -1271,8 +1268,27 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
             <div key={i} style={{
               display: 'flex',
               justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start',
+              ...(msg.role === 'system' || msg.role === 'thinking' ? { justifyContent: 'flex-start' } : {}),
               ...(msg.role === 'system' ? { justifyContent: 'center' } : {}),
             }}>
+              {msg.role === 'thinking' ? (
+                <div style={{
+                  display: 'flex', alignItems: 'flex-start', gap: '8px',
+                  maxWidth: '90%', padding: '4px 12px 4px 6px',
+                  fontSize: '11.5px', lineHeight: '1.45',
+                  color: 'rgba(170,195,235,0.65)',
+                  fontStyle: 'italic',
+                  borderLeft: '2px solid rgba(130,170,255,0.35)',
+                  background: 'rgba(20,35,70,0.25)',
+                  borderRadius: '0 8px 8px 0',
+                }}>
+                  <span style={{ fontSize: '13px', lineHeight: 1, marginTop: '1px', opacity: 0.7 }}>🧠</span>
+                  <span style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                    <span style={{ fontWeight: 600, fontStyle: 'normal', color: 'rgba(150,180,230,0.8)', marginRight: '6px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>thinking</span>
+                    {msg.content}
+                  </span>
+                </div>
+              ) : (
               <div style={{
                 maxWidth: msg.role === 'system' ? '100%' : '85%',
                 padding: msg.role === 'system' ? '6px 14px' : '10px 14px',
@@ -1409,6 +1425,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                   );
                 })()}
               </div>
+              )}
             </div>
           ))}
 

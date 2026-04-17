@@ -704,7 +704,7 @@ export const AI_COMMAND_TOOLS = [
     type: "function" as const,
     function: {
       name: "update_app_theme",
-      description: "Change the app's visual theme/colors OR the BrynAssist dialog's appearance. Updates stored in DB and take effect on next page load/refresh. For dashboard: use headerBar, mainBackground, etc. For BrynAssist dialog (this window): use wizard* properties. IMPORTANT: When user asks to change 'text color', use wizardTextColor for message text or wizardBodyTextColor for the prompt examples/body text. Do NOT change bubble backgrounds (wizardUserBubble/wizardAssistantBubble) unless the user specifically asks to change bubble/message background colors. Set wizardReset to true to reset ALL BrynAssist styles back to defaults.",
+      description: "Change colors of TWO surfaces ONLY: (a) the dashboard chrome (header bar, main bg, content boxes, today highlight), or (b) the BrynAssist dialog itself (this window — bg, border, header, input, message bubbles, message text). DOES NOT style any feature page (Automations, Library, Notepad, Calendar settings, Course Wizard, etc.) — for those you must use edit_file on the relevant component. If the user asks to change a feature page's colors, your thinking trace MUST acknowledge that and route to edit_file instead.\n\nAmbiguity rules: if the user just says 'change the text color' without saying which surface, ASK which one — don't guess. Default assumption: 'text color' alone usually means dashboard, NOT BrynAssist itself.\n\nSafety: the server validates contrast and will REJECT any wizardTextColor / wizardBodyTextColor change that would be unreadable against the current bubble/dialog bg (and vice versa). Read the error and try a contrasting color.\n\nUndo: set wizardUndo=true to restore the BrynAssist style to whatever it was BEFORE your most recent change. Use this when Bryn says revert/undo/'change it back'.\n\nReset: set wizardReset=true to wipe BrynAssist styles back to factory defaults.",
       parameters: {
         type: "object",
         properties: {
@@ -724,6 +724,7 @@ export const AI_COMMAND_TOOLS = [
           wizardTextColor: { type: "string", description: "BrynAssist message text color (hex code, e.g. '#ffffff'). Use this when user asks to change the text/font color in messages" },
           wizardBodyTextColor: { type: "string", description: "BrynAssist body/prompt example text color (hex code, e.g. '#ffffff'). Use this when user asks to change the welcome text or prompt example colors" },
           wizardReset: { type: "boolean", description: "Set to true to reset ALL BrynAssist wizard styles back to defaults. Use when user asks to reset/fix BrynAssist appearance" },
+          wizardUndo: { type: "boolean", description: "Set to true to revert BrynAssist wizard styles to the snapshot taken just before the most recent change. Use when user says undo / revert / 'change it back'." },
         },
       },
     },
@@ -2979,13 +2980,52 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
         const dashboardFields = ['headerBar', 'mainBackground', 'mainBackgroundGradientEnd', 'boxBackground', 'todayCellBackground', 'boxTransparency', 'boxGlassEffect'];
         const wizardFields = ['wizardBackground', 'wizardBorder', 'wizardHeaderBg', 'wizardInputBg', 'wizardUserBubble', 'wizardAssistantBubble', 'wizardTextColor', 'wizardBodyTextColor'];
 
-        if (args.wizardReset) {
-          const key = 'ui_wizardStyle';
-          const existingRows = await db.select().from(appStateTable).where(eq(appStateTable.key, key)).limit(1);
-          if (existingRows.length > 0) {
-            await db.update(appStateTable).set({ value: '{}', updatedAt: new Date() }).where(eq(appStateTable.key, key));
+        const isLightColor = (bg: string | undefined): boolean => {
+          if (!bg) return false;
+          const l = bg.toLowerCase().replace(/\s/g, '');
+          if (l.includes('white') || l === '#fff' || l === '#ffffff') return true;
+          const rgb = l.match(/rgba?\((\d+),(\d+),(\d+)/);
+          if (rgb) return (+rgb[1] * 0.299 + +rgb[2] * 0.587 + +rgb[3] * 0.114) > 160;
+          const hex = l.match(/#([0-9a-f]{6})/);
+          if (hex) { const r = parseInt(hex[1].slice(0,2),16), g = parseInt(hex[1].slice(2,4),16), b = parseInt(hex[1].slice(4,6),16); return (r*0.299+g*0.587+b*0.114) > 160; }
+          return false;
+        };
+
+        const wizKey = 'ui_wizardStyle';
+        const wizBackupKey = 'ui_wizardStyle_prevSnapshot';
+        const readKey = async (k: string): Promise<any> => {
+          const rows = await db.select().from(appStateTable).where(eq(appStateTable.key, k)).limit(1);
+          if (rows.length === 0 || !rows[0].value) return {};
+          try { return JSON.parse(rows[0].value); } catch { return {}; }
+        };
+        const writeKey = async (k: string, v: any) => {
+          const rows = await db.select().from(appStateTable).where(eq(appStateTable.key, k)).limit(1);
+          const value = JSON.stringify(v);
+          if (rows.length > 0) {
+            await db.update(appStateTable).set({ value, updatedAt: new Date() }).where(eq(appStateTable.key, k));
+          } else {
+            await db.insert(appStateTable).values({ key: k, value });
           }
-          return { success: true, result: { updated: ['BrynAssist: reset to defaults'], note: "Close and reopen BrynAssist to see changes." } };
+        };
+
+        if (args.wizardUndo) {
+          const snapshot = await readKey(wizBackupKey);
+          if (!snapshot || Object.keys(snapshot).length === 0) {
+            return { success: false, result: { error: "No previous BrynAssist style snapshot exists yet — nothing to undo. (Snapshots are created on each style change.)" } };
+          }
+          const current = await readKey(wizKey);
+          await writeKey(wizKey, snapshot);
+          await writeKey(wizBackupKey, current); // make undo itself undoable (acts as redo)
+          return { success: true, result: { updated: ['BrynAssist: reverted to previous snapshot'], note: "Close and reopen BrynAssist to see the revert. Calling wizardUndo again will redo the change." } };
+        }
+
+        if (args.wizardReset) {
+          const current = await readKey(wizKey);
+          if (Object.keys(current).length > 0) {
+            await writeKey(wizBackupKey, current);
+          }
+          await writeKey(wizKey, {});
+          return { success: true, result: { updated: ['BrynAssist: reset to defaults (snapshot saved — wizardUndo to revert)'], note: "Close and reopen BrynAssist to see changes." } };
         }
 
         const dashboardUpdates: any = {};
@@ -2995,6 +3035,45 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
 
         if (Object.keys(dashboardUpdates).length === 0 && Object.keys(wizardUpdates).length === 0) {
           return { success: false, result: { error: "No theme updates specified" } };
+        }
+
+        // CONTRAST GUARD — refuse changes that would make wizard text invisible.
+        if (Object.keys(wizardUpdates).length > 0) {
+          const currentWiz = await readKey(wizKey);
+          const merged = { ...currentWiz, ...wizardUpdates };
+          const defaults: any = {
+            wizardBackground: 'linear-gradient(180deg, #0d1b3e 0%, #0f2347 30%, #132d5a 60%, #162f5e 100%)',
+            wizardUserBubble: 'linear-gradient(135deg, #1d4ed8, #2563eb)',
+            wizardAssistantBubble: 'rgba(30,50,90,0.7)',
+          };
+          const userBubbleBg = merged.wizardUserBubble || defaults.wizardUserBubble;
+          const asstBubbleBg = merged.wizardAssistantBubble || defaults.wizardAssistantBubble;
+          const dialogBg = merged.wizardBackground || defaults.wizardBackground;
+          const checks: string[] = [];
+
+          if (merged.wizardTextColor) {
+            const txtLight = isLightColor(merged.wizardTextColor);
+            if (txtLight === isLightColor(userBubbleBg)) checks.push(`wizardTextColor (${merged.wizardTextColor}) has the same lightness as the user bubble bg (${userBubbleBg}) — would be unreadable. Pick the opposite (dark text on light bg, or light text on dark bg).`);
+            if (txtLight === isLightColor(asstBubbleBg)) checks.push(`wizardTextColor (${merged.wizardTextColor}) has the same lightness as the assistant bubble bg (${asstBubbleBg}) — would be unreadable.`);
+          }
+          if (merged.wizardBodyTextColor) {
+            if (isLightColor(merged.wizardBodyTextColor) === isLightColor(dialogBg)) {
+              checks.push(`wizardBodyTextColor (${merged.wizardBodyTextColor}) has the same lightness as the dialog bg (${dialogBg}) — body text would be unreadable.`);
+            }
+          }
+          if (wizardUpdates.wizardUserBubble && currentWiz.wizardTextColor) {
+            if (isLightColor(wizardUpdates.wizardUserBubble) === isLightColor(currentWiz.wizardTextColor)) {
+              checks.push(`Changing wizardUserBubble to ${wizardUpdates.wizardUserBubble} would make the existing wizardTextColor (${currentWiz.wizardTextColor}) unreadable. Either change the text color in the same call, or pick a different bubble shade.`);
+            }
+          }
+          if (wizardUpdates.wizardAssistantBubble && currentWiz.wizardTextColor) {
+            if (isLightColor(wizardUpdates.wizardAssistantBubble) === isLightColor(currentWiz.wizardTextColor)) {
+              checks.push(`Changing wizardAssistantBubble to ${wizardUpdates.wizardAssistantBubble} would make the existing wizardTextColor (${currentWiz.wizardTextColor}) unreadable.`);
+            }
+          }
+          if (checks.length > 0) {
+            return { success: false, result: { error: "Contrast guard rejected this BrynAssist style change.", details: checks, hint: "Pick colors with opposite lightness, or include both bubble bg AND text color in the same update_app_theme call so they stay paired." } };
+          }
         }
 
         const results: string[] = [];
@@ -3015,18 +3094,12 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
         }
 
         if (Object.keys(wizardUpdates).length > 0) {
-          const key = 'ui_wizardStyle';
-          const existingRows = await db.select().from(appStateTable).where(eq(appStateTable.key, key)).limit(1);
-          let current: any = {};
-          if (existingRows.length > 0 && existingRows[0].value) { try { current = JSON.parse(existingRows[0].value); } catch {} }
+          // Snapshot CURRENT state to backup BEFORE writing the new one (so wizardUndo works).
+          const current = await readKey(wizKey);
+          await writeKey(wizBackupKey, current);
           const merged = { ...current, ...wizardUpdates };
-          const value = JSON.stringify(merged);
-          if (existingRows.length > 0) {
-            await db.update(appStateTable).set({ value, updatedAt: new Date() }).where(eq(appStateTable.key, key));
-          } else {
-            await db.insert(appStateTable).values({ key, value });
-          }
-          results.push(`BrynAssist: ${Object.keys(wizardUpdates).join(', ')}`);
+          await writeKey(wizKey, merged);
+          results.push(`BrynAssist: ${Object.keys(wizardUpdates).join(', ')} (snapshot saved — wizardUndo to revert)`);
         }
 
         return { success: true, result: { updated: results, note: "Changes apply on page refresh. For BrynAssist changes, close and reopen the dialog." } };
