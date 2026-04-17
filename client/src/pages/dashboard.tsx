@@ -20749,7 +20749,7 @@ export default function Dashboard() {
           className="fixed cursor-pointer"
           style={{
             bottom: '64px',
-            left: weatherAlerts.length > 0 ? 'calc(50% + 302px + 35px + 150px)' : 'calc(50% + 302px + 150px)',
+            left: weatherAlerts.length > 0 ? 'calc(50% + 302px + 35px + 195px)' : 'calc(50% + 302px + 195px)',
             transition: 'left 0.3s ease-in-out',
             display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : 'block',
             zIndex: 10002,
@@ -20762,7 +20762,7 @@ export default function Dashboard() {
         >
           <svg width="84" height="25" viewBox="0 0 84 25" style={{ display: 'block' }}>
             <path d="M0,25 L84,25 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
-            <text x="42" y="7" textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.85)" fontSize="9" fontWeight="500" fontFamily="system-ui, -apple-system, sans-serif">Homework</text>
+            <text x="42" y="9" textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.95)" fontSize="12" fontWeight="600" fontFamily="system-ui, -apple-system, sans-serif">Homework</text>
           </svg>
         </button>
       )}
@@ -20788,8 +20788,8 @@ export default function Dashboard() {
           style={{
             bottom: '64px',
             left: weatherAlerts.length > 0
-              ? (homeworkMinimized ? 'calc(50% + 302px + 45px + 150px)' : 'calc(50% + 302px + 45px + 95px)')
-              : (homeworkMinimized ? 'calc(50% + 302px + 150px)' : 'calc(50% + 302px + 95px)'),
+              ? (homeworkMinimized ? 'calc(50% + 302px + 45px + 195px)' : 'calc(50% + 302px + 45px + 140px)')
+              : (homeworkMinimized ? 'calc(50% + 302px + 195px)' : 'calc(50% + 302px + 140px)'),
             transition: 'left 0.3s ease-in-out',
             display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : 'block',
             zIndex: 10002,
@@ -20802,7 +20802,7 @@ export default function Dashboard() {
         >
           <svg width="84" height="25" viewBox="0 0 84 25" style={{ display: 'block' }}>
             <path d="M0,25 L84,25 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
-            <text x="42" y="7" textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.85)" fontSize="8" fontWeight="500" fontFamily="system-ui, -apple-system, sans-serif">Notes</text>
+            <text x="42" y="9" textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.95)" fontSize="12" fontWeight="600" fontFamily="system-ui, -apple-system, sans-serif">Notes</text>
           </svg>
         </button>
       )}
