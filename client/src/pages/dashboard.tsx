@@ -18260,7 +18260,7 @@ export default function Dashboard() {
         <Share 
           className="text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
-          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 14}px`, right: `${calendarRight - calendarReduction + 19 + 46}px`, zIndex: 70 }}
+          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 14}px`, right: `${calendarRight - calendarReduction + 19 + 46 + 7}px`, zIndex: 70 }}
           onClick={() => { generateShareLink('4201'); setIsShareDialogOpen(true); }}
           data-testid="button-share-main"
         />
@@ -18269,7 +18269,7 @@ export default function Dashboard() {
         <Download
           className="text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
-          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 14}px`, right: `${calendarRight - calendarReduction + 19 + 23}px`, zIndex: 70 }}
+          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 14}px`, right: `${calendarRight - calendarReduction + 19 + 23 + 7}px`, zIndex: 70 }}
           onClick={() => {
             window.open('https://github.com/Reachushere/Home-View/archive/refs/heads/main.zip', '_blank');
           }}
@@ -18281,7 +18281,7 @@ export default function Dashboard() {
         <Printer
           className="text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
-          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 14}px`, right: `${calendarRight - calendarReduction + 19}px`, zIndex: 70 }}
+          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 14}px`, right: `${calendarRight - calendarReduction + 19 + 7}px`, zIndex: 70 }}
           onClick={() => {
             const printableIframe = document.querySelector('iframe[src*="pdf-reader"], iframe[src*="/files/"]') as HTMLIFrameElement | null;
             if (printableIframe && printableIframe.contentWindow) {
@@ -18298,7 +18298,7 @@ export default function Dashboard() {
         <Copy
           className="text-white/50 cursor-pointer hover:text-white/90"
           strokeWidth={2.5}
-          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 14}px`, right: `${calendarRight - calendarReduction + 19 + 69}px`, zIndex: 70 }}
+          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 14}px`, right: `${calendarRight - calendarReduction + 19 + 69 + 7}px`, zIndex: 70 }}
           onClick={async () => {
             try {
               const res = await fetch('/api/source-code/all');
@@ -39399,7 +39399,7 @@ export default function Dashboard() {
         <button
           onClick={() => setIsAiCommandOpen(true)}
           style={{
-            position: 'fixed', bottom: '12px', right: '12px', zIndex: 10000,
+            position: 'fixed', bottom: '43px', right: '12px', zIndex: 10000,
             width: '44px', height: '44px', borderRadius: '50%',
             background: 'radial-gradient(circle at 30% 30%, #b794f6 0%, #7c3aed 55%, #4c1d95 100%)',
             border: '1.5px solid rgba(183,148,246,0.55)',
