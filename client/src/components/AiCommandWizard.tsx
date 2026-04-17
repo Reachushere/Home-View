@@ -6,9 +6,9 @@ import brynAvatar from '@assets/generated_images/brynassist_avatar.png';
 const buildWaveBg = (): string => {
   const colors = ['%2300e5ff', '%230ea5e9', '%2338bdf8', '%2306b6d4', '%23a855f7', '%23d946ef', '%23ec4899', '%237c3aed', '%23f0abfc'];
   const lines: string[] = [];
-  const N = 32;
+  const N = 18;
   for (let i = 0; i < N; i++) {
-    const offset = (i - N / 2) * 16;
+    const offset = (i - N / 2) * 28;
     const baseY = 460 + offset;
     const wob = (i % 5) * 6 - 12;
     const c1y = baseY - 220 + wob;
@@ -1603,7 +1603,10 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                   ? (isLightBg(msg.role === 'user' ? wizStyle.wizardUserBubble : wizStyle.wizardAssistantBubble) ? 'none' : '0 1px 2px rgba(0,0,0,0.3)')
                   : undefined,
                 fontSize: isOrb ? orbFontSize : '13px',
-                lineHeight: '1.5',
+                fontFamily: isOrb ? "'Poppins', 'Nunito', 'Avenir Next', 'SF Pro Rounded', system-ui, sans-serif" : undefined,
+                fontWeight: isOrb ? 500 : undefined,
+                letterSpacing: isOrb ? '0.01em' : undefined,
+                lineHeight: isOrb ? '1.35' : '1.5',
                 whiteSpace: 'pre-wrap',
                 wordBreak: 'break-word',
               }}>
