@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Zap, Send, X, Loader2, CheckCircle, XCircle, AlertTriangle, Trash2, RotateCcw, Maximize2, Minimize2, Pencil, Circle, ArrowRight, ArrowDown, Undo2, Check, Scissors, Square, Copy, Download, FileText, BookOpen, Paperclip } from 'lucide-react';
 import { queryClient } from '@/lib/queryClient';
+import waveBgImage from '@assets/image_1776402537852.png';
 
 function CodeBlock({ code, lang }: { code: string; lang: string }) {
   const [copied, setCopied] = useState(false);
@@ -568,13 +569,40 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
+    const updateOrbScales = () => {
+      const containerRect = el.getBoundingClientRect();
+      const focalY = containerRect.top + containerRect.height * 0.5;
+      const orbs = el.querySelectorAll<HTMLElement>('[data-orb-bubble]');
+      orbs.forEach((orb) => {
+        const r = orb.getBoundingClientRect();
+        const orbCenter = r.top + r.height / 2;
+        const dist = Math.abs(orbCenter - focalY);
+        const threshold = containerRect.height * 0.55;
+        const t = Math.min(1, dist / threshold);
+        const scale = 1 - t * 0.45;
+        const opacity = 1 - t * 0.55;
+        orb.style.transform = `scale(${scale})`;
+        orb.style.opacity = String(opacity);
+        orb.style.zIndex = String(Math.round(100 - t * 100));
+      });
+    };
     const onScroll = () => {
       const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
       userScrolledRef.current = !atBottom;
       setShowScrollBtn(!atBottom);
+      updateOrbScales();
     };
     el.addEventListener('scroll', onScroll);
-    return () => el.removeEventListener('scroll', onScroll);
+    const ro = new ResizeObserver(updateOrbScales);
+    ro.observe(el);
+    const mo = new MutationObserver(updateOrbScales);
+    mo.observe(el, { childList: true, subtree: true });
+    requestAnimationFrame(updateOrbScales);
+    return () => {
+      el.removeEventListener('scroll', onScroll);
+      ro.disconnect();
+      mo.disconnect();
+    };
   }, [isOpen]);
 
   useEffect(() => {
@@ -1206,9 +1234,10 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
     maxWidth: expanded ? '1200px' : '95vw',
     maxHeight: panelMaxHeight,
     height: expanded ? '90vh' : undefined,
-    background: wizStyle.wizardBackground || defaultWizardStyle.wizardBackground,
+    background: `linear-gradient(180deg, rgba(10,20,50,0.55) 0%, rgba(10,15,40,0.65) 100%), url(${waveBgImage}) left center / 200% 100% no-repeat, ${wizStyle.wizardBackground || defaultWizardStyle.wizardBackground}`,
     border: wizStyle.wizardBorder || defaultWizardStyle.wizardBorder,
     borderRadius: '16px',
+    fontFamily: "'Inter', 'Avenir Next', 'SF Pro Display', system-ui, -apple-system, sans-serif",
     display: 'flex',
     flexDirection: 'column',
     boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(50,120,220,0.15)',
@@ -1366,14 +1395,44 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
           minHeight: '200px',
         }}>
           {messages.length === 0 && (
-            <div style={{ textAlign: 'center', padding: '30px 20px', color: wizStyle.wizardBodyTextColor || '#ffffff' }}>
-              <Zap size={32} color={wizStyle.wizardBodyTextColor || '#ffffff'} style={{ margin: '0 auto 12px', opacity: 0.7 }} />
-              <div style={{ fontSize: '14px', marginBottom: '8px' }}>What can I help with?</div>
-              <div style={{ fontSize: '12px', lineHeight: '1.8', opacity: 0.6 }}>
+            <div style={{
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'flex-start',
+              padding: '40px 32px',
+              color: '#ffffff',
+              minHeight: '320px',
+            }}>
+              <div style={{
+                fontSize: '26px',
+                fontWeight: 300,
+                lineHeight: '1.35',
+                letterSpacing: '-0.01em',
+                color: 'rgba(235,240,255,0.92)',
+                textShadow: '0 2px 12px rgba(0,0,0,0.4)',
+              }}>
+                I'm here to help you in<br />
+                your everyday life,<br />
+                <span style={{
+                  background: 'linear-gradient(90deg, #5eead4 0%, #60a5fa 50%, #a78bfa 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  fontWeight: 500,
+                }}>just ask me</span>...
+              </div>
+              <div style={{
+                marginTop: '28px',
+                fontSize: '11px',
+                lineHeight: '1.9',
+                opacity: 0.45,
+                color: '#cbd5ff',
+              }}>
                 "Add a quiz for CPPA122 next Friday"<br />
                 "What's due this week?"<br />
                 "Turn on the cat lights"<br />
-                "Mark my CFNF400 reading as done"<br />
                 "Announce dinner is ready"
               </div>
             </div>
@@ -1400,20 +1459,40 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                   </span>
                 </div>
               ) : (
-              <div style={{
-                maxWidth: msg.role === 'system' ? '100%' : '85%',
-                padding: msg.role === 'system' ? '6px 14px' : '10px 14px',
-                borderRadius: msg.role === 'user' ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
-                background: msg.role === 'user'
-                  ? (wizStyle.wizardUserBubble || defaultWizardStyle.wizardUserBubble)
-                  : msg.role === 'system'
+              (() => {
+                const orbContent = (msg.content || '').replace(/```[\s\S]*?```/g, '').trim();
+                const isShortOrb = msg.role !== 'system' && orbContent.length > 0 && orbContent.length < 70 && !msg.image && !msg.toolResults?.length;
+                const orbPalettes = [
+                  'radial-gradient(circle at 32% 28%, #b794f6 0%, #7c3aed 45%, #4c1d95 100%)',
+                  'radial-gradient(circle at 32% 28%, #5eead4 0%, #14b8a6 45%, #0f766e 100%)',
+                  'radial-gradient(circle at 32% 28%, #60a5fa 0%, #3b82f6 45%, #1e3a8a 100%)',
+                ];
+                const userOrbBg = 'radial-gradient(circle at 32% 28%, #6ea8ff 0%, #2563eb 45%, #1e3a8a 100%)';
+                const orbBg = msg.role === 'user' ? userOrbBg : orbPalettes[i % orbPalettes.length];
+                const orbShadow = msg.role === 'user'
+                  ? '0 10px 40px rgba(37,99,235,0.45), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -8px 20px rgba(0,0,0,0.2)'
+                  : '0 10px 40px rgba(124,58,237,0.4), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -8px 20px rgba(0,0,0,0.2)';
+                return (
+              <div data-orb-bubble={msg.role === 'system' ? undefined : '1'} style={{
+                maxWidth: msg.role === 'system' ? '100%' : (isShortOrb ? undefined : '85%'),
+                width: isShortOrb ? '170px' : undefined,
+                height: isShortOrb ? '170px' : undefined,
+                padding: msg.role === 'system' ? '6px 14px' : (isShortOrb ? '20px' : '14px 18px'),
+                borderRadius: msg.role === 'system' ? '14px' : (isShortOrb ? '50%' : '24px'),
+                display: isShortOrb ? 'flex' : undefined,
+                alignItems: isShortOrb ? 'center' : undefined,
+                justifyContent: isShortOrb ? 'center' : undefined,
+                textAlign: isShortOrb ? ('center' as const) : undefined,
+                flexShrink: 0,
+                background: msg.role === 'system'
                   ? 'rgba(255,200,50,0.15)'
-                  : (wizStyle.wizardAssistantBubble || defaultWizardStyle.wizardAssistantBubble),
-                border: msg.role === 'user'
-                  ? '1px solid rgba(96,165,250,0.3)'
-                  : msg.role === 'system'
+                  : orbBg,
+                boxShadow: msg.role === 'system' ? undefined : orbShadow,
+                border: msg.role === 'system'
                   ? '1px solid rgba(255,200,50,0.3)'
-                  : '1px solid rgba(100,160,255,0.15)',
+                  : '1px solid rgba(255,255,255,0.18)',
+                transition: 'transform 0.25s cubic-bezier(0.22,1,0.36,1), opacity 0.25s ease-out, box-shadow 0.25s ease-out',
+                transformOrigin: msg.role === 'user' ? 'right center' : 'left center',
                 color: (() => {
                   if (msg.role === 'system') return 'rgba(255,220,100,0.9)';
                   const bubbleBg = msg.role === 'user'
@@ -1536,6 +1615,8 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                   );
                 })()}
               </div>
+              );
+              })()
               )}
             </div>
           ))}
