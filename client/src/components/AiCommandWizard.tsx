@@ -612,18 +612,20 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       const containerRect = el.getBoundingClientRect();
       const focalY = containerRect.top + containerRect.height * 0.5;
       const orbs = el.querySelectorAll<HTMLElement>('[data-orb-bubble]');
-      const sigma = containerRect.height * 0.32;
+      const sigma = containerRect.height * 0.18;
       orbs.forEach((orb) => {
         const r = orb.getBoundingClientRect();
         const orbCenter = r.top + r.height / 2;
         const dist = Math.abs(orbCenter - focalY);
         const g = Math.exp(-(dist * dist) / (2 * sigma * sigma));
-        const scale = 0.42 + g * 0.58;
-        const opacity = 0.32 + g * 0.68;
+        const scale = 0.35 + g * 1.25;
+        const opacity = 0.22 + g * 0.78;
+        const blur = (1 - g) * 1.4;
         orb.style.transform = `scale(${scale})`;
         orb.style.opacity = String(opacity);
         orb.style.zIndex = String(Math.round(g * 100));
-        orb.style.filter = '';
+        orb.style.filter = blur > 0.1 ? `blur(${blur.toFixed(2)}px)` : '';
+        orb.style.transition = 'transform 0.18s ease-out, opacity 0.18s ease-out, filter 0.18s ease-out';
       });
     };
     const onScroll = () => {
