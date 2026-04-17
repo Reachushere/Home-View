@@ -527,14 +527,43 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   }, []);
   const [screenCopied, setScreenCopied] = useState(false);
   const copyScreen = useCallback(() => {
-    const lines = (messages || []).map((m: any) => {
-      const role = m.role === 'user' ? 'YOU' : m.role === 'assistant' ? 'BA' : (m.role || '').toUpperCase();
-      const tools = (m.toolResults && m.toolResults.length)
-        ? '\n  [tools: ' + m.toolResults.map((t: any) => `${t.name}${t.success ? '✓' : '✗'}`).join(', ') + ']'
-        : '';
-      return `${role}: ${m.content || ''}${tools}`;
-    }).join('\n\n');
-    navigator.clipboard.writeText(lines || '(empty conversation)').then(() => {
+    const lines: string[] = [];
+    const failRe = /^[ \t]*(?:Failed|❌\s*Failed|Error)[:\-—]\s*(.+)$/i;
+    for (const m of (messages || []) as any[]) {
+      const role = m.role === 'user' ? 'YOU'
+        : m.role === 'assistant' ? 'BA'
+        : m.role === 'thinking' ? 'THINKING'
+        : 'SYSTEM';
+      const content = (m.content ?? '').toString();
+      if (m.role === 'assistant') {
+        const lns = content.split('\n');
+        const fails: string[] = [];
+        let rest = lns;
+        while (rest.length > 0) {
+          const mm = rest[0].match(failRe);
+          if (!mm) break;
+          fails.push(mm[1].trim());
+          rest = rest.slice(1);
+        }
+        while (rest.length > 0 && rest[0].trim() === '') rest = rest.slice(1);
+        for (const f of fails) lines.push(`SYSTEM: Failed: ${f}`);
+        const remainder = rest.join('\n').trim();
+        if (remainder) lines.push(`${role}: ${remainder}`);
+      } else if (content.trim()) {
+        lines.push(`${role}: ${content}`);
+      }
+      if (m.toolResults && m.toolResults.length) {
+        for (const t of m.toolResults) {
+          const status = t.success ? '✓' : '✗';
+          let resultStr = '';
+          try { resultStr = typeof t.result === 'string' ? t.result : JSON.stringify(t.result); } catch { resultStr = String(t.result); }
+          if (resultStr.length > 800) resultStr = resultStr.substring(0, 800) + '…';
+          lines.push(`  [${t.name} ${status}] ${resultStr}`);
+        }
+      }
+    }
+    const text = lines.join('\n\n') || '(empty conversation)';
+    navigator.clipboard.writeText(text).then(() => {
       setScreenCopied(true);
       setTimeout(() => setScreenCopied(false), 1400);
     }).catch(() => {});
