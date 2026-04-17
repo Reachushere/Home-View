@@ -5844,24 +5844,51 @@ Be thorough but practical. Focus on real issues, not false positives. If the doc
 
   app.get("/api/onedrive/list-raw", async (req, res) => {
     try {
-      const folderPath = (req.query.path as string) || '';
+      let folderPath = (req.query.path as string) || '';
       if (!folderPath) return res.status(400).json({ error: "path query param required" });
-      const { listOneDriveItems, isOneDriveConnected } = await import("./onedrive");
+
+      // Normalize: ensure single leading slash, strip trailing slash, collapse doubles
+      folderPath = ('/' + folderPath).replace(/\/+/g, '/').replace(/\/$/, '') || '/';
+
+      const { isOneDriveConnected, getAccessToken } = await import("./onedrive");
       if (!isOneDriveConnected()) return res.status(503).json({ error: "OneDrive not connected" });
-      const items = await listOneDriveItems(folderPath);
-      const mapped = items.map((item: any) => ({
-        name: item.name,
-        type: item.type,
-        path: item.path,
-        size: item.size,
-        lastModified: item.lastModifiedDateTime,
+
+      // Raw fetch (bypass Graph SDK to avoid its cryptic startsWith errors on edge-case paths)
+      const accessToken = await getAccessToken();
+      if (!accessToken || typeof accessToken !== 'string') {
+        return res.status(500).json({ error: "OneDrive access token unavailable" });
+      }
+
+      const url = folderPath === '/'
+        ? 'https://graph.microsoft.com/v1.0/me/drive/root/children?$top=200&$select=id,name,folder,file,size,lastModifiedDateTime,parentReference'
+        : `https://graph.microsoft.com/v1.0/me/drive/root:${encodeURI(folderPath)}:/children?$top=200&$select=id,name,folder,file,size,lastModifiedDateTime,parentReference`;
+
+      const r = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}`, Accept: 'application/json' } });
+      const bodyText = await r.text();
+      if (!r.ok) {
+        console.error(`[OneDrive list-raw] Graph ${r.status}: ${bodyText.substring(0, 400)}`);
+        return res.status(r.status).json({ error: `Graph API ${r.status}`, detail: bodyText.substring(0, 500), normalizedPath: folderPath, requestedUrl: url });
+      }
+      let payload: any;
+      try { payload = JSON.parse(bodyText); } catch { return res.status(502).json({ error: "Graph returned non-JSON", detail: bodyText.substring(0, 300) }); }
+
+      const value = Array.isArray(payload?.value) ? payload.value : [];
+      const items = value.map((item: any) => ({
+        id: item?.id,
+        name: item?.name,
+        type: item?.folder ? 'folder' : (item?.file ? 'file' : 'unknown'),
+        size: item?.size,
+        lastModified: item?.lastModifiedDateTime,
+        path: item?.parentReference?.path
+          ? String(item.parentReference.path).replace('/drive/root:', '') + '/' + (item?.name ?? '')
+          : '/' + (item?.name ?? ''),
       }));
-      const folders = mapped.filter((i: any) => i.type === 'folder').map((i: any) => i.name);
-      const files = mapped.filter((i: any) => i.type === 'file').map((i: any) => i.name);
-      res.json({ path: folderPath, total: mapped.length, folders, files, items: mapped });
+      const folders = items.filter((i: any) => i.type === 'folder').map((i: any) => i.name).filter(Boolean);
+      const files = items.filter((i: any) => i.type === 'file').map((i: any) => i.name).filter(Boolean);
+      res.json({ path: folderPath, total: items.length, folders, files, items });
     } catch (err: any) {
-      console.error("[OneDrive list-raw] Error:", err.message);
-      res.status(500).json({ error: err.message?.substring(0, 300) || "Failed to list folder" });
+      console.error("[OneDrive list-raw] Error:", err?.message, err?.stack);
+      res.status(500).json({ error: err?.message?.substring(0, 300) || "Failed to list folder", stack: err?.stack?.substring(0, 500) });
     }
   });
 

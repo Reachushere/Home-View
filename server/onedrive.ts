@@ -138,7 +138,7 @@ export function isOneDriveConnected(): boolean {
   return hasReplit;
 }
 
-async function getAccessToken() {
+export async function getAccessToken() {
   if (cachedAccessToken && cachedTokenExpiresAt > Date.now() + 60000) {
     console.log(`[OneDrive][TRACE] Using cached access token (expires in ${Math.round((cachedTokenExpiresAt - Date.now()) / 1000)}s)`);
     return cachedAccessToken;
