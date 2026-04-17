@@ -74,8 +74,8 @@ function CodeBlock({ code, lang }: { code: string; lang: string }) {
         </button>
       </div>
       <pre style={{
-        margin: 0, padding: '10px 12px', overflowX: 'auto',
-        fontSize: '12.5px', lineHeight: '1.6',
+        margin: 0, padding: '8px 10px', overflowX: 'auto',
+        fontSize: '10.5px', lineHeight: '1.45',
         fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
         color: '#e8f0ff', whiteSpace: 'pre-wrap', wordBreak: 'break-all',
         textShadow: '0 0 1px rgba(200,220,255,0.15)',
@@ -1607,8 +1607,8 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                   : '0 10px 40px rgba(124,58,237,0.4), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -8px 20px rgba(0,0,0,0.2)';
                 return (
               <div data-orb-bubble={msg.role === 'system' ? undefined : '1'} style={{
-                maxWidth: msg.role === 'system' ? '70%' : (hasCodeBlock ? '92%' : undefined),
-                width: isOrb ? `${orbWidth}px` : (msg.role === 'system' ? 'auto' : (hasCodeBlock ? '92%' : undefined)),
+                maxWidth: msg.role === 'system' ? '70%' : (hasCodeBlock ? '78%' : undefined),
+                width: isOrb ? `${orbWidth}px` : (msg.role === 'system' ? 'auto' : (hasCodeBlock ? '78%' : undefined)),
                 height: isOrb ? `${orbHeight}px` : undefined,
                 padding: msg.role === 'system' ? '4px 12px' : (isOrb ? '22px 26px' : '14px 18px'),
                 borderRadius: msg.role === 'system' ? '999px' : (isOrb ? '50%' : '24px'),
