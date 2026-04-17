@@ -13738,7 +13738,16 @@ export default function Dashboard() {
                   const readingWeek = semesterSettings?.readingWeekStart || null;
                   const { start, end } = getWeekDates(selectedWeek, semStart, readingWeek);
                   const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' });
-                  return `Week ${selectedWeek}: ${fmt.format(start)} – ${fmt.format(end)}`;
+                  const semType = (semesterSettings?.semesterType || '').toLowerCase();
+                  const semYear = (semesterSettings?.semesterName || '').match(/\d{4}/)?.[0] || '';
+                  const yr2 = semYear.slice(-2);
+                  const semAbbrev = semType === 'spring_summer' ? `S/S ${yr2}`
+                    : semType === 'fall' ? `F${yr2}`
+                    : semType === 'winter' ? `W${yr2}`
+                    : '';
+                  return semAbbrev
+                    ? `${semAbbrev} · Week ${selectedWeek}: ${fmt.format(start)} – ${fmt.format(end)}`
+                    : `Week ${selectedWeek}: ${fmt.format(start)} – ${fmt.format(end)}`;
                 })()}
               </span>
               <div style={{ display: 'flex', gap: '4px' }}>
