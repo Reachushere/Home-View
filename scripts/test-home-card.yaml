@@ -1,5 +1,100 @@
 type: picture-elements
 elements:
+  - type: custom:kanji-clock-card
+    use_24h: true
+    invert_date: false
+    short_weekdays: true
+    kanji_numbers: false
+    style:
+      left: 68.5%
+      top: -3.5%
+      width: 22%
+      transform: scale(.56,.56)
+    card_mod:
+      style: |
+        ha-card {
+          display: flex;
+          justify-content: flex-end;
+          align-items: center;
+        }
+        .card-content {
+          text-align: right;
+          width: 100%;
+        }
+  - type: image
+    entity: switch.light_kitchen_cat_water_beacon_socket
+    style:
+      left: 0%
+      top: -0.2%
+      width: 100%
+      transform: scale(1,.98)
+    tap_action:
+      action: toggle
+    state_image:
+      on: /local/lovelace/overlays/Round Menu/5/Border6.gif
+  - entity: light.plug_cat_beacon_red_socket
+    tap_action:
+      action: call-service
+      service: automation.trigger
+      data:
+        skip_condition: true
+      target:
+        entity_id:
+          - automation.air_quality_below_30
+    state_image:
+      on: /local/lovelace/overlays/Round Menu/5/Border6.gif
+    style:
+      left: 0%
+      top: -0.2%
+      width: 100%
+      transform: scale(1,.98)
+    type: image
+  - type: image
+    entity: switch.light_kitchen_cat_food_beacon_socket_1
+    style:
+      left: 0%
+      top: -0.2%
+      width: 100%
+      transform: scale(1,.98)
+    tap_action:
+      action: toggle
+    state_image:
+      on: /local/lovelace/overlays/Round Menu/5/Border6.gif
+  - entity: timer.fish_timer_king
+    description: Fish Icon
+    text-align: center
+    tap_action:
+      action: call-service
+      service: script.fish_timer_start
+      data:
+        skip_condition: true
+      target:
+        entity_id: script.fish_timer_start
+    style:
+      left: 0%
+      top: -0.2%
+      width: 100%
+      transform: scale(1,.98)
+    state_image:
+      idle: /local/lovelace/overlays/Round Menu/5/Border6.gif
+    type: image
+  - entity: timer.dogs
+    text-align: center
+    tap_action:
+      action: call-service
+      service: script.dogs_reset_script
+      data:
+        skip_condition: true
+      target:
+        entity_id: script.dogs_reset_script
+    style:
+      left: 0%
+      top: -0.2%
+      width: 100%
+      transform: scale(1,.98)
+    state_image:
+      idle: /local/lovelace/overlays/Round Menu/5/Border6.gif
+    type: image
   - entity: timer.meds_timer_yasu
     tap_action:
       action: call-service
@@ -10,11 +105,63 @@ elements:
         entity_id:
           - automation.meds_taken_reload_yasu
     style:
-      left: 50%
-      top: 48.3%
+      left: 0%
+      top: -0.2%
       width: 100%
+      transform: scale(1,.98)
     state_image:
       idle: /local/lovelace/overlays/Round Menu/5/Border6.gif
+    type: image
+  - entity: switch.light_kitchen_amber_laundry_beacon_socket_1
+    tap_action:
+      action: call-service
+      service: automation.trigger
+      data:
+        skip_condition: true
+      target:
+        entity_id:
+          - automation.air_quality_below_30
+    state_image:
+      on: /local/lovelace/overlays/Round Menu/5/Yellow-Border.gif
+    style:
+      left: 0%
+      top: -0.2%
+      width: 100%
+      transform: scale(1,.98)
+    type: image
+  - entity: switch.light_kitchen_amber_laundry_beacon_socket_1
+    tap_action:
+      action: call-service
+      service: automation.trigger
+      data:
+        skip_condition: true
+      target:
+        entity_id:
+          - automation.air_quality_below_30
+    state_image:
+      on: /local/lovelace/overlays/Round Menu/5/Yellow-Border.gif
+    style:
+      left: 0%
+      top: -0.2%
+      width: 100%
+      transform: scale(1,.98)
+    type: image
+  - entity: switch.light_kitchen_white_beacon_dryer_socket_1
+    tap_action:
+      action: call-service
+      service: automation.trigger
+      data:
+        skip_condition: true
+      target:
+        entity_id:
+          - automation.air_quality_below_30
+    state_image:
+      on: /local/lovelace/overlays/Round Menu/5/White-Border.gif
+    style:
+      left: 0%
+      top: -0.2%
+      width: 100%
+      transform: scale(1,.98)
     type: image
   - entity: timer.bryn_meds
     tap_action:
@@ -29,110 +176,16 @@ elements:
       left: 50%
       top: 48.3%
       width: 100%
-    state_image:
-      idle: /local/lovelace/overlays/Round Menu/5/Border6.gif
-    type: image
-  - entity: light.plug_cat_beacon_red_socket
-    tap_action:
-      action: call-service
-      service: automation.trigger
-      data:
-        skip_condition: true
-      target:
-        entity_id:
-          - automation.air_quality_below_30
-    state_image:
-      "on": /local/lovelace/overlays/Round Menu/5/Border6.gif
-    style:
-      left: 50%
-      top: 48.3%
-      width: 100%
     type: image
   - type: image
-    entity: switch.light_kitchen_cat_water_beacon_socket
-    style:
-      left: 50%
-      top: 48.3%
-      width: 100%
+    image: /local/lovelace/overlays/Round Menu/4/gradhat2.png
     tap_action:
-      action: toggle
-    state_image:
-      "on": /local/lovelace/overlays/Round Menu/5/Border6.gif
-  - type: image
-    entity: switch.light_kitchen_cat_food_beacon_socket_1
+      action: navigate
+      navigation_path: /lovelace/Uni-Cal
     style:
-      left: 50%
-      top: 48.3%
-      width: 100%
-    tap_action:
-      action: toggle
-    state_image:
-      "on": /local/lovelace/overlays/Round Menu/5/Border6.gif
-  - entity: timer.fish_timer_king
-    description: Fish Icon
-    text-align: center
-    tap_action:
-      action: call-service
-      service: script.fish_timer_start
-      data:
-        skip_condition: true
-      target:
-        entity_id: script.fish_timer_start
-    style:
-      left: 50%
-      top: 48.3%
-      width: 100%
-    state_image:
-      idle: /local/lovelace/overlays/Round Menu/5/Border6.gif
-    type: image
-  - entity: timer.dogs
-    text-align: center
-    tap_action:
-      action: call-service
-      service: script.dogs_reset_script
-      data:
-        skip_condition: true
-      target:
-        entity_id: script.dogs_reset_script
-    style:
-      left: 50%
-      top: 48.3%
-      width: 100%
-    state_image:
-      idle: /local/lovelace/overlays/Round Menu/5/Border6.gif
-    type: image
-  - entity: switch.light_kitchen_amber_laundry_beacon_socket_1
-    tap_action:
-      action: call-service
-      service: automation.trigger
-      data:
-        skip_condition: true
-      target:
-        entity_id:
-          - automation.air_quality_below_30
-    state_image:
-      "on": /local/lovelace/overlays/Round Menu/5/Yellow-Border.gif
-    style:
-      left: 50%
-      top: 48.3%
-      width: 100%
-    type: image
-  - entity: switch.light_kitchen_white_beacon_dryer_socket_1
-    tap_action:
-      action: call-service
-      service: automation.trigger
-      data:
-        skip_condition: true
-      target:
-        entity_id:
-          - automation.air_quality_below_30
-    state_image:
-      "on": /local/lovelace/overlays/Round Menu/5/White-Border.gif
-    style:
-      left: 50%
-      top: 48.3%
-      width: 100%
-    type: image
+      left: 95.3%
+      top: 28.5%
+      width: 3.8%
   - type: image
     style:
       left: 52.45%
@@ -218,7 +271,7 @@ elements:
     collapsible_controls: false
     icon_type: none
     hvac_modes:
-      - "off"
+      - off
     style:
       left: 92.9%
       top: 23.9%
@@ -286,10 +339,10 @@ elements:
           }
   - entity: fan.king_room_f9e7c0
     title: King Vent Fan
-    image: null
+    image: Cacoon On7.png
     state_image:
-      "on": /local/lovelace/overlays/Round Menu/5/Cacoon Off10.png
-      "off": /local/lovelace/overlays/Round Menu/5/Cacoon On7.png
+      on: /local/lovelace/overlays/Round Menu/5/Cacoon Off10.png
+      off: /local/lovelace/overlays/Round Menu/5/Cacoon On7.png
     style:
       left: 95.32%
       top: 54.8%
@@ -554,7 +607,7 @@ elements:
                   left: 82.7%
                   top: 55.4%
                   width: 18.5%
-                  rotate: "-90deg"
+                  rotate: -90deg
             image: /local/lovelace/overlays/Round Menu/5/Doorbell21.png
             style:
               top: 50%
@@ -715,25 +768,29 @@ elements:
                   top: 81%
                   height: 80px
                   transform: scale(.75,.75)
-                  "--mmp-text-color": "#ffffffba"
+                  --mmp-text-color: "#ffffffba"
                 card_mod:
-                  style: |
+                  style: >
                     @keyframes slideright {
                       from {left: -155%;}
                       to {left: 36%;}
                     }
+
                     @keyframes slideleft {
                       from {left: 36%;}
                       to {left: -155%;}
                     }
+
                     @keyframes widthadd {
                       from {width: 293px;}
                       to {width: 382px;}
                     }
+
                     @keyframes widthminus {
                       from {width: 382px;}
                       to {width: 293px;}
                     }
+
                     :host {
                       {% if is_state("input_boolean.rx_stereo_menu", "off") %}
                         animation: slideleft 0.5s ease normal forwards, widthadd 0.5s ease normal forwards !important;
@@ -742,10 +799,12 @@ elements:
                         animation: slideright 0.5s ease normal forwards, widthminus 0.5s ease normal forwards !important;
                       {% endif %}
                     }
+
                     ha-card>div.mmp__bg {
                       background: none;
                       border: none;
                     }
+
                     ha-card {
                       border-color: transparent !important;
                       box-shadow: none !important;
@@ -793,23 +852,27 @@ elements:
                   top: 93%
                   height: 80px
                 card_mod:
-                  style: |
+                  style: >
                     @keyframes slideright {
                       from {left: -50%;}
                       to {left: 49.5%;}
                     }
+
                     @keyframes slideleft {
                       from {left: 49.5%;}
                       to {left: -50%;}
                     }
+
                     @keyframes widthadd {
                       from {width: 390px;}
                       to {width: 490px;}
                     }
+
                     @keyframes widthminus {
                       from {width: 490px;}
                       to {width: 390px;}
                     }
+
                     :host {
                       {% if is_state("input_boolean.rx_stereo_menu", "on") %}
                         animation: slideright 0.5s ease normal forwards, widthminus 0.5s ease normal forwards !important;
@@ -820,10 +883,12 @@ elements:
                       {% endif %}
                       border: none;
                     }
+
                     ha-card>div.mmp__bg {
                       background: none;
                       border: none;
                     }
+
                     ha-card {
                       border-color: transparent !important;
                       box-shadow: none !important;
@@ -860,15 +925,17 @@ elements:
                   width: 40px
                   transform: scale(8,8)
                 card_mod:
-                  style: |
+                  style: >
                     @keyframes slideright {
                       from {left: -50%;}
                       to {left: 1%;}
                     }
+
                     @keyframes slideleft {
                       from {left: 1%;}
                       to {left: -50%;}
                     }
+
                     :host {
                       {% if is_state("input_boolean.rx_stereo_menu", "on") %}
                         animation: slideright 0.5s ease normal forwards !important;
@@ -879,15 +946,18 @@ elements:
                       {% endif %}
                       --mini-media-player-button-color: rgba(1,1,1,1);
                     }
+
                     .entity__icon {
                       --mdc-icon-size: 1220px !important;
                       --mdc-icon-color: rgba(1,1,1,1);
                     }
+
                     ha-card>div.mmp__bg {
                       background: none;
                       border: none;
                       color: rgba(1,1,1,1);
                     }
+
                     ha-card {
                       border-color: transparent !important;
                       box-shadow: none !important;
@@ -939,15 +1009,17 @@ elements:
                   justify-content: center
                   align-items: center
                 card_mod:
-                  style: |
+                  style: >
                     @keyframes slideright {
                       from {left: -50%;}
                       to {left: 24%;}
                     }
+
                     @keyframes slideleft {
                       from {left: 24%;}
                       to {left: -50%;}
                     }
+
                     :host {
                       {% if is_state("input_boolean.rx_stereo_menu", "on") %}
                         animation: slideright 0.5s ease normal forwards !important;
@@ -957,9 +1029,11 @@ elements:
                         animation-play-state: running !important;
                       {% endif %}
                     }
+
                     ha-card>div.mmp__bg {
                       background: none;
                     }
+
                     ha-card {
                       border-color: transparent !important;
                       box-shadow: none !important;
@@ -1011,15 +1085,17 @@ elements:
                   justify-content: center
                   align-items: center
                 card_mod:
-                  style: |
+                  style: >
                     @keyframes slideright {
                       from {left: -50%;}
                       to {left: 75%;}
                     }
+
                     @keyframes slideleft {
                       from {left: 75%;}
                       to {left: -50%;}
                     }
+
                     :host {
                       {% if is_state("input_boolean.rx_stereo_menu", "on") %}
                         animation: slideright 0.5s ease normal forwards !important;
@@ -1029,9 +1105,11 @@ elements:
                         animation-play-state: running !important;
                       {% endif %}
                     }
+
                     ha-card>div.mmp__bg {
                       background: none;
                     }
+
                     ha-card {
                       border-color: transparent !important;
                       box-shadow: none !important;
@@ -1270,7 +1348,7 @@ elements:
                           repeat: true
                           state_label: true
                         card_mod:
-                          style: |
+                          style: >
                             ha-card { 
                               border-radius: 20px;
                               padding-top: -8px !important;
@@ -1279,6 +1357,7 @@ elements:
                               max-height: 500px;
                               border: none;
                             }
+
                             ha-card>div.mmp__bg {
                               border-radius: 20px;
                               box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.30), 0 6px 8px 0 rgba(0, 0, 0, 0.20) !important;
@@ -1287,6 +1366,7 @@ elements:
                               margin-bottom: 0px;
                               border: none;
                             }
+
                             ha-card>div.mmp-player {
                               background: none !important;
                               border: none;
@@ -1401,29 +1481,31 @@ elements:
                                     random_song: true
                                     shuffle: true
                             style:
-                              left: "-7%"
-                              top: "-5%"
+                              left: -7%
+                              top: -5%
                               width: 90%
                               transform: scale(1.1,1.1)
                             card_mod:
-                              style: |
+                              style: >
                                 ha-card {
                                   border: none !important;
                                   --card-background-color: rgba(255,255,255,0);
                                   max-height: 500px !important;
                                   min-height: 500px !important;
                                 }
+
                                 :host {
                                   --mini-media-player-button-color: rgba(68 115 158,1);
                                 }
                         image: /local/Black9.png
                         aspect_ratio: 0%
                         card_mod:
-                          style: |
+                          style: >
                             ha-card {
                               border: none !important;
                               --card-background-color: rgba(255,255,255,0);
                             }
+
                             :host {
                               --mini-media-player-button-color: rgba(68 115 158,1);
                             }
@@ -1491,29 +1573,31 @@ elements:
                                   type: source
                                   id: Closet
                             style:
-                              left: "-6%"
-                              top: "-9%"
+                              left: -6%
+                              top: -9%
                               width: 90%
                               transform: scale(1.1,1.1)
                             card_mod:
-                              style: |
+                              style: >
                                 ha-card {
                                   border: none !important;
                                   --card-background-color: rgba(255,255,255,0);
                                   max-height: 500px !important;
                                   min-height: 500px !important;
                                 }
+
                                 :host {
                                   --mini-media-player-button-color: rgba(68 115 158,1);
                                 }
                         image: /local/Black9.png
                         aspect_ratio: 0%
                         card_mod:
-                          style: |
+                          style: >
                             ha-card {
                               border: none !important;
                               --card-background-color: rgba(255,255,255,0);
                             }
+
                             :host {
                               --mini-media-player-button-color: rgba(68 115 158,1);
                             }
@@ -1632,29 +1716,31 @@ elements:
                                     random_song: true
                                     shuffle: true
                             style:
-                              left: "-5%"
-                              top: "-32%"
+                              left: -5%
+                              top: -32%
                               width: 90%
                               transform: scale(1.1,1.1)
                             card_mod:
-                              style: |
+                              style: >
                                 ha-card {
                                   border: none !important;
                                   --card-background-color: rgba(255,255,255,0);
                                   max-height: 700px !important;
                                   min-height: 650px !important;
                                 }
+
                                 :host {
                                   --mini-media-player-button-color: rgba(68 115 158,1);
                                 }
                         image: /local/Black9.png
                         aspect_ratio: 0%
                         card_mod:
-                          style: |
+                          style: >
                             ha-card {
                               border: none !important;
                               --card-background-color: rgba(255,255,255,0);
                             }
+
                             :host {
                               --mini-media-player-button-color: rgba(68 115 158,1);
                             }
@@ -1768,18 +1854,19 @@ elements:
                                     random_song: true
                                     shuffle: true
                             style:
-                              left: "-7%"
-                              top: "-4%"
+                              left: -7%
+                              top: -4%
                               width: 90%
                               transform: scale(1.05,1.05)
                             card_mod:
-                              style: |
+                              style: >
                                 ha-card {
                                   border: none !important;
                                   --card-background-color: rgba(255,255,255,0);
                                   max-height: 500px !important;
                                   min-height: 500px !important;
                                 }
+
                                 :host {
                                   --mini-media-player-button-color: rgba(68 115 158,1);
                                 }
@@ -1851,18 +1938,19 @@ elements:
                                   type: script
                                   id: script.virgin
                             style:
-                              left: "-6%"
-                              top: "-37%"
+                              left: -6%
+                              top: -37%
                               width: 90%
                               transform: scale(1.15,1.15)
                             card_mod:
-                              style: |
+                              style: >
                                 ha-card {
                                   border: none !important;
                                   --card-background-color: rgba(255,255,255,0);
                                   max-height: 500px !important;
                                   min-height: 500px !important;
                                 }
+
                                 :host {
                                   --mini-media-player-button-color: rgba(68 115 158,1);
                                 }
@@ -1884,15 +1972,17 @@ elements:
                   animation: slideleft 0.5s ease normal forwards;
                   animation-play-state: running;
                 card_mod:
-                  style: |
+                  style: >
                     @keyframes slideright {
                       from {left: -27%;}
                       to {left: 13%;}
                     }
+
                     @keyframes slideleft {
                       from {left: 13%;}
                       to {left: -27px;}
                     }
+
                     :host {
                       {% if is_state("input_boolean.rx_stereo_menu", "on") %}
                         animation: slideright 0.5s ease normal forwards !important;
@@ -1903,6 +1993,7 @@ elements:
                       {% endif %}
                       border: none;
                     }
+
                     :host {
                       scrollbar-width: none;
                       border-radius: 12px;
@@ -1960,15 +2051,17 @@ elements:
                   justify-content: center
                   align-items: center
                 card_mod:
-                  style: |
+                  style: >
                     @keyframes slideright {
                       from {left: -50%;}
                       to {left: 48%;}
                     }
+
                     @keyframes slideleft {
                       from {left: 48%;}
                       to {left: -50%;}
                     }
+
                     :host {
                       {% if is_state("input_boolean.rx_stereo_menu", "on") %}
                         animation: slideright 0.5s ease normal forwards !important;
@@ -1979,15 +2072,18 @@ elements:
                       {% endif %}
                       --mini-media-player-button-color: rgba(1,1,1,1);
                     }
+
                     .entity__icon {
                       --mdc-icon-size: 80px !important;
                       --mdc-icon-color: rgba(1,1,1,1);
                     }
+
                     ha-card>div.mmp__bg {
                       background: none;
                       border: none;
                       color: rgba(1,1,1,1);
                     }
+
                     ha-card {
                       border-color: transparent !important;
                       box-shadow: none !important;
@@ -2016,9 +2112,8 @@ elements:
                     view_layout:
                       grid-area: title
                     primary: ""
-                    secondary: >-
-                      {{ state_attr('media_player.spotifyplus_byhomeyyz',
-                      'media_title') }}
+                    secondary: "{{ state_attr('media_player.spotifyplus_byhomeyyz', 'media_title')
+                      }}"
                     icon: ""
                     entity: media_player.spotifyplus_byhomeyyz
                     fill_container: true
@@ -2049,9 +2144,8 @@ elements:
                     view_layout:
                       grid-area: artist
                     primary: ""
-                    secondary: >-
-                      {{ state_attr('media_player.spotifyplus_byhomeyyz',
-                      'media_artist') }}
+                    secondary: "{{ state_attr('media_player.spotifyplus_byhomeyyz', 'media_artist')
+                      }}"
                     icon: ""
                     entity: media_player.spotifyplus_byhomeyyz
                     fill_container: true
@@ -2082,9 +2176,8 @@ elements:
                     view_layout:
                       grid-area: album
                     primary: ""
-                    secondary: >-
-                      {{ state_attr('media_player.spotifyplus_byhomeyyz',
-                      'media_album_name') }}
+                    secondary: "{{ state_attr('media_player.spotifyplus_byhomeyyz',
+                      'media_album_name') }}"
                     icon: ""
                     entity: media_player.spotifyplus_byhomeyyz
                     fill_container: true
@@ -2113,7 +2206,7 @@ elements:
                         }
                 style:
                   align: left
-                  top: "-5%"
+                  top: -5%
                   left: 2%
                   height: 182px
                   width: 85%
@@ -2121,15 +2214,17 @@ elements:
                   animation: slideleft 0.5s ease normal forwards;
                   animation-play-state: running;
                 card_mod:
-                  style: |
+                  style: >
                     @keyframes slideright {
                       from {left: -247%;}
                       to {left: 11%;}
                     }
+
                     @keyframes slideleft {
                       from {left: 11%;}
                       to {left: -247px;}
                     }
+
                     :host {
                       {% if is_state("input_boolean.rx_stereo_menu", "on") %}
                         animation: slideright 0.5s ease normal forwards !important;
@@ -2140,6 +2235,7 @@ elements:
                       {% endif %}
                       border: none;
                     }
+
                     :host {
                       scrollbar-width: none;
                       border-radius: 20px;
@@ -2159,7 +2255,7 @@ elements:
                     conditions:
                       - condition: state
                         entity: input_boolean.rx_stereo_volume
-                        state: "on"
+                        state: on
                     card:
                       type: custom:my-slider-v2
                       entity: media_player.spotifyplus_byhomeyyz
@@ -2172,9 +2268,7 @@ elements:
                           - border-radius: 20px
                         container:
                           - border-radius: 20px
-                          - box-shadow: >-
-                              0 4px 8px 0 rgba(0, 0, 0, 0.30), 0 6px 20px 0
-                              rgba(0, 0, 0, 0.20)
+                          - box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.30), 0 6px 20px 0 rgba(0, 0, 0, 0.20)
                         track: null
                         progress:
                           - background: rgb(96 112 127 / 100%)
@@ -2284,9 +2378,7 @@ elements:
                           - type: custom:mini-media-player
                             entity: media_player.spotifyplus_byhomeyyz
                             artwork: full-cover
-                            background: >-
-                              /local/lovelace/overlays/Round Menu/5/Echo
-                              Idle.png
+                            background: /local/lovelace/overlays/Round Menu/5/Echo Idle.png
                             name: Spotify
                             icon: none
                             hide:
@@ -2438,7 +2530,7 @@ elements:
                               top: 76%
                               width: 40%
                             card_mod:
-                              style: |
+                              style: >
                                 ha-card {
                                   --card-background-color: rgba(255,0,255,0);
                                   border-color: transparent !important;
@@ -2446,6 +2538,7 @@ elements:
                                   border-style: none !important;
                                   border: none !important;
                                 }
+
                                 :host {
                                   --mini-media-player-button-color: rgba(95,95,100,1);
                                 }
@@ -2470,9 +2563,7 @@ elements:
                                 elements:
                                   - type: image
                                     description: blank content for picture elements
-                                    image: >-
-                                      /local/lovelace/overlays/Round
-                                      Menu/5/Blank.png
+                                    image: /local/lovelace/overlays/Round Menu/5/Blank.png
                                     style:
                                       left: 50%
                                       top: 50%
@@ -2520,9 +2611,7 @@ elements:
                                 elements:
                                   - type: image
                                     description: blank content for picture elements
-                                    image: >-
-                                      /local/lovelace/overlays/Round
-                                      Menu/5/Blank.png
+                                    image: /local/lovelace/overlays/Round Menu/5/Blank.png
                                     style:
                                       left: 50%
                                       top: 50%
@@ -2546,9 +2635,7 @@ elements:
                                 elements:
                                   - type: image
                                     description: blank content for picture elements
-                                    image: >-
-                                      /local/lovelace/overlays/Round
-                                      Menu/5/Blank.png
+                                    image: /local/lovelace/overlays/Round Menu/5/Blank.png
                                     style:
                                       left: 50%
                                       top: 50%
@@ -2578,7 +2665,7 @@ elements:
                                       artwork_border: true
                                       icon: true
                                     card_mod:
-                                      style: |
+                                      style: >
                                         ha-card {
                                           border: none !important;
                                           --card-background-color: rgba(255,255,255,0);
@@ -2610,14 +2697,12 @@ elements:
                                       width: 40%
                                       transform: scale(1.25,1.25)
                                     card_mod:
-                                      style: |
+                                      style: >
                                         ha-card {
                                           border: none !important;
                                           --card-background-color: rgba(255,255,255,0);
                                         }
-                                image: >-
-                                  /local/lovelace/overlays/Round Menu/5/B07
-                                  Blur.png
+                                image: /local/lovelace/overlays/Round Menu/5/B07 Blur.png
                                 style:
                                   left: 50%
                                   top: 50%
@@ -2660,9 +2745,7 @@ elements:
                                 elements:
                                   - type: image
                                     description: blank content for picture elements
-                                    image: >-
-                                      /local/lovelace/overlays/Round
-                                      Menu/5/Blank.png
+                                    image: /local/lovelace/overlays/Round Menu/5/Blank.png
                                     style:
                                       left: 50%
                                       top: 50%
@@ -2686,9 +2769,7 @@ elements:
                                 elements:
                                   - type: image
                                     description: blank content for picture elements
-                                    image: >-
-                                      /local/lovelace/overlays/Round
-                                      Menu/5/Blank.png
+                                    image: /local/lovelace/overlays/Round Menu/5/Blank.png
                                     style:
                                       left: 50%
                                       top: 50%
@@ -2720,35 +2801,28 @@ elements:
                                       buttons:
                                         - type: source
                                           name: EVERYWHERE
-                                          id: >-
-                                            94906a15-3ed0-4d84-b460-221ca33c8ff3_amzn_2
+                                          id: 94906a15-3ed0-4d84-b460-221ca33c8ff3_amzn_2
                                         - name: KITCHEN LIVING ROOM
                                           type: source
-                                          id: >-
-                                            94906a15-3ed0-4d84-b460-221ca33c8ff3_amzn_3
+                                          id: 94906a15-3ed0-4d84-b460-221ca33c8ff3_amzn_3
                                         - name: HALLWAY
                                           type: source
-                                          id: >-
-                                            a3743ae7-7b7f-4275-ace9-9567615d26cd_amzn_2
+                                          id: a3743ae7-7b7f-4275-ace9-9567615d26cd_amzn_2
                                         - name: PUG WASHROOM
                                           type: source
-                                          id: >-
-                                            0b6c6344-6b1c-4be6-8a55-3e1f98ac9638_amzn_1
+                                          id: 0b6c6344-6b1c-4be6-8a55-3e1f98ac9638_amzn_1
                                         - name: KITCHEN
                                           type: source
-                                          id: >-
-                                            94906a15-3ed0-4d84-b460-221ca33c8ff3_amzn_5
+                                          id: 94906a15-3ed0-4d84-b460-221ca33c8ff3_amzn_5
                                         - name: LIVING ROOM
                                           type: source
-                                          id: >-
-                                            136045b6-31f2-4d6e-90dc-f3b0e795f11e_amzn_2
+                                          id: 136045b6-31f2-4d6e-90dc-f3b0e795f11e_amzn_2
                                         - type: source
                                           name: KING BEDROOM
                                           id: 74d07e041426329df9fb292f77cc46de0de6a33b
                                         - name: CAT WASHROOM
                                           type: source
-                                          id: >-
-                                            a48c691d-08d9-436f-8713-68ec8c896b11_amzn_2
+                                          id: a48c691d-08d9-436f-8713-68ec8c896b11_amzn_2
                                         - name: CLOSET
                                           type: source
                                           id: Closet
@@ -2758,17 +2832,16 @@ elements:
                                       width: 60%
                                       transform: scale(1.1,1.1)
                                     card_mod:
-                                      style: |
+                                      style: >
                                         ha-card {
                                           border: none !important;
                                           --card-background-color: rgba(255,255,255,0);
                                         }
+
                                         :host {
                                           --mini-media-player-button-color: rgba(95,95,100,1);
                                         }
-                                image: >-
-                                  /local/lovelace/overlays/Round Menu/5/M07
-                                  Blur.png
+                                image: /local/lovelace/overlays/Round Menu/5/M07 Blur.png
                                 style:
                                   left: 50%
                                   top: 50%
@@ -2811,9 +2884,7 @@ elements:
                                 elements:
                                   - type: image
                                     description: blank content for picture elements
-                                    image: >-
-                                      /local/lovelace/overlays/Round
-                                      Menu/5/Blank.png
+                                    image: /local/lovelace/overlays/Round Menu/5/Blank.png
                                     style:
                                       left: 50%
                                       top: 50%
@@ -2837,9 +2908,7 @@ elements:
                                 elements:
                                   - type: image
                                     description: blank content for picture elements
-                                    image: >-
-                                      /local/lovelace/overlays/Round
-                                      Menu/5/Blank.png
+                                    image: /local/lovelace/overlays/Round Menu/5/Blank.png
                                     style:
                                       left: 50%
                                       top: 50%
@@ -2871,7 +2940,7 @@ elements:
                                       width: 55%
                                       transform: scale(1.25,1.25)
                                     card_mod:
-                                      style: |
+                                      style: >
                                         ha-card {
                                           border: none !important;
                                           --card-background-color: rgba(255,255,255,0);
@@ -2903,14 +2972,12 @@ elements:
                                       width: 25%
                                       transform: scale(1.25,1.25)
                                     card_mod:
-                                      style: |
+                                      style: >
                                         ha-card {
                                           border: none !important;
                                           --card-background-color: rgba(255,255,255,0);
                                         }
-                                image: >-
-                                  /local/lovelace/overlays/Round Menu/5/T07
-                                  Blur.png
+                                image: /local/lovelace/overlays/Round Menu/5/T07 Blur.png
                                 style:
                                   left: 38%
                                   top: 50%
@@ -2947,9 +3014,7 @@ elements:
                                   border: none !important;
                                 }
                           - type: image
-                            image: >-
-                              /local/lovelace/overlays/Round Menu/5/Volume
-                              Icon.png
+                            image: /local/lovelace/overlays/Round Menu/5/Volume Icon.png
                             style:
                               left: 97.5%
                               top: 87.5%
@@ -2983,7 +3048,7 @@ elements:
                           width: 125%
                           height: 125%
                         card_mod:
-                          style: |
+                          style: >
                             ha-card {
                               background-color: rgba(255,255,255,0);
                               background: rgba(255,255,255,0);
@@ -2998,7 +3063,7 @@ elements:
                               --secondary-background-color: rgba(255,255,255,0);)255,2
                               --secondary-card-background-color: rgba(255,255,255,0);)
                             }
-                "--ha-card-background": rgba(1,1,1,0)
+                --ha-card-background: rgba(1,1,1,0)
                 card_mod:
                   style: |
                     ha-card {
@@ -3072,9 +3137,9 @@ elements:
         entity_id:
           - automation.air_quality_below_30
     state_image:
-      "on": /local/lovelace/overlays/Round Menu/3/Purifieronly.gif
-      "off": /local/lovelace/overlays/Round Menu/5/Purifier white.png
-    image: null
+      on: /local/lovelace/overlays/Round Menu/3/Purifieronly.gif
+      off: /local/lovelace/overlays/Round Menu/5/Purifier white.png
+    image: /local/lovelace/overlays/Round Menu/5/Purifier white.png
     style:
       left: 42.7%
       top: 5.3%
@@ -3252,8 +3317,8 @@ elements:
     tap_action:
       action: toggle
     state_image:
-      "on": /local/lovelace/overlays/Round Menu/3/Food2.gif
-      "off": /local/lovelace/overlays/Round Menu/5/Food Icon2.png
+      on: /local/lovelace/overlays/Round Menu/3/Food2.gif
+      off: /local/lovelace/overlays/Round Menu/5/Food Icon2.png
   - type: image
     description: Toggle Motion Off
     image: /local/lovelace/overlays/Round Menu/4/Off Blue.png
@@ -3288,12 +3353,12 @@ elements:
         entity_id: script.motion_turn_off_turning_off
   - entity: script.motion_turn_off_turning_off
     title: Hallway Motion Automation - THIS IS FOR THE MAIN MOTION TOGGLE BELOW
-    image: null
+    image: /local/lovelace/overlays/Round Menu/5/Motion Off Orange3.png
     tap_action:
       action: toggle
     state_image:
-      "on": /local/lovelace/overlays/Round Menu/5/Motion On Orange3.png
-      "off": /local/lovelace/overlays/Round Menu/5/Motion Off Orange3.png
+      on: /local/lovelace/overlays/Round Menu/5/Motion On Orange3.png
+      off: /local/lovelace/overlays/Round Menu/5/Motion Off Orange3.png
     style:
       left: 27.9%
       top: 5.5%
@@ -3488,23 +3553,23 @@ elements:
                         label:
                           text: Hallway
                           x: 22932
-                          "y": 30339
+                          y: 30339
                           offset_y: 35
                         icon:
                           name: mdi:bed
                           x: 22932
-                          "y": 30339
+                          y: 30339
                   - template: vacuum_clean_segment
                     predefined_selections:
                       - id: "16"
                         icon:
                           name: mdi:hallway
                           x: 26750
-                          "y": 21425
+                          y: 21425
                         label:
                           text: Room 16
                           x: 26750
-                          "y": 21425
+                          y: 21425
                           offset_y: 35
                         outline:
                           - - 25800
@@ -3525,22 +3590,22 @@ elements:
                       calibration_points:
                         - vacuum:
                             x: 22633
-                            "y": 31641
+                            y: 31641
                           map:
                             x: 322
-                            "y": 172
+                            y: 172
                         - vacuum:
                             x: 22633
-                            "y": 26514
+                            y: 26514
                           map:
                             x: 322
-                            "y": 1342
+                            y: 1342
                         - vacuum:
                             x: 34283
-                            "y": 26514
+                            y: 26514
                           map:
                             x: 2993
-                            "y": 1342
+                            y: 1342
                     map_modes:
                       - name: Zones
                         icon: mdi:select-drag
@@ -3579,12 +3644,12 @@ elements:
                             label:
                               text: Kitchen
                               x: 28760
-                              "y": 28403
+                              y: 28403
                               offset_y: 35
                             icon:
                               name: mdi:pot-mix
                               x: 28760
-                              "y": 28403
+                              y: 28403
                       - name: Rooms
                         icon: mdi:floor-plan
                         selection_type: ROOM
@@ -3616,12 +3681,12 @@ elements:
                             label:
                               text: Living room
                               x: 33036
-                              "y": 27589
+                              y: 27589
                               offset_y: 35
                             icon:
                               name: mdi:television
                               x: 33036
-                              "y": 27589
+                              y: 27589
                       - name: Path
                         icon: mdi:map-marker-path
                         selection_type: MANUAL_PATH
@@ -3675,12 +3740,12 @@ elements:
                             label:
                               text: Emptying
                               x: 28006
-                              "y": 28036
+                              y: 28036
                               offset_y: 35
                             icon:
                               name: mdi:broom
                               x: 28006
-                              "y": 28036
+                              y: 28036
                   - preset_name: Image with perspective
                     entity: vacuum.loretta_s8
                     map_source:
@@ -3689,28 +3754,28 @@ elements:
                       calibration_points:
                         - vacuum:
                             x: 22633
-                            "y": 31641
+                            y: 31641
                           map:
                             x: 995
-                            "y": 144
+                            y: 144
                         - vacuum:
                             x: 22633
-                            "y": 26514
+                            y: 26514
                           map:
                             x: 603
-                            "y": 797
+                            y: 797
                         - vacuum:
                             x: 34283
-                            "y": 26514
+                            y: 26514
                           map:
                             x: 2515
-                            "y": 523
+                            y: 523
                         - vacuum:
                             x: 34283
-                            "y": 31641
+                            y: 31641
                           map:
                             x: 2350
-                            "y": 61
+                            y: 61
                     map_modes:
                       - name: Zones
                         icon: mdi:select-drag
@@ -3749,12 +3814,12 @@ elements:
                             label:
                               text: Kitchen
                               x: 28760
-                              "y": 28403
+                              y: 28403
                               offset_y: 35
                             icon:
                               name: mdi:pot-mix
                               x: 28760
-                              "y": 28403
+                              y: 28403
                           - zones:
                               - - 33914
                                 - 26472
@@ -3791,12 +3856,12 @@ elements:
                             label:
                               text: Bedroom
                               x: 22932
-                              "y": 30339
+                              y: 30339
                               offset_y: 35
                             icon:
                               name: mdi:bed
                               x: 22932
-                              "y": 30339
+                              y: 30339
                           - id: 3
                             outline:
                               - - 30417
@@ -3810,12 +3875,12 @@ elements:
                             label:
                               text: Living room
                               x: 33036
-                              "y": 27589
+                              y: 27589
                               offset_y: 35
                             icon:
                               name: mdi:television
                               x: 33036
-                              "y": 27589
+                              y: 27589
                       - name: Path
                         icon: mdi:map-marker-path
                         selection_type: MANUAL_PATH
@@ -3869,18 +3934,18 @@ elements:
                             label:
                               text: Emptying
                               x: 28006
-                              "y": 28036
+                              y: 28036
                               offset_y: 35
                             icon:
                               name: mdi:broom
                               x: 28006
-                              "y": 28036
+                              y: 28036
                 vacuum_platform: humbertogontijo/homeassistant-roborock
                 map_locked: false
                 two_finger_pan: false
                 style:
                   left: 64.3%
-                  top: "-15.8%"
+                  top: -15.8%
                   width: 40%
                   transform: scale(.73,.73)
                 card_mod:
@@ -4334,7 +4399,7 @@ elements:
                       card_mod:
                         styles:
                           grid:
-                            - grid-template-areas: "\"i n s\""
+                            - grid-template-areas: '"i n s"'
                             - grid-template-columns: 95px auto auto
                         style: |
                           ha-card {
@@ -4363,19 +4428,19 @@ elements:
                       filter:
                         include:
                           - entity_id: input_boolean.health_task_5mins_crunches
-                            state: "on"
+                            state: on
                           - entity_id: input_boolean.health_task_green_tea_water_1
-                            state: "on"
+                            state: on
                           - entity_id: input_boolean.health_task_metamucil
-                            state: "on"
+                            state: on
                           - entity_id: input_boolean.health_task_record_meals
-                            state: "on"
+                            state: on
                           - entity_id: input_boolean.health_task_stretches
-                            state: "on"
+                            state: on
                           - entity_id: input_boolean.health_task_take_vitamins
-                            state: "on"
+                            state: on
                           - entity_id: input_boolean.health_task_weigh_in
-                            state: "on"
+                            state: on
                       show_empty: false
                       sort:
                         method: name
@@ -4384,7 +4449,7 @@ elements:
                         show_header_toggle: false
                         show_state: false
                         card_mod:
-                          style: |
+                          style: >
                             ha-card {
                               border: none !important;
                               --card-background-color: rgba(255,255,255,0);
@@ -4394,6 +4459,7 @@ elements:
                               primary-text-color: rrgba(255,255,255,1);
                               secondary-text-color: rgba(255,255,255,1);
                             }
+
                             hui-generic-entity-row:
                               $: |
                                 .info {
@@ -4452,7 +4518,7 @@ elements:
                         left: 46%
                         width: 35%
                       card_mod:
-                        style: |
+                        style: >
                           .: |
                             #states > * {
                               border-color: transparent !important;
@@ -4504,19 +4570,19 @@ elements:
                       filter:
                         include:
                           - entity_id: input_boolean.health_task_skip_rope
-                            state: "on"
+                            state: on
                           - entity_id: input_boolean.health_task_stairs
-                            state: "on"
+                            state: on
                           - entity_id: input_boolean.health_task_record_meals_2
-                            state: "on"
+                            state: on
                           - entity_id: input_boolean.health_task_green_tea_water_2
-                            state: "on"
+                            state: on
                           - entity_id: input_boolean.health_task_walk_to_hospital
-                            state: "on"
+                            state: on
                           - entity_id: input_boolean.health_task_record_meals_3
-                            state: "on"
+                            state: on
                           - entity_id: input_boolean.daily_14_charge_watch
-                            state: "on"
+                            state: on
                       show_empty: false
                       sort:
                         method: name
@@ -4525,7 +4591,7 @@ elements:
                         show_header_toggle: false
                         show_state: false
                         card_mod:
-                          style: |
+                          style: |+
                             ha-card {
                               border: none !important;
                               --card-background-color: rgba(255,255,255,0);
@@ -4709,9 +4775,7 @@ elements:
                       --secondary-background-color: rgba(255,0,255,1);
                       --secondary-card-background-color: rgba(255,0,255,1);
                       }
-            image: >-
-              /local/lovelace/overlays/Round Menu/4/Radio Player
-              Background78.png
+            image: /local/lovelace/overlays/Round Menu/4/Radio Player Background78.png
             style:
               top: 50%
               left: 50%
@@ -4801,10 +4865,10 @@ elements:
           width: 150px;
         }
     state:
-      - value: "00:00:00"
+      - value: 00:00:00
         color: red
       - operator: <
-        value: "01:00:00"
+        value: 01:00:00
         color: yellow
   - type: image
     description: Dogs Circle
@@ -4908,8 +4972,8 @@ elements:
     image: /local/lovelace/overlays/Round Menu/5/Snow Icon5.png
     entity: switch.manual_clean
     state_image:
-      "on": /local/lovelace/overlays/Round Menu/5/Red-Cloud2.gif
-      "off": /local/lovelace/overlays/Round Menu/5/Snow Icon8.png
+      on: /local/lovelace/overlays/Round Menu/5/Red-Cloud2.gif
+      off: /local/lovelace/overlays/Round Menu/5/Snow Icon8.png
     style:
       left: 47.5%
       top: 5.5%
@@ -4941,8 +5005,8 @@ elements:
     tap_action:
       action: toggle
     state_image:
-      "on": /local/lovelace/overlays/Round Menu/3/Drop.gif
-      "off": /local/lovelace/overlays/Round Menu/3/Drop.png
+      on: /local/lovelace/overlays/Round Menu/3/Drop.gif
+      off: /local/lovelace/overlays/Round Menu/3/Drop.png
   - type: custom:clock-weather-card
     entity: weather.almost_home
     title: null
@@ -5266,10 +5330,10 @@ elements:
     title: Toggle Hallway Motion Sensor
     tap_action:
       action: toggle
-    image: null
+    image: /local/lovelace/overlays/Round Menu/4/Motion Off7.png
     state_image:
-      "on": /local/lovelace/overlays/Round Menu/4/Motion On11.png
-      "off": /local/lovelace/overlays/Round Menu/4/Motion Off7.png
+      on: /local/lovelace/overlays/Round Menu/4/Motion On11.png
+      off: /local/lovelace/overlays/Round Menu/4/Motion Off7.png
     style:
       left: 41.1%
       top: 24.8%
@@ -5280,10 +5344,10 @@ elements:
     title: Toggle Queen Motion Sensor
     tap_action:
       action: toggle
-    image: null
+    image: /local/lovelace/overlays/Round Menu/4/Motion Off7.png
     state_image:
-      "on": /local/lovelace/overlays/Round Menu/4/Motion On11.png
-      "off": /local/lovelace/overlays/Round Menu/4/Motion Off7.png
+      on: /local/lovelace/overlays/Round Menu/4/Motion On11.png
+      off: /local/lovelace/overlays/Round Menu/4/Motion Off7.png
     style:
       left: 33.95%
       top: 53.75%
@@ -5294,10 +5358,10 @@ elements:
     title: Toggle LR Motion Sensor
     tap_action:
       action: toggle
-    image: null
+    image: /local/lovelace/overlays/Round Menu/4/Motion Off7.png
     state_image:
-      "on": /local/lovelace/overlays/Round Menu/4/Motion On11.png
-      "off": /local/lovelace/overlays/Round Menu/4/Motion Off7.png
+      on: /local/lovelace/overlays/Round Menu/4/Motion On11.png
+      off: /local/lovelace/overlays/Round Menu/4/Motion Off7.png
     style:
       left: 56%
       top: 69.5%
@@ -5308,10 +5372,10 @@ elements:
     title: Toggle King Motion Sensor
     tap_action:
       action: toggle
-    image: null
+    image: /local/lovelace/overlays/Round Menu/4/Motion Off7.png
     state_image:
-      "on": /local/lovelace/overlays/Round Menu/4/Motion On11.png
-      "off": /local/lovelace/overlays/Round Menu/4/Motion Off7.png
+      on: /local/lovelace/overlays/Round Menu/4/Motion On11.png
+      off: /local/lovelace/overlays/Round Menu/4/Motion Off7.png
     style:
       left: 71.4%
       top: 54%
@@ -5322,10 +5386,10 @@ elements:
     title: Toggle Pug No Motion Sensor
     tap_action:
       action: toggle
-    image: null
+    image: /local/lovelace/overlays/Round Menu/5/Motion Off10.png
     state_image:
-      "on": /local/lovelace/overlays/Motion On.png
-      "off": /local/lovelace/overlays/Round Menu/5/Motion Off10.png
+      on: /local/lovelace/overlays/Motion On.png
+      off: /local/lovelace/overlays/Round Menu/5/Motion Off10.png
     style:
       left: 33.95%
       top: 41.8%
@@ -5336,10 +5400,10 @@ elements:
     title: Toggle Cat Motion Sensor
     tap_action:
       action: toggle
-    image: null
+    image: /local/lovelace/overlays/Round Menu/4/Motion Off7.png
     state_image:
-      "on": /local/lovelace/overlays/Round Menu/4/Motion On11.png
-      "off": /local/lovelace/overlays/Round Menu/4/Motion Off7.png
+      on: /local/lovelace/overlays/Round Menu/4/Motion On11.png
+      off: /local/lovelace/overlays/Round Menu/4/Motion Off7.png
     style:
       left: 55.7%
       top: 29%
@@ -5350,10 +5414,10 @@ elements:
     title: Toggle Closet Motion Sensor
     tap_action:
       action: toggle
-    image: null
+    image: /local/lovelace/overlays/Round Menu/4/Motion Off7.png
     state_image:
-      "on": /local/lovelace/overlays/Round Menu/4/Motion On11.png
-      "off": /local/lovelace/overlays/Round Menu/4/Motion Off7.png
+      on: /local/lovelace/overlays/Round Menu/4/Motion On11.png
+      off: /local/lovelace/overlays/Round Menu/4/Motion Off7.png
     style:
       left: 65%
       top: 30%
@@ -5364,10 +5428,10 @@ elements:
     title: Toggle Kitchen Motion Sensor
     tap_action:
       action: toggle
-    image: null
+    image: /local/lovelace/overlays/Round Menu/4/Motion Off7.png
     state_image:
-      "on": /local/lovelace/overlays/Round Menu/4/Motion On11.png
-      "off": /local/lovelace/overlays/Round Menu/4/Motion Off7.png
+      on: /local/lovelace/overlays/Round Menu/4/Motion On11.png
+      off: /local/lovelace/overlays/Round Menu/4/Motion Off7.png
     style:
       left: 46.2%
       top: 33.65%
@@ -5522,9 +5586,9 @@ elements:
           border-radius: 6px;
           font-family: raleway-light.woff2;
         }
-    state_display: |
+    state_display: >
       [[[
-        return entity.state ? parseFloat(entity.state).toFixed(1) + ' °C' : 'N/A';
+        return entity.state ? parseFloat(entity.state).toFixed(1) + ' Â°C' : 'N/A';
       ]]]
   - entity: sensor.temperature_sensor_king_temperature
     show_name: false
@@ -5767,13 +5831,13 @@ elements:
             type: picture-elements
             elements:
               - type: image
-                image: null
+                image: /local/lovelace/overlays/Round Menu/5/King Night8.png
                 entity: light.hallway_light_group
                 tap_action:
                   action: toggle
                 state_image:
-                  "on": /local/lovelace/overlays/Round Menu/5/King Day6.png
-                  "off": /local/lovelace/overlays/Round Menu/5/King Night8.png
+                  on: /local/lovelace/overlays/Round Menu/5/King Day6.png
+                  off: /local/lovelace/overlays/Round Menu/5/King Night8.png
                 style:
                   top: 13.5%
                   left: 15.0%
@@ -5815,10 +5879,10 @@ elements:
                       font-family: raleway-light.woff2;
                     }
               - entity: automation.motion_hallway_detects_2
-                image: null
+                image: /local/lovelace/overlays/Round Menu/5/Motion Off.png
                 state_image:
-                  "on": /local/lovelace/overlays/Round Menu/5/Motion On4.png
-                  "off": /local/lovelace/overlays/Round Menu/5/Motion Off.png
+                  on: /local/lovelace/overlays/Round Menu/5/Motion On4.png
+                  off: /local/lovelace/overlays/Round Menu/5/Motion Off.png
                 style:
                   left: 95.38%
                   top: 39.5%
@@ -5826,10 +5890,10 @@ elements:
                   opacity: 100%
                 type: image
               - entity: binary_sensor.sensor_hallway_entrance_door_opening
-                image: null
+                image: /local/lovelace/overlays/Round Menu/5/Door Closed3.png
                 state_image:
-                  "on": /local/lovelace/overlays/Round Menu/5/Door Open3.png
-                  "off": /local/lovelace/overlays/Round Menu/5/Door Closed3.png
+                  on: /local/lovelace/overlays/Round Menu/5/Door Open3.png
+                  off: /local/lovelace/overlays/Round Menu/5/Door Closed3.png
                 style:
                   left: 95.38%
                   top: 49.9%
@@ -5940,7 +6004,7 @@ elements:
                   top: 40%
                   left: 70.4%
                   width: 38.3%
-                  "--ha-card-background": rgba(1,1,1,0)
+                  --ha-card-background: rgba(1,1,1,0)
                 card:
                   show_name: true
                   show_icon: true
@@ -5988,26 +6052,19 @@ elements:
                           border: none;
                         }
               - type: image
-                entity: sensor.lg_washer
-                image: >-
-                  /local/lovelace/overlays/Round
-                  Menu/3/laundry/Washing/Washer8-Blank.png
+                entity: switch.lg_washer_power_2
+                image: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Washer8-Blank.png
                 state_image:
-                  "off": >-
-                    /local/lovelace/overlays/Round
-                    Menu/3/laundry/Washing/Washer16.png
+                  off: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Washer16.png
                 style:
                   top: 74.8%
                   left: 23%
                   width: 8.7%
                   image-rendering: crisp
-              - entity: sensor.lg_washer_run_state
-                image: >-
-                  /local/lovelace/overlays/Round
-                  Menu/3/laundry/Washing/Washer8-Blank.png
+              - entity: sensor.lg_washer_current_status
+                image: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Washer8-Blank.png
                 state_image:
-                  Spinning: >-
-                    /local/lovelace/overlays/Round
+                  Spinning: /local/lovelace/overlays/Round
                     Menu/3/laundry/Washing/Rainbow-Dogs5.gif
                 style:
                   top: 76%
@@ -6015,14 +6072,10 @@ elements:
                   width: 12%
                   image-rendering: crisp
                 type: image
-              - entity: sensor.lg_washer_run_state
-                image: >-
-                  /local/lovelace/overlays/Round
-                  Menu/3/laundry/Washing/Washer8-Blank.png
+              - entity: sensor.lg_washer_current_status
+                image: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Washer8-Blank.png
                 state_image:
-                  Rinsing: >-
-                    /local/lovelace/overlays/Round
-                    Menu/3/laundry/Washing/Rainbow-Dogs5.gif
+                  Rinsing: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Rainbow-Dogs5.gif
                 style:
                   top: 76%
                   left: 23%
@@ -6030,21 +6083,17 @@ elements:
                   image-rendering: crisp
                 type: image
               - type: image
-                entity: sensor.lg_washer_run_state
-                image: >-
-                  /local/lovelace/overlays/Round
-                  Menu/3/laundry/Washing/Washer8-Blank.png
+                entity: sensor.lg_washer_current_status
+                image: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Washer8-Blank.png
                 state_image:
-                  Washing: >-
-                    /local/lovelace/overlays/Round
-                    Menu/3/laundry/Washing/Rainbow-Dogs5.gif
+                  Washing: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Rainbow-Dogs5.gif
                 style:
                   top: 76%
                   left: 23%
                   width: 12%
                   image-rendering: crisp
               - type: custom:button-card
-                entity: sensor.lg_washer_remaining_time
+                entity: sensor.lg_washer_remaining_time_2
                 show_name: false
                 show_badge: false
                 show_icon: false
@@ -6071,49 +6120,37 @@ elements:
                 entity: binary_sensor.lg_washer_door_lock
                 image: /local/lg-icons/lock.png
                 state_image:
-                  "on": /local/lg-icons/lock-on.png
-                  "off": /local/lg-icons/lock.png
+                  on: /local/lg-icons/lock-on.png
+                  off: /local/lg-icons/lock.png
                 style:
                   top: 66.5%
                   width: 2%
                   left: 17%
                   image-rendering: crisp
               - type: image
-                entity: sensor.lg_dryer
-                image: >-
-                  /local/lovelace/overlays/Round
-                  Menu/3/laundry/Drying/Dryer7-Blank.png
+                entity: switch.lg_dryer_power_2
+                image: /local/lovelace/overlays/Round Menu/3/laundry/Drying/Dryer7-Blank.png
                 state_image:
-                  "off": >-
-                    /local/lovelace/overlays/Round
-                    Menu/3/laundry/Drying/Dryer11.png
+                  off: /local/lovelace/overlays/Round Menu/3/laundry/Drying/Dryer11.png
                 style:
                   top: 75%
                   left: 37%
                   width: 8.5%
                   image-rendering: crisp
-              - entity: sensor.lg_dryer
-                image: >-
-                  /local/lovelace/overlays/Round
-                  Menu/3/laundry/Drying/Dryer7-Blank.png
+              - entity: switch.lg_washer_power_2
+                image: /local/lovelace/overlays/Round Menu/3/laundry/Drying/Dryer7-Blank.png
                 state_image:
-                  Drying: >-
-                    /local/lovelace/overlays/Round
-                    Menu/3/laundry/Drying/Dryerdogs.gif
+                  Drying: /local/lovelace/overlays/Round Menu/3/laundry/Drying/Dryerdogs.gif
                 style:
                   top: 75%
                   left: 37%
                   width: 8.4%
                   image-rendering: crisp
                 type: image
-              - entity: sensor.lg_dryer_run_state
-                image: >-
-                  /local/lovelace/overlays/Round
-                  Menu/3/laundry/Drying/Dryer7-Blank.png
+              - entity: sensor.lg_dryer_current_status
+                image: /local/lovelace/overlays/Round Menu/3/laundry/Drying/Dryer7-Blank.png
                 state_image:
-                  Cooling: >-
-                    /local/lovelace/overlays/Round
-                    Menu/3/laundry/Drying/Dryerdogs.gif
+                  Cooling: /local/lovelace/overlays/Round Menu/3/laundry/Drying/Dryerdogs.gif
                 style:
                   top: 75%
                   left: 37%
@@ -6121,7 +6158,7 @@ elements:
                   image-rendering: crisp
                 type: image
               - type: custom:button-card
-                entity: sensor.lg_dryer_remaining_time
+                entity: sensor.lg_dryer_remaining_time_2
                 show_name: false
                 show_badge: false
                 show_icon: false
@@ -6150,10 +6187,10 @@ elements:
               left: 50%
               width: 125%
               height: 125%
-    image: null
+    image: /local/lovelace/overlays/Round Menu/4/Hallway Night.png
     state_image:
-      "on": /local/lovelace/overlays/Round Menu/4/Hallway Blank.png
-      "off": /local/lovelace/overlays/Round Menu/4/Hallway Night.png
+      on: /local/lovelace/overlays/Round Menu/4/Hallway Blank.png
+      off: /local/lovelace/overlays/Round Menu/4/Hallway Night.png
     style:
       left: 42.7%
       top: 38.65%
@@ -6179,13 +6216,13 @@ elements:
             type: picture-elements
             elements:
               - type: image
-                image: null
+                image: /local/lovelace/overlays/Round Menu/4/Pug Night3.png
                 entity: light.light_group_pug
                 tap_action:
                   action: toggle
                 state_image:
-                  "on": /local/lovelace/overlays/Round Menu/4/Pug Day3.png
-                  "off": /local/lovelace/overlays/Round Menu/4/Pug Night3.png
+                  on: /local/lovelace/overlays/Round Menu/4/Pug Day3.png
+                  off: /local/lovelace/overlays/Round Menu/4/Pug Night3.png
                 style:
                   top: 14.78%
                   left: 15.5%
@@ -6212,10 +6249,10 @@ elements:
                 title: Toggle Pug Motion Sensors
                 tap_action:
                   action: toggle
-                image: null
+                image: /local/lovelace/overlays/Round Menu/4/Motion Grey.png
                 state_image:
-                  "on": /local/lovelace/overlays/Round Menu/4/Motion White.png
-                  "off": /local/lovelace/overlays/Round Menu/4/Motion Grey.png
+                  on: /local/lovelace/overlays/Round Menu/4/Motion White.png
+                  off: /local/lovelace/overlays/Round Menu/4/Motion Grey.png
                 style:
                   left: 94%
                   top: 7.6%
@@ -6300,10 +6337,10 @@ elements:
                   }
               - entity: binary_sensor.sensor_pug_door_opening
                 title: Pug Door
-                image: null
+                image: /local/lovelace/overlays/Round Menu/5/Door Closed3.png
                 state_image:
-                  "on": /local/lovelace/overlays/Round Menu/5/Door Open3.png
-                  "off": /local/lovelace/overlays/Round Menu/5/Door Closed3.png
+                  on: /local/lovelace/overlays/Round Menu/5/Door Open3.png
+                  off: /local/lovelace/overlays/Round Menu/5/Door Closed3.png
                 style:
                   left: 94%
                   top: 19.6%
@@ -6331,7 +6368,7 @@ elements:
                   top: 77.3%
                   left: 30.2%
                   width: 30%
-                  "--ha-card-background": rgba(1,1,1,.6)
+                  --ha-card-background: rgba(1,1,1,.6)
                 card:
                   show_name: true
                   show_icon: true
@@ -6384,10 +6421,10 @@ elements:
               left: 36%
               width: 125%
               height: 125%
-    image: null
+    image: /local/lovelace/overlays/Round Menu/4/Pug Night.png
     state_image:
-      "on": /local/lovelace/overlays/Round Menu/4/Pug Blank.png
-      "off": /local/lovelace/overlays/Round Menu/4/Pug Night.png
+      on: /local/lovelace/overlays/Round Menu/4/Pug Blank.png
+      off: /local/lovelace/overlays/Round Menu/4/Pug Night.png
     style:
       left: 38.2%
       top: 41.2%
@@ -6413,13 +6450,13 @@ elements:
             type: picture-elements
             elements:
               - type: image
-                image: null
+                image: /local/lovelace/overlays/Round Menu/5/King Night8.png
                 entity: light.light_group_queen
                 tap_action:
                   action: toggle
                 state_image:
-                  "on": /local/lovelace/overlays/Round Menu/5/King Day6.png
-                  "off": /local/lovelace/overlays/Round Menu/5/King Night8.png
+                  on: /local/lovelace/overlays/Round Menu/5/King Day6.png
+                  off: /local/lovelace/overlays/Round Menu/5/King Night8.png
                 style:
                   top: 9.1%
                   left: 15.0%
@@ -6464,10 +6501,10 @@ elements:
                 title: Toggle Queen Sensors
                 tap_action:
                   action: toggle
-                image: null
+                image: /local/lovelace/overlays/Round Menu/5/Motion Off4.png
                 state_image:
-                  "on": /local/lovelace/overlays/Round Menu/5/Motion On4.png
-                  "off": /local/lovelace/overlays/Round Menu/5/Motion Off4.png
+                  on: /local/lovelace/overlays/Round Menu/5/Motion On4.png
+                  off: /local/lovelace/overlays/Round Menu/5/Motion Off4.png
                 style:
                   left: 95.45%
                   top: 31.22%
@@ -6483,10 +6520,10 @@ elements:
                   opacity: 100%
               - entity: fan.fan_king
                 title: King Fan
-                image: null
+                image: /local/lovelace/overlays/Round Menu/5/Fan Off2.png
                 state_image:
-                  "on": /local/lovelace/overlays/Round Menu/4/Fan-turning.gif
-                  "off": /local/lovelace/overlays/Round Menu/5/Fan Off2.png
+                  on: /local/lovelace/overlays/Round Menu/4/Fan-turning.gif
+                  off: /local/lovelace/overlays/Round Menu/5/Fan Off2.png
                 style:
                   left: 95.45%
                   top: 52%
@@ -6578,10 +6615,10 @@ elements:
                   }
               - entity: fan.fan_king
                 title: King Fan
-                image: null
+                image: /local/lovelace/overlays/Round Menu/5/Fan Off2.png
                 state_image:
-                  "on": /local/lovelace/overlays/Round Menu/4/Fan-turning.gif
-                  "off": /local/lovelace/overlays/Round Menu/5/Fan Off2.png
+                  on: /local/lovelace/overlays/Round Menu/4/Fan-turning.gif
+                  off: /local/lovelace/overlays/Round Menu/5/Fan Off2.png
                 style:
                   left: 95.45%
                   top: 62.5%
@@ -6592,8 +6629,8 @@ elements:
                 title: Queen Door
                 image: /local/lovelace/overlays/Round Menu/5/Door Open3.png
                 state_image:
-                  "on": /local/lovelace/overlays/Round Menu/5/Door Open3.png
-                  "off": /local/lovelace/overlays/Round Menu/5/Door Closed3.png
+                  on: /local/lovelace/overlays/Round Menu/5/Door Open3.png
+                  off: /local/lovelace/overlays/Round Menu/5/Door Closed3.png
                 style:
                   left: 95.45%
                   top: 41.5%
@@ -6627,7 +6664,7 @@ elements:
                   top: 39%
                   left: 70.7%
                   width: 38.3%
-                  "--ha-card-background": rgba(1,1,1,0)
+                  --ha-card-background: rgba(1,1,1,0)
                 card:
                   show_name: true
                   show_icon: true
@@ -7043,10 +7080,10 @@ elements:
               left: 50%
               width: 125%
               height: 125%
-    image: null
+    image: /local/lovelace/overlays/Round Menu/4/Queen Night.png
     state_image:
-      "on": /local/lovelace/overlays/Round Menu/4/Queen Blank.png
-      "off": /local/lovelace/overlays/Round Menu/4/Queen Night.png
+      on: /local/lovelace/overlays/Round Menu/4/Queen Blank.png
+      off: /local/lovelace/overlays/Round Menu/4/Queen Night.png
     style:
       left: 41.5%
       top: 54%
@@ -7073,13 +7110,13 @@ elements:
             type: picture-elements
             elements:
               - type: image
-                image: null
+                image: /local/lovelace/overlays/Round Menu/5/King Night8.png
                 entity: light.kitchen_group
                 tap_action:
                   action: toggle
                 state_image:
-                  "on": /local/lovelace/overlays/Round Menu/5/King Day6.png
-                  "off": /local/lovelace/overlays/Round Menu/5/King Night8.png
+                  on: /local/lovelace/overlays/Round Menu/5/King Day6.png
+                  off: /local/lovelace/overlays/Round Menu/5/King Night8.png
                 style:
                   top: 13.5%
                   left: 15.0%
@@ -7094,10 +7131,10 @@ elements:
                 title: Toggle Kitchen Motion Sensors
                 tap_action:
                   action: toggle
-                image: null
+                image: /local/lovelace/overlays/Round Menu/5/Motion Off4.png
                 state_image:
-                  "on": /local/lovelace/overlays/Round Menu/5/Motion On4.png
-                  "off": /local/lovelace/overlays/Round Menu/5/Motion Off4.png
+                  on: /local/lovelace/overlays/Round Menu/5/Motion On4.png
+                  off: /local/lovelace/overlays/Round Menu/5/Motion Off4.png
                 style:
                   left: 95.1%
                   top: 50.05%
@@ -7477,7 +7514,7 @@ elements:
                   top: 39.5%
                   left: 70%
                   width: 35%
-                  "--ha-card-background": rgba(1,1,1,0)
+                  --ha-card-background: rgba(1,1,1,0)
                 card:
                   show_name: true
                   show_icon: true
@@ -7530,10 +7567,10 @@ elements:
               left: 50%
               width: 125%
               height: 125%
-    image: null
+    image: /local/lovelace/overlays/Round Menu/4/Kitchen Night.png
     state_image:
-      "on": /local/lovelace/overlays/Round Menu/4/Kitchen Blank.png
-      "off": /local/lovelace/overlays/Round Menu/4/Kitchen Night.png
+      on: /local/lovelace/overlays/Round Menu/4/Kitchen Blank.png
+      off: /local/lovelace/overlays/Round Menu/4/Kitchen Night.png
     style:
       top: 45.7%
       left: 51.5%
@@ -7558,13 +7595,13 @@ elements:
             type: picture-elements
             elements:
               - type: image
-                image: null
+                image: /local/lovelace/overlays/Round Menu/5/King Night8.png
                 entity: light.living_room_lights_group
                 tap_action:
                   action: toggle
                 state_image:
-                  "on": /local/lovelace/overlays/Round Menu/5/King Day6.png
-                  "off": /local/lovelace/overlays/Round Menu/5/King Night8.png
+                  on: /local/lovelace/overlays/Round Menu/5/King Day6.png
+                  off: /local/lovelace/overlays/Round Menu/5/King Night8.png
                 style:
                   top: 13.5%
                   left: 15.0%
@@ -7576,13 +7613,13 @@ elements:
                       border-radius: 12px;
                      }
               - type: image
-                image: null
+                image: /local/lovelace/overlays/Round Menu/4/LR Night3.png
                 entity: light.living_room_lights_group
                 tap_action:
                   action: toggle
                 state_image:
-                  "on": /local/lovelace/overlays/Round Menu/4/LR Day3.png
-                  "off": /local/lovelace/overlays/Round Menu/4/LR Night3.png
+                  on: /local/lovelace/overlays/Round Menu/4/LR Day3.png
+                  off: /local/lovelace/overlays/Round Menu/4/LR Night3.png
                 style:
                   top: 14.78%
                   left: 15.5%
@@ -7608,10 +7645,10 @@ elements:
                   opacity: 100%
                 name: Activate Script
               - entity: automation.motion_living_room
-                image: null
+                image: /local/lovelace/overlays/Round Menu/5/Motion Off4.png
                 state_image:
-                  "on": /local/lovelace/overlays/Round Menu/5/Motion On4.png
-                  "off": /local/lovelace/overlays/Round Menu/5/Motion Off4.png
+                  on: /local/lovelace/overlays/Round Menu/5/Motion On4.png
+                  off: /local/lovelace/overlays/Round Menu/5/Motion Off4.png
                 style:
                   left: 95.38%
                   top: 50.35%
@@ -7619,10 +7656,10 @@ elements:
                   opacity: 100%
                 type: image
               - entity: automation.motion_living_room_detects3
-                image: null
+                image: /local/lovelace/overlays/Round Menu/5/Motion Off4.png
                 state_image:
-                  "on": /local/lovelace/overlays/Round Menu/5/Motion On4.png
-                  "off": /local/lovelace/overlays/Round Menu/5/Motion Off4.png
+                  on: /local/lovelace/overlays/Round Menu/5/Motion On4.png
+                  off: /local/lovelace/overlays/Round Menu/5/Motion Off4.png
                 style:
                   left: 95.38%
                   top: 61%
@@ -7761,7 +7798,7 @@ elements:
                   top: 39.1%
                   left: 70.2%
                   width: 38%
-                  "--ha-card-background": rgba(1,1,1,0)
+                  --ha-card-background: rgba(1,1,1,0)
                 card:
                   show_name: true
                   show_icon: true
@@ -8087,10 +8124,10 @@ elements:
                    secondary-background-color: rgba(1,1,1,0);
                    border: none;
                  }
-    image: null
+    image: /local/lovelace/overlays/Round Menu/4/Living Room Night.png
     state_image:
-      "on": /local/lovelace/overlays/Round Menu/4/Living Room Blank.png
-      "off": /local/lovelace/overlays/Round Menu/4/Living Room Night.png
+      on: /local/lovelace/overlays/Round Menu/4/Living Room Blank.png
+      off: /local/lovelace/overlays/Round Menu/4/Living Room Night.png
     style:
       left: 53.3%
       top: 58.5%
@@ -8116,13 +8153,13 @@ elements:
             type: picture-elements
             elements:
               - type: image
-                image: null
+                image: /local/lovelace/overlays/Round Menu/5/King Night8.png
                 entity: light.light_group_king
                 tap_action:
                   action: toggle
                 state_image:
-                  "on": /local/lovelace/overlays/Round Menu/5/King Day6.png
-                  "off": /local/lovelace/overlays/Round Menu/5/King Night8.png
+                  on: /local/lovelace/overlays/Round Menu/5/King Day6.png
+                  off: /local/lovelace/overlays/Round Menu/5/King Night8.png
                 style:
                   top: 13.5%
                   left: 15.0%
@@ -8134,10 +8171,10 @@ elements:
                       border-radius: 12px;
                      }
               - entity: automation.motion_king_detects2_2
-                image: null
+                image: /local/lovelace/overlays/Round Menu/5/Motion Off4.png
                 state_image:
-                  "on": /local/lovelace/overlays/Round Menu/5/Motion On4.png
-                  "off": /local/lovelace/overlays/Round Menu/5/Motion Off4.png
+                  on: /local/lovelace/overlays/Round Menu/5/Motion On4.png
+                  off: /local/lovelace/overlays/Round Menu/5/Motion Off4.png
                 style:
                   left: 95%
                   top: 25%
@@ -8145,10 +8182,10 @@ elements:
                   opacity: 100%
                 type: image
               - entity: binary_sensor.sensor_king_door_opening
-                image: null
+                image: /local/lovelace/overlays/Round Menu/5/Door Closed3.png
                 state_image:
-                  "on": /local/lovelace/overlays/Round Menu/5/Door Open3.png
-                  "off": /local/lovelace/overlays/Round Menu/5/Door Closed3.png
+                  on: /local/lovelace/overlays/Round Menu/5/Door Open3.png
+                  off: /local/lovelace/overlays/Round Menu/5/Door Closed3.png
                 style:
                   left: 95%
                   top: 35.5%
@@ -8157,10 +8194,10 @@ elements:
                 type: image
               - entity: fan.fan_king_cacoon
                 title: King Vent
-                image: null
+                image: /local/lovelace/overlays/Round Menu/5/Cacoon Off26.png
                 state_image:
-                  "on": /local/lovelace/overlays/Round Menu/5/Cacoon On7.png
-                  "off": /local/lovelace/overlays/Round Menu/5/Cacoon Off26.png
+                  on: /local/lovelace/overlays/Round Menu/5/Cacoon On7.png
+                  off: /local/lovelace/overlays/Round Menu/5/Cacoon Off26.png
                 style:
                   left: 95%
                   top: 46%
@@ -8176,10 +8213,10 @@ elements:
                   opacity: 100%
               - entity: fan.fan_king
                 title: King Fan
-                image: null
+                image: /local/lovelace/overlays/Round Menu/5/Fan Off2.png
                 state_image:
-                  "on": /local/lovelace/overlays/Round Menu/4/Fan-turning.gif
-                  "off": /local/lovelace/overlays/Round Menu/5/Fan Off2.png
+                  on: /local/lovelace/overlays/Round Menu/4/Fan-turning.gif
+                  off: /local/lovelace/overlays/Round Menu/5/Fan Off2.png
                 style:
                   left: 95%
                   top: 56.5%
@@ -8343,7 +8380,7 @@ elements:
                   top: 39.5%
                   left: 70.2%
                   width: 32%
-                  "--ha-card-background": rgba(1,1,1,0)
+                  --ha-card-background: rgba(1,1,1,0)
                 card:
                   show_name: true
                   show_icon: true
@@ -8637,7 +8674,7 @@ elements:
               width: 125%
               height: 125%
           card_mod:
-            style: |
+            style: |+
               .: |
                 #states > * {
                   margin: 0px 0px !important;
@@ -8668,10 +8705,10 @@ elements:
                    border: none;
                  }
                  
-    image: null
+    image: /local/lovelace/overlays/Round Menu/4/King Night.png
     state_image:
-      "on": /local/lovelace/overlays/Round Menu/4/King Blank.png
-      "off": /local/lovelace/overlays/Round Menu/4/King Night.png
+      on: /local/lovelace/overlays/Round Menu/4/King Blank.png
+      off: /local/lovelace/overlays/Round Menu/4/King Night.png
     style:
       left: 62.6%
       top: 46.9%
@@ -8697,13 +8734,13 @@ elements:
             type: picture-elements
             elements:
               - type: image
-                image: null
+                image: /local/lovelace/overlays/Round Menu/5/King Night8.png
                 entity: light.cat_lights
                 tap_action:
                   action: toggle
                 state_image:
-                  "on": /local/lovelace/overlays/Round Menu/5/King Day6.png
-                  "off": /local/lovelace/overlays/Round Menu/5/King Night8.png
+                  on: /local/lovelace/overlays/Round Menu/5/King Day6.png
+                  off: /local/lovelace/overlays/Round Menu/5/King Night8.png
                 style:
                   top: 13.5%
                   left: 15.0%
@@ -8718,10 +8755,10 @@ elements:
                 title: Toggle Cat Motion Sensors
                 tap_action:
                   action: toggle
-                image: null
+                image: /local/lovelace/overlays/Round Menu/5/Motion Off4.png
                 state_image:
-                  "on": /local/lovelace/overlays/Round Menu/5/Motion On4.png
-                  "off": /local/lovelace/overlays/Round Menu/5/Motion Off4.png
+                  on: /local/lovelace/overlays/Round Menu/5/Motion On4.png
+                  off: /local/lovelace/overlays/Round Menu/5/Motion Off4.png
                 style:
                   top: 23.5%
                   left: 95.1%
@@ -8744,8 +8781,8 @@ elements:
                 title: Cat Ceiling Fan
                 image: /local/lovelace/overlays/Round Menu/5/Fan Off4.png
                 state_image:
-                  "on": /local/lovelace/overlays/Round Menu/4/Fan-turning-white4.gif
-                  "off": /local/lovelace/overlays/Round Menu/5/Fan Off4.png
+                  on: /local/lovelace/overlays/Round Menu/4/Fan-turning-white4.gif
+                  off: /local/lovelace/overlays/Round Menu/5/Fan Off4.png
                 style:
                   left: 95.1%
                   top: 34%
@@ -8761,10 +8798,10 @@ elements:
                   opacity: 100%
               - entity: switch.fan_cat_black_socket_1
                 title: Cat Black Fan
-                image: null
+                image: /local/lovelace/overlays/Round Menu/5/Fan Off4.png
                 state_image:
-                  "on": /local/lovelace/overlays/Round Menu/4/Fan-turning-white4.gif
-                  "off": /local/lovelace/overlays/Round Menu/5/Fan Off4.png
+                  on: /local/lovelace/overlays/Round Menu/4/Fan-turning-white4.gif
+                  off: /local/lovelace/overlays/Round Menu/5/Fan Off4.png
                 style:
                   left: 95.1%
                   top: 44.5%
@@ -8874,8 +8911,8 @@ elements:
                   action: toggle
                 image: /local/lovelace/overlays/Round Menu/5/Shower1-3.png
                 state_image:
-                  "on": /local/lovelace/overlays/Round Menu/5/Shower-1.gif
-                  "off": /local/lovelace/overlays/Round Menu/5/Shower1-3.png
+                  on: /local/lovelace/overlays/Round Menu/5/Shower-1.gif
+                  off: /local/lovelace/overlays/Round Menu/5/Shower1-3.png
                 style:
                   left: 18.5%
                   top: 61.6%
@@ -8888,8 +8925,8 @@ elements:
                   action: toggle
                 image: /local/lovelace/overlays/Round Menu/5/Shower2-2.png
                 state_image:
-                  "on": /local/lovelace/overlays/Round Menu/5/Shower-2.gif
-                  "off": /local/lovelace/overlays/Round Menu/5/Shower2-2.png
+                  on: /local/lovelace/overlays/Round Menu/5/Shower-2.gif
+                  off: /local/lovelace/overlays/Round Menu/5/Shower2-2.png
                 style:
                   left: 30.5%
                   top: 61.6%
@@ -8902,8 +8939,8 @@ elements:
                   action: toggle
                 image: /local/lovelace/overlays/Round Menu/5/Shower3-2.png
                 state_image:
-                  "on": /local/lovelace/overlays/Round Menu/5/Shower-3.gif
-                  "off": /local/lovelace/overlays/Round Menu/5/Shower3-2.png
+                  on: /local/lovelace/overlays/Round Menu/5/Shower-3.gif
+                  off: /local/lovelace/overlays/Round Menu/5/Shower3-2.png
                 style:
                   left: 42.5%
                   top: 61.6%
@@ -8969,7 +9006,7 @@ elements:
                   top: 50.2%
                   left: 70.3%
                   width: 35%
-                  "--ha-card-background": rgba(1,1,1,1)
+                  --ha-card-background: rgba(1,1,1,1)
                 card:
                   show_name: true
                   show_icon: true
@@ -9022,10 +9059,10 @@ elements:
               left: 50%
               width: 125%
               height: 125%
-    image: null
+    image: /local/lovelace/overlays/Round Menu/4/Cat Night.png
     state_image:
-      "on": /local/lovelace/overlays/Round Menu/4/Cat Blank.png
-      "off": /local/lovelace/overlays/Round Menu/4/Cat Night.png
+      on: /local/lovelace/overlays/Round Menu/4/Cat Blank.png
+      off: /local/lovelace/overlays/Round Menu/4/Cat Night.png
     style:
       left: 58.15%
       top: 37.65%
@@ -9051,13 +9088,13 @@ elements:
             type: picture-elements
             elements:
               - type: image
-                image: null
+                image: /local/lovelace/overlays/Round Menu/5/King Night8.png
                 entity: light.light_group_closet
                 tap_action:
                   action: toggle
                 state_image:
-                  "on": /local/lovelace/overlays/Round Menu/5/King Day6.png
-                  "off": /local/lovelace/overlays/Round Menu/5/King Night8.png
+                  on: /local/lovelace/overlays/Round Menu/5/King Day6.png
+                  off: /local/lovelace/overlays/Round Menu/5/King Night8.png
                 style:
                   top: 13.5%
                   left: 15.0%
@@ -9072,10 +9109,10 @@ elements:
                 title: Toggle Closet Motion Sensors
                 tap_action:
                   action: toggle
-                image: null
+                image: /local/lovelace/overlays/Round Menu/5/Motion Off4.png
                 state_image:
-                  "on": /local/lovelace/overlays/Round Menu/5/Motion On4.png
-                  "off": /local/lovelace/overlays/Round Menu/5/Motion Off4.png
+                  on: /local/lovelace/overlays/Round Menu/5/Motion On4.png
+                  off: /local/lovelace/overlays/Round Menu/5/Motion Off4.png
                 style:
                   left: 95.45%
                   top: 48%
@@ -9084,10 +9121,10 @@ elements:
                 type: image
               - entity: binary_sensor.sensor_closet_door_opening
                 title: Closet Door
-                image: null
+                image: /local/lovelace/overlays/Round Menu/5/Door Closed3.png
                 state_image:
-                  "on": /local/lovelace/overlays/Round Menu/5/Door Open3.png
-                  "off": /local/lovelace/overlays/Round Menu/5/Door Closed3.png
+                  on: /local/lovelace/overlays/Round Menu/5/Door Open3.png
+                  off: /local/lovelace/overlays/Round Menu/5/Door Closed3.png
                 style:
                   left: 95.45%
                   top: 57.7%
@@ -9196,7 +9233,7 @@ elements:
                   left: 51.6%
                   width: 38%
                   transform: scale(1,1)
-                  "--ha-card-background": rgba(1,1,1,0)
+                  --ha-card-background: rgba(1,1,1,0)
                 card:
                   show_name: true
                   show_icon: true
@@ -9228,17 +9265,31 @@ elements:
                             padding-left: -2px !important; 
                             border: none;
                              }
-                      .: "#states > * {\n  margin: 0px 0px !important;\n  margin-top: -8px !important;\n  margin-bottom: -8px !important;\n  padding-right: 0px !important; \n  padding-left: 0px !important; \n  padding-top: -8px !important; \n  padding-bottom: -8px !important; \n  margin-left: -5px !important; \n  margin-right: -0px !important; \n  font-size: 14px;\n  --mdc-icon-size: 16px;\n  border: none;\n}\t\t\t\t\n"
+                      .: |
+                        #states > * {
+                          margin: 0px 0px !important;
+                          margin-top: -8px !important;
+                          margin-bottom: -8px !important;
+                          padding-right: 0px !important; 
+                          padding-left: 0px !important; 
+                          padding-top: -8px !important; 
+                          padding-bottom: -8px !important; 
+                          margin-left: -5px !important; 
+                          margin-right: -0px !important; 
+                          font-size: 14px;
+                          --mdc-icon-size: 16px;
+                          border: none;
+                        }				
             image: /local/lovelace/overlays/Round Menu/5/Closet BG59.png
             style:
               top: 50%
               left: 50%
               width: 125%
               height: 125%
-    image: null
+    image: /local/lovelace/overlays/Round Menu/4/Closet Night.png
     state_image:
-      "on": /local/lovelace/overlays/Round Menu/4/Closet Blank.png
-      "off": /local/lovelace/overlays/Round Menu/4/Closet Night.png
+      on: /local/lovelace/overlays/Round Menu/4/Closet Blank.png
+      off: /local/lovelace/overlays/Round Menu/4/Closet Night.png
     style:
       left: 61.84%
       top: 35.5%
@@ -9493,8 +9544,7 @@ elements:
                           width: 125%
                           height: 125%
                     - type: iframe
-                      url: >-
-                        https://www.flightradar24.com/simple?lat=43.67&lon=-79.38&z=21&label1=reg&size=small
+                      url: https://www.flightradar24.com/simple?lat=43.67&lon=-79.38&z=21&label1=reg&size=small
                       aspect_ratio: 100%
                       style:
                         top: 50%
@@ -9522,17 +9572,17 @@ elements:
       top: 71.6%
       width: 4.75%
   - type: image
-    entity: sensor.lg_dryer
+    entity: switch.lg_dryer_power_2
     image: /local/lovelace/overlays/Round Menu/3/laundry/Drying/Dryer7-Blank.png
     state_image:
-      "off": /local/lovelace/overlays/Round Menu/3/laundry/Drying/Dryer11.png
+      off: /local/lovelace/overlays/Round Menu/3/laundry/Drying/Dryer11.png
     style:
       top: 79.1%
       left: 27%
       width: 8%
       image-rendering: crisp
   - type: image
-    entity: sensor.lg_dryer_run_state
+    entity: sensor.lg_dryer_current_status
     image: /local/lovelace/overlays/Round Menu/3/laundry/Drying/Dryer7-Blank.png
     state_image:
       Drying: /local/lovelace/overlays/Round Menu/5/Dry.gif
@@ -9541,7 +9591,7 @@ elements:
       left: 32.5%
       width: 1.5%
       image-rendering: crisp
-  - entity: sensor.lg_dryer_run_state
+  - entity: sensor.lg_dryer_current_status
     image: /local/lovelace/overlays/Round Menu/3/laundry/Drying/Dryer7-Blank.png
     state_image:
       Drying: /local/lovelace/overlays/Round Menu/3/laundry/Drying/Dryerdogs.gif
@@ -9552,7 +9602,7 @@ elements:
       image-rendering: crisp
     type: image
   - type: image
-    entity: sensor.lg_dryer_run_state
+    entity: sensor.lg_dryer_current_status
     image: /local/lovelace/overlays/Round Menu/3/laundry/Drying/Dryer7-Blank.png
     state_image:
       Cooling: /local/lovelace/overlays/Round Menu/5/Cool.gif
@@ -9561,7 +9611,7 @@ elements:
       left: 32.5%
       width: 1.5%
       image-rendering: crisp
-  - entity: sensor.lg_dryer_run_state
+  - entity: sensor.lg_dryer_current_status
     image: /local/lovelace/overlays/Round Menu/3/laundry/Drying/Dryer7-Blank.png
     state_image:
       Cooling: /local/lovelace/overlays/Round Menu/3/laundry/Drying/Dryerdogs.gif
@@ -9572,7 +9622,7 @@ elements:
       image-rendering: crisp
     type: image
   - type: custom:button-card
-    entity: sensor.lg_dryer_remaining_time
+    entity: sensor.dryer_time_display
     show_name: false
     show_badge: false
     show_icon: false
@@ -9583,7 +9633,7 @@ elements:
       width: 8%
       letter-spacing: +1px
     card_mod:
-      style: |
+      style: >
         ha-card {
           background: rgba(0, 255, 255, 0);
           border: none;
@@ -9594,19 +9644,22 @@ elements:
           font-family: Pathway Gothic One;
           font-weight: 400;
           width: 25%;
+
+          transition: opacity 0.5s ease-in-out;
+          opacity: {{ 1 if states('sensor.dryer_time_display') not in ['', 'unknown', 'unavailable'] else 0 }};
         }
   - type: image
-    entity: sensor.lg_washer
+    entity: switch.lg_washer_power_2
     image: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Washer8-Blank.png
     state_image:
-      "off": /local/lovelace/overlays/Round Menu/3/laundry/Washing/Washer16.png
+      off: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Washer16.png
     style:
       top: 78.9%
       left: 18.1%
       width: 8.2%
       image-rendering: crisp
   - type: image
-    entity: sensor.lg_washer
+    entity: switch.lg_washer_power_2
     image: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Washer8-Blank.png
     state_image:
       Spinning: /local/lovelace/overlays/Round Menu/5/Spin.gif
@@ -9615,7 +9668,7 @@ elements:
       width: 2%
       left: 12.25%
       image-rendering: crisp
-  - entity: sensor.lg_washer_run_state
+  - entity: sensor.lg_washer_current_status
     image: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Washer8-Blank.png
     state_image:
       Spinning: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Rainbow-Dogs5.gif
@@ -9626,7 +9679,7 @@ elements:
       image-rendering: crisp
     type: image
   - type: image
-    entity: sensor.lg_washer
+    entity: switch.lg_washer_power_2
     image: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Washer8-Blank.png
     state_image:
       Rinsing: /local/lovelace/overlays/Round Menu/5/Rinse.gif
@@ -9635,7 +9688,7 @@ elements:
       width: 2%
       left: 12.25%
       image-rendering: crisp
-  - entity: sensor.lg_washer_run_state
+  - entity: sensor.lg_washer_current_status
     image: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Washer8-Blank.png
     state_image:
       Rinsing: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Rainbow-Dogs5.gif
@@ -9646,7 +9699,7 @@ elements:
       image-rendering: crisp
     type: image
   - type: image
-    entity: sensor.lg_washer
+    entity: switch.lg_washer_power_2
     image: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Washer8-Blank.png
     state_image:
       Washing: /local/lovelace/overlays/Round Menu/5/Wash.gif
@@ -9656,7 +9709,7 @@ elements:
       left: 12.25%
       image-rendering: crisp
   - type: image
-    entity: sensor.lg_washer_run_state
+    entity: sensor.lg_washer_current_status
     image: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Washer8-Blank.png
     state_image:
       Washing: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Rainbow-Dogs5.gif
@@ -9666,18 +9719,18 @@ elements:
       width: 11.8%
       image-rendering: crisp
   - type: custom:button-card
-    entity: sensor.lg_washer_remaining_time
+    entity: sensor.washer_time_display
     show_name: false
-    show_badge: false
+    show_badge: true
     show_icon: false
     show_state: true
     style:
       top: 66.2%
       left: 18.1%
-      width: 7%
+      width: 17%
       letter-spacing: +1px
     card_mod:
-      style: |
+      style: >
         ha-card {
           background: rgba(0, 255, 255, 0);
           border: none;
@@ -9688,13 +9741,17 @@ elements:
           font-family: Pathway Gothic One;
           font-weight: 400;
           width: 25%;
+          transition: opacity 0.5s ease-in-out;
+
+          /* Fade logic */
+          opacity: {{ '0' if states('sensor.washer_time_display') == '' else '1' }};
         }
   - type: image
     entity: binary_sensor.lg_washer_door_lock
     image: /local/lg-icons/lock.png
     state_image:
-      "on": /local/lg-icons/lock-on.png
-      "off": /local/lg-icons/lock.png
+      on: /local/lg-icons/lock-on.png
+      off: /local/lg-icons/lock.png
     style:
       top: 71.25%
       width: 2%
@@ -9725,14 +9782,10 @@ elements:
             description: laundry card
             elements:
               - type: image
-                entity: sensor.lg_washer
-                image: >-
-                  /local/lovelace/overlays/Round
-                  Menu/3/laundry/Washing/Washer8-Blank.png
+                entity: switch.lg_washer_power_2
+                image: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Washer8-Blank.png
                 state_image:
-                  "off": >-
-                    /local/lovelace/overlays/Round
-                    Menu/3/laundry/Washing/Washer16.png
+                  off: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Washer16.png
                 style:
                   top: 80.2%
                   left: 33%
@@ -9740,10 +9793,8 @@ elements:
                   image-rendering: crisp
               - type: image
                 description: laundry card
-                entity: sensor.lg_washer
-                image: >-
-                  /local/lovelace/overlays/Round
-                  Menu/3/laundry/Washing/Washer8-Blank.png
+                entity: switch.lg_washer_power_2
+                image: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Washer8-Blank.png
                 state_image:
                   Spinning: /local/lovelace/overlays/Round Menu/5/Spin.gif
                 style:
@@ -9751,14 +9802,11 @@ elements:
                   width: 2%
                   left: 33%
                   image-rendering: crisp
-              - entity: sensor.lg_washer_run_state
+              - entity: sensor.lg_washer_current_status
                 description: laundry card
-                image: >-
-                  /local/lovelace/overlays/Round
-                  Menu/3/laundry/Washing/Washer8-Blank.png
+                image: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Washer8-Blank.png
                 state_image:
-                  Spinning: >-
-                    /local/lovelace/overlays/Round
+                  Spinning: /local/lovelace/overlays/Round
                     Menu/3/laundry/Washing/Rainbow-Dogs5.gif
                 style:
                   top: 81%
@@ -9768,10 +9816,8 @@ elements:
                 type: image
               - type: image
                 description: laundry card
-                entity: sensor.lg_washer
-                image: >-
-                  /local/lovelace/overlays/Round
-                  Menu/3/laundry/Washing/Washer8-Blank.png
+                entity: switch.lg_washer_power_2
+                image: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Washer8-Blank.png
                 state_image:
                   Rinsing: /local/lovelace/overlays/Round Menu/5/Rinse.gif
                 style:
@@ -9779,15 +9825,11 @@ elements:
                   width: 21%
                   left: 12.25%
                   image-rendering: crisp
-              - entity: sensor.lg_washer_run_state
+              - entity: sensor.lg_washer_current_status
                 description: laundry card
-                image: >-
-                  /local/lovelace/overlays/Round
-                  Menu/3/laundry/Washing/Washer8-Blank.png
+                image: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Washer8-Blank.png
                 state_image:
-                  Rinsing: >-
-                    /local/lovelace/overlays/Round
-                    Menu/3/laundry/Washing/Rainbow-Dogs5.gif
+                  Rinsing: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Rainbow-Dogs5.gif
                 style:
                   top: 81%
                   left: 33%
@@ -9796,10 +9838,8 @@ elements:
                 type: image
               - type: image
                 description: laundry card
-                entity: sensor.lg_washer
-                image: >-
-                  /local/lovelace/overlays/Round
-                  Menu/3/laundry/Washing/Washer8-Blank.png
+                entity: switch.lg_washer_power_2
+                image: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Washer8-Blank.png
                 state_image:
                   Washing: /local/lovelace/overlays/Round Menu/5/Wash.gif
                 style:
@@ -9809,14 +9849,10 @@ elements:
                   image-rendering: crisp
               - type: image
                 description: laundry card
-                entity: sensor.lg_washer_run_state
-                image: >-
-                  /local/lovelace/overlays/Round
-                  Menu/3/laundry/Washing/Washer8-Blank.png
+                entity: sensor.lg_washer_current_status
+                image: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Washer8-Blank.png
                 state_image:
-                  Washing: >-
-                    /local/lovelace/overlays/Round
-                    Menu/3/laundry/Washing/Rainbow-Dogs5.gif
+                  Washing: /local/lovelace/overlays/Round Menu/3/laundry/Washing/Rainbow-Dogs5.gif
                 style:
                   top: 81%
                   left: 33%
@@ -9827,7 +9863,7 @@ elements:
                 card_param: entities
                 filter:
                   include:
-                    - entity_id: sensor.lg_washer_current_course
+                    - entity_id: sensor.lg_washer_cycles
                     - entity_id: sensor.lg_washer_pre_state
                     - entity_id: sensor.lg_washer_rinse_mode
                     - entity_id: binary_sensor.lg_washer_run_completed
@@ -9842,7 +9878,7 @@ elements:
                   left: 17.3%
                   width: 31%
                   transform: scale(.74,.74)
-                  "--ha-card-background": rgba(1,1,1,0)
+                  --ha-card-background: rgba(1,1,1,0)
                 card:
                   show_name: true
                   show_icon: true
@@ -9902,10 +9938,10 @@ elements:
                 card_param: entities
                 filter:
                   include:
-                    - entity_id: sensor.lg_dryer_current_course
-                    - entity_id: sensor.lg_dryer_dry_level
+                    - entity_id: sensor.lg_dryer_current_status
+                    - entity_id: select.lg_dryer_operation
                     - entity_id: binary_sensor.lg_dryer_run_completed
-                    - entity_id: sensor.lg_dryer_run_state
+                    - entity_id: event.lg_dryer_error
                   exclude: null
                 sort:
                   method: domain
@@ -9918,7 +9954,7 @@ elements:
                   left: 40.8%
                   width: 31%
                   transform: scale(.74,.74)
-                  "--ha-card-background": rgba(1,1,1,0)
+                  --ha-card-background: rgba(1,1,1,0)
                 card:
                   show_name: true
                   show_icon: true
@@ -9967,7 +10003,7 @@ elements:
                         }
               - type: custom:button-card
                 description: laundry card
-                entity: sensor.lg_washer_remaining_time
+                entity: sensor.lg_washer_remaining_time_2
                 show_name: false
                 show_badge: false
                 show_icon: false
@@ -9995,8 +10031,8 @@ elements:
                 entity: binary_sensor.lg_washer_door_lock
                 image: /local/lg-icons/lock.png
                 state_image:
-                  "on": /local/lg-icons/lock-on.png
-                  "off": /local/lg-icons/lock.png
+                  on: /local/lg-icons/lock-on.png
+                  off: /local/lg-icons/lock.png
                 style:
                   top: 54%
                   width: 3%
@@ -10004,14 +10040,10 @@ elements:
                   image-rendering: crisp
               - type: image
                 description: laundry card
-                entity: sensor.lg_dryer
-                image: >-
-                  /local/lovelace/overlays/Round
-                  Menu/3/laundry/Drying/Dryer7-Blank.png
+                entity: switch.lg_dryer_power_2
+                image: /local/lovelace/overlays/Round Menu/3/laundry/Drying/Dryer7-Blank.png
                 state_image:
-                  "off": >-
-                    /local/lovelace/overlays/Round
-                    Menu/3/laundry/Drying/Dryer11.png
+                  off: /local/lovelace/overlays/Round Menu/3/laundry/Drying/Dryer11.png
                 style:
                   top: 80%
                   left: 56%
@@ -10019,10 +10051,8 @@ elements:
                   image-rendering: crisp
               - type: image
                 description: laundry card
-                entity: sensor.lg_dryer_run_state
-                image: >-
-                  /local/lovelace/overlays/Round
-                  Menu/3/laundry/Drying/Dryer7-Blank.png
+                entity: sensor.lg_dryer_current_status
+                image: /local/lovelace/overlays/Round Menu/3/laundry/Drying/Dryer7-Blank.png
                 state_image:
                   Drying: /local/lovelace/overlays/Round Menu/5/Dry.gif
                 style:
@@ -10030,15 +10060,11 @@ elements:
                   left: 52%
                   width: 1.5%
                   image-rendering: crisp
-              - entity: sensor.lg_dryer_run_state
+              - entity: sensor.lg_dryer_current_status
                 description: laundry card
-                image: >-
-                  /local/lovelace/overlays/Round
-                  Menu/3/laundry/Drying/Dryer7-Blank.png
+                image: /local/lovelace/overlays/Round Menu/3/laundry/Drying/Dryer7-Blank.png
                 state_image:
-                  Drying: >-
-                    /local/lovelace/overlays/Round
-                    Menu/3/laundry/Drying/Dryerdogs.gif
+                  Drying: /local/lovelace/overlays/Round Menu/3/laundry/Drying/Dryerdogs.gif
                 style:
                   top: 80%
                   left: 56%
@@ -10047,10 +10073,8 @@ elements:
                 type: image
               - type: image
                 description: laundry card
-                entity: sensor.lg_dryer_run_state
-                image: >-
-                  /local/lovelace/overlays/Round
-                  Menu/3/laundry/Drying/Dryer7-Blank.png
+                entity: sensor.lg_dryer_current_status
+                image: /local/lovelace/overlays/Round Menu/3/laundry/Drying/Dryer7-Blank.png
                 state_image:
                   Cooling: /local/lovelace/overlays/Round Menu/5/Cool.gif
                 style:
@@ -10058,15 +10082,11 @@ elements:
                   left: 56%
                   width: 1.5%
                   image-rendering: crisp
-              - entity: sensor.lg_dryer_run_state
+              - entity: sensor.lg_dryer_current_status
                 description: laundry card
-                image: >-
-                  /local/lovelace/overlays/Round
-                  Menu/3/laundry/Drying/Dryer7-Blank.png
+                image: /local/lovelace/overlays/Round Menu/3/laundry/Drying/Dryer7-Blank.png
                 state_image:
-                  Cooling: >-
-                    /local/lovelace/overlays/Round
-                    Menu/3/laundry/Drying/Dryerdogs.gif
+                  Cooling: /local/lovelace/overlays/Round Menu/3/laundry/Drying/Dryerdogs.gif
                 style:
                   top: 80%
                   left: 56%
@@ -10075,7 +10095,7 @@ elements:
                 type: image
               - type: custom:button-card
                 description: laundry card
-                entity: sensor.lg_dryer_remaining_time
+                entity: sensor.lg_dryer_remaining_time_2
                 show_name: false
                 show_badge: false
                 show_icon: false
@@ -10136,17 +10156,17 @@ elements:
                         entity: todo.home_assistant_ideas_account1
                         style:
                           left: 20%
-                          top: "-30%"
+                          top: -30%
                           width: 26%
                           transform: scale(.9,.9)
                       sort:
                         method: domain
                       style:
-                        top: "-30%"
+                        top: -30%
                         left: 50%
                         width: 50%
                         transform: scale(.9,.9)
-                        "--ha-card-background": rgba(1,1,1,0)
+                        --ha-card-background: rgba(1,1,1,0)
                       card_mod:
                         style: |
                           .completed .summary {   
@@ -10221,7 +10241,7 @@ elements:
                         top: 29.75%
                         left: 29.5%
                         width: 10%
-                        "--ha-card-background": rgba(1,1,1,0)
+                        --ha-card-background: rgba(1,1,1,0)
                       card_mod:
                         style: |
                           ha-card {
@@ -10249,7 +10269,7 @@ elements:
                         top: 29.75%
                         left: 56.8%
                         width: 10%
-                        "--ha-card-background": rgba(1,1,1,0)
+                        --ha-card-background: rgba(1,1,1,0)
                       card_mod:
                         style: |
                           ha-card {
@@ -10277,7 +10297,7 @@ elements:
                         top: 52%
                         left: 84%
                         width: 10%
-                        "--ha-card-background": rgba(1,1,1,0)
+                        --ha-card-background: rgba(1,1,1,0)
                       card_mod:
                         style: |
                           ha-card {
@@ -10305,7 +10325,7 @@ elements:
                         top: 44.75%
                         left: 93.1%
                         width: 10%
-                        "--ha-card-background": rgba(1,1,1,0)
+                        --ha-card-background: rgba(1,1,1,0)
                       card_mod:
                         style: |
                           ha-card {
@@ -10333,7 +10353,7 @@ elements:
                         top: 66.5%
                         left: 20.2%
                         width: 10%
-                        "--ha-card-background": rgba(1,1,1,0)
+                        --ha-card-background: rgba(1,1,1,0)
                       card_mod:
                         style: |
                           ha-card {
@@ -10361,7 +10381,7 @@ elements:
                         top: 59.25%
                         left: 84%
                         width: 10%
-                        "--ha-card-background": rgba(1,1,1,0)
+                        --ha-card-background: rgba(1,1,1,0)
                       card_mod:
                         style: |
                           ha-card {
@@ -10389,7 +10409,7 @@ elements:
                         top: 37%
                         left: 20.2%
                         width: 10%
-                        "--ha-card-background": rgba(1,1,1,0)
+                        --ha-card-background: rgba(1,1,1,0)
                       card_mod:
                         style: |
                           ha-card {
@@ -10417,7 +10437,7 @@ elements:
                         top: 80.75%
                         left: 84%
                         width: 10%
-                        "--ha-card-background": rgba(1,1,1,0)
+                        --ha-card-background: rgba(1,1,1,0)
                       card_mod:
                         style: |
                           ha-card {
@@ -10445,7 +10465,7 @@ elements:
                         top: 88%
                         left: 20.2%
                         width: 10%
-                        "--ha-card-background": rgba(1,1,1,0)
+                        --ha-card-background: rgba(1,1,1,0)
                       card_mod:
                         style: |
                           ha-card {
@@ -10476,7 +10496,7 @@ elements:
                         top: 73.5%
                         left: 47.75%
                         width: 10%
-                        "--ha-card-background": rgba(1,1,1,0)
+                        --ha-card-background: rgba(1,1,1,0)
                       card_mod:
                         style: |
                           ha-card {
@@ -10546,7 +10566,7 @@ elements:
                         top: 29.75%
                         left: 29.5%
                         width: 10%
-                        "--ha-card-background": rgba(1,1,1,0)
+                        --ha-card-background: rgba(1,1,1,0)
                       card_mod:
                         style: |
                           ha-card {
@@ -10574,7 +10594,7 @@ elements:
                         top: 29.75%
                         left: 56.8%
                         width: 10%
-                        "--ha-card-background": rgba(1,1,1,0)
+                        --ha-card-background: rgba(1,1,1,0)
                       card_mod:
                         style: |
                           ha-card {
@@ -10602,7 +10622,7 @@ elements:
                         top: 52%
                         left: 84%
                         width: 10%
-                        "--ha-card-background": rgba(1,1,1,0)
+                        --ha-card-background: rgba(1,1,1,0)
                       card_mod:
                         style: |
                           ha-card {
@@ -10630,7 +10650,7 @@ elements:
                         top: 44.75%
                         left: 93.1%
                         width: 10%
-                        "--ha-card-background": rgba(1,1,1,0)
+                        --ha-card-background: rgba(1,1,1,0)
                       card_mod:
                         style: |
                           ha-card {
@@ -10658,7 +10678,7 @@ elements:
                         top: 66.5%
                         left: 20.2%
                         width: 10%
-                        "--ha-card-background": rgba(1,1,1,0)
+                        --ha-card-background: rgba(1,1,1,0)
                       card_mod:
                         style: |
                           ha-card {
@@ -10686,7 +10706,7 @@ elements:
                         top: 59.25%
                         left: 84%
                         width: 10%
-                        "--ha-card-background": rgba(1,1,1,0)
+                        --ha-card-background: rgba(1,1,1,0)
                       card_mod:
                         style: |
                           ha-card {
@@ -10714,7 +10734,7 @@ elements:
                         top: 37%
                         left: 20.2%
                         width: 10%
-                        "--ha-card-background": rgba(1,1,1,0)
+                        --ha-card-background: rgba(1,1,1,0)
                       card_mod:
                         style: |
                           ha-card {
@@ -10742,7 +10762,7 @@ elements:
                         top: 80.75%
                         left: 84%
                         width: 10%
-                        "--ha-card-background": rgba(1,1,1,0)
+                        --ha-card-background: rgba(1,1,1,0)
                       card_mod:
                         style: |
                           ha-card {
@@ -10770,7 +10790,7 @@ elements:
                         top: 88%
                         left: 20.2%
                         width: 10%
-                        "--ha-card-background": rgba(1,1,1,0)
+                        --ha-card-background: rgba(1,1,1,0)
                       card_mod:
                         style: |
                           ha-card {
@@ -10801,7 +10821,7 @@ elements:
                         top: 73.5%
                         left: 47.75%
                         width: 10%
-                        "--ha-card-background": rgba(1,1,1,0)
+                        --ha-card-background: rgba(1,1,1,0)
                       card_mod:
                         style: |
                           ha-card {
@@ -10835,17 +10855,17 @@ elements:
                         entity: todo.home_assistant_ideas_account1
                         style:
                           left: 20%
-                          top: "-15%"
+                          top: -15%
                           width: 26%
                           transform: scale(.9,.9)
                       sort:
                         method: domain
                       style:
-                        top: "-155%"
+                        top: -155%
                         left: 50%
                         width: 50%
                         transform: scale(.9,.9)
-                        "--ha-card-background": rgba(1,1,1,0)
+                        --ha-card-background: rgba(1,1,1,0)
                       card_mod:
                         style: |
                           .completed .summary {   
@@ -11044,21 +11064,21 @@ elements:
     filter:
       include:
         - entity_id: input_boolean.chore_bathrooms
-          state: "on"
+          state: on
         - entity_id: input_boolean.chore_vacuum
-          state: "on"
+          state: on
         - entity_id: input_boolean.chore_plants
-          state: "on"
+          state: on
         - entity_id: input_boolean.chore_clean_fridge
-          state: "on"
+          state: on
         - entity_id: input_boolean.chore_dusting
-          state: "on"
+          state: on
         - entity_id: input_boolean.chore_4_thur_vacuum
-          state: "on"
+          state: on
         - entity_id: input_boolean.chore_floors
-          state: "on"
+          state: on
         - entity_id: input_boolean.chore_8_wkly_brush_cats
-          state: "on"
+          state: on
     show_empty: false
     sort:
       method: name
@@ -11131,17 +11151,17 @@ elements:
     filter:
       include:
         - entity_id: input_boolean.chore_clean_microwave
-          state: "on"
+          state: on
         - entity_id: input_boolean.chore_recycling
-          state: "on"
+          state: on
         - entity_id: input_boolean.chore_brushing_dogs
-          state: "on"
+          state: on
         - entity_id: input_boolean.chore_garbage
-          state: "on"
+          state: on
         - entity_id: input_boolean.chore_bed_linen
-          state: "on"
+          state: on
         - entity_id: input_boolean.chore_organics
-          state: "on"
+          state: on
     show_empty: false
     sort:
       method: name
@@ -11266,7 +11286,7 @@ elements:
                   top: 46%
                   left: 75%
                   width: 45%
-                  "--ha-card-background": rgba(1,1,1,0)
+                  --ha-card-background: rgba(1,1,1,0)
                 card_mod:
                   style: |
                     ha-card {
@@ -11293,10 +11313,10 @@ elements:
     type: image
   - entity: automation.motion_lr_no_motion
     title: ALL MOTION OFF
-    image: null
+    image: /local/lovelace/overlays/Round Menu/5/Enabled3.gifll
     state_image:
-      "on": /local/lovelace/overlays/Round Menu/4/Off Disabled2.png
-      "off": /local/lovelace/overlays/Round Menu/5/Enabled3.gif
+      on: /local/lovelace/overlays/Round Menu/4/Off Disabled2.png
+      off: /local/lovelace/overlays/Round Menu/5/Enabled3.gif
     style:
       left: 27.8%
       top: 11.35%
@@ -11312,197 +11332,18 @@ elements:
     type: image
   - entity: script.motion_turn_off_turning_off
     title: Hallway Motion Automation - THIS IS FOR THE MAIN MOTION TOGGLE BELOW
-    image: null
+    image: /local/lovelace/overlays/Round Menu/5/Blank Circle.png
     tap_action:
       action: toggle
     state_image:
-      "on": /local/lovelace/overlays/Round Menu/5/Motion On Orange3.png
-      "off": /local/lovelace/overlays/Round Menu/5/Blank Circle.png
+      on: /local/lovelace/overlays/Round Menu/5/Motion On Orange3.png
+      off: /local/lovelace/overlays/Round Menu/5/Blank Circle.png
     style:
       left: 27.9%
       top: 5.5%
       width: 4.75%
       opacity: 100%
     type: image
-  - type: custom:html-card
-    content: |
-      <div class="ticker-wrap">
-        <div class="ticker">
-        <div class="ticker">
-          <span class="ticker__item" style="color: #39FF14;">Ragweed Pollen Index: [[ sensor.toronto_ragweed_pollen_day_0 ]]</span></span>
-          <span class="ticker__item" style="color: #39FF14;">Grass Pollen Index: [[ sensor.toronto_grass_pollen_day_0 ]]</span></span>
-          <span class="ticker__item" style="color: #39FF14;">Tree Pollen Index: [[ sensor.toronto_tree_pollen_day_0 ]]</span></span>
-          <span class="ticker__item" style="text-transform: uppercase; color: #00E7FF; font-weight: bold;">Forecast: </span>
-          <span="ticker__item" style="color: white;">[[ sensor.toronto_summary ]]</span>
-          <span class="ticker__item" style="text-transform: uppercase; color: #00E7FF; font-weight: bold;">In the news today: </span>
-          <span="ticker__item" style="color: white;">
-                [[ sensor.ctv_news_politics_attributes_0 ]]
-                <img src="/local/lovelace/overlays/Round Menu/4/CTV News8.png" alt="logo" style="height: 20px; vertical-align: middle;">
-            </span>
-            <span class="ticker__item" style="color: white;">
-                [[ sensor.cbs_news_top_stories_attributes_0 ]]
-                <img src="/local/lovelace/overlays/Round Menu/4/CBS News2.png" alt="logo" style="height: 20px; vertical-align: middle;">
-            </span>
-
-
-
-
-            <span class="ticker__item" style="color: white;">
-                [[ sensor.cnn_news_attributes_0 ]]
-                <img src="/local/lovelace/overlays/Round Menu/4/CNN.png" alt="logo" style="height: 20px; vertical-align: middle;">
-            </span>
-
-
-            <span class="ticker__item" style="color: white;">
-                [[ sensor.ctv_news_toronto_attributes_0 ]]
-                <img src="/local/lovelace/overlays/Round Menu/4/CTV News8.png" alt="logo" style="height: 20px; vertical-align: middle;">
-            </span>
-            <span class="ticker__item" style="color: white;">
-                [[ sensor.global_news_politics_attributes_0 ]]
-                <img src="/local/lovelace/overlays/Round Menu/4/Global News9.png" alt="logo" style="height: 20px; vertical-align: middle;">
-            </span>
-
-            <span class="ticker__item" style="color: white;">
-                [[ sensor.cnn_news_attributes_1 ]]
-                <img src="/local/lovelace/overlays/Round Menu/4/CNN.png" alt="logo" style="height: 20px; vertical-align: middle;">
-            </span>
-
-            <span class="ticker__item" style="color: white;">
-                [[ sensor.global_news_toronto_attributes_0 ]]
-                <img src="/local/lovelace/overlays/Round Menu/4/Global News9.png" alt="logo" style="height: 20px; vertical-align: middle;">
-            </span>
-
-            <span class="ticker__item" style="color: white;">
-                [[ sensor.ctv_news_politics_attributes_1 ]]
-                <img src="/local/lovelace/overlays/Round Menu/4/CTV News8.png" alt="logo" style="height: 20px; vertical-align: middle;">
-            </span>
-
-            <span class="ticker__item" style="color: white;">
-                [[ sensor.cbs_news_top_stories_attributes_1 ]]
-                <img src="/local/lovelace/overlays/Round Menu/4/CBS News2.png" alt="logo" style="height: 20px; vertical-align: middle;">
-            </span>
-
-          
-            <span class="ticker__item" style="color: white;">
-                [[ sensor.global_news_headlines_attributes_1 ]]
-                <img src="/local/lovelace/overlays/Round Menu/4/Global News9.png" alt="logo" style="height: 20px; vertical-align: middle;">
-            </span>
-
-            <span class="ticker__item" style="color: white;">
-                [[ sensor.cnn_news_attributes_2 ]]
-                <img src="/local/lovelace/overlays/Round Menu/4/CNN.png" alt="logo" style="height: 20px; vertical-align: middle;">
-            </span>
-
-            <span class="ticker__item" style="color: white;">
-                [[ sensor.ctv_news_toronto_attributes_1 ]]
-                <img src="/local/lovelace/overlays/Round Menu/4/CTV News8.png" alt="logo" style="height: 20px; vertical-align: middle;">
-            </span>
-
-            <span class="ticker__item" style="color: white;">
-                [[ sensor.global_news_politics_attributes_1 ]]
-                <img src="/local/lovelace/overlays/Round Menu/4/Global News9.png" alt="logo" style="height: 20px; vertical-align: middle;">
-            </span>
-
-            <span class="ticker__item" style="color: white;">
-                [[ sensor.cnn_news_attributes_3 ]]
-                <img src="/local/lovelace/overlays/Round Menu/4/CNN.png" alt="logo" style="height: 20px; vertical-align: middle;">
-            </span>
-            <span class="ticker__item" style="color: white;">
-                [[ sensor.global_news_toronto_attributes_1 ]]
-                <img src="/local/lovelace/overlays/Round Menu/4/Global News9.png" alt="logo" style="height: 20px; vertical-align: middle;">
-            </span>
-            <span class="ticker__item" style="color: white;">
-                [[ sensor.ctv_news_politics_attributes_2 ]]
-                <img src="/local/lovelace/overlays/Round Menu/4/CTV News8.png" alt="logo" style="height: 20px; vertical-align: middle;">
-            </span>
-            <span class="ticker__item" style="color: white;">
-                [[ sensor.cnn_news_attributes_4 ]]
-                <img src="/local/lovelace/overlays/Round Menu/4/CNN.png" alt="logo" style="height: 20px; vertical-align: middle;">
-            </span>
-        </div>
-      <style>
-        ha-card {
-          height: 0px;
-          
-        }    
-
-          @keyframes ticker {
-              0% {
-                  transform: translate3d(0, 0, 0);
-                  visibility: visible;
-              }
-              100% {
-                  transform: translate3d(-100%, 0, 0);
-              }
-          }
-
-          .ticker-wrap {
-              font-family: tahoma;
-              font-size: 14px;
-              position: fixed;
-              bottom: 0;
-              left: 0;
-              width: 100%;
-              overflow: hidden;
-              background-color: black;
-              visibility: visible;
-              padding-left: 100%;
-              box-sizing: content-box;
-          }
-
-          .ticker {
-              display: inline-block;
-              height: 1rem;
-              font-family: tahoma;
-              font-size: 20px;
-              line-height: 2rem;
-              white-space: nowrap;
-              padding-right: 0; /* Adjusted to remove extra space */
-              box-sizing: content-box;
-              animation: ticker 265s linear infinite;
-          }
-
-          .ticker__item {
-              display: inline-block;
-          }
-
-          .ticker__item:before {
-              content: " »» ";
-              color: rgba(0, 166, 255, 1);
-              font-size: 20px;
-          }
-
-          .ticker__item:after {
-              margin-right: 10px;
-          }
-      </style>
-    style:
-      top: 98.2%
-      width: 100%
-      height: 5%
-      opacity: 100%
-      transform: scale(75%, 75%);
-  - type: custom:mini-media-player
-    entity: media_player.spotifyplus_byhomeyyz
-    name: Now Playing
-    icon: mdi:music
-    artwork: material
-    source: full
-    sound_mode: full
-    info: scroll
-    group: true
-    hide:
-      power: false
-    style:
-      left: 33.75%
-      top: 79.3%
-      width: 35%
-      transform: scale(.9, .9)
-    card_mod:
-      style: |
-        ha-card {
-          --ha-card-border-radius: 4px
-        }
   - type: custom:digital-clock
     dateFormat:
       weekday: long
@@ -11512,7 +11353,7 @@ elements:
       hour: 2-digit
       minute: 2-digit
     style:
-      left: 87%
+      left: 86%
       top: 1%
       width: 11%
       transform: scale(1.3,1.3)
@@ -11539,25 +11380,48 @@ elements:
         {
           text-align: right;
         }
-  - type: custom:kanji-clock-card
-    use_24h: true
-    invert_date: false
-    short_weekdays: true
-    kanji_numbers: false
+  - type: image
+    image: /local/lovelace/overlays/Round Menu/5/U.png
     style:
-      left: 68.5%
-      top: "-3.5%"
-      width: 22%
-      transform: scale(.56,.56)
-    card_mod:
-      style: |
-        ha-card {
-          display: flex;
-          justify-content: flex-end;
-          align-items: center;
-        }
-        .card-content {
-          text-align: right;
-          width: 100%;
-        }
+      top: 28.7%
+      left: 95.3%
+      width: 2%
+    tap_action:
+      action: url
+      url_path: http://172.24.0.2:8123/lovelace/test-home
+  - type: image
+    image: /local/lovelace/overlays/Round Menu/5/Spotify Bryn2.png
+    tap_action:
+      action: navigate
+      navigation_path: /spotify-bryn/0
+    style:
+      top: 85.5%
+      left: 59%
+      width: 14%
+  - type: image
+    image: /local/lovelace/overlays/Round Menu/5/Spotify Yasu2.png
+    tap_action:
+      action: navigate
+      navigation_path: /spotify-yasu/0
+    style:
+      top: 85.5%
+      left: 43%
+      width: 14%
+  - type: custom:html-card
+    content: |
+      <iframe
+        src="https://home-view--bkh416.replit.app/api/ticker?auth=5747"
+        style="width:100%;height:38px;border:none;display:block;"
+        scrolling="no"
+        frameborder="0"
+      ></iframe>
+    style:
+      left: 0
+      right: 0
+      bottom: 0
+      top: 97.3%
+      width: 200%
+      height: 52px
+      position: absolute
+      z-index: 10
 image: /local/lovelace/overlays/Round Menu/5/Main BG11.png
