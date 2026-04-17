@@ -754,6 +754,9 @@ export default function Dashboard() {
   useEffect(() => {
     const checkMorningReview = async () => {
       if (authLevel !== '5747') return;
+      const host = window.location.hostname;
+      const isPi = host === 'uni-cal.app' || host.endsWith('.uni-cal.app');
+      if (!isPi) return;
       const params = new URLSearchParams(window.location.search);
       if (params.get('catWashFollow') || params.get('followOnly') || params.get('fullscreen')) return;
       const eastern = new Date(new Date().toLocaleString('en-US', { timeZone: getAppTz() }));
