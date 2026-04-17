@@ -20748,8 +20748,8 @@ export default function Dashboard() {
           }}
           className="fixed cursor-pointer"
           style={{
-            bottom: '49px',
-            left: weatherAlerts.length > 0 ? 'calc(50% + 302px + 35px + 100px)' : 'calc(50% + 302px + 100px)',
+            bottom: '64px',
+            left: weatherAlerts.length > 0 ? 'calc(50% + 302px + 35px + 150px)' : 'calc(50% + 302px + 150px)',
             transition: 'left 0.3s ease-in-out',
             display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : 'block',
             zIndex: 10002,
@@ -20786,10 +20786,10 @@ export default function Dashboard() {
           }}
           className="fixed cursor-pointer"
           style={{
-            bottom: '49px',
+            bottom: '64px',
             left: weatherAlerts.length > 0
-              ? (homeworkMinimized ? 'calc(50% + 302px + 45px + 100px)' : 'calc(50% + 302px + 45px + 45px)')
-              : (homeworkMinimized ? 'calc(50% + 302px + 100px)' : 'calc(50% + 302px + 45px)'),
+              ? (homeworkMinimized ? 'calc(50% + 302px + 45px + 150px)' : 'calc(50% + 302px + 45px + 95px)')
+              : (homeworkMinimized ? 'calc(50% + 302px + 150px)' : 'calc(50% + 302px + 95px)'),
             transition: 'left 0.3s ease-in-out',
             display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : 'block',
             zIndex: 10002,
