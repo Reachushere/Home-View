@@ -5,26 +5,19 @@ import { queryClient } from '@/lib/queryClient';
 import brynAvatar from '@assets/generated_images/brynassist_avatar.png';
 import defaultProfilePhoto from '@assets/image_1772579486577.png';
 const buildWaveBg = (): string => {
-  const colors = ['%2300e5ff', '%2338bdf8', '%2306b6d4', '%2367e8f9', '%2322d3ee', '%230891b2', '%23a855f7', '%23d946ef', '%237c3aed'];
+  const colors = ['%2300e5ff', '%2338bdf8', '%2306b6d4', '%23a855f7', '%23d946ef', '%23ec4899', '%237c3aed'];
   const lines: string[] = [];
-  const N = 70;
+  const N = 12;
   for (let i = 0; i < N; i++) {
-    const t = i / N;
-    const yShift = (i - N / 2) * 4;
-    const p0x = -80;
-    const p0y = 120 + yShift;
-    const p1x = 240;
-    const p1y = 580 + yShift * 0.85;
-    const p2x = 520;
-    const p2y = 80 + yShift * 1.05;
-    const p3x = 760;
-    const p3y = 540 + yShift * 0.9;
-    const p4x = 980;
-    const p4y = 220 + yShift * 1.0;
-    const d = `M${p0x},${p0y} C${p0x + 180},${p0y + 60} ${p1x - 160},${p1y - 80} ${p1x},${p1y} S${p2x - 80},${p2y - 60} ${p2x},${p2y} S${p3x - 60},${p3y + 80} ${p3x},${p3y} S${p4x - 60},${p4y - 100} ${p4x},${p4y}`;
+    const yShift = (i - N / 2) * 22;
+    const p0y = 200 + yShift * 0.6;
+    const p1y = 520 + yShift * 0.9;
+    const p2y = 140 + yShift * 1.1;
+    const p3y = 480 + yShift;
+    const d = `M-100,${p0y} C160,${p0y - 60} 320,${p1y + 40} 460,${p1y} S680,${p2y - 30} 780,${p2y} S960,${p3y + 60} 1040,${p3y}`;
     const color = colors[i % colors.length];
-    const opacity = (0.55 + (i % 7) * 0.05).toFixed(2);
-    const sw = (0.8 + (i % 4) * 0.25).toFixed(2);
+    const opacity = (0.85 + (i % 4) * 0.04).toFixed(2);
+    const sw = (1.6 + (i % 3) * 0.5).toFixed(2);
     lines.push(`<path d='${d}' stroke='${color}' stroke-width='${sw}' stroke-opacity='${opacity}'/>`);
   }
   const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 700' preserveAspectRatio='none'>` +
