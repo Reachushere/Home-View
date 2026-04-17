@@ -52,6 +52,14 @@ interface ProfileRecord {
   show_bryn_assist: boolean;
   show_notepad: boolean;
   show_radio: boolean;
+  show_admin_panel: boolean;
+  show_add_task: boolean;
+  show_completed_tasks: boolean;
+  show_courses: boolean;
+  show_library: boolean;
+  show_spotify: boolean;
+  show_home_assistant: boolean;
+  show_astronomy: boolean;
   can_edit_tasks: boolean;
   can_add_calendar_events: boolean;
   can_access_settings: boolean;
@@ -106,6 +114,7 @@ export default function AdminPanel({ open, onClose, colorSettings }: AdminPanelP
   const [editingPassword, setEditingPassword] = useState<{ admin: string; partner: string; guest: string }>({ admin: '', partner: '', guest: '' });
   const [showPasswords, setShowPasswords] = useState<Record<string, boolean>>({});
   const [expandedProfile, setExpandedProfile] = useState<number | null>(null);
+  const [profileDrafts, setProfileDrafts] = useState<Record<number, Partial<ProfileRecord>>>({});
   const [settingPasswordForUser, setSettingPasswordForUser] = useState<number | null>(null);
   const [userPasswordInput, setUserPasswordInput] = useState('');
   const { toast } = useToast();
@@ -216,6 +225,45 @@ export default function AdminPanel({ open, onClose, colorSettings }: AdminPanelP
     fetchAll();
   };
 
+  const setProfileDraft = (profile: ProfileRecord, field: string, value: boolean) => {
+    setProfileDrafts(prev => ({
+      ...prev,
+      [profile.id]: { ...(prev[profile.id] || {}), [field]: value },
+    }));
+  };
+
+  const getProfileValue = (profile: ProfileRecord, field: string): boolean => {
+    const draft = profileDrafts[profile.id];
+    if (draft && field in draft) return (draft as any)[field];
+    return (profile as any)[field];
+  };
+
+  const hasProfileChanges = (profile: ProfileRecord): boolean => {
+    const draft = profileDrafts[profile.id];
+    return !!draft && Object.keys(draft).length > 0;
+  };
+
+  const saveProfileDraft = async (profile: ProfileRecord) => {
+    const draft = profileDrafts[profile.id];
+    if (!draft || Object.keys(draft).length === 0) return;
+    const res = await fetch(`/api/admin/profiles/${profile.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(draft),
+    });
+    if (res.ok) {
+      toast({ title: `${profile.profile_name} saved` });
+      setProfileDrafts(prev => { const n = { ...prev }; delete n[profile.id]; return n; });
+      fetchAll();
+    } else {
+      toast({ title: 'Save failed', variant: 'destructive' });
+    }
+  };
+
+  const cancelProfileDraft = (profile: ProfileRecord) => {
+    setProfileDrafts(prev => { const n = { ...prev }; delete n[profile.id]; return n; });
+  };
+
   const handleRevokeSession = async (sessionId: string) => {
     await fetch('/api/admin/revoke-session', {
       method: 'POST',
@@ -233,7 +281,7 @@ export default function AdminPanel({ open, onClose, colorSettings }: AdminPanelP
   if (!open) return null;
 
   const inputStyle = { background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', fontSize: '11px', height: '28px', borderRadius: '4px', padding: '0 8px' };
-  const labelStyle = { fontSize: '10px', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' as const, letterSpacing: '0.5px', marginBottom: '3px' };
+  const labelStyle = { fontSize: '10px', color: '#fff', textTransform: 'uppercase' as const, letterSpacing: '0.5px', marginBottom: '3px' };
 
   const tabs: { id: TabId; label: string; icon: any }[] = [
     { id: 'overview', label: 'Overview', icon: Monitor },
@@ -255,6 +303,14 @@ export default function AdminPanel({ open, onClose, colorSettings }: AdminPanelP
     { field: 'show_bryn_assist', label: 'BrynAssist AI', icon: MessageSquare },
     { field: 'show_notepad', label: 'Notepad', icon: BookOpen },
     { field: 'show_radio', label: 'Radio', icon: Monitor },
+    { field: 'show_admin_panel', label: 'Admin Panel', icon: Shield },
+    { field: 'show_add_task', label: 'Add Task', icon: Plus },
+    { field: 'show_completed_tasks', label: 'Completed Tasks', icon: BookOpen },
+    { field: 'show_courses', label: 'Courses', icon: BookOpen },
+    { field: 'show_library', label: 'Library', icon: BookOpen },
+    { field: 'show_spotify', label: 'Spotify', icon: Monitor },
+    { field: 'show_home_assistant', label: 'Home Assistant', icon: Wifi },
+    { field: 'show_astronomy', label: 'Astronomy', icon: Cloud },
   ];
 
   const permissionToggles = [
@@ -291,7 +347,7 @@ export default function AdminPanel({ open, onClose, colorSettings }: AdminPanelP
               ADMIN PANEL
             </h2>
           </div>
-          <button onClick={onClose} className="text-white/60 hover:text-white text-lg font-bold leading-none" data-testid="button-close-admin-panel">
+          <button onClick={onClose} className="text-white hover:text-white text-lg font-bold leading-none" data-testid="button-close-admin-panel">
             <X style={{ width: 16, height: 16 }} />
           </button>
         </div>
@@ -319,7 +375,7 @@ export default function AdminPanel({ open, onClose, colorSettings }: AdminPanelP
 
           <div className="flex-1 overflow-y-auto p-4 min-h-0">
             {loading ? (
-              <div className="flex items-center justify-center h-32 text-white/40">Loading...</div>
+              <div className="flex items-center justify-center h-32 text-white">Loading...</div>
             ) : (
               <>
                 {activeTab === 'overview' && status && (
@@ -354,7 +410,7 @@ export default function AdminPanel({ open, onClose, colorSettings }: AdminPanelP
 
                     <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '8px', padding: '12px', border: '1px solid rgba(255,255,255,0.08)' }}>
                       <div style={labelStyle}>System Info</div>
-                      <div className="text-white/70 text-[11px] space-y-1 mt-1">
+                      <div className="text-white text-[11px] space-y-1 mt-1">
                         <div>Node: {status.nodeVersion} &nbsp;|&nbsp; PID: {status.pid}</div>
                         <div>RSS: {formatBytes(status.memoryUsage.rss)}</div>
                         <div>Active Sessions: {status.sessions.length}</div>
@@ -375,7 +431,7 @@ export default function AdminPanel({ open, onClose, colorSettings }: AdminPanelP
                 {activeTab === 'users' && (
                   <div className="space-y-3">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-white/70 text-[11px]">{users.length} user(s)</span>
+                      <span className="text-white text-[11px]">{users.length} user(s)</span>
                       <Button size="sm" onClick={() => setShowAddUser(!showAddUser)} style={{ background: 'rgba(74,222,128,0.15)', border: '1px solid rgba(74,222,128,0.3)', color: '#4ade80', fontSize: '11px', height: '28px' }} data-testid="button-add-user">
                         <UserPlus style={{ width: 12, height: 12, marginRight: 4 }} /> Add User
                       </Button>
@@ -431,7 +487,7 @@ export default function AdminPanel({ open, onClose, colorSettings }: AdminPanelP
                             </div>
                             <div>
                               <div className="text-white text-[12px] font-medium">{user.display_name}</div>
-                              <div className="text-white/40 text-[10px]">{user.username}</div>
+                              <div className="text-white text-[10px]">{user.username}</div>
                             </div>
                             <span style={{ fontSize: '9px', padding: '2px 6px', borderRadius: '4px', background: `${LEVEL_COLORS[user.auth_level] || '#888'}22`, color: LEVEL_COLORS[user.auth_level] || '#888', border: `1px solid ${LEVEL_COLORS[user.auth_level] || '#888'}44` }}>
                               {LEVEL_NAMES[user.auth_level] || user.auth_level}
@@ -447,11 +503,11 @@ export default function AdminPanel({ open, onClose, colorSettings }: AdminPanelP
                               <Key style={{ width: 13, height: 13, color: settingPasswordForUser === user.id ? '#fbbf24' : 'rgba(255,255,255,0.5)' }} />
                             </button>
                             <button onClick={() => handleToggleUser(user)} className="p-1.5 rounded hover:bg-white/10" title={user.enabled ? 'Disable' : 'Enable'} data-testid={`button-toggle-user-${user.id}`}>
-                              {user.enabled ? <Eye style={{ width: 13, height: 13, color: 'rgba(255,255,255,0.5)' }} /> : <EyeOff style={{ width: 13, height: 13, color: '#f87171' }} />}
+                              {user.enabled ? <Eye style={{ width: 13, height: 13, color: '#fff' }} /> : <EyeOff style={{ width: 13, height: 13, color: '#f87171' }} />}
                             </button>
                             {user.auth_level !== '5747' && (
                               <button onClick={() => handleDeleteUser(user)} className="p-1.5 rounded hover:bg-white/10" title="Delete" data-testid={`button-delete-user-${user.id}`}>
-                                <Trash2 style={{ width: 13, height: 13, color: 'rgba(255,255,255,0.3)' }} />
+                                <Trash2 style={{ width: 13, height: 13, color: '#fff' }} />
                               </button>
                             )}
                           </div>
@@ -477,7 +533,7 @@ export default function AdminPanel({ open, onClose, colorSettings }: AdminPanelP
                             </Button>
                           </div>
                         )}
-                        <div className="text-white/30 text-[9px] mt-1.5">
+                        <div className="text-white text-[9px] mt-1.5">
                           Created: {user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}
                           {user.last_login && <> &nbsp;|&nbsp; Last login: {new Date(user.last_login).toLocaleDateString()}</>}
                         </div>
@@ -488,15 +544,17 @@ export default function AdminPanel({ open, onClose, colorSettings }: AdminPanelP
 
                 {activeTab === 'profiles' && (
                   <div className="space-y-3">
-                    <div className="text-white/50 text-[10px] mb-2">
-                      Control what each access level can see and do. Changes take effect on next page load.
+                    <div className="text-white text-[10px] mb-2">
+                      Control what each access level can see and do. Click toggles, then press Save. Changes take effect on next page load.
                     </div>
                     {profiles.map(profile => {
                       const isExpanded = expandedProfile === profile.id;
+                      const dirty = hasProfileChanges(profile);
+                      const enabledVal = getProfileValue(profile, 'enabled');
                       return (
                         <div
                           key={profile.id}
-                          style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden' }}
+                          style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '8px', border: `1px solid ${dirty ? 'rgba(251,191,36,0.5)' : 'rgba(255,255,255,0.08)'}`, overflow: 'hidden' }}
                           data-testid={`profile-row-${profile.profile_level}`}
                         >
                           <button
@@ -506,9 +564,10 @@ export default function AdminPanel({ open, onClose, colorSettings }: AdminPanelP
                             <div className="flex items-center gap-2">
                               <div style={{ width: 8, height: 8, borderRadius: '50%', background: LEVEL_COLORS[profile.profile_level] || '#888' }} />
                               <span className="text-white text-[12px] font-medium">{profile.profile_name}</span>
-                              <span className="text-white/30 text-[10px]">({profile.profile_level})</span>
+                              <span className="text-white text-[10px]">({profile.profile_level})</span>
+                              {dirty && <span style={{ fontSize: '9px', padding: '1px 6px', borderRadius: '4px', background: 'rgba(251,191,36,0.2)', color: '#fbbf24', border: '1px solid rgba(251,191,36,0.4)' }}>Unsaved</span>}
                             </div>
-                            {isExpanded ? <ChevronDown style={{ width: 13, height: 13, color: 'rgba(255,255,255,0.4)' }} /> : <ChevronRight style={{ width: 13, height: 13, color: 'rgba(255,255,255,0.4)' }} />}
+                            {isExpanded ? <ChevronDown style={{ width: 13, height: 13, color: '#fff' }} /> : <ChevronRight style={{ width: 13, height: 13, color: '#fff' }} />}
                           </button>
 
                           {isExpanded && (
@@ -516,11 +575,11 @@ export default function AdminPanel({ open, onClose, colorSettings }: AdminPanelP
                               <div className="mt-2 mb-1" style={{ ...labelStyle, fontSize: '9px' }}>Visible Features</div>
                               <div className="grid grid-cols-2 gap-1">
                                 {visibilityToggles.map(toggle => {
-                                  const val = (profile as any)[toggle.field];
+                                  const val = getProfileValue(profile, toggle.field);
                                   return (
                                     <button
                                       key={toggle.field}
-                                      onClick={() => handleProfileToggle(profile, toggle.field, !val)}
+                                      onClick={() => setProfileDraft(profile, toggle.field, !val)}
                                       className="flex items-center gap-2 px-2 py-1.5 rounded transition-colors text-left"
                                       style={{
                                         background: val ? 'rgba(74,222,128,0.08)' : 'rgba(255,255,255,0.03)',
@@ -528,10 +587,10 @@ export default function AdminPanel({ open, onClose, colorSettings }: AdminPanelP
                                       }}
                                       data-testid={`toggle-${profile.profile_level}-${toggle.field}`}
                                     >
-                                      <div style={{ width: 14, height: 14, borderRadius: '3px', border: `1.5px solid ${val ? '#4ade80' : 'rgba(255,255,255,0.2)'}`, background: val ? '#4ade80' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                      <div style={{ width: 14, height: 14, borderRadius: '3px', border: `1.5px solid ${val ? '#4ade80' : '#fff'}`, background: val ? '#4ade80' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                         {val && <span style={{ color: '#000', fontSize: '9px', fontWeight: 700 }}>✓</span>}
                                       </div>
-                                      <span style={{ color: val ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.35)', fontSize: '10px' }}>{toggle.label}</span>
+                                      <span style={{ color: '#fff', fontSize: '10px' }}>{toggle.label}</span>
                                     </button>
                                   );
                                 })}
@@ -540,11 +599,11 @@ export default function AdminPanel({ open, onClose, colorSettings }: AdminPanelP
                               <div className="mt-3 mb-1" style={{ ...labelStyle, fontSize: '9px' }}>Permissions</div>
                               <div className="grid grid-cols-2 gap-1">
                                 {permissionToggles.map(toggle => {
-                                  const val = (profile as any)[toggle.field];
+                                  const val = getProfileValue(profile, toggle.field);
                                   return (
                                     <button
                                       key={toggle.field}
-                                      onClick={() => handleProfileToggle(profile, toggle.field, !val)}
+                                      onClick={() => setProfileDraft(profile, toggle.field, !val)}
                                       className="flex items-center gap-2 px-2 py-1.5 rounded transition-colors text-left"
                                       style={{
                                         background: val ? 'rgba(96,165,250,0.08)' : 'rgba(255,255,255,0.03)',
@@ -552,28 +611,48 @@ export default function AdminPanel({ open, onClose, colorSettings }: AdminPanelP
                                       }}
                                       data-testid={`toggle-${profile.profile_level}-${toggle.field}`}
                                     >
-                                      <div style={{ width: 14, height: 14, borderRadius: '3px', border: `1.5px solid ${val ? '#60a5fa' : 'rgba(255,255,255,0.2)'}`, background: val ? '#60a5fa' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                      <div style={{ width: 14, height: 14, borderRadius: '3px', border: `1.5px solid ${val ? '#60a5fa' : '#fff'}`, background: val ? '#60a5fa' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                         {val && <span style={{ color: '#000', fontSize: '9px', fontWeight: 700 }}>✓</span>}
                                       </div>
-                                      <span style={{ color: val ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.35)', fontSize: '10px' }}>{toggle.label}</span>
+                                      <span style={{ color: '#fff', fontSize: '10px' }}>{toggle.label}</span>
                                     </button>
                                   );
                                 })}
                               </div>
 
-                              <div className="mt-3 flex items-center gap-2">
+                              <div className="mt-3 flex items-center justify-between gap-2">
                                 <button
-                                  onClick={() => handleProfileToggle(profile, 'enabled', !profile.enabled)}
+                                  onClick={() => setProfileDraft(profile, 'enabled', !enabledVal)}
                                   className="flex items-center gap-1.5 px-2 py-1 rounded text-[10px]"
                                   style={{
-                                    background: profile.enabled ? 'rgba(239,68,68,0.1)' : 'rgba(74,222,128,0.1)',
-                                    border: `1px solid ${profile.enabled ? 'rgba(239,68,68,0.2)' : 'rgba(74,222,128,0.2)'}`,
-                                    color: profile.enabled ? '#f87171' : '#4ade80',
+                                    background: enabledVal ? 'rgba(239,68,68,0.1)' : 'rgba(74,222,128,0.1)',
+                                    border: `1px solid ${enabledVal ? 'rgba(239,68,68,0.2)' : 'rgba(74,222,128,0.2)'}`,
+                                    color: enabledVal ? '#f87171' : '#4ade80',
                                   }}
                                   data-testid={`toggle-profile-enabled-${profile.profile_level}`}
                                 >
-                                  {profile.enabled ? <><EyeOff style={{ width: 11, height: 11 }} /> Disable Profile</> : <><Eye style={{ width: 11, height: 11 }} /> Enable Profile</>}
+                                  {enabledVal ? <><EyeOff style={{ width: 11, height: 11 }} /> Disable Profile</> : <><Eye style={{ width: 11, height: 11 }} /> Enable Profile</>}
                                 </button>
+                                <div className="flex items-center gap-2">
+                                  <Button
+                                    size="sm"
+                                    onClick={() => cancelProfileDraft(profile)}
+                                    disabled={!dirty}
+                                    style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', fontSize: '10px', height: '26px', padding: '0 10px', opacity: dirty ? 1 : 0.4 }}
+                                    data-testid={`button-cancel-profile-${profile.profile_level}`}
+                                  >
+                                    Cancel
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    onClick={() => saveProfileDraft(profile)}
+                                    disabled={!dirty}
+                                    style={{ background: dirty ? 'rgba(74,222,128,0.2)' : 'rgba(74,222,128,0.08)', border: '1px solid rgba(74,222,128,0.4)', color: '#4ade80', fontSize: '10px', height: '26px', padding: '0 10px', opacity: dirty ? 1 : 0.4 }}
+                                    data-testid={`button-save-profile-${profile.profile_level}`}
+                                  >
+                                    <Save style={{ width: 11, height: 11, marginRight: 3 }} /> Save
+                                  </Button>
+                                </div>
                               </div>
                             </div>
                           )}
@@ -585,7 +664,7 @@ export default function AdminPanel({ open, onClose, colorSettings }: AdminPanelP
 
                 {activeTab === 'passwords' && status && (
                   <div className="space-y-4">
-                    <div className="text-white/50 text-[10px] mb-2">
+                    <div className="text-white text-[10px] mb-2">
                       These are the numeric access codes for the login screen. Changes are written to .env — restart required.
                     </div>
                     {[
@@ -597,11 +676,11 @@ export default function AdminPanel({ open, onClose, colorSettings }: AdminPanelP
                         <div className="flex items-center justify-between mb-2">
                           <div>
                             <span className="text-white text-[12px] font-medium">{pw.label}</span>
-                            <span className="text-white/30 text-[10px] ml-2">Level: {pw.level}</span>
+                            <span className="text-white text-[10px] ml-2">Level: {pw.level}</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <span className="text-white/40 text-[10px]">Current:</span>
-                            <button onClick={() => setShowPasswords(p => ({ ...p, [pw.key]: !p[pw.key] }))} className="flex items-center gap-1 text-[10px]" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                            <span className="text-white text-[10px]">Current:</span>
+                            <button onClick={() => setShowPasswords(p => ({ ...p, [pw.key]: !p[pw.key] }))} className="flex items-center gap-1 text-[10px]" style={{ color: '#fff' }}>
                               {showPasswords[pw.key] ? <><EyeOff style={{ width: 11, height: 11 }} /> {pw.current}</> : <><Eye style={{ width: 11, height: 11 }} /> ••••</>}
                             </button>
                           </div>
@@ -631,11 +710,11 @@ export default function AdminPanel({ open, onClose, colorSettings }: AdminPanelP
 
                 {activeTab === 'sessions' && status && (
                   <div className="space-y-3">
-                    <div className="text-white/50 text-[10px] mb-2">
+                    <div className="text-white text-[10px] mb-2">
                       Active sessions tracked since last server restart. Sessions older than 24h are auto-cleaned.
                     </div>
                     {status.sessions.length === 0 ? (
-                      <div className="text-white/30 text-center py-8">No active sessions tracked yet</div>
+                      <div className="text-white text-center py-8">No active sessions tracked yet</div>
                     ) : (
                       status.sessions.map((session, idx) => (
                         <div
@@ -647,13 +726,13 @@ export default function AdminPanel({ open, onClose, colorSettings }: AdminPanelP
                             <div className="flex items-center gap-2">
                               <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#4ade80' }} />
                               <span className="text-white text-[11px]">{session.levelName}</span>
-                              <span className="text-white/30 text-[9px]">{session.id}</span>
+                              <span className="text-white text-[9px]">{session.id}</span>
                             </div>
                             <button onClick={() => handleRevokeSession(session.id)} className="text-[9px] px-2 py-0.5 rounded" style={{ background: 'rgba(239,68,68,0.15)', color: '#f87171', border: '1px solid rgba(239,68,68,0.2)' }} data-testid={`button-revoke-session-${idx}`}>
                               Revoke
                             </button>
                           </div>
-                          <div className="text-white/30 text-[9px] mt-1 space-y-0.5">
+                          <div className="text-white text-[9px] mt-1 space-y-0.5">
                             <div>IP: {session.ip}</div>
                             <div>Device: {session.userAgent.substring(0, 80)}{session.userAgent.length > 80 ? '...' : ''}</div>
                             <div>Login: {timeAgo(session.loginTime)} &nbsp;|&nbsp; Last active: {timeAgo(session.lastActive)}</div>

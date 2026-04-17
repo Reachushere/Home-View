@@ -363,6 +363,14 @@ const adminDb = new PgPool({ connectionString: process.env.DATABASE_URL });
       show_bryn_assist BOOLEAN DEFAULT false,
       show_notepad BOOLEAN DEFAULT false,
       show_radio BOOLEAN DEFAULT true,
+      show_admin_panel BOOLEAN DEFAULT false,
+      show_add_task BOOLEAN DEFAULT true,
+      show_completed_tasks BOOLEAN DEFAULT true,
+      show_courses BOOLEAN DEFAULT true,
+      show_library BOOLEAN DEFAULT false,
+      show_spotify BOOLEAN DEFAULT true,
+      show_home_assistant BOOLEAN DEFAULT false,
+      show_astronomy BOOLEAN DEFAULT true,
       can_edit_tasks BOOLEAN DEFAULT false,
       can_add_calendar_events BOOLEAN DEFAULT false,
       can_access_settings BOOLEAN DEFAULT false,
@@ -377,6 +385,19 @@ const adminDb = new PgPool({ connectionString: process.env.DATABASE_URL });
         ('4201', 'Partner', false, false, false, false, true, false, false),
         ('1010', 'Guest', false, false, false, false, false, false, false)`);
     }
+    for (const col of [
+      ['show_admin_panel', 'BOOLEAN DEFAULT false'],
+      ['show_add_task', 'BOOLEAN DEFAULT true'],
+      ['show_completed_tasks', 'BOOLEAN DEFAULT true'],
+      ['show_courses', 'BOOLEAN DEFAULT true'],
+      ['show_library', 'BOOLEAN DEFAULT false'],
+      ['show_spotify', 'BOOLEAN DEFAULT true'],
+      ['show_home_assistant', 'BOOLEAN DEFAULT false'],
+      ['show_astronomy', 'BOOLEAN DEFAULT true'],
+    ]) {
+      await adminDb.query(`ALTER TABLE profile_settings ADD COLUMN IF NOT EXISTS ${col[0]} ${col[1]}`).catch(() => {});
+    }
+    await adminDb.query(`UPDATE profile_settings SET show_admin_panel = true, show_library = true, show_home_assistant = true WHERE profile_level = '5747'`).catch(() => {});
     console.log('[Admin] profile_settings table ready');
     await adminDb.query(`ALTER TABLE scholarships ADD COLUMN IF NOT EXISTS documents_deadline TEXT`).catch(() => {});
     await adminDb.query(`ALTER TABLE scholarships ADD COLUMN IF NOT EXISTS interview_date TEXT`).catch(() => {});
@@ -450,7 +471,7 @@ app.patch("/api/admin/profiles/:id", async (req: Request, res: Response) => {
     const sets: string[] = [];
     const vals: any[] = [];
     let idx = 1;
-    const allowedFields = ['profile_name', 'show_outlook_calendar', 'show_google_calendar', 'show_second_google_calendar', 'show_tasks', 'show_weather', 'show_news_ticker', 'show_homework_panel', 'show_degree_tracking', 'show_bryn_assist', 'show_notepad', 'show_radio', 'can_edit_tasks', 'can_add_calendar_events', 'can_access_settings', 'can_view_library', 'custom_calendars', 'enabled'];
+    const allowedFields = ['profile_name', 'show_outlook_calendar', 'show_google_calendar', 'show_second_google_calendar', 'show_tasks', 'show_weather', 'show_news_ticker', 'show_homework_panel', 'show_degree_tracking', 'show_bryn_assist', 'show_notepad', 'show_radio', 'show_admin_panel', 'show_add_task', 'show_completed_tasks', 'show_courses', 'show_library', 'show_spotify', 'show_home_assistant', 'show_astronomy', 'can_edit_tasks', 'can_add_calendar_events', 'can_access_settings', 'can_view_library', 'custom_calendars', 'enabled'];
     for (const [key, value] of Object.entries(updates)) {
       if (allowedFields.includes(key)) {
         sets.push(`${key} = $${idx++}`);
