@@ -8966,8 +8966,20 @@ Always cite which file/document each finding comes from. Be thorough but concise
 
   // ============= ONEDRIVE AUTH ROUTES =============
 
-  app.get("/api/onedrive/status", async (_req, res) => {
-    res.json({ connected: isOneDriveConnected() });
+  app.get("/api/onedrive/status", async (req, res) => {
+    const hasToken = isOneDriveConnected();
+    if (!hasToken) return res.json({ connected: false, hasToken: false, tokenWorks: false, reason: "No refresh token stored" });
+    if (req.query.verify === '1' || req.query.verify === 'true') {
+      try {
+        const { listOneDriveItems } = await import("./onedrive");
+        await listOneDriveItems('/');
+        return res.json({ connected: true, hasToken: true, tokenWorks: true });
+      } catch (e: any) {
+        const msg = e?.message || String(e);
+        return res.json({ connected: false, hasToken: true, tokenWorks: false, reason: `Token rejected by Microsoft: ${msg.substring(0, 200)}` });
+      }
+    }
+    res.json({ connected: hasToken, hasToken: true, tokenWorks: null, note: "Add ?verify=1 to actually test the token" });
   });
 
   app.get("/api/onedrive/auth", async (_req, res) => {
