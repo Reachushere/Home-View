@@ -34540,7 +34540,7 @@ export default function Dashboard() {
           className="rounded-[12px] flex flex-col fixed"
           style={{
             zIndex: 35,
-            overflow: homeworkAnimating || blankBoxAnimating || (homeworkMinimized && !blankBoxOpen) ? 'hidden' : 'visible',
+            overflow: homeworkAnimating || blankBoxAnimating ? 'hidden' : 'visible',
             right: (() => {
               const isAnimatingOrHidden = homeworkAnimating || blankBoxAnimating || homeworkMinimized || blankBoxOpen;
               const frozen = isAnimatingOrHidden
