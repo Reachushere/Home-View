@@ -1554,7 +1554,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
               ) : (
               (() => {
                 const rawContent = msg.content || '';
-                const hasCodeBlock = /```[\s\S]*?```/.test(rawContent);
+                const hasCodeBlock = rawContent.includes('```');
                 const orbContent = rawContent.replace(/```[\s\S]*?```/g, '').trim();
                 const hasExtras = !!msg.image || !!msg.toolResults?.length;
                 const isOrb = msg.role !== 'system' && orbContent.length > 0 && !hasExtras && !hasCodeBlock;
@@ -1585,8 +1585,8 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                   : '0 10px 40px rgba(124,58,237,0.4), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -8px 20px rgba(0,0,0,0.2)';
                 return (
               <div data-orb-bubble={msg.role === 'system' ? undefined : '1'} style={{
-                maxWidth: msg.role === 'system' ? '70%' : undefined,
-                width: isOrb ? `${orbWidth}px` : (msg.role === 'system' ? 'auto' : undefined),
+                maxWidth: msg.role === 'system' ? '70%' : (hasCodeBlock ? '92%' : undefined),
+                width: isOrb ? `${orbWidth}px` : (msg.role === 'system' ? 'auto' : (hasCodeBlock ? '92%' : undefined)),
                 height: isOrb ? `${orbHeight}px` : undefined,
                 padding: msg.role === 'system' ? '4px 12px' : (isOrb ? '22px 26px' : '14px 18px'),
                 borderRadius: msg.role === 'system' ? '999px' : (isOrb ? '50%' : '24px'),
