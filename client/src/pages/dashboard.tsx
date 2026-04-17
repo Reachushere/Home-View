@@ -20822,7 +20822,7 @@ export default function Dashboard() {
           data-testid="bottom-tab-homework"
           title="Restore homework panel"
         >
-          <svg width="84" height="17" viewBox="0 0 84 17" style={{ display: 'block' }}>
+          <svg width="84" height="14" viewBox="0 0 84 14" style={{ display: 'block' }}>
             <path d="M0,20 L84,20 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
             <text x="42" y="9" textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.95)" fontSize="12" fontWeight="600" fontFamily="system-ui, -apple-system, sans-serif">Homework</text>
           </svg>
@@ -20864,7 +20864,7 @@ export default function Dashboard() {
           data-testid="bottom-tab-blankbox"
           title="Restore temporary notes"
         >
-          <svg width="84" height="20" viewBox="0 0 84 20" style={{ display: 'block' }}>
+          <svg width="84" height="17" viewBox="0 0 84 17" style={{ display: 'block' }}>
             <path d="M0,20 L84,20 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
             <text x="42" y="9" textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.95)" fontSize="12" fontWeight="600" fontFamily="system-ui, -apple-system, sans-serif">Notes</text>
           </svg>
