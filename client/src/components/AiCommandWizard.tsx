@@ -802,7 +802,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
         body: JSON.stringify({
           message: finalMsg,
           image: currentImage || undefined,
-          history: messages.slice(-20).map(m => ({ role: m.role, content: m.content })),
+          history: messages.slice(-20).filter(m => m.role !== 'thinking').map(m => ({ role: m.role, content: m.content })),
           stream: true,
         }),
       });
