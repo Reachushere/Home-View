@@ -1274,6 +1274,23 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       onClose();
     }}>
       <div ref={panelRef} style={panelStyle} data-testid="ai-command-panel">
+        <img
+          src={brynAvatar}
+          alt="BrynAssist"
+          style={{
+            position: 'absolute',
+            top: '-78px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: '260px',
+            height: 'auto',
+            objectFit: 'contain',
+            pointerEvents: 'none',
+            filter: 'drop-shadow(0 6px 14px rgba(0,0,0,0.55))',
+            zIndex: 10,
+          }}
+          data-testid="img-brynassist-avatar"
+        />
         {!expanded && (
           <>
             <div
@@ -1315,13 +1332,8 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
             userSelect: 'none',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <img
-              src={brynAvatar}
-              alt="BrynAssist"
-              style={{ height: '56px', width: 'auto', objectFit: 'contain', display: 'block', filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.45))', marginTop: '-14px', marginBottom: '-14px' }}
-              data-testid="img-brynassist-avatar"
-            />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Zap size={18} color="#ffffff" />
             <span style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.3px' }}>BrynAssist</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
