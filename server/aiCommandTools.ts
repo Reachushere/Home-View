@@ -322,7 +322,7 @@ export const AI_COMMAND_TOOLS = [
     type: "function" as const,
     function: {
       name: "ha_element_patch",
-      description: "Surgically patch a single element inside a view's cards/elements tree without re-sending the whole view. BEST for small edits like adding/changing state_image, image, style props, tap_action, etc. The server reads the view, finds the target element by matching criteria (entity or index path), applies the patch (shallow merge at the specified key path), then writes only that view back. Much more reliable than ha_view_write for large views.",
+      description: "Surgically MODIFY ONE EXISTING element inside a view's cards/elements tree. ONLY edits keys on an element that is already there (entity, image, state_image, style.left/top/width, tap_action, etc.). \n\n**CANNOT add a new element.** If you need a NEW button, NEW countdown card, NEW image, or any sibling that doesn't already exist, you MUST use `ha_element_add` instead — `_patch` will silently mutate the wrong element or fail.\n\n**CANNOT remove an element.** Use `ha_element_remove` for that.\n\nTypical valid uses: change an entity from `timer.bryn_meds` to `timer.rascal_meds_timer`, move a button by patching its `style: { left, top }`, swap a `state_image.idle` gif, replace a `tap_action`. Finds target by `match_entity` (recursive) or `match_index_path` (literal walk). Shallow-merges `patch` onto the target.",
       parameters: {
         type: "object",
         properties: {
@@ -342,7 +342,7 @@ export const AI_COMMAND_TOOLS = [
     type: "function" as const,
     function: {
       name: "ha_element_add",
-      description: "Append a new element to a picture-elements card (or any card with an 'elements' or 'cards' array) WITHOUT echoing back the existing siblings. This is the SAFE way to add a new button/icon/image to a dashboard. The server reads the view, locates the target card by index path or by being the first picture-elements card, pushes the element, and writes back. Cannot drop other elements.",
+      description: "**THE ONLY way to ADD a new element** (button, image, countdown card, state-icon, custom:button-card, etc.) to a picture-elements card or any card with an 'elements'/'cards'/'children' array. Does NOT echo back existing siblings — server reads the view, locates the target card, pushes your element, writes back. Cannot drop other elements.\n\nUse this whenever the user asks to ADD / COPY / DUPLICATE / PLACE a new tile or countdown — even if you're modeling it after another existing element. To copy an element, first read it with `ha_lovelace_dashboard_get` (or recall its shape), then call `ha_element_add` with the full element object as `element`. Set `dedupe_by_entity: true` to make re-runs idempotent.\n\nExample for adding a Rascal meds countdown styled like the Yasu one: `element: { type: 'custom:button-card', entity: 'timer.rascal_meds_timer', show_state: true, show_name: false, show_icon: false, style: { left: '55%', top: '48%', width: '11%' }, tap_action: { action: 'call-service', service: 'script.rascal_meds_timer_reset_script' }, card_mod: { style: 'ha-card { background: transparent; border: none; color: white; font-size: 190px; font-weight: 800; font-family: Pathway Gothic One; }' } }`",
       parameters: {
         type: "object",
         properties: {
