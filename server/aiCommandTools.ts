@@ -1754,6 +1754,27 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           if (!args.force && existingCount > 30) {
             return { success: false, result: { error: `REFUSED: View has ${existingCount} nested items — too large for safe overwrite. Use ha_element_patch to change individual elements surgically. ha_view_write on large views has a history of dropping elements. If you truly need a full overwrite, pass force=true.` } };
           }
+          // SAFETY SNAPSHOT: save the entire current config to disk before overwriting
+          try {
+            const fsMod = await import('fs');
+            const pathMod = await import('path');
+            const snapDir = pathMod.resolve(process.cwd(), 'ha-snapshots');
+            if (!fsMod.existsSync(snapDir)) fsMod.mkdirSync(snapDir, { recursive: true });
+            const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+            const snapPath = pathMod.join(snapDir, `lovelace-${dashPathVW || 'main'}-${stamp}.json`);
+            fsMod.writeFileSync(snapPath, JSON.stringify(config, null, 2));
+            // Trim: keep only the 50 most recent snapshots per dashboard
+            const prefix = `lovelace-${dashPathVW || 'main'}-`;
+            const all = fsMod.readdirSync(snapDir).filter((f: string) => f.startsWith(prefix)).sort();
+            if (all.length > 50) {
+              for (const f of all.slice(0, all.length - 50)) {
+                try { fsMod.unlinkSync(pathMod.join(snapDir, f)); } catch {}
+              }
+            }
+            console.log(`[ha_view_write] Snapshot saved: ${snapPath}`);
+          } catch (snapErr: any) {
+            console.error(`[ha_view_write] Snapshot failed (proceeding anyway):`, snapErr?.message);
+          }
           views[viewIdx] = args.view_config;
           config.views = views;
           const wsMsgW: Record<string, any> = { config };
