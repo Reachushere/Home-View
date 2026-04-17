@@ -26572,7 +26572,7 @@ export default function Dashboard() {
                                 <div className="p-4 space-y-4 auto-resolution-body">
                                   <div>
                                     <div className="text-[13px] font-semibold text-white uppercase tracking-wider mb-3">Automation Flow</div>
-                                    <div className="flex items-start gap-0 flex-wrap">
+                                    <div className="auto-flow-strip rounded-lg px-4 py-4 flex items-start justify-between flex-nowrap" style={{ background: 'linear-gradient(180deg, #0b1220 0%, #000000 100%)', border: '1px solid #1e293b', width: '100%' }}>
                                       {(() => {
                                         const totalMod = courseHealth?.totalModules || 0;
                                         const totalRead = courseHealth?.totalReadings || 0;
@@ -26591,8 +26591,8 @@ export default function Dashboard() {
                                           { label: 'Library Shelf', icon: '📚', path: `BookReader`, status: (totalMod > 0 || totalRead > 0) ? 'ok' : 'error', issueKey: 'library', pct: libPct },
                                         ];
                                       })().map((step, sIdx, arr) => (
-                                        <div key={step.label} className="flex items-start" style={{ flexShrink: 0 }}>
-                                          <div className="flex flex-col items-center" style={{ width: '130px' }}>
+                                        <div key={step.label} className="flex items-start" style={{ flex: sIdx < arr.length - 1 ? '1 1 0' : '0 0 auto', minWidth: 0 }}>
+                                          <div className="flex flex-col items-center" style={{ width: '130px', flexShrink: 0 }}>
                                             <div
                                               className={`w-10 h-10 rounded-full flex items-center justify-center text-[16px] border ${(step.status === 'error' || step.status === 'warning') ? 'cursor-pointer hover:scale-110 transition-transform' : ''}`}
                                               style={{
@@ -26607,7 +26607,7 @@ export default function Dashboard() {
                                             {(step.status === 'error' || step.status === 'warning') && <span className="text-[9px] mt-1 px-2 py-0.5 rounded cursor-pointer hover:brightness-125 transition-all" style={{ background: step.status === 'error' ? 'rgba(239,68,68,0.25)' : 'rgba(234,179,8,0.25)', color: step.status === 'error' ? '#fca5a5' : '#fde68a', border: `1px solid ${step.status === 'error' ? 'rgba(239,68,68,0.4)' : 'rgba(234,179,8,0.4)'}` }} onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: step.issueKey, step: 0, phase: 'primary' }); }}>Fix</span>}
                                           </div>
                                           {sIdx < arr.length - 1 && (
-                                            <div className="flex items-center" style={{ width: '24px', height: '2px', marginTop: '18px' }}>
+                                            <div className="flex items-center" style={{ flex: '1 1 0', minWidth: '24px', height: '2px', marginTop: '18px', padding: '0 6px' }}>
                                               <div style={{ flex: 1, height: '2px', background: step.status === 'ok' ? '#22c55e' : step.status === 'warning' ? '#eab308' : step.status === 'error' ? '#ef4444' : 'rgba(255,255,255,0.2)' }} />
                                               <div style={{ width: 0, height: 0, borderTop: '4px solid transparent', borderBottom: '4px solid transparent', borderLeft: `6px solid ${step.status === 'ok' ? '#22c55e' : step.status === 'warning' ? '#eab308' : step.status === 'error' ? '#ef4444' : 'rgba(255,255,255,0.2)'}` }} />
                                             </div>
