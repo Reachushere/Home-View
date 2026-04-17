@@ -30076,9 +30076,28 @@ export default function Dashboard() {
                   ];
                   const active = semDefs.find(s => day >= new Date(s.start + 'T00:00:00') && day <= new Date(s.end + 'T23:59:59'));
                   if (active) {
-                    const semStart = new Date(active.start + 'T12:00:00');
-                    const wk = Math.floor((day.getTime() - semStart.getTime()) / (1000*60*60*24) / 7) + 1;
-                    return wk > active.weeks;
+                    // Use the same getWeekNumber that the calendar label uses,
+                    // so the umbrella never contradicts the "Week N" label.
+                    // We need the matching semester_settings row to get its
+                    // reading_week_start (the naive 7-day arithmetic doesn't
+                    // know about reading week and produces off-by-one results
+                    // on the last day of the semester).
+                    const allSems = allSemesterSettingsRef.current || [];
+                    const matchSem = allSems.find((s: any) => {
+                      if (!s.semesterStartDate) return false;
+                      const ss = new Date(s.semesterStartDate);
+                      const yr = ss.getUTCFullYear();
+                      const t = (s.semesterType || '').toLowerCase();
+                      const want = active.key;
+                      if (t === 'winter' && want === `w${yr}`) return true;
+                      if (t.startsWith('spring') && want === `ss${yr}`) return true;
+                      if (t === 'fall' && want === `f${yr}`) return true;
+                      return false;
+                    });
+                    const semStart = matchSem?.semesterStartDate ? new Date(matchSem.semesterStartDate) : new Date(active.start + 'T12:00:00');
+                    const rwStart = matchSem?.readingWeekStart ? new Date(matchSem.readingWeekStart) : null;
+                    const wk = getWeekNumber(day, semStart, rwStart);
+                    return wk > 0 && wk > active.weeks;
                   }
                   const next = semDefs.find(s => day < new Date(s.start + 'T00:00:00'));
                   if (next) return true;
