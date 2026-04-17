@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { Zap, Send, X, Loader2, CheckCircle, XCircle, AlertTriangle, Trash2, RotateCcw, Maximize2, Minimize2, Pencil, Circle, ArrowRight, ArrowDown, Undo2, Check, Scissors, Square, Copy, Download, FileText, BookOpen, Paperclip } from 'lucide-react';
 import { queryClient } from '@/lib/queryClient';
 import brynAvatar from '@assets/generated_images/brynassist_avatar.png';
+import defaultProfilePhoto from '@assets/image_1772579486577.png';
 const buildWaveBg = (): string => {
   const colors = ['%2300e5ff', '%230ea5e9', '%2338bdf8', '%2306b6d4', '%23a855f7', '%23d946ef', '%23ec4899', '%237c3aed', '%23f0abfc'];
   const lines: string[] = [];
@@ -558,6 +559,17 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   const resizeJustEndedRef = useRef(false);
   const resizeStartRef = useRef<{ x: number; width: number } | null>(null);
   const [panelRect, setPanelRect] = useState<{ top: number; left: number; width: number } | null>(null);
+  const [profilePhotoUrl, setProfilePhotoUrl] = useState<string>(() => {
+    try { return localStorage.getItem('profilePhotoUrl') || defaultProfilePhoto; } catch { return defaultProfilePhoto; }
+  });
+  useEffect(() => {
+    const onStorage = () => {
+      try { setProfilePhotoUrl(localStorage.getItem('profilePhotoUrl') || defaultProfilePhoto); } catch {}
+    };
+    window.addEventListener('storage', onStorage);
+    const id = window.setInterval(onStorage, 2000);
+    return () => { window.removeEventListener('storage', onStorage); window.clearInterval(id); };
+  }, []);
 
   useEffect(() => {
     fetch('/api/app-state/ui_wizardStyle')
@@ -1577,8 +1589,10 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 padding: msg.role === 'system' ? '6px 14px' : (isOrb ? '22px 26px' : '14px 18px'),
                 borderRadius: msg.role === 'system' ? '14px' : (isOrb ? '50%' : '24px'),
                 display: isOrb ? 'flex' : undefined,
+                flexDirection: isOrb ? ('column' as const) : undefined,
                 alignItems: isOrb ? 'center' : undefined,
                 justifyContent: isOrb ? 'center' : undefined,
+                gap: isOrb && msg.role === 'user' ? '6px' : undefined,
                 textAlign: isOrb ? ('center' as const) : undefined,
                 overflow: isOrb ? 'hidden' : undefined,
                 flexShrink: 0,
@@ -1616,6 +1630,17 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 whiteSpace: 'pre-wrap',
                 wordBreak: 'break-word',
               }}>
+                {isOrb && msg.role === 'user' && (
+                  <img src={profilePhotoUrl} alt="You" style={{
+                    width: orbLen < 30 ? '34px' : orbLen < 70 ? '42px' : '50px',
+                    height: orbLen < 30 ? '34px' : orbLen < 70 ? '42px' : '50px',
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                    border: '2px solid rgba(255,255,255,0.55)',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.35)',
+                    flexShrink: 0,
+                  }} />
+                )}
                 {msg.image && (
                   <img src={msg.image} alt="Screenshot" style={{ maxWidth: '100%', maxHeight: '150px', borderRadius: '6px', marginBottom: '6px', border: '1px solid rgba(100,160,255,0.2)' }} />
                 )}
