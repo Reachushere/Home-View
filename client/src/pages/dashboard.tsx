@@ -18252,7 +18252,7 @@ export default function Dashboard() {
         <Share 
           className="text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
-          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 19}px`, right: `${calendarRight - calendarReduction + 19 + 34}px`, zIndex: 70 }}
+          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 22}px`, right: `${calendarRight - calendarReduction + 19 + 34}px`, zIndex: 70 }}
           onClick={() => { generateShareLink('4201'); setIsShareDialogOpen(true); }}
           data-testid="button-share-main"
         />
@@ -18261,7 +18261,7 @@ export default function Dashboard() {
         <Download
           className="text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
-          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 19}px`, right: `${calendarRight - calendarReduction + 19 + 17}px`, zIndex: 70 }}
+          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 22}px`, right: `${calendarRight - calendarReduction + 19 + 17}px`, zIndex: 70 }}
           onClick={() => {
             window.open('https://github.com/Reachushere/Home-View/archive/refs/heads/main.zip', '_blank');
           }}
@@ -18273,7 +18273,7 @@ export default function Dashboard() {
         <Printer
           className="text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
-          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 19}px`, right: `${calendarRight - calendarReduction + 19}px`, zIndex: 70 }}
+          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 22}px`, right: `${calendarRight - calendarReduction + 19}px`, zIndex: 70 }}
           onClick={() => {
             const printableIframe = document.querySelector('iframe[src*="pdf-reader"], iframe[src*="/files/"]') as HTMLIFrameElement | null;
             if (printableIframe && printableIframe.contentWindow) {
@@ -18290,7 +18290,7 @@ export default function Dashboard() {
         <Copy
           className="text-white/50 cursor-pointer hover:text-white/90"
           strokeWidth={2.5}
-          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 19}px`, right: `${calendarRight - calendarReduction + 19 + 51}px`, zIndex: 70 }}
+          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 22}px`, right: `${calendarRight - calendarReduction + 19 + 51}px`, zIndex: 70 }}
           onClick={async () => {
             try {
               const res = await fetch('/api/source-code/all');
@@ -20818,7 +20818,7 @@ export default function Dashboard() {
           title="Restore homework panel"
         >
           <svg width="84" height="14" viewBox="0 0 84 14" style={{ display: 'block', overflow: 'hidden' }}>
-            <path d="M0,20 L84,20 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+            <path d="M0,20 L84,20 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill="#1a2332" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
             <text x="42" y="8" textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.95)" fontSize="11" fontWeight="600" fontFamily="system-ui, -apple-system, sans-serif">Homework</text>
           </svg>
         </button>
@@ -20859,7 +20859,7 @@ export default function Dashboard() {
           title="Open temporary notes"
         >
           <svg width="84" height="14" viewBox="0 0 84 14" style={{ display: 'block', overflow: 'hidden' }}>
-            <path d="M0,20 L84,20 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill="#1a2332" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+            <path d="M0,20 L84,20 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
             <text x="42" y="8" textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.95)" fontSize="11" fontWeight="600" fontFamily="system-ui, -apple-system, sans-serif">Notes</text>
           </svg>
         </button>
@@ -29677,7 +29677,7 @@ export default function Dashboard() {
         <div className="flex-1 overflow-visible scrollbar-hidden flex flex-col" style={{ marginTop: '0px', marginLeft: '-25px', marginRight: '-34px', paddingLeft: '25px', paddingRight: '0px' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
-        <div className="mb-[0px] mt-[0px] relative flex gap-4 transition-opacity duration-300" style={{ height: calendarHeight - 108, flexShrink: 0, order: 1, paddingTop: '3px' }}>
+        <div className="mb-[0px] mt-[0px] relative flex gap-4 transition-opacity duration-300" style={{ height: calendarHeight - 100, flexShrink: 0, order: 1, paddingTop: '3px' }}>
           
           {/* Module Media Controls Dialog */}
           <Dialog open={moduleMediaControlCourse !== null} onOpenChange={(open) => !open && setModuleMediaControlCourse(null)}>
@@ -34260,7 +34260,7 @@ export default function Dashboard() {
           </div>
         </div>
         ) : (
-        <div className="mb-[0px] mt-[0px] relative flex gap-4 transition-opacity duration-300" style={{ height: calendarHeight - 108, flexShrink: 0, order: 1, paddingTop: '3px' }}>
+        <div className="mb-[0px] mt-[0px] relative flex gap-4 transition-opacity duration-300" style={{ height: calendarHeight - 100, flexShrink: 0, order: 1, paddingTop: '3px' }}>
           <div ref={calendarWrapperRef} className="relative overflow-visible" style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction - 2}px` : ' - 12px'})`, height: '100%', marginTop: '0px', marginLeft: '12px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 - 2 - 2 - 2 : 12}px`, display: 'flex', flexDirection: 'column' as const, transition: (homeworkAnimating || blankBoxAnimating) ? 'width 0.35s cubic-bezier(0.4,0,0.2,1), margin-right 0.35s cubic-bezier(0.4,0,0.2,1)' : 'none' }}>
           {/* Glass effect backing box - same as main calendar */}
           <div 
