@@ -12,3 +12,5 @@ vite.config.ts.*
 .ai-conversations
 .ai-sessions.json
 .ai-temp-script.mjs
+.onedrive_tokens.json
+.onedrive_devicecode.json
