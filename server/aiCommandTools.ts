@@ -1670,10 +1670,59 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
         let dashPathW = args.dashboard || null;
         if (dashPathW?.startsWith('lovelace-')) dashPathW = dashPathW.replace('lovelace-', '');
         try {
+          // Fetch existing config for corruption guard + snapshot
+          const wsMsgRead: Record<string, any> = {};
+          if (dashPathW && dashPathW !== 'lovelace') wsMsgRead.url_path = dashPathW;
+          const existingConfig = await haWebSocket('lovelace/config', wsMsgRead);
+
+          const countElements = (node: any): number => {
+            if (!node || typeof node !== 'object') return 0;
+            let n = 1;
+            for (const k of ['cards', 'elements', 'children']) {
+              if (Array.isArray(node[k])) for (const c of node[k]) n += countElements(c);
+            }
+            return n;
+          };
+          const existingCount = countElements(existingConfig);
+          const newCount = countElements(args.config);
+
+          // GUARDRAIL: refuse to clobber a populated dashboard with a much smaller config (corruption signature)
+          if (!args.force && existingCount > 15 && newCount < existingCount * 0.9) {
+            return { success: false, result: { error: `REFUSED: Existing dashboard has ${existingCount} nested items but you only sent ${newCount}. This would delete elements (LLM truncation pattern). Use ha_element_patch for surgical edits — it cannot drop anything. To override, pass force=true (only with a verified complete config).` } };
+          }
+          if (!args.force && existingCount > 50) {
+            return { success: false, result: { error: `REFUSED: Dashboard has ${existingCount} nested items — too large for safe full overwrite. Use ha_element_patch or ha_view_write for targeted edits. Pass force=true only if you have a verified complete config.` } };
+          }
+
+          // SAFETY SNAPSHOT
+          try {
+            const fsMod = await import('fs');
+            const pathMod = await import('path');
+            const snapDir = pathMod.resolve(process.cwd(), 'ha-snapshots');
+            if (!fsMod.existsSync(snapDir)) fsMod.mkdirSync(snapDir, { recursive: true });
+            const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+            const snapPath = pathMod.join(snapDir, `lovelace-${dashPathW || 'main'}-${stamp}.json`);
+            fsMod.writeFileSync(snapPath, JSON.stringify(existingConfig, null, 2));
+            const prefix = `lovelace-${dashPathW || 'main'}-`;
+            const all = fsMod.readdirSync(snapDir).filter((f: string) => f.startsWith(prefix)).sort();
+            if (all.length > 50) for (const f of all.slice(0, all.length - 50)) { try { fsMod.unlinkSync(pathMod.join(snapDir, f)); } catch {} }
+            console.log(`[ha_dashboard_write] Snapshot saved: ${snapPath}`);
+          } catch (snapErr: any) {
+            console.error(`[ha_dashboard_write] Snapshot failed (proceeding anyway):`, snapErr?.message);
+          }
+
           const wsMsg: Record<string, any> = { config: args.config };
           if (dashPathW && dashPathW !== 'lovelace') wsMsg.url_path = dashPathW;
           await haWebSocket('lovelace/config/save', wsMsg);
-          return { success: true, result: { message: "Dashboard updated successfully. Refresh your HA browser to see changes.", dashboard: dashPathW || 'lovelace' } };
+
+          // POST-WRITE VERIFY
+          try {
+            const verifyConfig = await haWebSocket('lovelace/config', wsMsgRead);
+            const verifiedCount = countElements(verifyConfig);
+            return { success: true, result: { message: `Dashboard updated. Element count: ${existingCount} -> ${verifiedCount}. Refresh HA browser.`, dashboard: dashPathW || 'lovelace', elements_before: existingCount, elements_after: verifiedCount } };
+          } catch {
+            return { success: true, result: { message: "Dashboard updated. Refresh your HA browser to see changes.", dashboard: dashPathW || 'lovelace' } };
+          }
         } catch (err: any) {
           return { success: false, result: { error: `HA dashboard write failed: ${err.message}. Use ha_list_dashboards to verify the correct url_path. Only 'storage' mode dashboards can be written via API.` } };
         }
@@ -1780,7 +1829,16 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           const wsMsgW: Record<string, any> = { config };
           if (dashPathVW && dashPathVW !== 'lovelace') wsMsgW.url_path = dashPathVW;
           await haWebSocket('lovelace/config/save', wsMsgW);
-          return { success: true, result: { message: `View '${args.view_config.title || viewIdx}' updated successfully. Refresh HA browser to see changes.`, dashboard: dashPathVW || 'lovelace', view_index: viewIdx } };
+          // POST-WRITE VERIFY
+          try {
+            const wsMsgV: Record<string, any> = {};
+            if (dashPathVW && dashPathVW !== 'lovelace') wsMsgV.url_path = dashPathVW;
+            const verifyConfig = await haWebSocket('lovelace/config', wsMsgV);
+            const verifiedCount = countElements(verifyConfig.views?.[viewIdx]);
+            return { success: true, result: { message: `View '${args.view_config.title || viewIdx}' updated. Element count: ${existingCount} -> ${verifiedCount}. Refresh HA browser.`, dashboard: dashPathVW || 'lovelace', view_index: viewIdx, elements_before: existingCount, elements_after: verifiedCount } };
+          } catch {
+            return { success: true, result: { message: `View '${args.view_config.title || viewIdx}' updated. Refresh HA browser.`, dashboard: dashPathVW || 'lovelace', view_index: viewIdx } };
+          }
         } catch (err: any) {
           return { success: false, result: { error: `HA view write failed: ${err.message}` } };
         }
@@ -1876,7 +1934,24 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           const wsMsgW: Record<string, any> = { config };
           if (dashPathEP && dashPathEP !== 'lovelace') wsMsgW.url_path = dashPathEP;
           await haWebSocket('lovelace/config/save', wsMsgW);
-          return { success: true, result: { message: `Patched element at ${targetPath.join('.') || '(root)'} in view ${viewIdx}. Refresh HA to see changes.`, view_index: viewIdx, element_path: targetPath, patched_element: target } };
+          // POST-WRITE VERIFY: confirm patch landed and element count is sane
+          try {
+            const countAll = (n: any): number => {
+              if (!n || typeof n !== 'object') return 0;
+              let c = 1;
+              for (const k of ['cards', 'elements', 'children']) if (Array.isArray(n[k])) for (const x of n[k]) c += countAll(x);
+              return c;
+            };
+            const beforeCount = countAll(views[viewIdx]);
+            const verifyConfig = await haWebSocket('lovelace/config', wsMsgR);
+            const afterCount = countAll(verifyConfig.views?.[viewIdx]);
+            if (afterCount < beforeCount) {
+              return { success: true, result: { warning: `Patch saved but post-write count dropped: ${beforeCount} -> ${afterCount}. Inspect immediately.`, view_index: viewIdx, element_path: targetPath, patched_element: target, elements_before: beforeCount, elements_after: afterCount } };
+            }
+            return { success: true, result: { message: `Patched element at ${targetPath.join('.') || '(root)'} in view ${viewIdx}. Element count: ${beforeCount} -> ${afterCount}. Refresh HA.`, view_index: viewIdx, element_path: targetPath, patched_element: target, elements_before: beforeCount, elements_after: afterCount } };
+          } catch {
+            return { success: true, result: { message: `Patched element at ${targetPath.join('.') || '(root)'} in view ${viewIdx}. Refresh HA to see changes.`, view_index: viewIdx, element_path: targetPath, patched_element: target } };
+          }
         } catch (err: any) {
           return { success: false, result: { error: `ha_element_patch failed: ${err.message}` } };
         }
