@@ -291,6 +291,123 @@ interface WizardStyle {
   wizardBodyTextColor?: string;
 }
 
+const TOOL_LABELS: Record<string, string> = {
+  read_file: 'Reading file',
+  edit_file: 'Editing file',
+  write_file: 'Writing file',
+  multi_file_edit: 'Editing files',
+  search_code: 'Searching codebase',
+  list_directory: 'Listing directory',
+  get_project_map: 'Mapping project',
+  codebase_explore: 'Exploring codebase',
+  code_reference: 'Looking up reference',
+  smart_context: 'Gathering context',
+  explain_code: 'Explaining code',
+  analyze_dependencies: 'Analyzing dependencies',
+  run_shell_command: 'Running command',
+  read_logs: 'Reading logs',
+  check_build: 'Checking build',
+  check_performance: 'Checking performance',
+  health_check: 'Checking health',
+  process_check: 'Checking processes',
+  http_check: 'Pinging endpoint',
+  http_test: 'Testing endpoint',
+  restart_application: 'Restarting app',
+  install_package: 'Installing package',
+  npm_info: 'Looking up package',
+  stack_analyze: 'Analyzing stack',
+  project_snapshot: 'Snapshotting project',
+  web_search: 'Searching the web',
+  web_fetch: 'Fetching web page',
+  github_search: 'Searching GitHub',
+  github_file: 'Reading GitHub file',
+  github_tree: 'Reading GitHub tree',
+  deep_research: 'Researching deeply',
+  ai_subtask: 'Thinking deeper',
+  pair_program: 'Pair-programming',
+  code_complete: 'Completing code',
+  code_review_tool: 'Reviewing code',
+  generate_tests: 'Generating tests',
+  convert_code: 'Converting code',
+  plan_task: 'Planning steps',
+  retro: 'Reviewing session',
+  auto_discover: 'Discovering',
+  auto_test: 'Auto-testing',
+  smoke_test: 'Smoke-testing',
+  browser_test: 'Testing in browser',
+  take_screenshot: 'Taking screenshot',
+  analyze_ui: 'Analyzing UI',
+  generate_image: 'Generating image',
+  ha_list_entities: 'Listing devices',
+  ha_discover: 'Discovering devices',
+  ha_get_state: 'Reading device state',
+  ha_service_call: 'Calling device',
+  ha_announce: 'Announcing on speakers',
+  ha_history: 'Reading device history',
+  ha_logbook: 'Reading logbook',
+  ha_template_render: 'Rendering template',
+  ha_check_config: 'Checking HA config',
+  ha_reload: 'Reloading HA',
+  ha_input_set: 'Setting input',
+  ha_scene_apply: 'Applying scene',
+  ha_create_helper: 'Creating helper',
+  ha_create_automation: 'Creating automation',
+  ha_automation_list: 'Listing automations',
+  ha_automation_get: 'Reading automation',
+  ha_automation_update: 'Updating automation',
+  ha_automation_delete: 'Deleting automation',
+  ha_automation_toggle: 'Toggling automation',
+  ha_automation_clone: 'Cloning automation',
+  ha_script_list: 'Listing scripts',
+  ha_script_get: 'Reading script',
+  ha_script_run: 'Running script',
+  ha_list_dashboards: 'Listing dashboards',
+  ha_dashboard_read: 'Reading dashboard',
+  ha_dashboard_write: 'Updating dashboard',
+  ha_view_read: 'Reading view',
+  ha_view_write: 'Updating view',
+  ha_element_patch: 'Patching element',
+  ha_element_add: 'Adding element',
+  ha_element_remove: 'Removing element',
+  ha_config_entries: 'Reading HA integrations',
+  create_task: 'Creating task',
+  update_task: 'Updating task',
+  delete_task: 'Deleting task',
+  search_tasks: 'Searching tasks',
+  complete_task: 'Completing task',
+  bulk_complete_tasks: 'Completing tasks',
+  bulk_delete_tasks: 'Deleting tasks',
+  get_upcoming_tasks: 'Reading upcoming tasks',
+  sync_task_to_calendar: 'Syncing to calendar',
+  create_notepad_note: 'Creating note',
+  notepad_crud: 'Editing notes',
+  manage_sticky_note: 'Updating sticky note',
+  send_email: 'Sending email',
+  spotify_control: 'Controlling Spotify',
+  get_semester_info: 'Reading semester',
+  get_course_list: 'Reading courses',
+  update_semester_settings: 'Updating semester',
+  update_app_theme: 'Updating theme',
+  update_ui_setting: 'Updating UI setting',
+  staging_manage: 'Managing staging',
+  git_backup: 'Backing up',
+  git_diff: 'Checking git diff',
+  git_commit_and_push: 'Pushing to git',
+  run_node_script: 'Running script',
+  run_sql: 'Querying database',
+  db_schema: 'Reading DB schema',
+  db_migrate: 'Migrating DB',
+  memory_read: 'Loading memory',
+  memory_write: 'Saving memory',
+  conversation_history: 'Reading history',
+};
+
+function humanizeToolName(raw: string): string {
+  if (!raw) return 'Working';
+  if (TOOL_LABELS[raw]) return TOOL_LABELS[raw];
+  return raw.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
 function isLightBg(bg: string | undefined): boolean {
   if (!bg) return false;
   const l = bg.toLowerCase().replace(/\s/g, '');
@@ -641,15 +758,13 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 if (rawName === 'rate_limit_wait') {
                   setActiveToolName('Waiting for API...');
                 } else {
-                  const toolLabel = rawName.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
-                  setActiveToolName(toolLabel || 'Working...');
+                  setActiveToolName(humanizeToolName(rawName));
                 }
                 setThinkingPhase(null);
               } else if (event.type === 'tool_done') {
                 setActiveToolName(null);
                 if (!event.success) {
-                  const toolLabel = event.name.replace(/_/g, ' ');
-                  streamedContent += `Failed: ${toolLabel}\n`;
+                  streamedContent += `Failed: ${humanizeToolName(event.name)}\n`;
                 }
               } else if (event.type === 'token') {
                 setThinkingPhase(null);
@@ -1273,18 +1388,14 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
             }}>
               {msg.role === 'thinking' ? (
                 <div style={{
-                  display: 'flex', alignItems: 'flex-start', gap: '8px',
-                  maxWidth: '90%', padding: '4px 12px 4px 6px',
-                  fontSize: '11.5px', lineHeight: '1.45',
-                  color: 'rgba(170,195,235,0.65)',
+                  display: 'flex', alignItems: 'flex-start', gap: '6px',
+                  maxWidth: '92%', padding: '2px 10px 2px 4px',
+                  fontSize: '12px', lineHeight: '1.5',
+                  color: 'rgba(180,200,235,0.7)',
                   fontStyle: 'italic',
-                  borderLeft: '2px solid rgba(130,170,255,0.35)',
-                  background: 'rgba(20,35,70,0.25)',
-                  borderRadius: '0 8px 8px 0',
                 }}>
-                  <span style={{ fontSize: '13px', lineHeight: 1, marginTop: '1px', opacity: 0.7 }}>🧠</span>
+                  <span style={{ color: 'rgba(140,175,235,0.55)', fontStyle: 'normal', fontWeight: 600, marginTop: '0px', flexShrink: 0 }}>›</span>
                   <span style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
-                    <span style={{ fontWeight: 600, fontStyle: 'normal', color: 'rgba(150,180,230,0.8)', marginRight: '6px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>thinking</span>
                     {msg.content}
                   </span>
                 </div>
@@ -1433,24 +1544,25 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
             <div style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '12px',
-              padding: '10px 14px',
-              borderRadius: '14px 14px 14px 4px',
-              background: 'rgba(30,50,90,0.7)',
-              border: '1px solid rgba(100,160,255,0.15)',
+              gap: '10px',
+              padding: '6px 12px 6px 6px',
+              fontSize: '12px',
+              color: 'rgba(190,210,240,0.85)',
+              fontStyle: 'italic',
             }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '3.5px', alignItems: 'center', padding: '2px' }}>
-                {[0, 1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-                  <div key={i} style={{ width: '6px', height: '6px', borderRadius: '50%', background: ['#7c3aed','#8b5cf6','#7c3aed','#8b5cf6','#6d28d9','#8b5cf6','#7c3aed','#8b5cf6','#7c3aed'][i], animation: 'ai-dot-pulse 2s ease-in-out infinite', animationDelay: `${i * 0.15}s`, opacity: 1 }} />
+              <div style={{ display: 'inline-flex', gap: '4px', alignItems: 'center', padding: '0 2px' }}>
+                {[0, 1, 2].map(i => (
+                  <div key={i} style={{
+                    width: '5px', height: '5px', borderRadius: '50%',
+                    background: 'rgba(150,180,235,0.85)',
+                    animation: 'ai-wave-dot 1.2s ease-in-out infinite',
+                    animationDelay: `${i * 0.18}s`,
+                  }} />
                 ))}
               </div>
-              <span style={{
-                fontSize: '14px',
-                fontWeight: 700,
-                color: '#ffffff',
-                textShadow: '0 0 8px rgba(139,92,246,0.5)',
-              }}>
-                {activeToolName || thinkingPhase || 'Working...'}
+              <span style={{ fontWeight: 500, letterSpacing: '0.1px' }}>
+                {activeToolName || thinkingPhase || 'Working'}
+                <span style={{ opacity: 0.6 }}>…</span>
               </span>
             </div>
           )}
