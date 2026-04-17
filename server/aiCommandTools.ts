@@ -341,6 +341,42 @@ export const AI_COMMAND_TOOLS = [
   {
     type: "function" as const,
     function: {
+      name: "ha_element_add",
+      description: "Append a new element to a picture-elements card (or any card with an 'elements' or 'cards' array) WITHOUT echoing back the existing siblings. This is the SAFE way to add a new button/icon/image to a dashboard. The server reads the view, locates the target card by index path or by being the first picture-elements card, pushes the element, and writes back. Cannot drop other elements.",
+      parameters: {
+        type: "object",
+        properties: {
+          dashboard: { type: "string", description: "Dashboard url_path. Omit or 'lovelace' for default." },
+          view_index: { type: "number", description: "Zero-based view index. Use this OR view_title." },
+          view_title: { type: "string", description: "View title (case-insensitive)." },
+          card_index_path: { type: "array", items: { type: "number" }, description: "Optional path of card indices. Default [0] means view.cards[0]." },
+          container_key: { type: "string", enum: ["elements", "cards", "children"], description: "Which array on the target card to push into. Default 'elements'." },
+          element: { type: "object", description: "The new element object to append. e.g. { type: 'state-icon', entity: 'timer.x', icon: 'mdi:cat', tap_action: {...}, style: {...} }" },
+          dedupe_by_entity: { type: "boolean", description: "If true and the element has an 'entity', remove any existing siblings with the same entity first (idempotent re-runs)." },
+        },
+        required: ["element"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "ha_automation_clone",
+      description: "Clone an existing automation by its unique id, optionally rename and patch specific top-level fields (e.g. add an Alexa announcement to the actions). Much safer than rewriting the YAML by hand. The server fetches the source automation, applies the patch (deep-merge for objects, replace for arrays you explicitly provide), assigns a new id, and saves it.",
+      parameters: {
+        type: "object",
+        properties: {
+          source_id: { type: "string", description: "Unique automation id of the source (NOT the entity_id). Get from ha_config_entries GET /api/config/automation/config or HA UI URL." },
+          new_alias: { type: "string", description: "Display name for the cloned automation. Required." },
+          patch: { type: "object", description: "Object of top-level keys to override on the clone, e.g. { action: [...] } to replace actions, or { mode: 'restart' }. Arrays REPLACE, objects shallow-merge." },
+        },
+        required: ["source_id", "new_alias"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
       name: "ha_config_entries",
       description: "List HA config entries, integrations, or call any HA REST API endpoint. For advanced HA interactions like reading/writing automations, scripts, helpers, etc.",
       parameters: {
@@ -1954,6 +1990,93 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           }
         } catch (err: any) {
           return { success: false, result: { error: `ha_element_patch failed: ${err.message}` } };
+        }
+      }
+
+      case "ha_element_add": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+          return { success: false, result: { error: "Home Assistant not configured" } };
+        }
+        let dashPathEA = args.dashboard || null;
+        if (dashPathEA?.startsWith('lovelace-')) dashPathEA = dashPathEA.replace('lovelace-', '');
+        try {
+          const wsMsgR: Record<string, any> = {};
+          if (dashPathEA && dashPathEA !== 'lovelace') wsMsgR.url_path = dashPathEA;
+          const config = await haWebSocket('lovelace/config', wsMsgR);
+          const views = config.views || [];
+          let viewIdx = -1;
+          if (args.view_index !== undefined && args.view_index !== null) viewIdx = args.view_index;
+          else if (args.view_title) viewIdx = views.findIndex((v: any) => v?.title?.toLowerCase() === args.view_title.toLowerCase());
+          else viewIdx = 0;
+          if (viewIdx < 0 || viewIdx >= views.length || !views[viewIdx]) {
+            return { success: false, result: { error: `View not found. Available: ${views.map((v: any, i: number) => `${i}:${v?.title || '(null)'}`).join(', ')}` } };
+          }
+          const view = views[viewIdx];
+          const cardPath: number[] = Array.isArray(args.card_index_path) && args.card_index_path.length > 0 ? args.card_index_path : [0];
+          let card: any = view;
+          for (const idx of cardPath) {
+            const arr = card.cards || card.elements || card.children;
+            if (!Array.isArray(arr) || idx < 0 || idx >= arr.length) {
+              return { success: false, result: { error: `Invalid card path at index ${idx}` } };
+            }
+            card = arr[idx];
+          }
+          const containerKey: string = args.container_key || (Array.isArray(card.elements) ? 'elements' : Array.isArray(card.cards) ? 'cards' : 'elements');
+          if (!Array.isArray(card[containerKey])) card[containerKey] = [];
+          const beforeLen = card[containerKey].length;
+          if (args.dedupe_by_entity && args.element?.entity) {
+            card[containerKey] = card[containerKey].filter((e: any) => e?.entity !== args.element.entity);
+          }
+          card[containerKey].push(args.element);
+
+          // Snapshot
+          try {
+            const fsMod = await import('fs');
+            const pathMod = await import('path');
+            const snapDir = pathMod.resolve(process.cwd(), 'ha-snapshots');
+            if (!fsMod.existsSync(snapDir)) fsMod.mkdirSync(snapDir, { recursive: true });
+            const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+            const snapPath = pathMod.join(snapDir, `lovelace-${dashPathEA || 'main'}-${stamp}.json`);
+            const preConfig = await haWebSocket('lovelace/config', wsMsgR);
+            fsMod.writeFileSync(snapPath, JSON.stringify(preConfig, null, 2));
+            console.log(`[ha_element_add] Snapshot: ${snapPath}`);
+          } catch (e: any) { console.error(`[ha_element_add] snapshot failed:`, e?.message); }
+
+          const wsMsgW: Record<string, any> = { config };
+          if (dashPathEA && dashPathEA !== 'lovelace') wsMsgW.url_path = dashPathEA;
+          await haWebSocket('lovelace/config/save', wsMsgW);
+          return { success: true, result: { message: `Element added to view ${viewIdx} card ${cardPath.join('.')}.${containerKey}. Length: ${beforeLen} -> ${card[containerKey].length}. Refresh HA.`, view_index: viewIdx, card_path: cardPath, container_key: containerKey, container_length: card[containerKey].length } };
+        } catch (err: any) {
+          return { success: false, result: { error: `ha_element_add failed: ${err.message}` } };
+        }
+      }
+
+      case "ha_automation_clone": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+          return { success: false, result: { error: "Home Assistant not configured" } };
+        }
+        const haUrlAC = HOME_ASSISTANT_URL.replace(/\/$/, '');
+        try {
+          const headers = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
+          const srcResp = await fetch(`${haUrlAC}/api/config/automation/config/${args.source_id}`, { headers });
+          if (!srcResp.ok) return { success: false, result: { error: `Source automation '${args.source_id}' not found (HTTP ${srcResp.status}). Get IDs from /api/config/automation/config or browse Settings → Automations.` } };
+          const src = await srcResp.json();
+          const clone: any = JSON.parse(JSON.stringify(src));
+          clone.alias = args.new_alias;
+          delete clone.id;
+          if (args.patch && typeof args.patch === 'object') {
+            for (const k of Object.keys(args.patch)) clone[k] = args.patch[k];
+          }
+          const newId = `clone_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+          const saveResp = await fetch(`${haUrlAC}/api/config/automation/config/${newId}`, { method: 'POST', headers, body: JSON.stringify(clone) });
+          if (!saveResp.ok) {
+            const txt = await saveResp.text();
+            return { success: false, result: { error: `Save failed (HTTP ${saveResp.status}): ${txt}` } };
+          }
+          await fetch(`${haUrlAC}/api/services/automation/reload`, { method: 'POST', headers });
+          return { success: true, result: { message: `Cloned automation '${args.source_id}' as '${args.new_alias}' (id: ${newId}). Reloaded.`, new_id: newId, new_alias: args.new_alias, clone_config: clone } };
+        } catch (err: any) {
+          return { success: false, result: { error: `ha_automation_clone failed: ${err.message}` } };
         }
       }
 
