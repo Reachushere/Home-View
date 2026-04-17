@@ -16377,10 +16377,10 @@ export default function Dashboard() {
       {/* Profile photo + greeting — top-right where pomodoro timer used to sit */}
       <div className="fixed flex items-center" data-tpo data-tpo-opacity="1" style={{ right: `${calendarRight - calendarReduction + 7}px`, top: `${5 + d2lTickerHeight}px`, height: '39px', zIndex: 100, opacity: (isTopPillOpen || isTodoFlyoutOpen) ? 0 : 1, transition: (isTopPillOpen || isTodoFlyoutOpen) ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: (isTopPillOpen || isTodoFlyoutOpen) ? 'none' : 'auto', flexDirection: 'row' }}>
         <div className="flex flex-col" style={{ marginRight: '8px', textAlign: 'right', alignItems: 'flex-end' }}>
-          <span className="text-white font-bold text-[11.5px] leading-tight">{(() => { const h = new Date().getHours(); return h < 12 ? 'Good morning,' : h < 17 ? 'Good afternoon,' : 'Good evening,'; })()} {profileData.firstName}</span>
-          <span className="text-white text-[10px] leading-tight" style={{ fontWeight: 300 }}>{schoolData.schoolName || 'Toronto Metropolitan University'}</span>
+          <span className="text-white font-bold leading-tight" style={{ fontSize: '13.5px' }}>{(() => { const h = new Date().getHours(); return h < 12 ? 'Good morning,' : h < 17 ? 'Good afternoon,' : 'Good evening,'; })()} {profileData.firstName}</span>
+          <span className="text-white leading-tight" style={{ fontWeight: 300, fontSize: '12px' }}>{schoolData.schoolName || 'Toronto Metropolitan University'}</span>
         </div>
-        <img src={profilePhotoUrl || profilePhoto} alt="Profile" style={{ width: '43px', height: '43px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, alignSelf: 'flex-start', boxShadow: '0 2px 8px rgba(0,0,0,0.2)', cursor: 'pointer' }} onClick={() => startTransition(() => setIsProfileDialogOpen(true))} data-testid="button-profile-photo" />
+        <img src={profilePhotoUrl || profilePhoto} alt="Profile" style={{ width: '45px', height: '45px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, alignSelf: 'flex-start', boxShadow: '0 2px 8px rgba(0,0,0,0.2)', cursor: 'pointer' }} onClick={() => startTransition(() => setIsProfileDialogOpen(true))} data-testid="button-profile-photo" />
       </div>
 
 
