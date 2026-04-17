@@ -3371,6 +3371,9 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
         const projectRoot = getProjectRoot();
         const cmd = args.command;
         if (isDangerousCommand(cmd)) return { success: false, result: { error: "Command blocked for safety. Dangerous commands like rm -rf, format, shutdown, etc. are not allowed." } };
+        if (/(^|\s|;|&&|\|\|)\s*(sudo\s+)?(psql|pg_dump|pg_restore|pg_dumpall|createdb|dropdb)(\s|$)/i.test(cmd)) {
+          return { success: false, result: { error: "Do NOT use psql or any postgres CLI from the shell — local socket auth fails on the Pi (role does not exist). Use the run_sql tool for SELECT/INSERT/UPDATE/DELETE, or db_schema for inspecting tables. Both go through the configured DATABASE_URL and will work on Pi and dev." } };
+        }
         const cwd = args.cwd ? resolveProjectPath(args.cwd) || projectRoot : projectRoot;
         try {
           const output = execSync(cmd, { cwd, encoding: 'utf-8', timeout: 30000, maxBuffer: 2 * 1024 * 1024, env: { ...process.env, FORCE_COLOR: '0' } });
