@@ -32042,7 +32042,7 @@ export default function Dashboard() {
                         <div
                           key={dayIdx}
                           className="relative flex flex-col gap-0.5 pt-0.5 course-cell-scroll"
-                          style={{ minWidth: 0, boxSizing: 'border-box', backgroundColor: otherCellBg, borderBottom: '1px dotted rgba(0,0,0,0.25)', borderLeft: isOtherToday ? '3px solid black' : '1.5px dotted rgba(0,0,0,0.25)', overflow: 'hidden', maxHeight: `${otherRowHeight}px`, ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }}
+                          style={{ minWidth: 0, boxSizing: 'border-box', backgroundColor: otherCellBg, borderBottom: '1.5px dotted rgba(0,0,0,0.25)', borderLeft: isOtherToday ? '3px solid black' : '1.5px dotted rgba(0,0,0,0.25)', overflow: 'hidden', maxHeight: `${otherRowHeight}px`, ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }}
                           data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
                         >
                         <div className="flex flex-col course-cell-scroll" style={{ gap: '2px', padding: isOtherToday ? '1px 1px 1px 0px' : '1px 1px 1px 1px', overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'thin', maxHeight: '100%', height: '100%' }}>
