@@ -36,28 +36,44 @@ import { storage } from "./storage";
 import crypto from "crypto";
 import cookieParser from "cookie-parser";
 
+// Activation date = Saturday on/before the semester start date.
+// A semester does not become "active" until that Saturday, regardless of how
+// many days the previous semester has been over. This prevents the calendar
+// and library from "skipping" into the upcoming term during the break week.
+function activationDate(startDate: Date): Date {
+  const d = new Date(startDate);
+  d.setHours(0, 0, 0, 0);
+  const dow = d.getDay(); // 0=Sun..6=Sat
+  // Move back to Saturday on/before this date
+  const back = (dow + 1) % 7; // Sat -> 0, Sun -> 1, Mon -> 2, ...
+  d.setDate(d.getDate() - back);
+  return d;
+}
+
 async function checkAndSwitchSemester() {
   try {
-    const active = await storage.getActiveSemesterSettings();
-    if (!active || !active.semesterEndDate) return;
-
     const now = new Date();
-    const endDate = new Date(active.semesterEndDate);
+    const allSemesters = await storage.getAllSemesterSettings();
+    if (allSemesters.length === 0) return;
 
-    if (now > endDate) {
-      const allSemesters = await storage.getAllSemesterSettings();
-      const nextSemester = allSemesters
-        .filter(s => !s.isActive && new Date(s.semesterStartDate) > endDate)
-        .sort((a, b) => new Date(a.semesterStartDate).getTime() - new Date(b.semesterStartDate).getTime())[0];
+    // Reconcile from scratch every startup: the correct active semester is the
+    // LAST one whose activation Saturday is <= now. This both prevents the
+    // premature "now > endDate" flip AND self-heals if a previous version of
+    // this code already flipped to a future semester during the break week.
+    const ranked = allSemesters
+      .filter(s => s.semesterStartDate)
+      .map(s => ({ s, actMs: activationDate(new Date(s.semesterStartDate)).getTime() }))
+      .sort((a, b) => a.actMs - b.actMs);
 
-      if (nextSemester) {
-        await storage.updateSemesterSettings(active.id, { isActive: false });
-        await storage.updateSemesterSettings(nextSemester.id, { isActive: true });
-        console.log(`[Semester Switch] Switched from "${active.semesterName}" to "${nextSemester.semesterName}"`);
-      } else {
-        console.log(`[Semester Switch] "${active.semesterName}" has ended but no next semester found`);
-      }
-    }
+    let target = ranked.filter(r => r.actMs <= now.getTime()).pop()?.s;
+    if (!target) target = ranked[0].s; // before any semester activates, pick earliest
+
+    const active = allSemesters.find(s => s.isActive);
+    if (active?.id === target.id) return;
+
+    if (active) await storage.updateSemesterSettings(active.id, { isActive: false });
+    await storage.updateSemesterSettings(target.id, { isActive: true });
+    console.log(`[Semester Switch] Reconciled active semester: "${active?.semesterName ?? 'none'}" -> "${target.semesterName}"`);
   } catch (err) {
     console.error("[Semester Switch] Error checking semester:", err);
   }

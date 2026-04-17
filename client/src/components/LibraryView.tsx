@@ -2837,29 +2837,53 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
   const semesters = useMemo(() => {
     if (semesterSettings.length === 0) return semestersProp;
     const now = new Date().getTime();
-    const mapped = [...semesterSettings].map((s: any) => {
+    // Activation = Saturday of the week containing semesterStartDate.
+    // A semester becomes "current" on its activation date and stays current
+    // until the NEXT semester's activation date (covers between-semester breaks).
+    const activationMs = (startMs: number) => {
+      if (!startMs) return 0;
+      const d = new Date(startMs);
+      const dow = d.getDay(); // 0=Sun..6=Sat
+      const daysToSat = (6 - dow + 7) % 7; // 0 if already Sat
+      const sat = new Date(d);
+      sat.setDate(d.getDate() - (7 - daysToSat) % 7);
+      // Sat of the week containing start = move back to Saturday on/before start
+      const dowSat = sat.getDay();
+      if (dowSat !== 6) sat.setDate(sat.getDate() - ((dowSat + 1) % 7));
+      sat.setHours(0, 0, 0, 0);
+      return sat.getTime();
+    };
+    const enriched = [...semesterSettings].map((s: any) => {
+      const startMs = s.semesterStartDate ? new Date(s.semesterStartDate).getTime() : 0;
+      return { s, startMs, actMs: activationMs(startMs) };
+    }).sort((a, b) => a.startMs - b.startMs);
+    // Active semester = last one whose activation <= now
+    let activeIdx = -1;
+    for (let i = 0; i < enriched.length; i++) {
+      if (enriched[i].actMs && enriched[i].actMs <= now) activeIdx = i;
+    }
+    const mapped = enriched.map((e, i) => {
+      const s = e.s;
       const st = s.semesterType || '';
       const name = s.semesterName || '';
       const yearMatch = name.match(/\d{4}/);
       const year = yearMatch ? yearMatch[0] : '';
       const key = st.startsWith('spring_summer') ? `ss${year}` : st === 'fall' ? `f${year}` : st === 'winter' ? `w${year}` : `s${s.id}`;
       const courses: { code: string; name: string; color: string }[] = [];
-      for (let i = 1; i <= 3; i++) {
-        const code = s[`course${i}Code`] || '';
+      for (let j = 1; j <= 3; j++) {
+        const code = s[`course${j}Code`] || '';
         if (code) {
           courses.push({
             code,
-            name: s[`course${i}Name`] || '',
-            color: s[`course${i}Color`] || '#3b82f6',
+            name: s[`course${j}Name`] || '',
+            color: s[`course${j}Color`] || '#3b82f6',
           });
         }
       }
-      const startMs = s.semesterStartDate ? new Date(s.semesterStartDate).getTime() : 0;
-      const endMs = s.semesterEndDate ? new Date(s.semesterEndDate).getTime() + (24 * 60 * 60 * 1000 - 1) : startMs + 120 * 24 * 60 * 60 * 1000;
-      const isCurrent = now >= startMs && now <= endMs;
-      const isFuture = now < startMs;
-      const isPast = now > endMs;
-      return { key, label: name, courses, startMs, isCurrent, isFuture, isPast };
+      const isCurrent = i === activeIdx;
+      const isFuture = !isCurrent && i > activeIdx;
+      const isPast = !isCurrent && activeIdx >= 0 && i < activeIdx;
+      return { key, label: name, courses, startMs: e.startMs, isCurrent, isFuture, isPast };
     });
     mapped.sort((a, b) => {
       if (a.isCurrent && !b.isCurrent) return -1;
