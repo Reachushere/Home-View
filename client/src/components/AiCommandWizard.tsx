@@ -1599,6 +1599,15 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                   'radial-gradient(circle at 32% 28%, #b794f6 0%, #7c3aed 45%, #4c1d95 100%)',
                   'radial-gradient(circle at 32% 28%, #5eead4 0%, #14b8a6 45%, #0f766e 100%)',
                   'radial-gradient(circle at 32% 28%, #60a5fa 0%, #3b82f6 45%, #1e3a8a 100%)',
+                  'radial-gradient(circle at 32% 28%, #ff6ec7 0%, #ec4899 45%, #831843 100%)',
+                  'radial-gradient(circle at 32% 28%, #d8ff5e 0%, #84cc16 45%, #365314 100%)',
+                  'radial-gradient(circle at 32% 28%, #ffb84d 0%, #f97316 45%, #7c2d12 100%)',
+                  'radial-gradient(circle at 32% 28%, #67e8f9 0%, #06b6d4 45%, #164e63 100%)',
+                  'radial-gradient(circle at 32% 28%, #ff5edc 0%, #d946ef 45%, #701a75 100%)',
+                  'radial-gradient(circle at 32% 28%, #fde047 0%, #facc15 45%, #713f12 100%)',
+                  'radial-gradient(circle at 32% 28%, #ff7a7a 0%, #ef4444 45%, #7f1d1d 100%)',
+                  'radial-gradient(circle at 32% 28%, #5eff8f 0%, #22c55e 45%, #14532d 100%)',
+                  'radial-gradient(circle at 32% 28%, #c4b5fd 0%, #8b5cf6 45%, #4c1d95 100%)',
                 ];
                 const userOrbBg = 'radial-gradient(circle at 32% 28%, #6ea8ff 0%, #2563eb 45%, #1e3a8a 100%)';
                 const orbBg = msg.role === 'user' ? userOrbBg : orbPalettes[i % orbPalettes.length];
@@ -1618,7 +1627,8 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 justifyContent: isOrb ? 'center' : undefined,
                 gap: isOrb && msg.role === 'user' ? '6px' : undefined,
                 textAlign: isOrb ? ('center' as const) : undefined,
-                overflow: isOrb ? 'hidden' : undefined,
+                overflow: (isOrb || hasCodeBlock) ? 'hidden' : undefined,
+                minWidth: hasCodeBlock ? 0 : undefined,
                 flexShrink: 0,
                 background: msg.role === 'system'
                   ? (/^failed:/i.test(msg.content || '') ? 'rgba(239,68,68,0.18)' : 'rgba(255,200,50,0.15)')
