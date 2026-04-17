@@ -855,7 +855,8 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
               } else if (event.type === 'tool_done') {
                 setActiveToolName(null);
                 if (!event.success) {
-                  streamedContent += `Failed: ${humanizeToolName(event.name)}\n`;
+                  const failLabel = `Failed: ${humanizeToolName(event.name)}`;
+                  setMessages(prev => [...prev, { role: 'system' as const, content: failLabel }]);
                 }
               } else if (event.type === 'token') {
                 setThinkingPhase(null);
@@ -1593,11 +1594,11 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 overflow: isOrb ? 'hidden' : undefined,
                 flexShrink: 0,
                 background: msg.role === 'system'
-                  ? 'rgba(255,200,50,0.15)'
+                  ? (/^failed:/i.test(msg.content || '') ? 'rgba(239,68,68,0.18)' : 'rgba(255,200,50,0.15)')
                   : orbBg,
                 boxShadow: msg.role === 'system' ? undefined : orbShadow,
                 border: msg.role === 'system'
-                  ? '1px solid rgba(255,200,50,0.3)'
+                  ? (/^failed:/i.test(msg.content || '') ? '1px solid rgba(239,68,68,0.45)' : '1px solid rgba(255,200,50,0.3)')
                   : '1px solid rgba(255,255,255,0.18)',
                 transition: 'transform 0.25s cubic-bezier(0.22,1,0.36,1), opacity 0.25s ease-out, box-shadow 0.25s ease-out',
                 transformOrigin: msg.role === 'user' ? 'right center' : 'left center',
