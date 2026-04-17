@@ -16438,8 +16438,8 @@ export default function Dashboard() {
         const next = upcoming[0] || overdue[0];
         const pomodoroInline = (
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0, marginLeft: 'auto', marginRight: '4px', marginTop: '-3px', pointerEvents: 'auto' }} data-testid="pomodoro-inline">
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
-              <span style={{ fontSize: '12px', color: '#ffffff', fontWeight: 600, fontVariantNumeric: 'tabular-nums', lineHeight: 1, fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }} data-testid="text-pomodoro-time">{formatPomodoroTime(pomodoroTime)}</span>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+              <span style={{ fontSize: '12px', color: '#ffffff', fontWeight: 600, fontVariantNumeric: 'tabular-nums', lineHeight: 1, marginTop: '-8px', marginBottom: '0px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }} data-testid="text-pomodoro-time">{formatPomodoroTime(pomodoroTime)}</span>
               <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <button onClick={() => { setPomodoroTime(prev => Math.max(60, prev - 60)); }} style={{ background: 'none', border: 'none', padding: 0, color: 'white', fontSize: '12px', fontWeight: 600, lineHeight: 1, cursor: 'pointer' }} data-testid="button-pomodoro-sub-min" title="-1 min">−</button>
                 <button onClick={togglePomodoro} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center' }} data-testid="button-pomodoro-toggle" title={pomodoroRunning ? 'Pause' : 'Play'}>
@@ -16455,13 +16455,13 @@ export default function Dashboard() {
               const totalSec = pomodoroMode === 'work' ? 25 * 60 : pomodoroMode === 'shortBreak' ? 5 * 60 : 15 * 60;
               const elapsed = totalSec - pomodoroTime;
               const frac = totalSec > 0 ? elapsed / totalSec : 0;
-              const r = 18, cx = 21, cy = 22, sw = 3.5;
+              const r = 20, cx = 23, cy = 26, sw = 3.5;
               const arcLen = Math.PI;
               const circumHalf = r * arcLen;
               const dash = frac * circumHalf;
               const arcColor = pomodoroMode === 'work' ? '#e74c8b' : pomodoroMode === 'shortBreak' ? '#22c55e' : '#3b82f6';
               return (
-                <svg width="42" height="26" viewBox="0 0 42 26" style={{ cursor: 'pointer' }} onClick={togglePomodoro} data-testid="pomodoro-arc">
+                <svg width="46" height="30" viewBox="0 0 46 30" style={{ cursor: 'pointer', alignSelf: 'flex-end', marginRight: '-4px', marginTop: '-4px' }} onClick={togglePomodoro} data-testid="pomodoro-arc">
                   <path d={`M ${cx - r} ${cy} A ${r} ${r} 0 1 1 ${cx + r} ${cy}`} fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth={sw} strokeLinecap="round" />
                   <path d={`M ${cx - r} ${cy} A ${r} ${r} 0 1 1 ${cx + r} ${cy}`} fill="none" stroke={arcColor} strokeWidth={sw} strokeLinecap="round" strokeDasharray={`${dash} ${circumHalf}`} />
                 </svg>
@@ -16600,7 +16600,7 @@ export default function Dashboard() {
                   </div>
                 </div>
                 {pomodoroInline}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', position: 'absolute', left: 0, right: 0, top: '20px', bottom: '4px', alignItems: 'center', justifyContent: 'flex-start', paddingTop: '2px', pointerEvents: 'none', overflow: 'hidden', maxHeight: '34px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', position: 'absolute', left: 0, right: 0, top: '16px', bottom: '4px', alignItems: 'center', justifyContent: 'flex-start', paddingTop: '2px', pointerEvents: 'none', overflow: 'hidden', maxHeight: '50px' }}>
                   {(() => {
                     const prepDaysNum = prepDaysText === 'today' ? 0 : prepDaysText === 'now' ? -1 : Number(prepDaysText);
                   const showPrepFirst = prepDaysText && nextPrep && prepDaysNum < diffDays && diffDays > 0;
