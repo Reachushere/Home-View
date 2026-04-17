@@ -1332,10 +1332,10 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
           alt="BrynAssist"
           style={{
             position: 'fixed',
-            top: panelRect.top - 130,
+            top: panelRect.top - 165,
             left: panelRect.left + panelRect.width / 2,
             transform: 'translateX(-50%)',
-            width: '300px',
+            width: '380px',
             height: 'auto',
             objectFit: 'contain',
             pointerEvents: 'none',
