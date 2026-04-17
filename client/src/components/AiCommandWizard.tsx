@@ -510,6 +510,14 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   const [thinkingPhase, setThinkingPhase] = useState<string | null>(null);
   const [activeToolName, setActiveToolName] = useState<string | null>(null);
   const [toolSteps, setToolSteps] = useState<{ name: string; status: 'running' | 'done' | 'failed' | 'thinking' }[]>([]);
+  const [expandedOrbs, setExpandedOrbs] = useState<Set<string>>(new Set());
+  const toggleOrbExpanded = useCallback((key: string) => {
+    setExpandedOrbs(prev => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key); else next.add(key);
+      return next;
+    });
+  }, []);
   const playDing = useCallback(() => {
     try {
       const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -1619,8 +1627,14 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 const orbShadow = msg.role === 'user'
                   ? '0 10px 40px rgba(37,99,235,0.45), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -8px 20px rgba(0,0,0,0.2)'
                   : '0 10px 40px rgba(124,58,237,0.4), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -8px 20px rgba(0,0,0,0.2)';
+                const orbKey = String(msg._idx ?? i);
+                const orbExpanded = isOrb && expandedOrbs.has(orbKey);
                 return (
-              <div data-orb-bubble={msg.role === 'system' ? undefined : '1'} style={{
+              <div
+                data-orb-bubble={msg.role === 'system' ? undefined : '1'}
+                onClick={isOrb ? () => toggleOrbExpanded(orbKey) : undefined}
+                title={isOrb ? (orbExpanded ? 'Click to collapse' : 'Click to scroll full text') : undefined}
+                style={{
                 maxWidth: msg.role === 'system' ? '70%' : (hasCodeBlock ? '78%' : undefined),
                 width: isOrb ? `${orbWidth}px` : (msg.role === 'system' ? 'auto' : (hasCodeBlock ? '78%' : undefined)),
                 height: isOrb ? `${orbHeight}px` : undefined,
@@ -1632,7 +1646,9 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 justifyContent: isOrb ? 'center' : undefined,
                 gap: isOrb && msg.role === 'user' ? '6px' : undefined,
                 textAlign: isOrb ? ('center' as const) : undefined,
-                overflow: (isOrb || hasCodeBlock) ? 'hidden' : undefined,
+                overflow: orbExpanded ? 'auto' : ((isOrb || hasCodeBlock) ? 'hidden' : undefined),
+                overscrollBehavior: orbExpanded ? 'contain' : undefined,
+                cursor: isOrb ? (orbExpanded ? 'grab' : 'pointer') : undefined,
                 minWidth: hasCodeBlock ? 0 : undefined,
                 flexShrink: 0,
                 background: msg.role === 'system'
