@@ -32050,7 +32050,7 @@ export default function Dashboard() {
                         <div
                           key={dayIdx}
                           className="relative flex flex-col gap-0.5 pt-0.5 course-cell-scroll"
-                          style={{ minWidth: 0, boxSizing: 'border-box', backgroundColor: otherCellBg, borderBottom: '1.5px dotted rgba(0,0,0,0.25)', borderLeft: isOtherToday ? '3px solid black' : '1.5px dotted rgba(0,0,0,0.25)', overflow: 'hidden', maxHeight: `${otherRowHeight}px`, ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }}
+                          style={{ minWidth: 0, boxSizing: 'border-box', backgroundColor: otherCellBg, borderLeft: isOtherToday ? '3px solid black' : '1.5px dotted rgba(0,0,0,0.25)', overflow: 'hidden', maxHeight: `${otherRowHeight}px`, ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }}
                           data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
                         >
                         <div className="flex flex-col course-cell-scroll" style={{ gap: '2px', padding: isOtherToday ? '1px 1px 1px 0px' : '1px 1px 1px 1px', overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'thin', maxHeight: '100%', height: '100%' }}>
@@ -33596,7 +33596,7 @@ export default function Dashboard() {
           <button
             type="button"
             className="cursor-pointer select-none hover:opacity-80 transition-opacity"
-            style={{ position: 'fixed', bottom: `${calendarBottom - 17}px`, right: `${calendarRight - calendarReduction + 92}px`, display: 'flex', alignItems: 'center', gap: '4px', zIndex: 70, background: 'none', border: 'none', padding: '0 4px', pointerEvents: 'auto', WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
+            style={{ position: 'fixed', bottom: `${calendarBottom - 17}px`, right: `${calendarRight - calendarReduction + 102}px`, display: 'flex', alignItems: 'center', gap: '4px', zIndex: 70, background: 'none', border: 'none', padding: '0 4px', pointerEvents: 'auto', WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
             onClick={() => {
               localStorage.setItem('calendarHeight', String(calendarHeight));
               localStorage.setItem('calendarReduction', String(calendarReduction));
