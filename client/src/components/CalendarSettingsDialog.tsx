@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Settings, Sun as SunIcon, Moon as MoonIcon } from 'lucide-react';
 import { WeekVariantsSection } from '@/pages/dashboard-forms';
 import { apiRequest } from '@/lib/queryClient';
+import { AutomationsContent } from '@/components/AutomationsReference';
 
 interface CalendarSettingsDialogProps {
   open: boolean;
@@ -62,6 +63,7 @@ export function CalendarSettingsDialog(props: CalendarSettingsDialogProps) {
 
   const [semestersOpen, setSemestersOpen] = useState(false);
   const [weekVariantsOpen, setWeekVariantsOpen] = useState(false);
+  const [automationsOpen, setAutomationsOpen] = useState(false);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -398,6 +400,16 @@ export function CalendarSettingsDialog(props: CalendarSettingsDialogProps) {
                 </div>
               );
             })()}
+          </div>
+
+          <div className="border rounded-lg p-3 space-y-2" data-automations-section="true">
+            <div className="flex items-center justify-between cursor-pointer" onClick={() => setAutomationsOpen(!automationsOpen)} data-testid="toggle-automations-flyout">
+              <Label className="text-[10px] font-medium cursor-pointer">My Automations</Label>
+              <span className="text-xs">{automationsOpen ? '▼' : '▶'}</span>
+            </div>
+            {automationsOpen && (
+              <div className="pt-1"><AutomationsContent /></div>
+            )}
           </div>
 
           <div className="border rounded-lg p-3 space-y-2" data-week-variants-section="true">

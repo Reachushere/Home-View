@@ -29966,20 +29966,6 @@ export default function Dashboard() {
               >
                 <Settings className="h-[17px] w-[17px] text-white/70 hover:text-white" />
               </button>
-              <button
-                onClick={() => setIsAutomationsRefOpen(true)}
-                className="absolute cursor-pointer opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all duration-200"
-                style={{ left: '0px', top: '20px', background: 'none', border: 'none', padding: 0, transform: 'translateY(-4px)' }}
-                onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
-                data-testid="button-automations-reference"
-                title="My Automations"
-              >
-                <Zap className="h-[15px] w-[15px] text-white/70 hover:text-white" />
-              </button>
-              <div
-                className="absolute opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200"
-                style={{ left: '-4px', top: '17px', width: '25px', height: '24px' }}
-              />
             </div>
             <div
               style={{ position: 'absolute', left: '9px', top: '-31px', width: '191px', height: '14px', touchAction: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, pointerEvents: 'auto' }}
@@ -34380,15 +34366,6 @@ export default function Dashboard() {
                 title="Calendar Settings"
               >
                 <Settings className="h-[17px] w-[17px] text-white/70 hover:text-white" />
-              </button>
-              <button
-                onClick={() => setIsAutomationsRefOpen(true)}
-                className="absolute cursor-pointer opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all duration-200"
-                style={{ left: '0px', top: '20px', background: 'none', border: 'none', padding: 0 }}
-                data-testid="button-automations-reference-month"
-                title="My Automations"
-              >
-                <Zap className="h-[15px] w-[15px] text-white/70 hover:text-white" />
               </button>
             </div>
             <div

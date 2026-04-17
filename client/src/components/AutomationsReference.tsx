@@ -458,3 +458,55 @@ export default function AutomationsReference({ open, onClose, colorSettings }: A
     document.body
   );
 }
+
+export function AutomationsContent() {
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
+  const toggleCategory = (id: string) => setExpandedCategories(prev => ({ ...prev, [id]: !prev[id] }));
+  const totalItems = AUTOMATION_CATEGORIES.reduce((sum, c) => sum + c.items.length, 0);
+  return (
+    <div>
+      <p className="text-[10px] text-white/50 mb-2 leading-relaxed">
+        Everything UniCal does automatically — popups, reminders, syncs, AI actions, and background updates. ({totalItems} items)
+      </p>
+      <div className="space-y-2">
+        {AUTOMATION_CATEGORIES.map((category) => {
+          const isExpanded = expandedCategories[category.id];
+          const CategoryIcon = category.icon;
+          return (
+            <div key={category.id} className="rounded-lg overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.12)' }} data-testid={`automation-category-${category.id}`}>
+              <button className="w-full flex items-center gap-2.5 px-3 py-2 text-left hover:bg-white/5 transition-colors" onClick={() => toggleCategory(category.id)} style={{ background: 'rgba(255,255,255,0.04)' }} data-testid={`button-toggle-${category.id}`} type="button">
+                {isExpanded ? <ChevronDown className="h-3 w-3 text-white/40 flex-shrink-0" /> : <ChevronRight className="h-3 w-3 text-white/40 flex-shrink-0" />}
+                <CategoryIcon className="h-3.5 w-3.5 flex-shrink-0" style={{ color: category.color }} />
+                <span className="text-[11px] font-medium text-white flex-1">{category.title}</span>
+                <span className="text-[9px] px-1.5 py-0.5 rounded-full" style={{ background: `${category.color}20`, color: category.color, border: `1px solid ${category.color}40` }}>{category.items.length}</span>
+              </button>
+              {isExpanded && (
+                <div className="px-3 pb-2 space-y-1.5 pt-1.5">
+                  {category.items.map((item, idx) => {
+                    const ItemIcon = item.icon;
+                    return (
+                      <div key={idx} className="rounded-md px-3 py-2" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }} data-testid={`automation-item-${category.id}-${idx}`}>
+                        <div className="flex items-start gap-2">
+                          <ItemIcon className="h-3 w-3 flex-shrink-0 mt-0.5" style={{ color: category.color, opacity: 0.7 }} />
+                          <div className="flex-1 min-w-0">
+                            <div className="text-[10px] font-medium text-white leading-tight">{item.title}</div>
+                            <div className="text-[9px] text-white/60 mt-0.5 leading-relaxed">{item.description}</div>
+                            <div className="flex items-center gap-1 mt-1">
+                              <Clock className="h-2.5 w-2.5 text-white/30 flex-shrink-0" />
+                              <span className="text-[8px] text-white/40 leading-relaxed">{item.when}</span>
+                            </div>
+                            {item.canDisable && (<div className="text-[8px] text-amber-400/60 mt-0.5 italic">💡 {item.canDisable}</div>)}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
