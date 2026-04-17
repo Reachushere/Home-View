@@ -35148,18 +35148,11 @@ export default function Dashboard() {
             onClick={() => {
               if (hwMinimizeAnim !== 'idle' || blankMinimizeAnim !== 'idle') return;
               applyMinimizeOrigin('hw', 'homework', false);
-              applyMinimizeOrigin('blank', 'notes', false);
-              setBlankBoxOpen(true);
-              setBlankBoxMinimizedToTab(false);
-              localStorage.removeItem('blankBoxMinimizedToTab');
               setHwMinimizeAnim('minimizing');
-              setBlankMinimizeAnim('restoring');
               setTimeout(() => {
                 localStorage.setItem('homeworkMinimized', '1');
                 setHomeworkMinimized(true);
-                localStorage.setItem('blankBoxOpen', '1');
                 setHwMinimizeAnim('idle');
-                setBlankMinimizeAnim('idle');
               }, 580);
             }}
             className="absolute z-[70] rounded-tr-[11px] rounded-bl-[4px] rounded-tl-[2px] rounded-br-[2px] flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors"
