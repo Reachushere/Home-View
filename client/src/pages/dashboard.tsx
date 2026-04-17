@@ -18260,7 +18260,7 @@ export default function Dashboard() {
         <Share 
           className="text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
-          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 14}px`, right: `${calendarRight - calendarReduction + 19 + 36}px`, zIndex: 70 }}
+          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 14}px`, right: `${calendarRight - calendarReduction + 19 + 46}px`, zIndex: 70 }}
           onClick={() => { generateShareLink('4201'); setIsShareDialogOpen(true); }}
           data-testid="button-share-main"
         />
@@ -18269,7 +18269,7 @@ export default function Dashboard() {
         <Download
           className="text-white/80 cursor-pointer hover:text-white"
           strokeWidth={2.5}
-          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 14}px`, right: `${calendarRight - calendarReduction + 19 + 18}px`, zIndex: 70 }}
+          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 14}px`, right: `${calendarRight - calendarReduction + 19 + 23}px`, zIndex: 70 }}
           onClick={() => {
             window.open('https://github.com/Reachushere/Home-View/archive/refs/heads/main.zip', '_blank');
           }}
@@ -18298,7 +18298,7 @@ export default function Dashboard() {
         <Copy
           className="text-white/50 cursor-pointer hover:text-white/90"
           strokeWidth={2.5}
-          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 14}px`, right: `${calendarRight - calendarReduction + 19 + 54}px`, zIndex: 70 }}
+          style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 14}px`, right: `${calendarRight - calendarReduction + 19 + 69}px`, zIndex: 70 }}
           onClick={async () => {
             try {
               const res = await fetch('/api/source-code/all');
