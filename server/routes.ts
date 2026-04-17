@@ -6378,7 +6378,7 @@ EXAMPLES of guessing-as-failure (NEVER do this):
 ═══════════════════════════════════════════════════
 §3.6 — SELF-TEACHING MEMORY LOOP (LEARN, DON'T REPEAT)
 ═══════════════════════════════════════════════════
-You have a persistent memory file at .ai-memory.md (read via memory_read, write via memory_write).
+You have a persistent memory file at .ai-memory.md (read via memory_read, append via memory_append, full-overwrite via memory_write).
 This is YOUR notebook across sessions. Treat it like a real engineer's lab notebook.
 
 🧠 AT THE START of any non-trivial task (anything beyond a one-shot question), call memory_read FIRST. It contains:
@@ -6386,11 +6386,13 @@ This is YOUR notebook across sessions. Treat it like a real engineer's lab noteb
   • Confirmed HA entity_ids
   • Code-location index ("the bottom tabs live in dashboard.tsx ~line 20770")
   • Workflow patterns that work (and ones that don't)
+  • Pi deploy invariant, OneDrive endpoint names, file table column names, etc.
 
-🧠 AFTER LEARNING SOMETHING CONCRETE — file location, working pattern, fixed bug, confirmed entity, deploy gotcha — call memory_write to APPEND it. Always:
-  1. memory_read first to get current contents
-  2. APPEND your new lesson under the right section (don't overwrite!)
-  3. memory_write with the merged content
+🧠 AFTER LEARNING SOMETHING CONCRETE — file location, working pattern, fixed bug, confirmed entity, deploy gotcha, error message + cause, "Bryn prefers X" — call **memory_append** with topic/where/what/why. It's safe (no clobber risk), auto-dated. DO NOT use memory_write for adding lessons — memory_write replaces the entire file and risks destroying everything you knew. Use memory_write ONLY when restructuring the notebook (it auto-snapshots to .ai-memory.bak.md as a safety net).
+
+🚀 AFTER ANY git_commit_and_push that affects what Bryn sees on uni-cal.app: call **pi_deploy** with the SHA you just pushed. It either runs 'git pull && ./deploy.sh' directly (if you're on the Pi) or returns the exact command Bryn must run. Do NOT claim "delivered" until pi_deploy confirms HEAD == pushed SHA.
+
+🔑 IF /api/onedrive/status?verify=1 returns tokenWorks:false: call **onedrive_reauth_start** — it returns the user_code Bryn must type at microsoft.com/link. You CANNOT do that step. After Bryn says done, http_check GET /api/onedrive/status?verify=1&force=1 to confirm tokenWorks:true.
 
 LESSON FORMAT (be terse, be useful):
   ### YYYY-MM-DD — <topic>
@@ -7130,7 +7132,7 @@ I. WHAT YOU MUST NEVER DO
         messages.push({ role: "user", content: message.trim() });
       }
 
-      const readOnlyTools = new Set(["read_file", "list_directory", "search_code", "search_tasks", "get_semester_info", "check_build", "read_logs", "git_diff", "get_project_map", "db_schema", "http_check", "memory_read", "process_check", "analyze_ui", "smoke_test", "take_screenshot", "browser_test", "check_performance", "conversation_history", "health_check", "web_search", "web_fetch", "plan_task", "codebase_explore", "code_reference", "github_search", "github_file", "github_tree", "npm_info", "ai_subtask", "project_snapshot", "explain_code", "http_test", "analyze_dependencies", "stack_analyze", "convert_code", "code_complete", "code_review_tool", "generate_tests", "smart_context", "deep_research", "pair_program", "auto_discover", "auto_test", "retro"]);
+      const readOnlyTools = new Set(["read_file", "list_directory", "search_code", "search_tasks", "get_semester_info", "check_build", "read_logs", "git_diff", "get_project_map", "db_schema", "http_check", "memory_read", "memory_append", "onedrive_reauth_start", "process_check", "analyze_ui", "smoke_test", "take_screenshot", "browser_test", "check_performance", "conversation_history", "health_check", "web_search", "web_fetch", "plan_task", "codebase_explore", "code_reference", "github_search", "github_file", "github_tree", "npm_info", "ai_subtask", "project_snapshot", "explain_code", "http_test", "analyze_dependencies", "stack_analyze", "convert_code", "code_complete", "code_review_tool", "generate_tests", "smart_context", "deep_research", "pair_program", "auto_discover", "auto_test", "retro"]);
       const destructiveTools = new Set(["delete_task", "bulk_delete_tasks", "bulk_complete_tasks", "run_shell_command", "git_commit_and_push", "install_package", "generate_image", "db_migrate", "multi_file_edit"]);
 
       function isToolDestructive(fnName: string, fnArgs: any): boolean {
@@ -7155,7 +7157,7 @@ I. WHAT YOU MUST NEVER DO
         res.setHeader('Connection', 'keep-alive');
       }
 
-      const coreTool = (n: string) => ['create_task','update_task','delete_task','complete_task','search_tasks','get_upcoming_tasks','bulk_complete_tasks','bulk_delete_tasks','get_semester_info','get_course_list','update_semester_settings','read_file','edit_file','write_file','search_code','list_directory','smart_context','memory_read','memory_write','run_shell_command','read_logs','check_build','restart_application','git_commit_and_push','manage_sticky_note','notepad_crud','create_notepad_note','update_app_theme','update_ui_setting','conversation_history'].includes(n);
+      const coreTool = (n: string) => ['create_task','update_task','delete_task','complete_task','search_tasks','get_upcoming_tasks','bulk_complete_tasks','bulk_delete_tasks','get_semester_info','get_course_list','update_semester_settings','read_file','edit_file','write_file','search_code','list_directory','smart_context','memory_read','memory_write','memory_append','pi_deploy','onedrive_reauth_start','run_shell_command','read_logs','check_build','restart_application','git_commit_and_push','manage_sticky_note','notepad_crud','create_notepad_note','update_app_theme','update_ui_setting','conversation_history'].includes(n);
       const haTool = (n: string) => n.startsWith('ha_');
       const codeTool = (n: string) => ['multi_file_edit','code_complete','code_review_tool','explain_code','generate_tests','convert_code','analyze_dependencies','db_migrate','db_schema','run_sql','install_package','codebase_explore','code_reference','project_snapshot','get_project_map','run_node_script','analyze_ui','pair_program','plan_task','retro','stack_analyze'].includes(n);
       const webTool = (n: string) => ['web_search','web_fetch','deep_research','http_check','http_test','take_screenshot','send_email','generate_image','browser_test','smoke_test','auto_test','auto_discover','health_check','process_check','staging_manage','git_diff','git_backup','github_file','github_search','github_tree','npm_info'].includes(n);

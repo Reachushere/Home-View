@@ -1233,14 +1233,52 @@ export const AI_COMMAND_TOOLS = [
     type: "function" as const,
     function: {
       name: "memory_write",
-      description: "Write to your persistent memory file. Save important context, decisions, patterns, and notes here so you remember them in future sessions. Append new info — don't overwrite everything.",
+      description: "FULL OVERWRITE of your persistent memory file. DANGEROUS — wipes everything. Prefer memory_append for adding lessons. Only use memory_write when restructuring/cleaning up. Will auto-snapshot the previous version to .ai-memory.bak.md so you can recover.",
       parameters: {
         type: "object",
         properties: {
-          content: { type: "string", description: "Content to write to memory. Will replace the entire memory file, so include existing content you want to keep." },
+          content: { type: "string", description: "Full new memory file contents. PREVIOUS CONTENT IS REPLACED ENTIRELY — include anything you want to keep." },
         },
         required: ["content"],
       },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "memory_append",
+      description: "SAFE-APPEND a new lesson to your persistent memory file. Use this any time you learn something concrete you want future-you to remember (a bug fix, a confirmed file location, a Pi gotcha, an endpoint name, a Bryn preference). Auto-prepends a dated header. NEVER clobbers existing content. Prefer this over memory_write for normal learning.",
+      parameters: {
+        type: "object",
+        properties: {
+          topic: { type: "string", description: "Short lesson title (e.g. 'OneDrive list-raw startsWith bug', 'Pi git pull workflow')" },
+          where: { type: "string", description: "File:line, endpoint, or system area where this applies. Optional but very helpful." },
+          what: { type: "string", description: "The actual fact / pattern / gotcha. Be specific — exact filenames, exact endpoint paths, exact error messages, exact commands." },
+          why: { type: "string", description: "One-line reason future-you needs to remember this. Optional." },
+        },
+        required: ["topic", "what"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "pi_deploy",
+      description: "Deploy current code to the Pi (uni-cal.app). Use AFTER git_commit_and_push when you want changes live for Bryn. If you're running on the Pi itself, runs `git pull && ./deploy.sh` directly. If you're running on Replit (dev), returns the exact command Bryn needs to run on the Pi (you cannot SSH out). ALWAYS verifies HEAD matches origin/main at the end.",
+      parameters: {
+        type: "object",
+        properties: {
+          expectedSha: { type: "string", description: "Optional: the commit SHA you just pushed and expect to see on the Pi. The tool will fail if HEAD != this SHA after deploy." },
+        },
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "onedrive_reauth_start",
+      description: "Initiate OneDrive device-code reauth flow when token is dead (status?verify=1 returns tokenWorks:false). Returns the user_code Bryn must type at microsoft.com/link. THIS IS THE ONLY TOKEN RECOVERY PATH — Bryn MUST physically open microsoft.com/link, type the code, sign in. You cannot do that step. After Bryn confirms done, verify with /api/onedrive/status?verify=1&force=1.",
+      parameters: { type: "object", properties: {} },
     },
   },
   {
@@ -3734,9 +3772,99 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
       case "memory_write": {
         const projectRoot = getProjectRoot();
         const memPath = path.join(projectRoot, '.ai-memory.md');
+        const bakPath = path.join(projectRoot, '.ai-memory.bak.md');
         try {
+          try {
+            const prev = await fs.readFile(memPath, 'utf-8');
+            await fs.writeFile(bakPath, prev, 'utf-8');
+          } catch {}
           await fs.writeFile(memPath, args.content, 'utf-8');
-          return { success: true, result: { written: true, size: args.content.length } };
+          return { success: true, result: { written: true, size: args.content.length, snapshot: ".ai-memory.bak.md" } };
+        } catch (e: any) {
+          return { success: false, result: { error: e.message?.substring(0, 300) } };
+        }
+      }
+
+      case "memory_append": {
+        const projectRoot = getProjectRoot();
+        const memPath = path.join(projectRoot, '.ai-memory.md');
+        try {
+          const today = new Date().toISOString().slice(0, 10);
+          const topic = String(args.topic || '').trim() || 'Untitled lesson';
+          const where = String(args.where || '').trim();
+          const what = String(args.what || '').trim();
+          const why = String(args.why || '').trim();
+          if (!what) return { success: false, result: { error: "'what' is required — describe the actual fact/pattern to remember." } };
+          const block = [
+            ``,
+            `### ${today} — ${topic}`,
+            where ? `- Where: ${where}` : null,
+            `- What: ${what}`,
+            why ? `- Why: ${why}` : null,
+            ``,
+          ].filter(Boolean).join('\n');
+          let existing = '';
+          try { existing = await fs.readFile(memPath, 'utf-8'); } catch {}
+          await fs.writeFile(memPath, existing + block, 'utf-8');
+          return { success: true, result: { appended: true, topic, bytesAdded: block.length, totalSize: (existing + block).length } };
+        } catch (e: any) {
+          return { success: false, result: { error: e.message?.substring(0, 300) } };
+        }
+      }
+
+      case "pi_deploy": {
+        const projectRoot = getProjectRoot();
+        const isPi = projectRoot.includes('/home/byhomeyyz/') || projectRoot.includes('/Home-View');
+        const expected = String(args.expectedSha || '').trim();
+        try {
+          if (isPi) {
+            const { execSync } = await import('child_process');
+            const pull = execSync('cd ~/Home-View && git pull 2>&1', { encoding: 'utf-8', timeout: 60000 });
+            const deploy = execSync('cd ~/Home-View && ./deploy.sh 2>&1 | tail -30', { encoding: 'utf-8', timeout: 120000 });
+            const head = execSync('cd ~/Home-View && git rev-parse HEAD', { encoding: 'utf-8', timeout: 5000 }).trim();
+            const ok = !expected || head.startsWith(expected);
+            return { success: ok, result: { pulled: pull.substring(0, 1000), deployed: deploy.substring(0, 1500), head, expected: expected || '(none)', match: ok, hint: ok ? 'Tell Bryn to hard-refresh (Ctrl+Shift+R) to bust cache.' : `HEAD ${head} does NOT match expected ${expected} — pull may have failed.` } };
+          } else {
+            const { execSync } = await import('child_process');
+            const head = execSync('git rev-parse HEAD', { encoding: 'utf-8', timeout: 5000 }).trim();
+            return { success: true, result: {
+              location: 'replit-dev',
+              note: 'Cannot SSH to Pi from Replit. Tell Bryn to run this on the Pi:',
+              command: 'cd ~/Home-View && git pull && ./deploy.sh && git rev-parse HEAD',
+              expectedHead: expected || head,
+              followUp: 'After Bryn runs it, ask for the HEAD output and confirm it matches.',
+            } };
+          }
+        } catch (e: any) {
+          return { success: false, result: { error: e.message?.substring(0, 400), hint: 'If git pull failed, check for merge conflicts (likely .onedrive_tokens.json — should be untracked since commit a426e31d6).' } };
+        }
+      }
+
+      case "onedrive_reauth_start": {
+        try {
+          const r = await fetch('http://localhost:5000/api/onedrive/auth', {
+            method: 'POST',
+            headers: { 'x-auth-level': '5747', 'Content-Type': 'application/json' },
+          });
+          const text = await r.text();
+          let payload: any;
+          try { payload = JSON.parse(text); } catch { payload = { raw: text.substring(0, 400) }; }
+          if (!r.ok) return { success: false, result: { status: r.status, error: 'Auth init failed', detail: payload } };
+          const userCode = payload.user_code || payload.userCode || payload.code;
+          const verifyUri = payload.verification_uri || payload.verificationUri || 'https://www.microsoft.com/link';
+          if (!userCode) return { success: false, result: { error: 'No user_code in response', payload } };
+          return { success: true, result: {
+            user_code: userCode,
+            verification_uri: verifyUri,
+            instructions_for_bryn: [
+              `1. Open ${verifyUri} on any device`,
+              `2. Type this code: ${userCode}`,
+              `3. Sign in with the MS account that owns the OneDrive`,
+              `4. Approve permissions`,
+              `5. Tell BA "done" — BA will verify with /api/onedrive/status?verify=1&force=1`,
+            ],
+            note: 'You (BA) cannot do step 1-4. Bryn must physically sign in. Wait for confirmation, then verify.',
+          } };
         } catch (e: any) {
           return { success: false, result: { error: e.message?.substring(0, 300) } };
         }
