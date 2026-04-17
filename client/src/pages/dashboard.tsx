@@ -20817,8 +20817,8 @@ export default function Dashboard() {
           </g>
         </svg>
       </a>
-      {/* Bottom tab — Homework. Always visible; click to make HW the active box. */}
-      {desktopShowHomework && (
+      {/* Bottom tab — Homework. Only visible when Notes box is currently active; click to switch back to HW. */}
+      {desktopShowHomework && homeworkMinimized && (
         <button
           onClick={() => {
             if (hwMinimizeAnim !== 'idle' || blankMinimizeAnim !== 'idle') return;
@@ -20838,7 +20838,7 @@ export default function Dashboard() {
           }}
           className="fixed cursor-pointer"
           style={{
-            bottom: `${calendarBottom - 11}px`,
+            bottom: `${calendarBottom}px`,
             right: `${calendarRight - 17 - 84 - 10}px`,
             transition: 'right 0.3s ease-in-out, bottom 0.3s ease-in-out',
             display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : 'block',
@@ -20846,19 +20846,18 @@ export default function Dashboard() {
             background: 'none',
             border: 'none',
             padding: 0,
-            opacity: homeworkMinimized ? 1 : 0.55,
           }}
           data-testid="bottom-tab-homework"
-          title={homeworkMinimized ? "Restore homework panel" : "Homework is currently shown"}
+          title="Restore homework panel"
         >
-          <svg width="84" height="11" viewBox="0 0 84 11" style={{ display: 'block', overflow: 'hidden' }}>
+          <svg width="84" height="14" viewBox="0 0 84 14" style={{ display: 'block', overflow: 'hidden' }}>
             <path d="M0,20 L84,20 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
-            <text x="42" y="7" textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.95)" fontSize="11" fontWeight="600" fontFamily="system-ui, -apple-system, sans-serif">Homework</text>
+            <text x="42" y="8" textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.95)" fontSize="11" fontWeight="600" fontFamily="system-ui, -apple-system, sans-serif">Homework</text>
           </svg>
         </button>
       )}
-      {/* Bottom tab — Notes. Always visible; click to make Notes the active box. */}
-      {desktopShowHomework && (
+      {/* Bottom tab — Notes. Only visible when HW box is currently active; click to switch to Notes. */}
+      {desktopShowHomework && !homeworkMinimized && (
         <button
           onClick={() => {
             if (hwMinimizeAnim !== 'idle' || blankMinimizeAnim !== 'idle') return;
@@ -20880,18 +20879,17 @@ export default function Dashboard() {
           }}
           className="fixed cursor-pointer"
           style={{
-            bottom: `${calendarBottom - 14}px`,
-            right: `${calendarRight - 17 - 84 - 10 - 84 - 4}px`,
+            bottom: `${calendarBottom}px`,
+            right: `${calendarRight - 17 - 84 - 10}px`,
             transition: 'right 0.3s ease-in-out, bottom 0.3s ease-in-out',
             display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : 'block',
             zIndex: 10002,
             background: 'none',
             border: 'none',
             padding: 0,
-            opacity: (blankBoxOpen && !homeworkMinimized) ? 0.55 : 1,
           }}
           data-testid="bottom-tab-blankbox"
-          title="Restore temporary notes"
+          title="Open temporary notes"
         >
           <svg width="84" height="14" viewBox="0 0 84 14" style={{ display: 'block', overflow: 'hidden' }}>
             <path d="M0,20 L84,20 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill="#1a2332" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
@@ -29712,7 +29710,7 @@ export default function Dashboard() {
         <div className="flex-1 overflow-visible scrollbar-hidden flex flex-col" style={{ marginTop: '0px', marginLeft: '-25px', marginRight: '-34px', paddingLeft: '25px', paddingRight: '0px' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
-        <div className="mb-[0px] mt-[0px] relative flex gap-4 transition-opacity duration-300" style={{ height: calendarHeight - 93, flexShrink: 0, order: 1, paddingTop: '3px' }}>
+        <div className="mb-[0px] mt-[0px] relative flex gap-4 transition-opacity duration-300" style={{ height: calendarHeight - 108, flexShrink: 0, order: 1, paddingTop: '3px' }}>
           
           {/* Module Media Controls Dialog */}
           <Dialog open={moduleMediaControlCourse !== null} onOpenChange={(open) => !open && setModuleMediaControlCourse(null)}>
@@ -34295,7 +34293,7 @@ export default function Dashboard() {
           </div>
         </div>
         ) : (
-        <div className="mb-[0px] mt-[0px] relative flex gap-4 transition-opacity duration-300" style={{ height: calendarHeight - 93, flexShrink: 0, order: 1, paddingTop: '3px' }}>
+        <div className="mb-[0px] mt-[0px] relative flex gap-4 transition-opacity duration-300" style={{ height: calendarHeight - 108, flexShrink: 0, order: 1, paddingTop: '3px' }}>
           <div ref={calendarWrapperRef} className="relative overflow-visible" style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction - 2}px` : ' - 12px'})`, height: '100%', marginTop: '0px', marginLeft: '12px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 - 2 - 2 - 2 : 12}px`, display: 'flex', flexDirection: 'column' as const, transition: (homeworkAnimating || blankBoxAnimating) ? 'width 0.35s cubic-bezier(0.4,0,0.2,1), margin-right 0.35s cubic-bezier(0.4,0,0.2,1)' : 'none' }}>
           {/* Glass effect backing box - same as main calendar */}
           <div 
