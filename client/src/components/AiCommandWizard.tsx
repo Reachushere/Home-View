@@ -1623,9 +1623,9 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                   : undefined,
                 fontSize: isOrb ? orbFontSize : '13px',
                 fontFamily: isOrb ? "'Poppins', 'Nunito', 'Avenir Next', 'SF Pro Rounded', system-ui, sans-serif" : undefined,
-                fontWeight: isOrb ? 600 : undefined,
-                letterSpacing: isOrb ? '0.01em' : undefined,
-                lineHeight: isOrb ? '1.35' : '1.5',
+                fontWeight: isOrb ? 400 : undefined,
+                letterSpacing: isOrb ? '-0.01em' : undefined,
+                lineHeight: isOrb ? '1.3' : '1.5',
                 whiteSpace: 'pre-wrap',
                 wordBreak: 'break-word',
               }}>
