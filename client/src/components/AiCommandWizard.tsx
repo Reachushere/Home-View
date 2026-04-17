@@ -1553,9 +1553,11 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 </div>
               ) : (
               (() => {
-                const orbContent = (msg.content || '').replace(/```[\s\S]*?```/g, '').trim();
+                const rawContent = msg.content || '';
+                const hasCodeBlock = /```[\s\S]*?```/.test(rawContent);
+                const orbContent = rawContent.replace(/```[\s\S]*?```/g, '').trim();
                 const hasExtras = !!msg.image || !!msg.toolResults?.length;
-                const isOrb = msg.role !== 'system' && orbContent.length > 0 && !hasExtras;
+                const isOrb = msg.role !== 'system' && orbContent.length > 0 && !hasExtras && !hasCodeBlock;
                 const orbLen = orbContent.length;
                 const orbSize = orbLen < 30 ? 110
                   : orbLen < 70 ? 140
