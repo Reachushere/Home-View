@@ -77,6 +77,27 @@ This is NON-NEGOTIABLE. The user has been burned by agents promising to save not
 - **OneDrive Folder Generation**: Auto-creates semester/course/week folder structure on OneDrive. `generateWeekFolderNames()` handles reading week detection by aligning dates to Monday, producing "Reading Week - STUDY" folder without incrementing week numbers. Supports Winter (13 weeks + reading) and Spring/Summer (first_half, second_half, full) term structures.
 - **Quick Notes (OneDrive Scratchpad)**: Live-syncing notes viewer at `/onenote`. Reads `.txt`, `.md`, and `.html` files from a `QuickNotes` folder in OneDrive root. Auto-creates folder and default `notes.txt` on first access. Auto-refreshes content every 5 seconds. Edit files on phone via OneDrive/Word app for instant sync to dashboard. Supports basic markdown rendering for `.md` files and HTML rendering for `.html` files.
 
+### OneDrive Auth — Recurring Token Expiry (READ THIS WHEN OneDrive BREAKS)
+**Symptom**: Green "Connected" badge in UI, but Graph calls return 401 / weeks empty / "Token rejected by Microsoft" in logs.
+
+**Root cause**: We use Microsoft's device-code flow against `/consumers/oauth2/v2.0/` with the public Microsoft Graph PowerShell client ID (`14d82eec-...`). Personal MS account refresh tokens issued via this flow have a **24-hour inactivity window** — if the Pi is offline for >24h, or MS revokes the token for a security reason (password change, suspicious sign-in, app permission revoke), the refresh token dies even though `.onedrive_tokens.json` still exists on disk. The badge only checks file existence, not token validity, so it lies.
+
+**Fix (always works)**:
+```bash
+# On the Pi:
+curl -s -X POST https://uni-cal.app/api/onedrive/auth | jq
+# → returns {user_code, verification_uri}
+# Open https://www.microsoft.com/link on any device, enter the user_code,
+# sign in to Bryn's MS account, approve.
+# Wait ~10s, then verify:
+curl -s 'https://uni-cal.app/api/onedrive/status?verify=1'
+# → should show "tokenWorks":true
+```
+
+**Do NOT**: delete `.onedrive_tokens.json` first (the auth endpoint overwrites it anyway), restart the workflow (doesn't help — token is server-side at MS), or look for a UI reconnect button (there isn't one — device-code curl is the only path).
+
+BA's system prompt (search routes.ts for "ONEDRIVE TOKEN EXPIRED") contains this same procedure verbatim so users can ask BA "OneDrive is broken, fix it" and BA will walk them through it.
+
 ### Design Patterns
 - **Type Safety**: End-to-end TypeScript with shared types.
 - **API Contracts**: Zod schemas for API validation.
