@@ -35104,7 +35104,7 @@ export default function Dashboard() {
                   const endDow = format(weekEndDate, 'EEE');
                   const year = format(weekEndDate, 'yyyy');
                   const datePart = `${startDow} ${startMonth} ${startDay} - ${endDow} ${endMonth} ${endDay}`;
-                  return `Week ${selectedWeek} · ${datePart}, ${year}`;
+                  return `Week ${selectedWeek} │ ${datePart}, ${year}`;
                 })()}
               </span>
               <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 4px', margin: '-8px 0', height: 'calc(100% + 16px)', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => { if (showActualCurrentWeek) { setShowActualCurrentWeek(false); return; } const newWeek = selectedWeek + 1; calendarDrivingScrollRef.current = true; setTimeout(() => { calendarDrivingScrollRef.current = false; }, 1200); startTransition(() => setSelectedWeek(newWeek)); if (timelineSyncRef.current && newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }} data-testid="button-pill-next-week"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▶</span></div>
