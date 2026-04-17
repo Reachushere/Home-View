@@ -1281,7 +1281,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
 
   if (!isOpen) return null;
 
-  const panelWidth = expanded ? '90vw' : (customWidth ? `${customWidth}px` : '600px');
+  const panelWidth = expanded ? '90vw' : (customWidth ? `${customWidth}px` : '780px');
   const panelMaxHeight = expanded ? '90vh' : '80vh';
   const panelStyle: React.CSSProperties = {
     position: 'relative' as const,
