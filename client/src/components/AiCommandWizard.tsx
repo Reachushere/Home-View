@@ -5,22 +5,26 @@ import { queryClient } from '@/lib/queryClient';
 import brynAvatar from '@assets/generated_images/brynassist_avatar.png';
 import defaultProfilePhoto from '@assets/image_1772579486577.png';
 const buildWaveBg = (): string => {
-  const colors = ['%2300e5ff', '%2338bdf8', '%2306b6d4', '%23a855f7', '%23d946ef', '%23ec4899', '%237c3aed'];
+  const colors = ['%2300e5ff', '%2338bdf8', '%2306b6d4', '%2367e8f9', '%2322d3ee', '%230891b2', '%23a855f7', '%23d946ef', '%237c3aed'];
   const lines: string[] = [];
-  const N = 11;
+  const N = 70;
   for (let i = 0; i < N; i++) {
-    const offset = (i - N / 2) * 48;
-    const baseY = 350 + offset;
-    const wob = (i % 5) * 8 - 16;
-    const c1y = baseY - 180 + wob;
-    const c2y = baseY + 200 - wob;
-    const c3y = baseY - 90 + wob * 0.6;
-    const startX = -120 + (i % 4) * 14;
-    const endX = 1020 + (i % 4) * 14;
-    const d = `M${startX},${baseY - 40} C${startX + 280},${c1y} ${startX + 480},${c2y} ${(startX + endX) / 2},${baseY + wob} S${endX - 120},${c3y} ${endX},${baseY + 30}`;
+    const t = i / N;
+    const yShift = (i - N / 2) * 4;
+    const p0x = -80;
+    const p0y = 120 + yShift;
+    const p1x = 240;
+    const p1y = 580 + yShift * 0.85;
+    const p2x = 520;
+    const p2y = 80 + yShift * 1.05;
+    const p3x = 760;
+    const p3y = 540 + yShift * 0.9;
+    const p4x = 980;
+    const p4y = 220 + yShift * 1.0;
+    const d = `M${p0x},${p0y} C${p0x + 180},${p0y + 60} ${p1x - 160},${p1y - 80} ${p1x},${p1y} S${p2x - 80},${p2y - 60} ${p2x},${p2y} S${p3x - 60},${p3y + 80} ${p3x},${p3y} S${p4x - 60},${p4y - 100} ${p4x},${p4y}`;
     const color = colors[i % colors.length];
-    const opacity = (0.85 + (i % 4) * 0.04).toFixed(2);
-    const sw = (1.6 + (i % 3) * 0.5).toFixed(2);
+    const opacity = (0.55 + (i % 7) * 0.05).toFixed(2);
+    const sw = (0.8 + (i % 4) * 0.25).toFixed(2);
     lines.push(`<path d='${d}' stroke='${color}' stroke-width='${sw}' stroke-opacity='${opacity}'/>`);
   }
   const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 700' preserveAspectRatio='none'>` +
