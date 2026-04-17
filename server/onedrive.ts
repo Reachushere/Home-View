@@ -219,7 +219,8 @@ export async function listOneDriveItems(path: string = '/') {
     if (path === '/' || path === '') {
       response = await client.api('/me/drive/root/children').get();
     } else {
-      response = await client.api(`/me/drive/root:${path}:/children`).get();
+      const encodedPath = encodeURIComponent(path).replace(/%2F/g, '/');
+      response = await client.api(`/me/drive/root:${encodedPath}:/children`).get();
     }
     
     return response.value.map((item: any) => ({
