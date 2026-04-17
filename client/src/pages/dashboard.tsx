@@ -20831,7 +20831,7 @@ export default function Dashboard() {
         >
           <svg width="84" height="18" viewBox="0 0 84 18" style={{ display: 'block', overflow: 'hidden' }}>
             <path d="M0,20 L84,20 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill="#1a2332" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
-            <text x="42" y="10" textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.95)" fontSize="11" fontWeight="600" fontFamily="system-ui, -apple-system, sans-serif">Homework</text>
+            <text x="42" y="8" textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.95)" fontSize="10" fontWeight="600" fontFamily="system-ui, -apple-system, sans-serif">Homework</text>
           </svg>
         </button>
       )}
@@ -20862,7 +20862,7 @@ export default function Dashboard() {
           }}
           className="fixed cursor-pointer"
           style={{
-            bottom: `${calendarBottom}px`,
+            bottom: `${calendarBottom + 1}px`,
             right: `${calendarRight - 17 - 84 - 10}px`,
             transition: 'right 0.3s ease-in-out, bottom 0.3s ease-in-out',
             display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : 'block',
