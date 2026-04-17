@@ -16364,12 +16364,15 @@ export default function Dashboard() {
       {/* School Logo - Fixed top left, customizable via school settings */}
       <div className="fixed flex items-start" data-tpo data-tpo-opacity="1" style={{ left: '23px', top: `${8 + d2lTickerHeight}px`, height: '35px', zIndex: 100, opacity: (isTopPillOpen || isTodoFlyoutOpen) ? 0 : 1, transition: (isTopPillOpen || isTodoFlyoutOpen) ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: (isTopPillOpen || isTodoFlyoutOpen) ? 'none' : 'auto' }}>
         <img src={schoolData.schoolLogo || changSchoolLogo} alt={schoolData.schoolName || "The Chang School"} style={{ height: '44px', objectFit: 'contain', cursor: 'pointer' }} onClick={() => startTransition(() => setIsProfileDialogOpen(true))} data-testid="button-school-logo" />
-        <div style={{ width: '1.5px', height: '28px', backgroundColor: 'rgba(255,255,255,0.45)', borderRadius: '1px', flexShrink: 0, marginLeft: '10px', marginRight: '10px' }} />
-        <img src={profilePhotoUrl || profilePhoto} alt="Profile" style={{ width: '35px', height: '35px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, marginRight: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.2)', cursor: 'pointer' }} onClick={() => startTransition(() => setIsProfileDialogOpen(true))} data-testid="button-profile-photo" />
-        <div className="flex flex-col">
+      </div>
+
+      {/* Profile photo + greeting — top-right where pomodoro timer used to sit */}
+      <div className="fixed flex items-center" data-tpo data-tpo-opacity="1" style={{ right: `${calendarRight - calendarReduction + 7}px`, top: `${5 + d2lTickerHeight}px`, height: '39px', zIndex: 100, opacity: (isTopPillOpen || isTodoFlyoutOpen) ? 0 : 1, transition: (isTopPillOpen || isTodoFlyoutOpen) ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out', pointerEvents: (isTopPillOpen || isTodoFlyoutOpen) ? 'none' : 'auto', flexDirection: 'row' }}>
+        <div className="flex flex-col" style={{ marginRight: '8px', textAlign: 'right', alignItems: 'flex-end' }}>
           <span className="text-white font-bold text-[11.5px] leading-tight">{(() => { const h = new Date().getHours(); return h < 12 ? 'Good morning,' : h < 17 ? 'Good afternoon,' : 'Good evening,'; })()} {profileData.firstName}</span>
           <span className="text-white text-[10px] leading-tight" style={{ fontWeight: 300 }}>{schoolData.schoolName || 'Toronto Metropolitan University'}</span>
         </div>
+        <img src={profilePhotoUrl || profilePhoto} alt="Profile" style={{ width: '39px', height: '39px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, boxShadow: '0 2px 8px rgba(0,0,0,0.2)', cursor: 'pointer' }} onClick={() => startTransition(() => setIsProfileDialogOpen(true))} data-testid="button-profile-photo" />
       </div>
 
 
@@ -16425,6 +16428,39 @@ export default function Dashboard() {
           })
           .sort((a, b) => new Date(b.dueDate!).getTime() - new Date(a.dueDate!).getTime()) : [];
         const next = upcoming[0] || overdue[0];
+        const pomodoroInline = (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0, marginRight: '10px', marginTop: '-3px', pointerEvents: 'auto' }} data-testid="pomodoro-inline">
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+              <span style={{ fontSize: '12px', color: '#ffffff', fontWeight: 600, fontVariantNumeric: 'tabular-nums', lineHeight: 1, fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }} data-testid="text-pomodoro-time">{formatPomodoroTime(pomodoroTime)}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <button onClick={() => { setPomodoroTime(prev => Math.max(60, prev - 60)); }} style={{ background: 'none', border: 'none', padding: 0, color: 'white', fontSize: '12px', fontWeight: 600, lineHeight: 1, cursor: 'pointer' }} data-testid="button-pomodoro-sub-min" title="-1 min">−</button>
+                <button onClick={togglePomodoro} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center' }} data-testid="button-pomodoro-toggle" title={pomodoroRunning ? 'Pause' : 'Play'}>
+                  {pomodoroRunning ? <Pause className="h-[12px] w-[12px] text-white" strokeWidth={2.5} /> : <Play className="h-[12px] w-[12px] text-white" strokeWidth={2.5} />}
+                </button>
+                <button onClick={resetPomodoro} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center' }} data-testid="button-pomodoro-reset" title="Stop">
+                  <Square className="h-[10px] w-[10px] text-white" strokeWidth={2.5} />
+                </button>
+                <button onClick={() => { setPomodoroTime(prev => prev + 60); }} style={{ background: 'none', border: 'none', padding: 0, color: 'white', fontSize: '12px', fontWeight: 600, lineHeight: 1, cursor: 'pointer' }} data-testid="button-pomodoro-add-min" title="+1 min">+</button>
+              </div>
+            </div>
+            {(() => {
+              const totalSec = pomodoroMode === 'work' ? 25 * 60 : pomodoroMode === 'shortBreak' ? 5 * 60 : 15 * 60;
+              const elapsed = totalSec - pomodoroTime;
+              const frac = totalSec > 0 ? elapsed / totalSec : 0;
+              const r = 18, cx = 21, cy = 22, sw = 3.5;
+              const arcLen = Math.PI;
+              const circumHalf = r * arcLen;
+              const dash = frac * circumHalf;
+              const arcColor = pomodoroMode === 'work' ? '#e74c8b' : pomodoroMode === 'shortBreak' ? '#22c55e' : '#3b82f6';
+              return (
+                <svg width="42" height="26" viewBox="0 0 42 26" style={{ cursor: 'pointer' }} onClick={togglePomodoro} data-testid="pomodoro-arc">
+                  <path d={`M ${cx - r} ${cy} A ${r} ${r} 0 1 1 ${cx + r} ${cy}`} fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth={sw} strokeLinecap="round" />
+                  <path d={`M ${cx - r} ${cy} A ${r} ${r} 0 1 1 ${cx + r} ${cy}`} fill="none" stroke={arcColor} strokeWidth={sw} strokeLinecap="round" strokeDasharray={`${dash} ${circumHalf}`} />
+                </svg>
+              );
+            })()}
+          </div>
+        );
         if (!next) {
           return (
             <div
@@ -16457,6 +16493,7 @@ export default function Dashboard() {
                       <span className="text-white" style={{ fontSize: '9px', fontWeight: '400', textTransform: 'uppercase', lineHeight: '1', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>{new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}</span>
                     </div>
                   </div>
+                  {pomodoroInline}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginLeft: '2px', flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap' }} data-testid="countdown-empty-state">
                       <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>All tasks completed</span>
@@ -16554,6 +16591,7 @@ export default function Dashboard() {
                     <span className="text-white" style={{ fontSize: '9px', fontWeight: '400', textTransform: 'uppercase', lineHeight: '1', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>{new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}</span>
                   </div>
                 </div>
+                {pomodoroInline}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', position: 'absolute', left: 0, right: 0, top: '20px', bottom: '4px', alignItems: 'center', justifyContent: 'flex-start', paddingTop: '2px', pointerEvents: 'none', overflow: 'hidden', maxHeight: '34px' }}>
                   {(() => {
                     const prepDaysNum = prepDaysText === 'today' ? 0 : prepDaysText === 'now' ? -1 : Number(prepDaysText);
@@ -18268,78 +18306,7 @@ export default function Dashboard() {
         />
       )}
 
-      {/* Timer bar - pomodoro in glass box, right-aligned with glass backing */}
-      <div style={{
-        position: 'fixed',
-        right: `${calendarRight - calendarReduction + 7}px`,
-        top: `${3 + d2lTickerHeight + 2}px`,
-        zIndex: 100,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-end',
-        gap: '0px',
-        opacity: (isTopPillOpen || isTodoFlyoutOpen) ? 0 : 1,
-        transition: (isTopPillOpen || isTodoFlyoutOpen) ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out',
-        pointerEvents: (isTopPillOpen || isTodoFlyoutOpen) ? 'none' : 'auto',
-      }} data-tpo data-tpo-opacity="1" data-testid="timer-bar">
-        <div style={{
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: '10px',
-          background: 'linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.07) 100%)',
-          backdropFilter: 'blur(40px)',
-          WebkitBackdropFilter: 'blur(40px)',
-          borderRadius: '10px',
-          padding: '6px 12px 4px 12px',
-          border: '0.5px solid rgba(255,255,255,0.3)',
-          borderTop: '0.5px solid rgba(255,255,255,0.45)',
-          boxShadow: '0 4px 16px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.03), inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(255,255,255,0.05)',
-        }}>
-          <div className="flex flex-col items-center" style={{ gap: '3px' }}>
-            <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.6)', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase', lineHeight: 1 }}>Pomodoro</span>
-            <div className="flex flex-row items-center gap-[10px]">
-              <div className="flex items-center gap-[4px]">
-                <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={() => { setPomodoroTime(prev => Math.max(60, prev - 60)); }} data-testid="button-pomodoro-sub-min" title="-1 min" style={{ fontSize: '11px', color: 'white', fontWeight: 600, whiteSpace: 'nowrap', lineHeight: 1 }}>
-                  −
-                </button>
-                <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.5)', fontWeight: 500, lineHeight: 1 }}>1m</span>
-                <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={() => { setPomodoroTime(prev => prev + 60); }} data-testid="button-pomodoro-add-min" title="+1 min" style={{ fontSize: '11px', color: 'white', fontWeight: 600, whiteSpace: 'nowrap', lineHeight: 1 }}>
-                  +
-                </button>
-              </div>
-              <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle" title={pomodoroRunning ? 'Pause' : 'Play'}>
-                {pomodoroRunning ? <Pause className="h-[16px] w-[16px] text-white" strokeWidth={2.5} /> : <Play className="h-[16px] w-[16px] text-white" strokeWidth={2.5} />}
-              </button>
-              <button className="p-0 hover:bg-white/20 rounded transition-colors" onClick={resetPomodoro} data-testid="button-pomodoro-reset" title="Stop">
-                <Square className="h-[14px] w-[14px] text-white" strokeWidth={2.5} />
-              </button>
-            </div>
-          </div>
-          <div ref={clockContainerRef} data-testid="pomodoro-timer" style={{ position: 'relative', cursor: 'pointer' }} onClick={togglePomodoro}>
-            {(() => {
-              const totalSec = pomodoroMode === 'work' ? 25 * 60 : pomodoroMode === 'shortBreak' ? 5 * 60 : 15 * 60;
-              const elapsed = totalSec - pomodoroTime;
-              const frac = totalSec > 0 ? elapsed / totalSec : 0;
-              const r = 35, cx = 41, cy = 41, sw = 5;
-              const startAng = Math.PI, endAng = 2 * Math.PI;
-              const arcLen = endAng - startAng;
-              const circumHalf = r * arcLen;
-              const dash = frac * circumHalf;
-              const arcColor = pomodoroMode === 'work' ? '#e74c8b' : pomodoroMode === 'shortBreak' ? '#22c55e' : '#3b82f6';
-              return (
-                <svg width="82" height="47" viewBox="0 0 82 47">
-                  <path d={`M ${cx - r} ${cy} A ${r} ${r} 0 1 1 ${cx + r} ${cy}`} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={sw} strokeLinecap="round" />
-                  <path d={`M ${cx - r} ${cy} A ${r} ${r} 0 1 1 ${cx + r} ${cy}`} fill="none" stroke={arcColor} strokeWidth={sw} strokeLinecap="round" strokeDasharray={`${dash} ${circumHalf}`} />
-                  <text x={cx} y={cy - 1} textAnchor="middle" fill="#ffffff" fontSize="14" fontWeight="700" fontFamily="system-ui, sans-serif" style={{ fontVariantNumeric: 'tabular-nums' }}>{formatPomodoroTime(pomodoroTime)}</text>
-                </svg>
-              );
-            })()}
-          </div>
-        </div>
-      </div>
-
-      {/* Clock removed - now inside countdown pill */}
+      {/* Pomodoro now inlined into countdown pill (~16431) */}
 
       {/* Settings Panel Popup - Degree Tracking */}
       {isSettingsPanelOpen && (
