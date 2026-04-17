@@ -23205,6 +23205,51 @@ export default function Dashboard() {
             const defaultDateFlags = { applicationsOpen: true, deadline: true, documentsDeadline: true, interviewDate: true, winnersAnnounced: true };
             const [dateCalFlags, setDateCalFlags] = useState<Record<string, boolean>>(defaultDateFlags);
             const viewingScholarship = viewingScholarshipId ? scholarshipsList.find(x => x.id === viewingScholarshipId) : null;
+            const [isEditingScholarshipDetail, setIsEditingScholarshipDetail] = useState(false);
+            const [scholarshipDetailDraft, setScholarshipDetailDraft] = useState<any>(null);
+            const [savingScholarshipDetail, setSavingScholarshipDetail] = useState(false);
+            const enterScholarshipEditMode = (s: any) => {
+              setScholarshipDetailDraft({
+                name: s.name || '',
+                organization: s.organization || '',
+                amount: s.amount || '',
+                applicationsOpen: s.applicationsOpen || '',
+                deadline: s.deadline || '',
+                documentsDeadline: s.documentsDeadline || s.documents_deadline || '',
+                interviewDate: s.interviewDate || s.interview_date || '',
+                winnersAnnounced: s.winnersAnnounced || '',
+                applicationUrl: s.applicationUrl || '',
+                contactInfo: s.contactInfo || '',
+                additionalInfo: s.additionalInfo || '',
+              });
+              setIsEditingScholarshipDetail(true);
+            };
+            const cancelScholarshipEdit = () => {
+              setIsEditingScholarshipDetail(false);
+              setScholarshipDetailDraft(null);
+            };
+            const saveScholarshipDetail = async () => {
+              if (!viewingScholarshipId || !scholarshipDetailDraft) return;
+              setSavingScholarshipDetail(true);
+              try {
+                const res = await fetch(`/api/scholarships/${viewingScholarshipId}`, {
+                  method: 'PATCH',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(scholarshipDetailDraft),
+                });
+                if (!res.ok) throw new Error('save failed');
+                const updated = await fetch('/api/scholarships').then(r => r.json()).catch(() => null);
+                if (updated) setScholarshipsList(updated);
+                setIsEditingScholarshipDetail(false);
+                setScholarshipDetailDraft(null);
+                toast({ title: 'Scholarship updated' });
+              } catch (e) {
+                toast({ title: 'Failed to save', description: 'Check console for details.', variant: 'destructive' });
+                console.error('Save scholarship failed:', e);
+              } finally {
+                setSavingScholarshipDetail(false);
+              }
+            };
             const openWizardForEdit = (s: any) => {
               setEditingScholarshipId(s.id);
               setScholarshipForm({
@@ -23478,18 +23523,41 @@ export default function Dashboard() {
                     <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
                       <div className="flex items-center gap-2 min-w-0">
                         <Award className="text-white flex-shrink-0" style={{ width: '15px', height: '15px' }} />
-                        <h2 className="font-normal text-white truncate" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '13px' }} data-testid="text-scholarship-detail-title">{s.name}</h2>
+                        <h2 className="font-normal text-white truncate" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '13px' }} data-testid="text-scholarship-detail-title">{isEditingScholarshipDetail ? (scholarshipDetailDraft?.name || s.name) : s.name}</h2>
                       </div>
                       <div className="flex items-center gap-1">
-                        <button
-                          onClick={() => openWizardForEdit(s)}
-                          className="text-white hover:text-white/80 transition-colors p-1.5 rounded hover:bg-white/10"
-                          title="Edit scholarship"
-                          data-testid="button-edit-scholarship-detail"
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </button>
-                        <button onClick={() => setViewingScholarshipId(null)} className="text-white hover:text-white/80 transition-colors p-1" data-testid="button-close-scholarship-detail">
+                        {isEditingScholarshipDetail ? (
+                          <>
+                            <button
+                              onClick={saveScholarshipDetail}
+                              disabled={savingScholarshipDetail}
+                              className="text-white text-[11px] font-semibold px-3 py-1 rounded transition-colors hover:brightness-110 disabled:opacity-50"
+                              style={{ background: 'rgba(34,197,94,0.85)', border: '1px solid rgba(255,255,255,0.25)' }}
+                              data-testid="button-save-scholarship-detail"
+                            >
+                              {savingScholarshipDetail ? 'Saving…' : 'Save'}
+                            </button>
+                            <button
+                              onClick={cancelScholarshipEdit}
+                              disabled={savingScholarshipDetail}
+                              className="text-white text-[11px] font-semibold px-3 py-1 rounded transition-colors hover:brightness-110 disabled:opacity-50"
+                              style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.2)' }}
+                              data-testid="button-cancel-scholarship-detail"
+                            >
+                              Cancel
+                            </button>
+                          </>
+                        ) : (
+                          <button
+                            onClick={() => enterScholarshipEditMode(s)}
+                            className="text-white hover:text-white/80 transition-colors p-1.5 rounded hover:bg-white/10"
+                            title="Edit scholarship"
+                            data-testid="button-edit-scholarship-detail"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </button>
+                        )}
+                        <button onClick={() => { setIsEditingScholarshipDetail(false); setScholarshipDetailDraft(null); setViewingScholarshipId(null); }} className="text-white hover:text-white/80 transition-colors p-1" data-testid="button-close-scholarship-detail">
                           <X className="h-5 w-5" />
                         </button>
                       </div>
@@ -23497,45 +23565,91 @@ export default function Dashboard() {
                     <div className="p-5 space-y-3 max-h-[70vh] overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
                       <div>
                         <div className="text-[10px] uppercase tracking-wide text-white/50 mb-1">Organization</div>
-                        <div className="text-[12px]" data-testid="text-scholarship-detail-org">{s.organization || '—'}</div>
+                        {isEditingScholarshipDetail ? (
+                          <input type="text" value={scholarshipDetailDraft?.organization || ''} onChange={(e) => setScholarshipDetailDraft((d: any) => ({ ...d, organization: e.target.value }))} className="w-full text-[12px] px-2 py-1 rounded bg-white/10 border border-white/20 focus:border-white/50 focus:outline-none" data-testid="input-scholarship-detail-org" />
+                        ) : (
+                          <div className="text-[12px]" data-testid="text-scholarship-detail-org">{s.organization || '—'}</div>
+                        )}
                       </div>
+                      {isEditingScholarshipDetail && (
+                        <div>
+                          <div className="text-[10px] uppercase tracking-wide text-white/50 mb-1">Name</div>
+                          <input type="text" value={scholarshipDetailDraft?.name || ''} onChange={(e) => setScholarshipDetailDraft((d: any) => ({ ...d, name: e.target.value }))} className="w-full text-[12px] px-2 py-1 rounded bg-white/10 border border-white/20 focus:border-white/50 focus:outline-none" data-testid="input-scholarship-detail-name" />
+                        </div>
+                      )}
                       <div>
                         <div className="text-[10px] uppercase tracking-wide text-white/50 mb-1">Amount</div>
-                        <div className="text-[14px] font-semibold text-green-300" data-testid="text-scholarship-detail-amount">{s.amount ? (s.amount.startsWith('$') ? s.amount : `$${s.amount}`) : '—'}</div>
+                        {isEditingScholarshipDetail ? (
+                          <input type="text" value={scholarshipDetailDraft?.amount || ''} onChange={(e) => setScholarshipDetailDraft((d: any) => ({ ...d, amount: e.target.value }))} placeholder="e.g. $1000" className="w-full text-[12px] px-2 py-1 rounded bg-white/10 border border-white/20 focus:border-white/50 focus:outline-none" data-testid="input-scholarship-detail-amount" />
+                        ) : (
+                          <div className="text-[14px] font-semibold text-green-300" data-testid="text-scholarship-detail-amount">{s.amount ? (s.amount.startsWith('$') ? s.amount : `$${s.amount}`) : '—'}</div>
+                        )}
                       </div>
                       <div className="grid grid-cols-2 gap-3 pt-1 border-t border-white/10">
                         <div>
                           <div className="text-[10px] uppercase tracking-wide text-white/50 mb-1">Applications Open</div>
-                          <div className="text-[12px]" data-testid="text-scholarship-detail-open">{fmtDate(s.applicationsOpen)}</div>
+                          {isEditingScholarshipDetail ? (
+                            <input type="date" value={scholarshipDetailDraft?.applicationsOpen || ''} onChange={(e) => setScholarshipDetailDraft((d: any) => ({ ...d, applicationsOpen: e.target.value }))} className="w-full text-[12px] px-2 py-1 rounded bg-white/10 border border-white/20 focus:border-white/50 focus:outline-none" data-testid="input-scholarship-detail-open" />
+                          ) : (
+                            <div className="text-[12px]" data-testid="text-scholarship-detail-open">{fmtDate(s.applicationsOpen)}</div>
+                          )}
                         </div>
                         <div>
                           <div className="text-[10px] uppercase tracking-wide text-white/50 mb-1">Application Deadline</div>
-                          <div className="text-[12px] font-semibold" data-testid="text-scholarship-detail-deadline">{fmtDate(s.deadline)}</div>
+                          {isEditingScholarshipDetail ? (
+                            <input type="date" value={scholarshipDetailDraft?.deadline || ''} onChange={(e) => setScholarshipDetailDraft((d: any) => ({ ...d, deadline: e.target.value }))} className="w-full text-[12px] px-2 py-1 rounded bg-white/10 border border-white/20 focus:border-white/50 focus:outline-none" data-testid="input-scholarship-detail-deadline" />
+                          ) : (
+                            <div className="text-[12px] font-semibold" data-testid="text-scholarship-detail-deadline">{fmtDate(s.deadline)}</div>
+                          )}
                         </div>
                         <div>
                           <div className="text-[10px] uppercase tracking-wide text-white/50 mb-1">Documents Due</div>
-                          <div className="text-[12px]" data-testid="text-scholarship-detail-docs">{fmtDate(s.documentsDeadline || s.documents_deadline)}</div>
+                          {isEditingScholarshipDetail ? (
+                            <input type="date" value={scholarshipDetailDraft?.documentsDeadline || ''} onChange={(e) => setScholarshipDetailDraft((d: any) => ({ ...d, documentsDeadline: e.target.value }))} className="w-full text-[12px] px-2 py-1 rounded bg-white/10 border border-white/20 focus:border-white/50 focus:outline-none" data-testid="input-scholarship-detail-docs" />
+                          ) : (
+                            <div className="text-[12px]" data-testid="text-scholarship-detail-docs">{fmtDate(s.documentsDeadline || s.documents_deadline)}</div>
+                          )}
                         </div>
                         <div>
                           <div className="text-[10px] uppercase tracking-wide text-white/50 mb-1">Interview Date</div>
-                          <div className="text-[12px]" data-testid="text-scholarship-detail-interview">{fmtDate(s.interviewDate || s.interview_date)}</div>
+                          {isEditingScholarshipDetail ? (
+                            <input type="date" value={scholarshipDetailDraft?.interviewDate || ''} onChange={(e) => setScholarshipDetailDraft((d: any) => ({ ...d, interviewDate: e.target.value }))} className="w-full text-[12px] px-2 py-1 rounded bg-white/10 border border-white/20 focus:border-white/50 focus:outline-none" data-testid="input-scholarship-detail-interview" />
+                          ) : (
+                            <div className="text-[12px]" data-testid="text-scholarship-detail-interview">{fmtDate(s.interviewDate || s.interview_date)}</div>
+                          )}
                         </div>
                         <div className="col-span-2">
                           <div className="text-[10px] uppercase tracking-wide text-white/50 mb-1">Winners Announced</div>
-                          <div className="text-[12px]" data-testid="text-scholarship-detail-winners">{fmtDate(s.winnersAnnounced)}</div>
+                          {isEditingScholarshipDetail ? (
+                            <input type="date" value={scholarshipDetailDraft?.winnersAnnounced || ''} onChange={(e) => setScholarshipDetailDraft((d: any) => ({ ...d, winnersAnnounced: e.target.value }))} className="w-full text-[12px] px-2 py-1 rounded bg-white/10 border border-white/20 focus:border-white/50 focus:outline-none" data-testid="input-scholarship-detail-winners" />
+                          ) : (
+                            <div className="text-[12px]" data-testid="text-scholarship-detail-winners">{fmtDate(s.winnersAnnounced)}</div>
+                          )}
                         </div>
                       </div>
                       <div className="pt-1 border-t border-white/10">
                         <div className="text-[10px] uppercase tracking-wide text-white/50 mb-1">Application URL</div>
-                        <div className="text-[12px]">{renderLinky(s.applicationUrl, 'link-scholarship-detail-url')}</div>
+                        {isEditingScholarshipDetail ? (
+                          <input type="text" value={scholarshipDetailDraft?.applicationUrl || ''} onChange={(e) => setScholarshipDetailDraft((d: any) => ({ ...d, applicationUrl: e.target.value }))} placeholder="https://…" className="w-full text-[12px] px-2 py-1 rounded bg-white/10 border border-white/20 focus:border-white/50 focus:outline-none" data-testid="input-scholarship-detail-url" />
+                        ) : (
+                          <div className="text-[12px]">{renderLinky(s.applicationUrl, 'link-scholarship-detail-url')}</div>
+                        )}
                       </div>
                       <div>
                         <div className="text-[10px] uppercase tracking-wide text-white/50 mb-1">Contact</div>
-                        <div className="text-[12px]">{renderTextWithLinks(s.contactInfo, 'text-scholarship-detail-contact')}</div>
+                        {isEditingScholarshipDetail ? (
+                          <textarea value={scholarshipDetailDraft?.contactInfo || ''} onChange={(e) => setScholarshipDetailDraft((d: any) => ({ ...d, contactInfo: e.target.value }))} rows={2} className="w-full text-[12px] px-2 py-1 rounded bg-white/10 border border-white/20 focus:border-white/50 focus:outline-none resize-y" data-testid="input-scholarship-detail-contact" />
+                        ) : (
+                          <div className="text-[12px]">{renderTextWithLinks(s.contactInfo, 'text-scholarship-detail-contact')}</div>
+                        )}
                       </div>
                       <div>
                         <div className="text-[10px] uppercase tracking-wide text-white/50 mb-1">Additional Information</div>
-                        <div className="text-[12px]">{renderTextWithLinks(s.additionalInfo, 'text-scholarship-detail-info')}</div>
+                        {isEditingScholarshipDetail ? (
+                          <textarea value={scholarshipDetailDraft?.additionalInfo || ''} onChange={(e) => setScholarshipDetailDraft((d: any) => ({ ...d, additionalInfo: e.target.value }))} rows={4} className="w-full text-[12px] px-2 py-1 rounded bg-white/10 border border-white/20 focus:border-white/50 focus:outline-none resize-y" data-testid="input-scholarship-detail-info" />
+                        ) : (
+                          <div className="text-[12px]">{renderTextWithLinks(s.additionalInfo, 'text-scholarship-detail-info')}</div>
+                        )}
                       </div>
                     </div>
                   </>
