@@ -33588,7 +33588,7 @@ export default function Dashboard() {
           <button
             type="button"
             className="cursor-pointer select-none hover:opacity-80 transition-opacity"
-            style={{ position: 'absolute', left: 'calc(100% + 17px)', bottom: '-19px', display: 'flex', alignItems: 'center', gap: '4px', zIndex: 60, background: 'none', border: 'none', padding: '4px 6px', pointerEvents: 'auto', WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
+            style={{ position: 'fixed', bottom: `${calendarBottom - 17}px`, right: `${calendarRight - calendarReduction + 92}px`, display: 'flex', alignItems: 'center', gap: '4px', zIndex: 70, background: 'none', border: 'none', padding: '0 4px', pointerEvents: 'auto', WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
             onClick={() => {
               localStorage.setItem('calendarHeight', String(calendarHeight));
               localStorage.setItem('calendarReduction', String(calendarReduction));
