@@ -106,6 +106,7 @@ import {
   Contact,
   ClipboardCheck,
   Calendar,
+  CalendarPlus,
   CalendarClock,
   Clock,
   Plus,
@@ -23197,6 +23198,31 @@ export default function Dashboard() {
             const [scholarshipWizardStep, setScholarshipWizardStep] = useState(0);
             const [scholarshipForm, setScholarshipForm] = useState({ name: '', organization: '', amount: '', applicationsOpen: '', deadline: '', documentsDeadline: '', interviewDate: '', winnersAnnounced: '', applicationUrl: '', contactInfo: '', additionalInfo: '', recurring: true });
             const [editingScholarshipId, setEditingScholarshipId] = useState<number | null>(null);
+            const [viewingScholarshipId, setViewingScholarshipId] = useState<number | null>(null);
+            const defaultDateFlags = { applicationsOpen: true, deadline: true, documentsDeadline: true, interviewDate: true, winnersAnnounced: true };
+            const [dateCalFlags, setDateCalFlags] = useState<Record<string, boolean>>(defaultDateFlags);
+            const viewingScholarship = viewingScholarshipId ? scholarshipsList.find(x => x.id === viewingScholarshipId) : null;
+            const openWizardForEdit = (s: any) => {
+              setEditingScholarshipId(s.id);
+              setScholarshipForm({
+                name: s.name,
+                organization: s.organization,
+                amount: s.amount || '',
+                applicationsOpen: s.applicationsOpen || '',
+                deadline: s.deadline || '',
+                documentsDeadline: s.documentsDeadline || s.documents_deadline || '',
+                interviewDate: s.interviewDate || s.interview_date || '',
+                winnersAnnounced: s.winnersAnnounced || '',
+                applicationUrl: s.applicationUrl || '',
+                contactInfo: s.contactInfo || '',
+                additionalInfo: s.additionalInfo || '',
+                recurring: true,
+              });
+              setDateCalFlags({ applicationsOpen: false, deadline: false, documentsDeadline: false, interviewDate: false, winnersAnnounced: false });
+              setScholarshipWizardStep(0);
+              setViewingScholarshipId(null);
+              setScholarshipWizardOpen(true);
+            };
 
             useEffect(() => {
               if (isScholarshipsOpen) {
@@ -23210,59 +23236,58 @@ export default function Dashboard() {
                 await fetch(`/api/scholarships/${editingScholarshipId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
               } else {
                 await fetch('/api/scholarships', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-                const calDescription = [
-                  scholarshipForm.organization ? `Organization: ${scholarshipForm.organization}` : '',
-                  scholarshipForm.amount ? `Amount: ${scholarshipForm.amount}` : '',
-                  scholarshipForm.applicationUrl ? `Apply: ${scholarshipForm.applicationUrl}` : '',
-                  scholarshipForm.contactInfo ? `Contact: ${scholarshipForm.contactInfo}` : '',
-                  scholarshipForm.additionalInfo || '',
-                ].filter(Boolean).join('\n');
-                const scholarshipDateTasks: Array<{ dateStr: string; label: string; priority: string }> = [
-                  { dateStr: scholarshipForm.applicationsOpen, label: 'Applications Open', priority: 'medium' },
-                  { dateStr: scholarshipForm.deadline, label: 'Deadline', priority: 'high' },
-                  { dateStr: scholarshipForm.documentsDeadline, label: 'Documents Due', priority: 'high' },
-                  { dateStr: scholarshipForm.interviewDate, label: 'Interview', priority: 'high' },
-                  { dateStr: scholarshipForm.winnersAnnounced, label: 'Winners Announced', priority: 'low' },
-                ];
-                for (const sdt of scholarshipDateTasks) {
-                  if (sdt.dateStr) {
-                    try {
-                      const dueDate = new Date(sdt.dateStr + 'T18:00:00');
-                      const weekNum = getWeekNumber(dueDate, semStart, readingWeekStart);
-                      await apiRequest("POST", "/api/tasks", {
-                        title: `${scholarshipForm.name} — ${sdt.label}`,
-                        type: "scholarship",
-                        dueDate: dueDate.toISOString(),
-                        weekNumber: Math.max(2, Math.min(currentMaxWeek, weekNum)),
-                        priority: sdt.priority,
-                        description: calDescription,
-                        referenceLink: scholarshipForm.applicationUrl || '',
-                      });
-                    } catch (e) {
-                      console.error('Failed to create scholarship task:', e);
-                    }
-                  }
+              }
+              const calDescription = [
+                scholarshipForm.organization ? `Organization: ${scholarshipForm.organization}` : '',
+                scholarshipForm.amount ? `Amount: ${scholarshipForm.amount}` : '',
+                scholarshipForm.applicationUrl ? `Apply: ${scholarshipForm.applicationUrl}` : '',
+                scholarshipForm.contactInfo ? `Contact: ${scholarshipForm.contactInfo}` : '',
+                scholarshipForm.additionalInfo || '',
+              ].filter(Boolean).join('\n');
+              const scholarshipDateTasks: Array<{ field: string; dateStr: string; label: string; priority: string }> = [
+                { field: 'applicationsOpen', dateStr: scholarshipForm.applicationsOpen, label: 'Applications Open', priority: 'medium' },
+                { field: 'deadline', dateStr: scholarshipForm.deadline, label: 'Deadline', priority: 'high' },
+                { field: 'documentsDeadline', dateStr: scholarshipForm.documentsDeadline, label: 'Documents Due', priority: 'high' },
+                { field: 'interviewDate', dateStr: scholarshipForm.interviewDate, label: 'Interview', priority: 'high' },
+                { field: 'winnersAnnounced', dateStr: scholarshipForm.winnersAnnounced, label: 'Winners Announced', priority: 'low' },
+              ];
+              const enabledFields = scholarshipDateTasks.filter(s => s.dateStr && dateCalFlags[s.field]);
+              for (const sdt of enabledFields) {
+                try {
+                  const dueDate = new Date(sdt.dateStr + 'T18:00:00');
+                  const weekNum = getWeekNumber(dueDate, semStart, readingWeekStart);
+                  await apiRequest("POST", "/api/tasks", {
+                    title: `${scholarshipForm.name} — ${sdt.label}`,
+                    type: "scholarship",
+                    dueDate: dueDate.toISOString(),
+                    weekNumber: Math.max(2, Math.min(currentMaxWeek, weekNum)),
+                    priority: sdt.priority,
+                    description: calDescription,
+                    referenceLink: scholarshipForm.applicationUrl || '',
+                  });
+                } catch (e) {
+                  console.error('Failed to create scholarship task:', e);
                 }
+              }
+              if (enabledFields.length > 0) {
                 queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
-                if (scholarshipForm.applicationsOpen || scholarshipForm.deadline) {
-                  try {
-                    await fetch('/api/scholarships/calendar-events', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({
-                        name: scholarshipForm.name,
-                        applicationsOpen: scholarshipForm.applicationsOpen,
-                        deadline: scholarshipForm.deadline,
-                        documentsDeadline: scholarshipForm.documentsDeadline,
-                        interviewDate: scholarshipForm.interviewDate,
-                        winnersAnnounced: scholarshipForm.winnersAnnounced,
-                        description: calDescription,
-                        recurring: scholarshipForm.recurring,
-                      }),
-                    });
-                  } catch (e) {
-                    console.error('Failed to create scholarship calendar events:', e);
-                  }
+                try {
+                  await fetch('/api/scholarships/calendar-events', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      name: scholarshipForm.name,
+                      applicationsOpen: dateCalFlags.applicationsOpen ? scholarshipForm.applicationsOpen : '',
+                      deadline: dateCalFlags.deadline ? scholarshipForm.deadline : '',
+                      documentsDeadline: dateCalFlags.documentsDeadline ? scholarshipForm.documentsDeadline : '',
+                      interviewDate: dateCalFlags.interviewDate ? scholarshipForm.interviewDate : '',
+                      winnersAnnounced: dateCalFlags.winnersAnnounced ? scholarshipForm.winnersAnnounced : '',
+                      description: calDescription,
+                      recurring: scholarshipForm.recurring,
+                    }),
+                  });
+                } catch (e) {
+                  console.error('Failed to create scholarship calendar events:', e);
                 }
               }
               const updated = await fetch('/api/scholarships').then(r => r.json());
@@ -23355,7 +23380,7 @@ export default function Dashboard() {
                         const pct = totalSpan && totalSpan > 0 ? Math.min(100, Math.max(0, (elapsed / totalSpan) * 100)) : daysRemaining !== null && daysRemaining <= 0 ? 100 : 0;
                         const barColor = daysRemaining === null ? 'rgba(255,255,255,0.2)' : daysRemaining <= 0 ? '#ef4444' : daysRemaining <= 3 ? '#ef4444' : daysRemaining <= 7 ? '#f97316' : daysRemaining <= 14 ? '#eab308' : '#22c55e';
                         return (
-                        <tr key={s.id} className="border-b border-white/10 hover:bg-white/5 transition-colors cursor-pointer" onClick={() => { setEditingScholarshipId(s.id); setScholarshipForm({ name: s.name, organization: s.organization, amount: (s as any).amount || '', applicationsOpen: (s as any).applicationsOpen || '', deadline: (s as any).deadline || '', documentsDeadline: (s as any).documentsDeadline || (s as any).documents_deadline || '', interviewDate: (s as any).interviewDate || (s as any).interview_date || '', winnersAnnounced: (s as any).winnersAnnounced || '', applicationUrl: (s as any).applicationUrl || '', contactInfo: (s as any).contactInfo || '', additionalInfo: (s as any).additionalInfo || '', recurring: true }); setScholarshipWizardStep(0); setScholarshipWizardOpen(true); }} data-testid={`scholarship-row-${s.id}`}>
+                        <tr key={s.id} className="border-b border-white/10 hover:bg-white/5 transition-colors cursor-pointer" onClick={() => { setViewingScholarshipId(s.id); }} data-testid={`scholarship-row-${s.id}`}>
                           <td className="px-3 py-2.5 font-medium">{s.name}</td>
                           <td className="px-3 py-2.5 text-white/70">{s.organization}</td>
                           <td className="px-3 py-2.5 text-white/70">{s.amount ? (s.amount.startsWith('$') ? s.amount : `$${s.amount}`) : '—'}</td>
@@ -23404,6 +23429,115 @@ export default function Dashboard() {
                   Close
                 </button>
               </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          {/* Scholarship Details (Read-only) */}
+          <Dialog open={!!viewingScholarship} onOpenChange={(open) => { if (!open) setViewingScholarshipId(null); }}>
+            <DialogContent className="max-w-lg text-[11px] text-white [&_*]:text-white p-0 [&>button.absolute]:hidden overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25)' }}>
+              <DialogTitle className="sr-only">Scholarship Details</DialogTitle>
+              {viewingScholarship && (() => {
+                const s: any = viewingScholarship;
+                const fmtDate = (d: string | null | undefined) => d ? new Date(d + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+                const isUrl = (v: string | null | undefined) => !!v && /^(https?:\/\/|www\.)/i.test(v.trim());
+                const isEmail = (v: string | null | undefined) => !!v && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
+                const renderLinky = (v: string | null | undefined, testId: string) => {
+                  if (!v) return <span className="text-white/40">—</span>;
+                  if (isUrl(v)) {
+                    const href = v.startsWith('http') ? v : `https://${v}`;
+                    return <a href={href} target="_blank" rel="noopener noreferrer" className="text-blue-300 hover:text-blue-200 underline break-all" data-testid={testId}>{v}</a>;
+                  }
+                  if (isEmail(v)) {
+                    return <a href={`mailto:${v}`} className="text-blue-300 hover:text-blue-200 underline break-all" data-testid={testId}>{v}</a>;
+                  }
+                  return <span data-testid={testId}>{v}</span>;
+                };
+                const renderTextWithLinks = (text: string | null | undefined, testId: string) => {
+                  if (!text) return <span className="text-white/40">—</span>;
+                  const parts = text.split(/(https?:\/\/\S+|www\.\S+|[^\s@]+@[^\s@]+\.[^\s@]+)/g);
+                  return (
+                    <span className="whitespace-pre-wrap break-words" data-testid={testId}>
+                      {parts.map((p, i) => {
+                        if (/^https?:\/\//i.test(p) || /^www\./i.test(p)) {
+                          const href = p.startsWith('http') ? p : `https://${p}`;
+                          return <a key={i} href={href} target="_blank" rel="noopener noreferrer" className="text-blue-300 hover:text-blue-200 underline">{p}</a>;
+                        }
+                        if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p)) {
+                          return <a key={i} href={`mailto:${p}`} className="text-blue-300 hover:text-blue-200 underline">{p}</a>;
+                        }
+                        return <span key={i}>{p}</span>;
+                      })}
+                    </span>
+                  );
+                };
+                return (
+                  <>
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+                      <div className="flex items-center gap-2 min-w-0">
+                        <Award className="text-white flex-shrink-0" style={{ width: '15px', height: '15px' }} />
+                        <h2 className="font-normal text-white truncate" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '13px' }} data-testid="text-scholarship-detail-title">{s.name}</h2>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => openWizardForEdit(s)}
+                          className="text-white hover:text-white/80 transition-colors p-1.5 rounded hover:bg-white/10"
+                          title="Edit scholarship"
+                          data-testid="button-edit-scholarship-detail"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </button>
+                        <button onClick={() => setViewingScholarshipId(null)} className="text-white hover:text-white/80 transition-colors p-1" data-testid="button-close-scholarship-detail">
+                          <X className="h-5 w-5" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="p-5 space-y-3 max-h-[70vh] overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
+                      <div>
+                        <div className="text-[10px] uppercase tracking-wide text-white/50 mb-1">Organization</div>
+                        <div className="text-[12px]" data-testid="text-scholarship-detail-org">{s.organization || '—'}</div>
+                      </div>
+                      <div>
+                        <div className="text-[10px] uppercase tracking-wide text-white/50 mb-1">Amount</div>
+                        <div className="text-[14px] font-semibold text-green-300" data-testid="text-scholarship-detail-amount">{s.amount ? (s.amount.startsWith('$') ? s.amount : `$${s.amount}`) : '—'}</div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3 pt-1 border-t border-white/10">
+                        <div>
+                          <div className="text-[10px] uppercase tracking-wide text-white/50 mb-1">Applications Open</div>
+                          <div className="text-[12px]" data-testid="text-scholarship-detail-open">{fmtDate(s.applicationsOpen)}</div>
+                        </div>
+                        <div>
+                          <div className="text-[10px] uppercase tracking-wide text-white/50 mb-1">Application Deadline</div>
+                          <div className="text-[12px] font-semibold" data-testid="text-scholarship-detail-deadline">{fmtDate(s.deadline)}</div>
+                        </div>
+                        <div>
+                          <div className="text-[10px] uppercase tracking-wide text-white/50 mb-1">Documents Due</div>
+                          <div className="text-[12px]" data-testid="text-scholarship-detail-docs">{fmtDate(s.documentsDeadline || s.documents_deadline)}</div>
+                        </div>
+                        <div>
+                          <div className="text-[10px] uppercase tracking-wide text-white/50 mb-1">Interview Date</div>
+                          <div className="text-[12px]" data-testid="text-scholarship-detail-interview">{fmtDate(s.interviewDate || s.interview_date)}</div>
+                        </div>
+                        <div className="col-span-2">
+                          <div className="text-[10px] uppercase tracking-wide text-white/50 mb-1">Winners Announced</div>
+                          <div className="text-[12px]" data-testid="text-scholarship-detail-winners">{fmtDate(s.winnersAnnounced)}</div>
+                        </div>
+                      </div>
+                      <div className="pt-1 border-t border-white/10">
+                        <div className="text-[10px] uppercase tracking-wide text-white/50 mb-1">Application URL</div>
+                        <div className="text-[12px]">{renderLinky(s.applicationUrl, 'link-scholarship-detail-url')}</div>
+                      </div>
+                      <div>
+                        <div className="text-[10px] uppercase tracking-wide text-white/50 mb-1">Contact</div>
+                        <div className="text-[12px]">{renderTextWithLinks(s.contactInfo, 'text-scholarship-detail-contact')}</div>
+                      </div>
+                      <div>
+                        <div className="text-[10px] uppercase tracking-wide text-white/50 mb-1">Additional Information</div>
+                        <div className="text-[12px]">{renderTextWithLinks(s.additionalInfo, 'text-scholarship-detail-info')}</div>
+                      </div>
+                    </div>
+                  </>
+                );
+              })()}
             </DialogContent>
           </Dialog>
 
@@ -23469,16 +23603,30 @@ export default function Dashboard() {
                     </label>
                   </div>
                 ) : wizardSteps[scholarshipWizardStep].isDate ? (
-                  <input
-                    type="date"
-                    value={scholarshipForm[wizardSteps[scholarshipWizardStep].field]}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      setScholarshipForm(p => ({ ...p, [wizardSteps[scholarshipWizardStep].field]: val }));
-                    }}
-                    className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
-                    data-testid={`input-scholarship-${wizardSteps[scholarshipWizardStep].field}`}
-                  />
+                  <div className="space-y-2">
+                    <input
+                      type="date"
+                      value={scholarshipForm[wizardSteps[scholarshipWizardStep].field]}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setScholarshipForm(p => ({ ...p, [wizardSteps[scholarshipWizardStep].field]: val }));
+                      }}
+                      className="w-full px-3 py-2 rounded border border-white/20 bg-white/5 text-white text-[11px] focus:outline-none focus:border-white/40 [color-scheme:dark]"
+                      data-testid={`input-scholarship-${wizardSteps[scholarshipWizardStep].field}`}
+                    />
+                    <label className="flex items-center gap-2 cursor-pointer select-none" data-testid={`toggle-cal-${wizardSteps[scholarshipWizardStep].field}`}>
+                      <input
+                        type="checkbox"
+                        checked={!!dateCalFlags[wizardSteps[scholarshipWizardStep].field]}
+                        onChange={(e) => { const f = wizardSteps[scholarshipWizardStep].field; const c = e.target.checked; setDateCalFlags(p => ({ ...p, [f]: c })); }}
+                        className="h-4 w-4 rounded border-white/30 bg-white/10 accent-blue-400 cursor-pointer"
+                        data-testid={`checkbox-cal-${wizardSteps[scholarshipWizardStep].field}`}
+                      />
+                      <span className="text-[11px] text-white/80 inline-flex items-center gap-1">
+                        <CalendarPlus className="h-3 w-3" /> Add to calendar
+                      </span>
+                    </label>
+                  </div>
                 ) : (wizardSteps[scholarshipWizardStep] as any).isCurrency ? (
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/60 text-[11px] pointer-events-none">$</span>
