@@ -1550,6 +1550,58 @@ export default function Dashboard() {
   const savedGlassRightRef = useRef<number | null>(null);
   const savedGlassWidthRef = useRef<number | null>(null);
   const [blankBoxOpen, setBlankBoxOpen] = useState(() => localStorage.getItem('blankBoxOpen') === '1');
+  const [odStatus, setOdStatus] = useState<{ connected: boolean; tokenWorks: boolean | null; reason?: string } | null>(null);
+  const [odReauthOpen, setOdReauthOpen] = useState(false);
+  const [odReauthCode, setOdReauthCode] = useState<string | null>(null);
+  const [odReauthErr, setOdReauthErr] = useState<string | null>(null);
+  const [odReauthBusy, setOdReauthBusy] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    const check = async () => {
+      try {
+        const r = await fetch('/api/onedrive/status');
+        const d = await r.json();
+        if (!cancelled) setOdStatus(d);
+      } catch {}
+    };
+    check();
+    const id = setInterval(check, 120_000);
+    return () => { cancelled = true; clearInterval(id); };
+  }, []);
+  useEffect(() => {
+    if (!odReauthOpen || !odReauthCode) return;
+    let cancelled = false;
+    const poll = setInterval(async () => {
+      try {
+        const r = await fetch('/api/onedrive/status?force=1');
+        const d = await r.json();
+        if (cancelled) return;
+        setOdStatus(d);
+        if (d.connected && d.tokenWorks) {
+          setOdReauthOpen(false);
+          setOdReauthCode(null);
+        }
+      } catch {}
+    }, 4000);
+    return () => { cancelled = true; clearInterval(poll); };
+  }, [odReauthOpen, odReauthCode]);
+  const startOdReauth = async () => {
+    setOdReauthOpen(true);
+    setOdReauthErr(null);
+    setOdReauthCode(null);
+    setOdReauthBusy(true);
+    try {
+      const r = await fetch('/api/onedrive/auth', { method: 'POST' });
+      const d = await r.json();
+      if (d.error) setOdReauthErr(d.error);
+      else if (d.user_code) setOdReauthCode(d.user_code);
+      else setOdReauthErr('No code returned');
+    } catch (e: any) {
+      setOdReauthErr(e?.message || String(e));
+    } finally {
+      setOdReauthBusy(false);
+    }
+  };
   const [blankBoxAnimating, setBlankBoxAnimating] = useState(false);
   const [blankCanvasNotes, setBlankCanvasNotes] = useState(() => localStorage.getItem('blankCanvasNotes') || '');
   const blankEditorRef = useRef<HTMLDivElement>(null);
@@ -39442,6 +39494,31 @@ export default function Dashboard() {
           existingSchool={schoolData}
           existingCourses={coursesData?.courses}
         />
+      )}
+      {odStatus && odStatus.tokenWorks === false && !odReauthOpen && (
+        <button
+          onClick={startOdReauth}
+          data-testid="button-onedrive-reconnect"
+          style={{ position: 'fixed', bottom: 8, left: 8, zIndex: 9998, background: 'rgba(220,38,38,0.92)', color: 'white', border: 'none', padding: '6px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}
+        >OneDrive disconnected — Reconnect</button>
+      )}
+      {odReauthOpen && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }} data-testid="modal-onedrive-reauth">
+          <div style={{ background: '#132f4c', color: '#e0e0e0', borderRadius: 12, padding: 28, maxWidth: 460, width: '90%', textAlign: 'center', fontFamily: 'system-ui' }}>
+            <h2 style={{ margin: 0, color: '#90caf9', fontSize: 20 }}>Reconnect OneDrive</h2>
+            {odReauthBusy && <p style={{ marginTop: 16 }}>Starting…</p>}
+            {odReauthErr && <p style={{ marginTop: 16, color: '#ef9a9a' }}>Error: {odReauthErr}</p>}
+            {odReauthCode && (
+              <>
+                <p style={{ marginTop: 16 }}>Go to <a href="https://microsoft.com/devicelogin" target="_blank" rel="noreferrer" style={{ color: '#64b5f6' }}>microsoft.com/devicelogin</a></p>
+                <p>Enter this code:</p>
+                <div data-testid="text-onedrive-code" style={{ fontSize: 32, fontWeight: 'bold', color: '#90caf9', letterSpacing: 4, margin: '14px 0' }}>{odReauthCode}</div>
+                <p style={{ fontSize: 13, color: '#aaa' }}>Waiting for sign-in… this will close automatically when complete.</p>
+              </>
+            )}
+            <button onClick={() => { setOdReauthOpen(false); setOdReauthCode(null); setOdReauthErr(null); }} data-testid="button-onedrive-close" style={{ marginTop: 18, background: '#1976d2', color: 'white', border: 'none', padding: '8px 18px', borderRadius: 6, cursor: 'pointer', fontSize: 13 }}>Close</button>
+          </div>
+        </div>
       )}
     </div>
   );
