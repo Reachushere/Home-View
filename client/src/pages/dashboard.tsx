@@ -34765,14 +34765,24 @@ export default function Dashboard() {
               <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 4px', margin: '-8px 0', height: 'calc(100% + 16px)', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => { if (isViewingCurrentWeekRef.current && !showActualCurrentWeek) { setShowActualCurrentWeek(true); return; } const newWeek = selectedWeek - 1; setShowActualCurrentWeek(false); calendarDrivingScrollRef.current = true; setTimeout(() => { calendarDrivingScrollRef.current = false; }, 1200); startTransition(() => setSelectedWeek(newWeek)); if (timelineSyncRef.current && newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }} data-testid="button-pill-prev-week"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>◀</span></div>
               <span data-testid="text-week-dates" style={{ fontSize: '10px', fontWeight: 500, color: '#000', whiteSpace: 'nowrap', lineHeight: 1, letterSpacing: '0.3px', flex: 1, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px' }}>
                 {(() => {
-                  const startMonth = format(weekStartDate, 'MMMM');
-                  const endMonth = format(weekEndDate, 'MMMM');
+                  const startMonth = format(weekStartDate, 'MMM');
+                  const endMonth = format(weekEndDate, 'MMM');
                   const startDay = format(weekStartDate, 'd');
                   const endDay = format(weekEndDate, 'd');
                   const startDow = format(weekStartDate, 'EEE');
                   const endDow = format(weekEndDate, 'EEE');
                   const year = format(weekEndDate, 'yyyy');
-                  return `${startDow} ${startMonth} ${startDay} - ${endDow} ${endMonth} ${endDay}, ${year}`;
+                  const semType = (semesterSettings?.semesterType || '').toLowerCase();
+                  const semYear = (semesterSettings?.semesterName || '').match(/\d{4}/)?.[0] || year;
+                  const yr2 = semYear.slice(-2);
+                  const semAbbrev = semType === 'spring_summer' ? `S/S ${yr2}`
+                    : semType === 'fall' ? `F${yr2}`
+                    : semType === 'winter' ? `W${yr2}`
+                    : '';
+                  const datePart = `${startDow} ${startMonth} ${startDay} - ${endDow} ${endMonth} ${endDay}`;
+                  return semAbbrev
+                    ? `${semAbbrev} · Wk ${selectedWeek} · ${datePart}`
+                    : `Wk ${selectedWeek} · ${datePart}, ${year}`;
                 })()}
               </span>
               <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 4px', margin: '-8px 0', height: 'calc(100% + 16px)', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => { if (showActualCurrentWeek) { setShowActualCurrentWeek(false); return; } const newWeek = selectedWeek + 1; calendarDrivingScrollRef.current = true; setTimeout(() => { calendarDrivingScrollRef.current = false; }, 1200); startTransition(() => setSelectedWeek(newWeek)); if (timelineSyncRef.current && newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }} data-testid="button-pill-next-week"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▶</span></div>
