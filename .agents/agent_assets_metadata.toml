@@ -491,3 +491,9 @@ id = "PIbcQv9ObHxZdo-vLx44H"
 uri = "file://attached_assets/new_dashboard_merged.yaml"
 type = "unspecified"
 title = "Merged dashboard config (old coords + Rascal timer)"
+
+[[outputs]]
+id = "FEQ8Ue7S4K4Z6IKqBgRQU"
+uri = "file://scripts/test-home-card.yaml"
+type = "unspecified"
+title = "Test-home picture-elements card (March 26 backup, 121 elements)"
