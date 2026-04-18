@@ -35502,16 +35502,24 @@ export default function Dashboard() {
               <Minimize2 className="h-3 w-3 text-white" />
             </button>
           )}
-          {/* Minimize dock button — top-right, mirrors expansion dock style */}
+          {/* Minimize dock button — top-right, mirrors expansion dock style. Minimizes HW and opens Notes box. */}
           <button
             onClick={() => {
               if (hwMinimizeAnim !== 'idle' || blankMinimizeAnim !== 'idle') return;
+              if (blankBoxOpen) return;
               applyMinimizeOrigin('hw', 'homework', false);
+              applyMinimizeOrigin('blank', 'notes', false);
+              setBlankBoxMinimizedToTab(false);
+              localStorage.removeItem('blankBoxMinimizedToTab');
+              setHomeworkMinimized(true);
+              localStorage.setItem('homeworkMinimized', '1');
+              setBlankBoxOpen(true);
+              localStorage.setItem('blankBoxOpen', '1');
               setHwMinimizeAnim('minimizing');
+              setBlankMinimizeAnim('restoring');
               setTimeout(() => {
-                localStorage.setItem('homeworkMinimized', '1');
-                setHomeworkMinimized(true);
                 setHwMinimizeAnim('idle');
+                setBlankMinimizeAnim('idle');
               }, 580);
             }}
             className="absolute z-[70] rounded-tr-[11px] rounded-bl-[4px] rounded-tl-[2px] rounded-br-[2px] flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors"
