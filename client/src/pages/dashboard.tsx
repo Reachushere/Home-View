@@ -11882,6 +11882,24 @@ export default function Dashboard() {
     const readingWeek = semesterSettings?.readingWeekStart || null;
     const approx = getWeekDates(selectedWeek, semStart, readingWeek);
     const sems = allSemesterSettingsRef.current || [];
+    // Real-world today: if today doesn't fall within any active semester, anchor on today's Mon-Sun
+    const _today = new Date();
+    let _todayInActiveSem = false;
+    for (const sem of sems) {
+      if (!sem.semesterStartDate) continue;
+      const ss = new Date(sem.semesterStartDate);
+      const rw = sem.readingWeekStart || null;
+      const wnToday = getWeekNumber(_today, ss, rw);
+      const maxW = getSemesterTotalWeeks(sem.semesterType);
+      if (wnToday >= 1 && wnToday <= maxW) { _todayInActiveSem = true; break; }
+    }
+    if (!_todayInActiveSem) {
+      const dow = _today.getDay();
+      const daysSinceMon = dow === 0 ? 6 : dow - 1;
+      const mon = new Date(_today.getFullYear(), _today.getMonth(), _today.getDate() - daysSinceMon, 12);
+      const sun = new Date(mon.getFullYear(), mon.getMonth(), mon.getDate() + 6, 12);
+      return { start: mon, end: sun };
+    }
     if (sems.length > 0) {
       const midDate = new Date(approx.start.getTime() + 3 * 24 * 60 * 60 * 1000);
       for (const sem of sems) {
