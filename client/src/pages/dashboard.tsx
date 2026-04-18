@@ -473,15 +473,27 @@ export default function Dashboard() {
   }, []);
   
   const [selectedWeek, setSelectedWeek] = useState<number>(() => {
+    // Only restore the saved selectedWeek if it was saved TODAY (same calendar day).
+    // Otherwise fall through to the auto-anchor effect below which will set it to
+    // today's week once the weeks list loads. Using sentinel 0 means
+    // selectedWeekInfo will be undefined and the fallback to current Mon-Sun runs
+    // until the effect lands on the right week.
     try {
       const saved = localStorage.getItem('unical_selectedWeek');
-      const n = saved ? parseInt(saved, 10) : NaN;
-      if (Number.isFinite(n) && n >= 1 && n <= 15) return n;
+      const savedDay = localStorage.getItem('unical_selectedWeek_day');
+      const todayDay = new Date().toDateString();
+      if (saved && savedDay === todayDay) {
+        const n = parseInt(saved, 10);
+        if (Number.isFinite(n)) return n;
+      }
     } catch {}
-    return 1;
+    return 0;
   });
   useEffect(() => {
-    localStorage.setItem('unical_selectedWeek', String(selectedWeek));
+    try {
+      localStorage.setItem('unical_selectedWeek', String(selectedWeek));
+      localStorage.setItem('unical_selectedWeek_day', new Date().toDateString());
+    } catch {}
   }, [selectedWeek]);
   const [calendarWeekMode, setCalendarWeekMode] = useState<'current' | 'next'>(() => {
     const saved = localStorage.getItem('calendarWeekMode');
@@ -7303,19 +7315,41 @@ export default function Dashboard() {
   };
   const lastAutoWeekDateRef = useRef(new Date().getDate());
   const lastSyncedSemKeyRef = useRef<string | null>(null);
-  // Auto-resync of selectedWeek is intentionally disabled per user requirement:
-  // the calendar must NEVER auto-change when a semester ends, gets extended,
-  // refetches, or the date rolls over. Only explicit user navigation (arrows,
-  // date pills, etc.) can change the displayed week. The one-time initial
-  // selectedWeek comes from localStorage (or defaults to 1) in the useState
-  // initializer above.
+  const didInitialAnchorRef = useRef(false);
+  // Auto-resync of selectedWeek is disabled per user requirement: the calendar
+  // must NEVER auto-change once the user is using it. The ONLY exception is the
+  // initial anchor below — on first page load (sentinel selectedWeek === 0),
+  // anchor to today's week from the active semester. After that, only explicit
+  // user navigation (arrows, date pills) changes the displayed week.
   useEffect(() => {
     if (weeks.length === 0) return;
-    // Track the semester key for non-mutating uses elsewhere, but never
-    // call setSelectedWeek from here.
     lastSyncedSemKeyRef.current = weeks[0]?.startDate || null;
-    lastAutoWeekDateRef.current = new Date().getDate();
-  }, [weeks]);
+    if (didInitialAnchorRef.current) return;
+    if (selectedWeek !== 0) { didInitialAnchorRef.current = true; return; }
+    const today = new Date();
+    const currentWeek = findCurrentWeekFromList(weeks, today);
+    if (currentWeek) {
+      didInitialAnchorRef.current = true;
+      setSelectedWeek(currentWeek.weekNumber);
+      return;
+    }
+    // Today not in active semester's week list — try other configured semesters
+    const sems = allSemesterSettingsRef.current || [];
+    for (const sem of sems) {
+      if (!sem.semesterStartDate) continue;
+      const ss = new Date(sem.semesterStartDate);
+      const rw = sem.readingWeekStart || null;
+      const wn = getWeekNumber(today, ss, rw);
+      const maxW = getSemesterTotalWeeks(sem.semesterType);
+      if (wn >= 1 && wn <= maxW) {
+        didInitialAnchorRef.current = true;
+        setSelectedWeek(wn);
+        return;
+      }
+    }
+    // Between semesters: leave at sentinel 0 so the Mon-Sun fallback renders.
+    didInitialAnchorRef.current = true;
+  }, [weeks, selectedWeek]);
 
   const { data: allTasksRaw = [] } = useQuery<Task[]>({
     queryKey: ["/api/tasks"],
