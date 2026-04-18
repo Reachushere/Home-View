@@ -520,6 +520,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
     });
   }, []);
   const [copiedOrbId, setCopiedOrbId] = useState<string | null>(null);
+  const [hoveredOrbKey, setHoveredOrbKey] = useState<string | null>(null);
   const copyOrbContent = useCallback((key: string, content: string) => {
     navigator.clipboard.writeText(content || '').then(() => {
       setCopiedOrbId(key);
@@ -1695,7 +1696,9 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
               <div
                 data-orb-bubble={msg.role === 'system' ? undefined : '1'}
                 onClick={isOrb ? () => toggleOrbExpanded(orbKey) : undefined}
-                title={isOrb ? (orbExpanded ? 'Click to collapse' : 'Click to scroll full text') : undefined}
+                onMouseEnter={isOrb ? () => setHoveredOrbKey(orbKey) : undefined}
+                onMouseLeave={isOrb ? () => setHoveredOrbKey((k) => (k === orbKey ? null : k)) : undefined}
+                title={isOrb ? (orbExpanded ? 'Click to collapse' : 'Hover to preview · Click to scroll full text') : undefined}
                 style={{
                 maxWidth: msg.role === 'system' ? '70%' : (isOrb ? undefined : (hasCodeBlock ? '65%' : '65%')),
                 width: isOrb ? `${orbWidth}px` : (msg.role === 'system' ? 'auto' : (hasCodeBlock ? '65%' : undefined)),
@@ -1748,6 +1751,51 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 wordBreak: 'break-word',
                 position: 'relative',
               }}>
+                {isOrb && hoveredOrbKey === orbKey && !orbExpanded && (msg.content || '').trim().length > 0 && (
+                  <div
+                    data-testid={`orb-hover-preview-${orbKey}`}
+                    style={{
+                      position: 'absolute',
+                      bottom: 'calc(100% + 12px)',
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      width: 'min(420px, 70vw)',
+                      maxHeight: '50vh',
+                      overflowY: 'auto',
+                      padding: '12px 14px',
+                      borderRadius: '14px',
+                      background: 'rgba(20, 18, 38, 0.96)',
+                      color: '#fff',
+                      fontSize: '12px',
+                      fontFamily: "'Poppins', 'Nunito', 'Avenir Next', 'SF Pro Rounded', system-ui, sans-serif",
+                      fontWeight: 400,
+                      lineHeight: 1.45,
+                      letterSpacing: '-0.005em',
+                      whiteSpace: 'pre-wrap',
+                      wordBreak: 'break-word',
+                      textAlign: 'left',
+                      boxShadow: '0 12px 40px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.12)',
+                      zIndex: 200,
+                      pointerEvents: 'none',
+                      backdropFilter: 'blur(6px)',
+                    }}
+                  >
+                    {msg.content}
+                    <div
+                      style={{
+                        position: 'absolute',
+                        bottom: '-6px',
+                        left: '50%',
+                        transform: 'translateX(-50%) rotate(45deg)',
+                        width: '12px',
+                        height: '12px',
+                        background: 'rgba(20, 18, 38, 0.96)',
+                        borderRight: '1px solid rgba(255,255,255,0.12)',
+                        borderBottom: '1px solid rgba(255,255,255,0.12)',
+                      }}
+                    />
+                  </div>
+                )}
                 {msg.role !== 'system' && (msg.content || '').trim().length > 0 && (
                   <button
                     onClick={(e) => { e.stopPropagation(); copyOrbContent(String(orbKey), msg.content || ''); }}
