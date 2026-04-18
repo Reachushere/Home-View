@@ -2604,6 +2604,26 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
     try { await navigator.clipboard.writeText(text); setCiteCopied(key); setTimeout(() => setCiteCopied(null), 1500); } catch {}
   }, []);
   const [isAiChatOpen, setIsAiChatOpen] = useState(false);
+  const [aiChatDragOffset, setAiChatDragOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const aiChatDragRef = useRef<{ startX: number; startY: number; baseX: number; baseY: number } | null>(null);
+  const onAiChatDragStart = (e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest('button, select, input, textarea')) return;
+    e.preventDefault();
+    aiChatDragRef.current = { startX: e.clientX, startY: e.clientY, baseX: aiChatDragOffset.x, baseY: aiChatDragOffset.y };
+    const onMove = (ev: MouseEvent) => {
+      if (!aiChatDragRef.current) return;
+      const dx = ev.clientX - aiChatDragRef.current.startX;
+      const dy = ev.clientY - aiChatDragRef.current.startY;
+      setAiChatDragOffset({ x: aiChatDragRef.current.baseX + dx, y: aiChatDragRef.current.baseY + dy });
+    };
+    const onUp = () => {
+      aiChatDragRef.current = null;
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  };
   const [aiChatMessages, setAiChatMessages] = useState<{ role: 'user' | 'assistant'; content: string; essayHtml?: string; essayMeta?: { wordCount: number; sourceCount: number; citationStyle: string; references: string[] } }[]>([]);
   const [aiChatInput, setAiChatInput] = useState('');
   const [aiChatLoading, setAiChatLoading] = useState(false);
@@ -4869,9 +4889,14 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
           display: 'flex',
           flexDirection: 'column',
           boxShadow: '0 12px 40px rgba(10,42,94,0.6), 0 4px 12px rgba(0,0,0,0.3)',
+          transform: `translate(${aiChatDragOffset.x}px, ${aiChatDragOffset.y}px)`,
         }}
         data-testid="ai-chat-panel">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', borderBottom: '1px solid rgba(255,255,255,0.15)' }}>
+          <div
+            onMouseDown={onAiChatDragStart}
+            onDoubleClick={() => setAiChatDragOffset({ x: 0, y: 0 })}
+            title="Drag to move • Double-click header to reset position"
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', borderBottom: '1px solid rgba(255,255,255,0.15)', cursor: 'grab', userSelect: 'none' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <MessageSquare size={18} color="#ffffff" />
               <span style={{ fontSize: '15px', fontWeight: 700, color: '#fff', letterSpacing: '0.3px' }}>Study Assistant</span>
