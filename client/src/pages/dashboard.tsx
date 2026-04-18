@@ -6886,6 +6886,40 @@ export default function Dashboard() {
       color = (sem as any)[`${prefix}Color`] || color || '';
       colorEnd = (sem as any)[`${prefix}ColorEnd`] || colorEnd || '';
       colorStops = (sem as any)[`${prefix}ColorStops`] || colorStops || '';
+      // Fallback to the same per-semester default palette the calendar uses
+      // so the gradient selector in the edit dialog opens with the colours
+      // already shown on the course row (instead of generic gray).
+      if (!color || !colorEnd) {
+        const semDefaultPalettesDlg: Record<string, Array<{ start: string; end: string }>> = {
+          'ss2025': [{ start: '#e67e22', end: '#f0b778' }, { start: '#2ecc71', end: '#a3e4b8' }, { start: '#9b59b6', end: '#d2a8e0' }],
+          'f2025': [{ start: '#e74c3c', end: '#f1a09a' }, { start: '#3498db', end: '#89c4e8' }, { start: '#f1c40f', end: '#f7dc6f' }],
+          'w2026': [{ start: '#22c55e', end: '#AACD9F' }, { start: '#3b82f6', end: '#FFC3C6' }, { start: '#a855f7', end: '#E9C6F0' }],
+          'ss2026': [{ start: '#f97316', end: '#fdba74' }, { start: '#06b6d4', end: '#67e8f9' }, { start: '#ec4899', end: '#f9a8d4' }],
+          'f2026': [{ start: '#dc2626', end: '#fca5a5' }, { start: '#8b5cf6', end: '#c4b5fd' }, { start: '#14b8a6', end: '#5eead4' }],
+          'w2027': [{ start: '#0ea5e9', end: '#7dd3fc' }, { start: '#f59e0b', end: '#fcd34d' }, { start: '#d946ef', end: '#f0abfc' }],
+          'ss2027': [{ start: '#84cc16', end: '#bef264' }, { start: '#6366f1', end: '#a5b4fc' }, { start: '#f43f5e', end: '#fda4af' }],
+          'f2027': [{ start: '#f472b6', end: '#fbcfe8' }, { start: '#10b981', end: '#6ee7b7' }, { start: '#7c3aed', end: '#c4b5fd' }],
+          'w2028': [{ start: '#eab308', end: '#fde047' }, { start: '#0891b2', end: '#67e8f9' }, { start: '#be185d', end: '#f9a8d4' }],
+          'ss2028': [{ start: '#4ade80', end: '#bbf7d0' }, { start: '#e11d48', end: '#fda4af' }, { start: '#2563eb', end: '#93c5fd' }],
+          'f2028': [{ start: '#c084fc', end: '#e9d5ff' }, { start: '#ea580c', end: '#fdba74' }, { start: '#059669', end: '#6ee7b7' }],
+          'w2029': [{ start: '#38bdf8', end: '#bae6fd' }, { start: '#e879f9', end: '#f5d0fe' }, { start: '#65a30d', end: '#bef264' }],
+        };
+        // Determine the semester key (e.g. 'w2027') so we can pick the right palette.
+        let dlgSemKey = (detailSemKey || '').toLowerCase();
+        if (!dlgSemKey) {
+          const semType = (sem as any).semesterType || '';
+          const yr = (() => { const m = ((sem as any).semesterName || '').match(/\d{4}/); return m ? m[0] : ''; })();
+          if (yr) {
+            if (semType === 'winter') dlgSemKey = `w${yr}`;
+            else if (semType === 'fall') dlgSemKey = `f${yr}`;
+            else if (semType === 'spring_summer') dlgSemKey = `ss${yr}`;
+          }
+        }
+        const palette = semDefaultPalettesDlg[dlgSemKey] || [{ start: '#6b7280', end: '#9ca3af' }];
+        const pair = palette[(slotNum - 1) % palette.length] || palette[0];
+        if (!color) color = pair.start;
+        if (!colorEnd) colorEnd = pair.end;
+      }
       borderColor = (sem as any)[`${prefix}BorderColor`] || borderColor || '';
       courseRowColor = (sem as any)[`${prefix}CourseRowColor`] || courseRowColor || '';
       taskBgColor = (sem as any)[`${prefix}TaskBgColor`] || taskBgColor || '';
