@@ -7365,19 +7365,11 @@ export default function Dashboard() {
       }
     }
 
-    // 4) Otherwise check any configured semester for a week containing midWeek.
-    for (const sem of sems) {
-      if (!sem.semesterStartDate) continue;
-      const ss = new Date(sem.semesterStartDate);
-      const rw = sem.readingWeekStart || null;
-      const wn = getWeekNumber(midWeek, ss, rw);
-      const maxW = getSemesterTotalWeeks(sem.semesterType);
-      if (wn >= 1 && wn <= maxW) {
-        setSelectedWeek(wn);
-        setInterSemDayOffset(0);
-        return;
-      }
-    }
+    // 4) Outside the active semester — go straight to gap mode. Do NOT remap
+    // the week number to a different semester, because the rest of the
+    // calendar/course rendering is tied to the ACTIVE semester's start date,
+    // and reusing another semester's week-number would render the wrong dates
+    // and hide course rows. Switching semesters is an explicit user action.
 
     // 5) Gap/inter-semester mode — set offset so today's Monday + offset == newStart.
     const today = new Date();
