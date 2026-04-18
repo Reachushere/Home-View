@@ -8,7 +8,7 @@ import AdminPanel from "@/components/AdminPanel";
 import UniCalLogo from "@/components/UniCalLogo";
 import CourseDocumentsWizard from "@/components/CourseDocumentsWizard";
 import NotepadDialog from "@/components/NotepadDialog";
-import AutomationsReference from "@/components/AutomationsReference";
+import AutomationsReference, { AutomationsContent } from "@/components/AutomationsReference";
 import { AutomationEditor } from "@/components/AutomationEditor";
 import FloatingPostIt from "@/components/FloatingPostIt";
 import OtherRowEditDialog from "@/components/OtherRowEditDialog";
@@ -3715,6 +3715,7 @@ export default function Dashboard() {
     return { ...defaultCourseDisplayNames };
   });
   const [isSettingsDialogOpen, setIsSettingsDialogOpen] = useState(false);
+  const [settingsAutomationsOpen, setSettingsAutomationsOpen] = useState(false);
   const [isAutomationsRefOpen, setIsAutomationsRefOpen] = useState(false);
   const [mobileSettingsPage, setMobileSettingsPage] = useState(-1);
   const mobileSettingsOpen = mobileSettingsPage >= 0;
@@ -30050,6 +30051,15 @@ export default function Dashboard() {
                 </div>
 
                 {/* Save/Cancel Settings Buttons */}
+                </div>
+                <div className="border rounded-lg p-3 space-y-2 col-span-2" data-automations-section="true" style={{ marginBottom: '8px' }}>
+                  <div className="flex items-center justify-between cursor-pointer" onClick={() => setSettingsAutomationsOpen(v => !v)} data-testid="toggle-settings-automations">
+                    <Label className="text-[10px] font-medium cursor-pointer">My Automations</Label>
+                    <span className="text-xs">{settingsAutomationsOpen ? '▼' : '▶'}</span>
+                  </div>
+                  {settingsAutomationsOpen && (
+                    <div className="pt-1"><AutomationsContent /></div>
+                  )}
                 </div>
                 <div className="flex justify-end gap-2" style={{ marginTop: '-3px' }}>
                   <Button 
