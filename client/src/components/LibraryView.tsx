@@ -2669,7 +2669,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
   const [aiChatLoading, setAiChatLoading] = useState(false);
   const [essayFormOpen, setEssayFormOpen] = useState(false);
   const [essayTopic, setEssayTopic] = useState('');
-  const [essayLengthMode, setEssayLengthMode] = useState<'words' | 'pages'>('words');
+  const [essayLengthMode, setEssayLengthMode] = useState<'words' | 'pages'>('pages');
   const [essayWords, setEssayWords] = useState(1200);
   const [essayPages, setEssayPages] = useState(4);
   const [essayStyle, setEssayStyle] = useState<'APA' | 'MLA' | 'Chicago'>('APA');
