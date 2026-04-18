@@ -7824,15 +7824,64 @@ export default function Dashboard() {
   const [newTickerText, setNewTickerText] = useState('');
   const [newTickerTag, setNewTickerTag] = useState('Custom');
   const [newTickerVisibleTo, setNewTickerVisibleTo] = useState<string[]>(['5747', '4201', '1010']);
+  const [newTickerExpiryDate, setNewTickerExpiryDate] = useState<string>('');
+  const [newTickerExpiryTime, setNewTickerExpiryTime] = useState<string>('11:59 PM');
+  const TICKER_TIME_OPTIONS = (() => {
+    const opts: string[] = [];
+    for (let h = 0; h < 24; h++) {
+      for (let m = 0; m < 60; m += 30) {
+        const period = h < 12 ? 'AM' : 'PM';
+        const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+        opts.push(`${h12}:${m.toString().padStart(2, '0')} ${period}`);
+      }
+    }
+    opts.push('11:59 PM');
+    return opts;
+  })();
+  const buildExpiryISO = (dateStr: string, timeStr: string): string | null => {
+    if (!dateStr) return null;
+    const m = timeStr.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+    if (!m) return null;
+    let h = parseInt(m[1]); const min = parseInt(m[2]); const period = m[3].toUpperCase();
+    if (period === 'PM' && h !== 12) h += 12;
+    if (period === 'AM' && h === 12) h = 0;
+    const [y, mo, d] = dateStr.split('-').map(Number);
+    const dt = new Date(y, mo - 1, d, h, min, 0, 0);
+    if (isNaN(dt.getTime())) return null;
+    return dt.toISOString();
+  };
+  const isoToDateTimeParts = (iso: string | null | undefined): { date: string; time: string } => {
+    if (!iso) return { date: '', time: '11:59 PM' };
+    const dt = new Date(iso);
+    if (isNaN(dt.getTime())) return { date: '', time: '11:59 PM' };
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    const date = `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}`;
+    let h = dt.getHours();
+    const min = dt.getMinutes();
+    const period = h < 12 ? 'AM' : 'PM';
+    const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+    const time = `${h12}:${pad(min)} ${period}`;
+    return { date, time };
+  };
   const addTickerMutation = useMutation({
-    mutationFn: async ({ body, tag, visibleTo }: { body: string; tag: string; visibleTo: string[] }) => {
-      const res = await apiRequest('POST', '/api/announcements', { body, courseName: tag, visibleTo });
+    mutationFn: async ({ body, tag, visibleTo, expiresAt }: { body: string; tag: string; visibleTo: string[]; expiresAt: string | null }) => {
+      const res = await apiRequest('POST', '/api/announcements', { body, courseName: tag, visibleTo, expiresAt });
       return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/announcements'] });
       setNewTickerText('');
       setNewTickerVisibleTo(['5747', '4201', '1010']);
+      setNewTickerExpiryDate('');
+      setNewTickerExpiryTime('11:59 PM');
+    },
+  });
+  const updateTickerExpiryMutation = useMutation({
+    mutationFn: async ({ id, expiresAt }: { id: number; expiresAt: string | null }) => {
+      await apiRequest('PATCH', `/api/announcements/${id}/expiry`, { expiresAt });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/announcements'] });
     },
   });
   const updateTickerVisibilityMutation = useMutation({
@@ -12850,6 +12899,57 @@ export default function Dashboard() {
                         {a.courseName === 'Custom' ? '📌' : a.courseName}
                       </span>
                       <span className="text-white text-[12px] flex-1 min-w-0 truncate text-left">{(a.body || a.snippet || a.subject || '').replace(/^\s*\[[^\]]*\]\s*/g, '')}</span>
+                      {!a._isSynthetic && (() => {
+                        const parts = isoToDateTimeParts(a.expiresAt);
+                        return (
+                          <div className="flex items-center gap-1 shrink-0 mr-1.5" data-testid={`ticker-expiry-${a.id}`}>
+                            <input
+                              type="date"
+                              value={parts.date}
+                              onChange={(e) => {
+                                const newDate = e.target.value;
+                                if (!newDate) {
+                                  updateTickerExpiryMutation.mutate({ id: a.id, expiresAt: null });
+                                } else {
+                                  const iso = buildExpiryISO(newDate, parts.time || '11:59 PM');
+                                  updateTickerExpiryMutation.mutate({ id: a.id, expiresAt: iso });
+                                }
+                              }}
+                              className="text-white/80 text-[9px] px-1 py-0.5 rounded focus:outline-none"
+                              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', colorScheme: 'dark', width: '95px' }}
+                              title="Expiry date (optional)"
+                              data-testid={`input-ticker-expiry-date-${a.id}`}
+                            />
+                            <select
+                              value={parts.time}
+                              disabled={!parts.date}
+                              onChange={(e) => {
+                                if (!parts.date) return;
+                                const iso = buildExpiryISO(parts.date, e.target.value);
+                                updateTickerExpiryMutation.mutate({ id: a.id, expiresAt: iso });
+                              }}
+                              className="text-white/80 text-[9px] px-1 py-0.5 rounded focus:outline-none disabled:opacity-30"
+                              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)' }}
+                              title="Expiry time (optional)"
+                              data-testid={`select-ticker-expiry-time-${a.id}`}
+                            >
+                              {TICKER_TIME_OPTIONS.map(t => (
+                                <option key={t} value={t} style={{ background: '#1a1a2e' }}>{t}</option>
+                              ))}
+                            </select>
+                            {parts.date && (
+                              <button
+                                onClick={() => updateTickerExpiryMutation.mutate({ id: a.id, expiresAt: null })}
+                                className="text-white/30 hover:text-white text-[9px] px-0.5"
+                                title="Clear expiry"
+                                data-testid={`button-clear-ticker-expiry-${a.id}`}
+                              >
+                                ✕
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })()}
                       {!a._isSynthetic && (
                         <div className="flex items-center gap-1 shrink-0">
                           {['5747', '4201', '1010'].map(p => {
@@ -12920,14 +13020,14 @@ export default function Dashboard() {
                 type="text"
                 value={newTickerText}
                 onChange={(e) => setNewTickerText(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter' && newTickerText.trim()) { addTickerMutation.mutate({ body: newTickerText.trim(), tag: newTickerTag, visibleTo: newTickerVisibleTo }); } }}
+                onKeyDown={(e) => { if (e.key === 'Enter' && newTickerText.trim()) { addTickerMutation.mutate({ body: newTickerText.trim(), tag: newTickerTag, visibleTo: newTickerVisibleTo, expiresAt: buildExpiryISO(newTickerExpiryDate, newTickerExpiryTime) }); } }}
                 placeholder="Add ticker item..."
                 className="flex-1 text-white text-[12px] px-3 py-2 rounded focus:outline-none placeholder:text-white/30"
                 style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
                 data-testid="input-new-ticker"
               />
               <button
-                onClick={() => { if (newTickerText.trim()) addTickerMutation.mutate({ body: newTickerText.trim(), tag: newTickerTag, visibleTo: newTickerVisibleTo }); }}
+                onClick={() => { if (newTickerText.trim()) addTickerMutation.mutate({ body: newTickerText.trim(), tag: newTickerTag, visibleTo: newTickerVisibleTo, expiresAt: buildExpiryISO(newTickerExpiryDate, newTickerExpiryTime) }); }}
                 disabled={!newTickerText.trim() || addTickerMutation.isPending}
                 className="shrink-0 disabled:opacity-40 text-white text-[12px] font-semibold px-3 py-2 rounded transition-colors hover:brightness-110"
                 style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 3px rgba(0,0,0,0.15)', border: '1px solid rgba(255,255,255,0.2)' }}
@@ -12959,6 +13059,39 @@ export default function Dashboard() {
                   </button>
                 );
               })}
+            </div>
+            <div className="flex items-center gap-1.5 px-4 pb-2 pt-1">
+              <span className="text-white/40 text-[9px] mr-1">Expires:</span>
+              <input
+                type="date"
+                value={newTickerExpiryDate}
+                onChange={(e) => setNewTickerExpiryDate(e.target.value)}
+                className="text-white text-[10px] px-1.5 py-0.5 rounded focus:outline-none"
+                style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', colorScheme: 'dark' }}
+                data-testid="input-new-ticker-expiry-date"
+              />
+              <select
+                value={newTickerExpiryTime}
+                onChange={(e) => setNewTickerExpiryTime(e.target.value)}
+                disabled={!newTickerExpiryDate}
+                className="text-white text-[10px] px-1.5 py-0.5 rounded focus:outline-none disabled:opacity-40"
+                style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+                data-testid="select-new-ticker-expiry-time"
+              >
+                {TICKER_TIME_OPTIONS.map(t => (
+                  <option key={t} value={t} style={{ background: '#1a1a2e' }}>{t}</option>
+                ))}
+              </select>
+              {newTickerExpiryDate && (
+                <button
+                  onClick={() => { setNewTickerExpiryDate(''); setNewTickerExpiryTime('11:59 PM'); }}
+                  className="text-white/40 hover:text-white text-[10px] px-1"
+                  data-testid="button-clear-new-ticker-expiry"
+                  title="Clear expiry"
+                >
+                  ✕
+                </button>
+              )}
             </div>
             <div className="flex items-center justify-end gap-2 px-4 py-3" style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}>
               <Button

@@ -10618,6 +10618,10 @@ async function pollStatus(timeout){
       const now = new Date();
       const active = [];
       for (const a of all) {
+        if (a.expiresAt && new Date(a.expiresAt) <= now) {
+          storage.deleteAnnouncement(a.id).catch(() => {});
+          continue;
+        }
         if (a.courseName === 'Custom' || a.courseName === 'REMINDER' || a.courseName === 'URGENT') {
           active.push(a);
           continue;
@@ -10654,6 +10658,11 @@ async function pollStatus(timeout){
       }
       const tag = req.body.courseName || 'Custom';
       const visibleTo = Array.isArray(req.body.visibleTo) ? req.body.visibleTo : ['5747', '4201', '1010'];
+      let expiresAt: Date | null = null;
+      if (req.body.expiresAt) {
+        const d = new Date(req.body.expiresAt);
+        if (!isNaN(d.getTime())) expiresAt = d;
+      }
       const created = await storage.createAnnouncement({
         emailId: `manual-${Date.now()}`,
         subject: tag === 'Custom' ? 'Custom Ticker' : `${tag} Ticker`,
@@ -10662,11 +10671,29 @@ async function pollStatus(timeout){
         courseName: tag,
         receivedAt: new Date(),
         visibleTo,
+        expiresAt,
       });
       console.log(`[Ticker] Manually added ticker item id:${created.id} body:"${body.trim().substring(0, 50)}" visibleTo:${visibleTo.join(',')}`);
       res.json(created);
     } catch (err: any) {
       console.error("Error creating announcement:", err.message);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.patch("/api/announcements/:id/expiry", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ error: "Invalid id" });
+      let expiresAt: Date | null = null;
+      if (req.body.expiresAt) {
+        const d = new Date(req.body.expiresAt);
+        if (!isNaN(d.getTime())) expiresAt = d;
+      }
+      await db.update(announcements).set({ expiresAt }).where(eq(announcements.id, id));
+      res.json({ success: true });
+    } catch (err: any) {
+      console.error("Error updating announcement expiry:", err.message);
       res.status(500).json({ error: err.message });
     }
   });

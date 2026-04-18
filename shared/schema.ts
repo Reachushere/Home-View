@@ -728,6 +728,7 @@ export const announcements = pgTable("announcements", {
   receivedAt: timestamp("received_at").defaultNow(),
   sortOrder: integer("sort_order").default(0),
   visibleTo: text("visible_to").array().default(["5747", "4201", "1010"]),
+  expiresAt: timestamp("expires_at"),
 });
 
 export const insertAnnouncementSchema = createInsertSchema(announcements).omit({ id: true });
