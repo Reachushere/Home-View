@@ -4705,14 +4705,14 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
 
       {notesTaskId !== null && (
         <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 10020, background: 'rgba(0,0,0,0.6)', pointerEvents: 'auto' }} onPointerDown={(e) => { if (e.target === e.currentTarget) { e.preventDefault(); e.stopPropagation(); setNotesTaskId(null); setNotesText(''); }}} data-testid="dialog-notes-overlay">
-          <div className="rounded-xl border border-white/20 p-5 flex flex-col shadow-2xl" style={{ width: '420px', maxHeight: '380px', background: 'linear-gradient(180deg, rgba(30,40,60,0.99) 0%, rgba(20,28,45,0.99) 100%)', boxShadow: '0 12px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.08)' }} onPointerDown={(e) => e.stopPropagation()} data-testid="dialog-notes">
+          <div className="rounded-xl border border-black/20 p-5 flex flex-col shadow-2xl" style={{ width: '420px', maxHeight: '380px', background: '#ffffff', color: '#000000', boxShadow: '0 12px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,0,0,0.08)' }} onPointerDown={(e) => e.stopPropagation()} data-testid="dialog-notes">
             <div className="flex items-center justify-between mb-4">
-              <span className="text-[13px] font-semibold text-white tracking-wide">Notes</span>
-              <button className="text-white/50 hover:text-white p-1 rounded hover:bg-white/10 transition-colors" onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); setNotesTaskId(null); setNotesText(''); }} data-testid="button-notes-close"><X className="h-4 w-4" /></button>
+              <span className="text-[13px] font-semibold tracking-wide" style={{ color: '#000000' }}>Notes</span>
+              <button className="p-1 rounded transition-colors" style={{ color: 'rgba(0,0,0,0.55)' }} onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'rgba(0,0,0,0.06)'; (e.currentTarget as HTMLElement).style.color = '#000000'; }} onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.color = 'rgba(0,0,0,0.55)'; }} onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); setNotesTaskId(null); setNotesText(''); }} data-testid="button-notes-close"><X className="h-4 w-4" /></button>
             </div>
             <textarea
-              className="flex-1 w-full rounded-lg border border-white/20 bg-white/5 text-white text-[12px] p-3 resize-none focus:outline-none focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 transition-colors"
-              style={{ minHeight: '200px' }}
+              className="flex-1 w-full rounded-lg border text-[12px] p-3 resize-none focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-400/30 transition-colors"
+              style={{ minHeight: '200px', background: '#ffffff', color: '#000000', borderColor: 'rgba(0,0,0,0.2)' }}
               value={notesText}
               onChange={(e) => setNotesText(e.target.value)}
               placeholder="Type your notes here..."
@@ -4721,7 +4721,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             />
             <div className="flex justify-end gap-2 mt-4">
               <button
-                className="px-5 py-2 text-[11px] font-medium text-white/70 rounded-lg border border-white/20 hover:bg-white/10 hover:text-white transition-colors"
+                className="px-5 py-2 text-[11px] font-medium rounded-lg border transition-colors"
+                style={{ color: 'rgba(0,0,0,0.7)', borderColor: 'rgba(0,0,0,0.2)', background: '#ffffff' }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'rgba(0,0,0,0.05)'; (e.currentTarget as HTMLElement).style.color = '#000000'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = '#ffffff'; (e.currentTarget as HTMLElement).style.color = 'rgba(0,0,0,0.7)'; }}
                 onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); setNotesTaskId(null); setNotesText(''); }}
                 data-testid="button-notes-cancel"
               >
