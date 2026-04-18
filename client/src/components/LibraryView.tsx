@@ -3613,6 +3613,19 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
   }, []);
   handleBookClickRef.current = handleBookClick;
 
+  // Listen for essay-citation "open full source" events from Study Assistant
+  useEffect(() => {
+    const onOpenCitation = (e: Event) => {
+      const detail = (e as CustomEvent).detail as { fileId: number; page?: number; query?: string } | undefined;
+      if (!detail) return;
+      const file = allFiles.find(f => f.id === detail.fileId);
+      if (!file) return;
+      handleBookClick(file, '#8B6914', undefined, undefined, false, detail.query, detail.page);
+    };
+    window.addEventListener('bryn:open-file-citation', onOpenCitation as EventListener);
+    return () => window.removeEventListener('bryn:open-file-citation', onOpenCitation as EventListener);
+  }, [allFiles, handleBookClick]);
+
   const handleRenameStart = useCallback((file: FileRecord) => {
     setRenamingFile(file);
     setRenameValue(file.displayName || file.originalName);

@@ -28328,6 +28328,213 @@ Keep your tone friendly and educational. Format your response clearly with numbe
     }
   });
 
+  // ============================================================
+  // ESSAY GENERATOR — Study Assistant writes essays from course
+  // materials with linked, click-to-source citations.
+  // ============================================================
+  app.post("/api/essays/generate", async (req, res) => {
+    try {
+      const { topic, wordCount = 1200, courseCodes, citationStyle = 'APA' } = req.body || {};
+      if (!topic || typeof topic !== 'string' || topic.trim().length < 3) {
+        return res.status(400).json({ error: "topic is required (min 3 chars)" });
+      }
+      const targetWords = Math.max(200, Math.min(5000, Number(wordCount) || 1200));
+      const wantedCourses: string[] = Array.isArray(courseCodes)
+        ? courseCodes.map((c: string) => String(c).toLowerCase()).filter(Boolean)
+        : (typeof courseCodes === 'string' && courseCodes && courseCodes !== 'all')
+          ? [courseCodes.toLowerCase()]
+          : [];
+
+      const allFiles = await storage.getFiles();
+      const sourceFiles = allFiles.filter(f => {
+        if (!f.extractedText || f.extractedText.length < 200) return false;
+        const folder = (f.folder || '').toLowerCase();
+        const isCourseMaterial = /module|reading/.test(folder);
+        if (!isCourseMaterial) return false;
+        if (wantedCourses.length > 0) {
+          return wantedCourses.some(c => folder.includes(c));
+        }
+        return true;
+      });
+
+      if (sourceFiles.length === 0) {
+        return res.status(404).json({ error: "No course material files found with extracted text. Sync OneDrive and ensure files are processed." });
+      }
+
+      // Reference-list detection: skip files where >40% of lines look like APA refs
+      const looksLikeReferenceList = (text: string): boolean => {
+        const lines = text.split(/\n+/).map(l => l.trim()).filter(l => l.length > 20);
+        if (lines.length < 5) return false;
+        const refPattern = /\(\d{4}\)|\(\d{4}[a-z]?\)|, \d{4}\)|\bdoi:|https?:\/\/(dx\.)?doi\.org/i;
+        const refLines = lines.filter(l => refPattern.test(l)).length;
+        return refLines / lines.length > 0.4;
+      };
+
+      // Tokenize topic for relevance scoring
+      const STOPWORDS = new Set("a an the and or but if then so of to in on at by for with from as is are was were be been being do does did has have had this that these those it its they them their there what which who whom whose how why when where about into over under upon than not".split(/\s+/));
+      const topicTokens = topic.toLowerCase().match(/[a-z]{3,}/g)?.filter(t => !STOPWORDS.has(t)) || [];
+      if (topicTokens.length === 0) {
+        return res.status(400).json({ error: "Topic must contain meaningful keywords" });
+      }
+
+      // Build candidate chunks per file (page-level when filePages exist, else paragraph)
+      type Chunk = { cid: string; fileId: number; fileName: string; folder: string; page?: number; text: string; score: number };
+      const candidates: Chunk[] = [];
+      for (const f of sourceFiles) {
+        if (looksLikeReferenceList(f.extractedText!)) continue;
+        const pages = await storage.getFilePages(f.id);
+        const units: { text: string; page?: number }[] = [];
+        if (pages.length > 0) {
+          for (const p of pages) {
+            const t = (p.pageText || '').trim();
+            if (t.length > 80) units.push({ text: t, page: p.pageNum });
+          }
+        } else {
+          const paras = (f.extractedText || '').split(/\n\s*\n/).map(p => p.trim()).filter(p => p.length > 80);
+          for (const p of paras) units.push({ text: p });
+        }
+        for (let i = 0; i < units.length; i++) {
+          const u = units[i];
+          // Skip units that themselves look like reference lists
+          if (looksLikeReferenceList(u.text)) continue;
+          const lower = u.text.toLowerCase();
+          let score = 0;
+          for (const tok of topicTokens) {
+            const matches = lower.split(tok).length - 1;
+            if (matches > 0) score += matches * (1 + Math.log(tok.length));
+          }
+          if (score > 0) {
+            candidates.push({
+              cid: `${f.id}-${u.page ?? i}`,
+              fileId: f.id,
+              fileName: f.displayName || f.originalName,
+              folder: f.folder || '',
+              page: u.page,
+              text: u.text.length > 1800 ? u.text.slice(0, 1800) : u.text,
+              score,
+            });
+          }
+        }
+      }
+
+      candidates.sort((a, b) => b.score - a.score);
+      // Cap total context at ~24k chars
+      const selected: Chunk[] = [];
+      let charBudget = 24000;
+      for (const c of candidates) {
+        if (c.text.length > charBudget) continue;
+        selected.push(c);
+        charBudget -= c.text.length;
+        if (selected.length >= 40 || charBudget < 500) break;
+      }
+
+      if (selected.length === 0) {
+        return res.status(404).json({ error: `No source passages relevant to "${topic}" found in ${sourceFiles.length} course files. Try a different topic or add more course materials.` });
+      }
+
+      const sourcesBlock = selected.map(c =>
+        `[CHUNK ${c.cid}] (from "${c.fileName}"${c.page ? `, page ${c.page}` : ''})\n${c.text}`
+      ).join('\n\n---\n\n');
+
+      const OpenAI = (await import('openai')).default;
+      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+      const styleNote = citationStyle === 'MLA'
+        ? "Use MLA 9 in-text style: (AuthorLastName page) — but since author metadata may be unavailable, use the source title in italics shortened: (\"Short Title\" page)."
+        : citationStyle === 'Chicago'
+          ? "Use Chicago author-date in-text style with title-fallback: (\"Short Title\" Year)."
+          : "Use APA 7 in-text style. When author/year are unavailable, use the document short title and 'n.d.': (\"Short Title,\" n.d.).";
+
+      const systemPrompt = `You are an academic writing assistant for a university student. Write a well-structured essay of approximately ${targetWords} words on the given topic, drawing ONLY from the provided source chunks. Strict rules:
+1. Every substantive claim, fact, quote, or paraphrase MUST be followed by an inline citation marker in the exact format [CITE:CHUNK_ID] where CHUNK_ID is the bracketed id of the source chunk you used (e.g. [CITE:42-3]). Place the marker immediately after the sentence (before the period is fine).
+2. NEVER cite a chunk that itself appears to be a reference list, bibliography, or citation index. Only cite substantive content.
+3. NEVER fabricate sources. If the chunks do not support a claim, do not make that claim.
+4. Use clear academic prose with an introduction, 2–4 body paragraphs, and a conclusion.
+5. ${styleNote}
+6. Output ONLY the essay body in plain text with [CITE:...] markers inline. Do NOT include a title, references list, or any meta commentary — those will be added by the system.`;
+
+      const userPrompt = `Essay topic: ${topic}\nTarget length: ~${targetWords} words\n\nSource chunks:\n\n${sourcesBlock}`;
+
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt },
+        ],
+        temperature: 0.4,
+        max_tokens: Math.min(4096, Math.ceil(targetWords * 2.5)),
+      });
+
+      const rawEssay = completion.choices?.[0]?.message?.content?.trim() || '';
+      if (!rawEssay) {
+        return res.status(502).json({ error: "Model returned empty essay" });
+      }
+
+      // Build a lookup of selected chunks for citation rendering
+      const chunkMap = new Map(selected.map(c => [c.cid, c]));
+      const usedChunks = new Map<string, Chunk>();
+
+      // Helper: derive a short label from filename for citation display
+      const shortLabel = (c: Chunk) => {
+        const base = c.fileName.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim();
+        const trimmed = base.length > 40 ? base.slice(0, 40) + '…' : base;
+        return citationStyle === 'APA'
+          ? `("${trimmed}," n.d.${c.page ? `, p. ${c.page}` : ''})`
+          : citationStyle === 'MLA'
+            ? `("${trimmed}"${c.page ? ` ${c.page}` : ''})`
+            : `("${trimmed}" n.d.)`;
+      };
+
+      // Replace [CITE:cid] markers with HTML citation spans
+      const essayHtml = rawEssay.replace(/\[CITE:([A-Za-z0-9_\-]+)\]/g, (_m, cid) => {
+        const c = chunkMap.get(cid);
+        if (!c) return ''; // drop unknown citations silently
+        usedChunks.set(cid, c);
+        const label = shortLabel(c);
+        return `<cite class="essay-citation" data-cid="${cid}" data-file-id="${c.fileId}"${c.page ? ` data-page="${c.page}"` : ''}>${label}</cite>`;
+      });
+
+      // Build APA-style references list from used chunks (one entry per file, deduped)
+      const refsByFile = new Map<number, Chunk>();
+      for (const c of usedChunks.values()) {
+        if (!refsByFile.has(c.fileId)) refsByFile.set(c.fileId, c);
+      }
+      const referencesList = Array.from(refsByFile.values()).map(c => {
+        const title = c.fileName.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim();
+        return `${title} (n.d.). Course material${c.folder ? ` [${c.folder}]` : ''}.`;
+      });
+
+      // Citation map for frontend split-view
+      const citationsMap: Record<string, { fileId: number; fileName: string; page?: number; snippet: string }> = {};
+      for (const [cid, c] of usedChunks.entries()) {
+        citationsMap[cid] = {
+          fileId: c.fileId,
+          fileName: c.fileName,
+          page: c.page,
+          snippet: c.text,
+        };
+      }
+
+      // Wrap paragraphs in <p>
+      const paragraphs = essayHtml.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+      const html = paragraphs.map(p => `<p>${p.replace(/\n/g, '<br/>')}</p>`).join('\n');
+
+      res.json({
+        topic,
+        wordCount: targetWords,
+        citationStyle,
+        html,
+        citations: citationsMap,
+        references: referencesList,
+        sourceCount: refsByFile.size,
+        candidatePool: candidates.length,
+      });
+    } catch (err: any) {
+      console.error("[essay/generate]", err);
+      res.status(500).json({ error: String(err?.message || err) });
+    }
+  });
+
   return httpServer;
 }
 

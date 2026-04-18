@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { MessageSquare, RotateCcw, X, Loader2, Download, Copy, Maximize2, Minimize2, Paperclip, Scissors, BookOpen, FileText, Check } from 'lucide-react';
+import { MessageSquare, RotateCcw, X, Loader2, Download, Copy, Maximize2, Minimize2, Paperclip, Scissors, BookOpen, FileText, Check, PenLine } from 'lucide-react';
 
 interface AiChatBubbleProps {
   colorSettings: {
@@ -9,7 +9,113 @@ interface AiChatBubbleProps {
   };
 }
 
-type ChatMessage = { role: 'user' | 'assistant'; content: string; image?: string };
+type EssayCitation = { fileId: number; fileName: string; page?: number; snippet: string };
+type EssayPayload = {
+  topic: string;
+  wordCount: number;
+  citationStyle: string;
+  html: string;
+  citations: Record<string, EssayCitation>;
+  references: string[];
+  sourceCount: number;
+};
+type ChatMessage = { role: 'user' | 'assistant'; content: string; image?: string; essay?: EssayPayload };
+
+function EssayBlock({ essay }: { essay: EssayPayload }) {
+  const [activeCid, setActiveCid] = useState<string | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const active = activeCid ? essay.citations[activeCid] : null;
+
+  useEffect(() => {
+    const root = containerRef.current;
+    if (!root) return;
+    const onClick = (e: MouseEvent) => {
+      const t = (e.target as HTMLElement).closest('cite.essay-citation') as HTMLElement | null;
+      if (!t) return;
+      e.preventDefault();
+      const cid = t.getAttribute('data-cid');
+      if (cid) setActiveCid(cid);
+    };
+    root.addEventListener('click', onClick);
+    return () => root.removeEventListener('click', onClick);
+  }, []);
+
+  const openInLibrary = () => {
+    if (!active) return;
+    try {
+      window.dispatchEvent(new CustomEvent('bryn:open-file-citation', {
+        detail: { fileId: active.fileId, page: active.page, query: active.snippet.slice(0, 60) },
+      }));
+    } catch {}
+  };
+
+  return (
+    <div data-testid="essay-block" style={{ marginTop: '4px' }}>
+      <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.55)', marginBottom: '8px' }}>
+        Essay · ~{essay.wordCount} words · {essay.sourceCount} source{essay.sourceCount === 1 ? '' : 's'} · {essay.citationStyle}
+      </div>
+      <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+        <div
+          ref={containerRef}
+          dangerouslySetInnerHTML={{ __html: essay.html }}
+          style={{
+            flex: active ? '1 1 60%' : '1 1 100%',
+            background: 'rgba(255,255,255,0.06)',
+            border: '1px solid rgba(255,255,255,0.15)',
+            borderRadius: '8px',
+            padding: '14px 16px',
+            fontSize: '13px',
+            lineHeight: 1.6,
+            color: '#fff',
+            maxHeight: '500px',
+            overflowY: 'auto',
+          }}
+        />
+        {active && (
+          <div style={{
+            flex: '1 1 40%',
+            minWidth: '220px',
+            background: '#fff8c4',
+            color: '#1a1a1a',
+            border: '2px solid #f59e0b',
+            borderRadius: '8px',
+            padding: '12px 14px',
+            fontSize: '12px',
+            lineHeight: 1.55,
+            maxHeight: '500px',
+            overflowY: 'auto',
+            position: 'relative',
+          }} data-testid="essay-citation-source">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', borderBottom: '1px solid rgba(0,0,0,0.15)', paddingBottom: '6px' }}>
+              <div style={{ fontWeight: 700, fontSize: '11px', color: '#7c2d12' }}>
+                {active.fileName}{active.page ? ` · p. ${active.page}` : ''}
+              </div>
+              <button onClick={() => setActiveCid(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#7c2d12', padding: 2 }} title="Close source" data-testid="button-close-citation-source">
+                <X size={13} />
+              </button>
+            </div>
+            <div style={{ background: '#fde68a', padding: '8px 10px', borderRadius: '4px', whiteSpace: 'pre-wrap' }}>{active.snippet}</div>
+            <button
+              onClick={openInLibrary}
+              style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '6px', background: '#f59e0b', color: '#fff', border: 'none', borderRadius: '6px', padding: '6px 10px', fontSize: '11px', fontWeight: 600, cursor: 'pointer' }}
+              data-testid="button-open-source-in-library"
+            >
+              <BookOpen size={12} /> Open full source
+            </button>
+          </div>
+        )}
+      </div>
+      {essay.references.length > 0 && (
+        <div style={{ marginTop: '12px', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}>
+          <div style={{ fontSize: '11px', fontWeight: 700, color: '#a5b4fc', marginBottom: '6px', letterSpacing: '0.5px' }}>REFERENCES</div>
+          <ol style={{ margin: 0, paddingLeft: '20px', fontSize: '11.5px', color: 'rgba(255,255,255,0.85)', lineHeight: 1.5 }}>
+            {essay.references.map((r, i) => <li key={i} style={{ marginBottom: '3px' }}>{r}</li>)}
+          </ol>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function renderAssistantContent(text: string) {
   const parts: React.ReactNode[] = [];
@@ -85,6 +191,46 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
   useEffect(() => { localStorage.setItem('studyAssistantYearLevel', String(yearLevel)); }, [yearLevel]);
   const [pastedImage, setPastedImage] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
+  const [essayFormOpen, setEssayFormOpen] = useState(false);
+  const [essayTopic, setEssayTopic] = useState('');
+  const [essayWords, setEssayWords] = useState(1200);
+  const [essayCourse, setEssayCourse] = useState('all');
+  const [essayStyle, setEssayStyle] = useState<'APA'|'MLA'|'Chicago'>('APA');
+  const [essayLoading, setEssayLoading] = useState(false);
+
+  const generateEssay = useCallback(async (topic: string, opts?: { wordCount?: number; courseCode?: string; citationStyle?: string }) => {
+    if (essayLoading) return;
+    setEssayLoading(true);
+    setEssayFormOpen(false);
+    const userText = `Write a ${opts?.wordCount ?? essayWords}-word ${opts?.citationStyle ?? essayStyle} essay on: ${topic}${(opts?.courseCode ?? essayCourse) !== 'all' ? ` (sources: ${opts?.courseCode ?? essayCourse})` : ''}`;
+    setMessages(prev => [...prev, { role: 'user', content: userText }]);
+    setTimeout(() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' }), 50);
+    try {
+      const resp = await fetch('/api/essays/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          topic,
+          wordCount: opts?.wordCount ?? essayWords,
+          courseCodes: (opts?.courseCode ?? essayCourse) === 'all' ? undefined : (opts?.courseCode ?? essayCourse),
+          citationStyle: opts?.citationStyle ?? essayStyle,
+        }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || `HTTP ${resp.status}`);
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: `Drafted a ${data.wordCount}-word essay on "${data.topic}" using ${data.sourceCount} source${data.sourceCount === 1 ? '' : 's'}. Click any citation to see the source passage.`,
+        essay: data,
+      }]);
+      setTimeout(() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' }), 50);
+    } catch (err: any) {
+      setMessages(prev => [...prev, { role: 'assistant', content: `Essay generation failed: ${err.message}` }]);
+    } finally {
+      setEssayLoading(false);
+    }
+  }, [essayLoading, essayWords, essayCourse, essayStyle]);
+
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [screenCopied, setScreenCopied] = useState(false);
@@ -97,6 +243,19 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
   const sendMessage = useCallback(async () => {
     const msg = input.trim();
     if ((!msg && !pastedImage) || loading) return;
+    // Natural-language essay detection
+    if (msg && !pastedImage) {
+      const essayMatch = msg.match(/^(?:please\s+)?(?:write|draft|generate|compose)\s+(?:me\s+)?(?:an?\s+)?(?:(\d{3,4})[-\s]?word\s+)?(?:(APA|MLA|Chicago)\s+)?essay\s+(?:on|about|regarding)\s+(.+?)(?:\s+(?:using|from|with)\s+([A-Z]{4}\d{3}(?:\s*(?:and|,)\s*[A-Z]{4}\d{3})*)\s*(?:readings|materials|sources)?)?\s*\.?$/i);
+      if (essayMatch) {
+        const wc = essayMatch[1] ? parseInt(essayMatch[1]) : essayWords;
+        const style = essayMatch[2] ? (essayMatch[2].toUpperCase() === 'APA' ? 'APA' : essayMatch[2].toUpperCase() === 'MLA' ? 'MLA' : 'Chicago') : essayStyle;
+        const topic = essayMatch[3].trim();
+        const courseHint = essayMatch[4]?.match(/[A-Z]{4}\d{3}/)?.[0];
+        setInput('');
+        await generateEssay(topic, { wordCount: wc, citationStyle: style, courseCode: courseHint || essayCourse });
+        return;
+      }
+    }
     const finalMsg = msg || (pastedImage ? 'Please analyze this image.' : '');
     const userMsg: ChatMessage = { role: 'user', content: finalMsg, image: pastedImage || undefined };
     setMessages(prev => [...prev, userMsg]);
@@ -339,6 +498,14 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
                 )}
               </div>
               <button
+                onClick={() => setEssayFormOpen(o => !o)}
+                style={{ ...headerIconBtnStyle, background: essayFormOpen ? 'rgba(245,158,11,0.4)' : headerIconBtnStyle.background }}
+                title="Write Essay"
+                data-testid="button-ai-chat-essay"
+              >
+                <PenLine size={15} />
+              </button>
+              <button
                 onClick={copyScreen}
                 style={headerIconBtnStyle}
                 title={screenCopied ? 'Copied!' : 'Copy entire chat'}
@@ -363,6 +530,56 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
             </div>
           </div>
 
+          {essayFormOpen && (
+            <div style={{ padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.15)', background: 'rgba(245,158,11,0.08)' }} data-testid="essay-form-panel">
+              <div style={{ fontSize: '12px', fontWeight: 700, color: '#fbbf24', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <PenLine size={13} /> Write Essay
+              </div>
+              <input
+                value={essayTopic}
+                onChange={e => setEssayTopic(e.target.value)}
+                placeholder="Topic (e.g. The role of social services in housing policy)"
+                style={{ width: '100%', padding: '8px 10px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: '6px', color: '#fff', fontSize: '12px', marginBottom: '8px' }}
+                data-testid="input-essay-topic"
+                onKeyDown={e => { if (e.key === 'Enter' && essayTopic.trim()) generateEssay(essayTopic.trim()); }}
+              />
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap' }}>
+                <label style={{ fontSize: '11px', color: '#fff' }}>Words:</label>
+                <input type="number" value={essayWords} min={200} max={5000} step={100} onChange={e => setEssayWords(parseInt(e.target.value) || 1200)}
+                  style={{ width: '70px', padding: '4px 6px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: '4px', color: '#fff', fontSize: '11px' }}
+                  data-testid="input-essay-words" />
+                <label style={{ fontSize: '11px', color: '#fff' }}>Course:</label>
+                <select value={essayCourse} onChange={e => setEssayCourse(e.target.value)}
+                  style={{ padding: '4px 6px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: '4px', color: '#fff', fontSize: '11px' }}
+                  data-testid="select-essay-course">
+                  <option value="all" style={{ background: '#0d2548' }}>All courses</option>
+                  {['CPPA122','CFNF400','CASL101','CPPA101','CPPA102','CPPA120','CPPA121','CPPA125','CECN210','CPHL110','CHIS105'].map(c => (
+                    <option key={c} value={c} style={{ background: '#0d2548' }}>{c}</option>
+                  ))}
+                </select>
+                <label style={{ fontSize: '11px', color: '#fff' }}>Style:</label>
+                <select value={essayStyle} onChange={e => setEssayStyle(e.target.value as any)}
+                  style={{ padding: '4px 6px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: '4px', color: '#fff', fontSize: '11px' }}
+                  data-testid="select-essay-style">
+                  <option value="APA" style={{ background: '#0d2548' }}>APA 7</option>
+                  <option value="MLA" style={{ background: '#0d2548' }}>MLA 9</option>
+                  <option value="Chicago" style={{ background: '#0d2548' }}>Chicago</option>
+                </select>
+              </div>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  onClick={() => essayTopic.trim() && generateEssay(essayTopic.trim())}
+                  disabled={!essayTopic.trim() || essayLoading}
+                  style={{ padding: '6px 14px', background: essayLoading ? 'rgba(245,158,11,0.4)' : '#f59e0b', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '12px', fontWeight: 600, cursor: essayTopic.trim() && !essayLoading ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: '6px' }}
+                  data-testid="button-generate-essay"
+                >
+                  {essayLoading ? <Loader2 size={12} className="animate-spin" /> : <PenLine size={12} />}
+                  {essayLoading ? 'Generating…' : 'Generate'}
+                </button>
+                <button onClick={() => setEssayFormOpen(false)} style={{ padding: '6px 12px', background: 'transparent', color: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: '6px', fontSize: '12px', cursor: 'pointer' }} data-testid="button-cancel-essay-form">Cancel</button>
+              </div>
+            </div>
+          )}
           <div ref={scrollRef} style={{ flex: 1, overflowY: 'auto', padding: '16px 20px', minHeight: '280px', maxHeight: expanded ? 'none' : '500px' }}>
             {messages.length === 0 && (
               <div style={{ textAlign: 'center', padding: '40px 14px', color: 'rgba(255,255,255,0.5)' }}>
@@ -403,8 +620,14 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
                   )}
                   {msg.role === 'assistant' ? renderAssistantContent(msg.content) : msg.content}
                 </div>
+                {msg.essay && <EssayBlock essay={msg.essay} />}
               </div>
             ))}
+            {essayLoading && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 0', color: '#fbbf24', fontSize: '12px' }}>
+                <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> Drafting essay…
+              </div>
+            )}
             {loading && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 0', color: 'rgba(255,255,255,0.4)', fontSize: '12px' }}>
                 <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> Thinking...
