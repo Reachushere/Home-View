@@ -27001,7 +27001,9 @@ export default function Dashboard() {
                                     const lvl = semBoxHealthCache[sem.key]?.level;
                                     const triColor = lvl === 'critical' ? '#ef4444' : lvl === 'warning' ? '#facc15' : lvl === 'ok' ? '#22c55e' : null;
                                     return triColor ? (
-                                      <span aria-hidden style={{ display: 'inline-block', width: 0, height: 0, borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderBottom: `8px solid ${triColor}`, marginRight: '4px', flexShrink: 0 }} data-testid={`sem-health-tri-${sem.key}`} />
+                                      <svg aria-hidden width="16" height="14" viewBox="0 0 16 14" style={{ marginRight: '5px', flexShrink: 0, display: 'inline-block' }} data-testid={`sem-health-tri-${sem.key}`}>
+                                        <polygon points="8,1.5 14.5,12.5 1.5,12.5" fill="none" stroke={triColor} strokeWidth="1.75" strokeLinejoin="round" strokeLinecap="round" />
+                                      </svg>
                                     ) : null;
                                   })()}
                                   <span className="text-[10px] font-bold whitespace-nowrap" style={{ color: '#ffffff', marginRight: '3px' }}>{sem.label}</span>
