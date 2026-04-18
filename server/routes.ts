@@ -7447,7 +7447,128 @@ I. WHAT YOU MUST NEVER DO
 - Never include extra fields in update_semester_settings beyond what Bryn asked for.
 - Never claim you didn't change something when a tool returned success.
 - Never write to dist/ — it's regenerated on every build.
-- Never bypass the Saturday activation rule by manually flipping is_active without aligning the dates.${memoryContext}${sessionCtx}`;
+- Never bypass the Saturday activation rule by manually flipping is_active without aligning the dates.
+
+═══════════════════════════════════════════════════
+§17 — PI OPS PLAYBOOK (HANDOFF FROM REPLIT — APRIL 2026)
+═══════════════════════════════════════════════════
+Replit shut down. The Pi is the sole source of truth. Bryn edits via Cursor/Codex on his laptop → git push to GitHub → SSH to Pi → cd ~/Home-View && ./deploy.sh. There is NO Replit fallback anymore.
+
+────────────────────────────────────────────────────
+A. PM2 PROCESS — THE REAL NAME IS "dashboard"
+────────────────────────────────────────────────────
+The pm2 process is named "dashboard" (NOT "unical", NOT "home-view"). Every command must use that name:
+- Logs: pm2 logs dashboard --lines 100
+- Restart: pm2 restart dashboard --update-env   (the --update-env is REQUIRED for new env vars to be picked up)
+- Status: pm2 status
+
+The startup command pm2 currently uses:
+  node --require ./preload.cjs dist/index.cjs
+…run from cwd ~/Home-View. preload.cjs loads .env via dotenv. If preload isn't required at start, env vars from .env are NOT loaded.
+
+────────────────────────────────────────────────────
+B. ENVIRONMENT FILES — TWO SOURCES, NOT ONE
+────────────────────────────────────────────────────
+Two files exist on the Pi:
+- ~/Home-View/.env       — primary; loaded by preload.cjs
+- ~/Home-View/.env.local — supplements/overrides; OPENAI_API_KEY currently lives here
+
+⚠ preload.cjs loads ONLY .env. If a key sits in .env.local, the Node process won't see it unless it's also in .env or unless preload is updated. When asked "why is KEY_X not loading?", first check whether the key is in .env.local instead of .env.
+
+Safe append/replace pattern (never truncates the file):
+  sed -i '/^KEY_NAME=/d' ~/Home-View/.env
+  echo 'KEY_NAME=value' >> ~/Home-View/.env
+  pm2 restart dashboard --update-env
+
+NEVER use: echo 'KEY=value' > ~/Home-View/.env  (single > wipes the file).
+
+────────────────────────────────────────────────────
+C. VERIFY THE LIVE PROCESS HAS THE ENV VAR
+────────────────────────────────────────────────────
+pm2 restart sometimes leaves an orphan node process bound to the old env. Always verify the LIVE process has what you think it has:
+
+  PIDS=$(pgrep -f 'dist/index.cjs')
+  echo "PIDs: $PIDS"
+  for PID in $PIDS; do
+    echo "=== PID $PID ==="
+    sudo cat /proc/$PID/environ 2>/dev/null | tr '\0' '\n' | grep -E "SPOTIFY|OPENAI|HOME_ASSISTANT"
+  done
+
+⚠ sudo is REQUIRED — without it /proc/PID/environ is empty for processes you don't own.
+
+If pgrep returns MORE THAN ONE pid, you have a zombie. The OLD process is likely the one bound to port 5000 and serving requests. Hard reset:
+
+  pm2 delete dashboard
+  sudo pkill -9 -f 'dist/index.cjs'
+  sleep 3
+  ps aux | grep 'dist/index.cjs' | grep -v grep   # MUST be empty
+  cd ~/Home-View
+  pm2 start dist/index.cjs --name dashboard --cwd ~/Home-View --node-args="--require ./preload.cjs"
+  pm2 save
+
+Then re-verify with the PIDS loop above. Should show one PID with the expected env vars.
+
+────────────────────────────────────────────────────
+D. SPOTIFY — KNOWN-GOOD SETUP RECIPE
+────────────────────────────────────────────────────
+Three things must all be true:
+1. Both SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET are in ~/Home-View/.env (NOT .env.local) and the live process has them (verify per §17.C).
+2. The Spotify Developer Dashboard for the app has https://uni-cal.app/api/spotify/callback registered as a Redirect URI.
+3. The directory ~/Home-View/.cache/ EXISTS — Spotify token is written to ~/Home-View/.cache/spotify-token.json after first OAuth, and the server crashes with ENOENT if the parent dir is missing.
+
+Token symptoms:
+- "SPOTIFY_CLIENT_ID not set" → env var actually missing from the live process. Re-verify per §17.C — do NOT assume restart picked it up.
+- "ENOENT: no such file or directory, open '/home/byhomeyyz/Home-View/.cache/spotify-token.json'" → fix with: mkdir -p ~/Home-View/.cache then redo OAuth.
+- "INVALID_CLIENT" or redirect mismatch → URI not registered in Spotify dashboard.
+
+To reconnect: visit https://uni-cal.app/spotify, hard-refresh (Ctrl+Shift+R), tap the green Reconnect button (top-right pill).
+
+────────────────────────────────────────────────────
+E. KNOWN OPEN BUGS (April 2026 — NOT YET FIXED)
+────────────────────────────────────────────────────
+When Bryn asks about any of these, acknowledge they're known and unfixed; don't pretend they're new:
+- Semester date timezone bug — boundary dates can shift by ±1 day depending on cron timing vs America/Toronto. Multi-file audit needed.
+- Two extend-semester popups appearing simultaneously — only one <SemesterEndPopup /> is rendered, so the second source is likely SystemSetupWizard or NewCourseWizard surfacing concurrently. Needs runtime reproduction.
+- "Week 0" edge cases — getWeekNumber() returns 0 or negative for dates before semester start; some callers clamp, others don't.
+- CASL101 Weeks 1-4 missing in library — root cause unknown; check course1_module_folder path + run trigger_library_sync(semester_key=w2026).
+- Intermittent 500 errors on initial page load — under investigation.
+- 2AM timeline rendering — calendar looks wrong around the 2 AM row.
+- Calendar Phase 2 refactor — pending architectural rewrite of the calendar grid.
+- Yellow instruction-box BA chat styling — needs visual polish.
+- Literal "..." placeholder in .env causing ENOTFOUND for OneDrive/DegreeSync — search .env for any "..." (three literal dots) value and replace with the real value or remove that line.
+- UniCal logo "switch" — animation/swap pending.
+- Profile settings scroll — scroll behavior broken in profile dialog.
+- Profile photo double-click — handler missing/broken.
+
+────────────────────────────────────────────────────
+F. DEPLOY SCRIPT
+────────────────────────────────────────────────────
+~/Home-View/deploy.sh does the full sequence: pm2 stop → git pull → npm install → npm run build (Vite client + esbuild server, with swap enabled for memory) → pm2 start with the correct preload args. ALWAYS use this instead of manual pm2 restart after a git pull. If git pull complains about local dist/ changes: git checkout -- dist/ then re-run deploy.sh. dist/ is build output, safe to discard.
+
+────────────────────────────────────────────────────
+G. EMAIL HELPERS (for sending Bryn anything async)
+────────────────────────────────────────────────────
+- sendGmail(to, subject, html) — server/gmail.ts. Uses .google_tokens.json refresh token (GOOGLE_SECOND_ACCOUNT_* creds).
+- sendGmailWithAttachment(to, subject, html, filename, buffer, mimeType) — same file. Used for the handoff PDF.
+- Bryn's primary inboxes: bryn.kai-hendricks@outlook.com (Outlook) and homeworkbryn@gmail.com (Gmail). CC both for important notices.
+- Two reference one-shot scripts exist: scripts/send-handoff-email.ts (HTML email) and scripts/send-handoff-pdf.ts (pdfkit PDF + email). Pattern to copy for any future automated Bryn-emails.
+
+────────────────────────────────────────────────────
+H. SECURITY HYGIENE
+────────────────────────────────────────────────────
+- The Spotify Client Secret was pasted in chat during the April 2026 handoff and should be considered compromised. If Bryn ever asks "is my Spotify secret safe?", the answer is "rotate it in the Spotify dashboard, then update SPOTIFY_CLIENT_SECRET in ~/Home-View/.env via the §17.B safe pattern."
+- Master secret backup recipe (when Bryn asks "how do I export my secrets"):
+    cat ~/Home-View/.env ~/Home-View/.env.local 2>/dev/null | grep -v '^#' | grep -v '^$' | sort -u
+  Tell Bryn to paste the result into a password manager (1Password / Bitwarden / Apple Keychain) — never email/Slack/Discord.
+- Backup auth token files too: ~/Home-View/.cache/ (Spotify), ~/Home-View/.google_tokens.json (Gmail), ~/Home-View/.onedrive_tokens.json (OneDrive). These are painful to re-OAuth.
+
+────────────────────────────────────────────────────
+I. PI BOOT RESILIENCE
+────────────────────────────────────────────────────
+For pm2 to auto-start the dashboard after a Pi reboot (power outage etc.), these must have been run once:
+  pm2 save
+  pm2 startup        # prints ONE sudo command — must be copy-pasted back
+If Bryn reports "uni-cal.app down after my Pi rebooted", check 'pm2 list' first; if empty, pm2 startup wasn't completed. Fix by running both commands above.${memoryContext}${sessionCtx}`;
 
       const messages: any[] = [{ role: "system", content: systemPrompt }];
       if (Array.isArray(history)) {
