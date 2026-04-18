@@ -16964,7 +16964,7 @@ export default function Dashboard() {
                   const dueLine = (
                     <div
                       className=""
-                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', pointerEvents: 'auto', cursor: 'pointer', whiteSpace: 'nowrap', width: '100%' }}
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', pointerEvents: 'auto', cursor: 'pointer', whiteSpace: 'nowrap', maxWidth: '100%' }}
                       onMouseEnter={() => setHoveredCountdownTaskIdDebounced(next.id)}
                       onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                       data-testid="countdown-next-task-number"
@@ -16995,7 +16995,7 @@ export default function Dashboard() {
                 })()}
                 {prepDaysText && nextPrep && (
                   <div
-                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', pointerEvents: 'auto', cursor: 'pointer', whiteSpace: 'nowrap', width: '100%' }}
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', pointerEvents: 'auto', cursor: 'pointer', whiteSpace: 'nowrap', maxWidth: '100%' }}
                     onMouseEnter={() => setHoveredCountdownTaskIdDebounced(nextPrep.id)}
                     onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                     data-testid="countdown-prep-task-number"
