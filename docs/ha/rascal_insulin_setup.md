@@ -50,8 +50,8 @@ timer:
 ```
 
 If you already have a `timer:` block, just add `rascal_insulin:` under it.
-**Remove** the old `timer.dogs` (or whatever the existing Rascal timer was
-called) from the same block.
+**Leave `timer.dogs` and any other existing timers alone** — Bryn wants those
+kept.
 
 ---
 
@@ -260,10 +260,9 @@ border turns off.
 
 1. **Bryn meds card element** — remove its entire YAML block from the
    picture-elements card.
-2. **Old Rascal/dogs timer** — remove `timer.dogs:` from `configuration.yaml`
-   and remove `script.dogs_reset_script` from `scripts.yaml` if nothing else
-   references them. (Search your config for `dogs_reset_script` and
-   `timer.dogs` first to make sure nothing else uses them.)
+
+**Do NOT touch `timer.dogs` or `script.dogs_reset_script`** — Bryn is keeping
+those.
 
 ---
 
