@@ -32543,7 +32543,7 @@ export default function Dashboard() {
                     })();
                     const moduleFileInfo = (oneDriveModuleFolder ? `📁 ${oneDriveModuleFolder}/Week ${folderWeekNum}${weekSeasonLabel}/Module\n\n` : '') + (moduleFiles.map(f => `${f.originalName || f.name}`).join('\n') || 'No files');
                     const readingFileInfo = (oneDriveReadingFolder ? `📁 ${oneDriveReadingFolder}/Week ${folderWeekNum}${weekSeasonLabel}/Reading\n\n` : '') + (readingFiles.map(f => `${f.originalName || f.name}`).join('\n') || 'No files');
-                    const _hwSemKey: string | undefined = (course as any)._semKey;
+                    const _hwSemKey: string | undefined = (courseData as any)._semKey;
                     const _hwIsTBD = /^TBD\d*$/i.test(courseCode.replace(/\s/g, ''));
                     const _hwHasRealColor = !!courseHexColor && !/^#?(6b7280|9ca3af)$/i.test(String(courseHexColor).replace('#',''));
                     const _hwFallbackGrad = (() => {
