@@ -459,7 +459,6 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
   const twoLineFontSize = splitLines
     ? Math.max(5, Math.min(11, Math.floor(liftedTextHeight / (Math.max(splitLines[0].length, splitLines[1].length) * 0.85))))
     : expandedFontSize;
-  const weekNum = file.folder?.match(/^week-(\d+)/)?.[1] || '';
   const patternIdx = (index + courseCode.charCodeAt(0)) % SPINE_PATTERNS.length;
   const hasTopBand = index % 4 === 1;
   const hasBottomBand = index % 5 === 2;
