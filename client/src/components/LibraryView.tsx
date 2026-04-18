@@ -4555,7 +4555,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
                         {citeCopied === 'ref-chk' ? <><Check size={10} /> Copied</> : <><Copy size={10} /> Copy</>}
                       </button>
                     </div>
-                    <div style={{ fontSize: '12px', color: '#fff', lineHeight: 1.5, marginBottom: '8px' }}>{renderCiteItalics(citeResult.reference)}</div>
+                    <div style={{ fontSize: '12px', color: '#fff', lineHeight: 1.5, marginBottom: '8px', paddingLeft: '2em', textIndent: '-2em' }}>{renderCiteItalics(citeResult.reference)}</div>
                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                       <div style={{ flex: '1 1 180px' }}>
                         <div style={{ fontSize: '9.5px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.4px', color: 'rgba(255,255,255,0.45)', marginBottom: '2px' }}>In-text</div>
