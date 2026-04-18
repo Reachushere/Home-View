@@ -26760,18 +26760,29 @@ export default function Dashboard() {
                     const rowGradientColors = (() => {
                       const gc = getCourseGradientColors(semCourse.code);
                       const isGrayFallback = gc.start === '#6b7280' && gc.end === '#9ca3af';
-                      // TBD codes (TBD1/TBD2/TBD3) collide across semesters — every
-                      // semester's TBD1 resolves to the FIRST semester's stored TBD1
-                      // color, making future semesters look identical. Always use
-                      // the per-semester palette for TBD slots so each semester is
-                      // visually distinct.
                       const isTBDCode = /^TBD\d*$/i.test(semCourse.code.replace(/\s/g, ''));
                       if (isGrayFallback || isTBDCode) {
-                        const palette = semDefaultPalettesRow[semKey];
+                        // Try the curated per-semester palette first (nicer hand-picked
+                        // color combinations).
+                        const palette = semDefaultPalettesRow[semKey.toLowerCase()];
                         if (palette && palette.length > 0) {
                           const idx = Math.max(0, coursePositionInSem) % palette.length;
                           return palette[idx];
                         }
+                        // Fallback: deterministic HSL from semKey + slot index. This
+                        // guarantees every (semester, TBD-slot) combo gets a UNIQUE
+                        // color even if the semester isn't in the curated palette dict.
+                        let hash = 0;
+                        const seedStr = `${semKey}-${coursePositionInSem}`;
+                        for (let i = 0; i < seedStr.length; i++) {
+                          hash = ((hash << 5) - hash) + seedStr.charCodeAt(i);
+                          hash |= 0;
+                        }
+                        const hue = Math.abs(hash) % 360;
+                        return {
+                          start: `hsl(${hue}, 65%, 45%)`,
+                          end: `hsl(${(hue + 30) % 360}, 70%, 70%)`,
+                        };
                       }
                       return gc;
                     })();
