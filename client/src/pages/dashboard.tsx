@@ -12811,7 +12811,7 @@ export default function Dashboard() {
 
   const tickerDialogJSX = tickerDialogOpen ? (
         <div className="fixed inset-0 flex items-start justify-center pt-[50px]" style={{ zIndex: 10010, backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={(e) => { if (e.target === e.currentTarget) setTickerDialogOpen(false); }} data-testid="ticker-dialog-overlay">
-          <div className="sm:rounded-lg shadow-2xl w-[500px] max-w-[95vw] max-h-[500px] flex flex-col overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }} data-testid="ticker-dialog">
+          <div className="sm:rounded-lg shadow-2xl w-[860px] max-w-[97vw] max-h-[80vh] flex flex-col overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }} data-testid="ticker-dialog">
             <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
               <div className="flex items-center gap-3">
                 <span className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>TICKER ITEMS</span>
@@ -12893,12 +12893,12 @@ export default function Dashboard() {
                     }}
                     data-testid={`ticker-item-${a.id}`}
                   >
-                    <div className="flex items-center gap-2 py-2">
-                      <GripVertical className="h-3.5 w-3.5 text-white/25 shrink-0" />
-                      <span className="text-[10px] px-1.5 py-0.5 rounded font-semibold shrink-0" style={{ minWidth: '60px', textAlign: 'center', backgroundColor: a.courseName === 'Custom' ? 'rgba(255,255,255,0.1)' : a.courseName === 'URGENT' ? 'rgba(239,68,68,0.4)' : a.courseName === 'REMINDER' ? 'rgba(234,179,8,0.35)' : 'rgba(99,102,241,0.3)', color: a.courseName === 'Custom' ? '#9ca3af' : a.courseName === 'URGENT' ? '#fca5a5' : a.courseName === 'REMINDER' ? '#fde047' : '#a5b4fc' }}>
+                    <div className="flex items-center gap-2.5 py-3">
+                      <GripVertical className="h-4 w-4 text-white/40 shrink-0" />
+                      <span className="text-[12px] px-2 py-1 rounded font-semibold shrink-0" style={{ minWidth: '72px', textAlign: 'center', backgroundColor: a.courseName === 'Custom' ? 'rgba(255,255,255,0.18)' : a.courseName === 'URGENT' ? 'rgba(239,68,68,0.45)' : a.courseName === 'REMINDER' ? 'rgba(234,179,8,0.4)' : 'rgba(99,102,241,0.38)', color: '#ffffff' }}>
                         {a.courseName === 'Custom' ? '📌' : a.courseName}
                       </span>
-                      <span className="text-white text-[12px] flex-1 min-w-0 truncate text-left">{(a.body || a.snippet || a.subject || '').replace(/^\s*\[[^\]]*\]\s*/g, '')}</span>
+                      <span className="text-white text-[14px] flex-1 min-w-0 text-left" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={(a.body || a.snippet || a.subject || '').replace(/^\s*\[[^\]]*\]\s*/g, '')}>{(a.body || a.snippet || a.subject || '').replace(/^\s*\[[^\]]*\]\s*/g, '')}</span>
                       {!a._isSynthetic && (() => {
                         const parts = isoToDateTimeParts(a.expiresAt);
                         return (
@@ -12915,8 +12915,8 @@ export default function Dashboard() {
                                   updateTickerExpiryMutation.mutate({ id: a.id, expiresAt: iso });
                                 }
                               }}
-                              className="text-white/80 text-[9px] px-1 py-0.5 rounded focus:outline-none"
-                              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', colorScheme: 'dark', width: '95px' }}
+                              className="text-white text-[12px] px-2 py-1.5 rounded focus:outline-none"
+                              style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', colorScheme: 'dark', width: '125px' }}
                               title="Expiry date (optional)"
                               data-testid={`input-ticker-expiry-date-${a.id}`}
                             />
@@ -12928,8 +12928,8 @@ export default function Dashboard() {
                                 const iso = buildExpiryISO(parts.date, e.target.value);
                                 updateTickerExpiryMutation.mutate({ id: a.id, expiresAt: iso });
                               }}
-                              className="text-white/80 text-[9px] px-1 py-0.5 rounded focus:outline-none disabled:opacity-30"
-                              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)' }}
+                              className="text-white text-[12px] px-2 py-1.5 rounded focus:outline-none disabled:opacity-30"
+                              style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }}
                               title="Expiry time (optional)"
                               data-testid={`select-ticker-expiry-time-${a.id}`}
                             >
@@ -12940,7 +12940,7 @@ export default function Dashboard() {
                             {parts.date && (
                               <button
                                 onClick={() => updateTickerExpiryMutation.mutate({ id: a.id, expiresAt: null })}
-                                className="text-white/30 hover:text-white text-[9px] px-0.5"
+                                className="text-white/70 hover:text-white text-[14px] px-1"
                                 title="Clear expiry"
                                 data-testid={`button-clear-ticker-expiry-${a.id}`}
                               >
@@ -12964,14 +12964,16 @@ export default function Dashboard() {
                                   updateTickerVisibilityMutation.mutate({ id: a.id, visibleTo: next });
                                 }}
                                 style={{
-                                  width: '20px', height: '16px', borderRadius: '3px',
-                                  background: checked ? (p === '5747' ? 'rgba(99,102,241,0.5)' : p === '4201' ? 'rgba(139,92,246,0.5)' : 'rgba(255,255,255,0.2)') : 'rgba(255,255,255,0.05)',
-                                  border: checked ? '1px solid rgba(255,255,255,0.4)' : '1px solid rgba(255,255,255,0.15)',
+                                  width: '28px', height: '22px', borderRadius: '4px',
+                                  fontSize: '10px', fontWeight: 700, color: '#ffffff',
+                                  fontFamily: "system-ui, -apple-system, sans-serif",
+                                  background: checked ? (p === '5747' ? 'rgba(99,102,241,0.55)' : p === '4201' ? 'rgba(139,92,246,0.55)' : 'rgba(255,255,255,0.28)') : 'rgba(255,255,255,0.08)',
+                                  border: checked ? '1px solid rgba(255,255,255,0.5)' : '1px solid rgba(255,255,255,0.2)',
                                   cursor: 'pointer',
                                 }}
                                 data-testid={`ticker-vis-${a.id}-${p}`}
                                 title={p === '5747' ? 'Bryn' : p === '4201' ? 'Yasu' : 'Guest'}
-                              />
+                              >{p === '5747' ? 'B' : p === '4201' ? 'Y' : 'G'}</button>
                             );
                           })}
                         </div>
@@ -12987,10 +12989,10 @@ export default function Dashboard() {
                             deleteTickerMutation.mutate(a.id);
                           }
                         }}
-                        className="shrink-0 text-white/30 hover:text-red-400 transition-colors p-1"
+                        className="shrink-0 text-white/70 hover:text-red-400 transition-colors p-1.5"
                         data-testid={`button-delete-ticker-${a.id}`}
                       >
-                        <Trash2 className="h-3.5 w-3.5" />
+                        <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
                     {idx < allDialogItems.length - 1 && (
@@ -13000,12 +13002,12 @@ export default function Dashboard() {
                 ));
               })()}
             </div>
-            <div className="px-4 py-3 flex items-center gap-2" style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}>
+            <div className="px-4 py-4 flex items-center gap-2.5" style={{ borderTop: '1px solid rgba(255,255,255,0.2)' }}>
               <select
                 value={newTickerTag}
                 onChange={(e) => setNewTickerTag(e.target.value)}
-                className="text-white text-[11px] px-2 py-2 rounded focus:outline-none"
-                style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', minWidth: '90px' }}
+                className="text-white text-[13px] px-2.5 py-2.5 rounded focus:outline-none"
+                style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.22)', minWidth: '110px' }}
                 data-testid="select-ticker-tag"
               >
                 <option value="Custom" style={{ background: '#1a1a2e' }}>📌 Custom</option>
@@ -13022,22 +13024,22 @@ export default function Dashboard() {
                 onChange={(e) => setNewTickerText(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter' && newTickerText.trim()) { addTickerMutation.mutate({ body: newTickerText.trim(), tag: newTickerTag, visibleTo: newTickerVisibleTo, expiresAt: buildExpiryISO(newTickerExpiryDate, newTickerExpiryTime) }); } }}
                 placeholder="Add ticker item..."
-                className="flex-1 text-white text-[12px] px-3 py-2 rounded focus:outline-none placeholder:text-white/30"
-                style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+                className="flex-1 text-white text-[14px] px-3 py-2.5 rounded focus:outline-none placeholder:text-white/50"
+                style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.22)' }}
                 data-testid="input-new-ticker"
               />
               <button
                 onClick={() => { if (newTickerText.trim()) addTickerMutation.mutate({ body: newTickerText.trim(), tag: newTickerTag, visibleTo: newTickerVisibleTo, expiresAt: buildExpiryISO(newTickerExpiryDate, newTickerExpiryTime) }); }}
                 disabled={!newTickerText.trim() || addTickerMutation.isPending}
-                className="shrink-0 disabled:opacity-40 text-white text-[12px] font-semibold px-3 py-2 rounded transition-colors hover:brightness-110"
+                className="shrink-0 disabled:opacity-40 text-white text-[14px] font-semibold px-4 py-2.5 rounded transition-colors hover:brightness-110"
                 style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 3px rgba(0,0,0,0.15)', border: '1px solid rgba(255,255,255,0.2)' }}
                 data-testid="button-add-ticker"
               >
                 + Add
               </button>
             </div>
-            <div className="flex items-center gap-1.5 px-4 pb-1">
-              <span className="text-white/40 text-[9px] mr-1">Visible to:</span>
+            <div className="flex items-center gap-2 px-4 pb-2 pt-2">
+              <span className="text-white text-[12px] mr-1.5 font-medium">Visible to:</span>
               {['5747', '4201', '1010'].map(p => {
                 const checked = newTickerVisibleTo.includes(p);
                 return (
@@ -13045,11 +13047,11 @@ export default function Dashboard() {
                     key={p}
                     onClick={() => setNewTickerVisibleTo(prev => checked ? prev.filter(v => v !== p) : [...prev, p])}
                     style={{
-                      width: '22px', height: '17px', borderRadius: '3px', fontSize: '8px', fontWeight: 700,
+                      width: '30px', height: '24px', borderRadius: '4px', fontSize: '11px', fontWeight: 700,
                       fontFamily: "system-ui, -apple-system, sans-serif",
-                      background: checked ? (p === '5747' ? 'rgba(99,102,241,0.5)' : p === '4201' ? 'rgba(139,92,246,0.5)' : 'rgba(255,255,255,0.2)') : 'rgba(255,255,255,0.05)',
-                      border: checked ? '1px solid rgba(255,255,255,0.4)' : '1px solid rgba(255,255,255,0.15)',
-                      color: checked ? '#fff' : 'rgba(255,255,255,0.25)',
+                      background: checked ? (p === '5747' ? 'rgba(99,102,241,0.55)' : p === '4201' ? 'rgba(139,92,246,0.55)' : 'rgba(255,255,255,0.28)') : 'rgba(255,255,255,0.08)',
+                      border: checked ? '1px solid rgba(255,255,255,0.5)' : '1px solid rgba(255,255,255,0.2)',
+                      color: '#ffffff',
                       cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}
                     data-testid={`new-ticker-vis-${p}`}
@@ -13060,22 +13062,22 @@ export default function Dashboard() {
                 );
               })}
             </div>
-            <div className="flex items-center gap-1.5 px-4 pb-2 pt-1">
-              <span className="text-white/40 text-[9px] mr-1">Expires:</span>
+            <div className="flex items-center gap-2 px-4 pb-3 pt-1">
+              <span className="text-white text-[12px] mr-1.5 font-medium">Expires:</span>
               <input
                 type="date"
                 value={newTickerExpiryDate}
                 onChange={(e) => setNewTickerExpiryDate(e.target.value)}
-                className="text-white text-[10px] px-1.5 py-0.5 rounded focus:outline-none"
-                style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', colorScheme: 'dark' }}
+                className="text-white text-[12px] px-2 py-1.5 rounded focus:outline-none"
+                style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.22)', colorScheme: 'dark' }}
                 data-testid="input-new-ticker-expiry-date"
               />
               <select
                 value={newTickerExpiryTime}
                 onChange={(e) => setNewTickerExpiryTime(e.target.value)}
                 disabled={!newTickerExpiryDate}
-                className="text-white text-[10px] px-1.5 py-0.5 rounded focus:outline-none disabled:opacity-40"
-                style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+                className="text-white text-[12px] px-2 py-1.5 rounded focus:outline-none disabled:opacity-40"
+                style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.22)' }}
                 data-testid="select-new-ticker-expiry-time"
               >
                 {TICKER_TIME_OPTIONS.map(t => (
@@ -13085,7 +13087,7 @@ export default function Dashboard() {
               {newTickerExpiryDate && (
                 <button
                   onClick={() => { setNewTickerExpiryDate(''); setNewTickerExpiryTime('11:59 PM'); }}
-                  className="text-white/40 hover:text-white text-[10px] px-1"
+                  className="text-white/70 hover:text-white text-[14px] px-1.5"
                   data-testid="button-clear-new-ticker-expiry"
                   title="Clear expiry"
                 >
