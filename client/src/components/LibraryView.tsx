@@ -2599,6 +2599,80 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       setAiChatLoading(false);
     }
   }, [aiChatInput, aiChatLoading, aiChatCourseFilter, aiChatMessages]);
+
+  // Open a file at a specific page from a citation click
+  const openCitation = useCallback((courseHint: string | null, weekNum: number | null, page: number, allFilesList: FileRecord[]) => {
+    const normalizedHint = courseHint ? courseHint.replace(/\s+/g, '').toLowerCase() : null;
+    let candidates = allFilesList.filter(f => {
+      const folder = (f.folder || '').toLowerCase();
+      if (normalizedHint && !folder.includes(normalizedHint)) return false;
+      return true;
+    });
+    if (weekNum !== null) {
+      const weekMatched = candidates.filter(f => {
+        const m = (f.folder || '').match(/week-(\d+)/i);
+        return m && parseInt(m[1], 10) === weekNum;
+      });
+      if (weekMatched.length > 0) candidates = weekMatched;
+    }
+    // Prefer module files over readings when ambiguous
+    const moduleFirst = candidates.find(f => /-module$/i.test(f.folder || '')) || candidates[0];
+    if (!moduleFirst) {
+      console.warn('[Citation] No matching file', { courseHint, weekNum, page });
+      return;
+    }
+    handleBookClickRef.current(moduleFirst, '#8B6914', undefined, undefined, false, undefined, page);
+  }, []);
+
+  // Parse assistant content and return an array of React nodes with clickable citations
+  const renderAssistantContent = useCallback((content: string, allFilesList: FileRecord[]): React.ReactNode[] => {
+    // Match: ( ... pp?. NUMBER[-NUMBER]? ... )  — a parenthesized citation containing a page number
+    const re = /\(([^()]*?\bpp?\.\s*\d+(?:\s*[-–]\s*\d+)?[^()]*?)\)/gi;
+    const nodes: React.ReactNode[] = [];
+    let lastIdx = 0;
+    let m: RegExpExecArray | null;
+    let key = 0;
+    while ((m = re.exec(content)) !== null) {
+      const inner = m[1];
+      const start = m.index;
+      const end = start + m[0].length;
+      // Extract page number (first one if range)
+      const pageMatch = inner.match(/\bpp?\.\s*(\d+)/i);
+      if (!pageMatch) continue;
+      const page = parseInt(pageMatch[1], 10);
+      // Extract course code: letters then digits like CFNF400 or CFNF 400
+      const courseMatch = inner.match(/\b([A-Z]{3,5})\s*(\d{3,4})\b/);
+      const courseHint = courseMatch ? `${courseMatch[1]}${courseMatch[2]}` : null;
+      // Extract module/week number
+      const wkMatch = inner.match(/\b(?:Module|Week)\s*(\d+)\b/i);
+      const weekNum = wkMatch ? parseInt(wkMatch[1], 10) : null;
+
+      if (start > lastIdx) nodes.push(content.slice(lastIdx, start));
+      nodes.push(
+        <span
+          key={`cite-${key++}`}
+          onClick={() => openCitation(courseHint, weekNum, page, allFilesList)}
+          title={`Open ${courseHint || 'source'}${weekNum ? ` Module ${weekNum}` : ''} at page ${page}`}
+          style={{
+            color: '#D4AF37',
+            textDecoration: 'underline',
+            textDecorationColor: 'rgba(212,175,55,0.7)',
+            textUnderlineOffset: '2px',
+            cursor: 'pointer',
+            fontWeight: 500,
+          }}
+          onMouseEnter={e => { e.currentTarget.style.color = '#F4CF57'; e.currentTarget.style.textDecorationColor = '#F4CF57'; }}
+          onMouseLeave={e => { e.currentTarget.style.color = '#D4AF37'; e.currentTarget.style.textDecorationColor = 'rgba(212,175,55,0.7)'; }}
+          data-testid={`citation-${key}`}
+        >
+          {m[0]}
+        </span>
+      );
+      lastIdx = end;
+    }
+    if (lastIdx < content.length) nodes.push(content.slice(lastIdx));
+    return nodes.length > 0 ? nodes : [content];
+  }, [openCitation]);
   const [masterSemFilter, setMasterSemFilter] = useState('all');
   const [masterCourseFilter, setMasterCourseFilter] = useState('all');
   const [masterWeekFilter, setMasterWeekFilter] = useState('all');
@@ -4616,7 +4690,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                   whiteSpace: 'pre-wrap',
                   wordBreak: 'break-word',
                 }}>
-                  {msg.content}
+                  {msg.role === 'assistant' ? renderAssistantContent(msg.content, allFiles) : msg.content}
                 </div>
                 <button
                   onClick={() => {
