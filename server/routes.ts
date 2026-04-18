@@ -7536,7 +7536,8 @@ I. WHAT YOU MUST NEVER DO
             messages.push({ role: "tool", tool_call_id: tc.id, content: truncated });
             allToolResults.push({ name: fnName, ...result, tool_call_id: tc.id });
             if (stream) {
-              res.write(`data: ${JSON.stringify({ type: 'tool_done', name: fnName, success: result.success, round })}\n\n`);
+              const errText = !result.success ? (result.result?.error || (typeof result.result === 'string' ? result.result : JSON.stringify(result.result))?.slice(0, 1000)) : undefined;
+              res.write(`data: ${JSON.stringify({ type: 'tool_done', name: fnName, success: result.success, round, error: errText })}\n\n`);
             }
           }
         }

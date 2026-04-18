@@ -924,7 +924,9 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 setActiveToolName(null);
                 if (!event.success) {
                   const failLabel = `Failed: ${humanizeToolName(event.name)}`;
-                  setMessages(prev => [...prev, { role: 'system' as const, content: failLabel }]);
+                  const errBody = (event.error || '').toString().trim();
+                  const content = errBody ? `${failLabel}\n${errBody}` : failLabel;
+                  setMessages(prev => [...prev, { role: 'system' as const, content }]);
                 }
               } else if (event.type === 'token') {
                 setThinkingPhase(null);
@@ -1692,19 +1694,23 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                   : '0 10px 40px rgba(124,58,237,0.4), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -8px 20px rgba(0,0,0,0.2)';
                 const orbKey = String(msg._idx ?? i);
                 const orbExpanded = isOrb && expandedOrbs.has(orbKey);
+                const isFailedPill = msg.role === 'system' && /^failed:/i.test(msg.content || '');
+                const failedExpanded = isFailedPill && expandedOrbs.has(orbKey);
+                const failedHasBody = isFailedPill && (msg.content || '').includes('\n');
+                const isClickable = isOrb || (isFailedPill && failedHasBody);
                 return (
               <div
                 data-orb-bubble={msg.role === 'system' ? undefined : '1'}
-                onClick={isOrb ? () => toggleOrbExpanded(orbKey) : undefined}
+                onClick={isClickable ? () => toggleOrbExpanded(orbKey) : undefined}
                 onMouseEnter={isOrb ? () => setHoveredOrbKey(orbKey) : undefined}
                 onMouseLeave={isOrb ? () => setHoveredOrbKey((k) => (k === orbKey ? null : k)) : undefined}
-                title={isOrb ? (orbExpanded ? 'Click to collapse' : 'Hover to preview · Click to scroll full text') : undefined}
+                title={isOrb ? (orbExpanded ? 'Click to collapse' : 'Hover to preview · Click to scroll full text') : (isFailedPill && failedHasBody ? (failedExpanded ? 'Click to collapse' : 'Click to see full error') : undefined)}
                 style={{
-                maxWidth: msg.role === 'system' ? '70%' : (isOrb ? undefined : (hasCodeBlock ? '65%' : '65%')),
+                maxWidth: msg.role === 'system' ? (failedExpanded ? '92%' : '70%') : (isOrb ? undefined : (hasCodeBlock ? '65%' : '65%')),
                 width: isOrb ? `${orbWidth}px` : (msg.role === 'system' ? 'auto' : (hasCodeBlock ? '65%' : undefined)),
                 height: isOrb ? `${orbHeight}px` : undefined,
-                padding: msg.role === 'system' ? '4px 12px' : (isOrb ? '22px 26px' : '8px 12px'),
-                borderRadius: msg.role === 'system' ? '999px' : (isOrb ? '50%' : '24px'),
+                padding: msg.role === 'system' ? (failedExpanded ? '10px 14px' : '4px 12px') : (isOrb ? '22px 26px' : '8px 12px'),
+                borderRadius: msg.role === 'system' ? (failedExpanded ? '12px' : '999px') : (isOrb ? '50%' : '24px'),
                 display: isOrb ? 'flex' : undefined,
                 flexDirection: isOrb ? ('column' as const) : undefined,
                 alignItems: isOrb ? 'center' : undefined,
