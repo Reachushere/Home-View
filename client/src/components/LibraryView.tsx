@@ -1580,9 +1580,25 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
           if (count > 0) results.push({ page: i, matches: count });
         }
         setSearchResults(results);
-        setSearchCurrentIdx(0);
+        // If a citation supplied an explicit initialPage, prefer the match on (or nearest to)
+        // that page rather than blindly jumping to results[0]. Otherwise the highlighter would
+        // land on the first page that happens to contain the phrase (e.g. page 1) instead of
+        // the actual cited page.
+        let preferredIdx = 0;
+        if (initialPage && results.length > 0) {
+          let bestDist = Infinity;
+          for (let i = 0; i < results.length; i++) {
+            const d = Math.abs(results[i].page - initialPage);
+            if (d < bestDist) { bestDist = d; preferredIdx = i; }
+          }
+        }
+        setSearchCurrentIdx(preferredIdx);
         setSearchMatchIdx(0);
-        if (results.length > 0) goToSpread(results[0].page);
+        if (results.length > 0) {
+          goToSpread(results[preferredIdx].page);
+        } else if (initialPage && initialPage > 1) {
+          goToSpread(initialPage);
+        }
       } finally {
         setSearching(false);
       }
@@ -4771,11 +4787,12 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
           background: 'linear-gradient(180deg, #0a2a5e 0%, #0d3a7a 20%, #154B96 50%, #1a5ab0 80%, #ACD6F2 100%)',
           border: '1.5px solid rgba(144,202,249,0.35)',
           borderRadius: '14px',
-          zIndex: 100005,
+          zIndex: 150000,
           display: 'flex',
           flexDirection: 'column',
           boxShadow: '0 12px 40px rgba(10,42,94,0.6), 0 4px 12px rgba(0,0,0,0.3)',
-        }} data-testid="ai-chat-panel">
+        }}
+        data-testid="ai-chat-panel">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', borderBottom: '1px solid rgba(255,255,255,0.15)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <MessageSquare size={18} color="#ffffff" />
