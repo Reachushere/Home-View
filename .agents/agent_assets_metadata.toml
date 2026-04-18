@@ -521,3 +521,9 @@ id = "2MDkTrigNvNgyZDcYz_wT"
 uri = "file://attached_assets/Cat-Red.png"
 type = "image"
 title = "Cat-Red.png — download and save to Pi at \\\\172.24.0.2\\config\\www\\lovelace\\Icons'\\Cat-Red.png"
+
+[[outputs]]
+id = "bC4WKN3AHsDn2eLahwAKT"
+uri = "file://attached_assets/RedCat2_blink.gif"
+type = "image"
+title = "RedCat2_blink.gif — save to \\\\172.24.0.2\\config\\www\\lovelace\\Icons'\\Red Cat2 Blink.gif"
