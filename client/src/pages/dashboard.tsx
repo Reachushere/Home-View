@@ -11945,7 +11945,8 @@ export default function Dashboard() {
   };
 
   // Weekly view - get the current selected week's days
-  // If today is between semesters, ignore selectedWeekInfo so calendar falls back to real-world current week
+  // If today is between semesters, ignore selectedWeekInfo so calendar falls back to real-world current week.
+  // "In semester" = today is within the configured start..end window of any semester (honors extended end dates).
   const selectedWeekInfo = (() => {
     const match = weeks.find(w => w.weekNumber === selectedWeek);
     if (!match) return undefined;
@@ -11955,10 +11956,17 @@ export default function Dashboard() {
     for (const sem of sems) {
       if (!sem.semesterStartDate) continue;
       const ss = new Date(sem.semesterStartDate);
-      const rw = sem.readingWeekStart || null;
-      const wn = getWeekNumber(today, ss, rw);
-      const maxW = getSemesterTotalWeeks(sem.semesterType);
-      if (wn >= 1 && wn <= maxW) { inSem = true; break; }
+      ss.setHours(0, 0, 0, 0);
+      if (sem.semesterEndDate) {
+        const se = new Date(sem.semesterEndDate);
+        se.setHours(23, 59, 59, 999);
+        if (today >= ss && today <= se) { inSem = true; break; }
+      } else {
+        const rw = sem.readingWeekStart || null;
+        const wn = getWeekNumber(today, ss, rw);
+        const maxW = getSemesterTotalWeeks(sem.semesterType);
+        if (wn >= 1 && wn <= maxW) { inSem = true; break; }
+      }
     }
     return inSem ? match : undefined;
   })();
