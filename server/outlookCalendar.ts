@@ -1,5 +1,6 @@
 import { Client } from '@microsoft/microsoft-graph-client';
 import { storage } from './storage';
+import { easternDateStr } from './timezone';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -156,14 +157,14 @@ export async function syncOutlookEventsToReview(): Promise<{ added: number; skip
   const normalizeTitle = (t: string) => t.toLowerCase().replace(/\s+/g, ' ').replace(/[^a-z0-9 ]/g, '').trim();
   const existingReviewKeys = new Set(allReviewItems.map(i => {
     const normT = normalizeTitle(i.title || '');
-    const dateK = i.startDate ? new Date(i.startDate).toISOString().split('T')[0] : 'nodate';
+    const dateK = i.startDate ? easternDateStr(new Date(i.startDate)) : 'nodate';
     return `${normT}||${dateK}`;
   }));
 
   const allTasks = await storage.getTasks();
   const existingTaskKeys = new Set(allTasks.map(t => {
     const normT = normalizeTitle(t.title || '');
-    const dateK = t.dueDate ? new Date(t.dueDate).toISOString().split('T')[0] : 'nodate';
+    const dateK = t.dueDate ? easternDateStr(new Date(t.dueDate)) : 'nodate';
     return `${normT}||${dateK}`;
   }));
 
@@ -211,7 +212,7 @@ export async function syncOutlookEventsToReview(): Promise<{ added: number; skip
     const endDt = new Date(event.end.dateTime + (event.end.timeZone === 'UTC' ? 'Z' : ''));
 
     const normTitle = normalizeTitle(event.subject || 'untitled event');
-    const dateKey = startDt.toISOString().split('T')[0];
+    const dateKey = easternDateStr(startDt);
     const titleDateKey = `${normTitle}||${dateKey}`;
     if (existingReviewKeys.has(titleDateKey)) {
       skipped++;

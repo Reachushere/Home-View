@@ -2,7 +2,7 @@ import { storage } from "./storage";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 import { notepadNotes, getWeekNumber, COURSES } from "@shared/schema";
-import { easternNow } from "./timezone";
+import { easternNow, easternDateStr } from "./timezone";
 import * as spotifyApi from "./spotify";
 import crypto from "crypto";
 import path from "path";
@@ -3789,7 +3789,7 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
         const projectRoot = getProjectRoot();
         const memPath = path.join(projectRoot, '.ai-memory.md');
         try {
-          const today = new Date().toISOString().slice(0, 10);
+          const today = easternDateStr(new Date());
           const topic = String(args.topic || '').trim() || 'Untitled lesson';
           const where = String(args.where || '').trim();
           const what = String(args.what || '').trim();
@@ -4334,7 +4334,7 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           const daysBack = Math.min(args.days || 7, 30);
           const cutoff = new Date();
           cutoff.setDate(cutoff.getDate() - daysBack);
-          const cutoffStr = cutoff.toISOString().split('T')[0];
+          const cutoffStr = easternDateStr(cutoff);
 
           const conversations: any[] = [];
           for (const file of files.sort().reverse()) {
@@ -6112,15 +6112,15 @@ function isDangerousCommand(cmd: string): boolean {
 export async function getAppContext(): Promise<string> {
   const now = easternNow();
   const currentWeek = getWeekNumber(now);
-  const todayStr = now.toISOString().split('T')[0];
+  const todayStr = easternDateStr(now);
   const settings = await storage.getActiveSemesterSettings();
 
   let context = `Current date/time (Eastern): ${now.toLocaleString('en-US', { timeZone: 'America/Toronto', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })}\nCurrent semester week: ${currentWeek}\nToday: ${todayStr} (${now.toLocaleDateString('en-US', { timeZone: 'America/Toronto', weekday: 'long' })})\n`;
 
   if (settings) {
     context += `\nActive semester: ${settings.semesterName}\n`;
-    context += `Semester start: ${settings.semesterStartDate?.toISOString().split('T')[0]}\n`;
-    if (settings.semesterEndDate) context += `Semester end: ${settings.semesterEndDate.toISOString().split('T')[0]}\n`;
+    context += `Semester start: ${settings.semesterStartDate ? easternDateStr(settings.semesterStartDate) : ''}\n`;
+    if (settings.semesterEndDate) context += `Semester end: ${easternDateStr(settings.semesterEndDate)}\n`;
     if ((settings as any).readingWeekStart) context += `Reading week: ${(settings as any).readingWeekStart} to ${(settings as any).readingWeekEnd || '?'}\n`;
     if ((settings as any).examPeriodStart) context += `Exam period: ${(settings as any).examPeriodStart} to ${(settings as any).examPeriodEnd || '?'}\n`;
     const courses: string[] = [];
@@ -6136,14 +6136,14 @@ export async function getAppContext(): Promise<string> {
 
   const overdue = allIncomplete.filter(t => {
     const due = new Date(t.dueDate);
-    return due < now && due.toISOString().split('T')[0] !== todayStr;
+    return due < now && easternDateStr(due) !== todayStr;
   }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
 
-  const dueToday = allIncomplete.filter(t => new Date(t.dueDate).toISOString().split('T')[0] === todayStr);
+  const dueToday = allIncomplete.filter(t => easternDateStr(new Date(t.dueDate)) === todayStr);
 
   const tomorrow = new Date(now); tomorrow.setDate(tomorrow.getDate() + 1);
-  const tomorrowStr = tomorrow.toISOString().split('T')[0];
-  const dueTomorrow = allIncomplete.filter(t => new Date(t.dueDate).toISOString().split('T')[0] === tomorrowStr);
+  const tomorrowStr = easternDateStr(tomorrow);
+  const dueTomorrow = allIncomplete.filter(t => easternDateStr(new Date(t.dueDate)) === tomorrowStr);
 
   const thisWeek = allIncomplete.filter(t => t.weekNumber === currentWeek).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
 
@@ -6153,7 +6153,7 @@ export async function getAppContext(): Promise<string> {
     context += `\n⚠️ OVERDUE (${overdue.length}):\n`;
     for (const t of overdue.slice(0, 8)) {
       const daysLate = Math.floor((now.getTime() - new Date(t.dueDate).getTime()) / 86400000);
-      context += `  - [#${t.id}] "${t.title}" (${t.type}${t.courseName ? ', ' + t.courseName : ''}) was due ${new Date(t.dueDate).toISOString().split('T')[0]} (${daysLate}d late) priority:${t.priority}\n`;
+      context += `  - [#${t.id}] "${t.title}" (${t.type}${t.courseName ? ', ' + t.courseName : ''}) was due ${easternDateStr(new Date(t.dueDate))} (${daysLate}d late) priority:${t.priority}\n`;
     }
   }
 
@@ -6176,14 +6176,14 @@ export async function getAppContext(): Promise<string> {
   if (thisWeek.length > 0) {
     context += `\nThis week — week ${currentWeek} (${thisWeek.length} tasks):\n`;
     for (const t of thisWeek.slice(0, 12)) {
-      context += `  - [#${t.id}] "${t.title}" (${t.type}${t.courseName ? ', ' + t.courseName : ''}) due ${new Date(t.dueDate).toISOString().split('T')[0]} priority:${t.priority}\n`;
+      context += `  - [#${t.id}] "${t.title}" (${t.type}${t.courseName ? ', ' + t.courseName : ''}) due ${easternDateStr(new Date(t.dueDate))} priority:${t.priority}\n`;
     }
   }
 
   if (nextWeek.length > 0) {
     context += `\nNext week — week ${currentWeek + 1} (${nextWeek.length} tasks):\n`;
     for (const t of nextWeek.slice(0, 6)) {
-      context += `  - [#${t.id}] "${t.title}" (${t.type}${t.courseName ? ', ' + t.courseName : ''}) due ${new Date(t.dueDate).toISOString().split('T')[0]}\n`;
+      context += `  - [#${t.id}] "${t.title}" (${t.type}${t.courseName ? ', ' + t.courseName : ''}) due ${easternDateStr(new Date(t.dueDate))}\n`;
     }
   }
 

@@ -946,14 +946,14 @@ export async function registerRoutes(
           const existingKeys = new Set<string>();
           for (const t of existing) {
             const title = stripBrackets(t.title || '').toLowerCase();
-            const dateKey = t.dueDate ? new Date(t.dueDate).toISOString().split('T')[0] : '';
+            const dateKey = t.dueDate ? easternDateStr(new Date(t.dueDate)) : '';
             existingKeys.add(`${title}||${dateKey}`);
             existingKeys.add(`${(t.title || '').toLowerCase()}||${dateKey}`);
           }
           let created = 0, skipped = 0, failed = 0;
           for (const t of incoming) {
             const title = stripBrackets(t.title || '').toLowerCase();
-            const dateKey = t.dueDate ? new Date(t.dueDate).toISOString().split('T')[0] : '';
+            const dateKey = t.dueDate ? easternDateStr(new Date(t.dueDate)) : '';
             const rawTitle = (t.title || '').toLowerCase();
             if (existingKeys.has(`${title}||${dateKey}`) || existingKeys.has(`${rawTitle}||${dateKey}`)) {
               skipped++;
@@ -1612,7 +1612,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
         const key = `${t.courseName}||${t.title}||${t.type}||${t.weekNumber || ''}`;
         existingMap.set(key, t);
         const stripped = stripBrackets(t.title);
-        const dateKey = t.dueDate ? new Date(t.dueDate).toISOString().split('T')[0] : '';
+        const dateKey = t.dueDate ? easternDateStr(new Date(t.dueDate)) : '';
         const strippedKey = `${stripped}||${t.type}||${dateKey}`;
         if (!existingByStrippedTitle.has(strippedKey)) existingByStrippedTitle.set(strippedKey, t);
         const nameAndDateKey = `${stripped}||${dateKey}`;
@@ -1622,7 +1622,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
       let created = 0, updated = 0, skipped = 0;
       for (const t of incoming) {
         const key = `${t.courseName}||${t.title}||${t.type}||${t.weekNumber || ''}`;
-        const dueStr = t.dueDate ? new Date(t.dueDate).toISOString().split('T')[0] : '';
+        const dueStr = t.dueDate ? easternDateStr(new Date(t.dueDate)) : '';
         const strippedKey = `${stripBrackets(t.title)}||${t.type}||${dueStr}`;
         const { id, isMissed, subtaskCount, completedSubtaskCount, calendarEventId, calendarProvider, prepCalendarEventId, secondaryCalendarEventId, secondAccountCalendarEventId, secondAccountPrepEventId, ...taskData } = t;
         if (taskData.dueDate && typeof taskData.dueDate === 'string') taskData.dueDate = new Date(taskData.dueDate);
@@ -3053,8 +3053,8 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
     try {
       const endDate = new Date();
       const startDate = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000);
-      const startStr = startDate.toISOString().split('T')[0];
-      const endStr = endDate.toISOString().split('T')[0];
+      const startStr = easternDateStr(startDate);
+      const endStr = easternDateStr(endDate);
       const url = `https://archive-api.open-meteo.com/v1/archive?latitude=43.6275&longitude=-79.3962&start_date=${startStr}&end_date=${endStr}&hourly=temperature_2m,apparent_temperature,wind_speed_10m,wind_direction_10m,relative_humidity_2m,weather_code,precipitation&timezone=America/Toronto`;
       const resp = await fetch(url);
       const data = await resp.json();
@@ -5975,9 +5975,9 @@ ${allCourses}
 
 Available task types: reading, module, essay, project, discussion, poll, exam, quiz, reminder, meeting, scholarship, medical, school, household, financial, personal, outside, other
 
-Today's date: ${new Date().toISOString().split('T')[0]}
+Today's date: ${easternDateStr(new Date())}
 Day of week: ${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][new Date().getDay()]}
-${semStart ? `Semester start: ${semStart.toISOString().split('T')[0]}` : ''}
+${semStart ? `Semester start: ${easternDateStr(semStart)}` : ''}
 
 Rules:
 - Match course codes case-insensitively (e.g., "cfnf" → "CFNF400", "cppa" → best match based on context)
@@ -7566,7 +7566,7 @@ I. WHAT YOU MUST NEVER DO
         const fsP = await import('fs/promises');
         const convDir = path.join(process.cwd(), '.ai-conversations');
         await fsP.mkdir(convDir, { recursive: true }).catch(() => {});
-        const dateStr = new Date().toISOString().split('T')[0];
+        const dateStr = easternDateStr(new Date());
         const convFile = path.join(convDir, `${dateStr}.jsonl`);
         const entry = {
           timestamp: new Date().toISOString(),
@@ -7604,7 +7604,7 @@ I. WHAT YOU MUST NEVER DO
         try {
           let existing = '';
           try { existing = await fsP.readFile(memPath, 'utf-8'); } catch {}
-          const correction = `\n\n## Correction (${new Date().toISOString().split('T')[0]})\nUser said: "${message.trim().substring(0, 200)}"\nContext: After using tools [${allToolResults.map(r => r.name).join(', ')}]\n`;
+          const correction = `\n\n## Correction (${easternDateStr(new Date())})\nUser said: "${message.trim().substring(0, 200)}"\nContext: After using tools [${allToolResults.map(r => r.name).join(', ')}]\n`;
           await fsP.writeFile(memPath, existing + correction, 'utf-8');
           console.log('[AI Memory] Auto-saved correction to memory');
         } catch {}
@@ -7618,7 +7618,7 @@ I. WHAT YOU MUST NEVER DO
           const themeTools = allToolResults.filter(r => r.name === 'update_app_theme' && r.success);
           const codeTools = allToolResults.filter(r => (r.name === 'edit_file' || r.name === 'write_file') && r.success);
           const entries: string[] = [];
-          const today = new Date().toISOString().split('T')[0];
+          const today = easternDateStr(new Date());
           if (haTools.length > 0) {
             const entities = haTools.flatMap(r => {
               if (r.result?.entities) return r.result.entities.map((e: any) => e.entity_id).slice(0, 10);
@@ -11901,7 +11901,7 @@ async function pollStatus(timeout){
           let isExactTime = false;
           if (taskDueDate && evtStart) {
             const evtDate = new Date(evtStart);
-            const sameDate = evtDate.toISOString().split('T')[0] === taskDueDate.toISOString().split('T')[0];
+            const sameDate = easternDateStr(evtDate) === easternDateStr(taskDueDate);
             const evtStartTime = evt.start?.dateTime ? `${String(evtDate.getHours()).padStart(2,'0')}:${String(evtDate.getMinutes()).padStart(2,'0')}` : null;
             isExactTime = sameDate && (!taskStartTime || taskStartTime === evtStartTime);
           }
@@ -11943,7 +11943,7 @@ async function pollStatus(timeout){
             let isExactTime = false;
             if (taskDueDate && evtStart) {
               const evtDate = new Date(evtStart);
-              const sameDate = evtDate.toISOString().split('T')[0] === taskDueDate.toISOString().split('T')[0];
+              const sameDate = easternDateStr(evtDate) === easternDateStr(taskDueDate);
               const evtStartTime = evt.start?.dateTime ? `${String(evtDate.getHours()).padStart(2,'0')}:${String(evtDate.getMinutes()).padStart(2,'0')}` : null;
               isExactTime = sameDate && (!taskStartTime || taskStartTime === evtStartTime);
             }
@@ -11973,7 +11973,7 @@ async function pollStatus(timeout){
           let isExactTime = false;
           if (taskDueDate && evtStart) {
             const evtDate = new Date(evtStart);
-            const sameDate = evtDate.toISOString().split('T')[0] === taskDueDate.toISOString().split('T')[0];
+            const sameDate = easternDateStr(evtDate) === easternDateStr(taskDueDate);
             const evtStartTime = `${String(evtDate.getHours()).padStart(2,'0')}:${String(evtDate.getMinutes()).padStart(2,'0')}`;
             isExactTime = sameDate && (!taskStartTime || taskStartTime === evtStartTime);
           }
@@ -27199,7 +27199,7 @@ Return ONLY the JSON object, no markdown formatting.`;
       const allTasks = await storage.getTasks();
       const taskKeys = new Set(allTasks.map(t => {
         const normT = normalizeTitle(t.title || '');
-        const dateK = t.dueDate ? new Date(t.dueDate).toISOString().split('T')[0] : 'nodate';
+        const dateK = t.dueDate ? easternDateStr(new Date(t.dueDate)) : 'nodate';
         return `${normT}||${dateK}`;
       }));
       const filtered = items.filter(item => {
@@ -27208,7 +27208,7 @@ Return ONLY the JSON object, no markdown formatting.`;
           if (itemDate < todayStart) return false;
         }
         const normT = normalizeTitle(item.title || '');
-        const dateK = item.startDate ? new Date(item.startDate).toISOString().split('T')[0] : 'nodate';
+        const dateK = item.startDate ? easternDateStr(new Date(item.startDate)) : 'nodate';
         if (taskKeys.has(`${normT}||${dateK}`)) return false;
         return true;
       });
@@ -27429,7 +27429,7 @@ Return ONLY the JSON object, no markdown formatting.`;
       const normalizeTitle = (t: string) => t.toLowerCase().replace(/\s+/g, ' ').replace(/[^a-z0-9 ]/g, '').trim();
       for (const item of items) {
         const normTitle = normalizeTitle(item.title || '');
-        const dateKey = item.startDate ? new Date(item.startDate).toISOString().split('T')[0] : 'nodate';
+        const dateKey = item.startDate ? easternDateStr(new Date(item.startDate)) : 'nodate';
         const key = `${normTitle}||${dateKey}`;
         if (seen.has(key)) {
           await storage.deletePendingReviewItem(item.id);
@@ -27473,7 +27473,7 @@ Return ONLY the JSON object, no markdown formatting.`;
     const normalizeTitle = (t: string) => t.toLowerCase().replace(/\s+/g, ' ').replace(/[^a-z0-9 ]/g, '').trim();
     for (const item of items) {
       const normTitle = normalizeTitle(item.title || '');
-      const dateKey = item.startDate ? new Date(item.startDate).toISOString().split('T')[0] : 'nodate';
+      const dateKey = item.startDate ? easternDateStr(new Date(item.startDate)) : 'nodate';
       const key = `${normTitle}||${dateKey}`;
       if (seen.has(key)) {
         await storage.deletePendingReviewItem(item.id);
@@ -27581,7 +27581,7 @@ Return ONLY the JSON object, no markdown formatting.`;
       const allTasks = await storage.getTasks();
       const taskKeys = new Set(allTasks.map(t => {
         const normT = normalizeTitle(t.title || '');
-        const dateK = t.dueDate ? new Date(t.dueDate).toISOString().split('T')[0] : 'nodate';
+        const dateK = t.dueDate ? easternDateStr(new Date(t.dueDate)) : 'nodate';
         return `${normT}||${dateK}`;
       }));
       const dismissedTitles = new Set(await storage.getDismissedReviewTitles());
@@ -27593,7 +27593,7 @@ Return ONLY the JSON object, no markdown formatting.`;
         }
         const normT = normalizeTitle(item.title || '');
         if (dismissedTitles.has(normT)) return false;
-        const dateK = item.startDate ? new Date(item.startDate).toISOString().split('T')[0] : 'nodate';
+        const dateK = item.startDate ? easternDateStr(new Date(item.startDate)) : 'nodate';
         if (taskKeys.has(`${normT}||${dateK}`)) return false;
         if (seenTitles.has(normT)) return false;
         seenTitles.add(normT);
@@ -28184,7 +28184,7 @@ Keep your tone friendly and educational. Format your response clearly with numbe
         event = {
           summary: title,
           start: { date },
-          end: { date: nextDay.toISOString().split('T')[0] },
+          end: { date: easternDateStr(nextDay) },
         };
       }
 

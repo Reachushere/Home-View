@@ -1,5 +1,6 @@
 // Google Calendar Integration
 import { google } from 'googleapis';
+import { easternDateStr } from './timezone';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -183,7 +184,7 @@ export async function createCalendarEvent(task: {
   
   const summary = `${task.courseName ? `${task.courseName} - ` : ''}${task.title}`;
   
-  const checkDateStr = dueDate.toISOString().split('T')[0];
+  const checkDateStr = easternDateStr(dueDate);
   const existingEventId = await findExistingEventBySummary(summary, checkDateStr);
   if (existingEventId) {
     console.log(`[Calendar] Event already exists: "${summary}" on ${checkDateStr}, reusing id=${existingEventId}`);
@@ -216,11 +217,11 @@ export async function createCalendarEvent(task: {
   
   if (isAllDay) {
     // All-day event uses date (not dateTime)
-    const dateStr = dueDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+    const dateStr = easternDateStr(dueDate); // YYYY-MM-DD format
     // Google Calendar uses exclusive end date, so add 1 day for single-day events
     const nextDay = new Date(dueDate);
     nextDay.setDate(nextDay.getDate() + 1);
-    const endDateStr = nextDay.toISOString().split('T')[0];
+    const endDateStr = easternDateStr(nextDay);
     event = {
       summary,
       description: task.description || '',
@@ -292,10 +293,10 @@ export async function createEventInCalendar(calendarId: string, task: {
   let event: any;
   
   if (isAllDay) {
-    const dateStr = dueDate.toISOString().split('T')[0];
+    const dateStr = easternDateStr(dueDate);
     const nextDay = new Date(dueDate);
     nextDay.setDate(nextDay.getDate() + 1);
-    const endDateStr = nextDay.toISOString().split('T')[0];
+    const endDateStr = easternDateStr(nextDay);
     
     event = {
       summary,
@@ -398,10 +399,10 @@ export async function updateCalendarEvent(eventId: string, task: {
     // Create new event with correct type
     let event: any;
     if (isAllDay) {
-      const dateStr = dueDate.toISOString().split('T')[0];
+      const dateStr = easternDateStr(dueDate);
       const nextDay = new Date(dueDate);
       nextDay.setDate(nextDay.getDate() + 1);
-      const endDateStr = nextDay.toISOString().split('T')[0];
+      const endDateStr = easternDateStr(nextDay);
       event = {
         summary,
         description: task.description || '',
@@ -439,10 +440,10 @@ export async function updateCalendarEvent(eventId: string, task: {
   // Same type, just update in place
   let event: any;
   if (isAllDay) {
-    const dateStr = dueDate.toISOString().split('T')[0];
+    const dateStr = easternDateStr(dueDate);
     const nextDay = new Date(dueDate);
     nextDay.setDate(nextDay.getDate() + 1);
-    const endDateStr = nextDay.toISOString().split('T')[0];
+    const endDateStr = easternDateStr(nextDay);
     event = {
       summary,
       description: task.description || '',
@@ -490,10 +491,10 @@ export async function createPrepCalendarEvent(task: {
   let event: any;
   
   if (isAllDay) {
-    const dateStr = startDate.toISOString().split('T')[0];
+    const dateStr = easternDateStr(startDate);
     const nextDay = new Date(startDate);
     nextDay.setDate(nextDay.getDate() + 1);
-    const endDateStr = nextDay.toISOString().split('T')[0];
+    const endDateStr = easternDateStr(nextDay);
     event = {
       summary,
       description,
@@ -573,10 +574,10 @@ export async function updatePrepCalendarEvent(eventId: string, task: {
     
     let event: any;
     if (isAllDay) {
-      const dateStr = startDate.toISOString().split('T')[0];
+      const dateStr = easternDateStr(startDate);
       const nextDay = new Date(startDate);
       nextDay.setDate(nextDay.getDate() + 1);
-      const endDateStr = nextDay.toISOString().split('T')[0];
+      const endDateStr = easternDateStr(nextDay);
       event = {
         summary,
         description,
@@ -608,10 +609,10 @@ export async function updatePrepCalendarEvent(eventId: string, task: {
   
   let event: any;
   if (isAllDay) {
-    const dateStr = startDate.toISOString().split('T')[0];
+    const dateStr = easternDateStr(startDate);
     const nextDay = new Date(startDate);
     nextDay.setDate(nextDay.getDate() + 1);
-    const endDateStr = nextDay.toISOString().split('T')[0];
+    const endDateStr = easternDateStr(nextDay);
     event = {
       summary,
       description,
@@ -795,7 +796,7 @@ export async function createYearlyScholarshipEvent(info: {
     const dateStr = info.date;
     const endDate = new Date(dateObj);
     endDate.setDate(endDate.getDate() + 1);
-    const endDateStr = endDate.toISOString().split('T')[0];
+    const endDateStr = easternDateStr(endDate);
 
     // Dedup: don't create a new event if one with the same summary already exists on this date
     const existingId = await findExistingEventBySummary(summary, dateStr);
@@ -871,14 +872,14 @@ export async function syncGoogleEventsToReview(): Promise<{ added: number; skipp
   const normalizeTitle = (t: string) => t.toLowerCase().replace(/\s+/g, ' ').replace(/[^a-z0-9 ]/g, '').trim();
   const existingReviewKeys = new Set(allReviewItems.map(i => {
     const normT = normalizeTitle(i.title || '');
-    const dateK = i.startDate ? new Date(i.startDate).toISOString().split('T')[0] : 'nodate';
+    const dateK = i.startDate ? easternDateStr(new Date(i.startDate)) : 'nodate';
     return `${normT}||${dateK}`;
   }));
 
   const allTasks = await storage.getTasks();
   const existingTaskKeys = new Set(allTasks.map(t => {
     const normT = normalizeTitle(t.title || '');
-    const dateK = t.dueDate ? new Date(t.dueDate).toISOString().split('T')[0] : 'nodate';
+    const dateK = t.dueDate ? easternDateStr(new Date(t.dueDate)) : 'nodate';
     return `${normT}||${dateK}`;
   }));
 
@@ -957,7 +958,7 @@ export async function syncGoogleEventsToReview(): Promise<{ added: number; skipp
     const endDt = endStr ? new Date(endStr) : startDt;
 
     const normTitle = normalizeTitle(event.summary || 'untitled event');
-    const dateKey = startDt.toISOString().split('T')[0];
+    const dateKey = easternDateStr(startDt);
     const titleDateKey = `${normTitle}||${dateKey}`;
     if (existingReviewKeys.has(titleDateKey) || existingTaskKeys.has(titleDateKey)) {
       skipped++;
@@ -975,7 +976,7 @@ export async function syncGoogleEventsToReview(): Promise<{ added: number; skipp
       const alreadyHasClass = allExistingTasks.some(t => {
         if (t.type !== 'class' || t.isCompleted) return false;
         const tCode = t.courseName?.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '') || '';
-        const tDate = t.dueDate ? new Date(t.dueDate).toISOString().split('T')[0] : '';
+        const tDate = t.dueDate ? easternDateStr(new Date(t.dueDate)) : '';
         return tCode === classInfo.courseCode && tDate === dateKey && t.eventStartTime === startTime;
       });
       if (alreadyHasClass) {

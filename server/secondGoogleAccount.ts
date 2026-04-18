@@ -1,6 +1,7 @@
 // Second Google Account OAuth Integration
 import { google } from 'googleapis';
 import { storage } from './storage';
+import { easternDateStr } from './timezone';
 import type { SecondGoogleAccount } from '@shared/schema';
 
 const SCOPES = [
@@ -168,10 +169,10 @@ export async function createEventInSecondAccount(task: {
   let event: any;
   
   if (isAllDay) {
-    const dateStr = dueDate.toISOString().split('T')[0];
+    const dateStr = easternDateStr(dueDate);
     const nextDay = new Date(dueDate);
     nextDay.setDate(nextDay.getDate() + 1);
-    const endDateStr = nextDay.toISOString().split('T')[0];
+    const endDateStr = easternDateStr(nextDay);
     
     event = {
       summary,
@@ -231,10 +232,10 @@ export async function createPrepEventInSecondAccount(task: {
   let event: any;
   
   if (isAllDay) {
-    const dateStr = startDate.toISOString().split('T')[0];
+    const dateStr = easternDateStr(startDate);
     const nextDay = new Date(startDate);
     nextDay.setDate(nextDay.getDate() + 1);
-    const endDateStr = nextDay.toISOString().split('T')[0];
+    const endDateStr = easternDateStr(nextDay);
     
     event = {
       summary,
@@ -299,10 +300,10 @@ export async function updateEventInSecondAccount(eventId: string, task: {
   let event: any;
   
   if (isAllDay) {
-    const dateStr = dueDate.toISOString().split('T')[0];
+    const dateStr = easternDateStr(dueDate);
     const nextDay = new Date(dueDate);
     nextDay.setDate(nextDay.getDate() + 1);
-    const endDateStr = nextDay.toISOString().split('T')[0];
+    const endDateStr = easternDateStr(nextDay);
     
     event = {
       summary,
