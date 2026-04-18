@@ -143,7 +143,7 @@ git stash pop</pre>
 
 (async () => {
   const result = await sendGmail({
-    to: 'homeworkbryn@gmail.com',
+    to: 'bryn.kai-hendricks@outlook.com, homeworkbryn@gmail.com',
     subject: 'UniCal Pi Handoff — Step-by-Step Setup Checklist',
     htmlBody: html,
   });
