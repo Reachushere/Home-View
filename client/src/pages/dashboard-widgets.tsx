@@ -121,8 +121,8 @@ export const PrioritySelect = memo(function PrioritySelect({ priorityKey, initia
   const hasSuffix = suffix === 'A' || suffix === 'B';
   return (
     <select
-      className="text-[11px] font-semibold text-white bg-white/10 rounded px-1 py-0.5 border border-white/20 focus:outline-none focus:border-white/50 cursor-pointer appearance-none text-center"
-      style={{ width: hasSuffix ? '30px' : '22px', minWidth: hasSuffix ? '30px' : '22px', WebkitAppearance: 'none', MozAppearance: 'none', marginLeft: '5px' }}
+      className="text-[11px] font-semibold bg-white/10 rounded px-1 py-0.5 border border-white/20 focus:outline-none focus:border-white/50 cursor-pointer appearance-none text-center"
+      style={{ width: hasSuffix ? '30px' : '22px', minWidth: hasSuffix ? '30px' : '22px', WebkitAppearance: 'none', MozAppearance: 'none', marginLeft: '5px', color: 'inherit' }}
       value={val}
       onClick={(e) => e.stopPropagation()}
       onChange={(e) => {
