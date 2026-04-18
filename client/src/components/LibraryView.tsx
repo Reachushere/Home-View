@@ -4711,7 +4711,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       <div style={{
         position: 'absolute',
         top: '32px',
-        right: '200px',
+        right: '252px',
         zIndex: 100002,
         display: 'flex',
         alignItems: 'center',
@@ -4779,29 +4779,33 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         >
           <ChevronRight size={16} />
         </button>
-        <button
-          onClick={() => setShowLibraryNote(true)}
-          data-testid="btn-library-notepad"
-          title="Open Library Note"
-          style={{
-            width: '37px',
-            height: '37px',
-            borderRadius: '50%',
-            background: showLibraryNote ? 'rgba(212,175,55,0.25)' : 'rgba(0,0,0,0.5)',
-            border: showLibraryNote ? '1px solid rgba(212,175,55,0.4)' : '1px solid rgba(255,255,255,0.2)',
-            color: showLibraryNote ? 'rgba(212,175,55,0.9)' : 'rgba(255,255,255,0.7)',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'all 0.2s',
-          }}
-          onMouseEnter={e => { if (!showLibraryNote) { e.currentTarget.style.background = 'rgba(0,0,0,0.6)'; e.currentTarget.style.color = '#fff'; } }}
-          onMouseLeave={e => { if (!showLibraryNote) { e.currentTarget.style.background = 'rgba(0,0,0,0.5)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; } }}
-        >
-          <StickyNote size={16} />
-        </button>
       </div>
+      <button
+        onClick={() => setShowLibraryNote(true)}
+        data-testid="btn-library-notepad"
+        title="Open Library Note"
+        style={{
+          position: 'absolute',
+          top: '33px',
+          right: '204px',
+          zIndex: 30,
+          width: '36px',
+          height: '36px',
+          borderRadius: '50%',
+          background: showLibraryNote ? 'rgba(212,175,55,0.25)' : 'rgba(0,0,0,0.5)',
+          border: showLibraryNote ? '1px solid rgba(212,175,55,0.4)' : '1px solid rgba(255,255,255,0.2)',
+          color: showLibraryNote ? 'rgba(212,175,55,0.9)' : 'rgba(255,255,255,0.7)',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          transition: 'all 0.2s',
+        }}
+        onMouseEnter={e => { if (!showLibraryNote) { e.currentTarget.style.background = 'rgba(0,0,0,0.6)'; e.currentTarget.style.color = '#fff'; } }}
+        onMouseLeave={e => { if (!showLibraryNote) { e.currentTarget.style.background = 'rgba(0,0,0,0.5)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; } }}
+      >
+        <StickyNote size={16} />
+      </button>
 
       <div style={{
         position: 'absolute',
