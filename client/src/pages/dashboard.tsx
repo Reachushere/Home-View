@@ -7316,6 +7316,75 @@ export default function Dashboard() {
   const lastAutoWeekDateRef = useRef(new Date().getDate());
   const lastSyncedSemKeyRef = useRef<string | null>(null);
   const didInitialAnchorRef = useRef(false);
+  // Unified navigation: when in gap-mode (selectedWeek <= 0), shift the
+  // 7-day offset; if the new offset puts us into a configured semester, switch
+  // to that semester's week number. When in semester-mode, increment
+  // selectedWeek; if it falls outside the current semester's range, switch to
+  // gap-mode using the new week's start date as anchor.
+  const navigateWeeks = (delta: number) => {
+    const sems = allSemesterSettingsRef.current || [];
+    const findSemWeek = (d: Date): { wn: number } | null => {
+      for (const sem of sems) {
+        if (!sem.semesterStartDate) continue;
+        const ss = new Date(sem.semesterStartDate);
+        const rw = sem.readingWeekStart || null;
+        const wn = getWeekNumber(d, ss, rw);
+        const maxW = getSemesterTotalWeeks(sem.semesterType);
+        if (wn >= 1 && wn <= maxW) return { wn };
+      }
+      return null;
+    };
+    if (selectedWeek <= 0) {
+      // Gap mode — compute candidate Monday after offset shift
+      const today = new Date();
+      const dow = today.getDay();
+      const daysSinceMon = dow === 0 ? 6 : dow - 1;
+      const newOffset = (interSemDayOffset || 0) + delta * 7;
+      const candidateMon = new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysSinceMon + newOffset, 12);
+      const midWeek = new Date(candidateMon.getFullYear(), candidateMon.getMonth(), candidateMon.getDate() + 3, 12);
+      const hit = findSemWeek(midWeek);
+      if (hit) {
+        setInterSemDayOffset(0);
+        setSelectedWeek(hit.wn);
+      } else {
+        setInterSemDayOffset(newOffset);
+      }
+    } else {
+      // Semester mode — try selectedWeek + delta; if outside the active sem,
+      // switch to gap-mode with offset matching the new week's date.
+      const newWeek = selectedWeek + delta;
+      const match = weeks.find(w => w.weekNumber === newWeek);
+      if (match) {
+        setSelectedWeek(newWeek);
+        setInterSemDayOffset(0);
+      } else {
+        // Compute the date of the candidate week from active sem start
+        const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : null;
+        const rw = semesterSettings?.readingWeekStart || null;
+        if (semStart) {
+          const wd = getWeekDates(newWeek, semStart, rw);
+          const midWeek = new Date(wd.start.getFullYear(), wd.start.getMonth(), wd.start.getDate() + 3, 12);
+          const hit = findSemWeek(midWeek);
+          if (hit) {
+            setSelectedWeek(hit.wn);
+            setInterSemDayOffset(0);
+          } else {
+            // Compute offset from today's Monday to the candidate Monday
+            const today = new Date();
+            const dow = today.getDay();
+            const daysSinceMon = dow === 0 ? 6 : dow - 1;
+            const todayMon = new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysSinceMon, 12);
+            const candidateMon = new Date(wd.start.getFullYear(), wd.start.getMonth(), wd.start.getDate(), 12);
+            const offsetDays = Math.round((candidateMon.getTime() - todayMon.getTime()) / 86400000);
+            setSelectedWeek(0);
+            setInterSemDayOffset(offsetDays);
+          }
+        } else {
+          setSelectedWeek(newWeek);
+        }
+      }
+    }
+  };
   // Auto-resync of selectedWeek is disabled per user requirement: the calendar
   // must NEVER auto-change once the user is using it. The ONLY exception is the
   // initial anchor below — on first page load (sentinel selectedWeek === 0),
@@ -11949,7 +12018,7 @@ export default function Dashboard() {
   const _todayForFallback = new Date();
   const _dowForFallback = _todayForFallback.getDay();
   const _daysSinceMonday = _dowForFallback === 0 ? 6 : _dowForFallback - 1;
-  const _currentWeekMonday = new Date(_todayForFallback.getFullYear(), _todayForFallback.getMonth(), _todayForFallback.getDate() - _daysSinceMonday, 12);
+  const _currentWeekMonday = new Date(_todayForFallback.getFullYear(), _todayForFallback.getMonth(), _todayForFallback.getDate() - _daysSinceMonday + (interSemDayOffset || 0), 12);
   const _currentWeekSunday = new Date(_currentWeekMonday.getFullYear(), _currentWeekMonday.getMonth(), _currentWeekMonday.getDate() + 6, 12);
   const weekStartDate = selectedWeekInfo ? parseAsLocalDate(selectedWeekInfo.startDate) : computedWeekDates ? new Date(computedWeekDates.start.getFullYear(), computedWeekDates.start.getMonth(), computedWeekDates.start.getDate(), 12) : _currentWeekMonday;
   const weekEndDate = selectedWeekInfo ? parseAsLocalDate(selectedWeekInfo.endDate) : computedWeekDates ? new Date(computedWeekDates.end.getFullYear(), computedWeekDates.end.getMonth(), computedWeekDates.end.getDate(), 12) : _currentWeekSunday;
@@ -14047,8 +14116,8 @@ export default function Dashboard() {
                 })()}
               </span>
               <div style={{ display: 'flex', gap: '4px' }}>
-                <button onClick={() => setSelectedWeek(w => Math.max(FIRST_WEEK, w - 1))} style={{ color: '#fff', background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '4px', width: '24px', height: '22px', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} data-testid="mobile-prev-week">‹</button>
-                <button onClick={() => setSelectedWeek(w => Math.min(currentMaxWeek, w + 1))} style={{ color: '#fff', background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '4px', width: '24px', height: '22px', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} data-testid="mobile-next-week">›</button>
+                <button onClick={() => navigateWeeks(-1)} style={{ color: '#fff', background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '4px', width: '24px', height: '22px', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} data-testid="mobile-prev-week">‹</button>
+                <button onClick={() => navigateWeeks(1)} style={{ color: '#fff', background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '4px', width: '24px', height: '22px', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} data-testid="mobile-next-week">›</button>
                 <button onClick={() => setCalendarView(v => v === 'week' ? 'month' : 'week')} style={{ color: '#fff', background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '6px', height: '22px', padding: '0 8px', cursor: 'pointer', fontSize: '10px', fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center' }} data-testid="mobile-toggle-view">{calendarView === 'week' ? 'Month' : 'Week'}</button>
               </div>
             </div>
@@ -33953,7 +34022,7 @@ export default function Dashboard() {
                       variant="ghost" 
                       size="icon" 
                       className="h-7 w-7 hover:bg-white/20 rounded-md" 
-                      onClick={() => { calendarDrivingScrollRef.current = true; setTimeout(() => { calendarDrivingScrollRef.current = false; }, 1200); setSelectedWeek(selectedWeek - 1); }}
+                      onClick={() => { calendarDrivingScrollRef.current = true; setTimeout(() => { calendarDrivingScrollRef.current = false; }, 1200); navigateWeeks(-1); }}
                       data-testid="button-weeks-flyout-prev-week"
                     >
                       <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
@@ -33967,7 +34036,7 @@ export default function Dashboard() {
                       variant="ghost" 
                       size="icon" 
                       className="h-7 w-7 hover:bg-white/20 rounded-md" 
-                      onClick={() => { calendarDrivingScrollRef.current = true; setTimeout(() => { calendarDrivingScrollRef.current = false; }, 1200); setSelectedWeek(selectedWeek + 1); }}
+                      onClick={() => { calendarDrivingScrollRef.current = true; setTimeout(() => { calendarDrivingScrollRef.current = false; }, 1200); navigateWeeks(1); }}
                       data-testid="button-weeks-flyout-next-week"
                     >
                       <ChevronRight className="h-4 w-4 text-white" strokeWidth={2.5} />
@@ -35325,8 +35394,8 @@ export default function Dashboard() {
             data-testid="date-nav-tab"
           >
             <div style={{ width: '280px', height: '15px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)', padding: '0 2px', gap: '5px' }}>
-              <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 4px', margin: '-8px 0', height: 'calc(100% + 16px)', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => { const newWeek = selectedWeek - 4; setShowActualCurrentWeek(false); calendarDrivingScrollRef.current = true; setTimeout(() => { calendarDrivingScrollRef.current = false; }, 1200); startTransition(() => setSelectedWeek(newWeek)); if (timelineSyncRef.current && newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }} data-testid="button-pill-prev-month"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000', letterSpacing: '-2px', marginRight: '1px' }}>◀◀</span></div>
-              <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 4px', margin: '-8px 0', height: 'calc(100% + 16px)', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => { if (isViewingCurrentWeekRef.current && !showActualCurrentWeek) { setShowActualCurrentWeek(true); return; } const newWeek = selectedWeek - 1; setShowActualCurrentWeek(false); calendarDrivingScrollRef.current = true; setTimeout(() => { calendarDrivingScrollRef.current = false; }, 1200); startTransition(() => setSelectedWeek(newWeek)); if (timelineSyncRef.current && newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }} data-testid="button-pill-prev-week"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>◀</span></div>
+              <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 4px', margin: '-8px 0', height: 'calc(100% + 16px)', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => { setShowActualCurrentWeek(false); calendarDrivingScrollRef.current = true; setTimeout(() => { calendarDrivingScrollRef.current = false; }, 1200); startTransition(() => navigateWeeks(-4)); }} data-testid="button-pill-prev-month"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000', letterSpacing: '-2px', marginRight: '1px' }}>◀◀</span></div>
+              <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 4px', margin: '-8px 0', height: 'calc(100% + 16px)', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => { if (isViewingCurrentWeekRef.current && !showActualCurrentWeek) { setShowActualCurrentWeek(true); return; } setShowActualCurrentWeek(false); calendarDrivingScrollRef.current = true; setTimeout(() => { calendarDrivingScrollRef.current = false; }, 1200); startTransition(() => navigateWeeks(-1)); }} data-testid="button-pill-prev-week"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>◀</span></div>
               <span data-testid="text-week-dates" style={{ fontSize: '10px', fontWeight: 500, color: '#000', whiteSpace: 'nowrap', lineHeight: 1, letterSpacing: '0.3px', flex: 1, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px' }}>
                 {(() => {
                   const startMonth = format(weekStartDate, 'MMM');
@@ -35340,8 +35409,8 @@ export default function Dashboard() {
                   return `Week ${selectedWeek} │ ${datePart}, ${year}`;
                 })()}
               </span>
-              <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 4px', margin: '-8px 0', height: 'calc(100% + 16px)', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => { if (showActualCurrentWeek) { setShowActualCurrentWeek(false); return; } const newWeek = selectedWeek + 1; calendarDrivingScrollRef.current = true; setTimeout(() => { calendarDrivingScrollRef.current = false; }, 1200); startTransition(() => setSelectedWeek(newWeek)); if (timelineSyncRef.current && newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }} data-testid="button-pill-next-week"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▶</span></div>
-              <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 4px', margin: '-8px 0', height: 'calc(100% + 16px)', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => { const newWeek = selectedWeek + 4; setShowActualCurrentWeek(false); calendarDrivingScrollRef.current = true; setTimeout(() => { calendarDrivingScrollRef.current = false; }, 1200); startTransition(() => setSelectedWeek(newWeek)); if (timelineSyncRef.current && newWeek >= FIRST_WEEK && newWeek <= LAST_WEEK) scrollHomeworkToWeek(newWeek); }} data-testid="button-pill-next-month"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000', letterSpacing: '-2px', marginLeft: '1px' }}>▶▶</span></div>
+              <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 4px', margin: '-8px 0', height: 'calc(100% + 16px)', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => { if (showActualCurrentWeek) { setShowActualCurrentWeek(false); return; } calendarDrivingScrollRef.current = true; setTimeout(() => { calendarDrivingScrollRef.current = false; }, 1200); startTransition(() => navigateWeeks(1)); }} data-testid="button-pill-next-week"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▶</span></div>
+              <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 4px', margin: '-8px 0', height: 'calc(100% + 16px)', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => { setShowActualCurrentWeek(false); calendarDrivingScrollRef.current = true; setTimeout(() => { calendarDrivingScrollRef.current = false; }, 1200); startTransition(() => navigateWeeks(4)); }} data-testid="button-pill-next-month"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000', letterSpacing: '-2px', marginLeft: '1px' }}>▶▶</span></div>
             </div>
           </div>
           <button
