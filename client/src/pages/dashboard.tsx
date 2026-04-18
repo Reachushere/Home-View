@@ -39813,12 +39813,12 @@ export default function Dashboard() {
           onClick={() => setIsAiCommandOpen(true)}
           style={{
             position: 'fixed', bottom: '43px', right: '12px', zIndex: 10000,
-            width: '44px', height: '44px', borderRadius: '50%',
+            width: '36px', height: '36px', borderRadius: '50%',
             background: 'radial-gradient(circle at 30% 30%, #b794f6 0%, #7c3aed 55%, #4c1d95 100%)',
             border: '1.5px solid rgba(183,148,246,0.55)',
             boxShadow: '0 6px 20px rgba(124,58,237,0.55), inset 0 1px 2px rgba(255,255,255,0.35), inset 0 -2px 4px rgba(0,0,0,0.25)',
             cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: '#fff', fontSize: '13px', fontWeight: 700, letterSpacing: '0.5px',
+            color: '#fff', fontSize: '11px', fontWeight: 700, letterSpacing: '0.5px',
             fontFamily: 'Inter, system-ui, sans-serif', transition: 'all 0.2s',
           }}
           onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.08)'; e.currentTarget.style.boxShadow = '0 8px 26px rgba(124,58,237,0.7), inset 0 1px 2px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.25)'; }}
