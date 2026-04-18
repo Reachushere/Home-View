@@ -5038,16 +5038,54 @@ export default function Dashboard() {
       const rgb = hexToRgb(course.color);
       return { start: course.color, end: `rgb(${Math.min(255, rgb.r + 100)}, ${Math.min(255, rgb.g + 100)}, ${Math.min(255, rgb.b + 100)})` };
     }
+    // Per-semester default palette (mirrors the table used by the calendar
+    // course rows and the edit-course dialog). Slot 1/2/3 → palette index.
+    const semPaletteTable: Record<string, Array<{ start: string; end: string }>> = {
+      'ss2025': [{ start: '#e67e22', end: '#f0b778' }, { start: '#2ecc71', end: '#a3e4b8' }, { start: '#9b59b6', end: '#d2a8e0' }],
+      'f2025': [{ start: '#e74c3c', end: '#f1a09a' }, { start: '#3498db', end: '#89c4e8' }, { start: '#f1c40f', end: '#f7dc6f' }],
+      'w2026': [{ start: '#22c55e', end: '#AACD9F' }, { start: '#3b82f6', end: '#FFC3C6' }, { start: '#a855f7', end: '#E9C6F0' }],
+      'ss2026': [{ start: '#f97316', end: '#fdba74' }, { start: '#06b6d4', end: '#67e8f9' }, { start: '#ec4899', end: '#f9a8d4' }],
+      'f2026': [{ start: '#dc2626', end: '#fca5a5' }, { start: '#8b5cf6', end: '#c4b5fd' }, { start: '#14b8a6', end: '#5eead4' }],
+      'w2027': [{ start: '#0ea5e9', end: '#7dd3fc' }, { start: '#f59e0b', end: '#fcd34d' }, { start: '#d946ef', end: '#f0abfc' }],
+      'ss2027': [{ start: '#84cc16', end: '#bef264' }, { start: '#6366f1', end: '#a5b4fc' }, { start: '#f43f5e', end: '#fda4af' }],
+      'f2027': [{ start: '#f472b6', end: '#fbcfe8' }, { start: '#10b981', end: '#6ee7b7' }, { start: '#7c3aed', end: '#c4b5fd' }],
+      'w2028': [{ start: '#eab308', end: '#fde047' }, { start: '#0891b2', end: '#67e8f9' }, { start: '#be185d', end: '#f9a8d4' }],
+      'ss2028': [{ start: '#4ade80', end: '#bbf7d0' }, { start: '#e11d48', end: '#fda4af' }, { start: '#2563eb', end: '#93c5fd' }],
+      'f2028': [{ start: '#c084fc', end: '#e9d5ff' }, { start: '#ea580c', end: '#fdba74' }, { start: '#059669', end: '#6ee7b7' }],
+      'w2029': [{ start: '#38bdf8', end: '#bae6fd' }, { start: '#e879f9', end: '#f5d0fe' }, { start: '#65a30d', end: '#bef264' }],
+    };
+    const semKeyFromSem = (sem: any): string => {
+      const t = (sem.semesterType || '').toLowerCase();
+      const yrM = (sem.semesterName || '').match(/\d{4}/);
+      const yr = yrM ? yrM[0] : '';
+      if (!yr) return '';
+      if (t === 'winter') return `w${yr}`;
+      if (t === 'fall') return `f${yr}`;
+      if (t === 'spring_summer') return `ss${yr}`;
+      return '';
+    };
     const sems = allSemesterSettingsRef.current || [];
     for (const sem of sems) {
       for (let i = 1; i <= 3; i++) {
         const sc = ((sem as any)[`course${i}Code`] || '').toUpperCase().replace(/\s/g, '');
         if (sc === normCode) {
-          const color = (sem as any)[`course${i}Color`] || '#6b7280';
+          const color = (sem as any)[`course${i}Color`] || '';
           const colorEnd = (sem as any)[`course${i}ColorEnd`] || '';
-          if (colorEnd) return { start: color, end: colorEnd };
-          const rgb = hexToRgb(color);
-          return { start: color, end: `rgb(${Math.min(255, rgb.r + 100)}, ${Math.min(255, rgb.g + 100)}, ${Math.min(255, rgb.b + 100)})` };
+          if (color && colorEnd) return { start: color, end: colorEnd };
+          if (color && !colorEnd) {
+            const rgb = hexToRgb(color);
+            return { start: color, end: `rgb(${Math.min(255, rgb.r + 100)}, ${Math.min(255, rgb.g + 100)}, ${Math.min(255, rgb.b + 100)})` };
+          }
+          // No semester-stored colour for this slot → use the semester's
+          // default palette so TBD slots and unconfigured real courses pick
+          // up the same gradient the calendar row shows.
+          const sk = semKeyFromSem(sem);
+          const palette = semPaletteTable[sk];
+          if (palette) {
+            const pair = palette[(i - 1) % palette.length];
+            if (pair) return { start: pair.start, end: pair.end };
+          }
+          return { start: '#6b7280', end: '#9ca3af' };
         }
       }
     }
