@@ -7323,6 +7323,9 @@ export default function Dashboard() {
   // selectedWeek; if it falls outside the current semester's range, switch to
   // gap-mode using the new week's start date as anchor.
   const navigateWeeks = (delta: number) => {
+    // Mark that the user has manually navigated so the initial-anchor effect
+    // stops re-snapping back to today's week.
+    didInitialAnchorRef.current = true;
     const sems = allSemesterSettingsRef.current || [];
     const findSemWeek = (d: Date): { wn: number } | null => {
       for (const sem of sems) {
