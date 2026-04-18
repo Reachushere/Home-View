@@ -8484,6 +8484,43 @@ Always cite which file/document each finding comes from. Be thorough but concise
     }
   });
 
+  // Diagnostic: list every week folder + sub-file the active semester's OneDrive
+  // sees for a given course. Lets us tell whether missing weeks are a OneDrive
+  // visibility problem (different account / path) vs a sync logic problem.
+  // Usage: curl http://localhost:5000/api/library/debug-onedrive?course=CASL101
+  app.get("/api/library/debug-onedrive", async (req, res) => {
+    try {
+      const courseCode = String(req.query.course || '').toUpperCase().replace(/\s/g, '');
+      if (!courseCode) return res.status(400).json({ error: 'course query param required (e.g. ?course=CASL101)' });
+      const { listOneDriveItems, isOneDriveConnected } = await import("./onedrive");
+      if (!isOneDriveConnected()) return res.status(500).json({ error: 'OneDrive not connected on this server' });
+      const sem = await storage.getActiveSemesterSettings();
+      if (!sem) return res.status(404).json({ error: 'No active semester' });
+      const courses = await getSemesterOneDriveCourses(sem);
+      const course = courses.find((c: any) => c.code.replace(/\s/g, '').toUpperCase() === courseCode);
+      if (!course) return res.status(404).json({ error: `Course ${courseCode} not in active semester. Found: ${courses.map((c: any) => c.code).join(', ')}` });
+      const weekFolders = await listOneDriveItems(course.path);
+      const weeks: any[] = [];
+      for (const wf of weekFolders) {
+        if (wf.type !== 'folder') continue;
+        const m = wf.name.match(/Week\s+(\d+)/i);
+        if (!m) { weeks.push({ name: wf.name, path: wf.path, weekNum: null, contents: '(not a Week folder)' }); continue; }
+        const weekNum = parseInt(m[1], 10);
+        const weekContents = await listOneDriveItems(wf.path);
+        const subs: Record<string, string[]> = {};
+        for (const sub of weekContents) {
+          if (sub.type !== 'folder') continue;
+          const subFiles = await listOneDriveItems(sub.path);
+          subs[sub.name] = subFiles.filter((f: any) => f.type === 'file').map((f: any) => f.name);
+        }
+        weeks.push({ name: wf.name, path: wf.path, weekNum, subFolders: subs });
+      }
+      res.json({ course: course.code, coursePath: course.path, semester: sem.semesterName, weekCount: weeks.length, weeks });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message, stack: err.stack });
+    }
+  });
+
   app.get("/api/library/debug-files", async (_req, res) => {
     try {
       const allFiles = await storage.getFiles();
