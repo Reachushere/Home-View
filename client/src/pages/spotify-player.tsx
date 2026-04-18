@@ -6,6 +6,7 @@ import {
   Bed, Bath, DoorOpen, CookingPot, Sofa, Crown, ShirtIcon, Globe2,
   Sun, Cast, Monitor, Square,
 } from "lucide-react";
+import { SiSpotify } from "react-icons/si";
 import floorplanImg from "@assets/Floorplan11_1774005505273.png";
 import massBg from "@assets/mass-background2_1774005959332.png";
 import musicBg from "@assets/Music_BG20_1774006032495.png";
@@ -1442,6 +1443,21 @@ export default function SpotifyPlayerPage() {
       >
         <ChevronLeft className="h-3.5 w-3.5" />
         Back
+      </button>
+
+      <button
+        onClick={() => {
+          if (confirm('Reconnect Spotify? You will be redirected to sign in again.')) {
+            window.location.href = '/api/spotify/login';
+          }
+        }}
+        className="absolute top-3 right-3 z-50 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-white/80 hover:text-white transition-all"
+        style={{ background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.4)', backdropFilter: 'blur(12px)' }}
+        data-testid="button-spotify-reconnect"
+        title="Reconnect Spotify account"
+      >
+        <SiSpotify className="h-3.5 w-3.5" style={{ color: '#1DB954' }} />
+        Reconnect
       </button>
 
       {notification && (
