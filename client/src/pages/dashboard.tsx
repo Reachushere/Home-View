@@ -35426,10 +35426,10 @@ export default function Dashboard() {
             style={{ top: '-29px', right: '7px', left: '10px', display: calendarView === 'month' ? 'none' : 'flex', alignItems: 'center', justifyContent: 'flex-end', height: '15px', pointerEvents: (homeworkAnimating || blankBoxAnimating) ? 'none' : 'auto', opacity: (homeworkAnimating || blankBoxAnimating || isTopPillOpen) ? 0 : 1, transition: 'opacity 0.25s ease' }}
             data-testid="date-nav-tab"
           >
-            <div style={{ width: '280px', height: '15px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)', padding: '0 2px', gap: '5px' }}>
+            <div style={{ width: '340px', height: '15px', borderRadius: '6px 6px 0 0', background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.6)', borderBottom: 'none', display: 'flex', alignItems: 'center', backdropFilter: 'blur(8px)', padding: '0 2px', gap: '5px' }}>
               <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 4px', margin: '-8px 0', height: 'calc(100% + 16px)', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => { setShowActualCurrentWeek(false); calendarDrivingScrollRef.current = true; setTimeout(() => { calendarDrivingScrollRef.current = false; }, 1200); startTransition(() => navigateWeeks(-4)); }} data-testid="button-pill-prev-month"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000', letterSpacing: '-2px', marginRight: '1px' }}>◀◀</span></div>
               <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 4px', margin: '-8px 0', height: 'calc(100% + 16px)', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => { if (isViewingCurrentWeekRef.current && !showActualCurrentWeek) { setShowActualCurrentWeek(true); return; } setShowActualCurrentWeek(false); calendarDrivingScrollRef.current = true; setTimeout(() => { calendarDrivingScrollRef.current = false; }, 1200); startTransition(() => navigateWeeks(-1)); }} data-testid="button-pill-prev-week"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>◀</span></div>
-              <span data-testid="text-week-dates" style={{ fontSize: '10px', fontWeight: 500, color: '#000', whiteSpace: 'nowrap', lineHeight: 1, letterSpacing: '0.3px', flex: 1, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px' }}>
+              <span data-testid="text-week-dates" style={{ fontSize: '10px', fontWeight: 500, color: '#000', whiteSpace: 'nowrap', lineHeight: 1, letterSpacing: '0.3px', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px' }}>
                 {(() => {
                   const startMonth = format(weekStartDate, 'MMM');
                   const endMonth = format(weekEndDate, 'MMM');
@@ -35439,7 +35439,11 @@ export default function Dashboard() {
                   const endDow = format(weekEndDate, 'EEE');
                   const year = format(weekEndDate, 'yyyy');
                   const datePart = `${startDow} ${startMonth} ${startDay} - ${endDow} ${endMonth} ${endDay}`;
-                  return `Week ${selectedWeek} │ ${datePart}, ${year}`;
+                  // Hide "Week N" prefix when in a break / gap (selectedWeekInfo undefined or no active viewedSemester)
+                  const showWeekLabel = !!selectedWeekInfo && !!viewedSemester && selectedWeek > 0;
+                  return showWeekLabel
+                    ? `Week ${selectedWeek} │ ${datePart}, ${year}`
+                    : `${datePart}, ${year}`;
                 })()}
               </span>
               <div className="cursor-pointer hover:bg-white/20 rounded" data-date-nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 4px', margin: '-8px 0', height: 'calc(100% + 16px)', pointerEvents: 'auto', flexShrink: 0 }} onClick={() => { if (showActualCurrentWeek) { setShowActualCurrentWeek(false); return; } calendarDrivingScrollRef.current = true; setTimeout(() => { calendarDrivingScrollRef.current = false; }, 1200); startTransition(() => navigateWeeks(1)); }} data-testid="button-pill-next-week"><span style={{ fontSize: '8px', lineHeight: '1', color: '#000' }}>▶</span></div>
