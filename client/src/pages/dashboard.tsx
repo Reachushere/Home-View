@@ -30847,9 +30847,9 @@ export default function Dashboard() {
                                       {format(day, 'MMM')}
                                     </div>
                                   </div>
-                                  <div style={{ fontSize: '25px', fontWeight: 600, color: '#ffffff', lineHeight: 1, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                  <div style={{ position: 'relative', fontSize: '25px', fontWeight: 600, color: '#ffffff', lineHeight: 1, display: 'inline-flex', alignItems: 'center' }}>
                                     {dayNum}
-                                    {isBreakDay && <span style={{ fontSize: '25px', lineHeight: 1 }}>⛱️</span>}
+                                    {isBreakDay && <span style={{ position: 'absolute', left: '100%', marginLeft: '4px', fontSize: '25px', lineHeight: 1, pointerEvents: 'none' }}>⛱️</span>}
                                   </div>
                                 </>
                               );
@@ -30859,9 +30859,9 @@ export default function Dashboard() {
                                   <div className="text-[10px] font-medium tracking-wide" style={{ color: isNextSchoolWeek ? 'rgba(255,255,255,0.35)' : '#ffffff', lineHeight: 1 }}>{dayName}</div>
                                   <div className="text-[8px] font-bold tracking-wide" style={{ color: isNextSchoolWeek ? 'rgba(255,255,255,0.4)' : '#ffffff', lineHeight: 1, textTransform: 'uppercase' }}>{format(day, 'MMM')}</div>
                                 </div>
-                                <div style={{ fontSize: '24px', fontWeight: 700, color: isNextSchoolWeek ? 'rgba(255,255,255,0.35)' : '#ffffff', lineHeight: 1, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                <div style={{ position: 'relative', fontSize: '24px', fontWeight: 700, color: isNextSchoolWeek ? 'rgba(255,255,255,0.35)' : '#ffffff', lineHeight: 1, display: 'inline-flex', alignItems: 'center' }}>
                                   {dayNum}
-                                  {isBreakDay && <span style={{ fontSize: '24px', lineHeight: 1, opacity: isNextSchoolWeek ? 0.35 : 1 }}>⛱️</span>}
+                                  {isBreakDay && <span style={{ position: 'absolute', left: '100%', marginLeft: '4px', fontSize: '24px', lineHeight: 1, opacity: isNextSchoolWeek ? 0.35 : 1, pointerEvents: 'none' }}>⛱️</span>}
                                 </div>
                               </>
                             )}
