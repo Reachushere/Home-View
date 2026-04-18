@@ -7397,12 +7397,44 @@ export default function Dashboard() {
   useEffect(() => {
     if (weeks.length === 0) return;
     lastSyncedSemKeyRef.current = weeks[0]?.startDate || null;
+    const today = new Date();
+    // Special case: today is past the computed week range of every semester
+    // but is within some semester's EXTENDED end date. In that situation we
+    // want the calendar to land on that semester's last week (maxW), so the
+    // course rows show up. This must override a stale selectedWeek persisted
+    // in localStorage from yesterday — otherwise extending the semester end
+    // by a day leaves the calendar stuck on Week 1 (or wherever it was).
+    {
+      const sems = allSemesterSettingsRef.current || [];
+      let todayInComputedSem = false;
+      for (const sem of sems) {
+        if (!sem.semesterStartDate) continue;
+        const wn = getWeekNumber(today, new Date(sem.semesterStartDate), sem.readingWeekStart || null);
+        const maxW = getSemesterTotalWeeks(sem.semesterType);
+        if (wn >= 1 && wn <= maxW) { todayInComputedSem = true; break; }
+      }
+      if (!todayInComputedSem) {
+        for (const sem of sems) {
+          if (!sem.semesterStartDate || !sem.semesterEndDate) continue;
+          const ss = new Date(sem.semesterStartDate);
+          const se = new Date(sem.semesterEndDate);
+          se.setHours(23, 59, 59, 999);
+          if (today >= ss && today <= se) {
+            const maxW = getSemesterTotalWeeks(sem.semesterType);
+            if (selectedWeek !== maxW) {
+              didInitialAnchorRef.current = true;
+              setSelectedWeek(maxW);
+            }
+            return;
+          }
+        }
+      }
+    }
     // Anchor to today's week as long as the user hasn't navigated yet
     // (selectedWeek===0 is the sentinel meaning "not user-set"). This allows
     // re-anchoring when the weeks list regenerates (e.g., the user extended a
     // semester end date and today now falls inside an active semester).
     if (selectedWeek !== 0) { didInitialAnchorRef.current = true; return; }
-    const today = new Date();
     const currentWeek = findCurrentWeekFromList(weeks, today);
     if (currentWeek) {
       setSelectedWeek(currentWeek.weekNumber);
