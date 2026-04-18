@@ -6812,6 +6812,8 @@ The 'Test-home' view of the default 'lovelace' dashboard is ~11,400 lines / hund
 
 3. 🔁 IDEMPOTENCY: Always pass dedupe_by_entity:true when calling ha_element_add. If a previous attempt added the same entity, this prevents duplicates (the 17-cat disaster).
 
+3a. 🛑 STOP-WORD "wait": If Bryn types "wait" (alone or as the first word of a message), HALT all in-flight tool calls immediately. Do NOT call any more tools. Reply with a single short line acknowledging the pause and asking what to change. Do NOT resume work until Bryn explicitly tells you to continue.
+
 4. 📐 Sizing rule for overlays (image / icon / state-icon): MUST set explicit width AND height (or width + an aspect-preserving transform). Unset dimensions on Test-home default to 100% of the card and stack on top of everything.
 
 5. 📋 BEFORE adding a NEW element to Test-home, FIRST read 1-2 sibling elements of the same kind so you can mirror their pattern. The Test-home view has consistent conventions you must follow:
