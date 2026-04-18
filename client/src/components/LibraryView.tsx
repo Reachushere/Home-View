@@ -2600,8 +2600,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
     }
   }, [aiChatInput, aiChatLoading, aiChatCourseFilter, aiChatMessages]);
 
-  // Open a file at a specific page from a citation click
-  const openCitation = useCallback((courseHint: string | null, weekNum: number | null, page: number, allFilesList: FileRecord[]) => {
+  // Open a file at a specific page from a citation click; optional snippet highlights in yellow via PDF search
+  const openCitation = useCallback((courseHint: string | null, weekNum: number | null, page: number, allFilesList: FileRecord[], snippet?: string) => {
     const normalizedHint = courseHint ? courseHint.replace(/\s+/g, '').toLowerCase() : null;
     let candidates = allFilesList.filter(f => {
       const folder = (f.folder || '').toLowerCase();
@@ -2621,19 +2621,30 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       console.warn('[Citation] No matching file', { courseHint, weekNum, page });
       return;
     }
-    handleBookClickRef.current(moduleFirst, '#8B6914', undefined, undefined, false, undefined, page);
+    // Trim snippet to a searchable phrase (PDF search works best on short literal substrings)
+    let searchQuery: string | undefined;
+    if (snippet) {
+      const cleaned = snippet.replace(/\s+/g, ' ').trim();
+      // Use first 6-8 meaningful words for robust match across line breaks/justification
+      const words = cleaned.split(' ').filter(Boolean);
+      searchQuery = words.slice(0, Math.min(8, words.length)).join(' ');
+    }
+    handleBookClickRef.current(moduleFirst, '#8B6914', undefined, undefined, false, searchQuery, page);
   }, []);
 
-  // Parse assistant content and return an array of React nodes with clickable citations
+  // Parse assistant content and return an array of React nodes with clickable citations.
+  // Recognizes optional preceding "verbatim quote" so the cited passage can be searched & yellow-highlighted in the PDF.
   const renderAssistantContent = useCallback((content: string, allFilesList: FileRecord[]): React.ReactNode[] => {
-    // Match: ( ... pp?. NUMBER[-NUMBER]? ... )  — a parenthesized citation containing a page number
-    const re = /\(([^()]*?\bpp?\.\s*\d+(?:\s*[-–]\s*\d+)?[^()]*?)\)/gi;
+    // Match optional `"quote"` (straight or smart quotes) plus a parenthesized citation containing a page number.
+    // Quote group is optional; citation must contain pp?. NUMBER.
+    const re = /(?:["“]([^"”]{3,200})["”]\s*)?\(([^()]*?\bpp?\.\s*\d+(?:\s*[-–]\s*\d+)?[^()]*?)\)/gi;
     const nodes: React.ReactNode[] = [];
     let lastIdx = 0;
     let m: RegExpExecArray | null;
     let key = 0;
     while ((m = re.exec(content)) !== null) {
-      const inner = m[1];
+      const quote = m[1] || undefined;
+      const inner = m[2];
       const start = m.index;
       const end = start + m[0].length;
       // Extract page number (first one if range)
@@ -2651,8 +2662,8 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       nodes.push(
         <span
           key={`cite-${key++}`}
-          onClick={() => openCitation(courseHint, weekNum, page, allFilesList)}
-          title={`Open ${courseHint || 'source'}${weekNum ? ` Module ${weekNum}` : ''} at page ${page}`}
+          onClick={() => openCitation(courseHint, weekNum, page, allFilesList, quote)}
+          title={quote ? `Open ${courseHint || 'source'}${weekNum ? ` Module ${weekNum}` : ''} at page ${page} — highlights "${quote.slice(0, 60)}${quote.length > 60 ? '…' : ''}"` : `Open ${courseHint || 'source'}${weekNum ? ` Module ${weekNum}` : ''} at page ${page}`}
           style={{
             color: '#D4AF37',
             textDecoration: 'underline',

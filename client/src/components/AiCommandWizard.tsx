@@ -504,6 +504,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   const queuedMessageRef = useRef<string | null>(null);
   const [pendingConfirm, setPendingConfirm] = useState<any[] | null>(null);
   const [expanded, setExpanded] = useState(false);
+  const [isFocused, setIsFocused] = useState(true);
   const [position, setPosition] = useState<{ x: number; y: number } | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
@@ -1378,7 +1379,10 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       left: position.x,
       top: position.y,
     } : {}),
-    transition: (isDragging || isResizing) ? 'none' : 'width 0.2s, max-height 0.2s, height 0.2s',
+    transition: (isDragging || isResizing) ? 'none' : 'width 0.2s, max-height 0.2s, height 0.2s, opacity 0.18s',
+    pointerEvents: 'auto',
+    opacity: isFocused ? 1 : 0.55,
+    filter: isFocused ? 'none' : 'saturate(0.7)',
   };
 
   return (
@@ -1388,19 +1392,22 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       left: 0,
       right: 0,
       bottom: 0,
-      zIndex: 10020,
+      zIndex: isFocused ? 100020 : 10020,
       display: 'flex',
       alignItems: position ? 'flex-start' : 'center',
       justifyContent: position ? 'flex-start' : 'center',
-      background: 'rgba(0,0,0,0.5)',
+      background: isFocused ? 'rgba(0,0,0,0.5)' : 'transparent',
       backdropFilter: 'none',
+      pointerEvents: isFocused ? 'auto' : 'none',
+      transition: 'background 0.18s ease',
     }} data-testid="ai-command-overlay" onPointerDown={(e) => {
       if (e.target === e.currentTarget) (e.currentTarget as any)._overlayPointerDown = Date.now();
     }} onClick={(e) => {
       if (e.target !== e.currentTarget || resizeJustEndedRef.current || isDragging) return;
       const downTime = (e.currentTarget as any)._overlayPointerDown;
       if (!downTime || Date.now() - downTime > 400) return;
-      onClose();
+      // Click on backdrop sends BrynAssist behind ebook/syllabus instead of closing
+      setIsFocused(false);
     }}>
       {panelRect && createPortal(
         <img
@@ -1422,7 +1429,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
         />,
         document.body
       )}
-      <div ref={panelRef} style={panelStyle} data-testid="ai-command-panel">
+      <div ref={panelRef} style={panelStyle} data-testid="ai-command-panel" onMouseDown={() => { if (!isFocused) setIsFocused(true); }}>
         {!expanded && (
           <>
             <div
