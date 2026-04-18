@@ -26948,7 +26948,7 @@ export default function Dashboard() {
                           const isCurrentSem = sem.key === currentSemKey;
                           const colMap: Record<string, number> = { 'ss2025': 2, 'f2025': 3 };
                           return (
-                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'transparent', borderColor: isCurrentSem ? 'rgba(10,15,30,0.85)' : 'rgba(255,255,255,0.45)', borderWidth: isCurrentSem ? '3px' : '1px', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), minHeight: `${28 + 12 + 3 * 40}px`, alignSelf: 'stretch', ...(semBoxHealthCache[sem.key]?.level === 'critical' ? { boxShadow: '0 0 0 2px #ef4444, 0 0 12px 2px rgba(239,68,68,0.85), 0 0 24px 4px rgba(239,68,68,0.5)' } : semBoxHealthCache[sem.key]?.level === 'warning' ? { boxShadow: '0 0 0 2px #facc15, 0 0 12px 2px rgba(250,204,21,0.85), 0 0 24px 4px rgba(250,204,21,0.5)' } : semBoxHealthCache[sem.key]?.level === 'ok' ? { boxShadow: '0 0 0 2px #22c55e, 0 0 12px 2px rgba(34,197,94,0.85), 0 0 24px 4px rgba(34,197,94,0.5)' } : {}) }}
+                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'transparent', borderColor: isCurrentSem ? 'rgba(10,15,30,0.85)' : 'rgba(255,255,255,0.45)', borderWidth: isCurrentSem ? '3px' : '1px', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), minHeight: `${28 + 12 + 3 * 40}px`, alignSelf: 'stretch' }}
                               onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; e.currentTarget.style.boxShadow = '0 0 8px rgba(255,255,255,0.5)'; }}
                               onDragLeave={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
                               onDrop={(e) => {
@@ -26997,6 +26997,13 @@ export default function Dashboard() {
                                     onClick={(e) => { e.stopPropagation(); setSemSettingsDialogKey(sem.key); }}
                                     data-testid={`button-sem-settings-${sem.key}`}
                                   />
+                                  {(() => {
+                                    const lvl = semBoxHealthCache[sem.key]?.level;
+                                    const triColor = lvl === 'critical' ? '#ef4444' : lvl === 'warning' ? '#facc15' : lvl === 'ok' ? '#22c55e' : null;
+                                    return triColor ? (
+                                      <span aria-hidden style={{ display: 'inline-block', width: 0, height: 0, borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderBottom: `8px solid ${triColor}`, marginRight: '4px', flexShrink: 0 }} data-testid={`sem-health-tri-${sem.key}`} />
+                                    ) : null;
+                                  })()}
                                   <span className="text-[10px] font-bold whitespace-nowrap" style={{ color: '#ffffff', marginRight: '3px' }}>{sem.label}</span>
                                   {!sem.key.startsWith('ss') ? (
                                     <span className="text-[9px] whitespace-nowrap px-1.5 py-0.5 rounded border cursor-pointer hover:bg-white/15 transition-colors" style={{ color: '#ffffff', background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)', marginRight: '3px' }} onClick={(e) => { e.stopPropagation(); setSemDatePickerKey(sem.key); setSemDatePickerHalf('full'); }} data-testid={`dates-pill-${sem.key}`}>{(() => {
