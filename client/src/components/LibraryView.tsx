@@ -2608,33 +2608,43 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
   const [aiChatSize, setAiChatSize] = useState<{ w: number; h: number }>({ w: 520, h: 0 });
   const aiChatDragRef = useRef<{ startX: number; startY: number; baseX: number; baseY: number } | null>(null);
   const aiChatResizeRef = useRef<{ startX: number; startY: number; baseW: number; baseH: number } | null>(null);
-  const onAiChatResizeStart = (e: React.MouseEvent) => {
+  const onAiChatResizeStart = (e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
     e.stopPropagation();
     const panel = (e.currentTarget as HTMLElement).closest('[data-testid="ai-chat-panel"]') as HTMLElement | null;
     const rect = panel?.getBoundingClientRect();
+    const isTouch = 'touches' in e;
+    const startX = isTouch ? (e as React.TouchEvent).touches[0].clientX : (e as React.MouseEvent).clientX;
+    const startY = isTouch ? (e as React.TouchEvent).touches[0].clientY : (e as React.MouseEvent).clientY;
     aiChatResizeRef.current = {
-      startX: e.clientX,
-      startY: e.clientY,
+      startX,
+      startY,
       baseW: aiChatSize.w || rect?.width || 520,
       baseH: aiChatSize.h || rect?.height || 600,
     };
-    const onMove = (ev: MouseEvent) => {
+    const move = (cx: number, cy: number) => {
       if (!aiChatResizeRef.current) return;
-      // Anchor is bottom-right, so dragging top-left grows the panel.
-      const dx = aiChatResizeRef.current.startX - ev.clientX;
-      const dy = aiChatResizeRef.current.startY - ev.clientY;
+      const dx = aiChatResizeRef.current.startX - cx;
+      const dy = aiChatResizeRef.current.startY - cy;
       const newW = Math.max(320, Math.min(window.innerWidth - 40, aiChatResizeRef.current.baseW + dx));
       const newH = Math.max(280, Math.min(window.innerHeight - 80, aiChatResizeRef.current.baseH + dy));
       setAiChatSize({ w: newW, h: newH });
     };
+    const onMove = (ev: MouseEvent) => move(ev.clientX, ev.clientY);
+    const onTouchMove = (ev: TouchEvent) => { if (ev.touches[0]) move(ev.touches[0].clientX, ev.touches[0].clientY); };
     const onUp = () => {
       aiChatResizeRef.current = null;
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseup', onUp);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', onUp);
+      window.removeEventListener('touchcancel', onUp);
     };
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onUp);
+    window.addEventListener('touchmove', onTouchMove, { passive: false });
+    window.addEventListener('touchend', onUp);
+    window.addEventListener('touchcancel', onUp);
   };
   const onAiChatDragStart = (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest('button, select, input, textarea')) return;

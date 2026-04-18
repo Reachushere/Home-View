@@ -197,24 +197,38 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
   });
   useEffect(() => { try { localStorage.setItem('aiChatBubbleSize', JSON.stringify(chatSize)); } catch {} }, [chatSize]);
   const resizeStateRef = useRef<{ startX: number; startY: number; baseW: number; baseH: number } | null>(null);
-  const onResizeStart = useCallback((e: React.MouseEvent) => {
+  const onResizeStart = useCallback((e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
     e.stopPropagation();
     const panel = (e.currentTarget as HTMLElement).parentElement as HTMLElement;
     const rect = panel.getBoundingClientRect();
-    resizeStateRef.current = { startX: e.clientX, startY: e.clientY, baseW: rect.width, baseH: rect.height };
-    const onMove = (ev: MouseEvent) => {
+    const isTouch = 'touches' in e;
+    const startX = isTouch ? (e as React.TouchEvent).touches[0].clientX : (e as React.MouseEvent).clientX;
+    const startY = isTouch ? (e as React.TouchEvent).touches[0].clientY : (e as React.MouseEvent).clientY;
+    resizeStateRef.current = { startX, startY, baseW: rect.width, baseH: rect.height };
+    const move = (cx: number, cy: number) => {
       if (!resizeStateRef.current) return;
-      // Anchor is bottom-right corner; dragging top-left handle moves opposite
-      const dx = ev.clientX - resizeStateRef.current.startX;
-      const dy = ev.clientY - resizeStateRef.current.startY;
+      const dx = cx - resizeStateRef.current.startX;
+      const dy = cy - resizeStateRef.current.startY;
       const w = Math.max(320, resizeStateRef.current.baseW - dx);
       const h = Math.max(280, resizeStateRef.current.baseH - dy);
       setChatSize({ w, h });
     };
-    const onUp = () => { resizeStateRef.current = null; document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
+    const onMove = (ev: MouseEvent) => move(ev.clientX, ev.clientY);
+    const onTouchMove = (ev: TouchEvent) => { if (ev.touches[0]) move(ev.touches[0].clientX, ev.touches[0].clientY); };
+    const onUp = () => {
+      resizeStateRef.current = null;
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      document.removeEventListener('touchmove', onTouchMove);
+      document.removeEventListener('touchend', onUp);
+      document.removeEventListener('touchcancel', onUp);
+    };
     document.addEventListener('mousemove', onMove);
     document.addEventListener('mouseup', onUp);
+    document.addEventListener('touchmove', onTouchMove, { passive: false });
+    document.addEventListener('touchend', onUp);
+    document.addEventListener('touchcancel', onUp);
   }, []);
   const [essayFormOpen, setEssayFormOpen] = useState(false);
   const [essayTopic, setEssayTopic] = useState('');
