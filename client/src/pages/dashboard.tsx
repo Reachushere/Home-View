@@ -21150,7 +21150,7 @@ export default function Dashboard() {
         className={`fixed${tabBounceEnabled ? ' bottom-tab-bounce' : ''}`}
         style={{
           bottom: '29px',
-          left: 'calc(50% + 50px)',
+          left: 'calc(50% + 125px)',
           display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen || isMobileLibraryOpen) ? 'none' : 'block',
           background: 'none',
           border: 'none',
