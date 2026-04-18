@@ -31522,6 +31522,35 @@ export default function Dashboard() {
                 const _calSemKey: string | undefined = (courseData as any)._semKey;
                 const _isTBDCode = /^TBD\d*$/i.test(courseName.replace(/\s/g, ''));
                 const _hasRealDbColor = !!courseData.color && !/^#?(6b7280|9ca3af)$/i.test(String(courseData.color).replace('#', ''));
+                // Compute the course's position within its semester using the
+                // SAME priority sort that the Semesters & Classes page uses, so
+                // the curated palette index matches that page exactly.
+                const _calCoursePos = (() => {
+                  if (!_calSemKey) return courseIdx;
+                  const semCourses = semesterCourseAssignments[_calSemKey] || [];
+                  if (semCourses.length === 0) return courseIdx;
+                  const isSSSem = _calSemKey.startsWith('ss');
+                  const getPri = (code: string) => {
+                    if (isSSSem) {
+                      const va = coursePlayPriority[`${_calSemKey}:${code}:A`] ?? 0;
+                      const vb = coursePlayPriority[`${_calSemKey}:${code}:B`] ?? 0;
+                      const m = Math.min(va || 999, vb || 999);
+                      return m === 999 ? 0 : m;
+                    }
+                    return coursePlayPriority[`${_calSemKey}:${code}`] ?? 0;
+                  };
+                  const sorted = [...semCourses].sort((a, b) => {
+                    const pa = getPri(a.code); const pb = getPri(b.code);
+                    if (pa === 0 && pb === 0) return 0;
+                    if (pa === 0) return 1;
+                    if (pb === 0) return -1;
+                    return pa - pb;
+                  });
+                  const norm = (s: string) => s.replace(/\s/g, '').toUpperCase();
+                  const target = norm(courseName);
+                  const idx = sorted.findIndex(c => norm(c.code) === target);
+                  return idx >= 0 ? idx : courseIdx;
+                })();
                 let _resolvedStart: string;
                 let _resolvedEnd: string;
                 if (_hasRealDbColor && !_isTBDCode) {
@@ -31533,12 +31562,12 @@ export default function Dashboard() {
                   if ((isGrayFallback || _isTBDCode) && _calSemKey) {
                     const palette = semDefaultPalettesRow[_calSemKey.toLowerCase()];
                     if (palette && palette.length > 0) {
-                      const idx = Math.max(0, courseIdx) % palette.length;
+                      const idx = Math.max(0, _calCoursePos) % palette.length;
                       _resolvedStart = palette[idx].start;
                       _resolvedEnd = palette[idx].end;
                     } else {
                       let hash = 0;
-                      const seedStr = `${_calSemKey}-${courseIdx}`;
+                      const seedStr = `${_calSemKey}-${_calCoursePos}`;
                       for (let i = 0; i < seedStr.length; i++) { hash = ((hash << 5) - hash) + seedStr.charCodeAt(i); hash |= 0; }
                       const hue = Math.abs(hash) % 360;
                       _resolvedStart = `hsl(${hue}, 65%, 45%)`;
