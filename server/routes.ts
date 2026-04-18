@@ -19439,12 +19439,36 @@ document.body.removeChild(a);
       }
 
       const today = torontoDate();
-      const semesterSettings = await storage.getActiveSemesterSettings();
+      let semesterSettings = await storage.getActiveSemesterSettings();
 
       if (!semesterSettings) {
         console.log(`[Shower Button] No active semester — playing CHUM FM`);
         await playChumFmRadio(haUrl);
         return res.json({ action: "radio", reason: "No active semester" });
+      }
+
+      // If active semester has ended, look for another semester whose date range covers today.
+      // If none found, we are between semesters → default to CHUM FM.
+      const activeEnd = semesterSettings.semesterEndDate ? new Date(semesterSettings.semesterEndDate) : null;
+      if (activeEnd && today > activeEnd) {
+        console.log(`[Shower Button] Active semester "${semesterSettings.semesterName}" ended ${activeEnd.toISOString().slice(0, 10)} — looking for another semester covering today`);
+        const allSems = await storage.getAllSemesterSettings();
+        const matchingSem = allSems.find(s => {
+          const sStart = s.semesterStartDate ? new Date(s.semesterStartDate) : null;
+          const sEnd = s.semesterEndDate ? new Date(s.semesterEndDate) : null;
+          if (!sStart) return false;
+          const bufferStart = new Date(sStart);
+          bufferStart.setDate(bufferStart.getDate() - 7);
+          return today >= bufferStart && (!sEnd || today <= sEnd);
+        });
+        if (matchingSem) {
+          console.log(`[Shower Button] Found semester covering today: "${matchingSem.semesterName}"`);
+          semesterSettings = matchingSem;
+        } else {
+          console.log(`[Shower Button] No semester covers today — between semesters, playing CHUM FM`);
+          await playChumFmRadio(haUrl);
+          return res.json({ action: "radio", reason: "Between semesters — defaulting to CHUM FM" });
+        }
       }
 
       let currentWeekNumber = 1;
@@ -19804,8 +19828,9 @@ document.body.removeChild(a);
               effectiveSemester = matchingSem;
             } else {
               inBreakPeriod = true;
-              console.log(`[Cat Lights] No semester covers today's date — skipping prompt entirely`);
+              console.log(`[Cat Lights] No semester covers today's date — between semesters, defaulting to CHUM FM`);
               catLightsPromptPending = false;
+              try { await playChumFmRadio(haUrl0); } catch (e: any) { console.warn(`[Cat Lights] CHUM FM fallback failed: ${e.message}`); }
               return;
             }
           } else {
@@ -19813,8 +19838,9 @@ document.body.removeChild(a);
           }
         } else {
           inBreakPeriod = true;
-          console.log(`[Cat Lights] No active semester — skipping prompt entirely`);
+          console.log(`[Cat Lights] No active semester — defaulting to CHUM FM`);
           catLightsPromptPending = false;
+          try { await playChumFmRadio(haUrl0); } catch (e: any) { console.warn(`[Cat Lights] CHUM FM fallback failed: ${e.message}`); }
           return;
         }
       } catch (e: any) {
