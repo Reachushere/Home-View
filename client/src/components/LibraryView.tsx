@@ -2552,6 +2552,14 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
   const [aiChatCourseFilter, setAiChatCourseFilter] = useState('all');
   const aiChatScrollRef = useRef<HTMLDivElement>(null);
   const aiChatInputRef = useRef<HTMLTextAreaElement>(null);
+  const aiChatAbortRef = useRef<AbortController | null>(null);
+  const stopAiChat = useCallback(() => {
+    if (aiChatAbortRef.current) {
+      try { aiChatAbortRef.current.abort(); } catch {}
+      aiChatAbortRef.current = null;
+    }
+    setAiChatLoading(false);
+  }, []);
   const sendAiChat = useCallback(async () => {
     const msg = aiChatInput.trim();
     if (!msg || aiChatLoading) return;
@@ -2560,19 +2568,28 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
     setAiChatInput('');
     setAiChatLoading(true);
     setTimeout(() => aiChatScrollRef.current?.scrollTo({ top: aiChatScrollRef.current.scrollHeight, behavior: 'smooth' }), 50);
+    const controller = new AbortController();
+    aiChatAbortRef.current = controller;
     try {
       const resp = await fetch('/api/ai/chat-materials', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: msg, courseFilter: aiChatCourseFilter, history: aiChatMessages.slice(-6) }),
+        signal: controller.signal,
       });
       const data = await resp.json();
       if (!resp.ok) throw new Error(data.error || 'Chat failed');
+      if (controller.signal.aborted) return;
       setAiChatMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
       setTimeout(() => aiChatScrollRef.current?.scrollTo({ top: aiChatScrollRef.current.scrollHeight, behavior: 'smooth' }), 50);
     } catch (err: any) {
-      setAiChatMessages(prev => [...prev, { role: 'assistant', content: `Error: ${err.message}` }]);
+      if (err?.name === 'AbortError' || controller.signal.aborted) {
+        setAiChatMessages(prev => [...prev, { role: 'assistant', content: '⏹ Stopped.' }]);
+      } else {
+        setAiChatMessages(prev => [...prev, { role: 'assistant', content: `Error: ${err.message}` }]);
+      }
     } finally {
+      if (aiChatAbortRef.current === controller) aiChatAbortRef.current = null;
       setAiChatLoading(false);
     }
   }, [aiChatInput, aiChatLoading, aiChatCourseFilter, aiChatMessages]);
@@ -4600,6 +4617,11 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
             {aiChatLoading && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 0', color: 'rgba(255,255,255,0.4)', fontSize: '12px' }}>
                 <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> Thinking...
+                <button
+                  onClick={stopAiChat}
+                  data-testid="button-ai-chat-stop-inline"
+                  style={{ marginLeft: '8px', background: 'rgba(239,68,68,0.18)', border: '1px solid rgba(239,68,68,0.4)', color: '#fecaca', borderRadius: '6px', padding: '2px 10px', fontSize: '11px', fontWeight: 600, cursor: 'pointer' }}
+                >Stop</button>
               </div>
             )}
           </div>
@@ -4620,21 +4642,39 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
               }}
               data-testid="input-ai-chat"
             />
-            <button
-              onClick={sendAiChat}
-              disabled={!aiChatInput.trim() || aiChatLoading}
-              style={{
-                background: aiChatInput.trim() ? 'linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%)' : 'rgba(255,255,255,0.15)',
-                border: 'none', borderRadius: '12px', padding: '0 16px',
-                color: '#fff', cursor: aiChatInput.trim() ? 'pointer' : 'default',
-                opacity: aiChatInput.trim() && !aiChatLoading ? 1 : 0.5,
-                transition: 'all 0.15s',
-                minHeight: '44px',
-              }}
-              data-testid="button-ai-chat-send"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="#ffffff"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-            </button>
+            {aiChatLoading ? (
+              <button
+                onClick={stopAiChat}
+                style={{
+                  background: 'linear-gradient(180deg, #ef4444 0%, #b91c1c 100%)',
+                  border: 'none', borderRadius: '12px', padding: '0 16px',
+                  color: '#fff', cursor: 'pointer',
+                  transition: 'all 0.15s',
+                  minHeight: '44px',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}
+                data-testid="button-ai-chat-stop"
+                title="Stop generating"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#ffffff"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg>
+              </button>
+            ) : (
+              <button
+                onClick={sendAiChat}
+                disabled={!aiChatInput.trim()}
+                style={{
+                  background: aiChatInput.trim() ? 'linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%)' : 'rgba(255,255,255,0.15)',
+                  border: 'none', borderRadius: '12px', padding: '0 16px',
+                  color: '#fff', cursor: aiChatInput.trim() ? 'pointer' : 'default',
+                  opacity: aiChatInput.trim() ? 1 : 0.5,
+                  transition: 'all 0.15s',
+                  minHeight: '44px',
+                }}
+                data-testid="button-ai-chat-send"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#ffffff"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+              </button>
+            )}
           </div>
         </div>
       )}
