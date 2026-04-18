@@ -7411,15 +7411,17 @@ export default function Dashboard() {
           const se = new Date(sem.semesterEndDate);
           se.setHours(23, 59, 59, 999);
           if (today >= ss && today <= se) {
-            const maxW = getSemesterTotalWeeks(sem.semesterType);
-            // Only anchor once. After the user navigates forward (Week 14+ in
-            // the extended-end window), don't keep slamming back to maxW on
-            // every refetch of allSemesterSettings.
-            if (!didInitialAnchorRef.current && selectedWeek !== maxW) {
+            // EXTENSION WINDOW: today is past the last computed week of this
+            // semester but still within its (extended) end date. Snapping to
+            // maxW renders that week's STORED date range (e.g. Apr 6-12) which
+            // is one or more weeks behind today. Instead, go to gap-mode so
+            // the calendar renders the actual current Sat-Fri / Mon-Sun
+            // containing today. Course rows still appear because
+            // semesterSettings (the active semester) is unchanged.
+            if (!didInitialAnchorRef.current) {
               didInitialAnchorRef.current = true;
-              setSelectedWeek(maxW);
-            } else {
-              didInitialAnchorRef.current = true;
+              setSelectedWeek(0);
+              setInterSemDayOffset(0);
             }
             return;
           }
