@@ -16508,6 +16508,17 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         }
         (globalThis as any).__citationCleanupDone = true;
       }
+      const pageMarkerMigrationDone = (globalThis as any).__pageMarkerMigrationDone;
+      if (!pageMarkerMigrationDone) {
+        const filesNeedingMarkers = allFiles.filter((f: any) => f.extractedText && !/\[Page \d+\]/.test(f.extractedText));
+        if (filesNeedingMarkers.length > 0) {
+          console.log(`[AudioPrep] One-time: clearing ${filesNeedingMarkers.length} cached texts that lack [Page N] markers (so they get re-extracted with page citations)`);
+          for (const f of filesNeedingMarkers) {
+            try { await storage.updateFile(f.id, { extractedText: null }); } catch {}
+          }
+        }
+        (globalThis as any).__pageMarkerMigrationDone = true;
+      }
       const unprepared = allFiles.filter((f: any) => !f.preparedAudioPaths && !f.listened);
       if (unprepared.length > 0) {
         const semesterSettings = await storage.getActiveSemesterSettings();
@@ -16555,10 +16566,33 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
             queueFileForPreparation(f.id);
           }
         }
+        // Pick up newly-synced files (no preparedAudioPaths, not listened) so page-marker extraction
+        // happens within ~30min of upload instead of waiting for next server restart.
+        const newUnprepared = allFiles.filter((f: any) => !f.preparedAudioPaths && !f.listened);
+        if (newUnprepared.length > 0) {
+          console.log(`[AudioPrep Repair] Queueing ${newUnprepared.length} unprepared file(s) for extraction + audio prep`);
+          for (const f of newUnprepared) queueFileForPreparation(f.id);
+        }
       } catch (e: any) {
         console.error(`[AudioPrep Repair] Error: ${e.message}`);
       }
     }, AUDIO_REPAIR_INTERVAL_MS);
+
+    // Faster scan dedicated to NEW uploads: every 2min, queue any file with no extractedText yet
+    // (covers OneDrive sync within minutes instead of waiting 30min for the audio repair interval).
+    setInterval(async () => {
+      if (audioPreparationActive || audioPreparationPaused || catWashPlaybackActive) return;
+      try {
+        const allFiles = await storage.getFiles();
+        const fresh = allFiles.filter((f: any) => !f.extractedText && !f.listened && !audioPreparationQueue.includes(f.id));
+        if (fresh.length > 0) {
+          console.log(`[AudioPrep] New-upload scan: queueing ${fresh.length} file(s) for first-time extraction with [Page N] markers`);
+          for (const f of fresh) queueFileForPreparation(f.id);
+        }
+      } catch (e: any) {
+        console.error(`[AudioPrep] New-upload scan error: ${e.message}`);
+      }
+    }, 2 * 60 * 1000);
 
     try {
       const persisted = await getPersistedPlaybackSession();
@@ -18345,7 +18379,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         if (pdfText && typeof pdfText === 'object') {
           if (pdfText.pages && Array.isArray(pdfText.pages)) {
             pageTexts = pdfText.pages.map((p: any) => p.text || '');
-            textContent = pageTexts.join('\n\n');
+            textContent = pageTexts.join(' XPGBRKX ');
           } else if (pdfText.text) {
             textContent = pdfText.text;
             pageTexts = [textContent];
@@ -18371,7 +18405,18 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         }
       }
 
-      const cleanedText = cleanTextForTTS(textContent);
+      let cleanedText = cleanTextForTTS(textContent);
+
+      // Convert XPGBRKX sentinels into numbered [Page N] markers so Study Assistant can cite real pages
+      if (cleanedText.includes('XPGBRKX')) {
+        let pageNum = 1;
+        const parts = cleanedText.split(/\s*XPGBRKX\s*/);
+        cleanedText = parts.map((part, idx) => {
+          const marker = idx === 0 ? `[Page ${pageNum}]` : `\n\n[Page ${++pageNum}]`;
+          return `${marker}\n${part.trim()}`;
+        }).join('\n').trim();
+        console.log(`[ExtractText] Inserted ${pageNum} page markers for file ${file.id}`);
+      }
 
       if (cleanedText && file.id) {
         try {
