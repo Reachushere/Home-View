@@ -2572,12 +2572,19 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
     try {
       const resp = await fetch('/api/ai/chat-materials', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({ message: msg, courseFilter: aiChatCourseFilter, history: aiChatMessages.slice(-6) }),
         signal: controller.signal,
       });
-      const data = await resp.json();
-      if (!resp.ok) throw new Error(data.error || 'Chat failed');
+      const rawText = await resp.text();
+      let data: any = null;
+      try {
+        data = rawText ? JSON.parse(rawText) : null;
+      } catch {
+        const snippet = rawText.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 200);
+        throw new Error(`Server returned non-JSON (HTTP ${resp.status})${snippet ? ': ' + snippet : ''}. This usually means the request timed out at a proxy or the server crashed — try a shorter question or fewer course materials.`);
+      }
+      if (!resp.ok) throw new Error((data && data.error) || `Chat failed (HTTP ${resp.status})`);
       if (controller.signal.aborted) return;
       setAiChatMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
       setTimeout(() => aiChatScrollRef.current?.scrollTo({ top: aiChatScrollRef.current.scrollHeight, behavior: 'smooth' }), 50);
