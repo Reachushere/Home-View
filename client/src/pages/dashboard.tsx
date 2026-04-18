@@ -11927,8 +11927,13 @@ export default function Dashboard() {
     }
     return { start: approx.start, end: approx.end };
   }, [selectedWeek, selectedWeekInfo, semesterSettings, allSemesterSettings]);
-  const weekStartDate = selectedWeekInfo ? parseAsLocalDate(selectedWeekInfo.startDate) : computedWeekDates ? new Date(computedWeekDates.start.getFullYear(), computedWeekDates.start.getMonth(), computedWeekDates.start.getDate(), 12) : new Date(2026, 0, 17, 12);
-  const weekEndDate = selectedWeekInfo ? parseAsLocalDate(selectedWeekInfo.endDate) : computedWeekDates ? new Date(computedWeekDates.end.getFullYear(), computedWeekDates.end.getMonth(), computedWeekDates.end.getDate(), 12) : new Date(2026, 0, 23, 12);
+  const _todayForFallback = new Date();
+  const _dowForFallback = _todayForFallback.getDay();
+  const _daysSinceMonday = _dowForFallback === 0 ? 6 : _dowForFallback - 1;
+  const _currentWeekMonday = new Date(_todayForFallback.getFullYear(), _todayForFallback.getMonth(), _todayForFallback.getDate() - _daysSinceMonday, 12);
+  const _currentWeekSunday = new Date(_currentWeekMonday.getFullYear(), _currentWeekMonday.getMonth(), _currentWeekMonday.getDate() + 6, 12);
+  const weekStartDate = selectedWeekInfo ? parseAsLocalDate(selectedWeekInfo.startDate) : computedWeekDates ? new Date(computedWeekDates.start.getFullYear(), computedWeekDates.start.getMonth(), computedWeekDates.start.getDate(), 12) : _currentWeekMonday;
+  const weekEndDate = selectedWeekInfo ? parseAsLocalDate(selectedWeekInfo.endDate) : computedWeekDates ? new Date(computedWeekDates.end.getFullYear(), computedWeekDates.end.getMonth(), computedWeekDates.end.getDate(), 12) : _currentWeekSunday;
   weekStartDateRef.current = weekStartDate.toISOString();
   weekEndDateRef.current = weekEndDate.toISOString();
 

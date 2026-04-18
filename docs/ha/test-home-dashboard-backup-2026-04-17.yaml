@@ -163,15 +163,10 @@ elements:
       width: 100%
       transform: scale(1,.98)
     type: image
-  - entity: timer.bryn_meds
+  - entity: timer.rascal_insulin
     tap_action:
       action: call-service
-      service: automation.trigger
-      data:
-        skip_condition: true
-      target:
-        entity_id:
-          - automation.meds_reset_bryn
+      service: script.rascal_mark_dose_taken
     style:
       left: 50%
       top: 48.3%
@@ -3247,26 +3242,21 @@ elements:
       top: 5.5%
       width: 4.75%
       opacity: 100%
-  - entity: timer.bryn_meds
+  - entity: input_boolean.rascal_dose_overdue
     tap_action:
       action: call-service
-      service: automation.trigger
-      data:
-        skip_condition: true
-      target:
-        entity_id:
-          - automation.meds_reset_bryn
+      service: script.rascal_mark_dose_taken
     style:
       left: 37.75%
       top: 5.3%
-      width: 1.85%
+      width: 2.2%
       opacity: 100%
     state_image:
-      idle: /local/lovelace/overlays/Round Menu/3/Medicine-Red8.gif
-    image: /local/lovelace/overlays/Round Menu/3/Medicine White.png
+      on: "/local/lovelace/Icons'/Red Cat2 Blink.gif"
+    image: "/local/lovelace/Icons'/Cat4.png"
     type: image
   - type: custom:button-card
-    entity: timer.bryn_meds
+    entity: input_number.minutes_to_next_rascal_dose
     show_name: false
     show_badge: false
     show_icon: false
@@ -3278,11 +3268,8 @@ elements:
       width: 15.3%
     tap_action:
       action: call-service
-      service: automation.trigger
-      data:
-        skip_condition: true
-      target:
-        entity_id: automation.meds_reset_bryn
+      service: script.rascal_mark_dose_taken
+    update_interval: 1
     card_mod:
       style: |
         ha-card {
@@ -3296,17 +3283,37 @@ elements:
           font-family: Pathway Gothic One;
           width: 25%;
         }
+    state_display: |
+      [[[
+        var now = new Date();
+        var h = now.getHours(), mn = now.getMinutes();
+        var target = new Date(now);
+        if (h < 7 || (h===7 && mn < 30)) { target.setHours(7,30,0,0); }
+        else if (h < 19 || (h===19 && mn < 30)) { target.setHours(19,30,0,0); }
+        else { target.setDate(now.getDate()+1); target.setHours(7,30,0,0); }
+        var d = Math.floor((target - now)/1000);
+        var sign = d < 0 ? '-' : '';
+        var a = Math.abs(d);
+        var hh = Math.floor(a/3600);
+        var m = Math.floor((a%3600)/60);
+        var s = a%60;
+        return sign + hh + ':' + (m<10?'0':'') + m + ':' + (s<10?'0':'') + s;
+      ]]]
     styles:
       state:
-        - color: >
-            [[[ if (entity.state === '0') return 'red'; else if (entity.state <
-            '3600') return 'yellow'; else return 'rgba(0,10,90,1);'; ]]]
-  - type: image
-    image: /local/lovelace/overlays/Round Menu/5/B.png
-    style:
-      left: 37.8%
-      top: 8.6%
-      width: 0.4%
+        - color: |
+            [[[
+              var now = new Date();
+              var h = now.getHours(), mn = now.getMinutes();
+              var target = new Date(now);
+              if (h < 7 || (h===7 && mn < 30)) { target.setHours(7,30,0,0); }
+              else if (h < 19 || (h===19 && mn < 30)) { target.setHours(19,30,0,0); }
+              else { target.setDate(now.getDate()+1); target.setHours(7,30,0,0); }
+              var minsLeft = (target - now)/60000;
+              if (minsLeft <= 0) return 'red';
+              if (minsLeft <= 60) return 'yellow';
+              return 'rgba(255,255,255,1)';
+            ]]]
   - type: image
     image: /local/lovelace/overlays/Round Menu/5/Food Icon2.png
     entity: switch.light_kitchen_cat_food_beacon_socket_1
