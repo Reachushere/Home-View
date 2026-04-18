@@ -32543,12 +32543,48 @@ export default function Dashboard() {
                     })();
                     const moduleFileInfo = (oneDriveModuleFolder ? `📁 ${oneDriveModuleFolder}/Week ${folderWeekNum}${weekSeasonLabel}/Module\n\n` : '') + (moduleFiles.map(f => `${f.originalName || f.name}`).join('\n') || 'No files');
                     const readingFileInfo = (oneDriveReadingFolder ? `📁 ${oneDriveReadingFolder}/Week ${folderWeekNum}${weekSeasonLabel}/Reading\n\n` : '') + (readingFiles.map(f => `${f.originalName || f.name}`).join('\n') || 'No files');
-                    const _hwFallbackGrad = getCourseGradientColors(courseCode);
-                    const _hasRealStart = courseHexColor && courseHexColor !== '#6b7280';
+                    const _hwSemKey: string | undefined = (course as any)._semKey;
+                    const _hwIsTBD = /^TBD\d*$/i.test(courseCode.replace(/\s/g, ''));
+                    const _hwHasRealColor = !!courseHexColor && !/^#?(6b7280|9ca3af)$/i.test(String(courseHexColor).replace('#',''));
+                    const _hwFallbackGrad = (() => {
+                      const gc = getCourseGradientColors(courseCode);
+                      const isGray = gc.start === '#6b7280' && gc.end === '#9ca3af';
+                      if ((isGray || _hwIsTBD) && _hwSemKey) {
+                        try {
+                          const palette = semDefaultPalettesRow[_hwSemKey.toLowerCase()];
+                          const semCourses = (semesterCourseAssignments && semesterCourseAssignments[_hwSemKey]) || [];
+                          if (palette && palette.length > 0 && semCourses.length > 0) {
+                            const cpp = coursePlayPriority || {};
+                            const isSSSem = _hwSemKey.startsWith('ss');
+                            const getPri = (code: string) => {
+                              if (isSSSem) {
+                                const va = cpp[`${_hwSemKey}:${code}:A`] ?? 0;
+                                const vb = cpp[`${_hwSemKey}:${code}:B`] ?? 0;
+                                const m = Math.min(va || 999, vb || 999);
+                                return m === 999 ? 0 : m;
+                              }
+                              return cpp[`${_hwSemKey}:${code}`] ?? 0;
+                            };
+                            const sorted = [...semCourses].sort((a, b) => {
+                              const pa = getPri(a.code); const pb = getPri(b.code);
+                              if (pa === 0 && pb === 0) return 0;
+                              if (pa === 0) return 1;
+                              if (pb === 0) return -1;
+                              return pa - pb;
+                            });
+                            const norm = (s: string) => s.replace(/\s/g, '').toUpperCase();
+                            const pos = sorted.findIndex(c => norm(c.code) === norm(courseCode));
+                            const idx = Math.max(0, pos) % palette.length;
+                            return { start: palette[idx].start, end: palette[idx].end };
+                          }
+                        } catch {}
+                      }
+                      return gc;
+                    })();
                     courseProgressDataRef.current[courseIdx] = {
                       courseCode,
                       progressBg,
-                      progressStartColor: _hasRealStart ? courseHexColor : _hwFallbackGrad.start,
+                      progressStartColor: _hwHasRealColor && !_hwIsTBD ? courseHexColor : _hwFallbackGrad.start,
                       progressEndColor: courseHexColorEnd || _hwFallbackGrad.end,
                       courseRowColor: courseMatch?.courseRowColor || courseHexColor,
                       taskBgColor: courseMatch?.taskBgColor,
