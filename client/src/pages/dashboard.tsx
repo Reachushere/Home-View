@@ -16813,7 +16813,14 @@ export default function Dashboard() {
           const prepCourse = prepCourseCode ? coursesData.courses.find(c => c.name?.split(' - ')[0]?.toUpperCase() === prepCourseCode.toUpperCase()) : null;
           prepCourseColor = prepCourse?.colorEnd || prepCourse?.color || '';
           const prepCourseName = prepCourse?.name?.split(' - ')[1] || prepCourseCode;
-          prepTaskName = nextPrep.title;
+          prepTaskName = (() => {
+            let t = (nextPrep.title || '').replace(/\[.*?\]\s*/g, '').trim();
+            if (nextPrep.courseName) {
+              const cn = nextPrep.courseName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+              t = t.replace(new RegExp('^' + cn + '\\s*[-–—]\\s*', 'i'), '').trim();
+            }
+            return t || nextPrep.title;
+          })();
           if (nextPrep.prepDaysLeft > 0) {
             prepDaysText = `${nextPrep.prepDaysLeft}`;
           } else if (nextPrep.prepDaysLeft === 0) {
@@ -16890,7 +16897,7 @@ export default function Dashboard() {
                   const dueLine = (
                     <div
                       className=""
-                      style={{ display: 'flex', alignItems: 'center', gap: '4px', pointerEvents: 'auto', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', pointerEvents: 'auto', cursor: 'pointer', whiteSpace: 'nowrap', width: '100%' }}
                       onMouseEnter={() => setHoveredCountdownTaskIdDebounced(next.id)}
                       onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                       data-testid="countdown-next-task-number"
@@ -16903,7 +16910,7 @@ export default function Dashboard() {
                       {isDueZero ? (
                         <>
                           <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px' }}>DUE TODAY:</span>
-                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: next.type === 'class' ? 700 : 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{(next.title || '').replace(/\[.*?\]\s*/g, '').trim() || next.title}</span>
+                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: next.type === 'class' ? 700 : 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{(() => { let t = (next.title || '').replace(/\[.*?\]\s*/g, '').trim(); if (next.courseName) { const cn = next.courseName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); t = t.replace(new RegExp('^' + cn + '\\s*[-–—]\\s*', 'i'), '').trim(); } return t || next.title; })()}</span>
                         </>
                       ) : (
                         <>
@@ -16951,7 +16958,7 @@ export default function Dashboard() {
                       {isDueZero2 ? (
                         <>
                           <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: 700, letterSpacing: '0.3px' }}>DUE TODAY:</span>
-                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: next.type === 'class' ? 700 : 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{(next.title || '').replace(/\[.*?\]\s*/g, '').trim() || next.title}</span>
+                          <span style={{ color: '#ffffff', fontSize: '9.25px', fontWeight: next.type === 'class' ? 700 : 400, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{(() => { let t = (next.title || '').replace(/\[.*?\]\s*/g, '').trim(); if (next.courseName) { const cn = next.courseName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); t = t.replace(new RegExp('^' + cn + '\\s*[-–—]\\s*', 'i'), '').trim(); } return t || next.title; })()}</span>
                         </>
                       ) : (
                         <>
