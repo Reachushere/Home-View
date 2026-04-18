@@ -11965,11 +11965,13 @@ export default function Dashboard() {
       if (wnToday >= 1 && wnToday <= maxW) { _todayInActiveSem = true; break; }
     }
     if (!_todayInActiveSem) {
+      // School week runs Saturday–Friday. Compute the most recent Saturday ≤ today.
+      // dow: 6=Sat (0 back), 0=Sun (1), 1=Mon (2), ... 5=Fri (6)
       const dow = _today.getDay();
-      const daysSinceMon = dow === 0 ? 6 : dow - 1;
-      const mon = new Date(_today.getFullYear(), _today.getMonth(), _today.getDate() - daysSinceMon, 12);
-      const sun = new Date(mon.getFullYear(), mon.getMonth(), mon.getDate() + 6, 12);
-      return { start: mon, end: sun };
+      const daysSinceSat = dow === 6 ? 0 : dow + 1;
+      const sat = new Date(_today.getFullYear(), _today.getMonth(), _today.getDate() - daysSinceSat + (interSemDayOffset || 0), 12);
+      const fri = new Date(sat.getFullYear(), sat.getMonth(), sat.getDate() + 6, 12);
+      return { start: sat, end: fri };
     }
     if (sems.length > 0) {
       const midDate = new Date(approx.start.getTime() + 3 * 24 * 60 * 60 * 1000);
@@ -12014,7 +12016,7 @@ export default function Dashboard() {
       }
     }
     return { start: approx.start, end: approx.end };
-  }, [selectedWeek, selectedWeekInfo, semesterSettings, allSemesterSettings]);
+  }, [selectedWeek, selectedWeekInfo, semesterSettings, allSemesterSettings, interSemDayOffset]);
   const _todayForFallback = new Date();
   const _dowForFallback = _todayForFallback.getDay();
   const _daysSinceMonday = _dowForFallback === 0 ? 6 : _dowForFallback - 1;
