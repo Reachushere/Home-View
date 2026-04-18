@@ -11989,6 +11989,11 @@ export default function Dashboard() {
   const selectedWeekInfo = (() => {
     const match = weeks.find(w => w.weekNumber === selectedWeek);
     if (!match) return undefined;
+    // If the user has manually navigated, trust the matched week regardless of
+    // whether today falls inside a semester — otherwise the calendar grid stays
+    // anchored to today + interSemDayOffset while the "Week N" label moves,
+    // making the forward/back buttons appear broken.
+    if (didInitialAnchorRef.current) return match;
     const sems = allSemesterSettingsRef.current || [];
     const today = new Date();
     let inSem = false;
