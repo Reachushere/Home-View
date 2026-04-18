@@ -16866,7 +16866,7 @@ export default function Dashboard() {
                 })()}
                 {prepDaysText && nextPrep && (
                   <div
-                    style={{ display: 'flex', alignItems: 'center', gap: '4px', pointerEvents: 'auto', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', pointerEvents: 'auto', cursor: 'pointer', whiteSpace: 'nowrap', width: '100%' }}
                     onMouseEnter={() => setHoveredCountdownTaskIdDebounced(nextPrep.id)}
                     onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)}
                     data-testid="countdown-prep-task-number"
