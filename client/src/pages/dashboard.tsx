@@ -27426,9 +27426,9 @@ export default function Dashboard() {
                                                       <div className="flex items-center gap-3 min-w-0">
                                                         <div className="flex items-center gap-2 flex-shrink-0">
                                                           <span className="inline-flex items-center justify-center text-[9px] font-bold tabular-nums px-1.5 py-0.5 rounded" style={{ background: section.accent + '22', color: section.accent, border: `1px solid ${section.accent}66`, fontFamily: 'JetBrains Mono, monospace', minWidth: '20px' }}>0{sIdx + 1}</span>
-                                                          <span className="text-[12px] font-bold tracking-wide" style={{ color: '#e2e8f0', fontFamily: 'JetBrains Mono, monospace' }}>{section.title.toLowerCase().replace(/\s+/g, '_')}/</span>
+                                                          <span className="text-[12px] font-bold tracking-wide" style={{ color: '#ffffff', fontFamily: 'JetBrains Mono, monospace' }}>{section.title.toLowerCase().replace(/\s+/g, '_')}/</span>
                                                         </div>
-                                                        <span className="text-[10px] truncate" style={{ color: '#64748b', fontFamily: 'JetBrains Mono, monospace' }}># {section.subtitle}</span>
+                                                        <span className="text-[10px] truncate" style={{ color: '#ffffff', fontFamily: 'JetBrains Mono, monospace' }}># {section.subtitle}</span>
                                                       </div>
                                                       <div className="flex items-center gap-2 flex-shrink-0">
                                                         <span className="text-[9px] uppercase tracking-wider" style={{ color: '#475569', fontFamily: 'JetBrains Mono, monospace' }}>w:</span>
@@ -27440,24 +27440,24 @@ export default function Dashboard() {
                                                         </span>
                                                       </div>
                                                     </div>
-                                                    <table className="w-full text-[13px] text-white">
+                                                    <table className="w-full text-[13px]" style={{ background: '#ffffff', color: '#000000' }}>
                                                       <tbody>
                                                         {section.rows.map((row, rIdx) => {
                                                           const disabled = isHealthItemDisabled(c.code, row.issueKey);
                                                           const isLast = rIdx === section.rows.length - 1;
                                                           return (
-                                                            <tr key={row.label} className="hover:bg-white/5 transition-colors" style={{ opacity: disabled ? 0.45 : 1 }}>
-                                                              <td className="px-1 py-2 w-8" style={{ borderBottom: isLast ? 'none' : '1px solid rgba(255,255,255,0.05)' }}>
+                                                            <tr key={row.label} className="hover:bg-black/5 transition-colors" style={{ opacity: disabled ? 0.45 : 1, background: '#ffffff', color: '#000000' }}>
+                                                              <td className="px-1 py-2 w-8" style={{ borderBottom: isLast ? 'none' : '1px solid rgba(0,0,0,0.08)' }}>
                                                                 <input type="checkbox" checked={!disabled} onChange={() => toggleHealthItem(c.code, row.issueKey)} className="w-3.5 h-3.5 rounded cursor-pointer accent-emerald-500" title={disabled ? 'Enable for health reporting' : 'Disable from health reporting'} data-testid={`health-toggle-${row.issueKey}`} />
                                                               </td>
-                                                              <td className="px-3 py-2 font-medium text-white" style={{ borderBottom: isLast ? 'none' : '1px solid rgba(255,255,255,0.05)' }}>{row.label}</td>
-                                                              <td className="px-3 py-2 font-mono text-[11px] text-white" style={{ borderBottom: isLast ? 'none' : '1px solid rgba(255,255,255,0.05)' }}>
+                                                              <td className="px-3 py-2 font-medium" style={{ borderBottom: isLast ? 'none' : '1px solid rgba(0,0,0,0.08)', color: '#000000' }}>{row.label}</td>
+                                                              <td className="px-3 py-2 font-mono text-[11px]" style={{ borderBottom: isLast ? 'none' : '1px solid rgba(0,0,0,0.08)', color: '#000000' }}>
                                                                 <span className="inline-flex items-center gap-2">
                                                                   <span>{row.path}</span>
-                                                                  <Pencil className="w-3 h-3 text-white/40 hover:text-white/80 cursor-pointer flex-shrink-0 transition-colors" onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: row.issueKey, step: 0, phase: 'primary' }); }} />
+                                                                  <Pencil className="w-3 h-3 text-black/40 hover:text-black/80 cursor-pointer flex-shrink-0 transition-colors" onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: row.issueKey, step: 0, phase: 'primary' }); }} />
                                                                 </span>
                                                               </td>
-                                                              <td className="px-3 py-2" style={{ width: '70px', minWidth: '70px', borderBottom: isLast ? 'none' : '1px solid rgba(255,255,255,0.05)' }}>
+                                                              <td className="px-3 py-2" style={{ width: '70px', minWidth: '70px', borderBottom: isLast ? 'none' : '1px solid rgba(0,0,0,0.08)' }}>
                                                                 <div className="flex items-center" style={{ gap: '8px' }}>
                                                                   <span className={`inline-block w-2.5 h-2.5 rounded-full flex-shrink-0 ${row.ok ? 'bg-emerald-500' : 'bg-red-500'}`} title={row.ok ? 'Connected' : 'Not connected'} />
                                                                   {!row.ok && (
@@ -27472,7 +27472,7 @@ export default function Dashboard() {
                                                     </table>
                                                   </div>
                                                   {sIdx < sections.length - 1 && (
-                                                    <div className="flex items-center justify-center py-1.5" style={{ background: 'rgba(0,0,0,0.35)' }}>
+                                                    <div className="flex items-center justify-center py-1.5">
                                                       <div className="flex items-center gap-2 text-white/40">
                                                         <div className="h-px w-12" style={{ background: `linear-gradient(90deg, transparent 0%, ${sections[sIdx].accent} 100%)` }} />
                                                         <ChevronDown className="w-3.5 h-3.5" style={{ color: sections[sIdx + 1].accent }} />
