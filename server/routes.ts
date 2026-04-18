@@ -6232,21 +6232,60 @@ APA 7 RULES YOU MUST FOLLOW:
         if (filtered.length > 0) relevantFiles = filtered;
       }
 
-      const MAX_CHARS_PER_FILE = 6000;
-      const MAX_TOTAL_CHARS = 60000;
+      // Detect explicitly mentioned modules/weeks so we can include them at full length
+      const moduleMentions = Array.from(new Set(
+        Array.from(message.matchAll(/\b(?:module|week)\s*(\d+)/gi)).map(m => parseInt((m as RegExpMatchArray)[1], 10))
+      )).filter(n => Number.isFinite(n));
+
+      const isPriorityFile = (f: typeof relevantFiles[number]) => {
+        if (moduleMentions.length === 0) return false;
+        const folder = (f.folder || '').toLowerCase();
+        const name = (f.displayName || f.originalName || '').toLowerCase();
+        const combined = folder + ' ' + name;
+        return moduleMentions.some(n => {
+          // Match "module 5", "module-5", "week 5", "week-5", "m5", "w5"
+          const re = new RegExp(`(?:module|week|\\bm|\\bw)[\\s-]*${n}\\b`, 'i');
+          return re.test(combined);
+        });
+      };
+
+      // Sort: priority (mentioned) modules first, then everything else
+      relevantFiles.sort((a, b) => {
+        const pa = isPriorityFile(a) ? 1 : 0;
+        const pb = isPriorityFile(b) ? 1 : 0;
+        return pb - pa;
+      });
+
+      // Generous limits — modern models handle large context windows easily.
+      // Priority files get the full text (up to a bigger cap) so essay requests on a specific module work.
+      const MAX_CHARS_PRIORITY = 60000;
+      const MAX_CHARS_PER_FILE = 18000;
+      const MAX_TOTAL_CHARS = 360000;
       let totalChars = 0;
       const fileContents: string[] = [];
       for (const f of relevantFiles) {
-        const text = f.extractedText!.substring(0, MAX_CHARS_PER_FILE);
-        if (totalChars + text.length > MAX_TOTAL_CHARS) break;
+        const cap = isPriorityFile(f) ? MAX_CHARS_PRIORITY : MAX_CHARS_PER_FILE;
+        const text = f.extractedText!.substring(0, cap);
+        if (totalChars + text.length > MAX_TOTAL_CHARS) {
+          // Include a partial slice of this last file rather than skipping entirely
+          const remaining = MAX_TOTAL_CHARS - totalChars;
+          if (remaining > 1500) {
+            fileContents.push(`--- ${f.displayName || f.originalName} (${f.folder || 'no folder'}) [PARTIAL — first ${remaining} chars] ---\n${text.substring(0, remaining)}`);
+            totalChars += remaining;
+          }
+          break;
+        }
         fileContents.push(`--- ${f.displayName || f.originalName} (${f.folder || 'no folder'}) ---\n${text}`);
         totalChars += text.length;
       }
+      console.log(`[ChatMaterials] Loaded ${fileContents.length}/${relevantFiles.length} files, ${totalChars} chars total. Priority modules: ${moduleMentions.join(',') || 'none'}`);
 
       const filesWithPages = fileContents.filter(c => /\[Page \d+\]/.test(c)).length;
       const systemPrompt = `You are a study assistant for a university student at Toronto Metropolitan University (Chang School of Continuing Education). You have access to the student's course materials below.
 
-Answer questions thoroughly using ONLY the provided materials. If you can't find the answer in the materials, say so clearly.
+Answer questions thoroughly using the provided materials as your source. The materials below are excerpts that may be partial — do NOT refuse a request just because a specific detail isn't visible in the excerpt. Use everything you can find that is relevant, write the response in full (including multi-page essays when asked), and at the end add a short bracketed note like "[Coverage note: ...]" listing any sub-points you couldn't support from the visible excerpts. Never refuse the entire task because of partial coverage.
+
+When the user asks for a long-form essay or assignment, produce the FULL essay at the requested length and structure, with all required citations. Do not output meta-refusals or hedges in place of the essay.
 
 CITATION RULES (CRITICAL — the student needs verifiable citations for academic essays):
 - Course materials are split with [Page N] markers indicating PDF page boundaries. ${filesWithPages} of ${fileContents.length} document(s) provided here have page markers.
