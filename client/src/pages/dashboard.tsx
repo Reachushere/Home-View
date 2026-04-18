@@ -27307,9 +27307,7 @@ export default function Dashboard() {
                                               {okCount}/{steps.length} ok
                                             </span>
                                           </div>
-                                          <div className="rounded-lg relative" style={{ background: 'radial-gradient(ellipse at top, rgba(99,102,241,0.06) 0%, transparent 70%), #050912', border: '1px solid rgba(99,102,241,0.18)', padding: '18px 14px 14px', boxShadow: 'inset 0 0 24px rgba(0,0,0,0.6)' }}>
-                                            {/* dotted grid background */}
-                                            <div className="absolute inset-0 rounded-lg pointer-events-none opacity-40" style={{ backgroundImage: 'radial-gradient(rgba(148,163,184,0.18) 1px, transparent 1px)', backgroundSize: '14px 14px' }} />
+                                          <div className="rounded-lg relative" style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.12)', padding: '18px 14px 14px' }}>
                                             <div className="relative flex items-stretch" style={{ width: '100%' }}>
                                               {steps.map((step, sIdx) => {
                                                 const Icon = step.Icon;
@@ -27321,21 +27319,21 @@ export default function Dashboard() {
                                                   <React.Fragment key={step.label}>
                                                     <div
                                                       className="relative flex flex-col items-center text-center group"
-                                                      style={{ flex: '1 1 0', minWidth: 0, padding: '8px 6px 6px', cursor: isProblem ? 'pointer' : 'default', borderRadius: '8px', background: 'linear-gradient(180deg, rgba(15,23,42,0.85) 0%, rgba(8,13,28,0.85) 100%)', border: `1px solid ${isProblem ? accent + '66' : 'rgba(99,102,241,0.22)'}`, boxShadow: isProblem ? `0 0 14px ${accent}33, inset 0 1px 0 rgba(255,255,255,0.04)` : 'inset 0 1px 0 rgba(255,255,255,0.04)', transition: 'all 0.18s ease' }}
+                                                      style={{ flex: '1 1 0', minWidth: 0, padding: '8px 6px 6px', cursor: isProblem ? 'pointer' : 'default', borderRadius: '8px', background: '#ffffff', border: `1px solid ${isProblem ? accent + '88' : 'rgba(0,0,0,0.15)'}`, boxShadow: isProblem ? `0 0 0 1px ${accent}44` : 'none', transition: 'all 0.18s ease' }}
                                                       onClick={(e) => { if (isProblem) { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: step.issueKey, step: 0, phase: 'primary' }); } }}
-                                                      onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = accent + 'cc'; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 0 18px ${accent}55, inset 0 1px 0 rgba(255,255,255,0.06)`; }}
-                                                      onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = isProblem ? accent + '66' : 'rgba(99,102,241,0.22)'; (e.currentTarget as HTMLDivElement).style.boxShadow = isProblem ? `0 0 14px ${accent}33, inset 0 1px 0 rgba(255,255,255,0.04)` : 'inset 0 1px 0 rgba(255,255,255,0.04)'; }}
+                                                      onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = accent; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 0 0 2px ${accent}55`; }}
+                                                      onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = isProblem ? accent + '88' : 'rgba(0,0,0,0.15)'; (e.currentTarget as HTMLDivElement).style.boxShadow = isProblem ? `0 0 0 1px ${accent}44` : 'none'; }}
                                                     >
                                                       {/* Status LED top-right */}
                                                       <span className="absolute" style={{ top: '5px', right: '6px', width: '7px', height: '7px', borderRadius: '50%', background: accent, boxShadow: `0 0 8px ${accent}, 0 0 2px ${accent}` }} />
                                                       <div className="relative flex items-center justify-center mb-1.5" style={{ width: '32px', height: '32px', borderRadius: '8px', background: `linear-gradient(135deg, ${accent}22 0%, ${accent}08 100%)`, border: `1px solid ${accent}55` }}>
                                                         <Icon size={16} style={{ color: accent, strokeWidth: 2 }} />
                                                       </div>
-                                                      <span className="text-[10px] font-bold uppercase tracking-wider leading-none" style={{ color: '#e2e8f0', fontFamily: 'JetBrains Mono, monospace' }}>{step.label}</span>
-                                                      <span className="mt-1 text-[9px] tabular-nums leading-none truncate max-w-full" style={{ color: '#64748b', fontFamily: 'JetBrains Mono, monospace' }}>{step.value}</span>
+                                                      <span className="text-[10px] font-bold uppercase tracking-wider leading-none" style={{ color: '#000000', fontFamily: 'JetBrains Mono, monospace' }}>{step.label}</span>
+                                                      <span className="mt-1 text-[9px] tabular-nums leading-none truncate max-w-full" style={{ color: '#000000', fontFamily: 'JetBrains Mono, monospace' }}>{step.value}</span>
                                                       {step.pct !== null && (
                                                         <div className="mt-1.5 w-full" style={{ maxWidth: '60px' }}>
-                                                          <div style={{ height: '2px', borderRadius: '2px', background: 'rgba(15,23,42,0.9)', overflow: 'hidden', border: '1px solid rgba(99,102,241,0.15)' }}>
+                                                          <div style={{ height: '2px', borderRadius: '2px', background: 'rgba(0,0,0,0.08)', overflow: 'hidden', border: '1px solid rgba(0,0,0,0.1)' }}>
                                                             <div style={{ width: `${step.pct}%`, height: '100%', background: `linear-gradient(90deg, ${accent}88 0%, ${accent} 100%)`, transition: 'width 0.3s ease', boxShadow: `0 0 4px ${accent}` }} />
                                                           </div>
                                                         </div>
@@ -27419,7 +27417,7 @@ export default function Dashboard() {
                                             </span>
                                           </div>
 
-                                          <div className="rounded-lg overflow-hidden" style={{ background: '#050912', border: '1px solid rgba(99,102,241,0.18)', boxShadow: 'inset 0 0 24px rgba(0,0,0,0.6)' }}>
+                                          <div className="rounded-lg overflow-hidden" style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.12)' }}>
                                             {sections.map((section, sIdx) => {
                                               const activeRows = section.rows.filter(r => !isHealthItemDisabled(c.code, r.issueKey));
                                               const activeCount = activeRows.length;
@@ -27430,19 +27428,19 @@ export default function Dashboard() {
 
                                               return (
                                                 <React.Fragment key={section.key}>
-                                                  <div style={{ background: `linear-gradient(90deg, ${section.accent}1a 0%, transparent 50%)`, borderLeft: `3px solid ${section.accent}` }}>
-                                                    <div className="px-4 py-2 flex items-center justify-between" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.015)' }}>
+                                                  <div style={{ background: '#ffffff', borderLeft: `3px solid ${section.accent}` }}>
+                                                    <div className="px-4 py-2 flex items-center justify-between" style={{ borderBottom: '1px solid rgba(0,0,0,0.08)', background: '#ffffff' }}>
                                                       <div className="flex items-center gap-3 min-w-0">
                                                         <div className="flex items-center gap-2 flex-shrink-0">
                                                           <span className="inline-flex items-center justify-center text-[9px] font-bold tabular-nums px-1.5 py-0.5 rounded" style={{ background: section.accent + '22', color: section.accent, border: `1px solid ${section.accent}66`, fontFamily: 'JetBrains Mono, monospace', minWidth: '20px' }}>0{sIdx + 1}</span>
-                                                          <span className="text-[12px] font-bold tracking-wide" style={{ color: '#ffffff', fontFamily: 'JetBrains Mono, monospace' }}>{section.title.toLowerCase().replace(/\s+/g, '_')}/</span>
+                                                          <span className="text-[12px] font-bold tracking-wide" style={{ color: '#000000', fontFamily: 'JetBrains Mono, monospace' }}>{section.title.toLowerCase().replace(/\s+/g, '_')}/</span>
                                                         </div>
-                                                        <span className="text-[10px] truncate" style={{ color: '#ffffff', fontFamily: 'JetBrains Mono, monospace' }}># {section.subtitle}</span>
+                                                        <span className="text-[10px] truncate" style={{ color: '#000000', fontFamily: 'JetBrains Mono, monospace' }}># {section.subtitle}</span>
                                                       </div>
                                                       <div className="flex items-center gap-2 flex-shrink-0">
                                                         <span className="text-[9px] uppercase tracking-wider" style={{ color: '#475569', fontFamily: 'JetBrains Mono, monospace' }}>w:</span>
-                                                        <span className="text-[10px] tabular-nums" style={{ color: '#94a3b8', fontFamily: 'JetBrains Mono, monospace' }}>{weightPct}%</span>
-                                                        <span style={{ color: '#334155' }}>│</span>
+                                                        <span className="text-[10px] tabular-nums" style={{ color: '#475569', fontFamily: 'JetBrains Mono, monospace' }}>{weightPct}%</span>
+                                                        <span style={{ color: '#cbd5e1' }}>│</span>
                                                         <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold tabular-nums" style={{ background: sectionHealthy ? 'rgba(16,185,129,0.12)' : 'rgba(239,68,68,0.12)', border: `1px solid ${sectionHealthy ? 'rgba(16,185,129,0.4)' : 'rgba(239,68,68,0.4)'}`, color: sectionHealthy ? '#6ee7b7' : '#fca5a5', fontFamily: 'JetBrains Mono, monospace' }} data-testid={`section-health-${c.code}-${section.key}`}>
                                                           <span className="w-1.5 h-1.5 rounded-full" style={{ background: sectionHealthy ? '#10b981' : '#ef4444', boxShadow: `0 0 5px ${sectionHealthy ? '#10b981' : '#ef4444'}` }} />
                                                           {okCount}/{activeCount}·{sectionPct}%
@@ -27480,15 +27478,6 @@ export default function Dashboard() {
                                                       </tbody>
                                                     </table>
                                                   </div>
-                                                  {sIdx < sections.length - 1 && (
-                                                    <div className="flex items-center justify-center py-1.5">
-                                                      <div className="flex items-center gap-2 text-white/40">
-                                                        <div className="h-px w-12" style={{ background: `linear-gradient(90deg, transparent 0%, ${sections[sIdx].accent} 100%)` }} />
-                                                        <ChevronDown className="w-3.5 h-3.5" style={{ color: sections[sIdx + 1].accent }} />
-                                                        <div className="h-px w-12" style={{ background: `linear-gradient(90deg, ${sections[sIdx + 1].accent} 0%, transparent 100%)` }} />
-                                                      </div>
-                                                    </div>
-                                                  )}
                                                 </React.Fragment>
                                               );
                                             })}
