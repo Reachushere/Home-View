@@ -6799,14 +6799,39 @@ HA DISCOVERY:
 • "what automations?" → ha_discover(include:"automations")
 • Always memory_write important entities after discovering them
 
-HA DASHBOARD EDITING:
-For the default 'lovelace' dashboard (11 views, very large):
-1. ha_view_read(view_title:'Test-home') → get ONLY that view's config
-2. Modify the view structure (add/remove cards, elements, etc.)
-3. ha_view_write(view_title:'Test-home', view_config: modifiedView) → saves ONLY that view
-4. Tell Bryn to refresh
-NEVER use ha_dashboard_write on the default 'lovelace' dashboard — it's too large and will corrupt the config.
-For small custom dashboards (uni-cal, spotify-bryn, etc.): ha_dashboard_read → modify → ha_dashboard_write is fine.
+HA DASHBOARD EDITING — ⚠️ READ EVERY LINE, MISTAKES HERE WIPE BRYN'S DASHBOARD:
+
+The 'Test-home' view of the default 'lovelace' dashboard is ~11,400 lines / hundreds of elements. It has been wiped to half-empty TWICE by careless writes. NEVER let it happen again. RULES:
+
+1. 🚫 BANNED on Test-home (and any view with >10 elements): ha_view_write, ha_dashboard_write. They DESTROY the view because the LLM cannot echo back hundreds of elements perfectly. The tools will REFUSE without force=true — and you must NEVER pass force=true on Test-home. PERIOD.
+
+2. ✅ ONLY use these on Test-home:
+   • ha_element_add — to ADD a new button/image/card. Server reads the view, appends your element, writes back. Cannot drop siblings.
+   • ha_element_patch — to MODIFY ONE existing element (change entity, style, image, tap_action). Match by entity_id or index_path.
+   • ha_element_remove — to DELETE ONE existing element. Match by entity_id or index_path.
+
+3. 🔁 IDEMPOTENCY: Always pass dedupe_by_entity:true when calling ha_element_add. If a previous attempt added the same entity, this prevents duplicates (the 17-cat disaster).
+
+4. 📐 Sizing rule for overlays (image / icon / state-icon): MUST set explicit width AND height (or width + an aspect-preserving transform). Unset dimensions on Test-home default to 100% of the card and stack on top of everything.
+
+5. 📋 BEFORE adding a NEW element to Test-home, FIRST read 1-2 sibling elements of the same kind so you can mirror their pattern. The Test-home view has consistent conventions you must follow:
+   • Timer countdown buttons (timer.dogs, timer.bryn_meds, timer.meds_timer_yasu, timer.rascal_insulin) all use:
+     \`\`\`yaml
+     - entity: timer.<NAME>
+       type: image
+       text-align: center
+       style: { left: 0%, top: -0.2%, width: 100%, transform: scale(1,.98) }
+       state_image: { idle: /local/lovelace/overlays/Round Menu/5/Border6.gif }
+       tap_action: { action: call-service, service: script.<RESET_SCRIPT>, data: { skip_condition: true }, target: { entity_id: script.<RESET_SCRIPT> } }
+     \`\`\`
+   • Right-side circle buttons use Circle8.png at left:95.32%, width:4.75%
+   • DO NOT invent new patterns. Mirror existing siblings.
+
+6. 💾 BACKUP REFERENCE: A verbatim copy of the Test-home YAML lives at \`docs/ha/test-home-dashboard-backup-2026-04-17.yaml\` in the UniCal repo. Before any non-trivial dashboard edit, read_file that backup to see the EXACT element shapes already in use. After ANY successful Test-home edit, run a fresh ha_view_read and write the full YAML back to that backup file via write_file (with today's date) so future edits have a current reference.
+
+7. 🧨 IF YOU EVER SEE the response from ha_view_write succeed on Test-home (even with force=true): you screwed up. Immediately tell Bryn: "I just used ha_view_write on Test-home — please restore from docs/ha/test-home-dashboard-backup-*.yaml in the repo. I should have used ha_element_add."
+
+For SMALL custom dashboards (uni-cal, spotify-bryn, spotify-yasu, map): ha_dashboard_read → modify → ha_dashboard_write is fine.
 
 HA AUTOMATION MANAGEMENT:
 • To CREATE a new automation: use ha_create_automation(alias, trigger, action, condition?, mode?, description?)
