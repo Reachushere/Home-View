@@ -31526,30 +31526,35 @@ export default function Dashboard() {
                 // SAME priority sort that the Semesters & Classes page uses, so
                 // the curated palette index matches that page exactly.
                 const _calCoursePos = (() => {
-                  if (!_calSemKey) return courseIdx;
-                  const semCourses = semesterCourseAssignments[_calSemKey] || [];
-                  if (semCourses.length === 0) return courseIdx;
-                  const isSSSem = _calSemKey.startsWith('ss');
-                  const getPri = (code: string) => {
-                    if (isSSSem) {
-                      const va = coursePlayPriority[`${_calSemKey}:${code}:A`] ?? 0;
-                      const vb = coursePlayPriority[`${_calSemKey}:${code}:B`] ?? 0;
-                      const m = Math.min(va || 999, vb || 999);
-                      return m === 999 ? 0 : m;
-                    }
-                    return coursePlayPriority[`${_calSemKey}:${code}`] ?? 0;
-                  };
-                  const sorted = [...semCourses].sort((a, b) => {
-                    const pa = getPri(a.code); const pb = getPri(b.code);
-                    if (pa === 0 && pb === 0) return 0;
-                    if (pa === 0) return 1;
-                    if (pb === 0) return -1;
-                    return pa - pb;
-                  });
-                  const norm = (s: string) => s.replace(/\s/g, '').toUpperCase();
-                  const target = norm(courseName);
-                  const idx = sorted.findIndex(c => norm(c.code) === target);
-                  return idx >= 0 ? idx : courseIdx;
+                  try {
+                    if (!_calSemKey) return courseIdx;
+                    const semCourses = (semesterCourseAssignments && semesterCourseAssignments[_calSemKey]) || [];
+                    if (semCourses.length === 0) return courseIdx;
+                    const cpp = coursePlayPriority || {};
+                    const isSSSem = _calSemKey.startsWith('ss');
+                    const getPri = (code: string) => {
+                      if (isSSSem) {
+                        const va = cpp[`${_calSemKey}:${code}:A`] ?? 0;
+                        const vb = cpp[`${_calSemKey}:${code}:B`] ?? 0;
+                        const m = Math.min(va || 999, vb || 999);
+                        return m === 999 ? 0 : m;
+                      }
+                      return cpp[`${_calSemKey}:${code}`] ?? 0;
+                    };
+                    const sorted = [...semCourses].sort((a, b) => {
+                      const pa = getPri(a.code); const pb = getPri(b.code);
+                      if (pa === 0 && pb === 0) return 0;
+                      if (pa === 0) return 1;
+                      if (pb === 0) return -1;
+                      return pa - pb;
+                    });
+                    const norm = (s: string) => s.replace(/\s/g, '').toUpperCase();
+                    const target = norm(courseName);
+                    const idx = sorted.findIndex(c => norm(c.code) === target);
+                    return idx >= 0 ? idx : courseIdx;
+                  } catch {
+                    return courseIdx;
+                  }
                 })();
                 let _resolvedStart: string;
                 let _resolvedEnd: string;
