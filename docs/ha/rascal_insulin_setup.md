@@ -19,17 +19,17 @@ Goal:
 Copy `public/ha-assets/cat.png` (this repo) into HA at:
 
 ```
-/config/www/lovelace/icons/cat.png
+/config/www/lovelace/Icons'/cat.png
 ```
 
-It will then be reachable from Lovelace as `/local/lovelace/icons/cat.png`.
+It will then be reachable from Lovelace as `/local/lovelace/Icons%27/cat.png`.
 
 You'll also want a blink/animated version. Easiest: create a 2-frame GIF that
 swaps between the cat icon and a transparent (or red-tinted) frame at ~500ms.
 Save as:
 
 ```
-/config/www/lovelace/icons/cat_blink.gif
+/config/www/lovelace/Icons'/cat_blink.gif
 ```
 
 If you don't have time to make the GIF, the card-mod CSS animation below will
@@ -198,7 +198,7 @@ that the Bryn meds button currently uses so it lands in the same spot.
   card_mod:
     style: |
       ha-card {
-        background-image: url('/local/lovelace/icons/cat.png');
+        background-image: url('/local/lovelace/Icons%27/cat.png');
         background-repeat: no-repeat;
         background-position: center 30%;
         background-size: 55% auto;
@@ -219,7 +219,7 @@ get the icon overlay and the blink. If you'd rather avoid HACS, swap the
 
 ```yaml
 - type: image
-  image: /local/lovelace/icons/cat.png
+  image: /local/lovelace/Icons%27/cat.png
   style:
     left: 50%
     top: 35%
