@@ -19,7 +19,6 @@ import LibraryView from "@/components/LibraryView";
 import { AiChatBubble } from "@/components/AiChatBubble";
 import { AiCommandWizard } from "@/components/AiCommandWizard";
 import { ChangelogPopup } from "@/components/ChangelogPopup";
-import { SemesterEndPopup } from "@/components/SemesterEndPopup";
 import { Document, Page, pdfjs } from 'react-pdf';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -39934,7 +39933,6 @@ export default function Dashboard() {
       )}
       {authLevel === '5747' && <AiCommandWizard isOpen={isAiCommandOpen} onClose={() => setIsAiCommandOpen(false)} />}
       <ChangelogPopup />
-      <SemesterEndPopup />
       {showSystemSetupWizard && authLevel === '5747' && (
         <SystemSetupWizard
           open={showSystemSetupWizard}
