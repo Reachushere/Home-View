@@ -731,12 +731,34 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
                 )}
                 <label style={{ fontSize: '11px', color: '#fff' }}>Course:</label>
                 <select value={essayCourse} onChange={e => setEssayCourse(e.target.value)}
-                  style={{ padding: '4px 6px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: '4px', color: '#fff', fontSize: '11px' }}
+                  style={{ padding: '4px 6px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: '4px', color: '#fff', fontSize: '11px', maxWidth: '220px' }}
                   data-testid="select-essay-course">
                   <option value="all" style={{ background: '#0d2548' }}>All courses</option>
-                  {['CPPA122','CFNF400','CASL101','CPPA101','CPPA102','CPPA120','CPPA121','CPPA125','CECN210','CPHL110','CHIS105'].map(c => (
-                    <option key={c} value={c} style={{ background: '#0d2548' }}>{c}</option>
-                  ))}
+                  {(() => {
+                    const fallback = ['CPPA122','CFNF400','CASL101','CPPA101','CPPA102','CPPA120','CPPA121','CPPA125','CECN210','CPHL110','CHIS105'];
+                    let entries: Array<{ code: string; label: string }> = [];
+                    try {
+                      const raw = localStorage.getItem('coursesData');
+                      if (raw) {
+                        const parsed = JSON.parse(raw);
+                        const list: Array<{ name?: string }> = parsed?.courses || [];
+                        entries = list
+                          .map(c => {
+                            const full = (c.name || '').trim();
+                            if (!full) return null;
+                            const parts = full.split(' - ');
+                            const code = parts[0]?.trim() || full;
+                            const title = parts.slice(1).join(' - ').trim();
+                            return { code, label: title ? `${code} — ${title}` : code };
+                          })
+                          .filter((x): x is { code: string; label: string } => !!x);
+                      }
+                    } catch {}
+                    if (!entries.length) entries = fallback.map(c => ({ code: c, label: c }));
+                    return entries.map(e => (
+                      <option key={e.code} value={e.code} style={{ background: '#0d2548' }} title={e.label}>{e.label}</option>
+                    ));
+                  })()}
                 </select>
                 <label style={{ fontSize: '11px', color: '#fff' }}>Style:</label>
                 <select value={essayStyle} onChange={e => setEssayStyle(e.target.value as any)}
