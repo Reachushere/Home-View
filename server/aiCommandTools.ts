@@ -555,6 +555,53 @@ export const AI_COMMAND_TOOLS = [
   {
     type: "function" as const,
     function: {
+      name: "ha_script_create",
+      description: "Create a new Home Assistant script via REST POST to /api/config/script/config/{object_id}. Object id is the part after 'script.' (lowercase, underscores). Body fields: alias, sequence (array of action steps), mode, fields (optional), icon (optional), description (optional). Reloads scripts after creation so it appears immediately.",
+      parameters: {
+        type: "object",
+        properties: {
+          script_id: { type: "string", description: "Object id (no 'script.' prefix), e.g. 'rascal_insulin_alert'" },
+          alias: { type: "string", description: "Friendly name shown in HA UI" },
+          sequence: { type: "array", items: { type: "object" }, description: "Array of action steps (service calls, delays, etc.)" },
+          mode: { type: "string", enum: ["single", "restart", "queued", "parallel"], description: "Default 'single'" },
+          icon: { type: "string", description: "Optional mdi icon, e.g. 'mdi:cat'" },
+          description: { type: "string" },
+          fields: { type: "object", description: "Optional input field schema" },
+        },
+        required: ["script_id", "alias", "sequence"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "ha_script_update",
+      description: "Overwrite an existing script's full config. ALWAYS read it first with ha_script_get, modify, then send the full config back. Reloads scripts after update.",
+      parameters: {
+        type: "object",
+        properties: {
+          script_id: { type: "string", description: "Object id (no 'script.' prefix)" },
+          config: { type: "object", description: "Full script config (alias, sequence, mode, etc.)" },
+        },
+        required: ["script_id", "config"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "ha_script_delete",
+      description: "Delete a script by object id (no 'script.' prefix). Reloads scripts after delete.",
+      parameters: {
+        type: "object",
+        properties: { script_id: { type: "string" } },
+        required: ["script_id"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
       name: "ha_script_run",
       description: "Run a script immediately by entity_id.",
       parameters: {
@@ -2827,6 +2874,62 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           const r = await fetch(`${haUrl}/api/config/script/config/${args.script_id}`, { headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}` } });
           if (!r.ok) return { success: false, result: { error: `Not found (${r.status})` } };
           return { success: true, result: { config: await r.json() } };
+        } catch (err: any) { return { success: false, result: { error: err.message } }; }
+      }
+
+      case "ha_script_create": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) return { success: false, result: { error: "HA not configured" } };
+        try {
+          const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+          const slug = String(args.script_id).replace(/^script\./, '').toLowerCase().replace(/[^a-z0-9_]+/g, '_').replace(/^_|_$/g, '');
+          if (!Array.isArray(args.sequence) || args.sequence.length === 0) {
+            return { success: false, result: { error: "Missing 'sequence' array (the script's action steps)" } };
+          }
+          const config: Record<string, any> = {
+            alias: args.alias,
+            sequence: args.sequence,
+            mode: args.mode || 'single',
+          };
+          if (args.icon) config.icon = args.icon;
+          if (args.description) config.description = args.description;
+          if (args.fields) config.fields = args.fields;
+          const headers = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
+          const r = await fetch(`${haUrl}/api/config/script/config/${slug}`, { method: 'POST', headers, body: JSON.stringify(config) });
+          if (!r.ok) {
+            const errText = await r.text().catch(() => '');
+            return { success: false, result: { error: `Create script failed: ${r.status} ${errText.slice(0, 300)}` } };
+          }
+          await fetch(`${haUrl}/api/services/script/reload`, { method: 'POST', headers }).catch(() => {});
+          return { success: true, result: { created: true, entity_id: `script.${slug}`, alias: args.alias } };
+        } catch (err: any) { return { success: false, result: { error: `Failed to create script: ${err.message}` } }; }
+      }
+
+      case "ha_script_update": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) return { success: false, result: { error: "HA not configured" } };
+        try {
+          const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+          const slug = String(args.script_id).replace(/^script\./, '');
+          const headers = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
+          const r = await fetch(`${haUrl}/api/config/script/config/${slug}`, { method: 'POST', headers, body: JSON.stringify(args.config) });
+          if (!r.ok) {
+            const errText = await r.text().catch(() => '');
+            return { success: false, result: { error: `Update script failed: ${r.status} ${errText.slice(0, 300)}` } };
+          }
+          await fetch(`${haUrl}/api/services/script/reload`, { method: 'POST', headers }).catch(() => {});
+          return { success: true, result: { updated: true, entity_id: `script.${slug}` } };
+        } catch (err: any) { return { success: false, result: { error: err.message } }; }
+      }
+
+      case "ha_script_delete": {
+        if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) return { success: false, result: { error: "HA not configured" } };
+        try {
+          const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+          const slug = String(args.script_id).replace(/^script\./, '');
+          const headers = { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' };
+          const r = await fetch(`${haUrl}/api/config/script/config/${slug}`, { method: 'DELETE', headers });
+          if (!r.ok) return { success: false, result: { error: `Delete script failed: ${r.status}` } };
+          await fetch(`${haUrl}/api/services/script/reload`, { method: 'POST', headers }).catch(() => {});
+          return { success: true, result: { deleted: true, entity_id: `script.${slug}` } };
         } catch (err: any) { return { success: false, result: { error: err.message } }; }
       }
 
