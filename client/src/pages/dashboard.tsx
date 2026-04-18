@@ -30978,6 +30978,25 @@ export default function Dashboard() {
                                   { key: 'w2029', start: '2029-01-15', end: '2029-04-13', weeks: 13 },
 
                                 ];
+                                // Honor extended/custom end dates from DB (allSemesterSettings)
+                                (allSemesterSettings || []).forEach((s: any) => {
+                                  if (!s?.semesterEndDate || !s?.semesterType) return;
+                                  const yMatch = (s.semesterName || '').match(/\d{4}/);
+                                  const yr = yMatch ? yMatch[0] : '';
+                                  if (!yr) return;
+                                  const prefix = s.semesterType === 'winter' ? 'w' : s.semesterType === 'spring_summer' ? 'ss' : s.semesterType === 'fall' ? 'f' : '';
+                                  if (!prefix) return;
+                                  const def = semDefs.find(d => d.key === `${prefix}${yr}`);
+                                  if (def) {
+                                    def.end = String(s.semesterEndDate).slice(0, 10);
+                                    if (s.semesterStartDate) def.start = String(s.semesterStartDate).slice(0, 10);
+                                    // Recompute weeks from extended start..end
+                                    const sD = new Date(def.start + 'T12:00:00');
+                                    const eD = new Date(def.end + 'T12:00:00');
+                                    const days = Math.round((eD.getTime() - sD.getTime()) / 86400000) + 1;
+                                    def.weeks = Math.max(def.weeks, Math.ceil(days / 7));
+                                  }
+                                });
                                 const dayDate = new Date(day.getFullYear(), day.getMonth(), day.getDate(), 12, 0, 0);
                                 const activeSem = semDefs.find(s => dayDate >= new Date(s.start + 'T00:00:00') && dayDate <= new Date(s.end + 'T23:59:59'));
                                 if (activeSem) {
@@ -31030,6 +31049,24 @@ export default function Dashboard() {
                                   { key: 'w2029', start: '2029-01-15', end: '2029-04-13', weeks: 13 },
 
                                 ];
+                                // Honor extended/custom end dates from DB (allSemesterSettings)
+                                (allSemesterSettings || []).forEach((s: any) => {
+                                  if (!s?.semesterEndDate || !s?.semesterType) return;
+                                  const yMatch = (s.semesterName || '').match(/\d{4}/);
+                                  const yr = yMatch ? yMatch[0] : '';
+                                  if (!yr) return;
+                                  const prefix = s.semesterType === 'winter' ? 'w' : s.semesterType === 'spring_summer' ? 'ss' : s.semesterType === 'fall' ? 'f' : '';
+                                  if (!prefix) return;
+                                  const def = semDefs.find(d => d.key === `${prefix}${yr}`);
+                                  if (def) {
+                                    def.end = String(s.semesterEndDate).slice(0, 10);
+                                    if (s.semesterStartDate) def.start = String(s.semesterStartDate).slice(0, 10);
+                                    const sD = new Date(def.start + 'T12:00:00');
+                                    const eD = new Date(def.end + 'T12:00:00');
+                                    const days = Math.round((eD.getTime() - sD.getTime()) / 86400000) + 1;
+                                    def.weeks = Math.max(def.weeks, Math.ceil(days / 7));
+                                  }
+                                });
                                 const dayDate = new Date(day.getFullYear(), day.getMonth(), day.getDate(), 12, 0, 0);
                                 const activeSem = semDefs.find(s => dayDate >= new Date(s.start + 'T00:00:00') && dayDate <= new Date(s.end + 'T23:59:59'));
                                 if (activeSem) {
