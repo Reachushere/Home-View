@@ -6085,9 +6085,18 @@ Return ONLY valid JSON (no markdown):
         totalChars += text.length;
       }
 
+      const filesWithPages = fileContents.filter(c => /\[Page \d+\]/.test(c)).length;
       const systemPrompt = `You are a study assistant for a university student at Toronto Metropolitan University (Chang School of Continuing Education). You have access to the student's course materials below.
 
-Answer questions thoroughly using ONLY the provided materials. Always cite which document your answer comes from. If you can't find the answer in the materials, say so clearly.
+Answer questions thoroughly using ONLY the provided materials. If you can't find the answer in the materials, say so clearly.
+
+CITATION RULES (CRITICAL — the student needs verifiable citations for academic essays):
+- Course materials are split with [Page N] markers indicating PDF page boundaries. ${filesWithPages} of ${fileContents.length} document(s) provided here have page markers.
+- For every claim, cite the document AND the page number it came from, in the form: (CFNF 400, 2026, Module 5, p. 12) — using the [Page N] marker that immediately precedes the cited content.
+- If a paragraph spans pages, cite the page where the cited sentence appears. If a claim is supported by multiple pages, cite a range like (Module 5, pp. 12-13).
+- NEVER write "p. X" or "p. ?" or omit page numbers when [Page N] markers are present in the source. NEVER make up page numbers — only use numbers that appear as [Page N] markers in the materials below.
+- If a document has no [Page N] markers (e.g., text was extracted without page info), say so explicitly for that citation: "(Module 5, page unavailable)".
+- For essays with citation count requirements (e.g., "three citations per paragraph"), comply exactly.
 
 For flashcard requests, format as numbered Q&A pairs.
 For summaries, use clear headings and bullet points.
@@ -8482,9 +8491,14 @@ Always cite which file/document each finding comes from. Be thorough but concise
         return res.status(404).json({ error: "File not found" });
       }
 
-      if (file.extractedText) {
-        console.log(`[TextAPI] Using cached extractedText for file ${file.id} (${file.extractedText.length} chars)`);
+      const force = req.query.force === '1' || req.query.force === 'true';
+      const hasPageMarkers = file.extractedText && /\[Page \d+\]/.test(file.extractedText);
+      if (file.extractedText && !force && hasPageMarkers) {
+        console.log(`[TextAPI] Using cached extractedText for file ${file.id} (${file.extractedText.length} chars, has page markers)`);
         return res.json({ text: file.extractedText });
+      }
+      if (file.extractedText && !force && !hasPageMarkers) {
+        console.log(`[TextAPI] Re-extracting file ${file.id} (cached text lacks page markers)`);
       }
 
       const mediaUrl = file.objectPath;
@@ -8569,7 +8583,8 @@ Always cite which file/document each finding comes from. Be thorough but concise
           await parser.load();
           const pdfText = await parser.getText();
           
-          const PAGE_BREAK_MARKER = '\n\n---PAGE---\n\n';
+          // Use a sentinel that survives cleanTextForTTS (no digits, no special chars it strips)
+          const PAGE_BREAK_MARKER = ' XPGBRKX ';
           
           console.log(`[PDF Parse] getText type: ${typeof pdfText}, isArray: ${Array.isArray(pdfText)}, keys: ${pdfText && typeof pdfText === 'object' ? Object.keys(pdfText).join(',') : 'N/A'}`);
           if (pdfText && typeof pdfText === 'object' && (pdfText as any).pages) {
@@ -8622,6 +8637,17 @@ Always cite which file/document each finding comes from. Be thorough but concise
         .replace(/\. {2,}/g, '.\n\n')
         .replace(/\s+/g, ' ')
         .trim();
+
+      // Convert XPGBRKX sentinels into numbered [Page N] markers (start at page 1, increment per break)
+      if (textContent.includes('XPGBRKX')) {
+        let pageNum = 1;
+        const parts = textContent.split(/\s*XPGBRKX\s*/);
+        textContent = parts.map((part, idx) => {
+          const marker = idx === 0 ? `[Page ${pageNum}]` : `\n\n[Page ${++pageNum}]`;
+          return `${marker}\n${part.trim()}`;
+        }).join('\n').trim();
+        console.log(`[TextAPI] Inserted ${pageNum} page markers for file ${file.id}`);
+      }
 
       if (textContent && file.id) {
         storage.updateFile(file.id, { extractedText: textContent }).then(() => {
