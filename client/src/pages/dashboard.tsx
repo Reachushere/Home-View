@@ -31096,13 +31096,37 @@ export default function Dashboard() {
                 };
                 const allDisplayCourses: Array<{ name: string; color: string; colorEnd?: string; colorStops?: string; borderColor?: string; courseRowColor?: string; taskBgColor?: string; courseFontColor?: string; professor: string; professorEmail?: string; _semKey: string; displayName?: string }> = [];
                 const semKeyOrder = ['w2026', 'ss2026', 'f2026', 'w2027', 'ss2027', 'f2027', 'w2028', 'ss2028', 'f2028', 'w2029'];
+                const semKeyToDbTypeForEnd: Record<string, { type: string; year: number }> = {
+                  'ss2025': { type: 'spring_summer', year: 2025 }, 'f2025': { type: 'fall', year: 2025 },
+                  'w2026': { type: 'winter', year: 2026 }, 'ss2026': { type: 'spring_summer', year: 2026 },
+                  'f2026': { type: 'fall', year: 2026 }, 'w2027': { type: 'winter', year: 2027 },
+                  'ss2027': { type: 'spring_summer', year: 2027 }, 'f2027': { type: 'fall', year: 2027 },
+                  'w2028': { type: 'winter', year: 2028 }, 'ss2028': { type: 'spring_summer', year: 2028 },
+                  'f2028': { type: 'fall', year: 2028 }, 'w2029': { type: 'winter', year: 2029 },
+                };
                 for (const semKey of semKeyOrder) {
-                  if (semesterEndConfirmed[semKey]) continue;
                   const semStart = semStartDates[semKey];
                   const semEnd = semEndDates[semKey];
                   if (!semStart || !semEnd) continue;
-                  const semStartDate = new Date(semStart + 'T00:00:00');
-                  const semEndDate = new Date(semEnd + 'T23:59:59');
+                  // Honor the live DB end date (which may be extended) instead of the hardcoded fallback.
+                  const dbMap = semKeyToDbTypeForEnd[semKey];
+                  const liveSem = dbMap && allSemesterSettingsRef.current
+                    ? allSemesterSettingsRef.current.find((s: any) => {
+                        const yearMatch = s.semesterName?.match(/\d{4}/);
+                        const semYear = yearMatch ? parseInt(yearMatch[0]) : 0;
+                        return s.semesterType === dbMap.type && semYear === dbMap.year;
+                      })
+                    : null;
+                  const liveStart = liveSem?.semesterStartDate ? new Date(liveSem.semesterStartDate) : null;
+                  const liveEnd = liveSem?.semesterEndDate ? new Date(liveSem.semesterEndDate) : null;
+                  if (liveEnd) liveEnd.setHours(23, 59, 59, 999);
+                  const semStartDate = liveStart || new Date(semStart + 'T00:00:00');
+                  const semEndDate = liveEnd || new Date(semEnd + 'T23:59:59');
+                  // Skip only when the user explicitly confirmed end AND we're past the (possibly extended) end date.
+                  if (semesterEndConfirmed[semKey]) {
+                    const today = new Date();
+                    if (today > semEndDate) continue;
+                  }
                   if (currentWeekEnd < semStartDate || currentWeekStart > semEndDate) continue;
                   const assignedCourses = semesterCourseAssignments[semKey] || [];
                   const dbCourses: typeof assignedCourses = [];
