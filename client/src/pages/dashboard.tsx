@@ -7331,12 +7331,11 @@ export default function Dashboard() {
         setSelectedWeek(computedWeek);
         localStorage.setItem('unical_selectedWeek', String(computedWeek));
       } else {
-        // Between semesters: today doesn't fall in any week of the active
-        // semester. Default to week 1 rather than trusting a stale localStorage
-        // value (which previously persisted broken defaults like 12 or 13,
-        // landing the calendar deep in the upcoming semester).
-        setSelectedWeek(1);
-        localStorage.setItem('unical_selectedWeek', '1');
+        // Between semesters: today doesn't fall in any week. Set sentinel 0 so
+        // selectedWeekInfo is undefined and the calendar falls back to the
+        // current real-world week instead of landing in January.
+        setSelectedWeek(0);
+        localStorage.setItem('unical_selectedWeek', '0');
       }
     }
     lastAutoWeekDateRef.current = today.getDate();
