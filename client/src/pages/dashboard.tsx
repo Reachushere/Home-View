@@ -27241,100 +27241,111 @@ export default function Dashboard() {
                             })();
 
                             return (
-                              <div key={c.code} className="auto-resolution-card rounded-lg overflow-hidden shadow-sm" style={{ border: '1px solid #cbd5e1', background: '#fff' }} data-testid={`expanded-course-${c.code}`}>
-                                <div className="px-4 py-3 flex items-center gap-3 border-b" style={{ background: 'linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)', borderBottomColor: '#cbd5e1' }}>
-                                  <div className="w-4 h-4 rounded-full flex-shrink-0" style={{ background: dotBg, boxShadow: '0 0 0 2px #fff, 0 0 0 3px #cbd5e1' }} />
-                                  <span className="text-[15px] font-bold" style={{ color: '#0f172a' }}>{c.code}</span>
-                                  {(c.fullName || (displayNameResult !== c.code && displayNameResult)) && <span className="text-[13px]" style={{ color: '#475569' }}>— {c.fullName || displayNameResult}</span>}
+                              <div key={c.code} className="auto-resolution-card rounded-xl overflow-hidden" style={{ border: '1px solid rgba(99,102,241,0.28)', background: 'linear-gradient(180deg, #0b1220 0%, #0a0f1c 100%)', boxShadow: '0 12px 32px rgba(0,0,0,0.45), 0 0 0 1px rgba(99,102,241,0.08), inset 0 1px 0 rgba(255,255,255,0.04)' }} data-testid={`expanded-course-${c.code}`}>
+                                {/* Terminal-style title bar */}
+                                <div className="px-4 py-2.5 flex items-center gap-3 border-b" style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.045) 0%, rgba(255,255,255,0.015) 100%)', borderBottomColor: 'rgba(255,255,255,0.08)' }}>
+                                  <div className="flex items-center gap-1.5 mr-1">
+                                    <span className="w-2.5 h-2.5 rounded-full" style={{ background: '#ff5f57', boxShadow: '0 0 6px rgba(255,95,87,0.45)' }} />
+                                    <span className="w-2.5 h-2.5 rounded-full" style={{ background: '#febc2e', boxShadow: '0 0 6px rgba(254,188,46,0.4)' }} />
+                                    <span className="w-2.5 h-2.5 rounded-full" style={{ background: '#28c840', boxShadow: '0 0 6px rgba(40,200,64,0.45)' }} />
+                                  </div>
+                                  <div className="flex items-center gap-2 px-2 py-0.5 rounded" style={{ background: 'rgba(99,102,241,0.14)', border: '1px solid rgba(99,102,241,0.4)' }}>
+                                    <div className="w-2 h-2 rounded-full" style={{ background: dotBg, boxShadow: '0 0 6px rgba(255,255,255,0.35)' }} />
+                                    <span className="text-[12px] font-bold tracking-wider" style={{ color: '#c7d2fe', fontFamily: 'JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace' }}>{c.code}</span>
+                                  </div>
+                                  {(c.fullName || (displayNameResult !== c.code && displayNameResult)) && <span className="text-[12px] font-medium truncate" style={{ color: '#94a3b8', fontFamily: 'JetBrains Mono, ui-monospace, monospace' }}>~/{c.fullName || displayNameResult}</span>}
                                   {courseHealth && (
-                                    <div className="ml-auto flex items-center gap-3">
-                                      <span className="text-[12px]" style={{ color: '#334155' }}>{courseHealth.totalModules} modules · {courseHealth.totalReadings} readings</span>
-                                      {courseHealth.syllabusLinked ? <span className="text-[11px] px-2 py-0.5 rounded font-medium" style={{ background: '#dcfce7', color: '#166534', border: '1px solid #86efac' }}>Syllabus ✓</span> : <span className="text-[11px] px-2 py-0.5 rounded font-medium cursor-pointer hover:brightness-95" style={{ background: '#fee2e2', color: '#991b1b', border: '1px solid #fca5a5' }} onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: 'syllabus', step: 0, phase: 'primary' }); }}>No Syllabus — Fix</span>}
+                                    <div className="ml-auto flex items-center gap-2.5 flex-shrink-0">
+                                      <span className="text-[11px] tabular-nums" style={{ color: '#94a3b8', fontFamily: 'JetBrains Mono, ui-monospace, monospace' }}>{courseHealth.totalModules}M · {courseHealth.totalReadings}R</span>
+                                      {courseHealth.syllabusLinked
+                                        ? <span className="inline-flex items-center gap-1.5 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wider" style={{ background: 'rgba(16,185,129,0.12)', color: '#6ee7b7', border: '1px solid rgba(16,185,129,0.4)', fontFamily: 'JetBrains Mono, monospace' }}><span className="w-1.5 h-1.5 rounded-full" style={{ background: '#10b981', boxShadow: '0 0 5px #10b981' }} />syllabus.ok</span>
+                                        : <span className="inline-flex items-center gap-1.5 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wider cursor-pointer hover:brightness-125" style={{ background: 'rgba(239,68,68,0.12)', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.4)', fontFamily: 'JetBrains Mono, monospace' }} onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: 'syllabus', step: 0, phase: 'primary' }); }}><span className="w-1.5 h-1.5 rounded-full" style={{ background: '#ef4444', boxShadow: '0 0 5px #ef4444' }} />syllabus.missing</span>}
                                     </div>
                                   )}
                                 </div>
                                 <div className="p-4 space-y-4 auto-resolution-body">
                                   <div>
-                                    <div className="flex items-center justify-between mb-2">
-                                      <div className="text-[11px] font-semibold uppercase tracking-[0.08em]" style={{ color: '#64748b' }}>Pipeline</div>
-                                      {(() => {
-                                        const total = 5;
-                                        const cmTot = (courseHealth?.totalModules || 0) + (courseHealth?.totalReadings || 0);
-                                        const ttsOk2 = courseHealth ? ((courseHealth.totalTtsNeeded || 0) === 0 || (courseHealth.totalTtsReady || 0) === (courseHealth.totalTtsNeeded || 0)) : true;
-                                        const okCount = [
-                                          !!courseHealth?.oneDriveFolderConfigured,
-                                          !!courseHealth?.oneDriveFolderConfigured || cmTot > 0,
-                                          true,
-                                          ttsOk2,
-                                          !!courseHealth?.oneDriveFolderConfigured || cmTot > 0,
-                                        ].filter(Boolean).length;
-                                        const allGood = okCount === total;
-                                        return (
-                                          <span className="text-[10px] font-medium tabular-nums" style={{ color: allGood ? '#15803d' : okCount >= 3 ? '#a16207' : '#b91c1c' }}>
-                                            {okCount}/{total} healthy
-                                          </span>
-                                        );
-                                      })()}
-                                    </div>
-                                    <div className="auto-flow-strip rounded-md flex items-stretch" style={{ background: '#ffffff', border: '1px solid #e2e8f0', padding: '14px 12px', width: '100%' }}>
-                                      {(() => {
-                                        const totalMod = courseHealth?.totalModules || 0;
-                                        const totalRead = courseHealth?.totalReadings || 0;
-                                        const ttsReady = courseHealth?.totalTtsReady || 0;
-                                        const ttsNeeded = courseHealth?.totalTtsNeeded || 0;
-                                        const odPct = courseHealth?.oneDriveFolderConfigured ? 100 : 0;
-                                        const syncPct = (totalMod + totalRead) > 0 ? 100 : 0;
-                                        const storagePct = syncPct > 0 ? 100 : 0;
-                                        const ttsPct = ttsNeeded > 0 ? Math.round((ttsReady / ttsNeeded) * 100) : (totalMod > 0 ? 0 : null);
-                                        const libPct = (totalMod + totalRead) > 0 ? 100 : 0;
-                                        return [
-                                          { label: 'OneDrive', Icon: Cloud, value: courseHealth?.oneDriveFolderConfigured ? 'Linked' : 'Not linked', status: courseHealth?.oneDriveFolderConfigured ? 'ok' : 'error', issueKey: 'onedrive', pct: odPct },
-                                          { label: 'Sync', Icon: RefreshCw, value: `${totalMod}M · ${totalRead}R`, status: (courseHealth?.oneDriveFolderConfigured || totalMod > 0 || totalRead > 0) ? ((totalMod + totalRead) > 0 ? 'ok' : 'warning') : 'error', issueKey: 'sync', pct: (totalMod + totalRead) > 0 ? 100 : (courseHealth?.oneDriveFolderConfigured ? 50 : 0) },
-                                          { label: 'Storage', Icon: Folder, value: 'persistent', status: 'ok' as const, issueKey: 'storage', pct: 100 },
-                                          { label: 'TTS', Icon: Volume2, value: ttsNeeded > 0 ? `${ttsReady}/${ttsNeeded}` : '—', status: ttsNeeded === 0 ? 'ok' : ttsReady === ttsNeeded ? 'ok' : ttsReady > 0 ? 'warning' : 'error', issueKey: 'tts', pct: ttsPct !== null ? ttsPct : 100 },
-                                          { label: 'Library', Icon: BookOpen, value: 'BookReader', status: (courseHealth?.oneDriveFolderConfigured || totalMod > 0 || totalRead > 0) ? 'ok' : 'error', issueKey: 'library', pct: (totalMod + totalRead) > 0 ? 100 : (courseHealth?.oneDriveFolderConfigured ? 50 : 0) },
-                                        ];
-                                      })().map((step, sIdx, arr) => {
-                                        const Icon = step.Icon;
-                                        const dotColor = step.status === 'ok' ? '#16a34a' : step.status === 'warning' ? '#ca8a04' : '#dc2626';
-                                        const ringColor = step.status === 'ok' ? '#bbf7d0' : step.status === 'warning' ? '#fde68a' : '#fecaca';
-                                        const tintColor = step.status === 'ok' ? '#f0fdf4' : step.status === 'warning' ? '#fefce8' : '#fef2f2';
-                                        const isProblem = step.status === 'error' || step.status === 'warning';
-                                        return (
-                                          <React.Fragment key={step.label}>
-                                            <div
-                                              className="flex flex-col items-center text-center"
-                                              style={{ flex: '1 1 0', minWidth: 0, padding: '4px 6px', cursor: isProblem ? 'pointer' : 'default', borderRadius: '6px', transition: 'background 0.15s ease' }}
-                                              onClick={(e) => { if (isProblem) { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: step.issueKey, step: 0, phase: 'primary' }); } }}
-                                              onMouseEnter={(e) => { if (isProblem) (e.currentTarget as HTMLDivElement).style.background = tintColor; }}
-                                              onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.background = 'transparent'; }}
-                                            >
-                                              <div className="relative flex items-center justify-center" style={{ width: '34px', height: '34px', borderRadius: '50%', background: tintColor, border: `1.5px solid ${ringColor}` }}>
-                                                <Icon size={15} style={{ color: dotColor, strokeWidth: 2 }} />
-                                                <span className="absolute" style={{ top: '-2px', right: '-2px', width: '8px', height: '8px', borderRadius: '50%', background: dotColor, border: '1.5px solid #ffffff', boxShadow: '0 1px 2px rgba(0,0,0,0.1)' }} />
-                                              </div>
-                                              <span className="mt-2 text-[11px] font-semibold leading-none" style={{ color: '#0f172a' }}>{step.label}</span>
-                                              <span className="mt-1 text-[10px] font-medium tabular-nums leading-none" style={{ color: '#475569' }}>{step.value}</span>
-                                              {step.pct !== null && (
-                                                <div className="mt-1.5 w-full" style={{ maxWidth: '70px' }}>
-                                                  <div style={{ height: '3px', borderRadius: '2px', background: '#f1f5f9', overflow: 'hidden' }}>
-                                                    <div style={{ width: `${step.pct}%`, height: '100%', background: dotColor, transition: 'width 0.3s ease' }} />
-                                                  </div>
-                                                </div>
-                                              )}
-                                              {isProblem && (
-                                                <span className="mt-1.5 text-[10px] font-semibold underline decoration-dotted underline-offset-2" style={{ color: dotColor }}>Fix →</span>
-                                              )}
+                                    {(() => {
+                                      const totalMod = courseHealth?.totalModules || 0;
+                                      const totalRead = courseHealth?.totalReadings || 0;
+                                      const ttsReady = courseHealth?.totalTtsReady || 0;
+                                      const ttsNeeded = courseHealth?.totalTtsNeeded || 0;
+                                      const odPct = courseHealth?.oneDriveFolderConfigured ? 100 : 0;
+                                      const ttsPct = ttsNeeded > 0 ? Math.round((ttsReady / ttsNeeded) * 100) : (totalMod > 0 ? 0 : null);
+                                      const steps: { label: string; Icon: any; value: string; status: 'ok' | 'warning' | 'error'; issueKey: string; pct: number | null }[] = [
+                                        { label: 'OneDrive', Icon: Cloud, value: courseHealth?.oneDriveFolderConfigured ? 'linked' : 'unlinked', status: courseHealth?.oneDriveFolderConfigured ? 'ok' : 'error', issueKey: 'onedrive', pct: odPct },
+                                        { label: 'Sync', Icon: RefreshCw, value: `${totalMod}M·${totalRead}R`, status: (courseHealth?.oneDriveFolderConfigured || totalMod > 0 || totalRead > 0) ? ((totalMod + totalRead) > 0 ? 'ok' : 'warning') : 'error', issueKey: 'sync', pct: (totalMod + totalRead) > 0 ? 100 : (courseHealth?.oneDriveFolderConfigured ? 50 : 0) },
+                                        { label: 'Storage', Icon: Folder, value: 'persistent', status: 'ok', issueKey: 'storage', pct: 100 },
+                                        { label: 'TTS', Icon: Volume2, value: ttsNeeded > 0 ? `${ttsReady}/${ttsNeeded}` : 'idle', status: ttsNeeded === 0 ? 'ok' : ttsReady === ttsNeeded ? 'ok' : ttsReady > 0 ? 'warning' : 'error', issueKey: 'tts', pct: ttsPct !== null ? ttsPct : 100 },
+                                        { label: 'Library', Icon: BookOpen, value: 'reader', status: (courseHealth?.oneDriveFolderConfigured || totalMod > 0 || totalRead > 0) ? 'ok' : 'error', issueKey: 'library', pct: (totalMod + totalRead) > 0 ? 100 : (courseHealth?.oneDriveFolderConfigured ? 50 : 0) },
+                                      ];
+                                      const okCount = steps.filter(s => s.status === 'ok').length;
+                                      const allGood = okCount === steps.length;
+                                      return (
+                                        <>
+                                          <div className="flex items-center justify-between mb-2">
+                                            <div className="flex items-center gap-2">
+                                              <span className="text-[10px]" style={{ color: '#475569', fontFamily: 'JetBrains Mono, monospace' }}>$</span>
+                                              <span className="text-[11px] font-bold uppercase tracking-[0.12em]" style={{ color: '#94a3b8', fontFamily: 'JetBrains Mono, monospace' }}>pipeline.status</span>
                                             </div>
-                                            {sIdx < arr.length - 1 && (
-                                              <div className="flex items-center justify-center" style={{ width: '14px', flexShrink: 0 }}>
-                                                <div style={{ width: '100%', height: '1px', background: '#cbd5e1' }} />
-                                              </div>
-                                            )}
-                                          </React.Fragment>
-                                        );
-                                      })}
-                                    </div>
+                                            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold tabular-nums px-2 py-0.5 rounded-full" style={{ background: allGood ? 'rgba(16,185,129,0.12)' : okCount >= 3 ? 'rgba(234,179,8,0.12)' : 'rgba(239,68,68,0.12)', color: allGood ? '#6ee7b7' : okCount >= 3 ? '#fde68a' : '#fca5a5', border: `1px solid ${allGood ? 'rgba(16,185,129,0.4)' : okCount >= 3 ? 'rgba(234,179,8,0.4)' : 'rgba(239,68,68,0.4)'}`, fontFamily: 'JetBrains Mono, monospace' }}>
+                                              <span className="w-1.5 h-1.5 rounded-full" style={{ background: allGood ? '#10b981' : okCount >= 3 ? '#eab308' : '#ef4444', boxShadow: `0 0 5px ${allGood ? '#10b981' : okCount >= 3 ? '#eab308' : '#ef4444'}` }} />
+                                              {okCount}/{steps.length} ok
+                                            </span>
+                                          </div>
+                                          <div className="rounded-lg relative" style={{ background: 'radial-gradient(ellipse at top, rgba(99,102,241,0.06) 0%, transparent 70%), #050912', border: '1px solid rgba(99,102,241,0.18)', padding: '18px 14px 14px', boxShadow: 'inset 0 0 24px rgba(0,0,0,0.6)' }}>
+                                            {/* dotted grid background */}
+                                            <div className="absolute inset-0 rounded-lg pointer-events-none opacity-40" style={{ backgroundImage: 'radial-gradient(rgba(148,163,184,0.18) 1px, transparent 1px)', backgroundSize: '14px 14px' }} />
+                                            <div className="relative flex items-stretch" style={{ width: '100%' }}>
+                                              {steps.map((step, sIdx) => {
+                                                const Icon = step.Icon;
+                                                const accent = step.status === 'ok' ? '#10b981' : step.status === 'warning' ? '#eab308' : '#ef4444';
+                                                const isProblem = step.status === 'error' || step.status === 'warning';
+                                                const nextStatus = sIdx < steps.length - 1 ? steps[sIdx + 1].status : null;
+                                                const wireOk = step.status === 'ok' && nextStatus === 'ok';
+                                                return (
+                                                  <React.Fragment key={step.label}>
+                                                    <div
+                                                      className="relative flex flex-col items-center text-center group"
+                                                      style={{ flex: '1 1 0', minWidth: 0, padding: '8px 6px 6px', cursor: isProblem ? 'pointer' : 'default', borderRadius: '8px', background: 'linear-gradient(180deg, rgba(15,23,42,0.85) 0%, rgba(8,13,28,0.85) 100%)', border: `1px solid ${isProblem ? accent + '66' : 'rgba(99,102,241,0.22)'}`, boxShadow: isProblem ? `0 0 14px ${accent}33, inset 0 1px 0 rgba(255,255,255,0.04)` : 'inset 0 1px 0 rgba(255,255,255,0.04)', transition: 'all 0.18s ease' }}
+                                                      onClick={(e) => { if (isProblem) { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: step.issueKey, step: 0, phase: 'primary' }); } }}
+                                                      onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = accent + 'cc'; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 0 18px ${accent}55, inset 0 1px 0 rgba(255,255,255,0.06)`; }}
+                                                      onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = isProblem ? accent + '66' : 'rgba(99,102,241,0.22)'; (e.currentTarget as HTMLDivElement).style.boxShadow = isProblem ? `0 0 14px ${accent}33, inset 0 1px 0 rgba(255,255,255,0.04)` : 'inset 0 1px 0 rgba(255,255,255,0.04)'; }}
+                                                    >
+                                                      {/* Status LED top-right */}
+                                                      <span className="absolute" style={{ top: '5px', right: '6px', width: '7px', height: '7px', borderRadius: '50%', background: accent, boxShadow: `0 0 8px ${accent}, 0 0 2px ${accent}` }} />
+                                                      <div className="relative flex items-center justify-center mb-1.5" style={{ width: '32px', height: '32px', borderRadius: '8px', background: `linear-gradient(135deg, ${accent}22 0%, ${accent}08 100%)`, border: `1px solid ${accent}55` }}>
+                                                        <Icon size={16} style={{ color: accent, strokeWidth: 2 }} />
+                                                      </div>
+                                                      <span className="text-[10px] font-bold uppercase tracking-wider leading-none" style={{ color: '#e2e8f0', fontFamily: 'JetBrains Mono, monospace' }}>{step.label}</span>
+                                                      <span className="mt-1 text-[9px] tabular-nums leading-none truncate max-w-full" style={{ color: '#64748b', fontFamily: 'JetBrains Mono, monospace' }}>{step.value}</span>
+                                                      {step.pct !== null && (
+                                                        <div className="mt-1.5 w-full" style={{ maxWidth: '60px' }}>
+                                                          <div style={{ height: '2px', borderRadius: '2px', background: 'rgba(15,23,42,0.9)', overflow: 'hidden', border: '1px solid rgba(99,102,241,0.15)' }}>
+                                                            <div style={{ width: `${step.pct}%`, height: '100%', background: `linear-gradient(90deg, ${accent}88 0%, ${accent} 100%)`, transition: 'width 0.3s ease', boxShadow: `0 0 4px ${accent}` }} />
+                                                          </div>
+                                                        </div>
+                                                      )}
+                                                      {isProblem && (
+                                                        <span className="mt-1 text-[9px] font-bold uppercase tracking-wider" style={{ color: accent, fontFamily: 'JetBrains Mono, monospace' }}>fix →</span>
+                                                      )}
+                                                    </div>
+                                                    {sIdx < steps.length - 1 && (
+                                                      <div className="flex items-center justify-center self-center" style={{ width: '20px', flexShrink: 0, height: '32px' }}>
+                                                        <svg width="20" height="8" viewBox="0 0 20 8">
+                                                          <line x1="0" y1="4" x2="20" y2="4" stroke={wireOk ? '#10b981' : 'rgba(148,163,184,0.25)'} strokeWidth="1.5" strokeDasharray={wireOk ? '0' : '3 2'} />
+                                                          {wireOk && <circle cx="10" cy="4" r="1.5" fill="#10b981"><animate attributeName="cx" from="0" to="20" dur="1.6s" repeatCount="indefinite" /></circle>}
+                                                        </svg>
+                                                      </div>
+                                                    )}
+                                                  </React.Fragment>
+                                                );
+                                              })}
+                                            </div>
+                                          </div>
+                                        </>
+                                      );
+                                    })()}
                                   </div>
 
                                   <div>
@@ -27383,18 +27394,18 @@ export default function Dashboard() {
 
                                       return (
                                         <>
-                                          <div className="flex items-center justify-between mb-3">
+                                          <div className="flex items-center justify-between mb-2">
                                             <div className="flex items-center gap-2">
-                                              <div className="w-1 h-5 rounded-full" style={{ background: 'linear-gradient(180deg, #3b82f6 0%, #a855f7 50%, #10b981 100%)' }} />
-                                              <div className="text-[13px] font-semibold text-white uppercase tracking-wider">Naming Convention & File Paths</div>
+                                              <span className="text-[10px]" style={{ color: '#475569', fontFamily: 'JetBrains Mono, monospace' }}>$</span>
+                                              <span className="text-[11px] font-bold uppercase tracking-[0.12em]" style={{ color: '#94a3b8', fontFamily: 'JetBrains Mono, monospace' }}>tree --naming --paths</span>
                                             </div>
-                                            <div className="text-[11px] text-white/70">
-                                              <span className="font-mono font-bold text-white">{totalActiveOk}/{totalActive}</span>
-                                              <span className="text-white/50 ml-1">connections healthy</span>
-                                            </div>
+                                            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold tabular-nums px-2 py-0.5 rounded-full" style={{ background: totalActiveOk === totalActive ? 'rgba(16,185,129,0.12)' : 'rgba(234,179,8,0.12)', color: totalActiveOk === totalActive ? '#6ee7b7' : '#fde68a', border: `1px solid ${totalActiveOk === totalActive ? 'rgba(16,185,129,0.4)' : 'rgba(234,179,8,0.4)'}`, fontFamily: 'JetBrains Mono, monospace' }}>
+                                              <span className="w-1.5 h-1.5 rounded-full" style={{ background: totalActiveOk === totalActive ? '#10b981' : '#eab308', boxShadow: `0 0 5px ${totalActiveOk === totalActive ? '#10b981' : '#eab308'}` }} />
+                                              {totalActiveOk}/{totalActive} connected
+                                            </span>
                                           </div>
 
-                                          <div className="rounded-lg overflow-hidden" style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.12)' }}>
+                                          <div className="rounded-lg overflow-hidden" style={{ background: '#050912', border: '1px solid rgba(99,102,241,0.18)', boxShadow: 'inset 0 0 24px rgba(0,0,0,0.6)' }}>
                                             {sections.map((section, sIdx) => {
                                               const activeRows = section.rows.filter(r => !isHealthItemDisabled(c.code, r.issueKey));
                                               const activeCount = activeRows.length;
@@ -27405,22 +27416,22 @@ export default function Dashboard() {
 
                                               return (
                                                 <React.Fragment key={section.key}>
-                                                  <div style={{ background: `linear-gradient(90deg, ${section.accent}22 0%, transparent 60%)`, borderLeft: `3px solid ${section.accent}` }}>
-                                                    <div className="px-4 py-2.5 flex items-center justify-between" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                                                      <div className="flex items-center gap-3">
-                                                        <div className="flex items-center gap-2">
-                                                          <span className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold text-white" style={{ background: section.accent }}>{sIdx + 1}</span>
-                                                          <span className="text-[13px] font-bold text-white tracking-wide">{section.title}</span>
+                                                  <div style={{ background: `linear-gradient(90deg, ${section.accent}1a 0%, transparent 50%)`, borderLeft: `3px solid ${section.accent}` }}>
+                                                    <div className="px-4 py-2 flex items-center justify-between" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.015)' }}>
+                                                      <div className="flex items-center gap-3 min-w-0">
+                                                        <div className="flex items-center gap-2 flex-shrink-0">
+                                                          <span className="inline-flex items-center justify-center text-[9px] font-bold tabular-nums px-1.5 py-0.5 rounded" style={{ background: section.accent + '22', color: section.accent, border: `1px solid ${section.accent}66`, fontFamily: 'JetBrains Mono, monospace', minWidth: '20px' }}>0{sIdx + 1}</span>
+                                                          <span className="text-[12px] font-bold tracking-wide" style={{ color: '#e2e8f0', fontFamily: 'JetBrains Mono, monospace' }}>{section.title.toLowerCase().replace(/\s+/g, '_')}/</span>
                                                         </div>
-                                                        <span className="text-[11px] text-white/50">{section.subtitle}</span>
+                                                        <span className="text-[10px] truncate" style={{ color: '#64748b', fontFamily: 'JetBrains Mono, monospace' }}># {section.subtitle}</span>
                                                       </div>
-                                                      <div className="flex items-center gap-2">
-                                                        <span className="text-[10px] text-white/50">Weight</span>
-                                                        <span className="font-mono text-[11px] text-white/80">{weightPct}%</span>
-                                                        <span className="text-white/30">·</span>
-                                                        <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold`} style={{ background: sectionHealthy ? 'rgba(16,185,129,0.18)' : 'rgba(239,68,68,0.18)', border: `1px solid ${sectionHealthy ? 'rgba(16,185,129,0.4)' : 'rgba(239,68,68,0.4)'}`, color: sectionHealthy ? '#6ee7b7' : '#fca5a5' }} data-testid={`section-health-${c.code}-${section.key}`}>
-                                                          <span className={`inline-block w-1.5 h-1.5 rounded-full ${sectionHealthy ? 'bg-emerald-400' : 'bg-red-400'}`} />
-                                                          {okCount}/{activeCount} · {sectionPct}%
+                                                      <div className="flex items-center gap-2 flex-shrink-0">
+                                                        <span className="text-[9px] uppercase tracking-wider" style={{ color: '#475569', fontFamily: 'JetBrains Mono, monospace' }}>w:</span>
+                                                        <span className="text-[10px] tabular-nums" style={{ color: '#94a3b8', fontFamily: 'JetBrains Mono, monospace' }}>{weightPct}%</span>
+                                                        <span style={{ color: '#334155' }}>│</span>
+                                                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold tabular-nums" style={{ background: sectionHealthy ? 'rgba(16,185,129,0.12)' : 'rgba(239,68,68,0.12)', border: `1px solid ${sectionHealthy ? 'rgba(16,185,129,0.4)' : 'rgba(239,68,68,0.4)'}`, color: sectionHealthy ? '#6ee7b7' : '#fca5a5', fontFamily: 'JetBrains Mono, monospace' }} data-testid={`section-health-${c.code}-${section.key}`}>
+                                                          <span className="w-1.5 h-1.5 rounded-full" style={{ background: sectionHealthy ? '#10b981' : '#ef4444', boxShadow: `0 0 5px ${sectionHealthy ? '#10b981' : '#ef4444'}` }} />
+                                                          {okCount}/{activeCount}·{sectionPct}%
                                                         </span>
                                                       </div>
                                                     </div>
