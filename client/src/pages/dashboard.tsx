@@ -7328,68 +7328,65 @@ export default function Dashboard() {
     // Mark that the user has manually navigated so the initial-anchor effect
     // stops re-snapping back to today's week.
     didInitialAnchorRef.current = true;
+    // PURELY DATE-BASED: every click shifts the displayed week by exactly 7
+    // days from whatever week is currently displayed. Semester week numbers,
+    // extensions, and reading-week offsets NEVER change this 7-day stride —
+    // they only affect which "Week N" label gets shown for the new date range.
     const sems = allSemesterSettingsRef.current || [];
-    const findSemWeek = (d: Date): { wn: number } | null => {
-      for (const sem of sems) {
-        if (!sem.semesterStartDate) continue;
-        const ss = new Date(sem.semesterStartDate);
-        const rw = sem.readingWeekStart || null;
-        const wn = getWeekNumber(d, ss, rw);
-        const maxW = getSemesterTotalWeeks(sem.semesterType);
-        if (wn >= 1 && wn <= maxW) return { wn };
-      }
-      return null;
-    };
-    if (selectedWeek <= 0) {
-      // Gap mode — compute candidate Monday after offset shift
+
+    // 1) Determine the current displayed week's start date.
+    const currentMatch = weeks.find(w => w.weekNumber === selectedWeek);
+    let currentStart: Date;
+    if (currentMatch) {
+      const dp = currentMatch.startDate.includes('T') ? currentMatch.startDate.split('T')[0] : currentMatch.startDate;
+      const [y, m, d] = dp.split('-').map(Number);
+      currentStart = new Date(y, m - 1, d, 12);
+    } else {
       const today = new Date();
       const dow = today.getDay();
       const daysSinceMon = dow === 0 ? 6 : dow - 1;
-      const newOffset = (interSemDayOffset || 0) + delta * 7;
-      const candidateMon = new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysSinceMon + newOffset, 12);
-      const midWeek = new Date(candidateMon.getFullYear(), candidateMon.getMonth(), candidateMon.getDate() + 3, 12);
-      const hit = findSemWeek(midWeek);
-      if (hit) {
+      currentStart = new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysSinceMon + (interSemDayOffset || 0), 12);
+    }
+
+    // 2) Always advance by exactly 7 days.
+    const newStart = new Date(currentStart.getFullYear(), currentStart.getMonth(), currentStart.getDate() + delta * 7, 12);
+    const midWeek = new Date(newStart.getFullYear(), newStart.getMonth(), newStart.getDate() + 3, 12);
+
+    // 3) If the new week's start date matches a configured week in the active
+    // semester's `weeks` array (within tolerance), use that week number.
+    for (const w of weeks) {
+      const dp = w.startDate.includes('T') ? w.startDate.split('T')[0] : w.startDate;
+      const [y, m, d] = dp.split('-').map(Number);
+      const ws = new Date(y, m - 1, d, 12);
+      if (Math.abs(ws.getTime() - newStart.getTime()) < 86400000 * 1.5) {
+        setSelectedWeek(w.weekNumber);
         setInterSemDayOffset(0);
-        setSelectedWeek(hit.wn);
-      } else {
-        setInterSemDayOffset(newOffset);
-      }
-    } else {
-      // Semester mode — try selectedWeek + delta; if outside the active sem,
-      // switch to gap-mode with offset matching the new week's date.
-      const newWeek = selectedWeek + delta;
-      const match = weeks.find(w => w.weekNumber === newWeek);
-      if (match) {
-        setSelectedWeek(newWeek);
-        setInterSemDayOffset(0);
-      } else {
-        // Compute the date of the candidate week from active sem start
-        const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : null;
-        const rw = semesterSettings?.readingWeekStart || null;
-        if (semStart) {
-          const wd = getWeekDates(newWeek, semStart, rw);
-          const midWeek = new Date(wd.start.getFullYear(), wd.start.getMonth(), wd.start.getDate() + 3, 12);
-          const hit = findSemWeek(midWeek);
-          if (hit) {
-            setSelectedWeek(hit.wn);
-            setInterSemDayOffset(0);
-          } else {
-            // Compute offset from today's Monday to the candidate Monday
-            const today = new Date();
-            const dow = today.getDay();
-            const daysSinceMon = dow === 0 ? 6 : dow - 1;
-            const todayMon = new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysSinceMon, 12);
-            const candidateMon = new Date(wd.start.getFullYear(), wd.start.getMonth(), wd.start.getDate(), 12);
-            const offsetDays = Math.round((candidateMon.getTime() - todayMon.getTime()) / 86400000);
-            setSelectedWeek(0);
-            setInterSemDayOffset(offsetDays);
-          }
-        } else {
-          setSelectedWeek(newWeek);
-        }
+        return;
       }
     }
+
+    // 4) Otherwise check any configured semester for a week containing midWeek.
+    for (const sem of sems) {
+      if (!sem.semesterStartDate) continue;
+      const ss = new Date(sem.semesterStartDate);
+      const rw = sem.readingWeekStart || null;
+      const wn = getWeekNumber(midWeek, ss, rw);
+      const maxW = getSemesterTotalWeeks(sem.semesterType);
+      if (wn >= 1 && wn <= maxW) {
+        setSelectedWeek(wn);
+        setInterSemDayOffset(0);
+        return;
+      }
+    }
+
+    // 5) Gap/inter-semester mode — set offset so today's Monday + offset == newStart.
+    const today = new Date();
+    const dow = today.getDay();
+    const daysSinceMon = dow === 0 ? 6 : dow - 1;
+    const todayMon = new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysSinceMon, 12);
+    const offsetDays = Math.round((newStart.getTime() - todayMon.getTime()) / 86400000);
+    setSelectedWeek(0);
+    setInterSemDayOffset(offsetDays);
   };
   // Auto-resync of selectedWeek is disabled per user requirement: the calendar
   // must NEVER auto-change once the user is using it. The ONLY exception is the
