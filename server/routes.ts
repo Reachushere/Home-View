@@ -28478,7 +28478,26 @@ Keep your tone friendly and educational. Format your response clearly with numbe
         return res.status(404).json({ error: `No source passages relevant to "${topic}" found in ${sourceFiles.length} course files. Try a different topic or add more course materials.` });
       }
 
-      const sourcesBlock = selected.map(c =>
+      // Round-robin reorder: interleave selected chunks so consecutive items come
+      // from different files. This prevents the LLM from latching onto whichever
+      // file appears first in the prompt.
+      const byFile = new Map<number, Chunk[]>();
+      for (const c of selected) {
+        const arr = byFile.get(c.fileId) || [];
+        arr.push(c);
+        byFile.set(c.fileId, arr);
+      }
+      const fileQueues = Array.from(byFile.values());
+      const interleaved: Chunk[] = [];
+      while (interleaved.length < selected.length) {
+        for (const q of fileQueues) {
+          const next = q.shift();
+          if (next) interleaved.push(next);
+        }
+      }
+      console.log(`[EssayGen] Selected ${selected.length} chunks from ${byFile.size} distinct files (of ${sourceFiles.length} eligible)`);
+
+      const sourcesBlock = interleaved.map(c =>
         `[CHUNK ${c.cid}] (from "${c.fileName}"${c.page ? `, page ${c.page}` : ''})\n${c.text}`
       ).join('\n\n---\n\n');
 
@@ -28537,7 +28556,7 @@ Keep your tone friendly and educational. Format your response clearly with numbe
         if (!c) return ''; // drop unknown citations silently
         usedChunks.set(cid, c);
         const label = shortLabel(c);
-        return `<cite class="essay-citation" data-cid="${cid}" data-file-id="${c.fileId}"${c.page ? ` data-page="${c.page}"` : ''}>${label}</cite>`;
+        return `<cite class="essay-citation" data-cid="${cid}" data-file-id="${c.fileId}"${c.page ? ` data-page="${c.page}"` : ''} style="color:#fbbf24;text-decoration:underline;cursor:pointer;font-style:normal;font-weight:600;">${label}</cite>`;
       });
 
       // Build APA-style references list from used chunks (one entry per file, deduped)
