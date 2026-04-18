@@ -31234,8 +31234,11 @@ export default function Dashboard() {
                   if (liveEnd) liveEnd.setHours(23, 59, 59, 999);
                   const semStartDate = liveStart || new Date(semStart + 'T00:00:00');
                   const semEndDate = liveEnd || new Date(semEnd + 'T23:59:59');
-                  // Skip only when the user explicitly confirmed end AND we're past the (possibly extended) end date.
-                  if (semesterEndConfirmed[semKey]) {
+                  // Auto-hide an ended semester. The previous gate required the
+                  // user to confirm end via SemesterEndPopup (now removed), so it
+                  // never fired and ended semesters' course rows kept rendering
+                  // through the final partial week. Just hide once today > end.
+                  {
                     const today = new Date();
                     if (today > semEndDate) continue;
                   }
