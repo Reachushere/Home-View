@@ -2141,7 +2141,7 @@ export default function Dashboard() {
   const setIsTopPillOpen = useCallback((val: boolean) => {
     if (isTopPillOpenRef.current === val) return;
     isTopPillOpenRef.current = val;
-    startTransition(() => setIsTopPillOpenState(val));
+    setIsTopPillOpenState(val);
     document.querySelectorAll<HTMLElement>('[data-tpo]').forEach(el => {
       el.style.opacity = val ? '0' : (el.dataset.tpoOpacity || '1');
       el.style.pointerEvents = val ? 'none' : 'auto';
