@@ -28376,10 +28376,11 @@ Keep your tone friendly and educational. Format your response clearly with numbe
         return res.status(400).json({ error: "topic is required (min 3 chars)" });
       }
       const targetWords = Math.max(200, Math.min(5000, Number(wordCount) || 1200));
+      const normCode = (s: string) => String(s).toLowerCase().replace(/\s+/g, '');
       const wantedCourses: string[] = Array.isArray(courseCodes)
-        ? courseCodes.map((c: string) => String(c).toLowerCase()).filter(Boolean)
+        ? courseCodes.map(normCode).filter(Boolean)
         : (typeof courseCodes === 'string' && courseCodes && courseCodes !== 'all')
-          ? [courseCodes.toLowerCase()]
+          ? [normCode(courseCodes)]
           : [];
 
       const allFiles = await storage.getFiles();
@@ -28388,13 +28389,19 @@ Keep your tone friendly and educational. Format your response clearly with numbe
       // every file in the course to be considered, not just pre-indexed ones.
       const courseMatchFiles = allFiles.filter(f => {
         const folder = (f.folder || '').toLowerCase();
+        const folderNoSpace = folder.replace(/\s+/g, '');
+        const fileName = ((f.displayName || f.originalName) || '').toLowerCase().replace(/\s+/g, '');
         const isCourseMaterial = /module|reading/.test(folder);
         if (!isCourseMaterial) return false;
         if (wantedCourses.length > 0) {
-          return wantedCourses.some(c => folder.includes(c));
+          // Match against folder OR filename (with/without spaces) so e.g. a
+          // request for "CASL101" matches folders like "CASL 101/Modules/Week 1"
+          // AND files whose name contains the course code.
+          return wantedCourses.some(c => folderNoSpace.includes(c) || fileName.includes(c));
         }
         return true;
       });
+      console.log(`[EssayGen] Course filter ${JSON.stringify(wantedCourses)} matched ${courseMatchFiles.length} files`);
 
       // Lazy-extract any file in scope that has no extractedText yet. Cap the
       // batch so a request doesn't take forever if many files need extraction.
