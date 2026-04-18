@@ -4683,7 +4683,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
       <div style={{
         position: 'absolute',
         top: '32px',
-        right: '164px',
+        right: '200px',
         zIndex: 100002,
         display: 'flex',
         alignItems: 'center',
