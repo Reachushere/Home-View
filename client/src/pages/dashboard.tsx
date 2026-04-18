@@ -32543,11 +32543,13 @@ export default function Dashboard() {
                     })();
                     const moduleFileInfo = (oneDriveModuleFolder ? `📁 ${oneDriveModuleFolder}/Week ${folderWeekNum}${weekSeasonLabel}/Module\n\n` : '') + (moduleFiles.map(f => `${f.originalName || f.name}`).join('\n') || 'No files');
                     const readingFileInfo = (oneDriveReadingFolder ? `📁 ${oneDriveReadingFolder}/Week ${folderWeekNum}${weekSeasonLabel}/Reading\n\n` : '') + (readingFiles.map(f => `${f.originalName || f.name}`).join('\n') || 'No files');
+                    const _hwFallbackGrad = getCourseGradientColors(courseCode);
+                    const _hasRealStart = courseHexColor && courseHexColor !== '#6b7280';
                     courseProgressDataRef.current[courseIdx] = {
                       courseCode,
                       progressBg,
-                      progressStartColor: courseHexColor,
-                      progressEndColor: courseHexColorEnd || getCourseGradientColors(courseCode).end,
+                      progressStartColor: _hasRealStart ? courseHexColor : _hwFallbackGrad.start,
+                      progressEndColor: courseHexColorEnd || _hwFallbackGrad.end,
                       courseRowColor: courseMatch?.courseRowColor || courseHexColor,
                       taskBgColor: courseMatch?.taskBgColor,
                       courseFontColor: courseMatch?.courseFontColor || '',
