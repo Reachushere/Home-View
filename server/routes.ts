@@ -6814,6 +6814,8 @@ The 'Test-home' view of the default 'lovelace' dashboard is ~11,400 lines / hund
 
 3a. 🛑 STOP-WORD "wait": If Bryn types "wait" (alone or as the first word of a message), HALT all in-flight tool calls immediately. Do NOT call any more tools. Reply with a single short line acknowledging the pause and asking what to change. Do NOT resume work until Bryn explicitly tells you to continue.
 
+3b. 🧾 TOOL ARGS = STRICT JSON: Every tool call's arguments must be a single valid JSON object. Double-quote all keys and string values. Apostrophes inside string values (e.g. file paths like "/local/lovelace/Icons'/Cat.png") are LEGAL inside double-quoted JSON strings — do NOT escape, do NOT wrap in single quotes, do NOT prefix with "data:". If you ever produce something starting with "data: {" or using single quotes, the parser will reject it.
+
 4. 📐 Sizing rule for overlays (image / icon / state-icon): MUST set explicit width AND height (or width + an aspect-preserving transform). Unset dimensions on Test-home default to 100% of the card and stack on top of everything.
 
 5. 📋 BEFORE adding a NEW element to Test-home, FIRST read 1-2 sibling elements of the same kind so you can mirror their pattern. The Test-home view has consistent conventions you must follow:
@@ -7568,10 +7570,21 @@ I. WHAT YOU MUST NEVER DO
           const fnName = tc.function.name;
           let fnArgs: any;
           try { fnArgs = JSON.parse(tc.function.arguments); } catch {
-            const errResult = { error: "Invalid tool arguments" };
-            messages.push({ role: "tool", tool_call_id: tc.id, content: JSON.stringify(errResult) });
-            allToolResults.push({ name: fnName, success: false, result: errResult, tool_call_id: tc.id });
-            continue;
+            // Fallback: strip SSE-style "data: " prefixes / leading garbage and try to extract first {...} block
+            let raw = tc.function.arguments || "";
+            raw = raw.replace(/^\s*(data:\s*)+/i, "");
+            const firstBrace = raw.indexOf("{");
+            const lastBrace = raw.lastIndexOf("}");
+            let recovered = false;
+            if (firstBrace >= 0 && lastBrace > firstBrace) {
+              try { fnArgs = JSON.parse(raw.slice(firstBrace, lastBrace + 1)); recovered = true; } catch {}
+            }
+            if (!recovered) {
+              const errResult = { error: "Invalid tool arguments — must be a single JSON object with double-quoted keys/strings. Do NOT prefix with 'data:' or use single quotes. Apostrophes inside string values are fine if the value is double-quoted." };
+              messages.push({ role: "tool", tool_call_id: tc.id, content: JSON.stringify(errResult) });
+              allToolResults.push({ name: fnName, success: false, result: errResult, tool_call_id: tc.id });
+              continue;
+            }
           }
 
           if (isToolDestructive(fnName, fnArgs)) {
