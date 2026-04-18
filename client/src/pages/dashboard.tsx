@@ -30846,67 +30846,6 @@ export default function Dashboard() {
                               })()}</span>
                             </div>
                           )}
-                          {isToday && weatherData?.hourly && weatherData.hourly.length > 0 && (() => {
-                            const now = new Date();
-                            const nowMs = now.getTime();
-                            const offsets = [5, 10];
-                            const renderMiniWeatherSvg = (wc: number, isNight?: boolean) => {
-                              const s = 18;
-                              if (wc === 0 && isNight) return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><path d="M20.354 15.354A9 9 0 0 1 8.646 3.646 9.003 9.003 0 0 0 12 21a9.003 9.003 0 0 0 8.354-5.646z" fill="#fef9c3" stroke="rgba(255,250,200,0.3)" strokeWidth="0.5"/></svg>;
-                              if (wc === 0) return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="5" fill="#facc15"/><g stroke="#facc15" strokeWidth="2" strokeLinecap="round">{[[12,1,12,3],[12,21,12,23],[4.22,4.22,5.64,5.64],[18.36,18.36,19.78,19.78],[1,12,3,12],[21,12,23,12],[4.22,19.78,5.64,18.36],[18.36,5.64,19.78,4.22]].map(([x1,y1,x2,y2],i)=><line key={i} x1={x1} y1={y1} x2={x2} y2={y2}/>)}</g></svg>;
-                              if (wc === 1 && isNight) return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><path d="M16 6a6 6 0 0 1-5.5 3A6 6 0 0 0 14 18a6 6 0 0 0 5.5-3A6 6 0 0 1 16 6z" fill="#fef9c3" stroke="rgba(255,250,200,0.3)" strokeWidth="0.5"/><path d="M8 16a4 4 0 0 1 4-4h2a3 3 0 0 1 0 6H9a2.5 2.5 0 0 1 0-5" fill="rgba(255,255,255,0.85)"/></svg>;
-                              if (wc === 1) return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><circle cx="10" cy="8" r="3.5" fill="#facc15"/><g stroke="#facc15" strokeWidth="1.5" strokeLinecap="round"><line x1="10" y1="2" x2="10" y2="3.5"/><line x1="10" y1="12.5" x2="10" y2="14"/><line x1="4" y1="8" x2="5.5" y2="8"/><line x1="14.5" y1="8" x2="16" y2="8"/></g><path d="M8 16a4 4 0 0 1 4-4h2a3 3 0 0 1 0 6H9a2.5 2.5 0 0 1 0-5" fill="rgba(255,255,255,0.85)"/></svg>;
-                              if (wc === 2 && isNight) return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><path d="M16 4a5 5 0 0 1-4.5 2.5A5 5 0 0 0 14.5 14a5 5 0 0 0 4-2A5 5 0 0 1 16 4z" fill="#fef9c3" stroke="rgba(255,250,200,0.3)" strokeWidth="0.5"/><path d="M7 16a4.5 4.5 0 0 1 4.5-4.5h3a3.5 3.5 0 0 1 0 7H8.5a3 3 0 0 1 0-6" fill="rgba(255,255,255,0.9)"/></svg>;
-                              if (wc === 2) return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3" fill="#facc15"/><path d="M7 16a4.5 4.5 0 0 1 4.5-4.5h3a3.5 3.5 0 0 1 0 7H8.5a3 3 0 0 1 0-6" fill="rgba(255,255,255,0.9)"/></svg>;
-                              if (wc === 3) return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><path d="M6 16a5 5 0 0 1 5-5h3a4 4 0 0 1 0 8H7.5a3 3 0 0 1 0-6" fill="rgba(255,255,255,0.9)"/></svg>;
-                              if (wc === 45 || wc === 48) return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><g stroke="rgba(255,255,255,0.7)" strokeWidth="2" strokeLinecap="round"><line x1="3" y1="10" x2="21" y2="10"/><line x1="5" y1="14" x2="19" y2="14"/><line x1="7" y1="18" x2="17" y2="18"/></g></svg>;
-                              if ((wc >= 51 && wc <= 55) || (wc >= 80 && wc <= 82)) return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><path d="M6 12a4.5 4.5 0 0 1 4.5-4.5h2.5a3.5 3.5 0 0 1 0 7H7.5a3 3 0 0 1 0-6" fill="rgba(255,255,255,0.8)"/><g stroke="#60a5fa" strokeWidth="1.5" strokeLinecap="round"><line x1="8" y1="17" x2="7" y2="20"/><line x1="14" y1="17" x2="13" y2="20"/></g></svg>;
-                              if ((wc >= 56 && wc <= 57) || (wc >= 61 && wc <= 67)) return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><path d="M6 11a4.5 4.5 0 0 1 4.5-4.5h2.5a3.5 3.5 0 0 1 0 7H7.5a3 3 0 0 1 0-6" fill="rgba(255,255,255,0.8)"/><g stroke="#3b82f6" strokeWidth="1.5" strokeLinecap="round"><line x1="7" y1="16" x2="6" y2="19"/><line x1="11" y1="16" x2="10" y2="19"/><line x1="15" y1="16" x2="14" y2="19"/></g></svg>;
-                              if (wc >= 66 && wc <= 67) return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><path d="M6 11a4.5 4.5 0 0 1 4.5-4.5h2.5a3.5 3.5 0 0 1 0 7H7.5a3 3 0 0 1 0-6" fill="rgba(255,255,255,0.8)"/><g stroke="#93c5fd" strokeWidth="1.5" strokeLinecap="round"><line x1="8" y1="16" x2="7" y2="19"/><line x1="14" y1="16" x2="13" y2="19"/></g></svg>;
-                              if (wc >= 71 && wc <= 77) return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><path d="M6 11a4.5 4.5 0 0 1 4.5-4.5h2.5a3.5 3.5 0 0 1 0 7H7.5a3 3 0 0 1 0-6" fill="rgba(255,255,255,0.8)"/><g fill="#dbeafe"><circle cx="8" cy="17" r="1.5"/><circle cx="13" cy="18" r="1.5"/><circle cx="17" cy="16.5" r="1.5"/></g></svg>;
-                              if (wc >= 85 && wc <= 86) return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><path d="M6 11a4.5 4.5 0 0 1 4.5-4.5h2.5a3.5 3.5 0 0 1 0 7H7.5a3 3 0 0 1 0-6" fill="rgba(255,255,255,0.8)"/><g fill="#dbeafe"><circle cx="7" cy="17" r="1.5"/><circle cx="11" cy="18.5" r="1.5"/><circle cx="15" cy="17" r="1.5"/><circle cx="9" cy="20" r="1.2"/></g></svg>;
-                              if (wc >= 95) return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><path d="M6 10a4.5 4.5 0 0 1 4.5-4.5h2.5a3.5 3.5 0 0 1 0 7H7.5a3 3 0 0 1 0-6" fill="rgba(200,200,200,0.9)"/><path d="M13 14l-2 4h3l-2 4" stroke="#facc15" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>;
-                              return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3" fill="#facc15"/><path d="M7 16a4.5 4.5 0 0 1 4.5-4.5h3a3.5 3.5 0 0 1 0 7H8.5a3 3 0 0 1 0-6" fill="rgba(255,255,255,0.9)"/></svg>;
-                            };
-                            const srMs = weatherData.sunrise ? new Date(weatherData.sunrise).getTime() : 0;
-                            const ssMs = weatherData.sunset ? new Date(weatherData.sunset).getTime() : 0;
-                            const forecasts = offsets.map(h => {
-                              const targetMs = nowMs + h * 3600000;
-                              let closest = weatherData.hourly![0];
-                              let minDiff = Infinity;
-                              for (const entry of weatherData.hourly!) {
-                                const entryMs = new Date(entry.time).getTime();
-                                const diff = Math.abs(entryMs - targetMs);
-                                if (diff < minDiff) { minDiff = diff; closest = entry; }
-                              }
-                              const targetDate = new Date(targetMs);
-                              const targetHour = targetDate.getHours();
-                              const srHour = srMs ? new Date(srMs).getHours() : 6;
-                              const ssHour = ssMs ? new Date(ssMs).getHours() : 20;
-                              const isNight = targetHour < srHour || targetHour >= ssHour;
-                              return { offset: h, temp: closest.temp, code: closest.weatherCode, isNight };
-                            });
-                            const wmoLabel = (c: number, night?: boolean) => {
-                              if (night && c <= 1) return c === 0 ? 'Clear' : 'Mostly Clear';
-                              return ({ 0:'Sunny',1:'Mostly Clear',2:'Partly Cloudy',3:'Cloudy',45:'Foggy',48:'Foggy',51:'Light Drizzle',53:'Drizzle',55:'Heavy Drizzle',61:'Light Rain',63:'Rainy',65:'Heavy Rain',66:'Freezing Rain',67:'Freezing Rain',71:'Light Snow',73:'Snowy',75:'Heavy Snow',77:'Snow Grains',80:'Showers',81:'Showers',82:'Heavy Showers',85:'Snow Showers',86:'Snow Showers',95:'Thunderstorms',96:'Hail',99:'Severe Storms' })[c] || 'Mixed';
-                            };
-                            return (
-                              <div className="absolute z-20 flex flex-col" style={{ top: 6, bottom: 6, left: 6, width: '48px', gap: '0px', pointerEvents: 'none' }} data-testid="today-hourly-forecast">
-                                {forecasts.map((fc, i) => (
-                                  <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, borderBottom: i < forecasts.length - 1 ? '1px solid rgba(255,255,255,0.4)' : 'none' }}>
-                                    <div style={{ flex: 1, background: '#1a1a2e', borderRadius: i === 0 ? '3px 3px 0 0' : i === forecasts.length - 1 ? '0 0 3px 3px' : '0', padding: '1px 2px 1px 2px', display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: 0, overflow: 'visible' }} data-testid={`hourly-forecast-${fc.offset}h`}>
-                                      <div style={{ fontSize: '6.5px', color: 'rgba(255,255,255,0.85)', fontWeight: 600, lineHeight: 1, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: '1px', marginTop: '1px' }}>{wmoLabel(fc.code, fc.isNight)}</div>
-                                      <div className="flex items-center justify-center gap-[2px]" style={{ marginTop: '0px' }}>
-                                        <span style={{ fontSize: '8px', color: '#ffffff', fontWeight: 700, lineHeight: 1 }}>{fc.offset}h</span>
-                                        <span style={{ lineHeight: 1, flexShrink: 0 }}>{renderMiniWeatherSvg(fc.code, fc.isNight)}</span>
-                                        <span style={{ fontSize: '9px', color: '#ffffff', fontWeight: 700, lineHeight: 1 }}>{fc.temp}°</span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            );
-                          })()}
                           <div className="flex items-center gap-1.5" style={{ marginTop: '13px', position: 'relative', zIndex: 15 }}>
                             {isToday ? (() => {
                               const now = new Date();
