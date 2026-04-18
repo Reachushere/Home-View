@@ -1386,13 +1386,11 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
           if (weekNum !== null) {
             const mf = moduleFiles.find(m => m.weekNum === weekNum);
             if (mf) {
-              span.style.color = '#D4AF37';
               span.style.cursor = 'pointer';
               span.style.textDecoration = 'underline';
-              span.style.textDecorationColor = 'rgba(212,175,55,0.5)';
-              span.style.backgroundColor = 'rgba(212,175,55,0.12)';
-              span.style.borderRadius = '3px';
-              span.style.padding = '1px 3px';
+              span.style.textDecorationColor = 'rgba(212,175,55,0.55)';
+              span.style.textDecorationThickness = '1px';
+              span.style.textUnderlineOffset = '2px';
               span.title = `Open Module ${weekNum}: ${(mf.file.displayName || mf.file.originalName).replace(/\.pdf$/i, '')}`;
               span.addEventListener('click', (e) => {
                 e.stopPropagation();
