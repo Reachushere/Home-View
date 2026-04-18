@@ -1,0 +1,22 @@
+# Rascal Insulin Timer Button — Test-home view
+# Canonical pattern for timer countdown buttons (mirrors timer.dogs, timer.bryn_meds, timer.meds_timer_yasu).
+# To restore: paste this entry anywhere inside the top-level `elements:` list of the Test-home view.
+# Requires existing helpers: timer.rascal_insulin, script.rascal_reset_script.
+
+- entity: timer.rascal_insulin
+  type: image
+  text-align: center
+  style:
+    left: 0%
+    top: -0.2%
+    width: 100%
+    transform: scale(1,.98)
+  state_image:
+    idle: /local/lovelace/overlays/Round Menu/5/Border6.gif
+  tap_action:
+    action: call-service
+    service: script.rascal_reset_script
+    data:
+      skip_condition: true
+    target:
+      entity_id: script.rascal_reset_script
