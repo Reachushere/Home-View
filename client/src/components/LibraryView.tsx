@@ -2532,7 +2532,8 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
 }
 
 export default function LibraryView({ isOpen, onClose, onMinimize, semesters: semestersProp, initialSemesterKey, isSharedView, onOpenNotepad, courseDisplayNames, initialAiSearch, initialApaCheck }: LibraryViewProps) {
-  const { isAdmin: isFullAccess } = useAccessMode();
+  const { isAdmin: isFullAccess, authLevel: libAuthLevel } = useAccessMode();
+  const canUseEssayGen = isFullAccess || libAuthLevel === '5747';
   const [currentSemIdx, setCurrentSemIdx] = useState(0);
   const [syncingSemKey, setSyncingSemKey] = useState<string | null>(null);
   const [selectedBook, setSelectedBook] = useState<FileRecord | null>(null);
@@ -4993,14 +4994,16 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
                   <option key={c} value={c}>{c}</option>
                 ))}
               </select>
-              <button
-                onClick={() => setEssayFormOpen(o => !o)}
-                style={{ background: essayFormOpen ? 'rgba(245,158,11,0.4)' : 'none', border: 'none', cursor: 'pointer', color: '#ffffff', padding: '2px', borderRadius: '4px' }}
-                title="Write Essay"
-                data-testid="button-ai-chat-essay-library"
-              >
-                <PenLine size={15} />
-              </button>
+              {canUseEssayGen && (
+                <button
+                  onClick={() => setEssayFormOpen(o => !o)}
+                  style={{ background: essayFormOpen ? 'rgba(245,158,11,0.4)' : 'none', border: 'none', cursor: 'pointer', color: '#ffffff', padding: '2px', borderRadius: '4px' }}
+                  title="Write Essay"
+                  data-testid="button-ai-chat-essay-library"
+                >
+                  <PenLine size={15} />
+                </button>
+              )}
               <button onClick={() => { setAiChatMessages([]); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ffffff', padding: '2px' }} title="Clear chat" data-testid="button-ai-chat-clear">
                 <RotateCcw size={15} />
               </button>
@@ -5010,7 +5013,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
             </div>
           </div>
 
-          {essayFormOpen && (
+          {essayFormOpen && canUseEssayGen && (
             <div style={{ padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.15)', background: 'rgba(245,158,11,0.08)' }} data-testid="essay-form-panel-library">
               <div style={{ fontSize: '12px', fontWeight: 700, color: '#fbbf24', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <PenLine size={13} /> Write Essay
