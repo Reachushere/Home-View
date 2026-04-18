@@ -52,6 +52,7 @@ import {
 } from "lucide-react";
 import type { Task, SemesterSettings, Subtask, Project, TaskLink, CourseWeekMapping } from "@shared/schema";
 import { TASK_TYPES, COURSES, getWeekNumber, REMINDER_OPTIONS, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, REPEAT_TYPES, REPEAT_INTERVAL_UNITS } from "@shared/schema";
+import { getETHours, getETMinutes } from "./dashboard-utils";
 import { format, addDays, startOfWeek, endOfWeek } from "date-fns";
 import { iconMap, calendarTypeIconColors } from "./dashboard-constants";
 import { formatTimeTo12Hour } from "./dashboard-utils";
