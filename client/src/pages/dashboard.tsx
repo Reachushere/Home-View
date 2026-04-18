@@ -26780,8 +26780,8 @@ export default function Dashboard() {
                     return (
                       <div
                         key={semCourse.code}
-                        className="items-center px-2 py-1.5 rounded bg-white/5 border hover:border-white/25 cursor-grab transition-all overflow-hidden"
-                        style={{ display: 'flex', alignItems: 'center', gap: '6px', borderColor: courseNotAllAdded ? 'rgba(239,68,68,0.5)' : 'rgba(255,255,255,0.1)', background: courseNotAllAdded ? 'rgba(239,68,68,0.08)' : undefined }}
+                        className="items-center px-2 py-1.5 rounded border hover:border-white/40 cursor-grab transition-all overflow-hidden"
+                        style={{ display: 'flex', alignItems: 'center', gap: '6px', borderColor: courseNotAllAdded ? 'rgba(239,68,68,0.7)' : 'rgba(255,255,255,0.15)', background: (() => { const gc = getCourseGradientColors(semCourse.code); return `linear-gradient(90deg, ${gc.start}, ${gc.end})`; })() }}
                         draggable
                         onDragStart={(e) => {
                           dragCourseRef.current = { code: semCourse.code, fromSemKey: semKey };
