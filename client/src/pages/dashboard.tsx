@@ -16786,7 +16786,7 @@ export default function Dashboard() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0, marginLeft: 'auto', marginRight: '4px', marginTop: '-3px', pointerEvents: 'auto' }} data-testid="pomodoro-inline">
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
               <span style={{ fontSize: '12px', color: '#ffffff', fontWeight: 600, fontVariantNumeric: 'tabular-nums', lineHeight: 1, marginTop: '-8px', marginBottom: '0px', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }} data-testid="text-pomodoro-time">{formatPomodoroTime(pomodoroTime)}</span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <button onClick={() => { setPomodoroTime(prev => Math.max(60, prev - 60)); }} style={{ background: 'none', border: 'none', padding: 0, color: 'white', fontSize: '12px', fontWeight: 600, lineHeight: 1, cursor: 'pointer' }} data-testid="button-pomodoro-sub-min" title="-1 min">−</button>
                 <button onClick={togglePomodoro} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center' }} data-testid="button-pomodoro-toggle" title={pomodoroRunning ? 'Pause' : 'Play'}>
                   {pomodoroRunning ? <Pause className="h-[12px] w-[12px] text-white" strokeWidth={2.5} /> : <Play className="h-[12px] w-[12px] text-white" strokeWidth={2.5} />}
@@ -16837,7 +16837,7 @@ export default function Dashboard() {
               data-testid="next-task-countdown"
             >
               <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', position: 'relative', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderRadius: '12px', padding: '10px 14px 4px 14px', width: '756px', border: '0.5px solid rgba(255,255,255,0.5)', borderTop: '0.5px solid rgba(255,255,255,0.7)', boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", gap: '8px' }}>
+                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', position: 'relative', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderRadius: '12px', padding: '10px 14px 4px 14px', width: '945px', border: '0.5px solid rgba(255,255,255,0.5)', borderTop: '0.5px solid rgba(255,255,255,0.7)', boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", gap: '8px' }}>
                   
                   {/* Analogue clock in countdown pill */}
                   <div style={{ display: 'flex', alignItems: 'center', marginLeft: '-3px', marginRight: '10px', marginTop: '-5px', flexShrink: 0, gap: '8px' }}>
@@ -16942,7 +16942,7 @@ export default function Dashboard() {
             data-testid="next-task-countdown"
           >
             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-              <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', position: 'relative', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderRadius: '12px', padding: '10px 14px 4px 14px', width: '756px', border: '0.5px solid rgba(255,255,255,0.5)', borderTop: '0.5px solid rgba(255,255,255,0.7)', boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", gap: '8px' }}>
+              <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', position: 'relative', background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 100%)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderRadius: '12px', padding: '10px 14px 4px 14px', width: '945px', border: '0.5px solid rgba(255,255,255,0.5)', borderTop: '0.5px solid rgba(255,255,255,0.7)', boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(255,255,255,0.1)', fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", gap: '8px' }}>
               
                 {/* Analogue clock + digital clock in countdown pill */}
                 <div style={{ display: 'flex', alignItems: 'center', marginLeft: '-6px', marginRight: '13px', marginTop: '-5px', flexShrink: 0, gap: '8px' }}>
@@ -36491,7 +36491,7 @@ export default function Dashboard() {
                 />
                 {/* Today Section */}
                 <div data-homework-section="today" data-week-start={hwWeeklyTimeline[0]?.weekStart?.toISOString()} style={{ display: 'flex', flexDirection: 'column', gap: '0px', padding: dueTodayTasks.length === 0 ? '0px 0 5px 0' : '0px 0 4px 0', marginTop: '3px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span className="text-[12px]" style={{ color: '#FFFF00' }}>Today</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', position: 'relative', top: '0px' }}>({dueTodayTasks.length})</span>
                   </div>
