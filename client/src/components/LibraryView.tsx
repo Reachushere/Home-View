@@ -2654,7 +2654,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onUp);
   };
-  const [aiChatMessages, setAiChatMessages] = useState<{ role: 'user' | 'assistant'; content: string; essayHtml?: string; essayMeta?: { wordCount: number; sourceCount: number; citationStyle: string; references: string[] } }[]>([]);
+  const [aiChatMessages, setAiChatMessages] = useState<{ role: 'user' | 'assistant'; content: string; essayHtml?: string; essayMeta?: { wordCount: number; sourceCount: number; citationStyle: string; references: string[]; citations?: Record<string, { fileId: number; fileName: string; page?: number; snippet: string }> } }[]>([]);
   const [aiChatInput, setAiChatInput] = useState('');
   const [aiChatLoading, setAiChatLoading] = useState(false);
   const [essayFormOpen, setEssayFormOpen] = useState(false);
@@ -2744,7 +2744,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
         role: 'assistant',
         content: '',
         essayHtml: data.html || '',
-        essayMeta: { wordCount: data.wordCount || targetWords, sourceCount: data.sourceCount || 0, citationStyle: data.citationStyle || essayStyle, references: data.references || [] },
+        essayMeta: { wordCount: data.wordCount || targetWords, sourceCount: data.sourceCount || 0, citationStyle: data.citationStyle || essayStyle, references: data.references || [], citations: data.citations || {} },
       }]);
       setEssayFormOpen(false);
       setEssayTopic('');
@@ -2756,15 +2756,30 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
     }
   }, [essayTopic, essayWords, essayPages, essayLengthMode, essayStyle, essayCourse, essayLoading]);
 
-  const handleEssayCiteClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+  const handleEssayCiteClick = useCallback((e: React.MouseEvent<HTMLDivElement>, citations?: Record<string, { fileId: number; fileName: string; page?: number; snippet: string }>) => {
     const target = (e.target as HTMLElement).closest('cite.essay-citation') as HTMLElement | null;
     if (!target) return;
     const fileId = target.getAttribute('data-file-id');
     const page = parseInt(target.getAttribute('data-page') || '1', 10);
+    const cid = target.getAttribute('data-cid') || '';
     if (!fileId) return;
     e.preventDefault();
     e.stopPropagation();
-    window.dispatchEvent(new CustomEvent('bryn:open-file-citation', { detail: { fileId, page, query: '' } }));
+    // Look up the snippet text for this citation so the PDF viewer can highlight
+    // the exact passage. Trim to a phrase short enough to match across PDF text spans.
+    let query = '';
+    const snippet = citations?.[cid]?.snippet;
+    if (snippet) {
+      const cleaned = snippet
+        .replace(/\s+/g, ' ')
+        .replace(/[“”]/g, '"').replace(/[‘’]/g, "'")
+        .trim();
+      // First sentence (or first ~140 chars) — long enough to be unique, short enough
+      // to survive PDF text-span breakage.
+      const firstSentence = cleaned.split(/(?<=[.!?])\s+/)[0] || cleaned;
+      query = firstSentence.length > 140 ? firstSentence.slice(0, 140) : firstSentence;
+    }
+    window.dispatchEvent(new CustomEvent('bryn:open-file-citation', { detail: { fileId, page, query } }));
   }, []);
 
   // Open a file at a specific page from a citation click; optional snippet highlights in yellow via PDF search

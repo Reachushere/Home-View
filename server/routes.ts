@@ -28418,14 +28418,36 @@ Keep your tone friendly and educational. Format your response clearly with numbe
       }
 
       candidates.sort((a, b) => b.score - a.score);
-      // Cap total context at ~24k chars
+      // Cap total context at ~24k chars AND enforce per-file diversity so a single
+      // dense PDF (e.g. one course module) can't hog every slot. We do TWO passes:
+      // first pass takes up to 4 chunks per file (so the essay draws from many
+      // sources). Second pass fills remaining budget with leftover top-scoring
+      // chunks regardless of file.
       const selected: Chunk[] = [];
       let charBudget = 24000;
+      const PER_FILE_CAP = 4;
+      const perFileCount = new Map<number, number>();
+      const usedCids = new Set<string>();
       for (const c of candidates) {
         if (c.text.length > charBudget) continue;
+        const fc = perFileCount.get(c.fileId) || 0;
+        if (fc >= PER_FILE_CAP) continue;
         selected.push(c);
+        usedCids.add(c.cid);
+        perFileCount.set(c.fileId, fc + 1);
         charBudget -= c.text.length;
         if (selected.length >= 40 || charBudget < 500) break;
+      }
+      // Second pass: fill any remaining budget without per-file cap
+      if (selected.length < 40 && charBudget >= 500) {
+        for (const c of candidates) {
+          if (usedCids.has(c.cid)) continue;
+          if (c.text.length > charBudget) continue;
+          selected.push(c);
+          usedCids.add(c.cid);
+          charBudget -= c.text.length;
+          if (selected.length >= 40 || charBudget < 500) break;
+        }
       }
 
       if (selected.length === 0) {
