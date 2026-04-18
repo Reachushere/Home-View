@@ -444,7 +444,7 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
       <button
         onClick={() => { setIsOpen(prev => !prev); bringPanelToFront(); setTimeout(() => inputRef.current?.focus(), 100); }}
         style={{
-          position: 'fixed', bottom: '12px', right: '12px', zIndex: 10000,
+          position: 'fixed', bottom: '12px', right: '12px', zIndex: 200000,
           background: essayLoading
             ? 'linear-gradient(135deg, #b45309 0%, #f59e0b 50%, #fde047 100%)'
             : essayJustDone
