@@ -31516,6 +31516,39 @@ export default function Dashboard() {
               {filteredCourses.map((courseData, courseIdx) => {
                 const courseName = courseData.name.split(' - ')[0].toUpperCase();
                 const rgb = hexToRgb(courseData.color);
+                // Resolve gradient colors with the same TBD / gray-fallback logic
+                // used on the Semesters & Classes page so label cells aren't gray
+                // when the DB color is missing or unconfigured.
+                const _calSemKey: string | undefined = (courseData as any)._semKey;
+                const _isTBDCode = /^TBD\d*$/i.test(courseName.replace(/\s/g, ''));
+                const _hasRealDbColor = !!courseData.color && !/^#?(6b7280|9ca3af)$/i.test(String(courseData.color).replace('#', ''));
+                let _resolvedStart: string;
+                let _resolvedEnd: string;
+                if (_hasRealDbColor && !_isTBDCode) {
+                  _resolvedStart = courseData.color || `rgb(${Math.max(0, rgb.r - 40)}, ${Math.max(0, rgb.g - 40)}, ${Math.max(0, rgb.b - 40)})`;
+                  _resolvedEnd = courseData.colorEnd || `rgb(${Math.min(255, rgb.r + 100)}, ${Math.min(255, rgb.g + 100)}, ${Math.min(255, rgb.b + 100)})`;
+                } else {
+                  const gc = getCourseGradientColors(courseName);
+                  const isGrayFallback = gc.start === '#6b7280' && gc.end === '#9ca3af';
+                  if ((isGrayFallback || _isTBDCode) && _calSemKey) {
+                    const palette = semDefaultPalettesRow[_calSemKey.toLowerCase()];
+                    if (palette && palette.length > 0) {
+                      const idx = Math.max(0, courseIdx) % palette.length;
+                      _resolvedStart = palette[idx].start;
+                      _resolvedEnd = palette[idx].end;
+                    } else {
+                      let hash = 0;
+                      const seedStr = `${_calSemKey}-${courseIdx}`;
+                      for (let i = 0; i < seedStr.length; i++) { hash = ((hash << 5) - hash) + seedStr.charCodeAt(i); hash |= 0; }
+                      const hue = Math.abs(hash) % 360;
+                      _resolvedStart = `hsl(${hue}, 65%, 45%)`;
+                      _resolvedEnd = `hsl(${(hue + 30) % 360}, 70%, 70%)`;
+                    }
+                  } else {
+                    _resolvedStart = gc.start;
+                    _resolvedEnd = gc.end;
+                  }
+                }
                 const course = { 
                   name: courseName, 
                   bg: (() => {
@@ -31524,8 +31557,8 @@ export default function Dashboard() {
                     return `rgb(${end.r}, ${end.g}, ${end.b})`;
                   })(), 
                   label: (() => {
-                    const startColor = courseData.color || `rgb(${Math.max(0, rgb.r - 40)}, ${Math.max(0, rgb.g - 40)}, ${Math.max(0, rgb.b - 40)})`;
-                    const endColor = courseData.colorEnd || `rgb(${Math.min(255, rgb.r + 100)}, ${Math.min(255, rgb.g + 100)}, ${Math.min(255, rgb.b + 100)})`;
+                    const startColor = _resolvedStart;
+                    const endColor = _resolvedEnd;
                     if (courseData.colorStops) {
                       try {
                         const stops: Array<{position: number; color: string}> = JSON.parse(courseData.colorStops);
@@ -31552,7 +31585,7 @@ export default function Dashboard() {
                     return `rgb(${dR}, ${dG}, ${dB})`;
                   })(),
                   colors: dynamicCourseColors[courseName],
-                  fontColor: (courseData as any).courseFontColor || getReadableTextColor((courseData as any).color, (courseData as any).colorEnd),
+                  fontColor: (courseData as any).courseFontColor || getReadableTextColor(_resolvedStart, _resolvedEnd),
                 };
                 // Get full-week tasks for this course (tasks that span from visible start to Friday)
                 // Exclude completed tasks so they are removed from view
