@@ -48,6 +48,26 @@ function CodeBlock({ code, lang }: { code: string; lang: string }) {
 
 export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [dragPos, setDragPos] = useState<{ x: number; y: number }>(() => {
+    try { const s = localStorage.getItem('aiChatBubbleDragPos'); if (s) return JSON.parse(s); } catch {}
+    return { x: 0, y: 0 };
+  });
+  const dragStateRef = useRef<{ startX: number; startY: number; baseX: number; baseY: number } | null>(null);
+  useEffect(() => { try { localStorage.setItem('aiChatBubbleDragPos', JSON.stringify(dragPos)); } catch {} }, [dragPos]);
+  const onDragStart = useCallback((e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest('button, select, input, textarea, a')) return;
+    dragStateRef.current = { startX: e.clientX, startY: e.clientY, baseX: dragPos.x, baseY: dragPos.y };
+    const onMove = (ev: MouseEvent) => {
+      if (!dragStateRef.current) return;
+      const dx = ev.clientX - dragStateRef.current.startX;
+      const dy = ev.clientY - dragStateRef.current.startY;
+      setDragPos({ x: dragStateRef.current.baseX + dx, y: dragStateRef.current.baseY + dy });
+    };
+    const onUp = () => { dragStateRef.current = null; document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+    e.preventDefault();
+  }, [dragPos]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -246,8 +266,9 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
           borderRadius: '14px', zIndex: 10001,
           display: isOpen ? 'flex' : 'none', flexDirection: 'column',
           boxShadow: '0 12px 40px rgba(10,42,94,0.6), 0 4px 12px rgba(0,0,0,0.3)',
+          transform: `translate(${dragPos.x}px, ${dragPos.y}px)`,
         }} data-testid="ai-chat-panel-dashboard">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', borderBottom: '1px solid rgba(255,255,255,0.15)' }}>
+          <div onMouseDown={onDragStart} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', borderBottom: '1px solid rgba(255,255,255,0.15)', cursor: dragStateRef.current ? 'grabbing' : 'grab', userSelect: 'none' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <MessageSquare size={18} color="#ffffff" />
               <span style={{ fontSize: '15px', fontWeight: 700, color: '#fff', letterSpacing: '0.3px' }}>Study Assistant</span>

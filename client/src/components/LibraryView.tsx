@@ -4470,8 +4470,52 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
 
           {!apaResult && !apaLoading && (
             <>
+              <div style={{ marginBottom: '16px', padding: '12px', background: 'rgba(59,130,246,0.07)', border: '1px solid rgba(59,130,246,0.25)', borderRadius: '10px' }}>
+                <div style={{ fontSize: '11px', fontWeight: 700, color: '#93c5fd', marginBottom: '6px', letterSpacing: '0.4px', textTransform: 'uppercase' }}>Generate citation from URL / DOI / ISBN</div>
+                <div style={{ display: 'flex', gap: '6px' }}>
+                  <input
+                    type="text"
+                    value={citeInput}
+                    onChange={e => setCiteInput(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter' && !citeLoading && citeInput.trim()) generateCite(); }}
+                    placeholder="https://example.com/article"
+                    style={{ flex: 1, padding: '8px 10px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(0,0,0,0.4)', color: '#fff', fontSize: '12px', outline: 'none' }}
+                    data-testid="input-apa-checker-url"
+                  />
+                  <button
+                    onClick={generateCite}
+                    disabled={citeLoading || !citeInput.trim()}
+                    style={{ padding: '8px 14px', borderRadius: '6px', border: 'none', background: citeLoading || !citeInput.trim() ? 'rgba(255,255,255,0.1)' : 'linear-gradient(135deg, #3b82f6, #2563eb)', color: citeLoading || !citeInput.trim() ? 'rgba(255,255,255,0.4)' : '#fff', fontSize: '12px', fontWeight: 700, cursor: citeLoading || !citeInput.trim() ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap' }}
+                    data-testid="btn-apa-checker-generate-cite"
+                  >
+                    {citeLoading ? '…' : 'Cite'}
+                  </button>
+                </div>
+                {citeError && <div style={{ marginTop: '8px', fontSize: '11px', color: '#fca5a5' }} data-testid="text-apa-checker-cite-error">{citeError}</div>}
+                {citeResult && (
+                  <div style={{ marginTop: '10px', padding: '10px', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }} data-testid="container-apa-checker-cite-result">
+                    <div style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.4px', color: 'rgba(147,197,253,0.85)', marginBottom: '4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span>Reference</span>
+                      <button onClick={() => copyCiteText(citeResult.reference, 'ref-chk')} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '4px', padding: '2px 6px', fontSize: '10px', color: '#fff', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '3px' }} data-testid="btn-apa-checker-copy-ref">
+                        {citeCopied === 'ref-chk' ? <><Check size={10} /> Copied</> : <><Copy size={10} /> Copy</>}
+                      </button>
+                    </div>
+                    <div style={{ fontSize: '12px', color: '#fff', lineHeight: 1.5, marginBottom: '8px' }}>{renderCiteItalics(citeResult.reference)}</div>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                      <div style={{ flex: '1 1 180px' }}>
+                        <div style={{ fontSize: '9.5px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.4px', color: 'rgba(255,255,255,0.45)', marginBottom: '2px' }}>In-text</div>
+                        <div style={{ fontSize: '11px', color: '#fff', padding: '4px 8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px' }} data-testid="text-apa-checker-intext">{citeResult.inText || '—'}</div>
+                      </div>
+                      <div style={{ flex: '1 1 180px' }}>
+                        <div style={{ fontSize: '9.5px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.4px', color: 'rgba(255,255,255,0.45)', marginBottom: '2px' }}>Narrative</div>
+                        <div style={{ fontSize: '11px', color: '#fff', padding: '4px 8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px' }} data-testid="text-apa-checker-narrative">{citeResult.narrative || '—'}</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
               <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', marginBottom: '14px', lineHeight: '1.5' }}>
-                Upload your essay or paper (.docx or .txt) and get a detailed APA 7th Edition compliance report with specific issues and fixes.
+                Or upload your essay or paper (.docx or .txt) and get a detailed APA 7th Edition compliance report with specific issues and fixes.
               </div>
               <div
                 onDragOver={e => { e.preventDefault(); setApaDragOver(true); }}

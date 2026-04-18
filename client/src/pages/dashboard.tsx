@@ -14537,7 +14537,7 @@ export default function Dashboard() {
       {isMobileLibraryOpen && (
         <LibraryView
           isOpen={isMobileLibraryOpen}
-          onClose={() => { setIsMobileLibraryOpen(false); setLibrarySemesterKey(undefined); setMobileLibraryAiSearch(false); setMobileLibraryApaCheck(false); }}
+          onClose={() => { setIsMobileLibraryOpen(false); }}
           semesters={[]}
           initialSemesterKey={librarySemesterKey}
           onOpenNotepad={() => setIsNotepadOpen(true)}
@@ -21080,6 +21080,32 @@ export default function Dashboard() {
           </g>
         </svg>
       </a>
+      {/* Bottom binder tab - Library (right of Files tab) */}
+      <button
+        onClick={() => setIsMobileLibraryOpen(true)}
+        className={`fixed${tabBounceEnabled ? ' bottom-tab-bounce' : ''}`}
+        style={{
+          bottom: '29px',
+          left: 'calc(50% + 50px)',
+          display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen || isMobileLibraryOpen) ? 'none' : 'block',
+          background: 'none',
+          border: 'none',
+          padding: 0,
+          cursor: 'pointer',
+          zIndex: 10002,
+        }}
+        data-testid="bottom-tab-library"
+        title="Library"
+      >
+        <svg width="84" height="25" viewBox="0 0 84 25" style={{ display: 'block' }}>
+          <path d="M0,25 L84,25 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+          <g transform="translate(34, 4)" stroke="rgba(255,255,255,0.85)" strokeWidth="1.2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="1" width="2.5" height="11" rx="0.4" fill="rgba(255,255,255,0.85)" />
+            <rect x="5.5" y="1" width="2.5" height="11" rx="0.4" fill="rgba(255,255,255,0.85)" />
+            <path d="M9.5 1.6 L11.6 1 L14.4 11 L12.3 11.6 Z" fill="rgba(255,255,255,0.85)" />
+          </g>
+        </svg>
+      </button>
       {/* Bottom tab — Homework. Only visible when Notes box is currently active; click to switch back to HW. */}
       {desktopShowHomework && homeworkMinimized && (
         <button
