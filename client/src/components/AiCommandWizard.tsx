@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Zap, Send, X, Loader2, CheckCircle, XCircle, AlertTriangle, Trash2, RotateCcw, Maximize2, Minimize2, Pencil, Circle, ArrowRight, ArrowDown, Undo2, Check, Scissors, Square, Copy, Download, FileText, BookOpen, Paperclip } from 'lucide-react';
+import { Zap, Send, X, Loader2, CheckCircle, XCircle, AlertTriangle, Trash2, RotateCcw, Maximize2, Minimize2, Pencil, Circle, ArrowRight, ArrowDown, Undo2, Check, Scissors, Square, Copy, Download, FileText, BookOpen, Paperclip, Minus } from 'lucide-react';
 import { queryClient } from '@/lib/queryClient';
 import brynAvatar from '@assets/generated_images/brynassist_avatar.png';
 import defaultProfilePhoto from '@assets/image_1772579486577.png';
@@ -504,6 +504,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   const queuedMessageRef = useRef<string | null>(null);
   const [pendingConfirm, setPendingConfirm] = useState<any[] | null>(null);
   const [expanded, setExpanded] = useState(false);
+  const [minimized, setMinimized] = useState(false);
   const [isFocused, setIsFocused] = useState(true);
   const [position, setPosition] = useState<{ x: number; y: number } | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -1388,6 +1389,48 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
     filter: isFocused ? 'none' : 'saturate(0.7)',
   };
 
+  if (minimized) {
+    const lastAssistant = [...messages].reverse().find(m => m.role === 'assistant');
+    const preview = (lastAssistant?.content || activeToolName || thinkingPhase || 'Working...').toString().replace(/\s+/g, ' ').slice(0, 60);
+    return (
+      <button
+        onClick={() => setMinimized(false)}
+        title="Restore BrynAssist"
+        data-testid="button-ai-command-restore"
+        style={{
+          position: 'fixed',
+          bottom: '20px',
+          right: '20px',
+          zIndex: 100020,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          padding: '10px 14px',
+          background: 'linear-gradient(135deg, #1a1a3e 0%, #2a1a5e 100%)',
+          border: '1px solid rgba(140,100,255,0.5)',
+          borderRadius: '999px',
+          color: '#fff',
+          cursor: 'pointer',
+          boxShadow: '0 8px 24px rgba(0,0,0,0.5), 0 0 20px rgba(140,100,255,0.35)',
+          fontFamily: "'Inter', system-ui, sans-serif",
+          fontSize: '12px',
+          maxWidth: '320px',
+        }}
+      >
+        <img src={brynAvatar} alt="BA" style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0 }} />
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', minWidth: 0 }}>
+          <div style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+            BrynAssist
+            {loading && <Loader2 size={11} className="animate-spin" style={{ color: '#a78bfa' }} />}
+          </div>
+          <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '260px' }}>
+            {loading ? preview : 'Click to open'}
+          </div>
+        </div>
+      </button>
+    );
+  }
+
   return (
     <div style={{
       position: 'fixed',
@@ -1536,8 +1579,11 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
               {screenCopied ? <Check size={15} color="#4ade80" /> : <Copy size={15} />}
             </HeaderBtn>
             <HeaderBtn tip="Clear conversation" onClick={clearChat} testId="button-ai-command-clear"><RotateCcw size={15} /></HeaderBtn>
-            <HeaderBtn tip={expanded ? 'Minimize' : 'Expand'} onClick={() => { setExpanded(!expanded); setCustomWidth(null); if (expanded) setPosition(null); }} testId="button-ai-command-expand">
+            <HeaderBtn tip={expanded ? 'Restore' : 'Expand'} onClick={() => { setExpanded(!expanded); setCustomWidth(null); if (expanded) setPosition(null); }} testId="button-ai-command-expand">
               {expanded ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
+            </HeaderBtn>
+            <HeaderBtn tip="Minimize (BA keeps working)" onClick={() => setMinimized(true)} testId="button-ai-command-minimize">
+              <Minus size={15} />
             </HeaderBtn>
             <button
               onClick={onClose}
