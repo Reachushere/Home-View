@@ -1946,20 +1946,26 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
 
           {loading && !pendingConfirm && (
             <div style={{
-              display: 'flex', alignItems: 'flex-start', gap: '6px',
-              maxWidth: '92%', padding: '2px 10px 2px 4px',
-              fontSize: '12px', lineHeight: '1.5',
-              color: 'rgba(180,200,235,0.7)',
+              display: 'flex', alignItems: 'center', gap: '10px',
+              padding: '6px 12px 6px 6px',
+              fontSize: '12px',
+              color: 'rgba(200,180,240,0.9)',
               fontStyle: 'italic',
-            }}>
-              <span style={{ color: 'rgba(140,175,235,0.55)', fontStyle: 'normal', fontWeight: 600, marginTop: '0px', flexShrink: 0 }}>›</span>
-              <span style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+            }} data-testid="indicator-ai-working">
+              <div style={{ display: 'inline-flex', gap: '4px', alignItems: 'center', padding: '0 2px' }}>
+                {[0,1,2,3,4,5,6,7,8].map(i => (
+                  <div key={i} style={{
+                    width: '6px', height: '6px', borderRadius: '50%',
+                    background: 'rgba(170,120,240,0.95)',
+                    boxShadow: '0 0 6px rgba(170,120,240,0.7)',
+                    animation: 'ai-wave-dot 1.4s ease-in-out infinite',
+                    animationDelay: `${i * 0.12}s`,
+                  }} />
+                ))}
+              </div>
+              <span style={{ fontWeight: 500, letterSpacing: '0.1px' }}>
                 {activeToolName || thinkingPhase || 'Working'}
-                <span style={{
-                  display: 'inline-block', marginLeft: '2px',
-                  animation: 'ai-thinking-ellipsis 1.4s steps(4, end) infinite',
-                  fontStyle: 'normal',
-                }}>…</span>
+                <span style={{ opacity: 0.6 }}>…</span>
               </span>
             </div>
           )}

@@ -464,18 +464,21 @@ export const AI_COMMAND_TOOLS = [
     type: "function" as const,
     function: {
       name: "ha_create_automation",
-      description: "Create a new Home Assistant automation via REST API. Use this to create automations that trigger on events, states, time, etc.",
+      description: "Create a new Home Assistant automation via REST API. HA 2026.x uses PLURAL keys: triggers, conditions, actions. You may pass either singular or plural; this tool normalizes to plural before sending.",
       parameters: {
         type: "object",
         properties: {
           alias: { type: "string", description: "Name/alias for the automation" },
           description: { type: "string", description: "Description of what it does" },
-          trigger: { type: "array", items: { type: "object" }, description: "Array of trigger objects" },
-          condition: { type: "array", items: { type: "object" }, description: "Array of condition objects (optional)" },
-          action: { type: "array", items: { type: "object" }, description: "Array of action objects" },
+          triggers: { type: "array", items: { type: "object" }, description: "Array of trigger objects (HA 2026.x plural form)" },
+          trigger: { type: "array", items: { type: "object" }, description: "Legacy singular alias for triggers (auto-normalized)" },
+          conditions: { type: "array", items: { type: "object" }, description: "Array of condition objects (optional, plural)" },
+          condition: { type: "array", items: { type: "object" }, description: "Legacy singular alias for conditions (auto-normalized)" },
+          actions: { type: "array", items: { type: "object" }, description: "Array of action objects (HA 2026.x plural form)" },
+          action: { type: "array", items: { type: "object" }, description: "Legacy singular alias for actions (auto-normalized)" },
           mode: { type: "string", enum: ["single", "restart", "queued", "parallel"], description: "Automation mode. Default 'single'" },
         },
-        required: ["alias", "trigger", "action"],
+        required: ["alias"],
       },
     },
   },
@@ -2704,14 +2707,23 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
         }
         try {
           const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+          const triggers = args.triggers ?? args.trigger;
+          const actions = args.actions ?? args.action;
+          const conditions = args.conditions ?? args.condition;
+          if (!triggers || !Array.isArray(triggers) || triggers.length === 0) {
+            return { success: false, result: { error: "Missing 'triggers' (or legacy 'trigger') array" } };
+          }
+          if (!actions || !Array.isArray(actions) || actions.length === 0) {
+            return { success: false, result: { error: "Missing 'actions' (or legacy 'action') array" } };
+          }
           const automationConfig: Record<string, any> = {
             alias: args.alias,
-            trigger: args.trigger,
-            action: args.action,
+            triggers,
+            actions,
             mode: args.mode || 'single',
           };
           if (args.description) automationConfig.description = args.description;
-          if (args.condition) automationConfig.condition = args.condition;
+          if (conditions) automationConfig.conditions = conditions;
           const slug = (args.alias as string).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
           const resp = await fetch(`${haUrl}/api/config/automation/config/${slug}`, {
             method: 'POST',
@@ -2723,6 +2735,7 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
             return { success: false, result: { error: `Failed to create automation: ${resp.status} ${errText.substring(0, 300)}` } };
           }
           const result = await resp.json().catch(() => ({}));
+          await fetch(`${haUrl}/api/services/automation/reload`, { method: 'POST', headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' } }).catch(() => {});
           return { success: true, result: { created: true, automation_id: slug, alias: args.alias, ...result } };
         } catch (err: any) {
           return { success: false, result: { error: `Failed to create automation: ${err.message}` } };
