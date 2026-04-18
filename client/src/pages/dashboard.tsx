@@ -1762,6 +1762,7 @@ export default function Dashboard() {
   const [floatingNotes, setFloatingNotes] = useState<Array<{ id: number; title: string; content: string; x: number; y: number; width: number; height: number }>>([]);
   const [isMobileNotepadOpen, setIsMobileNotepadOpen] = useState(false);
   const [isMobileLibraryOpen, setIsMobileLibraryOpen] = useState(false);
+  const [isLibraryMinimized, setIsLibraryMinimized] = useState(false);
   const [mobileLibraryAiSearch, setMobileLibraryAiSearch] = useState(false);
   const [mobileLibraryApaCheck, setMobileLibraryApaCheck] = useState(false);
   const [librarySemesterKey, setLibrarySemesterKey] = useState<string | undefined>(undefined);
@@ -14602,7 +14603,8 @@ export default function Dashboard() {
       {isMobileLibraryOpen && (
         <LibraryView
           isOpen={isMobileLibraryOpen}
-          onClose={() => { setIsMobileLibraryOpen(false); }}
+          onClose={() => { setIsMobileLibraryOpen(false); setIsLibraryMinimized(false); }}
+          onMinimize={() => { setIsMobileLibraryOpen(false); setIsLibraryMinimized(true); }}
           semesters={[]}
           initialSemesterKey={librarySemesterKey}
           onOpenNotepad={() => setIsNotepadOpen(true)}
@@ -21145,14 +21147,14 @@ export default function Dashboard() {
           </g>
         </svg>
       </a>
-      {/* Bottom binder tab - Library (right of Files tab) */}
+      {/* Bottom binder tab - Library (right of Files tab) — only visible when library is minimized */}
       <button
-        onClick={() => setIsMobileLibraryOpen(true)}
+        onClick={() => { setIsMobileLibraryOpen(true); setIsLibraryMinimized(false); }}
         className={`fixed${tabBounceEnabled ? ' bottom-tab-bounce' : ''}`}
         style={{
           bottom: '29px',
           left: 'calc(50% + 145px)',
-          display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen || isMobileLibraryOpen) ? 'none' : 'block',
+          display: (isLibraryMinimized && !(isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen || isMobileLibraryOpen)) ? 'block' : 'none',
           background: 'none',
           border: 'none',
           padding: 0,

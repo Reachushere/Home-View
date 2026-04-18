@@ -108,6 +108,7 @@ interface SemesterInfo {
 interface LibraryViewProps {
   isOpen: boolean;
   onClose: () => void;
+  onMinimize?: () => void;
   semesters: SemesterInfo[];
   initialSemesterKey?: string;
   isSharedView?: boolean;
@@ -2509,7 +2510,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
   );
 }
 
-export default function LibraryView({ isOpen, onClose, semesters: semestersProp, initialSemesterKey, isSharedView, onOpenNotepad, courseDisplayNames, initialAiSearch, initialApaCheck }: LibraryViewProps) {
+export default function LibraryView({ isOpen, onClose, onMinimize, semesters: semestersProp, initialSemesterKey, isSharedView, onOpenNotepad, courseDisplayNames, initialAiSearch, initialApaCheck }: LibraryViewProps) {
   const { isAdmin: isFullAccess } = useAccessMode();
   const [currentSemIdx, setCurrentSemIdx] = useState(0);
   const [syncingSemKey, setSyncingSemKey] = useState<string | null>(null);
@@ -3929,6 +3930,35 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         <X size={18} />
       </button>
 
+      {onMinimize && (
+        <button
+          onClick={onMinimize}
+          style={{
+            position: 'absolute',
+            top: '33px',
+            right: '72px',
+            zIndex: 100002,
+            background: 'rgba(0,0,0,0.5)',
+            border: '1px solid rgba(255,255,255,0.2)',
+            borderRadius: '50%',
+            width: '36px',
+            height: '36px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            color: 'rgba(255,255,255,0.7)',
+            transition: 'all 0.2s',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.5)'; }}
+          onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; }}
+          data-testid="button-minimize-library"
+          title="Minimize"
+        >
+          <Minus size={18} />
+        </button>
+      )}
+
 
       {!isSharedView && isFullAccess && (
         <button
@@ -3967,7 +3997,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           style={{
             position: 'absolute',
             top: '33px',
-            right: '156px',
+            right: '200px',
             zIndex: 100002,
             background: apaCheckerOpen ? 'rgba(34,197,94,0.3)' : 'rgba(0,0,0,0.5)',
             border: apaCheckerOpen ? '1px solid rgba(34,197,94,0.5)' : '1px solid rgba(255,255,255,0.2)',
@@ -4010,7 +4040,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
           style={{
             position: 'absolute',
             top: '33px',
-            right: '72px',
+            right: '116px',
             zIndex: 100002,
             background: 'rgba(0,0,0,0.5)',
             border: '1px solid rgba(255,255,255,0.2)',
