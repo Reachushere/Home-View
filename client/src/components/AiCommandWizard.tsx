@@ -1392,7 +1392,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       left: 0,
       right: 0,
       bottom: 0,
-      zIndex: isFocused ? 100020 : 10020,
+      zIndex: isFocused ? 100020 : 100015,
       display: 'flex',
       alignItems: position ? 'flex-start' : 'center',
       justifyContent: position ? 'flex-start' : 'center',

@@ -1214,7 +1214,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
   const [showAnnotations, setShowAnnotations] = useState(false);
   const [activeToolPanel, setActiveToolPanel] = useState<'none' | 'highlight' | 'comment' | 'bookmark'>('none');
   const [saved, setSaved] = useState(false);
-  const initialSearchApplied = useRef(false);
+  const initialSearchApplied = useRef<string | null>(null);
   const [textLayerRenderCount, setTextLayerRenderCount] = useState(0);
   const [pendingComment, setPendingComment] = useState<{ x: number; y: number } | null>(null);
   const [pendingCommentText, setPendingCommentText] = useState('');
@@ -1540,8 +1540,8 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
   }, [searchQuery, currentPage, pdfDoc, zoom, applySearchHighlights, searchResults, searchCurrentIdx, searchMatchIdx, textLayerRenderCount]);
 
   useEffect(() => {
-    if (!initialSearchQuery || !pdfDoc || initialSearchApplied.current) return;
-    initialSearchApplied.current = true;
+    if (!initialSearchQuery || !pdfDoc || initialSearchApplied.current === initialSearchQuery) return;
+    initialSearchApplied.current = initialSearchQuery;
     setSearchQuery(initialSearchQuery);
     setSearchOpen(true);
     const runSearch = async () => {
@@ -2654,10 +2654,19 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
     // Trim snippet to a searchable phrase (PDF search works best on short literal substrings)
     let searchQuery: string | undefined;
     if (snippet) {
-      const cleaned = snippet.replace(/\s+/g, ' ').trim();
-      // Use first 6-8 meaningful words for robust match across line breaks/justification
+      // Strip markdown emphasis and surrounding punctuation that the model may add
+      const cleaned = snippet
+        .replace(/[*_`]+/g, '')
+        .replace(/[“”]/g, '"')
+        .replace(/[‘’]/g, "'")
+        .replace(/\s+/g, ' ')
+        .trim();
       const words = cleaned.split(' ').filter(Boolean);
-      searchQuery = words.slice(0, Math.min(8, words.length)).join(' ');
+      // Use first 5 words wrapped as a phrase (parseSearchQuery treats "..." as exact phrase)
+      const phrase = words.slice(0, Math.min(5, words.length)).join(' ');
+      // Pass as phrase + a few extra tokens so highlighter has fallbacks if exact phrase isn't on the page
+      const extras = words.slice(5, 10).join(' ');
+      searchQuery = phrase ? `"${phrase}"${extras ? ' ' + extras : ''}` : undefined;
     }
     handleBookClickRef.current(moduleFirst, '#8B6914', undefined, undefined, false, searchQuery, page);
   }, []);
@@ -3550,7 +3559,20 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
   const handleBookClick = useCallback((file: FileRecord, color: string, pdfUrl?: string, courseCode?: string, isSyllabus?: boolean, initialSearchQuery?: string, initialPage?: number, openedFromSyllabusCode?: string) => {
     const cc = courseCode || file.folder?.match(/^week-\d+-(.+?)-(module|reading)$/i)?.[1]?.toLowerCase();
     setOpenReaders(prev => {
-      if (prev.some(r => r.file.id === file.id)) return prev;
+      const existingIdx = prev.findIndex(r => r.file.id === file.id);
+      if (existingIdx >= 0) {
+        // Reader already open — update search/page so a NEW citation click re-highlights & jumps
+        if (initialSearchQuery !== undefined || initialPage !== undefined) {
+          const next = [...prev];
+          next[existingIdx] = {
+            ...next[existingIdx],
+            initialSearchQuery: initialSearchQuery ?? next[existingIdx].initialSearchQuery,
+            initialPage: initialPage ?? next[existingIdx].initialPage,
+          };
+          return next;
+        }
+        return prev;
+      }
       return [...prev, { file, color, pdfUrl, courseCode: cc, isSyllabus, initialSearchQuery, initialPage, openedFromSyllabusCode }];
     });
     setFocusedReaderId(file.id);
