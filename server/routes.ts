@@ -19448,24 +19448,30 @@ document.body.removeChild(a);
       }
 
       // If active semester has ended, look for another semester whose date range covers today.
-      // If none found, we are between semesters → default to CHUM FM.
-      const activeEnd = semesterSettings.semesterEndDate ? new Date(semesterSettings.semesterEndDate) : null;
-      if (activeEnd && today > activeEnd) {
-        console.log(`[Shower Button] Active semester "${semesterSettings.semesterName}" ended ${activeEnd.toISOString().slice(0, 10)} — looking for another semester covering today`);
+      // Compare as Toronto YYYY-MM-DD strings — never as UTC ms — so "April 17 11pm Toronto"
+      // never gets misread as "April 18" because of UTC offset.
+      const todayTorontoStr = easternDateStr(today);
+      const activeEndStr = semesterSettings.semesterEndDate ? easternDateStr(new Date(semesterSettings.semesterEndDate)) : null;
+      if (activeEndStr && todayTorontoStr > activeEndStr) {
+        console.log(`[Shower Button] Active semester "${semesterSettings.semesterName}" ended ${activeEndStr} (today Toronto: ${todayTorontoStr}) — looking for another semester covering today`);
         const allSems = await storage.getAllSemesterSettings();
+        const addDaysStr = (s: string, days: number) => {
+          const d = new Date(`${s}T12:00:00`);
+          d.setDate(d.getDate() + days);
+          return easternDateStr(d);
+        };
         const matchingSem = allSems.find(s => {
-          const sStart = s.semesterStartDate ? new Date(s.semesterStartDate) : null;
-          const sEnd = s.semesterEndDate ? new Date(s.semesterEndDate) : null;
-          if (!sStart) return false;
-          const bufferStart = new Date(sStart);
-          bufferStart.setDate(bufferStart.getDate() - 7);
-          return today >= bufferStart && (!sEnd || today <= sEnd);
+          if (!s.semesterStartDate) return false;
+          const sStartStr = easternDateStr(new Date(s.semesterStartDate));
+          const sEndStr = s.semesterEndDate ? easternDateStr(new Date(s.semesterEndDate)) : null;
+          const bufferStartStr = addDaysStr(sStartStr, -7);
+          return todayTorontoStr >= bufferStartStr && (!sEndStr || todayTorontoStr <= sEndStr);
         });
         if (matchingSem) {
           console.log(`[Shower Button] Found semester covering today: "${matchingSem.semesterName}"`);
           semesterSettings = matchingSem;
         } else {
-          console.log(`[Shower Button] No semester covers today — between semesters, playing CHUM FM`);
+          console.log(`[Shower Button] No semester covers today (Toronto: ${todayTorontoStr}) — between semesters, playing CHUM FM`);
           await playChumFmRadio(haUrl);
           return res.json({ action: "radio", reason: "Between semesters — defaulting to CHUM FM" });
         }
@@ -19811,17 +19817,24 @@ document.body.removeChild(a);
         const breakCheckSem = await storage.getActiveSemesterSettings();
         if (breakCheckSem) {
           const breakToday = torontoDate();
-          const semEnd = breakCheckSem.semesterEndDate ? new Date(breakCheckSem.semesterEndDate) : null;
-          if (semEnd && breakToday > semEnd) {
-            console.log(`[Cat Lights] Past active semester "${breakCheckSem.semesterName}" end (${semEnd.toISOString().slice(0, 10)}) — checking for another semester covering today...`);
+          // Compare as Toronto YYYY-MM-DD strings — never as UTC ms — so "April 17 11pm Toronto"
+          // never gets misread as "April 18" because of UTC offset.
+          const breakTodayStr = easternDateStr(breakToday);
+          const semEndStr = breakCheckSem.semesterEndDate ? easternDateStr(new Date(breakCheckSem.semesterEndDate)) : null;
+          if (semEndStr && breakTodayStr > semEndStr) {
+            console.log(`[Cat Lights] Past active semester "${breakCheckSem.semesterName}" end (${semEndStr}, today Toronto: ${breakTodayStr}) — checking for another semester covering today...`);
             const allSems = await storage.getAllSemesterSettings();
+            const addDaysStr = (s: string, days: number) => {
+              const d = new Date(`${s}T12:00:00`);
+              d.setDate(d.getDate() + days);
+              return easternDateStr(d);
+            };
             const matchingSem = allSems.find(s => {
-              const sStart = s.semesterStartDate ? new Date(s.semesterStartDate) : null;
-              const sEnd = s.semesterEndDate ? new Date(s.semesterEndDate) : null;
-              if (!sStart) return false;
-              const bufferStart = new Date(sStart);
-              bufferStart.setDate(bufferStart.getDate() - 7);
-              return breakToday >= bufferStart && (!sEnd || breakToday <= sEnd);
+              if (!s.semesterStartDate) return false;
+              const sStartStr = easternDateStr(new Date(s.semesterStartDate));
+              const sEndStr = s.semesterEndDate ? easternDateStr(new Date(s.semesterEndDate)) : null;
+              const bufferStartStr = addDaysStr(sStartStr, -7);
+              return breakTodayStr >= bufferStartStr && (!sEndStr || breakTodayStr <= sEndStr);
             });
             if (matchingSem) {
               console.log(`[Cat Lights] Found matching semester: "${matchingSem.semesterName}" (${matchingSem.semesterStartDate} to ${matchingSem.semesterEndDate})`);
