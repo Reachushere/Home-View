@@ -30997,46 +30997,14 @@ export default function Dashboard() {
                             </div>
                           )}
                           <div className="flex items-center gap-1.5" style={{ marginTop: '13px', position: 'relative', zIndex: 15 }}>
-                            {isToday ? (() => {
-                              const now = new Date();
-                              const todayPct = Math.min(100, Math.max(0, (now.getHours() * 60 + now.getMinutes()) / 1440 * 100));
-                              const srTimeT = weatherData?.sunrise ? new Date(weatherData.sunrise) : null;
-                              const ssTimeT = weatherData?.sunset ? new Date(weatherData.sunset) : null;
-                              const srMinT = srTimeT ? srTimeT.getHours() * 60 + srTimeT.getMinutes() : 420;
-                              const ssMinT = ssTimeT ? ssTimeT.getHours() * 60 + ssTimeT.getMinutes() : 1140;
-                              const minsT = now.getHours() * 60 + now.getMinutes();
-                              const isNightText = minsT < srMinT - 60 || minsT >= ssMinT + 60;
-                              const isSunriseText = minsT >= srMinT - 60 && minsT < srMinT + 90;
-                              const isSunsetText = minsT >= ssMinT - 60 && minsT < ssMinT + 60;
-                              const isDarkWeather = isNightText || isSunriseText || isSunsetText || (weatherData && weatherData.code >= 51);
-                            return (
-                                <>
-                                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', alignSelf: 'stretch', padding: '2px 0', marginLeft: '36px' }}>
-                                    <div className="text-[10px] font-medium tracking-wide" style={{ color: '#ffffff', lineHeight: 1 }}>
-                                      {dayName}
-                                    </div>
-                                    <div className="text-[8px] font-bold tracking-wide" style={{ color: 'rgba(255,255,255,0.7)', lineHeight: 1, textTransform: 'uppercase' }}>
-                                      {format(day, 'MMM')}
-                                    </div>
-                                  </div>
-                                  <div style={{ position: 'relative', fontSize: '25px', fontWeight: 600, color: '#ffffff', lineHeight: 1, display: 'inline-flex', alignItems: 'center' }}>
-                                    {dayNum}
-                                    {isBreakDay && <span style={{ position: 'absolute', left: '100%', marginLeft: '4px', fontSize: '25px', lineHeight: 1, pointerEvents: 'none' }}>⛱️</span>}
-                                  </div>
-                                </>
-                              );
-                            })() : (
-                              <>
-                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', alignSelf: 'stretch', padding: '2px 0' }}>
-                                  <div className="text-[10px] font-medium tracking-wide" style={{ color: isNextSchoolWeek ? 'rgba(255,255,255,0.35)' : '#ffffff', lineHeight: 1 }}>{dayName}</div>
-                                  <div className="text-[8px] font-bold tracking-wide" style={{ color: isNextSchoolWeek ? 'rgba(255,255,255,0.4)' : '#ffffff', lineHeight: 1, textTransform: 'uppercase' }}>{format(day, 'MMM')}</div>
-                                </div>
-                                <div style={{ position: 'relative', fontSize: '24px', fontWeight: 700, color: isNextSchoolWeek ? 'rgba(255,255,255,0.35)' : '#ffffff', lineHeight: 1, display: 'inline-flex', alignItems: 'center' }}>
-                                  {dayNum}
-                                  {isBreakDay && <span style={{ position: 'absolute', left: '100%', marginLeft: '4px', fontSize: '24px', lineHeight: 1, opacity: isNextSchoolWeek ? 0.35 : 1, pointerEvents: 'none' }}>⛱️</span>}
-                                </div>
-                              </>
-                            )}
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', alignSelf: 'stretch', padding: '2px 0' }}>
+                              <div className="text-[10px] font-medium tracking-wide" style={{ color: isNextSchoolWeek ? 'rgba(255,255,255,0.35)' : '#ffffff', lineHeight: 1 }}>{dayName}</div>
+                              <div className="text-[8px] font-bold tracking-wide" style={{ color: isNextSchoolWeek ? 'rgba(255,255,255,0.4)' : '#ffffff', lineHeight: 1, textTransform: 'uppercase' }}>{format(day, 'MMM')}</div>
+                            </div>
+                            <div style={{ position: 'relative', fontSize: '24px', fontWeight: 700, color: isNextSchoolWeek ? 'rgba(255,255,255,0.35)' : '#ffffff', lineHeight: 1, display: 'inline-flex', alignItems: 'center' }}>
+                              {dayNum}
+                              {isBreakDay && <span style={{ position: 'absolute', left: '100%', marginLeft: '4px', fontSize: '24px', lineHeight: 1, opacity: isNextSchoolWeek ? 0.35 : 1, pointerEvents: 'none' }}>⛱️</span>}
+                            </div>
                           </div>
                         </>
                       );
