@@ -2605,7 +2605,37 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
   }, []);
   const [isAiChatOpen, setIsAiChatOpen] = useState(false);
   const [aiChatDragOffset, setAiChatDragOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [aiChatSize, setAiChatSize] = useState<{ w: number; h: number }>({ w: 520, h: 0 });
   const aiChatDragRef = useRef<{ startX: number; startY: number; baseX: number; baseY: number } | null>(null);
+  const aiChatResizeRef = useRef<{ startX: number; startY: number; baseW: number; baseH: number } | null>(null);
+  const onAiChatResizeStart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const panel = (e.currentTarget as HTMLElement).closest('[data-testid="ai-chat-panel"]') as HTMLElement | null;
+    const rect = panel?.getBoundingClientRect();
+    aiChatResizeRef.current = {
+      startX: e.clientX,
+      startY: e.clientY,
+      baseW: aiChatSize.w || rect?.width || 520,
+      baseH: aiChatSize.h || rect?.height || 600,
+    };
+    const onMove = (ev: MouseEvent) => {
+      if (!aiChatResizeRef.current) return;
+      // Anchor is bottom-right, so dragging top-left grows the panel.
+      const dx = aiChatResizeRef.current.startX - ev.clientX;
+      const dy = aiChatResizeRef.current.startY - ev.clientY;
+      const newW = Math.max(320, Math.min(window.innerWidth - 40, aiChatResizeRef.current.baseW + dx));
+      const newH = Math.max(280, Math.min(window.innerHeight - 80, aiChatResizeRef.current.baseH + dy));
+      setAiChatSize({ w: newW, h: newH });
+    };
+    const onUp = () => {
+      aiChatResizeRef.current = null;
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  };
   const onAiChatDragStart = (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest('button, select, input, textarea')) return;
     e.preventDefault();
@@ -4879,8 +4909,9 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
           position: 'absolute',
           bottom: '56px',
           right: '12px',
-          width: '520px',
+          width: `${aiChatSize.w}px`,
           maxWidth: '95vw',
+          height: aiChatSize.h ? `${aiChatSize.h}px` : undefined,
           maxHeight: 'calc(100vh - 100px)',
           background: 'linear-gradient(180deg, #0a2a5e 0%, #0d3a7a 20%, #154B96 50%, #1a5ab0 80%, #ACD6F2 100%)',
           border: '1.5px solid rgba(144,202,249,0.35)',
@@ -4893,9 +4924,26 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
         }}
         data-testid="ai-chat-panel">
           <div
+            onMouseDown={onAiChatResizeStart}
+            title="Drag to resize"
+            data-testid="handle-ai-chat-resize"
+            style={{
+              position: 'absolute',
+              top: -4,
+              left: -4,
+              width: 18,
+              height: 18,
+              cursor: 'nwse-resize',
+              borderTop: '2px solid rgba(255,255,255,0.5)',
+              borderLeft: '2px solid rgba(255,255,255,0.5)',
+              borderTopLeftRadius: '14px',
+              zIndex: 1,
+            }}
+          />
+          <div
             onMouseDown={onAiChatDragStart}
-            onDoubleClick={() => setAiChatDragOffset({ x: 0, y: 0 })}
-            title="Drag to move • Double-click header to reset position"
+            onDoubleClick={() => { setAiChatDragOffset({ x: 0, y: 0 }); setAiChatSize({ w: 520, h: 0 }); }}
+            title="Drag to move • Double-click header to reset position and size"
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', borderBottom: '1px solid rgba(255,255,255,0.15)', cursor: 'grab', userSelect: 'none' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <MessageSquare size={18} color="#ffffff" />
