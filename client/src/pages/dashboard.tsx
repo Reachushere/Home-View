@@ -26760,7 +26760,13 @@ export default function Dashboard() {
                     const rowGradientColors = (() => {
                       const gc = getCourseGradientColors(semCourse.code);
                       const isGrayFallback = gc.start === '#6b7280' && gc.end === '#9ca3af';
-                      if (isGrayFallback) {
+                      // TBD codes (TBD1/TBD2/TBD3) collide across semesters — every
+                      // semester's TBD1 resolves to the FIRST semester's stored TBD1
+                      // color, making future semesters look identical. Always use
+                      // the per-semester palette for TBD slots so each semester is
+                      // visually distinct.
+                      const isTBDCode = /^TBD\d*$/i.test(semCourse.code.replace(/\s/g, ''));
+                      if (isGrayFallback || isTBDCode) {
                         const palette = semDefaultPalettesRow[semKey];
                         if (palette && palette.length > 0) {
                           const idx = Math.max(0, coursePositionInSem) % palette.length;
