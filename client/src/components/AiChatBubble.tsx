@@ -197,7 +197,7 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
   });
   useEffect(() => { try { localStorage.setItem('aiChatBubbleSize', JSON.stringify(chatSize)); } catch {} }, [chatSize]);
   const resizeStateRef = useRef<{ startX: number; startY: number; baseW: number; baseH: number } | null>(null);
-  const onResizeStart = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+  const onResizeStart = useCallback((axis: 'corner' | 'top' | 'left' | 'right' | 'bottom' | 'topright' | 'bottomleft' | 'bottomright') => (e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
     e.stopPropagation();
     const panel = (e.currentTarget as HTMLElement).parentElement as HTMLElement;
@@ -206,12 +206,19 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
     const startX = isTouch ? (e as React.TouchEvent).touches[0].clientX : (e as React.MouseEvent).clientX;
     const startY = isTouch ? (e as React.TouchEvent).touches[0].clientY : (e as React.MouseEvent).clientY;
     resizeStateRef.current = { startX, startY, baseW: rect.width, baseH: rect.height };
+    const affectsW = (a: string) => a === 'corner' || a === 'left' || a === 'right' || a === 'topright' || a === 'bottomleft' || a === 'bottomright';
+    const affectsH = (a: string) => a === 'corner' || a === 'top' || a === 'bottom' || a === 'topright' || a === 'bottomleft' || a === 'bottomright';
+    // Panel is anchored bottom-right. Sign of growth depends on which edge:
+    // - dragging left/up edges OUT (away from anchor) grows; mouse delta is negative.
+    // - dragging right/bottom edges OUT shrinks toward anchor; mouse delta is positive but reduces size.
+    const wSign = (a: string) => (a === 'right' || a === 'topright' || a === 'bottomright') ? 1 : -1;
+    const hSign = (a: string) => (a === 'bottom' || a === 'bottomleft' || a === 'bottomright') ? 1 : -1;
     const move = (cx: number, cy: number) => {
       if (!resizeStateRef.current) return;
       const dx = cx - resizeStateRef.current.startX;
       const dy = cy - resizeStateRef.current.startY;
-      const w = Math.max(320, resizeStateRef.current.baseW - dx);
-      const h = Math.max(280, resizeStateRef.current.baseH - dy);
+      const w = affectsW(axis) ? Math.max(320, resizeStateRef.current.baseW + wSign(axis) * dx) : resizeStateRef.current.baseW;
+      const h = affectsH(axis) ? Math.max(280, resizeStateRef.current.baseH + hSign(axis) * dy) : resizeStateRef.current.baseH;
       setChatSize({ w, h });
     };
     const onMove = (ev: MouseEvent) => move(ev.clientX, ev.clientY);
@@ -485,9 +492,10 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
           boxShadow: '0 12px 40px rgba(10,42,94,0.6), 0 4px 12px rgba(0,0,0,0.3)',
           transform: `translate(${dragPos.x}px, ${dragPos.y}px)`,
         }} onMouseDownCapture={bringPanelToFront} data-testid="ai-chat-panel-dashboard">
+          {/* Top-left corner handle (drag both axes) */}
           <div
-            onMouseDown={onResizeStart}
-            onTouchStart={onResizeStart}
+            onMouseDown={onResizeStart('corner')}
+            onTouchStart={onResizeStart('corner')}
             onDoubleClick={() => setChatSize({ w: 0, h: 0 })}
             title="Drag to resize · double-click to reset"
             data-testid="handle-ai-chat-resize-dashboard"
@@ -495,8 +503,84 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
               position: 'absolute', top: 0, left: 0, width: 22, height: 22,
               cursor: 'nwse-resize', background: 'rgba(255,255,255,0.18)',
               borderTop: '2px solid rgba(255,255,255,0.7)', borderLeft: '2px solid rgba(255,255,255,0.7)',
-              borderTopLeftRadius: '14px', zIndex: 50,
-              touchAction: 'none',
+              borderTopLeftRadius: '14px', zIndex: 50, touchAction: 'none',
+            }}
+          />
+          {/* Top edge — height only */}
+          <div
+            onMouseDown={onResizeStart('top')}
+            onTouchStart={onResizeStart('top')}
+            title="Drag to resize height"
+            data-testid="handle-ai-chat-resize-top"
+            style={{
+              position: 'absolute', top: 0, left: 22, right: 22, height: 6,
+              cursor: 'ns-resize', zIndex: 49, touchAction: 'none',
+            }}
+          />
+          {/* Left edge — width only */}
+          <div
+            onMouseDown={onResizeStart('left')}
+            onTouchStart={onResizeStart('left')}
+            title="Drag to resize width"
+            data-testid="handle-ai-chat-resize-left"
+            style={{
+              position: 'absolute', top: 22, bottom: 22, left: 0, width: 6,
+              cursor: 'ew-resize', zIndex: 49, touchAction: 'none',
+            }}
+          />
+          {/* Right edge — width only (shrink toward anchor) */}
+          <div
+            onMouseDown={onResizeStart('right')}
+            onTouchStart={onResizeStart('right')}
+            title="Drag to resize width"
+            data-testid="handle-ai-chat-resize-right"
+            style={{
+              position: 'absolute', top: 22, bottom: 22, right: 0, width: 6,
+              cursor: 'ew-resize', zIndex: 49, touchAction: 'none',
+            }}
+          />
+          {/* Bottom edge — height only */}
+          <div
+            onMouseDown={onResizeStart('bottom')}
+            onTouchStart={onResizeStart('bottom')}
+            title="Drag to resize height"
+            data-testid="handle-ai-chat-resize-bottom"
+            style={{
+              position: 'absolute', bottom: 0, left: 22, right: 22, height: 6,
+              cursor: 'ns-resize', zIndex: 49, touchAction: 'none',
+            }}
+          />
+          {/* Top-right corner */}
+          <div
+            onMouseDown={onResizeStart('topright')}
+            onTouchStart={onResizeStart('topright')}
+            title="Drag to resize"
+            data-testid="handle-ai-chat-resize-topright"
+            style={{
+              position: 'absolute', top: 0, right: 0, width: 18, height: 18,
+              cursor: 'nesw-resize', zIndex: 50, touchAction: 'none',
+            }}
+          />
+          {/* Bottom-left corner */}
+          <div
+            onMouseDown={onResizeStart('bottomleft')}
+            onTouchStart={onResizeStart('bottomleft')}
+            title="Drag to resize"
+            data-testid="handle-ai-chat-resize-bottomleft"
+            style={{
+              position: 'absolute', bottom: 0, left: 0, width: 18, height: 18,
+              cursor: 'nesw-resize', zIndex: 50, touchAction: 'none',
+            }}
+          />
+          {/* Bottom-right corner */}
+          <div
+            onMouseDown={onResizeStart('bottomright')}
+            onTouchStart={onResizeStart('bottomright')}
+            title="Drag to resize"
+            data-testid="handle-ai-chat-resize-bottomright"
+            style={{
+              position: 'absolute', bottom: 0, right: 0, width: 18, height: 18,
+              cursor: 'nwse-resize', zIndex: 50, touchAction: 'none',
             }}
           />
           <div onMouseDown={onDragStart} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', paddingLeft: '34px', borderBottom: '1px solid rgba(255,255,255,0.15)', cursor: dragStateRef.current ? 'grabbing' : 'grab', userSelect: 'none' }}>
