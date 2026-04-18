@@ -236,6 +236,7 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
   const [essayCourse, setEssayCourse] = useState('all');
   const [essayStyle, setEssayStyle] = useState<'APA'|'MLA'|'Chicago'>('APA');
   const [essayLoading, setEssayLoading] = useState(false);
+  const [essayJustDone, setEssayJustDone] = useState(false);
 
   const generateEssay = useCallback(async (topic: string, opts?: { wordCount?: number; courseCode?: string; citationStyle?: string }) => {
     if (essayLoading) return;
@@ -267,6 +268,8 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
       setMessages(prev => [...prev, { role: 'assistant', content: `Essay generation failed: ${err.message}` }]);
     } finally {
       setEssayLoading(false);
+      setEssayJustDone(true);
+      setTimeout(() => setEssayJustDone(false), 8000);
     }
   }, [essayLoading, essayWords, essayCourse, essayStyle]);
 
@@ -442,8 +445,17 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
         onClick={() => { setIsOpen(prev => !prev); bringPanelToFront(); setTimeout(() => inputRef.current?.focus(), 100); }}
         style={{
           position: 'fixed', bottom: '12px', right: '12px', zIndex: 10000,
-          background: isOpen ? 'linear-gradient(135deg, #1565c0 0%, #42a5f5 50%, #90caf9 100%)' : (loading ? 'linear-gradient(135deg, #6d28d9 0%, #8b5cf6 50%, #c4b5fd 100%)' : 'linear-gradient(135deg, #0a3d7a 0%, #1565c0 50%, #42a5f5 100%)'),
-          border: `1.5px solid ${isOpen ? 'rgba(144,202,249,0.6)' : 'rgba(255,255,255,0.3)'}`,
+          background: essayLoading
+            ? 'linear-gradient(135deg, #b45309 0%, #f59e0b 50%, #fde047 100%)'
+            : essayJustDone
+              ? 'linear-gradient(135deg, #14532d 0%, #16a34a 50%, #86efac 100%)'
+              : isOpen
+                ? 'linear-gradient(135deg, #1565c0 0%, #42a5f5 50%, #90caf9 100%)'
+                : loading
+                  ? 'linear-gradient(135deg, #6d28d9 0%, #8b5cf6 50%, #c4b5fd 100%)'
+                  : 'linear-gradient(135deg, #0a3d7a 0%, #1565c0 50%, #42a5f5 100%)',
+          border: `1.5px solid ${essayLoading ? 'rgba(253,224,71,0.8)' : essayJustDone ? 'rgba(134,239,172,0.8)' : isOpen ? 'rgba(144,202,249,0.6)' : 'rgba(255,255,255,0.3)'}`,
+          animation: essayLoading ? 'pulse 1.5s ease-in-out infinite' : 'none',
           borderRadius: '50%', width: '44px', height: '44px',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           cursor: 'pointer', color: '#fff',
