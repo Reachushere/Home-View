@@ -240,6 +240,8 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
   const [essayFormOpen, setEssayFormOpen] = useState(false);
   const [essayTopic, setEssayTopic] = useState('');
   const [essayWords, setEssayWords] = useState(1200);
+  const [essayPages, setEssayPages] = useState(4);
+  const [essayLengthMode, setEssayLengthMode] = useState<'words' | 'pages'>('pages');
   const [essayCourse, setEssayCourse] = useState('all');
   const [essayStyle, setEssayStyle] = useState<'APA'|'MLA'|'Chicago'>('APA');
   const [essayLoading, setEssayLoading] = useState(false);
@@ -249,7 +251,9 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
     if (essayLoading) return;
     setEssayLoading(true);
     setEssayFormOpen(false);
-    const userText = `Write a ${opts?.wordCount ?? essayWords}-word ${opts?.citationStyle ?? essayStyle} essay on: ${topic}${(opts?.courseCode ?? essayCourse) !== 'all' ? ` (sources: ${opts?.courseCode ?? essayCourse})` : ''}`;
+    const effectiveWordCount = opts?.wordCount ?? (essayLengthMode === 'pages' ? essayPages * 250 : essayWords);
+    const lengthLabel = opts?.wordCount ? `${opts.wordCount}-word` : (essayLengthMode === 'pages' ? `${essayPages}-page (~${effectiveWordCount}-word, TNR 12pt 2x)` : `${effectiveWordCount}-word`);
+    const userText = `Write a ${lengthLabel} ${opts?.citationStyle ?? essayStyle} essay on: ${topic}${(opts?.courseCode ?? essayCourse) !== 'all' ? ` (sources: ${opts?.courseCode ?? essayCourse})` : ''}`;
     setMessages(prev => [...prev, { role: 'user', content: userText }]);
     setTimeout(() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' }), 50);
     try {
@@ -258,7 +262,7 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           topic,
-          wordCount: opts?.wordCount ?? essayWords,
+          wordCount: effectiveWordCount,
           courseCodes: (opts?.courseCode ?? essayCourse) === 'all' ? undefined : (opts?.courseCode ?? essayCourse),
           citationStyle: opts?.citationStyle ?? essayStyle,
         }),
@@ -278,7 +282,7 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
       setEssayJustDone(true);
       setTimeout(() => setEssayJustDone(false), 8000);
     }
-  }, [essayLoading, essayWords, essayCourse, essayStyle]);
+  }, [essayLoading, essayWords, essayPages, essayLengthMode, essayCourse, essayStyle]);
 
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
@@ -694,10 +698,37 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
                 onKeyDown={e => { if (e.key === 'Enter' && essayTopic.trim()) generateEssay(essayTopic.trim()); }}
               />
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap' }}>
-                <label style={{ fontSize: '11px', color: '#fff' }}>Words:</label>
-                <input type="number" value={essayWords} min={200} max={5000} step={100} onChange={e => setEssayWords(parseInt(e.target.value) || 1200)}
-                  style={{ width: '70px', padding: '4px 6px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: '4px', color: '#fff', fontSize: '11px' }}
-                  data-testid="input-essay-words" />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(255,255,255,0.06)', borderRadius: '6px', padding: '3px' }}>
+                  <button
+                    onClick={() => setEssayLengthMode('words')}
+                    style={{ padding: '3px 8px', background: essayLengthMode === 'words' ? 'rgba(245,158,11,0.4)' : 'transparent', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', fontWeight: 600, cursor: 'pointer' }}
+                    data-testid="button-essay-mode-words"
+                  >Words</button>
+                  <button
+                    onClick={() => setEssayLengthMode('pages')}
+                    style={{ padding: '3px 8px', background: essayLengthMode === 'pages' ? 'rgba(245,158,11,0.4)' : 'transparent', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', fontWeight: 600, cursor: 'pointer' }}
+                    data-testid="button-essay-mode-pages"
+                  >Pages</button>
+                </div>
+                {essayLengthMode === 'words' ? (
+                  <>
+                    <label style={{ fontSize: '11px', color: '#fff' }}>Words:</label>
+                    <input type="number" value={essayWords} min={200} max={10000} step={100} onChange={e => setEssayWords(parseInt(e.target.value) || 1200)}
+                      style={{ width: '70px', padding: '4px 6px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: '4px', color: '#fff', fontSize: '11px' }}
+                      data-testid="input-essay-words" />
+                  </>
+                ) : (
+                  <label style={{ fontSize: '11px', color: '#fff', display: 'flex', alignItems: 'center', gap: '4px' }} title="Times New Roman 12pt, double-spaced, 1in margins (~250 words/page)">
+                    Pages:
+                    <select value={essayPages} onChange={e => setEssayPages(parseInt(e.target.value, 10))}
+                      style={{ padding: '4px 6px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: '4px', color: '#fff', fontSize: '11px' }}
+                      data-testid="select-essay-pages">
+                      {[1,2,3,4,5,6,7,8,10,12,15,20,25,30].map(n => (
+                        <option key={n} value={n} style={{ background: '#0d2548' }}>{n}</option>
+                      ))}
+                    </select>
+                  </label>
+                )}
                 <label style={{ fontSize: '11px', color: '#fff' }}>Course:</label>
                 <select value={essayCourse} onChange={e => setEssayCourse(e.target.value)}
                   style={{ padding: '4px 6px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: '4px', color: '#fff', fontSize: '11px' }}
