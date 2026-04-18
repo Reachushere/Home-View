@@ -6045,7 +6045,7 @@ Return ONLY valid JSON (no markdown):
   app.post("/api/ai/chat-materials", async (req, res) => {
     try {
       if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ error: "Access denied" });
-      const { message, courseFilter, history } = req.body;
+      const { message, courseFilter, history, imageDataUrl } = req.body;
       if (!message || typeof message !== 'string' || message.trim().length < 3) {
         return res.status(400).json({ error: "Message too short" });
       }
@@ -6113,13 +6113,24 @@ ${fileContents.join('\n\n')}`;
           messages.push({ role: h.role, content: h.content });
         }
       }
-      messages.push({ role: "user", content: message.trim() });
+      const hasImage = typeof imageDataUrl === 'string' && imageDataUrl.startsWith('data:image/');
+      if (hasImage) {
+        messages.push({
+          role: "user",
+          content: [
+            { type: "text", text: message.trim() },
+            { type: "image_url", image_url: { url: imageDataUrl } },
+          ],
+        });
+      } else {
+        messages.push({ role: "user", content: message.trim() });
+      }
 
       const OpenAI = (await import("openai")).default;
       const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
       const completion = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
+        model: hasImage ? "gpt-4o" : "gpt-4o-mini",
         messages,
         max_completion_tokens: 4096,
       });
