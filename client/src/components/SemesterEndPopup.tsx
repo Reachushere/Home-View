@@ -80,7 +80,7 @@ export function SemesterEndPopup() {
     for (const s of semesters) {
       if (!s.semesterEndDate) continue;
       const endYMD = ymdFromIso(s.semesterEndDate);
-      if (endYMD < todayYMD) continue;
+      if (endYMD > todayYMD) continue;
       if (endYMD === todayYMD && minsNow < triggerMins) continue;
       const dismissKey = `${s.id}:${endYMD}`;
       if (dismissedKeys.has(dismissKey)) continue;
