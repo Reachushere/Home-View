@@ -6042,6 +6042,164 @@ Return ONLY valid JSON (no markdown):
     }
   });
 
+  // APA 7th edition citation generator — accepts a URL, DOI, or ISBN and returns a formatted reference + in-text citation
+  app.post("/api/citations/apa", async (req, res) => {
+    try {
+      if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ error: "Access denied" });
+      const rawInput: string = (req.body?.input || '').toString().trim();
+      if (!rawInput) return res.status(400).json({ error: "Provide a URL, DOI, or ISBN" });
+
+      // --- Identify input type --------------------------------------------------
+      const doiMatch = rawInput.match(/\b(10\.\d{4,9}\/[\w.\-;()/:]+)/i);
+      const isbnMatch = rawInput.replace(/[\s-]/g, '').match(/^(?:97[89])?\d{9}[\dXx]$/);
+      const urlIsHttp = /^https?:\/\//i.test(rawInput);
+
+      let metadata: any = null;
+      let sourceType: 'doi' | 'isbn' | 'webpage' = 'webpage';
+      let resolvedUrl: string = urlIsHttp ? rawInput : '';
+
+      // --- DOI via CrossRef -----------------------------------------------------
+      if (doiMatch) {
+        sourceType = 'doi';
+        const doi = doiMatch[1].replace(/[.,)]+$/, '');
+        try {
+          const r = await fetch(`https://api.crossref.org/works/${encodeURIComponent(doi)}`, {
+            headers: { 'User-Agent': 'UniCal-Citations/1.0 (mailto:bryn@uni-cal.app)' },
+          });
+          if (r.ok) {
+            const j: any = await r.json();
+            metadata = { crossref: j.message };
+            resolvedUrl = `https://doi.org/${doi}`;
+          }
+        } catch (e) { console.warn('[Citation] CrossRef fetch failed:', (e as Error).message); }
+      }
+
+      // --- ISBN via Open Library ------------------------------------------------
+      else if (isbnMatch) {
+        sourceType = 'isbn';
+        const isbn = rawInput.replace(/[\s-]/g, '');
+        try {
+          const r = await fetch(`https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`);
+          if (r.ok) {
+            const j: any = await r.json();
+            const key = `ISBN:${isbn}`;
+            if (j[key]) {
+              metadata = { openlibrary: j[key], isbn };
+              resolvedUrl = j[key].url || `https://openlibrary.org/isbn/${isbn}`;
+            }
+          }
+        } catch (e) { console.warn('[Citation] OpenLibrary fetch failed:', (e as Error).message); }
+      }
+
+      // --- Webpage: fetch HTML, extract <meta>/JSON-LD/OpenGraph metadata -------
+      if (!metadata && urlIsHttp) {
+        sourceType = 'webpage';
+        try {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 10000);
+          const r = await fetch(rawInput, {
+            signal: controller.signal,
+            headers: { 'User-Agent': 'Mozilla/5.0 (compatible; UniCal-Citations/1.0)' },
+            redirect: 'follow',
+          });
+          clearTimeout(timeout);
+          if (r.ok) {
+            resolvedUrl = r.url || rawInput;
+            const html = (await r.text()).slice(0, 600000);
+            const pickMeta = (names: string[]): string | null => {
+              for (const n of names) {
+                const re = new RegExp(`<meta[^>]+(?:name|property|itemprop)=["']${n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}["'][^>]*content=["']([^"']+)["']`, 'i');
+                const m = html.match(re);
+                if (m) return m[1].replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+                const re2 = new RegExp(`<meta[^>]+content=["']([^"']+)["'][^>]+(?:name|property|itemprop)=["']${n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}["']`, 'i');
+                const m2 = html.match(re2);
+                if (m2) return m2[1].replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+              }
+              return null;
+            };
+            const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+            const meta = {
+              title: pickMeta(['citation_title', 'og:title', 'twitter:title', 'dc.title', 'DC.title']) || (titleMatch ? titleMatch[1].trim() : null),
+              author: pickMeta(['citation_author', 'author', 'article:author', 'dc.creator', 'DC.creator', 'sailthru.author']),
+              publishedDate: pickMeta(['citation_publication_date', 'citation_date', 'article:published_time', 'datePublished', 'date', 'dc.date', 'DC.date.issued', 'pubdate', 'sailthru.date']),
+              siteName: pickMeta(['og:site_name', 'application-name', 'citation_journal_title', 'publisher', 'citation_publisher']),
+              description: pickMeta(['og:description', 'description', 'twitter:description']),
+            };
+            // JSON-LD parsing for richer data (NewsArticle / Article schemas)
+            const ldMatches = Array.from(html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi));
+            const ldData: any[] = [];
+            for (const ldm of ldMatches) {
+              try { ldData.push(JSON.parse(ldm[1].trim())); } catch {}
+            }
+            metadata = { url: resolvedUrl, html_meta: meta, jsonld: ldData };
+          }
+        } catch (e) { console.warn('[Citation] Webpage fetch failed:', (e as Error).message); }
+      }
+
+      if (!metadata) {
+        return res.status(422).json({ error: "Could not retrieve metadata. Make sure the URL/DOI/ISBN is reachable." });
+      }
+
+      // --- Ask OpenAI to format APA 7 from the gathered metadata -----------------
+      if (!process.env.OPENAI_API_KEY) {
+        return res.status(500).json({ error: "OPENAI_API_KEY not set on this host" });
+      }
+      const OpenAI = (await import("openai")).default;
+      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+      const systemPrompt = `You are an expert APA 7th Edition citation formatter. You will receive metadata about a source (DOI/CrossRef record, ISBN/Open Library record, or webpage <meta>/JSON-LD data). Produce a strictly correct APA 7 reference list entry AND a parenthetical in-text citation.
+
+APA 7 RULES YOU MUST FOLLOW:
+- Author format: "Last, F. M." Multiple authors: comma + & before last (up to 20 authors). If 21+, list 19 then "..." then last.
+- Group/organization authors: write the full name as the author.
+- If no author is identifiable, use the work title (italicized for standalone works) as the leading element.
+- Year in parentheses immediately after author. For webpages with full date: (2023, March 15). News article: (2023, March 15).
+- Article/chapter titles: sentence case, no italics, no quotes (in references).
+- Journal/book/website names: title case, italicized — wrap in *asterisks* so the frontend can render italics.
+- DOIs: format as https://doi.org/10.xxxx/xxxx (no "doi:" prefix, no period after).
+- Webpages on news sites or organizational sites: Author, A. A. (Year, Month Day). Title of work. *Site Name*. URL
+- Webpages on a website with no clear publication date: use (n.d.).
+- Books: Author, A. A. (Year). *Title of book* (Edition). Publisher.
+- Journal articles: Author, A. A. (Year). Title. *Journal Name*, Volume(Issue), pages. https://doi.org/...
+- Do NOT invent authors, dates, or page numbers. If a piece is missing, omit it per APA rules (e.g., n.d. for missing date).
+- Output ONLY valid JSON, no markdown fences, matching exactly:
+{
+  "reference": "<APA 7 reference list entry, single line, italics shown as *like this*>",
+  "inText": "<parenthetical in-text citation, e.g., (Smith, 2023) or (Smith, 2023, p. 45) — omit page if unknown>",
+  "narrative": "<narrative form, e.g., Smith (2023)>",
+  "sourceType": "<journal-article|book|webpage|news-article|report|other>",
+  "confidence": "<high|medium|low>",
+  "notes": "<optional one-sentence note about anything missing or assumed>"
+}`;
+
+      const userPrompt = `Source type hint: ${sourceType}\nResolved URL: ${resolvedUrl || '(none)'}\n\nMETADATA JSON:\n${JSON.stringify(metadata, null, 2).slice(0, 12000)}`;
+
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt },
+        ],
+        temperature: 0.2,
+        response_format: { type: "json_object" },
+        max_tokens: 700,
+      });
+
+      const raw = completion.choices[0]?.message?.content || '{}';
+      let parsed: any;
+      try { parsed = JSON.parse(raw); } catch { parsed = { reference: raw, inText: '', narrative: '', sourceType, confidence: 'low' }; }
+
+      res.json({
+        ...parsed,
+        sourceType: parsed.sourceType || sourceType,
+        url: resolvedUrl || rawInput,
+      });
+    } catch (err: any) {
+      console.error('[Citation] error:', err);
+      res.status(500).json({ error: err?.message || 'Citation generation failed' });
+    }
+  });
+
   app.post("/api/ai/chat-materials", async (req, res) => {
     try {
       if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ error: "Access denied" });

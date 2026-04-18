@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
-import { X, ChevronLeft, ChevronRight, ChevronDown, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2, Printer, Volume2, Square, Pause, Play, RefreshCw, Pencil, FileText, Minus, Loader2, ListOrdered, RotateCcw, StickyNote, Clock, ArrowLeft, Upload } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, ChevronDown, BookOpen, ZoomIn, ZoomOut, Search, Bookmark, MessageSquare, Highlighter, Trash2, Download, Save, Check, Share2, Copy, Link2, Printer, Volume2, Square, Pause, Play, RefreshCw, Pencil, FileText, Minus, Loader2, ListOrdered, RotateCcw, StickyNote, Clock, ArrowLeft, Upload, Quote } from 'lucide-react';
 import * as pdfjsLib from 'pdfjs-dist';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useAccessMode } from '@/components/access-gate';
@@ -2543,6 +2543,36 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
     });
   }, []);
   const [showLibraryNote, setShowLibraryNote] = useState(false);
+  const [showApaTool, setShowApaTool] = useState(false);
+  const [citeInput, setCiteInput] = useState('');
+  const [citeResult, setCiteResult] = useState<{ reference: string; inText: string; narrative: string; sourceType?: string; confidence?: string; notes?: string; url?: string } | null>(null);
+  const [citeLoading, setCiteLoading] = useState(false);
+  const [citeError, setCiteError] = useState<string | null>(null);
+  const [citeCopied, setCiteCopied] = useState<string | null>(null);
+  const generateCite = useCallback(async () => {
+    const input = citeInput.trim();
+    if (!input) return;
+    setCiteLoading(true); setCiteError(null); setCiteResult(null);
+    try {
+      const r = await fetch('/api/citations/apa', {
+        method: 'POST', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ input }),
+      });
+      const j = await r.json();
+      if (!r.ok) throw new Error(j?.error || 'Citation failed');
+      setCiteResult(j);
+    } catch (e: any) {
+      setCiteError(e?.message || 'Citation failed');
+    } finally { setCiteLoading(false); }
+  }, [citeInput]);
+  const renderCiteItalics = useCallback((s: string) => {
+    const parts = s.split(/(\*[^*]+\*)/g);
+    return parts.map((p, i) => p.startsWith('*') && p.endsWith('*') ? <em key={i}>{p.slice(1, -1)}</em> : <React.Fragment key={i}>{p}</React.Fragment>);
+  }, []);
+  const copyCiteText = useCallback(async (text: string, key: string) => {
+    try { await navigator.clipboard.writeText(text); setCiteCopied(key); setTimeout(() => setCiteCopied(null), 1500); } catch {}
+  }, []);
   const [isAiChatOpen, setIsAiChatOpen] = useState(false);
   const [aiChatMessages, setAiChatMessages] = useState<{ role: 'user' | 'assistant'; content: string }[]>([]);
   const [aiChatInput, setAiChatInput] = useState('');
@@ -4873,6 +4903,33 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         </button>
       </div>
       <button
+        onClick={() => setShowApaTool(true)}
+        data-testid="btn-library-apa"
+        title="APA citation generator — paste a URL, DOI, or ISBN"
+        style={{
+          position: 'absolute',
+          top: '33px',
+          right: '250px',
+          zIndex: 30,
+          width: '36px',
+          height: '36px',
+          borderRadius: '50%',
+          background: showApaTool ? 'rgba(80,160,255,0.25)' : 'rgba(0,0,0,0.5)',
+          border: showApaTool ? '1px solid rgba(80,160,255,0.45)' : '1px solid rgba(255,255,255,0.2)',
+          color: showApaTool ? 'rgba(140,190,255,0.95)' : 'rgba(255,255,255,0.7)',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          transition: 'all 0.2s',
+        }}
+        onMouseEnter={e => { if (!showApaTool) { e.currentTarget.style.background = 'rgba(0,0,0,0.6)'; e.currentTarget.style.color = '#fff'; } }}
+        onMouseLeave={e => { if (!showApaTool) { e.currentTarget.style.background = 'rgba(0,0,0,0.5)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; } }}
+      >
+        <Quote size={16} />
+      </button>
+
+      <button
         onClick={() => setShowLibraryNote(true)}
         data-testid="btn-library-notepad"
         title="Open Library Note"
@@ -5900,6 +5957,100 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
         </div>
       )}
       {showLibraryNote && <LibraryFloatingNote onClose={() => setShowLibraryNote(false)} />}
+      {showApaTool && createPortal(
+        <div
+          style={{ position: 'fixed', inset: 0, zIndex: 200500, background: 'rgba(0,0,0,0.55)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '60px 20px', overflowY: 'auto' }}
+          onMouseDown={(e) => { if (e.target === e.currentTarget) { setShowApaTool(false); } }}
+          data-testid="dialog-apa-overlay"
+        >
+          <div style={{ width: '640px', maxWidth: '95vw', background: '#ffffff', color: '#1a1a1a', borderRadius: '14px', boxShadow: '0 20px 60px rgba(0,0,0,0.5)', padding: '24px', fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }} data-testid="dialog-apa">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Quote size={20} style={{ color: '#3b82f6' }} />
+                <span style={{ fontSize: '17px', fontWeight: 700, color: '#0f172a' }}>APA 7 Citation Generator</span>
+              </div>
+              <button onClick={() => setShowApaTool(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'rgba(0,0,0,0.5)', padding: '4px', borderRadius: '6px' }} data-testid="btn-apa-close" title="Close"><X size={18} /></button>
+            </div>
+            <div style={{ fontSize: '12.5px', color: '#475569', marginBottom: '12px', lineHeight: 1.5 }}>
+              Paste a URL, DOI, or ISBN and I'll fetch the source metadata and format a proper APA 7 citation.
+            </div>
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
+              <input
+                type="text"
+                value={citeInput}
+                onChange={(e) => setCiteInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter' && !citeLoading) generateCite(); }}
+                placeholder="https://example.com/article  •  10.1037/0003-066X.59.1.29  •  9780743273565"
+                autoFocus
+                style={{ flex: 1, padding: '10px 12px', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.18)', fontSize: '13px', color: '#0f172a', background: '#fff', outline: 'none' }}
+                data-testid="input-apa-source"
+              />
+              <button
+                onClick={generateCite}
+                disabled={citeLoading || !citeInput.trim()}
+                style={{ padding: '10px 18px', borderRadius: '8px', border: 'none', background: citeLoading || !citeInput.trim() ? '#94a3b8' : '#3b82f6', color: '#fff', fontSize: '13px', fontWeight: 600, cursor: citeLoading || !citeInput.trim() ? 'default' : 'pointer', display: 'flex', alignItems: 'center', gap: '6px', minWidth: '110px', justifyContent: 'center' }}
+                data-testid="btn-apa-generate"
+              >
+                {citeLoading ? (<><Loader2 size={14} className="animate-spin" /> Working…</>) : 'Generate'}
+              </button>
+            </div>
+            {citeError && (
+              <div style={{ padding: '10px 12px', borderRadius: '8px', background: '#fee2e2', border: '1px solid #fecaca', color: '#991b1b', fontSize: '12.5px', marginBottom: '12px' }} data-testid="text-apa-error">
+                {citeError}
+              </div>
+            )}
+            {citeResult && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }} data-testid="container-apa-result">
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                    <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#64748b' }}>Reference list entry</span>
+                    <button onClick={() => copyCiteText(citeResult.reference.replace(/\*/g, ''), 'ref')} style={{ background: 'transparent', border: '1px solid rgba(0,0,0,0.15)', borderRadius: '6px', padding: '4px 10px', fontSize: '11px', color: '#0f172a', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }} data-testid="btn-apa-copy-reference">
+                      {citeCopied === 'ref' ? (<><Check size={12} /> Copied</>) : (<><Copy size={12} /> Copy</>)}
+                    </button>
+                  </div>
+                  <div style={{ padding: '12px 14px 12px 36px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '13.5px', lineHeight: 1.6, color: '#0f172a', fontFamily: "'Times New Roman', Times, serif", textIndent: '-1.5em' }} data-testid="text-apa-reference">
+                    {renderCiteItalics(citeResult.reference)}
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                  <div style={{ flex: '1 1 220px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                      <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#64748b' }}>In-text (parenthetical)</span>
+                      <button onClick={() => copyCiteText(citeResult.inText, 'in')} style={{ background: 'transparent', border: '1px solid rgba(0,0,0,0.15)', borderRadius: '6px', padding: '3px 8px', fontSize: '11px', color: '#0f172a', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }} data-testid="btn-apa-copy-intext">
+                        {citeCopied === 'in' ? (<><Check size={12} /> Copied</>) : (<><Copy size={12} /></>)}
+                      </button>
+                    </div>
+                    <div style={{ padding: '8px 12px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '13px', color: '#0f172a' }} data-testid="text-apa-intext">{citeResult.inText || '—'}</div>
+                  </div>
+                  <div style={{ flex: '1 1 220px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                      <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#64748b' }}>Narrative</span>
+                      <button onClick={() => copyCiteText(citeResult.narrative, 'nar')} style={{ background: 'transparent', border: '1px solid rgba(0,0,0,0.15)', borderRadius: '6px', padding: '3px 8px', fontSize: '11px', color: '#0f172a', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }} data-testid="btn-apa-copy-narrative">
+                        {citeCopied === 'nar' ? (<><Check size={12} /> Copied</>) : (<><Copy size={12} /></>)}
+                      </button>
+                    </div>
+                    <div style={{ padding: '8px 12px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '13px', color: '#0f172a' }} data-testid="text-apa-narrative">{citeResult.narrative || '—'}</div>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', fontSize: '11.5px', color: '#64748b' }}>
+                  {citeResult.sourceType && <span>Type: <strong style={{ color: '#0f172a' }}>{citeResult.sourceType}</strong></span>}
+                  {citeResult.confidence && <span>Confidence: <strong style={{ color: citeResult.confidence === 'high' ? '#059669' : citeResult.confidence === 'medium' ? '#d97706' : '#dc2626' }}>{citeResult.confidence}</strong></span>}
+                  {citeResult.url && <a href={citeResult.url} target="_blank" rel="noopener noreferrer" style={{ color: '#3b82f6', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '3px' }} data-testid="link-apa-source"><Link2 size={11} /> Source</a>}
+                </div>
+                {citeResult.notes && (
+                  <div style={{ padding: '8px 10px', background: '#fef3c7', border: '1px solid #fde68a', borderRadius: '6px', fontSize: '11.5px', color: '#78350f' }} data-testid="text-apa-notes">
+                    Note: {citeResult.notes}
+                  </div>
+                )}
+              </div>
+            )}
+            <div style={{ marginTop: '16px', fontSize: '11px', color: '#94a3b8', lineHeight: 1.5 }}>
+              Tip: For paywalled or login-protected sources, paste the public URL or DOI — metadata is fetched server-side. Always double-check author and date fields.
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>,
     document.body
   );
