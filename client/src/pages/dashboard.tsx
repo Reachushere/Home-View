@@ -7474,7 +7474,7 @@ export default function Dashboard() {
     }
     // Between semesters: leave at sentinel 0 so the Mon-Sun fallback renders.
     didInitialAnchorRef.current = true;
-  }, [weeks, selectedWeek]);
+  }, [weeks, selectedWeek, allSemesterSettings]);
 
   const { data: allTasksRaw = [] } = useQuery<Task[]>({
     queryKey: ["/api/tasks"],
