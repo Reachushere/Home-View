@@ -475,14 +475,16 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
         }} onMouseDownCapture={bringPanelToFront} data-testid="ai-chat-panel-dashboard">
           <div
             onMouseDown={onResizeStart}
+            onTouchStart={onResizeStart}
             onDoubleClick={() => setChatSize({ w: 0, h: 0 })}
             title="Drag to resize · double-click to reset"
             data-testid="handle-ai-chat-resize-dashboard"
             style={{
-              position: 'absolute', top: 0, left: 0, width: 22, height: 22,
-              cursor: 'nwse-resize', background: 'rgba(255,255,255,0.18)',
-              borderTop: '2px solid rgba(255,255,255,0.7)', borderLeft: '2px solid rgba(255,255,255,0.7)',
-              borderTopLeftRadius: '14px', zIndex: 10,
+              position: 'absolute', top: 0, left: 0, width: 36, height: 36,
+              cursor: 'nwse-resize', background: 'rgba(255,255,255,0.35)',
+              borderTop: '3px solid rgba(255,255,255,0.95)', borderLeft: '3px solid rgba(255,255,255,0.95)',
+              borderTopLeftRadius: '14px', zIndex: 50,
+              touchAction: 'none',
             }}
           />
           <div onMouseDown={onDragStart} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', paddingLeft: '34px', borderBottom: '1px solid rgba(255,255,255,0.15)', cursor: dragStateRef.current ? 'grabbing' : 'grab', userSelect: 'none' }}>
