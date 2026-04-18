@@ -30412,9 +30412,27 @@ export default function Dashboard() {
                 if (calendarView === "month") {
                   setCurrentMonth(new Date());
                 } else {
-                  const cw = semesterSettings?.semesterStartDate ? getWeekNumber(new Date(), new Date(semesterSettings.semesterStartDate), semesterSettings.readingWeekStart) : 1;
-                  setSelectedWeek(cw);
-                  scrollHomeworkToWeek(cw);
+                  didInitialAnchorRef.current = true;
+                  const today = new Date();
+                  const sems = allSemesterSettingsRef.current || (semesterSettings ? [semesterSettings] : []);
+                  let landed = false;
+                  for (const sem of sems) {
+                    if (!sem?.semesterStartDate) continue;
+                    const ss = new Date(sem.semesterStartDate);
+                    const wn = getWeekNumber(today, ss, sem.readingWeekStart || null);
+                    const maxW = getSemesterTotalWeeks(sem.semesterType);
+                    if (wn >= 1 && wn <= maxW) {
+                      setInterSemDayOffset(0);
+                      setSelectedWeek(wn);
+                      scrollHomeworkToWeek(wn);
+                      landed = true;
+                      break;
+                    }
+                  }
+                  if (!landed) {
+                    setSelectedWeek(0);
+                    setInterSemDayOffset(0);
+                  }
                 }
               }} data-testid="button-current-view">Current</div>
               <span style={{ width: '1px', height: '8px', background: 'rgba(120,120,120,0.3)', flexShrink: 0 }} />
