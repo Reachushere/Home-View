@@ -28403,14 +28403,20 @@ Keep your tone friendly and educational. Format your response clearly with numbe
       });
       console.log(`[EssayGen] Course filter ${JSON.stringify(wantedCourses)} matched ${courseMatchFiles.length} files`);
 
-      // Lazy-extract any file in scope that has no extractedText yet. Cap the
-      // batch so a request doesn't take forever if many files need extraction.
+      // Lazy-extract any file in scope that has no extractedText yet — but
+      // ONLY if we don't already have enough indexed files, otherwise we hit
+      // the Cloudflare 524 timeout (100s) on Pi for large batches.
+      const alreadyExtracted = courseMatchFiles.filter(f => f.extractedText && f.extractedText.length >= 200);
       const needsExtract = courseMatchFiles.filter(f => !f.extractedText || f.extractedText.length < 200);
-      if (needsExtract.length > 0) {
-        const EXTRACT_BATCH = 25;
+      if (needsExtract.length > 0 && alreadyExtracted.length < 6) {
+        // Only extract a small batch synchronously to stay under the 100s edge timeout
+        const EXTRACT_BATCH = 6;
         const batch = needsExtract.slice(0, EXTRACT_BATCH);
-        console.log(`[EssayGen] Lazy-extracting ${batch.length}/${needsExtract.length} course files missing text`);
-        await Promise.all(batch.map(async (f) => {
+        console.log(`[EssayGen] Lazy-extracting ${batch.length}/${needsExtract.length} course files (only ${alreadyExtracted.length} already indexed)`);
+        const EXTRACT_TIMEOUT_MS = 45000;
+        const withTimeout = <T>(p: Promise<T>, ms: number): Promise<T | null> =>
+          Promise.race([p, new Promise<null>(resolve => setTimeout(() => resolve(null), ms))]);
+        await withTimeout(Promise.all(batch.map(async (f) => {
           try {
             const text = await extractFileText(f);
             if (text && text.length >= 200) {
@@ -28420,7 +28426,35 @@ Keep your tone friendly and educational. Format your response clearly with numbe
           } catch (err: any) {
             console.log(`[EssayGen] Extract failed for file ${f.id}: ${err.message}`);
           }
-        }));
+        })), EXTRACT_TIMEOUT_MS);
+        // Kick off background extraction of the rest so future requests have them
+        const remaining = needsExtract.slice(EXTRACT_BATCH);
+        if (remaining.length > 0) {
+          console.log(`[EssayGen] Backgrounding extraction of ${remaining.length} more files`);
+          setImmediate(() => {
+            (async () => {
+              for (const f of remaining) {
+                try {
+                  const text = await extractFileText(f);
+                  if (text && text.length >= 200) await storage.updateFile(f.id, { extractedText: text });
+                } catch {}
+              }
+            })();
+          });
+        }
+      } else if (needsExtract.length > 0) {
+        // We have enough indexed; queue the rest in the background
+        console.log(`[EssayGen] Skipping sync extraction (${alreadyExtracted.length} already indexed); backgrounding ${needsExtract.length}`);
+        setImmediate(() => {
+          (async () => {
+            for (const f of needsExtract) {
+              try {
+                const text = await extractFileText(f);
+                if (text && text.length >= 200) await storage.updateFile(f.id, { extractedText: text });
+              } catch {}
+            }
+          })();
+        });
       }
 
       const sourceFiles = courseMatchFiles.filter(f => f.extractedText && f.extractedText.length >= 200);
