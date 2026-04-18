@@ -5014,6 +5014,46 @@ export default function Dashboard() {
     return `rgb(${dr}, ${dg}, ${db})`;
   };
 
+  // Returns '#000' or '#fff' based on perceived brightness of a gradient.
+  // Uses YIQ luminance averaged across both stops. Yellows (#f1c40f, #f7dc6f
+  // etc.) score high and get black text; deep blues/purples get white.
+  const getReadableTextColor = (hex1?: string, hex2?: string): string => {
+    const parse = (h?: string) => {
+      if (!h) return null;
+      const m = h.trim().match(/#?([0-9a-fA-F]{6})/);
+      if (m) return { r: parseInt(m[1].slice(0, 2), 16), g: parseInt(m[1].slice(2, 4), 16), b: parseInt(m[1].slice(4, 6), 16) };
+      const rgbm = h.match(/rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+      if (rgbm) return { r: +rgbm[1], g: +rgbm[2], b: +rgbm[3] };
+      const hslm = h.match(/hsl\s*\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%/);
+      if (hslm) {
+        // crude HSL→RGB just for luminance estimation
+        const hh = (+hslm[1]) / 360, s = (+hslm[2]) / 100, l = (+hslm[3]) / 100;
+        const c = (1 - Math.abs(2 * l - 1)) * s;
+        const x = c * (1 - Math.abs(((hh * 6) % 2) - 1));
+        const m2 = l - c / 2;
+        let r = 0, g = 0, b = 0;
+        if (hh < 1 / 6) { r = c; g = x; }
+        else if (hh < 2 / 6) { r = x; g = c; }
+        else if (hh < 3 / 6) { g = c; b = x; }
+        else if (hh < 4 / 6) { g = x; b = c; }
+        else if (hh < 5 / 6) { r = x; b = c; }
+        else { r = c; b = x; }
+        return { r: Math.round((r + m2) * 255), g: Math.round((g + m2) * 255), b: Math.round((b + m2) * 255) };
+      }
+      return null;
+    };
+    const a = parse(hex1);
+    const b = parse(hex2);
+    const ar = a ? (a.r * 299 + a.g * 587 + a.b * 114) / 1000 : null;
+    const br = b ? (b.r * 299 + b.g * 587 + b.b * 114) / 1000 : null;
+    let lum: number;
+    if (ar !== null && br !== null) lum = (ar + br) / 2;
+    else if (ar !== null) lum = ar;
+    else if (br !== null) lum = br;
+    else return '#fff';
+    return lum > 165 ? '#000' : '#fff';
+  };
+
   const getCourseGradientColors = (courseCode: string): { start: string; end: string } => {
     const readingEndOverrides: Record<string, string> = {
       'CASL101': '#E9C6F0',
@@ -26902,7 +26942,7 @@ export default function Dashboard() {
                       <div
                         key={semCourse.code}
                         className="items-center px-2 py-1.5 rounded border hover:border-white/40 cursor-grab transition-all overflow-hidden"
-                        style={{ display: 'flex', alignItems: 'center', gap: '6px', borderColor: courseNotAllAdded ? 'rgba(239,68,68,0.7)' : 'rgba(255,255,255,0.15)', background: `linear-gradient(180deg, ${rowGradientColors.start}, ${rowGradientColors.end})` }}
+                        style={{ display: 'flex', alignItems: 'center', gap: '6px', borderColor: courseNotAllAdded ? 'rgba(239,68,68,0.7)' : 'rgba(255,255,255,0.15)', background: `linear-gradient(180deg, ${rowGradientColors.start}, ${rowGradientColors.end})`, color: getReadableTextColor(rowGradientColors.start, rowGradientColors.end) }}
                         draggable
                         onDragStart={(e) => {
                           dragCourseRef.current = { code: semCourse.code, fromSemKey: semKey };
@@ -31512,7 +31552,7 @@ export default function Dashboard() {
                     return `rgb(${dR}, ${dG}, ${dB})`;
                   })(),
                   colors: dynamicCourseColors[courseName],
-                  fontColor: (courseData as any).courseFontColor || '',
+                  fontColor: (courseData as any).courseFontColor || getReadableTextColor((courseData as any).color, (courseData as any).colorEnd),
                 };
                 // Get full-week tasks for this course (tasks that span from visible start to Friday)
                 // Exclude completed tasks so they are removed from view
