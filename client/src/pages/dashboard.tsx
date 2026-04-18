@@ -7437,11 +7437,23 @@ export default function Dashboard() {
         }
       }
     }
-    // Anchor to today's week as long as the user hasn't navigated yet
-    // (selectedWeek===0 is the sentinel meaning "not user-set"). This allows
-    // re-anchoring when the weeks list regenerates (e.g., the user extended a
-    // semester end date and today now falls inside an active semester).
-    if (selectedWeek !== 0) { didInitialAnchorRef.current = true; return; }
+    // Anchor to today's week on initial mount. If a stale selectedWeek was
+    // persisted from a previous session and today no longer falls inside it,
+    // reset to sentinel 0 so the today-anchoring logic below picks the right
+    // week. After the user has navigated even once, never re-anchor.
+    if (didInitialAnchorRef.current) return;
+    if (selectedWeek !== 0) {
+      const persisted = weeks.find(w => w.weekNumber === selectedWeek);
+      if (persisted) {
+        const ps = parseWeekDate(persisted.startDate);
+        const pe = parseWeekDate(persisted.endDate);
+        pe.setHours(23, 59, 59, 999);
+        if (today >= ps && today <= pe) { didInitialAnchorRef.current = true; return; }
+      }
+      // Stale persisted week — fall through and recompute from today.
+      setSelectedWeek(0);
+      return;
+    }
     const currentWeek = findCurrentWeekFromList(weeks, today);
     if (currentWeek) {
       setSelectedWeek(currentWeek.weekNumber);
