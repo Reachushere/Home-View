@@ -28346,8 +28346,10 @@ Keep your tone friendly and educational. Format your response clearly with numbe
           : [];
 
       const allFiles = await storage.getFiles();
-      const sourceFiles = allFiles.filter(f => {
-        if (!f.extractedText || f.extractedText.length < 200) return false;
+      // First gather ALL course-material files (regardless of extraction state) so
+      // we can lazy-extract any that haven't been processed yet. The user expects
+      // every file in the course to be considered, not just pre-indexed ones.
+      const courseMatchFiles = allFiles.filter(f => {
         const folder = (f.folder || '').toLowerCase();
         const isCourseMaterial = /module|reading/.test(folder);
         if (!isCourseMaterial) return false;
@@ -28357,8 +28359,30 @@ Keep your tone friendly and educational. Format your response clearly with numbe
         return true;
       });
 
+      // Lazy-extract any file in scope that has no extractedText yet. Cap the
+      // batch so a request doesn't take forever if many files need extraction.
+      const needsExtract = courseMatchFiles.filter(f => !f.extractedText || f.extractedText.length < 200);
+      if (needsExtract.length > 0) {
+        const EXTRACT_BATCH = 25;
+        const batch = needsExtract.slice(0, EXTRACT_BATCH);
+        console.log(`[EssayGen] Lazy-extracting ${batch.length}/${needsExtract.length} course files missing text`);
+        await Promise.all(batch.map(async (f) => {
+          try {
+            const text = await extractFileText(f);
+            if (text && text.length >= 200) {
+              await storage.updateFile(f.id, { extractedText: text });
+              (f as any).extractedText = text;
+            }
+          } catch (err: any) {
+            console.log(`[EssayGen] Extract failed for file ${f.id}: ${err.message}`);
+          }
+        }));
+      }
+
+      const sourceFiles = courseMatchFiles.filter(f => f.extractedText && f.extractedText.length >= 200);
+
       if (sourceFiles.length === 0) {
-        return res.status(404).json({ error: "No course material files found with extracted text. Sync OneDrive and ensure files are processed." });
+        return res.status(404).json({ error: "No course material files with extractable text. Sync OneDrive and ensure files are processed." });
       }
 
       // Reference-list detection: skip files where >40% of lines look like APA refs
