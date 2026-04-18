@@ -553,7 +553,6 @@ export function getWeekNumber(date: Date, customSemesterStart?: Date, readingWee
       }
     }
   }
-  if (weekNum < FIRST_WEEK) return FIRST_WEEK;
   return weekNum;
 }
 
