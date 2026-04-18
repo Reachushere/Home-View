@@ -2549,6 +2549,7 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
   const [aiChatMessages, setAiChatMessages] = useState<{ role: 'user' | 'assistant'; content: string }[]>([]);
   const [aiChatInput, setAiChatInput] = useState('');
   const [aiChatLoading, setAiChatLoading] = useState(false);
+  const [aiChatCopiedIdx, setAiChatCopiedIdx] = useState<number | null>(null);
   const [aiChatCourseFilter, setAiChatCourseFilter] = useState('all');
   const aiChatScrollRef = useRef<HTMLDivElement>(null);
   const aiChatInputRef = useRef<HTMLTextAreaElement>(null);
@@ -4612,6 +4613,35 @@ export default function LibraryView({ isOpen, onClose, semesters: semestersProp,
                 }}>
                   {msg.content}
                 </div>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(msg.content).then(() => {
+                      setAiChatCopiedIdx(i);
+                      setTimeout(() => setAiChatCopiedIdx(prev => prev === i ? null : prev), 1500);
+                    }).catch(() => {});
+                  }}
+                  data-testid={`button-ai-chat-copy-${i}`}
+                  title="Copy message"
+                  style={{
+                    marginTop: '4px',
+                    background: aiChatCopiedIdx === i ? 'rgba(74,222,128,0.18)' : 'rgba(255,255,255,0.06)',
+                    border: `1px solid ${aiChatCopiedIdx === i ? 'rgba(74,222,128,0.4)' : 'rgba(255,255,255,0.12)'}`,
+                    color: aiChatCopiedIdx === i ? '#86efac' : 'rgba(255,255,255,0.55)',
+                    borderRadius: '6px',
+                    padding: '2px 8px',
+                    fontSize: '10px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    transition: 'all 0.15s',
+                  }}
+                  onMouseEnter={e => { if (aiChatCopiedIdx !== i) { e.currentTarget.style.background = 'rgba(255,255,255,0.12)'; e.currentTarget.style.color = '#fff'; } }}
+                  onMouseLeave={e => { if (aiChatCopiedIdx !== i) { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = 'rgba(255,255,255,0.55)'; } }}
+                >
+                  {aiChatCopiedIdx === i ? <><Check size={10} /> Copied</> : <><Copy size={10} /> Copy</>}
+                </button>
               </div>
             ))}
             {aiChatLoading && (
