@@ -560,6 +560,13 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   if (req.path === "/api/client-error") return next();
   if (req.path === "/api/test-nest-speaker") return next();
   if (req.path === "/api/onedrive/auth" || req.path === "/api/onedrive/status") return next();
+  // Allow localhost-only POST to library sync so the Pi can re-pull OneDrive
+  // files via `curl -X POST http://localhost:5000/api/library/sync` without
+  // needing a session cookie.
+  if (
+    (req.path === "/api/library/sync" || req.path === "/api/library/reindex") &&
+    (req.ip === "127.0.0.1" || req.ip === "::1" || req.ip === "::ffff:127.0.0.1" || req.hostname === "localhost")
+  ) return next();
   if (req.path === "/api/export" || req.path === "/api/import" || req.path === "/api/cleanup-duplicates") return next();
   if (req.path === "/api/shift-schedule" && req.method === "POST") return next();
   if (req.path.startsWith("/api/files/") && req.method === "PATCH") return next();
