@@ -4929,15 +4929,18 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
             data-testid="handle-ai-chat-resize"
             style={{
               position: 'absolute',
-              top: -4,
-              left: -4,
-              width: 18,
-              height: 18,
+              top: 0,
+              left: 0,
+              width: 22,
+              height: 22,
               cursor: 'nwse-resize',
-              borderTop: '2px solid rgba(255,255,255,0.5)',
-              borderLeft: '2px solid rgba(255,255,255,0.5)',
+              background: 'rgba(255,255,255,0.18)',
+              borderTop: '2px solid rgba(255,255,255,0.7)',
+              borderLeft: '2px solid rgba(255,255,255,0.7)',
               borderTopLeftRadius: '14px',
-              zIndex: 1,
+              borderBottomRightRadius: '6px',
+              zIndex: 10,
+              pointerEvents: 'auto',
             }}
           />
           <div
