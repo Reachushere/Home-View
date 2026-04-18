@@ -3748,10 +3748,14 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
   // Listen for essay-citation "open full source" events from Study Assistant
   useEffect(() => {
     const onOpenCitation = (e: Event) => {
-      const detail = (e as CustomEvent).detail as { fileId: number; page?: number; query?: string } | undefined;
+      const detail = (e as CustomEvent).detail as { fileId: number | string; page?: number; query?: string } | undefined;
       if (!detail) return;
-      const file = allFiles.find(f => f.id === detail.fileId);
-      if (!file) return;
+      const wantId = typeof detail.fileId === 'string' ? parseInt(detail.fileId, 10) : detail.fileId;
+      const file = allFiles.find(f => Number(f.id) === wantId);
+      if (!file) {
+        console.warn('[Citation] No file found for id', detail.fileId, '— available file IDs:', allFiles.slice(0, 5).map(f => f.id));
+        return;
+      }
       handleBookClick(file, '#8B6914', undefined, undefined, false, detail.query, detail.page);
     };
     window.addEventListener('bryn:open-file-citation', onOpenCitation as EventListener);

@@ -28553,9 +28553,10 @@ Keep your tone friendly and educational. Format your response clearly with numbe
 2. CITATION DIVERSITY IS REQUIRED. You MUST use AT LEAST ${minDistinct} DIFFERENT [CITE:CHUNK_ID] markers across the essay, drawn from AT LEAST ${Math.min(byFile.size, Math.max(3, Math.floor(minDistinct / 2)))} DIFFERENT source files. Do NOT cite the same CHUNK_ID more than twice. Spread your citations across the provided chunks — every body paragraph should cite at least 2 different chunks from at least 2 different files.
 3. NEVER cite a chunk that itself appears to be a reference list, bibliography, or citation index. Only cite substantive content.
 4. NEVER fabricate sources or chunk IDs. If the chunks do not support a claim, do not make that claim.
-5. Use clear academic prose with an introduction, 2–4 body paragraphs, and a conclusion.
-6. ${styleNote}
-7. Output ONLY the essay body in plain text with [CITE:...] markers inline. Do NOT include a title, references list, or any meta commentary — those will be added by the system.
+5. Use clear academic prose. If the user's topic specifies a structure (introduction / main body / conclusion / numbered sections / headings), follow it exactly. You MAY use markdown headings (e.g. lines starting with "## Introduction" or "### Subsection") and they will be rendered.
+6. If the user's topic specifies a number of citations per paragraph (e.g. "three citations per paragraph"), strictly enforce that — every paragraph must contain at least that many [CITE:...] markers, each pointing to a DIFFERENT chunk.
+7. ${styleNote}
+8. Output ONLY the essay body. Do NOT include a references list at the end — the system appends one automatically. You MAY include the structural headings the user asked for.
 
 You have ${selected.length} source chunks from ${byFile.size} different files available. USE THEM. An essay that cites only one or two chunks will be rejected.`;
 
