@@ -7316,6 +7316,7 @@ export default function Dashboard() {
   const lastAutoWeekDateRef = useRef(new Date().getDate());
   const lastSyncedSemKeyRef = useRef<string | null>(null);
   const didInitialAnchorRef = useRef(false);
+  const [interSemDayOffset, setInterSemDayOffset] = useState<number>(0);
   // Unified navigation: when in gap-mode (selectedWeek <= 0), shift the
   // 7-day offset; if the new offset puts us into a configured semester, switch
   // to that semester's week number. When in semester-mode, increment
