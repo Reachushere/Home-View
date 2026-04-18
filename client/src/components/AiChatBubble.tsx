@@ -191,6 +191,31 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
   useEffect(() => { localStorage.setItem('studyAssistantYearLevel', String(yearLevel)); }, [yearLevel]);
   const [pastedImage, setPastedImage] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
+  const [chatSize, setChatSize] = useState<{ w: number; h: number }>(() => {
+    try { const s = localStorage.getItem('aiChatBubbleSize'); if (s) return JSON.parse(s); } catch {}
+    return { w: 0, h: 0 };
+  });
+  useEffect(() => { try { localStorage.setItem('aiChatBubbleSize', JSON.stringify(chatSize)); } catch {} }, [chatSize]);
+  const resizeStateRef = useRef<{ startX: number; startY: number; baseW: number; baseH: number } | null>(null);
+  const onResizeStart = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const panel = (e.currentTarget as HTMLElement).parentElement as HTMLElement;
+    const rect = panel.getBoundingClientRect();
+    resizeStateRef.current = { startX: e.clientX, startY: e.clientY, baseW: rect.width, baseH: rect.height };
+    const onMove = (ev: MouseEvent) => {
+      if (!resizeStateRef.current) return;
+      // Anchor is bottom-right corner; dragging top-left handle moves opposite
+      const dx = ev.clientX - resizeStateRef.current.startX;
+      const dy = ev.clientY - resizeStateRef.current.startY;
+      const w = Math.max(320, resizeStateRef.current.baseW - dx);
+      const h = Math.max(280, resizeStateRef.current.baseH - dy);
+      setChatSize({ w, h });
+    };
+    const onUp = () => { resizeStateRef.current = null; document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  }, []);
   const [essayFormOpen, setEssayFormOpen] = useState(false);
   const [essayTopic, setEssayTopic] = useState('');
   const [essayWords, setEssayWords] = useState(1200);
@@ -423,8 +448,9 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
           position: 'fixed',
           bottom: expanded ? '12px' : '64px',
           right: '12px',
-          width: expanded ? 'min(900px, 95vw)' : '520px',
+          width: chatSize.w ? `${chatSize.w}px` : (expanded ? 'min(900px, 95vw)' : '520px'),
           maxWidth: '95vw',
+          height: chatSize.h ? `${chatSize.h}px` : undefined,
           maxHeight: expanded ? 'calc(100vh - 24px)' : 'calc(100vh - 100px)',
           background: 'linear-gradient(180deg, #0a2a5e 0%, #0d3a7a 20%, #154B96 50%, #1a5ab0 80%, #ACD6F2 100%)',
           border: '1.5px solid rgba(144,202,249,0.35)',
@@ -433,7 +459,19 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
           boxShadow: '0 12px 40px rgba(10,42,94,0.6), 0 4px 12px rgba(0,0,0,0.3)',
           transform: `translate(${dragPos.x}px, ${dragPos.y}px)`,
         }} onMouseDownCapture={bringPanelToFront} data-testid="ai-chat-panel-dashboard">
-          <div onMouseDown={onDragStart} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', borderBottom: '1px solid rgba(255,255,255,0.15)', cursor: dragStateRef.current ? 'grabbing' : 'grab', userSelect: 'none' }}>
+          <div
+            onMouseDown={onResizeStart}
+            onDoubleClick={() => setChatSize({ w: 0, h: 0 })}
+            title="Drag to resize · double-click to reset"
+            data-testid="handle-ai-chat-resize-dashboard"
+            style={{
+              position: 'absolute', top: 0, left: 0, width: 22, height: 22,
+              cursor: 'nwse-resize', background: 'rgba(255,255,255,0.18)',
+              borderTop: '2px solid rgba(255,255,255,0.7)', borderLeft: '2px solid rgba(255,255,255,0.7)',
+              borderTopLeftRadius: '14px', zIndex: 10,
+            }}
+          />
+          <div onMouseDown={onDragStart} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', paddingLeft: '34px', borderBottom: '1px solid rgba(255,255,255,0.15)', cursor: dragStateRef.current ? 'grabbing' : 'grab', userSelect: 'none' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <MessageSquare size={18} color="#ffffff" />
               <span style={{ fontSize: '15px', fontWeight: 700, color: '#fff', letterSpacing: '0.3px' }}>Study Assistant</span>
