@@ -11868,7 +11868,23 @@ export default function Dashboard() {
   };
 
   // Weekly view - get the current selected week's days
-  const selectedWeekInfo = weeks.find(w => w.weekNumber === selectedWeek);
+  // If today is between semesters, ignore selectedWeekInfo so calendar falls back to real-world current week
+  const selectedWeekInfo = (() => {
+    const match = weeks.find(w => w.weekNumber === selectedWeek);
+    if (!match) return undefined;
+    const sems = allSemesterSettingsRef.current || [];
+    const today = new Date();
+    let inSem = false;
+    for (const sem of sems) {
+      if (!sem.semesterStartDate) continue;
+      const ss = new Date(sem.semesterStartDate);
+      const rw = sem.readingWeekStart || null;
+      const wn = getWeekNumber(today, ss, rw);
+      const maxW = getSemesterTotalWeeks(sem.semesterType);
+      if (wn >= 1 && wn <= maxW) { inSem = true; break; }
+    }
+    return inSem ? match : undefined;
+  })();
   // Parse YYYY-MM-DD dates as local dates at noon to avoid any edge cases
   const parseAsLocalDate = (dateStr: string) => {
     // Handle both YYYY-MM-DD and full ISO strings
