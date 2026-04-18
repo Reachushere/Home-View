@@ -7423,9 +7423,14 @@ export default function Dashboard() {
           se.setHours(23, 59, 59, 999);
           if (today >= ss && today <= se) {
             const maxW = getSemesterTotalWeeks(sem.semesterType);
-            if (selectedWeek !== maxW) {
+            // Only anchor once. After the user navigates forward (Week 14+ in
+            // the extended-end window), don't keep slamming back to maxW on
+            // every refetch of allSemesterSettings.
+            if (!didInitialAnchorRef.current && selectedWeek !== maxW) {
               didInitialAnchorRef.current = true;
               setSelectedWeek(maxW);
+            } else {
+              didInitialAnchorRef.current = true;
             }
             return;
           }
