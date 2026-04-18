@@ -1155,9 +1155,14 @@ function parseSearchQuery(raw: string): ParsedQuery {
   }
 
   const allHighlightTokens: string[] = [];
+  // When the query is purely phrases (no loose/required tokens), highlight ONLY the phrases.
+  // Otherwise also include the phrase words as fallback tokens for mixed queries.
+  const phrasesOnly = phrases.length > 0 && required.length === 0 && optional.length === 0;
   for (const ph of phrases) {
     allHighlightTokens.push(ph);
-    ph.split(/\s+/).forEach(w => { if (w.length >= 2 && !allHighlightTokens.includes(w)) allHighlightTokens.push(w); });
+    if (!phrasesOnly) {
+      ph.split(/\s+/).forEach(w => { if (w.length >= 2 && !allHighlightTokens.includes(w)) allHighlightTokens.push(w); });
+    }
   }
   for (const r of required) { if (!allHighlightTokens.includes(r)) allHighlightTokens.push(r); }
   for (const o of optional) { if (!allHighlightTokens.includes(o)) allHighlightTokens.push(o); }
@@ -2652,22 +2657,26 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
       console.warn('[Citation] No matching file', { courseHint, weekNum, page });
       return;
     }
-    // Trim snippet to a searchable phrase (PDF search works best on short literal substrings)
+    // Build a searchable phrase from the citation snippet. We send ONLY the phrase (no loose
+    // fallback tokens) so the PDF highlighter marks the contiguous quoted passage instead of
+    // scattering yellow over every individual word match across the page.
     let searchQuery: string | undefined;
     if (snippet) {
-      // Strip markdown emphasis and surrounding punctuation that the model may add
+      // Strip markdown emphasis, smart quotes, and any embedded inline citation parens that the model may include.
       const cleaned = snippet
         .replace(/[*_`]+/g, '')
         .replace(/[“”]/g, '"')
         .replace(/[‘’]/g, "'")
+        .replace(/\([^()]*\bpp?\.\s*\d+[^()]*\)/gi, '')
+        .replace(/"/g, '')
         .replace(/\s+/g, ' ')
         .trim();
-      const words = cleaned.split(' ').filter(Boolean);
-      // Use first 5 words wrapped as a phrase (parseSearchQuery treats "..." as exact phrase)
-      const phrase = words.slice(0, Math.min(5, words.length)).join(' ');
-      // Pass as phrase + a few extra tokens so highlighter has fallbacks if exact phrase isn't on the page
-      const extras = words.slice(5, 10).join(' ');
-      searchQuery = phrase ? `"${phrase}"${extras ? ' ' + extras : ''}` : undefined;
+      // Use the full cleaned snippet as a single exact phrase. Long phrases give a single
+      // contiguous highlight; if the exact phrase doesn't match (PDF text broken across spans)
+      // we fall back to a shorter prefix so at least the start of the quote is highlighted.
+      if (cleaned.length >= 3) {
+        searchQuery = `"${cleaned}"`;
+      }
     }
     handleBookClickRef.current(moduleFirst, '#8B6914', undefined, undefined, false, searchQuery, page);
   }, []);
