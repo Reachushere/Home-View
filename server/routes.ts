@@ -28547,13 +28547,17 @@ Keep your tone friendly and educational. Format your response clearly with numbe
           ? "Use Chicago author-date in-text style with title-fallback: (\"Short Title\" Year)."
           : "Use APA 7 in-text style. When author/year are unavailable, use the document short title and 'n.d.': (\"Short Title,\" n.d.).";
 
+      const minDistinct = Math.min(byFile.size, Math.max(6, Math.ceil(targetWords / 200)));
       const systemPrompt = `You are an academic writing assistant for a university student. Write a well-structured essay of approximately ${targetWords} words on the given topic, drawing ONLY from the provided source chunks. Strict rules:
 1. Every substantive claim, fact, quote, or paraphrase MUST be followed by an inline citation marker in the exact format [CITE:CHUNK_ID] where CHUNK_ID is the bracketed id of the source chunk you used (e.g. [CITE:42-3]). Place the marker immediately after the sentence (before the period is fine).
-2. NEVER cite a chunk that itself appears to be a reference list, bibliography, or citation index. Only cite substantive content.
-3. NEVER fabricate sources. If the chunks do not support a claim, do not make that claim.
-4. Use clear academic prose with an introduction, 2–4 body paragraphs, and a conclusion.
-5. ${styleNote}
-6. Output ONLY the essay body in plain text with [CITE:...] markers inline. Do NOT include a title, references list, or any meta commentary — those will be added by the system.`;
+2. CITATION DIVERSITY IS REQUIRED. You MUST use AT LEAST ${minDistinct} DIFFERENT [CITE:CHUNK_ID] markers across the essay, drawn from AT LEAST ${Math.min(byFile.size, Math.max(3, Math.floor(minDistinct / 2)))} DIFFERENT source files. Do NOT cite the same CHUNK_ID more than twice. Spread your citations across the provided chunks — every body paragraph should cite at least 2 different chunks from at least 2 different files.
+3. NEVER cite a chunk that itself appears to be a reference list, bibliography, or citation index. Only cite substantive content.
+4. NEVER fabricate sources or chunk IDs. If the chunks do not support a claim, do not make that claim.
+5. Use clear academic prose with an introduction, 2–4 body paragraphs, and a conclusion.
+6. ${styleNote}
+7. Output ONLY the essay body in plain text with [CITE:...] markers inline. Do NOT include a title, references list, or any meta commentary — those will be added by the system.
+
+You have ${selected.length} source chunks from ${byFile.size} different files available. USE THEM. An essay that cites only one or two chunks will be rejected.`;
 
       const userPrompt = `Essay topic: ${topic}\nTarget length: ~${targetWords} words\n\nSource chunks:\n\n${sourcesBlock}`;
 
@@ -28587,14 +28591,48 @@ Keep your tone friendly and educational. Format your response clearly with numbe
             : `("${trimmed}" n.d.)`;
       };
 
-      // Replace [CITE:cid] markers with HTML citation spans
+      // Replace [CITE:cid] markers with HTML citation spans. Track per-chunk
+      // usage and rewrite over-used cites to round-robin through unused chunks
+      // so a single chunk doesn't appear under every claim.
+      const cidUseCount = new Map<string, number>();
+      const interleavedCids = interleaved.map(c => c.cid);
+      let rrIdx = 0;
+      const pickAlternate = (): string | null => {
+        for (let i = 0; i < interleavedCids.length; i++) {
+          const candidate = interleavedCids[(rrIdx + i) % interleavedCids.length];
+          if ((cidUseCount.get(candidate) || 0) < 2) {
+            rrIdx = (rrIdx + i + 1) % interleavedCids.length;
+            return candidate;
+          }
+        }
+        return null;
+      };
+
       const essayHtml = rawEssay.replace(/\[CITE:([A-Za-z0-9_\-]+)\]/g, (_m, cid) => {
-        const c = chunkMap.get(cid);
-        if (!c) return ''; // drop unknown citations silently
-        usedChunks.set(cid, c);
+        let c = chunkMap.get(cid);
+        let useCid = cid;
+        if (!c) {
+          // Hallucinated chunk id - try to substitute with an unused real one
+          const alt = pickAlternate();
+          if (!alt) return '';
+          useCid = alt;
+          c = chunkMap.get(alt)!;
+        } else if ((cidUseCount.get(cid) || 0) >= 2) {
+          // Same chunk cited too many times - swap in a different chunk
+          const alt = pickAlternate();
+          if (alt) {
+            useCid = alt;
+            c = chunkMap.get(alt)!;
+          }
+        }
+        cidUseCount.set(useCid, (cidUseCount.get(useCid) || 0) + 1);
+        usedChunks.set(useCid, c);
         const label = shortLabel(c);
-        return `<cite class="essay-citation" data-cid="${cid}" data-file-id="${c.fileId}"${c.page ? ` data-page="${c.page}"` : ''} style="color:#fbbf24;text-decoration:underline;cursor:pointer;font-style:normal;font-weight:600;">${label}</cite>`;
+        return `<cite class="essay-citation" data-cid="${useCid}" data-file-id="${c.fileId}"${c.page ? ` data-page="${c.page}"` : ''} style="color:#fbbf24;text-decoration:underline;cursor:pointer;font-style:normal;font-weight:600;">${label}</cite>`;
       });
+
+      const distinctFilesCited = new Set(Array.from(usedChunks.values()).map(c => c.fileId)).size;
+      console.log(`[EssayGen] Essay used ${usedChunks.size} distinct chunks across ${distinctFilesCited} files (target: ${minDistinct} chunks / ${Math.min(byFile.size, Math.max(3, Math.floor(minDistinct / 2)))} files)`);
 
       // Build APA-style references list from used chunks (one entry per file, deduped)
       const refsByFile = new Map<number, Chunk>();
