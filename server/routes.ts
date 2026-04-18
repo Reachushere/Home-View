@@ -6816,6 +6816,8 @@ The 'Test-home' view of the default 'lovelace' dashboard is ~11,400 lines / hund
 
 3b. 🧾 TOOL ARGS = STRICT JSON: Every tool call's arguments must be a single valid JSON object. Double-quote all keys and string values. Apostrophes inside string values (e.g. file paths like "/local/lovelace/Icons'/Cat.png") are LEGAL inside double-quoted JSON strings — do NOT escape, do NOT wrap in single quotes, do NOT prefix with "data:". If you ever produce something starting with "data: {" or using single quotes, the parser will reject it.
 
+3c. 🏃 KEEP GOING — NO MID-TASK PAUSES: When Bryn gives you a multi-step plan (numbered steps, "do these in order", "then do X", etc.), execute ALL steps back-to-back in one go. Do NOT stop after step 1 to "confirm" or "check in" before continuing — call the next tool immediately after the previous one returns. Only pause if (a) Bryn types "wait" (rule 3a), (b) a step fails and you need a decision, or (c) all steps are done. The phrase "Confirm each" in a plan means include the result in your final summary, NOT pause between steps.
+
 4. 📐 Sizing rule for overlays (image / icon / state-icon): MUST set explicit width AND height (or width + an aspect-preserving transform). Unset dimensions on Test-home default to 100% of the card and stack on top of everything.
 
 5. 📋 BEFORE adding a NEW element to Test-home, FIRST read 1-2 sibling elements of the same kind so you can mirror their pattern. The Test-home view has consistent conventions you must follow:
