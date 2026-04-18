@@ -3997,7 +3997,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
           style={{
             position: 'absolute',
             top: '33px',
-            right: '200px',
+            right: '160px',
             zIndex: 100002,
             background: apaCheckerOpen ? 'rgba(34,197,94,0.3)' : 'rgba(0,0,0,0.5)',
             border: apaCheckerOpen ? '1px solid rgba(34,197,94,0.5)' : '1px solid rgba(255,255,255,0.2)',
@@ -5005,7 +5005,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
         style={{
           position: 'absolute',
           top: '33px',
-          right: '250px',
+          right: '248px',
           zIndex: 30,
           width: '36px',
           height: '36px',
