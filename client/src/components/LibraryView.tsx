@@ -2609,8 +2609,11 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
   const [aiChatLoading, setAiChatLoading] = useState(false);
   const [essayFormOpen, setEssayFormOpen] = useState(false);
   const [essayTopic, setEssayTopic] = useState('');
+  const [essayLengthMode, setEssayLengthMode] = useState<'words' | 'pages'>('words');
   const [essayWords, setEssayWords] = useState(1200);
+  const [essayPages, setEssayPages] = useState(4);
   const [essayStyle, setEssayStyle] = useState<'APA' | 'MLA' | 'Chicago'>('APA');
+  const [essayCourse, setEssayCourse] = useState<string>('all');
   const [essayLoading, setEssayLoading] = useState(false);
   const [aiChatCopiedIdx, setAiChatCopiedIdx] = useState<number | null>(null);
   const [aiChatCourseFilter, setAiChatCourseFilter] = useState('all');
@@ -2668,15 +2671,18 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
   const generateLibraryEssay = useCallback(async () => {
     const topic = essayTopic.trim();
     if (!topic || essayLoading) return;
+    // Times New Roman 12pt, double-spaced, 1in margins ≈ 250 words/page
+    const targetWords = essayLengthMode === 'pages' ? essayPages * 250 : essayWords;
+    const lengthLabel = essayLengthMode === 'pages' ? `${essayPages} page${essayPages === 1 ? '' : 's'} (~${targetWords} words, TNR 12pt 2x)` : `${targetWords} words`;
     setEssayLoading(true);
     setIsAiChatOpen(true);
-    setAiChatMessages(prev => [...prev, { role: 'user', content: `📝 Essay request: "${topic}" (${essayWords} words, ${essayStyle}${aiChatCourseFilter !== 'all' ? `, ${aiChatCourseFilter}` : ''})` }]);
+    setAiChatMessages(prev => [...prev, { role: 'user', content: `📝 Essay request: "${topic}" (${lengthLabel}, ${essayStyle}${essayCourse !== 'all' ? `, ${essayCourse}` : ''})` }]);
     setTimeout(() => aiChatScrollRef.current?.scrollTo({ top: aiChatScrollRef.current.scrollHeight, behavior: 'smooth' }), 50);
     try {
       const resp = await fetch('/api/essays/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({ topic, wordCount: essayWords, citationStyle: essayStyle, courseFilter: aiChatCourseFilter }),
+        body: JSON.stringify({ topic, wordCount: targetWords, citationStyle: essayStyle, courseFilter: essayCourse }),
       });
       const text = await resp.text();
       let data: any = null;
@@ -2688,7 +2694,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
         role: 'assistant',
         content: '',
         essayHtml: data.html || '',
-        essayMeta: { wordCount: data.wordCount || essayWords, sourceCount: data.sourceCount || 0, citationStyle: data.citationStyle || essayStyle, references: data.references || [] },
+        essayMeta: { wordCount: data.wordCount || targetWords, sourceCount: data.sourceCount || 0, citationStyle: data.citationStyle || essayStyle, references: data.references || [] },
       }]);
       setEssayFormOpen(false);
       setEssayTopic('');
@@ -2698,7 +2704,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
     } finally {
       setEssayLoading(false);
     }
-  }, [essayTopic, essayWords, essayStyle, essayLoading, aiChatCourseFilter]);
+  }, [essayTopic, essayWords, essayPages, essayLengthMode, essayStyle, essayCourse, essayLoading]);
 
   const handleEssayCiteClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     const target = (e.target as HTMLElement).closest('cite.essay-citation') as HTMLElement | null;
@@ -4913,19 +4919,48 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
                 onKeyDown={e => { if (e.key === 'Enter' && essayTopic.trim() && !essayLoading) generateLibraryEssay(); }}
               />
               <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-                <label style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  Words:
-                  <input
-                    type="number"
-                    value={essayWords}
-                    min={300}
-                    max={5000}
-                    step={100}
-                    onChange={e => setEssayWords(parseInt(e.target.value, 10) || 1200)}
-                    style={{ width: '70px', padding: '4px 6px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: '4px', color: '#fff', fontSize: '11px' }}
-                    data-testid="input-essay-words-library"
-                  />
-                </label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(255,255,255,0.06)', borderRadius: '6px', padding: '3px' }}>
+                  <button
+                    onClick={() => setEssayLengthMode('words')}
+                    style={{ padding: '3px 8px', background: essayLengthMode === 'words' ? 'rgba(245,158,11,0.4)' : 'transparent', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', fontWeight: 600, cursor: 'pointer' }}
+                    data-testid="button-essay-mode-words"
+                  >Words</button>
+                  <button
+                    onClick={() => setEssayLengthMode('pages')}
+                    style={{ padding: '3px 8px', background: essayLengthMode === 'pages' ? 'rgba(245,158,11,0.4)' : 'transparent', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', fontWeight: 600, cursor: 'pointer' }}
+                    data-testid="button-essay-mode-pages"
+                  >Pages</button>
+                </div>
+                {essayLengthMode === 'words' ? (
+                  <label style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    Words:
+                    <input
+                      type="number"
+                      value={essayWords}
+                      min={300}
+                      max={10000}
+                      step={100}
+                      onChange={e => setEssayWords(parseInt(e.target.value, 10) || 1200)}
+                      style={{ width: '70px', padding: '4px 6px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: '4px', color: '#fff', fontSize: '11px' }}
+                      data-testid="input-essay-words-library"
+                    />
+                  </label>
+                ) : (
+                  <label style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', display: 'flex', alignItems: 'center', gap: '4px' }} title="Times New Roman 12pt, double-spaced, 1in margins (~250 words/page)">
+                    Pages:
+                    <select
+                      value={essayPages}
+                      onChange={e => setEssayPages(parseInt(e.target.value, 10))}
+                      style={{ padding: '4px 6px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: '4px', color: '#fff', fontSize: '11px' }}
+                      data-testid="select-essay-pages-library"
+                    >
+                      {[1,2,3,4,5,6,7,8,10,12,15,20,25,30].map(n => (
+                        <option key={n} value={n} style={{ background: '#0d2548' }}>{n}</option>
+                      ))}
+                    </select>
+                    <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)' }}>(TNR 12pt 2x)</span>
+                  </label>
+                )}
                 <label style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', display: 'flex', alignItems: 'center', gap: '4px' }}>
                   Style:
                   <select
@@ -4939,7 +4974,24 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
                     <option value="Chicago" style={{ background: '#0d2548' }}>Chicago</option>
                   </select>
                 </label>
-                <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>Course: <strong style={{ color: '#fff' }}>{aiChatCourseFilter === 'all' ? 'All' : aiChatCourseFilter}</strong></span>
+                <label style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  Course:
+                  <select
+                    value={essayCourse}
+                    onChange={e => setEssayCourse(e.target.value)}
+                    style={{ padding: '4px 6px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: '4px', color: '#fff', fontSize: '11px', maxWidth: '180px' }}
+                    data-testid="select-essay-course-library"
+                  >
+                    <option value="all" style={{ background: '#0d2548' }}>All courses</option>
+                    {semesters.filter(s => s.key !== 'docdump' && s.courses.length > 0).map(s => (
+                      <optgroup key={s.key} label={`${s.label}${s.isCurrent ? ' (current)' : s.isFuture ? ' (upcoming)' : ' (past)'}`} style={{ background: '#0d2548' }}>
+                        {s.courses.map(c => (
+                          <option key={`${s.key}-${c.code}`} value={c.code} style={{ background: '#0d2548' }}>{c.code}{c.name ? ` — ${c.name}` : ''}</option>
+                        ))}
+                      </optgroup>
+                    ))}
+                  </select>
+                </label>
               </div>
               <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
                 <button onClick={() => setEssayFormOpen(false)} style={{ padding: '6px 12px', background: 'transparent', color: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: '6px', fontSize: '12px', cursor: 'pointer' }} data-testid="button-cancel-essay-form-library">Cancel</button>
