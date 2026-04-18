@@ -48,6 +48,12 @@ function CodeBlock({ code, lang }: { code: string; lang: string }) {
 
 export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [panelZ, setPanelZ] = useState(10001);
+  const bringPanelToFront = useCallback(() => {
+    const w = window as any;
+    if (!w.__brynTopZ || w.__brynTopZ < 100100) w.__brynTopZ = 100100;
+    setPanelZ(++w.__brynTopZ);
+  }, []);
   const [dragPos, setDragPos] = useState<{ x: number; y: number }>(() => {
     try { const s = localStorage.getItem('aiChatBubbleDragPos'); if (s) return JSON.parse(s); } catch {}
     return { x: 0, y: 0 };
@@ -235,7 +241,7 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
   return (
     <>
       <button
-        onClick={() => { setIsOpen(prev => !prev); setTimeout(() => inputRef.current?.focus(), 100); }}
+        onClick={() => { setIsOpen(prev => !prev); bringPanelToFront(); setTimeout(() => inputRef.current?.focus(), 100); }}
         style={{
           position: 'fixed', bottom: '12px', right: '12px', zIndex: 10000,
           background: isOpen ? 'linear-gradient(135deg, #1565c0 0%, #42a5f5 50%, #90caf9 100%)' : (loading ? 'linear-gradient(135deg, #6d28d9 0%, #8b5cf6 50%, #c4b5fd 100%)' : 'linear-gradient(135deg, #0a3d7a 0%, #1565c0 50%, #42a5f5 100%)'),
@@ -263,11 +269,11 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
           maxHeight: expanded ? 'calc(100vh - 24px)' : 'calc(100vh - 100px)',
           background: 'linear-gradient(180deg, #0a2a5e 0%, #0d3a7a 20%, #154B96 50%, #1a5ab0 80%, #ACD6F2 100%)',
           border: '1.5px solid rgba(144,202,249,0.35)',
-          borderRadius: '14px', zIndex: 10001,
+          borderRadius: '14px', zIndex: panelZ,
           display: isOpen ? 'flex' : 'none', flexDirection: 'column',
           boxShadow: '0 12px 40px rgba(10,42,94,0.6), 0 4px 12px rgba(0,0,0,0.3)',
           transform: `translate(${dragPos.x}px, ${dragPos.y}px)`,
-        }} data-testid="ai-chat-panel-dashboard">
+        }} onMouseDownCapture={bringPanelToFront} data-testid="ai-chat-panel-dashboard">
           <div onMouseDown={onDragStart} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', borderBottom: '1px solid rgba(255,255,255,0.15)', cursor: dragStateRef.current ? 'grabbing' : 'grab', userSelect: 'none' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <MessageSquare size={18} color="#ffffff" />

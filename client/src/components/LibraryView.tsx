@@ -2539,6 +2539,14 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
   const [selectedBookColor, setSelectedBookColor] = useState('#8B4513');
   const [openReaders, setOpenReaders] = useState<{ file: FileRecord; color: string; pdfUrl?: string; courseCode?: string; isSyllabus?: boolean; initialSearchQuery?: string; initialPage?: number; openedFromSyllabusCode?: string }[]>([]);
   const [focusedReaderId, setFocusedReaderId] = useState<number | null>(null);
+  const [readerZ, setReaderZ] = useState<Record<number, number>>({});
+  const bringReaderToFront = useCallback((id: number) => {
+    const w = window as any;
+    if (!w.__brynTopZ || w.__brynTopZ < 100100) w.__brynTopZ = 100100;
+    const next = ++w.__brynTopZ;
+    setReaderZ(prev => ({ ...prev, [id]: next }));
+    setFocusedReaderId(id);
+  }, []);
   const [minimizedReaders, setMinimizedReaders] = useState<Set<number>>(new Set());
   const scrollRef = useRef<HTMLDivElement>(null);
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -5759,12 +5767,13 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
       {openReaders.map((reader, readerIdx) => {
         const isFocused = focusedReaderId === reader.file.id;
         const baseZ = 100010;
-        const zIdx = isFocused ? baseZ + openReaders.length + 1 : baseZ + readerIdx;
+        const zIdx = readerZ[reader.file.id] ?? (isFocused ? baseZ + openReaders.length + 1 : baseZ + readerIdx);
         const isMinimized = minimizedReaders.has(reader.file.id);
         if (isMinimized) return null;
         return (
         <div
           key={reader.file.id}
+          onMouseDownCapture={() => bringReaderToFront(reader.file.id)}
           style={{
             position: 'fixed',
             inset: 0,
@@ -5787,7 +5796,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
             moduleFiles={reader.courseCode ? courseModuleFilesMap[reader.courseCode] : undefined}
             onOpenModuleFile={(mf, color) => handleBookClick(mf, color, undefined, reader.courseCode, false, undefined, undefined, reader.isSyllabus ? reader.courseCode : undefined)}
             isSyllabus={reader.isSyllabus}
-            onBringToFront={() => setFocusedReaderId(reader.file.id)}
+            onBringToFront={() => bringReaderToFront(reader.file.id)}
             readerIndex={readerIdx}
             initialSearchQuery={reader.initialSearchQuery}
             initialPage={reader.initialPage}
