@@ -28663,9 +28663,45 @@ You have ${selected.length} source chunks from ${byFile.size} different files av
         };
       }
 
-      // Wrap paragraphs in <p>
-      const paragraphs = essayHtml.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
-      const html = paragraphs.map(p => `<p>${p.replace(/\n/g, '<br/>')}</p>`).join('\n');
+      // Render: detect markdown headings (## or ###) and convert to <h2>/<h3>;
+      // wrap remaining blocks in <p>. This lets prompts that ask for
+      // "Introduction / Main Body / Conclusion" headings render correctly.
+      const blocks = essayHtml.split(/\n\s*\n/).map(b => b.trim()).filter(Boolean);
+      const renderedBlocks = blocks.map(b => {
+        const headingMatch = b.match(/^(#{2,4})\s+(.+?)\s*$/);
+        if (headingMatch && !b.includes('\n')) {
+          const level = headingMatch[1].length;
+          const tag = level === 2 ? 'h2' : level === 3 ? 'h3' : 'h4';
+          return `<${tag} style="color:#fff;margin-top:1.4em;margin-bottom:0.5em;font-weight:700;">${headingMatch[2]}</${tag}>`;
+        }
+        // Mixed block: also handle leading heading line followed by paragraph
+        const lines = b.split('\n');
+        const firstHM = lines[0].match(/^(#{2,4})\s+(.+?)\s*$/);
+        if (firstHM) {
+          const level = firstHM[1].length;
+          const tag = level === 2 ? 'h2' : level === 3 ? 'h3' : 'h4';
+          const rest = lines.slice(1).join('\n').trim();
+          const headHtml = `<${tag} style="color:#fff;margin-top:1.4em;margin-bottom:0.5em;font-weight:700;">${firstHM[2]}</${tag}>`;
+          return rest ? `${headHtml}\n<p>${rest.replace(/\n/g, '<br/>')}</p>` : headHtml;
+        }
+        return `<p>${b.replace(/\n/g, '<br/>')}</p>`;
+      });
+
+      // Append a "Citation Page Index" so the user can verify every citation
+      // against the original course PDF — lists chunk id, file name, and page.
+      const pageIndexRows = Array.from(usedChunks.entries())
+        .sort((a, b) => {
+          const fa = a[1].fileName.localeCompare(b[1].fileName);
+          if (fa !== 0) return fa;
+          return (a[1].page || 0) - (b[1].page || 0);
+        })
+        .map(([cid, c]) => `<li style="margin:4px 0;"><span style="font-family:monospace;color:#fbbf24;">${shortLabel(c)}</span> &mdash; <strong>${c.fileName}</strong>${c.page ? `, page <strong>${c.page}</strong>` : ' <em>(page n/a)</em>'}${c.folder ? ` <span style="opacity:0.7;font-size:0.9em;">[${c.folder}]</span>` : ''}</li>`)
+        .join('\n');
+      const pageIndexHtml = pageIndexRows
+        ? `\n<hr style="border-color:rgba(255,255,255,0.3);margin:2em 0 1em;" />\n<h3 style="color:#fbbf24;margin-bottom:0.5em;">Citation Page Index (verification)</h3>\n<p style="font-size:0.9em;opacity:0.85;margin-bottom:0.5em;">Every citation marker above mapped back to its source file and page number. Use this to verify each claim in the original course PDFs.</p>\n<ul style="padding-left:1.2em;">${pageIndexRows}</ul>`
+        : '';
+
+      const html = renderedBlocks.join('\n') + pageIndexHtml;
 
       res.json({
         topic,
