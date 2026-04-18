@@ -32549,7 +32549,7 @@ export default function Dashboard() {
                     const _hwFallbackGrad = (() => {
                       const gc = getCourseGradientColors(courseCode);
                       const isGray = gc.start === '#6b7280' && gc.end === '#9ca3af';
-                      if ((isGray || _hwIsTBD) && _hwSemKey) {
+                      if (isGray && _hwSemKey) {
                         try {
                           const palette = semDefaultPalettesRow[_hwSemKey.toLowerCase()];
                           const semCourses = (semesterCourseAssignments && semesterCourseAssignments[_hwSemKey]) || [];
