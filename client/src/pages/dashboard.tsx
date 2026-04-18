@@ -7422,6 +7422,22 @@ export default function Dashboard() {
         return;
       }
     }
+    // Today is past the last computed week of every semester. If today is
+    // still within an active semester's extended end date, anchor to its
+    // LAST week so the user sees course rows instead of an empty gap-mode
+    // grid. (Extending semesterEndDate doesn't add new weeks to the list.)
+    for (const sem of sems) {
+      if (!sem.semesterStartDate || !sem.semesterEndDate) continue;
+      const ss = new Date(sem.semesterStartDate);
+      const se = new Date(sem.semesterEndDate);
+      se.setHours(23, 59, 59, 999);
+      if (today >= ss && today <= se) {
+        const maxW = getSemesterTotalWeeks(sem.semesterType);
+        didInitialAnchorRef.current = true;
+        setSelectedWeek(maxW);
+        return;
+      }
+    }
     // Between semesters: leave at sentinel 0 so the Mon-Sun fallback renders.
     didInitialAnchorRef.current = true;
   }, [weeks, selectedWeek]);
