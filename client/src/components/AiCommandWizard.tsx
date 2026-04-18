@@ -2017,6 +2017,8 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                     width: '6px', height: '6px', borderRadius: '50%',
                     background: 'rgba(170,120,240,0.95)',
                     boxShadow: '0 0 6px rgba(170,120,240,0.7)',
+                    animation: 'ai-wave-dot 1.2s ease-in-out infinite',
+                    animationDelay: `${i * 0.1}s`,
                   }} />
                 ))}
               </div>
