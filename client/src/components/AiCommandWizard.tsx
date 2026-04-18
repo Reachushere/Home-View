@@ -1747,7 +1747,11 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 return (
               <div
                 data-orb-bubble={msg.role === 'system' ? undefined : '1'}
-                onClick={isClickable ? () => toggleOrbExpanded(orbKey) : undefined}
+                onClick={isClickable ? () => {
+                  const sel = typeof window !== 'undefined' ? window.getSelection?.() : null;
+                  if (sel && sel.toString().length > 0) return;
+                  toggleOrbExpanded(orbKey);
+                } : undefined}
                 onMouseEnter={isOrb ? () => setHoveredOrbKey(orbKey) : undefined}
                 onMouseLeave={isOrb ? () => setHoveredOrbKey((k) => (k === orbKey ? null : k)) : undefined}
                 title={isOrb ? (orbExpanded ? 'Click to collapse' : 'Hover to preview · Click to scroll full text') : (isFailedPill && failedHasBody ? (failedExpanded ? 'Click to collapse' : 'Click to see full error') : undefined)}
