@@ -7394,12 +7394,14 @@ export default function Dashboard() {
   useEffect(() => {
     if (weeks.length === 0) return;
     lastSyncedSemKeyRef.current = weeks[0]?.startDate || null;
-    if (didInitialAnchorRef.current) return;
+    // Anchor to today's week as long as the user hasn't navigated yet
+    // (selectedWeek===0 is the sentinel meaning "not user-set"). This allows
+    // re-anchoring when the weeks list regenerates (e.g., the user extended a
+    // semester end date and today now falls inside an active semester).
     if (selectedWeek !== 0) { didInitialAnchorRef.current = true; return; }
     const today = new Date();
     const currentWeek = findCurrentWeekFromList(weeks, today);
     if (currentWeek) {
-      didInitialAnchorRef.current = true;
       setSelectedWeek(currentWeek.weekNumber);
       return;
     }
