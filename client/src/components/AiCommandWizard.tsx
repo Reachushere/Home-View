@@ -1966,20 +1966,13 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 padding: '0 2px',
                 flexShrink: 0,
               }}>
-                {[0,1,2,3,4,5,6,7,8].map(i => {
-                  const row = Math.floor(i / 3);
-                  const col = i % 3;
-                  const delay = (row + col) * 0.15;
-                  return (
-                    <div key={i} style={{
-                      width: '6px', height: '6px', borderRadius: '50%',
-                      background: 'rgba(170,120,240,0.95)',
-                      boxShadow: '0 0 6px rgba(170,120,240,0.7)',
-                      animation: 'ai-wave-dot 1.4s ease-in-out infinite',
-                      animationDelay: `${delay}s`,
-                    }} />
-                  );
-                })}
+                {[0,1,2,3,4,5,6,7,8].map(i => (
+                  <div key={i} style={{
+                    width: '6px', height: '6px', borderRadius: '50%',
+                    background: 'rgba(170,120,240,0.95)',
+                    boxShadow: '0 0 6px rgba(170,120,240,0.7)',
+                  }} />
+                ))}
               </div>
               <span style={{ fontWeight: 500, letterSpacing: '0.1px' }}>
                 {activeToolName || thinkingPhase || 'Working'}
