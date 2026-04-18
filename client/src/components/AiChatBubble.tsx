@@ -52,6 +52,11 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [courseFilter, setCourseFilter] = useState('all');
+  const [yearLevel, setYearLevel] = useState<number>(() => {
+    const saved = parseInt(localStorage.getItem('studyAssistantYearLevel') || '1', 10);
+    return Number.isFinite(saved) && saved >= 1 && saved <= 4 ? saved : 1;
+  });
+  useEffect(() => { localStorage.setItem('studyAssistantYearLevel', String(yearLevel)); }, [yearLevel]);
   const [pastedImage, setPastedImage] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);
@@ -78,7 +83,7 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
       const resp = await fetch('/api/ai/chat-materials', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: finalMsg, courseFilter, history: messages.slice(-6), imageDataUrl: sentImage || undefined }),
+        body: JSON.stringify({ message: finalMsg, courseFilter, history: messages.slice(-6), imageDataUrl: sentImage || undefined, yearLevel }),
       });
       const text = await resp.text();
       let data: any = {};
@@ -91,7 +96,7 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
     } finally {
       setLoading(false);
     }
-  }, [input, loading, courseFilter, messages, pastedImage]);
+  }, [input, loading, courseFilter, messages, pastedImage, yearLevel]);
 
   const handlePaste = useCallback((e: React.ClipboardEvent) => {
     const items = e.clipboardData?.items;
@@ -249,6 +254,18 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
               {statusMsg && <span style={{ fontSize: '10px', color: '#a5b4fc', marginLeft: '4px' }}>{statusMsg}</span>}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <select
+                value={yearLevel}
+                onChange={e => setYearLevel(parseInt(e.target.value, 10))}
+                style={{ background: 'rgba(99,102,241,0.25)', border: '1px solid rgba(165,180,252,0.5)', borderRadius: '6px', color: '#fff', fontSize: '11px', padding: '4px 8px', cursor: 'pointer', fontWeight: 600 }}
+                title="Writing level used when generating essays and prose"
+                data-testid="select-ai-chat-year-level"
+              >
+                <option value={1} style={{ background: '#0d2548' }}>Year 1</option>
+                <option value={2} style={{ background: '#0d2548' }}>Year 2</option>
+                <option value={3} style={{ background: '#0d2548' }}>Year 3</option>
+                <option value={4} style={{ background: '#0d2548' }}>Year 4</option>
+              </select>
               <select
                 value={courseFilter}
                 onChange={e => setCourseFilter(e.target.value)}

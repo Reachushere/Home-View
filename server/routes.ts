@@ -6203,7 +6203,42 @@ APA 7 RULES YOU MUST FOLLOW:
   app.post("/api/ai/chat-materials", async (req, res) => {
     try {
       if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ error: "Access denied" });
-      const { message, courseFilter, history, imageDataUrl } = req.body;
+      const { message, courseFilter, history, imageDataUrl, yearLevel } = req.body;
+      const yearNum = Number.isFinite(parseInt(yearLevel, 10)) ? Math.max(1, Math.min(4, parseInt(yearLevel, 10))) : 1;
+      const yearStyleGuide: Record<number, string> = {
+        1: `WRITING LEVEL — FIRST-YEAR UNDERGRADUATE (Year 1):
+- Vocabulary should be clear and accessible; avoid graduate-level jargon and dense theoretical terms unless the source uses them and you briefly explain them.
+- Sentence structure: mostly straightforward, occasional compound/complex sentences. Avoid long cascading subordinate clauses.
+- Argument depth: a clear thesis, 2–4 supporting points, and direct use of source material. Light synthesis between sources is fine; do NOT attempt sophisticated cross-theoretical critique.
+- Tone: confident but not authoritative; appropriate hedging ("this suggests", "the module argues") rather than sweeping claims.
+- Citations: stick close to the source — paraphrase plainly, quote when the wording matters. Do not bring in outside scholars or theory the modules haven't introduced.
+- Length of paragraphs: 4–7 sentences typical. Topic sentence + evidence + brief explanation + link.
+- Avoid: meta-commentary on methodology, extended literature reviews, jargon-laden frameworks (e.g., "epistemological positionality"), and original theoretical contributions.`,
+        2: `WRITING LEVEL — SECOND-YEAR UNDERGRADUATE (Year 2):
+- Vocabulary: discipline-appropriate terminology used correctly, with brief definitions only when unusual.
+- Sentence structure: more varied; comfortable with complex sentences and embedded clauses where they add precision.
+- Argument depth: clear thesis with 3–5 supporting points; begin synthesizing across sources and noting tensions or agreements between them.
+- Tone: assertive but still measured; can name and apply a framework introduced in the modules.
+- Citations: paraphrase confidently, integrate quotes smoothly into sentences, and weigh sources against each other lightly.
+- Paragraphs: 5–8 sentences, with stronger analytical "so what" sentences.
+- Avoid: heavy meta-theory, novel theoretical claims, or treating yourself as an authority on the field.`,
+        3: `WRITING LEVEL — THIRD-YEAR UNDERGRADUATE (Year 3):
+- Vocabulary: fluent disciplinary language; precise use of theoretical terms.
+- Sentence structure: sophisticated and varied, with controlled use of complex syntax.
+- Argument depth: nuanced thesis, sustained analysis, explicit engagement with competing positions, and clear evaluation of evidence.
+- Tone: scholarly and analytical; willing to critique sources while remaining grounded in them.
+- Citations: synthesize across multiple sources, identify gaps, and use direct quotation strategically.
+- Paragraphs: well-developed (6–10 sentences), each advancing the argument rather than just summarizing.
+- Avoid: graduate-thesis-level abstraction or claims of original theoretical contribution.`,
+        4: `WRITING LEVEL — FOURTH-YEAR UNDERGRADUATE (Year 4):
+- Vocabulary: full command of disciplinary discourse; precise, economical, and theory-aware.
+- Sentence structure: confident, sophisticated, and rhythmically varied.
+- Argument depth: original synthesis grounded in the sources; explicit framing of stakes, limitations, and counter-arguments; capstone-level analytical control.
+- Tone: scholarly, evaluative, and self-aware about methodology.
+- Citations: integrated, layered, and used to construct (not merely support) the argument.
+- Paragraphs: tightly argued, each doing distinct analytical work.
+- Avoid: unsupported originality — the argument should still rest on the provided course materials.`,
+      };
       if (!message || typeof message !== 'string' || message.trim().length < 3) {
         return res.status(400).json({ error: "Message too short" });
       }
@@ -6282,6 +6317,10 @@ APA 7 RULES YOU MUST FOLLOW:
 
       const filesWithPages = fileContents.filter(c => /\[Page \d+\]/.test(c)).length;
       const systemPrompt = `You are a study assistant for a university student at Toronto Metropolitan University (Chang School of Continuing Education). You have access to the student's course materials below.
+
+${yearStyleGuide[yearNum]}
+
+When producing essays, paragraphs, summaries, or any written work, calibrate vocabulary, sentence complexity, argument depth, and tone to the writing level above. Do NOT exceed the level — a Year 1 essay should read like a strong first-year paper, not a third-year one. This applies to ALL prose output.
 
 Answer questions thoroughly using the provided materials as your source. The materials below are excerpts that may be partial — do NOT refuse a request just because a specific detail isn't visible in the excerpt. Use everything you can find that is relevant, write the response in full (including multi-page essays when asked), and at the end add a short bracketed note like "[Coverage note: ...]" listing any sub-points you couldn't support from the visible excerpts. Never refuse the entire task because of partial coverage.
 
