@@ -27722,7 +27722,7 @@ export default function Dashboard() {
                                   </div>
 
                                   {courseHealth && (
-                                    <div>
+                                    <div style={{ paddingLeft: '18px', paddingRight: '18px' }}>
                                       <div className="text-[13px] font-semibold text-white uppercase tracking-wider mb-3">Weekly Content Status</div>
                                       <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${Math.min(courseHealth.moduleWeeks ? Object.keys(courseHealth.moduleWeeks).length : 13, 13)}, 1fr)` }}>
                                         {Array.from({ length: expHealth?.numberOfWeeks || 13 }, (_, i) => i + 1).map(w => {
