@@ -2849,9 +2849,9 @@ input[type="date"].bg-white::-webkit-datetime-edit-year-field {
 /* Week cells: lighten the dark transparent backgrounds */
 .auto-resolution-body .grid > div[style*="rgba(255,255,255,0.03)"] { background: #f8fafc !important; border-color: #e2e8f0 !important; }
 
-/* === White course cards in expanded sem health === */
-.auto-resolution-card { background: #ffffff !important; border: 1px solid #cbd5e1 !important; color: #0f172a !important; }
-.auto-resolution-card .auto-resolution-body { background: #ffffff !important; }
+/* === Course pipeline cards: dark Back PNG bg applied inline; do not override === */
+.auto-resolution-card { color: #e2e8f0; }
+.auto-resolution-card .auto-resolution-body { background: transparent !important; }
 /* Pipeline strip: clean white with subtle border, no overrides on inner content */
 .auto-flow-strip { background: #ffffff !important; border: 1px solid #e2e8f0 !important; }
 /* Section headings — navy */
