@@ -2811,15 +2811,8 @@ input[type="date"].bg-white::-webkit-datetime-edit-year-field {
   overflow: hidden !important;
 }
 
-/* Automation resolution card — light professional theme inside expanded semester health view */
-.auto-resolution-body { color: #0f172a; }
-.auto-resolution-body .text-white { color: #0f172a !important; }
-.auto-resolution-body .text-white\/80 { color: #334155 !important; }
-.auto-resolution-body .text-white\/70 { color: #475569 !important; }
-.auto-resolution-body .text-white\/60 { color: #64748b !important; }
-.auto-resolution-body .text-white\/50 { color: #94a3b8 !important; }
-.auto-resolution-body .text-white\/40 { color: #94a3b8 !important; }
-.auto-resolution-body .text-white\/30 { color: #cbd5e1 !important; }
+/* Course pipeline body now sits on dark Back PNG — keep tailwind text colors as-is */
+.auto-resolution-body { color: #e2e8f0; }
 .auto-resolution-body .border-white\/30 { border-color: #cbd5e1 !important; }
 .auto-resolution-body .border-white\/20 { border-color: #cbd5e1 !important; }
 .auto-resolution-body .border-white\/15 { border-color: #e2e8f0 !important; }
@@ -2838,14 +2831,10 @@ input[type="date"].bg-white::-webkit-datetime-edit-year-field {
 .auto-resolution-body tbody tr:hover { background: #f8fafc !important; }
 /* Section headings */
 .auto-resolution-body > div > div.text-\[13px\].font-semibold.uppercase {
-  color: #1e3a8a !important;
   letter-spacing: 0.08em;
 }
 /* Mono path text in table */
 .auto-resolution-body td.font-mono { color: #475569 !important; }
-/* Weekly content cells: keep colored backgrounds but darken text */
-.auto-resolution-body .grid > div > .text-\[10px\].font-bold,
-.auto-resolution-body .grid > div > .text-\[9px\] { color: #0f172a !important; }
 /* Week cells: lighten the dark transparent backgrounds */
 .auto-resolution-body .grid > div[style*="rgba(255,255,255,0.03)"] { background: #f8fafc !important; border-color: #e2e8f0 !important; }
 
