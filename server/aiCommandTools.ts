@@ -211,6 +211,21 @@ export const AI_COMMAND_TOOLS = [
   {
     type: "function" as const,
     function: {
+      name: "append_temporary_notes",
+      description: "Append text to Bryn's Temporary Notes box (the white scratchpad that appears where the homework box minimizes to). Use whenever Bryn says 'add to notes', 'put on notes', 'jot this down', 'write this in my notes', or similar. The text is appended on a new line with a timestamp prefix and is immediately visible on every device (laptop, phone, Pi) the next time the notes box is opened or focused. This is NOT the same as create_notepad_note (which creates separate notepad cards) — use this tool, not that one, for quick scratchpad capture.",
+      parameters: {
+        type: "object",
+        properties: {
+          content: { type: "string", description: "Plain-text content to append. Newlines preserved. Do not include HTML." },
+          prefix_timestamp: { type: "boolean", description: "Whether to prefix with a [HH:MM] timestamp. Default true." },
+        },
+        required: ["content"],
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
       name: "ha_list_entities",
       description: "Search Home Assistant for available entities. Use this BEFORE ha_service_call when you don't know the exact entity_id. Also use for 'what lights do I have?', 'list devices', 'show automations', etc. Bryn has 400+ devices — always search, never guess.",
       parameters: {
@@ -1953,6 +1968,37 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           color: args.color || null,
         }).returning();
         return { success: true, result: { id: note.id, title: note.title } };
+      }
+
+      case "append_temporary_notes": {
+        const raw = String(args.content ?? '');
+        if (!raw.trim()) return { success: false, result: { error: "content is empty" } };
+        const escapeHtml = (s: string) => s
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+        const tsPrefix = (args.prefix_timestamp === false) ? '' : (() => {
+          try {
+            const now = new Date();
+            const hh = String(now.getHours()).padStart(2, '0');
+            const mm = String(now.getMinutes()).padStart(2, '0');
+            return `[${hh}:${mm}] `;
+          } catch { return ''; }
+        })();
+        const htmlBody = escapeHtml(raw).replace(/\n/g, '<br>');
+        const newBlock = `<div>${escapeHtml(tsPrefix)}${htmlBody}</div>`;
+        const existing = await db.select().from(appState).where(eq(appState.key, 'blank_canvas_notes_html')).limit(1);
+        const prev = existing.length > 0 ? (existing[0].value || '') : '';
+        const sep = prev && !prev.endsWith('>') ? '<br>' : '';
+        const next = prev + sep + newBlock;
+        if (existing.length > 0) {
+          await db.update(appState).set({ value: next, updatedAt: new Date() }).where(eq(appState.key, 'blank_canvas_notes_html'));
+        } else {
+          await db.insert(appState).values({ key: 'blank_canvas_notes_html', value: next });
+        }
+        return { success: true, result: { appended: raw.length, total_chars: next.length, location: "Temporary Notes box" } };
       }
 
       case "ha_list_dashboards": {

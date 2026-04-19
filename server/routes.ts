@@ -4512,6 +4512,31 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
+  // Beacon endpoint — accepts JSON via navigator.sendBeacon (which uses POST and
+  // can't set Content-Type for cross-origin) for the blank-canvas-notes save so
+  // iOS Safari doesn't lose unsaved typing when the tab is closed/backgrounded.
+  app.post("/api/blank-canvas-notes-beacon", express.text({ type: '*/*', limit: '2mb' }), async (req, res) => {
+    try {
+      let content = '';
+      const body: any = req.body;
+      if (typeof body === 'string') {
+        try { content = JSON.parse(body)?.content ?? ''; } catch { content = body; }
+      } else if (body && typeof body === 'object') {
+        content = body.content ?? '';
+      }
+      if (typeof content !== 'string') return res.status(400).json({ error: "content must be a string" });
+      const existing = await db.select().from(appState).where(eq(appState.key, 'blank_canvas_notes_html')).limit(1);
+      if (existing.length > 0) {
+        await db.update(appState).set({ value: content, updatedAt: new Date() }).where(eq(appState.key, 'blank_canvas_notes_html'));
+      } else {
+        await db.insert(appState).values({ key: 'blank_canvas_notes_html', value: content });
+      }
+      res.json({ success: true });
+    } catch (err) {
+      res.status(500).json({ error: "Failed to save blank canvas notes (beacon)" });
+    }
+  });
+
   app.get("/api/shift-schedule", async (_req, res) => {
     try {
       res.set('Cache-Control', 'no-cache, no-store, must-revalidate');

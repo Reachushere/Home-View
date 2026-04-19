@@ -1654,39 +1654,86 @@ export default function Dashboard() {
   const blankEditorRef = useRef<HTMLDivElement>(null);
   const blankCanvasNotesSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const blankCanvasNotesLoadedRef = useRef(false);
-  // Hydrate the blank-canvas notes editor from the server (was localStorage-only).
-  // localStorage still acts as an instant cache so reload doesn't flash empty,
-  // but the server is now the source of truth and Pi/Replit/etc see the same content.
-  useEffect(() => {
-    let cancelled = false;
-    fetch('/api/blank-canvas-notes')
-      .then(r => r.ok ? r.json() : null)
-      .then(d => {
-        if (cancelled || !d) return;
-        const serverHtml = typeof d.content === 'string' ? d.content : '';
-        try { localStorage.setItem('blankCanvasNotesHtml', serverHtml); } catch {}
-        if (blankEditorRef.current && blankEditorRef.current.innerHTML !== serverHtml) {
-          // Don't clobber unsaved local edits the user already made this session.
-          if (!blankCanvasNotesLoadedRef.current) {
-            blankEditorRef.current.innerHTML = serverHtml;
-          }
+  const blankCanvasNotesLastSavedRef = useRef<string>('');
+  const blankCanvasNotesPendingRef = useRef<string | null>(null);
+  // Pull-from-server fn — runs on mount, every time the notes box opens, and
+  // on tab focus / visibility-change. This is what makes the phone show the
+  // same content as the laptop instead of opening blank.
+  const hydrateBlankCanvasNotesFromServer = useCallback(async (force = false) => {
+    try {
+      const r = await fetch('/api/blank-canvas-notes', { cache: 'no-store' });
+      if (!r.ok) return;
+      const d = await r.json();
+      const serverHtml = typeof d?.content === 'string' ? d.content : '';
+      try { localStorage.setItem('blankCanvasNotesHtml', serverHtml); } catch {}
+      blankCanvasNotesLastSavedRef.current = serverHtml;
+      if (blankEditorRef.current && (force || !blankCanvasNotesLoadedRef.current || blankEditorRef.current.innerHTML === '')) {
+        if (blankEditorRef.current.innerHTML !== serverHtml) {
+          blankEditorRef.current.innerHTML = serverHtml;
         }
-        blankCanvasNotesLoadedRef.current = true;
-      })
-      .catch(() => { blankCanvasNotesLoadedRef.current = true; });
-    return () => { cancelled = true; };
+      }
+      blankCanvasNotesLoadedRef.current = true;
+    } catch {}
+  }, []);
+  useEffect(() => { hydrateBlankCanvasNotesFromServer(false); }, [hydrateBlankCanvasNotesFromServer]);
+  // Re-hydrate on tab focus / visibility — phone or laptop catches up to the
+  // other device's edits whenever you bring the tab back to the foreground.
+  useEffect(() => {
+    const onVis = () => {
+      if (document.visibilityState === 'visible') hydrateBlankCanvasNotesFromServer(false);
+    };
+    const onFocus = () => hydrateBlankCanvasNotesFromServer(false);
+    document.addEventListener('visibilitychange', onVis);
+    window.addEventListener('focus', onFocus);
+    return () => { document.removeEventListener('visibilitychange', onVis); window.removeEventListener('focus', onFocus); };
+  }, [hydrateBlankCanvasNotesFromServer]);
+  const flushBlankCanvasNotes = useCallback((html: string) => {
+    blankCanvasNotesLastSavedRef.current = html;
+    blankCanvasNotesPendingRef.current = null;
+    // Use sendBeacon when available so the save survives Safari closing the tab.
+    try {
+      if (navigator.sendBeacon) {
+        const blob = new Blob([JSON.stringify({ content: html })], { type: 'application/json' });
+        if (navigator.sendBeacon('/api/blank-canvas-notes-beacon', blob)) return;
+      }
+    } catch {}
+    fetch('/api/blank-canvas-notes', {
+      method: 'PUT', keepalive: true,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: html }),
+    }).catch(err => console.error('[blank-canvas-notes] save failed', err));
   }, []);
   const persistBlankCanvasNotes = useCallback((html: string) => {
     try { localStorage.setItem('blankCanvasNotesHtml', html); } catch {}
+    blankCanvasNotesPendingRef.current = html;
     if (blankCanvasNotesSaveTimer.current) clearTimeout(blankCanvasNotesSaveTimer.current);
     blankCanvasNotesSaveTimer.current = setTimeout(() => {
-      fetch('/api/blank-canvas-notes', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: html }),
-      }).catch(err => console.error('[blank-canvas-notes] save failed', err));
+      const pending = blankCanvasNotesPendingRef.current;
+      if (pending !== null) flushBlankCanvasNotes(pending);
     }, 800);
-  }, []);
+  }, [flushBlankCanvasNotes]);
+  // Flush pending save when tab is being hidden / closed — critical for
+  // iOS Safari which can suspend before the 800ms debounce fires.
+  useEffect(() => {
+    const flushNow = () => {
+      const pending = blankCanvasNotesPendingRef.current;
+      if (pending === null) return;
+      if (blankCanvasNotesSaveTimer.current) {
+        clearTimeout(blankCanvasNotesSaveTimer.current);
+        blankCanvasNotesSaveTimer.current = null;
+      }
+      flushBlankCanvasNotes(pending);
+    };
+    const onVis = () => { if (document.visibilityState === 'hidden') flushNow(); };
+    document.addEventListener('visibilitychange', onVis);
+    window.addEventListener('pagehide', flushNow);
+    window.addEventListener('beforeunload', flushNow);
+    return () => {
+      document.removeEventListener('visibilitychange', onVis);
+      window.removeEventListener('pagehide', flushNow);
+      window.removeEventListener('beforeunload', flushNow);
+    };
+  }, [flushBlankCanvasNotes]);
   const [blankShowFontSize, setBlankShowFontSize] = useState(false);
   const [blankShowFontColor, setBlankShowFontColor] = useState(false);
   const blankExecCommand = useCallback((cmd: string, value?: string) => {
@@ -36284,6 +36331,61 @@ export default function Dashboard() {
                   }
                   setBlankShowFontSize(false);
                   setBlankShowFontColor(false);
+                }}
+                onPaste={(e) => {
+                  // Image paste support — right-click paste on desktop, long-press
+                  // paste on iPhone Safari. Read any image item from clipboardData,
+                  // convert to a data URL, and insert as <img> at the caret.
+                  const items = e.clipboardData?.items;
+                  if (!items || items.length === 0) return;
+                  let handledImage = false;
+                  for (let i = 0; i < items.length; i++) {
+                    const it = items[i];
+                    if (it.kind === 'file' && it.type.startsWith('image/')) {
+                      const file = it.getAsFile();
+                      if (!file) continue;
+                      handledImage = true;
+                      e.preventDefault();
+                      const reader = new FileReader();
+                      reader.onload = () => {
+                        const dataUrl = String(reader.result || '');
+                        if (!dataUrl) return;
+                        const img = document.createElement('img');
+                        img.src = dataUrl;
+                        img.style.maxWidth = '100%';
+                        img.style.height = 'auto';
+                        img.style.display = 'block';
+                        img.style.margin = '6px 0';
+                        img.style.borderRadius = '4px';
+                        const sel = window.getSelection();
+                        if (sel && sel.rangeCount > 0 && blankEditorRef.current?.contains(sel.anchorNode)) {
+                          const range = sel.getRangeAt(0);
+                          range.deleteContents();
+                          range.insertNode(img);
+                          range.setStartAfter(img);
+                          range.collapse(true);
+                          sel.removeAllRanges();
+                          sel.addRange(range);
+                        } else {
+                          blankEditorRef.current?.appendChild(img);
+                        }
+                        if (blankEditorRef.current) {
+                          blankCanvasNotesLoadedRef.current = true;
+                          persistBlankCanvasNotes(blankEditorRef.current.innerHTML);
+                        }
+                      };
+                      reader.readAsDataURL(file);
+                      break;
+                    }
+                  }
+                  if (handledImage) return;
+                  // For text paste keep default behaviour but force plain text so
+                  // pasted styles don't override the editor's font.
+                  const text = e.clipboardData?.getData('text/plain');
+                  if (typeof text === 'string' && text.length > 0) {
+                    e.preventDefault();
+                    document.execCommand('insertText', false, text);
+                  }
                 }}
                 dangerouslySetInnerHTML={{ __html: (() => {
                   const saved = localStorage.getItem('blankCanvasNotesHtml');
