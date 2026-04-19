@@ -27514,7 +27514,7 @@ export default function Dashboard() {
                                               {okCount}/{steps.length} ok
                                             </span>
                                           </div>
-                                          <div className="rounded-lg relative" style={{ backgroundImage: `url(${blueBoxImg})`, backgroundSize: '100% 100%', backgroundRepeat: 'no-repeat', border: '1px solid rgba(0,0,0,0.12)', padding: '18px 14px 14px' }}>
+                                          <div className="relative" style={{ backgroundImage: `url(${blueBoxImg})`, backgroundSize: '100% 100%', backgroundRepeat: 'no-repeat', padding: '22px 18px 18px' }}>
                                             <div className="relative flex items-stretch" style={{ width: '100%' }}>
                                               {steps.map((step, sIdx) => {
                                                 const Icon = step.Icon;
@@ -27533,11 +27533,11 @@ export default function Dashboard() {
                                                           : (step.label === 'Sync' || step.label === 'Storage' || step.label === 'Library') ? greenBoxImg
                                                           : null;
                                                         const hasImg = !!stepBg;
-                                                        return { flex: '1 1 0', minWidth: 0, padding: hasImg ? '0' : '8px 6px 6px', cursor: isProblem ? 'pointer' : 'default', borderRadius: '8px', background: '#ffffff', backgroundImage: hasImg ? `url(${stepBg})` : undefined, backgroundSize: hasImg ? '100% 100%' : undefined, backgroundRepeat: hasImg ? 'no-repeat' : undefined, minHeight: hasImg ? '110px' : undefined, border: `1px solid ${isProblem ? accent + '88' : 'rgba(0,0,0,0.15)'}`, boxShadow: isProblem ? `0 0 0 1px ${accent}44` : 'none', transition: 'all 0.18s ease', overflow: 'hidden' };
+                                                        return { flex: '1 1 0', minWidth: 0, padding: hasImg ? '0' : '8px 6px 6px', cursor: isProblem ? 'pointer' : 'default', borderRadius: hasImg ? '0' : '8px', background: hasImg ? 'transparent' : '#ffffff', backgroundImage: hasImg ? `url(${stepBg})` : undefined, backgroundSize: hasImg ? '100% 100%' : undefined, backgroundRepeat: hasImg ? 'no-repeat' : undefined, minHeight: hasImg ? '110px' : undefined, border: hasImg ? 'none' : `1px solid ${isProblem ? accent + '88' : 'rgba(0,0,0,0.15)'}`, boxShadow: 'none', transition: 'all 0.18s ease' };
                                                       })()}
                                                       onClick={(e) => { if (isProblem) { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: step.issueKey, step: 0, phase: 'primary' }); } }}
-                                                      onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = accent; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 0 0 2px ${accent}55`; }}
-                                                      onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = isProblem ? accent + '88' : 'rgba(0,0,0,0.15)'; (e.currentTarget as HTMLDivElement).style.boxShadow = isProblem ? `0 0 0 1px ${accent}44` : 'none'; }}
+                                                      onMouseEnter={(e) => { const lbl = step.label; const hasArt = lbl === 'OneDrive' || lbl === 'TTS' || lbl === 'Sync' || lbl === 'Storage' || lbl === 'Library'; if (!hasArt) { (e.currentTarget as HTMLDivElement).style.borderColor = accent; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 0 0 2px ${accent}55`; } else { (e.currentTarget as HTMLDivElement).style.filter = 'brightness(1.08)'; } }}
+                                                      onMouseLeave={(e) => { const lbl = step.label; const hasArt = lbl === 'OneDrive' || lbl === 'TTS' || lbl === 'Sync' || lbl === 'Storage' || lbl === 'Library'; if (!hasArt) { (e.currentTarget as HTMLDivElement).style.borderColor = isProblem ? accent + '88' : 'rgba(0,0,0,0.15)'; (e.currentTarget as HTMLDivElement).style.boxShadow = isProblem ? `0 0 0 1px ${accent}44` : 'none'; } else { (e.currentTarget as HTMLDivElement).style.filter = 'none'; } }}
                                                     >
                                                       {/* Status LED top-right */}
                                                       <span className="absolute" style={{ top: '5px', right: '6px', width: '7px', height: '7px', borderRadius: '50%', background: accent, boxShadow: `0 0 8px ${accent}, 0 0 2px ${accent}`, zIndex: 2 }} />
@@ -27553,12 +27553,7 @@ export default function Dashboard() {
                                                                 <Icon size={16} style={{ color: accent, strokeWidth: 2 }} />
                                                               </div>
                                                             )}
-                                                            {hasArtBg && step.label !== 'OneDrive' && (
-                                                              <div className="relative flex items-center justify-center mb-1.5 mt-2" style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.35)' }}>
-                                                                <Icon size={16} style={{ color: '#ffffff', strokeWidth: 2 }} />
-                                                              </div>
-                                                            )}
-                                                            {hasArtBg && step.label === 'OneDrive' && <div style={{ flex: 1 }} />}
+                                                            {hasArtBg && <div style={{ flex: 1 }} />}
                                                             <span className="text-[10px] font-bold uppercase tracking-wider leading-none" style={{ color: txtColor, fontFamily: 'JetBrains Mono, monospace', textShadow: txtShadow, paddingLeft: hasArtBg ? '6px' : undefined, paddingRight: hasArtBg ? '6px' : undefined, paddingBottom: hideLabelText ? '4px' : undefined }}>{hideLabelText ? '' : step.label}</span>
                                                             <span className="mt-1 text-[9px] tabular-nums leading-none truncate max-w-full" style={{ color: txtColor, fontFamily: 'JetBrains Mono, monospace', textShadow: txtShadow, paddingBottom: hasArtBg ? '4px' : undefined, paddingLeft: hasArtBg ? '6px' : undefined, paddingRight: hasArtBg ? '6px' : undefined }}>{step.value}</span>
                                                           </>
