@@ -2512,6 +2512,73 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
     }
   });
 
+  // POST /api/admin/backfill-course-colors
+  // Forces every filled course slot in every semester to use the canonical
+  // semDefaultPalettesRow pair (start = dark = Module box, end = light =
+  // Reading box). This makes the EditCourseDetails dialog values match the
+  // calendar label cells exactly. Slots with no course code are left alone,
+  // so the "Other" row keeps its gray.
+  app.post("/api/admin/backfill-course-colors", async (_req, res) => {
+    try {
+      const semDefaultPalettesRow: Record<string, Array<{ start: string; end: string }>> = {
+        'ss2025': [{ start: '#e67e22', end: '#f0b778' }, { start: '#2ecc71', end: '#a3e4b8' }, { start: '#9b59b6', end: '#d2a8e0' }],
+        'f2025':  [{ start: '#e74c3c', end: '#f1a09a' }, { start: '#3498db', end: '#89c4e8' }, { start: '#f1c40f', end: '#f7dc6f' }],
+        'w2026':  [{ start: '#22c55e', end: '#AACD9F' }, { start: '#3b82f6', end: '#FFC3C6' }, { start: '#a855f7', end: '#E9C6F0' }],
+        'ss2026': [{ start: '#f97316', end: '#fdba74' }, { start: '#06b6d4', end: '#67e8f9' }, { start: '#ec4899', end: '#f9a8d4' }],
+        'f2026':  [{ start: '#dc2626', end: '#fca5a5' }, { start: '#8b5cf6', end: '#c4b5fd' }, { start: '#14b8a6', end: '#5eead4' }],
+        'w2027':  [{ start: '#0ea5e9', end: '#7dd3fc' }, { start: '#f59e0b', end: '#fcd34d' }, { start: '#d946ef', end: '#f0abfc' }],
+        'ss2027': [{ start: '#84cc16', end: '#bef264' }, { start: '#6366f1', end: '#a5b4fc' }, { start: '#f43f5e', end: '#fda4af' }],
+        'f2027':  [{ start: '#f472b6', end: '#fbcfe8' }, { start: '#10b981', end: '#6ee7b7' }, { start: '#7c3aed', end: '#c4b5fd' }],
+        'w2028':  [{ start: '#eab308', end: '#fde047' }, { start: '#0891b2', end: '#67e8f9' }, { start: '#be185d', end: '#f9a8d4' }],
+        'ss2028': [{ start: '#4ade80', end: '#bbf7d0' }, { start: '#e11d48', end: '#fda4af' }, { start: '#2563eb', end: '#93c5fd' }],
+        'f2028':  [{ start: '#c084fc', end: '#e9d5ff' }, { start: '#ea580c', end: '#fdba74' }, { start: '#059669', end: '#6ee7b7' }],
+        'w2029':  [{ start: '#38bdf8', end: '#bae6fd' }, { start: '#e879f9', end: '#f5d0fe' }, { start: '#65a30d', end: '#bef264' }],
+      };
+      const semKeyOf = (sem: any): string => {
+        const t = (sem.semesterType || 'winter').toLowerCase();
+        const yr = sem.semesterStartDate ? new Date(sem.semesterStartDate).getFullYear() : 0;
+        let prefix = 'w';
+        if (t.includes('spring') || t.includes('summer')) prefix = 'ss';
+        else if (t.includes('fall')) prefix = 'f';
+        return `${prefix}${yr}`;
+      };
+      const allSemesters = await storage.getAllSemesterSettings();
+      const updated: Array<{ id: number; semesterName: string; changes: string[] }> = [];
+      for (const sem of (allSemesters || [])) {
+        const semKey = semKeyOf(sem);
+        const palette = semDefaultPalettesRow[semKey];
+        if (!palette || palette.length === 0) continue;
+        const patch: Record<string, any> = {};
+        const changes: string[] = [];
+        for (let ci = 1; ci <= 3; ci++) {
+          const code = ((sem as any)[`course${ci}Code`] || '').trim();
+          if (!code) continue;
+          const target = palette[(ci - 1) % palette.length];
+          const startKey = `course${ci}Color`;
+          const endKey = `course${ci}ColorEnd`;
+          const curStart = String((sem as any)[startKey] || '').toLowerCase();
+          const curEnd = String((sem as any)[endKey] || '').toLowerCase();
+          if (curStart !== target.start.toLowerCase()) {
+            patch[startKey] = target.start;
+            changes.push(`${code} ${startKey}: ${curStart || '(empty)'} -> ${target.start}`);
+          }
+          if (curEnd !== target.end.toLowerCase()) {
+            patch[endKey] = target.end;
+            changes.push(`${code} ${endKey}: ${curEnd || '(empty)'} -> ${target.end}`);
+          }
+        }
+        if (Object.keys(patch).length > 0) {
+          await storage.updateSemesterSettings(sem.id, patch);
+          updated.push({ id: sem.id, semesterName: sem.semesterName, changes });
+        }
+      }
+      res.json({ success: true, semestersUpdated: updated.length, details: updated });
+    } catch (err: any) {
+      console.error("Error backfilling course colors:", err);
+      res.status(500).json({ error: err?.message || "Failed to backfill course colors" });
+    }
+  });
+
   // PATCH /api/semester-settings/calendar - Update secondary calendar
   app.patch("/api/semester-settings/calendar", async (req, res) => {
     try {
