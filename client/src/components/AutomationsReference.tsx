@@ -17,6 +17,26 @@ import {
   Newspaper,
   X,
 } from "lucide-react";
+import bgBack from "@assets/Back_1776566950517.png";
+import boxBlue from "@assets/Blue_Box_1776566950518.png";
+import boxGreen from "@assets/Green2_1776566950518.png";
+import boxGrey from "@assets/Grey_Box_1776566950519.png";
+import boxRed from "@assets/Red_Box_1776566950520.png";
+import boxYellow from "@assets/Yellow_Box_1776566950520.png";
+import headerImg from "@assets/Header_1776566950519.png";
+
+// Maps each category id to one of the bordered "box" PNGs supplied by Bryn.
+// Keeps the visual pipeline consistent: blue=sync, green=onedrive/auto-tasks,
+// red=alerts/AI, yellow=background data, grey=popups & HA.
+const CATEGORY_BG: Record<string, string> = {
+  popups: boxGrey,
+  reminders: boxRed,
+  'calendar-sync': boxBlue,
+  'auto-tasks': boxGreen,
+  brynassist: boxRed,
+  ha: boxGrey,
+  data: boxYellow,
+};
 
 interface AutomationItem {
   icon: typeof Zap;
@@ -289,7 +309,11 @@ export default function AutomationsReference({ open, onClose, colorSettings }: A
         style={{
           width: 'min(600px, calc(100% - 40px))',
           maxHeight: 'calc(100% - 60px)',
-          background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`,
+          backgroundImage: `url(${bgBack})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          backgroundColor: '#0b1530',
           border: '1.5px solid rgba(255,255,255,0.35)',
           boxShadow: '0 8px 48px rgba(0,0,0,0.4)',
         }}
@@ -297,30 +321,22 @@ export default function AutomationsReference({ open, onClose, colorSettings }: A
         data-testid="automations-reference-panel"
       >
         <div
-          className="flex items-center justify-between px-5 py-3 border-b border-white/40 flex-shrink-0 rounded-t-xl"
+          className="relative flex items-center justify-center flex-shrink-0"
           style={{
-            backdropFilter: 'blur(30px)',
-            WebkitBackdropFilter: 'blur(30px)',
-            background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`,
-            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)',
+            backgroundImage: `url(${headerImg})`,
+            backgroundSize: '100% 100%',
+            backgroundRepeat: 'no-repeat',
+            height: '44px',
+            paddingLeft: '12px',
+            paddingRight: '12px',
           }}
         >
-          <div className="flex items-center gap-2">
-            <Zap className="h-4 w-4 text-white" />
-            <h2
-              className="font-normal text-white"
-              style={{
-                fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
-                textShadow: '0 1px 2px rgba(0,0,0,0.2)',
-                fontSize: '12px',
-              }}
-            >
-              MY AUTOMATIONS
-            </h2>
-            <span className="text-[9px] text-white/50 ml-1">({totalItems} items)</span>
-          </div>
+          <span className="text-[9px] text-white/60 absolute" style={{ left: '14px', top: '50%', transform: 'translateY(-50%)' }}>
+            {totalItems} items
+          </span>
           <button
-            className="text-white/60 hover:text-white transition-colors"
+            className="absolute text-white/70 hover:text-white transition-colors"
+            style={{ right: '12px', top: '50%', transform: 'translateY(-50%)' }}
             onClick={onClose}
             data-testid="button-close-automations"
           >
@@ -340,38 +356,41 @@ export default function AutomationsReference({ open, onClose, colorSettings }: A
             {AUTOMATION_CATEGORIES.map((category) => {
               const isExpanded = expandedCategories[category.id];
               const CategoryIcon = category.icon;
+              const catBg = CATEGORY_BG[category.id] || boxGrey;
 
               return (
                 <div
                   key={category.id}
                   className="rounded-lg overflow-hidden"
-                  style={{ border: '1px solid rgba(255,255,255,0.12)' }}
+                  style={{
+                    border: '1px solid rgba(255,255,255,0.18)',
+                    backgroundImage: `url(${catBg})`,
+                    backgroundSize: '100% 100%',
+                    backgroundRepeat: 'no-repeat',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.35)',
+                  }}
                   data-testid={`automation-category-${category.id}`}
                 >
                   <button
-                    className="w-full flex items-center gap-2.5 px-3 py-2 text-left hover:bg-white/5 transition-colors"
+                    className="w-full flex items-center gap-2.5 px-3 py-2 text-left transition-colors"
                     onClick={() => toggleCategory(category.id)}
-                    style={{ background: 'rgba(255,255,255,0.04)' }}
+                    style={{ background: 'rgba(0,0,0,0.18)' }}
                     data-testid={`button-toggle-${category.id}`}
                   >
                     {isExpanded ? (
-                      <ChevronDown className="h-3 w-3 text-white/40 flex-shrink-0" />
+                      <ChevronDown className="h-3 w-3 text-white flex-shrink-0" />
                     ) : (
-                      <ChevronRight className="h-3 w-3 text-white/40 flex-shrink-0" />
+                      <ChevronRight className="h-3 w-3 text-white flex-shrink-0" />
                     )}
-                    <CategoryIcon
-                      className="h-3.5 w-3.5 flex-shrink-0"
-                      style={{ color: category.color }}
-                    />
-                    <span className="text-[11px] font-medium text-white flex-1">
+                    <CategoryIcon className="h-3.5 w-3.5 flex-shrink-0 text-white" />
+                    <span className="text-[11px] font-semibold text-white flex-1" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>
                       {category.title}
                     </span>
                     <span
-                      className="text-[9px] px-1.5 py-0.5 rounded-full"
+                      className="text-[9px] px-1.5 py-0.5 rounded-full text-white"
                       style={{
-                        background: `${category.color}20`,
-                        color: category.color,
-                        border: `1px solid ${category.color}40`,
+                        background: 'rgba(0,0,0,0.35)',
+                        border: '1px solid rgba(255,255,255,0.4)',
                       }}
                     >
                       {category.items.length}
@@ -379,39 +398,41 @@ export default function AutomationsReference({ open, onClose, colorSettings }: A
                   </button>
 
                   {isExpanded && (
-                    <div className="px-3 pb-2 space-y-1.5">
+                    <div className="px-3 pb-2 pt-1.5 space-y-1.5">
                       {category.items.map((item, idx) => {
                         const ItemIcon = item.icon;
+                        const isOneDrive = /onedrive/i.test(item.title);
+                        const itemBgImg = isOneDrive ? boxGreen : null;
                         return (
                           <div
                             key={idx}
                             className="rounded-md px-3 py-2"
                             style={{
-                              background: 'rgba(255,255,255,0.03)',
-                              border: '1px solid rgba(255,255,255,0.06)',
+                              backgroundImage: itemBgImg ? `url(${itemBgImg})` : undefined,
+                              backgroundSize: itemBgImg ? '100% 100%' : undefined,
+                              backgroundRepeat: itemBgImg ? 'no-repeat' : undefined,
+                              background: itemBgImg ? undefined : 'rgba(0,0,0,0.28)',
+                              border: '1px solid rgba(255,255,255,0.18)',
                             }}
                             data-testid={`automation-item-${category.id}-${idx}`}
                           >
                             <div className="flex items-start gap-2">
-                              <ItemIcon
-                                className="h-3 w-3 flex-shrink-0 mt-0.5"
-                                style={{ color: category.color, opacity: 0.7 }}
-                              />
+                              <ItemIcon className="h-3 w-3 flex-shrink-0 mt-0.5 text-white" />
                               <div className="flex-1 min-w-0">
-                                <div className="text-[10px] font-medium text-white leading-tight">
+                                <div className="text-[10px] font-semibold text-white leading-tight" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>
                                   {item.title}
                                 </div>
-                                <div className="text-[9px] text-white/60 mt-0.5 leading-relaxed">
+                                <div className="text-[9px] text-white/85 mt-0.5 leading-relaxed">
                                   {item.description}
                                 </div>
                                 <div className="flex items-center gap-1 mt-1">
-                                  <Clock className="h-2.5 w-2.5 text-white/30 flex-shrink-0" />
-                                  <span className="text-[8px] text-white/40 leading-relaxed">
+                                  <Clock className="h-2.5 w-2.5 text-white/70 flex-shrink-0" />
+                                  <span className="text-[8px] text-white/75 leading-relaxed">
                                     {item.when}
                                   </span>
                                 </div>
                                 {item.canDisable && (
-                                  <div className="text-[8px] text-amber-400/60 mt-0.5 italic">
+                                  <div className="text-[8px] text-amber-200 mt-0.5 italic">
                                     💡 {item.canDisable}
                                   </div>
                                 )}
@@ -468,34 +489,56 @@ export function AutomationsContent() {
       <p className="text-[10px] text-white/50 mb-2 leading-relaxed">
         Everything UniCal does automatically — popups, reminders, syncs, AI actions, and background updates. ({totalItems} items)
       </p>
+      <div
+        className="rounded-lg overflow-hidden mb-3"
+        style={{
+          backgroundImage: `url(${headerImg})`,
+          backgroundSize: '100% 100%',
+          backgroundRepeat: 'no-repeat',
+          height: '38px',
+        }}
+      />
+      <div
+        className="rounded-lg p-3"
+        style={{
+          backgroundImage: `url(${bgBack})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          backgroundColor: '#0b1530',
+        }}
+      >
       <div className="space-y-2">
         {AUTOMATION_CATEGORIES.map((category) => {
           const isExpanded = expandedCategories[category.id];
           const CategoryIcon = category.icon;
+          const catBg = CATEGORY_BG[category.id] || boxGrey;
           return (
-            <div key={category.id} className="rounded-lg overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.12)' }} data-testid={`automation-category-${category.id}`}>
-              <button className="w-full flex items-center gap-2.5 px-3 py-2 text-left hover:bg-white/5 transition-colors" onClick={() => toggleCategory(category.id)} style={{ background: 'rgba(255,255,255,0.04)' }} data-testid={`button-toggle-${category.id}`} type="button">
-                {isExpanded ? <ChevronDown className="h-3 w-3 text-white/40 flex-shrink-0" /> : <ChevronRight className="h-3 w-3 text-white/40 flex-shrink-0" />}
-                <CategoryIcon className="h-3.5 w-3.5 flex-shrink-0" style={{ color: category.color }} />
-                <span className="text-[11px] font-medium text-white flex-1">{category.title}</span>
-                <span className="text-[9px] px-1.5 py-0.5 rounded-full" style={{ background: `${category.color}20`, color: category.color, border: `1px solid ${category.color}40` }}>{category.items.length}</span>
+            <div key={category.id} className="rounded-lg overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.18)', backgroundImage: `url(${catBg})`, backgroundSize: '100% 100%', backgroundRepeat: 'no-repeat', boxShadow: '0 2px 6px rgba(0,0,0,0.35)' }} data-testid={`automation-category-${category.id}`}>
+              <button className="w-full flex items-center gap-2.5 px-3 py-2 text-left transition-colors" onClick={() => toggleCategory(category.id)} style={{ background: 'rgba(0,0,0,0.18)' }} data-testid={`button-toggle-${category.id}`} type="button">
+                {isExpanded ? <ChevronDown className="h-3 w-3 text-white flex-shrink-0" /> : <ChevronRight className="h-3 w-3 text-white flex-shrink-0" />}
+                <CategoryIcon className="h-3.5 w-3.5 flex-shrink-0 text-white" />
+                <span className="text-[11px] font-semibold text-white flex-1" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>{category.title}</span>
+                <span className="text-[9px] px-1.5 py-0.5 rounded-full text-white" style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(255,255,255,0.4)' }}>{category.items.length}</span>
               </button>
               {isExpanded && (
                 <div className="px-3 pb-2 space-y-1.5 pt-1.5">
                   {category.items.map((item, idx) => {
                     const ItemIcon = item.icon;
+                    const isOneDrive = /onedrive/i.test(item.title);
+                    const itemBgImg = isOneDrive ? boxGreen : null;
                     return (
-                      <div key={idx} className="rounded-md px-3 py-2" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }} data-testid={`automation-item-${category.id}-${idx}`}>
+                      <div key={idx} className="rounded-md px-3 py-2" style={{ backgroundImage: itemBgImg ? `url(${itemBgImg})` : undefined, backgroundSize: itemBgImg ? '100% 100%' : undefined, backgroundRepeat: itemBgImg ? 'no-repeat' : undefined, background: itemBgImg ? undefined : 'rgba(0,0,0,0.28)', border: '1px solid rgba(255,255,255,0.18)' }} data-testid={`automation-item-${category.id}-${idx}`}>
                         <div className="flex items-start gap-2">
-                          <ItemIcon className="h-3 w-3 flex-shrink-0 mt-0.5" style={{ color: category.color, opacity: 0.7 }} />
+                          <ItemIcon className="h-3 w-3 flex-shrink-0 mt-0.5 text-white" />
                           <div className="flex-1 min-w-0">
-                            <div className="text-[10px] font-medium text-white leading-tight">{item.title}</div>
-                            <div className="text-[9px] text-white/60 mt-0.5 leading-relaxed">{item.description}</div>
+                            <div className="text-[10px] font-semibold text-white leading-tight" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>{item.title}</div>
+                            <div className="text-[9px] text-white/85 mt-0.5 leading-relaxed">{item.description}</div>
                             <div className="flex items-center gap-1 mt-1">
-                              <Clock className="h-2.5 w-2.5 text-white/30 flex-shrink-0" />
-                              <span className="text-[8px] text-white/40 leading-relaxed">{item.when}</span>
+                              <Clock className="h-2.5 w-2.5 text-white/70 flex-shrink-0" />
+                              <span className="text-[8px] text-white/75 leading-relaxed">{item.when}</span>
                             </div>
-                            {item.canDisable && (<div className="text-[8px] text-amber-400/60 mt-0.5 italic">💡 {item.canDisable}</div>)}
+                            {item.canDisable && (<div className="text-[8px] text-amber-200 mt-0.5 italic">💡 {item.canDisable}</div>)}
                           </div>
                         </div>
                       </div>
@@ -506,6 +549,7 @@ export function AutomationsContent() {
             </div>
           );
         })}
+      </div>
       </div>
     </div>
   );
