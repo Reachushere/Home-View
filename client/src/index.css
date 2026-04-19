@@ -2926,3 +2926,17 @@ input[type="date"].bg-white::-webkit-datetime-edit-year-field {
   [data-testid="report-close"] { display: none !important; }
   .monthly-report-footer { display: none !important; }
 }
+
+/* Top pill: shrink every button by 1px so they fit the row evenly */
+#top-pill-buttons-row button,
+#top-pill-buttons-row [role="button"] {
+  height: calc(var(--btn-h, 40px) - 1px);
+  min-height: 0 !important;
+  padding-left: calc(var(--btn-px, 8px) - 1px) !important;
+  padding-right: calc(var(--btn-px, 8px) - 1px) !important;
+}
+#top-pill-buttons-row button.\!h-\[40px\],
+#top-pill-buttons-row [class*="h-[40px]"] {
+  height: 39px !important;
+  min-height: 39px !important;
+}
