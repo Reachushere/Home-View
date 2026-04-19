@@ -27504,17 +27504,14 @@ export default function Dashboard() {
                                       const allGood = okCount === steps.length;
                                       return (
                                         <>
-                                          <div className="flex items-center justify-between mb-2">
-                                            <div className="flex items-center gap-2">
-                                              <span className="text-[10px]" style={{ color: '#475569', fontFamily: 'JetBrains Mono, monospace' }}>$</span>
-                                              <span className="text-[11px] font-bold uppercase tracking-[0.12em]" style={{ color: '#94a3b8', fontFamily: 'JetBrains Mono, monospace' }}>pipeline.status</span>
+                                          <div className="relative" style={{ backgroundImage: `url(${blueBoxImg})`, backgroundSize: '100% 100%', backgroundRepeat: 'no-repeat', padding: '14px 18px 18px' }}>
+                                            <div className="flex items-center justify-center mb-3 relative" style={{ borderBottom: '1px solid rgba(255,255,255,0.18)', paddingBottom: '8px' }}>
+                                              <span className="text-[12px] font-bold tracking-[0.14em] uppercase" style={{ color: '#ffffff', fontFamily: 'JetBrains Mono, monospace', textShadow: '0 1px 3px rgba(0,0,0,0.6)' }}>Pipeline Status</span>
+                                              <span className="absolute right-0 inline-flex items-center gap-1.5 text-[10px] font-bold tabular-nums px-2 py-0.5 rounded-full" style={{ background: allGood ? 'rgba(16,185,129,0.2)' : okCount >= 3 ? 'rgba(234,179,8,0.2)' : 'rgba(239,68,68,0.2)', color: allGood ? '#6ee7b7' : okCount >= 3 ? '#fde68a' : '#fca5a5', border: `1px solid ${allGood ? 'rgba(16,185,129,0.5)' : okCount >= 3 ? 'rgba(234,179,8,0.5)' : 'rgba(239,68,68,0.5)'}`, fontFamily: 'JetBrains Mono, monospace' }}>
+                                                <span className="w-1.5 h-1.5 rounded-full" style={{ background: allGood ? '#10b981' : okCount >= 3 ? '#eab308' : '#ef4444', boxShadow: `0 0 5px ${allGood ? '#10b981' : okCount >= 3 ? '#eab308' : '#ef4444'}` }} />
+                                                {okCount}/{steps.length} ok
+                                              </span>
                                             </div>
-                                            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold tabular-nums px-2 py-0.5 rounded-full" style={{ background: allGood ? 'rgba(16,185,129,0.12)' : okCount >= 3 ? 'rgba(234,179,8,0.12)' : 'rgba(239,68,68,0.12)', color: allGood ? '#6ee7b7' : okCount >= 3 ? '#fde68a' : '#fca5a5', border: `1px solid ${allGood ? 'rgba(16,185,129,0.4)' : okCount >= 3 ? 'rgba(234,179,8,0.4)' : 'rgba(239,68,68,0.4)'}`, fontFamily: 'JetBrains Mono, monospace' }}>
-                                              <span className="w-1.5 h-1.5 rounded-full" style={{ background: allGood ? '#10b981' : okCount >= 3 ? '#eab308' : '#ef4444', boxShadow: `0 0 5px ${allGood ? '#10b981' : okCount >= 3 ? '#eab308' : '#ef4444'}` }} />
-                                              {okCount}/{steps.length} ok
-                                            </span>
-                                          </div>
-                                          <div className="relative" style={{ backgroundImage: `url(${blueBoxImg})`, backgroundSize: '100% 100%', backgroundRepeat: 'no-repeat', padding: '22px 18px 18px' }}>
                                             <div className="relative flex items-stretch" style={{ width: '100%' }}>
                                               {steps.map((step, sIdx) => {
                                                 const Icon = step.Icon;
