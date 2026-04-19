@@ -36657,7 +36657,21 @@ export default function Dashboard() {
                         const circumference = 2 * Math.PI * radius;
                         const offset = circumference - (item.p.percent / 100) * circumference;
                         const isModule = item.type === 'module';
-                        const circleColor = item.fontOverride || (item.dark ? '#fff' : '#000');
+                        const _autoBoxText = (() => {
+                          try {
+                            const c = String(item.bg || '');
+                            let r = 0, g = 0, b = 0, ok = false;
+                            const hm = c.match(/#([0-9a-fA-F]{6})/);
+                            if (hm) { r = parseInt(hm[1].substring(0,2),16); g = parseInt(hm[1].substring(2,4),16); b = parseInt(hm[1].substring(4,6),16); ok = true; }
+                            if (!ok) { const rm = c.match(/rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/); if (rm) { r = parseInt(rm[1]); g = parseInt(rm[2]); b = parseInt(rm[3]); ok = true; } }
+                            if (ok) {
+                              const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+                              return yiq > 165 ? '#000' : '#fff';
+                            }
+                          } catch {}
+                          return '#fff';
+                        })();
+                        const circleColor = pd.courseFontColor || _autoBoxText;
                         const textColor = circleColor;
                         const dragKey = `${pd.courseCode}-${item.type}`;
                         const isDragOver = hwDragOverTarget === dragKey;
