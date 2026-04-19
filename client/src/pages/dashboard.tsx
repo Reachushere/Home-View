@@ -27462,7 +27462,7 @@ export default function Dashboard() {
                             })();
 
                             return (
-                              <div key={c.code} className="auto-resolution-card rounded-xl overflow-hidden" style={{ border: '1px solid rgba(99,102,241,0.28)', background: 'linear-gradient(180deg, #0b1220 0%, #0a0f1c 100%)', boxShadow: '0 12px 32px rgba(0,0,0,0.45), 0 0 0 1px rgba(99,102,241,0.08), inset 0 1px 0 rgba(255,255,255,0.04)' }} data-testid={`expanded-course-${c.code}`}>
+                              <div key={c.code} className="auto-resolution-card rounded-xl overflow-hidden" style={{ backgroundImage: `url(${blueBoxImg})`, backgroundSize: '100% 100%', backgroundRepeat: 'no-repeat', boxShadow: '0 12px 32px rgba(0,0,0,0.45)' }} data-testid={`expanded-course-${c.code}`}>
                                 {/* Terminal-style title bar */}
                                 <div className="px-4 py-2.5 flex items-center gap-3 border-b" style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.045) 0%, rgba(255,255,255,0.015) 100%)', borderBottomColor: 'rgba(255,255,255,0.08)' }}>
                                   <div className="flex items-center gap-1.5 mr-1">
