@@ -24,6 +24,8 @@ import { Document, Page, pdfjs } from 'react-pdf';
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 import tmuLogo from "@assets/Chang-School2_1775779674508.png";
 import oneDriveBoxImg from "@assets/OneDrive_1776567093048.png";
+import greenBoxImg from "@assets/Green_Box_1776568031172.png";
+import yellowBoxImg from "@assets/Yellow_Box_1776568051366.png";
 
 import changSchoolLogo from "@assets/Chang-School2_1770607146365.png";
 import campusBg from "@assets/TMU_1769151150961.jpg";
@@ -27521,21 +27523,43 @@ export default function Dashboard() {
                                                   <React.Fragment key={step.label}>
                                                     <div
                                                       className="relative flex flex-col items-center text-center group"
-                                                      style={{ flex: '1 1 0', minWidth: 0, padding: step.label === 'OneDrive' ? '0' : '8px 6px 6px', cursor: isProblem ? 'pointer' : 'default', borderRadius: '8px', background: step.label === 'OneDrive' ? '#ffffff' : '#ffffff', backgroundImage: step.label === 'OneDrive' ? `url(${oneDriveBoxImg})` : undefined, backgroundSize: step.label === 'OneDrive' ? '100% 100%' : undefined, backgroundRepeat: step.label === 'OneDrive' ? 'no-repeat' : undefined, minHeight: step.label === 'OneDrive' ? '110px' : undefined, border: `1px solid ${isProblem ? accent + '88' : 'rgba(0,0,0,0.15)'}`, boxShadow: isProblem ? `0 0 0 1px ${accent}44` : 'none', transition: 'all 0.18s ease', overflow: 'hidden' }}
+                                                      style={(() => {
+                                                        const stepBg = step.label === 'OneDrive' ? oneDriveBoxImg
+                                                          : step.label === 'TTS' ? yellowBoxImg
+                                                          : (step.label === 'Sync' || step.label === 'Storage' || step.label === 'Library') ? greenBoxImg
+                                                          : null;
+                                                        const hasImg = !!stepBg;
+                                                        return { flex: '1 1 0', minWidth: 0, padding: hasImg ? '0' : '8px 6px 6px', cursor: isProblem ? 'pointer' : 'default', borderRadius: '8px', background: '#ffffff', backgroundImage: hasImg ? `url(${stepBg})` : undefined, backgroundSize: hasImg ? '100% 100%' : undefined, backgroundRepeat: hasImg ? 'no-repeat' : undefined, minHeight: hasImg ? '110px' : undefined, border: `1px solid ${isProblem ? accent + '88' : 'rgba(0,0,0,0.15)'}`, boxShadow: isProblem ? `0 0 0 1px ${accent}44` : 'none', transition: 'all 0.18s ease', overflow: 'hidden' };
+                                                      })()}
                                                       onClick={(e) => { if (isProblem) { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: step.issueKey, step: 0, phase: 'primary' }); } }}
                                                       onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = accent; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 0 0 2px ${accent}55`; }}
                                                       onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = isProblem ? accent + '88' : 'rgba(0,0,0,0.15)'; (e.currentTarget as HTMLDivElement).style.boxShadow = isProblem ? `0 0 0 1px ${accent}44` : 'none'; }}
                                                     >
                                                       {/* Status LED top-right */}
                                                       <span className="absolute" style={{ top: '5px', right: '6px', width: '7px', height: '7px', borderRadius: '50%', background: accent, boxShadow: `0 0 8px ${accent}, 0 0 2px ${accent}`, zIndex: 2 }} />
-                                                      {step.label !== 'OneDrive' && (
-                                                        <div className="relative flex items-center justify-center mb-1.5" style={{ width: '32px', height: '32px', borderRadius: '8px', background: `linear-gradient(135deg, ${accent}22 0%, ${accent}08 100%)`, border: `1px solid ${accent}55` }}>
-                                                          <Icon size={16} style={{ color: accent, strokeWidth: 2 }} />
-                                                        </div>
-                                                      )}
-                                                      {step.label === 'OneDrive' && <div style={{ flex: 1 }} />}
-                                                      <span className="text-[10px] font-bold uppercase tracking-wider leading-none" style={{ color: step.label === 'OneDrive' ? '#ffffff' : '#000000', fontFamily: 'JetBrains Mono, monospace', textShadow: step.label === 'OneDrive' ? '0 1px 3px rgba(0,0,0,0.7)' : undefined, paddingBottom: step.label === 'OneDrive' ? '4px' : undefined, paddingLeft: step.label === 'OneDrive' ? '6px' : undefined, paddingRight: step.label === 'OneDrive' ? '6px' : undefined }}>{step.label === 'OneDrive' ? '' : step.label}</span>
-                                                      <span className="mt-1 text-[9px] tabular-nums leading-none truncate max-w-full" style={{ color: step.label === 'OneDrive' ? '#ffffff' : '#000000', fontFamily: 'JetBrains Mono, monospace', textShadow: step.label === 'OneDrive' ? '0 1px 3px rgba(0,0,0,0.7)' : undefined, paddingBottom: step.label === 'OneDrive' ? '4px' : undefined }}>{step.value}</span>
+                                                      {(() => {
+                                                        const hasArtBg = step.label === 'OneDrive' || step.label === 'TTS' || step.label === 'Sync' || step.label === 'Storage' || step.label === 'Library';
+                                                        const txtColor = hasArtBg ? '#ffffff' : '#000000';
+                                                        const txtShadow = hasArtBg ? '0 1px 3px rgba(0,0,0,0.75)' : undefined;
+                                                        const hideLabelText = step.label === 'OneDrive';
+                                                        return (
+                                                          <>
+                                                            {!hasArtBg && (
+                                                              <div className="relative flex items-center justify-center mb-1.5" style={{ width: '32px', height: '32px', borderRadius: '8px', background: `linear-gradient(135deg, ${accent}22 0%, ${accent}08 100%)`, border: `1px solid ${accent}55` }}>
+                                                                <Icon size={16} style={{ color: accent, strokeWidth: 2 }} />
+                                                              </div>
+                                                            )}
+                                                            {hasArtBg && step.label !== 'OneDrive' && (
+                                                              <div className="relative flex items-center justify-center mb-1.5 mt-2" style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.35)' }}>
+                                                                <Icon size={16} style={{ color: '#ffffff', strokeWidth: 2 }} />
+                                                              </div>
+                                                            )}
+                                                            {hasArtBg && step.label === 'OneDrive' && <div style={{ flex: 1 }} />}
+                                                            <span className="text-[10px] font-bold uppercase tracking-wider leading-none" style={{ color: txtColor, fontFamily: 'JetBrains Mono, monospace', textShadow: txtShadow, paddingLeft: hasArtBg ? '6px' : undefined, paddingRight: hasArtBg ? '6px' : undefined, paddingBottom: hideLabelText ? '4px' : undefined }}>{hideLabelText ? '' : step.label}</span>
+                                                            <span className="mt-1 text-[9px] tabular-nums leading-none truncate max-w-full" style={{ color: txtColor, fontFamily: 'JetBrains Mono, monospace', textShadow: txtShadow, paddingBottom: hasArtBg ? '4px' : undefined, paddingLeft: hasArtBg ? '6px' : undefined, paddingRight: hasArtBg ? '6px' : undefined }}>{step.value}</span>
+                                                          </>
+                                                        );
+                                                      })()}
                                                       {step.pct !== null && (
                                                         <div className="mt-1.5 w-full" style={{ maxWidth: '60px' }}>
                                                           <div style={{ height: '2px', borderRadius: '2px', background: 'rgba(0,0,0,0.08)', overflow: 'hidden', border: '1px solid rgba(0,0,0,0.1)' }}>
