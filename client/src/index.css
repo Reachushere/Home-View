@@ -2872,6 +2872,10 @@ input[type="date"].bg-white::-webkit-datetime-edit-year-field {
 .monthly-report-print-mode .monthly-report-header * {
   color: #ffffff !important;
 }
+.monthly-report-print-mode [data-testid="report-save"],
+.monthly-report-print-mode [data-testid="report-save"] * {
+  color: #ffffff !important;
+}
 .monthly-report-print-mode input,
 .monthly-report-print-mode textarea {
   background: #ffffff !important;
@@ -2968,6 +2972,17 @@ input[type="date"].bg-white::-webkit-datetime-edit-year-field {
     margin: 0 auto !important; overflow: visible !important;
     transform: scale(0.78); transform-origin: top left;
     font-size: 9px !important;
+  }
+  [data-testid="monthly-report-dialog"] .monthly-report-header {
+    background: #ffffff !important;
+    border-bottom: 2px solid #000000 !important;
+    padding: 4px 8px !important;
+  }
+  [data-testid="monthly-report-dialog"] .monthly-report-header * {
+    color: #000000 !important;
+  }
+  [data-testid="monthly-report-dialog"] .monthly-report-header svg {
+    stroke: #000000 !important; fill: none !important;
   }
   [data-testid="monthly-report-dialog"] .flex-1 { overflow: visible !important; max-height: none !important; }
   [data-testid="monthly-report-dialog"] textarea,
