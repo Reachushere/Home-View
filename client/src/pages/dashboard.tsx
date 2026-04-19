@@ -277,12 +277,12 @@ const semesterActivationMs = (startStr: string): number => {
 
 const getCurrentSemKey = (now: Date = new Date(), fallback = 'w2026'): string => {
   const t = now.getTime();
-  let active = '';
   for (const s of SEMESTER_DATE_RANGES) {
-    if (semesterActivationMs(s.start) <= t) active = s.key;
-    else break;
+    const startMs = semesterActivationMs(s.start);
+    const endMs = new Date(s.end + 'T23:59:59').getTime();
+    if (t >= startMs && t <= endMs) return s.key;
   }
-  return active || fallback;
+  return fallback;
 };
 
 // Curated per-semester palettes used as gradient fallbacks for TBD slots and
