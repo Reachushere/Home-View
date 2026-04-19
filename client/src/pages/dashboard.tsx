@@ -32589,16 +32589,38 @@ export default function Dashboard() {
                         try {
                           const palette = semDefaultPalettesRow[_hwSemKey.toLowerCase()];
                           if (palette && palette.length > 0) {
-                            // Per-semester row index = number of filteredCourses
-                            // with the same _semKey appearing at or before this
-                            // row. Mirrors how the calendar label cells pick
-                            // their palette slot, so boxes match labels.
-                            let perSemIdx = 0;
-                            for (let k = 0; k < courseIdx; k++) {
-                              const otherSk = (filteredCourses[k] as any)?._semKey;
-                              if (otherSk === _hwSemKey) perSemIdx++;
-                            }
-                            const idx = perSemIdx % palette.length;
+                            // Use the SAME priority-sorted index as the
+                            // calendar label cell so the box gradient matches
+                            // the label exactly.
+                            const _hwCoursePos = (() => {
+                              try {
+                                const semCourses = (semesterCourseAssignments && semesterCourseAssignments[_hwSemKey]) || [];
+                                if (semCourses.length === 0) return courseIdx;
+                                const cpp = coursePlayPriority || {};
+                                const isSSSem = _hwSemKey.startsWith('ss');
+                                const getPri = (code: string) => {
+                                  if (isSSSem) {
+                                    const va = cpp[`${_hwSemKey}:${code}:A`] ?? 0;
+                                    const vb = cpp[`${_hwSemKey}:${code}:B`] ?? 0;
+                                    const m = Math.min(va || 999, vb || 999);
+                                    return m === 999 ? 0 : m;
+                                  }
+                                  return cpp[`${_hwSemKey}:${code}`] ?? 0;
+                                };
+                                const sorted = [...semCourses].sort((a: any, b: any) => {
+                                  const pa = getPri(a.code); const pb = getPri(b.code);
+                                  if (pa === 0 && pb === 0) return 0;
+                                  if (pa === 0) return 1;
+                                  if (pb === 0) return -1;
+                                  return pa - pb;
+                                });
+                                const norm = (s: string) => s.replace(/\s/g, '').toUpperCase();
+                                const target = norm(courseCode);
+                                const idx = sorted.findIndex((c: any) => norm(c.code) === target);
+                                return idx >= 0 ? idx : courseIdx;
+                              } catch { return courseIdx; }
+                            })();
+                            const idx = Math.max(0, _hwCoursePos) % palette.length;
                             return { start: palette[idx].start, end: palette[idx].end };
                           }
                         } catch {}
