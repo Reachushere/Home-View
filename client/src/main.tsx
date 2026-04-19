@@ -65,6 +65,13 @@ window.onunhandledrejection = function(event) {
   reportError(msg, event.reason?.stack);
 };
 
+// Version tracking only — we no longer auto-reload the page when the server
+// version bumps. The previous behavior (setInterval(checkVersion, 30000) +
+// window.location.reload()) caused the page to refresh constantly whenever
+// the server restarted (every git push / deploy.sh run on the Pi), which in
+// turn re-popped the monthly report dialog and sometimes dropped the auth
+// session so the password prompt re-appeared. Bryn refreshes manually when
+// they want the latest build.
 let knownVersion: string | null = null;
 async function checkVersion() {
   try {
@@ -73,15 +80,10 @@ async function checkVersion() {
     const resp = await originalFetch('/api/version');
     if (resp.ok) {
       const data = await resp.json();
-      if (knownVersion && data.version !== knownVersion) {
-        window.location.reload();
-        return;
-      }
       knownVersion = data.version;
     }
   } catch {}
 }
 checkVersion();
-setInterval(checkVersion, 30000);
 
 createRoot(document.getElementById("root")!).render(<App />);
