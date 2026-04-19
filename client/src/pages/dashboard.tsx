@@ -36664,7 +36664,8 @@ export default function Dashboard() {
                   const tabTop = topInset + tabIdx * (tabH + tabGap);
                   const svgH = Math.floor(tabH);
                   const svgW = tabW + 3;
-                  const activeExtra = isActive ? 4 : 0;
+                  const isSWeekTab = tab.topText === 'S';
+                  const activeExtra = isActive && isSWeekTab ? 4 : 0;
                   const displayW = svgW + activeExtra;
                   return (
                     <div
