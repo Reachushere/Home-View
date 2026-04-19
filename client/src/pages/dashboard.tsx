@@ -32585,32 +32585,20 @@ export default function Dashboard() {
                     const _hwFallbackGrad = (() => {
                       const gc = getCourseGradientColors(courseCode);
                       const isGray = gc.start === '#6b7280' && gc.end === '#9ca3af';
-                      if (isGray && _hwSemKey) {
+                      if ((isGray || _hwIsTBD) && _hwSemKey) {
                         try {
                           const palette = semDefaultPalettesRow[_hwSemKey.toLowerCase()];
-                          const semCourses = (semesterCourseAssignments && semesterCourseAssignments[_hwSemKey]) || [];
-                          if (palette && palette.length > 0 && semCourses.length > 0) {
-                            const cpp = coursePlayPriority || {};
-                            const isSSSem = _hwSemKey.startsWith('ss');
-                            const getPri = (code: string) => {
-                              if (isSSSem) {
-                                const va = cpp[`${_hwSemKey}:${code}:A`] ?? 0;
-                                const vb = cpp[`${_hwSemKey}:${code}:B`] ?? 0;
-                                const m = Math.min(va || 999, vb || 999);
-                                return m === 999 ? 0 : m;
-                              }
-                              return cpp[`${_hwSemKey}:${code}`] ?? 0;
-                            };
-                            const sorted = [...semCourses].sort((a, b) => {
-                              const pa = getPri(a.code); const pb = getPri(b.code);
-                              if (pa === 0 && pb === 0) return 0;
-                              if (pa === 0) return 1;
-                              if (pb === 0) return -1;
-                              return pa - pb;
-                            });
-                            const norm = (s: string) => s.replace(/\s/g, '').toUpperCase();
-                            const pos = sorted.findIndex(c => norm(c.code) === norm(courseCode));
-                            const idx = Math.max(0, pos) % palette.length;
+                          if (palette && palette.length > 0) {
+                            // Per-semester row index = number of filteredCourses
+                            // with the same _semKey appearing at or before this
+                            // row. Mirrors how the calendar label cells pick
+                            // their palette slot, so boxes match labels.
+                            let perSemIdx = 0;
+                            for (let k = 0; k < courseIdx; k++) {
+                              const otherSk = (filteredCourses[k] as any)?._semKey;
+                              if (otherSk === _hwSemKey) perSemIdx++;
+                            }
+                            const idx = perSemIdx % palette.length;
                             return { start: palette[idx].start, end: palette[idx].end };
                           }
                         } catch {}
