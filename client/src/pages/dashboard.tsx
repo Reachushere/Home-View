@@ -22573,18 +22573,6 @@ export default function Dashboard() {
                         <p className="text-[9px] text-white/50 mt-1">What would you like to add?</p>
                       </div>
                       <div className="grid grid-cols-2 gap-2">
-                        {/* Add Semester — opens the New Semester wizard pre-filled with the next chrono semester */}
-                        <button
-                          className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 text-white flex items-center gap-1.5"
-                          style={{ background: 'rgba(180,140,255,0.35)', border: '1px solid rgba(180,140,255,0.7)' }}
-                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(180,140,255,0.45)'; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(180,140,255,0.35)'; }}
-                          onClick={(e) => { e.stopPropagation(); setIsQuickAddOpen(false); setTimeout(() => openCreateSemesterWizard(), 50); }}
-                          data-testid="quick-add-type-add-semester"
-                        >
-                          <GraduationCap className="h-3.5 w-3.5" />
-                          Add Semester
-                        </button>
                         <button
                           className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 text-white flex items-center gap-1.5"
                           style={{ background: 'rgba(96,165,250,0.35)', border: '1px solid rgba(96,165,250,0.7)' }}
@@ -22765,6 +22753,18 @@ export default function Dashboard() {
                             </button>
                           );
                         })}
+                        {/* Semester — opens the New Semester wizard pre-filled with the next chrono semester (alphabetically after Scholarship) */}
+                        <button
+                          className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 text-white flex items-center gap-1.5"
+                          style={{ background: 'rgba(180,140,255,0.35)', border: '1px solid rgba(180,140,255,0.7)' }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(180,140,255,0.45)'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(180,140,255,0.35)'; }}
+                          onClick={(e) => { e.stopPropagation(); setIsQuickAddOpen(false); setTimeout(() => openCreateSemesterWizard(), 50); }}
+                          data-testid="quick-add-type-semester"
+                        >
+                          <GraduationCap className="h-3.5 w-3.5" />
+                          Semester
+                        </button>
                       </div>
                       {quickAddData.type && (
                         <div className="mt-3 pt-3 border-t border-white/15">
@@ -25592,10 +25592,10 @@ export default function Dashboard() {
                         localStorage.setItem('monthlyReportHistory', JSON.stringify(newHistory));
                         toast({ title: "Saved", description: "Snapshot added to Saved Reports." });
                       }}
-                      style={{ background: '#000000', color: '#ffffff', fontSize: '11px', fontWeight: 600, padding: '8px 14px', borderRadius: '4px', border: '1.5px solid #000000', cursor: 'pointer' }}
+                      style={{ background: '#000000', color: '#ffffff !important' as any, fontSize: '11px', fontWeight: 600, padding: '8px 14px', borderRadius: '4px', border: '1.5px solid #000000', cursor: 'pointer' }}
                       data-testid="report-save"
                     >
-                      Save Draft
+                      <span style={{ color: '#ffffff' }}>Save Draft</span>
                     </button>
                     <button
                       onClick={() => setIsMonthlyHistoryOpen(true)}
@@ -36669,11 +36669,15 @@ export default function Dashboard() {
                   return (
                     <div
                       key={tab.id}
-                      className={`cursor-pointer semester-tab-hover${isActive && tabBounceEnabled ? ' semester-tab-bounce' : ''}`}
+                      className={`cursor-pointer semester-tab-hover${(hwVisibleSection === tab.scrollTarget) && tabBounceEnabled ? ' semester-tab-bounce' : ''}`}
                       style={{ position: 'absolute', top: `${tabTop}px`, right: '1px', width: `${displayW}px`, height: `${svgH}px`, zIndex: isActive ? 100 : n - tabIdx, transition: 'transform 0.2s ease, width 0.2s ease, filter 0.2s ease', transform: `translateX(${isActive ? '4px' : '0px'})`, '--tab-base-transform': `translateX(${isActive ? '4px' : '0px'})` } as React.CSSProperties}
                       onClick={() => {
                         if (homeworkScrollRef.current) {
                           const scrollContainer = homeworkScrollRef.current;
+                          if (tab.id.startsWith('april-')) {
+                            scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+                            return;
+                          }
                           const el = scrollContainer.querySelector(`[data-homework-section="${tab.scrollTarget}"]`);
                           if (el) {
                             const elTop = (el as HTMLElement).offsetTop - scrollContainer.offsetTop;
