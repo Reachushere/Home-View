@@ -241,7 +241,7 @@ import NewSemesterChecklist from "@/components/NewSemesterChecklist";
 import type { Task, SemesterSettings, Subtask, Project, TaskLink } from "@shared/schema";
 import { TASK_TYPES, COURSES, getWeekNumber, getWeekDates, getSemesterTotalWeeks, alignToSaturday, REMINDER_OPTIONS, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, REPEAT_TYPES, REPEAT_INTERVAL_UNITS, FIRST_WEEK, LAST_WEEK, LINK_TYPES } from "@shared/schema";
 import type { CourseWeekMapping } from "@shared/schema";
-import { getUpcomingSemesterToConfirm, getNextSemesterByStartDate, FUTURE_SEMESTER_SCHEDULE, type FutureSemesterDates } from "@shared/semesterUtils";
+import { getUpcomingSemesterToConfirm, getNextSemesterByStartDate, FUTURE_SEMESTER_SCHEDULE, getNextSemesterAfter, semKeyFromTypeYear, parseSemKey, type FutureSemesterDates } from "@shared/semesterUtils";
 import { LIBERAL_STUDIES_COURSES, OPEN_ELECTIVE_COURSES, POG_COURSES, getCoursesForLevel, type ElectiveCourse } from "@shared/electiveCourses";
 import { format, addDays, subDays, addWeeks, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek, isWithinInterval, parseISO, startOfDay, endOfDay, differenceInDays, differenceInCalendarDays, isBefore } from "date-fns";
 
@@ -10880,7 +10880,87 @@ export default function Dashboard() {
     course3SpringSummerTerm: "second_half" as string,
     secondaryCalendarId: "",
   });
-  
+
+  // Open the New Semester wizard, pre-filled with the next semester chronologically after
+  // whatever's already in the DB (so it works for any future semester past Winter 2029, etc.)
+  const openCreateSemesterWizard = useCallback(() => {
+    try {
+      const sems = Array.isArray(allSemestersForHealth) ? allSemestersForHealth : [];
+      // Find the latest semester by start date
+      let latestKey: string | null = null;
+      let latestStart = -Infinity;
+      for (const s of sems) {
+        const t = s?.semesterStartDate ? new Date(s.semesterStartDate).getTime() : 0;
+        if (!t) continue;
+        if (t > latestStart) {
+          // Derive sem key from semester name like "Winter 2029 Semester"
+          const ym = (s.semesterName || '').match(/(Winter|Spring\/Summer|Fall)\s+(\d{4})/i);
+          if (ym) {
+            const type = ym[1].toLowerCase().startsWith('w') ? 'winter' : ym[1].toLowerCase().startsWith('f') ? 'fall' : 'spring_summer';
+            latestKey = semKeyFromTypeYear(type as any, parseInt(ym[2]));
+            latestStart = t;
+          }
+        }
+      }
+      // Fallback: if we couldn't derive, just use Winter 2029 as the anchor
+      const next = (latestKey && getNextSemesterAfter(latestKey)) || getNextSemesterAfter('w2029');
+      if (!next) {
+        setIsNewSemesterDialogOpen(true);
+        return;
+      }
+      // Reset form with next semester's dates and EMPTY courses (Bryn fills them in)
+      const term: 'full' | 'first_half' | 'second_half' = 'full';
+      const dayDefault = next.type === 'fall' || next.type === 'winter' ? 'monday' : '';
+      setNewSemesterForm({
+        semesterName: `${next.label} Semester`,
+        semesterType: next.type,
+        semesterStartDate: next.startDate,
+        semesterEndDate: next.endDate,
+        course1Code: "",
+        course1Name: "",
+        course1Professor: "",
+        course1ProfessorEmail: "",
+        course1DeliveryMode: "online",
+        course1ClassDay: dayDefault,
+        course1ClassDay2: "",
+        course1ClassTime: "",
+        course1ClassEndTime: "",
+        course1StartDate: next.startDate,
+        course1EndDate: next.endDate,
+        course1SpringSummerTerm: term,
+        course2Code: "",
+        course2Name: "",
+        course2Professor: "",
+        course2ProfessorEmail: "",
+        course2DeliveryMode: "in-person",
+        course2ClassDay: dayDefault,
+        course2ClassDay2: "",
+        course2ClassTime: "",
+        course2ClassEndTime: "",
+        course2StartDate: next.startDate,
+        course2EndDate: next.endDate,
+        course2SpringSummerTerm: term,
+        course3Code: "",
+        course3Name: "",
+        course3Professor: "",
+        course3ProfessorEmail: "",
+        course3DeliveryMode: "in-person",
+        course3ClassDay: dayDefault,
+        course3ClassDay2: "",
+        course3ClassTime: "",
+        course3ClassEndTime: "",
+        course3StartDate: next.startDate,
+        course3EndDate: next.endDate,
+        course3SpringSummerTerm: term,
+        secondaryCalendarId: "",
+      });
+      setIsNewSemesterDialogOpen(true);
+    } catch (err) {
+      console.error('[CreateSemester] failed to compute defaults:', err);
+      setIsNewSemesterDialogOpen(true);
+    }
+  }, [allSemestersForHealth]);
+
   const [isCalendarSettingsOpen, setIsCalendarSettingsOpen] = useState(false);
   const [isDialogManagerOpen, setIsDialogManagerOpen] = useState(false);
   const [showAllDayRow, setShowAllDayRow] = useState<boolean>(() => {
@@ -17890,6 +17970,7 @@ export default function Dashboard() {
             <span style={{ position: 'absolute', top: '13px', fontSize: '7.5px', color: '#ffffff', fontWeight: 500, letterSpacing: '0.5px', whiteSpace: 'nowrap', textAlign: 'center', right: '50%', transform: 'translateX(32%)' }}>Tasks</span>
           </div>
           {desktopIsFull && <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)', marginLeft: '-2px', marginTop: '1px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); startTransition(() => { setQuickAddStep(0); setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, countdownBarColor: '', priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminder4DateTimeMode: false, reminder4Date: '', reminder4Hour: '09', reminder4Minute: '00', reminderEmail: false, reminderAlexa: false, reminderSms: false, reminder1Methods: '', reminder2Methods: '', reminder3Methods: '', reminder4Methods: '', attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '', repeatSpanDays: 1, shiftAdjust: false, hideFromSummary: false, hideFromCountdown: false, sendInvite: false, inviteEmail: '', inviteName: '', taskLabel: '' as any }); setIsQuickAddOpen(true); }); }}>+ Add</Button>}
+          {desktopIsFull && <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[12px] no-default-hover-elevate no-default-active-elevate text-white text-[11px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(180,140,255,0.45) 0%, rgba(120,80,210,0.28) 100%)', border: '1.5px solid rgba(200,170,255,0.45)', boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)', marginLeft: '4px', marginTop: '1px', zIndex: 10, position: 'relative', display: 'flex', alignItems: 'center', gap: '4px' }} title="Add a new semester past Winter 2029" data-testid="button-add-semester-pill" onClick={() => { triggerButtonGlow('addtask'); openCreateSemesterWizard(); }}><GraduationCap style={{ width: '12px', height: '12px' }} />Sem</Button>}
           {/* Completed Tasks Button - Swapped with Graduation Hat */}
           <div className="pill-button-hover" style={{ 
             marginTop: '0px', width: '44px', height: '43px', borderRadius: '50%',
@@ -26071,6 +26152,20 @@ export default function Dashboard() {
               </div>
               ) : healthTab === 'folders' ? (
               <div className="px-4 py-3" style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent' }}>
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-[11px] font-semibold text-white/80 uppercase tracking-wider">Semesters &amp; Courses</span>
+                  <button
+                    type="button"
+                    onClick={openCreateSemesterWizard}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium text-white transition-all hover:brightness-110 active:scale-95"
+                    style={{ background: 'linear-gradient(180deg, rgba(180,140,255,0.45) 0%, rgba(120,80,210,0.28) 100%)', border: '1.5px solid rgba(200,170,255,0.45)', boxShadow: '0 2px 8px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.2)' }}
+                    data-testid="button-add-semester-folders"
+                    title="Create a new semester (Spring/Summer 2029, Fall 2029, etc.)"
+                  >
+                    <GraduationCap className="h-3 w-3" />
+                    <span>+ Add Semester</span>
+                  </button>
+                </div>
                 {allSemestersForHealth.length === 0 ? (
                   <div className="flex items-center justify-center py-8">
                     <Loader2 className="h-5 w-5 animate-spin text-white/60" />
