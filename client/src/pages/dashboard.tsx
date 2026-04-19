@@ -37479,7 +37479,7 @@ export default function Dashboard() {
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff', whiteSpace: 'nowrap', flexShrink: 0 }}>{hwWeeklyTimeline[0]?.label || 'Week'}</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', flexShrink: 0, minWidth: '20px' }}>({dueTomorrowTasks.length})</span>
                     <div style={{ flex: 1 }} />
-                    {/Week\s+\d/i.test(hwWeeklyTimeline[0]?.label || '') && hwWeeklyTimeline[0]?.weekStart && hwWeeklyTimeline[0]?.weekEnd && (
+                    {hwWeeklyTimeline[0]?.weekStart && hwWeeklyTimeline[0]?.weekEnd && (
                       <div style={{ display: 'flex', alignItems: 'center', gap: '2px', flexShrink: 0 }}>
                         <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                           <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(hwWeeklyTimeline[0].weekStart, 'MMM').toUpperCase()}</div>
@@ -37674,7 +37674,7 @@ export default function Dashboard() {
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff', flexShrink: 0 }}>{hwWeeklyTimeline[1]?.label || 'Week'}</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', flexShrink: 0, minWidth: '20px' }}>({dueNextWeekTasks.length})</span>
                     <div style={{ flex: 1 }} />
-                    {/Week\s+\d/i.test(hwWeeklyTimeline[1]?.label || '') && hwWeeklyTimeline[1]?.weekStart && hwWeeklyTimeline[1]?.weekEnd && (
+                    {hwWeeklyTimeline[1]?.weekStart && hwWeeklyTimeline[1]?.weekEnd && (
                       <div style={{ display: 'flex', alignItems: 'center', gap: '2px', flexShrink: 0 }}>
                         <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                           <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(hwWeeklyTimeline[1].weekStart, 'MMM').toUpperCase()}</div>
@@ -37853,7 +37853,7 @@ export default function Dashboard() {
                     <span className="text-[12px] font-semibold" style={{ color: '#ffffff', flexShrink: 0 }}>{hwWeeklyTimeline[2]?.label || 'Two weeks'}</span>
                     <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '14px', flexShrink: 0, minWidth: '20px' }}>({dueTwoWeeksTasks.length})</span>
                     <div style={{ flex: 1 }} />
-                    {/Week\s+\d/i.test(hwWeeklyTimeline[2]?.label || '') && hwWeeklyTimeline[2]?.weekStart && hwWeeklyTimeline[2]?.weekEnd && (
+                    {hwWeeklyTimeline[2]?.weekStart && hwWeeklyTimeline[2]?.weekEnd && (
                       <div style={{ display: 'flex', alignItems: 'center', gap: '2px', flexShrink: 0 }}>
                         <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                           <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(hwWeeklyTimeline[2].weekStart, 'MMM').toUpperCase()}</div>
@@ -38123,7 +38123,7 @@ export default function Dashboard() {
                                 <span className="text-[12px] font-semibold" style={{ color: '#ffffff' }}>{groupWeekLabel}</span>
                                 <span className="text-[9px] font-normal" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1 }}>({group.tasks.length})</span>
                               </div>
-                              {/Week\s+\d/i.test(groupWeekLabel) && tlEntry.weekStart && tlEntry.weekEnd && (
+                              {tlEntry.weekStart && tlEntry.weekEnd && (
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '2px', flexShrink: 0, marginLeft: '2px' }}>
                                   <div style={{ width: '16px', height: '18px', borderRadius: '2px', border: '1.5px solid rgb(0, 150, 0)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                                     <div style={{ background: 'rgb(0, 150, 0)', textAlign: 'center', fontSize: '5px', fontWeight: 700, color: 'white', lineHeight: '6px' }}>{format(tlEntry.weekStart, 'MMM').toUpperCase()}</div>
