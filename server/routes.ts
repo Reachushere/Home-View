@@ -7635,7 +7635,81 @@ I. PI BOOT RESILIENCE
 For pm2 to auto-start the dashboard after a Pi reboot (power outage etc.), these must have been run once:
   pm2 save
   pm2 startup        # prints ONE sudo command — must be copy-pasted back
-If Bryn reports "uni-cal.app down after my Pi rebooted", check 'pm2 list' first; if empty, pm2 startup wasn't completed. Fix by running both commands above.${memoryContext}${sessionCtx}`;
+If Bryn reports "uni-cal.app down after my Pi rebooted", check 'pm2 list' first; if empty, pm2 startup wasn't completed. Fix by running both commands above.
+
+═══════════════════════════════════════════════════
+§18 — RECENT FIX PATTERNS (April 2026 hand-off, learn these cold)
+═══════════════════════════════════════════════════
+These are the bug patterns that bit hardest in mid-April 2026. Recognize them on sight.
+
+────────────────────────────────────────────────────
+A. TDZ / HOIST ORDER IN dashboard.tsx (HUGE FILE)
+────────────────────────────────────────────────────
+dashboard.tsx is ~15k lines. JS \`const\`/\`let\` are hoisted but in the temporal dead zone until their declaration line. A useEffect/useMemo physically placed ABOVE a useState it reads will throw on every render: "Cannot access 'X' before initialization" — and React will WHITE-SCREEN the whole dashboard.
+
+RULE: when you add a new hook that reads another piece of state, place it IMMEDIATELY AFTER that state's useState declaration, not in a "logically grouped" earlier spot.
+
+Real example (commit 0f30c7590): \`dialogSemHealth\` query at line ~3290 referenced \`selectedCertCourse\` declared at line ~5377 → entire dashboard crashed. Fix was moving the effect to right after the useState.
+
+If Bryn reports "dashboard is just a black/white screen" or "page won't load anymore", FIRST check the browser console for \`ReferenceError: Cannot access '<x>' before initialization\` and grep for \`<x>\` declaration line vs. usage line.
+
+────────────────────────────────────────────────────
+B. SILENT RENDERER FAILURES INSIDE DIALOGS
+────────────────────────────────────────────────────
+CourseDetailDialog renders Automations content via an IIFE that calls a renderer function passed in from dashboard.tsx (\`automationsRenderer\`). If that renderer throws, React silently bails the subtree and the click "does nothing" — the chevron toggles state but the panel stays empty.
+
+RULE: any caller-injected renderer in a dialog MUST be wrapped in try/catch with a VISIBLE inline error message, not just console.error. Pattern (commit c6ae5a815):
+
+  {(() => {
+    try { return rendererFn(); }
+    catch (err) {
+      console.error('[X] renderer threw:', err);
+      return <div className="text-[10px] text-red-300">X failed: {String((err as any)?.message || err)}</div>;
+    }
+  })()}
+
+If Bryn says "clicking the arrow doesn't expand it", suspect a thrown renderer before suspecting the click handler. Click handlers in CourseDetailDialog all follow the same pattern as showAssignments/showWeekMappings — they're rarely the culprit.
+
+────────────────────────────────────────────────────
+C. buildCourseInfoForCert — SEMESTER FALLBACK SCAN
+────────────────────────────────────────────────────
+\`buildCourseInfoForCert\` (in dashboard.tsx) builds professor/email metadata for the Automations / certificate flow. \`selectedCertCourse.semKey\` is sometimes missing or stale (e.g. course was added in a previous semester then re-edited). If you only check the explicit semKey you'll show blank prof/email even when the data exists in another semester slot.
+
+RULE (commit e0ec59d3d): if \`selectedCertCourse.semKey\` is missing OR doesn't contain the course, scan ALL of \`semesterKeyOrder\` and find the slot whose \`courseCode\` matches. Don't trust a single semKey field for cross-semester lookups.
+
+────────────────────────────────────────────────────
+D. CURRENT-SEMESTER LOGIC — CLOSED INTERVAL ONLY
+────────────────────────────────────────────────────
+\`getCurrentSemKey\` returns the semKey whose start/end window contains \`now\`. Earlier logic returned "the most recently STARTED semester" which incorrectly kept Winter 2026 marked CURRENT all through April–May after exams ended.
+
+RULE (commit c7216ddd3): condition is \`t >= startMs && t <= endMs\`. If NO semester matches (i.e. we're in a between-semester gap like Apr 18 – May 4 2026), the function returns null/undefined. CURRENT badge correctly disappears from every semester until the next one's start date arrives. Do NOT add fallbacks like "default to next upcoming" — gap-with-no-CURRENT is the correct UX.
+
+────────────────────────────────────────────────────
+E. SNOWFLAKE SIZE — KEEP IT TINY
+────────────────────────────────────────────────────
+The dashboard background snow particles must be 1.5–4px range (commit 279df8e9c). 4–10px reads as "loading dots floating up the screen", not snow. If Bryn asks to "shrink the snow" again, the constants live in dashboard.tsx near the snowflake animation block.
+
+────────────────────────────────────────────────────
+F. PI-FIRST DEPLOY DISCIPLINE
+────────────────────────────────────────────────────
+Replit is gone. Every change MUST end with \`git push origin main\`. Bryn's deploy on the Pi is:
+  cd ~/Home-View && git pull && ./deploy.sh
+If you forget to push, the Pi pulls nothing and Bryn sees the OLD behavior — and will (correctly) think your fix didn't land. Always finish with the push command in your reply, e.g. "Pushed as <shortsha>. On the Pi: cd ~/Home-View && git pull && ./deploy.sh".
+
+────────────────────────────────────────────────────
+G. STATE OF KNOWN PENDING WORK (snapshot, may drift)
+────────────────────────────────────────────────────
+Items that were still open at last hand-off (verify before assuming):
+- 500 errors on initial page load (intermittent)
+- 2AM timeline rendering quirk (timezone edge)
+- Calendar Phase 2 refactor not yet started
+- Semester date timezone bug (some dates off by one)
+- Literal "..." placeholder in .env (cosmetic, but flagged)
+- BA chat yellow instruction-box styling (visual polish)
+- UniCal logo "switch", profile settings scroll bug, profile photo double-click — BLOCKED on Bryn's input
+- Nice-to-have: DRY-extract \`semDefaultPalettesRow\`
+
+When Bryn references one of these, you already have context — don't make him re-explain.${memoryContext}${sessionCtx}`;
 
       const messages: any[] = [{ role: "system", content: systemPrompt }];
       if (Array.isArray(history)) {
