@@ -6994,7 +6994,17 @@ export default function Dashboard() {
 
     const allSems = allSemesterSettingsRef.current || (semesterSettings ? [semesterSettings] : []);
     const detailSemKey = selectedCertCourse?.semKey;
-    const match = findSemSlot(detailSemKey, courseCode, allSems);
+    let match = findSemSlot(detailSemKey, courseCode, allSems);
+    if (!match) {
+      const ccNorm = courseCode.replace(/\s/g, '').toUpperCase();
+      for (const sk of semesterKeyOrder) {
+        const m = findSemSlot(sk, courseCode, allSems);
+        if (m) {
+          const slotCode = ((m.sem as any)[`course${m.slot}Code`] || '').replace(/\s/g, '').toUpperCase();
+          if (slotCode === ccNorm) { match = m; break; }
+        }
+      }
+    }
     if (match) {
       const { sem, slot: slotNum } = match;
       const prefix = `course${slotNum}`;
