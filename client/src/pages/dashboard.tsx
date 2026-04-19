@@ -27550,7 +27550,12 @@ export default function Dashboard() {
                                                                 <Icon size={16} style={{ color: accent, strokeWidth: 2 }} />
                                                               </div>
                                                             )}
-                                                            {hasArtBg && <div style={{ flex: 1 }} />}
+                                                            {hasArtBg && step.label !== 'OneDrive' && (
+                                                              <div className="relative flex items-center justify-center mb-1.5 mt-2" style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.4)' }}>
+                                                                <Icon size={16} style={{ color: '#ffffff', strokeWidth: 2 }} />
+                                                              </div>
+                                                            )}
+                                                            {hasArtBg && step.label === 'OneDrive' && <div style={{ flex: 1 }} />}
                                                             <span className="text-[10px] font-bold uppercase tracking-wider leading-none" style={{ color: txtColor, fontFamily: 'JetBrains Mono, monospace', textShadow: txtShadow, paddingLeft: hasArtBg ? '6px' : undefined, paddingRight: hasArtBg ? '6px' : undefined, paddingBottom: hideLabelText ? '4px' : undefined }}>{hideLabelText ? '' : step.label}</span>
                                                             <span className="mt-1 text-[9px] tabular-nums leading-none truncate max-w-full" style={{ color: txtColor, fontFamily: 'JetBrains Mono, monospace', textShadow: txtShadow, paddingBottom: hasArtBg ? '4px' : undefined, paddingLeft: hasArtBg ? '6px' : undefined, paddingRight: hasArtBg ? '6px' : undefined }}>{step.value}</span>
                                                           </>
