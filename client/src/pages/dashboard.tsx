@@ -29,6 +29,7 @@ import oneDriveBoxRedImg from "@assets/OneDrive_R_1776568204260.png";
 import greenBoxImg from "@assets/Green_Box_1776568031172.png";
 import yellowBoxImg from "@assets/Yellow_Box_1776568051366.png";
 import blueBoxImg from "@assets/Blue_Box_1776566950518.png";
+import pipelineBackImg from "@assets/Back_1776568672937.png";
 
 import changSchoolLogo from "@assets/Chang-School2_1770607146365.png";
 import campusBg from "@assets/TMU_1769151150961.jpg";
@@ -27462,7 +27463,7 @@ export default function Dashboard() {
                             })();
 
                             return (
-                              <div key={c.code} className="auto-resolution-card rounded-xl overflow-hidden" style={{ backgroundImage: `url(${blueBoxImg})`, backgroundSize: '100% 100%', backgroundRepeat: 'no-repeat', boxShadow: '0 12px 32px rgba(0,0,0,0.45)' }} data-testid={`expanded-course-${c.code}`}>
+                              <div key={c.code} className="auto-resolution-card rounded-xl overflow-hidden" style={{ backgroundImage: `url(${pipelineBackImg})`, backgroundSize: '100% 100%', backgroundRepeat: 'no-repeat', boxShadow: '0 12px 32px rgba(0,0,0,0.45)' }} data-testid={`expanded-course-${c.code}`}>
                                 {/* Terminal-style title bar */}
                                 <div className="px-4 py-2.5 flex items-center gap-3 border-b" style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.045) 0%, rgba(255,255,255,0.015) 100%)', borderBottomColor: 'rgba(255,255,255,0.08)' }}>
                                   <div className="flex items-center gap-1.5 mr-1">
