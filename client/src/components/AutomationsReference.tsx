@@ -20,6 +20,7 @@ import {
 import bgBack from "@assets/Back_1776566950517.png";
 import boxBlue from "@assets/Blue_Box_1776566950518.png";
 import boxGreen from "@assets/Green2_1776566950518.png";
+import oneDriveBox from "@assets/OneDrive_1776567093048.png";
 import boxGrey from "@assets/Grey_Box_1776566950519.png";
 import boxRed from "@assets/Red_Box_1776566950520.png";
 import boxYellow from "@assets/Yellow_Box_1776566950520.png";
@@ -402,7 +403,7 @@ export default function AutomationsReference({ open, onClose, colorSettings }: A
                       {category.items.map((item, idx) => {
                         const ItemIcon = item.icon;
                         const isOneDrive = /onedrive/i.test(item.title);
-                        const itemBgImg = isOneDrive ? boxGreen : null;
+                        const itemBgImg = isOneDrive ? oneDriveBox : null;
                         return (
                           <div
                             key={idx}
@@ -413,11 +414,12 @@ export default function AutomationsReference({ open, onClose, colorSettings }: A
                               backgroundRepeat: itemBgImg ? 'no-repeat' : undefined,
                               background: itemBgImg ? undefined : 'rgba(0,0,0,0.28)',
                               border: '1px solid rgba(255,255,255,0.18)',
+                              minHeight: isOneDrive ? '110px' : undefined,
                             }}
                             data-testid={`automation-item-${category.id}-${idx}`}
                           >
                             <div className="flex items-start gap-2">
-                              <ItemIcon className="h-3 w-3 flex-shrink-0 mt-0.5 text-white" />
+                              {!isOneDrive && <ItemIcon className="h-3 w-3 flex-shrink-0 mt-0.5 text-white" />}
                               <div className="flex-1 min-w-0">
                                 <div className="text-[10px] font-semibold text-white leading-tight" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>
                                   {item.title}
@@ -526,11 +528,11 @@ export function AutomationsContent() {
                   {category.items.map((item, idx) => {
                     const ItemIcon = item.icon;
                     const isOneDrive = /onedrive/i.test(item.title);
-                    const itemBgImg = isOneDrive ? boxGreen : null;
+                    const itemBgImg = isOneDrive ? oneDriveBox : null;
                     return (
-                      <div key={idx} className="rounded-md px-3 py-2" style={{ backgroundImage: itemBgImg ? `url(${itemBgImg})` : undefined, backgroundSize: itemBgImg ? '100% 100%' : undefined, backgroundRepeat: itemBgImg ? 'no-repeat' : undefined, background: itemBgImg ? undefined : 'rgba(0,0,0,0.28)', border: '1px solid rgba(255,255,255,0.18)' }} data-testid={`automation-item-${category.id}-${idx}`}>
+                      <div key={idx} className="rounded-md px-3 py-2" style={{ backgroundImage: itemBgImg ? `url(${itemBgImg})` : undefined, backgroundSize: itemBgImg ? '100% 100%' : undefined, backgroundRepeat: itemBgImg ? 'no-repeat' : undefined, background: itemBgImg ? undefined : 'rgba(0,0,0,0.28)', border: '1px solid rgba(255,255,255,0.18)', minHeight: isOneDrive ? '110px' : undefined }} data-testid={`automation-item-${category.id}-${idx}`}>
                         <div className="flex items-start gap-2">
-                          <ItemIcon className="h-3 w-3 flex-shrink-0 mt-0.5 text-white" />
+                          {!isOneDrive && <ItemIcon className="h-3 w-3 flex-shrink-0 mt-0.5 text-white" />}
                           <div className="flex-1 min-w-0">
                             <div className="text-[10px] font-semibold text-white leading-tight" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>{item.title}</div>
                             <div className="text-[9px] text-white/85 mt-0.5 leading-relaxed">{item.description}</div>
