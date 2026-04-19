@@ -896,7 +896,14 @@ export default function Dashboard() {
       const hour = et.getHours();
       const monthKey = `${et.getFullYear()}-${et.getMonth()}`;
       const dismissed = localStorage.getItem('monthlyReportDismissed');
-      if (day === 19 && hour >= 9 && dismissed !== monthKey) {
+      // v2: print-mode redesign — clear once so the form re-pops after the styling fix
+      const v = localStorage.getItem('monthlyReportRedesignVer');
+      if (v !== '2') {
+        localStorage.removeItem('monthlyReportDismissed');
+        localStorage.setItem('monthlyReportRedesignVer', '2');
+      }
+      const dismissedNow = localStorage.getItem('monthlyReportDismissed');
+      if (day === 19 && hour >= 9 && dismissedNow !== monthKey) {
         setIsMonthlyReportOpen(true);
       }
     };
@@ -1799,6 +1806,14 @@ export default function Dashboard() {
   const [mobileNotepadGroup, setMobileNotepadGroup] = useState('');
   const [mobileNotepadTitle, setMobileNotepadTitle] = useState('');
   const [isMonthlyReportOpen, setIsMonthlyReportOpen] = useState(false);
+  const [isMonthlyHistoryOpen, setIsMonthlyHistoryOpen] = useState(false);
+  const [monthlyReportHistory, setMonthlyReportHistory] = useState<any[]>(() => {
+    try {
+      const raw = localStorage.getItem('monthlyReportHistory');
+      if (raw) return JSON.parse(raw);
+    } catch {}
+    return [];
+  });
   const [monthlyReportFields, setMonthlyReportFields] = useState(() => {
     const saved = localStorage.getItem('monthlyReportFields');
     if (saved) try { return JSON.parse(saved); } catch {}
@@ -17971,6 +17986,7 @@ export default function Dashboard() {
           </div>
           {desktopIsFull && <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)', marginLeft: '-2px', marginTop: '1px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); startTransition(() => { setQuickAddStep(0); setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, countdownBarColor: '', priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminder4DateTimeMode: false, reminder4Date: '', reminder4Hour: '09', reminder4Minute: '00', reminderEmail: false, reminderAlexa: false, reminderSms: false, reminder1Methods: '', reminder2Methods: '', reminder3Methods: '', reminder4Methods: '', attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '', repeatSpanDays: 1, shiftAdjust: false, hideFromSummary: false, hideFromCountdown: false, sendInvite: false, inviteEmail: '', inviteName: '', taskLabel: '' as any }); setIsQuickAddOpen(true); }); }}>+ Add</Button>}
           {desktopIsFull && <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[12px] no-default-hover-elevate no-default-active-elevate text-white text-[11px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(180,140,255,0.45) 0%, rgba(120,80,210,0.28) 100%)', border: '1.5px solid rgba(200,170,255,0.45)', boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)', marginLeft: '4px', marginTop: '1px', zIndex: 10, position: 'relative', display: 'flex', alignItems: 'center', gap: '4px' }} title="Add a new semester past Winter 2029" data-testid="button-add-semester-pill" onClick={() => { triggerButtonGlow('addtask'); openCreateSemesterWizard(); }}><GraduationCap style={{ width: '12px', height: '12px' }} />Sem</Button>}
+          {desktopIsFull && <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[12px] no-default-hover-elevate no-default-active-elevate text-white text-[11px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(140,200,255,0.45) 0%, rgba(80,130,210,0.28) 100%)', border: '1.5px solid rgba(170,210,255,0.45)', boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)', marginLeft: '4px', marginTop: '1px', zIndex: 10, position: 'relative', display: 'flex', alignItems: 'center', gap: '4px' }} title="Open the Post-Secondary Monthly Report (and view saved copies)" data-testid="button-monthly-report-pill" onClick={() => { triggerButtonGlow('addtask'); setIsMonthlyReportOpen(true); }}><FileText style={{ width: '12px', height: '12px' }} />Report</Button>}
           {/* Completed Tasks Button - Swapped with Graduation Hat */}
           <div className="pill-button-hover" style={{ 
             marginTop: '0px', width: '44px', height: '43px', borderRadius: '50%',
@@ -25326,16 +25342,16 @@ export default function Dashboard() {
 
           {/* Monthly Post-Secondary Report Dialog */}
           {isMonthlyReportOpen && desktopIsFull && (
-            <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 10020, backgroundColor: 'rgba(0,0,0,0.6)' }} data-testid="monthly-report-overlay">
-              <div className="sm:rounded-lg shadow-2xl w-[600px] max-h-[85vh] flex flex-col overflow-hidden" style={{ background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }} data-testid="monthly-report-dialog">
-                <div className="flex items-center justify-between px-4 py-3 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
+            <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 10100, backgroundColor: 'rgba(0,0,0,0.6)' }} data-testid="monthly-report-overlay">
+              <div className="monthly-report-print-mode sm:rounded-lg shadow-2xl w-[600px] max-h-[85vh] flex flex-col overflow-hidden" style={{ background: '#ffffff', border: '2px solid #000000', boxShadow: '0 4px 24px rgba(0,0,0,0.4)' }} data-testid="monthly-report-dialog">
+                <div className="monthly-report-header flex items-center justify-between px-4 py-3 flex-shrink-0 rounded-t-lg" style={{ background: '#000000', borderBottom: '2px solid #000000' }}>
                   <div className="flex items-center gap-2">
-                    <FileText className="text-white" style={{ width: '15px', height: '15px' }} />
-                    <h2 className="font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)', fontSize: '12px' }}>
+                    <FileText style={{ width: '15px', height: '15px', color: '#ffffff' }} />
+                    <h2 style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", color: '#ffffff', fontSize: '12px', fontWeight: 500 }}>
                       POST-SECONDARY MONTHLY REPORT
                     </h2>
                   </div>
-                  <span className="text-white/40 text-[10px]">Due on the 19th</span>
+                  <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '10px' }}>Due on the 19th</span>
                 </div>
                 <div className="flex-1 overflow-y-auto p-4 space-y-3" style={{ scrollbarWidth: 'thin' }}>
                   <div className="px-3 py-2 rounded-lg border border-white/10" style={{ background: 'rgba(255,255,255,0.04)' }}>
@@ -25437,18 +25453,44 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between px-4 py-3 flex-shrink-0" style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}>
-                  <button
-                    onClick={() => {
-                      localStorage.setItem('monthlyReportFields', JSON.stringify(monthlyReportFields));
-                      toast({ title: "Saved", description: "Report fields saved locally." });
-                    }}
-                    className="text-white text-[11px] font-semibold px-4 py-2 rounded transition-colors hover:brightness-110"
-                    style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 3px rgba(0,0,0,0.15)', border: '1px solid rgba(255,255,255,0.2)' }}
-                    data-testid="report-save"
-                  >
-                    Save Draft
-                  </button>
+                <div className="monthly-report-footer flex items-center justify-between px-4 py-3 flex-shrink-0" style={{ borderTop: '2px solid #000000', background: '#ffffff' }}>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => {
+                        localStorage.setItem('monthlyReportFields', JSON.stringify(monthlyReportFields));
+                        const snapshot = {
+                          savedAt: new Date().toISOString(),
+                          reportingPeriod: monthlyReportFields.reportingPeriod || '(no period)',
+                          reportDate: monthlyReportFields.reportDate || '',
+                          fields: { ...monthlyReportFields },
+                        };
+                        const newHistory = [snapshot, ...monthlyReportHistory].slice(0, 50);
+                        setMonthlyReportHistory(newHistory);
+                        localStorage.setItem('monthlyReportHistory', JSON.stringify(newHistory));
+                        toast({ title: "Saved", description: "Snapshot added to Saved Reports." });
+                      }}
+                      style={{ background: '#000000', color: '#ffffff', fontSize: '11px', fontWeight: 600, padding: '8px 14px', borderRadius: '4px', border: '1.5px solid #000000', cursor: 'pointer' }}
+                      data-testid="report-save"
+                    >
+                      Save Draft
+                    </button>
+                    <button
+                      onClick={() => setIsMonthlyHistoryOpen(true)}
+                      style={{ background: '#ffffff', color: '#000000', fontSize: '11px', fontWeight: 600, padding: '8px 14px', borderRadius: '4px', border: '1.5px solid #000000', cursor: 'pointer' }}
+                      data-testid="report-saved"
+                      title="View previously saved reports"
+                    >
+                      Saved ({monthlyReportHistory.length})
+                    </button>
+                    <button
+                      onClick={() => { try { window.print(); } catch (e) { console.error(e); } }}
+                      style={{ background: '#ffffff', color: '#000000', fontSize: '11px', fontWeight: 600, padding: '8px 14px', borderRadius: '4px', border: '1.5px solid #000000', cursor: 'pointer' }}
+                      data-testid="report-print"
+                      title="Print this report"
+                    >
+                      Print
+                    </button>
+                  </div>
                   <div className="flex gap-2">
                     <button
                       onClick={() => {
@@ -25502,6 +25544,71 @@ export default function Dashboard() {
                       Close
                     </Button>
                   </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Saved Monthly Reports History Viewer */}
+          {isMonthlyHistoryOpen && desktopIsFull && (
+            <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 10110, backgroundColor: 'rgba(0,0,0,0.6)' }} data-testid="monthly-history-overlay">
+              <div className="monthly-report-print-mode sm:rounded-lg shadow-2xl w-[640px] max-h-[80vh] flex flex-col overflow-hidden" style={{ background: '#ffffff', border: '2px solid #000000' }} data-testid="monthly-history-dialog">
+                <div className="flex items-center justify-between px-4 py-3 flex-shrink-0 rounded-t-lg" style={{ background: '#000000' }}>
+                  <div className="flex items-center gap-2">
+                    <FileText style={{ width: '15px', height: '15px', color: '#ffffff' }} />
+                    <h2 style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", color: '#ffffff', fontSize: '12px', fontWeight: 500 }}>SAVED MONTHLY REPORTS</h2>
+                  </div>
+                  <button onClick={() => setIsMonthlyHistoryOpen(false)} style={{ color: '#ffffff', cursor: 'pointer', padding: '4px' }} data-testid="button-close-monthly-history"><X className="h-4 w-4" /></button>
+                </div>
+                <div className="flex-1 overflow-y-auto p-4" style={{ scrollbarWidth: 'thin', background: '#ffffff' }}>
+                  {monthlyReportHistory.length === 0 ? (
+                    <p style={{ color: '#000000', fontSize: '12px', textAlign: 'center', padding: '24px 0' }}>No saved reports yet. Click "Save Draft" in the report to save a snapshot here.</p>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {monthlyReportHistory.map((snap: any, idx: number) => {
+                        const dt = new Date(snap.savedAt);
+                        const dateLabel = isNaN(dt.getTime()) ? snap.savedAt : dt.toLocaleString('en-US', { timeZone: getAppTz(), month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+                        return (
+                          <div key={idx} style={{ border: '1.5px solid #000000', borderRadius: '4px', padding: '10px 12px', background: '#ffffff' }} data-testid={`saved-report-${idx}`}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <p style={{ color: '#000000', fontSize: '12px', fontWeight: 600, margin: 0 }}>{snap.reportingPeriod}</p>
+                                <p style={{ color: '#000000', fontSize: '10px', opacity: 0.7, margin: '2px 0 0 0' }}>Saved {dateLabel}{snap.reportDate ? ` · Report Date: ${snap.reportDate}` : ''}</p>
+                              </div>
+                              <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
+                                <button
+                                  onClick={() => {
+                                    setMonthlyReportFields(snap.fields);
+                                    setIsMonthlyHistoryOpen(false);
+                                    toast({ title: "Loaded", description: "Snapshot loaded into the form." });
+                                  }}
+                                  style={{ background: '#000000', color: '#ffffff', fontSize: '10px', fontWeight: 600, padding: '4px 10px', borderRadius: '3px', border: '1.5px solid #000000', cursor: 'pointer' }}
+                                  data-testid={`button-load-report-${idx}`}
+                                >
+                                  Load
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    if (!confirm('Delete this saved snapshot?')) return;
+                                    const next = monthlyReportHistory.filter((_: any, i: number) => i !== idx);
+                                    setMonthlyReportHistory(next);
+                                    localStorage.setItem('monthlyReportHistory', JSON.stringify(next));
+                                  }}
+                                  style={{ background: '#ffffff', color: '#000000', fontSize: '10px', fontWeight: 600, padding: '4px 10px', borderRadius: '3px', border: '1.5px solid #000000', cursor: 'pointer' }}
+                                  data-testid={`button-delete-report-${idx}`}
+                                >
+                                  Del
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+                <div className="flex items-center justify-end px-4 py-3 flex-shrink-0" style={{ borderTop: '2px solid #000000', background: '#ffffff', gap: '8px' }}>
+                  <button onClick={() => setIsMonthlyHistoryOpen(false)} style={{ background: '#ffffff', color: '#000000', fontSize: '11px', fontWeight: 600, padding: '8px 14px', borderRadius: '4px', border: '1.5px solid #000000', cursor: 'pointer' }} data-testid="button-close-monthly-history-footer">Close</button>
                 </div>
               </div>
             </div>
