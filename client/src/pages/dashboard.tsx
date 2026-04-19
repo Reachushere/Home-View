@@ -27511,7 +27511,7 @@ export default function Dashboard() {
                                           <div className="relative" style={{ padding: '14px 18px 18px' }}>
                                             <div className="relative mb-3">
                                               <img src={pipelineHeaderImg} alt="Automation Control Centre" style={{ display: 'block', width: '100%', height: 'auto' }} />
-                                              <span className="absolute inline-flex items-center gap-1.5 text-[10px] font-bold tabular-nums px-2 py-0.5 rounded-full" style={{ top: 'calc(50% - 9px)', right: '24px', transform: 'translateY(-50%)', background: allGood ? 'rgba(16,185,129,0.25)' : okCount >= 3 ? 'rgba(234,179,8,0.25)' : 'rgba(239,68,68,0.25)', color: allGood ? '#6ee7b7' : okCount >= 3 ? '#fde68a' : '#fca5a5', border: `1px solid ${allGood ? 'rgba(16,185,129,0.6)' : okCount >= 3 ? 'rgba(234,179,8,0.6)' : 'rgba(239,68,68,0.6)'}`, fontFamily: 'JetBrains Mono, monospace' }}>
+                                              <span className="absolute inline-flex items-center gap-1.5 text-[10px] font-bold tabular-nums px-2 py-0.5 rounded-full" style={{ top: 'calc(50% - 9px)', right: '30px', transform: 'translateY(-50%)', background: allGood ? 'rgba(16,185,129,0.25)' : okCount >= 3 ? 'rgba(234,179,8,0.25)' : 'rgba(239,68,68,0.25)', color: allGood ? '#6ee7b7' : okCount >= 3 ? '#fde68a' : '#fca5a5', border: `1px solid ${allGood ? 'rgba(16,185,129,0.6)' : okCount >= 3 ? 'rgba(234,179,8,0.6)' : 'rgba(239,68,68,0.6)'}`, fontFamily: 'JetBrains Mono, monospace' }}>
                                                 <span className="w-1.5 h-1.5 rounded-full" style={{ background: allGood ? '#10b981' : okCount >= 3 ? '#eab308' : '#ef4444', boxShadow: `0 0 5px ${allGood ? '#10b981' : okCount >= 3 ? '#eab308' : '#ef4444'}` }} />
                                                 {okCount}/{steps.length} ok
                                               </span>
@@ -27594,7 +27594,7 @@ export default function Dashboard() {
                                     })()}
                                   </div>
 
-                                  <div>
+                                  <div style={{ paddingLeft: '18px', paddingRight: '18px' }}>
                                     {(() => {
                                       const allReadingExempt = Array.from({ length: expHealth?.numberOfWeeks || 13 }, (_, i) => i + 1).every(w => isReadingExempt(c.code, w));
                                       const hasAnyReadingContent = courseHealth?.totalReadings > 0;
@@ -27642,8 +27642,8 @@ export default function Dashboard() {
                                         <>
                                           <div className="flex items-center justify-between mb-2">
                                             <div className="flex items-center gap-2">
-                                              <span className="text-[10px]" style={{ color: '#475569', fontFamily: 'JetBrains Mono, monospace' }}>$</span>
-                                              <span className="text-[11px] font-bold uppercase tracking-[0.12em]" style={{ color: '#94a3b8', fontFamily: 'JetBrains Mono, monospace' }}>tree --naming --paths</span>
+                                              <span className="text-[10px]" style={{ color: '#ffffff', fontFamily: 'JetBrains Mono, monospace', textShadow: '0 1px 2px rgba(0,0,0,0.6)' }}>$</span>
+                                              <span className="text-[11px] font-bold uppercase tracking-[0.12em]" style={{ color: '#ffffff', fontFamily: 'JetBrains Mono, monospace', textShadow: '0 1px 2px rgba(0,0,0,0.6)' }}>tree --naming --paths</span>
                                             </div>
                                             <span className="inline-flex items-center gap-1.5 text-[10px] font-bold tabular-nums px-2 py-0.5 rounded-full" style={{ background: totalActiveOk === totalActive ? 'rgba(16,185,129,0.12)' : 'rgba(234,179,8,0.12)', color: totalActiveOk === totalActive ? '#6ee7b7' : '#fde68a', border: `1px solid ${totalActiveOk === totalActive ? 'rgba(16,185,129,0.4)' : 'rgba(234,179,8,0.4)'}`, fontFamily: 'JetBrains Mono, monospace' }}>
                                               <span className="w-1.5 h-1.5 rounded-full" style={{ background: totalActiveOk === totalActive ? '#10b981' : '#eab308', boxShadow: `0 0 5px ${totalActiveOk === totalActive ? '#10b981' : '#eab308'}` }} />
@@ -27692,8 +27692,8 @@ export default function Dashboard() {
                                                                 <input type="checkbox" checked={!disabled} onChange={() => toggleHealthItem(c.code, row.issueKey)} className="w-3.5 h-3.5 rounded cursor-pointer accent-emerald-500" title={disabled ? 'Enable for health reporting' : 'Disable from health reporting'} data-testid={`health-toggle-${row.issueKey}`} />
                                                               </td>
                                                               <td className="px-3 py-2 font-medium" style={{ borderBottom: isLast ? 'none' : '1px solid rgba(0,0,0,0.08)', color: '#000000' }}>{row.label}</td>
-                                                              <td className="px-3 py-2 font-mono text-[11px]" style={{ borderBottom: isLast ? 'none' : '1px solid rgba(0,0,0,0.08)', color: '#000000' }}>
-                                                                <span className="inline-flex items-center gap-2">
+                                                              <td className="px-3 py-2 font-mono text-[11px]" style={{ borderBottom: isLast ? 'none' : '1px solid rgba(0,0,0,0.08)', color: '#000000', textAlign: 'left', width: '100%' }}>
+                                                                <span className="inline-flex items-center gap-2" style={{ textAlign: 'left' }}>
                                                                   <span>{row.path}</span>
                                                                   <Pencil className="w-3 h-3 text-black/40 hover:text-black/80 cursor-pointer flex-shrink-0 transition-colors" onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: row.issueKey, step: 0, phase: 'primary' }); }} />
                                                                 </span>
@@ -27739,12 +27739,12 @@ export default function Dashboard() {
                                               key={w}
                                               className="text-center cursor-pointer hover:brightness-125 transition-all relative"
                                               style={{
-                                                backgroundImage: weekGreen ? `url(${weekGreenBoxImg})` : weekRed ? `url(${weekRedBoxImg})` : 'none',
+                                                backgroundImage: weekGreen ? `url(${weekGreenBoxImg})` : weekRed ? `url(${weekRedBoxImg})` : undefined,
                                                 backgroundSize: '100% 100%',
                                                 backgroundRepeat: 'no-repeat',
-                                                background: weekGreen || weekRed ? undefined : 'rgba(255,255,255,0.03)',
-                                                border: weekGreen || weekRed ? 'none' : '1px solid rgba(255,255,255,0.1)',
-                                                borderRadius: weekGreen || weekRed ? 0 : '4px',
+                                                backgroundColor: (weekGreen || weekRed) ? 'transparent' : 'rgba(255,255,255,0.03)',
+                                                border: (weekGreen || weekRed) ? 'none' : '1px solid rgba(255,255,255,0.1)',
+                                                borderRadius: (weekGreen || weekRed) ? '0' : '4px',
                                                 padding: '6px 4px',
                                                 minHeight: '46px',
                                               }}
