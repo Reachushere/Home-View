@@ -919,9 +919,9 @@ export default function Dashboard() {
         setIsMonthlyReportOpen(true);
       }
     };
+    // Only check once on page load. Re-checking on a timer caused the dialog
+    // to pop back open the moment the user closed it (screen "kept refreshing").
     checkMonthlyReport();
-    const interval = setInterval(checkMonthlyReport, 60000);
-    return () => clearInterval(interval);
   }, []);
 
   const getRecurringGroupIds = useCallback((id: number): number[] => {
