@@ -31,6 +31,8 @@ import yellowBoxImg from "@assets/Yellow_Box_1776568051366.png";
 import blueBoxImg from "@assets/Blue_Box_1776566950518.png";
 import pipelineBackImg from "@assets/Back_1776568672937.png";
 import pipelineHeaderImg from "@assets/Header_1776568848425.png";
+import weekGreenBoxImg from "@assets/Green3_1776569141740.png";
+import weekRedBoxImg from "@assets/Red_1776569141741.png";
 
 import changSchoolLogo from "@assets/Chang-School2_1770607146365.png";
 import campusBg from "@assets/TMU_1769151150961.jpg";
@@ -27735,17 +27737,23 @@ export default function Dashboard() {
                                           return (
                                             <div
                                               key={w}
-                                              className="rounded border text-center py-1.5 cursor-pointer hover:brightness-125 transition-all"
+                                              className="text-center cursor-pointer hover:brightness-125 transition-all relative"
                                               style={{
-                                                background: weekGreen ? 'rgba(34,197,94,0.15)' : weekRed ? 'rgba(239,68,68,0.08)' : 'rgba(255,255,255,0.03)',
-                                                borderColor: weekGreen ? 'rgba(34,197,94,0.4)' : weekRed ? 'rgba(239,68,68,0.25)' : 'rgba(255,255,255,0.1)',
+                                                backgroundImage: weekGreen ? `url(${weekGreenBoxImg})` : weekRed ? `url(${weekRedBoxImg})` : 'none',
+                                                backgroundSize: '100% 100%',
+                                                backgroundRepeat: 'no-repeat',
+                                                background: weekGreen || weekRed ? undefined : 'rgba(255,255,255,0.03)',
+                                                border: weekGreen || weekRed ? 'none' : '1px solid rgba(255,255,255,0.1)',
+                                                borderRadius: weekGreen || weekRed ? 0 : '4px',
+                                                padding: '6px 4px',
+                                                minHeight: '46px',
                                               }}
                                               onClick={(e) => { e.stopPropagation(); setWeekDetailOpen({ courseCode: c.code, week: w }); }}
                                               data-testid={`week-cell-${c.code}-${w}`}
                                             >
-                                              <div className="text-[10px] font-bold text-white">W{w}</div>
-                                              <div className="text-[9px] text-white/80">{mCount}M {rCount}R{rExempt && rCount === 0 ? '*' : ''}</div>
-                                              {mCount > 0 && mTts < mCount && <div className="text-[8px] text-yellow-400">TTS {mTts}/{mCount}</div>}
+                                              <div className="text-[10px] font-bold text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.7)' }}>W{w}</div>
+                                              <div className="text-[9px] text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.7)' }}>{mCount}M {rCount}R{rExempt && rCount === 0 ? '*' : ''}</div>
+                                              {mCount > 0 && mTts < mCount && <div className="text-[8px] text-yellow-200" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.7)' }}>TTS {mTts}/{mCount}</div>}
                                             </div>
                                           );
                                         })}
