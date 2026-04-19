@@ -27702,7 +27702,7 @@ export default function Dashboard() {
                                                                 <div className="flex items-center" style={{ gap: '8px' }}>
                                                                   <span className={`inline-block w-2.5 h-2.5 rounded-full flex-shrink-0 ${row.ok ? 'bg-emerald-500' : 'bg-red-500'}`} title={row.ok ? 'Connected' : 'Not connected'} />
                                                                   {!row.ok && (
-                                                                    <span className="text-[10px] text-red-400 hover:text-red-300 underline cursor-pointer flex-shrink-0" onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: row.issueKey, step: 0, phase: 'primary' }); }}>Fix</span>
+                                                                    <span className="text-[10px] underline cursor-pointer flex-shrink-0" style={{ color: 'rgb(251, 210, 30)' }} onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: row.issueKey, step: 0, phase: 'primary' }); }}>Fix</span>
                                                                   )}
                                                                 </div>
                                                               </td>
