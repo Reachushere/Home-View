@@ -30,6 +30,7 @@ import greenBoxImg from "@assets/Green_Box_1776568031172.png";
 import yellowBoxImg from "@assets/Yellow_Box_1776568051366.png";
 import blueBoxImg from "@assets/Blue_Box_1776566950518.png";
 import pipelineBackImg from "@assets/Back_1776568672937.png";
+import pipelineHeaderImg from "@assets/Header_1776568848425.png";
 
 import changSchoolLogo from "@assets/Chang-School2_1770607146365.png";
 import campusBg from "@assets/TMU_1769151150961.jpg";
@@ -27506,9 +27507,9 @@ export default function Dashboard() {
                                       return (
                                         <>
                                           <div className="relative" style={{ padding: '14px 18px 18px' }}>
-                                            <div className="flex items-center justify-center mb-3 relative" style={{ borderBottom: '1px solid rgba(255,255,255,0.18)', paddingBottom: '8px' }}>
-                                              <span className="text-[12px] font-bold tracking-[0.14em] uppercase" style={{ color: '#ffffff', fontFamily: 'JetBrains Mono, monospace', textShadow: '0 1px 3px rgba(0,0,0,0.6)' }}>Pipeline Status</span>
-                                              <span className="absolute right-0 inline-flex items-center gap-1.5 text-[10px] font-bold tabular-nums px-2 py-0.5 rounded-full" style={{ background: allGood ? 'rgba(16,185,129,0.2)' : okCount >= 3 ? 'rgba(234,179,8,0.2)' : 'rgba(239,68,68,0.2)', color: allGood ? '#6ee7b7' : okCount >= 3 ? '#fde68a' : '#fca5a5', border: `1px solid ${allGood ? 'rgba(16,185,129,0.5)' : okCount >= 3 ? 'rgba(234,179,8,0.5)' : 'rgba(239,68,68,0.5)'}`, fontFamily: 'JetBrains Mono, monospace' }}>
+                                            <div className="relative mb-3">
+                                              <img src={pipelineHeaderImg} alt="Automation Control Centre" style={{ display: 'block', width: '100%', height: 'auto' }} />
+                                              <span className="absolute inline-flex items-center gap-1.5 text-[10px] font-bold tabular-nums px-2 py-0.5 rounded-full" style={{ top: '50%', right: '12px', transform: 'translateY(-50%)', background: allGood ? 'rgba(16,185,129,0.25)' : okCount >= 3 ? 'rgba(234,179,8,0.25)' : 'rgba(239,68,68,0.25)', color: allGood ? '#6ee7b7' : okCount >= 3 ? '#fde68a' : '#fca5a5', border: `1px solid ${allGood ? 'rgba(16,185,129,0.6)' : okCount >= 3 ? 'rgba(234,179,8,0.6)' : 'rgba(239,68,68,0.6)'}`, fontFamily: 'JetBrains Mono, monospace' }}>
                                                 <span className="w-1.5 h-1.5 rounded-full" style={{ background: allGood ? '#10b981' : okCount >= 3 ? '#eab308' : '#ef4444', boxShadow: `0 0 5px ${allGood ? '#10b981' : okCount >= 3 ? '#eab308' : '#ef4444'}` }} />
                                                 {okCount}/{steps.length} ok
                                               </span>
