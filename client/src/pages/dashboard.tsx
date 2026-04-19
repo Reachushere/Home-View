@@ -3287,6 +3287,27 @@ export default function Dashboard() {
       .then(data => { setExpandedSemHealth(data); setExpandedSemHealthLoading(false); })
       .catch(() => setExpandedSemHealthLoading(false));
   }, [expandedSemKey]);
+  const [dialogSemHealth, setDialogSemHealth] = useState<{ semKey: string; data: any } | null>(null);
+  useEffect(() => {
+    if (!selectedCertCourse) { setDialogSemHealth(null); return; }
+    const cc = selectedCertCourse.courseCode.replace(/\s/g, '').toUpperCase();
+    let semKey = selectedCertCourse.semKey || '';
+    if (!semKey) {
+      for (const sk of semesterKeyOrder) {
+        const courses = semesterCourseAssignments[sk] || [];
+        if (courses.some(c => c.code.replace(/\s/g, '').toUpperCase() === cc)) { semKey = sk; break; }
+      }
+    }
+    if (!semKey) return;
+    if (expandedSemKey === semKey && expandedSemHealth) {
+      setDialogSemHealth({ semKey, data: expandedSemHealth });
+      return;
+    }
+    fetch(`/api/semester-health-check/${semKey}`, { credentials: 'include' })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data) setDialogSemHealth({ semKey, data }); })
+      .catch(() => {});
+  }, [selectedCertCourse, expandedSemKey, expandedSemHealth]);
   const [semBoxHealthCache, setSemBoxHealthCache] = useState<Record<string, { score: number; level: 'ok' | 'warning' | 'critical' }>>({});
   useEffect(() => {
     if (!isSchoolCoursesDialogOpen) return;
@@ -14778,6 +14799,384 @@ export default function Dashboard() {
     );
   }
 
+  const renderCoursePipeline = (c: any, cIdx: number, expHealth: any, expandedSemKey: string) => {
+      const codeNorm = c.code.toUpperCase().replace(/\s/g, '');
+      const gc = getCourseGradientColors(c.code);
+      const dotBg = gc.start !== gc.end ? `linear-gradient(180deg, ${gc.start}, ${gc.end})` : gc.start;
+      const courseHealth = expHealth?.courses?.find((ch: any) => ch.code.replace(/\s/g, '').toUpperCase() === codeNorm);
+      const displayNameResult = (() => {
+        const dnMatch = findSemSlot(expandedSemKey, c.code, allSemesterSettings);
+        if (dnMatch) {
+          const dbDN = (dnMatch.sem as any)[`course${dnMatch.slot}DisplayName`];
+          if (dbDN) return dbDN;
+        }
+        return c.name;
+      })();
+                              return (
+                              <div key={c.code} className="auto-resolution-card rounded-xl overflow-hidden" style={{ backgroundImage: `url(${pipelineBackImg})`, backgroundSize: '100% 100%', backgroundRepeat: 'no-repeat', boxShadow: '0 12px 32px rgba(0,0,0,0.45)' }} data-testid={`expanded-course-${c.code}`}>
+                                {/* Terminal-style title bar */}
+                                <div className="px-4 py-2.5 flex items-center gap-3 border-b" style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.045) 0%, rgba(255,255,255,0.015) 100%)', borderBottomColor: 'rgba(255,255,255,0.08)' }}>
+                                  <div className="flex items-center gap-1.5 mr-1">
+                                    <span className="w-2.5 h-2.5 rounded-full" style={{ background: '#ff5f57', boxShadow: '0 0 6px rgba(255,95,87,0.45)' }} />
+                                    <span className="w-2.5 h-2.5 rounded-full" style={{ background: '#febc2e', boxShadow: '0 0 6px rgba(254,188,46,0.4)' }} />
+                                    <span className="w-2.5 h-2.5 rounded-full" style={{ background: '#28c840', boxShadow: '0 0 6px rgba(40,200,64,0.45)' }} />
+                                  </div>
+                                  <div className="flex items-center gap-2 px-2 py-0.5 rounded" style={{ background: 'rgba(99,102,241,0.14)', border: '1px solid rgba(99,102,241,0.4)' }}>
+                                    <div className="w-2 h-2 rounded-full" style={{ background: dotBg, boxShadow: '0 0 6px rgba(255,255,255,0.35)' }} />
+                                    <span className="text-[12px] font-bold tracking-wider" style={{ color: '#ffffff', fontFamily: 'JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace', textShadow: '0 1px 2px rgba(0,0,0,0.6)' }}>{c.code}</span>
+                                  </div>
+                                  {(c.fullName || (displayNameResult !== c.code && displayNameResult)) && <span className="text-[12px] font-medium truncate" style={{ color: '#ffffff', fontFamily: 'JetBrains Mono, ui-monospace, monospace', textShadow: '0 1px 2px rgba(0,0,0,0.6)' }}>~/{c.fullName || displayNameResult}</span>}
+                                  {courseHealth && (
+                                    <div className="ml-auto flex items-center gap-2.5 flex-shrink-0">
+                                      <span className="text-[11px] tabular-nums" style={{ color: '#94a3b8', fontFamily: 'JetBrains Mono, ui-monospace, monospace' }}>{courseHealth.totalModules}M · {courseHealth.totalReadings}R</span>
+                                      {courseHealth.syllabusLinked
+                                        ? <span className="inline-flex items-center gap-1.5 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wider" style={{ background: 'rgba(16,185,129,0.12)', color: '#6ee7b7', border: '1px solid rgba(16,185,129,0.4)', fontFamily: 'JetBrains Mono, monospace' }}><span className="w-1.5 h-1.5 rounded-full" style={{ background: '#10b981', boxShadow: '0 0 5px #10b981' }} />syllabus.ok</span>
+                                        : <span className="inline-flex items-center gap-1.5 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wider cursor-pointer hover:brightness-125" style={{ background: 'rgba(239,68,68,0.12)', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.4)', fontFamily: 'JetBrains Mono, monospace' }} onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: 'syllabus', step: 0, phase: 'primary' }); }}><span className="w-1.5 h-1.5 rounded-full" style={{ background: '#ef4444', boxShadow: '0 0 5px #ef4444' }} />syllabus.missing</span>}
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="p-4 space-y-4 auto-resolution-body">
+                                  <div>
+                                    {(() => {
+                                      const totalMod = courseHealth?.totalModules || 0;
+                                      const totalRead = courseHealth?.totalReadings || 0;
+                                      const ttsReady = courseHealth?.totalTtsReady || 0;
+                                      const ttsNeeded = courseHealth?.totalTtsNeeded || 0;
+                                      const odPct = courseHealth?.oneDriveFolderConfigured ? 100 : 0;
+                                      const ttsPct = ttsNeeded > 0 ? Math.round((ttsReady / ttsNeeded) * 100) : (totalMod > 0 ? 0 : null);
+                                      const steps: { label: string; Icon: any; value: string; status: 'ok' | 'warning' | 'error'; issueKey: string; pct: number | null }[] = [
+                                        { label: 'OneDrive', Icon: Cloud, value: courseHealth?.oneDriveFolderConfigured ? 'linked' : 'unlinked', status: courseHealth?.oneDriveFolderConfigured ? 'ok' : 'error', issueKey: 'onedrive', pct: odPct },
+                                        { label: 'Sync', Icon: RefreshCw, value: `${totalMod}M·${totalRead}R`, status: (courseHealth?.oneDriveFolderConfigured || totalMod > 0 || totalRead > 0) ? ((totalMod + totalRead) > 0 ? 'ok' : 'warning') : 'error', issueKey: 'sync', pct: (totalMod + totalRead) > 0 ? 100 : (courseHealth?.oneDriveFolderConfigured ? 50 : 0) },
+                                        { label: 'Storage', Icon: Folder, value: 'persistent', status: 'ok', issueKey: 'storage', pct: 100 },
+                                        { label: 'TTS', Icon: Volume2, value: ttsNeeded > 0 ? `${ttsReady}/${ttsNeeded}` : 'idle', status: ttsNeeded === 0 ? 'ok' : ttsReady === ttsNeeded ? 'ok' : ttsReady > 0 ? 'warning' : 'error', issueKey: 'tts', pct: ttsPct !== null ? ttsPct : 100 },
+                                        { label: 'Library', Icon: BookOpen, value: 'reader', status: (courseHealth?.oneDriveFolderConfigured || totalMod > 0 || totalRead > 0) ? 'ok' : 'error', issueKey: 'library', pct: (totalMod + totalRead) > 0 ? 100 : (courseHealth?.oneDriveFolderConfigured ? 50 : 0) },
+                                      ];
+                                      const okCount = steps.filter(s => s.status === 'ok').length;
+                                      const allGood = okCount === steps.length;
+                                      return (
+                                        <>
+                                          <div className="relative" style={{ padding: '14px 18px 18px' }}>
+                                            <div className="relative mb-3">
+                                              <img src={pipelineHeaderImg} alt="Automation Control Centre" style={{ display: 'block', width: '100%', height: 'auto' }} />
+                                              <span className="absolute inline-flex items-center gap-1.5 text-[10px] font-bold tabular-nums px-2 py-0.5 rounded-full" style={{ top: 'calc(50% - 9px)', right: '30px', transform: 'translateY(-50%)', background: allGood ? 'rgba(16,185,129,0.25)' : okCount >= 3 ? 'rgba(234,179,8,0.25)' : 'rgba(239,68,68,0.25)', color: allGood ? '#6ee7b7' : okCount >= 3 ? '#fde68a' : '#fca5a5', border: `1px solid ${allGood ? 'rgba(16,185,129,0.6)' : okCount >= 3 ? 'rgba(234,179,8,0.6)' : 'rgba(239,68,68,0.6)'}`, fontFamily: 'JetBrains Mono, monospace' }}>
+                                                <span className="w-1.5 h-1.5 rounded-full" style={{ background: allGood ? '#10b981' : okCount >= 3 ? '#eab308' : '#ef4444', boxShadow: `0 0 5px ${allGood ? '#10b981' : okCount >= 3 ? '#eab308' : '#ef4444'}` }} />
+                                                {okCount}/{steps.length} ok
+                                              </span>
+                                            </div>
+                                            <div className="relative flex items-stretch" style={{ width: '100%' }}>
+                                              {steps.map((step, sIdx) => {
+                                                const Icon = step.Icon;
+                                                const accent = step.status === 'ok' ? '#10b981' : step.status === 'warning' ? '#eab308' : '#ef4444';
+                                                const isProblem = step.status === 'error' || step.status === 'warning';
+                                                const nextStatus = sIdx < steps.length - 1 ? steps[sIdx + 1].status : null;
+                                                const wireOk = step.status === 'ok' && nextStatus === 'ok';
+                                                return (
+                                                  <React.Fragment key={step.label}>
+                                                    <div
+                                                      className="relative flex flex-col items-center text-center group"
+                                                      style={(() => {
+                                                        const stepBg = step.label === 'OneDrive'
+                                                            ? (step.status === 'error' ? oneDriveBoxRedImg : step.status === 'warning' ? oneDriveBoxYellowImg : oneDriveBoxImg)
+                                                          : step.label === 'TTS' ? yellowBoxImg
+                                                          : (step.label === 'Sync' || step.label === 'Storage' || step.label === 'Library') ? greenBoxImg
+                                                          : null;
+                                                        const hasImg = !!stepBg;
+                                                        return { flex: '1 1 0', minWidth: 0, padding: hasImg ? '0' : '8px 6px 6px', cursor: isProblem ? 'pointer' : 'default', borderRadius: hasImg ? '0' : '8px', background: hasImg ? 'transparent' : '#ffffff', backgroundImage: hasImg ? `url(${stepBg})` : undefined, backgroundSize: hasImg ? '100% 100%' : undefined, backgroundRepeat: hasImg ? 'no-repeat' : undefined, minHeight: hasImg ? '110px' : undefined, border: hasImg ? 'none' : `1px solid ${isProblem ? accent + '88' : 'rgba(0,0,0,0.15)'}`, boxShadow: 'none', transition: 'all 0.18s ease' };
+                                                      })()}
+                                                      onClick={(e) => { if (isProblem) { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: step.issueKey, step: 0, phase: 'primary' }); } }}
+                                                      onMouseEnter={(e) => { const lbl = step.label; const hasArt = lbl === 'OneDrive' || lbl === 'TTS' || lbl === 'Sync' || lbl === 'Storage' || lbl === 'Library'; if (!hasArt) { (e.currentTarget as HTMLDivElement).style.borderColor = accent; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 0 0 2px ${accent}55`; } else { (e.currentTarget as HTMLDivElement).style.filter = 'brightness(1.08)'; } }}
+                                                      onMouseLeave={(e) => { const lbl = step.label; const hasArt = lbl === 'OneDrive' || lbl === 'TTS' || lbl === 'Sync' || lbl === 'Storage' || lbl === 'Library'; if (!hasArt) { (e.currentTarget as HTMLDivElement).style.borderColor = isProblem ? accent + '88' : 'rgba(0,0,0,0.15)'; (e.currentTarget as HTMLDivElement).style.boxShadow = isProblem ? `0 0 0 1px ${accent}44` : 'none'; } else { (e.currentTarget as HTMLDivElement).style.filter = 'none'; } }}
+                                                    >
+                                                      {/* Status LED top-right */}
+                                                      <span className="absolute" style={{ top: '5px', right: '6px', width: '7px', height: '7px', borderRadius: '50%', background: accent, boxShadow: `0 0 8px ${accent}, 0 0 2px ${accent}`, zIndex: 2 }} />
+                                                      {(() => {
+                                                        const hasArtBg = step.label === 'OneDrive' || step.label === 'TTS' || step.label === 'Sync' || step.label === 'Storage' || step.label === 'Library';
+                                                        const txtColor = hasArtBg ? '#ffffff' : '#000000';
+                                                        const txtShadow = hasArtBg ? '0 1px 3px rgba(0,0,0,0.75)' : undefined;
+                                                        const hideLabelText = step.label === 'OneDrive';
+                                                        return (
+                                                          <>
+                                                            {!hasArtBg && (
+                                                              <div className="relative flex items-center justify-center mb-1.5" style={{ width: '32px', height: '32px', borderRadius: '8px', background: `linear-gradient(135deg, ${accent}22 0%, ${accent}08 100%)`, border: `1px solid ${accent}55` }}>
+                                                                <Icon size={16} style={{ color: accent, strokeWidth: 2 }} />
+                                                              </div>
+                                                            )}
+                                                            {hasArtBg && step.label !== 'OneDrive' && (
+                                                              <div className="relative flex items-center justify-center mb-1.5 mt-2" style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.4)' }}>
+                                                                <Icon size={16} style={{ color: '#ffffff', strokeWidth: 2 }} />
+                                                              </div>
+                                                            )}
+                                                            {hasArtBg && step.label === 'OneDrive' && <div style={{ flex: 1 }} />}
+                                                            <span className="text-[10px] font-bold uppercase tracking-wider leading-none" style={{ color: txtColor, fontFamily: 'JetBrains Mono, monospace', textShadow: txtShadow, paddingLeft: hasArtBg ? '6px' : undefined, paddingRight: hasArtBg ? '6px' : undefined, paddingBottom: hideLabelText ? '4px' : undefined }}>{hideLabelText ? '' : step.label}</span>
+                                                            <span className="mt-1 text-[9px] tabular-nums leading-none truncate max-w-full" style={{ color: txtColor, fontFamily: 'JetBrains Mono, monospace', textShadow: txtShadow, paddingBottom: hasArtBg ? '4px' : undefined, paddingLeft: hasArtBg ? '6px' : undefined, paddingRight: hasArtBg ? '6px' : undefined }}>{step.value}</span>
+                                                          </>
+                                                        );
+                                                      })()}
+                                                      {step.pct !== null && (
+                                                        <div className="mt-1.5 w-full" style={{ maxWidth: '60px' }}>
+                                                          <div style={{ height: '2px', borderRadius: '2px', background: 'rgba(0,0,0,0.08)', overflow: 'hidden', border: '1px solid rgba(0,0,0,0.1)' }}>
+                                                            <div style={{ width: `${step.pct}%`, height: '100%', background: `linear-gradient(90deg, ${accent}88 0%, ${accent} 100%)`, transition: 'width 0.3s ease', boxShadow: `0 0 4px ${accent}` }} />
+                                                          </div>
+                                                        </div>
+                                                      )}
+                                                      {isProblem && (
+                                                        <span className="mt-1 text-[9px] font-bold uppercase tracking-wider" style={{ color: accent, fontFamily: 'JetBrains Mono, monospace' }}>fix →</span>
+                                                      )}
+                                                    </div>
+                                                    {sIdx < steps.length - 1 && (
+                                                      <div className="flex items-center justify-center self-center" style={{ width: '20px', flexShrink: 0, height: '32px' }}>
+                                                        <svg width="20" height="8" viewBox="0 0 20 8">
+                                                          <line x1="0" y1="4" x2="20" y2="4" stroke={wireOk ? '#10b981' : 'rgba(148,163,184,0.25)'} strokeWidth="1.5" strokeDasharray={wireOk ? '0' : '3 2'} />
+                                                          {wireOk && <circle cx="10" cy="4" r="1.5" fill="#10b981"><animate attributeName="cx" from="0" to="20" dur="1.6s" repeatCount="indefinite" /></circle>}
+                                                        </svg>
+                                                      </div>
+                                                    )}
+                                                  </React.Fragment>
+                                                );
+                                              })}
+                                            </div>
+                                          </div>
+                                        </>
+                                      );
+                                    })()}
+                                  </div>
+
+                                  <div style={{ paddingLeft: '18px', paddingRight: '18px' }}>
+                                    {(() => {
+                                      const allReadingExempt = Array.from({ length: expHealth?.numberOfWeeks || 13 }, (_, i) => i + 1).every(w => isReadingExempt(c.code, w));
+                                      const hasAnyReadingContent = courseHealth?.totalReadings > 0;
+                                      const readingOk = hasAnyReadingContent || allReadingExempt;
+                                      const ttsOk = courseHealth ? (courseHealth.totalTtsNeeded === 0 || courseHealth.totalTtsReady === courseHealth.totalTtsNeeded) : true;
+                                      const localSyncOk = courseHealth ? (courseHealth.totalModules > 0 || courseHealth.totalReadings > 0) : false;
+
+                                      const sections: { key: string; title: string; subtitle: string; accent: string; rows: { label: string; path: string; ok: boolean; issueKey: string }[] }[] = [
+                                        {
+                                          key: 'cloud',
+                                          title: 'Cloud Source',
+                                          subtitle: 'OneDrive — origin of all course files',
+                                          accent: '#3b82f6',
+                                          rows: [
+                                            { label: 'OneDrive Root', path: getOneDrivePath(c.code), ok: courseHealth ? !!courseHealth.oneDriveFolderConfigured : false, issueKey: 'onedrive_root' },
+                                            { label: 'Module Folder', path: `${getOneDrivePath(c.code)}/Week {n}/Module/`, ok: courseHealth ? (!!courseHealth.oneDriveFolderConfigured || courseHealth.totalModules > 0) : false, issueKey: 'module_folder' },
+                                            { label: 'Reading Folder', path: `${getOneDrivePath(c.code)}/Week {n}/Reading/`, ok: readingOk || !!courseHealth?.oneDriveFolderConfigured, issueKey: 'reading_folder' },
+                                          ],
+                                        },
+                                        {
+                                          key: 'local',
+                                          title: 'Local Mirror',
+                                          subtitle: 'Pi storage — synced + linked references',
+                                          accent: '#a855f7',
+                                          rows: [
+                                            { label: 'Local Sync', path: `persistent-uploads/week-{n}-${c.code.toLowerCase()}-module|reading/`, ok: localSyncOk || !!courseHealth?.oneDriveFolderConfigured, issueKey: 'local_sync' },
+                                            { label: 'Syllabus', path: courseHealth?.syllabusPath || `syllabi/${c.code.toLowerCase()}_syllabus.pdf`, ok: courseHealth ? !!courseHealth.syllabusLinked : false, issueKey: 'syllabus' },
+                                          ],
+                                        },
+                                        {
+                                          key: 'derived',
+                                          title: 'Derived Assets',
+                                          subtitle: 'Generated artifacts — TTS, indexes',
+                                          accent: '#10b981',
+                                          rows: [
+                                            { label: 'TTS Audio', path: `TTS chunks (${courseHealth?.totalTtsReady || 0}/${courseHealth?.totalTtsNeeded || 0} ready)`, ok: ttsOk, issueKey: 'tts_audio' },
+                                          ],
+                                        },
+                                      ];
+
+                                      const totalActive = sections.reduce((sum, s) => sum + s.rows.filter(r => !isHealthItemDisabled(c.code, r.issueKey)).length, 0) || 1;
+                                      const totalActiveOk = sections.reduce((sum, s) => sum + s.rows.filter(r => !isHealthItemDisabled(c.code, r.issueKey) && r.ok).length, 0);
+
+                                      return (
+                                        <>
+                                          <div className="flex items-center justify-between mb-2">
+                                            <div className="flex items-center gap-2">
+                                              <span className="text-[10px]" style={{ color: '#ffffff', fontFamily: 'JetBrains Mono, monospace', textShadow: '0 1px 2px rgba(0,0,0,0.6)' }}>$</span>
+                                              <span className="text-[11px] font-bold uppercase tracking-[0.12em]" style={{ color: '#ffffff', fontFamily: 'JetBrains Mono, monospace', textShadow: '0 1px 2px rgba(0,0,0,0.6)' }}>tree --naming --paths</span>
+                                            </div>
+                                            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold tabular-nums px-2 py-0.5 rounded-full" style={{ background: totalActiveOk === totalActive ? 'rgba(16,185,129,0.12)' : 'rgba(234,179,8,0.12)', color: totalActiveOk === totalActive ? '#6ee7b7' : '#fde68a', border: `1px solid ${totalActiveOk === totalActive ? 'rgba(16,185,129,0.4)' : 'rgba(234,179,8,0.4)'}`, fontFamily: 'JetBrains Mono, monospace' }}>
+                                              <span className="w-1.5 h-1.5 rounded-full" style={{ background: totalActiveOk === totalActive ? '#10b981' : '#eab308', boxShadow: `0 0 5px ${totalActiveOk === totalActive ? '#10b981' : '#eab308'}` }} />
+                                              {totalActiveOk}/{totalActive} connected
+                                            </span>
+                                          </div>
+
+                                          <div className="rounded-lg overflow-hidden" style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.12)' }}>
+                                            {sections.map((section, sIdx) => {
+                                              const activeRows = section.rows.filter(r => !isHealthItemDisabled(c.code, r.issueKey));
+                                              const activeCount = activeRows.length;
+                                              const okCount = activeRows.filter(r => r.ok).length;
+                                              const sectionPct = activeCount > 0 ? Math.round((okCount / activeCount) * 100) : 100;
+                                              const weightPct = totalActive > 0 ? Math.round((activeCount / totalActive) * 100) : 0;
+                                              const sectionHealthy = activeCount === 0 || okCount === activeCount;
+
+                                              return (
+                                                <React.Fragment key={section.key}>
+                                                  <div style={{ background: '#ffffff', borderLeft: `3px solid ${section.accent}` }}>
+                                                    <div className="px-4 py-2 flex items-center justify-between" style={{ borderBottom: '1px solid rgba(0,0,0,0.08)', background: '#ffffff' }}>
+                                                      <div className="flex items-center gap-3 min-w-0">
+                                                        <div className="flex items-center gap-2 flex-shrink-0">
+                                                          <span className="inline-flex items-center justify-center text-[9px] font-bold tabular-nums px-1.5 py-0.5 rounded" style={{ background: section.accent + '22', color: section.accent, border: `1px solid ${section.accent}66`, fontFamily: 'JetBrains Mono, monospace', minWidth: '20px' }}>0{sIdx + 1}</span>
+                                                          <span className="text-[12px] font-bold tracking-wide" style={{ color: '#000000', fontFamily: 'JetBrains Mono, monospace' }}>{section.title.toLowerCase().replace(/\s+/g, '_')}/</span>
+                                                        </div>
+                                                        <span className="text-[10px] truncate" style={{ color: '#000000', fontFamily: 'JetBrains Mono, monospace' }}># {section.subtitle}</span>
+                                                      </div>
+                                                      <div className="flex items-center gap-2 flex-shrink-0">
+                                                        <span className="text-[9px] uppercase tracking-wider" style={{ color: '#475569', fontFamily: 'JetBrains Mono, monospace' }}>w:</span>
+                                                        <span className="text-[10px] tabular-nums" style={{ color: '#475569', fontFamily: 'JetBrains Mono, monospace' }}>{weightPct}%</span>
+                                                        <span style={{ color: '#cbd5e1' }}>│</span>
+                                                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold tabular-nums" style={{ background: sectionHealthy ? 'rgba(16,185,129,0.12)' : 'rgba(239,68,68,0.12)', border: `1px solid ${sectionHealthy ? 'rgba(16,185,129,0.4)' : 'rgba(239,68,68,0.4)'}`, color: sectionHealthy ? '#6ee7b7' : '#fca5a5', fontFamily: 'JetBrains Mono, monospace' }} data-testid={`section-health-${c.code}-${section.key}`}>
+                                                          <span className="w-1.5 h-1.5 rounded-full" style={{ background: sectionHealthy ? '#10b981' : '#ef4444', boxShadow: `0 0 5px ${sectionHealthy ? '#10b981' : '#ef4444'}` }} />
+                                                          {okCount}/{activeCount}·{sectionPct}%
+                                                        </span>
+                                                      </div>
+                                                    </div>
+                                                    <table className="w-full text-[13px]" style={{ background: '#ffffff', color: '#000000' }}>
+                                                      <tbody>
+                                                        {section.rows.map((row, rIdx) => {
+                                                          const disabled = isHealthItemDisabled(c.code, row.issueKey);
+                                                          const isLast = rIdx === section.rows.length - 1;
+                                                          return (
+                                                            <tr key={row.label} className="hover:bg-black/5 transition-colors" style={{ opacity: disabled ? 0.45 : 1, background: '#ffffff', color: '#000000' }}>
+                                                              <td className="px-1 py-2 w-8" style={{ borderBottom: isLast ? 'none' : '1px solid rgba(0,0,0,0.08)' }}>
+                                                                <input type="checkbox" checked={!disabled} onChange={() => toggleHealthItem(c.code, row.issueKey)} className="w-3.5 h-3.5 rounded cursor-pointer accent-emerald-500" title={disabled ? 'Enable for health reporting' : 'Disable from health reporting'} data-testid={`health-toggle-${row.issueKey}`} />
+                                                              </td>
+                                                              <td className="px-3 py-2 font-medium" style={{ borderBottom: isLast ? 'none' : '1px solid rgba(0,0,0,0.08)', color: '#000000' }}>{row.label}</td>
+                                                              <td className="px-3 py-2 font-mono text-[11px]" style={{ borderBottom: isLast ? 'none' : '1px solid rgba(0,0,0,0.08)', color: '#000000', textAlign: 'left', width: '100%' }}>
+                                                                <span className="inline-flex items-center gap-2" style={{ textAlign: 'left' }}>
+                                                                  <span>{row.path}</span>
+                                                                  <Pencil className="w-3 h-3 text-black/40 hover:text-black/80 cursor-pointer flex-shrink-0 transition-colors" onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: row.issueKey, step: 0, phase: 'primary' }); }} />
+                                                                </span>
+                                                              </td>
+                                                              <td className="px-3 py-2" style={{ width: '70px', minWidth: '70px', borderBottom: isLast ? 'none' : '1px solid rgba(0,0,0,0.08)' }}>
+                                                                <div className="flex items-center" style={{ gap: '8px' }}>
+                                                                  <span className={`inline-block w-2.5 h-2.5 rounded-full flex-shrink-0 ${row.ok ? 'bg-emerald-500' : 'bg-red-500'}`} title={row.ok ? 'Connected' : 'Not connected'} />
+                                                                  {!row.ok && (
+                                                                    <span className="text-[10px] underline cursor-pointer flex-shrink-0" style={{ color: 'rgb(251, 210, 30)' }} onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: row.issueKey, step: 0, phase: 'primary' }); }}>Fix</span>
+                                                                  )}
+                                                                </div>
+                                                              </td>
+                                                            </tr>
+                                                          );
+                                                        })}
+                                                      </tbody>
+                                                    </table>
+                                                  </div>
+                                                </React.Fragment>
+                                              );
+                                            })}
+                                          </div>
+                                        </>
+                                      );
+                                    })()}
+                                  </div>
+
+                                  {courseHealth && (
+                                    <div style={{ paddingLeft: '18px', paddingRight: '18px' }}>
+                                      <div className="text-[13px] font-semibold text-white uppercase tracking-wider mb-3">Weekly Content Status</div>
+                                      <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${Math.min(courseHealth.moduleWeeks ? Object.keys(courseHealth.moduleWeeks).length : 13, 13)}, 1fr)` }}>
+                                        {Array.from({ length: expHealth?.numberOfWeeks || 13 }, (_, i) => i + 1).map(w => {
+                                          const mCount = courseHealth.moduleWeeks?.[w]?.count || 0;
+                                          const rCount = courseHealth.readingWeeks?.[w]?.count || 0;
+                                          const mTts = courseHealth.moduleWeeks?.[w]?.ttsReady || 0;
+                                          const rExempt = isReadingExempt(c.code, w);
+                                          const moduleOk = mCount > 0;
+                                          const readingOk = rCount > 0 || rExempt;
+                                          const weekGreen = moduleOk && readingOk;
+                                          const weekRed = !moduleOk || !readingOk;
+                                          return (
+                                            <div
+                                              key={w}
+                                              className="text-center cursor-pointer hover:brightness-125 transition-all relative"
+                                              style={{
+                                                backgroundImage: weekGreen ? `url(${weekGreenBoxImg})` : weekRed ? `url(${weekRedBoxImg})` : undefined,
+                                                backgroundSize: '100% 100%',
+                                                backgroundRepeat: 'no-repeat',
+                                                backgroundColor: (weekGreen || weekRed) ? 'transparent' : 'rgba(255,255,255,0.03)',
+                                                border: (weekGreen || weekRed) ? 'none' : '1px solid rgba(255,255,255,0.1)',
+                                                borderRadius: (weekGreen || weekRed) ? '0' : '4px',
+                                                padding: '6px 4px',
+                                                minHeight: '46px',
+                                              }}
+                                              onClick={(e) => { e.stopPropagation(); setWeekDetailOpen({ courseCode: c.code, week: w }); }}
+                                              data-testid={`week-cell-${c.code}-${w}`}
+                                            >
+                                              <div className="text-[10px] font-bold text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.7)' }}>W{w}</div>
+                                              <div className="text-[9px] text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.7)' }}>{mCount}M {rCount}R{rExempt && rCount === 0 ? '*' : ''}</div>
+                                              {mCount > 0 && mTts < mCount && <div className="text-[8px] text-yellow-200" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.7)' }}>TTS {mTts}/{mCount}</div>}
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                      <div className="text-[10px] text-white/40 mt-1">* = reading not expected for this week. Click a week to upload files or toggle reading requirement.</div>
+                                    </div>
+                                  )}
+
+                                  {weekDetailOpen && weekDetailOpen.courseCode === c.code && (() => {
+                                    const wd = weekDetailOpen;
+                                    const mCount = courseHealth?.moduleWeeks?.[wd.week]?.count || 0;
+                                    const rCount = courseHealth?.readingWeeks?.[wd.week]?.count || 0;
+                                    const rExempt = isReadingExempt(wd.courseCode, wd.week);
+                                    const cleanCode = wd.courseCode.replace(/\s/g, '').toLowerCase();
+                                    return (
+                                      <div className="rounded-lg overflow-hidden mt-2" style={{ border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(0,0,0,0.25)' }}>
+                                        <div className="px-4 py-2.5 flex items-center justify-between border-b border-white/15" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                                          <span className="text-[13px] font-bold text-white">Week {wd.week} — {wd.courseCode}</span>
+                                          <button className="text-[11px] text-white/60 hover:text-white" onClick={() => setWeekDetailOpen(null)} data-testid="close-week-detail">Close</button>
+                                        </div>
+                                        <div className="p-4 grid grid-cols-2 gap-4">
+                                          <div className="space-y-2">
+                                            <div className="flex items-center gap-2">
+                                              <span className={`inline-block w-2 h-2 rounded-full ${mCount > 0 ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                                              <span className="text-[12px] font-semibold text-white">Module Files ({mCount})</span>
+                                            </div>
+                                            <button
+                                              className="w-full px-3 py-2.5 rounded text-[12px] font-medium text-white/80 hover:text-white hover:brightness-110 transition-all flex items-center justify-center gap-2"
+                                              style={{ background: 'rgba(59,130,246,0.15)', border: '1px solid rgba(59,130,246,0.3)' }}
+                                              onClick={() => {
+                                                setSemFlowWizard({ courseCode: wd.courseCode, issue: 'week_upload', step: 0, phase: 'primary', weekNum: wd.week, uploadType: 'module' });
+                                              }}
+                                              data-testid={`upload-module-w${wd.week}`}
+                                            >
+                                              <span>📤</span> Upload Module
+                                            </button>
+                                            <div className="text-[10px] text-white/50 font-mono">week-{wd.week}-{cleanCode}-module/</div>
+                                          </div>
+                                          <div className="space-y-2">
+                                            <div className="flex items-center gap-2">
+                                              <span className={`inline-block w-2 h-2 rounded-full ${rCount > 0 ? 'bg-emerald-500' : rExempt ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                                              <span className="text-[12px] font-semibold text-white">Reading Files ({rCount})</span>
+                                            </div>
+                                            <button
+                                              className="w-full px-3 py-2.5 rounded text-[12px] font-medium text-white/80 hover:text-white hover:brightness-110 transition-all flex items-center justify-center gap-2"
+                                              style={{ background: rExempt ? 'rgba(255,255,255,0.06)' : 'rgba(59,130,246,0.15)', border: `1px solid ${rExempt ? 'rgba(255,255,255,0.15)' : 'rgba(59,130,246,0.3)'}`, opacity: rExempt ? 0.5 : 1 }}
+                                              onClick={() => {
+                                                if (!rExempt) setSemFlowWizard({ courseCode: wd.courseCode, issue: 'week_upload', step: 0, phase: 'primary', weekNum: wd.week, uploadType: 'reading' });
+                                              }}
+                                              data-testid={`upload-reading-w${wd.week}`}
+                                            >
+                                              <span>📤</span> Upload Reading
+                                            </button>
+                                            <div className="flex items-center gap-2 mt-1">
+                                              <label className="flex items-center gap-1.5 cursor-pointer select-none" data-testid={`toggle-reading-exempt-w${wd.week}`}>
+                                                <div
+                                                  className="w-7 h-4 rounded-full relative transition-colors duration-200"
+                                                  style={{ background: rExempt ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.15)', border: `1px solid ${rExempt ? 'rgba(34,197,94,0.5)' : 'rgba(255,255,255,0.2)'}` }}
+                                                  onClick={() => updateReadingExempt(wd.courseCode, wd.week, !rExempt)}
+                                                >
+                                                  <div className="absolute top-0.5 w-2.5 h-2.5 rounded-full bg-white transition-all duration-200" style={{ left: rExempt ? '14px' : '2px' }} />
+                                                </div>
+                                                <span className="text-[10px] text-white/60">No reading file expected</span>
+                                              </label>
+                                            </div>
+                                            <div className="text-[10px] text-white/50 font-mono">week-{wd.week}-{cleanCode}-reading/</div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    );
+                                  })()}
+                                </div>
+                              </div>
+                            );
+    };
+  
   return (
     <div 
       className="flex flex-col overflow-hidden relative"
@@ -19927,6 +20326,15 @@ export default function Dashboard() {
               const cc = selectedCertCourse!.courseCode.replace(/\s/g, '').toUpperCase();
               setAllAssignmentsAdded(cc, val);
             }}
+            automationsRenderer={(() => {
+              if (!dialogSemHealth) return undefined;
+              const cc = selectedCertCourse!.courseCode.replace(/\s/g, '').toUpperCase();
+              const semKey = dialogSemHealth.semKey;
+              const semCourses = semesterCourseAssignments[semKey] || [];
+              const courseObj = semCourses.find(c => c.code.replace(/\s/g, '').toUpperCase() === cc);
+              if (!courseObj) return undefined;
+              return () => renderCoursePipeline(courseObj, 0, dialogSemHealth.data, semKey);
+            })()}
             onClose={() => {
               if (colorSnapshotRef.current) {
                 setCoursesData(colorSnapshotRef.current.coursesData);
@@ -27466,7 +27874,7 @@ export default function Dashboard() {
                             })();
 
                             return (
-                              <div key={c.code} className="auto-resolution-card rounded-xl overflow-hidden" style={{ backgroundImage: `url(${pipelineBackImg})`, backgroundSize: '100% 100%', backgroundRepeat: 'no-repeat', boxShadow: '0 12px 32px rgba(0,0,0,0.45)' }} data-testid={`expanded-course-${c.code}`}>
+                              <div key={c.code} className="auto-resolution-card rounded-xl overflow-hidden cursor-pointer hover:brightness-110 transition" style={{ backgroundImage: `url(${pipelineBackImg})`, backgroundSize: '100% 100%', backgroundRepeat: 'no-repeat', boxShadow: '0 12px 32px rgba(0,0,0,0.45)' }} onClick={() => { const certKey = c.code; startTransition(() => setSelectedCertCourse({ courseCode: c.code, courseName: displayNameResult, certKey, semKey: expandedSemKey })); }} data-testid={`expanded-course-${c.code}`}>
                                 {/* Terminal-style title bar */}
                                 <div className="px-4 py-2.5 flex items-center gap-3 border-b" style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.045) 0%, rgba(255,255,255,0.015) 100%)', borderBottomColor: 'rgba(255,255,255,0.08)' }}>
                                   <div className="flex items-center gap-1.5 mr-1">
@@ -27487,344 +27895,6 @@ export default function Dashboard() {
                                         : <span className="inline-flex items-center gap-1.5 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wider cursor-pointer hover:brightness-125" style={{ background: 'rgba(239,68,68,0.12)', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.4)', fontFamily: 'JetBrains Mono, monospace' }} onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: 'syllabus', step: 0, phase: 'primary' }); }}><span className="w-1.5 h-1.5 rounded-full" style={{ background: '#ef4444', boxShadow: '0 0 5px #ef4444' }} />syllabus.missing</span>}
                                     </div>
                                   )}
-                                </div>
-                                <div className="p-4 space-y-4 auto-resolution-body">
-                                  <div>
-                                    {(() => {
-                                      const totalMod = courseHealth?.totalModules || 0;
-                                      const totalRead = courseHealth?.totalReadings || 0;
-                                      const ttsReady = courseHealth?.totalTtsReady || 0;
-                                      const ttsNeeded = courseHealth?.totalTtsNeeded || 0;
-                                      const odPct = courseHealth?.oneDriveFolderConfigured ? 100 : 0;
-                                      const ttsPct = ttsNeeded > 0 ? Math.round((ttsReady / ttsNeeded) * 100) : (totalMod > 0 ? 0 : null);
-                                      const steps: { label: string; Icon: any; value: string; status: 'ok' | 'warning' | 'error'; issueKey: string; pct: number | null }[] = [
-                                        { label: 'OneDrive', Icon: Cloud, value: courseHealth?.oneDriveFolderConfigured ? 'linked' : 'unlinked', status: courseHealth?.oneDriveFolderConfigured ? 'ok' : 'error', issueKey: 'onedrive', pct: odPct },
-                                        { label: 'Sync', Icon: RefreshCw, value: `${totalMod}M·${totalRead}R`, status: (courseHealth?.oneDriveFolderConfigured || totalMod > 0 || totalRead > 0) ? ((totalMod + totalRead) > 0 ? 'ok' : 'warning') : 'error', issueKey: 'sync', pct: (totalMod + totalRead) > 0 ? 100 : (courseHealth?.oneDriveFolderConfigured ? 50 : 0) },
-                                        { label: 'Storage', Icon: Folder, value: 'persistent', status: 'ok', issueKey: 'storage', pct: 100 },
-                                        { label: 'TTS', Icon: Volume2, value: ttsNeeded > 0 ? `${ttsReady}/${ttsNeeded}` : 'idle', status: ttsNeeded === 0 ? 'ok' : ttsReady === ttsNeeded ? 'ok' : ttsReady > 0 ? 'warning' : 'error', issueKey: 'tts', pct: ttsPct !== null ? ttsPct : 100 },
-                                        { label: 'Library', Icon: BookOpen, value: 'reader', status: (courseHealth?.oneDriveFolderConfigured || totalMod > 0 || totalRead > 0) ? 'ok' : 'error', issueKey: 'library', pct: (totalMod + totalRead) > 0 ? 100 : (courseHealth?.oneDriveFolderConfigured ? 50 : 0) },
-                                      ];
-                                      const okCount = steps.filter(s => s.status === 'ok').length;
-                                      const allGood = okCount === steps.length;
-                                      return (
-                                        <>
-                                          <div className="relative" style={{ padding: '14px 18px 18px' }}>
-                                            <div className="relative mb-3">
-                                              <img src={pipelineHeaderImg} alt="Automation Control Centre" style={{ display: 'block', width: '100%', height: 'auto' }} />
-                                              <span className="absolute inline-flex items-center gap-1.5 text-[10px] font-bold tabular-nums px-2 py-0.5 rounded-full" style={{ top: 'calc(50% - 9px)', right: '30px', transform: 'translateY(-50%)', background: allGood ? 'rgba(16,185,129,0.25)' : okCount >= 3 ? 'rgba(234,179,8,0.25)' : 'rgba(239,68,68,0.25)', color: allGood ? '#6ee7b7' : okCount >= 3 ? '#fde68a' : '#fca5a5', border: `1px solid ${allGood ? 'rgba(16,185,129,0.6)' : okCount >= 3 ? 'rgba(234,179,8,0.6)' : 'rgba(239,68,68,0.6)'}`, fontFamily: 'JetBrains Mono, monospace' }}>
-                                                <span className="w-1.5 h-1.5 rounded-full" style={{ background: allGood ? '#10b981' : okCount >= 3 ? '#eab308' : '#ef4444', boxShadow: `0 0 5px ${allGood ? '#10b981' : okCount >= 3 ? '#eab308' : '#ef4444'}` }} />
-                                                {okCount}/{steps.length} ok
-                                              </span>
-                                            </div>
-                                            <div className="relative flex items-stretch" style={{ width: '100%' }}>
-                                              {steps.map((step, sIdx) => {
-                                                const Icon = step.Icon;
-                                                const accent = step.status === 'ok' ? '#10b981' : step.status === 'warning' ? '#eab308' : '#ef4444';
-                                                const isProblem = step.status === 'error' || step.status === 'warning';
-                                                const nextStatus = sIdx < steps.length - 1 ? steps[sIdx + 1].status : null;
-                                                const wireOk = step.status === 'ok' && nextStatus === 'ok';
-                                                return (
-                                                  <React.Fragment key={step.label}>
-                                                    <div
-                                                      className="relative flex flex-col items-center text-center group"
-                                                      style={(() => {
-                                                        const stepBg = step.label === 'OneDrive'
-                                                            ? (step.status === 'error' ? oneDriveBoxRedImg : step.status === 'warning' ? oneDriveBoxYellowImg : oneDriveBoxImg)
-                                                          : step.label === 'TTS' ? yellowBoxImg
-                                                          : (step.label === 'Sync' || step.label === 'Storage' || step.label === 'Library') ? greenBoxImg
-                                                          : null;
-                                                        const hasImg = !!stepBg;
-                                                        return { flex: '1 1 0', minWidth: 0, padding: hasImg ? '0' : '8px 6px 6px', cursor: isProblem ? 'pointer' : 'default', borderRadius: hasImg ? '0' : '8px', background: hasImg ? 'transparent' : '#ffffff', backgroundImage: hasImg ? `url(${stepBg})` : undefined, backgroundSize: hasImg ? '100% 100%' : undefined, backgroundRepeat: hasImg ? 'no-repeat' : undefined, minHeight: hasImg ? '110px' : undefined, border: hasImg ? 'none' : `1px solid ${isProblem ? accent + '88' : 'rgba(0,0,0,0.15)'}`, boxShadow: 'none', transition: 'all 0.18s ease' };
-                                                      })()}
-                                                      onClick={(e) => { if (isProblem) { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: step.issueKey, step: 0, phase: 'primary' }); } }}
-                                                      onMouseEnter={(e) => { const lbl = step.label; const hasArt = lbl === 'OneDrive' || lbl === 'TTS' || lbl === 'Sync' || lbl === 'Storage' || lbl === 'Library'; if (!hasArt) { (e.currentTarget as HTMLDivElement).style.borderColor = accent; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 0 0 2px ${accent}55`; } else { (e.currentTarget as HTMLDivElement).style.filter = 'brightness(1.08)'; } }}
-                                                      onMouseLeave={(e) => { const lbl = step.label; const hasArt = lbl === 'OneDrive' || lbl === 'TTS' || lbl === 'Sync' || lbl === 'Storage' || lbl === 'Library'; if (!hasArt) { (e.currentTarget as HTMLDivElement).style.borderColor = isProblem ? accent + '88' : 'rgba(0,0,0,0.15)'; (e.currentTarget as HTMLDivElement).style.boxShadow = isProblem ? `0 0 0 1px ${accent}44` : 'none'; } else { (e.currentTarget as HTMLDivElement).style.filter = 'none'; } }}
-                                                    >
-                                                      {/* Status LED top-right */}
-                                                      <span className="absolute" style={{ top: '5px', right: '6px', width: '7px', height: '7px', borderRadius: '50%', background: accent, boxShadow: `0 0 8px ${accent}, 0 0 2px ${accent}`, zIndex: 2 }} />
-                                                      {(() => {
-                                                        const hasArtBg = step.label === 'OneDrive' || step.label === 'TTS' || step.label === 'Sync' || step.label === 'Storage' || step.label === 'Library';
-                                                        const txtColor = hasArtBg ? '#ffffff' : '#000000';
-                                                        const txtShadow = hasArtBg ? '0 1px 3px rgba(0,0,0,0.75)' : undefined;
-                                                        const hideLabelText = step.label === 'OneDrive';
-                                                        return (
-                                                          <>
-                                                            {!hasArtBg && (
-                                                              <div className="relative flex items-center justify-center mb-1.5" style={{ width: '32px', height: '32px', borderRadius: '8px', background: `linear-gradient(135deg, ${accent}22 0%, ${accent}08 100%)`, border: `1px solid ${accent}55` }}>
-                                                                <Icon size={16} style={{ color: accent, strokeWidth: 2 }} />
-                                                              </div>
-                                                            )}
-                                                            {hasArtBg && step.label !== 'OneDrive' && (
-                                                              <div className="relative flex items-center justify-center mb-1.5 mt-2" style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.4)' }}>
-                                                                <Icon size={16} style={{ color: '#ffffff', strokeWidth: 2 }} />
-                                                              </div>
-                                                            )}
-                                                            {hasArtBg && step.label === 'OneDrive' && <div style={{ flex: 1 }} />}
-                                                            <span className="text-[10px] font-bold uppercase tracking-wider leading-none" style={{ color: txtColor, fontFamily: 'JetBrains Mono, monospace', textShadow: txtShadow, paddingLeft: hasArtBg ? '6px' : undefined, paddingRight: hasArtBg ? '6px' : undefined, paddingBottom: hideLabelText ? '4px' : undefined }}>{hideLabelText ? '' : step.label}</span>
-                                                            <span className="mt-1 text-[9px] tabular-nums leading-none truncate max-w-full" style={{ color: txtColor, fontFamily: 'JetBrains Mono, monospace', textShadow: txtShadow, paddingBottom: hasArtBg ? '4px' : undefined, paddingLeft: hasArtBg ? '6px' : undefined, paddingRight: hasArtBg ? '6px' : undefined }}>{step.value}</span>
-                                                          </>
-                                                        );
-                                                      })()}
-                                                      {step.pct !== null && (
-                                                        <div className="mt-1.5 w-full" style={{ maxWidth: '60px' }}>
-                                                          <div style={{ height: '2px', borderRadius: '2px', background: 'rgba(0,0,0,0.08)', overflow: 'hidden', border: '1px solid rgba(0,0,0,0.1)' }}>
-                                                            <div style={{ width: `${step.pct}%`, height: '100%', background: `linear-gradient(90deg, ${accent}88 0%, ${accent} 100%)`, transition: 'width 0.3s ease', boxShadow: `0 0 4px ${accent}` }} />
-                                                          </div>
-                                                        </div>
-                                                      )}
-                                                      {isProblem && (
-                                                        <span className="mt-1 text-[9px] font-bold uppercase tracking-wider" style={{ color: accent, fontFamily: 'JetBrains Mono, monospace' }}>fix →</span>
-                                                      )}
-                                                    </div>
-                                                    {sIdx < steps.length - 1 && (
-                                                      <div className="flex items-center justify-center self-center" style={{ width: '20px', flexShrink: 0, height: '32px' }}>
-                                                        <svg width="20" height="8" viewBox="0 0 20 8">
-                                                          <line x1="0" y1="4" x2="20" y2="4" stroke={wireOk ? '#10b981' : 'rgba(148,163,184,0.25)'} strokeWidth="1.5" strokeDasharray={wireOk ? '0' : '3 2'} />
-                                                          {wireOk && <circle cx="10" cy="4" r="1.5" fill="#10b981"><animate attributeName="cx" from="0" to="20" dur="1.6s" repeatCount="indefinite" /></circle>}
-                                                        </svg>
-                                                      </div>
-                                                    )}
-                                                  </React.Fragment>
-                                                );
-                                              })}
-                                            </div>
-                                          </div>
-                                        </>
-                                      );
-                                    })()}
-                                  </div>
-
-                                  <div style={{ paddingLeft: '18px', paddingRight: '18px' }}>
-                                    {(() => {
-                                      const allReadingExempt = Array.from({ length: expHealth?.numberOfWeeks || 13 }, (_, i) => i + 1).every(w => isReadingExempt(c.code, w));
-                                      const hasAnyReadingContent = courseHealth?.totalReadings > 0;
-                                      const readingOk = hasAnyReadingContent || allReadingExempt;
-                                      const ttsOk = courseHealth ? (courseHealth.totalTtsNeeded === 0 || courseHealth.totalTtsReady === courseHealth.totalTtsNeeded) : true;
-                                      const localSyncOk = courseHealth ? (courseHealth.totalModules > 0 || courseHealth.totalReadings > 0) : false;
-
-                                      const sections: { key: string; title: string; subtitle: string; accent: string; rows: { label: string; path: string; ok: boolean; issueKey: string }[] }[] = [
-                                        {
-                                          key: 'cloud',
-                                          title: 'Cloud Source',
-                                          subtitle: 'OneDrive — origin of all course files',
-                                          accent: '#3b82f6',
-                                          rows: [
-                                            { label: 'OneDrive Root', path: getOneDrivePath(c.code), ok: courseHealth ? !!courseHealth.oneDriveFolderConfigured : false, issueKey: 'onedrive_root' },
-                                            { label: 'Module Folder', path: `${getOneDrivePath(c.code)}/Week {n}/Module/`, ok: courseHealth ? (!!courseHealth.oneDriveFolderConfigured || courseHealth.totalModules > 0) : false, issueKey: 'module_folder' },
-                                            { label: 'Reading Folder', path: `${getOneDrivePath(c.code)}/Week {n}/Reading/`, ok: readingOk || !!courseHealth?.oneDriveFolderConfigured, issueKey: 'reading_folder' },
-                                          ],
-                                        },
-                                        {
-                                          key: 'local',
-                                          title: 'Local Mirror',
-                                          subtitle: 'Pi storage — synced + linked references',
-                                          accent: '#a855f7',
-                                          rows: [
-                                            { label: 'Local Sync', path: `persistent-uploads/week-{n}-${c.code.toLowerCase()}-module|reading/`, ok: localSyncOk || !!courseHealth?.oneDriveFolderConfigured, issueKey: 'local_sync' },
-                                            { label: 'Syllabus', path: courseHealth?.syllabusPath || `syllabi/${c.code.toLowerCase()}_syllabus.pdf`, ok: courseHealth ? !!courseHealth.syllabusLinked : false, issueKey: 'syllabus' },
-                                          ],
-                                        },
-                                        {
-                                          key: 'derived',
-                                          title: 'Derived Assets',
-                                          subtitle: 'Generated artifacts — TTS, indexes',
-                                          accent: '#10b981',
-                                          rows: [
-                                            { label: 'TTS Audio', path: `TTS chunks (${courseHealth?.totalTtsReady || 0}/${courseHealth?.totalTtsNeeded || 0} ready)`, ok: ttsOk, issueKey: 'tts_audio' },
-                                          ],
-                                        },
-                                      ];
-
-                                      const totalActive = sections.reduce((sum, s) => sum + s.rows.filter(r => !isHealthItemDisabled(c.code, r.issueKey)).length, 0) || 1;
-                                      const totalActiveOk = sections.reduce((sum, s) => sum + s.rows.filter(r => !isHealthItemDisabled(c.code, r.issueKey) && r.ok).length, 0);
-
-                                      return (
-                                        <>
-                                          <div className="flex items-center justify-between mb-2">
-                                            <div className="flex items-center gap-2">
-                                              <span className="text-[10px]" style={{ color: '#ffffff', fontFamily: 'JetBrains Mono, monospace', textShadow: '0 1px 2px rgba(0,0,0,0.6)' }}>$</span>
-                                              <span className="text-[11px] font-bold uppercase tracking-[0.12em]" style={{ color: '#ffffff', fontFamily: 'JetBrains Mono, monospace', textShadow: '0 1px 2px rgba(0,0,0,0.6)' }}>tree --naming --paths</span>
-                                            </div>
-                                            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold tabular-nums px-2 py-0.5 rounded-full" style={{ background: totalActiveOk === totalActive ? 'rgba(16,185,129,0.12)' : 'rgba(234,179,8,0.12)', color: totalActiveOk === totalActive ? '#6ee7b7' : '#fde68a', border: `1px solid ${totalActiveOk === totalActive ? 'rgba(16,185,129,0.4)' : 'rgba(234,179,8,0.4)'}`, fontFamily: 'JetBrains Mono, monospace' }}>
-                                              <span className="w-1.5 h-1.5 rounded-full" style={{ background: totalActiveOk === totalActive ? '#10b981' : '#eab308', boxShadow: `0 0 5px ${totalActiveOk === totalActive ? '#10b981' : '#eab308'}` }} />
-                                              {totalActiveOk}/{totalActive} connected
-                                            </span>
-                                          </div>
-
-                                          <div className="rounded-lg overflow-hidden" style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.12)' }}>
-                                            {sections.map((section, sIdx) => {
-                                              const activeRows = section.rows.filter(r => !isHealthItemDisabled(c.code, r.issueKey));
-                                              const activeCount = activeRows.length;
-                                              const okCount = activeRows.filter(r => r.ok).length;
-                                              const sectionPct = activeCount > 0 ? Math.round((okCount / activeCount) * 100) : 100;
-                                              const weightPct = totalActive > 0 ? Math.round((activeCount / totalActive) * 100) : 0;
-                                              const sectionHealthy = activeCount === 0 || okCount === activeCount;
-
-                                              return (
-                                                <React.Fragment key={section.key}>
-                                                  <div style={{ background: '#ffffff', borderLeft: `3px solid ${section.accent}` }}>
-                                                    <div className="px-4 py-2 flex items-center justify-between" style={{ borderBottom: '1px solid rgba(0,0,0,0.08)', background: '#ffffff' }}>
-                                                      <div className="flex items-center gap-3 min-w-0">
-                                                        <div className="flex items-center gap-2 flex-shrink-0">
-                                                          <span className="inline-flex items-center justify-center text-[9px] font-bold tabular-nums px-1.5 py-0.5 rounded" style={{ background: section.accent + '22', color: section.accent, border: `1px solid ${section.accent}66`, fontFamily: 'JetBrains Mono, monospace', minWidth: '20px' }}>0{sIdx + 1}</span>
-                                                          <span className="text-[12px] font-bold tracking-wide" style={{ color: '#000000', fontFamily: 'JetBrains Mono, monospace' }}>{section.title.toLowerCase().replace(/\s+/g, '_')}/</span>
-                                                        </div>
-                                                        <span className="text-[10px] truncate" style={{ color: '#000000', fontFamily: 'JetBrains Mono, monospace' }}># {section.subtitle}</span>
-                                                      </div>
-                                                      <div className="flex items-center gap-2 flex-shrink-0">
-                                                        <span className="text-[9px] uppercase tracking-wider" style={{ color: '#475569', fontFamily: 'JetBrains Mono, monospace' }}>w:</span>
-                                                        <span className="text-[10px] tabular-nums" style={{ color: '#475569', fontFamily: 'JetBrains Mono, monospace' }}>{weightPct}%</span>
-                                                        <span style={{ color: '#cbd5e1' }}>│</span>
-                                                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold tabular-nums" style={{ background: sectionHealthy ? 'rgba(16,185,129,0.12)' : 'rgba(239,68,68,0.12)', border: `1px solid ${sectionHealthy ? 'rgba(16,185,129,0.4)' : 'rgba(239,68,68,0.4)'}`, color: sectionHealthy ? '#6ee7b7' : '#fca5a5', fontFamily: 'JetBrains Mono, monospace' }} data-testid={`section-health-${c.code}-${section.key}`}>
-                                                          <span className="w-1.5 h-1.5 rounded-full" style={{ background: sectionHealthy ? '#10b981' : '#ef4444', boxShadow: `0 0 5px ${sectionHealthy ? '#10b981' : '#ef4444'}` }} />
-                                                          {okCount}/{activeCount}·{sectionPct}%
-                                                        </span>
-                                                      </div>
-                                                    </div>
-                                                    <table className="w-full text-[13px]" style={{ background: '#ffffff', color: '#000000' }}>
-                                                      <tbody>
-                                                        {section.rows.map((row, rIdx) => {
-                                                          const disabled = isHealthItemDisabled(c.code, row.issueKey);
-                                                          const isLast = rIdx === section.rows.length - 1;
-                                                          return (
-                                                            <tr key={row.label} className="hover:bg-black/5 transition-colors" style={{ opacity: disabled ? 0.45 : 1, background: '#ffffff', color: '#000000' }}>
-                                                              <td className="px-1 py-2 w-8" style={{ borderBottom: isLast ? 'none' : '1px solid rgba(0,0,0,0.08)' }}>
-                                                                <input type="checkbox" checked={!disabled} onChange={() => toggleHealthItem(c.code, row.issueKey)} className="w-3.5 h-3.5 rounded cursor-pointer accent-emerald-500" title={disabled ? 'Enable for health reporting' : 'Disable from health reporting'} data-testid={`health-toggle-${row.issueKey}`} />
-                                                              </td>
-                                                              <td className="px-3 py-2 font-medium" style={{ borderBottom: isLast ? 'none' : '1px solid rgba(0,0,0,0.08)', color: '#000000' }}>{row.label}</td>
-                                                              <td className="px-3 py-2 font-mono text-[11px]" style={{ borderBottom: isLast ? 'none' : '1px solid rgba(0,0,0,0.08)', color: '#000000', textAlign: 'left', width: '100%' }}>
-                                                                <span className="inline-flex items-center gap-2" style={{ textAlign: 'left' }}>
-                                                                  <span>{row.path}</span>
-                                                                  <Pencil className="w-3 h-3 text-black/40 hover:text-black/80 cursor-pointer flex-shrink-0 transition-colors" onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: row.issueKey, step: 0, phase: 'primary' }); }} />
-                                                                </span>
-                                                              </td>
-                                                              <td className="px-3 py-2" style={{ width: '70px', minWidth: '70px', borderBottom: isLast ? 'none' : '1px solid rgba(0,0,0,0.08)' }}>
-                                                                <div className="flex items-center" style={{ gap: '8px' }}>
-                                                                  <span className={`inline-block w-2.5 h-2.5 rounded-full flex-shrink-0 ${row.ok ? 'bg-emerald-500' : 'bg-red-500'}`} title={row.ok ? 'Connected' : 'Not connected'} />
-                                                                  {!row.ok && (
-                                                                    <span className="text-[10px] underline cursor-pointer flex-shrink-0" style={{ color: 'rgb(251, 210, 30)' }} onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: row.issueKey, step: 0, phase: 'primary' }); }}>Fix</span>
-                                                                  )}
-                                                                </div>
-                                                              </td>
-                                                            </tr>
-                                                          );
-                                                        })}
-                                                      </tbody>
-                                                    </table>
-                                                  </div>
-                                                </React.Fragment>
-                                              );
-                                            })}
-                                          </div>
-                                        </>
-                                      );
-                                    })()}
-                                  </div>
-
-                                  {courseHealth && (
-                                    <div style={{ paddingLeft: '18px', paddingRight: '18px' }}>
-                                      <div className="text-[13px] font-semibold text-white uppercase tracking-wider mb-3">Weekly Content Status</div>
-                                      <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${Math.min(courseHealth.moduleWeeks ? Object.keys(courseHealth.moduleWeeks).length : 13, 13)}, 1fr)` }}>
-                                        {Array.from({ length: expHealth?.numberOfWeeks || 13 }, (_, i) => i + 1).map(w => {
-                                          const mCount = courseHealth.moduleWeeks?.[w]?.count || 0;
-                                          const rCount = courseHealth.readingWeeks?.[w]?.count || 0;
-                                          const mTts = courseHealth.moduleWeeks?.[w]?.ttsReady || 0;
-                                          const rExempt = isReadingExempt(c.code, w);
-                                          const moduleOk = mCount > 0;
-                                          const readingOk = rCount > 0 || rExempt;
-                                          const weekGreen = moduleOk && readingOk;
-                                          const weekRed = !moduleOk || !readingOk;
-                                          return (
-                                            <div
-                                              key={w}
-                                              className="text-center cursor-pointer hover:brightness-125 transition-all relative"
-                                              style={{
-                                                backgroundImage: weekGreen ? `url(${weekGreenBoxImg})` : weekRed ? `url(${weekRedBoxImg})` : undefined,
-                                                backgroundSize: '100% 100%',
-                                                backgroundRepeat: 'no-repeat',
-                                                backgroundColor: (weekGreen || weekRed) ? 'transparent' : 'rgba(255,255,255,0.03)',
-                                                border: (weekGreen || weekRed) ? 'none' : '1px solid rgba(255,255,255,0.1)',
-                                                borderRadius: (weekGreen || weekRed) ? '0' : '4px',
-                                                padding: '6px 4px',
-                                                minHeight: '46px',
-                                              }}
-                                              onClick={(e) => { e.stopPropagation(); setWeekDetailOpen({ courseCode: c.code, week: w }); }}
-                                              data-testid={`week-cell-${c.code}-${w}`}
-                                            >
-                                              <div className="text-[10px] font-bold text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.7)' }}>W{w}</div>
-                                              <div className="text-[9px] text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.7)' }}>{mCount}M {rCount}R{rExempt && rCount === 0 ? '*' : ''}</div>
-                                              {mCount > 0 && mTts < mCount && <div className="text-[8px] text-yellow-200" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.7)' }}>TTS {mTts}/{mCount}</div>}
-                                            </div>
-                                          );
-                                        })}
-                                      </div>
-                                      <div className="text-[10px] text-white/40 mt-1">* = reading not expected for this week. Click a week to upload files or toggle reading requirement.</div>
-                                    </div>
-                                  )}
-
-                                  {weekDetailOpen && weekDetailOpen.courseCode === c.code && (() => {
-                                    const wd = weekDetailOpen;
-                                    const mCount = courseHealth?.moduleWeeks?.[wd.week]?.count || 0;
-                                    const rCount = courseHealth?.readingWeeks?.[wd.week]?.count || 0;
-                                    const rExempt = isReadingExempt(wd.courseCode, wd.week);
-                                    const cleanCode = wd.courseCode.replace(/\s/g, '').toLowerCase();
-                                    return (
-                                      <div className="rounded-lg overflow-hidden mt-2" style={{ border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(0,0,0,0.25)' }}>
-                                        <div className="px-4 py-2.5 flex items-center justify-between border-b border-white/15" style={{ background: 'rgba(255,255,255,0.06)' }}>
-                                          <span className="text-[13px] font-bold text-white">Week {wd.week} — {wd.courseCode}</span>
-                                          <button className="text-[11px] text-white/60 hover:text-white" onClick={() => setWeekDetailOpen(null)} data-testid="close-week-detail">Close</button>
-                                        </div>
-                                        <div className="p-4 grid grid-cols-2 gap-4">
-                                          <div className="space-y-2">
-                                            <div className="flex items-center gap-2">
-                                              <span className={`inline-block w-2 h-2 rounded-full ${mCount > 0 ? 'bg-emerald-500' : 'bg-red-500'}`} />
-                                              <span className="text-[12px] font-semibold text-white">Module Files ({mCount})</span>
-                                            </div>
-                                            <button
-                                              className="w-full px-3 py-2.5 rounded text-[12px] font-medium text-white/80 hover:text-white hover:brightness-110 transition-all flex items-center justify-center gap-2"
-                                              style={{ background: 'rgba(59,130,246,0.15)', border: '1px solid rgba(59,130,246,0.3)' }}
-                                              onClick={() => {
-                                                setSemFlowWizard({ courseCode: wd.courseCode, issue: 'week_upload', step: 0, phase: 'primary', weekNum: wd.week, uploadType: 'module' });
-                                              }}
-                                              data-testid={`upload-module-w${wd.week}`}
-                                            >
-                                              <span>📤</span> Upload Module
-                                            </button>
-                                            <div className="text-[10px] text-white/50 font-mono">week-{wd.week}-{cleanCode}-module/</div>
-                                          </div>
-                                          <div className="space-y-2">
-                                            <div className="flex items-center gap-2">
-                                              <span className={`inline-block w-2 h-2 rounded-full ${rCount > 0 ? 'bg-emerald-500' : rExempt ? 'bg-emerald-500' : 'bg-red-500'}`} />
-                                              <span className="text-[12px] font-semibold text-white">Reading Files ({rCount})</span>
-                                            </div>
-                                            <button
-                                              className="w-full px-3 py-2.5 rounded text-[12px] font-medium text-white/80 hover:text-white hover:brightness-110 transition-all flex items-center justify-center gap-2"
-                                              style={{ background: rExempt ? 'rgba(255,255,255,0.06)' : 'rgba(59,130,246,0.15)', border: `1px solid ${rExempt ? 'rgba(255,255,255,0.15)' : 'rgba(59,130,246,0.3)'}`, opacity: rExempt ? 0.5 : 1 }}
-                                              onClick={() => {
-                                                if (!rExempt) setSemFlowWizard({ courseCode: wd.courseCode, issue: 'week_upload', step: 0, phase: 'primary', weekNum: wd.week, uploadType: 'reading' });
-                                              }}
-                                              data-testid={`upload-reading-w${wd.week}`}
-                                            >
-                                              <span>📤</span> Upload Reading
-                                            </button>
-                                            <div className="flex items-center gap-2 mt-1">
-                                              <label className="flex items-center gap-1.5 cursor-pointer select-none" data-testid={`toggle-reading-exempt-w${wd.week}`}>
-                                                <div
-                                                  className="w-7 h-4 rounded-full relative transition-colors duration-200"
-                                                  style={{ background: rExempt ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.15)', border: `1px solid ${rExempt ? 'rgba(34,197,94,0.5)' : 'rgba(255,255,255,0.2)'}` }}
-                                                  onClick={() => updateReadingExempt(wd.courseCode, wd.week, !rExempt)}
-                                                >
-                                                  <div className="absolute top-0.5 w-2.5 h-2.5 rounded-full bg-white transition-all duration-200" style={{ left: rExempt ? '14px' : '2px' }} />
-                                                </div>
-                                                <span className="text-[10px] text-white/60">No reading file expected</span>
-                                              </label>
-                                            </div>
-                                            <div className="text-[10px] text-white/50 font-mono">week-{wd.week}-{cleanCode}-reading/</div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    );
-                                  })()}
                                 </div>
                               </div>
                             );

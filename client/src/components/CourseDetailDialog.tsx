@@ -39,6 +39,7 @@ import {
   ArrowDown,
   Flag,
   ClipboardList,
+  Cog,
   Award,
   FolderOpen,
   Folder,
@@ -138,6 +139,7 @@ interface CourseDetailDialogProps {
   semesterSettings?: Record<string, { week1StartDate?: string; springStartDate?: string; springEndDate?: string; summerStartDate?: string; summerEndDate?: string }>;
   allAssignmentsAdded?: boolean;
   onAllAssignmentsAddedChange?: (val: boolean) => void;
+  automationsRenderer?: () => React.ReactNode;
 }
 
 interface NewTaskForm {
@@ -253,7 +255,7 @@ function semesterKeyFromTermYear(term?: string, year?: string): string {
   return '';
 }
 
-export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLiveColorChange, onGradeCalculated, onDeleteCourse, onOpenEditTask, semesterStart, readingWeekStart, certificateName, onPushUndo, initialEditMode, courseRank, usedRanks, isSpringSummer, courseSpSuTerm, courseRankA, courseRankB, usedRanksA, usedRanksB, onRankChange, semesterSettings, allAssignmentsAdded, onAllAssignmentsAddedChange }: CourseDetailDialogProps) {
+export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLiveColorChange, onGradeCalculated, onDeleteCourse, onOpenEditTask, semesterStart, readingWeekStart, certificateName, onPushUndo, initialEditMode, courseRank, usedRanks, isSpringSummer, courseSpSuTerm, courseRankA, courseRankB, usedRanksA, usedRanksB, onRankChange, semesterSettings, allAssignmentsAdded, onAllAssignmentsAddedChange, automationsRenderer }: CourseDetailDialogProps) {
   const maxWeek = isSpringSummer ? 14 : 13;
   const { toast } = useToast();
   const [showAddForm, setShowAddForm] = useState(false);
@@ -344,6 +346,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
   }, [courseInfo.courseCode]);
   const [showWeekMappings, setShowWeekMappings] = useState(false);
   const [showAssignments, setShowAssignments] = useState(!initialEditMode);
+  const [showAutomations, setShowAutomations] = useState(false);
+  const automationsRef = useRef<HTMLDivElement>(null);
   const [showModules, setShowModules] = useState(true);
 
   const courseCodeClean = courseInfo.courseCode?.replace(/\s/g, '').toUpperCase() || '';
@@ -4532,6 +4536,30 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           </>)}
 
           </div>
+
+          {automationsRenderer && (
+            <div ref={automationsRef} style={{ marginTop: '10px' }}>
+              <div style={{ border: '2px solid rgba(255,255,255,0.2)', borderRadius: '8px', padding: '12px' }}>
+                <div
+                  className="flex items-center justify-between cursor-pointer group"
+                  onClick={() => { const next = !showAutomations; setShowAutomations(next); if (next) setTimeout(() => { const el = automationsRef.current; if (el) { const scrollParent = el.closest('.overflow-y-auto') as HTMLElement | null; if (scrollParent) { const elTop = (el as HTMLElement).offsetTop - scrollParent.offsetTop; scrollParent.scrollTo({ top: elTop - 4, behavior: 'smooth' }); } else { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } } }, 80); }}
+                  data-testid="button-toggle-automations"
+                >
+                  <div className="flex items-center gap-2">
+                    <Cog className="h-3.5 w-3.5 text-white/70" />
+                    <h3 className="text-[11px] font-medium text-white uppercase">Automations</h3>
+                  </div>
+                  {showAutomations ? <ChevronDown className="h-3 w-3 text-white/50" /> : <ChevronRight className="h-3 w-3 text-white/50" />}
+                </div>
+                {showAutomations && (
+                  <div style={{ marginTop: '12px' }} data-testid="automations-content">
+                    {automationsRenderer()}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           </div>
           </div>
           </div>
