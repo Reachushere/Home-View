@@ -28992,10 +28992,23 @@ export default function Dashboard() {
                 <div className="flex-1 overflow-y-auto px-5 py-3" style={{ maxHeight: 'calc(80vh - 120px)' }}>
                 {(() => {
                   const ignoredIds: number[] = (() => { try { return JSON.parse(localStorage.getItem('weeklyPlanIgnored') || '[]'); } catch { return []; } })();
+                  // Active course codes for the current semester (course1Code/course2Code/course3Code on semesterSettings).
+                  // If we have a populated list, hide tasks whose courseName/title doesn't match an active code -
+                  // this prevents ended classes (e.g. CASL101 after it wraps up) from cluttering the weekly plan.
+                  const activeSemCodes: string[] = semesterSettings ? [1,2,3].map(i => ((semesterSettings as any)[`course${i}Code`] || '').toString().trim().toUpperCase()).filter(Boolean) : [];
+                  const taskBelongsToActiveCourse = (t: any) => {
+                    if (activeSemCodes.length === 0) return true; // no active-course info → don't filter
+                    const cn = (t.courseName || '').toUpperCase();
+                    const ti = (t.title || '').toUpperCase();
+                    // Non-course personal/general tasks (no courseName) always pass.
+                    if (!cn) return true;
+                    return activeSemCodes.some(code => cn.includes(code) || ti.includes(code));
+                  };
                   const upcoming = allTasks.filter(t => {
                     if (t.isCompleted) return false;
                     if (!t.dueDate) return false;
                     if (ignoredIds.includes(t.id)) return false;
+                    if (!taskBelongsToActiveCourse(t)) return false;
                     const due = new Date(t.dueDate);
                     const now = new Date();
                     const diff = (due.getTime() - now.getTime()) / (1000*60*60*24);
