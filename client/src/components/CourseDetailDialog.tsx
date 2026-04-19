@@ -4553,7 +4553,14 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 </div>
                 {showAutomations && (
                   <div style={{ marginTop: '12px' }} data-testid="automations-content">
-                    {automationsRenderer()}
+                    {(() => {
+                      try {
+                        return automationsRenderer();
+                      } catch (err) {
+                        console.error('[Automations] renderer threw:', err);
+                        return <div className="text-[10px] text-red-300">Automations failed to render: {String((err as any)?.message || err)}</div>;
+                      }
+                    })()}
                   </div>
                 )}
               </div>
