@@ -913,9 +913,13 @@ export default function Dashboard() {
         localStorage.setItem('monthlyReportRedesignVer', '3');
       }
       const dismissedNow = localStorage.getItem('monthlyReportDismissed');
-      // Pop on every refresh from the 19th onwards (after 9am) until the user
-      // ticks the Complete checkbox in the dialog header.
-      if (day >= 19 && hour >= 9 && dismissedNow !== monthKey) {
+      // Track per-tab-session dismissal so the auto-version-check reload
+      // (every 30s in main.tsx → window.location.reload) does NOT re-pop the
+      // dialog after the user has already closed it in this tab. Closing the
+      // browser / opening a new tab clears sessionStorage and the popup will
+      // appear again — which is what Bryn wants on a true fresh refresh.
+      const sessionDismissed = (typeof window !== 'undefined') && sessionStorage.getItem('monthlyReportDismissedSession') === monthKey;
+      if (day >= 19 && hour >= 9 && dismissedNow !== monthKey && !sessionDismissed) {
         setIsMonthlyReportOpen(true);
       }
     };
@@ -17488,20 +17492,25 @@ export default function Dashboard() {
               )}
               {particleCount > 0 && bgWeatherParticles.slice(0, particleCount).map((p, i) => {
                 if (snowCount > 0) {
-                  const size = 1.5 + p.sizeFactor * 2.5;
+                  // Render as actual snowflake glyphs (❄ / ❅ / ❆) instead of plain circles.
+                  // The size factor maps to a glyph font-size so flakes still look airy.
+                  const size = 6 + p.sizeFactor * 10;
                   const duration = 6 + p.durationFactor * 8;
                   const drift = p.driftFactor * 50 - 25;
-                  const sway = p.swayFactor * 20 - 10;
+                  const glyph = ['❄', '❅', '❆'][i % 3];
+                  const spinDur = 6 + (p.swayFactor * 8);
                   return (
                     <div key={`bg-snow-${i}`} style={{
                       position: 'absolute', left: `${p.left}%`, top: '-10px',
-                      width: `${size}px`, height: `${size}px`, borderRadius: '50%',
-                      background: 'rgba(255,255,255,0.8)',
-                      opacity: 0.35 + p.opacityFactor * 0.4,
-                      animation: `bgSnowFall ${duration}s linear ${p.delay}s infinite`,
+                      lineHeight: 1, color: 'rgba(255,255,255,0.92)',
+                      fontSize: `${size}px`,
+                      opacity: 0.45 + p.opacityFactor * 0.45,
+                      textShadow: '0 0 4px rgba(200,225,255,0.65), 0 0 1px rgba(255,255,255,0.9)',
+                      animation: `bgSnowFall ${duration}s linear ${p.delay}s infinite, snowSpin ${spinDur}s linear ${p.delay}s infinite`,
                       transform: `translateX(${drift}px)`,
-                      filter: size > 6 ? 'blur(0.5px)' : 'none',
-                    }} />
+                      filter: size > 12 ? 'blur(0.4px)' : 'none',
+                      pointerEvents: 'none', userSelect: 'none',
+                    }}>{glyph}</div>
                   );
                 }
                 const height = isFreezingRain ? (3 + p.sizeFactor * 5) : (4 + p.sizeFactor * 6);
@@ -20268,6 +20277,11 @@ export default function Dashboard() {
                   setEditingTaskRaw(null);
                   setShowWeatherHistoryPanel(false);
                   setShowMorningReview(false);
+                  try {
+                    const now = new Date();
+                    const monthKey = `${now.getFullYear()}-${now.getMonth()}`;
+                    sessionStorage.setItem('monthlyReportDismissedSession', monthKey);
+                  } catch {}
                   setIsMonthlyReportOpen(false);
                   setIsNotepadOpen(false);
                   setSkyMapOpen(false);
@@ -31145,14 +31159,14 @@ export default function Dashboard() {
                   }
                   if (wc >= 71 && wc <= 77) {
                     return `<div style="position:absolute;inset:0;overflow:hidden">${Array.from({length:14},(_,i)=>{
-                      const sz = 2.5+(i%3)*1; const l = (i*21+3)%100;
-                      return `<div style="position:absolute;left:${l}%;top:-5px;width:${sz}px;height:${sz}px;background:radial-gradient(circle,rgba(255,255,255,0.95) 40%,rgba(200,230,255,0.6));border-radius:50%;animation:fwSnowDrop ${1.8+(i%3)*0.6}s ${(i*0.18).toFixed(2)}s linear infinite;box-shadow:0 0 ${3+(i%2)*2}px rgba(180,220,255,0.7)"></div>`;
+                      const sz = 7+(i%3)*4; const l = (i*21+3)%100; const g=['❄','❅','❆'][i%3];
+                      return `<div style="position:absolute;left:${l}%;top:-5px;font-size:${sz}px;line-height:1;color:rgba(255,255,255,0.95);text-shadow:0 0 ${3+(i%2)*2}px rgba(180,220,255,0.8),0 0 1px #fff;animation:fwSnowDrop ${1.8+(i%3)*0.6}s ${(i*0.18).toFixed(2)}s linear infinite,snowSpin ${5+(i%3)}s linear ${(i*0.18).toFixed(2)}s infinite;pointer-events:none;user-select:none">${g}</div>`;
                     }).join('')}</div>`;
                   }
                   if (wc >= 85 && wc <= 86) {
                     return `<div style="position:absolute;inset:0;overflow:hidden">${Array.from({length:16},(_,i)=>{
-                      const sz = 3+(i%3)*1.5; const l = (i*19+5)%100;
-                      return `<div style="position:absolute;left:${l}%;top:-5px;width:${sz}px;height:${sz}px;background:radial-gradient(circle,rgba(255,255,255,0.95) 40%,rgba(200,230,255,0.5));border-radius:50%;animation:fwSnowDrop ${1.4+(i%3)*0.5}s ${(i*0.14).toFixed(2)}s linear infinite;box-shadow:0 0 ${4+(i%2)*3}px rgba(180,220,255,0.8)"></div>`;
+                      const sz = 8+(i%3)*5; const l = (i*19+5)%100; const g=['❄','❅','❆'][i%3];
+                      return `<div style="position:absolute;left:${l}%;top:-5px;font-size:${sz}px;line-height:1;color:rgba(255,255,255,0.95);text-shadow:0 0 ${4+(i%2)*3}px rgba(180,220,255,0.85),0 0 1px #fff;animation:fwSnowDrop ${1.4+(i%3)*0.5}s ${(i*0.14).toFixed(2)}s linear infinite,snowSpin ${4+(i%3)}s linear ${(i*0.14).toFixed(2)}s infinite;pointer-events:none;user-select:none">${g}</div>`;
                     }).join('')}</div>`;
                   }
                   if ((wc >= 61 && wc <= 67) || (wc >= 80 && wc <= 82)) {
@@ -31490,6 +31504,15 @@ export default function Dashboard() {
                                 return Array.from({ length: 16 }, (_, i) => {
                                   const left = (i * 23 + 5) % 100;
                                   const delay = ((i * 0.2) % 2).toFixed(2);
+                                  const size = 8 + (i % 3) * 5;
+                                  const g = ['❄','❅','❆'][i%3];
+                                  return `<div style="position:absolute;left:${left}%;top:0;font-size:${size}px;line-height:1;color:rgba(225,240,255,0.95);text-shadow:0 0 4px rgba(180,215,255,0.7),0 0 1px #fff;animation:snowFall 2s ${delay}s linear infinite,snowSpin ${5+(i%3)}s linear ${delay}s infinite;pointer-events:none;user-select:none">${g}</div>`;
+                                }).join('');
+                              }
+                              if (false) {
+                                return Array.from({ length: 16 }, (_, i) => {
+                                  const left = (i * 23 + 5) % 100;
+                                  const delay = ((i * 0.2) % 2).toFixed(2);
                                   const size = 3.5 + (i % 2) * 1.5;
                                   return `<div style="position:absolute;left:${left}%;top:0;width:${size}px;height:${size}px;background:rgba(225,240,255,0.95);border-radius:50%;animation:snowFall 2s ${delay}s linear infinite;box-shadow:0 0 4px rgba(180,215,255,0.6)"></div>`;
                                 }).join('');
@@ -31635,16 +31658,18 @@ export default function Dashboard() {
                                 return Array.from({ length: 28 }, (_, i) => {
                                   const left = (i * 14 + 3) % 100;
                                   const delay = ((i * 0.15) % 2.5).toFixed(2);
-                                  const size = 3 + (i % 4) * 1.5;
-                                  return `<div style="position:absolute;left:${left}%;top:-6px;width:${size}px;height:${size}px;background:radial-gradient(circle,rgba(255,255,255,0.95) 30%,rgba(200,230,255,0.5));border-radius:50%;animation:snowFall ${2 + (i % 4) * 0.8}s ${delay}s linear infinite;box-shadow:0 0 ${4+(i%3)*2}px rgba(180,220,255,0.6)"></div>`;
+                                  const size = 7 + (i % 4) * 4;
+                                  const g = ['❄','❅','❆'][i%3];
+                                  return `<div style="position:absolute;left:${left}%;top:-6px;font-size:${size}px;line-height:1;color:rgba(255,255,255,0.95);text-shadow:0 0 ${4+(i%3)*2}px rgba(180,220,255,0.7),0 0 1px #fff;animation:snowFall ${2 + (i % 4) * 0.8}s ${delay}s linear infinite,snowSpin ${5+(i%3)}s linear ${delay}s infinite;pointer-events:none;user-select:none">${g}</div>`;
                                 }).join('');
                               }
                               if (wc >= 85 && wc <= 86) {
                                 return Array.from({ length: 30 }, (_, i) => {
                                   const left = (i * 13 + 3) % 100;
                                   const delay = ((i * 0.12) % 2).toFixed(2);
-                                  const size = 3 + (i % 3) * 1.5;
-                                  return `<div style="position:absolute;left:${left}%;top:-6px;width:${size}px;height:${size}px;background:rgba(230,240,255,0.95);border-radius:50%;animation:snowFall ${1.8 + (i % 2) * 0.7}s ${delay}s linear infinite;box-shadow:0 0 3px rgba(200,220,255,0.5)"></div>`;
+                                  const size = 8 + (i % 3) * 5;
+                                  const g = ['❄','❅','❆'][i%3];
+                                  return `<div style="position:absolute;left:${left}%;top:-6px;font-size:${size}px;line-height:1;color:rgba(230,240,255,0.95);text-shadow:0 0 4px rgba(200,220,255,0.7),0 0 1px #fff;animation:snowFall ${1.8 + (i % 2) * 0.7}s ${delay}s linear infinite,snowSpin ${4+(i%3)}s linear ${delay}s infinite;pointer-events:none;user-select:none">${g}</div>`;
                                 }).join('');
                               }
                               if (wc >= 66 && wc <= 67) {
