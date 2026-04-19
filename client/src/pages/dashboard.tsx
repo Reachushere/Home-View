@@ -14814,6 +14814,12 @@ export default function Dashboard() {
       const gc = getCourseGradientColors(c.code);
       const dotBg = gc.start !== gc.end ? `linear-gradient(180deg, ${gc.start}, ${gc.end})` : gc.start;
       const courseHealth = expHealth?.courses?.find((ch: any) => ch.code.replace(/\s/g, '').toUpperCase() === codeNorm);
+      const getOneDrivePath = (courseCode: string, weekNum?: number) => {
+        const yearStr = expandedSemKey.replace(/^(ss|f|w)/, '');
+        const semType = expandedSemKey.startsWith('ss') ? 'Spring & Summer' : expandedSemKey.startsWith('f') ? 'Fall' : 'Winter';
+        const base = `/School/1. TMU/Courses/${yearStr}/${semType}/${courseCode}`;
+        return weekNum ? `${base}/Week ${weekNum}` : base;
+      };
       const displayNameResult = (() => {
         const dnMatch = findSemSlot(expandedSemKey, c.code, allSemesterSettings);
         if (dnMatch) {
