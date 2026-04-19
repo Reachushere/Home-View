@@ -18020,7 +18020,6 @@ export default function Dashboard() {
             <span style={{ position: 'absolute', top: '13px', fontSize: '7.5px', color: '#ffffff', fontWeight: 500, letterSpacing: '0.5px', whiteSpace: 'nowrap', textAlign: 'center', right: '50%', transform: 'translateX(32%)' }}>Tasks</span>
           </div>
           {desktopIsFull && <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)', marginLeft: '-2px', marginTop: '1px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); startTransition(() => { setQuickAddStep(0); setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, countdownBarColor: '', priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminder4DateTimeMode: false, reminder4Date: '', reminder4Hour: '09', reminder4Minute: '00', reminderEmail: false, reminderAlexa: false, reminderSms: false, reminder1Methods: '', reminder2Methods: '', reminder3Methods: '', reminder4Methods: '', attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '', repeatSpanDays: 1, shiftAdjust: false, hideFromSummary: false, hideFromCountdown: false, sendInvite: false, inviteEmail: '', inviteName: '', taskLabel: '' as any }); setIsQuickAddOpen(true); }); }}>+ Add</Button>}
-          {desktopIsFull && <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[12px] no-default-hover-elevate no-default-active-elevate text-white text-[11px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(180,140,255,0.45) 0%, rgba(120,80,210,0.28) 100%)', border: '1.5px solid rgba(200,170,255,0.45)', boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)', marginLeft: '4px', marginTop: '1px', zIndex: 10, position: 'relative', display: 'flex', alignItems: 'center', gap: '4px' }} title="Add a new semester past Winter 2029" data-testid="button-add-semester-pill" onClick={() => { triggerButtonGlow('addtask'); openCreateSemesterWizard(); }}><GraduationCap style={{ width: '12px', height: '12px' }} />Sem</Button>}
           {desktopIsFull && <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[12px] no-default-hover-elevate no-default-active-elevate text-white text-[11px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(140,200,255,0.45) 0%, rgba(80,130,210,0.28) 100%)', border: '1.5px solid rgba(170,210,255,0.45)', boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)', marginLeft: '4px', marginTop: '1px', zIndex: 10, position: 'relative', display: 'flex', alignItems: 'center', gap: '4px' }} title="Open the Post-Secondary Monthly Report (and view saved copies)" data-testid="button-monthly-report-pill" onClick={() => { triggerButtonGlow('addtask'); setIsMonthlyReportOpen(true); }}><FileText style={{ width: '12px', height: '12px' }} />Report</Button>}
           {/* Completed Tasks Button - Swapped with Graduation Hat */}
           <div className="pill-button-hover" style={{ 
@@ -22574,6 +22573,29 @@ export default function Dashboard() {
                         <p className="text-[9px] text-white/50 mt-1">What would you like to add?</p>
                       </div>
                       <div className="grid grid-cols-2 gap-2">
+                        {/* Add Semester — opens the New Semester wizard pre-filled with the next chrono semester */}
+                        <button
+                          className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 text-white flex items-center gap-1.5"
+                          style={{ background: 'rgba(180,140,255,0.35)', border: '1px solid rgba(180,140,255,0.7)' }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(180,140,255,0.45)'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(180,140,255,0.35)'; }}
+                          onClick={(e) => { e.stopPropagation(); setIsQuickAddOpen(false); setTimeout(() => openCreateSemesterWizard(), 50); }}
+                          data-testid="quick-add-type-add-semester"
+                        >
+                          <GraduationCap className="h-3.5 w-3.5" />
+                          Add Semester
+                        </button>
+                        <button
+                          className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 text-white flex items-center gap-1.5"
+                          style={{ background: 'rgba(96,165,250,0.35)', border: '1px solid rgba(96,165,250,0.7)' }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(96,165,250,0.45)'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(96,165,250,0.35)'; }}
+                          onClick={(e) => { e.stopPropagation(); setIsQuickAddOpen(false); setTimeout(() => setIsAiCommandOpen(true), 50); }}
+                          data-testid="quick-add-type-ai-command"
+                        >
+                          <Zap className="h-3.5 w-3.5" />
+                          AI Command
+                        </button>
                         <button
                           className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 text-white flex items-center gap-1.5"
                           style={{ background: 'rgba(34,180,90,0.35)', border: '1px solid rgba(34,180,90,0.7)' }}
@@ -22596,18 +22618,8 @@ export default function Dashboard() {
                           <FileText className="h-3.5 w-3.5" />
                           Course Documents
                         </button>
-                        <button
-                          className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 text-white flex items-center gap-1.5"
-                          style={{ background: 'rgba(96,165,250,0.35)', border: '1px solid rgba(96,165,250,0.7)' }}
-                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(96,165,250,0.45)'; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(96,165,250,0.35)'; }}
-                          onClick={(e) => { e.stopPropagation(); setIsQuickAddOpen(false); setTimeout(() => setIsAiCommandOpen(true), 50); }}
-                          data-testid="quick-add-type-ai-command"
-                        >
-                          <Zap className="h-3.5 w-3.5" />
-                          AI Command
-                        </button>
-                        {(["module", "reading", "essay", "discussion", "poll", "quiz", "exam", "other", "reminder", "meeting", "phone_call", "scholarship", "project"] as const).map(type => {
+                        {/* Alphabetical task-type buttons (D-S) — interspersed with Medical Appointment, Partner Shifts, Project (folder) which appear via the buttons below */}
+                        {(["discussion", "essay", "exam"] as const).map(type => {
                           const TypeIcon = iconMap[type] || FileText;
                           const typeColors: Record<string, { bg: string; border: string; hover: string }> = {
                             reading: { bg: 'rgba(56,130,255,0.35)', border: 'rgba(56,130,255,0.7)', hover: 'rgba(56,130,255,0.45)' },
@@ -22644,6 +22656,7 @@ export default function Dashboard() {
                             </button>
                           );
                         })}
+                        {/* Medical Appointment (alphabetically between Exam and Meeting) */}
                         <button
                           className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 text-white flex items-center gap-1.5"
                           style={{ background: 'rgba(220,60,60,0.35)', border: '1px solid rgba(220,60,60,0.7)' }}
@@ -22655,6 +22668,31 @@ export default function Dashboard() {
                           <Activity className="h-3.5 w-3.5" style={{ color: '#ffffff' }} />
                           Medical Appointment
                         </button>
+                        {(["meeting", "module", "other"] as const).map(type => {
+                          const TypeIcon = iconMap[type] || FileText;
+                          const typeColors: Record<string, { bg: string; border: string; hover: string }> = {
+                            module: { bg: 'rgba(180,120,220,0.35)', border: 'rgba(180,120,220,0.7)', hover: 'rgba(180,120,220,0.45)' },
+                            meeting: { bg: 'rgba(202,138,4,0.35)', border: 'rgba(202,138,4,0.7)', hover: 'rgba(202,138,4,0.45)' },
+                            other: { bg: 'rgba(180,160,40,0.35)', border: 'rgba(180,160,40,0.7)', hover: 'rgba(180,160,40,0.45)' },
+                          };
+                          const tc = typeColors[type] || { bg: 'rgba(255,255,255,0.05)', border: 'rgba(255,255,255,0.1)', hover: 'rgba(255,255,255,0.2)' };
+                          const isSelected = quickAddData.type === type;
+                          return (
+                            <button
+                              key={type}
+                              className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 flex items-center gap-1.5 text-white"
+                              style={{ background: isSelected ? tc.hover : tc.bg, border: `1px solid ${isSelected ? 'rgba(255,255,255,0.4)' : tc.border}` }}
+                              onMouseEnter={(e) => { e.currentTarget.style.background = tc.hover; }}
+                              onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = tc.bg; }}
+                              onClick={() => { setQuickAddData(p => ({ ...p, type, taskLabel: '' })); setQuickAddStep(1); }}
+                              data-testid={`quick-add-type-${type}`}
+                            >
+                              <TypeIcon className="h-3.5 w-3.5" />
+                              {type.charAt(0).toUpperCase() + type.slice(1)}
+                            </button>
+                          );
+                        })}
+                        {/* Partner Shifts (alphabetically between Other and Phone Call) */}
                         <button
                           className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 text-white flex items-center gap-1.5"
                           style={{ background: 'rgba(0,180,170,0.35)', border: '1px solid rgba(0,180,170,0.7)' }}
@@ -22666,6 +22704,31 @@ export default function Dashboard() {
                           <Calendar className="h-3.5 w-3.5" style={{ color: '#ffffff' }} />
                           Partner Shifts
                         </button>
+                        {(["phone_call", "poll", "project"] as const).map(type => {
+                          const TypeIcon = iconMap[type] || FileText;
+                          const typeColors: Record<string, { bg: string; border: string; hover: string }> = {
+                            phone_call: { bg: 'rgba(13,148,136,0.35)', border: 'rgba(13,148,136,0.7)', hover: 'rgba(13,148,136,0.45)' },
+                            poll: { bg: 'rgba(255,70,160,0.35)', border: 'rgba(255,70,160,0.7)', hover: 'rgba(255,70,160,0.45)' },
+                            project: { bg: 'rgba(255,100,50,0.35)', border: 'rgba(255,100,50,0.7)', hover: 'rgba(255,100,50,0.45)' },
+                          };
+                          const tc = typeColors[type] || { bg: 'rgba(255,255,255,0.05)', border: 'rgba(255,255,255,0.1)', hover: 'rgba(255,255,255,0.2)' };
+                          const isSelected = quickAddData.type === type;
+                          return (
+                            <button
+                              key={type}
+                              className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 flex items-center gap-1.5 text-white"
+                              style={{ background: isSelected ? tc.hover : tc.bg, border: `1px solid ${isSelected ? 'rgba(255,255,255,0.4)' : tc.border}` }}
+                              onMouseEnter={(e) => { e.currentTarget.style.background = tc.hover; }}
+                              onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = tc.bg; }}
+                              onClick={() => { setQuickAddData(p => ({ ...p, type, taskLabel: '' })); setQuickAddStep(1); }}
+                              data-testid={`quick-add-type-${type}`}
+                            >
+                              <TypeIcon className="h-3.5 w-3.5" />
+                              {type === 'phone_call' ? 'Phone Call' : type.charAt(0).toUpperCase() + type.slice(1)}
+                            </button>
+                          );
+                        })}
+                        {/* Project (folder/wizard) — separate from project task type, sorted next to it */}
                         <button
                           className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 text-white flex items-center gap-1.5"
                           style={{ background: 'rgba(180,130,70,0.35)', border: '1px solid rgba(180,130,70,0.7)' }}
@@ -22675,8 +22738,33 @@ export default function Dashboard() {
                           data-testid="quick-add-type-project-wizard"
                         >
                           <FolderPlus className="h-3.5 w-3.5" />
-                          Project
+                          Project (folder)
                         </button>
+                        {(["quiz", "reading", "reminder", "scholarship"] as const).map(type => {
+                          const TypeIcon = iconMap[type] || FileText;
+                          const typeColors: Record<string, { bg: string; border: string; hover: string }> = {
+                            quiz: { bg: 'rgba(16,200,120,0.35)', border: 'rgba(16,200,120,0.7)', hover: 'rgba(16,200,120,0.45)' },
+                            reading: { bg: 'rgba(56,130,255,0.35)', border: 'rgba(56,130,255,0.7)', hover: 'rgba(56,130,255,0.45)' },
+                            reminder: { bg: 'rgba(80,100,220,0.4)', border: 'rgba(100,120,240,0.7)', hover: 'rgba(80,100,220,0.5)' },
+                            scholarship: { bg: 'rgba(224,76,23,0.35)', border: 'rgba(224,76,23,0.70)', hover: 'rgba(224,76,23,0.45)' },
+                          };
+                          const tc = typeColors[type] || { bg: 'rgba(255,255,255,0.05)', border: 'rgba(255,255,255,0.1)', hover: 'rgba(255,255,255,0.2)' };
+                          const isSelected = quickAddData.type === type;
+                          return (
+                            <button
+                              key={type}
+                              className="px-3 py-2.5 rounded-lg text-[12px] text-left transition-all duration-200 flex items-center gap-1.5 text-white"
+                              style={{ background: isSelected ? tc.hover : tc.bg, border: `1px solid ${isSelected ? 'rgba(255,255,255,0.4)' : tc.border}` }}
+                              onMouseEnter={(e) => { e.currentTarget.style.background = tc.hover; }}
+                              onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = tc.bg; }}
+                              onClick={() => { if (type === 'scholarship') { setIsQuickAddOpen(false); setTimeout(() => setIsScholarshipsOpen(true), 50); } else { setQuickAddData(p => ({ ...p, type, taskLabel: '' })); setQuickAddStep(1); } }}
+                              data-testid={`quick-add-type-${type}`}
+                            >
+                              <TypeIcon className="h-3.5 w-3.5" />
+                              {type.charAt(0).toUpperCase() + type.slice(1)}
+                            </button>
+                          );
+                        })}
                       </div>
                       {quickAddData.type && (
                         <div className="mt-3 pt-3 border-t border-white/15">
