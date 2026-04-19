@@ -12028,13 +12028,17 @@ export default function Dashboard() {
     return courseName.startsWith("CASL101") || courseName.startsWith("CASL 101");
   };
 
-  // Helper to check if a CASL101 task's time has passed (should be auto-hidden)
+  // Helper to check if a CASL101 task's time has passed (should be auto-hidden).
+  // CASL101 ran Winter 2026 (Jan 12 – Apr 17, 2026). Any CASL101 task dated
+  // after Apr 17, 2026 is a leftover recurring entry and must be hidden — the
+  // course is finished and Bryn did not add those Saturday events herself.
+  const CASL101_COURSE_END = new Date('2026-04-17T23:59:59');
   const isCASL101Finished = (task: Task) => {
     if (!isCASL101Task(task)) return false;
     const now = new Date();
     const dueDate = new Date(task.dueDate);
+    if (dueDate > CASL101_COURSE_END) return true;
     if (task.eventEndTime) {
-      // If task has an end time, check if it's passed
       const [endHour, endMin] = task.eventEndTime.split(':').map(Number);
       dueDate.setHours(endHour, endMin, 0, 0);
     }
