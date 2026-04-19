@@ -3288,26 +3288,6 @@ export default function Dashboard() {
       .catch(() => setExpandedSemHealthLoading(false));
   }, [expandedSemKey]);
   const [dialogSemHealth, setDialogSemHealth] = useState<{ semKey: string; data: any } | null>(null);
-  useEffect(() => {
-    if (!selectedCertCourse) { setDialogSemHealth(null); return; }
-    const cc = selectedCertCourse.courseCode.replace(/\s/g, '').toUpperCase();
-    let semKey = selectedCertCourse.semKey || '';
-    if (!semKey) {
-      for (const sk of semesterKeyOrder) {
-        const courses = semesterCourseAssignments[sk] || [];
-        if (courses.some(c => c.code.replace(/\s/g, '').toUpperCase() === cc)) { semKey = sk; break; }
-      }
-    }
-    if (!semKey) return;
-    if (expandedSemKey === semKey && expandedSemHealth) {
-      setDialogSemHealth({ semKey, data: expandedSemHealth });
-      return;
-    }
-    fetch(`/api/semester-health-check/${semKey}`, { credentials: 'include' })
-      .then(r => r.ok ? r.json() : null)
-      .then(data => { if (data) setDialogSemHealth({ semKey, data }); })
-      .catch(() => {});
-  }, [selectedCertCourse, expandedSemKey, expandedSemHealth]);
   const [semBoxHealthCache, setSemBoxHealthCache] = useState<Record<string, { score: number; level: 'ok' | 'warning' | 'critical' }>>({});
   useEffect(() => {
     if (!isSchoolCoursesDialogOpen) return;
@@ -5381,6 +5361,26 @@ export default function Dashboard() {
     openInEdit?: boolean;
     semKey?: string;
   } | null>(null);
+  useEffect(() => {
+    if (!selectedCertCourse) { setDialogSemHealth(null); return; }
+    const cc = selectedCertCourse.courseCode.replace(/\s/g, '').toUpperCase();
+    let semKey = selectedCertCourse.semKey || '';
+    if (!semKey) {
+      for (const sk of semesterKeyOrder) {
+        const courses = semesterCourseAssignments[sk] || [];
+        if (courses.some(c => c.code.replace(/\s/g, '').toUpperCase() === cc)) { semKey = sk; break; }
+      }
+    }
+    if (!semKey) return;
+    if (expandedSemKey === semKey && expandedSemHealth) {
+      setDialogSemHealth({ semKey, data: expandedSemHealth });
+      return;
+    }
+    fetch(`/api/semester-health-check/${semKey}`, { credentials: 'include' })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data) setDialogSemHealth({ semKey, data }); })
+      .catch(() => {});
+  }, [selectedCertCourse, expandedSemKey, expandedSemHealth]);
   const colorSnapshotRef = useRef<{ coursesData: any; semestersQuery: any[] | null; semesterQuery: any } | null>(null);
   const [syncingCourses, setSyncingCourses] = useState<Set<string>>(new Set());
   const [syncResults, setSyncResults] = useState<Map<string, { count: number; skipped?: number; message?: string }>>(new Map());
