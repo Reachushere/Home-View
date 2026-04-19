@@ -27476,9 +27476,9 @@ export default function Dashboard() {
                                   </div>
                                   <div className="flex items-center gap-2 px-2 py-0.5 rounded" style={{ background: 'rgba(99,102,241,0.14)', border: '1px solid rgba(99,102,241,0.4)' }}>
                                     <div className="w-2 h-2 rounded-full" style={{ background: dotBg, boxShadow: '0 0 6px rgba(255,255,255,0.35)' }} />
-                                    <span className="text-[12px] font-bold tracking-wider" style={{ color: '#c7d2fe', fontFamily: 'JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace' }}>{c.code}</span>
+                                    <span className="text-[12px] font-bold tracking-wider" style={{ color: '#ffffff', fontFamily: 'JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace', textShadow: '0 1px 2px rgba(0,0,0,0.6)' }}>{c.code}</span>
                                   </div>
-                                  {(c.fullName || (displayNameResult !== c.code && displayNameResult)) && <span className="text-[12px] font-medium truncate" style={{ color: '#94a3b8', fontFamily: 'JetBrains Mono, ui-monospace, monospace' }}>~/{c.fullName || displayNameResult}</span>}
+                                  {(c.fullName || (displayNameResult !== c.code && displayNameResult)) && <span className="text-[12px] font-medium truncate" style={{ color: '#ffffff', fontFamily: 'JetBrains Mono, ui-monospace, monospace', textShadow: '0 1px 2px rgba(0,0,0,0.6)' }}>~/{c.fullName || displayNameResult}</span>}
                                   {courseHealth && (
                                     <div className="ml-auto flex items-center gap-2.5 flex-shrink-0">
                                       <span className="text-[11px] tabular-nums" style={{ color: '#94a3b8', fontFamily: 'JetBrains Mono, ui-monospace, monospace' }}>{courseHealth.totalModules}M · {courseHealth.totalReadings}R</span>
