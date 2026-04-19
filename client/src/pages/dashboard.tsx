@@ -14995,7 +14995,7 @@ export default function Dashboard() {
                                         { label: 'Sync', Icon: RefreshCw, value: `${totalMod}M·${totalRead}R`, status: (courseHealth?.oneDriveFolderConfigured || totalMod > 0 || totalRead > 0) ? ((totalMod + totalRead) > 0 ? 'ok' : 'warning') : 'error', issueKey: 'sync', pct: (totalMod + totalRead) > 0 ? 100 : (courseHealth?.oneDriveFolderConfigured ? 50 : 0) },
                                         { label: 'Storage', Icon: Folder, value: 'persistent', status: 'ok', issueKey: 'storage', pct: 100 },
                                         { label: 'TTS', Icon: Volume2, value: ttsNeeded > 0 ? `${ttsReady}/${ttsNeeded}` : 'idle', status: ttsNeeded === 0 ? 'ok' : ttsReady === ttsNeeded ? 'ok' : ttsReady > 0 ? 'warning' : 'error', issueKey: 'tts', pct: ttsPct !== null ? ttsPct : 100 },
-                                        { label: 'Library', Icon: BookOpen, value: 'reader', status: (courseHealth?.oneDriveFolderConfigured || totalMod > 0 || totalRead > 0) ? 'ok' : 'error', issueKey: 'library', pct: (totalMod + totalRead) > 0 ? 100 : (courseHealth?.oneDriveFolderConfigured ? 50 : 0) },
+                                        { label: 'Library', Icon: BookOpen, value: (totalMod + totalRead) > 0 ? `${totalMod + totalRead} files` : (courseHealth?.oneDriveFolderConfigured ? 'ready' : 'empty'), status: (courseHealth?.oneDriveFolderConfigured || totalMod > 0 || totalRead > 0) ? 'ok' : 'error', issueKey: 'library', pct: (totalMod + totalRead) > 0 ? 100 : (courseHealth?.oneDriveFolderConfigured ? 50 : 0) },
                                       ];
                                       const okCount = steps.filter(s => s.status === 'ok').length;
                                       const allGood = okCount === steps.length;
@@ -15023,8 +15023,8 @@ export default function Dashboard() {
                                                       style={(() => {
                                                         const stepBg = step.label === 'OneDrive'
                                                             ? (step.status === 'error' ? oneDriveBoxRedImg : step.status === 'warning' ? oneDriveBoxYellowImg : oneDriveBoxImg)
-                                                          : step.label === 'TTS' ? yellowBoxImg
-                                                          : (step.label === 'Sync' || step.label === 'Storage' || step.label === 'Library') ? greenBoxImg
+                                                          : (step.label === 'TTS' || step.label === 'Sync' || step.label === 'Storage' || step.label === 'Library')
+                                                            ? (step.status === 'ok' ? greenBoxImg : yellowBoxImg)
                                                           : null;
                                                         const hasImg = !!stepBg;
                                                         return { flex: '1 1 0', minWidth: 0, padding: hasImg ? '0' : '8px 6px 6px', cursor: isProblem ? 'pointer' : 'default', borderRadius: hasImg ? '0' : '8px', background: hasImg ? 'transparent' : '#ffffff', backgroundImage: hasImg ? `url(${stepBg})` : undefined, backgroundSize: hasImg ? '100% 100%' : undefined, backgroundRepeat: hasImg ? 'no-repeat' : undefined, minHeight: hasImg ? '110px' : undefined, border: hasImg ? 'none' : `1px solid ${isProblem ? accent + '88' : 'rgba(0,0,0,0.15)'}`, boxShadow: 'none', transition: 'all 0.18s ease' };
