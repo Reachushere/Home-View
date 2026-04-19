@@ -17273,7 +17273,7 @@ export default function Dashboard() {
               )}
               {particleCount > 0 && bgWeatherParticles.slice(0, particleCount).map((p, i) => {
                 if (snowCount > 0) {
-                  const size = 4 + p.sizeFactor * 6;
+                  const size = 1.5 + p.sizeFactor * 2.5;
                   const duration = 6 + p.durationFactor * 8;
                   const drift = p.driftFactor * 50 - 25;
                   const sway = p.swayFactor * 20 - 10;
