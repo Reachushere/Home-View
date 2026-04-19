@@ -1652,6 +1652,41 @@ export default function Dashboard() {
   const [blankBoxAnimating, setBlankBoxAnimating] = useState(false);
   const [blankCanvasNotes, setBlankCanvasNotes] = useState(() => localStorage.getItem('blankCanvasNotes') || '');
   const blankEditorRef = useRef<HTMLDivElement>(null);
+  const blankCanvasNotesSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const blankCanvasNotesLoadedRef = useRef(false);
+  // Hydrate the blank-canvas notes editor from the server (was localStorage-only).
+  // localStorage still acts as an instant cache so reload doesn't flash empty,
+  // but the server is now the source of truth and Pi/Replit/etc see the same content.
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/blank-canvas-notes')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (cancelled || !d) return;
+        const serverHtml = typeof d.content === 'string' ? d.content : '';
+        try { localStorage.setItem('blankCanvasNotesHtml', serverHtml); } catch {}
+        if (blankEditorRef.current && blankEditorRef.current.innerHTML !== serverHtml) {
+          // Don't clobber unsaved local edits the user already made this session.
+          if (!blankCanvasNotesLoadedRef.current) {
+            blankEditorRef.current.innerHTML = serverHtml;
+          }
+        }
+        blankCanvasNotesLoadedRef.current = true;
+      })
+      .catch(() => { blankCanvasNotesLoadedRef.current = true; });
+    return () => { cancelled = true; };
+  }, []);
+  const persistBlankCanvasNotes = useCallback((html: string) => {
+    try { localStorage.setItem('blankCanvasNotesHtml', html); } catch {}
+    if (blankCanvasNotesSaveTimer.current) clearTimeout(blankCanvasNotesSaveTimer.current);
+    blankCanvasNotesSaveTimer.current = setTimeout(() => {
+      fetch('/api/blank-canvas-notes', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: html }),
+      }).catch(err => console.error('[blank-canvas-notes] save failed', err));
+    }, 800);
+  }, []);
   const [blankShowFontSize, setBlankShowFontSize] = useState(false);
   const [blankShowFontColor, setBlankShowFontColor] = useState(false);
   const blankExecCommand = useCallback((cmd: string, value?: string) => {
@@ -36137,13 +36172,14 @@ export default function Dashboard() {
                 suppressContentEditableWarning
                 onInput={() => {
                   if (blankEditorRef.current) {
-                    const html = blankEditorRef.current.innerHTML;
-                    localStorage.setItem('blankCanvasNotesHtml', html);
+                    blankCanvasNotesLoadedRef.current = true;
+                    persistBlankCanvasNotes(blankEditorRef.current.innerHTML);
                   }
                 }}
                 onBlur={() => {
                   if (blankEditorRef.current) {
-                    localStorage.setItem('blankCanvasNotesHtml', blankEditorRef.current.innerHTML);
+                    blankCanvasNotesLoadedRef.current = true;
+                    persistBlankCanvasNotes(blankEditorRef.current.innerHTML);
                   }
                   setBlankShowFontSize(false);
                   setBlankShowFontColor(false);
