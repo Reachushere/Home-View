@@ -20337,13 +20337,19 @@ export default function Dashboard() {
               setAllAssignmentsAdded(cc, val);
             }}
             automationsRenderer={(() => {
-              if (!dialogSemHealth) return undefined;
               const cc = selectedCertCourse!.courseCode.replace(/\s/g, '').toUpperCase();
-              const semKey = dialogSemHealth.semKey;
+              const semKey = dialogSemHealth?.semKey || selectedCertCourse?.semKey || (() => {
+                for (const sk of semesterKeyOrder) {
+                  const cs = semesterCourseAssignments[sk] || [];
+                  if (cs.some(c => c.code.replace(/\s/g, '').toUpperCase() === cc)) return sk;
+                }
+                return '';
+              })();
+              if (!semKey) return undefined;
               const semCourses = semesterCourseAssignments[semKey] || [];
-              const courseObj = semCourses.find(c => c.code.replace(/\s/g, '').toUpperCase() === cc);
-              if (!courseObj) return undefined;
-              return () => renderCoursePipeline(courseObj, 0, dialogSemHealth.data, semKey);
+              const courseObj = semCourses.find(c => c.code.replace(/\s/g, '').toUpperCase() === cc)
+                || { code: selectedCertCourse!.courseCode, name: selectedCertCourse!.courseName } as any;
+              return () => renderCoursePipeline(courseObj, 0, dialogSemHealth?.data || null, semKey);
             })()}
             onClose={() => {
               if (colorSnapshotRef.current) {
