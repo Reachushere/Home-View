@@ -26,6 +26,7 @@ import tmuLogo from "@assets/Chang-School2_1775779674508.png";
 import oneDriveBoxImg from "@assets/OneDrive_1776567093048.png";
 import greenBoxImg from "@assets/Green_Box_1776568031172.png";
 import yellowBoxImg from "@assets/Yellow_Box_1776568051366.png";
+import blueBoxImg from "@assets/Blue_Box_1776566950518.png";
 
 import changSchoolLogo from "@assets/Chang-School2_1770607146365.png";
 import campusBg from "@assets/TMU_1769151150961.jpg";
@@ -27511,7 +27512,7 @@ export default function Dashboard() {
                                               {okCount}/{steps.length} ok
                                             </span>
                                           </div>
-                                          <div className="rounded-lg relative" style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.12)', padding: '18px 14px 14px' }}>
+                                          <div className="rounded-lg relative" style={{ backgroundImage: `url(${blueBoxImg})`, backgroundSize: '100% 100%', backgroundRepeat: 'no-repeat', border: '1px solid rgba(0,0,0,0.12)', padding: '18px 14px 14px' }}>
                                             <div className="relative flex items-stretch" style={{ width: '100%' }}>
                                               {steps.map((step, sIdx) => {
                                                 const Icon = step.Icon;
