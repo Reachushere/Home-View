@@ -8071,6 +8071,9 @@ export default function Dashboard() {
   const [tickerDialogOpen, setTickerDialogOpen] = useState(false);
   const [newTickerText, setNewTickerText] = useState('');
   const [newTickerTag, setNewTickerTag] = useState('Custom');
+  const [customTickerTags, setCustomTickerTags] = useState<string[]>(() => {
+    try { const s = localStorage.getItem('customTickerTags'); return s ? JSON.parse(s) : []; } catch { return []; }
+  });
   const [newTickerVisibleTo, setNewTickerVisibleTo] = useState<string[]>(['5747', '4201', '1010']);
   const [newTickerExpiryDate, setNewTickerExpiryDate] = useState<string>('');
   const [newTickerExpiryTime, setNewTickerExpiryTime] = useState<string>('11:59 PM');
@@ -13313,13 +13316,46 @@ export default function Dashboard() {
                 data-testid="select-ticker-tag"
               >
                 <option value="Custom" style={{ background: '#1a1a2e' }}>📌 Custom</option>
-                {semesterSettings && [1, 2, 3].map(i => {
-                  const code = ((semesterSettings as any)[`course${i}Code`] || '').trim().replace(/\s/g, '').toUpperCase();
-                  return code ? <option key={code} value={code} style={{ background: '#1a1a2e' }}>{code}</option> : null;
-                })}
+                {(() => {
+                  const sems = allSemesterSettingsRef.current || (semesterSettings ? [semesterSettings] : []);
+                  const seen = new Set<string>();
+                  const codes: string[] = [];
+                  for (const sem of sems) {
+                    for (let i = 1; i <= 3; i++) {
+                      const c = ((sem as any)[`course${i}Code`] || '').trim().replace(/\s/g, '').toUpperCase();
+                      if (c && !seen.has(c)) { seen.add(c); codes.push(c); }
+                    }
+                  }
+                  codes.sort();
+                  return codes.map(code => <option key={code} value={code} style={{ background: '#1a1a2e' }}>{code}</option>);
+                })()}
                 <option value="REMINDER" style={{ background: '#1a1a2e' }}>REMINDER</option>
                 <option value="URGENT" style={{ background: '#1a1a2e' }}>URGENT</option>
+                {customTickerTags.map(tag => (
+                  <option key={`ct-${tag}`} value={tag} style={{ background: '#1a1a2e' }}>{tag}</option>
+                ))}
               </select>
+              <button
+                type="button"
+                onClick={() => {
+                  const name = prompt('New category name:')?.trim();
+                  if (!name) return;
+                  const norm = name.toUpperCase();
+                  setCustomTickerTags(prev => {
+                    if (prev.includes(norm)) return prev;
+                    const next = [...prev, norm];
+                    try { localStorage.setItem('customTickerTags', JSON.stringify(next)); } catch {}
+                    return next;
+                  });
+                  setNewTickerTag(norm);
+                }}
+                className="shrink-0 text-white text-[16px] font-bold px-2.5 py-2.5 rounded hover:brightness-125"
+                style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.22)', lineHeight: 1 }}
+                title="Add new category"
+                data-testid="button-add-ticker-category"
+              >
+                +
+              </button>
               <input
                 type="text"
                 value={newTickerText}
