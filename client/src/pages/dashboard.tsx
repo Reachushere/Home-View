@@ -25,6 +25,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 import tmuLogo from "@assets/Chang-School2_1775779674508.png";
 import oneDriveBoxImg from "@assets/OneDrive_1776567093048.png";
 import oneDriveBoxYellowImg from "@assets/OneDrive_Y_1776568204260.png";
+import tahltanBanner from "@assets/image_1776640309567.png";
 import oneDriveBoxRedImg from "@assets/OneDrive_R_1776568204260.png";
 import greenBoxImg from "@assets/Green_Box_1776568031172.png";
 import yellowBoxImg from "@assets/Yellow_Box_1776568051366.png";
