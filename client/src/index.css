@@ -2844,8 +2844,6 @@ input[type="date"].bg-white::-webkit-datetime-edit-year-field {
 /* Pipeline strip: clean white with subtle border, no overrides on inner content */
 .auto-flow-strip { background: #ffffff !important; border: 1px solid #e2e8f0 !important; }
 /* Section headings — navy */
-.auto-resolution-body > div > .text-\[13px\].font-semibold.uppercase { color: #1e3a8a !important; }
-.auto-resolution-body > div > .text-\[11px\].font-semibold.uppercase { color: #64748b !important; }
 
 /* === Homework / Notes box swap animations — shrink into / grow out of bottom tab === */
 @keyframes hwShrinkToTab {
