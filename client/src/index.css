@@ -2956,41 +2956,70 @@ input[type="date"].bg-white::-webkit-datetime-edit-year-field {
 /* Monthly report: fit on one US Letter page when printing */
 @media print {
   @page { size: letter portrait; margin: 0.35in; }
-  html, body { background: #ffffff !important; }
+  html, body { background: #ffffff !important; height: auto !important; }
   body * { visibility: hidden !important; }
   [data-testid="monthly-report-overlay"],
   [data-testid="monthly-report-overlay"] * { visibility: visible !important; }
   [data-testid="monthly-report-overlay"] {
-    position: absolute !important; inset: 0 !important;
+    position: absolute !important; left: 0 !important; top: 0 !important; right: 0 !important;
     background: transparent !important; display: block !important;
-    width: 100% !important; height: auto !important;
+    width: 100% !important; height: auto !important; padding: 0 !important; margin: 0 !important;
   }
   [data-testid="monthly-report-dialog"] {
-    width: 7.8in !important; max-width: 7.8in !important;
+    position: relative !important;
+    width: 100% !important; max-width: 100% !important;
     max-height: none !important; height: auto !important;
-    box-shadow: none !important; border: 1px solid #000 !important;
-    margin: 0 auto !important; overflow: visible !important;
-    transform: scale(0.78); transform-origin: top left;
-    font-size: 9px !important;
+    min-height: 0 !important;
+    box-shadow: none !important; border: 1.5px solid #000 !important; border-radius: 6px !important;
+    margin: 0 !important; padding: 0 !important;
+    overflow: visible !important; display: block !important;
+    font-size: 9.5px !important;
+    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
   }
   [data-testid="monthly-report-dialog"] .monthly-report-header {
     background: #ffffff !important;
-    border-bottom: 2px solid #000000 !important;
-    padding: 4px 8px !important;
+    border-bottom: 1.5px solid #000000 !important;
+    padding: 4px 10px !important;
+    border-radius: 5px 5px 0 0 !important;
   }
   [data-testid="monthly-report-dialog"] .monthly-report-header * {
     color: #000000 !important;
   }
+  [data-testid="monthly-report-dialog"] .monthly-report-header h2 {
+    font-size: 11px !important; font-weight: 600 !important;
+  }
   [data-testid="monthly-report-dialog"] .monthly-report-header svg {
     stroke: #000000 !important; fill: none !important;
   }
-  [data-testid="monthly-report-dialog"] .flex-1 { overflow: visible !important; max-height: none !important; }
+  /* Hide "Due on the 19th" label and the Complete checkbox in print */
+  [data-testid="monthly-report-dialog"] .monthly-report-due-label,
+  [data-testid="monthly-report-dialog"] .monthly-report-complete-toggle,
+  [data-testid="monthly-report-dialog"] [data-testid="report-complete-checkbox"] { display: none !important; }
+  /* Body region — no scrollbar in print */
+  [data-testid="monthly-report-dialog"] > .flex-1,
+  [data-testid="monthly-report-dialog"] .overflow-y-auto {
+    overflow: visible !important; max-height: none !important; height: auto !important;
+    padding: 6px 8px !important;
+  }
   [data-testid="monthly-report-dialog"] textarea,
-  [data-testid="monthly-report-dialog"] input { font-size: 9px !important; padding: 2px 4px !important; }
+  [data-testid="monthly-report-dialog"] input {
+    font-size: 9.5px !important; padding: 2px 5px !important;
+    min-height: 0 !important; line-height: 1.25 !important;
+    background: #ffffff !important; border: 1px solid #000000 !important; border-radius: 3px !important;
+  }
+  /* Tighten the section card padding/spacing so everything fits one page */
   [data-testid="monthly-report-dialog"] .space-y-3 > * + * { margin-top: 4px !important; }
   [data-testid="monthly-report-dialog"] .space-y-2 > * + * { margin-top: 2px !important; }
-  [data-testid="monthly-report-dialog"] .py-3 { padding-top: 4px !important; padding-bottom: 4px !important; }
-  [data-testid="monthly-report-dialog"] .py-2 { padding-top: 3px !important; padding-bottom: 3px !important; }
+  [data-testid="monthly-report-dialog"] .py-3 { padding-top: 3px !important; padding-bottom: 3px !important; }
+  [data-testid="monthly-report-dialog"] .py-2 { padding-top: 2px !important; padding-bottom: 2px !important; }
+  [data-testid="monthly-report-dialog"] .px-3 { padding-left: 6px !important; padding-right: 6px !important; }
   [data-testid="monthly-report-dialog"] .p-4 { padding: 6px !important; }
-  [data-testid="report-save"], [data-testid="report-saved"], [data-testid="report-print"], [data-testid="report-copy"], [data-testid="report-close"] { display: none !important; }
+  [data-testid="monthly-report-dialog"] .gap-3 { gap: 6px !important; }
+  [data-testid="monthly-report-dialog"] .mb-0\.5 { margin-bottom: 1px !important; }
+  /* Section labels */
+  [data-testid="monthly-report-dialog"] .text-cyan-300\/80 { font-size: 10px !important; }
+  /* Hide controls that aren't part of the printed form */
+  [data-testid="report-save"], [data-testid="report-saved"], [data-testid="report-print"],
+  [data-testid="report-copy"], [data-testid="report-close"],
+  .monthly-report-footer { display: none !important; }
 }

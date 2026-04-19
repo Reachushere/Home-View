@@ -889,21 +889,32 @@ export default function Dashboard() {
   useEffect(() => {
     const checkMonthlyReport = () => {
       if (authLevel !== '5747') return;
+      // Skip on touch devices (tablets, Pi touchscreen, phones) — laptop only.
+      try {
+        const w = window.innerWidth, h = window.innerHeight;
+        const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+        const minDim = Math.min(w, h);
+        const looksLikeTablet = isTouch && minDim >= 600 && minDim < 1100;
+        const looksLikePiOrPhone = isTouch && minDim < 600;
+        if (looksLikeTablet || looksLikePiOrPhone) return;
+      } catch {}
       const now = new Date();
       const etStr = now.toLocaleString('en-US', { timeZone: getAppTz() });
       const et = new Date(etStr);
       const day = et.getDate();
       const hour = et.getHours();
       const monthKey = `${et.getFullYear()}-${et.getMonth()}`;
-      const dismissed = localStorage.getItem('monthlyReportDismissed');
-      // v2: print-mode redesign — clear once so the form re-pops after the styling fix
+      // v3: now pops on every refresh from the 19th onwards until "Complete"
+      // is checked. Clear stale dismiss keys from earlier behaviour once.
       const v = localStorage.getItem('monthlyReportRedesignVer');
-      if (v !== '2') {
+      if (v !== '3') {
         localStorage.removeItem('monthlyReportDismissed');
-        localStorage.setItem('monthlyReportRedesignVer', '2');
+        localStorage.setItem('monthlyReportRedesignVer', '3');
       }
       const dismissedNow = localStorage.getItem('monthlyReportDismissed');
-      if (day === 19 && hour >= 9 && dismissedNow !== monthKey) {
+      // Pop on every refresh from the 19th onwards (after 9am) until the user
+      // ticks the Complete checkbox in the dialog header.
+      if (day >= 19 && hour >= 9 && dismissedNow !== monthKey) {
         setIsMonthlyReportOpen(true);
       }
     };
@@ -1888,6 +1899,22 @@ export default function Dashboard() {
   const [mobileNotepadGroup, setMobileNotepadGroup] = useState('');
   const [mobileNotepadTitle, setMobileNotepadTitle] = useState('');
   const [isMonthlyReportOpen, setIsMonthlyReportOpen] = useState(false);
+  // When the monthly report dialog opens, refresh the GPA field from the latest
+  // running GPA computed by the degree-tracking page so it always matches the
+  // GPA shown in the top-right of that page.
+  useEffect(() => {
+    if (!isMonthlyReportOpen) return;
+    try {
+      const g = localStorage.getItem('currentRunningGpa');
+      if (!g) return;
+      setMonthlyReportFields((p: any) => {
+        const cur = (p?.gradeStatus || '').trim();
+        const looksLikeAutoGpa = cur === '' || /^\s*\d\.\d{1,2}\s+overall\s*$/i.test(cur) || /this class/i.test(cur);
+        if (!looksLikeAutoGpa) return p;
+        return { ...p, gradeStatus: `${g} overall` };
+      });
+    } catch {}
+  }, [isMonthlyReportOpen]);
   const [isMonthlyHistoryOpen, setIsMonthlyHistoryOpen] = useState(false);
   const [monthlyReportHistory, setMonthlyReportHistory] = useState<any[]>(() => {
     try {
@@ -1903,7 +1930,7 @@ export default function Dashboard() {
       reportingPeriod: '',
       reportDate: '',
       coursesEnrolled: '',
-      gradeStatus: '4.0 this class, 3.78 overall',
+      gradeStatus: (() => { try { const g = localStorage.getItem('currentRunningGpa'); return g ? `${g} overall` : ''; } catch { return ''; } })(),
       keyAssignments: '',
       upcomingDeadlines: '',
       classAttendance: 'Attended all classes',
@@ -19588,6 +19615,7 @@ export default function Dashboard() {
                   for (const v of getGpaValsForSem(currentSemKey)) allGpaVals.push(v);
                 }
                 const runningGpa = allGpaVals.length > 0 ? allGpaVals.reduce((a, b) => a + b, 0) / allGpaVals.length : null;
+                try { if (runningGpa !== null) localStorage.setItem('currentRunningGpa', runningGpa.toFixed(2)); } catch {}
 
                 const gpaToLetter = (gpa: number): string => {
                   if (gpa >= 4.17) return 'A+';
@@ -25518,10 +25546,32 @@ export default function Dashboard() {
                   <div className="flex items-center gap-2">
                     <FileText style={{ width: '15px', height: '15px', color: '#ffffff' }} />
                     <h2 style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", color: '#ffffff', fontSize: '12px', fontWeight: 500 }}>
-                      ɁAkisq'nuk Monthly Education Reporting Form
+                      ¿Akisq'nuk Monthly Education Reporting Form
                     </h2>
                   </div>
-                  <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '10px' }}>Due on the 19th</span>
+                  <div className="flex items-center gap-3">
+                    <span className="monthly-report-due-label" style={{ color: 'rgba(255,255,255,0.7)', fontSize: '10px' }}>Due on the 19th</span>
+                    {(() => {
+                      const now = new Date();
+                      const etStr = now.toLocaleString('en-US', { timeZone: getAppTz() });
+                      const et = new Date(etStr);
+                      const monthKey = `${et.getFullYear()}-${et.getMonth()}`;
+                      const isCompleted = (typeof window !== 'undefined') && localStorage.getItem('monthlyReportDismissed') === monthKey;
+                      return (
+                        <label className="monthly-report-complete-toggle flex items-center gap-1.5 cursor-pointer" style={{ color: '#ffffff', fontSize: '10px' }} title="Mark this month complete (stops the auto-popup until next month)">
+                          <input type="checkbox" checked={isCompleted} onChange={(e) => {
+                            if (e.target.checked) {
+                              localStorage.setItem('monthlyReportDismissed', monthKey);
+                              setIsMonthlyReportOpen(false);
+                            } else {
+                              localStorage.removeItem('monthlyReportDismissed');
+                            }
+                          }} style={{ width: '13px', height: '13px', cursor: 'pointer' }} data-testid="report-complete-checkbox" />
+                          <span>Complete</span>
+                        </label>
+                      );
+                    })()}
+                  </div>
                 </div>
                 <div className="flex-1 overflow-y-auto p-4 space-y-3" style={{ scrollbarWidth: 'thin' }}>
                   <div className="px-3 py-2 rounded-lg border border-white/10" style={{ background: 'rgba(255,255,255,0.04)' }}>
