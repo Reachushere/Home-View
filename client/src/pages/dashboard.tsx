@@ -25471,7 +25471,7 @@ export default function Dashboard() {
                   <div className="flex items-center gap-2">
                     <FileText style={{ width: '15px', height: '15px', color: '#ffffff' }} />
                     <h2 style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", color: '#ffffff', fontSize: '12px', fontWeight: 500 }}>
-                      POST-SECONDARY MONTHLY REPORT
+                      ɁAkisq'nuk Monthly Education Reporting Form
                     </h2>
                   </div>
                   <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '10px' }}>Due on the 19th</span>
