@@ -8725,6 +8725,72 @@ export default function Dashboard() {
     }
   }, [isMonthlyReportOpen, allSemesterSettings, allTasksRaw]);
 
+  // Keep `currentRunningGpa` in localStorage fresh whenever the underlying
+  // data changes. Previously the value was only written when the
+  // degree-tracking GPA box rendered, so opening the monthly report from
+  // another page got a stale value (or none at all).
+  useEffect(() => {
+    try {
+      const semKeyOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029'];
+      const now = new Date();
+      let currentSemIdx = semKeyOrder.indexOf(getCurrentSemKey(now, ''));
+      if (currentSemIdx === -1) {
+        const nowMs = now.getTime();
+        let latestEndedIdx = -1;
+        for (let i = 0; i < semKeyOrder.length; i++) {
+          const range = SEMESTER_DATE_RANGES.find(r => r.key === semKeyOrder[i]);
+          if (!range) continue;
+          const endMs = new Date(range.end + 'T23:59:59').getTime();
+          if (endMs < nowMs) latestEndedIdx = i;
+        }
+        currentSemIdx = latestEndedIdx;
+      }
+      const relevantSemKeys = currentSemIdx >= 0 ? semKeyOrder.slice(0, currentSemIdx + 1) : [];
+      const letterToGpa: Record<string, number> = { 'A+': 4.33, 'A': 4.0, 'A-': 3.67, 'B+': 3.33, 'B': 3.0, 'B-': 2.67, 'C+': 2.33, 'C': 2.0, 'C-': 1.67, 'D': 1.0, 'F': 0 };
+      const pToGpa = (p: number) => p >= 90 ? 4.33 : p >= 85 ? 4.0 : p >= 80 ? 3.67 : p >= 77 ? 3.33 : p >= 73 ? 3.0 : p >= 70 ? 2.67 : p >= 67 ? 2.33 : p >= 63 ? 2.0 : p >= 60 ? 1.67 : p >= 50 ? 1.0 : 0;
+      const allVals: number[] = [];
+      for (const semKey of relevantSemKeys) {
+        const courses = semesterCourseAssignments[semKey] || [];
+        for (const c of courses) {
+          const code = c.code.replace(/\s/g, '');
+          const codeNorm = code.toUpperCase();
+          const codeNoC = codeNorm.replace(/^C(?=[A-Z]{2,})/, '');
+          const info = pastCourseInfo[code] || pastCourseInfo[codeNoC];
+          const certKey = Object.keys(certCourseMap).find(k => {
+            const mc = certCourseMap[k].code.replace(/\s/g, '').toUpperCase();
+            return mc === codeNorm || ('C' + mc) === codeNorm || mc === codeNoC;
+          });
+          const cg = certKey ? courseGrades[certKey] : null;
+          const directGrade = courseGrades[codeNorm] || courseGrades[code] || courseGrades[codeNoC] || null;
+          let electiveGrade: { grade: string; percent: string } | null = null;
+          if (!cg?.percent && !cg?.grade && !directGrade?.percent && !directGrade?.grade) {
+            for (const [slot, elVal] of Object.entries(openElectives)) {
+              if (elVal && elVal.replace(/\s/g, '').toUpperCase().startsWith(codeNorm)) {
+                if (courseGrades[slot]?.percent || courseGrades[slot]?.grade) {
+                  electiveGrade = courseGrades[slot];
+                  break;
+                }
+              }
+            }
+          }
+          if (cg?.percent && cg.percent.trim()) { const p = parseFloat(cg.percent); if (!isNaN(p)) allVals.push(pToGpa(p)); }
+          else if (cg?.grade && cg.grade.trim() && letterToGpa[cg.grade] !== undefined) allVals.push(letterToGpa[cg.grade]);
+          else if (directGrade?.percent && directGrade.percent.trim()) { const p = parseFloat(directGrade.percent); if (!isNaN(p)) allVals.push(pToGpa(p)); }
+          else if (directGrade?.grade && directGrade.grade.trim() && letterToGpa[directGrade.grade] !== undefined) allVals.push(letterToGpa[directGrade.grade]);
+          else if (info?.grade && info.grade.trim() && letterToGpa[info.grade] !== undefined) allVals.push(letterToGpa[info.grade]);
+          else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const p = parseFloat(electiveGrade.percent); if (!isNaN(p)) allVals.push(pToGpa(p)); }
+          else if (electiveGrade?.grade && electiveGrade.grade.trim() && letterToGpa[electiveGrade.grade] !== undefined) allVals.push(letterToGpa[electiveGrade.grade]);
+        }
+      }
+      if (allVals.length > 0) {
+        const runningGpa = allVals.reduce((a, b) => a + b, 0) / allVals.length;
+        localStorage.setItem('currentRunningGpa', runningGpa.toFixed(2));
+      }
+    } catch (e) {
+      console.error('[RunningGPA cache]', e);
+    }
+  }, [semesterCourseAssignments, courseGrades, pastCourseInfo, openElectives, certCourseMap]);
+
   useEffect(() => {
     if (!semesterSettings) return;
     const sem = semesterSettings as any;
