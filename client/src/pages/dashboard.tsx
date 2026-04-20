@@ -8690,7 +8690,8 @@ export default function Dashboard() {
             const v = Number(t.gradeValue);
             const tot = Number(t.gradeTotal);
             const pct = tot > 0 ? ((v / tot) * 100).toFixed(1) : '—';
-            return `${codePrefixFor(t)}${t.title}: ${v}/${tot} (${pct}%)`;
+            const fmtNum = (n: number) => Number.isInteger(n) ? String(n) : n.toFixed(1);
+            return `${codePrefixFor(t)}${t.title}: ${fmtNum(v)}/${fmtNum(tot)} (${pct}%)`;
           }).join('\n');
 
       // Upcoming Deadlines: ungraded tasks for the same courses whose due
