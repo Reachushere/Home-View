@@ -8556,6 +8556,86 @@ export default function Dashboard() {
   const weekStartDateRef = useRef<string>('');
   const weekEndDateRef = useRef<string>('');
 
+  // When the monthly report dialog opens, auto-fill Courses Enrolled (current
+  // or most recent semester's course codes + names) and Key Assignments
+  // (every task in those courses with the "Grade Received" toggle on, i.e.
+  // excludeFromGpa === false, with a numeric grade entered).
+  useEffect(() => {
+    if (!isMonthlyReportOpen) return;
+    try {
+      const sems: any[] = Array.isArray(allSemesterSettings) ? allSemesterSettings : [];
+      const tasks: any[] = Array.isArray(allTasksRaw) ? allTasksRaw : [];
+      if (sems.length === 0) return;
+
+      const now = new Date();
+      let activeSem: any = null;
+      for (const s of sems) {
+        const start = s.semesterStartDate ? new Date(s.semesterStartDate) : null;
+        const end = s.semesterEndDate ? new Date(s.semesterEndDate) : null;
+        if (start && end && start <= now && now <= end) { activeSem = s; break; }
+      }
+      if (!activeSem) {
+        const started = sems
+          .filter((s: any) => s.semesterStartDate && new Date(s.semesterStartDate) <= now)
+          .sort((a: any, b: any) => new Date(b.semesterStartDate).getTime() - new Date(a.semesterStartDate).getTime());
+        activeSem = started[0] || null;
+      }
+      if (!activeSem) {
+        const sorted = [...sems].sort((a: any, b: any) =>
+          new Date(b.semesterStartDate || 0).getTime() - new Date(a.semesterStartDate || 0).getTime()
+        );
+        activeSem = sorted[0] || null;
+      }
+      if (!activeSem) return;
+
+      const courses: { code: string; name: string }[] = [];
+      for (let i = 1; i <= 6; i++) {
+        const code = activeSem[`course${i}Code`];
+        const name = activeSem[`course${i}Name`];
+        if (code && name) courses.push({ code: String(code).trim(), name: String(name).trim() });
+      }
+      if (courses.length === 0) return;
+
+      const coursesText = courses.map(c => `${c.code} - ${c.name}`).join('\n');
+
+      const courseNamesLower = new Set(courses.map(c => c.name.toLowerCase()));
+      const courseCodesLower = new Set(courses.map(c => c.code.toLowerCase()));
+      const matchedTasks = tasks.filter((t: any) => {
+        if (!t || t.excludeFromGpa !== false) return false;
+        if (t.gradeValue == null || t.gradeTotal == null || Number(t.gradeTotal) <= 0) return false;
+        const cn = String(t.courseName || '').toLowerCase().trim();
+        if (!cn) return false;
+        if (courseNamesLower.has(cn)) return true;
+        for (const code of courseCodesLower) { if (cn.includes(code)) return true; }
+        return false;
+      });
+      matchedTasks.sort((a: any, b: any) =>
+        new Date(b.dueDate || 0).getTime() - new Date(a.dueDate || 0).getTime()
+      );
+
+      const assignmentsText = matchedTasks.length === 0
+        ? 'No graded assignments yet.'
+        : matchedTasks.map((t: any) => {
+            const cn = String(t.courseName || '').toLowerCase().trim();
+            const course = courses.find(c => c.name.toLowerCase() === cn) ||
+                           courses.find(c => cn.includes(c.code.toLowerCase()));
+            const codePrefix = course ? `${course.code} ` : '';
+            const v = Number(t.gradeValue);
+            const tot = Number(t.gradeTotal);
+            const pct = tot > 0 ? ((v / tot) * 100).toFixed(1) : '—';
+            return `${codePrefix}${t.title}: ${v}/${tot} (${pct}%)`;
+          }).join('\n');
+
+      setMonthlyReportFields((p: any) => ({
+        ...p,
+        coursesEnrolled: coursesText,
+        keyAssignments: assignmentsText,
+      }));
+    } catch (e) {
+      console.error('[MonthlyReport AutoFill]', e);
+    }
+  }, [isMonthlyReportOpen, allSemesterSettings, allTasksRaw]);
+
   useEffect(() => {
     if (!semesterSettings) return;
     const sem = semesterSettings as any;
