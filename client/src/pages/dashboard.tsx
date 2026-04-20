@@ -25965,7 +25965,16 @@ export default function Dashboard() {
                   </div>
 
                   <div className="border-t border-white/15 pt-2 mt-2">
-                    <p className="text-cyan-300/80 text-[11px] font-medium mb-2">4. Challenges/Concerns (Optional)</p>
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-cyan-300/80 text-[11px] font-medium">4. Challenges/Concerns (Optional)</p>
+                      <button
+                        onClick={() => setMonthlyReportFields((p: any) => ({ ...p, academicChallenges: '', otherConcerns: '' }))}
+                        className="text-[10px] text-white/60 hover:text-white px-2 py-0.5 rounded"
+                        style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)' }}
+                        data-testid="report-clear-challenges"
+                        title="Clear both fields"
+                      >Clear</button>
+                    </div>
                     <div className="space-y-2">
                       <div>
                         <p className="text-white/50 text-[10px] mb-0.5">Academic Challenges</p>
@@ -25979,7 +25988,16 @@ export default function Dashboard() {
                   </div>
 
                   <div className="border-t border-white/15 pt-2 mt-2">
-                    <p className="text-cyan-300/80 text-[11px] font-medium mb-2">5. Additional Information (Optional)</p>
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-cyan-300/80 text-[11px] font-medium">5. Additional Information (Optional)</p>
+                      <button
+                        onClick={() => setMonthlyReportFields((p: any) => ({ ...p, additionalInfo: '' }))}
+                        className="text-[10px] text-white/60 hover:text-white px-2 py-0.5 rounded"
+                        style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)' }}
+                        data-testid="report-clear-additional"
+                        title="Clear field"
+                      >Clear</button>
+                    </div>
                     <textarea value={monthlyReportFields.additionalInfo} onChange={(e) => setMonthlyReportFields((p: any) => ({ ...p, additionalInfo: e.target.value }))} rows={2} className="w-full text-white text-[11px] px-2 py-1.5 rounded resize-none focus:outline-none placeholder:text-white/30" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }} data-testid="report-additional" />
                   </div>
                 </div>
