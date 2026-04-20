@@ -10,6 +10,26 @@ export async function buildMonthlyReportPdfBytes(): Promise<Uint8Array> {
   const dialog = document.querySelector('[data-testid="monthly-report-dialog"]') as HTMLElement | null;
   if (!dialog) throw new Error("Monthly report dialog not mounted");
 
+  const liveInputs = dialog.querySelectorAll<HTMLInputElement>("input");
+  const liveTextareas = dialog.querySelectorAll<HTMLTextAreaElement>("textarea");
+  const inputValues = new Map<string, string>();
+  const textareaValues = new Map<string, string>();
+  liveInputs.forEach((el, i) => {
+    const key = el.getAttribute("data-testid") || `input-${i}`;
+    el.setAttribute("data-clone-key", key);
+    inputValues.set(key, el.value);
+  });
+  liveTextareas.forEach((el, i) => {
+    const key = el.getAttribute("data-testid") || `textarea-${i}`;
+    el.setAttribute("data-clone-key", key);
+    textareaValues.set(key, el.value);
+  });
+
+  const scrollEl = dialog.querySelector<HTMLElement>('[data-testid="monthly-report-scroll"]') ||
+                   (dialog.firstElementChild as HTMLElement | null);
+  const prevScrollTop = scrollEl?.scrollTop ?? 0;
+  if (scrollEl) scrollEl.scrollTop = 0;
+
   const canvas = await html2canvas(dialog, {
     backgroundColor: "#ffffff",
     scale: 2,
@@ -17,7 +37,50 @@ export async function buildMonthlyReportPdfBytes(): Promise<Uint8Array> {
     logging: false,
     windowWidth: dialog.scrollWidth,
     windowHeight: dialog.scrollHeight,
+    height: dialog.scrollHeight,
+    width: dialog.scrollWidth,
+    onclone: (clonedDoc) => {
+      const clonedDialog = clonedDoc.querySelector<HTMLElement>('[data-testid="monthly-report-dialog"]');
+      if (!clonedDialog) return;
+
+      clonedDialog.style.maxHeight = "none";
+      clonedDialog.style.height = "auto";
+      clonedDialog.style.overflow = "visible";
+      clonedDialog.querySelectorAll<HTMLElement>("*").forEach((el) => {
+        const cs = clonedDoc.defaultView?.getComputedStyle(el);
+        if (!cs) return;
+        if (cs.overflowY === "auto" || cs.overflowY === "scroll" || cs.overflow === "auto" || cs.overflow === "scroll") {
+          el.style.overflow = "visible";
+          el.style.maxHeight = "none";
+          el.style.height = "auto";
+        }
+      });
+
+      clonedDialog.querySelectorAll<HTMLInputElement>("input").forEach((el) => {
+        const key = el.getAttribute("data-clone-key");
+        const v = key ? inputValues.get(key) ?? "" : "";
+        el.setAttribute("value", v);
+        el.value = v;
+        const span = clonedDoc.createElement("span");
+        span.textContent = v;
+        span.style.cssText = `display:inline-block;padding:6px 8px;font-size:11px;color:#000;background:#fff;border:1px solid #000;border-radius:4px;width:100%;min-height:24px;box-sizing:border-box;font-family:inherit;white-space:pre-wrap;word-break:break-word;`;
+        el.parentNode?.replaceChild(span, el);
+      });
+
+      clonedDialog.querySelectorAll<HTMLTextAreaElement>("textarea").forEach((el) => {
+        const key = el.getAttribute("data-clone-key");
+        const v = key ? textareaValues.get(key) ?? "" : "";
+        const div = clonedDoc.createElement("div");
+        div.textContent = v;
+        div.style.cssText = `display:block;padding:6px 8px;font-size:11px;color:#000;background:#fff;border:1px solid #000;border-radius:4px;width:100%;min-height:36px;box-sizing:border-box;font-family:inherit;white-space:pre-wrap;word-break:break-word;line-height:1.4;`;
+        el.parentNode?.replaceChild(div, el);
+      });
+    },
   });
+
+  if (scrollEl) scrollEl.scrollTop = prevScrollTop;
+  liveInputs.forEach((el) => el.removeAttribute("data-clone-key"));
+  liveTextareas.forEach((el) => el.removeAttribute("data-clone-key"));
 
   const pngDataUrl = canvas.toDataURL("image/png");
   const pngBytes = await (await fetch(pngDataUrl)).arrayBuffer();
