@@ -8575,6 +8575,10 @@ export default function Dashboard() {
   // excludeFromGpa === false, with a numeric grade entered).
   useEffect(() => {
     if (!isMonthlyReportOpen) return;
+    // Force-refetch tasks + semester settings so the autofill always uses
+    // the latest data, not whatever React Query had cached from before.
+    queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+    queryClient.invalidateQueries({ queryKey: ['/api/semester-settings'] });
     try {
       const sems: any[] = Array.isArray(allSemesterSettings) ? allSemesterSettings : [];
       const tasks: any[] = Array.isArray(allTasksRaw) ? allTasksRaw : [];
