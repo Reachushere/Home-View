@@ -249,6 +249,30 @@ export async function emailMonthlyReportViaOutlook(opts: {
   const pdfFilename = `Monthly Report - ${label}.pdf`;
   const emlFilename = `Monthly Report - ${label}.eml`;
 
+  // Save a copy to OneDrive under
+  // /School/1. TMU/Administrative/Monthly Reports/<year>/.
+  // Year is taken from the reporting period's end date (matches the
+  // label "Month YYYY"); falls back to today's year. Errors don't
+  // block the email — just logged.
+  try {
+    const yearMatch = label.match(/(\d{4})/);
+    const year = yearMatch ? yearMatch[1] : String(new Date().getFullYear());
+    const pdfBase64 = uint8ToBase64(pdfBytes);
+    const resp = await fetch("/api/onedrive/upload-monthly-report", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fileName: pdfFilename, pdfBase64, year }),
+    });
+    if (!resp.ok) {
+      const t = await resp.text();
+      console.error("OneDrive upload failed:", resp.status, t);
+    } else {
+      console.log("OneDrive upload OK:", await resp.json());
+    }
+  } catch (e) {
+    console.error("OneDrive upload error:", e);
+  }
+
   const subject = `Monthly Report - ${label}`;
   const body = [
     `Hello Kevin,`,

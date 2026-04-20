@@ -10940,6 +10940,28 @@ async function pollStatus(timeout){
     }
   });
 
+  app.post("/api/onedrive/upload-monthly-report", async (req, res) => {
+    try {
+      const { fileName, pdfBase64, year } = req.body || {};
+      if (!fileName || !pdfBase64 || !year) {
+        return res.status(400).json({ error: "fileName, pdfBase64 and year are required" });
+      }
+      const buf = Buffer.from(pdfBase64, "base64");
+      const basePath = "/School/1. TMU/Administrative/Monthly Reports";
+      const yearPath = `${basePath}/${year}`;
+      const { uploadOneDriveFile, createOneDriveFolder } = await import("./onedrive");
+      // Make sure parent folders exist (no-op if already present).
+      try { await createOneDriveFolder("/School/1. TMU/Administrative", "Monthly Reports"); } catch {}
+      try { await createOneDriveFolder(basePath, String(year)); } catch {}
+      const result = await uploadOneDriveFile(yearPath, fileName, buf, "application/pdf");
+      console.log(`[MonthlyReport] OneDrive upload: ${fileName} -> ${yearPath}`);
+      res.json({ ok: true, path: `${yearPath}/${fileName}`, item: result });
+    } catch (error: any) {
+      console.error("Monthly report OneDrive upload error:", error);
+      res.status(500).json({ error: error.message || String(error) });
+    }
+  });
+
   app.post("/api/onedrive/ensure-all-semester-folders", async (req, res) => {
     try {
       const allSemesters = await storage.getAllSemesterSettings();
