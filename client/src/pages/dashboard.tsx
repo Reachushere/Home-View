@@ -28210,12 +28210,9 @@ export default function Dashboard() {
                           const pToGpa = (p: number) => p >= 90 ? 4.33 : p >= 85 ? 4.0 : p >= 80 ? 3.67 : p >= 77 ? 3.33 : p >= 73 ? 3.0 : p >= 70 ? 2.67 : p >= 67 ? 2.33 : p >= 63 ? 2.0 : p >= 60 ? 1.67 : p >= 50 ? 1.0 : 0;
                           const code = semCourse.code.replace(/\s/g, '');
                           const codeNoC = code.toUpperCase().replace(/^C(?=[A-Z]{2,})/, '');
-                          const info = pastCourseInfo[code] || pastCourseInfo[codeNoC];
-                          const certKey = Object.keys(certCourseMap).find(k => { const mc = certCourseMap[k].code.replace(/\s/g, '').toUpperCase(); return mc === code.toUpperCase() || ('C' + mc) === code.toUpperCase() || mc === codeNoC; });
-                          const cg = certKey ? courseGrades[certKey] : null;
+                          const cg = (rowCertKey && courseGrades[rowCertKey]) || courseGrades[codeNorm] || courseGrades[semCourse.code] || courseGrades[code] || courseGrades[codeNoC] || null;
                           let electiveGrade: { grade: string; percent: string } | null = null;
                           if (!cg?.percent && !cg?.grade) {
-                            const codeNorm = code.toUpperCase();
                             for (const [slot, elVal] of Object.entries(openElectives)) {
                               if (elVal && elVal.replace(/\s/g, '').toUpperCase().startsWith(codeNorm)) {
                                 if (courseGrades[slot]?.percent || courseGrades[slot]?.grade) {
@@ -28228,7 +28225,7 @@ export default function Dashboard() {
                           let gpa: number | null = null;
                           if (cg?.percent && cg.percent.trim()) { const p = parseFloat(cg.percent); if (!isNaN(p)) gpa = pToGpa(p); }
                           else if (cg?.grade && cg.grade.trim() && letterToGpa[cg.grade] !== undefined) gpa = letterToGpa[cg.grade];
-                          else if (info?.grade && info.grade.trim() && letterToGpa[info.grade] !== undefined) gpa = letterToGpa[info.grade];
+                          else if (profInfo?.grade && profInfo.grade.trim() && letterToGpa[profInfo.grade] !== undefined) gpa = letterToGpa[profInfo.grade];
                           else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const p = parseFloat(electiveGrade.percent); if (!isNaN(p)) gpa = pToGpa(p); }
                           else if (electiveGrade?.grade && electiveGrade.grade.trim() && letterToGpa[electiveGrade.grade] !== undefined) gpa = letterToGpa[electiveGrade.grade];
                           if (gpa === null) return null;
