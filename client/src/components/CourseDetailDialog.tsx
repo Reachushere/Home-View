@@ -1268,11 +1268,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
-      // Keep the add form open with fields cleared so the user can quickly
-      // add another assignment without re-clicking "Add". They can hit the
-      // "Done" button (formerly "Cancel") when they're finished.
       setNewTask(createEmptyTaskForm());
-      toast({ title: "Assignment added", description: "Task created. Add another or click Done." });
+      setShowAddForm(false);
+      toast({ title: "Assignment added", description: "Task created and added to your calendar." });
     },
     onError: () => {
       toast({ title: "Error", description: "Failed to create task.", variant: "destructive" });
@@ -4513,7 +4511,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     className="h-7 text-[10px] text-white hover:text-white hover:bg-white/10"
                     data-testid="button-cancel-add"
                   >
-                    Done
+                    Cancel
                   </Button>
                   <Button
                     size="sm"
@@ -4522,7 +4520,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     className="h-7 text-[10px] bg-white/20 hover:bg-white/30 text-white"
                     data-testid="button-save-assignment"
                   >
-                    {createTaskMutation.isPending ? "Saving..." : "Save Task"}
+                    {createTaskMutation.isPending ? "Adding..." : "Add to Calendar"}
                   </Button>
                 </div>
 
