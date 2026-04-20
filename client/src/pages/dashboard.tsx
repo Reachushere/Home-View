@@ -26072,7 +26072,9 @@ export default function Dashboard() {
                           const onBeforePrint = () => {
                             const dialog = document.querySelector<HTMLElement>('[data-testid="monthly-report-dialog"]');
                             if (!dialog) return;
-                            const body = dialog.querySelector<HTMLElement>(':scope > .flex-1 > .overflow-y-auto');
+                            const body = dialog.querySelector<HTMLElement>(':scope > .flex-1.overflow-y-auto')
+                              || dialog.querySelector<HTMLElement>(':scope > .overflow-y-auto')
+                              || dialog.querySelector<HTMLElement>('.flex-1.overflow-y-auto');
                             const header = dialog.querySelector<HTMLElement>('.monthly-report-header');
                             const banner = dialog.querySelector<HTMLElement>('.monthly-report-banner');
                             if (!body) return;

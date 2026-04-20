@@ -70,7 +70,11 @@ export async function buildMonthlyReportPdfBytes(): Promise<Uint8Array> {
   void captureClone.offsetHeight;
   // Scale the body content to fit the fixed dialog box, mirroring the
   // beforeprint scaler used by the Print button.
-  const body = captureClone.querySelector<HTMLElement>(":scope > .flex-1 > .overflow-y-auto");
+  // The body is the `<div class="flex-1 overflow-y-auto p-4 space-y-3">`
+  // child of the dialog — both classes live on the same element.
+  const body = captureClone.querySelector<HTMLElement>(":scope > .flex-1.overflow-y-auto")
+    || captureClone.querySelector<HTMLElement>(":scope > .overflow-y-auto")
+    || captureClone.querySelector<HTMLElement>(".flex-1.overflow-y-auto");
   const header = captureClone.querySelector<HTMLElement>(".monthly-report-header");
   const banner = captureClone.querySelector<HTMLElement>(".monthly-report-banner");
   if (body) {
