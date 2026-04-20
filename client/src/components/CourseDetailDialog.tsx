@@ -1872,6 +1872,15 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             </div>
           </label>
           <button
+            onClick={(e) => { e.stopPropagation(); updateTaskMutation.mutate({ id: task.id, data: { isNotGraded: true, gradeScratchedOff: false }, _task: task }); }}
+            className="flex-shrink-0 text-white/50 hover:text-blue-400 transition-colors p-0.5"
+            style={{ marginLeft: '4px' }}
+            title="Move to Not Graded section"
+            data-testid={`button-move-to-ungraded-${task.id}`}
+          >
+            <ArrowDown className="h-[15px] w-[15px]" />
+          </button>
+          <button
             onClick={(e) => {
               e.stopPropagation();
               const { id, gradeValue, isCompleted, ...rest } = task;
