@@ -1733,6 +1733,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
         onDragOver={(e) => handleDragOver(e, task.id)}
         onDrop={(e) => handleDrop(e, task.id, currentGroup)}
         onDragEnd={handleDragEnd}
+        style={{ touchAction: 'none' }}
         className={`flex items-center px-1.5 py-1.5 rounded-md border transition-all ${
           isDragging ? "opacity-40 border-blue-400/50" :
           isDragOver ? "border-blue-400 bg-blue-400/10" :
@@ -2056,6 +2057,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
         onDragStart={(e) => handleDragStart(e, task.id, 'ungraded')}
         onDragEnd={handleDragEnd}
         onDragOver={(e) => { if (dragSourceRef.current) { e.preventDefault(); try { e.dataTransfer.dropEffect = 'move'; } catch {} } }}
+        style={{ touchAction: 'none' }}
         className={`flex items-center px-1.5 py-1.5 rounded-md border transition-all ${
           dragId === task.id ? "opacity-40 border-blue-400/50" :
           task.isCompleted ? "bg-white/5 border-white/5" :
