@@ -1922,9 +1922,18 @@ export default function Dashboard() {
       const tz = (typeof getAppTz === 'function') ? getAppTz() : 'America/Toronto';
       const nowEt = new Date(new Date().toLocaleString('en-US', { timeZone: tz }));
       const fmtLong = (d: Date) => d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-      // Period: 20th of (this month - 1) -> 19th of this month.
-      const periodEnd = new Date(nowEt.getFullYear(), nowEt.getMonth(), 19);
-      const periodStart = new Date(nowEt.getFullYear(), nowEt.getMonth() - 1, 20);
+      // Period rule: if today is the 25th or earlier, the report covers the
+      // PREVIOUS period (20th of month-1 -> 19th of this month). If today is
+      // the 26th or later, the report covers the CURRENT period (20th of
+      // this month -> 19th of next month).
+      const dayOfMonth = nowEt.getDate();
+      const useCurrent = dayOfMonth >= 26;
+      const periodStart = useCurrent
+        ? new Date(nowEt.getFullYear(), nowEt.getMonth(), 20)
+        : new Date(nowEt.getFullYear(), nowEt.getMonth() - 1, 20);
+      const periodEnd = useCurrent
+        ? new Date(nowEt.getFullYear(), nowEt.getMonth() + 1, 19)
+        : new Date(nowEt.getFullYear(), nowEt.getMonth(), 19);
       const reportingPeriod = `${fmtLong(periodStart)} to ${fmtLong(periodEnd)}`;
       const reportDate = fmtLong(nowEt);
 
@@ -8602,38 +8611,85 @@ export default function Dashboard() {
 
       const coursesText = courses.map(c => `${c.code} - ${c.name}`).join('\n');
 
+      // Compute reporting period using the same 25th-of-month rule as the
+      // header autofill so the assignments shown match the period printed
+      // at the top of the report.
+      const tz = (typeof getAppTz === 'function') ? getAppTz() : 'America/Toronto';
+      const nowEt = new Date(new Date().toLocaleString('en-US', { timeZone: tz }));
+      const dayOfMonth = nowEt.getDate();
+      const useCurrent = dayOfMonth >= 26;
+      const periodStart = useCurrent
+        ? new Date(nowEt.getFullYear(), nowEt.getMonth(), 20, 0, 0, 0, 0)
+        : new Date(nowEt.getFullYear(), nowEt.getMonth() - 1, 20, 0, 0, 0, 0);
+      const periodEnd = useCurrent
+        ? new Date(nowEt.getFullYear(), nowEt.getMonth() + 1, 19, 23, 59, 59, 999)
+        : new Date(nowEt.getFullYear(), nowEt.getMonth(), 19, 23, 59, 59, 999);
+
       const courseNamesLower = new Set(courses.map(c => c.name.toLowerCase()));
-      const courseCodesLower = new Set(courses.map(c => c.code.toLowerCase()));
-      const matchedTasks = tasks.filter((t: any) => {
-        if (!t || t.excludeFromGpa !== false) return false;
-        if (t.gradeValue == null || t.gradeTotal == null || Number(t.gradeTotal) <= 0) return false;
+      const courseCodesLower = courses.map(c => c.code.toLowerCase().replace(/\s/g, ''));
+      const taskMatchesCourse = (t: any): boolean => {
         const cn = String(t.courseName || '').toLowerCase().trim();
         if (!cn) return false;
         if (courseNamesLower.has(cn)) return true;
-        for (const code of courseCodesLower) { if (cn.includes(code)) return true; }
+        const cnNoSpace = cn.replace(/\s/g, '');
+        for (const code of courseCodesLower) { if (cnNoSpace.includes(code)) return true; }
         return false;
-      });
-      matchedTasks.sort((a: any, b: any) =>
-        new Date(b.dueDate || 0).getTime() - new Date(a.dueDate || 0).getTime()
-      );
+      };
+      const taskInPeriod = (t: any): boolean => {
+        const d = t.dueDate ? new Date(t.dueDate) : null;
+        if (!d || isNaN(d.getTime())) return false;
+        return d >= periodStart && d <= periodEnd;
+      };
+      const codePrefixFor = (t: any): string => {
+        const cn = String(t.courseName || '').toLowerCase().trim();
+        const cnNoSpace = cn.replace(/\s/g, '');
+        const course = courses.find(c => c.name.toLowerCase() === cn) ||
+                       courses.find(c => cnNoSpace.includes(c.code.toLowerCase().replace(/\s/g, '')));
+        return course ? `${course.code} ` : '';
+      };
 
-      const assignmentsText = matchedTasks.length === 0
-        ? 'No graded assignments yet.'
-        : matchedTasks.map((t: any) => {
-            const cn = String(t.courseName || '').toLowerCase().trim();
-            const course = courses.find(c => c.name.toLowerCase() === cn) ||
-                           courses.find(c => cn.includes(c.code.toLowerCase()));
-            const codePrefix = course ? `${course.code} ` : '';
+      // Key Assignments / Projects Completed: graded tasks whose due date
+      // falls inside the reporting period.
+      const completed = tasks.filter((t: any) =>
+        t && taskMatchesCourse(t) && taskInPeriod(t) &&
+        t.gradeValue != null && t.gradeTotal != null && Number(t.gradeTotal) > 0
+      ).sort((a: any, b: any) =>
+        new Date(a.dueDate || 0).getTime() - new Date(b.dueDate || 0).getTime()
+      );
+      const assignmentsText = completed.length === 0
+        ? 'No graded assignments in this period.'
+        : completed.map((t: any) => {
             const v = Number(t.gradeValue);
             const tot = Number(t.gradeTotal);
             const pct = tot > 0 ? ((v / tot) * 100).toFixed(1) : '—';
-            return `${codePrefix}${t.title}: ${v}/${tot} (${pct}%)`;
+            return `${codePrefixFor(t)}${t.title}: ${v}/${tot} (${pct}%)`;
+          }).join('\n');
+
+      // Upcoming Deadlines: ungraded tasks for the same courses whose due
+      // date is after the period end (next ~30 days), in ascending order.
+      const upcomingHorizon = new Date(periodEnd.getTime() + 30 * 24 * 60 * 60 * 1000);
+      const upcoming = tasks.filter((t: any) => {
+        if (!t || !taskMatchesCourse(t)) return false;
+        if (t.gradeValue != null && t.gradeTotal != null) return false;
+        const d = t.dueDate ? new Date(t.dueDate) : null;
+        if (!d || isNaN(d.getTime())) return false;
+        return d > periodEnd && d <= upcomingHorizon;
+      }).sort((a: any, b: any) =>
+        new Date(a.dueDate || 0).getTime() - new Date(b.dueDate || 0).getTime()
+      ).slice(0, 15);
+      const fmtShort = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const upcomingText = upcoming.length === 0
+        ? 'None within the next 30 days.'
+        : upcoming.map((t: any) => {
+            const d = new Date(t.dueDate);
+            return `${codePrefixFor(t)}${t.title} — due ${fmtShort(d)}`;
           }).join('\n');
 
       setMonthlyReportFields((p: any) => ({
         ...p,
         coursesEnrolled: coursesText,
         keyAssignments: assignmentsText,
+        upcomingDeadlines: upcomingText,
       }));
     } catch (e) {
       console.error('[MonthlyReport AutoFill]', e);
