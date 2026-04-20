@@ -4582,7 +4582,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   </div>
                   <div className={`flex-1 min-w-0 ${hdrCls('title')}`} style={{ marginLeft: isEditingInfo ? '36px' : '36px' }} onClick={() => toggleSort('title')} data-testid="sort-title">Assignments (Graded)<SortIcon field="title" />
                   </div>
-                  <div className="flex-shrink-0 text-white" style={{ position: 'relative', width: '162px', height: '20px', left: isEditingInfo ? '-61px' : '-52px' }}>
+                  <div className="flex-shrink-0 text-white" style={{ position: 'relative', width: '162px', height: '20px', left: isEditingInfo ? '-31px' : '-22px' }}>
                     <span className={`w-[33px] text-center leading-tight ${hdrCls('score')}`} onClick={() => toggleSort('score')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'absolute', left: '0px', bottom: 0 }} data-testid="sort-score">
                       Score<SortIcon field="score" />
                     </span>
