@@ -19802,8 +19802,19 @@ export default function Dashboard() {
                   return vals;
                 };
 
-                const prevSemKeys = currentSemIdx > 0 ? relevantSemKeys.slice(0, currentSemIdx) : [];
-                const currentSemKey = currentSemIdx >= 0 ? relevantSemKeys[currentSemIdx] : null;
+                // Are we ACTUALLY in an active semester right now? Distinct from
+                // the index fallback above, which treats the most recently ended
+                // semester as "current" purely so the box has data to show.
+                const inActiveSemester = getCurrentSemKey(now, '') !== '';
+                // Between semesters (e.g. April→May break): there is no
+                // "current" GPA, so collapse the box to a single value that
+                // includes EVERY completed semester (the just-ended one too).
+                const prevSemKeys = inActiveSemester
+                  ? (currentSemIdx > 0 ? relevantSemKeys.slice(0, currentSemIdx) : [])
+                  : relevantSemKeys;
+                const currentSemKey = inActiveSemester && currentSemIdx >= 0
+                  ? relevantSemKeys[currentSemIdx]
+                  : null;
 
                 const prevGpaVals: number[] = [];
                 for (const semKey of prevSemKeys) {
