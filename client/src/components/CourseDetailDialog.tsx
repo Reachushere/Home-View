@@ -155,6 +155,7 @@ interface NewTaskForm {
   gradeWeight: string;
   gradeTotal: string;
   gradeValue: string;
+  isNotGraded: boolean;
 }
 
 function DebouncedGradeInput({ value, onSave, placeholder, testId, disabled }: { value: number | null | undefined; onSave: (val: number | null) => void; placeholder: string; testId: string; disabled?: boolean }) {
@@ -215,6 +216,7 @@ function createEmptyTaskForm(): NewTaskForm {
     gradeWeight: "",
     gradeTotal: "",
     gradeValue: "",
+    isNotGraded: false,
   };
 }
 
@@ -991,7 +993,11 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
     }
   };
 
-  const isTaskUngraded = (t: Task) => t.excludeFromGpa || t.type === 'discussion';
+  // "Not Graded" section = tasks the user has explicitly marked as not
+  // having a grade coming (or discussion posts, which are never graded).
+  // The excludeFromGpa toggle is a SEPARATE concept: it stays in the Graded
+  // section but greys out and is excluded from totals until re-enabled.
+  const isTaskUngraded = (t: Task) => (t as any).isNotGraded === true || t.type === 'discussion';
 
   const gradedCourseTasks = useMemo(() => courseTasks.filter(t => !isTaskUngraded(t)), [courseTasks]);
   const ungradedCourseTasks = useMemo(() => courseTasks.filter(t => isTaskUngraded(t)), [courseTasks]);
@@ -1113,9 +1119,14 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
   };
 
   const completedCount = courseTasks.filter((t) => t.isCompleted).length;
-  const totalWeight = gradedCourseTasks.reduce((s, t) => s + (t.gradeWeight || 0), 0);
-  const activeGradeTasks = useMemo(() => gradedCourseTasks.filter(t => !t.gradeScratchedOff), [gradedCourseTasks]);
-  const scratchedWeight = useMemo(() => gradedCourseTasks.filter(t => t.gradeScratchedOff).reduce((s, t) => s + (t.gradeWeight || 0), 0), [gradedCourseTasks]);
+  // Tasks that count toward weight totals: in the Graded section, NOT scratched
+  // off, AND NOT toggled off via the per-row "include in totals" switch
+  // (excludeFromGpa). The greyed-out rows are still visible but excluded from
+  // every numerator/denominator and from the bottom totals row.
+  const includedGradeTasks = useMemo(() => gradedCourseTasks.filter(t => !t.excludeFromGpa), [gradedCourseTasks]);
+  const totalWeight = includedGradeTasks.reduce((s, t) => s + (t.gradeWeight || 0), 0);
+  const activeGradeTasks = useMemo(() => includedGradeTasks.filter(t => !t.gradeScratchedOff), [includedGradeTasks]);
+  const scratchedWeight = useMemo(() => includedGradeTasks.filter(t => t.gradeScratchedOff).reduce((s, t) => s + (t.gradeWeight || 0), 0), [includedGradeTasks]);
   const activeWeight = totalWeight - scratchedWeight;
 
   const gradeCalc = useMemo(() => {
@@ -1328,7 +1339,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           weekNumber: 1,
           gradeWeight: parsed.gradeWeight || null,
           attachments: [uploadResult.objectPath],
-          excludeFromGpa: true,
+          excludeFromGpa: true, isNotGraded: false,
         });
         queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
         toast({ title: "Assignment created", description: `"${parsed.title}" created with PDF attached. Please set the due date.` });
@@ -1502,7 +1513,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
         reminder1: 30,
         reminder2: 120,
         gradeWeight: item.weight || null,
-        excludeFromGpa: true,
+        excludeFromGpa: true, isNotGraded: false,
       });
 
       const created = await resp.json();
@@ -1602,7 +1613,12 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
       gradeWeight: newTask.gradeWeight ? parseInt(newTask.gradeWeight) : null,
       gradeTotal: newTask.gradeTotal ? parseInt(newTask.gradeTotal) : null,
       gradeValue: newTask.gradeValue ? parseInt(newTask.gradeValue) : null,
-      excludeFromGpa: true,
+      // If user explicitly marked this as a Not Graded item, send it to the
+      // Not Graded section. Otherwise it lands in the Graded section but
+      // greyed out (excludeFromGpa: true) until they fill in score/total/weight
+      // and toggle it on.
+      isNotGraded: newTask.isNotGraded === true,
+      excludeFromGpa: newTask.isNotGraded === true ? false : true,
     });
   };
 
@@ -1731,7 +1747,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             <span className="capitalize">{task.type}</span>
           </div>
         </div>
-        <div className="flex items-center flex-shrink-0" style={{ gap: '10px', position: 'relative', left: '-12px', opacity: task.gradeScratchedOff ? 0.35 : 1 }} onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center flex-shrink-0" style={{ gap: '10px', position: 'relative', left: '-12px', opacity: task.gradeScratchedOff || task.excludeFromGpa ? 0.35 : 1 }} onClick={(e) => e.stopPropagation()}>
           <DebouncedGradeInput
             value={task.gradeValue}
             onSave={(val) => updateGradeValueMutation.mutate({ id: task.id, gradeValue: val, _task: task })}
@@ -1764,7 +1780,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           >
             {task.gradeScratchedOff ? '✕' : '—'}
           </button>
-          <label className="flex items-center gap-1 cursor-pointer" style={{ marginLeft: '8px' }} title={task.excludeFromGpa ? "Not gradable — click to mark as graded" : "Gradable — click to mark as ungraded"} data-testid={`toggle-gpa-${task.id}`}>
+          <label className="flex items-center gap-1 cursor-pointer" style={{ marginLeft: '8px' }} title={task.excludeFromGpa ? "Excluded from totals — click to include in grade calculation" : "Included in totals — click to exclude (stays in Graded section, greyed out)"} data-testid={`toggle-gpa-${task.id}`}>
             <div className="relative" onClick={() => updateTaskMutation.mutate({ id: task.id, data: { excludeFromGpa: !task.excludeFromGpa }, _task: task })}>
               <div className={`w-6 h-3.5 rounded-full transition-colors ${task.excludeFromGpa ? 'bg-white/20' : 'bg-green-500/60'}`} />
               <div className={`absolute top-0.5 w-2.5 h-2.5 rounded-full bg-white transition-transform ${task.excludeFromGpa ? 'left-0.5' : 'left-3'}`} />
@@ -2011,8 +2027,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           </div>
         </div>
         <div className="flex items-center flex-shrink-0" style={{ gap: '6px', marginLeft: '8px', marginRight: '15px' }} onClick={(e) => e.stopPropagation()}>
-          <label className="flex items-center gap-1 cursor-pointer" title={task.type === 'discussion' ? "Discussion posts are always ungraded" : "Not gradable — click to mark as graded"} data-testid={`toggle-gpa-ungraded-${task.id}`}>
-            <div className="relative" onClick={() => { if (task.type !== 'discussion') updateTaskMutation.mutate({ id: task.id, data: { excludeFromGpa: !task.excludeFromGpa }, _task: task }); }}>
+          <label className="flex items-center gap-1 cursor-pointer" title={task.type === 'discussion' ? "Discussion posts are always Not Graded" : "Not Graded item — click to move to Graded section"} data-testid={`toggle-gpa-ungraded-${task.id}`}>
+            <div className="relative" onClick={() => { if (task.type !== 'discussion') updateTaskMutation.mutate({ id: task.id, data: { isNotGraded: false, excludeFromGpa: false }, _task: task }); }}>
               <div className={`w-6 h-3.5 rounded-full transition-colors ${task.type === 'discussion' ? 'bg-white/10' : 'bg-white/20'}`} />
               <div className={`absolute top-0.5 left-0.5 w-2.5 h-2.5 rounded-full bg-white transition-transform`} />
             </div>
@@ -4385,6 +4401,18 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     {createTaskMutation.isPending ? "Adding..." : "Add to Calendar"}
                   </Button>
                 </div>
+
+                <label className="flex items-center gap-2 cursor-pointer text-[10px] text-white/80 select-none" style={{ marginTop: '4px' }} data-testid="toggle-new-task-not-graded">
+                  <div className="relative" onClick={() => setNewTask({ ...newTask, isNotGraded: !newTask.isNotGraded })}>
+                    <div className={`w-7 h-4 rounded-full transition-colors ${newTask.isNotGraded ? 'bg-amber-500/60' : 'bg-white/20'}`} />
+                    <div className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-transform ${newTask.isNotGraded ? 'left-3.5' : 'left-0.5'}`} />
+                  </div>
+                  <span>
+                    {newTask.isNotGraded
+                      ? "Not Graded item (no grade coming) — goes to Not Graded section"
+                      : "Graded assignment — goes to Graded section"}
+                  </span>
+                </label>
               </div>
             )}
 
@@ -4534,7 +4562,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             {ungradedCourseTasks.length > 0 && (
               <>
                 <div className="flex items-center px-1.5 py-1.5 text-[11px] font-medium text-white uppercase" style={{ margin: '12px 4px 0 4px' }} data-testid="ungraded-section-header">
-                  <span className="flex-1">Assignments (Ungraded)</span>
+                  <span className="flex-1">Assignments (Not Graded)</span>
                   <span className="text-[9px] text-white" style={{ marginRight: '8px' }}>{ungradedCourseTasks.length} items</span>
                   <span className="text-[8px] text-white/50 uppercase" style={{ width: '24px', textAlign: 'center', marginRight: '21px', letterSpacing: '0.5px' }}>GPA</span>
                 </div>

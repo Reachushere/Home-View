@@ -409,6 +409,7 @@ export const tasks = pgTable("tasks", {
   sortOrder: integer("sort_order").default(0), // Order within group or list
   isAcknowledged: boolean("is_acknowledged").default(true), // For reminders: false until user acknowledges
   excludeFromGpa: boolean("exclude_from_gpa").default(true),
+  isNotGraded: boolean("is_not_graded").default(false),
   gradeScratchedOff: boolean("grade_scratched_off").default(false),
   inviteEmails: text("invite_emails").array(),
   hideFromSummary: boolean("hide_from_summary").default(false),
