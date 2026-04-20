@@ -4460,23 +4460,23 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   <div className={`flex-1 min-w-0 ${hdrCls('title')}`} style={{ marginLeft: isEditingInfo ? '36px' : '36px' }} onClick={() => toggleSort('title')} data-testid="sort-title">Assignments (Graded)<SortIcon field="title" />
                   </div>
                   <div className="flex items-end flex-shrink-0 text-white" style={{ gap: '10px', position: 'relative', left: isEditingInfo ? '-35px' : '-26px' }}>
-                    <span className={`w-[33px] text-center leading-tight ${hdrCls('score')}`} onClick={() => toggleSort('score')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'relative', left: isEditingInfo ? '-5px' : '-5px' }} data-testid="sort-score">
+                    <span className={`w-[33px] text-center leading-tight ${hdrCls('score')}`} onClick={() => toggleSort('score')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'relative', left: isEditingInfo ? '-6px' : '-6px' }} data-testid="sort-score">
                       Score<SortIcon field="score" />
                     </span>
-                    <span className={`w-[33px] text-center leading-tight ${hdrCls('total')}`} onClick={() => toggleSort('total')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'relative', left: isEditingInfo ? '-5px' : '-4px' }} data-testid="sort-total">
+                    <span className={`w-[33px] text-center leading-tight ${hdrCls('total')}`} onClick={() => toggleSort('total')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'relative', left: isEditingInfo ? '-7px' : '-6px' }} data-testid="sort-total">
                       Total<SortIcon field="total" />
                     </span>
-                    <span className={`w-[33px] text-center leading-tight ${hdrCls('weight')}`} onClick={() => toggleSort('weight')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'relative', left: isEditingInfo ? '-1px' : undefined }} data-testid="sort-weight">
+                    <span className={`w-[33px] text-center leading-tight ${hdrCls('weight')}`} onClick={() => toggleSort('weight')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'relative', left: isEditingInfo ? '-3px' : '-2px' }} data-testid="sort-weight">
                       Weight<SortIcon field="weight" />
                     </span>
-                    <span className={`w-[33px] text-center leading-tight ${hdrCls('percent')}`} onClick={() => toggleSort('percent')} style={{ display: 'inline-flex', justifyContent: 'center' }} data-testid="sort-percent">
+                    <span className={`w-[33px] text-center leading-tight ${hdrCls('percent')}`} onClick={() => toggleSort('percent')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'relative', left: '-2px' }} data-testid="sort-percent">
                       Percent<SortIcon field="percent" />
                     </span>
                   </div>
                   <div className="flex items-end flex-shrink-0" style={{ gap: '6px', marginLeft: isEditingInfo ? '-16px' : '-7px' }}>
                     <div className={hdrCls('scratched')} style={{ width: '18px', textAlign: 'center', lineHeight: '1.1', marginLeft: '-10px', marginRight: '2px' }} onClick={() => toggleSort('scratched')} data-testid="sort-scratched"><span className="text-[8px] font-bold text-white">Scratch<SortIcon field="scratched" /></span></div>
                     <div className={hdrCls('gradeReceived')} style={{ width: '24px', textAlign: 'center', lineHeight: '1.1', marginLeft: '8px' }} onClick={() => toggleSort('gradeReceived')} data-testid="sort-grade-received"><span className="text-[8px] font-bold text-white">Grade<br/>Received<SortIcon field="gradeReceived" /></span></div>
-                    <div style={{ width: '19px', textAlign: 'center', marginLeft: '6px' }}><span className="text-[8px] font-bold text-white">Copy</span></div>
+                    <div style={{ width: '19px', textAlign: 'center', marginLeft: '14px' }}><span className="text-[8px] font-bold text-white">Copy</span></div>
                     <div style={{ width: '19px' }} />
                   </div>
                 </div>
@@ -4546,25 +4546,25 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 <div className="flex-1 min-w-0 text-[11px] font-bold text-white" style={{ marginLeft: '4px' }}>Totals</div>
                 <div className="flex items-center flex-shrink-0" style={{ gap: '10px', position: 'relative', left: '-12px' }}>
                   <span className="text-[11px] font-bold w-[33px] text-center text-amber-400" data-testid="text-sum-value">
-                    {(() => { const v = gradedCourseTasks.reduce((s, t) => s + (t.gradeValue || 0), 0); return v ? v.toFixed(2) : '—'; })()}
+                    {(() => { const v = activeGradeTasks.reduce((s, t) => s + (t.gradeValue || 0), 0); return v ? v.toFixed(2) : '—'; })()}
                   </span>
                   <span className="text-[11px] font-bold w-[33px] text-center text-amber-400" data-testid="text-sum-total">
-                    {(() => { const v = gradedCourseTasks.reduce((s, t) => s + (t.gradeTotal || 0), 0); return v ? v.toFixed(2) : '—'; })()}
+                    {(() => { const v = activeGradeTasks.reduce((s, t) => s + (t.gradeTotal || 0), 0); return v ? v.toFixed(2) : '—'; })()}
                   </span>
                   <span className={`text-[11px] font-bold w-[33px] text-center ${
-                    totalWeight === 100 ? 'text-green-400' : totalWeight > 100 ? 'text-red-400' : 'text-amber-400'
+                    activeWeight === 100 ? 'text-green-400' : activeWeight > 100 ? 'text-red-400' : 'text-amber-400'
                   }`} data-testid="text-sum-weight">
-                    {totalWeight ? totalWeight.toFixed(2) : '—'}
+                    {activeWeight ? activeWeight.toFixed(2) : '—'}
                   </span>
                   <span className="text-[11px] font-bold w-[33px] text-center text-amber-400" data-testid="text-sum-percent" title="Overall course percent: sum of (score/total × weight) over total weight of all non-scratched assignments">
                     {gradeCalc ? `${gradeCalc.currentPercent.toFixed(2)}%` : '—'}
                   </span>
                 </div>
                 <div className="flex items-center flex-shrink-0" style={{ gap: '6px', marginLeft: '8px', visibility: 'hidden' }}>
-                  <div style={{ width: '18px', height: '14px', marginLeft: '-4px', marginRight: '-4px' }} />
-                  <div style={{ width: '24px', height: '14px' }} />
-                  <div style={{ padding: '2px', marginLeft: '6px' }}><div style={{ width: '15px', height: '15px' }} /></div>
-                  <div style={{ padding: '2px' }}><div style={{ width: '15px', height: '15px' }} /></div>
+                  <div style={{ width: '18px', height: '14px', marginLeft: '-10px', marginRight: '2px' }} />
+                  <div style={{ width: '24px', height: '14px', marginLeft: '8px' }} />
+                  <div style={{ marginLeft: '14px' }}><div style={{ width: '15px', height: '15px' }} /></div>
+                  <div><div style={{ width: '15px', height: '15px' }} /></div>
                 </div>
               </div>
             )}
