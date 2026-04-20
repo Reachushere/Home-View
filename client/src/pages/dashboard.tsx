@@ -31444,7 +31444,7 @@ export default function Dashboard() {
                     return `<div style="position:absolute;inset:0;overflow:hidden">${layer1}${layer2}</div>`;
                   }
                   if (wc === 0 || wc === 1) {
-                    return `<div style="position:absolute;top:1px;left:50%;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;background:radial-gradient(circle,rgba(255,230,100,0.9) 30%,rgba(255,200,50,0.4) 70%,transparent);animation:sunPulse 3s ease-in-out infinite;box-shadow:0 0 6px rgba(255,200,50,0.5)"></div>`;
+                    return `<div style="position:absolute;top:1px;right:3px;width:8px;height:8px;border-radius:50%;background:radial-gradient(circle,rgba(255,230,100,0.9) 30%,rgba(255,200,50,0.4) 70%,transparent);animation:sunPulse 3s ease-in-out infinite;box-shadow:0 0 6px rgba(255,200,50,0.5)"></div>`;
                   }
                   return '';
                 })() : '';

@@ -1097,7 +1097,16 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
 
   const handleDrop = (e: React.DragEvent, targetId: number, targetGroup?: string | null) => {
     e.preventDefault();
-    if (dragId === null || dragId === targetId) { handleDragEnd(); return; }
+    if (dragId === null) { handleDragEnd(); return; }
+    if (dragSourceSection === 'ungraded') {
+      const dragTask = courseTasks.find(t => t.id === dragId);
+      if (dragTask) {
+        updateTaskMutation.mutate({ id: dragId, data: { isNotGraded: false, excludeFromGpa: false, assignmentGroup: targetGroup ?? null }, _task: dragTask });
+      }
+      handleDragEnd();
+      return;
+    }
+    if (dragId === targetId) { handleDragEnd(); return; }
     const taskList = targetGroup ? (groupedTasks[targetGroup] || []) : ungroupedTasks;
     const allList = [...taskList];
     const dragIdx = allList.findIndex(t => t.id === dragId);
@@ -1116,7 +1125,15 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
 
   const handleDropOnGroup = (e: React.DragEvent, groupName: string) => {
     e.preventDefault();
-    if (dragId === null) return;
+    if (dragId === null) { handleDragEnd(); return; }
+    if (dragSourceSection === 'ungraded') {
+      const dragTask = courseTasks.find(t => t.id === dragId);
+      if (dragTask) {
+        updateTaskMutation.mutate({ id: dragId, data: { isNotGraded: false, excludeFromGpa: false, assignmentGroup: groupName }, _task: dragTask });
+      }
+      handleDragEnd();
+      return;
+    }
     const existing = groupedTasks[groupName] || [];
     const updates = [{ id: dragId, sortOrder: existing.length, assignmentGroup: groupName }];
     reorderMutation.mutate(updates);
