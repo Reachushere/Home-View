@@ -1,0 +1,330 @@
+byhomeyyz@raspberrypi:~/Home-View $ cd ~/Home-View && git pull && ./deploy.sh
+Already up to date.
+=== UniCal Deploy ===
+
+[1/7] Stopping old process FIRST...
+[2/7] Pulling latest from GitHub...
+
+Changes incoming:
+
+HEAD is now at 7eaabdfd8 Make monthly report fill exactly one 8.5x11 page in print
+[3/7] Generating changelog...
+Changelog written: 7eaabdfd8 (2026-04-20T00:16:23Z)
+[4/7] Installing dependencies...
+
+up to date, audited 1030 packages in 3s
+
+152 packages are looking for funding
+  run `npm fund` for details
+
+16 vulnerabilities (5 low, 2 moderate, 9 high)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+[5/7] Building fresh from latest source (with swap)...
+
+> rest-express@1.0.0 build
+> tsx script/build.ts
+
+building client...
+vite v7.3.0 building client environment for production...
+✓ 3083 modules transformed.
+../dist/public/assets/CN2_1773897525570-afBA9WIn.png                                4.64 kB
+../dist/public/index.html                                                           4.68 kB │ gzip:     1.79 kB
+../dist/public/assets/Zoomcam_1773655084814-Dd0RqcMf.png                            6.41 kB
+../dist/public/assets/saturn_planet-DyCcVDqz.jpg                                    9.35 kB
+../dist/public/assets/image_1776640309567-BZqx5jvP.png                             13.66 kB
+../dist/public/assets/Red_1776569141741-DqyH1RRE.png                               14.50 kB
+../dist/public/assets/uranus_planet-BBf9JheU.jpg                                   14.81 kB
+../dist/public/assets/Button_1769701329320-vj3a_XjG.png                            14.88 kB
+../dist/public/assets/Fox_News_1773610204651-Cm2F7G44.png                          18.91 kB
+../dist/public/assets/Animoji_1769350617739-DKdhEpD6.webp                          21.31 kB
+../dist/public/assets/Wifi_1773656687145-BkFdNwBM.png                              21.68 kB
+../dist/public/assets/Global_White_1773536754594-C17BPXU2.png                      22.80 kB
+../dist/public/assets/Green2_1776566950518-BjbiAvWz.png                            23.22 kB
+../dist/public/assets/jupiter_planet-BIMUlata.jpg                                  26.92 kB
+../dist/public/assets/ABC_1773609250051-CfAo4DiJ.png                               31.54 kB
+../dist/public/assets/Zoom2_1773776262533-u1jCiZQ5.png                             31.94 kB
+../dist/public/assets/MSNBC_1773536950584-DXnjYP_H.png                             32.99 kB
+../dist/public/assets/CTV2_1773545440801-BQRb6VTL.png                              34.23 kB
+../dist/public/assets/Sound_1775176942072-DQdszRIH.png                             41.57 kB
+../dist/public/assets/cbc-news-logo-black-and-white_1773536865600-CmQYEfGd.png     42.50 kB
+../dist/public/assets/Weather_Alert_1773608511887-BFQqPgnq.png                     42.94 kB
+../dist/public/assets/mars_planet-CmC43G73.jpg                                     44.56 kB
+../dist/public/assets/CNN_1773536484180-DucbTf95.png                               48.85 kB
+../dist/public/assets/Raw_Story_1773607642361-CKfjYmZ7.png                         58.82 kB
+../dist/public/assets/venus_planet-pWHYImPJ.jpg                                    59.79 kB
+../dist/public/assets/Closet_Night_1774008796953-DXicaVTT.png                      60.27 kB
+../dist/public/assets/Degree_1775175568321-Dz3bFyki.png                            63.04 kB
+../dist/public/assets/Teacher_White2_1775164260333-DzP7w8Fj.png                    64.77 kB
+../dist/public/assets/Teacher_1775101022422-6YMTUW-g.png                           64.78 kB
+../dist/public/assets/Reminders_1775175754351-2hYnQH-_.png                         65.19 kB
+../dist/public/assets/victory-fanfare-CYW8HOv7.mp3                                 67.20 kB
+../dist/public/assets/BBC_1773609711103-BfBjSiKV.png                               73.89 kB
+../dist/public/assets/Pug_Night_1774008796949-3yLPls61.png                         79.00 kB
+../dist/public/assets/Cat_Night_1774008796951-Dcd6HiVq.png                         79.73 kB
+../dist/public/assets/Green3_1776569141740-C7yka4fK.png                            80.14 kB
+../dist/public/assets/image_1772579486577-DIShbgJ0.png                             80.83 kB
+../dist/public/assets/Yasu_1774341165517-DKbY5fn0.png                              83.10 kB
+../dist/public/assets/Forecast2_1773897989398-DSI3LWIa.png                        116.96 kB
+../dist/public/assets/Yellow_Box_1776566950520-DS0mUeMC.png                       117.03 kB
+../dist/public/assets/BG2_1769977873184-BMC0LH4N.jpg                              124.20 kB
+../dist/public/assets/Chang-School2_1770607146365-_XjUzhwY.png                    128.19 kB
+../dist/public/assets/Hallway_Night_1774008796945-BuzRBJO8.png                    129.78 kB
+../dist/public/assets/crowd-cheer-DkUts2go.mp3                                    142.08 kB
+../dist/public/assets/Newspaper2_1773898792176-DFEQePQK.png                       143.21 kB
+../dist/public/assets/Red_Box_1776566950520-BjzW3rH4.png                          155.12 kB
+../dist/public/assets/Blue_Box_1776566950518-RDHj27Sp.png                         166.38 kB
+../dist/public/assets/OneDrive_Y_1776568204260-jiJRHJ5Y.png                       168.99 kB
+../dist/public/assets/Green_Box_1776568031172-FcCDW--e.png                        180.33 kB
+../dist/public/assets/OneDrive_R_1776568204260-C9DMwFfR.png                       206.67 kB
+../dist/public/assets/Grey_Box_1776566950519-B7CHHp67.png                         221.61 kB
+../dist/public/assets/Queen_Night_1774008796950-B57EmMzY.png                      228.53 kB
+../dist/public/assets/OneDrive_1776567093048-Dg4Vrqx-.png                         260.34 kB
+../dist/public/assets/Header_1776566950519-nj_AT7oD.png                           283.67 kB
+../dist/public/assets/Living_Room_Night_1774008796948-CTbz7lx7.png                292.86 kB
+../dist/public/assets/King_Night_1774008796946-qs8T8Rav.png                       321.84 kB
+../dist/public/assets/Kitchen_Night_1774008796947-DzGdhLNI.png                    333.69 kB
+../dist/public/assets/Bookshelf10_1776107329434-DXSkg-65.jpg                      422.34 kB
+../dist/public/assets/image_1775263840386-D9P4kHhc.png                            494.62 kB
+../dist/public/assets/TMU2_1772842397746-B9XhF-lv.png                             788.80 kB
+../dist/public/assets/brynassist_avatar-C4-SWJI9.png                              865.03 kB
+../dist/public/assets/Bryn_1774341392117-CfDPXLO2.png                           1,069.12 kB
+../dist/public/assets/mass-background2_1774005959332-mw-YgJzQ.png               1,426.94 kB
+../dist/public/assets/Floorplan11_1774005505273-BEWw-gX1.png                    1,553.36 kB
+../dist/public/assets/Back_1776566950517-DkovLr1h.png                           1,887.33 kB
+../dist/public/assets/Echo_1774213902054-Dum5d4T4.png                           2,055.05 kB
+../dist/public/assets/Music_BG20_1774006032495-CxhBg4I3.png                     2,114.88 kB
+../dist/public/assets/style-BBEEk7A1.css                                          286.35 kB │ gzip:    45.92 kB
+../dist/public/assets/html2canvas.esm-BwnQUXM0.js                                 199.79 kB │ gzip:    46.41 kB
+../dist/public/assets/index-X1wCidNm.js                                         4,210.99 kB │ gzip: 1,075.55 kB
+✓ built in 1m 13s
+building server...
+
+  dist/index.cjs  15.0mb ⚠️
+
+⚡ Done in 1534ms
+[6/7] Verifying build...
+[7/7] Starting with PM2...
+[PM2] Starting /home/byhomeyyz/Home-View/dist/index.cjs in fork_mode (1 instance)
+[PM2] Done.
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+├────┼────────────────────┼──────────┼──────┼───────────┼──────────┼──────────┤
+│ 0  │ dashboard          │ fork     │ 0    │ online    │ 0%       │ 6.2mb    │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+[PM2] Saving current process list...
+[PM2] Successfully saved in /home/byhomeyyz/.pm2/dump.pm2
+
+=== Deploy complete! App running at http://172.24.1.204:5000 ===
+Commit: 7eaabdfd8 Make monthly report fill exactly one 8.5x11 page in print
+byhomeyyz@raspberrypi:~/Home-View $ pm2 logs dashboard --err --lines 200 --nostream
+[TAILING] Tailing last 200 lines for [dashboard] process (change the value with --lines option)
+/home/byhomeyyz/.pm2/logs/dashboard-error.log last 200 lines:
+0|dashboar |     statusText: 'Unauthorized',
+0|dashboar |     request: { responseURL: 'https://oauth2.googleapis.com/token' }
+0|dashboar |   },
+0|dashboar |   error: undefined,
+0|dashboar |   status: 401,
+0|dashboar |   Symbol(gaxios-gaxios-error): '6.7.1'
+0|dashboar | }
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Server] Port 5000 in use, retrying in 3s...
+0|dashboar | [Weather History] Failed to record: {"message":"Not authenticated"}
+0|dashboar | [Gmail] Error fetching D2L announcements: Gmail API error 403: {
+0|dashboar |   "error": {
+0|dashboar |     "code": 403,
+0|dashboar |     "message": "Request had insufficient authentication scopes.",
+0|dashboar |     "errors": [
+0|dashboar |       {
+0|dashboar |         "message": "Insufficient Permission",
+0|dashboar |         "domain": "global",
+0|dashboar |         "reason": "insufficientPermissions"
+0|dashboar |       }
+0|dashboar |     ],
+0|dashboar |     "status": "PERMISSION_DENIED",
+0|dashboar |     "details": [
+0|dashboar |       {
+0|dashboar |         "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+0|dashboar |         "reason": "ACCESS_TOKEN_SCOPE_INSUFFICIENT",
+0|dashboar |         "domain": "googleapis.com",
+0|dashboar |         "metadata": {
+0|dashboar |           "service": "gmail.googleapis.com",
+0|dashboar |           "method": "caribou.api.proto.MailboxService.ListMessages"
+0|dashboar |         }
+0|dashboar |       }
+0|dashboar |     ]
+0|dashboar |   }
+0|dashboar | }
+0|dashboar |
+0|dashboar | [Error: ENOSPC: no space left on device, write] {
+0|dashboar |   errno: -28,
+0|dashboar |   code: 'ENOSPC',
+0|dashboar |   syscall: 'write'
+0|dashboar | }
+0|dashboar | (node:139351) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+0|dashboar | (Use `node --trace-deprecation ...` to show where the warning was created)
+0|dashboar | Error fetching events from third account calendar: e [Error]: unauthorized_client
+0|dashboar |     at fY._request (/home/byhomeyyz/Home-View/dist/index.cjs:97:3512)
+0|dashboar |     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+0|dashboar |     at async e.refreshTokenNoCache (/home/byhomeyyz/Home-View/dist/index.cjs:168:7701)
+0|dashboar |     at async e.refreshAccessTokenAsync (/home/byhomeyyz/Home-View/dist/index.cjs:168:8418)
+0|dashboar |     at async hRr (/home/byhomeyyz/Home-View/dist/index.cjs:786:94023)
+0|dashboar |     at async fM (/home/byhomeyyz/Home-View/dist/index.cjs:786:94430)
+0|dashboar |     at async mM (/home/byhomeyyz/Home-View/dist/index.cjs:786:95240)
+0|dashboar |     at async /home/byhomeyyz/Home-View/dist/index.cjs:2708:3334 {
+0|dashboar |   config: {
+0|dashboar |     retry: true,
+0|dashboar |     retryConfig: {
+0|dashboar |       httpMethodsToRetry: [Array],
+0|dashboar |       currentRetryAttempt: 0,
+0|dashboar |       retry: 3,
+0|dashboar |       noResponseRetries: 2,
+0|dashboar |       retryDelayMultiplier: 2,
+0|dashboar |       timeOfFirstRequest: 1776644422679,
+0|dashboar |       totalTimeout: 9007199254740991,
+0|dashboar |       maxRetryDelay: 9007199254740991,
+0|dashboar |       statusCodesToRetry: [Array]
+0|dashboar |     },
+0|dashboar |     method: 'POST',
+0|dashboar |     url: 'https://oauth2.googleapis.com/token',
+0|dashboar |     data: '<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.',
+0|dashboar |     headers: {
+0|dashboar |       'Content-Type': 'application/x-www-form-urlencoded',
+0|dashboar |       'User-Agent': 'google-api-nodejs-client/9.15.1',
+0|dashboar |       'x-goog-api-client': 'gl-node/25.9.0'
+0|dashboar |     },
+0|dashboar |     paramsSerializer: [Function: paramsSerializer],
+0|dashboar |     body: '<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.',
+0|dashboar |     validateStatus: [Function: validateStatus],
+0|dashboar |     responseType: 'unknown',
+0|dashboar |     errorRedactor: [Function: Tct]
+0|dashboar |   },
+0|dashboar |   response: {
+0|dashboar |     config: {
+0|dashboar |       retry: true,
+0|dashboar |       retryConfig: [Object],
+0|dashboar |       method: 'POST',
+0|dashboar |       url: 'https://oauth2.googleapis.com/token',
+0|dashboar |       data: '<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.',
+0|dashboar |       headers: [Object],
+0|dashboar |       paramsSerializer: [Function: paramsSerializer],
+0|dashboar |       body: '<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.',
+0|dashboar |       validateStatus: [Function: validateStatus],
+0|dashboar |       responseType: 'unknown',
+0|dashboar |       errorRedactor: [Function: Tct]
+0|dashboar |     },
+0|dashboar |     data: { error: 'unauthorized_client', error_description: 'Unauthorized' },
+0|dashboar |     headers: {
+0|dashboar |       'alt-svc': 'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000',
+0|dashboar |       'cache-control': 'no-cache, no-store, max-age=0, must-revalidate',
+0|dashboar |       'content-encoding': 'gzip',
+0|dashboar |       'content-type': 'application/json; charset=utf-8',
+0|dashboar |       date: 'Mon, 20 Apr 2026 00:20:22 GMT',
+0|dashboar |       expires: 'Mon, 01 Jan 1990 00:00:00 GMT',
+0|dashboar |       pragma: 'no-cache',
+0|dashboar |       server: 'scaffolding on HTTPServer2',
+0|dashboar |       'transfer-encoding': 'chunked',
+0|dashboar |       vary: 'Origin, X-Origin, Referer',
+0|dashboar |       'x-content-type-options': 'nosniff',
+0|dashboar |       'x-frame-options': 'SAMEORIGIN',
+0|dashboar |       'x-xss-protection': '0'
+0|dashboar |     },
+0|dashboar |     status: 401,
+0|dashboar |     statusText: 'Unauthorized',
+0|dashboar |     request: { responseURL: 'https://oauth2.googleapis.com/token' }
+0|dashboar |   },
+0|dashboar |   error: undefined,
+0|dashboar |   status: 401,
+0|dashboar |   Symbol(gaxios-gaxios-error): '6.7.1'
+0|dashboar | }
+0|dashboar | [Weather History] Failed to record: {"message":"Not authenticated"}
+0|dashboar | [Error: ENOSPC: no space left on device, write] {
+0|dashboar |   errno: -28,
+0|dashboar |   code: 'ENOSPC',
+0|dashboar |   syscall: 'write'
+0|dashboar | }
+0|dashboar | (node:139457) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+0|dashboar | (Use `node --trace-deprecation ...` to show where the warning was created)
+0|dashboar | Error fetching events from third account calendar: e [Error]: unauthorized_client
+0|dashboar |     at fY._request (/home/byhomeyyz/Home-View/dist/index.cjs:97:3512)
+0|dashboar |     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+0|dashboar |     at async e.refreshTokenNoCache (/home/byhomeyyz/Home-View/dist/index.cjs:168:7701)
+0|dashboar |     at async e.refreshAccessTokenAsync (/home/byhomeyyz/Home-View/dist/index.cjs:168:8418)
+0|dashboar |     at async hRr (/home/byhomeyyz/Home-View/dist/index.cjs:786:94023)
+0|dashboar |     at async fM (/home/byhomeyyz/Home-View/dist/index.cjs:786:94430)
+0|dashboar |     at async mM (/home/byhomeyyz/Home-View/dist/index.cjs:786:95240)
+0|dashboar |     at async /home/byhomeyyz/Home-View/dist/index.cjs:2708:3334 {
+0|dashboar |   config: {
+0|dashboar |     retry: true,
+0|dashboar |     retryConfig: {
+0|dashboar |       httpMethodsToRetry: [Array],
+0|dashboar |       currentRetryAttempt: 0,
+0|dashboar |       retry: 3,
+0|dashboar |       noResponseRetries: 2,
+0|dashboar |       retryDelayMultiplier: 2,
+0|dashboar |       timeOfFirstRequest: 1776644444354,
+0|dashboar |       totalTimeout: 9007199254740991,
+0|dashboar |       maxRetryDelay: 9007199254740991,
+0|dashboar |       statusCodesToRetry: [Array]
+0|dashboar |     },
+0|dashboar |     method: 'POST',
+0|dashboar |     url: 'https://oauth2.googleapis.com/token',
+0|dashboar |     data: '<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.',
+0|dashboar |     headers: {
+0|dashboar |       'Content-Type': 'application/x-www-form-urlencoded',
+0|dashboar |       'User-Agent': 'google-api-nodejs-client/9.15.1',
+0|dashboar |       'x-goog-api-client': 'gl-node/25.9.0'
+0|dashboar |     },
+0|dashboar |     paramsSerializer: [Function: paramsSerializer],
+0|dashboar |     body: '<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.',
+0|dashboar |     validateStatus: [Function: validateStatus],
+0|dashboar |     responseType: 'unknown',
+0|dashboar |     errorRedactor: [Function: Tct]
+0|dashboar |   },
+0|dashboar |   response: {
+0|dashboar |     config: {
+0|dashboar |       retry: true,
+0|dashboar |       retryConfig: [Object],
+0|dashboar |       method: 'POST',
+0|dashboar |       url: 'https://oauth2.googleapis.com/token',
+0|dashboar |       data: '<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.',
+0|dashboar |       headers: [Object],
+0|dashboar |       paramsSerializer: [Function: paramsSerializer],
+0|dashboar |       body: '<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.',
+0|dashboar |       validateStatus: [Function: validateStatus],
+0|dashboar |       responseType: 'unknown',
+0|dashboar |       errorRedactor: [Function: Tct]
+0|dashboar |     },
+0|dashboar |     data: { error: 'unauthorized_client', error_description: 'Unauthorized' },
+0|dashboar |     headers: {
+0|dashboar |       'alt-svc': 'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000',
+0|dashboar |       'cache-control': 'no-cache, no-store, max-age=0, must-revalidate',
+0|dashboar |       'content-encoding': 'gzip',
+0|dashboar |       'content-type': 'application/json; charset=utf-8',
+0|dashboar |       date: 'Mon, 20 Apr 2026 00:20:44 GMT',
+0|dashboar |       expires: 'Mon, 01 Jan 1990 00:00:00 GMT',
+0|dashboar |       pragma: 'no-cache',
+0|dashboar |       server: 'scaffolding on HTTPServer2',
+0|dashboar |       'transfer-encoding': 'chunked',
+0|dashboar |       vary: 'Origin, X-Origin, Referer',
+0|dashboar |       'x-content-type-options': 'nosniff',
+0|dashboar |       'x-frame-options': 'SAMEORIGIN',
+0|dashboar |       'x-xss-protection': '0'
+0|dashboar |     },
+0|dashboar |     status: 401,
+0|dashboar |     statusText: 'Unauthorized',
+0|dashboar |     request: { responseURL: 'https://oauth2.googleapis.com/token' }
+0|dashboar |   },
+0|dashboar |   error: undefined,
+0|dashboar |   status: 401,
+0|dashboar |   Symbol(gaxios-gaxios-error): '6.7.1'
+0|dashboar | }
+
+byhomeyyz@raspberrypi:~/Home-View $
