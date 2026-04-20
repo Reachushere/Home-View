@@ -235,7 +235,6 @@ import {
   Type,
   CheckSquare2,
   Shield,
-  Mail,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import { useAccessMode } from "@/components/access-gate";

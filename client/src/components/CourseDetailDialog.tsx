@@ -1119,25 +1119,34 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
   const activeWeight = totalWeight - scratchedWeight;
 
   const gradeCalc = useMemo(() => {
-    const gradedTasks = activeGradeTasks.filter(t => t.gradeTotal && t.gradeValue !== null && t.gradeValue !== undefined && (t.gradeValue !== 0 || t.isCompleted));
-    if (gradedTasks.length === 0) return null;
-    let weightedSum = 0;
-    let gradedWeight = 0;
-    for (const t of gradedTasks) {
-      const rawW = t.gradeWeight || 0;
-      const adjustedW = activeWeight > 0 ? (rawW / activeWeight) * totalWeight : rawW;
-      const pct = (t.gradeTotal || 0) > 0 ? ((t.gradeValue || 0) / t.gradeTotal!) * 100 : 0;
-      weightedSum += pct * adjustedW;
-      gradedWeight += adjustedW;
+    // Tasks that actually have a numeric score entered.
+    const scoredTasks = activeGradeTasks.filter(t => t.gradeTotal && t.gradeValue !== null && t.gradeValue !== undefined && (t.gradeValue !== 0 || t.isCompleted));
+    if (scoredTasks.length === 0) return null;
+
+    // Rubric-based percent: every non-scratched assignment counts in the
+    // denominator (whether or not the score has been entered yet); each
+    // scored assignment contributes (score/total) * weight to the numerator.
+    // An assignment with weight set but no score yet contributes 0 / weight,
+    // so the percent reflects what you have actually earned out of the
+    // course's full assessable weight so far.
+    let earnedWeight = 0;
+    let assessableWeight = 0;
+    for (const t of activeGradeTasks) {
+      const w = t.gradeWeight || 0;
+      assessableWeight += w;
+      if (t.gradeTotal && t.gradeValue !== null && t.gradeValue !== undefined) {
+        const ratio = (t.gradeTotal || 0) > 0 ? (t.gradeValue || 0) / (t.gradeTotal as number) : 0;
+        earnedWeight += ratio * w;
+      }
     }
-    const currentPercent = gradedWeight > 0 ? weightedSum / gradedWeight : 0;
+    const currentPercent = assessableWeight > 0 ? (earnedWeight / assessableWeight) * 100 : 0;
     return {
       currentPercent: Math.round(currentPercent * 100) / 100,
       currentGrade: percentToLetterGrade(currentPercent),
-      gradedWeight,
-      gradedCount: gradedTasks.length,
+      gradedWeight: assessableWeight,
+      gradedCount: scoredTasks.length,
     };
-  }, [activeGradeTasks, totalWeight, activeWeight]);
+  }, [activeGradeTasks]);
 
   const onGradeCalculatedRef = useRef(onGradeCalculated);
   onGradeCalculatedRef.current = onGradeCalculated;
@@ -4509,7 +4518,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   }`} data-testid="text-sum-weight">
                     {totalWeight ? totalWeight.toFixed(2) : '—'}
                   </span>
-                  <span className="w-[33px]" />
+                  <span className="text-[11px] font-bold w-[33px] text-center text-amber-400" data-testid="text-sum-percent" title="Overall course percent: sum of (score/total × weight) over total weight of all non-scratched assignments">
+                    {gradeCalc ? `${gradeCalc.currentPercent.toFixed(2)}%` : '—'}
+                  </span>
                 </div>
                 <div className="flex items-center flex-shrink-0" style={{ gap: '6px', marginLeft: '8px', visibility: 'hidden' }}>
                   <div style={{ width: '18px', height: '14px', marginLeft: '-4px', marginRight: '-4px' }} />
