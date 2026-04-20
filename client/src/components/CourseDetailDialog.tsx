@@ -4598,9 +4598,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   </div>
                   <div className="flex-shrink-0" style={{ marginLeft: isEditingInfo ? '-24px' : '-15px', position: 'relative', left: '-8px', width: '160px', height: '20px' }}>
                     <div className={hdrCls('scratched')} style={{ width: '18px', textAlign: 'center', lineHeight: '1.1', position: 'absolute', left: '-5px', bottom: 0 }} onClick={() => toggleSort('scratched')} data-testid="sort-scratched"><span className="text-[8px] font-bold text-white">Scratch<SortIcon field="scratched" /></span></div>
-                    <div className={hdrCls('gradeReceived')} style={{ width: '24px', textAlign: 'center', lineHeight: '1.1', position: 'absolute', left: '34px', bottom: 0 }} onClick={() => toggleSort('gradeReceived')} data-testid="sort-grade-received"><span className="text-[8px] font-bold text-white">Grade<br/>Received<SortIcon field="gradeReceived" /></span></div>
-                    <div style={{ width: '24px', textAlign: 'center', lineHeight: '1.1', position: 'absolute', left: '101px', bottom: 0 }} data-testid="header-move-section"><span className="text-[8px] font-bold text-white">Not<br/>Graded</span></div>
-                    <div style={{ width: '19px', textAlign: 'center', position: 'absolute', left: '135px', bottom: 0 }}><span className="text-[8px] font-bold text-white">Copy</span></div>
+                    <div className={hdrCls('gradeReceived')} style={{ width: '24px', textAlign: 'center', lineHeight: '1.1', position: 'absolute', left: '44px', bottom: 0 }} onClick={() => toggleSort('gradeReceived')} data-testid="sort-grade-received"><span className="text-[8px] font-bold text-white">Grade<br/>Received<SortIcon field="gradeReceived" /></span></div>
+                    <div style={{ width: '24px', textAlign: 'center', lineHeight: '1.1', position: 'absolute', left: '86px', bottom: 0 }} data-testid="header-move-section"><span className="text-[8px] font-bold text-white">Not<br/>Graded</span></div>
+                    <div style={{ width: '19px', textAlign: 'center', position: 'absolute', left: '120px', bottom: 0 }}><span className="text-[8px] font-bold text-white">Copy</span></div>
                     <div style={{ width: '19px' }} />
                     <div style={{ width: '19px' }} />
                     <div style={{ width: '19px' }} />
