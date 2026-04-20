@@ -1149,6 +1149,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
       return;
     }
     if (did === targetId) { handleDragEnd(); return; }
+    if (sortField !== 'manual') { setSortField('manual'); setSortDir('asc'); }
     const taskList = targetGroup ? (groupedTasks[targetGroup] || []) : ungroupedTasks;
     const allList = [...taskList];
     const dragIdx = allList.findIndex(t => t.id === did);
@@ -1178,6 +1179,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
       handleDragEnd();
       return;
     }
+    if (sortField !== 'manual') { setSortField('manual'); setSortDir('asc'); }
     const existing = groupedTasks[groupName] || [];
     const updates = [{ id: did, sortOrder: existing.length, assignmentGroup: groupName }];
     reorderMutation.mutate(updates);
