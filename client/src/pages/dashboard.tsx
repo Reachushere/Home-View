@@ -28205,6 +28205,44 @@ export default function Dashboard() {
                           <MessageSquare className="w-3.5 h-3.5" strokeWidth={2.5} />
                         </button>
                         <span className="text-[10px] truncate min-w-0 flex-1 cursor-pointer hover:underline" style={{ marginLeft: '5px' }} onClick={(e) => { e.stopPropagation(); const certKey = pastEntry?.certKey || semCourse.code; startTransition(() => setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey, semKey })); }} data-testid={`course-name-click-${semCourse.code}`}>{displayNameFromDb ? <span className="font-bold">{displayName}</span> : <><span className="font-bold">{displayName}</span>{subtitle && <> - {subtitle}</>}</>}</span>
+                        {(() => {
+                          const letterToGpa: Record<string, number> = { 'A+': 4.33, 'A': 4.0, 'A-': 3.67, 'B+': 3.33, 'B': 3.0, 'B-': 2.67, 'C+': 2.33, 'C': 2.0, 'C-': 1.67, 'D': 1.0, 'F': 0 };
+                          const pToGpa = (p: number) => p >= 90 ? 4.33 : p >= 85 ? 4.0 : p >= 80 ? 3.67 : p >= 77 ? 3.33 : p >= 73 ? 3.0 : p >= 70 ? 2.67 : p >= 67 ? 2.33 : p >= 63 ? 2.0 : p >= 60 ? 1.67 : p >= 50 ? 1.0 : 0;
+                          const code = semCourse.code.replace(/\s/g, '');
+                          const codeNoC = code.toUpperCase().replace(/^C(?=[A-Z]{2,})/, '');
+                          const info = pastCourseInfo[code] || pastCourseInfo[codeNoC];
+                          const certKey = Object.keys(certCourseMap).find(k => { const mc = certCourseMap[k].code.replace(/\s/g, '').toUpperCase(); return mc === code.toUpperCase() || ('C' + mc) === code.toUpperCase() || mc === codeNoC; });
+                          const cg = certKey ? courseGrades[certKey] : null;
+                          let electiveGrade: { grade: string; percent: string } | null = null;
+                          if (!cg?.percent && !cg?.grade) {
+                            const codeNorm = code.toUpperCase();
+                            for (const [slot, elVal] of Object.entries(openElectives)) {
+                              if (elVal && elVal.replace(/\s/g, '').toUpperCase().startsWith(codeNorm)) {
+                                if (courseGrades[slot]?.percent || courseGrades[slot]?.grade) {
+                                  electiveGrade = courseGrades[slot];
+                                  break;
+                                }
+                              }
+                            }
+                          }
+                          let gpa: number | null = null;
+                          if (cg?.percent && cg.percent.trim()) { const p = parseFloat(cg.percent); if (!isNaN(p)) gpa = pToGpa(p); }
+                          else if (cg?.grade && cg.grade.trim() && letterToGpa[cg.grade] !== undefined) gpa = letterToGpa[cg.grade];
+                          else if (info?.grade && info.grade.trim() && letterToGpa[info.grade] !== undefined) gpa = letterToGpa[info.grade];
+                          else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const p = parseFloat(electiveGrade.percent); if (!isNaN(p)) gpa = pToGpa(p); }
+                          else if (electiveGrade?.grade && electiveGrade.grade.trim() && letterToGpa[electiveGrade.grade] !== undefined) gpa = letterToGpa[electiveGrade.grade];
+                          if (gpa === null) return null;
+                          return (
+                            <span
+                              className="font-bold flex-shrink-0"
+                              style={{ color: '#ffffff', background: 'rgba(80,130,210,0.45)', border: '1px solid rgba(170,210,255,0.5)', borderRadius: '4px', fontSize: '9px', padding: '0 5px', lineHeight: '14px', whiteSpace: 'nowrap', marginLeft: '4px', marginRight: '4px' }}
+                              data-testid={`course-gpa-${semCourse.code}`}
+                              title="Course GPA"
+                            >
+                              {gpa.toFixed(2)}
+                            </span>
+                          );
+                        })()}
                         <div className="flex items-center gap-1 flex-shrink-0" style={{ marginRight: '-3px' }}>
                           {(() => {
                             const profName = currentCourse?.professor || profInfo.professor;
