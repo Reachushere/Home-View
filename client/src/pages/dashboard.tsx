@@ -31449,7 +31449,7 @@ export default function Dashboard() {
                   return '';
                 })() : '';
                 return (
-                  <div key={idx} className="flex items-center justify-center overflow-hidden relative" style={{ opacity: isPast ? 0.5 : 1, borderLeft: isTodayForecast ? '3px solid #64b5f6' : undefined, background: showForecastWeather && fwSkyBg ? undefined : colorSettings.headerBar, ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }} data-testid={`weather-above-${dateStr}`}>
+                  <div key={idx} className="flex items-center justify-center overflow-hidden relative" style={{ opacity: isPast ? 0.5 : 1, borderLeft: isTodayForecast && day.getDay() !== 0 ? '3px solid #64b5f6' : undefined, background: showForecastWeather && fwSkyBg ? undefined : colorSettings.headerBar, ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }} data-testid={`weather-above-${dateStr}`}>
                     {showForecastWeather && fwSkyBg && (
                       <div className="absolute z-0" style={{ top: 0, bottom: 0, left: 0, right: 0, background: fwSkyBg, overflow: 'hidden', pointerEvents: 'none', opacity: isTodayForecast ? 1 : isNextWeekDay ? 0.35 : 1 }}>
                         {fwEffectsHtml && <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }} dangerouslySetInnerHTML={{ __html: fwEffectsHtml }} />}
@@ -32978,7 +32978,7 @@ export default function Dashboard() {
                       <div 
                         key={dayIdx} 
                         className="relative pt-0.5"
-                        style={{ backgroundColor: cellBgColor, padding: '2px 1px 2px 1px', borderBottom: '1px dotted rgba(0,0,0,0.25)', borderLeft: isDayToday ? '3px solid black' : '1.5px dotted rgba(0,0,0,0.25)', minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', boxSizing: 'border-box', ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }}
+                        style={{ backgroundColor: cellBgColor, padding: '2px 1px 2px 1px', borderBottom: '1px dotted rgba(0,0,0,0.25)', borderLeft: isDayToday && day.getDay() !== 0 ? '3px solid black' : day.getDay() === 0 ? 'none' : '1.5px dotted rgba(0,0,0,0.25)', minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', boxSizing: 'border-box', ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
                           e.preventDefault();
@@ -33688,7 +33688,7 @@ export default function Dashboard() {
                         <div
                           key={dayIdx}
                           className="relative flex flex-col gap-0.5 pt-0.5 course-cell-scroll"
-                          style={{ minWidth: 0, boxSizing: 'border-box', backgroundColor: otherCellBg, borderLeft: isOtherToday ? '3px solid black' : '1.5px dotted rgba(0,0,0,0.25)', overflow: 'hidden', maxHeight: `${otherRowHeight}px`, ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }}
+                          style={{ minWidth: 0, boxSizing: 'border-box', backgroundColor: otherCellBg, borderLeft: isOtherToday && day.getDay() !== 0 ? '3px solid black' : day.getDay() === 0 ? 'none' : '1.5px dotted rgba(0,0,0,0.25)', overflow: 'hidden', maxHeight: `${otherRowHeight}px`, ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }}
                           data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
                         >
                         <div className="flex flex-col course-cell-scroll" style={{ gap: '2px', padding: isOtherToday ? '1px 1px 1px 0px' : '1px 1px 1px 1px', overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'thin', maxHeight: '100%', height: '100%' }}>
@@ -34194,7 +34194,7 @@ export default function Dashboard() {
                           key={dayIdx} 
                           className={`relative p-0.5 ${dragOverSlot && isSameDayET(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "ring-2 ring-primary ring-inset" : ""}`}
                           style={{
-                            borderLeft: isSameDayET(day, new Date()) ? '3px solid #64b5f6' : '1.5px dotted rgba(0,0,0,0.25)',
+                            borderLeft: isSameDayET(day, new Date()) && day.getDay() !== 0 ? '3px solid #64b5f6' : day.getDay() === 0 ? 'none' : '1.5px dotted rgba(0,0,0,0.25)',
                             borderRight: isSameDayET(day, new Date()) ? '2px solid rgba(100,181,246,0.35)' : undefined,
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined,
                             overflow: 'hidden',
