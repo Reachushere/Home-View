@@ -1047,6 +1047,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
 
   const [dragId, setDragId] = useState<number | null>(null);
   const [dragOverId, setDragOverId] = useState<number | null>(null);
+  const [dragSourceSection, setDragSourceSection] = useState<'graded' | 'ungraded' | null>(null);
+  const [dragOverSection, setDragOverSection] = useState<'graded' | 'ungraded' | null>(null);
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(() => new Set());
   const [showGroupInput, setShowGroupInput] = useState(false);
   const [newGroupName, setNewGroupName] = useState('');
@@ -1073,9 +1075,25 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['/api/tasks'] }); },
   });
 
-  const handleDragStart = (taskId: number) => { setDragId(taskId); };
+  const handleDragStart = (taskId: number, source: 'graded' | 'ungraded' = 'graded') => { setDragId(taskId); setDragSourceSection(source); };
   const handleDragOver = (e: React.DragEvent, taskId: number) => { e.preventDefault(); setDragOverId(taskId); };
-  const handleDragEnd = () => { setDragId(null); setDragOverId(null); };
+  const handleDragEnd = () => { setDragId(null); setDragOverId(null); setDragSourceSection(null); setDragOverSection(null); };
+  const handleSectionDragOver = (e: React.DragEvent, section: 'graded' | 'ungraded') => {
+    if (dragSourceSection && dragSourceSection !== section) { e.preventDefault(); setDragOverSection(section); }
+  };
+  const handleSectionDrop = (e: React.DragEvent, target: 'graded' | 'ungraded') => {
+    if (dragId === null || !dragSourceSection || dragSourceSection === target) { handleDragEnd(); return; }
+    e.preventDefault();
+    e.stopPropagation();
+    const dragTask = courseTasks.find(t => t.id === dragId);
+    if (!dragTask) { handleDragEnd(); return; }
+    if (target === 'graded') {
+      updateTaskMutation.mutate({ id: dragId, data: { isNotGraded: false, excludeFromGpa: false }, _task: dragTask });
+    } else {
+      updateTaskMutation.mutate({ id: dragId, data: { isNotGraded: true, gradeScratchedOff: false }, _task: dragTask });
+    }
+    handleDragEnd();
+  };
 
   const handleDrop = (e: React.DragEvent, targetId: number, targetGroup?: string | null) => {
     e.preventDefault();
@@ -1978,7 +1996,11 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
     return (
       <React.Fragment key={task.id}>
       <div
+        draggable
+        onDragStart={() => handleDragStart(task.id, 'ungraded')}
+        onDragEnd={handleDragEnd}
         className={`flex items-center px-1.5 py-1.5 rounded-md border transition-all ${
+          dragId === task.id ? "opacity-40 border-blue-400/50" :
           task.isCompleted ? "bg-white/5 border-white/5" :
           overdue ? "bg-red-500/10 border-red-500/20" :
           "bg-white/5 border-white/10 hover:bg-white/8"
@@ -4460,16 +4482,16 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   <div className={`flex-1 min-w-0 ${hdrCls('title')}`} style={{ marginLeft: isEditingInfo ? '36px' : '36px' }} onClick={() => toggleSort('title')} data-testid="sort-title">Assignments (Graded)<SortIcon field="title" />
                   </div>
                   <div className="flex items-end flex-shrink-0 text-white" style={{ gap: '10px', position: 'relative', left: isEditingInfo ? '-35px' : '-26px' }}>
-                    <span className={`w-[33px] text-center leading-tight ${hdrCls('score')}`} onClick={() => toggleSort('score')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'relative', left: isEditingInfo ? '-6px' : '-6px' }} data-testid="sort-score">
+                    <span className={`w-[33px] text-center leading-tight ${hdrCls('score')}`} onClick={() => toggleSort('score')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'relative', left: isEditingInfo ? '-9px' : '-9px' }} data-testid="sort-score">
                       Score<SortIcon field="score" />
                     </span>
-                    <span className={`w-[33px] text-center leading-tight ${hdrCls('total')}`} onClick={() => toggleSort('total')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'relative', left: isEditingInfo ? '-7px' : '-6px' }} data-testid="sort-total">
+                    <span className={`w-[33px] text-center leading-tight ${hdrCls('total')}`} onClick={() => toggleSort('total')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'relative', left: isEditingInfo ? '-10px' : '-9px' }} data-testid="sort-total">
                       Total<SortIcon field="total" />
                     </span>
-                    <span className={`w-[33px] text-center leading-tight ${hdrCls('weight')}`} onClick={() => toggleSort('weight')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'relative', left: isEditingInfo ? '-3px' : '-2px' }} data-testid="sort-weight">
+                    <span className={`w-[33px] text-center leading-tight ${hdrCls('weight')}`} onClick={() => toggleSort('weight')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'relative', left: isEditingInfo ? '-6px' : '-5px' }} data-testid="sort-weight">
                       Weight<SortIcon field="weight" />
                     </span>
-                    <span className={`w-[33px] text-center leading-tight ${hdrCls('percent')}`} onClick={() => toggleSort('percent')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'relative', left: '-2px' }} data-testid="sort-percent">
+                    <span className={`w-[33px] text-center leading-tight ${hdrCls('percent')}`} onClick={() => toggleSort('percent')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'relative', left: '-5px' }} data-testid="sort-percent">
                       Percent<SortIcon field="percent" />
                     </span>
                   </div>
@@ -4504,7 +4526,13 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               </div>
             )}
 
-            <div className="flex flex-col overflow-y-auto" style={{ gap: '5px', maxHeight: 'none', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent' }} data-testid="assignments-list">
+            <div
+              className={`flex flex-col overflow-y-auto rounded-md transition-colors ${dragOverSection === 'graded' ? 'bg-blue-400/10 outline outline-2 outline-blue-400/40' : ''}`}
+              style={{ gap: '5px', maxHeight: 'none', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.3) transparent' }}
+              onDragOver={(e) => handleSectionDragOver(e, 'graded')}
+              onDrop={(e) => handleSectionDrop(e, 'graded')}
+              data-testid="assignments-list"
+            >
               {allGroups.map(groupName => {
                 const tasks = (groupedTasks[groupName] || []).filter(t => !t.excludeFromGpa);
                 if (tasks.length === 0) return null;
@@ -4573,10 +4601,18 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               <>
                 <div className="flex items-center px-1.5 py-1.5 text-[11px] font-medium text-white uppercase" style={{ margin: '12px 4px 0 4px' }} data-testid="ungraded-section-header">
                   <span className="flex-1">Assignments (Not Graded)</span>
-                  <span className="text-[9px] text-white" style={{ marginRight: '8px' }}>{ungradedCourseTasks.length} items</span>
-                  <span className="text-[8px] text-white/50 uppercase" style={{ width: '24px', textAlign: 'center', marginRight: '21px', letterSpacing: '0.5px' }}>GPA</span>
+                  <div className="flex items-center" style={{ gap: '6px', marginRight: '15px' }}>
+                    <span className="text-[8px] text-white whitespace-nowrap" style={{ display: 'inline-block', width: '24px', textAlign: 'left', letterSpacing: '0.5px' }}>{ungradedCourseTasks.length} items</span>
+                    <span style={{ display: 'inline-block', width: '15px' }} />
+                  </div>
                 </div>
-                <div className="flex flex-col" style={{ gap: '3px', padding: '0 4px' }} data-testid="ungraded-assignments-list">
+                <div
+                  className={`flex flex-col rounded-md transition-colors ${dragOverSection === 'ungraded' ? 'bg-blue-400/10 outline outline-2 outline-blue-400/40' : ''}`}
+                  style={{ gap: '3px', padding: '0 4px', minHeight: '32px' }}
+                  onDragOver={(e) => handleSectionDragOver(e, 'ungraded')}
+                  onDrop={(e) => handleSectionDrop(e, 'ungraded')}
+                  data-testid="ungraded-assignments-list"
+                >
                   {sortedUngradedTasks.map(task => renderUngradedAssignmentRow(task))}
                 </div>
               </>
