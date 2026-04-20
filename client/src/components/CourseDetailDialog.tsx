@@ -1088,7 +1088,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
     } catch {}
   };
   const handleDragOver = (e: React.DragEvent, taskId: number) => { e.preventDefault(); try { e.dataTransfer.dropEffect = 'move'; } catch {} setDragOverId(taskId); };
-  const handleDragEnd = () => { dragIdRef.current = null; dragSourceRef.current = null; setDragId(null); setDragOverId(null); setDragSourceSection(null); setDragOverSection(null); };
+  const handleDragEnd = () => {
+    setTimeout(() => { dragIdRef.current = null; dragSourceRef.current = null; }, 100);
+    setDragId(null); setDragOverId(null); setDragSourceSection(null); setDragOverSection(null);
+  };
   const handleSectionDragOver = (e: React.DragEvent, section: 'graded' | 'ungraded') => {
     const src = dragSourceRef.current;
     if (!src) return;
