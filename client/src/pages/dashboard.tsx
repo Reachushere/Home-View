@@ -26147,15 +26147,22 @@ export default function Dashboard() {
                             if (!body) return;
                             const headerH = (header?.offsetHeight ?? 0) + (banner?.offsetHeight ?? 0);
                             const availableH = dialog.clientHeight - headerH;
-                            // Body has overflow:visible in print, so scrollHeight
-                            // is the natural full content height.
-                            const contentH = body.scrollHeight;
+                            // Sum the children's actual heights — body has
+                            // flex:1 1 auto so its scrollHeight equals
+                            // clientHeight when content fits, hiding the
+                            // true natural content height we need for the
+                            // scale.
+                            const cs = window.getComputedStyle(body);
+                            const padV = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+                            const children = Array.from(body.children) as HTMLElement[];
+                            let contentH = padV;
+                            for (const ch of children) {
+                              const chCs = window.getComputedStyle(ch);
+                              contentH += ch.offsetHeight
+                                + parseFloat(chCs.marginTop || '0')
+                                + parseFloat(chCs.marginBottom || '0');
+                            }
                             if (contentH > 0 && availableH > 0) {
-                              // Always scale (up or down) so the form
-                              // fills the page. CSS zoom changes actual
-                              // layout (font, padding, gaps), so short
-                              // forms grow and long forms shrink to fit
-                              // exactly one page.
                               const scale = availableH / contentH;
                               savedBodyCss = body.style.cssText;
                               scaledBody = body;
