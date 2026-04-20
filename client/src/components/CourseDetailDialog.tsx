@@ -1087,6 +1087,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
     dragSourceRef.current = source;
     setDragId(taskId);
     setDragSourceSection(source);
+    if (sortField !== 'manual') { setSortField('manual'); setSortDir('asc'); }
     try {
       e.dataTransfer.setData('text/plain', JSON.stringify({ did: taskId, src: source }));
       e.dataTransfer.effectAllowed = 'move';
