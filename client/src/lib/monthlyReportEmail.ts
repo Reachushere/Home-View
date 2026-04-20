@@ -79,20 +79,24 @@ export async function buildMonthlyReportPdfBytes(): Promise<Uint8Array> {
   const banner = captureClone.querySelector<HTMLElement>(".monthly-report-banner");
   if (body) {
     // Wrap the children so we can scale them independently of the body's
-    // flex/height constraints.
+    // flex/height constraints. NOTE: html2canvas does NOT honor CSS
+    // `zoom` (it renders at natural unscaled size), so we use
+    // `transform: scale()` with top-left origin instead — html2canvas
+    // does honor transform.
     const wrap = document.createElement("div");
     wrap.setAttribute("data-print-scale-wrap", "");
     wrap.style.width = "100%";
+    wrap.style.transformOrigin = "top left";
     while (body.firstChild) wrap.appendChild(body.firstChild);
     body.appendChild(wrap);
 
-    // Binary-search the largest zoom that keeps the wrap within the
-    // dialog's bottom edge. Direct measurement after each trial is the
-    // only reliable way — every analytic shortcut we tried got fooled
-    // by flex constraints, !important overrides, or html2canvas
-    // peculiarities.
-    const fits = (z: number) => {
-      (wrap.style as unknown as { zoom: string }).zoom = String(z);
+    // Binary-search the largest scale that keeps the wrap within the
+    // dialog's bottom edge. transform: scale() doesn't reflow, but
+    // getBoundingClientRect returns the transformed bounds — so
+    // measuring the wrap's bottom against the dialog's bottom is
+    // accurate.
+    const fits = (s: number) => {
+      wrap.style.transform = `scale(${s})`;
       // Force layout
       void wrap.offsetHeight;
       const dialogBottom = captureClone.getBoundingClientRect().bottom;
@@ -111,7 +115,11 @@ export async function buildMonthlyReportPdfBytes(): Promise<Uint8Array> {
         else hi = mid;
       }
     }
-    (wrap.style as unknown as { zoom: string }).zoom = String(lo);
+    wrap.style.transform = `scale(${lo})`;
+    // transform: scale doesn't change the wrap's layout box. Set the
+    // wrap's width so it fills the body (since scale<1 would otherwise
+    // leave the visual content narrower than the page).
+    wrap.style.width = `${100 / lo}%`;
   }
 
   let canvas: HTMLCanvasElement;
