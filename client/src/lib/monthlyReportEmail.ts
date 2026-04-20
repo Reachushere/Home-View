@@ -25,45 +25,35 @@ export async function buildMonthlyReportPdfBytes(): Promise<Uint8Array> {
     textareaValues.set(key, el.value);
   });
 
-  // Build an offscreen clone of the dialog with no height/overflow
-  // constraints so html2canvas captures the entire form, no matter how
-  // long. The original dialog is height-capped (max-h-85vh) and uses an
-  // inner overflow-y-auto scroll region — both of which clip the capture
-  // when we read the live element directly.
+  // Render an offscreen clone of the dialog using the same fixed
+  // 7.7in × 10.2in print layout as the on-screen Print flow, then scale
+  // its body to fit so the PDF mirrors print exactly — fitted both
+  // directions on a single Letter page.
+  const PX_PER_IN = 96;
+  const TARGET_W_PX = 7.7 * PX_PER_IN;  // 739.2
+  const TARGET_H_PX = 10.2 * PX_PER_IN; // 979.2
   const captureHost = document.createElement("div");
+  captureHost.className = "email-pdf-host";
   captureHost.style.cssText = [
     "position:fixed",
     "left:-100000px",
     "top:0",
-    "width:600px",
+    `width:${TARGET_W_PX}px`,
     "background:#ffffff",
     "z-index:-1",
     "pointer-events:none",
     "visibility:visible",
   ].join(";");
   const captureClone = dialog.cloneNode(true) as HTMLElement;
-  // Remove every height/overflow constraint on the clone and its descendants.
-  captureClone.style.maxHeight = "none";
-  captureClone.style.height = "auto";
-  captureClone.style.overflow = "visible";
-  captureClone.style.width = "600px";
-  captureClone.querySelectorAll<HTMLElement>("*").forEach((el) => {
-    el.style.maxHeight = "none";
-    el.style.overflow = "visible";
-    if (el.classList.contains("overflow-y-auto") || el.classList.contains("overflow-hidden")) {
-      el.style.height = "auto";
-    }
-  });
-  // Replace inputs/textareas in the clone with static blocks that show the
-  // live value (form controls don't render their value into the canvas
-  // reliably otherwise).
+  // Replace form controls with static blocks (controls don't render their
+  // value reliably into a canvas).
   captureClone.querySelectorAll<HTMLInputElement>("input").forEach((el) => {
     if (el.type === "checkbox" || el.type === "radio") return;
     const key = el.getAttribute("data-clone-key");
     const v = key ? inputValues.get(key) ?? "" : el.value;
     const span = document.createElement("span");
     span.textContent = v;
-    span.style.cssText = "display:inline-block;padding:6px 8px;font-size:11px;color:#000;background:#fff;border:1px solid #000;border-radius:4px;width:100%;min-height:24px;box-sizing:border-box;font-family:inherit;white-space:pre-wrap;word-break:break-word;";
+    span.style.cssText = "display:inline-block;padding:4px 7px;font-size:12px;color:#000;background:#fff;border:1px solid #000;border-radius:3px;width:100%;min-height:24px;box-sizing:border-box;font-family:inherit;white-space:pre-wrap;word-break:break-word;line-height:1.3;";
     el.parentNode?.replaceChild(span, el);
   });
   captureClone.querySelectorAll<HTMLTextAreaElement>("textarea").forEach((el) => {
@@ -71,15 +61,30 @@ export async function buildMonthlyReportPdfBytes(): Promise<Uint8Array> {
     const v = key ? textareaValues.get(key) ?? "" : el.value;
     const div = document.createElement("div");
     div.textContent = v;
-    div.style.cssText = "display:block;padding:6px 8px;font-size:11px;color:#000;background:#fff;border:1px solid #000;border-radius:4px;width:100%;min-height:36px;box-sizing:border-box;font-family:inherit;white-space:pre-wrap;word-break:break-word;line-height:1.4;";
+    div.style.cssText = "display:block;padding:4px 7px;font-size:12px;color:#000;background:#fff;border:1px solid #000;border-radius:3px;width:100%;min-height:36px;box-sizing:border-box;font-family:inherit;white-space:pre-wrap;word-break:break-word;line-height:1.3;";
     el.parentNode?.replaceChild(div, el);
   });
   captureHost.appendChild(captureClone);
   document.body.appendChild(captureHost);
-  // Force layout, then measure the natural full size of the clone.
+  // Force layout under .email-pdf-host scope so the print-style CSS applies.
   void captureClone.offsetHeight;
-  const fullWidth = Math.max(captureClone.scrollWidth, captureClone.offsetWidth, 600);
-  const fullHeight = Math.max(captureClone.scrollHeight, captureClone.offsetHeight);
+  // Scale the body content to fit the fixed dialog box, mirroring the
+  // beforeprint scaler used by the Print button.
+  const body = captureClone.querySelector<HTMLElement>(":scope > .flex-1 > .overflow-y-auto");
+  const header = captureClone.querySelector<HTMLElement>(".monthly-report-header");
+  const banner = captureClone.querySelector<HTMLElement>(".monthly-report-banner");
+  if (body) {
+    const headerH = (header?.offsetHeight ?? 0) + (banner?.offsetHeight ?? 0);
+    const availableH = captureClone.clientHeight - headerH;
+    const contentH = body.scrollHeight;
+    if (contentH > 0 && availableH > 0 && contentH > availableH) {
+      const scale = availableH / contentH;
+      body.style.transformOrigin = "top left";
+      body.style.transform = `scale(${scale})`;
+      body.style.width = `${100 / scale}%`;
+      body.style.height = `${contentH}px`;
+    }
+  }
 
   let canvas: HTMLCanvasElement;
   try {
@@ -88,10 +93,10 @@ export async function buildMonthlyReportPdfBytes(): Promise<Uint8Array> {
       scale: 2,
       useCORS: true,
       logging: false,
-      windowWidth: fullWidth,
-      windowHeight: fullHeight,
-      height: fullHeight,
-      width: fullWidth,
+      windowWidth: TARGET_W_PX,
+      windowHeight: TARGET_H_PX,
+      width: TARGET_W_PX,
+      height: TARGET_H_PX,
     });
   } finally {
     captureHost.remove();
@@ -103,23 +108,23 @@ export async function buildMonthlyReportPdfBytes(): Promise<Uint8Array> {
   const pngBytes = await (await fetch(pngDataUrl)).arrayBuffer();
 
   const pdf = await PDFDocument.create();
-  const PAGE_W = 612;
-  const PAGE_H = 792;
-  const MARGIN = 28.8;
+  // US Letter at 72pt/in: 8.5in × 11in. The capture is exactly 7.7in ×
+  // 10.2in (printable area with 0.4in margins) so we draw it at that
+  // size, centered — matching the Print output 1:1.
+  const PAGE_W = 612;  // 8.5in
+  const PAGE_H = 792;  // 11in
+  const MARGIN = 28.8; // 0.4in
   const page = pdf.addPage([PAGE_W, PAGE_H]);
   const png = await pdf.embedPng(pngBytes);
 
-  const maxW = PAGE_W - 2 * MARGIN;
-  const maxH = PAGE_H - 2 * MARGIN;
-  const ratio = Math.min(maxW / png.width, maxH / png.height);
-  const w = png.width * ratio;
-  const h = png.height * ratio;
+  const drawW = PAGE_W - 2 * MARGIN; // 554.4
+  const drawH = PAGE_H - 2 * MARGIN; // 734.4
 
   page.drawImage(png, {
-    x: (PAGE_W - w) / 2,
-    y: (PAGE_H - h) / 2,
-    width: w,
-    height: h,
+    x: MARGIN,
+    y: MARGIN,
+    width: drawW,
+    height: drawH,
   });
 
   return await pdf.save();
