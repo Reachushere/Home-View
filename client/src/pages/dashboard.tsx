@@ -28278,7 +28278,12 @@ export default function Dashboard() {
                         >
                           <MessageSquare className="w-3.5 h-3.5" strokeWidth={2.5} />
                         </button>
-                        <span className="text-[10px] truncate min-w-0 flex-1 cursor-pointer hover:underline" style={{ marginLeft: '5px' }} onClick={(e) => { e.stopPropagation(); const certKey = pastEntry?.certKey || semCourse.code; startTransition(() => setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey, semKey })); }} data-testid={`course-name-click-${semCourse.code}`}><span className="font-bold">{displayName}</span>{subtitle && subtitle.trim().toLowerCase() !== displayName.trim().toLowerCase() && <> - {subtitle}</>}</span>
+                        <span className="text-[10px] truncate min-w-0 flex-1 cursor-pointer hover:underline" style={{ marginLeft: '5px' }} onClick={(e) => { e.stopPropagation(); const certKey = pastEntry?.certKey || semCourse.code; startTransition(() => setSelectedCertCourse({ courseCode: semCourse.code, courseName: subtitle || displayName, certKey, semKey })); }} data-testid={`course-name-click-${semCourse.code}`}>{(() => {
+                          const codeStr = semCourse.code;
+                          const nameStr = (subtitle && subtitle.trim()) ? subtitle : (displayName !== codeStr ? displayName : '');
+                          const showSuffix = !!nameStr && nameStr.trim().toLowerCase() !== codeStr.trim().toLowerCase();
+                          return <><span className="font-bold">{codeStr}</span>{showSuffix && <> - {nameStr}</>}</>;
+                        })()}</span>
                         {(() => {
                           const letterToGpa: Record<string, number> = { 'A+': 4.33, 'A': 4.0, 'A-': 3.67, 'B+': 3.33, 'B': 3.0, 'B-': 2.67, 'C+': 2.33, 'C': 2.0, 'C-': 1.67, 'D': 1.0, 'F': 0 };
                           const pToGpa = (p: number) => p >= 90 ? 4.33 : p >= 85 ? 4.0 : p >= 80 ? 3.67 : p >= 77 ? 3.33 : p >= 73 ? 3.0 : p >= 70 ? 2.67 : p >= 67 ? 2.33 : p >= 63 ? 2.0 : p >= 60 ? 1.67 : p >= 50 ? 1.0 : 0;
