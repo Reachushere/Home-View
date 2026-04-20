@@ -4561,24 +4561,24 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   <div className={`flex-1 min-w-0 ${hdrCls('title')}`} style={{ marginLeft: isEditingInfo ? '36px' : '36px' }} onClick={() => toggleSort('title')} data-testid="sort-title">Assignments (Graded)<SortIcon field="title" />
                   </div>
                   <div className="flex items-end flex-shrink-0 text-white" style={{ gap: '10px', position: 'relative', left: isEditingInfo ? '-41px' : '-32px' }}>
-                    <span className={`w-[33px] text-center leading-tight ${hdrCls('score')}`} onClick={() => toggleSort('score')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'relative', left: isEditingInfo ? '-8px' : '-8px' }} data-testid="sort-score">
+                    <span className={`w-[33px] text-center leading-tight ${hdrCls('score')}`} onClick={() => toggleSort('score')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'relative', left: isEditingInfo ? '-4px' : '-4px' }} data-testid="sort-score">
                       Score<SortIcon field="score" />
                     </span>
-                    <span className={`w-[33px] text-center leading-tight ${hdrCls('total')}`} onClick={() => toggleSort('total')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'relative', left: isEditingInfo ? '-8px' : '-7px' }} data-testid="sort-total">
+                    <span className={`w-[33px] text-center leading-tight ${hdrCls('total')}`} onClick={() => toggleSort('total')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'relative', left: isEditingInfo ? '-6px' : '-5px' }} data-testid="sort-total">
                       Total<SortIcon field="total" />
                     </span>
-                    <span className={`w-[33px] text-center leading-tight ${hdrCls('weight')}`} onClick={() => toggleSort('weight')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'relative', left: isEditingInfo ? '-5px' : '-4px' }} data-testid="sort-weight">
+                    <span className={`w-[33px] text-center leading-tight ${hdrCls('weight')}`} onClick={() => toggleSort('weight')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'relative', left: isEditingInfo ? '-3px' : '-2px' }} data-testid="sort-weight">
                       Weight<SortIcon field="weight" />
                     </span>
-                    <span className={`w-[33px] text-center leading-tight ${hdrCls('percent')}`} onClick={() => toggleSort('percent')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'relative', left: '-5px' }} data-testid="sort-percent">
+                    <span className={`w-[33px] text-center leading-tight ${hdrCls('percent')}`} onClick={() => toggleSort('percent')} style={{ display: 'inline-flex', justifyContent: 'center', position: 'relative', left: '-3px' }} data-testid="sort-percent">
                       Percent<SortIcon field="percent" />
                     </span>
                   </div>
                   <div className="flex items-end flex-shrink-0" style={{ gap: '6px', marginLeft: isEditingInfo ? '-24px' : '-15px', position: 'relative', left: '-8px' }}>
-                    <div className={hdrCls('scratched')} style={{ width: '18px', textAlign: 'center', lineHeight: '1.1', marginLeft: '-10px', marginRight: '2px' }} onClick={() => toggleSort('scratched')} data-testid="sort-scratched"><span className="text-[8px] font-bold text-white">Scratch<SortIcon field="scratched" /></span></div>
-                    <div className={hdrCls('gradeReceived')} style={{ width: '24px', textAlign: 'center', lineHeight: '1.1', marginLeft: '8px' }} onClick={() => toggleSort('gradeReceived')} data-testid="sort-grade-received"><span className="text-[8px] font-bold text-white">Grade<br/>Received<SortIcon field="gradeReceived" /></span></div>
-                    <div style={{ width: '24px', textAlign: 'center', lineHeight: '1.1', marginLeft: '13px' }} data-testid="header-move-section"><span className="text-[8px] font-bold text-white">Not<br/>Graded</span></div>
-                    <div style={{ width: '19px', textAlign: 'center', marginLeft: '12px' }}><span className="text-[8px] font-bold text-white">Copy</span></div>
+                    <div className={hdrCls('scratched')} style={{ width: '18px', textAlign: 'center', lineHeight: '1.1', marginLeft: '-8px', marginRight: '2px' }} onClick={() => toggleSort('scratched')} data-testid="sort-scratched"><span className="text-[8px] font-bold text-white">Scratch<SortIcon field="scratched" /></span></div>
+                    <div className={hdrCls('gradeReceived')} style={{ width: '24px', textAlign: 'center', lineHeight: '1.1', marginLeft: '10px' }} onClick={() => toggleSort('gradeReceived')} data-testid="sort-grade-received"><span className="text-[8px] font-bold text-white">Grade<br/>Received<SortIcon field="gradeReceived" /></span></div>
+                    <div style={{ width: '24px', textAlign: 'center', lineHeight: '1.1', marginLeft: '17px' }} data-testid="header-move-section"><span className="text-[8px] font-bold text-white">Not<br/>Graded</span></div>
+                    <div style={{ width: '19px', textAlign: 'center', marginLeft: '15px' }}><span className="text-[8px] font-bold text-white">Copy</span></div>
                     <div style={{ width: '19px' }} />
                   </div>
                 </div>
