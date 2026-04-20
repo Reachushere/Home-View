@@ -19739,7 +19739,22 @@ export default function Dashboard() {
               {(() => {
                 const semKeyOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029'];
                 const now = new Date();
-                const currentSemIdx = semKeyOrder.indexOf(getCurrentSemKey(now, ''));
+                let currentSemIdx = semKeyOrder.indexOf(getCurrentSemKey(now, ''));
+                // Between-semesters fallback: if no semester is currently in
+                // session, treat the most recently ENDED semester as the
+                // "current" one so the GPA box still shows finished work
+                // instead of going blank during the gap weeks.
+                if (currentSemIdx === -1) {
+                  const nowMs = now.getTime();
+                  let latestEndedIdx = -1;
+                  for (let i = 0; i < semKeyOrder.length; i++) {
+                    const range = SEMESTER_DATE_RANGES.find(r => r.key === semKeyOrder[i]);
+                    if (!range) continue;
+                    const endMs = new Date(range.end + 'T23:59:59').getTime();
+                    if (endMs < nowMs) latestEndedIdx = i;
+                  }
+                  currentSemIdx = latestEndedIdx;
+                }
                 const relevantSemKeys = currentSemIdx >= 0 ? semKeyOrder.slice(0, currentSemIdx + 1) : [];
                 const letterToGpa: Record<string, number> = { 'A+': 4.33, 'A': 4.0, 'A-': 3.67, 'B+': 3.33, 'B': 3.0, 'B-': 2.67, 'C+': 2.33, 'C': 2.0, 'C-': 1.67, 'D': 1.0, 'F': 0 };
                 const pToGpa = (p: number) => p >= 90 ? 4.33 : p >= 85 ? 4.0 : p >= 80 ? 3.67 : p >= 77 ? 3.33 : p >= 73 ? 3.0 : p >= 70 ? 2.67 : p >= 67 ? 2.33 : p >= 63 ? 2.0 : p >= 60 ? 1.67 : p >= 50 ? 1.0 : 0;
