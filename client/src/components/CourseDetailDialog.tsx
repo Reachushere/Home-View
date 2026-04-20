@@ -176,7 +176,7 @@ function DebouncedGradeInput({ value, onSave, placeholder, testId, disabled }: {
       type="text"
       inputMode="decimal"
       pattern="[0-9]*\.?[0-9]*"
-      className="w-[33px] h-[23px] text-[9px] text-center bg-transparent border border-amber-400/60 rounded text-white placeholder:text-amber-400/50 focus:border-amber-400 focus:ring-1 focus:ring-amber-400/30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none disabled:border-white/20 disabled:text-white/30 disabled:placeholder:text-white/20 disabled:cursor-not-allowed"
+      className="w-[33px] h-[23px] text-[11px] text-center bg-transparent border border-amber-400/60 rounded text-white placeholder:text-amber-400/50 focus:border-amber-400 focus:ring-1 focus:ring-amber-400/30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none disabled:border-white/20 disabled:text-white/30 disabled:placeholder:text-white/20 disabled:cursor-not-allowed"
       placeholder={placeholder}
       value={local}
       disabled={disabled}
