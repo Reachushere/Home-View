@@ -26150,14 +26150,15 @@ export default function Dashboard() {
                             // Body has overflow:visible in print, so scrollHeight
                             // is the natural full content height.
                             const contentH = body.scrollHeight;
-                            if (contentH > 0 && availableH > 0 && contentH > availableH) {
+                            if (contentH > 0 && availableH > 0) {
+                              // Always scale (up or down) so the form
+                              // fills the page. CSS zoom changes actual
+                              // layout (font, padding, gaps), so short
+                              // forms grow and long forms shrink to fit
+                              // exactly one page.
                               const scale = availableH / contentH;
                               savedBodyCss = body.style.cssText;
                               scaledBody = body;
-                              // CSS zoom actually changes layout (transform
-                              // is visual-only and gets clipped by the
-                              // dialog's overflow:hidden when height:auto
-                              // !important defeats our height override).
                               (body.style as unknown as { zoom: string }).zoom = String(scale);
                             }
                           };

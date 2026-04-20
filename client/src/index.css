@@ -2985,15 +2985,13 @@ input[type="date"].bg-white::-webkit-datetime-edit-year-field {
     flex: 1 1 auto !important;
     display: flex !important; flex-direction: column !important;
   }
-  /* When the form is shorter than the page, distribute the sections so
-     the form fills top-to-bottom instead of leaving blank space at the
-     bottom. When the form is longer than the page, the beforeprint
-     scaler applies CSS zoom on the body so everything still fits on
-     one page. */
+  /* The beforeprint scaler always applies CSS zoom on the body so the
+     form's content scales (font, padding, gaps included) to exactly
+     fill the page. Sections keep their natural spacing — no flex
+     distribution that would inject blank gaps between fields. */
   [data-testid="monthly-report-dialog"] .flex-1.overflow-y-auto {
     flex: 1 1 auto !important;
-    display: flex !important; flex-direction: column !important;
-    justify-content: space-between !important;
+    display: block !important;
   }
   [data-testid="monthly-report-dialog"] * { box-sizing: border-box !important; }
   [data-testid="monthly-report-dialog"] .monthly-report-header {
@@ -3071,8 +3069,7 @@ input[type="date"].bg-white::-webkit-datetime-edit-year-field {
 }
 .email-pdf-host [data-testid="monthly-report-dialog"] .flex-1.overflow-y-auto {
   flex: 1 1 auto !important;
-  display: flex !important; flex-direction: column !important;
-  justify-content: space-between !important;
+  display: block !important;
 }
 .email-pdf-host [data-testid="monthly-report-dialog"] * { box-sizing: border-box !important; }
 .email-pdf-host [data-testid="monthly-report-dialog"] .monthly-report-header {

@@ -81,10 +81,11 @@ export async function buildMonthlyReportPdfBytes(): Promise<Uint8Array> {
     const headerH = (header?.offsetHeight ?? 0) + (banner?.offsetHeight ?? 0);
     const availableH = captureClone.clientHeight - headerH;
     const contentH = body.scrollHeight;
-    if (contentH > 0 && availableH > 0 && contentH > availableH) {
-      // Use CSS zoom (not transform) — zoom actually changes layout, so
-      // html2canvas captures the shrunk content correctly. transform is
-      // visual-only and was being silently dropped on long forms.
+    if (contentH > 0 && availableH > 0) {
+      // Always scale (up or down) so the form's content fills the page.
+      // CSS zoom changes actual layout (font size, padding, gaps), so
+      // long forms shrink to fit and short forms grow to fill the page
+      // without leaving a tall blank block at the bottom.
       const scale = availableH / contentH;
       (body.style as unknown as { zoom: string }).zoom = String(scale);
     }
