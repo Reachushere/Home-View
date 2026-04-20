@@ -1086,6 +1086,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
       e.dataTransfer.setData('text/plain', String(taskId));
       e.dataTransfer.effectAllowed = 'move';
     } catch {}
+    console.log('[DRAG] start', { taskId, source });
   };
   const handleDragOver = (e: React.DragEvent, taskId: number) => { e.preventDefault(); try { e.dataTransfer.dropEffect = 'move'; } catch {} setDragOverId(taskId); };
   const handleDragEnd = () => { dragIdRef.current = null; dragSourceRef.current = null; setDragId(null); setDragOverId(null); setDragSourceSection(null); setDragOverSection(null); };
@@ -1099,15 +1100,16 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
   const handleSectionDrop = (e: React.DragEvent, target: 'graded' | 'ungraded') => {
     const did = dragIdRef.current;
     const src = dragSourceRef.current;
+    console.log('[DRAG] section drop', { target, did, src });
     if (did === null || !src || src === target) { handleDragEnd(); return; }
     e.preventDefault();
     e.stopPropagation();
-    const dragTask = courseTasks.find(t => t.id === dragId);
+    const dragTask = courseTasks.find(t => t.id === did);
     if (!dragTask) { handleDragEnd(); return; }
     if (target === 'graded') {
-      updateTaskMutation.mutate({ id: dragId, data: { isNotGraded: false, excludeFromGpa: false }, _task: dragTask });
+      updateTaskMutation.mutate({ id: did, data: { isNotGraded: false, excludeFromGpa: false }, _task: dragTask });
     } else {
-      updateTaskMutation.mutate({ id: dragId, data: { isNotGraded: true, gradeScratchedOff: false }, _task: dragTask });
+      updateTaskMutation.mutate({ id: did, data: { isNotGraded: true, gradeScratchedOff: false }, _task: dragTask });
     }
     handleDragEnd();
   };
