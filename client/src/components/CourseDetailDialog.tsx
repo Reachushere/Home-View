@@ -172,6 +172,7 @@ function DebouncedGradeInput({ value, onSave, placeholder, testId, disabled }: {
   }, [value, editing]);
 
   return (
+    <span draggable onDragStart={(e) => { e.preventDefault(); e.stopPropagation(); }} style={{ display: 'inline-block' }}>
     <input
       type="text"
       inputMode="decimal"
@@ -181,8 +182,6 @@ function DebouncedGradeInput({ value, onSave, placeholder, testId, disabled }: {
       value={local}
       disabled={disabled}
       onMouseDown={(e) => e.stopPropagation()}
-      onDragStart={(e) => { e.preventDefault(); e.stopPropagation(); }}
-      draggable={false}
       onFocus={() => setEditing(true)}
       onChange={(e) => setLocal(e.target.value)}
       onBlur={() => {
@@ -202,6 +201,7 @@ function DebouncedGradeInput({ value, onSave, placeholder, testId, disabled }: {
       }}
       data-testid={testId}
     />
+    </span>
   );
 }
 
