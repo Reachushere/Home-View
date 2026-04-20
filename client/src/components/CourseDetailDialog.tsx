@@ -1091,10 +1091,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
   const handleDragEnd = () => { dragIdRef.current = null; dragSourceRef.current = null; setDragId(null); setDragOverId(null); setDragSourceSection(null); setDragOverSection(null); };
   const handleSectionDragOver = (e: React.DragEvent, section: 'graded' | 'ungraded') => {
     const src = dragSourceRef.current;
-    if (!src || src === section) return;
+    if (!src) return;
     e.preventDefault();
     try { e.dataTransfer.dropEffect = 'move'; } catch {}
-    if (dragOverSection !== section) setDragOverSection(section);
+    if (src !== section && dragOverSection !== section) setDragOverSection(section);
   };
   const handleSectionDrop = (e: React.DragEvent, target: 'graded' | 'ungraded') => {
     const did = dragIdRef.current;
@@ -2037,6 +2037,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
         draggable
         onDragStart={(e) => handleDragStart(e, task.id, 'ungraded')}
         onDragEnd={handleDragEnd}
+        onDragOver={(e) => { if (dragSourceRef.current) { e.preventDefault(); try { e.dataTransfer.dropEffect = 'move'; } catch {} } }}
         className={`flex items-center px-1.5 py-1.5 rounded-md border transition-all ${
           dragId === task.id ? "opacity-40 border-blue-400/50" :
           task.isCompleted ? "bg-white/5 border-white/5" :
