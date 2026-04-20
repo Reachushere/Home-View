@@ -1909,17 +1909,45 @@ export default function Dashboard() {
   const [isMonthlyReportOpen, setIsMonthlyReportOpen] = useState(false);
   // When the monthly report dialog opens, refresh the GPA field from the latest
   // running GPA computed by the degree-tracking page so it always matches the
-  // GPA shown in the top-right of that page.
+  // GPA shown in the top-right of that page. Also auto-fill the Reporting
+  // Period (20th of last month -> 19th of current month) and Report Date
+  // (today) — these are the same on every monthly report so we always
+  // recompute them so the user never has to type a date.
   useEffect(() => {
     if (!isMonthlyReportOpen) return;
     try {
-      const g = localStorage.getItem('currentRunningGpa');
-      if (!g) return;
+      // Compute today in the app's timezone so the date is correct even when
+      // the Pi/server clock is in a different zone.
+      const tz = (typeof getAppTz === 'function') ? getAppTz() : 'America/Toronto';
+      const nowEt = new Date(new Date().toLocaleString('en-US', { timeZone: tz }));
+      const fmtLong = (d: Date) => d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      // Period: 20th of (this month - 1) -> 19th of this month.
+      const periodEnd = new Date(nowEt.getFullYear(), nowEt.getMonth(), 19);
+      const periodStart = new Date(nowEt.getFullYear(), nowEt.getMonth() - 1, 20);
+      const reportingPeriod = `${fmtLong(periodStart)} to ${fmtLong(periodEnd)}`;
+      const reportDate = fmtLong(nowEt);
+
       setMonthlyReportFields((p: any) => {
-        const cur = (p?.gradeStatus || '').trim();
-        const looksLikeAutoGpa = cur === '' || /^\s*\d\.\d{1,2}\s+overall\s*$/i.test(cur) || /this class/i.test(cur);
-        if (!looksLikeAutoGpa) return p;
-        return { ...p, gradeStatus: `${g} overall` };
+        const next: any = { ...p };
+        // Always strip any "X.X this class," prefix — never show "this class".
+        if (typeof next.gradeStatus === 'string') {
+          next.gradeStatus = next.gradeStatus.replace(/\d+(?:\.\d+)?\s*this\s*class\s*,?\s*/gi, '').trim();
+        }
+        // GPA refresh from latest running GPA
+        try {
+          const g = localStorage.getItem('currentRunningGpa');
+          if (g) {
+            const cur = (next.gradeStatus || '').trim();
+            const looksLikeAutoGpa = cur === '' || /^\s*\d\.\d{1,2}\s+overall\s*$/i.test(cur);
+            if (looksLikeAutoGpa) next.gradeStatus = `${g} overall`;
+          }
+        } catch {}
+        // Always overwrite reportingPeriod + reportDate with computed values
+        // so they stay current. If the user wants a custom value they can
+        // edit the field after the dialog is open.
+        next.reportingPeriod = reportingPeriod;
+        next.reportDate = reportDate;
+        return next;
       });
     } catch {}
   }, [isMonthlyReportOpen]);
@@ -1932,8 +1960,22 @@ export default function Dashboard() {
     return [];
   });
   const [monthlyReportFields, setMonthlyReportFields] = useState(() => {
+    // Strip any "X.X this class," prefix from gradeStatus — Bryn never wants
+    // "this class" shown in the report, only the overall GPA.
+    const sanitizeGrade = (s: any): string => {
+      if (typeof s !== 'string') return '';
+      return s.replace(/\d+(?:\.\d+)?\s*this\s*class\s*,?\s*/gi, '').trim();
+    };
     const saved = localStorage.getItem('monthlyReportFields');
-    if (saved) try { return JSON.parse(saved); } catch {}
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed === 'object') {
+          parsed.gradeStatus = sanitizeGrade(parsed.gradeStatus);
+        }
+        return parsed;
+      } catch {}
+    }
     return {
       reportingPeriod: '',
       reportDate: '',
