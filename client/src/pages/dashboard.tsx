@@ -28397,7 +28397,7 @@ export default function Dashboard() {
                                     return (
                                       <span
                                         className="font-bold tracking-wider uppercase rounded border flex-shrink"
-                                        style={{ color: '#ffffff', background: 'rgba(80,130,210,0.45)', borderColor: 'rgba(170,210,255,0.5)', lineHeight: '14px', fontSize: 'clamp(5px, 1.2vw, 7px)', padding: '0 clamp(3px, 0.6vw, 5px)', whiteSpace: 'nowrap', flexShrink: 1, minWidth: 0 }}
+                                        style={{ color: '#ffffff', background: 'rgba(80,130,210,0.45)', borderColor: 'rgba(170,210,255,0.5)', lineHeight: '14px', fontSize: '9px', padding: '0 6px', whiteSpace: 'nowrap', flexShrink: 1, minWidth: 0 }}
                                         title={`Semester average across ${gpaVals.length} course${gpaVals.length === 1 ? '' : 's'}`}
                                         data-testid={`badge-sem-gpa-${sem.key}`}
                                       >
