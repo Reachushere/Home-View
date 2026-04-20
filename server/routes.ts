@@ -955,11 +955,32 @@ export async function registerRoutes(
             existingKeys.add(`${title}||${dateKey}`);
             existingKeys.add(`${(t.title || '').toLowerCase()}||${dateKey}`);
           }
-          let created = 0, skipped = 0, failed = 0;
+          // Load tombstones once so we never re-import anything the user deleted
+          let tombstones = new Set<string>();
+          try {
+            const ts = await db.select().from(appState).where(eq(appState.key, "deleted_task_signatures")).limit(1);
+            if (ts.length > 0) {
+              const arr = JSON.parse(ts[0].value || "[]");
+              if (Array.isArray(arr)) tombstones = new Set(arr);
+            }
+          } catch {}
+          // Also build a tombstone-by-title set so we can block ANY date variant
+          const tombstoneTitles = new Set<string>();
+          for (const sig of tombstones) {
+            const titlePart = sig.split("||")[0];
+            if (titlePart) tombstoneTitles.add(titlePart);
+          }
+          let created = 0, skipped = 0, failed = 0, tombstoned = 0;
           for (const t of incoming) {
             const title = stripBrackets(t.title || '').toLowerCase();
             const dateKey = t.dueDate ? easternDateStr(new Date(t.dueDate)) : '';
             const rawTitle = (t.title || '').toLowerCase();
+            // Skip if user has ever deleted a task with this title
+            if (tombstoneTitles.has(title.trim()) || tombstoneTitles.has(rawTitle.trim())) {
+              tombstoned++;
+              console.log(`[AutoImport] TOMBSTONED skip: "${t.title}"`);
+              continue;
+            }
             if (existingKeys.has(`${title}||${dateKey}`) || existingKeys.has(`${rawTitle}||${dateKey}`)) {
               skipped++;
               continue;
