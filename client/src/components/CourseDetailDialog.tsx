@@ -1086,7 +1086,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
       e.dataTransfer.setData('text/plain', String(taskId));
       e.dataTransfer.effectAllowed = 'move';
     } catch {}
-    console.log('[DRAG] start', { taskId, source });
   };
   const handleDragOver = (e: React.DragEvent, taskId: number) => { e.preventDefault(); try { e.dataTransfer.dropEffect = 'move'; } catch {} setDragOverId(taskId); };
   const handleDragEnd = () => { dragIdRef.current = null; dragSourceRef.current = null; setDragId(null); setDragOverId(null); setDragSourceSection(null); setDragOverSection(null); };
@@ -1100,7 +1099,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
   const handleSectionDrop = (e: React.DragEvent, target: 'graded' | 'ungraded') => {
     const did = dragIdRef.current;
     const src = dragSourceRef.current;
-    console.log('[DRAG] section drop', { target, did, src });
     if (did === null || !src || src === target) { handleDragEnd(); return; }
     e.preventDefault();
     e.stopPropagation();
