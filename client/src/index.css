@@ -2985,14 +2985,12 @@ input[type="date"].bg-white::-webkit-datetime-edit-year-field {
     flex: 1 1 auto !important;
     display: flex !important; flex-direction: column !important;
   }
-  /* The inner space-y-3 stack should distribute its sections evenly so the
-     form fills the page top-to-bottom instead of leaving blank space at
-     the bottom. */
+  /* Stack sections from the top with their natural spacing. The
+     beforeprint scaler shrinks the body via CSS zoom when the form is
+     long, so we don't need to spread sections apart to fill the page. */
   [data-testid="monthly-report-dialog"] > .flex-1 > .overflow-y-auto,
   [data-testid="monthly-report-dialog"] > .flex-1 > .overflow-y-auto > .space-y-3 {
-    flex: 1 1 auto !important;
-    display: flex !important; flex-direction: column !important;
-    justify-content: space-between !important;
+    display: block !important;
   }
   [data-testid="monthly-report-dialog"] * { box-sizing: border-box !important; }
   [data-testid="monthly-report-dialog"] .monthly-report-header {
@@ -3038,7 +3036,7 @@ input[type="date"].bg-white::-webkit-datetime-edit-year-field {
   [data-testid="monthly-report-dialog"] .text-cyan-300\/80 { font-size: 12px !important; font-weight: 600 !important; }
   /* Hide controls that aren't part of the printed form */
   [data-testid="report-save"], [data-testid="report-saved"], [data-testid="report-print"],
-  [data-testid="report-copy"], [data-testid="report-close"],
+  [data-testid="report-email"], [data-testid="report-copy"], [data-testid="report-close"],
   .monthly-report-footer { display: none !important; }
 }
 
@@ -3070,9 +3068,7 @@ input[type="date"].bg-white::-webkit-datetime-edit-year-field {
 }
 .email-pdf-host [data-testid="monthly-report-dialog"] > .flex-1 > .overflow-y-auto,
 .email-pdf-host [data-testid="monthly-report-dialog"] > .flex-1 > .overflow-y-auto > .space-y-3 {
-  flex: 1 1 auto !important;
-  display: flex !important; flex-direction: column !important;
-  justify-content: space-between !important;
+  display: block !important;
 }
 .email-pdf-host [data-testid="monthly-report-dialog"] * { box-sizing: border-box !important; }
 .email-pdf-host [data-testid="monthly-report-dialog"] .monthly-report-header {

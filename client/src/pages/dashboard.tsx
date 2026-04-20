@@ -26087,10 +26087,11 @@ export default function Dashboard() {
                               const scale = availableH / contentH;
                               savedBodyCss = body.style.cssText;
                               scaledBody = body;
-                              body.style.transformOrigin = 'top left';
-                              body.style.transform = `scale(${scale})`;
-                              body.style.width = `${100 / scale}%`;
-                              body.style.height = `${contentH}px`;
+                              // CSS zoom actually changes layout (transform
+                              // is visual-only and gets clipped by the
+                              // dialog's overflow:hidden when height:auto
+                              // !important defeats our height override).
+                              (body.style as unknown as { zoom: string }).zoom = String(scale);
                             }
                           };
                           const onAfterPrint = () => {
