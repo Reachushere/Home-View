@@ -19883,7 +19883,7 @@ export default function Dashboard() {
                     ) : (
                       <span className="text-[10px]" style={{ color: '#aaa' }}>—</span>
                     )}
-                    {runningGpa !== null && (
+                    {currentSemKey !== null && runningGpa !== null && (
                       <>
                         <span style={{ color: '#ccc', fontSize: '16px', fontWeight: 300 }}>|</span>
                         <span className="flex flex-col items-center leading-none" style={{ gap: '1px' }}>
