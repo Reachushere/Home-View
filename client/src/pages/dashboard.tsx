@@ -26138,6 +26138,16 @@ export default function Dashboard() {
                           const onBeforePrint = () => {
                             const dialog = document.querySelector<HTMLElement>('[data-testid="monthly-report-dialog"]');
                             if (!dialog) return;
+                            // Force the dialog into the actual print
+                            // layout (7.7×10.2in) BEFORE measuring.
+                            // Without this we'd measure the on-screen
+                            // dialog (~600px) and undersize the scale,
+                            // leaving a gap on the printed page.
+                            const overlay = document.querySelector<HTMLElement>('[data-testid="monthly-report-overlay"]');
+                            dialog.classList.add('pdf-print-mode');
+                            overlay?.classList.add('pdf-print-mode-overlay');
+                            // Force layout
+                            void dialog.offsetHeight;
                             const body = dialog.querySelector<HTMLElement>(':scope > .flex-1.overflow-y-auto')
                               || dialog.querySelector<HTMLElement>(':scope > .overflow-y-auto')
                               || dialog.querySelector<HTMLElement>('.flex-1.overflow-y-auto');
@@ -26184,6 +26194,10 @@ export default function Dashboard() {
                               }
                               scaledBody = null;
                             }
+                            const dialogEl = document.querySelector<HTMLElement>('[data-testid="monthly-report-dialog"]');
+                            const overlayEl = document.querySelector<HTMLElement>('[data-testid="monthly-report-overlay"]');
+                            dialogEl?.classList.remove('pdf-print-mode');
+                            overlayEl?.classList.remove('pdf-print-mode-overlay');
                             window.removeEventListener('beforeprint', onBeforePrint);
                             window.removeEventListener('afterprint', onAfterPrint);
                           };
