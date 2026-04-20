@@ -1077,12 +1077,24 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
 
   const dragIdRef = useRef<number | null>(null);
   const dragSourceRef = useRef<'graded' | 'ungraded' | null>(null);
-  const handleDragStart = (taskId: number, source: 'graded' | 'ungraded' = 'graded') => { dragIdRef.current = taskId; dragSourceRef.current = source; setDragId(taskId); setDragSourceSection(source); };
-  const handleDragOver = (e: React.DragEvent, taskId: number) => { e.preventDefault(); setDragOverId(taskId); };
+  const handleDragStart = (e: React.DragEvent, taskId: number, source: 'graded' | 'ungraded' = 'graded') => {
+    dragIdRef.current = taskId;
+    dragSourceRef.current = source;
+    setDragId(taskId);
+    setDragSourceSection(source);
+    try {
+      e.dataTransfer.setData('text/plain', String(taskId));
+      e.dataTransfer.effectAllowed = 'move';
+    } catch {}
+  };
+  const handleDragOver = (e: React.DragEvent, taskId: number) => { e.preventDefault(); try { e.dataTransfer.dropEffect = 'move'; } catch {} setDragOverId(taskId); };
   const handleDragEnd = () => { dragIdRef.current = null; dragSourceRef.current = null; setDragId(null); setDragOverId(null); setDragSourceSection(null); setDragOverSection(null); };
   const handleSectionDragOver = (e: React.DragEvent, section: 'graded' | 'ungraded') => {
     const src = dragSourceRef.current;
-    if (src && src !== section) { e.preventDefault(); if (dragOverSection !== section) setDragOverSection(section); }
+    if (!src || src === section) return;
+    e.preventDefault();
+    try { e.dataTransfer.dropEffect = 'move'; } catch {}
+    if (dragOverSection !== section) setDragOverSection(section);
   };
   const handleSectionDrop = (e: React.DragEvent, target: 'graded' | 'ungraded') => {
     const did = dragIdRef.current;
@@ -1699,7 +1711,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
       <React.Fragment key={task.id}>
       <div
         draggable
-        onDragStart={() => handleDragStart(task.id)}
+        onDragStart={(e) => handleDragStart(e, task.id)}
         onDragOver={(e) => handleDragOver(e, task.id)}
         onDrop={(e) => handleDrop(e, task.id, currentGroup)}
         onDragEnd={handleDragEnd}
@@ -2023,7 +2035,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
       <React.Fragment key={task.id}>
       <div
         draggable
-        onDragStart={() => handleDragStart(task.id, 'ungraded')}
+        onDragStart={(e) => handleDragStart(e, task.id, 'ungraded')}
         onDragEnd={handleDragEnd}
         className={`flex items-center px-1.5 py-1.5 rounded-md border transition-all ${
           dragId === task.id ? "opacity-40 border-blue-400/50" :
