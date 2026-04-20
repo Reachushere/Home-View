@@ -1,0 +1,174 @@
+byhomeyyz@raspberrypi:~/Home-View $ git pull && npm run build && pm2 restart dashboard
+remote: Enumerating objects: 28, done.
+remote: Counting objects: 100% (28/28), done.
+remote: Compressing objects: 100% (11/11), done.
+remote: Total 22 (delta 17), reused 16 (delta 11), pack-reused 0 (from 0)
+Unpacking objects: 100% (22/22), 139.48 KiB | 1.53 MiB/s, done.
+From https://github.com/Reachushere/Home-View
+   6950163ae..c00f36f44  main       -> origin/main
+Updating 6950163ae..c00f36f44
+Fast-forward
+ attached_assets/image_1776668645295.png      | Bin 0 -> 50358 bytes
+ attached_assets/image_1776668874349.png      | Bin 0 -> 97267 bytes
+ client/src/components/CourseDetailDialog.tsx |  36 +++++++++++++++++++++++-------------
+ 3 files changed, 23 insertions(+), 13 deletions(-)
+ create mode 100644 attached_assets/image_1776668645295.png
+ create mode 100644 attached_assets/image_1776668874349.png
+
+> rest-express@1.0.0 build
+> tsx script/build.ts
+
+building client...
+vite v7.3.0 building client environment for production...
+✓ 2411 modules transformed.
+✗ Build failed in 9.23s
+[vite:esbuild] Transform failed with 1 error:
+/home/byhomeyyz/Home-View/client/src/components/CourseDetailDialog.tsx:4328:20: ERROR: Expected ")" but found "size"
+file: /home/byhomeyyz/Home-View/client/src/components/CourseDetailDialog.tsx:4328:20
+
+Expected ")" but found "size"
+4326 |                    </button>
+4327 |                    <Button
+4328 |                      size="sm"
+     |                      ^
+4329 |                      onClick={(e) => { e.stopPropagation(); setShowAddForm(!showAddForm); }}
+4330 |                      className="px-2 text-[9px] bg-white/10 hover:bg-white/20 text-white border border-white/20"
+
+    at failureErrorWithLog (/home/byhomeyyz/Home-View/node_modules/vite/node_modules/esbuild/lib/main.js:1467:15)
+    at /home/byhomeyyz/Home-View/node_modules/vite/node_modules/esbuild/lib/main.js:736:50
+    at responseCallbacks.<computed> (/home/byhomeyyz/Home-View/node_modules/vite/node_modules/esbuild/lib/main.js:603:9)
+    at handleIncomingPacket (/home/byhomeyyz/Home-View/node_modules/vite/node_modules/esbuild/lib/main.js:658:12)
+    at Socket.readFromStdout (/home/byhomeyyz/Home-View/node_modules/vite/node_modules/esbuild/lib/main.js:581:7)
+    at Socket.emit (node:events:509:20)
+    at addChunk (node:internal/streams/readable:564:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:515:3)
+    at Readable.push (node:internal/streams/readable:395:5)
+    at Pipe.onStreamRead (node:internal/stream_base_commons:189:23) {
+  errors: [Getter/Setter],
+  warnings: [Getter/Setter],
+  frame: '\n' +
+    '\x1B[33mExpected ")" but found "size"\x1B[39m\n' +
+    '4326 |                    </button>\n' +
+    '4327 |                    <Button\n' +
+    '4328 |                      size="sm"\n' +
+    '     |                      ^\n' +
+    '4329 |                      onClick={(e) => { e.stopPropagation(); setShowAddForm(!showAddForm); }}\n' +
+    '4330 |                      className="px-2 text-[9px] bg-white/10 hover:bg-white/20 text-white border border-white/20"\n',
+  loc: {
+    column: 20,
+    file: '/home/byhomeyyz/Home-View/client/src/components/CourseDetailDialog.tsx',
+    length: 4,
+    line: 4328,
+    lineText: '                    size="sm"',
+    namespace: '',
+    suggestion: ')'
+  },
+  code: 'PLUGIN_ERROR',
+  plugin: 'vite:esbuild',
+  hook: 'transform',
+  id: '/home/byhomeyyz/Home-View/client/src/components/CourseDetailDialog.tsx',
+  watchFiles: [
+    '/home/byhomeyyz/Home-View/client/index.html',
+    '/home/byhomeyyz/Home-View/client/src/main.tsx',
+    '/home/byhomeyyz/Home-View/package.json',
+    '/home/byhomeyyz/Home-View/node_modules/drag-drop-touch/DragDropTouch.js',
+    '/home/byhomeyyz/Home-View/node_modules/preact/compat/jsx-runtime.mjs',
+    '/home/byhomeyyz/Home-View/node_modules/preact/compat/client.mjs',
+    '/home/byhomeyyz/Home-View/client/src/App.tsx',
+    '/home/byhomeyyz/Home-View/client/src/index.css',
+    '/home/byhomeyyz/Home-View/node_modules/preact/compat/dist/compat.module.js',
+    '/home/byhomeyyz/Home-View/node_modules/preact/jsx-runtime/dist/jsxRuntime.module.js',
+    '/home/byhomeyyz/Home-View/node_modules/wouter/esm/index.js',
+    '/home/byhomeyyz/Home-View/node_modules/@tanstack/react-query/build/modern/index.js',
+    '/home/byhomeyyz/Home-View/client/src/lib/queryClient.ts',
+    '/home/byhomeyyz/Home-View/node_modules/lucide-react/dist/esm/lucide-react.js',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/toaster.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/tooltip.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/access-gate.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/OpenAIApprovalNotifier.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/not-found.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/files.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/projects.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/pdf-viewer.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/pdf-reader.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/onedrive.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/onenote.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/spotify-player.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/mobile-notes.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/mobile-upload.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/code-checker.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/ticker.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/shared-library.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/essay-editor.tsx',
+    '/home/byhomeyyz/Home-View/client/src/pages/mobile-app.tsx',
+    '/home/byhomeyyz/Home-View/node_modules/preact/dist/preact.module.js',
+    '/home/byhomeyyz/Home-View/node_modules/preact/hooks/dist/hooks.module.js',
+    '/home/byhomeyyz/Home-View/client/src/hooks/use-devices.ts',
+    '/home/byhomeyyz/Home-View/client/src/hooks/use-toast.ts',
+    '/home/byhomeyyz/Home-View/client/src/hooks/use-upload.ts',
+    '/home/byhomeyyz/Home-View/client/src/lib/dialogStyles.ts',
+    '/home/byhomeyyz/Home-View/client/src/lib/monthlyReportEmail.ts',
+    '/home/byhomeyyz/Home-View/client/src/lib/starCatalog.ts',
+    '/home/byhomeyyz/Home-View/client/src/lib/utils.ts',
+    '/home/byhomeyyz/Home-View/client/src/pages/dashboard-constants.ts',
+    '/home/byhomeyyz/Home-View/client/src/pages/dashboard-utils.ts',
+    '/home/byhomeyyz/Home-View/client/src/pages/mobile/hooks.ts',
+    '/home/byhomeyyz/Home-View/client/src/pages/mobile/types.ts',
+    '/home/byhomeyyz/Home-View/client/src/components/AddDeviceDialog.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/AdminPanel.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/AiChatBubble.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/AiCommandWizard.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/AutomationEditor.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/AutomationsReference.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/BookAnimation.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/CalendarSettingsDialog.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ChangelogPopup.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/CourseDetailDialog.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/CourseDocumentsWizard.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/DeviceCard.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/FastInput.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/FloatingPostIt.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/LibraryView.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/NewCourseWizard.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/NewSemesterChecklist.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/NotepadDialog.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ObjectUploader.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/OtherRowEditDialog.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/SemesterChecklistDialog.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/Sidebar.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/StickyNoteItem.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/SystemSetupWizard.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/UniCalLogo.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/accordion.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/alert-dialog.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/alert.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/aspect-ratio.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/avatar.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/badge.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/breadcrumb.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/button.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/calendar.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/card.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/carousel.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/chart.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/checkbox.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/collapsible.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/command.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/context-menu.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/dialog.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/drawer.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/dropdown-menu.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/form.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/hover-card.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/input-otp.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/input.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/label.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/menubar.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/navigation-menu.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/pagination.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/popover.tsx',
+    '/home/byhomeyyz/Home-View/client/src/components/ui/progress.tsx',
+    ... 2360 more items
+  ]
+}
+byhomeyyz@raspberrypi:~/Home-View $
