@@ -2048,6 +2048,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
         }`}
         data-testid={`ungraded-row-${task.id}`}
       >
+        <div className="flex-shrink-0 cursor-grab active:cursor-grabbing text-white/30 hover:text-white/60" style={{ marginRight: '10px' }} data-testid={`drag-handle-ungraded-${task.id}`}>
+          <GripVertical className="h-3.5 w-3.5" />
+        </div>
         <button
           onClick={(e) => { e.stopPropagation(); toggleTaskMutation.mutate({ id: task.id, isCompleted: !task.isCompleted, _task: task }); }}
           className={`flex-shrink-0 w-4 h-4 rounded-sm border-2 flex items-center justify-center transition-colors ${
