@@ -6836,14 +6836,97 @@ PRODUCTION (Pi):
 • Deploy flow: push to GitHub → Pi runs ~/Home-View/deploy.sh → git pull → npm run build → pm2 restart all
 • Build output: dist/index.cjs (server), dist/public/ (frontend)
 
-DEVELOPMENT:
-• Replit (separate environment, different DB)
-• Same codebase, different runtime
+⚠️ NO MORE REPLIT. The Replit dev environment was SHUT DOWN. The Pi is the
+ONE AND ONLY environment now — there is no parallel Replit DB, no Replit
+sidecar, no Replit object storage. Anything in the codebase that references
+REPLIT_DOMAINS / REPLIT_DEV_DOMAIN / REPLIT_CONNECTORS_HOSTNAME / REPL_ID /
+picard.replit.dev is either:
+  (a) a fallback that will never fire on the Pi (e.g., OAuth redirect
+      construction in spotify.ts/secondGoogleAccount.ts/googleCalendar.ts —
+      all of those prefer APP_DOMAIN, then fall through to 'uni-cal.app' if
+      every REPLIT_* var is unset), OR
+  (b) dead bootstrap code (pi-force-import.cjs / pi-force-import.sh) from
+      when the Pi pulled directly from Replit. With Replit gone, those
+      scripts are inert.
+Do NOT add new code that depends on Replit. Use process.env.APP_DOMAIN for
+host-aware logic, the local Postgres DB for storage, /local-object-storage
+(or the existing object_storage abstraction with its Pi fallback) for
+files, and process.env.OPENAI_API_KEY (direct to api.openai.com) for AI.
+
+DEPLOY FLOW (CRITICAL — do not just pm2 restart):
+• git push to origin/main, then on the Pi: ~/Home-View/deploy.sh
+• deploy.sh = git pull → npm run build → pm2 restart all
+• The runtime entry point is dist/index.cjs (compiled). A plain
+  "pm2 restart dashboard" without rebuilding runs STALE code from before
+  the last edit. Every code change requires the rebuild.
+• After deploy, the user must hard-refresh (Ctrl+Shift+R) — service worker
+  / aggressive caching otherwise serves old bundle.
 
 HOME ASSISTANT:
 • Nabu Casa cloud URL: https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa
 • Long-lived access token (JWT, starts with eyJ...)
 • 400+ devices — NEVER guess entity IDs, always ha_list_entities first
+
+═══════════════════════════════════════════════════
+§2.5 — RECENT FIXES & PATTERNS YOU MUST KNOW (April 2026 session)
+═══════════════════════════════════════════════════
+MONTHLY REPORT (the Kevin Morrall report — fully working as of commit ca9a1811b):
+• Three buttons in the dialog: Print, Email Kevin, Copy. The dialog has
+  data-testid="monthly-report-dialog"; its overlay is
+  data-testid="monthly-report-overlay".
+• Print path lives in client/src/pages/dashboard.tsx (search onBeforePrint
+  near the report-print button). Email/PDF path lives in
+  client/src/lib/monthlyReportEmail.ts → buildMonthlyReportPdfBytes() and
+  emailMonthlyReportViaOutlook().
+• Both paths share ONE design goal: render the form to fill a single
+  US Letter page exactly (7.7in × 10.2in printable area = Letter minus
+  0.4in margins on every side). Short forms scale UP, long forms scale
+  DOWN, never overflow, never leave a gap.
+• Mechanism: (1) wrap the body's children in <div data-print-scale-wrap>;
+  (2) binary-search for the largest scale (lo=0.3, hi=3.0, 14 iterations)
+  that keeps wrap.getBoundingClientRect().bottom <= dialog bottom;
+  (3) apply that scale.
+• Print uses CSS `zoom` (browsers honor it for native printing).
+• PDF uses CSS `transform: scale()` with transform-origin: top left
+  (html2canvas IGNORES `zoom` but DOES honor `transform`). The wrap's
+  width is also bumped to 100/scale% so scaled-down content still fills
+  the page horizontally.
+• CRITICAL: beforeprint fires while the dialog is still in its on-screen
+  layout — Chrome doesn't apply @media print rules until AFTER beforeprint
+  returns. So the Print handler stamps `pdf-print-mode` (a class) on the
+  live dialog BEFORE measuring. That class lives in client/src/index.css
+  and mirrors the @media print rules (forces 7.7×10.2in, hides buttons,
+  etc.) so JS measurements see the real print dimensions. Removed in
+  onAfterPrint.
+• Email PDF uses the matching `.email-pdf-host` scope on an offscreen
+  clone (also in index.css). DO NOT replace one with the other — they
+  share rules but are toggled differently.
+• Email PDF additionally uploads a copy to OneDrive at
+  /School/1. TMU/Administrative/Monthly Reports/<year>/Monthly Report - <Month YYYY>.pdf
+  via POST /api/onedrive/upload-monthly-report (year auto-derived from
+  the report's month/year label). Failure logs but doesn't block email.
+
+GPA AUTO-UPDATE:
+• currentRunningGpa is recomputed via a dedicated useEffect in
+  dashboard.tsx (search "currentRunningGpa") whenever
+  semesterCourseAssignments / courseGrades / pastCourseInfo /
+  openElectives / certCourseMap changes. Do NOT add a code path that
+  re-derives it only when the Degree Tracking page renders — that
+  regression lasted weeks before the dedicated effect was added.
+
+DECIMAL ROUNDING IN GRADE DISPLAY:
+• Assignment values use .toFixed(1) when fractional, plain integer when
+  whole — never the raw 0.4000000001. Apply the same pattern anywhere a
+  user-visible number could come from floating-point math.
+
+TIMEZONE:
+• Always Eastern. Use easternDateStr() / easternNow() helpers in
+  shared/timezone.ts (or wherever they live in shared/) — never raw
+  new Date() for anything user-visible.
+
+DASHBOARD.TSX SIZE:
+• ~41,500 lines. read_file with offset/limit, or grep first. Don't try
+  to load the whole file.
 
 ═══════════════════════════════════════════════════
 §3 — YOUR PERSONALITY & THINKING-OUT-LOUD PROTOCOL
