@@ -30,15 +30,40 @@ export async function buildMonthlyReportPdfBytes(): Promise<Uint8Array> {
   const prevScrollTop = scrollEl?.scrollTop ?? 0;
   if (scrollEl) scrollEl.scrollTop = 0;
 
+  // Temporarily expand the dialog and any inner scrollable elements so we
+  // can measure (and capture) the full content height. Without this,
+  // html2canvas only captures the dialog's clipped visible area and the
+  // PDF gets cut off mid-page when content is long.
+  type SavedStyle = { el: HTMLElement; cssText: string };
+  const savedStyles: SavedStyle[] = [];
+  const expandEl = (el: HTMLElement) => {
+    savedStyles.push({ el, cssText: el.style.cssText });
+    el.style.maxHeight = "none";
+    el.style.height = "auto";
+    el.style.overflow = "visible";
+  };
+  expandEl(dialog);
+  if (scrollEl && scrollEl !== dialog) expandEl(scrollEl);
+  dialog.querySelectorAll<HTMLElement>("*").forEach((el) => {
+    const cs = window.getComputedStyle(el);
+    if (cs.overflowY === "auto" || cs.overflowY === "scroll" || cs.overflow === "auto" || cs.overflow === "scroll") {
+      expandEl(el);
+    }
+  });
+  // Force layout to recompute, then read the true expanded height.
+  void dialog.offsetHeight;
+  const fullHeight = Math.max(dialog.scrollHeight, dialog.offsetHeight);
+  const fullWidth = Math.max(dialog.scrollWidth, dialog.offsetWidth);
+
   const canvas = await html2canvas(dialog, {
     backgroundColor: "#ffffff",
     scale: 2,
     useCORS: true,
     logging: false,
-    windowWidth: dialog.scrollWidth,
-    windowHeight: dialog.scrollHeight,
-    height: dialog.scrollHeight,
-    width: dialog.scrollWidth,
+    windowWidth: fullWidth,
+    windowHeight: fullHeight,
+    height: fullHeight,
+    width: fullWidth,
     onclone: (clonedDoc) => {
       const clonedDialog = clonedDoc.querySelector<HTMLElement>('[data-testid="monthly-report-dialog"]');
       if (!clonedDialog) return;
@@ -78,6 +103,11 @@ export async function buildMonthlyReportPdfBytes(): Promise<Uint8Array> {
     },
   });
 
+  // Restore the original styles we mutated for the capture so the visible
+  // dialog snaps back to its scrollable layout.
+  for (const s of savedStyles) {
+    s.el.style.cssText = s.cssText;
+  }
   if (scrollEl) scrollEl.scrollTop = prevScrollTop;
   liveInputs.forEach((el) => el.removeAttribute("data-clone-key"));
   liveTextareas.forEach((el) => el.removeAttribute("data-clone-key"));
