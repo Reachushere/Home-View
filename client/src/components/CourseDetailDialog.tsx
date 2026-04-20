@@ -1672,12 +1672,16 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
   };
 
   const handleAddTask = () => {
-    if (!newTask.title.trim() || !newTask.dueDate) {
-      toast({ title: "Missing fields", description: "Title and due date are required.", variant: "destructive" });
+    if (!newTask.title.trim()) {
+      toast({ title: "Missing title", description: "Title is required.", variant: "destructive" });
+      return;
+    }
+    if (!newTask.isNotGraded && !newTask.dueDate) {
+      toast({ title: "Missing due date", description: "Due date is required for graded assignments.", variant: "destructive" });
       return;
     }
 
-    const dueDate = new Date(newTask.dueDate);
+    const dueDate = newTask.dueDate ? new Date(newTask.dueDate) : new Date();
     if (newTask.dueTime) {
       const [h, m] = newTask.dueTime.split(":").map(Number);
       dueDate.setHours(h, m, 0, 0);
@@ -4290,6 +4294,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               <div className="flex items-center gap-1.5">
                 {showAssignments && (
                   <>
+                  {isEditingInfo && (
                   <button
                     onClick={(e) => { e.stopPropagation(); onAllAssignmentsAddedChange?.(!allAssignmentsAdded); }}
                     className="flex items-center gap-1 px-1.5 text-[8px] rounded border cursor-pointer transition-all"
@@ -4326,6 +4331,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     <Plus className="h-3 w-3 mr-1" />
                     Add
                   </Button>
+                  </>
+                  )}
                   </>
                 )}
                 {showAssignments ? <ChevronDown className="h-3 w-3 text-white/50" /> : <ChevronRight className="h-3 w-3 text-white/50" />}
