@@ -1075,14 +1075,19 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['/api/tasks'] }); },
   });
 
-  const handleDragStart = (taskId: number, source: 'graded' | 'ungraded' = 'graded') => { setDragId(taskId); setDragSourceSection(source); };
+  const dragIdRef = useRef<number | null>(null);
+  const dragSourceRef = useRef<'graded' | 'ungraded' | null>(null);
+  const handleDragStart = (taskId: number, source: 'graded' | 'ungraded' = 'graded') => { dragIdRef.current = taskId; dragSourceRef.current = source; setDragId(taskId); setDragSourceSection(source); };
   const handleDragOver = (e: React.DragEvent, taskId: number) => { e.preventDefault(); setDragOverId(taskId); };
-  const handleDragEnd = () => { setDragId(null); setDragOverId(null); setDragSourceSection(null); setDragOverSection(null); };
+  const handleDragEnd = () => { dragIdRef.current = null; dragSourceRef.current = null; setDragId(null); setDragOverId(null); setDragSourceSection(null); setDragOverSection(null); };
   const handleSectionDragOver = (e: React.DragEvent, section: 'graded' | 'ungraded') => {
-    if (dragSourceSection && dragSourceSection !== section) { e.preventDefault(); setDragOverSection(section); }
+    const src = dragSourceRef.current;
+    if (src && src !== section) { e.preventDefault(); if (dragOverSection !== section) setDragOverSection(section); }
   };
   const handleSectionDrop = (e: React.DragEvent, target: 'graded' | 'ungraded') => {
-    if (dragId === null || !dragSourceSection || dragSourceSection === target) { handleDragEnd(); return; }
+    const did = dragIdRef.current;
+    const src = dragSourceRef.current;
+    if (did === null || !src || src === target) { handleDragEnd(); return; }
     e.preventDefault();
     e.stopPropagation();
     const dragTask = courseTasks.find(t => t.id === dragId);
@@ -1097,22 +1102,24 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
 
   const handleDrop = (e: React.DragEvent, targetId: number, targetGroup?: string | null) => {
     e.preventDefault();
-    if (dragId === null) { handleDragEnd(); return; }
-    if (dragSourceSection === 'ungraded') {
-      const dragTask = courseTasks.find(t => t.id === dragId);
+    const did = dragIdRef.current;
+    const src = dragSourceRef.current;
+    if (did === null) { handleDragEnd(); return; }
+    if (src === 'ungraded') {
+      const dragTask = courseTasks.find(t => t.id === did);
       if (dragTask) {
-        updateTaskMutation.mutate({ id: dragId, data: { isNotGraded: false, excludeFromGpa: false, assignmentGroup: targetGroup ?? null }, _task: dragTask });
+        updateTaskMutation.mutate({ id: did, data: { isNotGraded: false, excludeFromGpa: false, assignmentGroup: targetGroup ?? null }, _task: dragTask });
       }
       handleDragEnd();
       return;
     }
-    if (dragId === targetId) { handleDragEnd(); return; }
+    if (did === targetId) { handleDragEnd(); return; }
     const taskList = targetGroup ? (groupedTasks[targetGroup] || []) : ungroupedTasks;
     const allList = [...taskList];
-    const dragIdx = allList.findIndex(t => t.id === dragId);
+    const dragIdx = allList.findIndex(t => t.id === did);
     const targetIdx = allList.findIndex(t => t.id === targetId);
     if (dragIdx < 0) {
-      const dragTask = courseTasks.find(t => t.id === dragId);
+      const dragTask = courseTasks.find(t => t.id === did);
       if (dragTask) allList.splice(targetIdx, 0, dragTask);
     } else {
       const [moved] = allList.splice(dragIdx, 1);
@@ -1125,17 +1132,19 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
 
   const handleDropOnGroup = (e: React.DragEvent, groupName: string) => {
     e.preventDefault();
-    if (dragId === null) { handleDragEnd(); return; }
-    if (dragSourceSection === 'ungraded') {
-      const dragTask = courseTasks.find(t => t.id === dragId);
+    const did = dragIdRef.current;
+    const src = dragSourceRef.current;
+    if (did === null) { handleDragEnd(); return; }
+    if (src === 'ungraded') {
+      const dragTask = courseTasks.find(t => t.id === did);
       if (dragTask) {
-        updateTaskMutation.mutate({ id: dragId, data: { isNotGraded: false, excludeFromGpa: false, assignmentGroup: groupName }, _task: dragTask });
+        updateTaskMutation.mutate({ id: did, data: { isNotGraded: false, excludeFromGpa: false, assignmentGroup: groupName }, _task: dragTask });
       }
       handleDragEnd();
       return;
     }
     const existing = groupedTasks[groupName] || [];
-    const updates = [{ id: dragId, sortOrder: existing.length, assignmentGroup: groupName }];
+    const updates = [{ id: did, sortOrder: existing.length, assignmentGroup: groupName }];
     reorderMutation.mutate(updates);
     handleDragEnd();
   };
@@ -2075,7 +2084,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             <span className="capitalize">{task.type}</span>
           </div>
         </div>
-        <div className="flex items-center flex-shrink-0" style={{ gap: '6px', marginLeft: '8px', marginRight: '15px' }} onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center flex-shrink-0" style={{ gap: '6px', marginLeft: '8px', marginRight: '17px' }} onClick={(e) => e.stopPropagation()}>
           <label className="flex items-center gap-1 cursor-pointer" title={task.type === 'discussion' ? "Discussion posts are always Not Graded" : "Not Graded item — click to move to Graded section"} data-testid={`toggle-gpa-ungraded-${task.id}`}>
             <div className="relative" onClick={() => { if (task.type !== 'discussion') updateTaskMutation.mutate({ id: task.id, data: { isNotGraded: false, excludeFromGpa: false }, _task: task }); }}>
               <div className={`w-6 h-3.5 rounded-full transition-colors ${task.type === 'discussion' ? 'bg-white/10' : 'bg-white/20'}`} />

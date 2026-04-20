@@ -12698,7 +12698,32 @@ export default function Dashboard() {
       });
     }
   }
-  
+
+  const isWholeWeekBreak = (() => {
+    const semDefs = [
+      { key: 'w2026', start: '2026-01-12', end: '2026-04-17', weeks: 13 },
+      { key: 'ss2026', start: '2026-05-04', end: '2026-08-04', weeks: 14 },
+      { key: 'f2026', start: '2026-09-14', end: '2026-12-07', weeks: 13 },
+      { key: 'w2027', start: '2027-01-11', end: '2027-04-09', weeks: 13 },
+      { key: 'ss2027', start: '2027-05-03', end: '2027-08-03', weeks: 14 },
+      { key: 'f2027', start: '2027-09-13', end: '2027-12-06', weeks: 13 },
+      { key: 'w2028', start: '2028-01-10', end: '2028-04-14', weeks: 13 },
+      { key: 'ss2028', start: '2028-05-01', end: '2028-08-01', weeks: 14 },
+      { key: 'f2028', start: '2028-09-11', end: '2028-12-04', weeks: 13 },
+      { key: 'w2029', start: '2029-01-15', end: '2029-04-13', weeks: 13 },
+    ];
+    return weekDays.every(d => {
+      const active = semDefs.find(s => d >= new Date(s.start + 'T00:00:00') && d <= new Date(s.end + 'T23:59:59'));
+      if (active) {
+        const semStart = new Date(active.start + 'T12:00:00');
+        const daysDiff = Math.round((d.getTime() - semStart.getTime()) / 86400000);
+        const wk = Math.max(1, Math.floor(daysDiff / 7) + 1);
+        return wk > active.weeks;
+      }
+      return true;
+    });
+  })();
+
   const thisWeekAnnouncements = (() => {
     if (!d2lAnnouncements || d2lAnnouncements.length === 0) return [];
     const todayLocal = startOfDayET(new Date());
@@ -31449,7 +31474,7 @@ export default function Dashboard() {
                   return '';
                 })() : '';
                 return (
-                  <div key={idx} className="flex items-center justify-center overflow-hidden relative" style={{ opacity: isPast ? 0.5 : 1, borderLeft: isTodayForecast && day.getDay() !== 0 ? '3px solid #64b5f6' : undefined, background: showForecastWeather && fwSkyBg ? undefined : colorSettings.headerBar, ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }} data-testid={`weather-above-${dateStr}`}>
+                  <div key={idx} className="flex items-center justify-center overflow-hidden relative" style={{ opacity: isPast ? 0.5 : 1, borderLeft: (day.getDay() === 6 && isWholeWeekBreak) ? 'none' : (isTodayForecast && day.getDay() !== 0 ? '3px solid #64b5f6' : undefined), background: showForecastWeather && fwSkyBg ? undefined : colorSettings.headerBar, ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }} data-testid={`weather-above-${dateStr}`}>
                     {showForecastWeather && fwSkyBg && (
                       <div className="absolute z-0" style={{ top: 0, bottom: 0, left: 0, right: 0, background: fwSkyBg, overflow: 'hidden', pointerEvents: 'none', opacity: isTodayForecast ? 1 : isNextWeekDay ? 0.35 : 1 }}>
                         {fwEffectsHtml && <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }} dangerouslySetInnerHTML={{ __html: fwEffectsHtml }} />}
@@ -32978,7 +33003,7 @@ export default function Dashboard() {
                       <div 
                         key={dayIdx} 
                         className="relative pt-0.5"
-                        style={{ backgroundColor: cellBgColor, padding: '2px 1px 2px 1px', borderBottom: '1px dotted rgba(0,0,0,0.25)', borderLeft: isDayToday && day.getDay() !== 0 ? '3px solid black' : day.getDay() === 0 ? 'none' : '1.5px dotted rgba(0,0,0,0.25)', minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', boxSizing: 'border-box', ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }}
+                        style={{ backgroundColor: cellBgColor, padding: '2px 1px 2px 1px', borderBottom: '1px dotted rgba(0,0,0,0.25)', borderLeft: (day.getDay() === 6 && isWholeWeekBreak) ? 'none' : (isDayToday && day.getDay() !== 0 ? '3px solid black' : day.getDay() === 0 ? 'none' : '1.5px dotted rgba(0,0,0,0.25)'), minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', boxSizing: 'border-box', ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
                           e.preventDefault();
@@ -33688,7 +33713,7 @@ export default function Dashboard() {
                         <div
                           key={dayIdx}
                           className="relative flex flex-col gap-0.5 pt-0.5 course-cell-scroll"
-                          style={{ minWidth: 0, boxSizing: 'border-box', backgroundColor: otherCellBg, borderLeft: isOtherToday && day.getDay() !== 0 ? '3px solid black' : day.getDay() === 0 ? 'none' : '1.5px dotted rgba(0,0,0,0.25)', overflow: 'hidden', maxHeight: `${otherRowHeight}px`, ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }}
+                          style={{ minWidth: 0, boxSizing: 'border-box', backgroundColor: otherCellBg, borderLeft: (day.getDay() === 6 && isWholeWeekBreak) ? 'none' : (isOtherToday && day.getDay() !== 0 ? '3px solid black' : day.getDay() === 0 ? 'none' : '1.5px dotted rgba(0,0,0,0.25)'), overflow: 'hidden', maxHeight: `${otherRowHeight}px`, ...(day.getDay() === 6 && calScrollbarW > 0 ? { marginRight: `-${calScrollbarW}px` } : {}) }}
                           data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
                         >
                         <div className="flex flex-col course-cell-scroll" style={{ gap: '2px', padding: isOtherToday ? '1px 1px 1px 0px' : '1px 1px 1px 1px', overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'thin', maxHeight: '100%', height: '100%' }}>
@@ -33865,7 +33890,7 @@ export default function Dashboard() {
                     key={dayIdx} 
                     className={`relative p-0.5 flex flex-col gap-0.5 min-w-0 ${isSameDayET(day, new Date()) ? 'border-b border-black' : 'border-b border-border/50'}`}
                     style={{ 
-                      borderLeft: isSameDayET(day, new Date()) ? '3px solid black' : '1.5px dotted rgba(0,0,0,0.25)',
+                      borderLeft: (day.getDay() === 6 && isWholeWeekBreak) ? 'none' : (isSameDayET(day, new Date()) && day.getDay() !== 0 ? '3px solid black' : day.getDay() === 0 ? 'none' : '1.5px dotted rgba(0,0,0,0.25)'),
                       backgroundColor: (() => {
                         if (isSameDayET(day, new Date())) return colorSettings.headerBar;
                         if (calendarWeekMode === 'current') {
@@ -34194,7 +34219,7 @@ export default function Dashboard() {
                           key={dayIdx} 
                           className={`relative p-0.5 ${dragOverSlot && isSameDayET(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "ring-2 ring-primary ring-inset" : ""}`}
                           style={{
-                            borderLeft: isSameDayET(day, new Date()) && day.getDay() !== 0 ? '3px solid #64b5f6' : day.getDay() === 0 ? 'none' : '1.5px dotted rgba(0,0,0,0.25)',
+                            borderLeft: (day.getDay() === 6 && isWholeWeekBreak) ? 'none' : (isSameDayET(day, new Date()) && day.getDay() !== 0 ? '3px solid #64b5f6' : day.getDay() === 0 ? 'none' : '1.5px dotted rgba(0,0,0,0.25)'),
                             borderRight: isSameDayET(day, new Date()) ? '2px solid rgba(100,181,246,0.35)' : undefined,
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined,
                             overflow: 'hidden',
