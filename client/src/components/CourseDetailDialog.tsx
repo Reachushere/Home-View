@@ -997,7 +997,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
   // having a grade coming (or discussion posts, which are never graded).
   // The excludeFromGpa toggle is a SEPARATE concept: it stays in the Graded
   // section but greys out and is excluded from totals until re-enabled.
-  const isTaskUngraded = (t: Task) => (t as any).isNotGraded === true || t.type === 'discussion';
+  const isTaskUngraded = (t: Task) => (t as any).isNotGraded === true;
 
   const gradedCourseTasks = useMemo(() => courseTasks.filter(t => !isTaskUngraded(t)), [courseTasks]);
   const ungradedCourseTasks = useMemo(() => courseTasks.filter(t => isTaskUngraded(t)), [courseTasks]);

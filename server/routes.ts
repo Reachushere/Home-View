@@ -1388,6 +1388,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
       const input = api.tasks.create.input.parse(req.body);
       if (input.type === 'discussion') {
         input.excludeFromGpa = true;
+        if (input.isNotGraded === undefined) input.isNotGraded = true;
       }
       if (!input.startDate && input.dueDate) {
         const due = new Date(input.dueDate);
