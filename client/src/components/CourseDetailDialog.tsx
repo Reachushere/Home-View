@@ -979,7 +979,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
     } catch {}
   }, [courseInfo.courseCode, weekMappingEdits, toast]);
 
-  type SortField = 'manual' | 'title' | 'dueDate' | 'score' | 'total' | 'weight' | 'percent';
+  type SortField = 'manual' | 'title' | 'dueDate' | 'score' | 'total' | 'weight' | 'percent' | 'done' | 'scratched' | 'gradeReceived';
   const [sortField, setSortField] = useState<SortField>('manual');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
 
@@ -1021,6 +1021,16 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           const pA = a.gradeValue != null && a.gradeTotal ? (a.gradeValue / a.gradeTotal) : -1;
           const pB = b.gradeValue != null && b.gradeTotal ? (b.gradeValue / b.gradeTotal) : -1;
           cmp = pA - pB;
+          break;
+        }
+        // Boolean sorts: true sorts AFTER false in asc (so 'desc' surfaces them first).
+        case 'done': cmp = (a.isCompleted ? 1 : 0) - (b.isCompleted ? 1 : 0); break;
+        case 'scratched': cmp = (a.gradeScratchedOff ? 1 : 0) - (b.gradeScratchedOff ? 1 : 0); break;
+        // 'gradeReceived' = has a numeric score entered (regardless of total).
+        case 'gradeReceived': {
+          const hA = (a.gradeValue !== null && a.gradeValue !== undefined) ? 1 : 0;
+          const hB = (b.gradeValue !== null && b.gradeValue !== undefined) ? 1 : 0;
+          cmp = hA - hB;
           break;
         }
       }
@@ -1706,7 +1716,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
         <Plus className={`h-[14px] w-[14px] flex-shrink-0 cursor-pointer hover:opacity-70 transition-opacity ${task.isCompleted ? "text-white/50" : "text-white"}`} style={{ marginLeft: '4px', marginRight: '4px' }} onClick={(e) => { e.stopPropagation(); if (expandedTaskId === task.id) { setExpandedTaskId(null); setEditTaskFields(null); } else { setExpandedTaskId(task.id); const d = task.dueDate ? new Date(task.dueDate) : null; setEditTaskFields({ title: task.title || '', type: task.type || 'other', dueDate: d ? `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` : '', dueTime: d ? `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}` : '', timezone: (task as any).timezone || 'America/Toronto', description: task.description || '', gradeWeight: task.gradeWeight?.toString() || '', gradeTotal: task.gradeTotal?.toString() || '', gradeValue: task.gradeValue?.toString() || '', reminder1: task.reminder1 ?? 30, reminder2: task.reminder2 ?? 120, reminder3: task.reminder3 ?? null, reminder4: task.reminder4 ?? null, hideFromSummary: task.hideFromSummary ?? false }); } }} data-testid={`button-expand-${task.id}`} />
         <div className="flex-1 min-w-0" style={{ marginLeft: '36px' }}>
           <div
-            className={`text-[10px] font-medium truncate flex items-center gap-1 cursor-pointer hover:underline ${task.isCompleted ? "line-through text-white/50" : task.gradeScratchedOff ? "line-through text-red-400/60" : "text-white"}`}
+            className={`text-[10px] font-medium truncate flex items-center gap-1 cursor-pointer hover:underline ${task.isCompleted ? "text-white/50" : task.gradeScratchedOff ? "line-through text-red-400/60" : "text-white"}`}
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
@@ -1988,7 +1998,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
         <TypeIcon className={`h-3.5 w-3.5 flex-shrink-0 ${task.isCompleted ? 'text-white/30' : 'text-white/60'}`} style={{ marginRight: '8px' }} />
         <div className="flex-1 min-w-0">
           <div
-            className={`text-[10px] font-medium truncate flex items-center gap-1 cursor-pointer hover:underline ${task.isCompleted ? "line-through text-white/50" : "text-white"}`}
+            className={`text-[10px] font-medium truncate flex items-center gap-1 cursor-pointer hover:underline ${task.isCompleted ? "text-white/50" : "text-white"}`}
             onClick={(e) => {
               e.stopPropagation();
               if (expandedTaskId === task.id) {
@@ -4434,8 +4444,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               return (
                 <div className="flex items-end px-1.5 py-1 text-[8px] font-bold text-white" style={{ margin: '0 4px', marginTop: '10px', letterSpacing: '0' }}>
                   <div className="flex-shrink-0" style={{ width: '14px', marginRight: '10px' }} />
-                  <div className="flex-shrink-0 flex justify-center" style={{ width: '16px', marginRight: '10px', overflow: 'visible' }}>
-                    <span className="text-[8px] font-bold text-white" style={{ whiteSpace: 'nowrap' }}>Done</span>
+                  <div className={`flex-shrink-0 flex justify-center ${hdrCls('done')}`} style={{ width: '16px', marginRight: '10px', overflow: 'visible' }} onClick={() => toggleSort('done')} data-testid="sort-done">
+                    <span className="text-[8px] font-bold text-white" style={{ whiteSpace: 'nowrap' }}>Done<SortIcon field="done" /></span>
                   </div>
                   <div className="flex-shrink-0 flex justify-center" style={{ width: '15px', marginLeft: '8px', marginRight: '10px', overflow: 'visible' }}>
                     <span className="text-[8px] font-bold text-white" style={{ whiteSpace: 'nowrap' }}>Assign</span>
@@ -4464,8 +4474,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     </span>
                   </div>
                   <div className="flex items-end flex-shrink-0" style={{ gap: '6px', marginLeft: isEditingInfo ? '-16px' : '-7px' }}>
-                    <div style={{ width: '18px', textAlign: 'center', lineHeight: '1.1', marginLeft: '-10px', marginRight: '2px' }}><span className="text-[8px] font-bold text-white">Scratch</span></div>
-                    <div style={{ width: '24px', textAlign: 'center', lineHeight: '1.1', marginLeft: '8px' }}><span className="text-[8px] font-bold text-white">Grade<br/>Received</span></div>
+                    <div className={hdrCls('scratched')} style={{ width: '18px', textAlign: 'center', lineHeight: '1.1', marginLeft: '-10px', marginRight: '2px' }} onClick={() => toggleSort('scratched')} data-testid="sort-scratched"><span className="text-[8px] font-bold text-white">Scratch<SortIcon field="scratched" /></span></div>
+                    <div className={hdrCls('gradeReceived')} style={{ width: '24px', textAlign: 'center', lineHeight: '1.1', marginLeft: '8px' }} onClick={() => toggleSort('gradeReceived')} data-testid="sort-grade-received"><span className="text-[8px] font-bold text-white">Grade<br/>Received<SortIcon field="gradeReceived" /></span></div>
                     <div style={{ width: '19px', textAlign: 'center', marginLeft: '6px' }}><span className="text-[8px] font-bold text-white">Copy</span></div>
                     <div style={{ width: '19px' }} />
                   </div>
