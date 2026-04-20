@@ -180,6 +180,9 @@ function DebouncedGradeInput({ value, onSave, placeholder, testId, disabled }: {
       placeholder={placeholder}
       value={local}
       disabled={disabled}
+      onMouseDown={(e) => e.stopPropagation()}
+      onDragStart={(e) => { e.preventDefault(); e.stopPropagation(); }}
+      draggable={false}
       onFocus={() => setEditing(true)}
       onChange={(e) => setLocal(e.target.value)}
       onBlur={() => {
