@@ -936,13 +936,8 @@ export async function registerRoutes(
       const stripBrackets = (s: string) => (s || '').replace(/\[.*?\]\s*/g, '').trim();
 
       const tasksFile = path.join(cwd, 'pi-import-tasks.json');
-      const tasksFileDisabled = path.join(cwd, 'pi-import-tasks.imported.json');
       console.log(`[AutoImport] Looking for tasks file: ${tasksFile}`);
       console.log(`[AutoImport] File exists: ${fs.existsSync(tasksFile)}`);
-      // Hard kill: if disabled marker exists, NEVER auto-import again
-      if (fs.existsSync(tasksFileDisabled)) {
-        console.log('[AutoImport] DISABLED — pi-import-tasks.imported.json marker present. Skipping forever.');
-      } else
       if (fs.existsSync(tasksFile)) {
         const raw = fs.readFileSync(tasksFile, 'utf8');
         console.log(`[AutoImport] Tasks file size: ${raw.length} bytes`);
@@ -1005,13 +1000,6 @@ export async function registerRoutes(
             }
           }
           console.log(`[AutoImport] Tasks result: ${created} created, ${skipped} skipped, ${failed} failed`);
-        }
-        // Disable forever after first run so deletions stick
-        try {
-          fs.renameSync(tasksFile, tasksFileDisabled);
-          console.log('[AutoImport] Renamed pi-import-tasks.json -> pi-import-tasks.imported.json. Will not run again.');
-        } catch (renameErr: any) {
-          console.error('[AutoImport] Failed to rename tasks file:', renameErr.message);
         }
       } else {
         console.log(`[AutoImport] No tasks file found at ${tasksFile} — listing directory:`);
