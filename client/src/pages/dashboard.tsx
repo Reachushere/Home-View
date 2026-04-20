@@ -19855,16 +19855,16 @@ export default function Dashboard() {
                 try { if (runningGpa !== null) localStorage.setItem('currentRunningGpa', runningGpa.toFixed(2)); } catch {}
 
                 const gpaToLetter = (gpa: number): string => {
-                  if (gpa >= 4.17) return 'A+';
-                  if (gpa >= 3.84) return 'A';
-                  if (gpa >= 3.5) return 'A-';
-                  if (gpa >= 3.17) return 'B+';
-                  if (gpa >= 2.84) return 'B';
-                  if (gpa >= 2.5) return 'B-';
-                  if (gpa >= 2.17) return 'C+';
-                  if (gpa >= 1.84) return 'C';
-                  if (gpa >= 1.34) return 'C-';
-                  if (gpa >= 0.5) return 'D';
+                  if (gpa >= 4.33) return 'A+';
+                  if (gpa >= 4.0) return 'A';
+                  if (gpa >= 3.67) return 'A-';
+                  if (gpa >= 3.33) return 'B+';
+                  if (gpa >= 3.0) return 'B';
+                  if (gpa >= 2.67) return 'B-';
+                  if (gpa >= 2.33) return 'C+';
+                  if (gpa >= 2.0) return 'C';
+                  if (gpa >= 1.67) return 'C-';
+                  if (gpa >= 1.0) return 'D';
                   return 'F';
                 };
                 return (
@@ -28418,7 +28418,7 @@ export default function Dashboard() {
                                     if (gpaVals.length === 0) return null;
                                     const avgGpa = gpaVals.reduce((a, b) => a + b, 0) / gpaVals.length;
                                     const avgPct = pctVals.reduce((a, b) => a + b, 0) / pctVals.length;
-                                    const gpaLetter = avgGpa >= 4.17 ? 'A+' : avgGpa >= 3.84 ? 'A' : avgGpa >= 3.5 ? 'A-' : avgGpa >= 3.17 ? 'B+' : avgGpa >= 2.84 ? 'B' : avgGpa >= 2.5 ? 'B-' : avgGpa >= 2.17 ? 'C+' : avgGpa >= 1.84 ? 'C' : avgGpa >= 1.34 ? 'C-' : avgGpa >= 0.5 ? 'D' : 'F';
+                                    const gpaLetter = avgGpa >= 4.33 ? 'A+' : avgGpa >= 4.0 ? 'A' : avgGpa >= 3.67 ? 'A-' : avgGpa >= 3.33 ? 'B+' : avgGpa >= 3.0 ? 'B' : avgGpa >= 2.67 ? 'B-' : avgGpa >= 2.33 ? 'C+' : avgGpa >= 2.0 ? 'C' : avgGpa >= 1.67 ? 'C-' : avgGpa >= 1.0 ? 'D' : 'F';
                                     return (
                                       <span
                                         className="font-bold tracking-wider uppercase rounded border flex-shrink"
