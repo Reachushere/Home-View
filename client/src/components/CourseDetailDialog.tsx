@@ -1755,7 +1755,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           >
             {task.gradeScratchedOff ? '✕' : '—'}
           </button>
-          <label className="flex items-center gap-1 cursor-pointer" title={task.excludeFromGpa ? "Not gradable — click to mark as graded" : "Gradable — click to mark as ungraded"} data-testid={`toggle-gpa-${task.id}`}>
+          <label className="flex items-center gap-1 cursor-pointer" style={{ marginLeft: '8px' }} title={task.excludeFromGpa ? "Not gradable — click to mark as graded" : "Gradable — click to mark as ungraded"} data-testid={`toggle-gpa-${task.id}`}>
             <div className="relative" onClick={() => updateTaskMutation.mutate({ id: task.id, data: { excludeFromGpa: !task.excludeFromGpa }, _task: task })}>
               <div className={`w-6 h-3.5 rounded-full transition-colors ${task.excludeFromGpa ? 'bg-white/20' : 'bg-green-500/60'}`} />
               <div className={`absolute top-0.5 w-2.5 h-2.5 rounded-full bg-white transition-transform ${task.excludeFromGpa ? 'left-0.5' : 'left-3'}`} />
@@ -4428,7 +4428,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                   </div>
                   <div className="flex items-end flex-shrink-0" style={{ gap: '6px', marginLeft: isEditingInfo ? '-16px' : '-7px' }}>
                     <div style={{ width: '18px', textAlign: 'center', lineHeight: '1.1', marginLeft: '-10px', marginRight: '2px' }}><span className="text-[8px] font-bold text-white">Scratch</span></div>
-                    <div style={{ width: '24px', textAlign: 'center', lineHeight: '1.1' }}><span className="text-[8px] font-bold text-white">Grade<br/>Received</span></div>
+                    <div style={{ width: '24px', textAlign: 'center', lineHeight: '1.1', marginLeft: '8px' }}><span className="text-[8px] font-bold text-white">Grade<br/>Received</span></div>
                     <div style={{ width: '19px', textAlign: 'center', marginLeft: '6px' }}><span className="text-[8px] font-bold text-white">Copy</span></div>
                     <div style={{ width: '19px' }} />
                   </div>
