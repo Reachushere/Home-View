@@ -1,0 +1,91 @@
+byhomeyyz@raspberrypi:~/Home-View $ # All mounted filesystems — look for any at 100%
+df -h
+
+# Inode usage — same thing but for file count
+df -i
+Filesystem      Size  Used Avail Use% Mounted on
+udev            3.9G     0  3.9G   0% /dev
+tmpfs           1.6G  164M  1.5G  11% /run
+/dev/mmcblk0p2  117G   20G   93G  18% /
+tmpfs           4.0G  1.6M  4.0G   1% /dev/shm
+tmpfs           5.0M   48K  5.0M   1% /run/lock
+tmpfs           1.0M     0  1.0M   0% /run/credentials/systemd-journald.service
+tmpfs           4.0G  4.0G     0 100% /tmp
+/dev/mmcblk0p1  510M   78M  433M  16% /boot/firmware
+tmpfs           807M  256K  807M   1% /run/user/1000
+tmpfs           1.0M     0  1.0M   0% /run/credentials/getty@tty1.service
+tmpfs           1.0M     0  1.0M   0% /run/credentials/serial-getty@ttyAMA10.service
+Filesystem      Inodes  IUsed   IFree IUse% Mounted on
+udev            255332    564  254768    1% /dev
+tmpfs           258014   1114  256900    1% /run
+/dev/mmcblk0p2 7782400 360454 7421946    5% /
+tmpfs           258014     15  257999    1% /dev/shm
+tmpfs           258014      5  258009    1% /run/lock
+tmpfs             1024      1    1023    1% /run/credentials/systemd-journald.service
+tmpfs          1048576   7445 1041131    1% /tmp
+/dev/mmcblk0p1       0      0       0     - /boot/firmware
+tmpfs           206408     97  206311    1% /run/user/1000
+tmpfs             1024      1    1023    1% /run/credentials/getty@tty1.service
+tmpfs             1024      1    1023    1% /run/credentials/serial-getty@ttyAMA10.service
+byhomeyyz@raspberrypi:~/Home-View $ # See what's hogging /tmp (look for big files)
+sudo du -ah /tmp 2>/dev/null | sort -hr | head -20
+
+# Safe cleanup — removes files older than 1 hour, skips anything in use
+sudo find /tmp -mindepth 1 -maxdepth 1 -mmin +60 -exec rm -rf {} + 2>/dev/null
+
+# Verify
+df -h /tmp
+
+# Now restart the dashboard cleanly
+pm2 stop dashboard
+fuser -k 5000/tcp 2>/dev/null
+sleep 2
+pm2 restart dashboard
+sleep 5
+pm2 list
+df -h /tmp
+4.0G    /tmp
+8.6M    /tmp/node-compile-cache/v25.9.0-arm64-392347a2-1000
+8.6M    /tmp/node-compile-cache
+3.5M    /tmp/edge-tts-fcaf6a64-c71a-4992-8525-2e1a966f18d8.mp3
+3.5M    /tmp/edge-tts-fb02e44b-42c5-40a7-8625-264a4df6f3b5.mp3
+3.5M    /tmp/edge-tts-f9f71fb7-2a1c-44b3-a601-8f94e57e1150.mp3
+3.5M    /tmp/edge-tts-f94e3954-98d4-4dc6-b31b-91a7f9a63017.mp3
+3.5M    /tmp/edge-tts-f780aa3d-123e-453a-89b9-3914f9edd039.mp3
+3.5M    /tmp/edge-tts-f7109542-0410-4ac1-b08e-c255dc51ffc3.mp3
+3.5M    /tmp/edge-tts-f664d257-d115-46be-8f70-3ea6b9cbe257.mp3
+3.5M    /tmp/edge-tts-f4d1de26-753a-449a-8010-ebbf676075c2.mp3
+3.5M    /tmp/edge-tts-f131ec72-3d6e-4659-8245-e7aa06cd105f.mp3
+3.5M    /tmp/edge-tts-ef32c47e-4157-4142-be72-08422e91b169.mp3
+3.5M    /tmp/edge-tts-ee75e4b1-61d5-488c-b211-1e745e2a76b1.mp3
+3.5M    /tmp/edge-tts-ec60b887-098d-4bd7-83bd-c0a5b18d734e.mp3
+3.5M    /tmp/edge-tts-e7d5cd4f-5b2d-495a-9623-9f3c3f271549.mp3
+3.5M    /tmp/edge-tts-e6869384-e30c-4665-9c94-07f023666b04.mp3
+3.5M    /tmp/edge-tts-e5dca711-6f47-4cda-b1d4-439a012ad5f1.mp3
+3.5M    /tmp/edge-tts-e0417a4b-ef6c-40a2-851f-863d4ed2b087.mp3
+3.5M    /tmp/edge-tts-e038d4e6-fe6a-4bf2-93a8-edd37cd46457.mp3
+Filesystem      Size  Used Avail Use% Mounted on
+tmpfs           4.0G   16K  4.0G   1% /tmp
+[PM2] Applying action stopProcessId on app [dashboard](ids: [ 0 ])
+[PM2] [dashboard](0) ✓
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+├────┼────────────────────┼──────────┼──────┼───────────┼──────────┼──────────┤
+│ 0  │ dashboard          │ fork     │ 13   │ stopped   │ 0%       │ 0b       │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+Use --update-env to update environment variables
+[PM2] Applying action restartProcessId on app [dashboard](ids: [ 0 ])
+[PM2] [dashboard](0) ✓
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+├────┼────────────────────┼──────────┼──────┼───────────┼──────────┼──────────┤
+│ 0  │ dashboard          │ fork     │ 13   │ online    │ 0%       │ 10.3mb   │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+├────┼────────────────────┼──────────┼──────┼───────────┼──────────┼──────────┤
+│ 0  │ dashboard          │ fork     │ 13   │ online    │ 0%       │ 204.8mb  │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+Filesystem      Size  Used Avail Use% Mounted on
+tmpfs           4.0G  8.4M  4.0G   1% /tmp
+byhomeyyz@raspberrypi:~/Home-View $

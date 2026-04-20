@@ -90,12 +90,11 @@ const EDGE_TTS_MAX_CONSECUTIVE_FAILURES = 5;
 async function edgeTTSGenerate(text: string, voice: string, retries = 2): Promise<Buffer> {
   const edgeVoice = edgeVoiceMap[voice] || edgeVoiceMap.echo;
   for (let attempt = 0; attempt <= retries; attempt++) {
+    const outPath = join(tmpdir(), `edge-tts-${randomUUID()}.mp3`);
     try {
-      const outPath = join(tmpdir(), `edge-tts-${randomUUID()}.mp3`);
       const tts = new EdgeTTS({ voice: edgeVoice });
       await tts.ttsPromise(text, outPath);
       const buf = await readFile(outPath);
-      await unlink(outPath).catch(() => {});
       if (buf.length === 0) throw new Error("Edge TTS returned empty audio");
       edgeTTSConsecutiveFailures = 0;
       return buf;
@@ -107,11 +106,49 @@ async function edgeTTSGenerate(text: string, voice: string, retries = 2): Promis
         edgeTTSConsecutiveFailures++;
         throw err;
       }
+    } finally {
+      // Always remove the temp file — including on failure / mid-write
+      // crash / retry. Without this, every failed attempt would leak a
+      // 3.5 MB file in /tmp and over time fill the entire 4 GB tmpfs,
+      // crashing the whole server with ENOSPC. (Bryn 2026-04-19.)
+      await unlink(outPath).catch(() => {});
     }
   }
   edgeTTSConsecutiveFailures++;
   throw new Error("Edge TTS failed after retries");
 }
+
+// Sweep any orphaned edge-tts*.mp3 / local-tts*.wav files in /tmp on startup.
+// Runs once at module load so each server restart self-heals from past leaks.
+(async () => {
+  try {
+    const { readdir, stat } = await import("node:fs/promises");
+    const dir = tmpdir();
+    const entries = await readdir(dir);
+    const now = Date.now();
+    let removed = 0;
+    let bytes = 0;
+    for (const name of entries) {
+      if (!/^(edge-tts-|local-tts-).+\.(mp3|wav)$/i.test(name)) continue;
+      const full = join(dir, name);
+      try {
+        const st = await stat(full);
+        // Only remove files older than 5 minutes so we never clobber a
+        // request currently in flight.
+        if (now - st.mtimeMs > 5 * 60 * 1000) {
+          await unlink(full).catch(() => {});
+          removed++;
+          bytes += st.size;
+        }
+      } catch {}
+    }
+    if (removed > 0) {
+      console.log(`[TTS Cleanup] Removed ${removed} orphaned TTS temp files (${(bytes / 1024 / 1024).toFixed(1)} MB freed)`);
+    }
+  } catch (e: any) {
+    console.warn(`[TTS Cleanup] Startup sweep skipped: ${e?.message || e}`);
+  }
+})();
 
 async function localTTSGenerate(text: string): Promise<Buffer> {
   const outPath = join(tmpdir(), `local-tts-${randomUUID()}.wav`);
