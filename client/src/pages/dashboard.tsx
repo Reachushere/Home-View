@@ -6427,8 +6427,9 @@ export default function Dashboard() {
   const gradeOptions = ['', 'A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D', 'F'];
 
   const percentToGrade = (percent: string): string => {
-    const p = parseFloat(percent);
-    if (isNaN(p) || percent.trim() === '') return '';
+    const raw = parseFloat(percent);
+    if (isNaN(raw) || percent.trim() === '') return '';
+    const p = Math.round(raw);
     if (p >= 90) return 'A+';
     if (p >= 85) return 'A';
     if (p >= 80) return 'A-';
