@@ -1419,7 +1419,19 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
         console.log(`[Tasks] Duplicate prevented: "${input.title}" (${inputType}) for ${input.courseName || 'no course'}`);
         return res.status(200).json(duplicate);
       }
-      const task = await storage.createTask(input);
+      // User-initiated POST: clear any tombstone for this signature so re-add works
+      try {
+        const sig = `${(input.title || "").trim().toLowerCase()}||${((input.courseName as any) || "").trim().toLowerCase()}||${((input.type as any) || "").toLowerCase()}`;
+        const row = await db.select().from(appState).where(eq(appState.key, "deleted_task_signatures")).limit(1);
+        if (row.length > 0) {
+          const arr = JSON.parse(row[0].value || "[]");
+          if (Array.isArray(arr) && arr.includes(sig)) {
+            const filtered = arr.filter((s: string) => s !== sig);
+            await db.update(appState).set({ value: JSON.stringify(filtered), updatedAt: new Date() }).where(eq(appState.key, "deleted_task_signatures"));
+          }
+        }
+      } catch {}
+      const task = await storage.createTask(input, { skipTombstone: true });
       
       if (!skipCalendarSync) {
       // Auto-sync to Google Calendar (primary account)
@@ -1980,6 +1992,28 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
     // Delete all subtasks and related links for this task
     await storage.deleteSubtasksByTask(taskId);
     
+    // Record tombstone so automatic recreation paths skip this title
+    try {
+      const sig = `${(task.title || "").trim().toLowerCase()}||${((task.courseName as any) || "").trim().toLowerCase()}||${((task.type as any) || "").toLowerCase()}`;
+      const key = "deleted_task_signatures";
+      const existing = await db.select().from(appState).where(eq(appState.key, key)).limit(1);
+      let arr: string[] = [];
+      if (existing.length > 0) {
+        try { const p = JSON.parse(existing[0].value); if (Array.isArray(p)) arr = p; } catch {}
+      }
+      if (!arr.includes(sig)) arr.push(sig);
+      if (arr.length > 1000) arr = arr.slice(-1000);
+      const value = JSON.stringify(arr);
+      if (existing.length > 0) {
+        await db.update(appState).set({ value, updatedAt: new Date() }).where(eq(appState.key, key));
+      } else {
+        await db.insert(appState).values({ key, value });
+      }
+      console.log(`[Tombstone] Recorded deleted task signature: ${task.title} (${task.courseName})`);
+    } catch (tombErr) {
+      console.error("[Tombstone] Failed to record:", tombErr);
+    }
+
     await storage.deleteTask(taskId);
     res.status(204).end();
   });

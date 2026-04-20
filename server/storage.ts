@@ -173,7 +173,25 @@ export class DatabaseStorage implements IStorage {
     return task;
   }
 
-  async createTask(insertTask: InsertTask): Promise<Task> {
+  async createTask(insertTask: InsertTask, opts?: { skipTombstone?: boolean }): Promise<Task> {
+    if (!opts?.skipTombstone) {
+      try {
+        const { appState } = await import("@shared/schema");
+        const row = await db.select().from(appState).where(eq(appState.key, "deleted_task_signatures")).limit(1);
+        if (row.length > 0) {
+          const arr = JSON.parse(row[0].value || "[]");
+          if (Array.isArray(arr)) {
+            const sig = `${(insertTask.title || "").trim().toLowerCase()}||${((insertTask.courseName as string) || "").trim().toLowerCase()}||${((insertTask.type as string) || "").toLowerCase()}`;
+            if (arr.includes(sig)) {
+              console.log(`[Tombstone] Blocked recreate of deleted task: ${insertTask.title} (${insertTask.courseName})`);
+              throw new Error(`Task previously deleted: ${insertTask.title}`);
+            }
+          }
+        }
+      } catch (e: any) {
+        if (e?.message?.startsWith("Task previously deleted")) throw e;
+      }
+    }
     const [task] = await db.insert(tasks).values(insertTask).returning();
     return task;
   }

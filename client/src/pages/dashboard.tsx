@@ -33842,8 +33842,15 @@ export default function Dashboard() {
                                 const labelText = (t.title || '').replace(/\[[^\]]*\]\s*/g, '').trim();
                                 const dueDate = t.dueDate ? format(new Date(t.dueDate), 'MMM d') : '';
                                 const tooltipText = `${labelText} — due in ${cd.daysLeft}d (${dueDate})${isNotStarted ? ' — not started' : ''}`;
+                                const barColCount = Math.max(0, Math.min(cd.daysLeft - 1, otherBarDayIndices.length));
+                                let barFrSum = 0;
+                                for (let k = 0; k < barColCount; k++) {
+                                  const di = otherBarDayIndices[k];
+                                  if (di != null && dws[di] != null) barFrSum += dws[di];
+                                }
+                                const barWidthPct = frSpan > 0 ? (barFrSum / frSpan) * 100 : 100;
                                 return (
-                                  <div key={`cbar-or-${t.id}`} className="countdown-bar-wrapper" style={{ height: `${barGap}px`, flexShrink: 0, pointerEvents: 'auto', cursor: 'pointer', position: 'relative', zIndex: 31 }} title={tooltipText} data-testid={`countdown-bar-or-${t.id}`} onMouseEnter={() => setHoveredCountdownTaskIdDebounced(t.id)} onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)} onDoubleClick={(e) => { e.stopPropagation(); const taskToEdit = allTasks.find(at => at.id === t.id) || t; setEditingTask(taskToEdit); }}>
+                                  <div key={`cbar-or-${t.id}`} className="countdown-bar-wrapper" style={{ height: `${barGap}px`, width: `${barWidthPct}%`, flexShrink: 0, pointerEvents: 'auto', cursor: 'pointer', position: 'relative', zIndex: 31 }} title={tooltipText} data-testid={`countdown-bar-or-${t.id}`} onMouseEnter={() => setHoveredCountdownTaskIdDebounced(t.id)} onMouseLeave={() => setHoveredCountdownTaskIdDebounced(null)} onDoubleClick={(e) => { e.stopPropagation(); const taskToEdit = allTasks.find(at => at.id === t.id) || t; setEditingTask(taskToEdit); }}>
                                     <div style={{ paddingTop: '2px', height: '10px', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
                                       <div className={needsShimmer ? 'countdown-bar-shimmer-left' : ''} style={{ width: '10px', minWidth: '10px', height: `${barH}px`, background: barColor, opacity: 0.85, borderRadius: '2px 0 0 2px', flexShrink: 0 }} />
                                       <div style={{ width: '20px', minWidth: '20px', textAlign: 'left', paddingLeft: '2px', flexShrink: 0, lineHeight: '10px', display: 'flex', alignItems: 'center' }}>
