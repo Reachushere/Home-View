@@ -1083,9 +1083,24 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
     setDragId(taskId);
     setDragSourceSection(source);
     try {
-      e.dataTransfer.setData('text/plain', String(taskId));
+      e.dataTransfer.setData('text/plain', JSON.stringify({ did: taskId, src: source }));
       e.dataTransfer.effectAllowed = 'move';
     } catch {}
+  };
+  const readDragPayload = (e: React.DragEvent): { did: number | null; src: 'graded' | 'ungraded' | null } => {
+    let did = dragIdRef.current;
+    let src = dragSourceRef.current;
+    if (did === null || !src) {
+      try {
+        const raw = e.dataTransfer.getData('text/plain');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (typeof parsed?.did === 'number') did = parsed.did;
+          if (parsed?.src === 'graded' || parsed?.src === 'ungraded') src = parsed.src;
+        }
+      } catch {}
+    }
+    return { did, src };
   };
   const handleDragOver = (e: React.DragEvent, taskId: number) => { e.preventDefault(); try { e.dataTransfer.dropEffect = 'move'; } catch {} setDragOverId(taskId); };
   const handleDragEnd = () => {
@@ -1100,8 +1115,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
     if (src !== section && dragOverSection !== section) setDragOverSection(section);
   };
   const handleSectionDrop = (e: React.DragEvent, target: 'graded' | 'ungraded') => {
-    const did = dragIdRef.current;
-    const src = dragSourceRef.current;
+    const { did, src } = readDragPayload(e);
+    console.log('[DRAG] section drop', { target, did, src });
     if (did === null || !src || src === target) { handleDragEnd(); return; }
     e.preventDefault();
     e.stopPropagation();
@@ -1117,8 +1132,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
 
   const handleDrop = (e: React.DragEvent, targetId: number, targetGroup?: string | null) => {
     e.preventDefault();
-    const did = dragIdRef.current;
-    const src = dragSourceRef.current;
+    const { did, src } = readDragPayload(e);
+    console.log('[DRAG] row drop', { targetId, targetGroup, did, src });
     if (did === null) { handleDragEnd(); return; }
     if (src === 'ungraded') {
       const dragTask = courseTasks.find(t => t.id === did);
@@ -1147,8 +1162,8 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
 
   const handleDropOnGroup = (e: React.DragEvent, groupName: string) => {
     e.preventDefault();
-    const did = dragIdRef.current;
-    const src = dragSourceRef.current;
+    const { did, src } = readDragPayload(e);
+    console.log('[DRAG] group drop', { groupName, did, src });
     if (did === null) { handleDragEnd(); return; }
     if (src === 'ungraded') {
       const dragTask = courseTasks.find(t => t.id === did);
