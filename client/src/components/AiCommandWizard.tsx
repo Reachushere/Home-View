@@ -513,13 +513,36 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   const [activeToolName, setActiveToolName] = useState<string | null>(null);
   const [toolSteps, setToolSteps] = useState<{ name: string; status: 'running' | 'done' | 'failed' | 'thinking' }[]>([]);
   const [expandedOrbs, setExpandedOrbs] = useState<Set<string>>(new Set());
+  const [pinnedOrbs, setPinnedOrbs] = useState<Set<string>>(new Set());
   const toggleOrbExpanded = useCallback((key: string) => {
-    setExpandedOrbs(prev => {
+    setPinnedOrbs(prev => {
       const next = new Set(prev);
       if (next.has(key)) next.delete(key); else next.add(key);
       return next;
     });
+    setExpandedOrbs(prev => {
+      const next = new Set(prev);
+      if (next.has(key) && pinnedOrbs.has(key)) next.delete(key); else next.add(key);
+      return next;
+    });
+  }, [pinnedOrbs]);
+  const hoverExpandOrb = useCallback((key: string) => {
+    setExpandedOrbs(prev => {
+      if (prev.has(key)) return prev;
+      const next = new Set(prev);
+      next.add(key);
+      return next;
+    });
   }, []);
+  const hoverCollapseOrb = useCallback((key: string) => {
+    setExpandedOrbs(prev => {
+      if (!prev.has(key)) return prev;
+      if (pinnedOrbs.has(key)) return prev;
+      const next = new Set(prev);
+      next.delete(key);
+      return next;
+    });
+  }, [pinnedOrbs]);
   const [copiedOrbId, setCopiedOrbId] = useState<string | null>(null);
   const [hoveredOrbKey, setHoveredOrbKey] = useState<string | null>(null);
   const copyOrbContent = useCallback((key: string, content: string) => {
@@ -1711,13 +1734,18 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                   : orbLen < 240 ? 210
                   : orbLen < 380 ? 245
                   : 280;
-                const orbWidth = orbSize;
-                const orbHeight = orbSize;
-                const orbFontSize = orbLen < 30 ? '13px'
-                  : orbLen < 70 ? '12px'
-                  : orbLen < 140 ? '11px'
-                  : orbLen < 240 ? '10px'
-                  : '9.5px';
+                const orbKeyEarly = String(msg._idx ?? i);
+                const orbExpandedEarly = isOrb && expandedOrbs.has(orbKeyEarly);
+                const orbExpandedSize = Math.min(420, Math.round(orbSize * 1.6));
+                const orbWidth = orbExpandedEarly ? orbExpandedSize : orbSize;
+                const orbHeight = orbExpandedEarly ? orbExpandedSize : orbSize;
+                const orbFontSize = orbExpandedEarly
+                  ? (orbLen < 70 ? '14px' : orbLen < 240 ? '13px' : '12.5px')
+                  : (orbLen < 30 ? '13px'
+                    : orbLen < 70 ? '12px'
+                    : orbLen < 140 ? '11px'
+                    : orbLen < 240 ? '10px'
+                    : '9.5px');
                 const isShortOrb = isOrb;
                 const orbPalettes = [
                   'radial-gradient(circle at 32% 28%, #b794f6 0%, #7c3aed 45%, #4c1d95 100%)',
@@ -1752,8 +1780,8 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                   if (sel && sel.toString().length > 0) return;
                   toggleOrbExpanded(orbKey);
                 } : undefined}
-                onMouseEnter={isOrb ? () => setHoveredOrbKey(orbKey) : undefined}
-                onMouseLeave={isOrb ? () => setHoveredOrbKey((k) => (k === orbKey ? null : k)) : undefined}
+                onMouseEnter={isOrb ? () => { setHoveredOrbKey(orbKey); hoverExpandOrb(orbKey); } : undefined}
+                onMouseLeave={isOrb ? () => { setHoveredOrbKey((k) => (k === orbKey ? null : k)); hoverCollapseOrb(orbKey); } : undefined}
                 title={isOrb ? (orbExpanded ? 'Click to collapse' : 'Hover to preview · Click to scroll full text') : (isFailedPill && failedHasBody ? (failedExpanded ? 'Click to collapse' : 'Click to see full error') : undefined)}
                 style={{
                 maxWidth: msg.role === 'system' ? (failedExpanded ? '92%' : '70%') : (isOrb ? undefined : (hasCodeBlock ? '65%' : '65%')),
