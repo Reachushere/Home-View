@@ -102,6 +102,7 @@ import { DayPicker } from "react-day-picker";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useUpload } from "@/hooks/use-upload";
 import { useToast } from "@/hooks/use-toast";
+import { useDragPan } from "@/hooks/use-drag-pan";
 import {
   BookOpen,
   BookOpenCheck,
@@ -3509,6 +3510,9 @@ export default function Dashboard() {
     }
   }, []);
   const coursesScrollRef = useRef<HTMLDivElement>(null);
+  const degreeDialogRef = useRef<HTMLDivElement>(null);
+  useDragPan(coursesScrollRef, isSchoolCoursesDialogOpen);
+  useDragPan(degreeDialogRef, isSettingsPanelOpen);
 
   type SemCourse = { code: string; name: string; fullName?: string; period: string };
   const defaultSemesterCourses: Record<string, SemCourse[]> = {
@@ -19722,7 +19726,7 @@ export default function Dashboard() {
               <ChevronRight className="text-white/80" style={{ width: '14px', height: '14px' }} />
             </div>
           </div>
-          <div className="flex-1 overflow-hidden p-2 pt-1 min-h-0 flex flex-col" style={{ color: '#000' }}>
+          <div ref={degreeDialogRef} className="flex-1 overflow-hidden p-2 pt-1 min-h-0 flex flex-col" style={{ color: '#000' }}>
             <div className="shrink-0 flex items-center justify-between pb-2" style={{ marginTop: '2px' }}>
               <div className="flex items-center">
               <input
