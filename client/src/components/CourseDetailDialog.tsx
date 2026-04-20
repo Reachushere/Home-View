@@ -4649,7 +4649,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
             {gradedCourseTasks.length > 0 && (
               <div className="flex items-center px-1.5 py-1.5 mt-1 rounded-md border border-amber-400/30 bg-amber-400/5" style={{ margin: '4px 4px 0 4px' }} data-testid="grade-totals-row">
                 <div className="flex-1 min-w-0 text-[11px] font-bold text-white" style={{ marginLeft: '4px' }}>Totals</div>
-                <div className="flex items-center flex-shrink-0" style={{ gap: '10px', position: 'relative', left: '-17px' }}>
+                <div className="flex items-center flex-shrink-0" style={{ gap: '10px', position: 'relative', left: '-24px' }}>
                   <span className="text-[11px] font-bold w-[33px] text-center text-amber-400" data-testid="text-sum-value">
                     {(() => { const v = activeGradeTasks.reduce((s, t) => s + (t.gradeValue || 0), 0); return v ? v.toFixed(2) : '—'; })()}
                   </span>
