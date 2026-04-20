@@ -4614,7 +4614,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               data-testid="assignments-list"
             >
               {allGroups.map(groupName => {
-                const tasks = (groupedTasks[groupName] || []).filter(t => !t.excludeFromGpa);
+                const tasks = (groupedTasks[groupName] || []);
                 if (tasks.length === 0) return null;
                 const isCollapsed = collapsedGroups.has(groupName);
                 const groupWeight = tasks.reduce((s, t) => s + (t.gradeWeight || 0), 0);
@@ -4643,7 +4643,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 );
               })}
 
-              {ungroupedTasks.filter(t => !t.excludeFromGpa).map(task => (
+              {ungroupedTasks.map(task => (
                 <div key={`ungrouped-${task.id}`} style={{ padding: '0 4px' }}>
                   {renderAssignmentRow(task, null)}
                 </div>
