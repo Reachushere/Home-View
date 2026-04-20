@@ -28327,7 +28327,7 @@ export default function Dashboard() {
                                 const allCoursesAdded = semDef ? semDef.codes.every(c => allAssignmentsAddedMap[c] || allAssignmentsAddedMap[c.toUpperCase()]) : true;
                                 const needsRedBorder = isCurrentSem && semHasStarted && !allCoursesAdded;
                                 const borderCol = isCurrentSem ? (needsRedBorder ? '#ef4444' : 'rgba(10,15,30,0.85)') : isPast || isEnded ? 'rgba(150,150,150,0.5)' : 'rgba(255,255,255,0.3)';
-                                const bgCol = isCurrentSem ? 'rgba(10,15,30,0.85)' : isPast || isEnded ? 'rgba(160,160,160,0.35)' : 'transparent';
+                                const bgCol = isCurrentSem ? 'rgba(10,15,30,0.85)' : isPast || isEnded ? 'rgba(110,110,110,0.65)' : 'transparent';
                                 const shadow = isCurrentSem ? (needsRedBorder ? { boxShadow: '0 0 6px rgba(239,68,68,0.6), 0 0 12px rgba(239,68,68,0.4), 0 0 18px rgba(239,68,68,0.3)' } : {}) : {};
                                 return { background: bgCol, borderColor: borderCol, ...shadow, position: 'relative' as const, borderWidth: isCurrentSem ? '2px' : undefined };
                               })()}>
