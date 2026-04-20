@@ -2905,31 +2905,9 @@ input[type="date"].bg-white::-webkit-datetime-edit-year-field {
 .monthly-report-print-mode [style*="rgba(255,255,255,0.04)"] {
   background: #ffffff !important;
 }
-@media print {
-  body * { visibility: hidden; }
-  [data-testid="monthly-report-dialog"],
-  [data-testid="monthly-report-dialog"] * { visibility: visible; }
-  [data-testid="monthly-report-overlay"] {
-    position: absolute !important;
-    inset: 0 !important;
-    background: #ffffff !important;
-  }
-  [data-testid="monthly-report-dialog"] {
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
-    width: 100% !important;
-    max-height: none !important;
-    box-shadow: none !important;
-    border: 1.5px solid #000000 !important;
-  }
-  [data-testid="report-save"],
-  [data-testid="report-saved"],
-  [data-testid="report-print"],
-  [data-testid="report-copy"],
-  [data-testid="report-close"] { display: none !important; }
-  .monthly-report-footer { display: none !important; }
-}
+/* (Older legacy print block intentionally removed — superseded by the
+   single comprehensive @media print block below. Two competing print
+   blocks were causing Chrome to render the dialog at the wrong size.) */
 
 /* Top pill: shrink every button by 1px so they fit the row evenly */
 #top-pill-buttons-row button,
@@ -2953,20 +2931,35 @@ input[type="date"].bg-white::-webkit-datetime-edit-year-field {
   resize: none !important;
 }
 
-/* Monthly report: fill one US Letter portrait page when printing */
+/* Monthly report: fill one US Letter portrait page when printing.
+
+   Implementation note (2026-04-19): Earlier versions used
+   `body * { visibility: hidden }` to hide the rest of the dashboard during
+   print. That preserves layout space — the entire dashboard still occupied
+   thousands of pixels of body height, just invisibly. Chrome's print
+   pagination then misbehaved: it would either render the dialog at its
+   on-screen size centered on a mostly-empty page, or split the form across
+   pages because body was thousands of pixels tall. Switching to
+   `display: none` actually removes those nodes from the print layout, so
+   the dialog renders at the exact page size we asked for. */
 @media print {
   @page { size: letter portrait; margin: 0.4in; }
   html, body {
     background: #ffffff !important; height: auto !important;
     margin: 0 !important; padding: 0 !important; width: 100% !important;
+    overflow: visible !important;
   }
-  body * { visibility: hidden !important; }
-  [data-testid="monthly-report-overlay"],
-  [data-testid="monthly-report-overlay"] * { visibility: visible !important; }
+  /* Hide every direct child of body, then re-show only the print overlay.
+     display:none removes them from layout entirely (unlike visibility:hidden
+     which preserves space and breaks pagination). */
+  body > *:not([data-testid="monthly-report-overlay"]) { display: none !important; }
+  /* Also hide the safe-mode banner if it happens to be on. */
+  [data-testid="banner-safe-mode"] { display: none !important; }
   [data-testid="monthly-report-overlay"] {
-    position: absolute !important; left: 0 !important; top: 0 !important; right: 0 !important;
+    position: static !important;
     background: transparent !important; display: block !important;
     width: 100% !important; height: auto !important; padding: 0 !important; margin: 0 !important;
+    inset: auto !important;
   }
   [data-testid="monthly-report-dialog"] {
     position: relative !important;
