@@ -26060,7 +26060,50 @@ export default function Dashboard() {
                       Saved ({monthlyReportHistory.length})
                     </button>
                     <button
-                      onClick={() => { try { window.print(); } catch (e) { console.error(e); } }}
+                      onClick={() => {
+                        try {
+                          // Before the browser opens its print preview, the
+                          // print CSS forces the dialog into a fixed 10.2in
+                          // box with overflow:hidden — so when the form is
+                          // long the bottom gets clipped. Scale the body to
+                          // fit and restore it after.
+                          let savedBodyCss = '';
+                          let scaledBody: HTMLElement | null = null;
+                          const onBeforePrint = () => {
+                            const dialog = document.querySelector<HTMLElement>('[data-testid="monthly-report-dialog"]');
+                            if (!dialog) return;
+                            const body = dialog.querySelector<HTMLElement>(':scope > .flex-1 > .overflow-y-auto');
+                            const header = dialog.querySelector<HTMLElement>('.monthly-report-header');
+                            const banner = dialog.querySelector<HTMLElement>('.monthly-report-banner');
+                            if (!body) return;
+                            const headerH = (header?.offsetHeight ?? 0) + (banner?.offsetHeight ?? 0);
+                            const availableH = dialog.clientHeight - headerH;
+                            // Body has overflow:visible in print, so scrollHeight
+                            // is the natural full content height.
+                            const contentH = body.scrollHeight;
+                            if (contentH > 0 && availableH > 0 && contentH > availableH) {
+                              const scale = availableH / contentH;
+                              savedBodyCss = body.style.cssText;
+                              scaledBody = body;
+                              body.style.transformOrigin = 'top left';
+                              body.style.transform = `scale(${scale})`;
+                              body.style.width = `${100 / scale}%`;
+                              body.style.height = `${contentH}px`;
+                            }
+                          };
+                          const onAfterPrint = () => {
+                            if (scaledBody) {
+                              scaledBody.style.cssText = savedBodyCss;
+                              scaledBody = null;
+                            }
+                            window.removeEventListener('beforeprint', onBeforePrint);
+                            window.removeEventListener('afterprint', onAfterPrint);
+                          };
+                          window.addEventListener('beforeprint', onBeforePrint);
+                          window.addEventListener('afterprint', onAfterPrint);
+                          window.print();
+                        } catch (e) { console.error(e); }
+                      }}
                       style={{ background: '#ffffff', color: '#000000', fontSize: '11px', fontWeight: 600, padding: '8px 14px', borderRadius: '4px', border: '1.5px solid #000000', cursor: 'pointer' }}
                       data-testid="report-print"
                       title="Print this report"
