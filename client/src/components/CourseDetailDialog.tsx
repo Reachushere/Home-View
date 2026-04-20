@@ -4298,6 +4298,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 {showAssignments && (
                   <>
                   {isEditingInfo && (
+                  <>
                   <button
                     onClick={(e) => { e.stopPropagation(); onAllAssignmentsAddedChange?.(!allAssignmentsAdded); }}
                     className="flex items-center gap-1 px-1.5 text-[8px] rounded border cursor-pointer transition-all"
