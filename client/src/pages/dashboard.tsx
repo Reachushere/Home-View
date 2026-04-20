@@ -919,7 +919,10 @@ export default function Dashboard() {
       // browser / opening a new tab clears sessionStorage and the popup will
       // appear again — which is what Bryn wants on a true fresh refresh.
       const sessionDismissed = (typeof window !== 'undefined') && sessionStorage.getItem('monthlyReportDismissedSession') === monthKey;
-      if (day >= 19 && hour >= 9 && dismissedNow !== monthKey && !sessionDismissed) {
+      // Respect safe mode (?safe=1) — when active, never auto-pop the dialog
+      // so the user can interact with the page even during a reload loop.
+      const safeMode = (typeof window !== 'undefined') && (window as any).__SAFE_MODE__ === true;
+      if (day >= 19 && hour >= 9 && dismissedNow !== monthKey && !sessionDismissed && !safeMode) {
         setIsMonthlyReportOpen(true);
       }
     };
