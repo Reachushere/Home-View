@@ -1,0 +1,60 @@
+remote: Enumerating objects: 18, done.
+remote: Counting objects: 100% (18/18), done.
+remote: Compressing objects: 100% (5/5), done.
+remote: Total 12 (delta 7), reused 12 (delta 7), pack-reused 0 (from 0)
+Unpacking objects: 100% (12/12), 9.19 KiB | 448.00 KiB/s, done.
+From https://github.com/Reachushere/Home-View
+   7eaabdfd8..ae9d2bf7d  main       -> origin/main
+Updating 7eaabdfd8..ae9d2bf7d
+Fast-forward
+ ...yhomeyyz-raspberrypi-Home-View-All-mounted-filesystems_1776644580525.txt |  91 ++++++++++
+ ...yhomeyyz-raspberrypi-Home-View-cd-Home-View-git-pull-d_1776644462981.txt | 330 ++++++++++++++++++++++++++++++++++++
+ server/replit_integrations/audio/client.ts                                  |  41 ++++-
+ 3 files changed, 460 insertions(+), 2 deletions(-)
+ create mode 100644 attached_assets/Pasted-byhomeyyz-raspberrypi-Home-View-All-mounted-filesystems_1776644580525.txt
+ create mode 100644 attached_assets/Pasted-byhomeyyz-raspberrypi-Home-View-cd-Home-View-git-pull-d_1776644462981.txt
+=== UniCal Deploy ===
+
+[1/7] Stopping old process FIRST...
+[PM2] Applying action stopProcessId on app [dashboard](ids: [ 0 ])
+[PM2] [dashboard](0) ✓
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+├────┼────────────────────┼──────────┼──────┼───────────┼──────────┼──────────┤
+│ 0  │ dashboard          │ fork     │ 13   │ stopped   │ 0%       │ 0b       │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+[PM2] Applying action deleteProcessId on app [dashboard](ids: [ 0 ])
+[PM2] [dashboard](0) ✓
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+ 140176[2/7] Pulling latest from GitHub...
+
+Changes incoming:
+
+HEAD is now at ae9d2bf7d Fix TTS temp-file leak that filled /tmp and crashed the Pi
+[3/7] Generating changelog...
+Changelog written: ae9d2bf7d (2026-04-20T00:24:18Z)
+[4/7] Installing dependencies...
+
+up to date, audited 1030 packages in 4s
+
+152 packages are looking for funding
+  run `npm fund` for details
+
+16 vulnerabilities (5 low, 2 moderate, 9 high)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+[5/7] Building fresh from latest source (with swap)...
+
+> rest-express@1.0.0 build
+> tsx script/build.ts
+
+building client...
+vite v7.3.0 building client environment for production...
