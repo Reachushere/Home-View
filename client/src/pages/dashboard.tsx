@@ -26144,24 +26144,35 @@ export default function Dashboard() {
                             const header = dialog.querySelector<HTMLElement>('.monthly-report-header');
                             const banner = dialog.querySelector<HTMLElement>('.monthly-report-banner');
                             if (!body) return;
-                            const headerH = (header?.offsetHeight ?? 0) + (banner?.offsetHeight ?? 0);
-                            const cs = window.getComputedStyle(body);
-                            const padV = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
-                            const availableH = dialog.clientHeight - headerH - padV;
-                            // Wrap body's children in a measurable div so we
-                            // can sidestep the body's flex:1 1 auto sizing
-                            // and apply CSS zoom on a node that has a true
-                            // natural content height.
+                            // Wrap children so we can scale them
+                            // independently of the body's flex/height
+                            // constraints.
                             const wrap = document.createElement('div');
                             wrap.setAttribute('data-print-scale-wrap', '');
                             wrap.style.width = '100%';
                             while (body.firstChild) wrap.appendChild(body.firstChild);
                             body.appendChild(wrap);
-                            const naturalH = wrap.scrollHeight;
-                            if (naturalH > 0 && availableH > 0) {
-                              const scale = availableH / naturalH;
-                              (wrap.style as unknown as { zoom: string }).zoom = String(scale);
+                            // Binary-search the largest zoom that keeps
+                            // the wrap within the dialog's bottom edge.
+                            const fits = (z: number) => {
+                              (wrap.style as unknown as { zoom: string }).zoom = String(z);
+                              void wrap.offsetHeight;
+                              const dialogBottom = dialog.getBoundingClientRect().bottom;
+                              const wrapBottom = wrap.getBoundingClientRect().bottom;
+                              return wrapBottom <= dialogBottom + 1;
+                            };
+                            let lo = 0.3;
+                            let hi = 3.0;
+                            if (fits(hi)) {
+                              lo = hi;
+                            } else {
+                              for (let i = 0; i < 14; i++) {
+                                const mid = (lo + hi) / 2;
+                                if (fits(mid)) lo = mid;
+                                else hi = mid;
+                              }
                             }
+                            (wrap.style as unknown as { zoom: string }).zoom = String(lo);
                             scaledBody = body;
                           };
                           const onAfterPrint = () => {

@@ -78,26 +78,40 @@ export async function buildMonthlyReportPdfBytes(): Promise<Uint8Array> {
   const header = captureClone.querySelector<HTMLElement>(".monthly-report-header");
   const banner = captureClone.querySelector<HTMLElement>(".monthly-report-banner");
   if (body) {
-    const headerH = (header?.offsetHeight ?? 0) + (banner?.offsetHeight ?? 0);
-    const cs = window.getComputedStyle(body);
-    const padV = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
-    const availableH = captureClone.clientHeight - headerH - padV;
-    // Wrap the body's children in a measurable div. The body itself has
-    // flex:1 1 auto + height:auto !important from print CSS, so we can't
-    // measure or constrain it directly. The wrapper has no flex
-    // constraints, so its scrollHeight is the true natural content
-    // height and CSS zoom on the wrapper actually changes its rendered
-    // size (which is what html2canvas captures).
+    // Wrap the children so we can scale them independently of the body's
+    // flex/height constraints.
     const wrap = document.createElement("div");
     wrap.setAttribute("data-print-scale-wrap", "");
     wrap.style.width = "100%";
     while (body.firstChild) wrap.appendChild(body.firstChild);
     body.appendChild(wrap);
-    const naturalH = wrap.scrollHeight;
-    if (naturalH > 0 && availableH > 0) {
-      const scale = availableH / naturalH;
-      (wrap.style as unknown as { zoom: string }).zoom = String(scale);
+
+    // Binary-search the largest zoom that keeps the wrap within the
+    // dialog's bottom edge. Direct measurement after each trial is the
+    // only reliable way — every analytic shortcut we tried got fooled
+    // by flex constraints, !important overrides, or html2canvas
+    // peculiarities.
+    const fits = (z: number) => {
+      (wrap.style as unknown as { zoom: string }).zoom = String(z);
+      // Force layout
+      void wrap.offsetHeight;
+      const dialogBottom = captureClone.getBoundingClientRect().bottom;
+      const wrapBottom = wrap.getBoundingClientRect().bottom;
+      // Allow 1px of slop for rounding
+      return wrapBottom <= dialogBottom + 1;
+    };
+    let lo = 0.3;
+    let hi = 3.0;
+    if (fits(hi)) {
+      lo = hi;
+    } else {
+      for (let i = 0; i < 14; i++) {
+        const mid = (lo + hi) / 2;
+        if (fits(mid)) lo = mid;
+        else hi = mid;
+      }
     }
+    (wrap.style as unknown as { zoom: string }).zoom = String(lo);
   }
 
   let canvas: HTMLCanvasElement;
