@@ -2873,7 +2873,9 @@ input[type="date"].bg-white::-webkit-datetime-edit-year-field {
   color: #ffffff !important;
 }
 .monthly-report-print-mode [data-testid="report-save"],
-.monthly-report-print-mode [data-testid="report-save"] * {
+.monthly-report-print-mode [data-testid="report-save"] *,
+.monthly-report-print-mode [data-testid="report-email"],
+.monthly-report-print-mode [data-testid="report-email"] * {
   color: #ffffff !important;
 }
 .monthly-report-print-mode input,
