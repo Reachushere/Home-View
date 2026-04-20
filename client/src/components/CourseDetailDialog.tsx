@@ -1211,9 +1211,12 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
   // (excludeFromGpa). The greyed-out rows are still visible but excluded from
   // every numerator/denominator and from the bottom totals row.
   const includedGradeTasks = useMemo(() => gradedCourseTasks.filter(t => !t.excludeFromGpa), [gradedCourseTasks]);
-  const totalWeight = includedGradeTasks.reduce((s, t) => s + (t.gradeWeight || 0), 0);
+  // Weight totals count EVERY non-scratched graded task — even ones with the
+  // "Grade Received" toggle still off (excludeFromGpa: true). Those tasks just
+  // don't contribute to the percent / score numerator yet.
+  const totalWeight = gradedCourseTasks.reduce((s, t) => s + (t.gradeWeight || 0), 0);
   const activeGradeTasks = useMemo(() => includedGradeTasks.filter(t => !t.gradeScratchedOff), [includedGradeTasks]);
-  const scratchedWeight = useMemo(() => includedGradeTasks.filter(t => t.gradeScratchedOff).reduce((s, t) => s + (t.gradeWeight || 0), 0), [includedGradeTasks]);
+  const scratchedWeight = useMemo(() => gradedCourseTasks.filter(t => t.gradeScratchedOff).reduce((s, t) => s + (t.gradeWeight || 0), 0), [gradedCourseTasks]);
   const activeWeight = totalWeight - scratchedWeight;
 
   const gradeCalc = useMemo(() => {
