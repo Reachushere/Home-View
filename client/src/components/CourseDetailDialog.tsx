@@ -2136,7 +2136,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
         </div>
         <div className="flex items-center flex-shrink-0" style={{ gap: '6px', marginLeft: '8px', marginRight: '17px' }} onClick={(e) => e.stopPropagation()}>
           <label className="flex items-center gap-1 cursor-pointer" title="Not Graded item — click to move to Graded section" data-testid={`toggle-gpa-ungraded-${task.id}`}>
-            <div className="relative" onClick={() => updateTaskMutation.mutate({ id: task.id, data: { isNotGraded: false }, _task: task })}>
+            <div className="relative" onClick={() => updateTaskMutation.mutate({ id: task.id, data: { isNotGraded: false, excludeFromGpa: false }, _task: task })}>
               <div className="w-6 h-3.5 rounded-full transition-colors bg-white/20" />
               <div className="absolute top-0.5 left-0.5 w-2.5 h-2.5 rounded-full bg-white transition-transform" />
             </div>
