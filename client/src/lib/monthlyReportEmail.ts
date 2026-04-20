@@ -25,92 +25,79 @@ export async function buildMonthlyReportPdfBytes(): Promise<Uint8Array> {
     textareaValues.set(key, el.value);
   });
 
-  const scrollEl = dialog.querySelector<HTMLElement>('[data-testid="monthly-report-scroll"]') ||
-                   (dialog.firstElementChild as HTMLElement | null);
-  const prevScrollTop = scrollEl?.scrollTop ?? 0;
-  if (scrollEl) scrollEl.scrollTop = 0;
-
-  // Temporarily expand the dialog and any inner scrollable elements so we
-  // can measure (and capture) the full content height. Without this,
-  // html2canvas only captures the dialog's clipped visible area and the
-  // PDF gets cut off mid-page when content is long.
-  type SavedStyle = { el: HTMLElement; cssText: string };
-  const savedStyles: SavedStyle[] = [];
-  const expandEl = (el: HTMLElement) => {
-    savedStyles.push({ el, cssText: el.style.cssText });
+  // Build an offscreen clone of the dialog with no height/overflow
+  // constraints so html2canvas captures the entire form, no matter how
+  // long. The original dialog is height-capped (max-h-85vh) and uses an
+  // inner overflow-y-auto scroll region — both of which clip the capture
+  // when we read the live element directly.
+  const captureHost = document.createElement("div");
+  captureHost.style.cssText = [
+    "position:fixed",
+    "left:-100000px",
+    "top:0",
+    "width:600px",
+    "background:#ffffff",
+    "z-index:-1",
+    "pointer-events:none",
+    "visibility:visible",
+  ].join(";");
+  const captureClone = dialog.cloneNode(true) as HTMLElement;
+  // Remove every height/overflow constraint on the clone and its descendants.
+  captureClone.style.maxHeight = "none";
+  captureClone.style.height = "auto";
+  captureClone.style.overflow = "visible";
+  captureClone.style.width = "600px";
+  captureClone.querySelectorAll<HTMLElement>("*").forEach((el) => {
     el.style.maxHeight = "none";
-    el.style.height = "auto";
     el.style.overflow = "visible";
-  };
-  expandEl(dialog);
-  if (scrollEl && scrollEl !== dialog) expandEl(scrollEl);
-  dialog.querySelectorAll<HTMLElement>("*").forEach((el) => {
-    const cs = window.getComputedStyle(el);
-    if (cs.overflowY === "auto" || cs.overflowY === "scroll" || cs.overflow === "auto" || cs.overflow === "scroll") {
-      expandEl(el);
+    if (el.classList.contains("overflow-y-auto") || el.classList.contains("overflow-hidden")) {
+      el.style.height = "auto";
     }
   });
-  // Force layout to recompute, then read the true expanded height.
-  void dialog.offsetHeight;
-  const fullHeight = Math.max(dialog.scrollHeight, dialog.offsetHeight);
-  const fullWidth = Math.max(dialog.scrollWidth, dialog.offsetWidth);
-
-  const canvas = await html2canvas(dialog, {
-    backgroundColor: "#ffffff",
-    scale: 2,
-    useCORS: true,
-    logging: false,
-    windowWidth: fullWidth,
-    windowHeight: fullHeight,
-    height: fullHeight,
-    width: fullWidth,
-    onclone: (clonedDoc) => {
-      const clonedDialog = clonedDoc.querySelector<HTMLElement>('[data-testid="monthly-report-dialog"]');
-      if (!clonedDialog) return;
-
-      clonedDialog.style.maxHeight = "none";
-      clonedDialog.style.height = "auto";
-      clonedDialog.style.overflow = "visible";
-      clonedDialog.querySelectorAll<HTMLElement>("*").forEach((el) => {
-        const cs = clonedDoc.defaultView?.getComputedStyle(el);
-        if (!cs) return;
-        if (cs.overflowY === "auto" || cs.overflowY === "scroll" || cs.overflow === "auto" || cs.overflow === "scroll") {
-          el.style.overflow = "visible";
-          el.style.maxHeight = "none";
-          el.style.height = "auto";
-        }
-      });
-
-      clonedDialog.querySelectorAll<HTMLInputElement>("input").forEach((el) => {
-        const key = el.getAttribute("data-clone-key");
-        const v = key ? inputValues.get(key) ?? "" : "";
-        el.setAttribute("value", v);
-        el.value = v;
-        const span = clonedDoc.createElement("span");
-        span.textContent = v;
-        span.style.cssText = `display:inline-block;padding:6px 8px;font-size:11px;color:#000;background:#fff;border:1px solid #000;border-radius:4px;width:100%;min-height:24px;box-sizing:border-box;font-family:inherit;white-space:pre-wrap;word-break:break-word;`;
-        el.parentNode?.replaceChild(span, el);
-      });
-
-      clonedDialog.querySelectorAll<HTMLTextAreaElement>("textarea").forEach((el) => {
-        const key = el.getAttribute("data-clone-key");
-        const v = key ? textareaValues.get(key) ?? "" : "";
-        const div = clonedDoc.createElement("div");
-        div.textContent = v;
-        div.style.cssText = `display:block;padding:6px 8px;font-size:11px;color:#000;background:#fff;border:1px solid #000;border-radius:4px;width:100%;min-height:36px;box-sizing:border-box;font-family:inherit;white-space:pre-wrap;word-break:break-word;line-height:1.4;`;
-        el.parentNode?.replaceChild(div, el);
-      });
-    },
+  // Replace inputs/textareas in the clone with static blocks that show the
+  // live value (form controls don't render their value into the canvas
+  // reliably otherwise).
+  captureClone.querySelectorAll<HTMLInputElement>("input").forEach((el) => {
+    if (el.type === "checkbox" || el.type === "radio") return;
+    const key = el.getAttribute("data-clone-key");
+    const v = key ? inputValues.get(key) ?? "" : el.value;
+    const span = document.createElement("span");
+    span.textContent = v;
+    span.style.cssText = "display:inline-block;padding:6px 8px;font-size:11px;color:#000;background:#fff;border:1px solid #000;border-radius:4px;width:100%;min-height:24px;box-sizing:border-box;font-family:inherit;white-space:pre-wrap;word-break:break-word;";
+    el.parentNode?.replaceChild(span, el);
   });
+  captureClone.querySelectorAll<HTMLTextAreaElement>("textarea").forEach((el) => {
+    const key = el.getAttribute("data-clone-key");
+    const v = key ? textareaValues.get(key) ?? "" : el.value;
+    const div = document.createElement("div");
+    div.textContent = v;
+    div.style.cssText = "display:block;padding:6px 8px;font-size:11px;color:#000;background:#fff;border:1px solid #000;border-radius:4px;width:100%;min-height:36px;box-sizing:border-box;font-family:inherit;white-space:pre-wrap;word-break:break-word;line-height:1.4;";
+    el.parentNode?.replaceChild(div, el);
+  });
+  captureHost.appendChild(captureClone);
+  document.body.appendChild(captureHost);
+  // Force layout, then measure the natural full size of the clone.
+  void captureClone.offsetHeight;
+  const fullWidth = Math.max(captureClone.scrollWidth, captureClone.offsetWidth, 600);
+  const fullHeight = Math.max(captureClone.scrollHeight, captureClone.offsetHeight);
 
-  // Restore the original styles we mutated for the capture so the visible
-  // dialog snaps back to its scrollable layout.
-  for (const s of savedStyles) {
-    s.el.style.cssText = s.cssText;
+  let canvas: HTMLCanvasElement;
+  try {
+    canvas = await html2canvas(captureClone, {
+      backgroundColor: "#ffffff",
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      windowWidth: fullWidth,
+      windowHeight: fullHeight,
+      height: fullHeight,
+      width: fullWidth,
+    });
+  } finally {
+    captureHost.remove();
+    liveInputs.forEach((el) => el.removeAttribute("data-clone-key"));
+    liveTextareas.forEach((el) => el.removeAttribute("data-clone-key"));
   }
-  if (scrollEl) scrollEl.scrollTop = prevScrollTop;
-  liveInputs.forEach((el) => el.removeAttribute("data-clone-key"));
-  liveTextareas.forEach((el) => el.removeAttribute("data-clone-key"));
 
   const pngDataUrl = canvas.toDataURL("image/png");
   const pngBytes = await (await fetch(pngDataUrl)).arrayBuffer();
