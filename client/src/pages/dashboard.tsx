@@ -28343,41 +28343,59 @@ export default function Dashboard() {
                                     );
                                   })()}
                                   {isCurrentSem && <span className="text-[7px] font-bold text-white bg-emerald-500/20 px-1 py-0.5 rounded-full border border-white">CURRENT</span>}
-                                  {(() => { const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })(); const isConfirmedEnded = semesterEndConfirmed[sem.key]; return (isPast || isConfirmedEnded) ? <span className="font-bold tracking-wider uppercase rounded border flex-shrink" style={{ color: '#ffffff', background: colorSettings.headerBar, borderColor: 'rgba(255,255,255,0.2)', lineHeight: '14px', fontSize: 'clamp(5px, 1.2vw, 7px)', padding: '0 clamp(2px, 0.5vw, 4px)', whiteSpace: 'nowrap', flexShrink: 1, minWidth: 0 }}>COMPLETE</span> : null; })()}
-                                </div>
-                                <span className="text-[10px] text-white whitespace-nowrap ml-1">{(() => {
-                                  const letterToGpa: Record<string, number> = { 'A+': 4.33, 'A': 4.0, 'A-': 3.67, 'B+': 3.33, 'B': 3.0, 'B-': 2.67, 'C+': 2.33, 'C': 2.0, 'C-': 1.67, 'D': 1.0, 'F': 0 };
-                                  const pToGpa = (p: number) => p >= 90 ? 4.33 : p >= 85 ? 4.0 : p >= 80 ? 3.67 : p >= 77 ? 3.33 : p >= 73 ? 3.0 : p >= 70 ? 2.67 : p >= 67 ? 2.33 : p >= 63 ? 2.0 : p >= 60 ? 1.67 : p >= 50 ? 1.0 : 0;
-                                  const vals: number[] = [];
-                                  for (const c of sem.courses) {
-                                    const code = c.code.replace(/\s/g, '');
-                                    const codeNoC = code.toUpperCase().replace(/^C(?=[A-Z]{2,})/, '');
-                                    const info = pastCourseInfo[code] || pastCourseInfo[codeNoC];
-                                    const certKey = Object.keys(certCourseMap).find(k => { const mc = certCourseMap[k].code.replace(/\s/g, '').toUpperCase(); return mc === code.toUpperCase() || ('C' + mc) === code.toUpperCase() || mc === codeNoC; });
-                                    const cg = certKey ? courseGrades[certKey] : null;
-                                    let electiveGrade: { grade: string; percent: string } | null = null;
-                                    if (!cg?.percent && !cg?.grade) {
-                                      const codeNorm = code.toUpperCase();
-                                      for (const [slot, elVal] of Object.entries(openElectives)) {
-                                        if (elVal && elVal.replace(/\s/g, '').toUpperCase().startsWith(codeNorm)) {
-                                          if (courseGrades[slot]?.percent || courseGrades[slot]?.grade) {
-                                            electiveGrade = courseGrades[slot];
-                                            break;
+                                  {(() => {
+                                    // Semester GPA + average % badge: shown inline next to the date
+                                    // pills, just before the COMPLETE badge. Pulls grades from
+                                    // certCourseMap → courseGrades (with electives + pastCourseInfo
+                                    // fallback) for every course in this semester, then averages.
+                                    const letterToGpa: Record<string, number> = { 'A+': 4.33, 'A': 4.0, 'A-': 3.67, 'B+': 3.33, 'B': 3.0, 'B-': 2.67, 'C+': 2.33, 'C': 2.0, 'C-': 1.67, 'D': 1.0, 'F': 0 };
+                                    const pToGpa = (p: number) => p >= 90 ? 4.33 : p >= 85 ? 4.0 : p >= 80 ? 3.67 : p >= 77 ? 3.33 : p >= 73 ? 3.0 : p >= 70 ? 2.67 : p >= 67 ? 2.33 : p >= 63 ? 2.0 : p >= 60 ? 1.67 : p >= 50 ? 1.0 : 0;
+                                    // Approximate inverse for letter-only grades, so the % badge
+                                    // still renders even when only a letter has been entered.
+                                    const letterToPct: Record<string, number> = { 'A+': 92, 'A': 87, 'A-': 82, 'B+': 78, 'B': 75, 'B-': 72, 'C+': 68, 'C': 65, 'C-': 62, 'D': 55, 'F': 40 };
+                                    const gpaVals: number[] = [];
+                                    const pctVals: number[] = [];
+                                    for (const c of sem.courses) {
+                                      const code = c.code.replace(/\s/g, '');
+                                      const codeNoC = code.toUpperCase().replace(/^C(?=[A-Z]{2,})/, '');
+                                      const info = pastCourseInfo[code] || pastCourseInfo[codeNoC];
+                                      const certKey = Object.keys(certCourseMap).find(k => { const mc = certCourseMap[k].code.replace(/\s/g, '').toUpperCase(); return mc === code.toUpperCase() || ('C' + mc) === code.toUpperCase() || mc === codeNoC; });
+                                      const cg = certKey ? courseGrades[certKey] : null;
+                                      let electiveGrade: { grade: string; percent: string } | null = null;
+                                      if (!cg?.percent && !cg?.grade) {
+                                        const codeNorm = code.toUpperCase();
+                                        for (const [slot, elVal] of Object.entries(openElectives)) {
+                                          if (elVal && elVal.replace(/\s/g, '').toUpperCase().startsWith(codeNorm)) {
+                                            if (courseGrades[slot]?.percent || courseGrades[slot]?.grade) {
+                                              electiveGrade = courseGrades[slot];
+                                              break;
+                                            }
                                           }
                                         }
                                       }
+                                      if (cg?.percent && cg.percent.trim()) { const p = parseFloat(cg.percent); if (!isNaN(p)) { gpaVals.push(pToGpa(p)); pctVals.push(p); } }
+                                      else if (cg?.grade && cg.grade.trim() && letterToGpa[cg.grade] !== undefined) { gpaVals.push(letterToGpa[cg.grade]); pctVals.push(letterToPct[cg.grade]); }
+                                      else if (info?.grade && info.grade.trim() && letterToGpa[info.grade] !== undefined) { gpaVals.push(letterToGpa[info.grade]); pctVals.push(letterToPct[info.grade]); }
+                                      else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const p = parseFloat(electiveGrade.percent); if (!isNaN(p)) { gpaVals.push(pToGpa(p)); pctVals.push(p); } }
+                                      else if (electiveGrade?.grade && electiveGrade.grade.trim() && letterToGpa[electiveGrade.grade] !== undefined) { gpaVals.push(letterToGpa[electiveGrade.grade]); pctVals.push(letterToPct[electiveGrade.grade]); }
                                     }
-                                    if (cg?.percent && cg.percent.trim()) { const p = parseFloat(cg.percent); if (!isNaN(p)) vals.push(pToGpa(p)); }
-                                    else if (cg?.grade && cg.grade.trim() && letterToGpa[cg.grade] !== undefined) { vals.push(letterToGpa[cg.grade]); }
-                                    else if (info?.grade && info.grade.trim() && letterToGpa[info.grade] !== undefined) { vals.push(letterToGpa[info.grade]); }
-                                    else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const p = parseFloat(electiveGrade.percent); if (!isNaN(p)) vals.push(pToGpa(p)); }
-                                    else if (electiveGrade?.grade && electiveGrade.grade.trim() && letterToGpa[electiveGrade.grade] !== undefined) { vals.push(letterToGpa[electiveGrade.grade]); }
-                                  }
-                                  if (vals.length === 0) return '';
-                                  const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
-                                  const gpaLetter = avg >= 4.17 ? 'A+' : avg >= 3.84 ? 'A' : avg >= 3.5 ? 'A-' : avg >= 3.17 ? 'B+' : avg >= 2.84 ? 'B' : avg >= 2.5 ? 'B-' : avg >= 2.17 ? 'C+' : avg >= 1.84 ? 'C' : avg >= 1.34 ? 'C-' : avg >= 0.5 ? 'D' : 'F';
-                                  return `GPA: ${avg.toFixed(2)} (${gpaLetter})`;
-                                })()}</span>
+                                    if (gpaVals.length === 0) return null;
+                                    const avgGpa = gpaVals.reduce((a, b) => a + b, 0) / gpaVals.length;
+                                    const avgPct = pctVals.reduce((a, b) => a + b, 0) / pctVals.length;
+                                    const gpaLetter = avgGpa >= 4.17 ? 'A+' : avgGpa >= 3.84 ? 'A' : avgGpa >= 3.5 ? 'A-' : avgGpa >= 3.17 ? 'B+' : avgGpa >= 2.84 ? 'B' : avgGpa >= 2.5 ? 'B-' : avgGpa >= 2.17 ? 'C+' : avgGpa >= 1.84 ? 'C' : avgGpa >= 1.34 ? 'C-' : avgGpa >= 0.5 ? 'D' : 'F';
+                                    return (
+                                      <span
+                                        className="font-bold tracking-wider uppercase rounded border flex-shrink"
+                                        style={{ color: '#ffffff', background: 'rgba(80,130,210,0.45)', borderColor: 'rgba(170,210,255,0.5)', lineHeight: '14px', fontSize: 'clamp(5px, 1.2vw, 7px)', padding: '0 clamp(3px, 0.6vw, 5px)', whiteSpace: 'nowrap', flexShrink: 1, minWidth: 0 }}
+                                        title={`Semester average across ${gpaVals.length} course${gpaVals.length === 1 ? '' : 's'}`}
+                                        data-testid={`badge-sem-gpa-${sem.key}`}
+                                      >
+                                        {`GPA ${avgGpa.toFixed(2)} ${gpaLetter} • ${avgPct.toFixed(1)}%`}
+                                      </span>
+                                    );
+                                  })()}
+                                  {(() => { const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })(); const isConfirmedEnded = semesterEndConfirmed[sem.key]; return (isPast || isConfirmedEnded) ? <span className="font-bold tracking-wider uppercase rounded border flex-shrink" style={{ color: '#ffffff', background: colorSettings.headerBar, borderColor: 'rgba(255,255,255,0.2)', lineHeight: '14px', fontSize: 'clamp(5px, 1.2vw, 7px)', padding: '0 clamp(2px, 0.5vw, 4px)', whiteSpace: 'nowrap', flexShrink: 1, minWidth: 0 }}>COMPLETE</span> : null; })()}
+                                </div>
                                 <ChevronRight
                                   className="text-white/40 hover:text-white cursor-pointer transition-colors flex-shrink-0 ml-1"
                                   style={{ width: '14px', height: '14px' }}
