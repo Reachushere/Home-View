@@ -1871,15 +1871,20 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               <div className={`absolute top-0.5 w-2.5 h-2.5 rounded-full bg-white transition-transform ${task.excludeFromGpa ? 'left-0.5' : 'left-3'}`} />
             </div>
           </label>
-          <button
-            onClick={(e) => { e.stopPropagation(); updateTaskMutation.mutate({ id: task.id, data: { isNotGraded: true, gradeScratchedOff: false }, _task: task }); }}
-            className="flex-shrink-0 text-white/50 hover:text-blue-400 transition-colors p-0.5"
-            style={{ marginLeft: '4px' }}
+          <label
+            className="flex items-center gap-1 cursor-pointer"
+            style={{ marginLeft: '8px' }}
             title="Move to Not Graded section"
-            data-testid={`button-move-to-ungraded-${task.id}`}
+            data-testid={`toggle-section-${task.id}`}
           >
-            <ArrowDown className="h-[15px] w-[15px]" />
-          </button>
+            <div
+              className="relative"
+              onClick={(e) => { e.stopPropagation(); updateTaskMutation.mutate({ id: task.id, data: { isNotGraded: true }, _task: task }); }}
+            >
+              <div className="w-6 h-3.5 rounded-full transition-colors bg-blue-500/60" />
+              <div className="absolute top-0.5 left-3 w-2.5 h-2.5 rounded-full bg-white transition-transform" />
+            </div>
+          </label>
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -2130,10 +2135,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           </div>
         </div>
         <div className="flex items-center flex-shrink-0" style={{ gap: '6px', marginLeft: '8px', marginRight: '17px' }} onClick={(e) => e.stopPropagation()}>
-          <label className="flex items-center gap-1 cursor-pointer" title={task.type === 'discussion' ? "Discussion posts are always Not Graded" : "Not Graded item — click to move to Graded section"} data-testid={`toggle-gpa-ungraded-${task.id}`}>
-            <div className="relative" onClick={() => { if (task.type !== 'discussion') updateTaskMutation.mutate({ id: task.id, data: { isNotGraded: false, excludeFromGpa: false }, _task: task }); }}>
-              <div className={`w-6 h-3.5 rounded-full transition-colors ${task.type === 'discussion' ? 'bg-white/10' : 'bg-white/20'}`} />
-              <div className={`absolute top-0.5 left-0.5 w-2.5 h-2.5 rounded-full bg-white transition-transform`} />
+          <label className="flex items-center gap-1 cursor-pointer" title="Not Graded item — click to move to Graded section" data-testid={`toggle-gpa-ungraded-${task.id}`}>
+            <div className="relative" onClick={() => updateTaskMutation.mutate({ id: task.id, data: { isNotGraded: false }, _task: task })}>
+              <div className="w-6 h-3.5 rounded-full transition-colors bg-white/20" />
+              <div className="absolute top-0.5 left-0.5 w-2.5 h-2.5 rounded-full bg-white transition-transform" />
             </div>
           </label>
           <button
