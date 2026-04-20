@@ -18233,7 +18233,6 @@ export default function Dashboard() {
             <span style={{ position: 'absolute', top: '13px', fontSize: '7.5px', color: '#ffffff', fontWeight: 500, letterSpacing: '0.5px', whiteSpace: 'nowrap', textAlign: 'center', right: '50%', transform: 'translateX(32%)' }}>Tasks</span>
           </div>
           {desktopIsFull && <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)', marginTop: '1px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); startTransition(() => { setQuickAddStep(0); setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, countdownBarColor: '', priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminder4DateTimeMode: false, reminder4Date: '', reminder4Hour: '09', reminder4Minute: '00', reminderEmail: false, reminderAlexa: false, reminderSms: false, reminder1Methods: '', reminder2Methods: '', reminder3Methods: '', reminder4Methods: '', attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '', repeatSpanDays: 1, shiftAdjust: false, hideFromSummary: false, hideFromCountdown: false, sendInvite: false, inviteEmail: '', inviteName: '', taskLabel: '' as any }); setIsQuickAddOpen(true); }); }}>+ Add</Button>}
-          {desktopIsFull && <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[12px] no-default-hover-elevate no-default-active-elevate text-white text-[11px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(140,200,255,0.45) 0%, rgba(80,130,210,0.28) 100%)', border: '1.5px solid rgba(170,210,255,0.45)', boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)', marginTop: '1px', zIndex: 10, position: 'relative', display: 'flex', alignItems: 'center', gap: '4px' }} title="Open the Post-Secondary Monthly Report (and view saved copies)" data-testid="button-monthly-report-pill" onClick={() => { triggerButtonGlow('addtask'); setIsMonthlyReportOpen(true); }}><FileText style={{ width: '12px', height: '12px' }} />Report</Button>}
           {/* Completed Tasks Button - Swapped with Graduation Hat */}
           <div className="pill-button-hover" style={{ 
             marginTop: '0px', width: '44px', height: '43px', borderRadius: '50%',
@@ -18837,6 +18836,26 @@ export default function Dashboard() {
               title="Redo"
             >
               <Redo2 className="h-[18px] w-[18px] text-white" />
+            </div>
+          )}
+
+          {/* Monthly Report (moved from Tasks pill — kept blue, sits right of Redo, default 2px gap) */}
+          {desktopIsFull && (
+            <div
+              style={{
+                width: '44px', height: '43px', marginTop: '3px', marginLeft: '2px', zIndex: 100, borderRadius: '50%',
+                background: 'linear-gradient(180deg, rgba(140,200,255,0.45) 0%, rgba(80,130,210,0.28) 100%)',
+                position: 'relative' as const,
+                border: '1.5px solid rgba(170,210,255,0.45)',
+                boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+              }}
+              className="pill-button-hover"
+              onClick={() => { triggerButtonGlow('addtask'); setIsMonthlyReportOpen(true); }}
+              data-testid="button-monthly-report-pill"
+              title="Open the Post-Secondary Monthly Report (and view saved copies)"
+            >
+              <FileText className="h-[18px] w-[18px] text-white" />
             </div>
           )}
 
