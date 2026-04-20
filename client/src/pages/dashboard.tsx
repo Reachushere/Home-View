@@ -26134,7 +26134,6 @@ export default function Dashboard() {
                           // box with overflow:hidden — so when the form is
                           // long the bottom gets clipped. Scale the body to
                           // fit and restore it after.
-                          let savedBodyCss = '';
                           let scaledBody: HTMLElement | null = null;
                           const onBeforePrint = () => {
                             const dialog = document.querySelector<HTMLElement>('[data-testid="monthly-report-dialog"]');
@@ -26146,32 +26145,32 @@ export default function Dashboard() {
                             const banner = dialog.querySelector<HTMLElement>('.monthly-report-banner');
                             if (!body) return;
                             const headerH = (header?.offsetHeight ?? 0) + (banner?.offsetHeight ?? 0);
-                            const availableH = dialog.clientHeight - headerH;
-                            // Sum the children's actual heights — body has
-                            // flex:1 1 auto so its scrollHeight equals
-                            // clientHeight when content fits, hiding the
-                            // true natural content height we need for the
-                            // scale.
                             const cs = window.getComputedStyle(body);
                             const padV = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
-                            const children = Array.from(body.children) as HTMLElement[];
-                            let contentH = padV;
-                            for (const ch of children) {
-                              const chCs = window.getComputedStyle(ch);
-                              contentH += ch.offsetHeight
-                                + parseFloat(chCs.marginTop || '0')
-                                + parseFloat(chCs.marginBottom || '0');
+                            const availableH = dialog.clientHeight - headerH - padV;
+                            // Wrap body's children in a measurable div so we
+                            // can sidestep the body's flex:1 1 auto sizing
+                            // and apply CSS zoom on a node that has a true
+                            // natural content height.
+                            const wrap = document.createElement('div');
+                            wrap.setAttribute('data-print-scale-wrap', '');
+                            wrap.style.width = '100%';
+                            while (body.firstChild) wrap.appendChild(body.firstChild);
+                            body.appendChild(wrap);
+                            const naturalH = wrap.scrollHeight;
+                            if (naturalH > 0 && availableH > 0) {
+                              const scale = availableH / naturalH;
+                              (wrap.style as unknown as { zoom: string }).zoom = String(scale);
                             }
-                            if (contentH > 0 && availableH > 0) {
-                              const scale = availableH / contentH;
-                              savedBodyCss = body.style.cssText;
-                              scaledBody = body;
-                              (body.style as unknown as { zoom: string }).zoom = String(scale);
-                            }
+                            scaledBody = body;
                           };
                           const onAfterPrint = () => {
                             if (scaledBody) {
-                              scaledBody.style.cssText = savedBodyCss;
+                              const wrap = scaledBody.querySelector<HTMLElement>(':scope > [data-print-scale-wrap]');
+                              if (wrap) {
+                                while (wrap.firstChild) scaledBody.appendChild(wrap.firstChild);
+                                scaledBody.removeChild(wrap);
+                              }
                               scaledBody = null;
                             }
                             window.removeEventListener('beforeprint', onBeforePrint);

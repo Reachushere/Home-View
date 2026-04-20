@@ -81,24 +81,22 @@ export async function buildMonthlyReportPdfBytes(): Promise<Uint8Array> {
     const headerH = (header?.offsetHeight ?? 0) + (banner?.offsetHeight ?? 0);
     const cs = window.getComputedStyle(body);
     const padV = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
-    const availableH = captureClone.clientHeight - headerH;
-    // Measure the actual natural height of the body's children. We can't
-    // rely on body.scrollHeight because body has flex:1 1 auto which
-    // forces its box to fill the dialog — making scrollHeight = clientHeight
-    // whenever the content is shorter than the page. Summing children
-    // (plus their margins) gives us the true content height.
-    const children = Array.from(body.children) as HTMLElement[];
-    let contentH = padV;
-    for (let i = 0; i < children.length; i++) {
-      const ch = children[i];
-      const chCs = window.getComputedStyle(ch);
-      contentH += ch.offsetHeight
-        + parseFloat(chCs.marginTop || "0")
-        + parseFloat(chCs.marginBottom || "0");
-    }
-    if (contentH > 0 && availableH > 0) {
-      const scale = availableH / contentH;
-      (body.style as unknown as { zoom: string }).zoom = String(scale);
+    const availableH = captureClone.clientHeight - headerH - padV;
+    // Wrap the body's children in a measurable div. The body itself has
+    // flex:1 1 auto + height:auto !important from print CSS, so we can't
+    // measure or constrain it directly. The wrapper has no flex
+    // constraints, so its scrollHeight is the true natural content
+    // height and CSS zoom on the wrapper actually changes its rendered
+    // size (which is what html2canvas captures).
+    const wrap = document.createElement("div");
+    wrap.setAttribute("data-print-scale-wrap", "");
+    wrap.style.width = "100%";
+    while (body.firstChild) wrap.appendChild(body.firstChild);
+    body.appendChild(wrap);
+    const naturalH = wrap.scrollHeight;
+    if (naturalH > 0 && availableH > 0) {
+      const scale = availableH / naturalH;
+      (wrap.style as unknown as { zoom: string }).zoom = String(scale);
     }
   }
 
