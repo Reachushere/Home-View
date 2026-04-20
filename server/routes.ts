@@ -871,22 +871,10 @@ export async function registerRoutes(
 
   await initTTSFallbackStatus();
 
-  // One-time migration: ensure all existing discussion-type tasks are
-  // flagged as isNotGraded=true. Previously the Not Graded section was
-  // determined client-side by `type === 'discussion'`, but now isNotGraded
-  // is the single source of truth.
-  try {
-    const allTasks = await storage.getTasks();
-    const toMigrate = allTasks.filter(t => t.type === 'discussion' && t.isNotGraded !== true);
-    if (toMigrate.length > 0) {
-      console.log(`[Migration] Setting isNotGraded=true on ${toMigrate.length} discussion tasks`);
-      for (const t of toMigrate) {
-        try { await storage.updateTask(t.id, { isNotGraded: true } as any); } catch {}
-      }
-    }
-  } catch (err) {
-    console.error('[Migration] discussion isNotGraded migration failed:', err);
-  }
+  // Note: previously a startup migration here flipped every discussion task
+  // back to isNotGraded=true on every restart, which clobbered manual moves
+  // from Not Graded → Graded. New discussions get isNotGraded=true via the
+  // POST /api/tasks handler default, so this migration is no longer needed.
 
   const serverPort = process.env.PORT || 5000;
 
