@@ -235,6 +235,7 @@ import {
   Type,
   CheckSquare2,
   Shield,
+  Mail,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import { useAccessMode } from "@/components/access-gate";
@@ -25781,6 +25782,34 @@ export default function Dashboard() {
                       title="Print this report"
                     >
                       Print
+                    </button>
+                    <button
+                      onClick={async () => {
+                        try {
+                          const { emailMonthlyReportViaOutlook } = await import('@/lib/monthlyReportEmail');
+                          const { filename } = await emailMonthlyReportViaOutlook({
+                            reportingPeriod: monthlyReportFields.reportingPeriod || '',
+                            reportDate: monthlyReportFields.reportDate || '',
+                          });
+                          toast({
+                            title: 'Outlook opening…',
+                            description: `${filename} saved to Downloads. Drag it into the email before sending.`,
+                          });
+                        } catch (e: any) {
+                          console.error('[Email Report]', e);
+                          toast({
+                            title: 'Email failed',
+                            description: e?.message || 'Could not generate the report PDF.',
+                            variant: 'destructive',
+                          });
+                        }
+                      }}
+                      style={{ background: '#000000', color: '#ffffff', fontSize: '11px', fontWeight: 600, padding: '8px 14px', borderRadius: '4px', border: '1.5px solid #000000', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                      data-testid="report-email"
+                      title="Save report as PDF and open Outlook to email it to Kevin"
+                    >
+                      <Mail style={{ width: '13px', height: '13px' }} />
+                      <span>Email Kevin</span>
                     </button>
                   </div>
                   <div className="flex gap-2">
