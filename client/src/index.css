@@ -2990,8 +2990,7 @@ input[type="date"].bg-white::-webkit-datetime-edit-year-field {
      bottom. When the form is longer than the page, the beforeprint
      scaler applies CSS zoom on the body so everything still fits on
      one page. */
-  [data-testid="monthly-report-dialog"] > .flex-1 > .overflow-y-auto,
-  [data-testid="monthly-report-dialog"] > .flex-1 > .overflow-y-auto > .space-y-3 {
+  [data-testid="monthly-report-dialog"] .flex-1.overflow-y-auto {
     flex: 1 1 auto !important;
     display: flex !important; flex-direction: column !important;
     justify-content: space-between !important;
@@ -3070,8 +3069,7 @@ input[type="date"].bg-white::-webkit-datetime-edit-year-field {
   flex: 1 1 auto !important;
   display: flex !important; flex-direction: column !important;
 }
-.email-pdf-host [data-testid="monthly-report-dialog"] > .flex-1 > .overflow-y-auto,
-.email-pdf-host [data-testid="monthly-report-dialog"] > .flex-1 > .overflow-y-auto > .space-y-3 {
+.email-pdf-host [data-testid="monthly-report-dialog"] .flex-1.overflow-y-auto {
   flex: 1 1 auto !important;
   display: flex !important; flex-direction: column !important;
   justify-content: space-between !important;
