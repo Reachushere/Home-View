@@ -25560,8 +25560,13 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
 
-          {/* Monthly Post-Secondary Report Dialog */}
-          {isMonthlyReportOpen && desktopIsFull && (
+          {/* Monthly Post-Secondary Report Dialog
+              Portaled to document.body so it's a direct body child. This is
+              required for the print stylesheet — display:none on body's
+              other direct children leaves only the overlay visible, so the
+              dialog can render at the exact 7.7in x 10.2in print size
+              without competing with the rest of the dashboard's layout. */}
+          {isMonthlyReportOpen && desktopIsFull && createPortal(
             <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 10100, backgroundColor: 'rgba(0,0,0,0.6)' }} data-testid="monthly-report-overlay">
               <div className="monthly-report-print-mode sm:rounded-lg shadow-2xl w-[600px] max-h-[85vh] flex flex-col overflow-hidden" style={{ background: '#ffffff', border: '2px solid #000000', boxShadow: '0 4px 24px rgba(0,0,0,0.4)' }} data-testid="monthly-report-dialog">
                 <div className="monthly-report-header flex items-center justify-between px-4 py-3 flex-shrink-0 rounded-t-lg" style={{ background: '#000000', borderBottom: '2px solid #000000' }}>
@@ -25791,7 +25796,8 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
-            </div>
+            </div>,
+            document.body
           )}
 
           {/* Saved Monthly Reports History Viewer */}
