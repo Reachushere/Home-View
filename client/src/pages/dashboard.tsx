@@ -28332,7 +28332,7 @@ export default function Dashboard() {
                                 return { background: bgCol, borderColor: borderCol, ...shadow, position: 'relative' as const, borderWidth: isCurrentSem ? '2px' : undefined };
                               })()}>
                                 <div className="px-2 py-1.5 flex items-center justify-between cursor-pointer" onClick={(e) => { const t = e.target as HTMLElement; if (t.closest('[data-testid^="button-"], [data-testid^="dates-pill"], [data-testid^="pencil-"]')) return; e.stopPropagation(); expandedSemOpenTimeRef.current = Date.now(); setExpandedSemKey(sem.key); }} onDoubleClick={(e) => { e.stopPropagation(); expandedSemOpenTimeRef.current = Date.now(); setExpandedSemKey(sem.key); }}>
-                                <div className="flex items-center gap-1.5 flex-wrap" style={{ flexWrap: 'nowrap', overflow: 'hidden', minWidth: 0 }}>
+                                <div className="flex items-center flex-wrap" style={{ flexWrap: 'nowrap', overflow: 'hidden', minWidth: 0, gap: '7px' }}>
                                   <Settings
                                     className="text-white/50 hover:text-white cursor-pointer transition-colors flex-shrink-0"
                                     style={{ width: '11px', height: '11px' }}
@@ -28348,9 +28348,9 @@ export default function Dashboard() {
                                       </svg>
                                     ) : null;
                                   })()}
-                                  <span className="text-[10px] font-bold whitespace-nowrap" style={{ color: '#ffffff', marginRight: '3px' }}>{sem.label}</span>
+                                  <span className="text-[10px] font-bold whitespace-nowrap" style={{ color: '#ffffff' }}>{sem.label}</span>
                                   {!sem.key.startsWith('ss') ? (
-                                    <span className="text-[9px] whitespace-nowrap px-1.5 py-0.5 rounded border cursor-pointer hover:bg-white/15 transition-colors" style={{ color: '#ffffff', background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)', marginRight: '3px' }} onClick={(e) => { e.stopPropagation(); setSemDatePickerKey(sem.key); setSemDatePickerHalf('full'); }} data-testid={`dates-pill-${sem.key}`}>{(() => {
+                                    <span className="text-[9px] whitespace-nowrap px-1.5 py-0.5 rounded border cursor-pointer hover:bg-white/15 transition-colors" style={{ color: '#ffffff', background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)' }} onClick={(e) => { e.stopPropagation(); setSemDatePickerKey(sem.key); setSemDatePickerHalf('full'); }} data-testid={`dates-pill-${sem.key}`}>{(() => {
                                       const ps = perSemesterSettings[sem.key] as any;
                                       if (ps?.week1StartDate || ps?.semesterEndDate) {
                                         const fmtDate = (d: string) => { if (!d) return '?'; const dt = new Date(d + 'T12:00:00'); return dt.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); };
@@ -28369,10 +28369,10 @@ export default function Dashboard() {
                                     const summerLabel = (ss?.summerStartDate || ss?.summerEndDate) ? `${fmtD(ss.summerStartDate || '')} – ${fmtD(ss.summerEndDate || '')}` : 'Set dates';
                                     return (
                                       <>
-                                        <span className="text-[8px] whitespace-nowrap px-1 py-0.5 rounded border cursor-pointer hover:bg-white/15 transition-colors" style={{ color: '#ffffff', background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)', marginRight: '2px' }} onClick={(e) => { e.stopPropagation(); setSemDatePickerKey(sem.key); setSemDatePickerHalf('spring'); }} data-testid={`dates-pill-spring-${sem.key}`}>
+                                        <span className="text-[8px] whitespace-nowrap px-1 py-0.5 rounded border cursor-pointer hover:bg-white/15 transition-colors" style={{ color: '#ffffff', background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)' }} onClick={(e) => { e.stopPropagation(); setSemDatePickerKey(sem.key); setSemDatePickerHalf('spring'); }} data-testid={`dates-pill-spring-${sem.key}`}>
                                           <span style={{ fontWeight: 700 }}>Spring:</span> {springLabel}
                                         </span>
-                                        <span className="text-[8px] whitespace-nowrap px-1 py-0.5 rounded border cursor-pointer hover:bg-white/15 transition-colors" style={{ color: '#ffffff', background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)', marginRight: '3px' }} onClick={(e) => { e.stopPropagation(); setSemDatePickerKey(sem.key); setSemDatePickerHalf('summer'); }} data-testid={`dates-pill-summer-${sem.key}`}>
+                                        <span className="text-[8px] whitespace-nowrap px-1 py-0.5 rounded border cursor-pointer hover:bg-white/15 transition-colors" style={{ color: '#ffffff', background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)' }} onClick={(e) => { e.stopPropagation(); setSemDatePickerKey(sem.key); setSemDatePickerHalf('summer'); }} data-testid={`dates-pill-summer-${sem.key}`}>
                                           <span style={{ fontWeight: 700 }}>Summer:</span> {summerLabel}
                                         </span>
                                       </>
