@@ -2970,14 +2970,34 @@ input[type="date"].bg-white::-webkit-datetime-edit-year-field {
   }
   [data-testid="monthly-report-dialog"] {
     position: relative !important;
-    width: 100% !important; max-width: 100% !important; min-width: 0 !important;
-    max-height: none !important; height: auto !important; min-height: 0 !important;
+    /* Letter portrait = 8.5in x 11in. With 0.4in @page margin, printable
+       area is 7.7in x 10.2in. Force the form to occupy that exact box so
+       it always fills one page in both width and height. */
+    width: 7.7in !important; max-width: 7.7in !important; min-width: 0 !important;
+    height: 10.2in !important; min-height: 10.2in !important; max-height: 10.2in !important;
     box-shadow: none !important; border: 1.5px solid #000 !important; border-radius: 6px !important;
-    margin: 0 !important; padding: 0 !important;
-    overflow: visible !important; display: block !important;
+    margin: 0 auto !important; padding: 0 !important;
+    overflow: hidden !important;
+    display: flex !important; flex-direction: column !important;
     font-size: 12px !important; line-height: 1.35 !important;
     -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
     box-sizing: border-box !important;
+    page-break-inside: avoid !important;
+  }
+  [data-testid="monthly-report-dialog"] .monthly-report-header { flex: 0 0 auto !important; }
+  /* Body region must stretch to consume all remaining height in the page. */
+  [data-testid="monthly-report-dialog"] > .flex-1 {
+    flex: 1 1 auto !important;
+    display: flex !important; flex-direction: column !important;
+  }
+  /* The inner space-y-3 stack should distribute its sections evenly so the
+     form fills the page top-to-bottom instead of leaving blank space at
+     the bottom. */
+  [data-testid="monthly-report-dialog"] > .flex-1 > .overflow-y-auto,
+  [data-testid="monthly-report-dialog"] > .flex-1 > .overflow-y-auto > .space-y-3 {
+    flex: 1 1 auto !important;
+    display: flex !important; flex-direction: column !important;
+    justify-content: space-between !important;
   }
   [data-testid="monthly-report-dialog"] * { box-sizing: border-box !important; }
   [data-testid="monthly-report-dialog"] .monthly-report-header {
