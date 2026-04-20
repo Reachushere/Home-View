@@ -18859,6 +18859,34 @@ export default function Dashboard() {
             </div>
           )}
 
+          {/* Safe Mode / Panic — stops auto-popups, polling, and version check
+              so the app holds still while BA fixes whatever is misbehaving.
+              Single click reloads with ?safe=1; the red banner up top has the
+              "Exit safe mode" button. */}
+          {desktopIsFull && (
+            <div
+              style={{
+                width: '44px', height: '43px', marginTop: '3px', marginLeft: '2px', zIndex: 100, borderRadius: '50%',
+                background: 'linear-gradient(180deg, rgba(255,120,120,0.55) 0%, rgba(200,40,40,0.40) 100%)',
+                position: 'relative' as const,
+                border: '1.5px solid rgba(255,170,170,0.55)',
+                boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+              }}
+              className="pill-button-hover"
+              onClick={() => {
+                try { localStorage.setItem('uni_cal_safe_mode', '1'); } catch {}
+                const u = new URL(window.location.href);
+                u.searchParams.set('safe', '1');
+                window.location.replace(u.toString());
+              }}
+              data-testid="button-safe-mode"
+              title="Safe mode — pauses all auto-popups, polling, and version checks so BA can fix things without the page changing under you. A red banner appears with an Exit button."
+            >
+              <Pause className="h-[18px] w-[18px] text-white" strokeWidth={2.5} />
+            </div>
+          )}
+
 
           {/* Home Assistant */}
           {isAdmin && (
