@@ -156,6 +156,7 @@ interface NewTaskForm {
   gradeTotal: string;
   gradeValue: string;
   isNotGraded: boolean;
+  addToCalendar: boolean;
 }
 
 function DebouncedGradeInput({ value, onSave, placeholder, testId, disabled }: { value: number | null | undefined; onSave: (val: number | null) => void; placeholder: string; testId: string; disabled?: boolean }) {
@@ -220,6 +221,7 @@ function createEmptyTaskForm(): NewTaskForm {
     gradeTotal: "",
     gradeValue: "",
     isNotGraded: false,
+    addToCalendar: true,
   };
 }
 
@@ -1713,6 +1715,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
       // and toggle it on.
       isNotGraded: newTask.isNotGraded === true,
       excludeFromGpa: newTask.isNotGraded === true ? false : true,
+      _skipCalendarSync: !newTask.addToCalendar,
     });
   };
 
@@ -4520,9 +4523,17 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     className="h-7 text-[10px] bg-white/20 hover:bg-white/30 text-white"
                     data-testid="button-save-assignment"
                   >
-                    {createTaskMutation.isPending ? "Adding..." : "Add to Calendar"}
+                    {createTaskMutation.isPending ? "Saving..." : "Save"}
                   </Button>
                 </div>
+
+                <label className="flex items-center gap-2 cursor-pointer text-[10px] text-white/80 select-none" style={{ marginTop: '4px' }} data-testid="toggle-new-task-add-to-calendar">
+                  <div className="relative" onClick={() => setNewTask({ ...newTask, addToCalendar: !newTask.addToCalendar })}>
+                    <div className={`w-7 h-4 rounded-full transition-colors ${newTask.addToCalendar ? 'bg-blue-500/60' : 'bg-white/20'}`} />
+                    <div className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-transform ${newTask.addToCalendar ? 'left-3.5' : 'left-0.5'}`} />
+                  </div>
+                  <span>{newTask.addToCalendar ? "Add to Google Calendar on save" : "Save to list only — skip calendar"}</span>
+                </label>
 
                 <label className="flex items-center gap-2 cursor-pointer text-[10px] text-white/80 select-none" style={{ marginTop: '4px' }} data-testid="toggle-new-task-not-graded">
                   <div className="relative" onClick={() => setNewTask({ ...newTask, isNotGraded: !newTask.isNotGraded })}>

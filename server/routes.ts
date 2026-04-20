@@ -1390,7 +1390,10 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
   // POST /api/tasks
   app.post(api.tasks.create.path, async (req, res) => {
     try {
-      const input = api.tasks.create.input.parse(req.body);
+      // Pull out client-only flags before Zod validation
+      const { _skipCalendarSync, ...bodyForValidation } = req.body || {};
+      const skipCalendarSync = _skipCalendarSync === true;
+      const input = api.tasks.create.input.parse(bodyForValidation);
       if (input.type === 'discussion') {
         input.excludeFromGpa = true;
         if (input.isNotGraded === undefined) input.isNotGraded = true;
@@ -1418,6 +1421,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
       }
       const task = await storage.createTask(input);
       
+      if (!skipCalendarSync) {
       // Auto-sync to Google Calendar (primary account)
       try {
         const event = await createCalendarEvent({
@@ -1488,6 +1492,7 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
       } catch (secAccErr) {
         console.error("Auto-sync to second Google account failed:", secAccErr);
       }
+      } // end if (!skipCalendarSync)
       
       // Generate repeated task instances if repeat is set
       if (task.repeatType && task.repeatType !== "none") {
@@ -1871,6 +1876,36 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
       return res.status(404).json({ message: 'Task not found' });
     }
     
+    // Record every Google Calendar event id tied to this task so the
+    // periodic Google→tasks sync doesn't re-import them as fresh tasks.
+    const idsToBlock = [
+      task.calendarEventId,
+      task.prepCalendarEventId,
+      task.secondaryCalendarEventId,
+      task.secondAccountCalendarEventId,
+      task.secondAccountPrepEventId,
+    ].filter(Boolean) as string[];
+    if (idsToBlock.length > 0) {
+      try {
+        const blockedKey = 'blocked_calendar_event_ids';
+        const existing = await db.select().from(appState).where(eq(appState.key, blockedKey)).limit(1);
+        let blocked: string[] = [];
+        if (existing.length > 0) {
+          try { const arr = JSON.parse(existing[0].value); if (Array.isArray(arr)) blocked = arr; } catch {}
+        }
+        for (const id of idsToBlock) if (!blocked.includes(id)) blocked.push(id);
+        if (blocked.length > 5000) blocked = blocked.slice(-5000);
+        const value = JSON.stringify(blocked);
+        if (existing.length > 0) {
+          await db.update(appState).set({ value, updatedAt: new Date() }).where(eq(appState.key, blockedKey));
+        } else {
+          await db.insert(appState).values({ key: blockedKey, value });
+        }
+      } catch (blockErr) {
+        console.error('[Delete] Failed to record blocked calendar event ids:', blockErr);
+      }
+    }
+
     // Delete from Google Calendar if synced
     if (task.calendarEventId) {
       try {

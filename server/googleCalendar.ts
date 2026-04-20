@@ -891,6 +891,20 @@ export async function syncGoogleEventsToReview(): Promise<{ added: number; skipp
     ...allTasks.map(t => t.secondaryCalendarEventId).filter(Boolean),
   ]);
 
+  // Calendar event IDs the user has explicitly deleted (so we don't re-import
+  // a class task they just trashed).
+  let blockedEventIds = new Set<string>();
+  try {
+    const { db } = await import('./db');
+    const { appState } = await import('@shared/schema');
+    const { eq } = await import('drizzle-orm');
+    const row = await db.select().from(appState).where(eq(appState.key, 'blocked_calendar_event_ids')).limit(1);
+    if (row.length > 0) {
+      const arr = JSON.parse(row[0].value);
+      if (Array.isArray(arr)) blockedEventIds = new Set(arr);
+    }
+  } catch {}
+
   const { COURSES } = await import('../shared/schema');
   const courseCodeSet = new Set(COURSES.map(c => c.code.toUpperCase()));
   const courseNameMap = new Map(COURSES.map(c => [c.code.toUpperCase(), c.name]));
@@ -945,6 +959,10 @@ export async function syncGoogleEventsToReview(): Promise<{ added: number; skipp
 
     const existing = await storage.getPendingReviewItemByExternalId(event.id, 'google_calendar');
     if (existing) {
+      skipped++;
+      continue;
+    }
+    if (event.id && blockedEventIds.has(event.id)) {
       skipped++;
       continue;
     }
