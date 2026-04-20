@@ -1680,6 +1680,9 @@ export default function Dashboard() {
   // on tab focus / visibility-change. This is what makes the phone show the
   // same content as the laptop instead of opening blank.
   const hydrateBlankCanvasNotesFromServer = useCallback(async (force = false) => {
+    // These notes are private to the 5747 profile — skip all network calls
+    // for any other profile so we don't leak content or overwrite it.
+    if (authLevel !== '5747') return;
     try {
       const r = await fetch('/api/blank-canvas-notes', { cache: 'no-store' });
       if (!r.ok) return;
@@ -1687,15 +1690,34 @@ export default function Dashboard() {
       const serverHtml = typeof d?.content === 'string' ? d.content : '';
       try { localStorage.setItem('blankCanvasNotesHtml', serverHtml); } catch {}
       blankCanvasNotesLastSavedRef.current = serverHtml;
-      if (blankEditorRef.current && (force || !blankCanvasNotesLoadedRef.current || blankEditorRef.current.innerHTML === '')) {
-        if (blankEditorRef.current.innerHTML !== serverHtml) {
-          blankEditorRef.current.innerHTML = serverHtml;
+      if (blankEditorRef.current) {
+        const editor = blankEditorRef.current;
+        const isEditing = (typeof document !== 'undefined') && document.activeElement === editor;
+        // Pull in server content whenever the user isn't actively typing.
+        // This is what lets the phone catch up to the laptop and vice-versa
+        // — previously we only updated when the editor was empty, which
+        // meant edits from another device silently disappeared.
+        if (!isEditing && editor.innerHTML !== serverHtml) {
+          editor.innerHTML = serverHtml;
+        } else if (force && editor.innerHTML !== serverHtml) {
+          editor.innerHTML = serverHtml;
         }
       }
       blankCanvasNotesLoadedRef.current = true;
     } catch {}
-  }, []);
+  }, [authLevel]);
   useEffect(() => { hydrateBlankCanvasNotesFromServer(false); }, [hydrateBlankCanvasNotesFromServer]);
+  // Force a fresh pull every time the notes box opens, so opening on a
+  // different device shows the latest content rather than what was last
+  // typed locally.
+  useEffect(() => {
+    if (!blankBoxOpen) return;
+    hydrateBlankCanvasNotesFromServer(true);
+    // Light polling while the box is open so two devices stay in sync if
+    // you're glancing at one while typing on the other.
+    const id = setInterval(() => hydrateBlankCanvasNotesFromServer(false), 15000);
+    return () => clearInterval(id);
+  }, [blankBoxOpen, hydrateBlankCanvasNotesFromServer]);
   // Re-hydrate on tab focus / visibility — phone or laptop catches up to the
   // other device's edits whenever you bring the tab back to the foreground.
   useEffect(() => {
@@ -1708,6 +1730,8 @@ export default function Dashboard() {
     return () => { document.removeEventListener('visibilitychange', onVis); window.removeEventListener('focus', onFocus); };
   }, [hydrateBlankCanvasNotesFromServer]);
   const flushBlankCanvasNotes = useCallback((html: string) => {
+    // Notes are private to the 5747 profile — never write from any other.
+    if (authLevel !== '5747') return;
     blankCanvasNotesLastSavedRef.current = html;
     blankCanvasNotesPendingRef.current = null;
     // Use sendBeacon when available so the save survives Safari closing the tab.
