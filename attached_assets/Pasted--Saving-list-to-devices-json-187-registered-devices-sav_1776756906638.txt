@@ -1,0 +1,208 @@
+> Saving list to devices.json
+    187 registered devices saved
+
+>> Saving raw TuyaPlatform response to tuya-raw.json
+
+Poll local devices? (Y/n): Y
+
+Scanning local network for Tuya devices...
+    73 local devices discovered
+
+Polling local devices...
+    [Air Freshener - Hallway2 ] No IP found - Battery-powered or offline
+    [Air Purifier - Cat       ] 172.24.0.71        - No Response
+    [Air Purifier - King      ] No IP found - Battery-powered or offline
+    [Beacon Remote            ] No IP found - Battery-powered or offline
+    [Blind - King L           ] 172.24.1.22        - No Response
+    [Blind - King R           ] 172.24.3.164       - No Response
+    [Blind - LR               ] 172.24.0.62        - No Response
+    [Blind - LR Balcony2      ] No IP found - Battery-powered or offline
+    [Blind - Queen            ] 172.24.3.244       - No Response
+    [Blind - Queen Closet L   ] 172.24.1.202       - No Response
+    [Blind - Queen Closet R   ] No IP found - Battery-powered or offline
+    [Button - Cat SOS         ] No IP found - Battery-powered or offline
+    [Button - Pug SOS         ] No IP found - Battery-powered or offline
+    [Clock - King SunRise     ] 172.24.2.90        - No Response
+    [Dehumidifier - Cat       ] No IP found - Battery-powered or offline
+    [Fan - Cat Black2 Plug    ] 172.24.1.94        - No Response
+    [Fan - King               ] No IP found - Battery-powered or offline
+    [Fan - Queen Black        ] 172.24.1.181       - No Response
+    [Fan - Queen White        ] No IP found - Battery-powered or offline
+    [Fingerbot - LR HA Power  ] No IP found - Battery-powered or offline
+    [Formaldehyde Detector - K] No IP found - Battery-powered or offline
+    [Fountain - Hallway Cat   ] No IP found - Battery-powered or offline
+    [Fountain - LR Cat4       ] No IP found - Battery-powered or offline
+    [Fridge Door QB           ] No IP found - Battery-powered or offline
+    [Gateway - Cat 1          ] No IP found - Battery-powered or offline
+    [Gateway - Cat 2          ] 172.24.1.41        - No Response
+    [Gateway - Cat 3          ] 172.24.3.47        - No Response
+    [Gateway - Cat Tuya Blueto] 172.24.1.115       - No Response
+    [Gateway - LR Bluetooth   ] 172.24.0.127       - No Response
+    [Gateway - LR Emylo       ] No IP found - Battery-powered or offline
+    [Gateway - Queen          ] No IP found - Battery-powered or offline
+    [Heater - LR Aquarium     ] 172.24.3.165       - No Response
+    [Humidifier - Cat         ] No IP found - Battery-powered or offline
+    [IR Hub - Queen           ] No IP found - Battery-powered or offline
+    [Kitchen - Kettle         ] 172.24.3.118       - No Response
+    [Lever - TV LR            ] 172.24.3.163       - No Response
+    [Light - Cat (Down)       ] 172.24.0.60        - No Response
+    [Light - Cat Cupboard Shel] 172.24.2.70        - No Response
+    [Light - Cat Hutch        ] No IP found - Battery-powered or offline
+    [Light - Cat LED up2      ] 172.24.1.185       - No Response
+    [Light - Cat Med Reminder ] No IP found - Battery-powered or offline
+    [Light - Cat Mirror       ] No IP found - Battery-powered or offline
+    [Light - Cat Picture      ] No IP found - Battery-powered or offline
+    [Light - Cat Shelves LED 3] 172.24.0.229       - No Response
+    [Light - Cat Shelves LED1 ] No IP found - Battery-powered or offline
+    [Light - Cat Shelves LED2 ] No IP found - Battery-powered or offline
+    [Light - Cat Shelves LED3 ] 172.24.0.126       - No Response
+    [Light - Cat Shelves LED4 ] 172.24.2.201       - No Response
+    [Light - Cat Shower       ] No IP found - Battery-powered or offline
+    [Light - Cat SpotNN       ] No IP found - Battery-powered or offline
+    [Light - Cat Toilet       ] 172.24.2.207       - No Response
+    [Light - Cat Towels       ] 172.24.2.21        - No Response
+    [Light - Cat Up           ] 172.24.0.15        - No Response
+    [Light - Closet Pantry    ] No IP found - Battery-powered or offline
+    [Light - Closet Shelves L ] No IP found - Battery-powered or offline
+    [Light - Closet Shelves R ] No IP found - Battery-powered or offline
+    [Light - Closet Track 1   ] No IP found - Battery-powered or offline
+    [Light - Closet Track 2   ] 172.24.3.32        - No Response
+    [Light - Closet Track 3   ] No IP found - Battery-powered or offline
+    [Light - Closet Track 4   ] No IP found - Battery-powered or offline
+    [Light - Closet Track 5   ] 172.24.1.90        - No Response
+    [Light - Closet Track 6   ] 172.24.1.171       - No Response
+    [Light - Hallway Candle Bu] 172.24.3.187       - No Response
+    [Light - Hallway Cat House] 172.24.1.135       - No Response
+    [Light - Hallway Entrance ] No IP found - Battery-powered or offline
+    [Light - Hallway Hutch & M] No IP found - Battery-powered or offline
+    [Light - Hallway Shelf2   ] No IP found - Battery-powered or offline
+    [Light - Hallway Track (1)] 172.24.3.78        - No Response
+    [Light - Hallway Track (2)] No IP found - Battery-powered or offline
+    [Light - Hallway Track (4)] No IP found - Battery-powered or offline
+    [Light - Hallway Track (5)] No IP found - Battery-powered or offline
+    [Light - Hallway Track 3  ] No IP found - Battery-powered or offline
+    [Light - Hallway Track 6  ] No IP found - Battery-powered or offline
+    [Light - Hallway YBhome   ] No IP found - Battery-powered or offline
+    [Light - King Cupboard (L)] 172.24.0.103       - No Response
+    [Light - King Cupboard (R)] 172.24.3.177       - No Response
+    [Light - King Floor L     ] No IP found - Battery-powered or offline
+    [Light - King Floor R     ] No IP found - Battery-powered or offline
+    [Light - King HB (Right)  ] 172.24.0.251       - No Response
+    [Light - King HB L        ] 172.24.3.102       - No Response
+    [Light - King On Air      ] 172.24.2.128       - No Response
+    [Light - King Sconce L    ] 172.24.0.59        - No Response
+    [Light - King Sconce R    ] 172.24.0.234       - No Response
+    [Light - King Spot        ] No IP found - Battery-powered or offline
+    [Light - King TV (L)2     ] No IP found - Battery-powered or offline
+    [Light - King TV R        ] No IP found - Battery-powered or offline
+    [Light - King Track (3)   ] 172.24.2.52        - No Response
+    [Light - King Track (6)   ] 172.24.0.131       - No Response
+    [Light - King Track 1     ] No IP found - Battery-powered or offline
+    [Light - King Track 2     ] No IP found - Battery-powered or offline
+    [Light - King Track 4     ] No IP found - Battery-powered or offline
+    [Light - King Track 5     ] No IP found - Battery-powered or offline
+    [Light - Kitchen Amber Lau] No IP found - Battery-powered or offline
+    [Light - Kitchen Bulb 1   ] 172.24.3.217       - No Response
+    [Light - Kitchen Bulb 2   ] No IP found - Battery-powered or offline
+    [Light - Kitchen Bulb 3   ] 172.24.2.92        - No Response
+    [Light - Kitchen Cat Food ] No IP found - Battery-powered or offline
+    [Light - Kitchen Cat Water] No IP found - Battery-powered or offline
+    [Light - Kitchen Cupboards] No IP found - Battery-powered or offline
+    [Light - Kitchen Duct     ] 172.24.2.239       - No Response
+    [Light - Kitchen Hutch    ] 172.24.2.115       - No Response
+    [Light - Kitchen Island Co] 172.24.3.36        - No Response
+    [Light - Kitchen Red Beaco] No IP found - Battery-powered or offline
+    [Light - Kitchen Track 1  ] No IP found - Battery-powered or offline
+    [Light - Kitchen Track 2  ] 172.24.3.31        - No Response
+    [Light - Kitchen Track 3  ] No IP found - Battery-powered or offline
+    [Light - Kitchen White Bea] No IP found - Battery-powered or offline
+    [Light - LR Arch          ] 172.24.0.203       - No Response
+    [Light - LR Behind Couch  ] No IP found - Battery-powered or offline
+    [Light - LR Behind Couch C] No IP found - Battery-powered or offline
+    [Light - LR Beside Balcony] 172.24.3.251       - No Response
+    [Light - LR Beside Balcony] 172.24.1.7         - No Response
+    [Light - LR Elephant      ] 172.24.2.46        - No Response
+    [Light - LR Heart2        ] No IP found - Battery-powered or offline
+    [Light - LR Lamp (Down)   ] No IP found - Battery-powered or offline
+    [Light - LR Lamp (Up)     ] 172.24.2.110       - No Response
+    [Light - LR Rainbow1      ] No IP found - Battery-powered or offline
+    [Light - LR Rainbow3      ] 172.24.1.89        - No Response
+    [Light - LR Sconce (L) Dow] No IP found - Battery-powered or offline
+    [Light - LR Sconce (L) Up ] No IP found - Battery-powered or offline
+    [Light - LR Sconce (R) Dow] 172.24.2.227       - No Response
+    [Light - LR Sconce (R) Up ] No IP found - Battery-powered or offline
+    [Light - LR TV Cabinet    ] No IP found - Battery-powered or offline
+    [Light - LR Thanksgiving L] No IP found - Battery-powered or offline
+    [Light - LR Waterfall Acce] 172.24.0.130       - No Response
+    [Light - LR Waterfall Plug] 172.24.1.61        - No Response
+    [Light - LR Waterfall Pond] 172.24.2.9         - No Response
+    [Light - Pug Down         ] No IP found - Battery-powered or offline
+    [Light - Pug LED          ] No IP found - Battery-powered or offline
+    [Light - Pug Mirror       ] No IP found - Battery-powered or offline
+    [Light - Pug Shower       ] No IP found - Battery-powered or offline
+    [Light - Pug Sky          ] No IP found - Battery-powered or offline
+    [Light - Pug Toilet       ] No IP found - Battery-powered or offline
+    [Light - Pug Up2          ] No IP found - Battery-powered or offline
+    [Light - Queen Above Bed L] No IP found - Battery-powered or offline
+    [Light - Queen Above Bed R] No IP found - Battery-powered or offline
+    [Light - Queen Bed Left   ] No IP found - Battery-powered or offline
+    [Light - Queen Below Bed L] No IP found - Battery-powered or offline
+    [Light - Queen Below Bed R] No IP found - Battery-powered or offline
+    [Light - Queen Closet Stor] 172.24.0.222       - No Response
+    [Light - Queen Ladder     ] No IP found - Battery-powered or offline
+    [Light - Queen Shelf LED  ] No IP found - Battery-powered or offline
+    [Light - Queen Spot       ] No IP found - Battery-powered or offline
+    [Light - Queen Track 1    ] No IP found - Battery-powered or offline
+    [Light - Queen Track 2    ] No IP found - Battery-powered or offline
+    [Light - Queen Track 3    ] No IP found - Battery-powered or offline
+    [Light - Queen Track 4    ] No IP found - Battery-powered or offline
+    [Light - Queen Track 5    ] No IP found - Battery-powered or offline
+    [Light - Queen Track 6    ] No IP found - Battery-powered or offline
+    [Light Bar - Kitchen Cupbo] No IP found - Battery-powered or offline
+    [Lights - Rainbow2        ] 172.24.3.222       - No Response
+    [Medication Dispenser - Ca] No IP found - Battery-powered or offline
+    [Plug - Air Freshener Selb] 172.24.3.46        - No Response
+    [Plug - Aquarium Shelf Lig] 172.24.2.126       - [Off] - DPS: {'1': False, '9': 0, '38': 'memory', '40': 'relay', '41': False, '44': ''}
+    [Plug - Cabinet strip ligh] 172.24.0.63        - No Response
+    [Plug - Cat Air Fresheher ] 172.24.3.183       - No Response
+    [Plug - Cat B Fan         ] 172.24.2.166       - No Response
+    [Plug - Cat Beacon Red    ] No IP found - Battery-powered or offline
+    [Plug - Cat Humidifier    ] No IP found - Battery-powered or offline
+    [Plug - Cat WR Mini Founta] 172.24.1.232       - No Response
+    [Plug - Hallway Air Freshe] 172.24.2.206       - No Response
+    [Plug - Hallway Entrance W] No IP found - Battery-powered or offline
+    [Plug - Hallway Mirror Lig] No IP found - Battery-powered or offline
+    [Plug - King Dummy        ] 172.24.2.208       - No Response
+    [Plug - King Projector    ] 172.24.2.7         - No Response
+    [Plug - King Red Work Beac] 172.24.1.242       - No Response
+    [Plug - Kitchen Hutch Foun] 172.24.1.134       - No Response
+    [Plug - Kitchen Potpourri ] 172.24.3.103       - No Response
+    [Plug - Kitchen Purple Bea] No IP found - Battery-powered or offline
+    [Plug - Kitchen Recycling ] 172.24.3.194       - No Response
+    [Plug - Kitchen Utility Ca] No IP found - Battery-powered or offline
+    [Plug - Kitchen Work Docke] No IP found - Battery-powered or offline
+    [Plug - Kitchen Work Heads] 172.24.1.138       - No Response
+    [Plug - LR Cat Water      ] 172.24.3.128       - No Response
+    [Plug - LR Rainbow Heart  ] No IP found - Battery-powered or offline
+    [Pulley - Cat Mirror      ] No IP found - Battery-powered or offline
+    [Pully Motor              ] No IP found - Battery-powered or offline
+    [SNOW⁺ Self-Cleaning Litte] No IP found - Battery-powered or offline
+    [Sensor - Balcony Door    ] No IP found - Battery-powered or offline
+    [Sensor - Cat Smoke       ] No IP found - Battery-powered or offline
+    [Sensor - Kitchen Smoke   ] No IP found - Battery-powered or offline
+    [Shower - Cat Main        ] No IP found - Battery-powered or offline
+    [Shower - Cat2            ] No IP found - Battery-powered or offline
+    [Shower - Cat3            ] No IP found - Battery-powered or offline
+    [Shower - Pug Bluetooth   ] No IP found - Battery-powered or offline
+    [Switch - LR HDMI USB     ] No IP found - Battery-powered or offline
+    [Window Cleaner - Cat     ] No IP found - Battery-powered or offline
+
+>> Saving device snapshot data to snapshot.json
+
+
+>> Saving IP addresses to devices.json
+    73 device IP addresses found
+
+Done.
+
+byhomeyyz@raspberrypi:~/tinytuya $
