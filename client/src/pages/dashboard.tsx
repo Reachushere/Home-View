@@ -21886,7 +21886,7 @@ export default function Dashboard() {
             <div className="fixed inset-0 bg-black/50" />
             <div
               className="fixed z-[10002] overflow-hidden flex flex-col text-[11px] text-white p-0 sm:rounded-lg"
-              style={{ top: `${(calendarBorderTop || (calendarTop + 15))}px`, left: `${calendarLeft}px`, right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1 + 3}px`, bottom: `${calendarBottom}px`, color: 'white', background: `linear-gradient(90deg, #2a3a6e 0%, #6e4a6e 15%, #c97355 30%, #e8a55a 45%, #1b3355 55%, #1a2744 75%, #151d35 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}
+              style={{ top: `${(calendarBorderTop || (calendarTop + 15))}px`, left: `${calendarLeft}px`, right: `${calendarRight - calendarReduction + 3 + 7 - 6 + 2 + 4 + 3 - 2 + 4 + 3 + 2 - 3 + 2 + 1 + 3}px`, bottom: `${calendarBottom}px`, color: 'white', background: `linear-gradient(90deg, #4a5a8e 0%, #9a7a9a 15%, #e09578 30%, #f4c785 45%, #3a5378 55%, #4a5878 75%, #364270 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}
               onClick={(e) => e.stopPropagation()}
               data-testid="day-detail-panel"
             >
