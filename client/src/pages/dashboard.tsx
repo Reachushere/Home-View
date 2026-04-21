@@ -15440,15 +15440,42 @@ export default function Dashboard() {
                                                       title={step.desc}
                                                       className="relative flex flex-col items-center text-center group"
                                                       style={(() => {
-                                                        const stepBg = step.label === 'OneDrive'
-                                                            ? (step.status === 'error' ? oneDriveBoxRedImg : step.status === 'warning' ? oneDriveBoxYellowImg : oneDriveBoxImg)
+                                                        // OneDrive uses a CSS gradient (palette from supplied SVG) so the box
+                                                        // stretches crisply at any width. Stops match the rest of the app:
+                                                        // green = auto-tasks gradient, yellow = data gradient, red = reminders gradient.
+                                                        const isOneDrive = step.label === 'OneDrive';
+                                                        const oneDriveGrad = isOneDrive
+                                                          ? (step.status === 'error'
+                                                              ? 'linear-gradient(135deg, #FAB6BE 0%, #C46D75 43%, #8F252E 100%)'
+                                                              : step.status === 'warning'
+                                                                ? 'linear-gradient(135deg, #FDE324 0%, #BD9D28 43%, #7D562D 100%)'
+                                                                : 'linear-gradient(135deg, #64BA4D 0%, #428046 43%, #20453F 100%)')
+                                                          : null;
+                                                        const stepBg = isOneDrive ? null
                                                           : (step.label === 'TTS' || step.label === 'Sync' || step.label === 'Storage' || step.label === 'Library')
                                                             ? (step.status === 'ok' ? greenBoxImg : yellowBoxImg)
                                                           : (step.label === 'Syllabus' || step.label === 'Assignments' || step.label === 'Textbook')
                                                             ? (step.status === 'ok' ? greenBoxImg : redBoxImg)
                                                           : null;
                                                         const hasImg = !!stepBg;
-                                                        return { flex: '1 1 0', minWidth: 0, padding: hasImg ? '0' : '8px 6px 6px', cursor: isProblem ? 'pointer' : 'default', borderRadius: hasImg ? '0' : '8px', background: hasImg ? 'transparent' : '#ffffff', backgroundImage: hasImg ? `url(${stepBg})` : undefined, backgroundSize: hasImg ? '100% 100%' : undefined, backgroundRepeat: hasImg ? 'no-repeat' : undefined, minHeight: hasImg ? '110px' : undefined, border: hasImg ? 'none' : `1px solid ${isProblem ? accent + '88' : 'rgba(0,0,0,0.15)'}`, boxShadow: 'none', transition: 'all 0.18s ease' };
+                                                        const hasGrad = !!oneDriveGrad;
+                                                        const hasArt = hasImg || hasGrad;
+                                                        return {
+                                                          flex: '1 1 0',
+                                                          minWidth: 0,
+                                                          padding: hasArt ? '0' : '8px 6px 6px',
+                                                          cursor: isProblem ? 'pointer' : 'default',
+                                                          borderRadius: hasGrad ? '8px' : (hasImg ? '0' : '8px'),
+                                                          background: hasGrad ? oneDriveGrad : (hasImg ? 'transparent' : '#ffffff'),
+                                                          backgroundImage: hasImg ? `url(${stepBg})` : undefined,
+                                                          backgroundSize: hasImg ? '100% 100%' : undefined,
+                                                          backgroundRepeat: hasImg ? 'no-repeat' : undefined,
+                                                          minHeight: hasArt ? '110px' : undefined,
+                                                          border: hasGrad ? '1px solid rgba(0,0,0,0.22)' : (hasImg ? 'none' : `1px solid ${isProblem ? accent + '88' : 'rgba(0,0,0,0.15)'}`),
+                                                          boxShadow: hasGrad ? 'inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.25)' : 'none',
+                                                          overflow: 'hidden',
+                                                          transition: 'all 0.18s ease',
+                                                        };
                                                       })()}
                                                       onClick={(e) => { if (isProblem) { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: step.issueKey, step: 0, phase: 'primary' }); } }}
                                                       onMouseEnter={(e) => { const lbl = step.label; const hasArt = lbl === 'OneDrive' || lbl === 'TTS' || lbl === 'Sync' || lbl === 'Storage' || lbl === 'Library' || lbl === 'Syllabus' || lbl === 'Assignments' || lbl === 'Textbook'; if (!hasArt) { (e.currentTarget as HTMLDivElement).style.borderColor = accent; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 0 0 2px ${accent}55`; } else { (e.currentTarget as HTMLDivElement).style.filter = 'brightness(1.08)'; } }}

@@ -426,17 +426,16 @@ export default function AutomationsReference({ open, onClose, colorSettings }: A
                       {category.items.map((item, idx) => {
                         const ItemIcon = item.icon;
                         const isOneDrive = /onedrive/i.test(item.title);
-                        const itemBgImg = isOneDrive ? oneDriveBox : null;
                         return (
                           <div
                             key={idx}
                             className="rounded-md px-3 py-2"
                             style={{
-                              backgroundImage: itemBgImg ? `url(${itemBgImg})` : undefined,
-                              backgroundSize: itemBgImg ? '100% 100%' : undefined,
-                              backgroundRepeat: itemBgImg ? 'no-repeat' : undefined,
-                              background: itemBgImg ? undefined : 'rgba(0,0,0,0.28)',
+                              background: isOneDrive
+                                ? 'linear-gradient(135deg, #64BA4D 0%, #428046 43%, #20453F 100%)'
+                                : 'rgba(0,0,0,0.28)',
                               border: '1px solid rgba(255,255,255,0.18)',
+                              boxShadow: isOneDrive ? 'inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.15)' : undefined,
                               minHeight: isOneDrive ? '110px' : undefined,
                             }}
                             data-testid={`automation-item-${category.id}-${idx}`}
@@ -636,9 +635,8 @@ export function AutomationsContent() {
                   {category.items.map((item, idx) => {
                     const ItemIcon = item.icon;
                     const isOneDrive = /onedrive/i.test(item.title);
-                    const itemBgImg = isOneDrive ? oneDriveBox : null;
                     return (
-                      <div key={idx} className="rounded-md px-3 py-2" style={{ backgroundImage: itemBgImg ? `url(${itemBgImg})` : undefined, backgroundSize: itemBgImg ? '100% 100%' : undefined, backgroundRepeat: itemBgImg ? 'no-repeat' : undefined, background: itemBgImg ? undefined : 'rgba(0,0,0,0.28)', border: '1px solid rgba(255,255,255,0.18)', minHeight: isOneDrive ? '110px' : undefined }} data-testid={`automation-item-${category.id}-${idx}`}>
+                      <div key={idx} className="rounded-md px-3 py-2" style={{ background: isOneDrive ? 'linear-gradient(135deg, #64BA4D 0%, #428046 43%, #20453F 100%)' : 'rgba(0,0,0,0.28)', border: '1px solid rgba(255,255,255,0.18)', boxShadow: isOneDrive ? 'inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.15)' : undefined, minHeight: isOneDrive ? '110px' : undefined }} data-testid={`automation-item-${category.id}-${idx}`}>
                         <div className="flex items-start gap-2">
                           {!isOneDrive && <ItemIcon className="h-3 w-3 flex-shrink-0 mt-0.5 text-white" />}
                           <div className="flex-1 min-w-0">
