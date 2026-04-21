@@ -2322,13 +2322,20 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           >
             <X className="w-4 h-4" />
           </button>
-          {gradeCalc && (
-            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md flex-shrink-0" style={{ background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.4)' }} data-testid="grade-calculator-inline">
-              <span className="text-[11px] font-bold text-white" data-testid="text-current-grade">{gradeCalc.currentGrade}</span>
-              <span className="text-[10px] text-white">({gradeCalc.currentPercent.toFixed(1)}%)</span>
-              <span className="text-[9px] text-white/70" style={{ marginLeft: '2px' }}>{gradeCalc.gradedCount} graded · {gradeCalc.gradedWeight.toFixed(0)}%</span>
-            </div>
-          )}
+          {gradeCalc && (() => {
+            const letterToGpa: Record<string, number> = { 'A+': 4.33, 'A': 4.0, 'A-': 3.67, 'B+': 3.33, 'B': 3.0, 'B-': 2.67, 'C+': 2.33, 'C': 2.0, 'C-': 1.67, 'D': 1.0, 'F': 0 };
+            const courseGpa = letterToGpa[gradeCalc.currentGrade];
+            return (
+              <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md flex-shrink-0" style={{ background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.4)' }} data-testid="grade-calculator-inline">
+                <span className="text-[11px] font-bold text-white" data-testid="text-current-grade">{gradeCalc.currentGrade}</span>
+                <span className="text-[10px] text-white">({gradeCalc.currentPercent.toFixed(1)}%)</span>
+                {courseGpa !== undefined && (
+                  <span className="text-[10px] font-semibold text-white" data-testid="text-course-gpa" style={{ marginLeft: '2px' }}>· {courseGpa.toFixed(2)} GPA</span>
+                )}
+                <span className="text-[9px] text-white/70" style={{ marginLeft: '2px' }}>{gradeCalc.gradedCount} graded · {gradeCalc.gradedWeight.toFixed(0)}%</span>
+              </div>
+            );
+          })()}
         </div>
 
         <div className="flex items-center justify-between px-3 py-2 border-b border-white/10 flex-shrink-0">
