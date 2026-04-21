@@ -1,0 +1,387 @@
+byhomeyyz@raspberrypi:~/Home-View $ cd ~/tinytuya && tinytuya scan
+
+TinyTuya (Tuya device scanner) [1.18.0]
+
+[Loaded devices.json - 187 devices]
+
+Scanning on UDP ports 6666 and 6667 and 7000 for devices for 18 seconds...
+
+New Broadcast from App at 172.24.1.204 - {'from': 'app', 'ip': '172.24.1.204'}
+Light - King Sconce R   Product ID = keytg5kq8gvkv9dh  [Valid Broadcast]:
+    Address = 172.24.0.234   Device ID = eb65b8583deea2475awa0y (len:22)  Local Key = ?VBZ=~RYs4fjOE_#  Version = 3.3  Type = default, MAC = 7c:f6:66:2c:c6:c6
+    Status: {'20': False, '21': 'white', '22': 1000, '23': 720, '24': '000003e803e8', '25': '000e0d0000000000000000c80000', '26': 0, '34': False, '41': True}
+Light - Hallway Candle Burner   Product ID = key7qn3agvymujfp  [Valid Broadcast]:
+    Address = 172.24.3.187   Device ID = ebe770bbe5e665585btut8 (len:22)  Local Key = mKAN[9AF&OfJ'Wf[  Version = 3.3  Type = default, MAC = d8:d6:68:c3:7d:78
+    Status: {'1': False, '9': 0, '38': 'memory', '40': 'relay', '41': False, '42': '', '43': '', '44': ''}
+Light - Queen Track 1   Product ID = keytg5kq8gvkv9dh  [Valid Broadcast]:
+    Address = 172.24.3.97   Device ID = eb3aa3e54deb910c7eckao (len:22)  Local Key = _e/L]1|66*>p0z[r  Version = 3.3  Type = default, MAC = 70:89:76:e5:d5:a8
+    Status: {'20': False, '21': 'white', '22': 1000, '23': 949, '24': '00c3035f03e8', '25': '0d000000000a02bc03e800000000', '26': 0}
+Plug - Aquarium Shelf Light   Product ID = key4jvwtp4scdun3  [Valid Broadcast]:
+    Address = 172.24.2.126   Device ID = ebf691f183493e3d9duocr (len:22)  Local Key = gn1KykNKB|{nc(Lt  Version = 3.5  Type = default, MAC = bc:35:1e:23:5b:58
+    Status: {'1': False, '9': 0, '38': 'memory', '40': 'relay', '41': False, '44': ''}
+Light - Hallway Hutch & Mirror   Product ID = key7qn3agvymujfp  [Valid Broadcast]:
+    Address = 172.24.2.241   Device ID = eb967f6b8cb5ab1b2f3r6a (len:22)  Local Key = }OT_jg:]5klj<]hf  Version = 3.3  Type = default, MAC = 18:de:50:57:d9:7f
+    Status: {'1': False, '9': 0, '38': 'memory', '40': 'relay', '41': False, '42': '', '43': '', '44': ''}
+Light - Kitchen Track 1   Product ID = keyrfn7pmw9rcaw7  [Valid Broadcast]:
+    Address = 172.24.3.125   Device ID = eb7fa4d873539626fbmbm2 (len:22)  Local Key = F/dAJ{a+Q=JfKC}7  Version = 3.5  Type = default, MAC = 38:2c:e5:78:13:dc
+    Status: {'20': True, '21': 'white', '22': 1000, '23': 720, '24': '001703e203e8', '25': '000e0d0000000000000000c80000', '26': 0, '34': True}
+Light - Closet Track 5   Product ID = keytg5kq8gvkv9dh  [Valid Broadcast]:
+    Address = 172.24.1.90   Device ID = eb94c2a948a1fa0eb7xra3 (len:22)  Local Key = JMm!6X$!qBe(FTK5  Version = 3.3  Type = default, MAC = 70:89:76:a9:bf:3a
+    Status: {'20': True, '21': 'white', '22': 1000, '24': '000003e803e8', '25': '000e0d0000000000000000c803e8', '26': 0}
+Fan - Cat Black2 Plug   Product ID = xee3mwqjztrmyksl  [Valid Broadcast]:
+    Address = 172.24.1.94   Device ID = ebfb4ffae717a4d32clsus (len:22)  Local Key = y_jC/x{1rzqFp5sI  Version = 3.3  Type = default, MAC = 10:5a:17:f9:49:0c
+    Status: {'1': False, '9': 0, '38': 'memory', '39': 'relay', '40': False, '41': '', '42': '', '43': ''}
+Plug - Air Freshener Selby   Product ID = key7qn3agvymujfp  [Valid Broadcast]:
+    Address = 172.24.3.46   Device ID = eb0a7d0d1fe6d842a4uw7u (len:22)  Local Key = 0.b|GiGBy?g*?9j;  Version = 3.3  Type = default, MAC = d8:d6:68:38:8c:67
+    Status: {'1': False, '9': 0, '38': 'memory', '40': 'relay', '41': False, '42': '', '43': '', '44': ''}
+Fan - King   Product ID = NFpRxSl74TyJnhvD  [Valid Broadcast]:
+    Address = 172.24.2.142   Device ID = 60766424483fda13baea (len:20)  Local Key = :ptEt]a?7bU[jd$^  Version = 3.3  Type = default, MAC = 48:3f:da:13:ba:ea
+    Status: {'1': False, '2': '1', '3': 'normal', '8': False, '11': '0', '12': 0}
+Light - Kitchen Track 2   Product ID = keyrfn7pmw9rcaw7  [Valid Broadcast]:
+    Address = 172.24.3.31   Device ID = eb4aad68cfe8943147zxgl (len:22)  Local Key = AiI[qKj:rOvC[I@&  Version = 3.5  Type = default, MAC = 38:2c:e5:78:03:7a
+    Status: {'20': True, '21': 'white', '22': 510, '23': 720, '24': '012c03da01fe', '25': '000e0d0000000000000000c80000', '26': 0, '34': True}
+Plug - King Projector   Product ID = keyjup78v54myhan  [Valid Broadcast]:
+    Address = 172.24.2.7   Device ID = ebb1c5c51d52a1b4b4kt3o (len:22)  Local Key = 1F`}`D?zU~a<S0X1  Version = 3.5  Type = default, MAC = 38:a5:c9:22:f6:5f
+    Status: {'1': False, '9': 0, '38': 'memory', '40': 'relay', '41': False, '42': '', '43': '', '44': ''}
+Light - King Floor L   Product ID = keyxfhf7ryk8ftcx  [Valid Broadcast]:
+    Address = 172.24.0.57   Device ID = 68351436e868e769514f (len:20)  Local Key = #dJHd}nxf05TFi{(  Version = 3.3  Type = default, MAC = e8:68:e7:69:51:4f
+    Status: {'20': False, '21': 'white', '22': 1000, '23': 720, '24': '000003e803e8', '25': '00373702016603e803e800000000373702000e03e803e800000000373702002303e803e800000000373702003003e803e800000000373702003e03e803e800000000', '26': 0}
+Air Freshener - Hallway2   Product ID = 7x87ndiyat1sv6os  [Valid Broadcast]:
+    Address = 172.24.1.168   Device ID = eb4dc2aaebb8b731f030ao (len:22)  Local Key = ~.hRTOhMCWBgT`8t  Version = 3.4  Type = default, MAC = 4c:a9:19:37:f8:45
+    Status: {'1': False, '11': False, '12': 0, '13': '0', '14': 0, '103': 'off', '108': '', '109': 'white', '110': '1', '111': 0}
+Light - Queen Ladder   Product ID = keytg5kq8gvkv9dh  [Valid Broadcast]:
+    Address = 172.24.3.66   Device ID = eb3656428e19bb2108xx68 (len:22)  Local Key = HEZZpFh?)<lu(K|f  Version = 3.3  Type = default, MAC = 84:e3:42:cb:f3:d6
+    Status: {'20': False, '21': 'white', '22': 1000, '23': 949, '24': '000003e803e8', '25': '0d000000000a02bc03e800000000', '26': 0}
+Light - Hallway Cat House   Product ID = key7qn3agvymujfp  [Valid Broadcast]:
+    Address = 172.24.1.134   Device ID = eb4659eaa78030514emun4 (len:22)  Local Key = imSVg!hKZ~J/L5n2  Version = 3.3  Type = default, MAC = d8:d6:68:c6:38:35
+    Status: {'1': True, '9': 0, '38': 'memory', '40': 'relay', '41': False, '42': '', '43': '', '44': ''}
+Kitchen - Kettle   Product ID = 2vuvtw0cj8wmjrpc  [Valid Broadcast]:
+    Address = 172.24.3.118   Device ID = eb89a2788919a667c9xne1 (len:22)  Local Key = 0J}=l5ZRQ}8-IC5J  Version = 3.3  Type = default, MAC = 10:d5:61:93:a0:45
+    Status: {'1': False, '5': 82, '10': 0, '103': False, '104': '0', '105': 'f', '106': '0', '107': '0'}
+Fan - Queen Black   Product ID = keyjup78v54myhan  [Valid Broadcast]:
+    Address = 172.24.1.181   Device ID = ebe305509bad6ae711n4oa (len:22)  Local Key = 5bYa-wFi~D[.yujC  Version = 3.4  Type = default, MAC = 38:a5:c9:22:d2:04
+    Status: {'1': False, '9': 0, '38': 'memory', '40': 'relay', '41': False, '42': '', '43': '', '44': ''}
+Light - Queen Bed Left   Product ID = keyj979nf3q3theh  [Valid Broadcast]:
+    Address = 172.24.2.229   Device ID = 00858622d8f15bf06524 (len:20)  Local Key = b8a15f669822f934  Version = 3.3  Type = default, MAC = d8:f1:5b:f0:65:24
+    Status: {'20': False, '21': 'white', '22': 1000, '23': 949, '24': '002703e8019c', '25': '0d000000000a02bc03e800000000', '26': 0}
+Light - Hallway Track (4)   Product ID = key8u54q9dtru5jw  [Valid Broadcast]:
+    Address = 172.24.0.170   Device ID = ebe48973922c95b935clcx (len:22)  Local Key = t<*n1@<|kdKSn1u=  Version = 3.5  Type = default, MAC = c0:f8:53:1e:9e:69
+    Status: {'20': True, '21': 'white', '22': 1000, '23': 1000, '24': '000003e803e8', '25': '000e0d0000000000000000c80000', '26': 0, '34': False, '41': True}
+Light - King HB (Right)   Product ID = key8u54q9dtru5jw  [Valid Broadcast]:
+    Address = 172.24.0.251   Device ID = eb022f2567a750f6aaertj (len:22)  Local Key = .3Hm9*U.E;VZRwsw  Version = 3.5  Type = default, MAC = d8:d6:68:f7:35:a1
+    Status: {'20': False, '21': 'white', '22': 1000, '23': 340, '24': '000003e803e8', '25': '000e0d0000000000000000c80000', '26': 0, '34': False}
+Blind - Queen   Product ID = 9awugrztssowpgij  [Valid Broadcast]:
+    Address = 172.24.3.244   Device ID = ebf76e6a937262cd5etscc (len:22)  Local Key = 86c8163551d8270e  Version = 3.3  Type = default, MAC = fc:67:1f:25:4b:6f
+    Status: {'1': 'open', '2': 100, '3': 100, '5': 'back', '7': 'closing', '11': 'fully_open', '12': 0, '103': True, '104': True, '105': True, '106': 'contiuation'}
+Air Purifier - Cat   Product ID = nedhywwbir5vbypd  [Valid Broadcast]:
+    Address = 172.24.0.71   Device ID = eb50d3a0694b59fe93uoir (len:22)  Local Key = .0Ck&Xsq$t1PdoS)  Version = 3.3  Type = default, MAC = 08:3a:f2:1c:17:b8
+    Status: {'1': True}
+Plug - LR Cat Water   Product ID = keyjup78v54myhan  [Valid Broadcast]:
+    Address = 172.24.3.128   Device ID = eb59611694b3698269wifi (len:22)  Local Key = <pez+ZuA/Esr#$V{  Version = 3.4  Type = default, MAC = f8:17:2d:d4:72:f1
+    Status: {'1': False, '9': 0, '38': 'memory', '40': 'relay', '41': False, '42': '', '43': '', '44': ''}
+Light - Cat SpotNN   Product ID = key8u54q9dtru5jw  [Valid Broadcast]:
+    Address = 172.24.0.179   Device ID = eb7b4d6377d0b555deajka (len:22)  Local Key = bfS(1tFY>o$(D|/+  Version = 3.5  Type = default, MAC = d8:d6:68:13:13:e6
+    Status: {'20': True, '21': 'white', '22': 1000, '23': 1000, '24': '000003e803e8', '25': '000e0d0000000000000000c80000', '26': 0, '34': False, '41': True}
+Light - Pug Down   Product ID = key8u54q9dtru5jw  [Valid Broadcast]:
+    Address = 172.24.2.252   Device ID = eb13a73db729f5b959yyzu (len:22)  Local Key = FEdw*Y]P1_7nk+$^  Version = 3.3  Type = default, MAC = d8:1f:12:18:e7:36
+    Status: {'20': False, '21': 'white', '22': 1000, '23': 1000, '24': '000003e803e8', '25': '000e0d0000000000000000c80000', '26': 0, '34': False}
+Light - Cat Hutch   Product ID = keygg897krt5kk4t  [Valid Broadcast]:
+    Address = 172.24.2.200   Device ID = ebf3dc382d33470112ygev (len:22)  Local Key = GW=Kz&|(`U'4BXDy  Version = 3.3  Type = default, MAC = 84:e3:42:2b:87:2c
+    Status: {'1': False, '11': 0, '101': '', '102': '', '103': ''}
+Light - King Track (3)   Product ID = key8u54q9dtru5jw  [Valid Broadcast]:
+    Address = 172.24.2.52   Device ID = eb8bfe253be15f4b939j8e (len:22)  Local Key = @i![p*I!<A?[;7>p  Version = 3.5  Type = default, MAC = c0:f8:53:1e:8f:f0
+    Status: {'20': False, '21': 'white', '22': 1000, '23': 1000, '24': '000003e803e8', '25': '000e0d0000000000000000c80000', '26': 0, '34': False, '41': True}
+Light - King Track 5   Product ID = keyj979nf3q3theh  [Valid Broadcast]:
+    Address = 172.24.2.6   Device ID = 26243300c4dd5726a046 (len:20)  Local Key = 954e758fe7294b3d  Version = 3.3  Type = default, MAC = c4:dd:57:26:a0:46
+    Status: {'20': False, '21': 'white', '22': 1000, '23': 720, '24': '000003e803e8', '25': '000e0d0000000000000000c80000', '26': 0}
+Light - King Track (6)   Product ID = key8u54q9dtru5jw  [Valid Broadcast]:
+    Address = 172.24.0.131   Device ID = eb71da76a939f23fa2ofbo (len:22)  Local Key = SK+1QX^l8$QF^M/s  Version = 3.5  Type = default, MAC = c0:f8:53:1e:92:3f
+    Status: {'20': False, '21': 'white', '22': 1000, '23': 1000, '24': '000003e803e8', '25': '000e0d0000000000000000c80000', '26': 0, '34': False, '41': True}
+Light - Hallway Shelf2   Product ID = key8u54q9dtru5jw  [Valid Broadcast]:
+    Address = 172.24.3.252   Device ID = eb0cdea58237d9d850dpbl (len:22)  Local Key = |H:}2?!x]nOXNq7I  Version = 3.5  Type = default, MAC = d8:c8:0c:cc:b2:85
+    Status: {'20': True, '21': 'white', '22': 1000, '23': 342, '24': '012403a703e8', '25': '000e0d0000000000000000c80000', '26': 0}
+Light - Cat Toilet   Product ID = key8u54q9dtru5jw  [Valid Broadcast]:
+    Address = 172.24.2.207   Device ID = ebff9ca15001bcd892vidn (len:22)  Local Key = <=ZJD05b9fNG~G=A  Version = 3.4  Type = default, MAC = 10:5a:17:e5:69:12
+    Status: {'20': True, '21': 'white', '22': 1000, '23': 720, '24': '000003e803e8', '25': '000e0d0000000000000000c80000', '26': 0}
+Gateway - Cat Tuya Bluetooth   Product ID = key7mn9kc48xep73  [Valid Broadcast]:
+    Address = 172.24.1.115   Device ID = ebe2b3a982f31bb118hzyg (len:22)  Local Key = GOK({Fvk+QzY6lm!  Version = 3.5  Type = default, MAC = 1c:90:ff:6e:57:a9
+    Access rejected by 172.24.1.115 (check key): Invalid JSON Response from Device: json obj data unvalid
+Plug - King Dummy   Product ID = keyjup78v54myhan  [Valid Broadcast]:
+    Address = 172.24.2.208   Device ID = ebe14e67fe3e621c09wiao (len:22)  Local Key = W(_r@BDTVn7/ff3_  Version = 3.4  Type = default, MAC = a8:80:55:1c:5c:1c
+    Status: {'1': False, '9': 0, '38': 'memory', '40': 'relay', '41': False, '42': '', '43': '', '44': ''}
+Light - Queen Spot   Product ID = keyj979nf3q3theh  [Valid Broadcast]:
+    Address = 172.24.1.128   Device ID = 008586222cf432ecb7af (len:20)  Local Key = 7ba5c3ec384744c3  Version = 3.3  Type = default, MAC = 2c:f4:32:ec:b7:af
+    Status: {'20': False, '21': 'white', '22': 1000, '23': 949, '24': '002703e801a4', '25': '0d000000000a02bc03e800000000', '26': 0}
+Light - Hallway Track (5)   Product ID = key8u54q9dtru5jw  [Valid Broadcast]:
+    Address = 172.24.2.202   Device ID = eb2274510784f1a61ecphu (len:22)  Local Key = <s5[xt58iLt+2MDE  Version = 3.5  Type = default, MAC = d8:d6:68:13:2a:05
+    Status: {'20': True, '21': 'white', '22': 1000, '23': 1000, '24': '000003e803e8', '25': '000e0d0000000000000000c80000', '26': 0, '34': False, '41': True}
+Pulley - Cat Mirror   Product ID = t6ief6k56sapz1ey  [Valid Broadcast]:
+    Address = 172.24.3.12   Device ID = 20250715c45bbe64c190 (len:20)  Local Key = &|c7Va|xL+@L)/i`  Version = 3.3  Type = default, MAC = c4:5b:be:64:c1:90
+    Status: {'1': 'stop', '2': 0, '5': False, '7': 'opening'}
+Light - King TV R   Product ID = keyj979nf3q3theh  [Valid Broadcast]:
+    Address = 172.24.3.243   Device ID = 008586222cf432ec05f7 (len:20)  Local Key = ec7a028899918fc5  Version = 3.3  Type = default, MAC = 2c:f4:32:ec:05:f7
+    Status: {'20': False, '21': 'white', '22': 1000, '23': 720, '24': '000003e803e8', '25': '000e0d0000000000000000c80000', '26': 0}
+Light - LR Sconce (R) Down   Product ID = key8u54q9dtru5jw  [Valid Broadcast]:
+    Address = 172.24.2.227   Device ID = eba56d30bb0d4ed380zz40 (len:22)  Local Key = oU(hkncLu)r9MYaF  Version = 3.3  Type = default, MAC = 38:1f:8d:a4:ec:2a
+    Status: {'20': False, '21': 'white', '22': 1000, '23': 0, '24': '007f03e803e8', '25': '000e0d0000000000000000c80000', '26': 0}
+Light - Closet Track 2   Product ID = key8u54q9dtru5jw  [Valid Broadcast]:
+    Address = 172.24.3.32   Device ID = eb56bebda785ccf751uz4i (len:22)  Local Key = &a;e8?2Gly^h}H52  Version = 3.3  Type = default, MAC = a0:92:08:3e:a6:c8
+    Status: {'20': False, '21': 'white', '22': 1000, '23': 0, '24': '000003e803e8', '25': '000e0d0000000000000000c80000', '26': 0}
+Air Purifier - King   Product ID = jiiagi6aamtgbffk  [Valid Broadcast]:
+    Address = 172.24.0.66   Device ID = 0583178384cca88fd28b (len:20)  Local Key = 66c73f5585267e54  Version = 3.3  Type = default, MAC = 84:cc:a8:8f:d2:8b
+    Status: {'1': False, '2': 0, '4': 'auto', '5': 0, '7': False, '8': False, '11': True, '16': 0, '17': 0, '21': 'great', '101': 0, '102': '003'}
+Blind - King L   Product ID = 9awugrztssowpgij  [Valid Broadcast]:
+    Address = 172.24.1.22   Device ID = eb996c31bee17e96d86onv (len:22)  Local Key = 2af8b33ffe616ff4  Version = 3.3  Type = default, MAC = cc:8c:bf:2c:cb:f4
+    Status: {'1': 'close', '2': 100, '3': 100, '5': 'forward', '7': 'opening', '11': 'fully_open', '12': 0, '103': True, '104': False, '105': True, '106': 'contiuation'}
+Light - Closet Track 4   Product ID = key8u54q9dtru5jw  [Valid Broadcast]:
+    Address = 172.24.1.248   Device ID = eb0a0a5f9b6ade926ez72b (len:22)  Local Key = Zmwk0EV{S?kj(RPl  Version = 3.5  Type = default, MAC = d8:d6:68:f7:52:a6
+    Status: {'20': False, '21': 'white', '22': 1000, '23': 340, '24': '000003e803e8', '25': '000e0d0000000000000000c80000', '26': 0, '34': False}
+Blind - LR   Product ID = 9awugrztssowpgij  [Valid Broadcast]:
+    Address = 172.24.0.62   Device ID = eb142b227fbdd70766aejb (len:22)  Local Key = 900a101e781950c6  Version = 3.3  Type = default, MAC = fc:67:1f:16:b6:b9
+    Status: {'1': 'open', '2': 100, '3': 100, '5': 'back', '7': 'closing', '11': 'fully_open', '12': 0, '103': True, '104': False, '105': True, '106': 'contiuation'}
+Light - Kitchen Red Beacon   Product ID = keygg897krt5kk4t  [Valid Broadcast]:
+    Address = 172.24.1.93   Device ID = eb9a98de1d69c0a95d6vxs (len:22)  Local Key = j}x/;R:wDPu]iz8U  Version = 3.3  Type = default, MAC = 18:69:d8:87:cf:a3
+    Status: {'1': False, '11': 0, '101': '', '102': '', '103': ''}
+Light - King Track 2   Product ID = key8u54q9dtru5jw  [Valid Broadcast]:
+    Address = 172.24.0.147   Device ID = ebd9ea9c642100ddcanmf1 (len:22)  Local Key = cIM$gn4/U#_*qP<k  Version = 3.5  Type = default, MAC = d8:d6:68:13:13:c6
+    Status: {'20': False, '21': 'white', '22': 1000, '23': 720, '24': '000003e803e8', '25': '000e0d0000000000000000c80000', '26': 0, '34': False, '41': True}
+Light - King Sconce L   Product ID = keytg5kq8gvkv9dh  [Valid Broadcast]:
+    Address = 172.24.0.59   Device ID = eb3a1e253c68dbc0e8la5w (len:22)  Local Key = TB?m`13EN2O)L4m<  Version = 3.3  Type = default, MAC = 18:69:d8:37:e8:b2
+    Status: {'20': False, '21': 'white', '22': 1000, '23': 720, '24': '000003e803e8', '25': '000e0d0000000000000000c80000', '26': 0}
+Light - LR Waterfall Pond   Product ID = keyjup78v54myhan  [Valid Broadcast]:
+    Address = 172.24.2.9   Device ID = eb6102861df16cfc91rvyk (len:22)  Local Key = Rx!/E'Rg?zGVg>]p  Version = 3.4  Type = default, MAC = a8:80:55:1c:67:57
+    Status: {'1': True, '9': 0, '38': 'memory', '40': 'relay', '41': False, '42': '', '43': '', '44': ''}
+Light - Closet Track 6   Product ID = key8u54q9dtru5jw  [Valid Broadcast]:
+    Address = 172.24.1.171   Device ID = ebb7752b78a31b6aa8j2ol (len:22)  Local Key = M>l>=7eA3T5eOg*y  Version = 3.3  Type = default, MAC = a0:92:08:3e:9d:50
+    Status: {'20': False, '21': 'white', '22': 1000, '23': 0, '24': '000003e803e8', '25': '000e0d0000000000000000c80000', '26': 0}
+Light - King Cupboard (R)   Product ID = key7qn3agvymujfp  [Valid Broadcast]:
+    Address = 172.24.3.177   Device ID = eb6de37bfa174297d3jlp5 (len:22)  Local Key = ]`QjPm({trESGe/G  Version = 3.3  Type = default, MAC = d8:d6:68:8c:5d:64
+    Status: {'1': False, '9': 0, '38': 'memory', '40': 'relay', '41': False, '42': '', '43': '', '44': ''}
+Light - Hallway Track (1)   Product ID = key8u54q9dtru5jw  [Valid Broadcast]:
+    Address = 172.24.3.78   Device ID = eb3ae1deeebede5e69atiz (len:22)  Local Key = 4;ABU$5Dg|X*4bbF  Version = 3.5  Type = default, MAC = d8:d6:68:13:12:83
+    Status: {'20': True, '21': 'white', '22': 1000, '23': 1000, '24': '000003e803e8', '25': '000e0d0000000000000000c80000', '26': 0, '34': False, '41': True}
+Pully Motor   Product ID = t6ief6k56sapz1ey  [Valid Broadcast]:
+    Address = 172.24.0.115   Device ID = 20250715c45bbe654c84 (len:20)  Local Key = x>]1.lc}~f9$y(1{  Version = 3.3  Type = default, MAC = c4:5b:be:65:4c:84
+    Status: {'1': 'stop', '2': 0, '5': True, '7': 'opening'}
+Light - Cat Shelves LED3   Product ID = key7qn3agvymujfp  [Valid Broadcast]:
+    Address = 172.24.0.126   Device ID = eb57012df1d06cfdfbwgtt (len:22)  Local Key = c$At:#$][_s}i'zV  Version = 3.3  Type = default, MAC = 18:de:50:15:60:83
+    Status: {'1': False, '9': 0, '38': 'memory', '40': 'relay', '41': False, '42': '', '43': '', '44': ''}
+Light - LR Beside Balcony   Product ID = keya4gvchmtapm8n  [Valid Broadcast]:
+    Address = 172.24.3.251   Device ID = eb0b1dca5709a46374i21l (len:22)  Local Key = =%;kxg;)LCN2_'HZ  Version = 3.3  Type = default, MAC = 84:e3:42:73:ec:eb
+    Status: {'1': True, '9': 0, '38': 'off'}
+Heater - LR Aquarium   Product ID = rt9nqdxeiqo7dnz9  [Valid Broadcast]:
+    Address = 172.24.3.165   Device ID = eb84f644a74ee152504pwj (len:22)  Local Key = 3S>kdAlS?bso?1Tb  Version = 3.4  Type = default, MAC = f8:17:2d:43:1c:04
+    Status: {'12': 0, '101': 'C', '102': 0, '104': 262, '106': 265, '108': 0, '109': 290, '110': 210, '111': False, '112': False, '113': False, '115': '3', '116': 792, '117': 20, '118': 10}
+Light - Queen Above Bed R   Product ID = keytg5kq8gvkv9dh  [Valid Broadcast]:
+    Address = 172.24.3.146   Device ID = eb7639dbbcbcc2ceffrs8v (len:22)  Local Key = Qcro4yjoai1OG@df  Version = 3.3  Type = default, MAC = 10:d5:61:60:32:f4
+    Status: {'20': False, '21': 'white', '22': 1000, '23': 1000, '24': '000003e803e8', '25': '000e0d0000000000000000c80000', '26': 0, '34': False}
+Light - Queen Shelf LED   Product ID = nde0ziykpsgr0n4m  [Valid Broadcast]:
+    Address = 172.24.2.219   Device ID = 20128218c82b96ccec4a (len:20)  Local Key = aa2be43bb4ccb5d7  Version = 3.3  Type = default, MAC = c8:2b:96:cc:ec:4a
+    Status: {'1': False, '2': False, '9': 0, '10': 0}
+Plug - Cat WR Mini Fountain   Product ID = key7qn3agvymujfp  [Valid Broadcast]:
+    Address = 172.24.1.233   Device ID = eb340c55f04412c6eenusf (len:22)  Local Key = ckgR*u/Bg=AL8`qo  Version = 3.3  Type = default, MAC = 18:de:50:0d:a8:9e
+    Status: {'1': False, '9': 0, '38': 'memory', '40': 'relay', '41': False, '42': '', '43': '', '44': ''}
+Light - Kitchen Island Corner2   Product ID = key8u54q9dtru5jw  [Valid Broadcast]:
+    Address = 172.24.3.36   Device ID = eb2cafb3119937fae0wrlw (len:22)  Local Key = ~E|/k^qtpq.d!r~t  Version = 3.5  Type = default, MAC = 38:2c:e5:d8:58:2d
+    Status: {'20': True, '21': 'white', '22': 1000, '23': 342, '24': '000003e803e8', '25': '000e0d0000000000000000c80000', '26': 0}
+Light - Kitchen Bulb 1   Product ID = keyj979nf3q3theh  [Valid Broadcast]:
+    Address = 172.24.3.217   Device ID = 00858622b8f009000d77 (len:20)  Local Key = !^66]U)vhpS(e^Nw  Version = 3.3  Type = default, MAC = b8:f0:09:00:0d:77
+    Status: {'20': True, '21': 'white', '22': 1000, '23': 1000, '24': '002403e803e8', '25': '05464601000003e803e800000000464601007803e803e80000000046460100f003e803e800000000464601003d03e803e80000000046460100ae03e803e800000000464601011303e803e800000000', '26': 0}
+Light - Queen Closet Storage   Product ID = keygg897krt5kk4t  [Valid Broadcast]:
+    Address = 172.24.0.222   Device ID = eb0d8af4f679bd4bb9dxsq (len:22)  Local Key = a5cee519fff50041  Version = 3.3  Type = default, MAC = 84:e3:42:52:92:81
+    Status: {'1': False, '11': 0, '101': '', '102': '', '103': ''}
+Plug - Kitchen Recycling Light   Product ID = keyjup78v54myhan  [Valid Broadcast]:
+    Address = 172.24.3.195   Device ID = ebdbd0d29de76e34a6zgdz (len:22)  Local Key = *g;w'g`K_g+_`}hx  Version = 3.4  Type = default, MAC = f8:17:2d:d4:1b:1e
+    Status: {'1': True, '9': 0, '38': 'memory', '40': 'relay', '41': False, '42': '', '43': '', '44': ''}
+Light - Queen Track 3   Product ID = keytg5kq8gvkv9dh  [Valid Broadcast]:
+    Address = 172.24.3.210   Device ID = eb140ff40911d283fczy6f (len:22)  Local Key = e2P?xP}K.LQi#?uT  Version = 3.3  Type = default, MAC = 70:89:76:e5:e2:1d
+    Status: {'20': False, '21': 'white', '22': 1000, '23': 1000, '24': '002703e801a4', '25': '0d000000000a02bc03e800000000', '26': 0}
+Light - Hallway Entrance   Product ID = keynm3ud5yvgpe9t  [Valid Broadcast]:
+    Address = 172.24.1.37   Device ID = 231580538caab5e7e6e0 (len:20)  Local Key = r^NCeoT|]^sP6n8N  Version = 3.3  Type = default, MAC = 8c:aa:b5:e7:e6:e0
+    Status: {'1': True, '2': 'white', '3': 255, '4': 184, '5': '00ff030078ffff', '6': '00ff0000000000', '7': 'ffff500100ff00', '8': 'ffff8003ff000000ff000000ff000000000000000000', '9': 'ffff5001ff0000', '10': 'ffff0505ff000000ff00ffff00ff00ff0000ff000000'}
+Light - Cat (Down)   Product ID = key8u54q9dtru5jw  [Valid Broadcast]:
+    Address = 172.24.0.60   Device ID = eb1a4b44b53154e45cokh0 (len:22)  Local Key = *AB|6.=V}{x&c*2[  Version = 3.5  Type = default, MAC = d8:d6:68:90:f4:c2
+    Status: {'20': False, '21': 'white', '22': 971, '23': 997, '24': '000003e803e8', '25': '000e0d0000000000000000c80000', '26': 0, '34': False}
+Light - Cat LED up2   Product ID = key7qn3agvymujfp  [Valid Broadcast]:
+    Address = 172.24.1.185   Device ID = eb008e814851c4caa5umkd (len:22)  Local Key = (}{VgG|*#C>73@-n  Version = 3.3  Type = default, MAC = d8:d6:68:bc:c7:d1
+    Status: {'1': False, '9': 0, '38': 'memory', '40': 'relay', '41': False, '42': '', '43': '', '44': ''}
+Light - LR Behind Couch Colour   Product ID = ozrrouknwweemjyn  [Valid Broadcast]:
+    Address = 172.24.3.23   Device ID = ebb03c8540ad48099c4eiu (len:22)  Local Key = 13a33239a4b447f2  Version = 3.3  Type = default, MAC = 38:1f:8d:d3:d2:f7
+    Status: {'20': True, '21': 'scene', '22': 920, '24': '001b015d0347', '26': 0, '102': '0'}
+Blind - King R   Product ID = 9awugrztssowpgij  [Valid Broadcast]:
+    Address = 172.24.3.161   Device ID = eb6ae7a8335db238e5lyrf (len:22)  Local Key = f77d48720290f4b8  Version = 3.3  Type = default, MAC = fc:67:1f:25:47:1b
+    Status: {'1': 'close', '2': 100, '3': 100, '5': 'back', '7': 'closing', '11': 'fully_open', '12': 0, '103': True, '104': False, '105': True, '106': 'contiuation'}
+Plug - Kitchen Potpourri   Product ID = key7qn3agvymujfp  [Valid Broadcast]:
+    Address = 172.24.3.103   Device ID = eb286059e9078d40d3kyie (len:22)  Local Key = eo{+<_![ZJ<2YR<I  Version = 3.3  Type = default, MAC = c4:82:e1:b8:24:53
+    Status: {'1': False, '9': 0, '38': 'memory', '40': 'relay', '41': False, '42': '', '43': '', '44': ''}
+Light - King Spot   Product ID = keyj979nf3q3theh  [Valid Broadcast]:
+    Address = 172.24.0.181   Device ID = 008586222cf432ecb6e3 (len:20)  Local Key = be399978974c77c9  Version = 3.3  Type = default, MAC = 2c:f4:32:ec:b6:e3
+    Status: {'20': False, '21': 'white', '22': 1000, '23': 720, '24': '00ae02d203e8', '25': '000e0d0000000000000000c80000', '26': 0}
+Light - Hallway Track (2)   Product ID = key8u54q9dtru5jw  [Valid Broadcast]:
+    Address = 172.24.2.181   Device ID = eb9d7f7d39cd9d1306lsbp (len:22)  Local Key = ?+WHZ&jXU#H*IAM(  Version = 3.5  Type = default, MAC = c0:f8:53:1e:8c:71
+    Status: {'20': True, '21': 'white', '22': 1000, '23': 1000, '24': '000003e803e8', '25': '000e0d0000000000000000c80000', '26': 0, '34': False, '41': True}
+Light - King Cupboard (L)   Product ID = key7qn3agvymujfp  [Valid Broadcast]:
+    Address = 172.24.0.103   Device ID = ebaad38eaf6dece151cxa6 (len:22)  Local Key = 'Wu:&YT)kFTQC;.|  Version = 3.3  Type = default, MAC = d8:d6:68:77:ef:1b
+    Status: {'1': False, '9': 0, '38': 'memory', '40': 'relay', '41': False, '42': '', '43': '', '44': ''}
+Clock - King SunRise   Product ID = xuqo7pmtezb6mrzi  [Valid Broadcast]:
+    Address = 172.24.2.90   Device ID = eb9c9da1d9c76acaf3exln (len:22)  Local Key = 3X+g'($}zOF/6.+Y  Version = 3.3  Type = default, MAC = a8:80:55:c2:a9:6b
+    Status: {'2': False, '7': False, '11': '000003e803e8', '101': 1000, '102': False, '104': False, '106': False, '108': False, '110': False, '112': False, '115': False, '116': '3', '117': 'IDlE', '118': '1', '119': 'C', '121': True, '123': 1000, '124': 1000, '125': False, '129': False, '134': 'Night_ON'}
+Light - Kitchen Duct   Product ID = keyjup78v54myhan  [Valid Broadcast]:
+    Address = 172.24.2.239   Device ID = ebeab6b22de18d7c764sty (len:22)  Local Key = WAgVm5N0LiRhi[QD  Version = 3.4  Type = default, MAC = a8:80:55:1c:64:3d
+    Status: {'1': True, '9': 0, '38': 'memory', '40': 'relay', '41': False, '42': '', '43': '', '44': ''}
+Light - LR Waterfall Accent   Product ID = key7qn3agvymujfp  [Valid Broadcast]:
+    Address = 172.24.0.130   Device ID = eb44346db3245f1f150nbd (len:22)  Local Key = xeh!Hej;+#N>roe@  Version = 3.3  Type = default, MAC = 18:de:50:4b:22:cd
+    Status: {'1': False, '9': 0, '38': 'memory', '40': 'relay', '41': False, '42': '', '43': '', '44': ''}
+Light - Pug Mirror   Product ID = keytg5kq8gvkv9dh  [Valid Broadcast]:
+    Address = 172.24.2.234   Device ID = eb978f81eb6a641ffc7wak (len:22)  Local Key = !<3s);[N'p.|Z50r  Version = 3.3  Type = default, MAC = 70:89:76:e5:d5:31
+    Status: {'20': False, '21': 'white', '22': 1000, '23': 720, '24': '000003e803e8', '25': '000e0d0000000000000000c80000', '26': 0}
+Light - LR Elephant   Product ID = xee3mwqjztrmyksl  [Valid Broadcast]:
+    Address = 172.24.2.46   Device ID = eb03601037123d79a8ipbu (len:22)  Local Key = 7c23aa4ce1df8e92  Version = 3.3  Type = default, MAC = 10:5a:17:e5:b8:84
+    Status: {'1': False, '9': 0, '38': 'memory', '39': 'relay', '40': True, '41': '', '42': '', '43': ''}
+Plug - Cat B Fan   Product ID = keygg897krt5kk4t  [Valid Broadcast]:
+    Address = 172.24.2.166   Device ID = ebc0228033d477e1e9lsfz (len:22)  Local Key = vE42.Qe|rz5}T8]S  Version = 3.3  Type = default, MAC = 84:e3:42:2b:87:0a
+    Status: {'1': True, '11': 0, '101': '', '102': '', '103': ''}
+SNOW⁺ Self-Cleaning Litter Box 2   Product ID = bdfimkssp9ews36b  [Valid Broadcast]:
+    Address = 172.24.1.34   Device ID = ebdd018c0badc1f409vnoh (len:22)  Local Key = pESD(:I[HUIS1]Hz  Version = 3.4  Type = default, MAC = fc:3c:d7:e5:d8:0f
+    Status: {'4': True, '5': 6, '7': 1, '8': 103, '9': False, '10': False, '16': True, '21': 2, '22': 0, '24': 'standby', '102': 0, '104': True, '107': False, '109': False, '110': False, '112': False, '116': '1C160067', '117': False, '118': False}
+Light - Cat Shelves LED 3   Product ID = key7qn3agvymujfp  [Valid Broadcast]:
+    Address = 172.24.0.229   Device ID = eb7d813583f114860estp7 (len:22)  Local Key = cbD<?hDm~;nuqi[N  Version = 3.3  Type = default, MAC = d8:d6:68:86:f0:b1
+    Status: {'1': False, '9': 0, '38': 'memory', '40': 'relay', '41': False, '42': '', '43': '', '44': ''}
+Light - Pug Toilet   Product ID = keytg5kq8gvkv9dh  [Valid Broadcast]:
+    Address = 172.24.1.107   Device ID = ebf115e1bcdfaaf287ulzr (len:22)  Local Key = MN<amEyTqM[n8R+P  Version = 3.3  Type = default, MAC = 70:89:76:e5:db:b2
+    Status: {'20': False, '21': 'white', '22': 1000, '23': 720, '24': '000003e803e8', '25': '000e0d0000000000000000c80000', '26': 0}
+Plug - Cabinet strip lights   Product ID = keyjup78v54myhan  [Valid Broadcast]:
+    Address = 172.24.0.63   Device ID = eb56dd153e2efb3dcda6ib (len:22)  Local Key = U@&o@T;e~R#P|GY4  Version = 3.4  Type = default, MAC = f8:17:2d:d4:5f:a9
+    Status: {'1': False, '9': 0, '38': 'memory', '40': 'relay', '41': False, '42': '', '43': '', '44': ''}
+Light - Kitchen Bulb 2   Product ID = key8u54q9dtru5jw  [Valid Broadcast]:
+    Address = 172.24.1.84   Device ID = ebe61a10e2b3a6b1bbeqm5 (len:22)  Local Key = H}EPSHt#l8~K(}O~  Version = 3.5  Type = default, MAC = d8:d6:68:f7:19:f3
+    Status: {'20': True, '21': 'white', '22': 377, '23': 1000, '24': '001803da03e8', '25': '000e0d0000000000000000c80000', '26': 0, '34': False}
+Light - LR Arch   Product ID = key7qn3agvymujfp  [Valid Broadcast]:
+    Address = 172.24.0.203   Device ID = ebaaa94a0543af3e26xve4 (len:22)  Local Key = ZDKFhP-y!7w2_4#Z  Version = 3.3  Type = default, MAC = d8:d6:68:8c:82:85
+    Status: {'1': False, '9': 0, '38': 'memory', '40': 'relay', '41': False, '42': '', '43': '', '44': ''}
+Light - Cat Up   Product ID = key8u54q9dtru5jw  [Valid Broadcast]:
+    Address = 172.24.0.15   Device ID = ebd157f69bc1a99599kabr (len:22)  Local Key = [??zV(?'PKWOlU`/  Version = 3.5  Type = default, MAC = d8:d6:68:91:12:0a
+    Status: {'20': False, '21': 'white', '22': 993, '23': 720, '24': '000003e803e8', '25': '000e0d0000000000000000c80000', '26': 0, '34': False}
+Blind - Queen Closet L   Product ID = 7qcsglvoqkrdduk6  [Valid Broadcast]:
+    Address = 172.24.1.202   Device ID = eb07ed87474a344a16lhaa (len:22)  Local Key = 129c7d94fa2179d0  Version = 3.3  Type = default, MAC = 38:1f:8d:da:29:35
+    Status: {'2': 20, '103': False, '104': True, '105': True, '109': 4}
+Plug - Cat Beacon Red   Product ID = 66mNaBqLdsYhX5lA  [Valid Broadcast]:
+    Address = 172.24.2.82   Device ID = 32110836bcddc2bffda7 (len:20)  Local Key = {f(7xBfv}R0J!]_n  Version = 3.3  Type = default, MAC = bc:dd:c2:bf:fd:a7
+    Status: {'1': False, '2': 0}
+Light - Kitchen Bulb 3   Product ID = key8u54q9dtru5jw  [Valid Broadcast]:
+    Address = 172.24.2.92   Device ID = eb9690ff0b4641bf9ej8pe (len:22)  Local Key = a:C8i)vW#+#>bm'$  Version = 3.5  Type = default, MAC = d8:d6:68:f7:1a:fc
+    Status: {'20': False, '21': 'white', '22': 277, '23': 1000, '24': '000003e803e8', '25': '000e0d0000000000000000c80000', '26': 0, '34': False}
+Plug - King Red Work Beacon   Product ID = key7qn3agvymujfp  [Valid Broadcast]:
+    Address = 172.24.1.242   Device ID = eb41a21a6024240567v2fb (len:22)  Local Key = hhbrDTojUz8Er*LH  Version = 3.3  Type = default, MAC = c4:82:e1:b9:58:96
+    Status: {'1': False, '9': 0, '38': 'memory', '40': 'relay', '41': False, '42': '', '43': '', '44': ''}
+Light - King HB L   Product ID = keytg5kq8gvkv9dh  [Valid Broadcast]:
+    Address = 172.24.3.102   Device ID = eb900cb02264725e50tw8l (len:22)  Local Key = Az[kAe-Q2*l?.n`F  Version = 3.3  Type = default, MAC = 84:e3:42:cb:f3:fa
+    Status: {'20': False, '21': 'white', '22': 1000, '23': 720, '24': '000003e803e8', '25': '000e0d0000000000000000c80000', '26': 0}
+Lights - Rainbow2   Product ID = key7qn3agvymujfp  [Valid Broadcast]:
+    Address = 172.24.3.222   Device ID = eb501db32cfb347da5grum (len:22)  Local Key = r?(L%L#2<3GEsOt}  Version = 3.3  Type = default, MAC = d8:d6:68:39:06:a2
+    Status: {'1': False, '9': 0, '38': 'memory', '40': 'relay', '41': False, '42': '', '43': '', '44': ''}
+Plug - Hallway Air Freshener   Product ID = keyjup78v54myhan  [Valid Broadcast]:
+    Address = 172.24.2.206   Device ID = eb686185a1d7719e65p36i (len:22)  Local Key = s08P}Wsq6GF;*dt.  Version = 3.4  Type = default, MAC = 38:a5:c9:22:9f:11
+    Status: {'1': False, '9': 0, '38': 'memory', '40': 'relay', '41': False, '42': '', '43': '', '44': ''}
+Lever - TV LR   Product ID = 4w6o5buyvgps5vqk  [Valid Broadcast]:
+    Address = 172.24.3.163   Device ID = eb3277ac3afb4fc81dn3qs (len:22)  Local Key = (t]nZ0en&'~j4pdI  Version = 3.3  Type = default, MAC = 38:1f:8d:db:bc:de
+    Status: {'2': 'stop', '7': 0, '24': True, '103': 'off', '104': 'off'}
+Light - Closet Track 3   Product ID = keytg5kq8gvkv9dh  [Valid Broadcast]:
+    Address = 172.24.1.23   Device ID = eb4693e504939dc0f9i3bg (len:22)  Local Key = U}XZ>$Cii1QUF3Jl  Version = 3.3  Type = default, MAC = 70:89:76:a9:aa:f2
+    Status: {'20': False, '21': 'white', '22': 10, '24': '000003e803e8', '25': '000e0d0000000000000000c803e8', '26': 0}
+Light - Cat Mirror   Product ID = keyj979nf3q3theh  [Valid Broadcast]:
+    Address = 172.24.3.67   Device ID = 0717501540f520e925f0 (len:20)  Local Key = 6OkteG'FfHjJXct=  Version = 3.3  Type = default, MAC = 40:f5:20:e9:25:f0
+    Status: {'20': False, '21': 'white', '22': 1000, '23': 720, '24': '000003e803e8', '25': '000e0d0000000000000000c80000', '26': 0}
+Gateway - LR Bluetooth   Product ID = key7mn9kc48xep73  [Valid Broadcast]:
+    Address = 172.24.0.127   Device ID = ebe76e9652be0d74baelne (len:22)  Local Key = +ovbOQxWfqe2Xs16  Version = 3.4  Type = default, MAC = 50:8b:b9:7e:bb:a8
+    Status: {'38': 'memory'}
+Light - Queen Track 4   Product ID = keytg5kq8gvkv9dh  [Valid Broadcast]:
+    Address = 172.24.0.172   Device ID = eb7067f7f79c62e1d03d9q (len:22)  Local Key = !+xT;<@OP3=hxThv  Version = 3.3  Type = default, MAC = 70:89:76:e5:c2:ec
+    Status: {'20': False, '21': 'white', '22': 1000, '23': 949, '24': '00f803ac03e8', '25': '07464602000003e803e800000000464602007803e803e80000000046460200f003e803e800000000464602003d03e803e80000000046460200ae03e803e800000000464602011303e803e800000000', '26': 0}
+Light - LR Rainbow3   Product ID = key7qn3agvymujfp  [Valid Broadcast]:
+    Address = 172.24.1.89   Device ID = eb8192da8f6cc78c137eo3 (len:22)  Local Key = Zd(2}XM|YbNqVjk7  Version = 3.3  Type = default, MAC = c4:82:e1:b8:da:71
+    Status: {'1': False, '9': 0, '38': 'memory', '40': 'relay', '41': False, '42': '', '43': '', '44': ''}
+Light - Kitchen Cat Water Beacon   Product ID = 66mNaBqLdsYhX5lA  [Valid Broadcast]:
+    Address = 172.24.3.28   Device ID = 32110836bcddc25528e8 (len:20)  Local Key = 9da5fcd9079d5432  Version = 3.3  Type = default, MAC = bc:dd:c2:55:28:e8
+    Status: {'1': True, '2': 0}
+Light - LR Lamp (Up)   Product ID = key8u54q9dtru5jw  [Valid Broadcast]:
+    Address = 172.24.2.110   Device ID = eb15e9d31863d47a0ewvmu (len:22)  Local Key = ''.0ok`^p{YhN;g-  Version = 3.3  Type = default, MAC = fc:3c:d7:31:0f:a0
+    Status: {'20': True, '21': 'white', '22': 1000, '23': 720, '24': '001e03e803e8', '25': '000e0d0000000000000000c80000', '26': 0}
+Plug - Kitchen Hutch Fountain   Product ID = key7qn3agvymujfp  [Valid Broadcast]:
+    Address = 172.24.1.135   Device ID = eb216ff9ca287bed9eae5x (len:22)  Local Key = gKE/s=g/HJGq|}|K  Version = 3.3  Type = default, MAC = 18:de:50:12:24:78
+    Status: {'1': False, '9': 0, '38': 'memory', '40': 'relay', '41': False, '42': '', '43': '', '44': ''}
+Light - Cat Towels   Product ID = xee3mwqjztrmyksl  [Valid Broadcast]:
+    Address = 172.24.2.21   Device ID = ebeef7da5c09350b3bdjdl (len:22)  Local Key = 8(:e!VHLrv5v^hi!  Version = 3.3  Type = default, MAC = 10:5a:17:fa:7b:7d
+    Status: {'1': False, '9': 0, '38': 'memory', '39': 'relay', '40': False, '41': '', '42': '', '43': ''}
+Light - Cat Shelves LED4   Product ID = key7qn3agvymujfp  [Valid Broadcast]:
+    Address = 172.24.2.201   Device ID = ebf912be20b8f5614c46xk (len:22)  Local Key = d<k}t6Cy#VAIj~+_  Version = 3.3  Type = default, MAC = d8:d6:68:39:05:8c
+    Status: {'1': False, '9': 0, '38': 'memory', '40': 'relay', '41': False, '42': '', '43': '', '44': ''}
+Light - Cat Cupboard Shelves LED   Product ID = xee3mwqjztrmyksl  [Valid Broadcast]:
+    Address = 172.24.2.70   Device ID = eb88d68903a2cd865fh5dj (len:22)  Local Key = (yA<wU}h4q~d(>W~  Version = 3.3  Type = default, MAC = 10:5a:17:f5:87:54
+    Status: {'1': False, '9': 0, '38': 'memory', '39': 'relay', '40': False, '41': '', '42': '', '43': ''}
+Plug - Kitchen Work Headset   Product ID = keyjup78v54myhan  [Valid Broadcast]:
+    Address = 172.24.1.138   Device ID = eb757d11246f8dfadb7qaq (len:22)  Local Key = 7__{7ro}[!X<n<c`  Version = 3.4  Type = default, MAC = a8:80:55:eb:71:23
+    Status: {'1': False, '9': 0, '38': 'memory', '40': 'relay', '41': False, '42': '', '43': '', '44': ''}
+Light - Queen Above Bed L   Product ID = keytg5kq8gvkv9dh  [Valid Broadcast]:
+    Address = 172.24.2.182   Device ID = eb6be4645ca242bd2fwogc (len:22)  Local Key = =FKiF7L9~['w3[&N  Version = 3.3  Type = default, MAC = 10:d5:61:4b:93:0f
+    Status: {'20': False, '21': 'white', '22': 1000, '23': 1000, '24': '000003e801a4', '25': '0d000000000a02bc03e800000000', '26': 0, '34': False}
+Light - Kitchen Hutch   Product ID = key7qn3agvymujfp  [Valid Broadcast]:
+    Address = 172.24.2.115   Device ID = ebd9357efe9fa74902yobi (len:22)  Local Key = fsS)3'.~nC;4-P-]  Version = 3.3  Type = default, MAC = 18:de:50:13:bf:39
+    Status: {'1': False, '9': 0, '38': 'memory', '40': 'relay', '41': False, '42': '', '43': '', '44': ''}
+Fountain - Hallway Cat   Product ID = hrjausmoefohergp  [Valid Broadcast]:
+    Address = 172.24.3.205   Device ID = ebf97f26e22644febaiegq (len:22)  Local Key = xVS;_ua.8:79X!:j  Version = 3.3  Type = default, MAC = 28:6d:cd:af:af:15
+    Polling 172.24.3.205 Failed: Connect Failed
+Light - LR Beside Balcony Colour   Product ID = ozrrouknwweemjyn  [Valid Broadcast]:
+    Address = 172.24.1.7   Device ID = eb4d1220dec2a66517wg4m (len:22)  Local Key = 0849e75b71248593  Version = 3.3  Type = default, MAC = 38:1f:8d:d3:c8:e3
+    Polling 172.24.1.7 Failed: Connect Failed
+Light - LR Lamp (Down)   Product ID = keyj979nf3q3theh  [Valid Broadcast]:
+    Address = 172.24.2.254   Device ID = 008586222cf432ecb52e (len:20)  Local Key = jdHqG?Jk?(`@g*r@  Version = 3.3  Type = default, MAC = 2c:f4:32:ec:b5:2e
+    Status: {'20': True, '21': 'white', '22': 880, '23': 720, '24': '013003e80320', '25': '000e0d0000000000000000c80000', '26': 0}
+Light - Cat Shower   Product ID = keyj979nf3q3theh  [Valid Broadcast]:
+    Address = 172.24.3.83   Device ID = 68268805c44f33b56b55 (len:20)  Local Key = 5048dec760aab47c  Version = 3.3  Type = default, MAC = c4:4f:33:b5:6b:55
+    Status: {'20': False, '21': 'white', '22': 1000, '23': 720, '24': '000003e803e8', '25': '000e0d0000000000000000c80000', '26': 0}
+Light - Pug Shower   Product ID = keyj979nf3q3theh  [Valid Broadcast]:
+    Address = 172.24.1.183   Device ID = 88875870d8f15bca7467 (len:20)  Local Key = 5f31124e32ccad69  Version = 3.3  Type = default, MAC = d8:f1:5b:ca:74:67
+    Status: {'20': False, '21': 'white', '22': 1000, '23': 720, '24': '000003e803e8', '25': '000e0d0000000000000000c80000', '26': 0}
+Light - Closet Shelves R   Product ID = key7qn3agvymujfp  [Valid Broadcast]:
+    Address = 172.24.2.68   Device ID = ebd848838f7feef0d3lsdx (len:22)  Local Key = dad7c6e37ba6d382  Version = 3.3  Type = default, MAC = d8:1f:12:17:16:3c
+    Status: {'1': False, '9': 0, '38': 'memory', '40': 'relay', '41': False, '42': '', '43': '', '44': 'false///'}
+Light - LR Waterfall Plug   Product ID = keygg897krt5kk4t  [Valid Broadcast]:
+    Address = 172.24.1.61   Device ID = eb97eb979325de7a46gkmz (len:22)  Local Key = `>Gq$:eA@zw*x9y6  Version = 3.3  Type = default, MAC = 84:e3:42:51:75:2d
+    Polling 172.24.1.61 Failed: Connect Failed
+Light - King On Air   Product ID = keygg897krt5kk4t  [Valid Broadcast]:
+    Address = 172.24.2.128   Device ID = eb37c9e74308095883wefj (len:22)  Local Key = d0b2c63d1f9ae605  Version = 3.3  Type = default, MAC = 18:69:d8:72:d5:a7
+    Polling 172.24.2.128 Failed: Connect Failed
+Light - Kitchen Amber Laundry Beacon   Product ID = keygg897krt5kk4t  [Valid Broadcast]:
+    Address = 172.24.0.164   Device ID = eb6ddbcfe8bc7fd9a7rj6i (len:22)  Local Key = $*n#(K(L[YNtX?SZ  Version = 3.3  Type = default, MAC = 84:e3:42:49:ab:3f
+    Polling 172.24.0.164 Failed: Connect Failed
+Light - LR TV Cabinet   Product ID = keyj979nf3q3theh  [Valid Broadcast]:
+    Address = 172.24.3.121   Device ID = 008586222cf432ec0d7f (len:20)  Local Key = ]#*>.9u^~awGq]2P  Version = 3.3  Type = default, MAC = 2c:f4:32:ec:0d:7f
+    Status: {'20': True, '21': 'white', '22': 1000, '23': 1000, '24': '000003e803e8', '25': '000e0d0000000000000000c80000', '26': 0}
+Plug - Cat Air Fresheher   Product ID = keyjup78v54myhan  [Valid Broadcast]:
+    Address = 172.24.3.183   Device ID = eb03ea1201d1048c2fd7pt (len:22)  Local Key = _T3e[+f=G>P.}Yv6  Version = 3.4  Type = default, MAC = 38:a5:c9:22:7f:f2
+    Status: {'1': False, '9': 0, '38': 'memory', '40': 'relay', '41': False, '42': '', '43': '', '44': ''}
+Light - Queen Track 5   Product ID = keytg5kq8gvkv9dh  [Valid Broadcast]:
+    Address = 172.24.1.189   Device ID = eb25b26bc3f5f2c648oaiq (len:22)  Local Key = %8p$^yP%bzx!B5%[  Version = 3.3  Type = default, MAC = 70:89:76:e5:f0:0a
+    Status: {'20': False, '21': 'white', '22': 1000, '23': 949, '24': '00c3035f03e8', '25': '0d000000000a02bc03e800000000', '26': 0}
+Fan - Queen White   Product ID = keygg897krt5kk4t  [Valid Broadcast]:
+    Address = 172.24.0.17   Device ID = eb2f5b825fbc6472c8aiao (len:22)  Local Key = 5kf&'XWA|+N!Sg1K  Version = 3.3  Type = default, MAC = 18:69:d8:9e:9c:c3
+    Polling 172.24.0.17 Failed: Connect Failed
+Gateway - Cat 3   Product ID = key7mn9kc48xep73  [Valid Broadcast]:
+    Address = 172.24.3.47   Device ID = eba77a290b0860542adrcl (len:22)  Local Key = m|u@BG(51bbd'Yj9  Version = 3.4  Type = default, MAC = a0:92:08:27:20:3c
+    Polling 172.24.3.47 Failed: No response
+Gateway - Cat 2   Product ID = key7mn9kc48xep73  [Valid Broadcast]:
+    Address = 172.24.1.41   Device ID = eb72f2eda0ea2e1225o5bw (len:22)  Local Key = |({:CKV7|q9c|:y2  Version = 3.4  Type = default, MAC = a0:92:08:27:26:36
+    Polling 172.24.1.41 Failed: No response
+Gateway - Cat 1   Product ID = key7mn9kc48xep73  [Valid Broadcast]:
+    Address = 172.24.3.60   Device ID = eb68992392cdd6adc9lqha (len:22)  Local Key = ~kK=GvK*wA5Q`H'3  Version = 3.4  Type = default, MAC = a0:92:08:27:20:49
+    Polling 172.24.3.60 Failed: No response
+Scan completed in 21.9841 seconds
+
+Scan Complete!  Found 123 devices.
+Broadcasted: 123
+Versions: 3.3: 84, 3.4: 18, 3.5: 21
+
+>> Saving device snapshot data to snapshot.json
+
+byhomeyyz@raspberrypi:~/tinytuya $
