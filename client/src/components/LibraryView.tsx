@@ -5307,23 +5307,47 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
         >
           <ChevronLeft size={16} />
         </button>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-          {semesters.map((sem, idx) => (
-            <div
-              key={sem.key}
-              onClick={() => setCurrentSemIdx(idx)}
-              style={{
-                width: '7px',
-                height: '7px',
-                borderRadius: '50%',
-                backgroundColor: idx === currentSemIdx ? '#ffffff' : 'rgba(255,255,255,0.25)',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                boxShadow: idx === currentSemIdx ? '0 0 6px rgba(255,255,255,0.5)' : 'none',
-              }}
-              data-testid={`library-sem-dot-${sem.key}`}
-            />
-          ))}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {(() => {
+            const groups: { year: string; items: { sem: any; idx: number }[] }[] = [];
+            semesters.forEach((sem, idx) => {
+              const year = sem.key.match(/\d{4}/)?.[0] || '????';
+              const last = groups[groups.length - 1];
+              if (last && last.year === year) last.items.push({ sem, idx });
+              else groups.push({ year, items: [{ sem, idx }] });
+            });
+            return groups.map((g, gi) => (
+              <React.Fragment key={g.year}>
+                {gi > 0 && (
+                  <div style={{ width: '1px', height: '14px', background: 'rgba(255,255,255,0.2)' }} />
+                )}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px' }}>
+                  <div style={{ fontSize: '8.5px', fontWeight: 700, letterSpacing: '0.6px', color: g.items.some(it => it.idx === currentSemIdx) ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.4)', lineHeight: 1, fontFamily: 'system-ui, sans-serif' }}>
+                    {g.year}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    {g.items.map(({ sem, idx }) => (
+                      <div
+                        key={sem.key}
+                        onClick={() => setCurrentSemIdx(idx)}
+                        title={sem.label}
+                        style={{
+                          width: '7px',
+                          height: '7px',
+                          borderRadius: '50%',
+                          backgroundColor: idx === currentSemIdx ? '#ffffff' : 'rgba(255,255,255,0.25)',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                          boxShadow: idx === currentSemIdx ? '0 0 6px rgba(255,255,255,0.5)' : 'none',
+                        }}
+                        data-testid={`library-sem-dot-${sem.key}`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </React.Fragment>
+            ));
+          })()}
         </div>
         <button
           onClick={nextSem}
