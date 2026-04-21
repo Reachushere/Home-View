@@ -1,0 +1,205 @@
+
+5C:80:B6:75:C6:D1
+
+
+
+
+Address
+Name
+Device
+Source
+Updated
+RSSI
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+00:C4:E5:76:89:71
+TY
+-
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+15 seconds ago
+-84
+1F:84:A2:D1:17:9C
+1F:84:A2:D1:17:9C
+-
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+13 seconds ago
+-60
+2F:8A:69:DF:09:49
+2F:8A:69:DF:09:49
+-
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+15 minutes ago
+-61
+2F:8A:71:5F:09:49
+2F:8A:71:5F:09:49
+-
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+8 minutes ago
+-63
+2F:8B:F1:5F:09:49
+2F:8B:F1:5F:09:49
+-
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+13 minutes ago
+-63
+3A:BF:A9:76:89:71
+TY
+-
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+14 seconds ago
+-83
+3C:C9:AA:21:00:26
+3C:C9:AA:21:00:26
+-
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+2 minutes ago
+-62
+3F:36:17:DB:12:82
+3F:36:17:DB:12:82
+-
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+10 minutes ago
+-88
+4A:5C:F9:73:A9:AE
+4A:5C:F9:73:A9:AE
+-
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+15 seconds ago
+-86
+4B:E9:B6:CD:BA:E5
+4B:E9:B6:CD:BA:E5
+-
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+10 minutes ago
+-90
+4C:A9:19:37:F8:45
+TY
+-
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+14 seconds ago
+-85
+4F:8A:0F:3F:09:29
+4F:8A:0F:3F:09:29
+-
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+12 minutes ago
+-62
+7E:20:35:49:BC:4E
+7E:20:35:49:BC:4E
+-
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+13 seconds ago
+-82
+08:65:F0:7F:54:50
+IOTBT450
+-
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+14 seconds ago
+-71
+9C:3E:53:22:6A:A3
+9C:3E:53:22:6A:A3
+-
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+13 seconds ago
+-60
+10:5A:17:E5:B8:84
+TY
+-
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+13 seconds ago
+-68
+10:5A:17:F5:87:54
+TY
+-
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+13 seconds ago
+-66
+10:5A:17:FA:7B:7D
+TY
+-
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+13 seconds ago
+-64
+10:C3:B2:A7:98:51
+10:C3:B2:A7:98:51
+-
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+2 seconds ago
+-69
+18:DE:50:0D:A8:9E
+TY
+-
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+14 seconds ago
+-75
+20:F8:3B:09:7D:61
+ha-voice-pe-097d5f
+-
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+3 minutes ago
+-62
+20:F8:3B:09:C8:68
+ha-voice-pe-09c866
+-
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+13 seconds ago
+-58
+21:C3:E5:76:89:71
+TY
+-
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+13 seconds ago
+-72
+38:1F:8D:DB:BC:DE
+TY
+-
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+14 seconds ago
+-62
+38:2C:E5:40:AE:EC
+TY
+-
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+13 seconds ago
+-76
+38:2C:E5:78:0F:63
+TUYA_
+-
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+13 seconds ago
+-70
+38:2C:E5:78:13:DD
+TUYA_
+-
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+13 seconds ago
+-76
+38:A5:C9:22:7F:F3
+TY
+-
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+13 seconds ago
+-65
+44:5C:E9:BB:4C:1D
+44:5C:E9:BB:4C:1D
+-
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+14 seconds ago
+-66
+45:3A:3F:9C:2C:4B
+45:3A:3F:9C:2C:4B
+-
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+9 minutes ago
+-58
+47:00:C6:FE:76:A9
+47:00:C6:FE:76:A9
+-
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+13 seconds ago
+-88
+53:BC:2F:E0:DC:90
+53:BC:2F:E0:DC:90
+-
+hci1 (5C:80:B6:75:C6:D1) (Living Room)
+16 seconds ago
+-83
