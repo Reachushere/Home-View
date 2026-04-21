@@ -5322,9 +5322,22 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
                   <div style={{ width: '1px', height: '14px', background: 'rgba(255,255,255,0.2)' }} />
                 )}
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px' }}>
-                  <div style={{ fontSize: '8.5px', fontWeight: 700, letterSpacing: '0.6px', color: g.items.some(it => it.idx === currentSemIdx) ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.4)', lineHeight: 1, fontFamily: 'system-ui, sans-serif' }}>
-                    {g.year}
-                  </div>
+                  {(() => {
+                    const winter = g.items.find(it => it.sem.key.startsWith('w'));
+                    const target = winter ?? g.items[0];
+                    return (
+                      <div
+                        onClick={() => target && setCurrentSemIdx(target.idx)}
+                        title={winter ? `Jump to Winter ${g.year}` : (target ? `Jump to ${target.sem.label}` : g.year)}
+                        style={{ fontSize: '8.5px', fontWeight: 700, letterSpacing: '0.6px', color: g.items.some(it => it.idx === currentSemIdx) ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.4)', lineHeight: 1, fontFamily: 'system-ui, sans-serif', cursor: target ? 'pointer' : 'default', userSelect: 'none' }}
+                        onMouseEnter={e => { if (target) (e.currentTarget as HTMLDivElement).style.color = 'rgba(255,255,255,1)'; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.color = g.items.some(it => it.idx === currentSemIdx) ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.4)'; }}
+                        data-testid={`library-year-label-${g.year}`}
+                      >
+                        {g.year}
+                      </div>
+                    );
+                  })()}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                     {g.items.map(({ sem, idx }) => (
                       <div
