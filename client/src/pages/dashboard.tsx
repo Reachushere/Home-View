@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect, useMemo, memo, startTransition } from "react";
 import { createPortal } from "react-dom";
 import Cropper from "react-easy-crop";
-import { SiMicrosoftonedrive } from "react-icons/si";
+import oneDriveLogoPath from "@assets/OneDrive_1776567093048.png";
 import { NewCourseWizard } from "@/components/NewCourseWizard";
 import { CourseDetailDialog } from "@/components/CourseDetailDialog";
 import { CalendarSettingsDialog } from "@/components/CalendarSettingsDialog";
@@ -15506,7 +15506,7 @@ export default function Dashboard() {
                                                             )}
                                                             {hasArtBg && step.label === 'OneDrive' && (
                                                               <div className="flex flex-col items-center justify-center gap-1.5" style={{ flex: 1, paddingTop: '8px' }}>
-                                                                <SiMicrosoftonedrive size={28} style={{ color: '#ffffff', filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.55))' }} />
+                                                                <img src={oneDriveLogoPath} alt="OneDrive" style={{ width: 28, height: 28, filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.55))' }} />
                                                                 <span className="text-[11px] font-bold leading-none" style={{ color: '#ffffff', fontFamily: 'JetBrains Mono, monospace', textShadow: '0 1px 3px rgba(0,0,0,0.75)', letterSpacing: '0.02em' }}>OneDrive</span>
                                                               </div>
                                                             )}
