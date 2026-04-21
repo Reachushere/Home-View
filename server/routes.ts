@@ -15155,6 +15155,145 @@ async function pollStatus(timeout){
     }
   });
 
+  // ============================================================================
+  // AUDIT PDF GENERATION
+  // Client gathers per-semester health data + automation list and POSTs here.
+  // We render a multi-page PDF using pdfkit and stream it back as application/pdf.
+  // ============================================================================
+  app.post("/api/audit/generate-pdf", async (req, res) => {
+    try {
+      const PDFDocument = (await import("pdfkit")).default as any;
+      const { semesterReports = [], automations = [], generatedAt } = (req.body || {}) as {
+        semesterReports: any[];
+        automations: any[];
+        generatedAt?: string;
+      };
+
+      const doc = new PDFDocument({ size: "LETTER", margin: 48, info: { Title: "UniCal Audit Report", Author: "UniCal" } });
+      const chunks: Buffer[] = [];
+      doc.on("data", (c: Buffer) => chunks.push(c));
+      doc.on("end", () => {
+        const pdf = Buffer.concat(chunks);
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader("Content-Disposition", 'inline; filename="unical-audit.pdf"');
+        res.setHeader("Content-Length", String(pdf.length));
+        res.end(pdf);
+      });
+
+      const ts = generatedAt ? new Date(generatedAt) : new Date();
+      const tsStr = ts.toLocaleString("en-CA", { timeZone: "America/Toronto" });
+
+      // ---------- Title ----------
+      doc.fontSize(22).fillColor("#0f172a").text("UniCal — Automation Audit", { align: "left" });
+      doc.moveDown(0.3);
+      doc.fontSize(10).fillColor("#475569").text(`Generated: ${tsStr} (Toronto)`);
+      doc.moveDown(0.6);
+      doc.moveTo(48, doc.y).lineTo(564, doc.y).strokeColor("#cbd5e1").lineWidth(0.8).stroke();
+      doc.moveDown(0.8);
+
+      // ---------- Summary ----------
+      const totalSemesters = semesterReports.length;
+      const totalCourses = semesterReports.reduce((s: number, r: any) => s + (r?.courses?.length || 0), 0);
+      const totalIssues = semesterReports.reduce((s: number, r: any) => s + (r?.issues?.length || 0), 0);
+      const avgScore = totalSemesters > 0
+        ? Math.round(semesterReports.reduce((s: number, r: any) => s + (r?.healthScore || 0), 0) / totalSemesters)
+        : 0;
+      doc.fontSize(13).fillColor("#0f172a").text("Summary");
+      doc.moveDown(0.2);
+      doc.fontSize(10).fillColor("#1f2937");
+      doc.text(`• Semesters audited: ${totalSemesters} (current + future only)`);
+      doc.text(`• Courses audited:   ${totalCourses}`);
+      doc.text(`• Average health:    ${avgScore}%`);
+      doc.text(`• Open issues:       ${totalIssues}`);
+      doc.moveDown(0.8);
+
+      // ---------- Per-semester sections ----------
+      const componentLabel = (key: string) => ({
+        onedrive: "OneDrive Connection",
+        sync: "OneDrive Sync",
+        syllabus: "Syllabus Folder",
+        assignments: "Assignments Folder",
+        textbook: "Textbook Folder",
+        storage: "Local Storage (Pi)",
+        tts: "TTS Readiness",
+        library: "Library Connection",
+      } as Record<string, string>)[key] || key;
+
+      for (const sem of semesterReports) {
+        if (doc.y > 680) doc.addPage();
+        doc.fontSize(15).fillColor("#0f172a").text(sem.semesterName || sem.semKey || "Semester");
+        doc.fontSize(9).fillColor("#64748b").text(`Health: ${sem.healthScore ?? 0}%   •   Active: ${sem.isActive ? "yes" : "no"}   •   Dates configured: ${sem.hasDates ? "yes" : "no"}`);
+        doc.moveDown(0.4);
+
+        const courses = Array.isArray(sem.courses) ? sem.courses : [];
+        if (courses.length === 0) {
+          doc.fontSize(10).fillColor("#94a3b8").text("(no configured courses)");
+          doc.moveDown(0.6);
+        }
+        for (const c of courses) {
+          if (doc.y > 700) doc.addPage();
+          doc.fontSize(11).fillColor("#0f172a").text(`${c.code || ""}  ${c.name || ""}`);
+          doc.fontSize(9).fillColor("#1f2937");
+
+          const rows: Array<[string, string]> = [
+            [componentLabel("onedrive"), c.oneDriveFolderConfigured ? "Connected" : "Not configured"],
+            [componentLabel("syllabus"), c.syllabusLinked ? "Linked" : (c.syllabusFolderExists ? "Folder exists, no syllabus" : "Missing")],
+            [componentLabel("assignments"), c.assignmentsFolderExists ? "Present" : "Missing"],
+            [componentLabel("textbook"), c.textbookFolderExists ? "Present" : "Missing"],
+            [componentLabel("tts"), c.totalTtsNeeded > 0 ? `${c.totalTtsReady}/${c.totalTtsNeeded} ready` : "n/a"],
+            ["Modules / Readings", `${c.totalModules || 0} modules, ${c.totalReadings || 0} readings`],
+          ];
+          for (const [k, v] of rows) {
+            const isOk = /Connected|Linked|Present|n\/a/.test(v) || /^\d+\/\d+ ready$/.test(v);
+            doc.fillColor(isOk ? "#15803d" : "#b91c1c").text(`    • ${k}: `, { continued: true });
+            doc.fillColor("#1f2937").text(v);
+          }
+          doc.moveDown(0.3);
+        }
+
+        if (Array.isArray(sem.issues) && sem.issues.length > 0) {
+          if (doc.y > 700) doc.addPage();
+          doc.fontSize(10).fillColor("#b91c1c").text(`Open issues (${sem.issues.length}):`);
+          doc.fontSize(9).fillColor("#1f2937");
+          for (const iss of sem.issues) {
+            if (doc.y > 740) doc.addPage();
+            doc.text(`    – ${iss}`);
+          }
+        }
+        doc.moveDown(0.6);
+        doc.moveTo(48, doc.y).lineTo(564, doc.y).strokeColor("#e2e8f0").lineWidth(0.5).stroke();
+        doc.moveDown(0.6);
+      }
+
+      // ---------- Automations checklist ----------
+      doc.addPage();
+      doc.fontSize(15).fillColor("#0f172a").text("My Automations — Inventory");
+      doc.moveDown(0.3);
+      doc.fontSize(9).fillColor("#475569").text("Everything UniCal does automatically.");
+      doc.moveDown(0.6);
+
+      for (const cat of automations) {
+        if (doc.y > 700) doc.addPage();
+        doc.fontSize(12).fillColor("#0f172a").text(`${cat.title || "Category"}  (${(cat.items || []).length})`);
+        doc.moveDown(0.2);
+        doc.fontSize(9).fillColor("#1f2937");
+        for (const item of (cat.items || [])) {
+          if (doc.y > 730) doc.addPage();
+          doc.fillColor("#0f172a").text(`  • ${item.title || ""}`, { continued: false });
+          if (item.description) doc.fillColor("#374151").text(`      ${item.description}`);
+          if (item.when) doc.fillColor("#64748b").text(`      When: ${item.when}`);
+          doc.moveDown(0.15);
+        }
+        doc.moveDown(0.4);
+      }
+
+      doc.end();
+    } catch (err: any) {
+      console.error("[Audit PDF] Error:", err);
+      if (!res.headersSent) res.status(500).json({ error: "Audit PDF generation failed", message: err.message });
+    }
+  });
+
   // Register object storage routes for file uploads
   registerObjectStorageRoutes(app);
 

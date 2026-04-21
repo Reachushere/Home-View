@@ -16,6 +16,9 @@ import {
   ChevronRight,
   Newspaper,
   X,
+  FileText,
+  Loader2,
+  ClipboardCheck,
 } from "lucide-react";
 import bgBack from "@assets/Back_1776566950517.png";
 import boxBlue from "@assets/Blue_Box_1776566950518.png";
@@ -486,11 +489,97 @@ export function AutomationsContent() {
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
   const toggleCategory = (id: string) => setExpandedCategories(prev => ({ ...prev, [id]: !prev[id] }));
   const totalItems = AUTOMATION_CATEGORIES.reduce((sum, c) => sum + c.items.length, 0);
+
+  const [auditState, setAuditState] = useState<'idle' | 'running' | 'done' | 'error'>('idle');
+  const [auditMsg, setAuditMsg] = useState<string>('');
+
+  const runAudit = async () => {
+    if (auditState === 'running') return;
+    setAuditState('running');
+    setAuditMsg('Reading semesters…');
+    try {
+      const semsRes = await fetch('/api/semesters', { credentials: 'include' });
+      if (!semsRes.ok) throw new Error('Could not load semesters');
+      const allSems: any[] = await semsRes.json();
+      const today = new Date(); today.setHours(0,0,0,0);
+      const typePrefix: Record<string, string> = { winter: 'w', fall: 'f', spring_summer: 'ss' };
+      const currentFuture = allSems.filter(s => {
+        if (!s?.semesterEndDate) return true;
+        const end = new Date(s.semesterEndDate);
+        return end >= today;
+      });
+      const semKeys = currentFuture.map(s => {
+        const yr = new Date(s.semesterStartDate).getFullYear();
+        const t = (s.semesterType || 'winter').toLowerCase();
+        const prefix = typePrefix[t] || t.charAt(0) || 'w';
+        return `${prefix}${yr}`;
+      });
+      const reports: any[] = [];
+      for (let i = 0; i < semKeys.length; i++) {
+        setAuditMsg(`Checking ${semKeys[i]} (${i + 1}/${semKeys.length})…`);
+        try {
+          const r = await fetch(`/api/semester-health-check/${semKeys[i]}`, { credentials: 'include' });
+          if (r.ok) reports.push(await r.json());
+        } catch {}
+      }
+      setAuditMsg('Compiling PDF…');
+      // Strip non-serializable icon components from automation list
+      const automations = AUTOMATION_CATEGORIES.map(c => ({
+        title: c.title,
+        items: c.items.map(it => ({ title: it.title, description: it.description, when: it.when, canDisable: it.canDisable })),
+      }));
+      const pdfRes = await fetch('/api/audit/generate-pdf', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ semesterReports: reports, automations, generatedAt: new Date().toISOString() }),
+      });
+      if (!pdfRes.ok) throw new Error('PDF endpoint failed');
+      const blob = await pdfRes.blob();
+      const url = URL.createObjectURL(blob);
+      window.dispatchEvent(new CustomEvent('unical:audit-pdf-ready', { detail: { url, name: `unical-audit-${new Date().toISOString().slice(0,16).replace(/[:T]/g,'-')}.pdf` } }));
+      setAuditState('done');
+      setAuditMsg('Done — see PDF tab at bottom of screen.');
+      setTimeout(() => { setAuditState('idle'); setAuditMsg(''); }, 6000);
+    } catch (e: any) {
+      console.error('[Audit] failed', e);
+      setAuditState('error');
+      setAuditMsg(e?.message || 'Audit failed');
+      setTimeout(() => { setAuditState('idle'); setAuditMsg(''); }, 6000);
+    }
+  };
+
   return (
     <div>
       <p className="text-[10px] text-white/50 mb-2 leading-relaxed">
         Everything UniCal does automatically — popups, reminders, syncs, AI actions, and background updates. ({totalItems} items)
       </p>
+      <div className="mb-2 flex items-center gap-2">
+        <button
+          type="button"
+          onClick={runAudit}
+          disabled={auditState === 'running'}
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-semibold text-white border border-white/30 hover:bg-white/15 disabled:opacity-60 disabled:cursor-wait"
+          style={{ background: 'rgba(59,130,246,0.35)' }}
+          data-testid="button-run-audit"
+          title="Audit all current/future semesters, every course, every component, plus all My Automations items, and compile a PDF report."
+        >
+          {auditState === 'running' ? (
+            <Loader2 className="h-3 w-3 animate-spin" />
+          ) : (
+            <ClipboardCheck className="h-3 w-3" />
+          )}
+          <span>{auditState === 'running' ? 'Running audit…' : 'Run Audit'}</span>
+        </button>
+        {auditMsg && (
+          <span
+            className={`text-[9px] ${auditState === 'error' ? 'text-red-300' : 'text-white/70'}`}
+            data-testid="text-audit-status"
+          >
+            {auditMsg}
+          </span>
+        )}
+      </div>
       <div
         className="rounded-lg overflow-hidden mb-3"
         style={{

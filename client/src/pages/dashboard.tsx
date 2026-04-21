@@ -11387,6 +11387,22 @@ export default function Dashboard() {
     const saved = localStorage.getItem('tabBounceEnabled');
     return saved !== null ? JSON.parse(saved) : true;
   });
+  // Audit PDF tab — populated by Run Audit button inside My Automations.
+  const [auditPdf, setAuditPdf] = useState<{ url: string; name: string } | null>(null);
+  const [auditPdfChooserOpen, setAuditPdfChooserOpen] = useState(false);
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail as { url: string; name: string };
+      if (!detail?.url) return;
+      // Revoke any prior blob URL so we don't leak.
+      setAuditPdf(prev => {
+        if (prev?.url) { try { URL.revokeObjectURL(prev.url); } catch {} }
+        return detail;
+      });
+    };
+    window.addEventListener('unical:audit-pdf-ready', handler as EventListener);
+    return () => window.removeEventListener('unical:audit-pdf-ready', handler as EventListener);
+  }, []);
   const [showCountdownBars, setShowCountdownBars] = useState<boolean>(() => {
     const saved = localStorage.getItem('showCountdownBars');
     return saved !== null ? JSON.parse(saved) : true;
@@ -22376,6 +22392,99 @@ export default function Dashboard() {
 
         return null;
       })()}
+      {/* Bottom binder tab - Audit PDF (left of Files tab, only when audit ready) */}
+      {auditPdf && (
+        <button
+          type="button"
+          onClick={() => setAuditPdfChooserOpen(true)}
+          className={`fixed${tabBounceEnabled ? ' bottom-tab-bounce' : ''}`}
+          style={{
+            bottom: '29px',
+            left: 'calc(50% - 145px)',
+            display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen || auditPdfChooserOpen) ? 'none' : 'block',
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            cursor: 'pointer',
+            zIndex: 10002,
+          }}
+          data-testid="bottom-tab-audit-pdf"
+          title="Audit report ready — click to open or save"
+        >
+          <svg width="84" height="25" viewBox="0 0 84 25" style={{ display: 'block' }}>
+            <path d="M0,25 L84,25 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill="rgba(220,38,38,0.35)" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" />
+            {/* PDF document icon — same FileText silhouette used elsewhere on module boxes */}
+            <g transform="translate(33, 4)" stroke="rgba(255,255,255,0.95)" strokeWidth="1.2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3,1 L11,1 L15,5 L15,15 L3,15 Z" fill="rgba(255,255,255,0.18)" />
+              <path d="M11,1 L11,5 L15,5" />
+              <text x="9" y="13" fill="rgba(255,255,255,0.95)" stroke="none" fontSize="4.6" fontFamily="Arial,Helvetica,sans-serif" fontWeight="700" textAnchor="middle">PDF</text>
+            </g>
+          </svg>
+        </button>
+      )}
+      {/* Audit PDF Open/Save chooser */}
+      {auditPdfChooserOpen && auditPdf && (
+        <div
+          className="fixed inset-0 flex items-center justify-center"
+          style={{ zIndex: 10010, background: 'rgba(0,0,0,0.55)' }}
+          onClick={() => setAuditPdfChooserOpen(false)}
+          data-testid="audit-pdf-chooser-backdrop"
+        >
+          <div
+            className="rounded-lg border border-white/25 p-5 max-w-sm w-[90vw]"
+            style={{ background: '#0b1530', boxShadow: '0 10px 40px rgba(0,0,0,0.6)' }}
+            onClick={(e) => e.stopPropagation()}
+            data-testid="audit-pdf-chooser"
+          >
+            <div className="text-white text-sm font-semibold mb-1">Audit report ready</div>
+            <div className="text-white/70 text-xs mb-4">{auditPdf.name}</div>
+            <div className="flex gap-2 justify-end">
+              <button
+                type="button"
+                onClick={() => setAuditPdfChooserOpen(false)}
+                className="px-3 py-1.5 rounded text-xs text-white/80 hover:bg-white/10 border border-white/20"
+                data-testid="button-audit-pdf-cancel"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  // Save: trigger download via anchor; browser opens its file-save dialog
+                  // when the user has "ask where to save each file" enabled.
+                  const a = document.createElement('a');
+                  a.href = auditPdf.url;
+                  a.download = auditPdf.name;
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                  setAuditPdfChooserOpen(false);
+                  // Tab disappears after action.
+                  setAuditPdf(prev => { if (prev?.url) { try { URL.revokeObjectURL(prev.url); } catch {} } return null; });
+                }}
+                className="px-3 py-1.5 rounded text-xs text-white border border-white/30 hover:bg-white/15"
+                style={{ background: 'rgba(34,197,94,0.35)' }}
+                data-testid="button-audit-pdf-save"
+              >
+                Save…
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  window.open(auditPdf.url, '_blank', 'noopener');
+                  setAuditPdfChooserOpen(false);
+                  setAuditPdf(prev => { if (prev?.url) { try { URL.revokeObjectURL(prev.url); } catch {} } return null; });
+                }}
+                className="px-3 py-1.5 rounded text-xs text-white border border-white/30 hover:bg-white/15"
+                style={{ background: 'rgba(59,130,246,0.45)' }}
+                data-testid="button-audit-pdf-open"
+              >
+                Open
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Bottom binder tab - Files */}
       <a
         href="/files"
