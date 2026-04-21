@@ -143,8 +143,14 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
   };
 
   const handleToggleGlobal = useCallback((item: NewSemesterChecklistItem) => {
-    updateMutation.mutate({ id: item.id, isGlobal: !item.isGlobal });
-  }, []);
+    const next = !item.isGlobal;
+    updateMutation.mutate({ id: item.id, isGlobal: next });
+    const label = (item.title || '').trim() || 'Item';
+    toast({
+      title: next ? `"${label}" now on every semester` : `"${label}" only on this semester`,
+      description: next ? 'It will appear in every semester checklist.' : 'It will only appear here.',
+    });
+  }, [toast]);
 
   const handleTitleChange = useCallback((id: number, value: string) => {
     setEditingTitles(prev => ({ ...prev, [id]: value }));
@@ -360,11 +366,12 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
 
         <button
           type="button"
-          style={{ touchAction: 'manipulation', background: 'none', border: 'none', padding: '4px', cursor: 'pointer' }}
+          style={{ touchAction: 'manipulation', background: 'none', border: 'none', padding: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}
           onClick={(e) => { e.stopPropagation(); handleToggleGlobal(item); }}
-          title={item.isGlobal ? 'Appears on all semesters' : 'Only this semester'}
+          title={item.isGlobal ? 'Showing on every semester checklist. Click to make this semester only.' : 'Only on this semester checklist. Click to show on every semester.'}
           data-testid={`checklist-global-toggle-${item.id}`}
         >
+          <span className="text-[9px] font-semibold uppercase tracking-wide" style={{ color: item.isGlobal ? '#22c55e' : 'rgba(255,255,255,0.55)', whiteSpace: 'nowrap' }}>All sem</span>
           <div className="flex items-center rounded-full" style={{ width: '30px', height: '16px', backgroundColor: item.isGlobal ? '#22c55e' : 'rgba(255,255,255,0.25)', justifyContent: item.isGlobal ? 'flex-end' : 'flex-start', display: 'flex', padding: '2px' }}>
             <div className="rounded-full" style={{ width: '12px', height: '12px', backgroundColor: '#fff' }} />
           </div>
