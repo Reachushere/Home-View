@@ -4301,9 +4301,70 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         const hasOneDriveConfig = explicitFolder || (odConnected && !!code);
         const folderName = matchedSem ? ((matchedSem as any)[`course${i}Name`] || '') : '';
 
+        // Probe Syllabus / Assignments / Textbook subfolders inside the course OneDrive folder
+        let syllabusFolderExists = false;
+        let assignmentsFolderExists = false;
+        let textbookFolderExists = false;
+        let courseFolderPath: string | null = null;
+        if (odConnected && code && matchedSem) {
+          try {
+            const { listOneDriveFolderChildren } = await import("./onedrive");
+            const semYear = new Date(matchedSem.semesterStartDate as any).getFullYear();
+            const semType = (matchedSem.semesterType || 'winter').toLowerCase();
+            const semFolderVars = semType.includes('spring') || semType.includes('summer')
+              ? ['Spring & Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer']
+              : semType.includes('fall') ? ['Fall'] : ['Winter'];
+            let semChildren: any[] = [];
+            let semBasePath = `/School/1. TMU/Courses/${semYear}/${semFolderVars[0]}`;
+            for (const v of semFolderVars) {
+              const tryPath = `/School/1. TMU/Courses/${semYear}/${v}`;
+              try { semChildren = await listOneDriveFolderChildren(tryPath); semBasePath = tryPath; break; } catch {}
+            }
+            // For Spring/Summer, course folders live one level deeper (Spring - First Half / Summer - Second Half / etc.)
+            const ssBuckets = (semType.includes('spring') || semType.includes('summer'))
+              ? (semChildren || []).filter((f: any) => f.folder && /^(Spring|Summer)\s*-/.test(f.name))
+              : [];
+            const candidateParents: { path: string; children: any[] }[] = [];
+            if (ssBuckets.length > 0) {
+              for (const bucket of ssBuckets) {
+                try {
+                  const bp = `${semBasePath}/${bucket.name}`;
+                  const bc = await listOneDriveFolderChildren(bp);
+                  candidateParents.push({ path: bp, children: bc });
+                } catch {}
+              }
+            } else {
+              candidateParents.push({ path: semBasePath, children: semChildren || [] });
+            }
+            for (const cp of candidateParents) {
+              const matches = cp.children.filter((f: any) => f.folder && f.name.toUpperCase().startsWith(code.toUpperCase()));
+              const match = matches.length > 1 ? matches.sort((a: any, b: any) => a.name.length - b.name.length)[0] : matches[0];
+              if (match) {
+                courseFolderPath = `${cp.path}/${match.name}`;
+                try {
+                  const subs = await listOneDriveFolderChildren(courseFolderPath);
+                  const subNames = (subs || []).filter((s: any) => s.folder).map((s: any) => s.name.toLowerCase());
+                  syllabusFolderExists = subNames.includes('syllabus');
+                  assignmentsFolderExists = subNames.includes('assignments');
+                  textbookFolderExists = subNames.includes('textbook');
+                } catch {}
+                break;
+              }
+            }
+          } catch (e: any) {
+            console.log(`[Health Check] Subfolder probe failed for ${code}:`, e?.message);
+          }
+        }
+
+        // For Spring/Summer 2026 onward, treat Syllabus folder as the canonical syllabus link
+        const isNewSyllabusEra = semKey.startsWith('ss') && parseInt(semKey.slice(2)) >= 2026;
+        const effectiveSyllabusLinked = isNewSyllabusEra ? (syllabusFolderExists || hasSyllabus) : hasSyllabus;
+
         courses.push({
           code, name, slotNum: i,
-          syllabusLinked: hasSyllabus, syllabusPath,
+          syllabusLinked: effectiveSyllabusLinked, syllabusPath,
+          syllabusFolderExists, assignmentsFolderExists, textbookFolderExists,
+          courseFolderPath,
           moduleWeeks, readingWeeks,
           totalModules, totalReadings,
           totalTtsReady, totalTtsNeeded,
@@ -4332,6 +4393,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       if (!isActive) issues.push('Semester is not active');
       for (const c of courses) {
         if (!c.syllabusLinked) issues.push(`${c.code}: Syllabus not linked`);
+        if (c.oneDriveFolderConfigured && (c as any).courseFolderPath && !(c as any).assignmentsFolderExists) issues.push(`${c.code}: Assignments folder missing`);
+        if (c.oneDriveFolderConfigured && (c as any).courseFolderPath && !(c as any).textbookFolderExists) issues.push(`${c.code}: Textbook folder missing`);
         const missingModWeeks: number[] = [];
         for (let w = 1; w <= numberOfWeeks; w++) {
           if (!c.moduleWeeks[w] || c.moduleWeeks[w].count === 0) missingModWeeks.push(w);
@@ -4376,6 +4439,73 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     } catch (err: any) {
       console.error("[Health Check] Error:", err);
       res.status(500).json({ error: "Health check failed", message: err.message });
+    }
+  });
+
+  // Ensure (create if missing) a Syllabus / Assignments / Textbook subfolder under a course's OneDrive folder
+  app.post("/api/course-folder/ensure-subfolder", async (req, res) => {
+    try {
+      const { semKey, courseCode, sub } = req.body as { semKey: string; courseCode: string; sub: 'Syllabus' | 'Assignments' | 'Textbook' };
+      if (!semKey || !courseCode || !['Syllabus', 'Assignments', 'Textbook'].includes(sub)) {
+        return res.status(400).json({ error: 'semKey, courseCode, and sub (Syllabus|Assignments|Textbook) are required' });
+      }
+      const { listOneDriveFolderChildren, createOneDriveFolder, checkOneDriveFolderExists } = await import("./onedrive");
+      const allSemesters = await storage.getAllSemesterSettings();
+      const typePrefix: Record<string, string> = { winter: 'w', fall: 'f', spring_summer: 'ss' };
+      const matchedSem = allSemesters.find(s => {
+        const yr = new Date(s.semesterStartDate).getFullYear();
+        const prefix = typePrefix[(s.semesterType || 'winter').toLowerCase()] || s.semesterType?.charAt(0) || 'w';
+        return `${prefix}${yr}` === semKey;
+      });
+      if (!matchedSem) return res.status(404).json({ error: 'Semester not found' });
+      const semYear = new Date(matchedSem.semesterStartDate as any).getFullYear();
+      const semType = (matchedSem.semesterType || 'winter').toLowerCase();
+      const semFolderVars = semType.includes('spring') || semType.includes('summer')
+        ? ['Spring & Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer']
+        : semType.includes('fall') ? ['Fall'] : ['Winter'];
+      let semChildren: any[] = [];
+      let semBasePath = `/School/1. TMU/Courses/${semYear}/${semFolderVars[0]}`;
+      for (const v of semFolderVars) {
+        const tryPath = `/School/1. TMU/Courses/${semYear}/${v}`;
+        try { semChildren = await listOneDriveFolderChildren(tryPath); semBasePath = tryPath; break; } catch {}
+      }
+      const ssBuckets = (semType.includes('spring') || semType.includes('summer'))
+        ? (semChildren || []).filter((f: any) => f.folder && /^(Spring|Summer)\s*-/.test(f.name))
+        : [];
+      const candidateParents: { path: string; children: any[] }[] = [];
+      if (ssBuckets.length > 0) {
+        for (const bucket of ssBuckets) {
+          try {
+            const bp = `${semBasePath}/${bucket.name}`;
+            const bc = await listOneDriveFolderChildren(bp);
+            candidateParents.push({ path: bp, children: bc });
+          } catch {}
+        }
+      } else {
+        candidateParents.push({ path: semBasePath, children: semChildren || [] });
+      }
+      let courseFolderPath: string | null = null;
+      for (const cp of candidateParents) {
+        const matches = cp.children.filter((f: any) => f.folder && f.name.toUpperCase().startsWith(courseCode.toUpperCase()));
+        const match = matches.length > 1 ? matches.sort((a: any, b: any) => a.name.length - b.name.length)[0] : matches[0];
+        if (match) { courseFolderPath = `${cp.path}/${match.name}`; break; }
+      }
+      if (!courseFolderPath) {
+        return res.status(404).json({ error: `No OneDrive folder found for ${courseCode} in ${semKey}` });
+      }
+      try {
+        await createOneDriveFolder(courseFolderPath, sub);
+      } catch (e: any) {
+        if (!String(e?.message || '').includes('nameAlreadyExists') && e?.statusCode !== 409) {
+          throw e;
+        }
+      }
+      const subPath = `${courseFolderPath}/${sub}`;
+      const exists = await checkOneDriveFolderExists(subPath);
+      res.json({ ok: true, courseFolderPath, subPath, exists });
+    } catch (err: any) {
+      console.error('[ensure-subfolder] error:', err);
+      res.status(500).json({ error: 'Failed to ensure subfolder', message: err.message });
     }
   });
 

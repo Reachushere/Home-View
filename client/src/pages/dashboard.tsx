@@ -15385,9 +15385,15 @@ export default function Dashboard() {
                                       const ttsNeeded = courseHealth?.totalTtsNeeded || 0;
                                       const odPct = courseHealth?.oneDriveFolderConfigured ? 100 : 0;
                                       const ttsPct = ttsNeeded > 0 ? Math.round((ttsReady / ttsNeeded) * 100) : (totalMod > 0 ? 0 : null);
+                                      const sylFolderOk = courseHealth?.syllabusFolderExists === true;
+                                      const asgFolderOk = courseHealth?.assignmentsFolderExists === true;
+                                      const tbkFolderOk = courseHealth?.textbookFolderExists === true;
                                       const steps: { label: string; Icon: any; value: string; status: 'ok' | 'warning' | 'error'; issueKey: string; pct: number | null }[] = [
                                         { label: 'OneDrive', Icon: Cloud, value: courseHealth?.oneDriveFolderConfigured ? 'linked' : 'unlinked', status: courseHealth?.oneDriveFolderConfigured ? 'ok' : 'error', issueKey: 'onedrive', pct: odPct },
                                         { label: 'Sync', Icon: RefreshCw, value: `${totalMod}M·${totalRead}R`, status: (courseHealth?.oneDriveFolderConfigured || totalMod > 0 || totalRead > 0) ? ((totalMod + totalRead) > 0 ? 'ok' : 'warning') : 'error', issueKey: 'sync', pct: (totalMod + totalRead) > 0 ? 100 : (courseHealth?.oneDriveFolderConfigured ? 50 : 0) },
+                                        { label: 'Syllabus', Icon: FileText, value: sylFolderOk ? 'linked' : 'missing', status: sylFolderOk ? 'ok' : 'error', issueKey: 'syllabus_folder', pct: sylFolderOk ? 100 : 0 },
+                                        { label: 'Assignments', Icon: ClipboardList, value: asgFolderOk ? 'linked' : 'missing', status: asgFolderOk ? 'ok' : 'error', issueKey: 'assignments_folder', pct: asgFolderOk ? 100 : 0 },
+                                        { label: 'Textbook', Icon: BookOpen, value: tbkFolderOk ? 'linked' : 'missing', status: tbkFolderOk ? 'ok' : 'error', issueKey: 'textbook_folder', pct: tbkFolderOk ? 100 : 0 },
                                         { label: 'Storage', Icon: Folder, value: 'persistent', status: 'ok', issueKey: 'storage', pct: 100 },
                                         { label: 'TTS', Icon: Volume2, value: ttsNeeded > 0 ? `${ttsReady}/${ttsNeeded}` : 'idle', status: ttsNeeded === 0 ? 'ok' : ttsReady === ttsNeeded ? 'ok' : ttsReady > 0 ? 'warning' : 'error', issueKey: 'tts', pct: ttsPct !== null ? ttsPct : 100 },
                                         { label: 'Library', Icon: BookOpen, value: (totalMod + totalRead) > 0 ? `${totalMod + totalRead} files` : (courseHealth?.oneDriveFolderConfigured ? 'ready' : 'empty'), status: (courseHealth?.oneDriveFolderConfigured || totalMod > 0 || totalRead > 0) ? 'ok' : 'error', issueKey: 'library', pct: (totalMod + totalRead) > 0 ? 100 : (courseHealth?.oneDriveFolderConfigured ? 50 : 0) },
@@ -29068,6 +29074,24 @@ export default function Dashboard() {
                           storage: { title: 'Local Storage', testCheck: 'totalModules', steps: [
                             ['Storage Active', 'Local storage is always available. Files are stored in the persistent-uploads folder on this device.'],
                           ], secondary: [] },
+                          syllabus_folder: { title: 'Create Syllabus Folder', testCheck: 'syllabusFolderExists', steps: [
+                            ['Auto-Create Syllabus Folder', `Create the Syllabus folder for ${semFlowWizard.courseCode} in OneDrive at:\n${odPath}/Syllabus\n\nClick below to have BA create it for you.`, 'create_subfolder_syllabus'],
+                            ['Verify', 'After creation, click "Test It" to confirm the folder is linked.'],
+                          ], secondary: [
+                            ['Open OneDrive', `Browse to ${odPath} and create a "Syllabus" folder manually.`, 'open_onedrive'],
+                          ] },
+                          assignments_folder: { title: 'Create Assignments Folder', testCheck: 'assignmentsFolderExists', steps: [
+                            ['Auto-Create Assignments Folder', `Create the Assignments folder for ${semFlowWizard.courseCode} in OneDrive at:\n${odPath}/Assignments\n\nNon-essay attachments will land here automatically.`, 'create_subfolder_assignments'],
+                            ['Verify', 'After creation, click "Test It" to confirm the folder is linked.'],
+                          ], secondary: [
+                            ['Open OneDrive', `Browse to ${odPath} and create an "Assignments" folder manually.`, 'open_onedrive'],
+                          ] },
+                          textbook_folder: { title: 'Create Textbook Folder', testCheck: 'textbookFolderExists', steps: [
+                            ['Auto-Create Textbook Folder', `Create the Textbook folder for ${semFlowWizard.courseCode} in OneDrive at:\n${odPath}/Textbook\n\nDrop the textbook PDF here and BA will sync it to the library, add it to the course shelf, and OCR-index it for search.`, 'create_subfolder_textbook'],
+                            ['Verify', 'After creation, click "Test It" to confirm the folder is linked.'],
+                          ], secondary: [
+                            ['Open OneDrive', `Browse to ${odPath} and create a "Textbook" folder manually.`, 'open_onedrive'],
+                          ] },
                           general: { title: 'Resolve Issue', testCheck: 'healthScore', steps: [
                             ['Open Settings', 'Review your semester settings and course configuration.', 'open_settings'],
                             ['Force Sync', 'Trigger a full re-sync of all OneDrive folders.', 'force_sync'],
@@ -29243,6 +29267,13 @@ export default function Dashboard() {
                                           } else if (action === 'create_folders') {
                                             await fetch(`/api/onedrive/create-folders/${expandedSemKey}/${semFlowWizard!.courseCode}`, { method: 'POST', credentials: 'include' });
                                             setWizActionDone('Folder structure created on OneDrive!');
+                                          } else if (action === 'create_subfolder_syllabus' || action === 'create_subfolder_assignments' || action === 'create_subfolder_textbook') {
+                                            const sub = action === 'create_subfolder_syllabus' ? 'Syllabus' : action === 'create_subfolder_assignments' ? 'Assignments' : 'Textbook';
+                                            const r = await fetch('/api/course-folder/ensure-subfolder', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ semKey: expandedSemKey, courseCode: semFlowWizard!.courseCode, sub }) });
+                                            const j = await r.json().catch(() => ({}));
+                                            if (r.ok && j.exists) setWizActionDone(`${sub} folder created at:\n${j.subPath}`);
+                                            else setWizActionDone(`Error: ${j.message || j.error || 'Could not create folder'}`);
+                                            try { await queryClient.invalidateQueries({ queryKey: ['/api/semester-health-check', expandedSemKey] }); } catch {}
                                           } else if (action === 'prepare_tts') {
                                             await fetch(`/api/tts/prepare-course/${semFlowWizard!.courseCode}`, { method: 'POST', credentials: 'include' });
                                             setWizActionDone('TTS processing started!');
