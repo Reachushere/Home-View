@@ -4721,7 +4721,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                 <div className="flex items-center px-1.5 py-1.5 text-[11px] font-medium text-white uppercase" style={{ margin: '12px 4px 0 4px' }} data-testid="ungraded-section-header">
                   <span className="flex-1">Assignments (Not Graded)</span>
                   <div className="flex items-center" style={{ gap: '6px', marginRight: '24px' }}>
-                    <span className="text-[8px] text-white whitespace-nowrap" style={{ display: 'inline-block', width: '24px', textAlign: 'left', letterSpacing: '0.5px' }}>{ungradedCourseTasks.length} items</span>
+                    <span className="text-[8px] text-white whitespace-nowrap" style={{ display: 'inline-block', width: '40px', textAlign: 'left', letterSpacing: '0.5px' }}>{ungradedCourseTasks.length} graded</span>
                     <span style={{ display: 'inline-block', width: '15px' }} />
                   </div>
                 </div>
