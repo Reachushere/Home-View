@@ -22,6 +22,26 @@ interface Props {
 export default function NewSemesterChecklist({ semesterKey, semesterLabel, colorSettings, onDismiss, semesterStartDate }: Props) {
   const flyoutRef = useRef<HTMLDivElement>(null);
   const confirmRef = useRef<HTMLDivElement>(null);
+  const [dragPos, setDragPos] = useState<{ x: number; y: number } | null>(null);
+  const dragStartRef = useRef<{ mouseX: number; mouseY: number; startX: number; startY: number } | null>(null);
+  const handleHeaderMouseDown = useCallback((e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest('[data-no-drag]')) return;
+    const rect = flyoutRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    dragStartRef.current = { mouseX: e.clientX, mouseY: e.clientY, startX: rect.left, startY: rect.top };
+    e.preventDefault();
+  }, []);
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      if (!dragStartRef.current) return;
+      const { mouseX, mouseY, startX, startY } = dragStartRef.current;
+      setDragPos({ x: startX + (e.clientX - mouseX), y: startY + (e.clientY - mouseY) });
+    };
+    const onUp = () => { dragStartRef.current = null; };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    return () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); };
+  }, []);
   const [editingTitles, setEditingTitles] = useState<Record<number, string>>({});
   const [openDatePickerId, setOpenDatePickerId] = useState<number | null>(null);
   const [confirmTask, setConfirmTask] = useState<{ item: NewSemesterChecklistItem; date: string } | null>(null);
@@ -369,9 +389,9 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
         ref={flyoutRef}
         style={{
           position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
+          top: dragPos ? `${dragPos.y}px` : '50%',
+          left: dragPos ? `${dragPos.x}px` : '50%',
+          transform: dragPos ? 'none' : 'translate(-50%, -50%)',
           zIndex: 10005,
           width: '620px',
           maxWidth: '95vw',
@@ -383,9 +403,13 @@ export default function NewSemesterChecklist({ semesterKey, semesterLabel, color
         }}
         data-testid={`sem-checklist-flyout-${semesterKey}`}
       >
-        <div className="px-4 py-2.5 flex items-center justify-between border-b border-white/10" style={{ background: colorSettings.headerBar, borderRadius: '12px 12px 0 0' }}>
+        <div
+          className="px-4 py-2.5 flex items-center justify-between border-b border-white/10 select-none"
+          style={{ background: colorSettings.headerBar, borderRadius: '12px 12px 0 0', cursor: 'move' }}
+          onMouseDown={handleHeaderMouseDown}
+        >
           <span className="text-sm font-bold text-white tracking-wide">{semesterLabel} Checklist</span>
-          <X className="w-4 h-4 text-white/60 hover:text-white cursor-pointer" onClick={onDismiss} data-testid="close-sem-checklist" />
+          <X data-no-drag className="w-4 h-4 text-white/60 hover:text-white cursor-pointer" onClick={onDismiss} data-testid="close-sem-checklist" />
         </div>
 
         <div className="px-4 py-3" style={{ maxHeight: '60vh', overflowY: 'auto' }}>
