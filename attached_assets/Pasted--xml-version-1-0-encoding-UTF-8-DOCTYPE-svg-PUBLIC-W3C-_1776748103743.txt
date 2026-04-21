@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Creator: CorelDRAW (Not for commercial use) -->
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="215.9mm" height="279.4mm" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+viewBox="0 0 21590 27940"
+ xmlns:xlink="http://www.w3.org/1999/xlink"
+ xmlns:xodm="http://www.corel.com/coreldraw/odm/2003">
+ <defs>
+  <style type="text/css">
+   <![CDATA[
+    .fil0 {fill:url(#id2)}
+   ]]>
+  </style>
+    <clipPath id="id0">
+     <path d="M-47274.61 25855.54l7876.03 0c223.28,0 405.96,182.68 405.96,405.96l0 5030.08c0,223.28 -182.68,405.96 -405.96,405.96l-7876.03 0c-223.28,0 -405.96,-182.68 -405.96,-405.96l0 -5030.08c0,-223.28 182.68,-405.96 405.96,-405.96z"/>
+    </clipPath>
+    <clipPath id="id1">
+     <path d="M-47274.61 25855.54l7876.03 0c223.28,0 405.96,182.68 405.96,405.96l0 5030.08c0,223.28 -182.68,405.96 -405.96,405.96l-7876.03 0c-223.28,0 -405.96,-182.68 -405.96,-405.96l0 -5030.08c0,-223.28 182.68,-405.96 405.96,-405.96z"/>
+    </clipPath>
+  <linearGradient id="id2" gradientUnits="userSpaceOnUse" x1="-46014.46" y1="31898.88" x2="-40658.72" y2="25654.2">
+   <stop offset="0" style="stop-opacity:1; stop-color:#64BA4D"/>
+   <stop offset="0.431373" style="stop-opacity:1; stop-color:#428046"/>
+   <stop offset="1" style="stop-opacity:1; stop-color:#20453F"/>
+  </linearGradient>
+ </defs>
+ <g id="Layer_x0020_1">
+  <metadata id="CorelCorpID_0Corel-Layer"/>
+  <path class="fil0" d="M-47402.46 25728.54l8131.74 0c208.53,0 379.13,214.47 379.13,476.62l0 5142.76c0,262.15 -170.6,476.62 -379.13,476.62l-8131.74 0c-208.53,0 -379.13,-214.47 -379.13,-476.62l0 -5142.76c0,-262.15 170.6,-476.62 379.13,-476.62zm85.22 127l7961.3 0c199.83,0 363.33,205.54 363.33,456.76l0 4928.48c0,251.22 -163.5,456.76 -363.33,456.76l-7961.3 0c-199.83,0 -363.33,-205.54 -363.33,-456.76l0 -4928.48c0,-251.22 163.5,-456.76 363.33,-456.76z"/>
+  <g>
+   <g style="clip-path:url(#id0)">
+    <image x="-47680.57" y="25855.54" width="8687.95" height="5842" xlink:href="AutoGreen2_Images\AutoGreen2_ImgID1.png"/>
+   </g>
+  </g>
+  <g>
+   <g style="clip-path:url(#id1)">
+    <image x="-47680.57" y="25855.54" width="8687.95" height="5842" xlink:href="AutoGreen2_Images\AutoGreen2_ImgID2.png"/>
+   </g>
+  </g>
+ </g>
+</svg>

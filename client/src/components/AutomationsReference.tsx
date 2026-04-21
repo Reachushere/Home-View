@@ -362,15 +362,20 @@ export default function AutomationsReference({ open, onClose, colorSettings }: A
               const CategoryIcon = category.icon;
               const catBg = CATEGORY_BG[category.id] || boxGrey;
 
+              const isCalSync = category.id === 'calendar-sync';
               return (
                 <div
                   key={category.id}
                   className="rounded-lg overflow-hidden"
                   style={{
                     border: '1px solid rgba(255,255,255,0.18)',
-                    backgroundImage: `url(${catBg})`,
-                    backgroundSize: '100% 100%',
-                    backgroundRepeat: 'no-repeat',
+                    // Calendar-sync uses a CSS gradient (from the supplied SVG palette)
+                    // so it stretches cleanly at any size — no PNG corner distortion.
+                    backgroundImage: isCalSync
+                      ? 'linear-gradient(135deg, #48AAE8 0%, #2D6CA7 43%, #122E66 100%)'
+                      : `url(${catBg})`,
+                    backgroundSize: isCalSync ? undefined : '100% 100%',
+                    backgroundRepeat: isCalSync ? undefined : 'no-repeat',
                     boxShadow: '0 2px 6px rgba(0,0,0,0.35)',
                   }}
                   data-testid={`automation-category-${category.id}`}
@@ -605,7 +610,7 @@ export function AutomationsContent() {
           const CategoryIcon = category.icon;
           const catBg = CATEGORY_BG[category.id] || boxGrey;
           return (
-            <div key={category.id} className="rounded-lg overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.18)', backgroundImage: `url(${catBg})`, backgroundSize: '100% 100%', backgroundRepeat: 'no-repeat', boxShadow: '0 2px 6px rgba(0,0,0,0.35)' }} data-testid={`automation-category-${category.id}`}>
+            <div key={category.id} className="rounded-lg overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.18)', backgroundImage: category.id === 'calendar-sync' ? 'linear-gradient(135deg, #48AAE8 0%, #2D6CA7 43%, #122E66 100%)' : `url(${catBg})`, backgroundSize: category.id === 'calendar-sync' ? undefined : '100% 100%', backgroundRepeat: category.id === 'calendar-sync' ? undefined : 'no-repeat', boxShadow: '0 2px 6px rgba(0,0,0,0.35)' }} data-testid={`automation-category-${category.id}`}>
               <button className="w-full flex items-center gap-2.5 px-3 py-2 text-left transition-colors" onClick={() => toggleCategory(category.id)} style={{ background: 'rgba(0,0,0,0.18)' }} data-testid={`button-toggle-${category.id}`} type="button">
                 {isExpanded ? <ChevronDown className="h-3 w-3 text-white flex-shrink-0" /> : <ChevronRight className="h-3 w-3 text-white flex-shrink-0" />}
                 <CategoryIcon className="h-3.5 w-3.5 flex-shrink-0 text-white" />
