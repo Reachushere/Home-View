@@ -6461,7 +6461,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
             position: 'fixed',
             inset: 0,
             backgroundColor: 'rgba(0,0,0,0.5)',
-            zIndex: 9999,
+            zIndex: 200001,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
