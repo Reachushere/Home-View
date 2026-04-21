@@ -931,6 +931,19 @@ export async function registerRoutes(
   setTimeout(async () => {
     console.log('[AutoImport] Starting auto-import check...');
     try {
+      // ONE-TIME ONLY: pi-import-tasks.json was the original Replit→Pi migration
+      // file. Once imported, the DB is source of truth. Re-running on every
+      // restart was resurrecting tasks the user had deleted (tombstones missed
+      // edge cases). Gate behind an app_state flag — runs at most once more.
+      try {
+        const flag = await db.select().from(appState).where(eq(appState.key, "auto_import_done")).limit(1);
+        if (flag.length > 0 && flag[0].value === "true") {
+          console.log('[AutoImport] Already completed previously — skipping (DB is source of truth)');
+          return;
+        }
+      } catch (flagErr: any) {
+        console.error('[AutoImport] Could not read auto_import_done flag, proceeding:', flagErr.message);
+      }
       const cwd = process.cwd();
       console.log(`[AutoImport] Working directory: ${cwd}`);
       const stripBrackets = (s: string) => (s || '').replace(/\[.*?\]\s*/g, '').trim();
@@ -1039,6 +1052,15 @@ export async function registerRoutes(
       const finalTasks = await storage.getTasks({});
       const finalShifts = await storage.getShiftSchedule();
       console.log(`[AutoImport] DONE — DB now has ${finalTasks.length} tasks and ${finalShifts.length} shifts`);
+      // Mark complete so we never run again — DB is now source of truth.
+      try {
+        await db.insert(appState)
+          .values({ key: "auto_import_done", value: "true" })
+          .onConflictDoUpdate({ target: appState.key, set: { value: "true" } });
+        console.log('[AutoImport] Set auto_import_done=true — will skip on future restarts');
+      } catch (markErr: any) {
+        console.error('[AutoImport] Could not set auto_import_done flag:', markErr.message);
+      }
     } catch (e: any) {
       console.error(`[AutoImport] FATAL ERROR: ${e.message}`);
       console.error(e.stack);
