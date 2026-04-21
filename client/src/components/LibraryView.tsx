@@ -125,10 +125,28 @@ const WEEK_COLOR_PALETTE: Record<number, string> = {
   13: '#8B0000', 14: '#01579B', 15: '#556B2F',
 };
 
+// Layered gradients per spine "material". Each one stacks (in order, top
+// painted last by the browser):
+//   1. side edges      — deep shadow on the left, thin highlight on the right
+//                         to fake the curvature of the spine
+//   2. top/bottom caps — soft dark cap at the head & tail of the book
+//   3. fine weave/grain — repeating pixel lines for cloth / linen / leather
 const SPINE_PATTERNS = [
-  'linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 20%, transparent 80%, rgba(255,255,255,0.08) 100%)',
-  'linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.05) 30%, rgba(255,255,255,0.05) 70%, transparent 100%)',
-  'linear-gradient(180deg, rgba(0,0,0,0.1) 0%, transparent 15%, transparent 85%, rgba(0,0,0,0.15) 100%)',
+  // Bookcloth: vertical fine grain + cross hatch
+  `linear-gradient(90deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.18) 5%, transparent 14%, transparent 86%, rgba(0,0,0,0.22) 95%, rgba(255,255,255,0.10) 100%),
+   linear-gradient(180deg, rgba(0,0,0,0.40) 0%, rgba(0,0,0,0.05) 5%, transparent 9%, transparent 91%, rgba(0,0,0,0.06) 95%, rgba(0,0,0,0.45) 100%),
+   repeating-linear-gradient(180deg, rgba(255,255,255,0.045) 0px, rgba(255,255,255,0.045) 1px, transparent 1px, transparent 3px),
+   repeating-linear-gradient(90deg, rgba(0,0,0,0.055) 0px, rgba(0,0,0,0.055) 1px, transparent 1px, transparent 2px)`,
+  // Linen weave: 45° crosshatch
+  `linear-gradient(90deg, rgba(0,0,0,0.50) 0%, rgba(0,0,0,0.15) 5%, transparent 14%, transparent 86%, rgba(0,0,0,0.20) 95%, rgba(255,255,255,0.08) 100%),
+   linear-gradient(180deg, rgba(0,0,0,0.35) 0%, transparent 7%, transparent 93%, rgba(0,0,0,0.40) 100%),
+   repeating-linear-gradient(45deg, rgba(255,255,255,0.030) 0px, rgba(255,255,255,0.030) 1px, transparent 1px, transparent 4px),
+   repeating-linear-gradient(-45deg, rgba(0,0,0,0.045) 0px, rgba(0,0,0,0.045) 1px, transparent 1px, transparent 4px)`,
+  // Leather: soft sheen + subtle horizontal grain
+  `linear-gradient(90deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.20) 4%, transparent 12%, transparent 88%, rgba(0,0,0,0.25) 96%, rgba(255,255,255,0.12) 100%),
+   linear-gradient(180deg, rgba(0,0,0,0.40) 0%, transparent 6%, transparent 94%, rgba(0,0,0,0.45) 100%),
+   radial-gradient(ellipse at 35% 40%, rgba(255,255,255,0.05) 0%, transparent 65%),
+   repeating-linear-gradient(180deg, rgba(0,0,0,0.035) 0px, rgba(0,0,0,0.035) 2px, transparent 2px, transparent 5px)`,
 ];
 
 function getBookColor(index: number, courseCode: string, weekNum?: number): string {
@@ -670,10 +688,10 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
           flexDirection: 'row',
           gap: '1px',
           fontSize: `${twoLineFontSize}px`,
-          fontWeight: 600,
-          color: '#ffffff',
-          textShadow: '0 1px 3px rgba(0,0,0,0.7)',
-          letterSpacing: '0.3px',
+          fontWeight: 700,
+          color: '#e8dcc4',
+          textShadow: '0 1px 0 rgba(0,0,0,0.55), 0 -1px 0 rgba(255,255,255,0.10)',
+          letterSpacing: '0.6px',
           maxHeight: `${liftedTextHeight}px`,
           overflow: 'hidden',
           padding: '4px 0',
@@ -692,10 +710,10 @@ function BookSpine({ file, index, courseCode, bookColor, isSelected, onClick, sh
           textOrientation: 'mixed',
           transform: 'rotate(180deg)',
           fontSize: fileType === 'module' ? '13px' : (isLifted ? `${expandedFontSize}px` : '10px'),
-          fontWeight: 600,
-          color: '#ffffff',
-          textShadow: '0 1px 3px rgba(0,0,0,0.7)',
-          letterSpacing: '0.3px',
+          fontWeight: 700,
+          color: '#e8dcc4',
+          textShadow: '0 1px 0 rgba(0,0,0,0.55), 0 -1px 0 rgba(255,255,255,0.10)',
+          letterSpacing: '0.6px',
           maxHeight: fileType === 'module' ? 'none' : `${isLifted ? liftedTextHeight : maxTextHeight}px`,
           overflow: fileType === 'module' ? 'visible' : 'hidden',
           textOverflow: fileType === 'module' ? undefined : (isLifted ? 'clip' : 'ellipsis'),
