@@ -3254,15 +3254,18 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
     const moduleReadingFiles = allFiles.filter(f => {
       if (!f.folder) return false;
       const fl = f.folder.toLowerCase();
-      if (!(fl.includes('-module') || fl.includes('-reading')) || !fl.startsWith('week-')) return false;
-      return true;
+      if (fl.startsWith('week-') && (fl.includes('-module') || fl.includes('-reading'))) return true;
+      if (/^course-.+-textbook$/.test(fl)) return true;
+      return false;
     });
 
     const courseMap = new Map<string, FileRecord[]>();
     moduleReadingFiles.forEach(f => {
-      const match = f.folder!.match(/^week-(\d+)-(.+?)-(module|reading)$/i);
-      if (!match) return;
-      const code = match[2].toLowerCase();
+      const fl = f.folder!.toLowerCase();
+      const wkMatch = fl.match(/^week-(\d+)-(.+?)-(module|reading)$/i);
+      const tbMatch = !wkMatch ? fl.match(/^course-(.+)-textbook$/i) : null;
+      const code = wkMatch ? wkMatch[2].toLowerCase() : tbMatch ? tbMatch[1].toLowerCase() : null;
+      if (!code) return;
       if (!courseMap.has(code)) courseMap.set(code, []);
       courseMap.get(code)!.push(f);
     });
