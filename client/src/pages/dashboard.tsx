@@ -22452,18 +22452,44 @@ export default function Dashboard() {
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  // Save: trigger download via anchor; browser opens its file-save dialog
-                  // when the user has "ask where to save each file" enabled.
+                onClick={async () => {
+                  // Prefer the File System Access API for a true "save anywhere"
+                  // picker (Chrome / Edge / Opera, desktop). Falls back to an
+                  // anchor download on Safari / Firefox / iOS, which honours the
+                  // browser's default download location (or its own ask-where
+                  // prompt if the user has that enabled).
+                  const closeAndClear = () => {
+                    setAuditPdfChooserOpen(false);
+                    setAuditPdf(prev => { if (prev?.url) { try { URL.revokeObjectURL(prev.url); } catch {} } return null; });
+                  };
+                  const w: any = window;
+                  if (typeof w.showSaveFilePicker === 'function') {
+                    try {
+                      const handle = await w.showSaveFilePicker({
+                        suggestedName: auditPdf.name,
+                        types: [{ description: 'PDF document', accept: { 'application/pdf': ['.pdf'] } }],
+                      });
+                      const blob = await fetch(auditPdf.url).then(r => r.blob());
+                      const writable = await handle.createWritable();
+                      await writable.write(blob);
+                      await writable.close();
+                      closeAndClear();
+                      return;
+                    } catch (err: any) {
+                      // User hit Cancel in the picker — leave the chooser open
+                      // so they can decide again. Any other error falls through
+                      // to the anchor download fallback below.
+                      if (err?.name === 'AbortError') return;
+                      console.warn('[Audit PDF] showSaveFilePicker failed, falling back', err);
+                    }
+                  }
                   const a = document.createElement('a');
                   a.href = auditPdf.url;
                   a.download = auditPdf.name;
                   document.body.appendChild(a);
                   a.click();
                   document.body.removeChild(a);
-                  setAuditPdfChooserOpen(false);
-                  // Tab disappears after action.
-                  setAuditPdf(prev => { if (prev?.url) { try { URL.revokeObjectURL(prev.url); } catch {} } return null; });
+                  closeAndClear();
                 }}
                 className="px-3 py-1.5 rounded text-xs text-white border border-white/30 hover:bg-white/15"
                 style={{ background: 'rgba(34,197,94,0.35)' }}
