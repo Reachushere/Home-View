@@ -15499,32 +15499,36 @@ export default function Dashboard() {
                                       const sections: { key: string; title: string; subtitle: string; accent: string; rows: { label: string; path: string; ok: boolean; issueKey: string }[] }[] = [
                                         {
                                           key: 'cloud',
-                                          title: 'Cloud Source',
-                                          subtitle: 'OneDrive — origin of all course files',
+                                          title: 'OneDrive Folders',
+                                          subtitle: 'Where your course files live in the cloud',
                                           accent: '#3b82f6',
                                           rows: [
-                                            { label: 'OneDrive Root', path: getOneDrivePath(c.code), ok: courseHealth ? !!courseHealth.oneDriveFolderConfigured : false, issueKey: 'onedrive_root' },
-                                            { label: 'Module Folder', path: `${getOneDrivePath(c.code)}/Week {n}/Module/`, ok: courseHealth ? (!!courseHealth.oneDriveFolderConfigured || courseHealth.totalModules > 0) : false, issueKey: 'module_folder' },
-                                            { label: 'Reading Folder', path: `${getOneDrivePath(c.code)}/Week {n}/Reading/`, ok: readingOk || !!courseHealth?.oneDriveFolderConfigured, issueKey: 'reading_folder' },
+                                            { label: 'Course Folder', path: getOneDrivePath(c.code), ok: courseHealth ? !!courseHealth.oneDriveFolderConfigured : false, issueKey: 'onedrive_root' },
+                                            { label: 'Weekly Module Files', path: `${getOneDrivePath(c.code)}/Week {n}/Module/`, ok: courseHealth ? (!!courseHealth.oneDriveFolderConfigured || courseHealth.totalModules > 0) : false, issueKey: 'module_folder' },
+                                            { label: 'Weekly Reading Files', path: `${getOneDrivePath(c.code)}/Week {n}/Reading/`, ok: readingOk || !!courseHealth?.oneDriveFolderConfigured, issueKey: 'reading_folder' },
+                                            { label: 'Syllabus Folder', path: `${getOneDrivePath(c.code)}/Syllabus/`, ok: courseHealth ? !!(courseHealth as any).syllabusFolderExists : false, issueKey: 'syllabus_folder' },
+                                            { label: 'Assignments Folder', path: `${getOneDrivePath(c.code)}/Assignments/`, ok: courseHealth ? !!(courseHealth as any).assignmentsFolderExists : false, issueKey: 'assignments_folder' },
+                                            { label: 'Textbook Folder', path: `${getOneDrivePath(c.code)}/Textbook/`, ok: courseHealth ? !!(courseHealth as any).textbookFolderExists : false, issueKey: 'textbook_folder' },
                                           ],
                                         },
                                         {
                                           key: 'local',
-                                          title: 'Local Mirror',
-                                          subtitle: 'Pi storage — synced + linked references',
+                                          title: 'On the Pi',
+                                          subtitle: 'Files synced down from OneDrive so the app can use them',
                                           accent: '#a855f7',
                                           rows: [
-                                            { label: 'Local Sync', path: `persistent-uploads/week-{n}-${c.code.toLowerCase()}-module|reading/`, ok: localSyncOk || !!courseHealth?.oneDriveFolderConfigured, issueKey: 'local_sync' },
-                                            { label: 'Syllabus', path: courseHealth?.syllabusPath || `syllabi/${c.code.toLowerCase()}_syllabus.pdf`, ok: courseHealth ? !!courseHealth.syllabusLinked : false, issueKey: 'syllabus' },
+                                            { label: 'Synced Course Files', path: `persistent-uploads/week-{n}-${c.code.toLowerCase()}-module|reading/`, ok: localSyncOk || !!courseHealth?.oneDriveFolderConfigured, issueKey: 'local_sync' },
+                                            { label: 'Syllabus Linked', path: courseHealth?.syllabusPath || `syllabi/${c.code.toLowerCase()}_syllabus.pdf`, ok: courseHealth ? !!courseHealth.syllabusLinked : false, issueKey: 'syllabus' },
+                                            { label: 'Library Shelf', path: `Module + Reading PDFs available in the Library`, ok: localSyncOk || !!courseHealth?.oneDriveFolderConfigured, issueKey: 'library' },
                                           ],
                                         },
                                         {
                                           key: 'derived',
-                                          title: 'Derived Assets',
-                                          subtitle: 'Generated artifacts — TTS, indexes',
+                                          title: 'Auto-Generated',
+                                          subtitle: 'Things UniCal makes for you (audio, indexes)',
                                           accent: '#10b981',
                                           rows: [
-                                            { label: 'TTS Audio', path: `TTS chunks (${courseHealth?.totalTtsReady || 0}/${courseHealth?.totalTtsNeeded || 0} ready)`, ok: ttsOk, issueKey: 'tts_audio' },
+                                            { label: 'Audio Narration', path: `${courseHealth?.totalTtsReady || 0} of ${courseHealth?.totalTtsNeeded || 0} files have audio ready`, ok: ttsOk, issueKey: 'tts_audio' },
                                           ],
                                         },
                                       ];
