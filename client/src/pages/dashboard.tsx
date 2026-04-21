@@ -8049,7 +8049,11 @@ export default function Dashboard() {
         const merged = { ...prev };
         let changed = false;
         for (const [k, v] of Object.entries(updates)) {
-          if (!merged[k]?.percent || merged[k].percent.trim() === '') {
+          // Always overwrite with the live-computed value when we have task-based
+          // grade data — the previous "skip if percent already set" guard caused
+          // the per-course GPA to get stuck at the first computed value and not
+          // refresh when assignment scores changed.
+          if (merged[k]?.grade !== v.grade || merged[k]?.percent !== v.percent) {
             merged[k] = v;
             changed = true;
           }
