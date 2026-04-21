@@ -3496,7 +3496,8 @@ export default function Dashboard() {
       .catch(() => setExpandedSemHealthLoading(false));
   }, [expandedSemKey]);
   const [dialogSemHealth, setDialogSemHealth] = useState<{ semKey: string; data: any } | null>(null);
-  const [semBoxHealthCache, setSemBoxHealthCache] = useState<Record<string, { score: number; level: 'ok' | 'warning' | 'critical' }>>({});
+  const [semBoxHealthCache, setSemBoxHealthCache] = useState<Record<string, { score: number; level: 'ok' | 'warning' | 'critical'; issues: string[] }>>({});
+  const [semTriHover, setSemTriHover] = useState<{ semKey: string; x: number; y: number } | null>(null);
   useEffect(() => {
     if (!isSchoolCoursesDialogOpen) return;
     const semKeys = ['ss2025', 'f2025', 'w2026', 'ss2026', 'f2026', 'w2027', 'ss2027', 'f2027', 'w2028', 'ss2028', 'f2028', 'w2029'];
@@ -3516,9 +3517,10 @@ export default function Dashboard() {
         .then(r => r.json())
         .then(data => {
           const score = data.healthScore || 0;
-          const issueCount = (data.issues || []).length;
+          const issues: string[] = data.issues || [];
+          const issueCount = issues.length;
           const level = issueCount > 0 ? (score >= 50 ? 'warning' as const : 'critical' as const) : score >= 80 ? 'ok' as const : score >= 50 ? 'warning' as const : 'critical' as const;
-          setSemBoxHealthCache(prev => ({ ...prev, [sk]: { score, level } }));
+          setSemBoxHealthCache(prev => ({ ...prev, [sk]: { score, level, issues } }));
         })
         .catch(() => {});
     });
@@ -28639,7 +28641,19 @@ export default function Dashboard() {
                                     const lvl = semBoxHealthCache[sem.key]?.level;
                                     const triColor = lvl === 'critical' ? '#ef4444' : lvl === 'warning' ? '#facc15' : lvl === 'ok' ? '#22c55e' : null;
                                     return triColor ? (
-                                      <svg aria-hidden width="16" height="14" viewBox="0 0 16 14" style={{ marginRight: '5px', flexShrink: 0, display: 'inline-block' }} data-testid={`sem-health-tri-${sem.key}`}>
+                                      <svg
+                                        aria-hidden
+                                        width="16"
+                                        height="14"
+                                        viewBox="0 0 16 14"
+                                        style={{ marginRight: '5px', flexShrink: 0, display: 'inline-block', cursor: 'help' }}
+                                        data-testid={`sem-health-tri-${sem.key}`}
+                                        onMouseEnter={(e) => {
+                                          const r = (e.currentTarget as SVGSVGElement).getBoundingClientRect();
+                                          setSemTriHover({ semKey: sem.key, x: r.left + r.width / 2, y: r.bottom + 6 });
+                                        }}
+                                        onMouseLeave={() => setSemTriHover(null)}
+                                      >
                                         <polygon points="8,1.5 14.5,12.5 1.5,12.5" fill="none" stroke={triColor} strokeWidth="1.75" strokeLinejoin="round" strokeLinecap="round" />
                                       </svg>
                                     ) : null;
@@ -39863,6 +39877,55 @@ export default function Dashboard() {
                 anchorRect={semChecklistAnchorRect}
               />
             </>, document.body
+          )}
+
+          {semTriHover && semBoxHealthCache[semTriHover.semKey] && createPortal(
+            (() => {
+              const h = semBoxHealthCache[semTriHover.semKey];
+              const lvl = h.level;
+              const color = lvl === 'critical' ? '#ef4444' : lvl === 'warning' ? '#facc15' : '#22c55e';
+              const issues = h.issues || [];
+              return (
+                <div
+                  style={{
+                    position: 'fixed',
+                    left: `${semTriHover.x}px`,
+                    top: `${semTriHover.y}px`,
+                    transform: 'translateX(-50%)',
+                    zIndex: 10010,
+                    pointerEvents: 'none',
+                    background: 'rgba(15,20,35,0.97)',
+                    border: `1px solid ${color}`,
+                    borderRadius: '8px',
+                    padding: '8px 10px',
+                    minWidth: '220px',
+                    maxWidth: '360px',
+                    boxShadow: '0 6px 24px rgba(0,0,0,0.5)',
+                  }}
+                  data-testid={`sem-health-tooltip-${semTriHover.semKey}`}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: issues.length ? '6px' : '0' }}>
+                    <span style={{ fontSize: '10px', fontWeight: 700, color, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      {lvl === 'ok' ? 'Healthy' : lvl === 'warning' ? 'Needs Attention' : 'Critical'}
+                    </span>
+                    <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.6)' }}>· Health {h.score}%</span>
+                  </div>
+                  {issues.length === 0 ? (
+                    <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.6)' }}>No outstanding issues.</div>
+                  ) : (
+                    <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '4px', maxHeight: '260px', overflowY: 'auto' }}>
+                      {issues.map((iss, i) => (
+                        <li key={i} style={{ display: 'flex', gap: '6px', fontSize: '10.5px', color: 'rgba(255,255,255,0.85)', lineHeight: 1.35 }}>
+                          <span style={{ color, flexShrink: 0 }}>•</span>
+                          <span>{iss}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              );
+            })(),
+            document.body
           )}
 
         {/* Projects Flyout - Burst from Left */}
