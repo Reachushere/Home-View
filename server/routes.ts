@@ -4509,6 +4509,130 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
     }
   });
 
+  // POST /api/onedrive/sync-textbooks - Walk each course's Textbook/ subfolder, import PDFs to library, OCR-index for search
+  // Body: { semKey?: string, courseCode?: string }
+  app.post("/api/onedrive/sync-textbooks", async (req, res) => {
+    try {
+      const { semKey, courseCode } = req.body || {};
+      const { listOneDriveItems, listOneDriveFolderChildren } = await import("./onedrive");
+      const { ObjectStorageService } = await import("./replit_integrations/object_storage");
+      const objectStorage = new ObjectStorageService();
+
+      const allSemesters = await storage.getAllSemesterSettings();
+      let semester: any = null;
+      const semKeyToType: Record<string, { type: string; year: number }> = {};
+      for (const k of ['w2025','ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']) {
+        const t = k.startsWith('ss') ? 'spring_summer' : k.startsWith('f') ? 'fall' : 'winter';
+        const yr = parseInt(k.match(/\d{4}/)?.[0] || '0');
+        semKeyToType[k] = { type: t, year: yr };
+      }
+      if (semKey && semKeyToType[semKey]) {
+        const m = semKeyToType[semKey];
+        semester = allSemesters.find((s: any) => { const sy = parseInt(s.semesterName?.match(/\d{4}/)?.[0] || '0'); return s.semesterType === m.type && sy === m.year; });
+      } else {
+        semester = (await storage.getActiveSemesterSettings()) || allSemesters[0];
+      }
+      if (!semester) return res.status(404).json({ error: 'No semester configured' });
+
+      const semType = (semester.semesterType || 'winter').toLowerCase();
+      const semYear = semester.semesterName?.match(/\d{4}/)?.[0] || String(new Date().getFullYear());
+      const semFolderVars = semType.includes('spring') || semType.includes('summer')
+        ? ['Spring & Summer', 'Spring-Summer', 'Spring_Summer', 'Spring Summer']
+        : semType.includes('fall') ? ['Fall'] : ['Winter'];
+
+      let semBasePath = `/School/1. TMU/Courses/${semYear}/${semFolderVars[0]}`;
+      let semChildren: any[] = [];
+      for (const v of semFolderVars) {
+        const tryPath = `/School/1. TMU/Courses/${semYear}/${v}`;
+        try { semChildren = await listOneDriveFolderChildren(tryPath); semBasePath = tryPath; break; } catch {}
+      }
+
+      const ssBuckets = (semType.includes('spring') || semType.includes('summer'))
+        ? (semChildren || []).filter((f: any) => f.folder && /^(Spring|Summer)\s*-/.test(f.name))
+        : [];
+      const candidateParents: { path: string; children: any[] }[] = [];
+      if (ssBuckets.length > 0) {
+        for (const bucket of ssBuckets) {
+          try {
+            const bp = `${semBasePath}/${bucket.name}`;
+            const bc = await listOneDriveFolderChildren(bp);
+            candidateParents.push({ path: bp, children: bc });
+          } catch {}
+        }
+      } else {
+        candidateParents.push({ path: semBasePath, children: semChildren || [] });
+      }
+
+      const requestedCodes: string[] = courseCode
+        ? [courseCode]
+        : [semester.course1Code, semester.course2Code, semester.course3Code].filter(Boolean);
+
+      const existingFiles = await storage.getFiles();
+      const existingFileKeys = new Set(existingFiles.map((f: any) => `${f.originalName}|||${f.folder}`));
+
+      const result: any[] = [];
+
+      for (const code of requestedCodes) {
+        const codeUp = code.toUpperCase();
+        let courseFolderPath: string | null = null;
+        for (const cp of candidateParents) {
+          const matches = cp.children.filter((f: any) => f.folder && f.name.toUpperCase().startsWith(codeUp));
+          const match = matches.length > 1 ? matches.sort((a: any, b: any) => a.name.length - b.name.length)[0] : matches[0];
+          if (match) { courseFolderPath = `${cp.path}/${match.name}`; break; }
+        }
+        if (!courseFolderPath) {
+          result.push({ courseCode: code, error: 'course folder not found' });
+          continue;
+        }
+        const tbPath = `${courseFolderPath}/Textbook`;
+        let tbItems: any[] = [];
+        try { tbItems = await listOneDriveItems(tbPath); } catch (e: any) {
+          result.push({ courseCode: code, error: `Textbook folder missing: ${tbPath}` });
+          continue;
+        }
+        const folderTag = `course-${code.toLowerCase()}-textbook`;
+        const synced: string[] = [];
+        let skipped = 0;
+        for (const file of tbItems) {
+          if (file.type !== 'file' || !file.name.toLowerCase().endsWith('.pdf')) continue;
+          const key = `${file.name}|||${folderTag}`;
+          if (existingFileKeys.has(key)) { skipped++; continue; }
+          try {
+            const dl = await fetch(file.downloadUrl);
+            if (!dl.ok) { console.log(`[Textbook Sync] Download failed ${file.name}: ${dl.status}`); continue; }
+            const buf = Buffer.from(await dl.arrayBuffer());
+            const uploadUrl = await objectStorage.getObjectEntityUploadURL();
+            const up = await fetch(uploadUrl, { method: 'PUT', body: buf, headers: { 'Content-Type': 'application/pdf' } });
+            if (!up.ok) { console.log(`[Textbook Sync] Upload failed ${file.name}: ${up.status}`); continue; }
+            const objectPath = objectStorage.normalizeObjectEntityPath(uploadUrl);
+            const newFile = await storage.createFile({
+              originalName: file.name, displayName: file.name, objectPath,
+              contentType: 'application/pdf', size: file.size, folder: folderTag, listened: false,
+            } as any);
+            existingFileKeys.add(key);
+            try {
+              const text = await extractFileText({ ...newFile, objectPath });
+              if (text) {
+                const totalChunks = Math.ceil(text.length / CHUNK_SIZE);
+                await storage.updateFile(newFile.id, { totalChunks, extractedText: text } as any);
+              }
+            } catch (e: any) { console.log(`[Textbook Sync] Extract failed for ${file.name}: ${e.message}`); }
+            synced.push(file.name);
+            console.log(`[Textbook Sync] Imported ${file.name} -> ${folderTag}`);
+          } catch (e: any) {
+            console.error(`[Textbook Sync] Error on ${file.name}:`, e.message);
+          }
+        }
+        result.push({ courseCode: code, courseFolderPath, textbookPath: tbPath, synced, skippedExisting: skipped, totalSynced: synced.length });
+      }
+
+      res.json({ ok: true, semester: semester.semesterName, results: result });
+    } catch (err: any) {
+      console.error('[Textbook Sync] Error:', err);
+      res.status(500).json({ error: 'Textbook sync failed', message: err.message });
+    }
+  });
+
   app.post("/api/semester-reset-files", async (_req, res) => {
     try {
       const allFiles = await storage.getFiles();

@@ -29117,7 +29117,8 @@ export default function Dashboard() {
                           ] },
                           textbook_folder: { title: 'Create Textbook Folder', testCheck: 'textbookFolderExists', steps: [
                             ['Auto-Create Textbook Folder', `Create the Textbook folder for ${semFlowWizard.courseCode} in OneDrive at:\n${odPath}/Textbook\n\nDrop the textbook PDF here and BA will sync it to the library, add it to the course shelf, and OCR-index it for search.`, 'create_subfolder_textbook'],
-                            ['Verify', 'After creation, click "Test It" to confirm the folder is linked.'],
+                            ['Sync Textbook PDFs', `Pull all PDFs currently in ${odPath}/Textbook into the library, OCR-index them for search, and place them on the ${semFlowWizard.courseCode} course shelf.`, 'sync_textbooks'],
+                            ['Verify', 'After syncing, click "Test It" to confirm the folder is linked.'],
                           ], secondary: [
                             ['Open OneDrive', `Browse to ${odPath} and create a "Textbook" folder manually.`, 'open_onedrive'],
                           ] },
@@ -29243,6 +29244,10 @@ export default function Dashboard() {
                                         link_reading_folder: { label: 'Browse & Link Reading Folder', icon: '🔗' },
                                         link_root_folder: { label: 'Browse & Link Course Folder', icon: '🔗' },
                                         create_folders: { label: 'Create Folders', icon: '📁' },
+                                        sync_textbooks: { label: 'Sync Textbooks', icon: '📖' },
+                                        create_subfolder_syllabus: { label: 'Create Syllabus Folder', icon: '📑' },
+                                        create_subfolder_assignments: { label: 'Create Assignments Folder', icon: '📋' },
+                                        create_subfolder_textbook: { label: 'Create Textbook Folder', icon: '📚' },
                                         open_settings: { label: 'Open Settings', icon: '⚙️' },
                                         force_sync: { label: 'Force Full Sync', icon: '🔄' },
                                         upload_file: { label: 'Upload Files', icon: '📤' },
@@ -29296,6 +29301,16 @@ export default function Dashboard() {
                                           } else if (action === 'create_folders') {
                                             await fetch(`/api/onedrive/create-folders/${expandedSemKey}/${semFlowWizard!.courseCode}`, { method: 'POST', credentials: 'include' });
                                             setWizActionDone('Folder structure created on OneDrive!');
+                                          } else if (action === 'sync_textbooks') {
+                                            const r = await fetch('/api/onedrive/sync-textbooks', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ semKey: expandedSemKey, courseCode: semFlowWizard!.courseCode }) });
+                                            const j = await r.json().catch(() => ({}));
+                                            const courseRes = (j.results || []).find((x: any) => (x.courseCode || '').toUpperCase() === semFlowWizard!.courseCode.toUpperCase());
+                                            if (r.ok && courseRes && !courseRes.error) {
+                                              setWizActionDone(`Imported ${courseRes.totalSynced} new PDF(s); skipped ${courseRes.skippedExisting} already in library. Search & shelf updated.`);
+                                            } else {
+                                              setWizActionDone(`Error: ${courseRes?.error || j.message || 'Textbook sync failed'}`);
+                                            }
+                                            try { await queryClient.invalidateQueries({ queryKey: ['/api/files'] }); } catch {}
                                           } else if (action === 'create_subfolder_syllabus' || action === 'create_subfolder_assignments' || action === 'create_subfolder_textbook') {
                                             const sub = action === 'create_subfolder_syllabus' ? 'Syllabus' : action === 'create_subfolder_assignments' ? 'Assignments' : 'Textbook';
                                             const r = await fetch('/api/course-folder/ensure-subfolder', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ semKey: expandedSemKey, courseCode: semFlowWizard!.courseCode, sub }) });
