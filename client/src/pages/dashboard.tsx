@@ -15669,16 +15669,17 @@ export default function Dashboard() {
                                               key={w}
                                               className="text-center cursor-pointer hover:brightness-125 transition-all relative"
                                               style={{
-                                                // Green "uploaded" state uses CSS so it stretches at any size with
-                                                // crisp rounded corners (color from supplied SVG: #64BA4D).
-                                                // Red still uses the PNG art until that is replaced too.
-                                                backgroundImage: weekRed ? `url(${weekRedBoxImg})` : undefined,
-                                                backgroundSize: weekRed ? '100% 100%' : undefined,
-                                                backgroundRepeat: weekRed ? 'no-repeat' : undefined,
-                                                backgroundColor: weekGreen ? '#64BA4D' : weekRed ? 'transparent' : 'rgba(255,255,255,0.03)',
-                                                border: weekRed ? 'none' : weekGreen ? '1px solid rgba(0,0,0,0.18)' : '1px solid rgba(255,255,255,0.1)',
-                                                borderRadius: weekRed ? '0' : '4px',
-                                                boxShadow: weekGreen ? 'inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.25)' : undefined,
+                                                // Both states use CSS so cells stretch at any size with crisp rounded
+                                                // corners. Green = #64BA4D flat fill. Red = pink->red diagonal gradient
+                                                // sampled from the supplied SVG palette
+                                                // (#FAB6BE -> #C46D75 -> #8F252E).
+                                                background: weekRed
+                                                  ? 'linear-gradient(135deg, #FAB6BE 0%, #C46D75 43%, #8F252E 100%)'
+                                                  : undefined,
+                                                backgroundColor: weekGreen ? '#64BA4D' : weekRed ? undefined : 'rgba(255,255,255,0.03)',
+                                                border: weekRed ? '1px solid rgba(0,0,0,0.18)' : weekGreen ? '1px solid rgba(0,0,0,0.18)' : '1px solid rgba(255,255,255,0.1)',
+                                                borderRadius: '4px',
+                                                boxShadow: (weekGreen || weekRed) ? 'inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.25)' : undefined,
                                                 padding: '6px 4px',
                                                 minHeight: '46px',
                                               }}
