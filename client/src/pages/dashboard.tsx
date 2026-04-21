@@ -22500,9 +22500,23 @@ export default function Dashboard() {
               <button
                 type="button"
                 onClick={() => {
-                  window.open(auditPdf.url, '_blank', 'noopener');
+                  // window.open(blob:, _blank) was being treated as a popup on the
+                  // tunneled domain and either blocked or (worse) navigating the
+                  // current tab — which unloaded the SPA. Programmatic <a target=_blank>
+                  // clicks are treated as user-initiated and reliably open a new tab.
+                  // Capture the URL locally so the deferred revoke doesn't race the
+                  // state clear, and delay revocation so the new tab has time to load.
+                  const url = auditPdf.url;
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.target = '_blank';
+                  a.rel = 'noopener noreferrer';
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
                   setAuditPdfChooserOpen(false);
-                  setAuditPdf(prev => { if (prev?.url) { try { URL.revokeObjectURL(prev.url); } catch {} } return null; });
+                  setAuditPdf(null);
+                  setTimeout(() => { try { URL.revokeObjectURL(url); } catch {} }, 60_000);
                 }}
                 className="px-3 py-1.5 rounded text-xs text-white border border-white/30 hover:bg-white/15"
                 style={{ background: 'rgba(59,130,246,0.45)' }}
