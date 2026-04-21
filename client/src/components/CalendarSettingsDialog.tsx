@@ -422,6 +422,36 @@ export function CalendarSettingsDialog(props: CalendarSettingsDialogProps) {
             )}
           </div>
         </div>
+        {/* Sticky footer — mirrors header gradient. Save commits schoolData
+            (the rest of the dialog autosaves per-field) and dismisses. */}
+        <div
+          className="px-4 py-2 border-t border-white/40 flex items-center justify-end gap-2 flex-shrink-0 rounded-b-lg"
+          style={{
+            backdropFilter: 'blur(30px)',
+            WebkitBackdropFilter: 'blur(30px)',
+            background: `linear-gradient(0deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)`,
+            boxShadow: 'inset 0 -1px 0 rgba(255,255,255,0.45), inset 0 -2px 4px rgba(255,255,255,0.15), inset 0 1px 0 rgba(0,0,0,0.08), 0 -2px 8px rgba(0,0,0,0.1)',
+          }}
+        >
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 text-xs text-white hover:bg-white/15 border border-white/25"
+            onClick={() => onOpenChange(false)}
+            data-testid="button-cal-settings-close"
+          >
+            Close
+          </Button>
+          <Button
+            size="sm"
+            className="h-7 text-xs text-white border border-white/30"
+            style={{ background: 'rgba(34,197,94,0.45)' }}
+            onClick={() => { saveSchool(schoolData); onOpenChange(false); }}
+            data-testid="button-cal-settings-save"
+          >
+            Save
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );
