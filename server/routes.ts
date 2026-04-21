@@ -4244,7 +4244,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       for (let i = 1; i <= 3; i++) {
         const code = matchedSem ? ((matchedSem as any)[`course${i}Code`] || '') : '';
         const name = matchedSem ? ((matchedSem as any)[`course${i}Name`] || '') : '';
-        if (!code || code.startsWith('TBD')) continue;
+        if (!code) continue;
 
         const cleanCode = code.replace(/\s/g, '').toLowerCase();
         const hasSyllabus = !!(syllabusPaths[code] || syllabusPaths[code.toUpperCase()] || syllabusPaths[cleanCode]);
