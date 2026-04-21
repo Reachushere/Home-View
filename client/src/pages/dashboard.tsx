@@ -15445,21 +15445,22 @@ export default function Dashboard() {
                                                         // stretches crisply at any width. Stops match the rest of the app:
                                                         // green = auto-tasks gradient, yellow = data gradient, red = reminders gradient.
                                                         const isOneDrive = step.label === 'OneDrive';
-                                                        const oneDriveGrad = isOneDrive
-                                                          ? (step.status === 'error'
-                                                              ? 'linear-gradient(135deg, #FAB6BE 0%, #C46D75 43%, #8F252E 100%)'
-                                                              : step.status === 'warning'
-                                                                ? 'linear-gradient(135deg, #FDE324 0%, #BD9D28 43%, #7D562D 100%)'
-                                                                : 'linear-gradient(135deg, #64BA4D 0%, #428046 43%, #20453F 100%)')
+                                                        const isYellowFallback = step.label === 'TTS' || step.label === 'Sync' || step.label === 'Storage' || step.label === 'Library';
+                                                        const isRedFallback = step.label === 'Syllabus' || step.label === 'Assignments' || step.label === 'Textbook';
+                                                        const GREEN_GRAD = 'linear-gradient(135deg, #64BA4D 0%, #428046 43%, #20453F 100%)';
+                                                        const RED_GRAD = 'linear-gradient(135deg, #FAB6BE 0%, #C46D75 43%, #8F252E 100%)';
+                                                        const YELLOW_GRAD = 'linear-gradient(135deg, #FDE324 0%, #BD9D28 43%, #7D562D 100%)';
+                                                        const cellGrad = isOneDrive
+                                                          ? (step.status === 'error' ? RED_GRAD : step.status === 'warning' ? YELLOW_GRAD : GREEN_GRAD)
+                                                          : isYellowFallback
+                                                            ? (step.status === 'ok' ? GREEN_GRAD : YELLOW_GRAD)
+                                                          : isRedFallback
+                                                            ? (step.status === 'ok' ? GREEN_GRAD : RED_GRAD)
                                                           : null;
-                                                        const stepBg = isOneDrive ? null
-                                                          : (step.label === 'TTS' || step.label === 'Sync' || step.label === 'Storage' || step.label === 'Library')
-                                                            ? (step.status === 'ok' ? greenBoxImg : yellowBoxImg)
-                                                          : (step.label === 'Syllabus' || step.label === 'Assignments' || step.label === 'Textbook')
-                                                            ? (step.status === 'ok' ? greenBoxImg : redBoxImg)
-                                                          : null;
-                                                        const hasImg = !!stepBg;
-                                                        const hasGrad = !!oneDriveGrad;
+                                                        const oneDriveGrad = isOneDrive ? cellGrad : null;
+                                                        const stepBg = null;
+                                                        const hasImg = false;
+                                                        const hasGrad = !!cellGrad;
                                                         const hasArt = hasImg || hasGrad;
                                                         return {
                                                           flex: '1 1 0',
