@@ -15388,15 +15388,15 @@ export default function Dashboard() {
                                       const sylFolderOk = courseHealth?.syllabusFolderExists === true;
                                       const asgFolderOk = courseHealth?.assignmentsFolderExists === true;
                                       const tbkFolderOk = courseHealth?.textbookFolderExists === true;
-                                      const steps: { label: string; Icon: any; value: string; status: 'ok' | 'warning' | 'error'; issueKey: string; pct: number | null }[] = [
-                                        { label: 'OneDrive', Icon: Cloud, value: courseHealth?.oneDriveFolderConfigured ? 'linked' : 'unlinked', status: courseHealth?.oneDriveFolderConfigured ? 'ok' : 'error', issueKey: 'onedrive', pct: odPct },
-                                        { label: 'Sync', Icon: RefreshCw, value: `${totalMod}M·${totalRead}R`, status: (courseHealth?.oneDriveFolderConfigured || totalMod > 0 || totalRead > 0) ? ((totalMod + totalRead) > 0 ? 'ok' : 'warning') : 'error', issueKey: 'sync', pct: (totalMod + totalRead) > 0 ? 100 : (courseHealth?.oneDriveFolderConfigured ? 50 : 0) },
-                                        { label: 'Syllabus', Icon: FileText, value: sylFolderOk ? 'linked' : 'missing', status: sylFolderOk ? 'ok' : 'error', issueKey: 'syllabus_folder', pct: sylFolderOk ? 100 : 0 },
-                                        { label: 'Assignments', Icon: ClipboardList, value: asgFolderOk ? 'linked' : 'missing', status: asgFolderOk ? 'ok' : 'error', issueKey: 'assignments_folder', pct: asgFolderOk ? 100 : 0 },
-                                        { label: 'Textbook', Icon: BookOpen, value: tbkFolderOk ? 'linked' : 'missing', status: tbkFolderOk ? 'ok' : 'error', issueKey: 'textbook_folder', pct: tbkFolderOk ? 100 : 0 },
-                                        { label: 'Storage', Icon: Folder, value: 'persistent', status: 'ok', issueKey: 'storage', pct: 100 },
-                                        { label: 'TTS', Icon: Volume2, value: ttsNeeded > 0 ? `${ttsReady}/${ttsNeeded}` : 'idle', status: ttsNeeded === 0 ? 'ok' : ttsReady === ttsNeeded ? 'ok' : ttsReady > 0 ? 'warning' : 'error', issueKey: 'tts', pct: ttsPct !== null ? ttsPct : 100 },
-                                        { label: 'Library', Icon: BookOpen, value: (totalMod + totalRead) > 0 ? `${totalMod + totalRead} files` : (courseHealth?.oneDriveFolderConfigured ? 'ready' : 'empty'), status: (courseHealth?.oneDriveFolderConfigured || totalMod > 0 || totalRead > 0) ? 'ok' : 'error', issueKey: 'library', pct: (totalMod + totalRead) > 0 ? 100 : (courseHealth?.oneDriveFolderConfigured ? 50 : 0) },
+                                      const steps: { label: string; Icon: any; value: string; status: 'ok' | 'warning' | 'error'; issueKey: string; pct: number | null; desc: string }[] = [
+                                        { label: 'OneDrive', Icon: Cloud, value: courseHealth?.oneDriveFolderConfigured ? 'linked' : 'unlinked', status: courseHealth?.oneDriveFolderConfigured ? 'ok' : 'error', issueKey: 'onedrive', pct: odPct, desc: 'Cloud folder for this course. Everything starts here — drop your files in OneDrive and the app pulls them down.' },
+                                        { label: 'Sync', Icon: RefreshCw, value: `${totalMod}M·${totalRead}R`, status: (courseHealth?.oneDriveFolderConfigured || totalMod > 0 || totalRead > 0) ? ((totalMod + totalRead) > 0 ? 'ok' : 'warning') : 'error', issueKey: 'sync', pct: (totalMod + totalRead) > 0 ? 100 : (courseHealth?.oneDriveFolderConfigured ? 50 : 0), desc: 'How many module + reading files have been pulled from OneDrive into the app. M = modules, R = readings.' },
+                                        { label: 'Syllabus', Icon: FileText, value: sylFolderOk ? 'linked' : 'missing', status: sylFolderOk ? 'ok' : 'error', issueKey: 'syllabus_folder', pct: sylFolderOk ? 100 : 0, desc: 'The Syllabus subfolder in OneDrive. Drop the course syllabus PDF here so the app can show it on the course page.' },
+                                        { label: 'Assignments', Icon: ClipboardList, value: asgFolderOk ? 'linked' : 'missing', status: asgFolderOk ? 'ok' : 'error', issueKey: 'assignments_folder', pct: asgFolderOk ? 100 : 0, desc: 'The Assignments subfolder in OneDrive. Drop assignment briefs / instructions here.' },
+                                        { label: 'Textbook', Icon: BookOpen, value: tbkFolderOk ? 'linked' : 'missing', status: tbkFolderOk ? 'ok' : 'error', issueKey: 'textbook_folder', pct: tbkFolderOk ? 100 : 0, desc: 'The Textbook subfolder in OneDrive. Drop the textbook PDF here and it gets imported into the Library and indexed for search.' },
+                                        { label: 'Storage', Icon: Folder, value: 'persistent', status: 'ok', issueKey: 'storage', pct: 100, desc: 'Long-term storage on the Pi. Files synced from OneDrive get cached here so the app stays fast and works offline.' },
+                                        { label: 'TTS', Icon: Volume2, value: ttsNeeded > 0 ? `${ttsReady}/${ttsNeeded}` : 'idle', status: ttsNeeded === 0 ? 'ok' : ttsReady === ttsNeeded ? 'ok' : ttsReady > 0 ? 'warning' : 'error', issueKey: 'tts', pct: ttsPct !== null ? ttsPct : 100, desc: 'Audio narration. The app reads PDFs aloud — count is how many files already have audio generated.' },
+                                        { label: 'Library', Icon: BookOpen, value: (totalMod + totalRead) > 0 ? `${totalMod + totalRead} files` : (courseHealth?.oneDriveFolderConfigured ? 'ready' : 'empty'), status: (courseHealth?.oneDriveFolderConfigured || totalMod > 0 || totalRead > 0) ? 'ok' : 'error', issueKey: 'library', pct: (totalMod + totalRead) > 0 ? 100 : (courseHealth?.oneDriveFolderConfigured ? 50 : 0), desc: 'Your reading library. All synced PDFs show up here as books on the course shelf for quick browsing.' },
                                       ];
                                       const okCount = steps.filter(s => s.status === 'ok').length;
                                       const allGood = okCount === steps.length;
@@ -15420,6 +15420,7 @@ export default function Dashboard() {
                                                 return (
                                                   <React.Fragment key={step.label}>
                                                     <div
+                                                      title={step.desc}
                                                       className="relative flex flex-col items-center text-center group"
                                                       style={(() => {
                                                         const stepBg = step.label === 'OneDrive'
@@ -15496,6 +15497,18 @@ export default function Dashboard() {
                                       const ttsOk = courseHealth ? (courseHealth.totalTtsNeeded === 0 || courseHealth.totalTtsReady === courseHealth.totalTtsNeeded) : true;
                                       const localSyncOk = courseHealth ? (courseHealth.totalModules > 0 || courseHealth.totalReadings > 0) : false;
 
+                                      const rowDesc: Record<string, string> = {
+                                        onedrive_root: 'The top-level OneDrive folder for this course. All other folders sit inside it.',
+                                        module_folder: 'Where each week\'s lecture / module PDFs live in OneDrive (one subfolder per week).',
+                                        reading_folder: 'Where each week\'s required reading PDFs live in OneDrive (one subfolder per week).',
+                                        syllabus_folder: 'Subfolder for the course syllabus PDF. The app reads it for important dates and shows it on the course page.',
+                                        assignments_folder: 'Subfolder for assignment briefs and instructions. Drop assignment PDFs here.',
+                                        textbook_folder: 'Subfolder for the textbook PDF. The app imports it into the Library and OCR-indexes it for search.',
+                                        local_sync: 'Synced copies of your OneDrive files cached on the Pi so the app stays fast and works offline.',
+                                        syllabus: 'The syllabus PDF, linked into the app and shown on the course page (View Syllabus button).',
+                                        library: 'Module + Reading PDFs flow into the Library shelf for this course so you can browse them as books.',
+                                        tts_audio: 'Audio narration generated from your readings. Counter shows how many files have audio ready vs. needed.',
+                                      };
                                       const sections: { key: string; title: string; subtitle: string; accent: string; rows: { label: string; path: string; ok: boolean; issueKey: string }[] }[] = [
                                         {
                                           key: 'cloud',
@@ -15585,7 +15598,7 @@ export default function Dashboard() {
                                                           const disabled = isHealthItemDisabled(c.code, row.issueKey);
                                                           const isLast = rIdx === section.rows.length - 1;
                                                           return (
-                                                            <tr key={row.label} className="hover:bg-black/5 transition-colors" style={{ opacity: disabled ? 0.45 : 1, background: '#ffffff', color: '#000000' }}>
+                                                            <tr key={row.label} title={rowDesc[row.issueKey] || ''} className="hover:bg-black/5 transition-colors" style={{ opacity: disabled ? 0.45 : 1, background: '#ffffff', color: '#000000' }}>
                                                               <td className="px-1 py-2 w-8" style={{ borderBottom: isLast ? 'none' : '1px solid rgba(0,0,0,0.08)' }}>
                                                                 <input type="checkbox" checked={!disabled} onChange={() => toggleHealthItem(c.code, row.issueKey)} className="w-3.5 h-3.5 rounded cursor-pointer accent-emerald-500" title={disabled ? 'Enable for health reporting' : 'Disable from health reporting'} data-testid={`health-toggle-${row.issueKey}`} />
                                                               </td>
