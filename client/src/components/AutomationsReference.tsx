@@ -364,10 +364,13 @@ export default function AutomationsReference({ open, onClose, colorSettings }: A
 
               const isCalSync = category.id === 'calendar-sync';
               const isAutoTasks = category.id === 'auto-tasks';
-              const useCssGradient = isCalSync || isAutoTasks;
+              const isGreyCat = category.id === 'popups' || category.id === 'ha';
+              const useCssGradient = isCalSync || isAutoTasks || isGreyCat;
               const cssGradient = isCalSync
                 ? 'linear-gradient(135deg, #48AAE8 0%, #2D6CA7 43%, #122E66 100%)'
-                : 'linear-gradient(135deg, #64BA4D 0%, #428046 43%, #20453F 100%)';
+                : isAutoTasks
+                  ? 'linear-gradient(135deg, #64BA4D 0%, #428046 43%, #20453F 100%)'
+                  : 'linear-gradient(135deg, #A7AFBB 0%, #687382 43%, #293649 100%)';
               return (
                 <div
                   key={category.id}
@@ -614,7 +617,7 @@ export function AutomationsContent() {
           const CategoryIcon = category.icon;
           const catBg = CATEGORY_BG[category.id] || boxGrey;
           return (
-            <div key={category.id} className="rounded-lg overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.18)', backgroundImage: category.id === 'calendar-sync' ? 'linear-gradient(135deg, #48AAE8 0%, #2D6CA7 43%, #122E66 100%)' : category.id === 'auto-tasks' ? 'linear-gradient(135deg, #64BA4D 0%, #428046 43%, #20453F 100%)' : `url(${catBg})`, backgroundSize: (category.id === 'calendar-sync' || category.id === 'auto-tasks') ? undefined : '100% 100%', backgroundRepeat: (category.id === 'calendar-sync' || category.id === 'auto-tasks') ? undefined : 'no-repeat', boxShadow: '0 2px 6px rgba(0,0,0,0.35)' }} data-testid={`automation-category-${category.id}`}>
+            <div key={category.id} className="rounded-lg overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.18)', backgroundImage: category.id === 'calendar-sync' ? 'linear-gradient(135deg, #48AAE8 0%, #2D6CA7 43%, #122E66 100%)' : category.id === 'auto-tasks' ? 'linear-gradient(135deg, #64BA4D 0%, #428046 43%, #20453F 100%)' : (category.id === 'popups' || category.id === 'ha') ? 'linear-gradient(135deg, #A7AFBB 0%, #687382 43%, #293649 100%)' : `url(${catBg})`, backgroundSize: (category.id === 'calendar-sync' || category.id === 'auto-tasks' || category.id === 'popups' || category.id === 'ha') ? undefined : '100% 100%', backgroundRepeat: (category.id === 'calendar-sync' || category.id === 'auto-tasks' || category.id === 'popups' || category.id === 'ha') ? undefined : 'no-repeat', boxShadow: '0 2px 6px rgba(0,0,0,0.35)' }} data-testid={`automation-category-${category.id}`}>
               <button className="w-full flex items-center gap-2.5 px-3 py-2 text-left transition-colors" onClick={() => toggleCategory(category.id)} style={{ background: 'rgba(0,0,0,0.18)' }} data-testid={`button-toggle-${category.id}`} type="button">
                 {isExpanded ? <ChevronDown className="h-3 w-3 text-white flex-shrink-0" /> : <ChevronRight className="h-3 w-3 text-white flex-shrink-0" />}
                 <CategoryIcon className="h-3.5 w-3.5 flex-shrink-0 text-white" />
