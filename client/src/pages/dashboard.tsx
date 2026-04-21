@@ -29,6 +29,7 @@ import tahltanBanner from "@assets/image_1776640309567.png";
 import oneDriveBoxRedImg from "@assets/OneDrive_R_1776568204260.png";
 import greenBoxImg from "@assets/Green_Box_1776568031172.png";
 import yellowBoxImg from "@assets/Yellow_Box_1776568051366.png";
+import redBoxImg from "@assets/Red_Box_1776566950520.png";
 import blueBoxImg from "@assets/Blue_Box_1776566950518.png";
 import pipelineBackImg from "@assets/Back_1776568672937.png";
 import pipelineHeaderImg from "@assets/Header_1776568848425.png";
@@ -15443,6 +15444,8 @@ export default function Dashboard() {
                                                             ? (step.status === 'error' ? oneDriveBoxRedImg : step.status === 'warning' ? oneDriveBoxYellowImg : oneDriveBoxImg)
                                                           : (step.label === 'TTS' || step.label === 'Sync' || step.label === 'Storage' || step.label === 'Library')
                                                             ? (step.status === 'ok' ? greenBoxImg : yellowBoxImg)
+                                                          : (step.label === 'Syllabus' || step.label === 'Assignments' || step.label === 'Textbook')
+                                                            ? (step.status === 'ok' ? greenBoxImg : redBoxImg)
                                                           : null;
                                                         const hasImg = !!stepBg;
                                                         return { flex: '1 1 0', minWidth: 0, padding: hasImg ? '0' : '8px 6px 6px', cursor: isProblem ? 'pointer' : 'default', borderRadius: hasImg ? '0' : '8px', background: hasImg ? 'transparent' : '#ffffff', backgroundImage: hasImg ? `url(${stepBg})` : undefined, backgroundSize: hasImg ? '100% 100%' : undefined, backgroundRepeat: hasImg ? 'no-repeat' : undefined, minHeight: hasImg ? '110px' : undefined, border: hasImg ? 'none' : `1px solid ${isProblem ? accent + '88' : 'rgba(0,0,0,0.15)'}`, boxShadow: 'none', transition: 'all 0.18s ease' };

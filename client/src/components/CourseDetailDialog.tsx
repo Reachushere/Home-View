@@ -2268,7 +2268,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
         className="flex flex-col text-white rounded-lg"
         style={{
           pointerEvents: 'auto',
-          width: "960px",
+          width: "1548px",
           maxWidth: "95vw",
           height: "88vh",
           background: 'linear-gradient(180deg, #3a8bbf 0%, color-mix(in srgb, #164a72 70%, black) 100%)',
