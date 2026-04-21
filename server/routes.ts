@@ -6886,19 +6886,19 @@ MONTHLY REPORT (the Kevin Morrall report — fully working as of commit ca9a1811
   (2) binary-search for the largest scale (lo=0.3, hi=3.0, 14 iterations)
   that keeps wrap.getBoundingClientRect().bottom <= dialog bottom;
   (3) apply that scale.
-• Print uses CSS `zoom` (browsers honor it for native printing).
-• PDF uses CSS `transform: scale()` with transform-origin: top left
-  (html2canvas IGNORES `zoom` but DOES honor `transform`). The wrap's
+• Print uses CSS 'zoom' (browsers honor it for native printing).
+• PDF uses CSS 'transform: scale()' with transform-origin: top left
+  (html2canvas IGNORES 'zoom' but DOES honor 'transform'). The wrap's
   width is also bumped to 100/scale% so scaled-down content still fills
   the page horizontally.
 • CRITICAL: beforeprint fires while the dialog is still in its on-screen
   layout — Chrome doesn't apply @media print rules until AFTER beforeprint
-  returns. So the Print handler stamps `pdf-print-mode` (a class) on the
+  returns. So the Print handler stamps 'pdf-print-mode' (a class) on the
   live dialog BEFORE measuring. That class lives in client/src/index.css
   and mirrors the @media print rules (forces 7.7×10.2in, hides buttons,
   etc.) so JS measurements see the real print dimensions. Removed in
   onAfterPrint.
-• Email PDF uses the matching `.email-pdf-host` scope on an offscreen
+• Email PDF uses the matching '.email-pdf-host' scope on an offscreen
   clone (also in index.css). DO NOT replace one with the other — they
   share rules but are toggled differently.
 • Email PDF additionally uploads a copy to OneDrive at
