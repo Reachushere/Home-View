@@ -28629,7 +28629,7 @@ export default function Dashboard() {
                                 const shadow = isCurrentSem ? (needsRedBorder ? { boxShadow: '0 0 6px rgba(239,68,68,0.6), 0 0 12px rgba(239,68,68,0.4), 0 0 18px rgba(239,68,68,0.3)' } : {}) : {};
                                 return { background: bgCol, borderColor: borderCol, ...shadow, position: 'relative' as const, borderWidth: isCurrentSem ? '2px' : undefined };
                               })()}>
-                                <div className="px-2 py-1.5 flex items-center justify-between cursor-pointer" onClick={(e) => { const t = e.target as HTMLElement; if (t.closest('[data-testid^="button-"], [data-testid^="dates-pill"], [data-testid^="pencil-"]')) return; e.stopPropagation(); expandedSemOpenTimeRef.current = Date.now(); setExpandedSemKey(sem.key); }} onDoubleClick={(e) => { e.stopPropagation(); expandedSemOpenTimeRef.current = Date.now(); setExpandedSemKey(sem.key); }}>
+                                <div className="px-2 py-1.5 flex items-center justify-between">
                                 <div className="flex items-center flex-wrap" style={{ flexWrap: 'nowrap', overflow: 'hidden', minWidth: 0, gap: '7px' }}>
                                   <Settings
                                     className="text-white/50 hover:text-white cursor-pointer transition-colors flex-shrink-0"
@@ -28638,25 +28638,30 @@ export default function Dashboard() {
                                     data-testid={`button-sem-settings-${sem.key}`}
                                   />
                                   {(() => {
-                                    const lvl = semBoxHealthCache[sem.key]?.level;
-                                    const triColor = lvl === 'critical' ? '#ef4444' : lvl === 'warning' ? '#facc15' : lvl === 'ok' ? '#22c55e' : null;
-                                    return triColor ? (
+                                    const lvl = semBoxHealthCache[sem.key]?.level || 'ok';
+                                    const triColor = lvl === 'critical' ? '#ef4444' : lvl === 'warning' ? '#facc15' : '#22c55e';
+                                    const fillColor = lvl === 'critical' ? 'rgba(239,68,68,0.95)' : lvl === 'warning' ? 'rgba(250,204,21,0.95)' : 'rgba(34,197,94,0.9)';
+                                    const markColor = lvl === 'warning' ? '#1a1a1a' : '#ffffff';
+                                    return (
                                       <svg
-                                        aria-hidden
-                                        width="16"
-                                        height="14"
-                                        viewBox="0 0 16 14"
-                                        style={{ marginRight: '5px', flexShrink: 0, display: 'inline-block', cursor: 'help' }}
+                                        aria-label="Open semester automations"
+                                        width="18"
+                                        height="16"
+                                        viewBox="0 0 18 16"
+                                        style={{ marginLeft: '3px', marginRight: '5px', flexShrink: 0, display: 'inline-block', cursor: 'pointer', filter: `drop-shadow(0 0 3px ${triColor}88)` }}
                                         data-testid={`sem-health-tri-${sem.key}`}
+                                        onClick={(e) => { e.stopPropagation(); expandedSemOpenTimeRef.current = Date.now(); setExpandedSemKey(sem.key); }}
                                         onMouseEnter={(e) => {
                                           const r = (e.currentTarget as SVGSVGElement).getBoundingClientRect();
                                           setSemTriHover({ semKey: sem.key, x: r.left + r.width / 2, y: r.bottom + 6 });
                                         }}
                                         onMouseLeave={() => setSemTriHover(null)}
                                       >
-                                        <polygon points="8,1.5 14.5,12.5 1.5,12.5" fill="none" stroke={triColor} strokeWidth="1.75" strokeLinejoin="round" strokeLinecap="round" />
+                                        <polygon points="9,1.5 16.5,14 1.5,14" fill={fillColor} stroke={triColor} strokeWidth="1.25" strokeLinejoin="round" strokeLinecap="round" />
+                                        <rect x="8.25" y="5.5" width="1.5" height="4.25" rx="0.6" fill={markColor} />
+                                        <circle cx="9" cy="11.7" r="0.85" fill={markColor} />
                                       </svg>
-                                    ) : null;
+                                    );
                                   })()}
                                   <span className="text-[10px] font-bold whitespace-nowrap" style={{ color: '#ffffff' }}>{sem.label}</span>
                                   {!sem.key.startsWith('ss') ? (
