@@ -3181,8 +3181,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     const fmt = (t: string) => { const [h,m] = t.split(':').map(Number); const p = h >= 12 ? 'PM' : 'AM'; const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h; return `${h12}:${m.toString().padStart(2,'0')} ${p}`; };
                     return (
                       <>
-                        <div />
-                        <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center', justifyItems: 'end', marginLeft: '100px' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '12px auto 1fr', gap: '6px', alignItems: 'center', justifyItems: 'end', marginLeft: '225px' }}>
                           <Calendar className="h-3 w-3 text-white flex-shrink-0" style={{ justifySelf: 'end' }} />
                           <span className="text-white" style={{ justifySelf: 'end' }}>Day 2:</span>
                           <span className="text-white capitalize" style={{ justifySelf: 'end' }}>
