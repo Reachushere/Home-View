@@ -327,9 +327,11 @@ export default function AutomationsReference({ open, onClose, colorSettings }: A
         <div
           className="relative flex items-center justify-center flex-shrink-0"
           style={{
-            backgroundImage: `url(${headerImg})`,
-            backgroundSize: '100% 100%',
-            backgroundRepeat: 'no-repeat',
+            // CSS gradient (palette from supplied SVG: dark navy
+            // #131A2B -> #1F2A40 -> #293249) so the header stretches
+            // crisply at any width and stays sharp on hi-dpi screens.
+            background: 'linear-gradient(135deg, #293249 0%, #1F2A40 43%, #131A2B 100%)',
+            boxShadow: 'inset 0 1px 0 rgba(173,192,226,0.35), inset 0 -1px 0 rgba(0,0,0,0.4)',
             height: '44px',
             paddingLeft: '12px',
             paddingRight: '12px',
@@ -595,9 +597,8 @@ export function AutomationsContent() {
       <div
         className="rounded-lg overflow-hidden mb-3"
         style={{
-          backgroundImage: `url(${headerImg})`,
-          backgroundSize: '100% 100%',
-          backgroundRepeat: 'no-repeat',
+          background: 'linear-gradient(135deg, #293249 0%, #1F2A40 43%, #131A2B 100%)',
+          boxShadow: 'inset 0 1px 0 rgba(173,192,226,0.35), inset 0 -1px 0 rgba(0,0,0,0.4)',
           height: '38px',
         }}
       />
