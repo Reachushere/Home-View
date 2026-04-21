@@ -28929,31 +28929,7 @@ export default function Dashboard() {
                               return c.name;
                             })();
 
-                            return (
-                              <div key={c.code} className="auto-resolution-card rounded-xl overflow-hidden cursor-pointer hover:brightness-110 transition" style={{ backgroundImage: `url(${pipelineBackImg})`, backgroundSize: '100% 100%', backgroundRepeat: 'no-repeat', boxShadow: '0 12px 32px rgba(0,0,0,0.45)' }} onClick={() => { const certKey = c.code; startTransition(() => setSelectedCertCourse({ courseCode: c.code, courseName: displayNameResult, certKey, semKey: expandedSemKey })); }} data-testid={`expanded-course-${c.code}`}>
-                                {/* Terminal-style title bar */}
-                                <div className="px-4 py-2.5 flex items-center gap-3 border-b" style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.045) 0%, rgba(255,255,255,0.015) 100%)', borderBottomColor: 'rgba(255,255,255,0.08)' }}>
-                                  <div className="flex items-center gap-1.5 mr-1">
-                                    <span className="w-2.5 h-2.5 rounded-full" style={{ background: '#ff5f57', boxShadow: '0 0 6px rgba(255,95,87,0.45)' }} />
-                                    <span className="w-2.5 h-2.5 rounded-full" style={{ background: '#febc2e', boxShadow: '0 0 6px rgba(254,188,46,0.4)' }} />
-                                    <span className="w-2.5 h-2.5 rounded-full" style={{ background: '#28c840', boxShadow: '0 0 6px rgba(40,200,64,0.45)' }} />
-                                  </div>
-                                  <div className="flex items-center gap-2 px-2 py-0.5 rounded" style={{ background: 'rgba(99,102,241,0.14)', border: '1px solid rgba(99,102,241,0.4)' }}>
-                                    <div className="w-2 h-2 rounded-full" style={{ background: dotBg, boxShadow: '0 0 6px rgba(255,255,255,0.35)' }} />
-                                    <span className="text-[12px] font-bold tracking-wider" style={{ color: '#ffffff', fontFamily: 'JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace', textShadow: '0 1px 2px rgba(0,0,0,0.6)' }}>{c.code}</span>
-                                  </div>
-                                  {(c.fullName || (displayNameResult !== c.code && displayNameResult)) && <span className="text-[12px] font-medium truncate" style={{ color: '#ffffff', fontFamily: 'JetBrains Mono, ui-monospace, monospace', textShadow: '0 1px 2px rgba(0,0,0,0.6)' }}>~/{c.fullName || displayNameResult}</span>}
-                                  {courseHealth && (
-                                    <div className="ml-auto flex items-center gap-2.5 flex-shrink-0">
-                                      <span className="text-[11px] tabular-nums" style={{ color: '#94a3b8', fontFamily: 'JetBrains Mono, ui-monospace, monospace' }}>{courseHealth.totalModules}M · {courseHealth.totalReadings}R</span>
-                                      {courseHealth.syllabusLinked
-                                        ? <span className="inline-flex items-center gap-1.5 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wider" style={{ background: 'rgba(16,185,129,0.12)', color: '#6ee7b7', border: '1px solid rgba(16,185,129,0.4)', fontFamily: 'JetBrains Mono, monospace' }}><span className="w-1.5 h-1.5 rounded-full" style={{ background: '#10b981', boxShadow: '0 0 5px #10b981' }} />syllabus.ok</span>
-                                        : <span className="inline-flex items-center gap-1.5 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wider cursor-pointer hover:brightness-125" style={{ background: 'rgba(239,68,68,0.12)', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.4)', fontFamily: 'JetBrains Mono, monospace' }} onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: 'syllabus', step: 0, phase: 'primary' }); }}><span className="w-1.5 h-1.5 rounded-full" style={{ background: '#ef4444', boxShadow: '0 0 5px #ef4444' }} />syllabus.missing</span>}
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            );
+                            return renderCoursePipeline(c, cIdx, expHealth, expandedSemKey);
                           })}
 
                           {expHealth?.issues && expHealth.issues.length > 0 && (
