@@ -368,14 +368,17 @@ export default function AutomationsReference({ open, onClose, colorSettings }: A
               const isAutoTasks = category.id === 'auto-tasks';
               const isGreyCat = category.id === 'popups' || category.id === 'ha';
               const isRedCat = category.id === 'reminders' || category.id === 'brynassist';
-              const useCssGradient = isCalSync || isAutoTasks || isGreyCat || isRedCat;
+              const isYellowCat = category.id === 'data';
+              const useCssGradient = isCalSync || isAutoTasks || isGreyCat || isRedCat || isYellowCat;
               const cssGradient = isCalSync
                 ? 'linear-gradient(135deg, #48AAE8 0%, #2D6CA7 43%, #122E66 100%)'
                 : isAutoTasks
                   ? 'linear-gradient(135deg, #64BA4D 0%, #428046 43%, #20453F 100%)'
                   : isRedCat
                     ? 'linear-gradient(135deg, #FAB6BE 0%, #C46D75 43%, #8F252E 100%)'
-                    : 'linear-gradient(135deg, #A7AFBB 0%, #687382 43%, #293649 100%)';
+                    : isYellowCat
+                      ? 'linear-gradient(135deg, #FDE324 0%, #BD9D28 43%, #7D562D 100%)'
+                      : 'linear-gradient(135deg, #A7AFBB 0%, #687382 43%, #293649 100%)';
               return (
                 <div
                   key={category.id}
