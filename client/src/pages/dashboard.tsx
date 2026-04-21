@@ -82,6 +82,7 @@ import hwPlayIconPath from "@assets/Headphones2_1774667878315.png";
 import hwPlayIconLightPath from "@assets/Headphone3_1774670459512.png";
 import BookAnimation from "@/components/BookAnimation";
 import dragTabPath from "@assets/drag-tab.svg";
+import semCogIconPath from "@assets/cog_1776749133244.svg";
 import teacherIconPath from "@assets/Teacher_1775101022422.png";
 import teacherWhiteIconPath from "@assets/Teacher_White2_1775164260333.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -28845,9 +28846,13 @@ export default function Dashboard() {
                               })()}>
                                 <div className="px-2 py-1.5 flex items-center justify-between">
                                 <div className="flex items-center flex-wrap" style={{ flexWrap: 'nowrap', overflow: 'hidden', minWidth: 0, gap: '7px' }}>
-                                  <Settings
-                                    className="text-white/50 hover:text-white cursor-pointer transition-colors flex-shrink-0"
-                                    style={{ width: '11px', height: '11px' }}
+                                  <img
+                                    src={semCogIconPath}
+                                    alt="Semester settings"
+                                    className="cursor-pointer flex-shrink-0"
+                                    style={{ width: '13px', height: '13px', opacity: 0.6, transition: 'opacity 0.15s ease' }}
+                                    onMouseEnter={(e) => { (e.currentTarget as HTMLImageElement).style.opacity = '1'; }}
+                                    onMouseLeave={(e) => { (e.currentTarget as HTMLImageElement).style.opacity = '0.6'; }}
                                     onClick={(e) => { e.stopPropagation(); setSemSettingsDialogKey(sem.key); }}
                                     data-testid={`button-sem-settings-${sem.key}`}
                                   />
