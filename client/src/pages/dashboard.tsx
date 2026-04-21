@@ -15459,7 +15459,6 @@ export default function Dashboard() {
                                                           : isRedFallback
                                                             ? (step.status === 'ok' ? GREEN_GRAD : RED_GRAD)
                                                           : null;
-                                                        const oneDriveGrad = isOneDrive ? cellGrad : null;
                                                         const stepBg = null;
                                                         const hasImg = false;
                                                         const hasGrad = !!cellGrad;
@@ -15470,7 +15469,7 @@ export default function Dashboard() {
                                                           padding: hasArt ? '0' : '8px 6px 6px',
                                                           cursor: isProblem ? 'pointer' : 'default',
                                                           borderRadius: hasGrad ? '8px' : (hasImg ? '0' : '8px'),
-                                                          background: hasGrad ? oneDriveGrad : (hasImg ? 'transparent' : '#ffffff'),
+                                                          background: hasGrad ? cellGrad : (hasImg ? 'transparent' : '#ffffff'),
                                                           backgroundImage: hasImg ? `url(${stepBg})` : undefined,
                                                           backgroundSize: hasImg ? '100% 100%' : undefined,
                                                           backgroundRepeat: hasImg ? 'no-repeat' : undefined,
