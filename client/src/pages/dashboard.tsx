@@ -28885,7 +28885,7 @@ export default function Dashboard() {
                                   })()}
                                   <span className="text-[10px] font-bold whitespace-nowrap" style={{ color: '#ffffff' }}>{sem.label}</span>
                                   {!sem.key.startsWith('ss') ? (
-                                    <span className="text-[9px] whitespace-nowrap px-1.5 py-0.5 rounded border cursor-pointer hover:bg-white/15 transition-colors" style={{ color: '#ffffff', background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)' }} onClick={(e) => { e.stopPropagation(); setSemDatePickerKey(sem.key); setSemDatePickerHalf('full'); }} data-testid={`dates-pill-${sem.key}`}>{(() => {
+                                    <span className="whitespace-nowrap rounded border cursor-pointer hover:bg-white/15 transition-colors" style={{ color: '#ffffff', background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)', lineHeight: '14px', fontSize: '9px', padding: '0 6px' }} onClick={(e) => { e.stopPropagation(); setSemDatePickerKey(sem.key); setSemDatePickerHalf('full'); }} data-testid={`dates-pill-${sem.key}`}>{(() => {
                                       const ps = perSemesterSettings[sem.key] as any;
                                       if (ps?.week1StartDate || ps?.semesterEndDate) {
                                         const fmtDate = (d: string) => { if (!d) return '?'; const dt = new Date(d + 'T12:00:00'); return dt.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); };
@@ -28913,7 +28913,7 @@ export default function Dashboard() {
                                       </>
                                     );
                                   })()}
-                                  {isCurrentSem && <span className="text-[7px] font-bold text-white bg-emerald-500/20 px-1 py-0.5 rounded-full border border-white">CURRENT</span>}
+                                  {isCurrentSem && <span className="font-bold tracking-wider uppercase rounded border whitespace-nowrap" style={{ color: '#ffffff', background: 'rgba(16,185,129,0.55)', borderColor: 'rgba(255,255,255,0.85)', lineHeight: '14px', fontSize: '9px', padding: '0 6px' }}>CURRENT</span>}
                                   {(() => {
                                     const semType = sem.key.startsWith('ss') ? 'spring_summer' : sem.key.startsWith('f') ? 'fall' : 'winter';
                                     const yMatch = sem.key.match(/\d{4}/);
@@ -28922,8 +28922,8 @@ export default function Dashboard() {
                                     const isAct = !!(dbSem && dbSem.isActive);
                                     return (
                                       <span
-                                        className="text-[7px] font-bold px-1.5 py-0.5 rounded-full border cursor-pointer transition-colors whitespace-nowrap"
-                                        style={{ color: isAct ? '#0a0f1e' : '#ffffff', background: isAct ? 'rgba(34,197,94,0.95)' : 'rgba(120,120,120,0.35)', borderColor: isAct ? 'rgba(34,197,94,1)' : 'rgba(255,255,255,0.4)' }}
+                                        className="font-bold tracking-wider uppercase rounded border cursor-pointer transition-colors whitespace-nowrap"
+                                        style={{ color: isAct ? '#0a0f1e' : '#ffffff', background: isAct ? 'rgba(34,197,94,0.95)' : 'rgba(120,120,120,0.35)', borderColor: isAct ? 'rgba(34,197,94,1)' : 'rgba(255,255,255,0.4)', lineHeight: '14px', fontSize: '9px', padding: '0 6px' }}
                                         title={dbSem ? (isAct ? 'Click to deactivate this semester' : 'Click to activate this semester') : 'Save semester dates first to enable activation'}
                                         onClick={async (e) => {
                                           e.stopPropagation();
@@ -28931,7 +28931,8 @@ export default function Dashboard() {
                                           try {
                                             const r = await fetch(`/api/semesters/${dbSem.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ isActive: !isAct }) });
                                             if (!r.ok) throw new Error(String(r.status));
-                                            await queryClient.invalidateQueries({ queryKey: ['/api/semester-settings'] });
+                                            await queryClient.invalidateQueries({ queryKey: ['/api/semesters'] });
+                                            await queryClient.invalidateQueries({ queryKey: ['/api/semester'] });
                                             toast({ title: !isAct ? 'Semester activated' : 'Semester deactivated' });
                                           } catch (err: any) {
                                             toast({ title: 'Toggle failed', description: String(err?.message || err), variant: 'destructive' });
@@ -28994,7 +28995,7 @@ export default function Dashboard() {
                                       </span>
                                     );
                                   })()}
-                                  {(() => { const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })(); const isConfirmedEnded = semesterEndConfirmed[sem.key]; return (isPast || isConfirmedEnded) ? <span className="font-bold tracking-wider uppercase rounded border flex-shrink" style={{ color: '#ffffff', background: colorSettings.headerBar, borderColor: 'rgba(255,255,255,0.2)', lineHeight: '14px', fontSize: 'clamp(5px, 1.2vw, 7px)', padding: '0 clamp(2px, 0.5vw, 4px)', whiteSpace: 'nowrap', flexShrink: 1, minWidth: 0 }}>COMPLETE</span> : null; })()}
+                                  {(() => { const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })(); const isConfirmedEnded = semesterEndConfirmed[sem.key]; return (isPast || isConfirmedEnded) ? <span className="font-bold tracking-wider uppercase rounded border flex-shrink" style={{ color: '#ffffff', background: colorSettings.headerBar, borderColor: 'rgba(255,255,255,0.2)', lineHeight: '14px', fontSize: '9px', padding: '0 6px', whiteSpace: 'nowrap', flexShrink: 0 }}>COMPLETE</span> : null; })()}
                                 </div>
                                 <ChevronRight
                                   className="text-white/40 hover:text-white cursor-pointer transition-colors flex-shrink-0 ml-1"
