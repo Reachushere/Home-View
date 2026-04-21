@@ -28944,7 +28944,24 @@ export default function Dashboard() {
                           {(expIsPast || expIsEnded) && <span className="text-[9px] font-bold text-white uppercase px-2 py-0.5 rounded border" style={{ background: colorSettings.headerBar, borderColor: 'rgba(255,255,255,0.3)' }}>COMPLETE</span>}
                           {expHealth && <span className="text-[9px] font-medium px-2 py-0.5 rounded-full" style={{ background: healthLevel === 'ok' ? 'rgba(34,197,94,0.2)' : healthLevel === 'warning' ? 'rgba(234,179,8,0.2)' : 'rgba(239,68,68,0.2)', color: healthLevel === 'ok' ? '#22c55e' : healthLevel === 'warning' ? '#eab308' : '#ef4444', border: `1px solid ${healthLevel === 'ok' ? 'rgba(34,197,94,0.4)' : healthLevel === 'warning' ? 'rgba(234,179,8,0.4)' : 'rgba(239,68,68,0.4)'}` }}>Health: {expHealth.healthScore}%</span>}
                         </div>
-                        <button className="text-white/60 hover:text-white transition-colors text-[18px] font-light" onClick={() => setExpandedSemKey(null)} data-testid="button-close-expanded-sem">&times;</button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => setIsCoursesDialogOpen(true)}
+                            className="text-[10.5px] px-3 py-1 rounded text-emerald-200 hover:text-white transition-colors"
+                            style={{ background: 'rgba(16,185,129,0.18)', border: '1px solid rgba(16,185,129,0.4)' }}
+                            data-testid="btn-open-courses-from-sem"
+                            title="Open Courses & Schedule (add/edit courses, generate class tasks)"
+                          >Manage Courses</button>
+                          <button
+                            onClick={() => generateClassTasksMutation.mutate()}
+                            disabled={generateClassTasksMutation.isPending}
+                            className="text-[10.5px] px-3 py-1 rounded text-blue-200 hover:text-white transition-colors disabled:opacity-50"
+                            style={{ background: 'rgba(59,130,246,0.18)', border: '1px solid rgba(59,130,246,0.45)' }}
+                            data-testid="btn-generate-class-tasks-from-sem"
+                            title="Generate class calendar entries for virtual courses in the active semester"
+                          >{generateClassTasksMutation.isPending ? 'Generating…' : 'Generate Class Tasks'}</button>
+                          <button className="text-white/60 hover:text-white transition-colors text-[18px] font-light ml-1" onClick={() => setExpandedSemKey(null)} data-testid="button-close-expanded-sem">&times;</button>
+                        </div>
                       </div>
 
                       <div className="flex-1 overflow-y-auto p-6" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.2) transparent' }}>
