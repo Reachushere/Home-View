@@ -28701,6 +28701,35 @@ export default function Dashboard() {
                                   })()}
                                   {isCurrentSem && <span className="text-[7px] font-bold text-white bg-emerald-500/20 px-1 py-0.5 rounded-full border border-white">CURRENT</span>}
                                   {(() => {
+                                    const semType = sem.key.startsWith('ss') ? 'spring_summer' : sem.key.startsWith('f') ? 'fall' : 'winter';
+                                    const yMatch = sem.key.match(/\d{4}/);
+                                    const yr = yMatch ? parseInt(yMatch[0]) : 0;
+                                    const dbSem = (allSemesterSettings || []).find((s: any) => { const ym = s.semesterName?.match(/\d{4}/); const sy = ym ? parseInt(ym[0]) : 0; return s.semesterType === semType && sy === yr; });
+                                    const isAct = !!(dbSem && dbSem.isActive);
+                                    return (
+                                      <span
+                                        className="text-[7px] font-bold px-1.5 py-0.5 rounded-full border cursor-pointer transition-colors whitespace-nowrap"
+                                        style={{ color: isAct ? '#0a0f1e' : '#ffffff', background: isAct ? 'rgba(34,197,94,0.95)' : 'rgba(120,120,120,0.35)', borderColor: isAct ? 'rgba(34,197,94,1)' : 'rgba(255,255,255,0.4)' }}
+                                        title={dbSem ? (isAct ? 'Click to deactivate this semester' : 'Click to activate this semester') : 'Save semester dates first to enable activation'}
+                                        onClick={async (e) => {
+                                          e.stopPropagation();
+                                          if (!dbSem) { toast({ title: 'Set semester dates first', description: 'Save the semester start/end dates before activating.' }); return; }
+                                          try {
+                                            const r = await fetch(`/api/semesters/${dbSem.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ isActive: !isAct }) });
+                                            if (!r.ok) throw new Error(String(r.status));
+                                            await queryClient.invalidateQueries({ queryKey: ['/api/semester-settings'] });
+                                            toast({ title: !isAct ? 'Semester activated' : 'Semester deactivated' });
+                                          } catch (err: any) {
+                                            toast({ title: 'Toggle failed', description: String(err?.message || err), variant: 'destructive' });
+                                          }
+                                        }}
+                                        data-testid={`toggle-active-${sem.key}`}
+                                      >
+                                        {isAct ? 'ACTIVE' : 'INACTIVE'}
+                                      </span>
+                                    );
+                                  })()}
+                                  {(() => {
                                     // Semester GPA + average % badge: shown inline next to the date
                                     // pills, just before the COMPLETE badge. Pulls grades from
                                     // certCourseMap → courseGrades (with electives + pastCourseInfo
