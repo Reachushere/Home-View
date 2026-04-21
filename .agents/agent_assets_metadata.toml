@@ -527,3 +527,9 @@ id = "bC4WKN3AHsDn2eLahwAKT"
 uri = "file://attached_assets/RedCat2_blink.gif"
 type = "image"
 title = "RedCat2_blink.gif — save to \\\\172.24.0.2\\config\\www\\lovelace\\Icons'\\Red Cat2 Blink.gif"
+
+[[outputs]]
+id = "u2TeV5PAAn1vVfX43EYv0"
+uri = "file://exports/Replit_Folder_All_Emails.pdf"
+type = "pdf"
+title = "Replit Folder — All 111 Emails (Chronological)"
