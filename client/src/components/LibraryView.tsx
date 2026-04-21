@@ -2899,6 +2899,11 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
       return saved ? new Set(JSON.parse(saved)) : new Set();
     } catch { return new Set(); }
   });
+  const [connectFolderModal, setConnectFolderModal] = useState<{ courseCode: string; courseName: string; semesterId: number; slotIdx: number; field: 'module' | 'reading'; currentPath: string } | null>(null);
+  const [connectBrowsePath, setConnectBrowsePath] = useState('/School/1. TMU/Courses');
+  const [connectBrowseItems, setConnectBrowseItems] = useState<any[]>([]);
+  const [connectBrowseLoading, setConnectBrowseLoading] = useState(false);
+  const [connectBrowseSaving, setConnectBrowseSaving] = useState(false);
   const [masterTypeFilter, setMasterTypeFilter] = useState<'all' | 'module' | 'reading'>('all');
   const [masterFormatFilter, setMasterFormatFilter] = useState('all');
   const [masterSortBy, setMasterSortBy] = useState<'relevance' | 'date_added' | 'name' | 'week'>('relevance');
@@ -5916,6 +5921,66 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
               data-testid={`toggle-shelf-${course.code}`}
               >
                 {!isCollapsed && (() => {
+                  const codeNorm = course.code.replace(/\s/g, '').toUpperCase();
+                  const semKeyLocal = currentSemester?.key || '';
+                  const semType = semKeyLocal.startsWith('ss') ? 'spring_summer' : semKeyLocal.startsWith('f') ? 'fall' : 'winter';
+                  const semYr = parseInt(semKeyLocal.match(/\d{4}/)?.[0] || '0');
+                  const dbSem = (semesterSettings || []).find((s: any) => { const sy = parseInt(s.semesterName?.match(/\d{4}/)?.[0] || '0'); return s.semesterType === semType && sy === semYr; });
+                  let slotIdx = 0;
+                  if (dbSem) {
+                    for (let i = 1; i <= 3; i++) {
+                      const c = ((dbSem as any)[`course${i}Code`] || '').replace(/\s/g, '').toUpperCase();
+                      if (c === codeNorm) { slotIdx = i; break; }
+                    }
+                  }
+                  const moduleFolder: string = (dbSem && slotIdx) ? ((dbSem as any)[`course${slotIdx}ModuleFolder`] || '') : '';
+                  const readingFolder: string = (dbSem && slotIdx) ? ((dbSem as any)[`course${slotIdx}ReadingFolder`] || '') : '';
+                  const hasModuleFiles = courseFiles.some(f => (f.folder || '').toLowerCase().includes('-module'));
+                  const hasReadingFiles = courseFiles.some(f => (f.folder || '').toLowerCase().includes('-reading'));
+                  const moduleLinked = !!moduleFolder || hasModuleFiles;
+                  const readingLinked = !!readingFolder || hasReadingFiles;
+                  const openConnect = (field: 'module' | 'reading') => {
+                    if (!dbSem || !slotIdx) { console.warn('[Library Connect] No semester record / slot for', course.code); return; }
+                    const cur = field === 'module' ? moduleFolder : readingFolder;
+                    const start = cur || '/School/1. TMU/Courses';
+                    setConnectFolderModal({ courseCode: course.code, courseName: course.name, semesterId: dbSem.id, slotIdx, field, currentPath: cur });
+                    setConnectBrowsePath(start);
+                    setConnectBrowseLoading(true);
+                    fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(start)}`).then(r => r.json()).then(items => {
+                      setConnectBrowseItems(Array.isArray(items) ? items : []);
+                      setConnectBrowseLoading(false);
+                    }).catch(() => setConnectBrowseLoading(false));
+                  };
+                  const Pill = ({ field, linked, label, path }: { field: 'module' | 'reading'; linked: boolean; label: string; path: string }) => (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); e.preventDefault(); openConnect(field); }}
+                      title={linked ? `${label} folder: ${path || '(detected from synced files)'} — click to change` : `${label} folder not connected — click to browse and link`}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: '3px', padding: '2px 6px',
+                        border: linked ? '1px solid rgba(34,197,94,0.6)' : '1px dashed rgba(239,68,68,0.7)',
+                        borderRadius: '4px',
+                        background: linked ? 'rgba(34,197,94,0.18)' : 'rgba(239,68,68,0.18)',
+                        color: linked ? '#0b3d1f' : '#7f1d1d',
+                        fontSize: '9px', fontWeight: 700, letterSpacing: '0.5px', cursor: 'pointer',
+                        fontFamily: 'system-ui, -apple-system, sans-serif', textTransform: 'uppercase',
+                        marginRight: '4px', flexShrink: 0, position: 'relative', zIndex: 20,
+                      }}
+                      data-testid={`btn-link-${field}-${course.code}`}
+                    >
+                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: linked ? '#16a34a' : '#dc2626', boxShadow: linked ? '0 0 4px rgba(34,197,94,0.6)' : '0 0 4px rgba(239,68,68,0.6)' }} />
+                      {label}
+                    </button>
+                  );
+                  const code = course.code;
+                  const hasSyllabus = !!syllabusPaths[code];
+                  return (
+                  <>
+                  <Pill field="module" linked={moduleLinked} label="Modules" path={moduleFolder} />
+                  <Pill field="reading" linked={readingLinked} label="Readings" path={readingFolder} />
+                  </>
+                  );
+                })()}
+                {!isCollapsed && (() => {
                   const code = course.code;
                   const hasSyllabus = !!syllabusPaths[code];
                   return (
@@ -6074,6 +6139,89 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
           );})
         )}
       </div>
+
+      {connectFolderModal && createPortal(
+        <div
+          onClick={() => setConnectFolderModal(null)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 200000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          data-testid="modal-connect-folder"
+        >
+          <div onClick={e => e.stopPropagation()} style={{ background: '#0a0f1e', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '10px', width: 'min(640px, 90vw)', maxHeight: '78vh', display: 'flex', flexDirection: 'column', color: '#fff', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+            <div style={{ padding: '14px 18px', borderBottom: '1px solid rgba(255,255,255,0.15)' }}>
+              <div style={{ fontSize: '13px', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase' }}>Connect {connectFolderModal.field === 'module' ? 'Modules' : 'Readings'} Folder</div>
+              <div style={{ fontSize: '11px', opacity: 0.75, marginTop: '4px' }}>{connectFolderModal.courseCode} — {connectFolderModal.courseName}</div>
+              <div style={{ fontSize: '10px', opacity: 0.6, marginTop: '6px', wordBreak: 'break-all' }}>Currently: {connectFolderModal.currentPath || '(not linked)'}</div>
+            </div>
+            <div style={{ padding: '8px 18px', borderBottom: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px' }}>
+              <button
+                onClick={() => {
+                  const parts = connectBrowsePath.split('/').filter(Boolean);
+                  parts.pop();
+                  const up = '/' + parts.join('/');
+                  setConnectBrowsePath(up || '/');
+                  setConnectBrowseLoading(true);
+                  fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(up || '/')}`).then(r => r.json()).then(items => { setConnectBrowseItems(Array.isArray(items) ? items : []); setConnectBrowseLoading(false); }).catch(() => setConnectBrowseLoading(false));
+                }}
+                style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', padding: '4px 10px', borderRadius: '4px', cursor: 'pointer', fontSize: '11px' }}
+                disabled={connectBrowseLoading || connectBrowsePath === '/' || connectBrowsePath === ''}
+                data-testid="button-folder-up"
+              >↑ Up</button>
+              <span style={{ flex: 1, fontFamily: 'monospace', opacity: 0.85, wordBreak: 'break-all' }}>{connectBrowsePath}</span>
+            </div>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '8px 0' }}>
+              {connectBrowseLoading ? (
+                <div style={{ padding: '20px', textAlign: 'center', opacity: 0.6, fontSize: '12px' }}>Loading…</div>
+              ) : connectBrowseItems.length === 0 ? (
+                <div style={{ padding: '20px', textAlign: 'center', opacity: 0.5, fontSize: '12px' }}>No subfolders here.</div>
+              ) : (
+                connectBrowseItems.map((item: any, i: number) => (
+                  <div
+                    key={i}
+                    onClick={() => {
+                      const next = `${connectBrowsePath === '/' ? '' : connectBrowsePath}/${item.name}`.replace(/\/+/g, '/');
+                      setConnectBrowsePath(next);
+                      setConnectBrowseLoading(true);
+                      fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(next)}`).then(r => r.json()).then(items => { setConnectBrowseItems(Array.isArray(items) ? items : []); setConnectBrowseLoading(false); }).catch(() => setConnectBrowseLoading(false));
+                    }}
+                    style={{ padding: '8px 18px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px' }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    data-testid={`folder-item-${i}`}
+                  >
+                    <span>📁</span>
+                    <span>{item.name}</span>
+                  </div>
+                ))
+              )}
+            </div>
+            <div style={{ padding: '12px 18px', borderTop: '1px solid rgba(255,255,255,0.15)', display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setConnectFolderModal(null)}
+                style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.25)', color: '#fff', padding: '6px 14px', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
+                data-testid="button-folder-cancel"
+              >Cancel</button>
+              <button
+                onClick={async () => {
+                  if (!connectFolderModal) return;
+                  setConnectBrowseSaving(true);
+                  try {
+                    const field = connectFolderModal.field === 'module' ? `course${connectFolderModal.slotIdx}ModuleFolder` : `course${connectFolderModal.slotIdx}ReadingFolder`;
+                    const r = await fetch(`/api/semesters/${connectFolderModal.semesterId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ [field]: connectBrowsePath }) });
+                    if (!r.ok) throw new Error(String(r.status));
+                    await queryClient.invalidateQueries({ queryKey: ['/api/semester-settings'] });
+                    setConnectFolderModal(null);
+                  } catch (e) { console.error('[Connect Folder] save failed', e); }
+                  setConnectBrowseSaving(false);
+                }}
+                disabled={connectBrowseSaving}
+                style={{ background: '#16a34a', border: '1px solid #16a34a', color: '#fff', padding: '6px 14px', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 600 }}
+                data-testid="button-folder-save"
+              >{connectBrowseSaving ? 'Saving…' : 'Use this folder'}</button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
 
       {openReaders.map((reader, readerIdx) => {
         const isFocused = focusedReaderId === reader.file.id;
