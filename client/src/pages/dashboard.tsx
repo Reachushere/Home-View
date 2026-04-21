@@ -83,6 +83,7 @@ import hwPlayIconLightPath from "@assets/Headphone3_1774670459512.png";
 import BookAnimation from "@/components/BookAnimation";
 import dragTabPath from "@assets/drag-tab.svg";
 import semCogIconPath from "@assets/cog_1776749133244.svg";
+import semHealthIconPath from "@assets/sem_health_icon_1776749198070.svg";
 import teacherIconPath from "@assets/Teacher_1775101022422.png";
 import teacherWhiteIconPath from "@assets/Teacher_White2_1775164260333.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -28862,24 +28863,24 @@ export default function Dashboard() {
                                     const fillColor = lvl === 'critical' ? 'rgba(239,68,68,0.95)' : lvl === 'warning' ? 'rgba(250,204,21,0.95)' : 'rgba(34,197,94,0.9)';
                                     const markColor = lvl === 'warning' ? '#1a1a1a' : '#ffffff';
                                     return (
-                                      <svg
+                                      <span
                                         aria-label="Open semester automations"
-                                        width="18"
-                                        height="16"
-                                        viewBox="0 0 18 16"
-                                        style={{ marginLeft: '3px', marginRight: '5px', flexShrink: 0, display: 'inline-block', cursor: 'pointer', filter: `drop-shadow(0 0 3px ${triColor}88)` }}
+                                        role="button"
                                         data-testid={`sem-health-tri-${sem.key}`}
                                         onClick={(e) => { e.stopPropagation(); expandedSemOpenTimeRef.current = Date.now(); setExpandedSemKey(sem.key); }}
                                         onMouseEnter={(e) => {
-                                          const r = (e.currentTarget as SVGSVGElement).getBoundingClientRect();
+                                          const r = (e.currentTarget as HTMLSpanElement).getBoundingClientRect();
                                           setSemTriHover({ semKey: sem.key, x: r.left + r.width / 2, y: r.bottom + 6 });
                                         }}
                                         onMouseLeave={() => setSemTriHover(null)}
+                                        style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '18px', height: '18px', marginLeft: '3px', marginRight: '5px', flexShrink: 0, cursor: 'pointer', filter: `drop-shadow(0 0 3px ${triColor}88)` }}
                                       >
-                                        <polygon points="9,1.5 16.5,14 1.5,14" fill={fillColor} stroke={triColor} strokeWidth="1.25" strokeLinejoin="round" strokeLinecap="round" />
-                                        <rect x="8.25" y="5.5" width="1.5" height="4.25" rx="0.6" fill={markColor} />
-                                        <circle cx="9" cy="11.7" r="0.85" fill={markColor} />
-                                      </svg>
+                                        <img src={semHealthIconPath} alt="" style={{ width: '16px', height: '16px', display: 'block' }} />
+                                        <svg width="9" height="8" viewBox="0 0 9 8" style={{ position: 'absolute', top: '-2px', right: '-3px', pointerEvents: 'none', filter: `drop-shadow(0 0 2px ${triColor})` }}>
+                                          <polygon points="4.5,0.6 8.4,7.4 0.6,7.4" fill={fillColor} stroke={triColor} strokeWidth="0.9" strokeLinejoin="round" />
+                                          <circle cx="4.5" cy="5.4" r="0.55" fill={markColor} />
+                                        </svg>
+                                      </span>
                                     );
                                   })()}
                                   <span className="text-[10px] font-bold whitespace-nowrap" style={{ color: '#ffffff' }}>{sem.label}</span>
