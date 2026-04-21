@@ -20,6 +20,7 @@ import {
   Loader2,
   ClipboardCheck,
 } from "lucide-react";
+import { SiMicrosoftonedrive } from "react-icons/si";
 import bgBack from "@assets/Back_1776566950517.png";
 import boxBlue from "@assets/Blue_Box_1776566950518.png";
 import boxGreen from "@assets/Green2_1776566950518.png";
@@ -441,7 +442,9 @@ export default function AutomationsReference({ open, onClose, colorSettings }: A
                             data-testid={`automation-item-${category.id}-${idx}`}
                           >
                             <div className="flex items-start gap-2">
-                              {!isOneDrive && <ItemIcon className="h-3 w-3 flex-shrink-0 mt-0.5 text-white" />}
+                              {isOneDrive
+                                ? <SiMicrosoftonedrive className="h-4 w-4 flex-shrink-0 mt-0.5 text-white" style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.55))' }} />
+                                : <ItemIcon className="h-3 w-3 flex-shrink-0 mt-0.5 text-white" />}
                               <div className="flex-1 min-w-0">
                                 <div className="text-[10px] font-semibold text-white leading-tight" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>
                                   {item.title}
@@ -638,7 +641,9 @@ export function AutomationsContent() {
                     return (
                       <div key={idx} className="rounded-md px-3 py-2" style={{ background: isOneDrive ? 'linear-gradient(135deg, #64BA4D 0%, #428046 43%, #20453F 100%)' : 'rgba(0,0,0,0.28)', border: '1px solid rgba(255,255,255,0.18)', boxShadow: isOneDrive ? 'inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.15)' : undefined, minHeight: isOneDrive ? '110px' : undefined }} data-testid={`automation-item-${category.id}-${idx}`}>
                         <div className="flex items-start gap-2">
-                          {!isOneDrive && <ItemIcon className="h-3 w-3 flex-shrink-0 mt-0.5 text-white" />}
+                          {isOneDrive
+                            ? <SiMicrosoftonedrive className="h-4 w-4 flex-shrink-0 mt-0.5 text-white" style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.55))' }} />
+                            : <ItemIcon className="h-3 w-3 flex-shrink-0 mt-0.5 text-white" />}
                           <div className="flex-1 min-w-0">
                             <div className="text-[10px] font-semibold text-white leading-tight" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>{item.title}</div>
                             <div className="text-[9px] text-white/85 mt-0.5 leading-relaxed">{item.description}</div>

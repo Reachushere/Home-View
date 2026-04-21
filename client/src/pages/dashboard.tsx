@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect, useMemo, memo, startTransition } from "react";
 import { createPortal } from "react-dom";
 import Cropper from "react-easy-crop";
+import { SiMicrosoftonedrive } from "react-icons/si";
 import { NewCourseWizard } from "@/components/NewCourseWizard";
 import { CourseDetailDialog } from "@/components/CourseDetailDialog";
 import { CalendarSettingsDialog } from "@/components/CalendarSettingsDialog";
@@ -15500,8 +15501,13 @@ export default function Dashboard() {
                                                                 <Icon size={16} style={{ color: '#ffffff', strokeWidth: 2 }} />
                                                               </div>
                                                             )}
-                                                            {hasArtBg && step.label === 'OneDrive' && <div style={{ flex: 1 }} />}
-                                                            <span className="text-[10px] font-bold uppercase tracking-wider leading-none" style={{ color: txtColor, fontFamily: 'JetBrains Mono, monospace', textShadow: txtShadow, paddingLeft: hasArtBg ? '6px' : undefined, paddingRight: hasArtBg ? '6px' : undefined, paddingBottom: hideLabelText ? '4px' : undefined }}>{hideLabelText ? '' : step.label}</span>
+                                                            {hasArtBg && step.label === 'OneDrive' && (
+                                                              <div className="flex flex-col items-center justify-center gap-1.5" style={{ flex: 1, paddingTop: '8px' }}>
+                                                                <SiMicrosoftonedrive size={28} style={{ color: '#ffffff', filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.55))' }} />
+                                                                <span className="text-[11px] font-bold leading-none" style={{ color: '#ffffff', fontFamily: 'JetBrains Mono, monospace', textShadow: '0 1px 3px rgba(0,0,0,0.75)', letterSpacing: '0.02em' }}>OneDrive</span>
+                                                              </div>
+                                                            )}
+                                                            <span className="text-[10px] font-bold uppercase tracking-wider leading-none" style={{ color: txtColor, fontFamily: 'JetBrains Mono, monospace', textShadow: txtShadow, paddingLeft: hasArtBg ? '6px' : undefined, paddingRight: hasArtBg ? '6px' : undefined, paddingBottom: hideLabelText ? '4px' : undefined, display: hideLabelText ? 'none' : undefined }}>{hideLabelText ? '' : step.label}</span>
                                                             <span className="mt-1 text-[9px] tabular-nums leading-none truncate max-w-full" style={{ color: txtColor, fontFamily: 'JetBrains Mono, monospace', textShadow: txtShadow, paddingBottom: hasArtBg ? '4px' : undefined, paddingLeft: hasArtBg ? '6px' : undefined, paddingRight: hasArtBg ? '6px' : undefined }}>{step.value}</span>
                                                           </>
                                                         );
