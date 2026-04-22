@@ -29044,7 +29044,7 @@ export default function Dashboard() {
                                       </>
                                     );
                                   })()}
-                                  {isCurrentSem && <span className="font-bold tracking-wider uppercase rounded border whitespace-nowrap" style={{ color: '#ffffff', background: 'rgba(16,185,129,0.55)', borderColor: 'rgba(255,255,255,0.85)', lineHeight: '14px', fontSize: '9px', padding: '0 6px' }}>CURRENT</span>}
+                                  {isCurrentSem && !semesterEndConfirmed[sem.key] && <span className="font-bold tracking-wider uppercase rounded border whitespace-nowrap" style={{ color: '#ffffff', background: 'rgba(16,185,129,0.55)', borderColor: 'rgba(255,255,255,0.85)', lineHeight: '14px', fontSize: '9px', padding: '0 6px' }}>CURRENT</span>}
                                   {(() => {
                                     const semType = sem.key.startsWith('ss') ? 'spring_summer' : sem.key.startsWith('f') ? 'fall' : 'winter';
                                     const yMatch = sem.key.match(/\d{4}/);
