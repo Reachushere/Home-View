@@ -171,7 +171,35 @@ function Auth1010Effects() {
 
   useEffect(() => {
     document.body.setAttribute('data-auth-1010', '1');
-    return () => { document.body.removeAttribute('data-auth-1010'); };
+    const originalFetch = window.fetch.bind(window);
+    const blockedResponse = () => new Response(
+      JSON.stringify({ ok: false, blocked: '1010-read-only' }),
+      { status: 200, headers: { 'Content-Type': 'application/json' } },
+    );
+    const guardedFetch: typeof window.fetch = (input, init) => {
+      const method = (init?.method
+        || (typeof input !== 'string' && !(input instanceof URL) ? (input as Request).method : 'GET')
+        || 'GET').toUpperCase();
+      if (method !== 'GET' && method !== 'HEAD' && method !== 'OPTIONS') {
+        const url = typeof input === 'string' ? input : (input instanceof URL ? input.toString() : (input as Request).url);
+        console.warn(`[1010] Blocked ${method} ${url} — read-only profile`);
+        return Promise.resolve(blockedResponse());
+      }
+      return originalFetch(input as any, init);
+    };
+    window.fetch = guardedFetch;
+    const originalSendBeacon = navigator.sendBeacon ? navigator.sendBeacon.bind(navigator) : null;
+    if (originalSendBeacon) {
+      navigator.sendBeacon = ((url: string | URL) => {
+        console.warn(`[1010] Blocked sendBeacon ${url} — read-only profile`);
+        return true;
+      }) as typeof navigator.sendBeacon;
+    }
+    return () => {
+      document.body.removeAttribute('data-auth-1010');
+      window.fetch = originalFetch;
+      if (originalSendBeacon) navigator.sendBeacon = originalSendBeacon;
+    };
   }, []);
 
   useEffect(() => {
