@@ -3424,6 +3424,22 @@ export default function Dashboard() {
   const [healthBrowsePath, setHealthBrowsePath] = useState('/School/1. TMU/Courses');
   const [healthBrowseItems, setHealthBrowseItems] = useState<Array<{ name: string; type: string; path: string }>>([]);
   const [healthBrowseLoading, setHealthBrowseLoading] = useState(false);
+  const [hiddenCalendarSources, setHiddenCalendarSources] = useState<Set<string>>(() => {
+    try {
+      const raw = localStorage.getItem('hiddenCalendarSources');
+      if (!raw) return new Set();
+      const arr = JSON.parse(raw);
+      return new Set(Array.isArray(arr) ? arr : []);
+    } catch { return new Set(); }
+  });
+  const toggleCalendarSource = (src: string) => {
+    setHiddenCalendarSources(prev => {
+      const next = new Set(prev);
+      if (next.has(src)) next.delete(src); else next.add(src);
+      try { localStorage.setItem('hiddenCalendarSources', JSON.stringify(Array.from(next))); } catch {}
+      return next;
+    });
+  };
   const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(() => {
     return localStorage.getItem('profilePhotoUrl');
   });
@@ -8319,10 +8335,13 @@ export default function Dashboard() {
   });
 
   const filteredCalendarEvents = useMemo(() => {
-    if (authLevel === '5747') return calendarEvents;
     if (authLevel === '1010') return [];
+    if (authLevel === '5747') {
+      if (hiddenCalendarSources.size === 0) return calendarEvents;
+      return calendarEvents.filter(e => !hiddenCalendarSources.has(e.source));
+    }
     return [];
-  }, [calendarEvents, authLevel]);
+  }, [calendarEvents, authLevel, hiddenCalendarSources]);
 
   const { data: upcomingCalendarEvents = [] } = useQuery<CalendarEvent[]>({
     queryKey: ["/api/calendar/upcoming-events"],
@@ -17953,6 +17972,66 @@ export default function Dashboard() {
         </div>
         <img src={profilePhotoUrl || profilePhoto} alt="Profile" style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, alignSelf: 'flex-start', boxShadow: '0 2px 8px rgba(0,0,0,0.2)', cursor: 'pointer' }} onClick={() => startTransition(() => setIsProfileDialogOpen(true))} data-testid="button-profile-photo" />
       </div>
+
+      {/* Calendar source toggles — 5747 only, sits under the profile photo */}
+      {authLevel === '5747' && (
+        <div
+          className="fixed flex flex-col"
+          data-tpo data-tpo-opacity="1"
+          style={{
+            right: `${calendarRight - calendarReduction + 7}px`,
+            top: `${5 + d2lTickerHeight + 44 + 6}px`,
+            zIndex: 100,
+            gap: '4px',
+            alignItems: 'flex-end',
+            opacity: (isTopPillOpen || isTodoFlyoutOpen) ? 0 : 1,
+            transition: (isTopPillOpen || isTodoFlyoutOpen) ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out',
+            pointerEvents: (isTopPillOpen || isTodoFlyoutOpen) ? 'none' : 'auto',
+          }}
+          data-testid="calendar-source-toggles"
+        >
+          {[
+            { src: 'tmu', label: 'TMU' },
+            { src: 'outlook_calendar', label: 'Outlook' },
+          ].map(({ src, label }) => {
+            const on = !hiddenCalendarSources.has(src);
+            return (
+              <button
+                key={src}
+                onClick={() => toggleCalendarSource(src)}
+                data-testid={`toggle-calendar-${src}`}
+                title={`${on ? 'Hide' : 'Show'} ${label} calendar events`}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '6px',
+                  padding: '3px 8px',
+                  borderRadius: '12px',
+                  background: on
+                    ? 'linear-gradient(180deg, rgba(100,186,77,0.55) 0%, rgba(66,128,70,0.40) 100%)'
+                    : 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.08) 100%)',
+                  border: on ? '1px solid rgba(140,210,120,0.55)' : '1px solid rgba(255,255,255,0.25)',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.18)',
+                  color: '#fff',
+                  fontSize: '10.5px',
+                  fontWeight: 500,
+                  fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  opacity: on ? 1 : 0.55,
+                }}
+              >
+                <span
+                  style={{
+                    display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%',
+                    background: on ? '#7BD162' : '#888',
+                    boxShadow: on ? '0 0 6px rgba(123,209,98,0.8)' : 'none',
+                  }}
+                />
+                {label}
+              </button>
+            );
+          })}
+        </div>
+      )}
 
 
       {/* Coming Up label removed */}
