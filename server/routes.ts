@@ -5533,6 +5533,45 @@ Be thorough but practical. Focus on real issues, not false positives. If the doc
     }
   });
 
+  // POST /api/semester/cleanup-class-tasks - Delete class tasks falling outside their course's start-end window
+  app.post("/api/semester/cleanup-class-tasks", async (req, res) => {
+    try {
+      const semesters = await storage.getAllSemesterSettings();
+      const allTasks = await storage.getTasks();
+      const classTasks = allTasks.filter(t => t.type === 'class' && t.dueDate && t.courseName);
+      const courseWindows: Array<{ code: string; start: Date; end: Date }> = [];
+      for (const sem of semesters) {
+        for (const n of [1, 2, 3] as const) {
+          const code = (sem as any)[`course${n}Code`];
+          const sd = (sem as any)[`course${n}StartDate`] || sem.semesterStartDate;
+          const ed = (sem as any)[`course${n}EndDate`] || sem.semesterEndDate;
+          if (code && sd && ed) {
+            courseWindows.push({ code: String(code).replace(/\s/g, '').toUpperCase(), start: new Date(sd), end: new Date(ed) });
+          }
+        }
+      }
+      const toDelete: any[] = [];
+      const dryRun = req.query.dryRun === '1' || (req.body && req.body.dryRun);
+      for (const t of classTasks) {
+        const cc = (t.courseName || '').split(' - ')[0].replace(/\s/g, '').toUpperCase();
+        const windows = courseWindows.filter(w => w.code === cc);
+        if (windows.length === 0) continue;
+        const due = new Date(t.dueDate as any);
+        const inAny = windows.some(w => due >= w.start && due <= new Date(w.end.getTime() + 24*60*60*1000));
+        if (!inAny) toDelete.push({ id: t.id, title: t.title, courseName: t.courseName, dueDate: t.dueDate });
+      }
+      if (!dryRun) {
+        for (const t of toDelete) {
+          try { await storage.deleteTask(t.id); } catch (_) {}
+        }
+      }
+      res.json({ deleted: dryRun ? 0 : toDelete.length, candidates: toDelete.length, dryRun: !!dryRun, sample: toDelete.slice(0, 20) });
+    } catch (err) {
+      console.error('[CleanupClassTasks] error:', err);
+      res.status(500).json({ error: 'Failed to cleanup class tasks' });
+    }
+  });
+
   // POST /api/semester/generate-class-tasks - Auto-create class tasks for virtual courses
   app.post("/api/semester/generate-class-tasks", async (req, res) => {
     try {

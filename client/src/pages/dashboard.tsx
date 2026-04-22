@@ -21460,11 +21460,15 @@ export default function Dashboard() {
                           queryClient.invalidateQueries({ queryKey: ["/api/semester"] });
                           if (updates.classDay && updates.classTime && updates.classEndTime && updates.semesterTerm && updates.year) {
                             const dates = computeSemesterDates(updates.semesterTerm, updates.year);
-                            if (dates.startDate) {
+                            const courseStartRaw = payload[`${prefix}StartDate`] || (sem as any)[`${prefix}StartDate`];
+                            const courseEndRaw = payload[`${prefix}EndDate`] || (sem as any)[`${prefix}EndDate`];
+                            const courseStartStr = courseStartRaw ? (typeof courseStartRaw === 'string' ? courseStartRaw.split('T')[0] : new Date(courseStartRaw).toISOString().split('T')[0]) : dates.startDate;
+                            const courseEndStr = courseEndRaw ? (typeof courseEndRaw === 'string' ? courseEndRaw.split('T')[0] : new Date(courseEndRaw).toISOString().split('T')[0]) : dates.endDate;
+                            if (courseStartStr) {
                               const courseName = updatedCourses[matchIdx >= 0 ? matchIdx : 0]?.name || `${courseCode}`;
-                              const [sY, sM, sD] = dates.startDate.split('-').map(Number);
+                              const [sY, sM, sD] = courseStartStr.split('-').map(Number);
                               const startD = new Date(sY, sM - 1, sD);
-                              const [eY, eM, eD] = dates.endDate.split('-').map(Number);
+                              const [eY, eM, eD] = courseEndStr.split('-').map(Number);
                               const endD = new Date(eY, eM - 1, eD);
                               const dayMap: Record<string, number> = { sunday: 0, monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5, saturday: 6 };
                               const day1Num = dayMap[updates.classDay!] ?? -1;
