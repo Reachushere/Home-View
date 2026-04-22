@@ -29074,7 +29074,9 @@ export default function Dashboard() {
                                     const yMatch = sem.key.match(/\d{4}/);
                                     const yr = yMatch ? parseInt(yMatch[0]) : 0;
                                     const dbSem = (allSemesterSettings || []).find((s: any) => { const ym = s.semesterName?.match(/\d{4}/); const sy = ym ? parseInt(ym[0]) : 0; return s.semesterType === semType && sy === yr; });
-                                    const isAct = !!(dbSem && dbSem.isActive);
+                                    const semEndForBadge = dbSem?.semesterEndDate ? new Date(dbSem.semesterEndDate) : null;
+                                    const isPastEndForBadge = !!(semEndForBadge && Date.now() > semEndForBadge.getTime() + 24*60*60*1000);
+                                    const isAct = !!(dbSem && dbSem.isActive) && !isPastEndForBadge && !semesterEndConfirmed[sem.key];
                                     return (
                                       <span
                                         className="font-bold tracking-wider uppercase rounded border cursor-pointer transition-colors whitespace-nowrap"

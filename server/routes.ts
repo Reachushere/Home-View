@@ -2608,12 +2608,115 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
         }
       }
 
+      if (existing) {
+        const renameSlots: Array<{ oldCode: string; newCode: string; oldName: string; newName: string }> = [];
+        for (let ci = 1; ci <= 3; ci++) {
+          const oc = ((existing as any)[`course${ci}Code`] || '').trim();
+          const nc = ((updated as any)[`course${ci}Code`] || '').trim();
+          const on = ((existing as any)[`course${ci}Name`] || '').trim();
+          const nn = ((updated as any)[`course${ci}Name`] || '').trim();
+          if (oc && nc && (oc !== nc || on !== nn)) {
+            renameSlots.push({ oldCode: oc, newCode: nc, oldName: on, newName: nn });
+          }
+        }
+        for (const r of renameSlots) {
+          try {
+            const { oldCode, newCode, oldName, newName } = r;
+            const oldFull = oldName ? `${oldCode} - ${oldName}` : oldCode;
+            const newFull = newName ? `${newCode} - ${newName}` : newCode;
+            const oldCodeSpaced = oldCode.replace(/^([A-Z]+)(\d.*)$/i, '$1 $2');
+            const newCodeSpaced = newCode.replace(/^([A-Z]+)(\d.*)$/i, '$1 $2');
+
+            const updateCourseNameField = async (table: string) => {
+              await db.execute(sql.raw(`UPDATE ${table} SET course_name = '${newFull.replace(/'/g, "''")}' WHERE course_name = '${oldFull.replace(/'/g, "''")}' OR course_name = '${oldCode.replace(/'/g, "''")}' OR course_name = '${oldCodeSpaced.replace(/'/g, "''")}'`));
+              await db.execute(sql.raw(`UPDATE ${table} SET course_name = REPLACE(course_name, '${oldFull.replace(/'/g, "''")}', '${newFull.replace(/'/g, "''")}') WHERE course_name LIKE '%${oldFull.replace(/'/g, "''")}%' AND course_name <> '${newFull.replace(/'/g, "''")}'`));
+              await db.execute(sql.raw(`UPDATE ${table} SET course_name = REPLACE(course_name, '${oldCodeSpaced.replace(/'/g, "''")}', '${newCodeSpaced.replace(/'/g, "''")}') WHERE course_name LIKE '%${oldCodeSpaced.replace(/'/g, "''")}%'`));
+            };
+            await updateCourseNameField('tasks');
+            await updateCourseNameField('projects');
+            await updateCourseNameField('announcements');
+            await updateCourseNameField('pending_review_items');
+
+            await db.execute(sql.raw(`UPDATE semester_checklist SET course_code = '${newCode.replace(/'/g, "''")}' WHERE course_code = '${oldCode.replace(/'/g, "''")}'`));
+            await db.execute(sql.raw(`UPDATE course_week_mappings SET course_code = '${newCode.replace(/'/g, "''")}' WHERE course_code = '${oldCode.replace(/'/g, "''")}'`));
+
+            await db.execute(sql.raw(`UPDATE files SET folder = REPLACE(folder, '${oldCode.replace(/'/g, "''")}', '${newCode.replace(/'/g, "''")}') WHERE folder LIKE '%${oldCode.replace(/'/g, "''")}%'`));
+
+            const dtRows = await db.select().from(degreeTrackingData);
+            for (const row of dtRows) {
+              if (row.key === 'semesterCourseAssignments' || row.key === 'coursesData') continue;
+              const v = row.value || '';
+              if (!v.includes(oldCode) && !v.includes(oldCodeSpaced)) continue;
+              let nv = v.split(oldFull).join(newFull);
+              nv = nv.split(oldCode).join(newCode);
+              nv = nv.split(oldCodeSpaced).join(newCodeSpaced);
+              if (nv !== v) {
+                await db.update(degreeTrackingData).set({ value: nv }).where(eq(degreeTrackingData.key, row.key));
+              }
+            }
+
+            console.log(`[Semester] Cascade rename ${oldCode} -> ${newCode} (${oldName} -> ${newName}) complete`);
+          } catch (e: any) {
+            console.error(`[Semester] Cascade rename failed:`, e.message);
+          }
+        }
+      }
+
       syncDegreeTrackingFromDb().catch(() => {});
 
       res.json(updated);
     } catch (err) {
       console.error("Error updating semester settings by ID:", err);
       res.status(500).json({ error: "Failed to update semester settings" });
+    }
+  });
+
+  app.post("/api/semester/cascade-rename", async (req, res) => {
+    try {
+      const { oldCode, newCode, oldName, newName } = req.body || {};
+      if (!oldCode || !newCode) return res.status(400).json({ error: 'oldCode and newCode required' });
+      const oldFull = oldName ? `${oldCode} - ${oldName}` : oldCode;
+      const newFull = newName ? `${newCode} - ${newName}` : newCode;
+      const oldCodeSpaced = oldCode.replace(/^([A-Z]+)(\d.*)$/i, '$1 $2');
+      const newCodeSpaced = newCode.replace(/^([A-Z]+)(\d.*)$/i, '$1 $2');
+      const counts: Record<string, number> = {};
+      const upd = async (table: string, label: string) => {
+        const r1: any = await db.execute(sql.raw(`UPDATE ${table} SET course_name = '${newFull.replace(/'/g, "''")}' WHERE course_name = '${oldFull.replace(/'/g, "''")}' OR course_name = '${oldCode.replace(/'/g, "''")}' OR course_name = '${oldCodeSpaced.replace(/'/g, "''")}'`));
+        const r2: any = await db.execute(sql.raw(`UPDATE ${table} SET course_name = REPLACE(course_name, '${oldFull.replace(/'/g, "''")}', '${newFull.replace(/'/g, "''")}') WHERE course_name LIKE '%${oldFull.replace(/'/g, "''")}%' AND course_name <> '${newFull.replace(/'/g, "''")}'`));
+        const r3: any = await db.execute(sql.raw(`UPDATE ${table} SET course_name = REPLACE(course_name, '${oldCodeSpaced.replace(/'/g, "''")}', '${newCodeSpaced.replace(/'/g, "''")}') WHERE course_name LIKE '%${oldCodeSpaced.replace(/'/g, "''")}%'`));
+        counts[label] = (r1?.rowCount || 0) + (r2?.rowCount || 0) + (r3?.rowCount || 0);
+      };
+      await upd('tasks', 'tasks');
+      await upd('projects', 'projects');
+      await upd('announcements', 'announcements');
+      await upd('pending_review_items', 'pendingReviewItems');
+      const c1: any = await db.execute(sql.raw(`UPDATE semester_checklist SET course_code = '${newCode.replace(/'/g, "''")}' WHERE course_code = '${oldCode.replace(/'/g, "''")}'`));
+      counts['semesterChecklist'] = c1?.rowCount || 0;
+      const c2: any = await db.execute(sql.raw(`UPDATE course_week_mappings SET course_code = '${newCode.replace(/'/g, "''")}' WHERE course_code = '${oldCode.replace(/'/g, "''")}'`));
+      counts['courseWeekMappings'] = c2?.rowCount || 0;
+      const c3: any = await db.execute(sql.raw(`UPDATE files SET folder = REPLACE(folder, '${oldCode.replace(/'/g, "''")}', '${newCode.replace(/'/g, "''")}') WHERE folder LIKE '%${oldCode.replace(/'/g, "''")}%'`));
+      counts['files'] = c3?.rowCount || 0;
+
+      let dtUpdated = 0;
+      const dtRows = await db.select().from(degreeTrackingData);
+      for (const row of dtRows) {
+        if (row.key === 'semesterCourseAssignments' || row.key === 'coursesData') continue;
+        const v = row.value || '';
+        if (!v.includes(oldCode) && !v.includes(oldCodeSpaced)) continue;
+        let nv = v.split(oldFull).join(newFull);
+        nv = nv.split(oldCode).join(newCode);
+        nv = nv.split(oldCodeSpaced).join(newCodeSpaced);
+        if (nv !== v) {
+          await db.update(degreeTrackingData).set({ value: nv }).where(eq(degreeTrackingData.key, row.key));
+          dtUpdated++;
+        }
+      }
+      counts['degreeTrackingRows'] = dtUpdated;
+      syncDegreeTrackingFromDb().catch(() => {});
+      res.json({ ok: true, oldCode, newCode, counts });
+    } catch (e: any) {
+      console.error('[CascadeRename] Failed:', e);
+      res.status(500).json({ error: e?.message || 'Failed' });
     }
   });
 
