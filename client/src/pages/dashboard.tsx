@@ -879,6 +879,19 @@ export default function Dashboard() {
     return () => clearInterval(morningReviewInterval);
   }, []);
 
+  useEffect(() => {
+    if (!showMorningReview) return;
+    try {
+      const eastern = new Date(new Date().toLocaleString('en-US', { timeZone: getAppTz() }));
+      const todayStr = `${eastern.getFullYear()}-${String(eastern.getMonth()+1).padStart(2,'0')}-${String(eastern.getDate()).padStart(2,'0')}`;
+      fetch('/api/morning-review/last-shown', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date: todayStr }),
+      }).catch(() => {});
+    } catch {}
+  }, [showMorningReview]);
+
   const triggerOutlookSyncAndReview = useCallback(async () => {
     try {
       const syncRes = await fetch('/api/morning-review/sync-all', { method: 'POST' });
