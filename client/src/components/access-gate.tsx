@@ -174,6 +174,15 @@ function Auth1010Effects() {
     return () => { document.body.removeAttribute('data-auth-1010'); };
   }, []);
 
+  useEffect(() => {
+    const handler = () => {
+      try { sessionStorage.removeItem('uni_cal_1010_fs_prompt_dismissed'); } catch {}
+      setShowFullscreenPrompt(true);
+    };
+    window.addEventListener('show-1010-fs-prompt', handler);
+    return () => window.removeEventListener('show-1010-fs-prompt', handler);
+  }, []);
+
   const dismiss = () => {
     try { sessionStorage.setItem('uni_cal_1010_fs_prompt_dismissed', '1'); } catch {}
     setShowFullscreenPrompt(false);

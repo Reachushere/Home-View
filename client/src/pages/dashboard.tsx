@@ -18982,6 +18982,10 @@ export default function Dashboard() {
               data-testid="button-library-pill"
               title="Library"
               onClick={() => {
+                if (is1010View) {
+                  window.dispatchEvent(new CustomEvent('show-1010-fs-prompt'));
+                  return;
+                }
                 const ss = semesterSettings as any;
                 if (ss) {
                   const st = ss.semesterType || '';
