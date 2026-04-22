@@ -23265,7 +23265,7 @@ export default function Dashboard() {
           )}
 
           {/* Quick Add Wizard Dialog */}
-          {isQuickAddOpen && desktopIsFull && (
+          {isQuickAddOpen && (desktopIsFull || is1010View) && (
             <div className="fixed inset-0 z-[10003] flex items-center justify-center" onClick={handleQuickAddClose}>
               <div 
                 className="rounded-xl w-[612px] max-w-[95vw] max-h-[95vh] overflow-hidden flex flex-col text-white shadow-2xl"
