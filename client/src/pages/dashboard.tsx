@@ -875,8 +875,6 @@ export default function Dashboard() {
       }
     };
     checkMorningReview();
-    const morningReviewInterval = setInterval(checkMorningReview, 30 * 60 * 1000);
-    return () => clearInterval(morningReviewInterval);
   }, []);
 
   useEffect(() => {
