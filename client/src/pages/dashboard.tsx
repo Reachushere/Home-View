@@ -7908,7 +7908,12 @@ export default function Dashboard() {
       title: (t.title || '').replace(/^\s*\[[^\]]*\]\s*/g, ''),
     }));
     if (authLevel === '5747') return stripBrackets(allTasksRaw);
-    if (authLevel === '1010') return [];
+    if (authLevel === '1010') {
+      return stripBrackets(allTasksRaw.filter(t => {
+        const title = (t.title || '').toLowerCase();
+        return /joanne/.test(title) || (/kevin/.test(title) && /report/.test(title));
+      }));
+    }
     return stripBrackets(allTasksRaw.filter(t => {
       const desc = (t as any).description || '';
       if (/\[Label:\s*(Personal|Financial)\]/i.test(desc)) return false;
