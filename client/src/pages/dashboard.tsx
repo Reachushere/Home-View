@@ -35174,7 +35174,51 @@ export default function Dashboard() {
                             style={{ top: '50%' }}
                           />}
                           {/* Multi-hour tasks are now rendered at scroll container level as single elements */}
+                          {is1010View && (() => {
+                            const joanneTask = (allTasks || []).find(t => {
+                              if (!/joanne/i.test(t.title || '') || !t.dueDate) return false;
+                              if (!isSameDayET(new Date(t.dueDate), day)) return false;
+                              const h = t.eventStartTime ? parseInt(t.eventStartTime.split(':')[0], 10) : getETHours(new Date(t.dueDate));
+                              return h === hour;
+                            });
+                            if (!joanneTask) return null;
+                            const dt = new Date(joanneTask.dueDate);
+                            const timeStr = joanneTask.eventStartTime
+                              ? (() => { const [h, m] = joanneTask.eventStartTime.split(':').map(Number); const hh = h % 12 || 12; const ap = h >= 12 ? 'PM' : 'AM'; return `${hh}:${String(m).padStart(2,'0')} ${ap}`; })()
+                              : dt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/Toronto' });
+                            const cleanTitle = (joanneTask.title || '').replace(/^\d{1,2}:\d{2}\s*[AP]M\s+/i, '').replace(/^\[[^\]]*\]\s*/g, '');
+                            return (
+                              <div
+                                onClick={(e) => { e.stopPropagation(); setEditingTask(joanneTask); }}
+                                style={{
+                                  position: 'absolute',
+                                  left: '2px', right: '2px', top: '2px',
+                                  height: `${Math.max(rowHeight - 4, 26)}px`,
+                                  background: 'linear-gradient(180deg, #fde68a, #f59e0b)',
+                                  border: '1.5px solid #92400e',
+                                  borderRadius: '4px',
+                                  padding: '2px 6px',
+                                  fontSize: '11px',
+                                  fontWeight: 700,
+                                  color: '#1f2937',
+                                  zIndex: 60,
+                                  cursor: 'pointer',
+                                  boxShadow: '0 1px 3px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.9)',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '5px',
+                                  overflow: 'hidden',
+                                  whiteSpace: 'nowrap',
+                                }}
+                                data-testid={`joanne-time-task-${joanneTask.id}`}
+                              >
+                                <span style={{ background: '#1f2937', color: '#fbbf24', padding: '1px 5px', borderRadius: '3px', fontSize: '10px', flexShrink: 0 }}>{timeStr}</span>
+                                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0, flex: 1 }}>{cleanTitle}</span>
+                              </div>
+                            );
+                          })()}
                           {hourTasks.filter(task => {
+                            if (is1010View && /joanne/i.test(task.title || '')) return false;
                             if (task.eventStartTime && task.eventEndTime) {
                               const [startHour] = task.eventStartTime.split(':').map(Number);
                               const [endHour] = task.eventEndTime.split(':').map(Number);
