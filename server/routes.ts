@@ -2640,7 +2640,10 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
             await db.execute(sql.raw(`UPDATE semester_checklist SET course_code = '${newCode.replace(/'/g, "''")}' WHERE course_code = '${oldCode.replace(/'/g, "''")}'`));
             await db.execute(sql.raw(`UPDATE course_week_mappings SET course_code = '${newCode.replace(/'/g, "''")}' WHERE course_code = '${oldCode.replace(/'/g, "''")}'`));
 
+            await db.execute(sql.raw(`UPDATE files SET folder = REPLACE(folder, '${oldFull.replace(/'/g, "''")}', '${newFull.replace(/'/g, "''")}') WHERE folder LIKE '%${oldFull.replace(/'/g, "''")}%'`));
+            await db.execute(sql.raw(`UPDATE files SET folder = REPLACE(folder, '${oldCodeSpaced.replace(/'/g, "''")} - ${oldName.replace(/'/g, "''")}', '${newCodeSpaced.replace(/'/g, "''")} - ${newName.replace(/'/g, "''")}') WHERE folder LIKE '%${oldCodeSpaced.replace(/'/g, "''")} - ${oldName.replace(/'/g, "''")}%'`));
             await db.execute(sql.raw(`UPDATE files SET folder = REPLACE(folder, '${oldCode.replace(/'/g, "''")}', '${newCode.replace(/'/g, "''")}') WHERE folder LIKE '%${oldCode.replace(/'/g, "''")}%'`));
+            await db.execute(sql.raw(`UPDATE files SET folder = REPLACE(folder, '${oldCodeSpaced.replace(/'/g, "''")}', '${newCodeSpaced.replace(/'/g, "''")}') WHERE folder LIKE '%${oldCodeSpaced.replace(/'/g, "''")}%'`));
 
             const dtRows = await db.select().from(degreeTrackingData);
             for (const row of dtRows) {
