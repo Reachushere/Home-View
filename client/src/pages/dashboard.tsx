@@ -18012,8 +18012,8 @@ export default function Dashboard() {
           data-testid="calendar-source-toggles"
         >
           {[
-            { src: 'tmu', label: 'TMU' },
             { src: 'outlook_calendar', label: 'Outlook' },
+            { src: 'tmu', label: 'TMU' },
           ].map(({ src, label }) => {
             const on = !hiddenCalendarSources.has(src);
             return (
@@ -18023,16 +18023,16 @@ export default function Dashboard() {
                 data-testid={`toggle-calendar-${src}`}
                 title={`${on ? 'Hide' : 'Show'} ${label} calendar events`}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: '5px',
-                  padding: '0.5px 6px',
-                  borderRadius: '9px',
+                  display: 'flex', alignItems: 'center', gap: '3px',
+                  padding: '0.5px 4px',
+                  borderRadius: '7px',
                   background: on
                     ? 'linear-gradient(180deg, rgba(100,186,77,0.55) 0%, rgba(66,128,70,0.40) 100%)'
                     : 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.08) 100%)',
                   border: on ? '1px solid rgba(140,210,120,0.55)' : '1px solid rgba(255,255,255,0.25)',
                   boxShadow: '0 2px 8px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.18)',
                   color: '#fff',
-                  fontSize: '9px',
+                  fontSize: '6px',
                   fontWeight: 500,
                   fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
                   cursor: 'pointer',
@@ -18042,7 +18042,7 @@ export default function Dashboard() {
               >
                 <span
                   style={{
-                    display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%',
+                    display: 'inline-block', width: '4px', height: '4px', borderRadius: '50%',
                     background: on ? '#7BD162' : '#888',
                     boxShadow: on ? '0 0 6px rgba(123,209,98,0.8)' : 'none',
                   }}

@@ -122,3 +122,52 @@ BA's system prompt (search routes.ts for "ONEDRIVE TOKEN EXPIRED") contains this
 - **Mobile Companion App**: Standalone mobile app shell at `/m` route with its own password gate (5747/4201/1010), D2L ticker, bottom tab navigation (Home, Calendar, Notes, Share, More), and feature grid. Profile-based visibility: 5747=full access, 4201=shifts+partner wizard, 1010=limited. Features: Add Task, Alexa/Megaphone, Settings wizard, Quick Notepad, Partner Shifts, Library browser, Study AI, APA Checker. Embeds existing MobileNotesPage and MobileUploadPage. Calendar tab has week/month views with task dots. File: `client/src/pages/mobile-app.tsx`.
 - **Gmail Ticker System**: Google Apps Script (hosted at script.google.com) pushes emails to the app via webhooks. Supports 5 email types: (1) Subject "Ticker" → bottom ticker bar, (2) Subject "Reminder" → todo list with red button indicator, (3) Subject "Delete" → removes ticker/calendar/todo items by body text, (4) Forwarded from user's Outlook/TMU address → calendar task, (5) D2L Brightspace → D2L announcement ticker. Endpoints: `/api/webhook/ticker`, `/api/webhook/reminder`, `/api/webhook/delete`, `/api/webhook/email-homework`, `/api/announcements/webhook`. Auth: `?auth=5747` or body `auth` field.
 - **AI Wizard Upgrades (40 tools)**: Auto-deploy on Pi (git_commit_and_push runs deploy.sh automatically when on Pi), scheduled health checks with email alerts (POST/GET `/api/ai/health-monitor`), auto-learning memory (corrections auto-saved to `.ai-memory.md`), conversation history persistence (`.ai-conversations/` directory, JSONL per day), performance/bundle tracking (`check_performance` tool), comprehensive health check tool, and voice command routing (unknown voice commands forwarded to AI wizard via `/api/ai/voice-command`). Conversation history API at `GET /api/ai/conversations`.
+## Naming & Discoverability Cheatsheet (for fellow agents)
+
+When the user describes a UI element by what it looks like or where it sits on screen, the literal label rarely matches the JSX. Use these patterns to grep faster.
+
+### Locating UI elements
+- **Don't grep the visible label first** (e.g. "Outlook", "TMU"). Grep nearby JSX comments and `data-testid` attributes — comments in dashboard.tsx describe regions like `{/* Calendar source toggles — 5747 only, sits under the profile photo */}`.
+- **Anchor by neighbor**: if the user says "below the profile photo", grep `profilePhoto`, `profilePhotoUrl`, `button-profile-photo`, then read 50–200 lines after.
+- **Anchor by data-testid**: most clickable items have `data-testid="..."`. Grep `toggle-calendar-`, `button-`, `badge-`, `chip-`, `card-`.
+- **Anchor by CSS-in-JS keyword**: search for unique style values seen in screenshots (gradient stops, hex colors like `#059669`, `rgba(16,185,129`, fontSize `'9px'`).
+- **Mega-file**: dashboard.tsx is ~42k lines; search past 19200 to skip imports/state. Use `head_limit` on grep.
+
+### Common synonyms in this codebase
+| User says | Search for |
+|---|---|
+| "calendar toggle" / "outlook toggle" / "tmu toggle" | `calendar-source-toggles`, `toggleCalendarSource`, `hiddenCalendarSources` |
+| "profile photo" | `profilePhoto`, `profilePhotoUrl`, `button-profile-photo` |
+| "main calendar" / "week calendar" / "time slots" | `getTasksForHour`, `getCalendarEventsForHour`, `weekDays.map`, `timeSlots.map` |
+| "per-course week row" | `filteredCourses.map((courseData, courseIdx)`, `courseWeekTasks`, `dueTasks` filter |
+| "semesters page" / "header bar" / "ACTIVE/CURRENT/COMPLETE badge" | `isCurrentSem`, `semesterEndConfirmed`, `allSemestersForHealth`, `>ACTIVE<`, `>CURRENT<`, `>COMPLETE<` |
+| "library books rename popup" | `newReadingPrompt`, `library-reading-rename-prompted`, `handleReadingRenameResponse` |
+| "D2L ticker" / "announcements bar" | `thisWeekAnnouncements`, `tickerDialogOpen`, `button-ticker-manage` |
+| "contacts dialog" | `contactsList`, `setContactsList` (cleared on 1010) |
+| "weather alerts past" | `Past Weather Alerts`, search `<details>` near line ~28131 |
+| "APA citation" | `Quote` icon import, near LibraryView right-side toolbar |
+| "notepad" / "APA Checker" floating buttons | look in LibraryView toolbar around `is1010View` const ~line 2558 |
+
+### Auth / profile gating
+- `authLevel === '5747'` — Bryn (full access)
+- `authLevel === '4201'` — Yasu (partner, limited)
+- `authLevel === '1010'` — Guest (read-only). Local: `const is1010View = libAuthLevel === '1010'` in LibraryView (~2555) and `const is1010View = authLevel === '1010'` in dashboard (~2216).
+- Many features must be gated for 1010: any popups/prompts (rename, sync), edit pencils, manage buttons. Pattern: `is1010View && return null` early, or `(desktopIsFull || is1010View)` for read-only allowance.
+
+### Semester key conventions
+- Keys: `ss2025`, `f2025`, `w2026`, `ss2026`, `f2026`, `w2027`, ... (Spring/Summer = `ss`, Fall = `f`, Winter = `w`).
+- Derive from `semesterName` ("Winter 2026 Semester") via `semKeyFromTypeYear(type, year)`.
+- `semesterEndConfirmed[semKey]` is the source of truth for "this semester is over". When true, hide CURRENT/ACTIVE badges and show COMPLETE.
+- `currentSemKey` is the live current semester. `hasSemStarted(key)` for past-check.
+
+### Tasks
+- `allTasks` is the user-visible task list. The 1010 override (around line 7913) restricts to joanne/kevin-report tasks and may rewrite titles (e.g., prepend time).
+- Per-course week calendar filters by `task.courseName?.toUpperCase().startsWith(courseCodeUpper)`. Tasks without a matching courseName won't appear unless explicitly injected.
+- Hourly time-slot grid uses `tasksByDateKey` (built from `allTasks`) and `getTasksForHour(day, hour)`. To force-render a special task there, add a custom render block right before `hourTasks.filter(...).map(...)` (~line 35179) and exclude it from the normal map to avoid duplication.
+- `task.eventStartTime` (`HH:MM`) overrides `dueDate` for hour bucketing. UTC-midnight `dueDate` falls back to hour=20.
+
+### Per-course "course row" gotcha
+- The dueTasks filter in the week-calendar course rows iterates `filteredCourses.map((courseData, courseIdx))` (~line 33168). To inject a non-course task, gate by `courseIdx === 0` so it appears once (in the first row) instead of repeating in every course row.
+
+### Style/size adjustments
+- "X pixels smaller" usually means font-size + matching padding/dot adjustments, not just one. Reduce in proportion (e.g., font 9→6, dot 6→4, gap 5→3, padding 6→4, radius 9→7).
