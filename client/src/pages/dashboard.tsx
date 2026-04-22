@@ -18988,7 +18988,6 @@ export default function Dashboard() {
               onClick={() => {
                 if (is1010View) {
                   window.dispatchEvent(new CustomEvent('show-1010-fs-prompt'));
-                  return;
                 }
                 const ss = semesterSettings as any;
                 if (ss) {
