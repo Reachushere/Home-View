@@ -1711,6 +1711,11 @@ export default function Dashboard() {
     } catch {}
   }, [authLevel]);
   useEffect(() => { hydrateBlankCanvasNotesFromServer(false); }, [hydrateBlankCanvasNotesFromServer]);
+  useEffect(() => {
+    if (authLevel === '1010' && blankEditorRef.current) {
+      blankEditorRef.current.innerHTML = '';
+    }
+  }, [authLevel, blankBoxOpen]);
   // Force a fresh pull every time the notes box opens, so opening on a
   // different device shows the latest content rather than what was last
   // typed locally.
@@ -2208,9 +2213,11 @@ export default function Dashboard() {
   const [isGeneratingLink, setIsGeneratingLink] = useState(false);
   const desktopIsFull = authLevel === '5747';
   const desktopHasPartnerWizard = authLevel === '5747' || authLevel === '4201';
-  const desktopShowHomework = authLevel === '5747';
+  const is1010View = authLevel === '1010';
+  const desktopShowHomework = authLevel === '5747' || is1010View;
   const desktopShowWidePill = authLevel === '5747';
   const desktopShowCalendar = authLevel === '5747' || authLevel === '1010';
+  const lockedDisabledStyle: React.CSSProperties = { opacity: 0.35, filter: 'grayscale(100%)', pointerEvents: 'none', cursor: 'not-allowed' };
   const desktopHasD2L = true;
   const [isCompletedTasksOpen, setIsCompletedTasksOpen] = useState(false);
   const [dismissedCalendarEvents, setDismissedCalendarEvents] = useState<Set<string>>(() => {
@@ -7885,6 +7892,7 @@ export default function Dashboard() {
       title: (t.title || '').replace(/^\s*\[[^\]]*\]\s*/g, ''),
     }));
     if (authLevel === '5747') return stripBrackets(allTasksRaw);
+    if (authLevel === '1010') return [];
     return stripBrackets(allTasksRaw.filter(t => {
       const desc = (t as any).description || '';
       if (/\[Label:\s*(Personal|Financial)\]/i.test(desc)) return false;
@@ -8312,7 +8320,7 @@ export default function Dashboard() {
 
   const filteredCalendarEvents = useMemo(() => {
     if (authLevel === '5747') return calendarEvents;
-    if (authLevel === '1010') return calendarEvents.filter(e => e.source === 'tmu');
+    if (authLevel === '1010') return [];
     return [];
   }, [calendarEvents, authLevel]);
 
@@ -18501,7 +18509,7 @@ export default function Dashboard() {
             <ListChecks className="h-[18px] w-[18px] text-white/70" style={{ position: 'relative', top: '-5px', left: '-2px' }} />
             <span style={{ position: 'absolute', top: '13px', fontSize: '7.5px', color: '#ffffff', fontWeight: 500, letterSpacing: '0.5px', whiteSpace: 'nowrap', textAlign: 'center', right: '50%', transform: 'translateX(32%)' }}>Tasks</span>
           </div>
-          {desktopIsFull && <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)', marginTop: '1px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); startTransition(() => { setQuickAddStep(0); setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, countdownBarColor: '', priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminder4DateTimeMode: false, reminder4Date: '', reminder4Hour: '09', reminder4Minute: '00', reminderEmail: false, reminderAlexa: false, reminderSms: false, reminder1Methods: '', reminder2Methods: '', reminder3Methods: '', reminder4Methods: '', attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '', repeatSpanDays: 1, shiftAdjust: false, hideFromSummary: false, hideFromCountdown: false, sendInvite: false, inviteEmail: '', inviteName: '', taskLabel: '' as any }); setIsQuickAddOpen(true); }); }}>+ Add</Button>}
+          {(desktopIsFull || is1010View) && <Button variant="ghost" size="sm" disabled={is1010View && !desktopIsFull} className={`!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%)',  border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)', marginTop: '1px', zIndex: 10, position: 'relative', ...(is1010View && !desktopIsFull ? lockedDisabledStyle : {}) }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); startTransition(() => { setQuickAddStep(0); setQuickAddData({ type: '', title: '', courseName: '', dueDate: '', dueDateHour: '18', dueDateMinute: '00', timezone: 'America/Toronto', prepDays: 0, showCountdownBar: true, showCountdownBarMain: true, showCountdownBarSummary: true, countdownBarDays: 0, countdownBarColor: '', priority: 'medium', description: '', eventStartTime: '', eventEndTime: '', reminder1: DEFAULT_REMINDER_1, reminder1Custom: false, reminder1Days: 0, reminder1Hours: 0, reminder1Minutes: 30, reminder2: DEFAULT_REMINDER_2, reminder2Custom: false, reminder2Days: 0, reminder2Hours: 2, reminder2Minutes: 0, reminder3: null, reminder3Custom: false, reminder3Days: 0, reminder3Hours: 0, reminder3Minutes: 0, reminder4: null, reminder4Custom: false, reminder4Days: 0, reminder4Hours: 0, reminder4Minutes: 0, reminder4DateTimeMode: false, reminder4Date: '', reminder4Hour: '09', reminder4Minute: '00', reminderEmail: false, reminderAlexa: false, reminderSms: false, reminder1Methods: '', reminder2Methods: '', reminder3Methods: '', reminder4Methods: '', attachments: [], pasteUrl: '', notes: '', referenceLink: '', subtasks: [], subtaskInput: '', projectId: null, repeatType: 'none', repeatInterval: null, repeatIntervalUnit: null, repeatEndDate: '', repeatSpanDays: 1, shiftAdjust: false, hideFromSummary: false, hideFromCountdown: false, sendInvite: false, inviteEmail: '', inviteName: '', taskLabel: '' as any }); setIsQuickAddOpen(true); }); }}>+ Add</Button>}
           {/* Completed Tasks Button - Swapped with Graduation Hat */}
           <div className="pill-button-hover" style={{ 
             marginTop: '0px', width: '44px', height: '43px', borderRadius: '50%',
@@ -18548,11 +18556,12 @@ export default function Dashboard() {
           </div>
 
 
-          {authLevel === '4201' && <Button
+          {(authLevel === '4201' || is1010View) && <Button
             variant="ghost"
             size="sm"
+            disabled={is1010View}
             className="!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover"
-            style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(139,92,246,0.35) 0%, rgba(139,92,246,0.18) 100%)', border: '1.5px solid rgba(139,92,246,0.45)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '1px', zIndex: 10, position: 'relative' }}
+            style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(139,92,246,0.35) 0%, rgba(139,92,246,0.18) 100%)', border: '1.5px solid rgba(139,92,246,0.45)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '1px', zIndex: 10, position: 'relative', ...(is1010View ? lockedDisabledStyle : {}) }}
             data-testid="button-partner-shifts-4201"
             onClick={() => { setPartnerWizardStep(0); setPartnerWizardDates([]); setPartnerWizardShiftType('day'); setPartnerWizardOpen(true); }}
           >Partner Shifts</Button>}
@@ -19109,7 +19118,7 @@ export default function Dashboard() {
           )}
 
           {/* Monthly Report (moved from Tasks pill — kept blue, sits right of Redo, default 2px gap) */}
-          {desktopIsFull && (
+          {(desktopIsFull || is1010View) && (
             <div
               style={{
                 width: '44px', height: '43px', marginTop: '3px', marginLeft: '2px', zIndex: 100, borderRadius: '50%',
@@ -19117,7 +19126,8 @@ export default function Dashboard() {
                 position: 'relative' as const,
                 border: '1.5px solid rgba(170,210,255,0.45)',
                 boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+                display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                ...(is1010View && !desktopIsFull ? lockedDisabledStyle : {})
               }}
               className="pill-button-hover"
               onClick={() => { triggerButtonGlow('addtask'); setIsMonthlyReportOpen(true); }}
@@ -19132,7 +19142,7 @@ export default function Dashboard() {
               so the app holds still while BA fixes whatever is misbehaving.
               Single click reloads with ?safe=1; the red banner up top has the
               "Exit safe mode" button. */}
-          {desktopIsFull && (
+          {(desktopIsFull || is1010View) && (
             <div
               style={{
                 width: '44px', height: '43px', marginTop: '3px', marginLeft: '2px', zIndex: 100, borderRadius: '50%',
@@ -19140,7 +19150,8 @@ export default function Dashboard() {
                 position: 'relative' as const,
                 border: '1.5px solid rgba(255,170,170,0.55)',
                 boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+                display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                ...(is1010View && !desktopIsFull ? lockedDisabledStyle : {})
               }}
               className="pill-button-hover"
               onClick={() => {
