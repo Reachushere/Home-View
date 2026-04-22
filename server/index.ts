@@ -781,7 +781,7 @@ app.use((req, res, next) => {
           const all = await storage.getAllSemesterSettings();
           const existingNames = new Set(all.map((s: any) => s.semesterName));
           const requiredSemesters = [
-            { semesterName: 'Spring/Summer 2026', semesterType: 'spring_summer', semesterStartDate: new Date('2026-05-04'), semesterEndDate: new Date('2026-08-07'), course1Code: 'CECN210', course1Name: 'Understanding Economics', course1DisplayName: 'Economics', course1SpringSummerTerm: 'full', course2Code: 'CPHL110', course2Name: 'Philosophy of Religion', course2DisplayName: 'Philosophy of Religion', course2SpringSummerTerm: 'first_half', course3Code: 'CHIS105', course3Name: 'Inventing Popular Culture', course3DisplayName: 'Popular Culture', course3SpringSummerTerm: 'second_half', course1StartDate: new Date('2026-05-04'), course1EndDate: new Date('2026-07-31'), course2StartDate: new Date('2026-05-04'), course2EndDate: new Date('2026-06-20'), course3StartDate: new Date('2026-06-23'), course3EndDate: new Date('2026-08-04') },
+            { semesterName: 'Spring/Summer 2026', semesterType: 'spring_summer', semesterStartDate: new Date('2026-05-04'), semesterEndDate: new Date('2026-08-07'), course1Code: 'CECN210', course1Name: 'Understanding Economics', course1DisplayName: 'Economics', course1SpringSummerTerm: 'full', course2Code: 'CPHL110', course2Name: 'Philosophy of Religion', course2DisplayName: 'Philosophy of Religion', course2SpringSummerTerm: 'first_half', course3Code: 'CHST501', course3Name: 'The American Civil War', course3DisplayName: 'American Civil War', course3SpringSummerTerm: 'second_half', course1StartDate: new Date('2026-05-04'), course1EndDate: new Date('2026-07-31'), course2StartDate: new Date('2026-05-04'), course2EndDate: new Date('2026-06-20'), course3StartDate: new Date('2026-06-23'), course3EndDate: new Date('2026-08-04') },
             { semesterName: 'Fall 2026', semesterType: 'fall', semesterStartDate: new Date('2026-09-07'), semesterEndDate: new Date('2026-12-11'), course1Code: 'CPPA235', course1Name: 'CPPA235 - TBD', course2Code: 'TBD2', course2Name: 'TBD2', course3Code: 'TBD3', course3Name: 'TBD3' },
             { semesterName: 'Winter 2027', semesterType: 'winter', semesterStartDate: new Date('2027-01-11'), semesterEndDate: new Date('2027-04-16'), course1Code: 'TBD1', course1Name: 'TBD1', course2Code: 'TBD2', course2Name: 'TBD2', course3Code: 'TBD3', course3Name: 'TBD3' },
             { semesterName: 'Spring/Summer 2027', semesterType: 'spring_summer', semesterStartDate: new Date('2027-05-03'), semesterEndDate: new Date('2027-08-06'), course1Code: 'TBD1', course1Name: 'TBD1', course1SpringSummerTerm: 'full', course2Code: 'TBD2', course2Name: 'TBD2', course3Code: 'TBD3', course3Name: 'TBD3' },
@@ -815,9 +815,11 @@ app.use((req, res, next) => {
             if (ss2026.course1Code === 'CECN210') displayUpdates.course1DisplayName = 'Economics';
             if (ss2026.course2Code === 'CPHL110') displayUpdates.course2DisplayName = 'Philosophy of Religion';
             if (ss2026.course3Code === 'CHIS105') displayUpdates.course3DisplayName = 'Popular Culture';
+            if (ss2026.course3Code === 'CHST501') displayUpdates.course3DisplayName = 'American Civil War';
             if (ss2026.course1Name?.includes('CECN210 - ')) displayUpdates.course1Name = ss2026.course1Name.replace('CECN210 - ', '');
             if (ss2026.course2Name?.includes('CPHL110 - ')) displayUpdates.course2Name = ss2026.course2Name.replace('CPHL110 - ', '');
             if (ss2026.course3Name?.includes('CHIS105 - ')) displayUpdates.course3Name = ss2026.course3Name.replace('CHIS105 - ', '');
+            if (ss2026.course3Name?.includes('CHST501 - ')) displayUpdates.course3Name = ss2026.course3Name.replace('CHST501 - ', '');
             if (Object.keys(displayUpdates).length > 0) {
               await storage.updateSemesterSettings(ss2026.id, displayUpdates);
               console.log(`[Semesters] Set SS2026 display names: ${JSON.stringify(displayUpdates)}`);

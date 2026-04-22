@@ -57,7 +57,7 @@ export const COURSES = [
   { code: "CGCM738", name: "Photoshopped!", color: "orange" },
   { code: "CECN210", name: "Understanding Economics", color: "emerald" },
   { code: "CPHL110", name: "Philosophy of Religion", color: "blue" },
-  { code: "CHIS105", name: "Inventing Popular Culture", color: "red" },
+  { code: "CHST501", name: "The American Civil War", color: "red" },
 ] as const;
 
 export type Course = typeof COURSES[number];

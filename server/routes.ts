@@ -1129,7 +1129,7 @@ export async function registerRoutes(
       const allSemesters = await storage.getAllSemesterSettings();
       const realCourseCodes = new Set([
         'CPPA101','CPPA102','CPPA120','CPPA121','CPPA122','CPPA125','CPPA235',
-        'CFNF400','CASL101','CECN210','CHIS105','CPHL110','CGCM738',
+        'CFNF400','CASL101','CECN210','CHIS105','CHST501','CPHL110','CGCM738',
       ]);
       const validPattern = /^TBD\d*$/i;
       for (const sem of allSemesters) {
@@ -7253,7 +7253,7 @@ CRITICAL — TOKEN BUDGET: Your OpenAI account has a LOW rate limit (30K tokens/
   - "photoshop" / "graphic design" = CGCM738 (NOTE: may not be active every semester)
   - "economics" / "econ" = CECN210
   - "philosophy" / "phil" = CPHL110
-  - "popular culture" / "pop culture" / "history" = CHIS105
+  - "civil war" / "history" / "american history" = CHST501
 • NEVER add previous-week task fallback logic. NEVER touch Degree Tracker / Diploma Tracking page names.
 
 ═══════════════════════════════════════════════════
@@ -17292,7 +17292,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     'CPPA122': 1, 'CPPA101': 1, 'CPPA102': 1, 'CPPA120': 1, 'CPPA121': 1, 'CPPA124': 1, 'CPPA125': 1,
     'CFNF400': 2,
     'CASL101': 3,
-    'CECN210': 1, 'CPHL110': 2, 'CHIS105': 3,
+    'CECN210': 1, 'CPHL110': 2, 'CHIS105': 3, 'CHST501': 3,
   };
   let coursePlayPriority: Record<string, number> = { ...DEFAULT_COURSE_PRIORITY };
   const COURSE_PRIORITY_FILE = path.join(process.cwd(), 'persistent-uploads', 'course-play-priority.json');
@@ -18709,6 +18709,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     'CECN210': 'Economics',
     'CPHL110': 'Philosophy of Religion',
     'CHIS105': 'Popular Culture',
+    'CHST501': 'American Civil War',
   };
 
   function describeFileForTTS(file: any, weekNumber: number): string {
@@ -30253,7 +30254,7 @@ COURSE COLORS:
   - CASL101: #6366f1 (indigo)
   - CECN210: #34D399 (emerald)
   - CPHL110: #60A5FA (blue)
-  - CHIS105: #F87171 (red)
+  - CHST501: #F87171 (red)
   - CPPA235: #CD853F (peru/brown)
 
 MODULE BOX RENDERING:
