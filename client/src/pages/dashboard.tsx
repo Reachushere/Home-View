@@ -17976,14 +17976,15 @@ export default function Dashboard() {
       {/* Calendar source toggles — 5747 only, sits under the profile photo */}
       {authLevel === '5747' && (
         <div
-          className="fixed flex flex-col"
+          className="fixed flex flex-row"
           data-tpo data-tpo-opacity="1"
           style={{
             right: `${calendarRight - calendarReduction + 7}px`,
             top: `${5 + d2lTickerHeight + 44 + 6}px`,
             zIndex: 100,
             gap: '4px',
-            alignItems: 'flex-end',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
             opacity: (isTopPillOpen || isTodoFlyoutOpen) ? 0 : 1,
             transition: (isTopPillOpen || isTodoFlyoutOpen) ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out',
             pointerEvents: (isTopPillOpen || isTodoFlyoutOpen) ? 'none' : 'auto',
@@ -18002,16 +18003,16 @@ export default function Dashboard() {
                 data-testid={`toggle-calendar-${src}`}
                 title={`${on ? 'Hide' : 'Show'} ${label} calendar events`}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: '6px',
-                  padding: '3px 8px',
-                  borderRadius: '12px',
+                  display: 'flex', alignItems: 'center', gap: '5px',
+                  padding: '1.5px 7px',
+                  borderRadius: '10px',
                   background: on
                     ? 'linear-gradient(180deg, rgba(100,186,77,0.55) 0%, rgba(66,128,70,0.40) 100%)'
                     : 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.08) 100%)',
                   border: on ? '1px solid rgba(140,210,120,0.55)' : '1px solid rgba(255,255,255,0.25)',
                   boxShadow: '0 2px 8px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.18)',
                   color: '#fff',
-                  fontSize: '10.5px',
+                  fontSize: '9px',
                   fontWeight: 500,
                   fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
                   cursor: 'pointer',
@@ -18021,7 +18022,7 @@ export default function Dashboard() {
               >
                 <span
                   style={{
-                    display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%',
+                    display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%',
                     background: on ? '#7BD162' : '#888',
                     boxShadow: on ? '0 0 6px rgba(123,209,98,0.8)' : 'none',
                   }}
