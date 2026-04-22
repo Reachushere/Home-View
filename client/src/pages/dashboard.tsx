@@ -7909,10 +7909,19 @@ export default function Dashboard() {
     }));
     if (authLevel === '5747') return stripBrackets(allTasksRaw);
     if (authLevel === '1010') {
-      return stripBrackets(allTasksRaw.filter(t => {
+      const filtered = allTasksRaw.filter(t => {
         const title = (t.title || '').toLowerCase();
         return /joanne/.test(title) || (/kevin/.test(title) && /report/.test(title));
-      }));
+      });
+      return stripBrackets(filtered).map(t => {
+        if (!/joanne/i.test(t.title || '') || !t.dueDate) return t;
+        try {
+          const d = new Date(t.dueDate);
+          const timeStr = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/Toronto' });
+          if (/^\d{1,2}:\d{2}/.test(t.title || '')) return t;
+          return { ...t, title: `${timeStr} ${t.title}` };
+        } catch { return t; }
+      });
     }
     return stripBrackets(allTasksRaw.filter(t => {
       const desc = (t as any).description || '';
@@ -33692,6 +33701,11 @@ export default function Dashboard() {
                     const cellDate = startOfDayET(day);
                     
                     const dueTasks = allTasks?.filter(task => {
+                      if (is1010View && courseIdx === 0 && /joanne/i.test(task.title || '')) {
+                        if (task.isCompleted) return false;
+                        const taskDueDate = startOfDayET(new Date(task.dueDate));
+                        return isSameDayET(taskDueDate, cellDate);
+                      }
                       if (!courseCodeUpper || !task.courseName?.toUpperCase().startsWith(courseCodeUpper)) return false;
                       if (task.isCompleted) return false;
                       const taskDueDate = startOfDayET(new Date(task.dueDate));
