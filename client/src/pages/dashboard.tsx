@@ -18636,12 +18636,11 @@ export default function Dashboard() {
           </div>
 
 
-          {(authLevel === '4201' || is1010View) && <Button
+          {authLevel === '4201' && <Button
             variant="ghost"
             size="sm"
-            {...(is1010View ? { disabled: true } : {})}
             className="!h-[40px] !min-h-[40px] px-[16px] no-default-hover-elevate no-default-active-elevate text-white text-[12px] border-0 font-medium rounded-full !bg-transparent pill-button-hover"
-            style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(139,92,246,0.35) 0%, rgba(139,92,246,0.18) 100%)', border: '1.5px solid rgba(139,92,246,0.45)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '1px', zIndex: 10, position: 'relative', ...(is1010View ? lockedDisabledStyle : {}) }}
+            style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'linear-gradient(180deg, rgba(139,92,246,0.35) 0%, rgba(139,92,246,0.18) 100%)', border: '1.5px solid rgba(139,92,246,0.45)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)', marginLeft: '-5px', marginTop: '1px', zIndex: 10, position: 'relative' }}
             data-testid="button-partner-shifts-4201"
             onClick={() => { setPartnerWizardStep(0); setPartnerWizardDates([]); setPartnerWizardShiftType('day'); setPartnerWizardOpen(true); }}
           >Partner Shifts</Button>}
