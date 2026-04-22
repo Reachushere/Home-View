@@ -27376,7 +27376,14 @@ export default function Dashboard() {
                         <div key={sem.id} style={{ padding: '10px 12px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }} data-testid={`health-semester-${sem.id}`}>
                           <div className="flex items-center gap-2 mb-2">
                             <span className="text-[13px] font-semibold" style={{ color: '#fff' }}>{sem.semesterName}</span>
-                            {sem.isActive && <span style={{ fontSize: '8px', background: '#059669', color: '#fff', padding: '1px 6px', borderRadius: '4px', fontWeight: 600 }}>ACTIVE</span>}
+                            {(() => {
+                              const ym = (sem.semesterName || '').match(/(Winter|Spring\/Summer|Fall)\s+(\d{4})/i);
+                              const semKey = ym ? semKeyFromTypeYear((ym[1].toLowerCase().startsWith('w') ? 'winter' : ym[1].toLowerCase().startsWith('f') ? 'fall' : 'spring_summer') as any, parseInt(ym[2])) : null;
+                              const isEnded = semKey ? !!semesterEndConfirmed[semKey] : false;
+                              if (sem.isActive && !isEnded) return <span style={{ fontSize: '8px', background: '#059669', color: '#fff', padding: '1px 6px', borderRadius: '4px', fontWeight: 600 }}>ACTIVE</span>;
+                              if (isEnded) return <span style={{ fontSize: '8px', background: '#374151', color: '#fff', padding: '1px 6px', borderRadius: '4px', fontWeight: 600 }}>COMPLETE</span>;
+                              return null;
+                            })()}
                           </div>
                           {courses.map((c) => {
                             const hasModFolder = !!(c.modFolder && c.modFolder.trim());
