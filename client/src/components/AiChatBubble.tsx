@@ -613,7 +613,7 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
                 data-testid="select-ai-chat-course-dashboard"
               >
                 <option value="all">All courses</option>
-                {['CPPA122','CFNF400','CASL101','CPPA101','CPPA102','CPPA120','CPPA121','CPPA125','CECN210','CPHL110','CHIS105'].map(c => (
+                {['CPPA122','CFNF400','CASL101','CPPA101','CPPA102','CPPA120','CPPA121','CPPA125','CECN210','CPHL110','CHST501'].map(c => (
                   <option key={c} value={c}>{c}</option>
                 ))}
               </select>
@@ -735,7 +735,7 @@ export function AiChatBubble({ colorSettings }: AiChatBubbleProps) {
                   data-testid="select-essay-course">
                   <option value="all" style={{ background: '#0d2548' }}>All courses</option>
                   {(() => {
-                    const fallback = ['CPPA122','CFNF400','CASL101','CPPA101','CPPA102','CPPA120','CPPA121','CPPA125','CECN210','CPHL110','CHIS105'];
+                    const fallback = ['CPPA122','CFNF400','CASL101','CPPA101','CPPA102','CPPA120','CPPA121','CPPA125','CECN210','CPHL110','CHST501'];
                     let entries: Array<{ code: string; label: string }> = [];
                     try {
                       const raw = localStorage.getItem('coursesData');

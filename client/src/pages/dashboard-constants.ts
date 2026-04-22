@@ -134,5 +134,5 @@ export const defaultCourseDisplayNames: Record<string, string> = {
   "CASL101": "CASL101 ASL",
   "CECN210": "Economics",
   "CPHL110": "Philosophy of Religion",
-  "CHIS105": "Popular Culture",
+  "CHST501": "American Civil War",
 };

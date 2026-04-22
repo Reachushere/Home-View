@@ -5018,7 +5018,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
                 data-testid="select-ai-chat-course"
               >
                 <option value="all">All courses</option>
-                {['CPPA122','CFNF400','CASL101','CPPA101','CPPA102','CPPA120','CPPA121','CPPA125','CECN210','CPHL110','CHIS105'].map(c => (
+                {['CPPA122','CFNF400','CASL101','CPPA101','CPPA102','CPPA120','CPPA121','CPPA125','CECN210','CPHL110','CHST501'].map(c => (
                   <option key={c} value={c}>{c}</option>
                 ))}
               </select>
