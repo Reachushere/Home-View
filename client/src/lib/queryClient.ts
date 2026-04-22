@@ -7,11 +7,26 @@ async function throwIfResNotOk(res: Response) {
   }
 }
 
+function is1010Locked(): boolean {
+  try {
+    if (typeof document === 'undefined') return false;
+    return document.body.getAttribute('data-auth-1010') === '1';
+  } catch { return false; }
+}
+
 export async function apiRequest(
   method: string,
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
+  const m = (method || 'GET').toUpperCase();
+  if (is1010Locked() && m !== 'GET' && m !== 'HEAD' && m !== 'OPTIONS') {
+    console.warn(`[1010] Blocked ${m} ${url} — read-only profile`);
+    return new Response(JSON.stringify({ ok: false, blocked: '1010-read-only' }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
   const res = await fetch(url, {
     method,
     headers: data ? { "Content-Type": "application/json" } : {},
