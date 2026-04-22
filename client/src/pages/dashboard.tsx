@@ -12953,6 +12953,8 @@ export default function Dashboard() {
     wkEnd.setDate(wkEnd.getDate() + 6);
     wkEnd.setHours(23, 59, 59, 999);
     return d2lAnnouncements.filter((a: any) => {
+      const vis = Array.isArray(a.visibleTo) ? a.visibleTo : ['5747', '4201', '1010'];
+      if (authLevel && !vis.includes(authLevel)) return false;
       const isManual = a.emailId && typeof a.emailId === 'string' && a.emailId.startsWith('manual-');
       if (isManual) return true;
       const d = new Date(a.receivedAt || a.date);
