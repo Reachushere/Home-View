@@ -19214,11 +19214,11 @@ export default function Dashboard() {
                 border: '1.5px solid rgba(170,210,255,0.45)',
                 boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-                ...(is1010View && !desktopIsFull ? lockedDisabledStyle : {})
+                ...({} as React.CSSProperties)
               }}
               className="pill-button-hover"
               onClick={() => { triggerButtonGlow('addtask'); setIsMonthlyReportOpen(true); }}
-              data-testid="button-monthly-report-pill"
+              data-testid="button-monthly-report-pill-1010-clickable"
               title="Open the Post-Secondary Monthly Report (and view saved copies)"
             >
               <FileText className="h-[18px] w-[18px] text-white" />
@@ -19238,7 +19238,7 @@ export default function Dashboard() {
                 border: '1.5px solid rgba(255,170,170,0.55)',
                 boxShadow: '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.03)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-                ...(is1010View && !desktopIsFull ? lockedDisabledStyle : {})
+                ...({} as React.CSSProperties)
               }}
               className="pill-button-hover"
               onClick={() => {
@@ -25286,7 +25286,7 @@ export default function Dashboard() {
 
             useEffect(() => {
               if (isScholarshipsOpen) {
-                fetch('/api/scholarships').then(r => r.json()).then(d => setScholarshipsList(d)).catch(() => {});
+                if (is1010View) { setScholarshipsList([]); } else { fetch('/api/scholarships').then(r => r.json()).then(d => setScholarshipsList(d)).catch(() => {}); }
               }
             }, [isScholarshipsOpen]);
 
@@ -28460,7 +28460,7 @@ export default function Dashboard() {
             </div>,
             document.body
           )}
-          {isSchoolCoursesDialogOpen && desktopIsFull && createPortal(
+          {isSchoolCoursesDialogOpen && (desktopIsFull || is1010View) && createPortal(
             <div>
             <div className={`fixed inset-0 z-[10002] ${schoolCoursesOpenSource === 'pill' ? 'bg-black/50' : ''}`} onClick={() => startTransition(() => setIsSchoolCoursesDialogOpen(false))} />
             <div
