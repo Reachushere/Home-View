@@ -2552,6 +2552,7 @@ function BookReader({ file, bookColor, onClose, onMinimize, pdfUrl, moduleFiles,
 export default function LibraryView({ isOpen, onClose, onMinimize, semesters: semestersProp, initialSemesterKey, isSharedView, onOpenNotepad, courseDisplayNames, initialAiSearch, initialApaCheck }: LibraryViewProps) {
   const { isAdmin: isFullAccess, authLevel: libAuthLevel } = useAccessMode();
   const canUseEssayGen = isFullAccess || libAuthLevel === '5747';
+  const is1010View = libAuthLevel === '1010';
   const [currentSemIdx, setCurrentSemIdx] = useState(0);
   const [syncingSemKey, setSyncingSemKey] = useState<string | null>(null);
   const [selectedBook, setSelectedBook] = useState<FileRecord | null>(null);
@@ -4206,7 +4207,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
           style={{
             position: 'absolute',
             top: '33px',
-            right: '160px',
+            right: is1010View ? '204px' : '160px',
             zIndex: 100002,
             background: apaCheckerOpen ? 'rgba(34,197,94,0.3)' : 'rgba(0,0,0,0.5)',
             border: apaCheckerOpen ? '1px solid rgba(34,197,94,0.5)' : '1px solid rgba(255,255,255,0.2)',
@@ -5403,7 +5404,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
           <ChevronRight size={16} />
         </button>
       </div>
-      <button
+      {!is1010View && <button
         onClick={() => setShowApaTool(true)}
         data-testid="btn-library-apa"
         title="APA citation generator — paste a URL, DOI, or ISBN"
@@ -5428,7 +5429,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
         onMouseLeave={e => { if (!showApaTool) { e.currentTarget.style.background = 'rgba(0,0,0,0.5)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; } }}
       >
         <Quote size={16} />
-      </button>
+      </button>}
 
       <button
         onClick={() => setShowLibraryNote(true)}
@@ -5437,7 +5438,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
         style={{
           position: 'absolute',
           top: '33px',
-          right: '204px',
+          right: is1010View ? '248px' : '204px',
           zIndex: 30,
           width: '36px',
           height: '36px',
