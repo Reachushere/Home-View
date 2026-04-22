@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useUpload } from "@/hooks/use-upload";
 import { ObjectUploader } from "@/components/ObjectUploader";
 import { Link } from "wouter";
+import { useAccessMode } from "@/components/access-gate";
 import { 
   FileText, 
   File, 
@@ -284,9 +285,13 @@ export default function FilesPage() {
     },
   });
 
-  const { data: files = [], isLoading: filesLoading } = useQuery<FileRecord[]>({
+  const { authLevel } = useAccessMode();
+  const is1010View = authLevel === '1010';
+  const { data: filesRaw = [], isLoading: filesLoading } = useQuery<FileRecord[]>({
     queryKey: ["/api/files"],
+    enabled: !is1010View,
   });
+  const files: FileRecord[] = is1010View ? [] : filesRaw;
 
   const { data: tasks = [], isLoading: tasksLoading } = useQuery<Task[]>({
     queryKey: ["/api/tasks"],
@@ -307,7 +312,7 @@ export default function FilesPage() {
     queryFn: () => fetch("/api/weeks").then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
   });
 
-  const { data: oneDriveItems = [], isLoading: oneDriveLoading } = useQuery<OneDriveItem[]>({
+  const { data: oneDriveItemsRaw = [], isLoading: oneDriveLoading } = useQuery<OneDriveItem[]>({
     queryKey: ["/api/onedrive/files", oneDrivePath],
     queryFn: async () => {
       const response = await fetch(`/api/onedrive/files?path=${encodeURIComponent(oneDrivePath)}`);
@@ -317,8 +322,9 @@ export default function FilesPage() {
       }
       return response.json();
     },
-    enabled: viewMode === "week",
+    enabled: viewMode === "week" && !is1010View,
   });
+  const oneDriveItems: OneDriveItem[] = is1010View ? [] : oneDriveItemsRaw;
 
   const oneDriveFolders = oneDriveItems
     .filter(item => item.type === "folder")
