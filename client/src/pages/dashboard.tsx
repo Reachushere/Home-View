@@ -26805,7 +26805,7 @@ export default function Dashboard() {
             />
           ))}
 
-          <Dialog open={isKeyContactsOpen && desktopIsFull} onOpenChange={setIsKeyContactsOpen}>
+          <Dialog open={isKeyContactsOpen && (desktopIsFull || is1010View)} onOpenChange={setIsKeyContactsOpen}>
             <DialogContent className="overflow-hidden flex flex-col text-[11px] text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white p-0 [&>button.absolute]:hidden max-w-none" style={{ width: 'calc(96vw + 28px)', maxWidth: 'calc(96vw + 28px)', height: 'calc(94vh + 16px)', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.05)' }}>
               <DialogTitle className="sr-only">Key Contacts</DialogTitle>
               <div className="flex items-center justify-between px-4 py-1.5 border-b border-white/40 flex-shrink-0 rounded-t-lg" style={{ background: `linear-gradient(180deg, ${colorSettings.headerBar} 0%, ${colorSettings.headerBar} 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.1)' }}>
@@ -28126,11 +28126,12 @@ export default function Dashboard() {
                     </div>
                   )}
                   {weatherAlertHistoryData.length > 0 && (
-                    <div className="mb-4" data-testid="weather-history-past-alerts">
-                      <div className="flex items-center gap-2 mb-2">
+                    <details className="mb-4" data-testid="weather-history-past-alerts">
+                      <summary className="flex items-center gap-2 mb-2 cursor-pointer list-none select-none" style={{ outline: 'none' }}>
                         <img src={weatherAlertLogoPath} alt="Past Alerts" style={{ height: '18px', width: 'auto', objectFit: 'contain', opacity: 0.6 }} />
                         <span className="text-[12px] font-semibold" style={{ color: '#ef4444' }}>Past Weather Alerts ({weatherAlertHistoryData.length})</span>
-                      </div>
+                        <ChevronDown className="h-3 w-3 ml-auto" style={{ color: 'rgba(255,255,255,0.5)' }} />
+                      </summary>
                       {(() => {
                         const groupedAlerts: Record<string, any[]> = {};
                         weatherAlertHistoryData.forEach((alert: any) => {
@@ -28167,7 +28168,7 @@ export default function Dashboard() {
                           </div>
                         );
                       })()}
-                    </div>
+                    </details>
                   )}
                   {weatherHistoryLoading ? (
                     <div className="text-white/70 text-center py-8 text-[12px]">Loading weather history...</div>
