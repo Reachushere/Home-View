@@ -27394,7 +27394,9 @@ export default function Dashboard() {
                             {(() => {
                               const ym = (sem.semesterName || '').match(/(Winter|Spring\/Summer|Fall)\s+(\d{4})/i);
                               const semKey = ym ? semKeyFromTypeYear((ym[1].toLowerCase().startsWith('w') ? 'winter' : ym[1].toLowerCase().startsWith('f') ? 'fall' : 'spring_summer') as any, parseInt(ym[2])) : null;
-                              const isEnded = semKey ? !!semesterEndConfirmed[semKey] : false;
+                              const semEnd = sem.semesterEndDate ? new Date(sem.semesterEndDate) : null;
+                              const isPastEnd = !!(semEnd && Date.now() > semEnd.getTime() + 24*60*60*1000);
+                              const isEnded = (semKey ? !!semesterEndConfirmed[semKey] : false) || isPastEnd;
                               if (sem.isActive && !isEnded) return <span style={{ fontSize: '8px', background: '#059669', color: '#fff', padding: '1px 6px', borderRadius: '4px', fontWeight: 600 }}>ACTIVE</span>;
                               if (isEnded) return <span style={{ fontSize: '8px', background: '#374151', color: '#fff', padding: '1px 6px', borderRadius: '4px', fontWeight: 600 }}>COMPLETE</span>;
                               return null;
