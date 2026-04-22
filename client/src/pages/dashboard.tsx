@@ -8338,7 +8338,11 @@ export default function Dashboard() {
     if (authLevel === '1010') return [];
     if (authLevel === '5747') {
       if (hiddenCalendarSources.size === 0) return calendarEvents;
-      return calendarEvents.filter(e => !hiddenCalendarSources.has(e.source));
+      return calendarEvents.filter((e: any) => {
+        const src = (e as any).source || (e as any)._source;
+        if (!src) return true;
+        return !hiddenCalendarSources.has(src);
+      });
     }
     return [];
   }, [calendarEvents, authLevel, hiddenCalendarSources]);
@@ -18004,8 +18008,8 @@ export default function Dashboard() {
                 title={`${on ? 'Hide' : 'Show'} ${label} calendar events`}
                 style={{
                   display: 'flex', alignItems: 'center', gap: '5px',
-                  padding: '1.5px 7px',
-                  borderRadius: '10px',
+                  padding: '0.5px 6px',
+                  borderRadius: '9px',
                   background: on
                     ? 'linear-gradient(180deg, rgba(100,186,77,0.55) 0%, rgba(66,128,70,0.40) 100%)'
                     : 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.08) 100%)',
