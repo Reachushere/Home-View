@@ -351,9 +351,10 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
         } catch {}
       });
   }, [courseInfo.courseCode]);
-  const [showWeekMappings, setShowWeekMappings] = useState(false);
-  const [showAssignments, setShowAssignments] = useState(!initialEditMode);
-  const [showAutomations, setShowAutomations] = useState(false);
+  const is1010View = typeof document !== 'undefined' && document.body.getAttribute('data-auth-1010') === '1';
+  const [showWeekMappings, setShowWeekMappings] = useState(is1010View);
+  const [showAssignments, setShowAssignments] = useState(is1010View || !initialEditMode);
+  const [showAutomations, setShowAutomations] = useState(is1010View);
   const automationsRef = useRef<HTMLDivElement>(null);
   const [showModules, setShowModules] = useState(true);
 
