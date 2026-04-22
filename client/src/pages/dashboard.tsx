@@ -309,6 +309,24 @@ const semDefaultPalettesRow: Record<string, Array<{ start: string; end: string }
   'w2029': [{ start: '#38bdf8', end: '#bae6fd' }, { start: '#e879f9', end: '#f5d0fe' }, { start: '#65a30d', end: '#bef264' }],
 };
 
+const STATIC_KNOWN_COURSE_CODES = ['CPPA122', 'CFNF400', 'CASL101', 'CECN210', 'CPHL110', 'CHST501', 'CPPA235'];
+
+function getKnownCourseCodes(): string[] {
+  try {
+    const raw = localStorage.getItem('coursesData');
+    if (!raw) return STATIC_KNOWN_COURSE_CODES;
+    const parsed = JSON.parse(raw);
+    const list: Array<{ name?: string }> = parsed?.courses || [];
+    const codes = list
+      .map(c => (c?.name || '').trim().split(/[\s-]/)[0]?.toUpperCase().replace(/\s/g, ''))
+      .filter((c): c is string => !!c && /^[A-Z]{2,5}\d{2,4}[A-Z]?$/.test(c));
+    const unique = Array.from(new Set(codes));
+    return unique.length > 0 ? unique : STATIC_KNOWN_COURSE_CODES;
+  } catch {
+    return STATIC_KNOWN_COURSE_CODES;
+  }
+}
+
 export default function Dashboard() {
   const { toast } = useToast();
   
@@ -8243,7 +8261,7 @@ export default function Dashboard() {
     .filter(item => item.type === "folder")
     .sort((a, b) => {
       // Course order to match calendar
-      const courseOrder = ['CPPA122', 'CFNF400', 'CASL101', 'CECN210', 'CPHL110', 'CHST501', 'CPPA235'];
+      const courseOrder = getKnownCourseCodes();
       
       // Check if folders are course folders
       const getCourseIndex = (name: string) => {
@@ -37061,7 +37079,7 @@ export default function Dashboard() {
           // Group tasks by course
           const groupByCourse = (tasks: typeof dueTodayTasks) => {
             const grouped: Record<string, typeof tasks> = {};
-            const courseOrder = ['CPPA122', 'CFNF400', 'CASL101', 'CECN210', 'CPHL110', 'CHST501', 'CPPA235'];
+            const courseOrder = getKnownCourseCodes();
             tasks.forEach(task => {
               const courseCode = task.courseName?.split(' - ')[0] || task.courseName?.split(' ')[0] || 'OTHER';
               if (!grouped[courseCode]) grouped[courseCode] = [];
@@ -38089,7 +38107,7 @@ export default function Dashboard() {
               if (t.isCompleted) return false;
               if (t.hideFromSummary) return false;
               const tc = t.courseName?.split(' ')[0]?.toUpperCase() || '';
-              const knownCourseCodes = ['CPPA122', 'CFNF400', 'CASL101', 'CECN210', 'CPHL110', 'CHST501', 'CPPA235'];
+              const knownCourseCodes = getKnownCourseCodes();
               if (knownCourseCodes.includes(tc)) return false;
               const taskDue = startOfDayET(new Date(t.dueDate));
               if (weekStart && weekEnd) {
@@ -38225,7 +38243,7 @@ export default function Dashboard() {
                       const tc = t.courseName?.split(' ')[0]?.toUpperCase() || '';
                       if (tc !== cCode || t.isCompleted) return false;
                       if (t.hideFromSummary) return false;
-                      const knownCourseCodes = ['CPPA122', 'CFNF400', 'CASL101', 'CECN210', 'CPHL110', 'CHST501', 'CPPA235'];
+                      const knownCourseCodes = getKnownCourseCodes();
                       if (!knownCourseCodes.includes(tc)) return false;
                       const taskDue = new Date(t.dueDate);
                       if (taskDue < startOfDayET(new Date())) return false;
@@ -38544,7 +38562,7 @@ export default function Dashboard() {
 
             const rows = [hwBlackBg, ...rightBgs, ...courseRows];
 
-            const knownCourseCodes = ['CPPA122', 'CFNF400', 'CASL101', 'CECN210', 'CPHL110', 'CHST501', 'CPPA235'];
+            const knownCourseCodes = getKnownCourseCodes();
             const otherProgressTasks = (allTasks || []).filter(t => {
               if (t.isCompleted) return false;
               if (new Date(t.dueDate) < startOfDayET(new Date())) return false;
