@@ -564,7 +564,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   // files via `curl -X POST http://localhost:5000/api/library/sync` without
   // needing a session cookie.
   if (
-    (req.path === "/api/library/sync" || req.path === "/api/library/reindex" || req.path === "/api/library/debug-onedrive" || req.path === "/api/library/debug-files") &&
+    (req.path === "/api/library/sync" || req.path === "/api/library/reindex" || req.path === "/api/library/debug-onedrive" || req.path === "/api/library/debug-files" || req.path === "/api/semester/cascade-rename" || req.path === "/api/semester/cleanup-class-tasks") &&
     (req.ip === "127.0.0.1" || req.ip === "::1" || req.ip === "::ffff:127.0.0.1" || req.hostname === "localhost")
   ) return next();
   if (req.path === "/api/export" || req.path === "/api/import" || req.path === "/api/cleanup-duplicates") return next();

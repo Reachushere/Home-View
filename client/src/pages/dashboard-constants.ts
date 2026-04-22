@@ -124,7 +124,7 @@ export const courseColors: Record<string, { bg: string; border: string; text: st
   "CGCM738": { bg: "bg-orange-50 dark:bg-orange-900/30", border: "border-orange-400", text: "text-orange-600 dark:text-orange-300", dot: "bg-orange-400", prepBg: "bg-orange-50 dark:bg-orange-900/30", prepBorder: "border-orange-200", prepText: "text-orange-500 dark:text-orange-400" },
   "CECN210": { bg: "bg-emerald-50 dark:bg-emerald-900/30", border: "border-emerald-400", text: "text-emerald-600 dark:text-emerald-300", dot: "bg-emerald-400", prepBg: "bg-emerald-50 dark:bg-emerald-900/30", prepBorder: "border-emerald-200", prepText: "text-emerald-500 dark:text-emerald-400" },
   "CPHL110": { bg: "bg-blue-50 dark:bg-blue-900/30", border: "border-blue-500", text: "text-blue-600 dark:text-blue-300", dot: "bg-blue-500", prepBg: "bg-blue-50 dark:bg-blue-900/30", prepBorder: "border-blue-300", prepText: "text-blue-500 dark:text-blue-400" },
-  "CHIS105": { bg: "bg-red-50 dark:bg-red-900/30", border: "border-red-400", text: "text-red-600 dark:text-red-300", dot: "bg-red-400", prepBg: "bg-red-50 dark:bg-red-900/30", prepBorder: "border-red-200", prepText: "text-red-500 dark:text-red-400" },
+  "CHST501": { bg: "bg-red-50 dark:bg-red-900/30", border: "border-red-400", text: "text-red-600 dark:text-red-300", dot: "bg-red-400", prepBg: "bg-red-50 dark:bg-red-900/30", prepBorder: "border-red-200", prepText: "text-red-500 dark:text-red-400" },
   "SCHOOL": { bg: "bg-blue-50 dark:bg-blue-900/30", border: "border-[#004C9C]", text: "text-[#004C9C] dark:text-blue-300", dot: "bg-[#004C9C]", prepBg: "bg-blue-50 dark:bg-blue-900/30", prepBorder: "border-blue-300", prepText: "text-[#004C9C] dark:text-blue-400" },
 };
 
