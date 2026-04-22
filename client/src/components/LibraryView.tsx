@@ -5491,6 +5491,11 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
             {currentSemester && (currentSemester as any).isPast && <span style={{ marginLeft: '6px', fontSize: '8px', padding: '1px 5px', borderRadius: '6px', background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.4)', fontFamily: 'sans-serif', letterSpacing: '0.3px', verticalAlign: 'middle' }}>PAST</span>}
             {currentSemester && (currentSemester as any).isFuture && <span style={{ marginLeft: '6px', fontSize: '8px', padding: '1px 5px', borderRadius: '6px', background: 'rgba(33,150,243,0.25)', color: '#64B5F6', fontFamily: 'sans-serif', letterSpacing: '0.3px', verticalAlign: 'middle' }}>UPCOMING</span>}
           </div>
+          {typeof document !== 'undefined' && document.body.getAttribute('data-auth-1010') === '1' && (
+            <div style={{ marginTop: '4px', fontSize: '10px', color: 'rgba(255,255,255,0.65)', fontFamily: "'Avenir', 'Avenir Next', -apple-system, sans-serif", fontStyle: 'italic', letterSpacing: '0.3px' }} data-testid="library-1010-fullscreen-hint">
+              Please make browser full screen to view this page
+            </div>
+          )}
         </div>
         <button
           onClick={async () => {
