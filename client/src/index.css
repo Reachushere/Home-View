@@ -3196,3 +3196,19 @@ input[type="date"].bg-white::-webkit-datetime-edit-year-field {
 [data-testid="monthly-report-dialog"].pdf-print-mode [data-testid="report-close"],
 [data-testid="monthly-report-dialog"].pdf-print-mode [data-testid="report-email"],
 [data-testid="monthly-report-dialog"].pdf-print-mode .monthly-report-footer { display: none !important; }
+
+/* ===== 1010 view: hide all popups/dialogs/toasts/tooltips ===== */
+/* The only thing allowed through is anything with [data-allow-1010="1"]. */
+body[data-auth-1010="1"] [role="dialog"]:not([data-allow-1010="1"]),
+body[data-auth-1010="1"] [role="alertdialog"]:not([data-allow-1010="1"]),
+body[data-auth-1010="1"] [data-radix-popper-content-wrapper]:not([data-allow-1010="1"]),
+body[data-auth-1010="1"] [data-state="open"][data-side]:not([data-allow-1010="1"]),
+body[data-auth-1010="1"] [data-sonner-toaster],
+body[data-auth-1010="1"] [data-sonner-toast],
+body[data-auth-1010="1"] [role="status"]:not([data-allow-1010="1"]),
+body[data-auth-1010="1"] .toaster:not([data-allow-1010="1"]),
+body[data-auth-1010="1"] [role="tooltip"]:not([data-allow-1010="1"]) {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}

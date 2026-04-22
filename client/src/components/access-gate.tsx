@@ -159,6 +159,71 @@ export function AccessGate({ children }: AccessGateProps) {
   return (
     <AccessContext.Provider value={{ isReadOnly: !isFullAccess, isAdmin: isFullAccess, authLevel }}>
       {children}
+      {authLevel === '1010' && <Auth1010Effects />}
     </AccessContext.Provider>
+  );
+}
+
+function Auth1010Effects() {
+  const [showFullscreenPrompt, setShowFullscreenPrompt] = useState(() => {
+    try { return sessionStorage.getItem('uni_cal_1010_fs_prompt_dismissed') !== '1'; } catch { return true; }
+  });
+
+  useEffect(() => {
+    document.body.setAttribute('data-auth-1010', '1');
+    return () => { document.body.removeAttribute('data-auth-1010'); };
+  }, []);
+
+  const dismiss = () => {
+    try { sessionStorage.setItem('uni_cal_1010_fs_prompt_dismissed', '1'); } catch {}
+    setShowFullscreenPrompt(false);
+  };
+
+  if (!showFullscreenPrompt) return null;
+
+  return (
+    <div
+      data-allow-1010="1"
+      data-testid="dialog-1010-fullscreen-prompt"
+      style={{
+        position: 'fixed', inset: 0, zIndex: 2147483647,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(6px)',
+      }}
+    >
+      <div
+        data-allow-1010="1"
+        style={{
+          maxWidth: '440px', width: '90%',
+          background: 'linear-gradient(180deg, #1f2937 0%, #111827 100%)',
+          border: '1px solid rgba(255,255,255,0.18)',
+          borderRadius: '14px',
+          padding: '28px 26px',
+          boxShadow: '0 30px 60px rgba(0,0,0,0.55)',
+          color: '#fff',
+          textAlign: 'center',
+          fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
+        }}
+      >
+        <div style={{ fontSize: '17px', fontWeight: 600, marginBottom: '10px' }}>One quick thing</div>
+        <div style={{ fontSize: '14px', lineHeight: 1.5, color: 'rgba(255,255,255,0.85)', marginBottom: '20px' }}>
+          Please set your browser to full screen to view Bryn's software properly.
+        </div>
+        <button
+          data-allow-1010="1"
+          onClick={dismiss}
+          data-testid="button-1010-fullscreen-ok"
+          style={{
+            padding: '10px 22px', borderRadius: '8px',
+            background: 'linear-gradient(180deg, #3b82f6 0%, #1e3a8a 100%)',
+            border: '1px solid rgba(255,255,255,0.2)',
+            color: '#fff', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+          }}
+        >
+          Got it
+        </button>
+      </div>
+    </div>
   );
 }
