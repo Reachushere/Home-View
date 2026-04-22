@@ -28125,27 +28125,44 @@ export default function Dashboard() {
                     <div className="mb-4" data-testid="weather-history-past-alerts">
                       <div className="flex items-center gap-2 mb-2">
                         <img src={weatherAlertLogoPath} alt="Past Alerts" style={{ height: '18px', width: 'auto', objectFit: 'contain', opacity: 0.6 }} />
-                        <span className="text-[12px] font-semibold" style={{ color: '#ff8844' }}>Past Weather Alerts ({weatherAlertHistoryData.length})</span>
+                        <span className="text-[12px] font-semibold" style={{ color: '#ef4444' }}>Past Weather Alerts ({weatherAlertHistoryData.length})</span>
                       </div>
-                      <div className="flex flex-col gap-2">
-                        {weatherAlertHistoryData.map((alert: any, ai: number) => (
-                          <div key={ai} className="rounded-md px-3 py-2" style={{ background: 'rgba(255,136,68,0.08)', border: '1px solid rgba(255,136,68,0.25)' }} data-testid={`weather-history-past-alert-${ai}`}>
-                            <div className="flex items-start gap-2">
-                              <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-[1px]" style={{ color: '#ff8844' }} />
-                              <div style={{ flex: 1, minWidth: 0 }}>
-                                <div className="flex items-center gap-2">
-                                  <span className="text-[11px] font-bold" style={{ color: '#ffaa66' }}>{alert.title}</span>
-                                  <span className="text-[8px]" style={{ color: 'rgba(255,255,255,0.4)' }}>
-                                    {new Date(alert.recordedAt).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: getAppTz() })}
-                                  </span>
+                      {(() => {
+                        const groupedAlerts: Record<string, any[]> = {};
+                        weatherAlertHistoryData.forEach((alert: any) => {
+                          const key = new Date(alert.recordedAt).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', timeZone: getAppTz() });
+                          if (!groupedAlerts[key]) groupedAlerts[key] = [];
+                          groupedAlerts[key].push(alert);
+                        });
+                        return (
+                          <div className="flex flex-col gap-3">
+                            {Object.entries(groupedAlerts).map(([dateStr, alerts]) => (
+                              <div key={dateStr} data-testid={`weather-history-past-alert-group-${dateStr}`}>
+                                <div className="text-[10px] font-semibold uppercase tracking-wide px-1 mb-1" style={{ color: 'rgba(255,255,255,0.5)' }}>{dateStr} ({alerts.length})</div>
+                                <div className="flex flex-col gap-2">
+                                  {alerts.map((alert: any, ai: number) => (
+                                    <div key={ai} className="rounded-md px-3 py-2" style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)' }} data-testid={`weather-history-past-alert-${dateStr}-${ai}`}>
+                                      <div className="flex items-start gap-2">
+                                        <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-[1px]" style={{ color: '#ef4444' }} />
+                                        <div style={{ flex: 1, minWidth: 0 }}>
+                                          <div className="flex items-center gap-2">
+                                            <span className="text-[11px] font-bold" style={{ color: '#fca5a5' }}>{alert.title}</span>
+                                            <span className="text-[8px]" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                                              {new Date(alert.recordedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: getAppTz() })}
+                                            </span>
+                                          </div>
+                                          {alert.summary && <div className="text-[10px] mt-0.5" style={{ color: 'rgba(255,255,255,0.6)' }}>{alert.summary}</div>}
+                                          {alert.alertType && <span className="text-[8px] uppercase tracking-wider mt-1 inline-block px-1.5 py-0.5 rounded" style={{ background: 'rgba(239,68,68,0.15)', color: '#fca5a5' }}>{alert.alertType}</span>}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
                                 </div>
-                                {alert.summary && <div className="text-[10px] mt-0.5" style={{ color: 'rgba(255,255,255,0.6)' }}>{alert.summary}</div>}
-                                {alert.alertType && <span className="text-[8px] uppercase tracking-wider mt-1 inline-block px-1.5 py-0.5 rounded" style={{ background: 'rgba(255,136,68,0.15)', color: '#ffaa66' }}>{alert.alertType}</span>}
                               </div>
-                            </div>
+                            ))}
                           </div>
-                        ))}
-                      </div>
+                        );
+                      })()}
                     </div>
                   )}
                   {weatherHistoryLoading ? (
