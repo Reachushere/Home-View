@@ -41912,7 +41912,7 @@ export default function Dashboard() {
         </button>
       )}
       {authLevel === '5747' && <AiCommandWizard isOpen={isAiCommandOpen} onClose={() => setIsAiCommandOpen(false)} />}
-      <ChangelogPopup />
+      {!is1010View && <ChangelogPopup />}
       {showSystemSetupWizard && authLevel === '5747' && (
         <SystemSetupWizard
           open={showSystemSetupWizard}

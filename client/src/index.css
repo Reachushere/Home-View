@@ -3197,15 +3197,12 @@ input[type="date"].bg-white::-webkit-datetime-edit-year-field {
 [data-testid="monthly-report-dialog"].pdf-print-mode [data-testid="report-email"],
 [data-testid="monthly-report-dialog"].pdf-print-mode .monthly-report-footer { display: none !important; }
 
-/* ===== 1010 view: hide all popups/dialogs/toasts/tooltips ===== */
-/* The only thing allowed through is anything with [data-allow-1010="1"]. */
-body[data-auth-1010="1"] [role="dialog"]:not([data-allow-1010="1"]),
-body[data-auth-1010="1"] [role="alertdialog"]:not([data-allow-1010="1"]),
-body[data-auth-1010="1"] [data-radix-popper-content-wrapper]:not([data-allow-1010="1"]),
-body[data-auth-1010="1"] [data-state="open"][data-side]:not([data-allow-1010="1"]),
+/* ===== 1010 view: hide passive popup noise (toasts, tooltips, hover popovers) ===== */
+/* User-initiated dialogs (role=dialog / alertdialog) are allowed so top-pill */
+/* buttons still open their dialogs. The fullscreen prompt and any other */
+/* explicitly-allowed element opt in via [data-allow-1010="1"]. */
 body[data-auth-1010="1"] [data-sonner-toaster],
 body[data-auth-1010="1"] [data-sonner-toast],
-body[data-auth-1010="1"] [role="status"]:not([data-allow-1010="1"]),
 body[data-auth-1010="1"] .toaster:not([data-allow-1010="1"]),
 body[data-auth-1010="1"] [role="tooltip"]:not([data-allow-1010="1"]) {
   display: none !important;
