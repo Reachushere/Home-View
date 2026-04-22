@@ -3077,6 +3077,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
 
   useEffect(() => {
     if (!isOpen || allFiles.length === 0 || newReadingPrompt) return;
+    if (is1010View) return;
     try {
       const prompted: string[] = JSON.parse(localStorage.getItem('library-reading-rename-prompted') || '[]');
       const promptedSet = new Set(prompted);
