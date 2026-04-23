@@ -637,7 +637,7 @@ function ProjectWizard({
                     data-testid="input-wizard-start"
                     value={data.startDate}
                     onChange={(e) => setData({ ...data, startDate: e.target.value })}
-                    className="!text-black !bg-white"
+                    className="bg-white text-black date-black-text"
                     style={{ color: "#000", background: "#fff", colorScheme: "light" }}
                   />
                 </div>
@@ -648,7 +648,7 @@ function ProjectWizard({
                     data-testid="input-wizard-target"
                     value={data.targetDate}
                     onChange={(e) => setData({ ...data, targetDate: e.target.value })}
-                    className="!text-black !bg-white"
+                    className="bg-white text-black date-black-text"
                     style={{ color: "#000", background: "#fff", colorScheme: "light" }}
                   />
                 </div>
@@ -744,7 +744,7 @@ function ProjectWizard({
                         data-testid={`input-wizard-task-due-${i}`}
                         value={t.dueDate}
                         onChange={(e) => updateTask(i, { dueDate: e.target.value })}
-                        className="w-32 h-7 !text-black !bg-white"
+                        className="w-32 h-7 bg-white text-black date-black-text"
                         style={{ color: "#000", background: "#fff", colorScheme: "light" }}
                       />
                       <Select value={t.priority} onValueChange={(v) => updateTask(i, { priority: v })}>
@@ -870,7 +870,7 @@ function ProjectWizard({
                                     data-testid={`input-subtask-due-${i}-${j}`}
                                     value={s.dueDate}
                                     onChange={(e) => updateSubtask(i, j, { dueDate: e.target.value })}
-                                    className="w-32 h-7 !text-black !bg-white"
+                                    className="w-32 h-7 bg-white text-black date-black-text"
                                     style={{ color: "#000", background: "#fff", colorScheme: "light" }}
                                   />
                                   <Button type="button" size="icon" variant="ghost" onClick={() => removeSubtask(i, j)} className="h-6 w-6 text-white/70 hover:text-red-400" data-testid={`button-remove-subtask-${i}-${j}`}>
