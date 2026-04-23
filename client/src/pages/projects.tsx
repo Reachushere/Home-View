@@ -31,7 +31,10 @@ import {
   GitBranch,
   ArrowRight,
   Lock,
-  Unlock
+  Unlock,
+  ChevronLeft,
+  ChevronRight,
+  X
 } from "lucide-react";
 import { format } from "date-fns";
 import type { Project, Task, TaskLink } from "@shared/schema";
@@ -346,6 +349,432 @@ function LegalComplaintEditor({
   );
 }
 
+interface WizardTask {
+  title: string;
+  dueDate: string;
+  priority: string;
+  blockedByIdx: number[];
+}
+
+function ProjectWizard({
+  open,
+  onOpenChange,
+  onComplete,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onComplete: (data: ProjectFormData, tasks: WizardTask[]) => Promise<void> | void;
+}) {
+  const [step, setStep] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
+  const [data, setData] = useState<ProjectFormData>({
+    name: "",
+    description: "",
+    color: "#6366F1",
+    status: "planning",
+    courseName: "",
+    startDate: "",
+    targetDate: "",
+    priority: "medium",
+    notes: "",
+    projectType: "general",
+    metadata: null,
+  });
+  const [tasks, setTasks] = useState<WizardTask[]>([]);
+
+  const reset = () => {
+    setStep(0);
+    setData({
+      name: "",
+      description: "",
+      color: "#6366F1",
+      status: "planning",
+      courseName: "",
+      startDate: "",
+      targetDate: "",
+      priority: "medium",
+      notes: "",
+      projectType: "general",
+      metadata: null,
+    });
+    setTasks([]);
+  };
+
+  const close = (o: boolean) => {
+    if (!o) reset();
+    onOpenChange(o);
+  };
+
+  const addTaskRow = () => {
+    const dflt = format(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), "yyyy-MM-dd");
+    setTasks((t) => [...t, { title: "", dueDate: dflt, priority: "medium", blockedByIdx: [] }]);
+  };
+
+  const updateTask = (idx: number, patch: Partial<WizardTask>) => {
+    setTasks((t) => t.map((x, i) => (i === idx ? { ...x, ...patch } : x)));
+  };
+
+  const removeTask = (idx: number) => {
+    setTasks((t) =>
+      t
+        .filter((_, i) => i !== idx)
+        .map((x) => ({
+          ...x,
+          blockedByIdx: x.blockedByIdx
+            .filter((b) => b !== idx)
+            .map((b) => (b > idx ? b - 1 : b)),
+        }))
+    );
+  };
+
+  const toggleDep = (taskIdx: number, depIdx: number) => {
+    setTasks((t) =>
+      t.map((x, i) => {
+        if (i !== taskIdx) return x;
+        const has = x.blockedByIdx.includes(depIdx);
+        return {
+          ...x,
+          blockedByIdx: has ? x.blockedByIdx.filter((b) => b !== depIdx) : [...x.blockedByIdx, depIdx],
+        };
+      })
+    );
+  };
+
+  const validTasks = tasks.filter((t) => t.title.trim().length > 0);
+  const showDepStep = validTasks.length >= 2;
+  const totalSteps = showDepStep ? 7 : 6;
+
+  const labels = ["Name", "Description", "Style", "Schedule", "Tasks", showDepStep ? "Dependencies" : null, "Review"].filter(Boolean) as string[];
+
+  const canAdvance = () => {
+    if (step === 0) return data.name.trim().length > 0;
+    return true;
+  };
+
+  const handleFinish = async () => {
+    setSubmitting(true);
+    try {
+      const cleanedTasks = tasks
+        .map((t, originalIdx) => ({ ...t, originalIdx }))
+        .filter((t) => t.title.trim().length > 0);
+      const remap: Record<number, number> = {};
+      cleanedTasks.forEach((t, newIdx) => {
+        remap[t.originalIdx] = newIdx;
+      });
+      const finalTasks: WizardTask[] = cleanedTasks.map((t) => ({
+        title: t.title.trim(),
+        dueDate: t.dueDate,
+        priority: t.priority,
+        blockedByIdx: t.blockedByIdx
+          .map((b) => remap[b])
+          .filter((b) => b !== undefined && b !== null) as number[],
+      }));
+      await onComplete(data, finalTasks);
+      reset();
+      onOpenChange(false);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={close}>
+      <DialogContent className="max-w-xl text-[11px] text-white [&_label]:text-white [&_input]:text-black [&_input]:bg-white [&_select]:text-black [&_select]:bg-white [&_textarea]:text-black [&_textarea]:bg-white [&_input]:text-[11px] [&_select]:text-[11px] [&_textarea]:text-[11px]">
+        <DialogHeader>
+          <DialogTitle className="text-white text-sm">Create New Project — {labels[step]}</DialogTitle>
+        </DialogHeader>
+
+        <div className="flex items-center gap-1 mb-2 flex-wrap">
+          {labels.map((label, i) => (
+            <button
+              key={i}
+              type="button"
+              data-testid={`button-wizard-step-${i}`}
+              onClick={() => { if (i <= step) setStep(i); }}
+              className={`px-2 py-0.5 rounded text-[10px] ${
+                i === step ? "bg-white text-black" : i < step ? "bg-white/40 text-white" : "bg-white/10 text-white/40"
+              }`}
+            >
+              {i + 1}. {label}
+            </button>
+          ))}
+        </div>
+
+        <div className="min-h-[220px] space-y-3">
+          {step === 0 && (
+            <div className="space-y-2">
+              <label className="text-[11px] font-medium">Project Name</label>
+              <Input
+                data-testid="input-wizard-name"
+                value={data.name}
+                onChange={(e) => setData({ ...data, name: e.target.value })}
+                placeholder="e.g. Final Essay — POL101"
+                autoFocus
+              />
+            </div>
+          )}
+
+          {step === 1 && (
+            <div className="space-y-2">
+              <label className="text-[11px] font-medium">Description</label>
+              <Textarea
+                data-testid="input-wizard-description"
+                value={data.description}
+                onChange={(e) => setData({ ...data, description: e.target.value })}
+                placeholder="What is this project about?"
+                rows={4}
+              />
+            </div>
+          )}
+
+          {step === 2 && (
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <label className="text-[11px] font-medium">Color</label>
+                  <div className="flex gap-2 items-center">
+                    <input
+                      type="color"
+                      data-testid="input-wizard-color"
+                      value={data.color}
+                      onChange={(e) => setData({ ...data, color: e.target.value })}
+                      className="h-9 w-14 rounded-md border cursor-pointer"
+                    />
+                    <Input value={data.color} onChange={(e) => setData({ ...data, color: e.target.value })} className="flex-1" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[11px] font-medium">Status</label>
+                  <Select value={data.status} onValueChange={(v) => setData({ ...data, status: v })}>
+                    <SelectTrigger data-testid="select-wizard-status" className="bg-white text-black text-[11px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PROJECT_STATUSES.map((s) => (
+                        <SelectItem key={s} value={s}>{s.replace("_", " ").replace(/\b\w/g, (l) => l.toUpperCase())}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[11px] font-medium">Course (optional)</label>
+                <Input
+                  data-testid="input-wizard-course"
+                  value={data.courseName}
+                  onChange={(e) => setData({ ...data, courseName: e.target.value })}
+                  placeholder="e.g. POL101"
+                />
+              </div>
+            </div>
+          )}
+
+          {step === 3 && (
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <label className="text-[11px] font-medium">Start Date</label>
+                  <Input
+                    type="date"
+                    data-testid="input-wizard-start"
+                    value={data.startDate}
+                    onChange={(e) => setData({ ...data, startDate: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[11px] font-medium">Target Date</label>
+                  <Input
+                    type="date"
+                    data-testid="input-wizard-target"
+                    value={data.targetDate}
+                    onChange={(e) => setData({ ...data, targetDate: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[11px] font-medium">Priority</label>
+                <Select value={data.priority} onValueChange={(v) => setData({ ...data, priority: v })}>
+                  <SelectTrigger data-testid="select-wizard-priority" className="bg-white text-black text-[11px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {["low", "medium", "high", "urgent"].map((p) => (
+                      <SelectItem key={p} value={p}>{p[0].toUpperCase() + p.slice(1)}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          )}
+
+          {step === 4 && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-[11px] font-medium">Tasks for this project</label>
+                <Button type="button" size="sm" variant="outline" onClick={addTaskRow} className="border-white/30 text-white hover:bg-white/10 hover:text-white h-7 text-[10px]" data-testid="button-add-task-row">
+                  <Plus className="h-3 w-3 mr-1" /> Add Task
+                </Button>
+              </div>
+              {tasks.length === 0 && (
+                <p className="text-[10px] text-white/60">No tasks yet. Click "Add Task" to add one. You can skip this step and add tasks later.</p>
+              )}
+              <div className="space-y-2 max-h-[260px] overflow-y-auto">
+                {tasks.map((t, i) => (
+                  <div key={i} className="flex gap-1 items-center bg-white/5 p-2 rounded">
+                    <Input
+                      data-testid={`input-wizard-task-title-${i}`}
+                      value={t.title}
+                      onChange={(e) => updateTask(i, { title: e.target.value })}
+                      placeholder="Task title"
+                      className="flex-1 h-7"
+                    />
+                    <Input
+                      type="date"
+                      data-testid={`input-wizard-task-due-${i}`}
+                      value={t.dueDate}
+                      onChange={(e) => updateTask(i, { dueDate: e.target.value })}
+                      className="w-32 h-7"
+                    />
+                    <Select value={t.priority} onValueChange={(v) => updateTask(i, { priority: v })}>
+                      <SelectTrigger data-testid={`select-wizard-task-priority-${i}`} className="w-24 h-7 bg-white text-black text-[10px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {["low", "medium", "high", "urgent"].map((p) => (
+                          <SelectItem key={p} value={p}>{p[0].toUpperCase() + p.slice(1)}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button type="button" size="icon" variant="ghost" onClick={() => removeTask(i)} className="h-7 w-7 text-white/70 hover:text-red-400" data-testid={`button-remove-task-${i}`}>
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {step === 5 && showDepStep && (
+            <div className="space-y-2">
+              <label className="text-[11px] font-medium">Task Dependencies</label>
+              <p className="text-[10px] text-white/60">For each task, click any task that must be completed first (it will be marked as a "blocked by" dependency).</p>
+              <div className="space-y-2 max-h-[280px] overflow-y-auto">
+                {validTasks.map((t, i) => (
+                  <div key={i} className="bg-white/5 p-2 rounded">
+                    <div className="text-[11px] font-medium mb-1 truncate">{i + 1}. {t.title}</div>
+                    <div className="flex flex-wrap gap-1">
+                      {validTasks.map((other, j) => {
+                        if (i === j) return null;
+                        const active = t.blockedByIdx.includes(j);
+                        return (
+                          <button
+                            key={j}
+                            type="button"
+                            data-testid={`button-dep-${i}-${j}`}
+                            onClick={() => toggleDep(i, j)}
+                            className={`px-2 py-0.5 rounded text-[10px] truncate max-w-[140px] ${
+                              active ? "bg-orange-500 text-white" : "bg-white/10 text-white/70 hover:bg-white/20"
+                            }`}
+                            title={active ? `Blocked by: ${other.title}` : `Click to mark blocked by: ${other.title}`}
+                          >
+                            {active ? "✓ " : ""}{other.title || `Task ${j + 1}`}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {((step === 5 && !showDepStep) || step === 6) && (
+            <div className="space-y-2 text-[11px]">
+              <div className="bg-white/5 p-3 rounded space-y-1">
+                <div><span className="text-white/60">Name:</span> <span className="font-medium">{data.name || "(unnamed)"}</span></div>
+                {data.description && <div><span className="text-white/60">Description:</span> {data.description}</div>}
+                <div className="flex gap-3 flex-wrap">
+                  <span><span className="text-white/60">Status:</span> {data.status}</span>
+                  <span><span className="text-white/60">Priority:</span> {data.priority}</span>
+                  {data.courseName && <span><span className="text-white/60">Course:</span> {data.courseName}</span>}
+                  {data.targetDate && <span><span className="text-white/60">Due:</span> {data.targetDate}</span>}
+                </div>
+              </div>
+              <div className="bg-white/5 p-3 rounded">
+                <div className="text-white/60 mb-1">Tasks ({validTasks.length})</div>
+                {validTasks.length === 0 ? (
+                  <div className="text-white/50 text-[10px]">None — you can add tasks from the project card later.</div>
+                ) : (
+                  <ul className="space-y-1">
+                    {validTasks.map((t, i) => (
+                      <li key={i} className="flex justify-between gap-2">
+                        <span className="truncate">{i + 1}. {t.title} <span className="text-white/40">({t.priority})</span></span>
+                        <span className="text-white/60 text-[10px]">{t.dueDate}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {showDepStep && validTasks.some((t) => t.blockedByIdx.length > 0) && (
+                  <div className="mt-2 pt-2 border-t border-white/10">
+                    <div className="text-white/60 mb-1">Dependencies</div>
+                    <ul className="space-y-0.5 text-[10px]">
+                      {validTasks.map((t, i) =>
+                        t.blockedByIdx.length > 0 ? (
+                          <li key={i}>
+                            <span className="font-medium">{t.title}</span>
+                            <span className="text-white/50"> blocked by: </span>
+                            {t.blockedByIdx.map((b) => validTasks[b]?.title || `Task ${b + 1}`).join(", ")}
+                          </li>
+                        ) : null
+                      )}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <DialogFooter className="flex justify-between sm:justify-between gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setStep(Math.max(0, step - 1))}
+            disabled={step === 0 || submitting}
+            className="border-white/30 text-white hover:bg-white/10 hover:text-white"
+            data-testid="button-wizard-back"
+          >
+            <ChevronLeft className="h-3 w-3 mr-1" /> Back
+          </Button>
+          {step < totalSteps - 1 ? (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setStep(step + 1)}
+              disabled={!canAdvance() || submitting}
+              className="border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent"
+              data-testid="button-wizard-next"
+            >
+              Next <ChevronRight className="h-3 w-3 ml-1" />
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleFinish}
+              disabled={submitting || data.name.trim().length === 0}
+              className="border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)]"
+              data-testid="button-wizard-finish"
+            >
+              {submitting ? "Creating..." : "Create Project"}
+            </Button>
+          )}
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function ProjectDialog({ 
   project, 
   open, 
@@ -540,20 +969,6 @@ function ProjectDialog({
               rows={2}
             />
           </div>
-
-          {!project && (
-            <div className="space-y-2">
-              <label className="text-[11px] font-medium">Initial tasks (optional)</label>
-              <Textarea
-                data-testid="input-project-initial-tasks"
-                value={formData.initialTasks || ""}
-                onChange={(e) => setFormData({ ...formData, initialTasks: e.target.value })}
-                placeholder={"One task per line. Each will get a 1-week due date by default.\nExample:\nDraft outline\nResearch sources\nWrite first draft"}
-                rows={4}
-              />
-              <p className="text-[10px] text-white/60">Tasks will be created and linked to this project. You can edit due dates afterwards.</p>
-            </div>
-          )}
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="border-white/30 text-white hover:bg-white/10 hover:text-white">
@@ -1178,48 +1593,72 @@ export default function ProjectsPage() {
     },
   });
 
-  const handleSaveProject = async (data: ProjectFormData) => {
-    const { initialTasks, ...projectData } = data;
+  const handleSaveProject = (data: ProjectFormData) => {
+    const { initialTasks: _ignore, ...projectData } = data;
     if (editingProject) {
       updateProjectMutation.mutate({ id: editingProject.id, data: projectData as ProjectFormData });
     } else {
-      try {
-        const res: any = await createProjectMutation.mutateAsync(projectData as ProjectFormData);
-        const created: any = res && typeof res.json === "function" ? await res.json() : res;
-        const newProjectId = created?.id ?? created?.project?.id;
-        const lines = (initialTasks || "")
-          .split("\n")
-          .map((s) => s.trim())
-          .filter(Boolean);
-        if (newProjectId && lines.length > 0) {
-          const defaultDue = format(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), "yyyy-MM-dd");
-          let createdCount = 0;
-          for (const title of lines) {
-            try {
-              await apiRequest("POST", "/api/tasks", {
-                title,
-                dueDate: defaultDue,
-                projectId: newProjectId,
-                taskType: "homework",
-                type: "task",
-                priority: "medium",
-              });
-              createdCount++;
-            } catch (e) {
-              // continue with remaining tasks
-            }
-          }
-          queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
-          if (createdCount > 0) {
-            toast({ title: `Created ${createdCount} task${createdCount === 1 ? "" : "s"} in project` });
-          }
-        }
-      } catch (e) {
-        // createProjectMutation already shows an error toast
-      }
+      createProjectMutation.mutate(projectData as ProjectFormData);
     }
     setEditingProject(null);
     setDialogOpen(false);
+  };
+
+  const handleWizardComplete = async (data: ProjectFormData, wizardTasks: WizardTask[]) => {
+    try {
+      const res: any = await createProjectMutation.mutateAsync(data);
+      const created: any = res && typeof res.json === "function" ? await res.json() : res;
+      const newProjectId = created?.id ?? created?.project?.id;
+      if (!newProjectId) return;
+
+      const newTaskIds: number[] = [];
+      for (const wt of wizardTasks) {
+        try {
+          const tRes: any = await apiRequest("POST", "/api/tasks", {
+            title: wt.title,
+            dueDate: wt.dueDate,
+            projectId: newProjectId,
+            taskType: "homework",
+            type: "task",
+            priority: wt.priority,
+          });
+          const tCreated: any = tRes && typeof tRes.json === "function" ? await tRes.json() : tRes;
+          const tid = tCreated?.id ?? tCreated?.task?.id;
+          newTaskIds.push(tid);
+        } catch {
+          newTaskIds.push(0);
+        }
+      }
+
+      let depCount = 0;
+      for (let i = 0; i < wizardTasks.length; i++) {
+        const sourceId = newTaskIds[i];
+        if (!sourceId) continue;
+        for (const blockerIdx of wizardTasks[i].blockedByIdx) {
+          const targetId = newTaskIds[blockerIdx];
+          if (!targetId) continue;
+          try {
+            await apiRequest("POST", "/api/links", {
+              sourceType: "task",
+              sourceId,
+              targetType: "task",
+              targetId,
+              linkType: "blocked_by",
+            });
+            depCount++;
+          } catch { /* ignore individual link failures */ }
+        }
+      }
+
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/links"] });
+      const taskCount = newTaskIds.filter(Boolean).length;
+      if (taskCount > 0 || depCount > 0) {
+        toast({ title: `Created project with ${taskCount} task${taskCount === 1 ? "" : "s"}${depCount > 0 ? ` and ${depCount} dependency link${depCount === 1 ? "" : "s"}` : ""}` });
+      }
+    } catch {
+      // createProjectMutation already shows an error toast
+    }
   };
 
   const handleEditProject = (project: Project) => {
@@ -1623,15 +2062,26 @@ export default function ProjectsPage() {
         )}
       </main>
 
-      <ProjectDialog
-        project={editingProject}
-        open={dialogOpen}
-        onOpenChange={(open) => {
-          setDialogOpen(open);
-          if (!open) setEditingProject(null);
-        }}
-        onSave={handleSaveProject}
-      />
+      {editingProject ? (
+        <ProjectDialog
+          project={editingProject}
+          open={dialogOpen}
+          onOpenChange={(open) => {
+            setDialogOpen(open);
+            if (!open) setEditingProject(null);
+          }}
+          onSave={handleSaveProject}
+        />
+      ) : (
+        <ProjectWizard
+          open={dialogOpen}
+          onOpenChange={(open) => {
+            setDialogOpen(open);
+            if (!open) setEditingProject(null);
+          }}
+          onComplete={handleWizardComplete}
+        />
+      )}
     </div>
   );
 }
