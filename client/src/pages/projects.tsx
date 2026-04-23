@@ -87,6 +87,7 @@ interface ProjectFormData {
   notes: string;
   projectType: string;
   metadata: any;
+  initialTasks?: string;
 }
 
 function uid(prefix = 'id') {
