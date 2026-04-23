@@ -7,7 +7,10 @@ const NEWSLETTER_DOMAINS = [
 const POLITICAL_KEYWORDS: string[] = [];
 
 function buildQuery(): string {
-  return "from:(" + NEWSLETTER_DOMAINS.map(d => `@${d}`).join(" OR ") + ")";
+  const fromClause = "from:(" + NEWSLETTER_DOMAINS.map(d => `@${d}`).join(" OR ") + ")";
+  const subjectClause = `subject:"Raw Story"`;
+  const bodyClause = `"Raw Story"`;
+  return `(${fromClause}) OR (${subjectClause}) OR (${bodyClause})`;
 }
 
 async function gmailFetch(path: string, init: RequestInit = {}): Promise<any> {
