@@ -3504,6 +3504,16 @@ export default function Dashboard() {
   const [expandedSemHealth, setExpandedSemHealth] = useState<any>(null);
   const [expandedSemHealthLoading, setExpandedSemHealthLoading] = useState(false);
   const [semFlowWizard, setSemFlowWizard] = useState<{ courseCode: string; issue: string; step: number; phase: 'primary' | 'testing' | 'test-result' | 'secondary' | 'testing2' | 'test-result2' | 'chatgpt'; testResult?: any; weekNum?: number; uploadType?: 'module' | 'reading' } | null>(null);
+  // OneDrive device-code reconnect wizard (opened from the right cog → expanded
+  // semester panel → "Reconnect OneDrive"). Mirrors the curl flow documented in
+  // server/routes.ts: POST /api/onedrive/auth → user_code + verification_uri,
+  // then GET /api/onedrive/status?verify=1&force=1 to confirm tokenWorks:true.
+  const [odReconnect, setOdReconnect] = useState<{
+    step: 'idle' | 'fetching-code' | 'awaiting-signin' | 'verifying' | 'success' | 'failed';
+    userCode?: string;
+    verificationUri?: string;
+    error?: string;
+  } | null>(null);
   const [wizActionLoading, setWizActionLoading] = useState(false);
   const [wizActionDone, setWizActionDone] = useState<string | null>(null);
   const wizUploadRef = useRef<HTMLInputElement>(null);
@@ -29350,6 +29360,13 @@ export default function Dashboard() {
                             data-testid="btn-generate-class-tasks-from-sem"
                             title="Generate class calendar entries for virtual courses in the active semester"
                           >{generateClassTasksMutation.isPending ? 'Generating…' : 'Generate Class Tasks'}</button>
+                          <button
+                            onClick={() => setOdReconnect({ step: 'idle' })}
+                            className="text-[10.5px] px-3 py-1 rounded text-amber-100 hover:text-white transition-colors"
+                            style={{ background: 'rgba(245,158,11,0.18)', border: '1px solid rgba(245,158,11,0.45)' }}
+                            data-testid="btn-reconnect-onedrive"
+                            title="Re-authenticate OneDrive via Microsoft device-code flow (use when token has expired and folders/syncs are failing)"
+                          >Reconnect OneDrive</button>
                           <button className="text-white/60 hover:text-white transition-colors text-[18px] font-light ml-1" onClick={() => setExpandedSemKey(null)} data-testid="button-close-expanded-sem">&times;</button>
                         </div>
                       </div>
@@ -29408,6 +29425,179 @@ export default function Dashboard() {
                       <div className="flex items-center justify-end px-4 py-[10px] border-t border-white/40 shrink-0 rounded-b-xl" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, ${colorSettings.headerBar}bb 0%, ${colorSettings.headerBar}cc 100%)`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15), 0 -2px 8px rgba(0,0,0,0.08)' }}>
                         <button className="px-5 py-[5px] rounded text-[11px] font-medium text-white/80 hover:text-white transition-colors" style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)' }} onClick={() => setExpandedSemKey(null)} data-testid="button-close-expanded-sem-footer">Close</button>
                       </div>
+
+                      {odReconnect && createPortal(
+                        <div className="fixed inset-0 z-[10010] flex items-center justify-center" data-testid="onedrive-reconnect-wizard">
+                          <div className="absolute inset-0 bg-black/70" onClick={() => setOdReconnect(null)} />
+                          <div
+                            className="relative z-[10011] rounded-xl text-white p-0 flex flex-col overflow-hidden"
+                            style={{ width: '480px', maxWidth: '94vw', maxHeight: '85vh', background: `linear-gradient(180deg, ${colorSettings.mainBackground} 0%, color-mix(in srgb, ${colorSettings.mainBackgroundGradientEnd} 70%, black) 100%)`, border: '1.5px solid rgba(255,255,255,0.35)', boxShadow: '0 12px 48px rgba(0,0,0,0.5)' }}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <div className="flex items-center justify-between px-5 py-3 border-b border-white/40 flex-shrink-0" style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', background: `linear-gradient(180deg, rgba(255,255,255,0.28) 0%, ${colorSettings.headerBar}cc 40%, ${colorSettings.headerBar}bb 100%)` }}>
+                              <div className="flex items-center gap-2">
+                                <span className="text-[15px]">🔑</span>
+                                <h3 className="text-[13px] font-semibold text-white">Reconnect OneDrive</h3>
+                              </div>
+                              <button onClick={() => setOdReconnect(null)} className="text-white/60 hover:text-white text-[18px] font-light" data-testid="btn-od-reconnect-close">&times;</button>
+                            </div>
+
+                            <div className="flex items-center gap-1 px-5 py-2 border-b border-white/15 text-[10px] text-white/60">
+                              <span className={odReconnect.step === 'idle' || odReconnect.step === 'fetching-code' ? 'text-amber-300 font-semibold' : ''}>1. Get code</span>
+                              <span className="text-white/30">›</span>
+                              <span className={odReconnect.step === 'awaiting-signin' ? 'text-amber-300 font-semibold' : ''}>2. Sign in at microsoft.com/link</span>
+                              <span className="text-white/30">›</span>
+                              <span className={odReconnect.step === 'verifying' || odReconnect.step === 'success' || odReconnect.step === 'failed' ? 'text-amber-300 font-semibold' : ''}>3. Verify</span>
+                            </div>
+
+                            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 text-[12px]">
+                              {odReconnect.step === 'idle' && (
+                                <>
+                                  <p className="text-white/80 leading-relaxed">
+                                    Use this when OneDrive folders/syncs are failing because the Microsoft refresh token has expired (personal accounts rotate them; if the Pi was offline {'>'}24h or MS triggered a security event the token dies).
+                                  </p>
+                                  <p className="text-white/60 text-[11px] leading-relaxed">
+                                    The "Connected" badge can lie — it only checks the token file exists, not that it still works. This wizard runs the same device-code flow as the documented <code className="text-amber-200">curl POST /api/onedrive/auth</code> recovery, but without the terminal.
+                                  </p>
+                                  <button
+                                    onClick={async () => {
+                                      setOdReconnect({ step: 'fetching-code' });
+                                      try {
+                                        const r = await fetch('/api/onedrive/auth', { method: 'POST', credentials: 'include' });
+                                        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+                                        const data = await r.json();
+                                        if (!data.user_code) throw new Error('No user_code in response');
+                                        setOdReconnect({
+                                          step: 'awaiting-signin',
+                                          userCode: data.user_code,
+                                          verificationUri: data.verification_uri || 'https://microsoft.com/link',
+                                        });
+                                      } catch (e: any) {
+                                        setOdReconnect({ step: 'failed', error: `Failed to start device-code flow: ${e?.message || e}` });
+                                      }
+                                    }}
+                                    className="w-full px-4 py-2 rounded text-[12px] font-semibold text-white transition-colors"
+                                    style={{ background: 'rgba(245,158,11,0.4)', border: '1px solid rgba(245,158,11,0.6)' }}
+                                    data-testid="btn-od-reconnect-start"
+                                  >Start — Get device code</button>
+                                </>
+                              )}
+
+                              {odReconnect.step === 'fetching-code' && (
+                                <div className="flex items-center justify-center py-6 text-white/70">
+                                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                                  Requesting device code from Microsoft…
+                                </div>
+                              )}
+
+                              {odReconnect.step === 'awaiting-signin' && (
+                                <>
+                                  <p className="text-white/80">On any device, open the Microsoft sign-in page and type the code below:</p>
+                                  <div className="flex flex-col items-center gap-2 py-2">
+                                    <div className="text-[10px] text-white/50 uppercase tracking-wider">Your code</div>
+                                    <div
+                                      className="text-[28px] font-mono font-bold tracking-[0.25em] px-4 py-2 rounded select-all"
+                                      style={{ background: 'rgba(245,158,11,0.18)', border: '1px solid rgba(245,158,11,0.5)', color: '#fde68a' }}
+                                      data-testid="text-od-user-code"
+                                    >{odReconnect.userCode}</div>
+                                    <button
+                                      onClick={() => { try { navigator.clipboard.writeText(odReconnect.userCode || ''); toast({ title: 'Code copied' }); } catch {} }}
+                                      className="text-[10px] text-white/60 hover:text-white underline"
+                                      data-testid="btn-od-copy-code"
+                                    >Copy code</button>
+                                  </div>
+                                  <a
+                                    href={odReconnect.verificationUri || 'https://microsoft.com/link'}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block w-full text-center px-4 py-2 rounded text-[12px] font-semibold text-white transition-colors"
+                                    style={{ background: 'rgba(59,130,246,0.4)', border: '1px solid rgba(59,130,246,0.6)' }}
+                                    data-testid="link-od-verify-uri"
+                                  >Open {odReconnect.verificationUri || 'microsoft.com/link'} ↗</a>
+                                  <ol className="text-[11px] text-white/70 list-decimal pl-5 space-y-1">
+                                    <li>Open the link above on any device.</li>
+                                    <li>Type/paste the 8-character code (Microsoft auto-formats with a dash — just type all 8 chars).</li>
+                                    <li>Sign in with the Microsoft account that owns the OneDrive.</li>
+                                    <li>Approve the permissions.</li>
+                                    <li>Wait ~10 seconds, then click "I've signed in — verify" below.</li>
+                                  </ol>
+                                  <button
+                                    onClick={async () => {
+                                      setOdReconnect({ ...odReconnect, step: 'verifying' });
+                                      try {
+                                        const r = await fetch('/api/onedrive/status?verify=1&force=1', { credentials: 'include' });
+                                        const data = await r.json();
+                                        if (data.tokenWorks === true) {
+                                          setOdReconnect({ ...odReconnect, step: 'success' });
+                                          try { await queryClient.invalidateQueries({ queryKey: ['/api/onedrive/status'] }); } catch {}
+                                          if (expandedSemKey) {
+                                            try {
+                                              const hr = await fetch(`/api/semester-health-check/${expandedSemKey}`, { credentials: 'include' });
+                                              if (hr.ok) setExpandedSemHealth(await hr.json());
+                                            } catch {}
+                                          }
+                                        } else {
+                                          setOdReconnect({ ...odReconnect, step: 'failed', error: data.error || 'Token still not working. Did you complete the sign-in at microsoft.com/link?' });
+                                        }
+                                      } catch (e: any) {
+                                        setOdReconnect({ ...odReconnect, step: 'failed', error: `Verify call failed: ${e?.message || e}` });
+                                      }
+                                    }}
+                                    className="w-full px-4 py-2 rounded text-[12px] font-semibold text-white transition-colors"
+                                    style={{ background: 'rgba(34,197,94,0.4)', border: '1px solid rgba(34,197,94,0.6)' }}
+                                    data-testid="btn-od-verify"
+                                  >I've signed in — verify</button>
+                                </>
+                              )}
+
+                              {odReconnect.step === 'verifying' && (
+                                <div className="flex items-center justify-center py-6 text-white/70">
+                                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                                  Asking Microsoft if the token works now…
+                                </div>
+                              )}
+
+                              {odReconnect.step === 'success' && (
+                                <div className="text-center py-6 space-y-3">
+                                  <div className="text-[36px]">✅</div>
+                                  <div className="text-[14px] font-semibold text-emerald-300">OneDrive reconnected</div>
+                                  <p className="text-[11px] text-white/60">Token verified with Microsoft. Folder reads/writes should work again.</p>
+                                  <button
+                                    onClick={() => setOdReconnect(null)}
+                                    className="px-4 py-2 rounded text-[12px] font-semibold text-white"
+                                    style={{ background: 'rgba(34,197,94,0.4)', border: '1px solid rgba(34,197,94,0.6)' }}
+                                    data-testid="btn-od-done"
+                                  >Done</button>
+                                </div>
+                              )}
+
+                              {odReconnect.step === 'failed' && (
+                                <div className="space-y-3">
+                                  <div className="flex items-start gap-2 px-3 py-2 rounded" style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.4)' }}>
+                                    <span>⚠️</span>
+                                    <div className="text-[11px] text-red-200" data-testid="text-od-error">{odReconnect.error}</div>
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <button
+                                      onClick={() => setOdReconnect({ step: 'idle' })}
+                                      className="flex-1 px-4 py-2 rounded text-[12px] font-semibold text-white"
+                                      style={{ background: 'rgba(245,158,11,0.4)', border: '1px solid rgba(245,158,11,0.6)' }}
+                                      data-testid="btn-od-restart"
+                                    >Start over</button>
+                                    <button
+                                      onClick={() => setOdReconnect(null)}
+                                      className="flex-1 px-4 py-2 rounded text-[12px] font-medium text-white/80"
+                                      style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }}
+                                      data-testid="btn-od-cancel"
+                                    >Close</button>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>,
+                        document.body
+                      )}
 
                       {semFlowWizard && (() => {
                         const odPath = getOneDrivePath(semFlowWizard.courseCode);
