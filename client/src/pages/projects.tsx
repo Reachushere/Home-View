@@ -566,7 +566,9 @@ function ProjectCard({
   expanded,
   onToggleExpand,
   headerBarColor,
-  onRename
+  onRename,
+  onAddTask,
+  isAddingTask,
 }: { 
   project: Project;
   tasks: Task[];
@@ -576,11 +578,27 @@ function ProjectCard({
   onToggleExpand: () => void;
   headerBarColor: string;
   onRename: (name: string) => void;
+  onAddTask: (title: string, dueDate: string) => void;
+  isAddingTask: boolean;
 }) {
   const completedTasks = tasks.filter(t => t.isCompleted);
   const progress = tasks.length > 0 ? Math.round((completedTasks.length / tasks.length) * 100) : 0;
   const [isEditingName, setIsEditingName] = useState(false);
   const [editName, setEditName] = useState(project.name);
+  const [addOpen, setAddOpen] = useState(false);
+  const [addTitle, setAddTitle] = useState("");
+  const [addDate, setAddDate] = useState(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 7);
+    return d.toISOString().slice(0, 10);
+  });
+  const submitAdd = () => {
+    const t = addTitle.trim();
+    if (!t || !addDate) return;
+    onAddTask(t, addDate);
+    setAddTitle("");
+    setAddOpen(false);
+  };
   
   return (
     <div 
@@ -758,25 +776,80 @@ function ProjectCard({
           <Progress value={progress} className="h-2" />
         </div>
 
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={onToggleExpand}
-          className="w-full justify-center gap-1 text-white hover:text-white hover:bg-white/20 text-xs"
-          data-testid={`button-toggle-tasks-${project.id}`}
-        >
-          {expanded ? (
-            <>
-              <ChevronUp className="w-3.5 h-3.5" />
-              Hide Tasks
-            </>
-          ) : (
-            <>
-              <ChevronDown className="w-3.5 h-3.5" />
-              Show Tasks ({tasks.length})
-            </>
-          )}
-        </Button>
+        <div className="flex gap-1">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={onToggleExpand}
+            className="flex-1 justify-center gap-1 text-white hover:text-white hover:bg-white/20 text-xs"
+            data-testid={`button-toggle-tasks-${project.id}`}
+          >
+            {expanded ? (
+              <>
+                <ChevronUp className="w-3.5 h-3.5" />
+                Hide Tasks
+              </>
+            ) : (
+              <>
+                <ChevronDown className="w-3.5 h-3.5" />
+                Show Tasks ({tasks.length})
+              </>
+            )}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setAddOpen(o => !o)}
+            className="gap-1 text-white hover:text-white hover:bg-white/20 text-xs px-2"
+            data-testid={`button-add-task-${project.id}`}
+            title="Add task to this project"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            Task
+          </Button>
+        </div>
+
+        {addOpen && (
+          <div className="mt-2 p-2 rounded-md bg-white/15 border border-white/30 space-y-2" data-testid={`form-add-task-${project.id}`}>
+            <input
+              type="text"
+              autoFocus
+              value={addTitle}
+              onChange={(e) => setAddTitle(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') submitAdd(); else if (e.key === 'Escape') setAddOpen(false); }}
+              placeholder="Task title..."
+              className="w-full bg-white/20 border border-white/30 rounded px-2 py-1.5 text-white text-xs placeholder-white/50 focus:outline-none focus:border-white/60"
+              data-testid={`input-new-task-title-${project.id}`}
+            />
+            <div className="flex gap-2 items-center">
+              <input
+                type="date"
+                value={addDate}
+                onChange={(e) => setAddDate(e.target.value)}
+                className="flex-1 bg-white/20 border border-white/30 rounded px-2 py-1.5 text-white text-xs focus:outline-none focus:border-white/60 [color-scheme:dark]"
+                data-testid={`input-new-task-date-${project.id}`}
+              />
+              <Button
+                size="sm"
+                onClick={submitAdd}
+                disabled={isAddingTask || !addTitle.trim() || !addDate}
+                className="text-xs h-7"
+                data-testid={`button-confirm-add-task-${project.id}`}
+              >
+                {isAddingTask ? "..." : "Add"}
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => { setAddOpen(false); setAddTitle(""); }}
+                className="text-xs h-7 text-white hover:bg-white/20"
+                data-testid={`button-cancel-add-task-${project.id}`}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        )}
 
         {expanded && tasks.length > 0 && (
           <div className="space-y-1 pt-2 mt-2 border-t border-white/30">
@@ -1066,6 +1139,26 @@ export default function ProjectsPage() {
     },
     onError: () => {
       toast({ title: "Failed to delete project", variant: "destructive" });
+    },
+  });
+
+  const addTaskToProjectMutation = useMutation({
+    mutationFn: async (data: { title: string; dueDate: string; projectId: number }) => {
+      return await apiRequest("POST", "/api/tasks", {
+        title: data.title,
+        dueDate: data.dueDate,
+        projectId: data.projectId,
+        taskType: "homework",
+        type: "task",
+        priority: "medium",
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+      toast({ title: "Task added to project" });
+    },
+    onError: (e: any) => {
+      toast({ title: "Failed to add task", description: e?.message || "", variant: "destructive" });
     },
   });
 
@@ -1472,6 +1565,8 @@ export default function ProjectsPage() {
                 onToggleExpand={() => toggleProjectExpanded(project.id)}
                 headerBarColor={headerBarColor}
                 onRename={(name) => updateProjectMutation.mutate({ id: project.id, data: { name } })}
+                onAddTask={(title, dueDate) => addTaskToProjectMutation.mutate({ title, dueDate, projectId: project.id })}
+                isAddingTask={addTaskToProjectMutation.isPending}
               />
             ))}
           </div>
