@@ -18028,70 +18028,55 @@ export default function Dashboard() {
         <div className="flex flex-col" style={{ marginRight: '8px', textAlign: 'right', alignItems: 'flex-end', gap: '3px' }}>
           <span className="text-white font-bold leading-tight" style={{ fontSize: '12.5px' }}>{(() => { const h = new Date().getHours(); return h < 12 ? 'Good morning,' : h < 17 ? 'Good afternoon,' : 'Good evening,'; })()} {profileData.firstName}</span>
           <span className="text-white leading-tight" style={{ fontWeight: 300, fontSize: '11px' }}>{schoolData.schoolName || 'Toronto Metropolitan University'}</span>
+          {authLevel === '5747' && (
+            <div className="flex flex-row" style={{ gap: '4px', justifyContent: 'flex-end', marginTop: '1px' }} data-testid="calendar-source-toggles">
+              {[
+                { src: 'outlook_calendar', label: 'Outlook' },
+                { src: 'tmu', label: 'TMU' },
+              ].map(({ src, label }) => {
+                const on = !hiddenCalendarSources.has(src);
+                return (
+                  <button
+                    key={src}
+                    onClick={() => toggleCalendarSource(src)}
+                    data-testid={`toggle-calendar-${src}`}
+                    title={`${on ? 'Hide' : 'Show'} ${label} calendar events`}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '3px',
+                      padding: '0.5px 4px',
+                      borderRadius: '7px',
+                      background: on
+                        ? 'linear-gradient(180deg, rgba(100,186,77,0.55) 0%, rgba(66,128,70,0.40) 100%)'
+                        : 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.08) 100%)',
+                      border: on ? '1px solid rgba(140,210,120,0.55)' : '1px solid rgba(255,255,255,0.25)',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.18)',
+                      color: '#fff',
+                      fontSize: '6px',
+                      fontWeight: 500,
+                      fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      opacity: on ? 1 : 0.55,
+                    }}
+                  >
+                    <span
+                      style={{
+                        display: 'inline-block', width: '4px', height: '4px', borderRadius: '50%',
+                        background: on ? '#7BD162' : '#888',
+                        boxShadow: on ? '0 0 6px rgba(123,209,98,0.8)' : 'none',
+                      }}
+                    />
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
         <img src={profilePhotoUrl || profilePhoto} alt="Profile" style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, alignSelf: 'flex-start', boxShadow: '0 2px 8px rgba(0,0,0,0.2)', cursor: 'pointer' }} onClick={() => startTransition(() => setIsProfileDialogOpen(true))} data-testid="button-profile-photo" />
       </div>
 
-      {/* Calendar source toggles — 5747 only, sits under the profile photo */}
-      {authLevel === '5747' && (
-        <div
-          className="fixed flex flex-row"
-          data-tpo data-tpo-opacity="1"
-          style={{
-            right: `${calendarRight - calendarReduction + 7}px`,
-            top: `${5 + d2lTickerHeight + 44 + 6}px`,
-            zIndex: 100,
-            gap: '4px',
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-            opacity: (isTopPillOpen || isTodoFlyoutOpen) ? 0 : 1,
-            transition: (isTopPillOpen || isTodoFlyoutOpen) ? 'opacity 0.3s ease-in-out' : 'opacity 0.1s ease-in-out',
-            pointerEvents: (isTopPillOpen || isTodoFlyoutOpen) ? 'none' : 'auto',
-          }}
-          data-testid="calendar-source-toggles"
-        >
-          {[
-            { src: 'outlook_calendar', label: 'Outlook' },
-            { src: 'tmu', label: 'TMU' },
-          ].map(({ src, label }) => {
-            const on = !hiddenCalendarSources.has(src);
-            return (
-              <button
-                key={src}
-                onClick={() => toggleCalendarSource(src)}
-                data-testid={`toggle-calendar-${src}`}
-                title={`${on ? 'Hide' : 'Show'} ${label} calendar events`}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: '3px',
-                  padding: '0.5px 4px',
-                  borderRadius: '7px',
-                  background: on
-                    ? 'linear-gradient(180deg, rgba(100,186,77,0.55) 0%, rgba(66,128,70,0.40) 100%)'
-                    : 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.08) 100%)',
-                  border: on ? '1px solid rgba(140,210,120,0.55)' : '1px solid rgba(255,255,255,0.25)',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.18)',
-                  color: '#fff',
-                  fontSize: '6px',
-                  fontWeight: 500,
-                  fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  opacity: on ? 1 : 0.55,
-                }}
-              >
-                <span
-                  style={{
-                    display: 'inline-block', width: '4px', height: '4px', borderRadius: '50%',
-                    background: on ? '#7BD162' : '#888',
-                    boxShadow: on ? '0 0 6px rgba(123,209,98,0.8)' : 'none',
-                  }}
-                />
-                {label}
-              </button>
-            );
-          })}
-        </div>
-      )}
+      {/* Calendar source toggles moved into the greeting block above (under "Toronto Metropolitan University", right-aligned) */}
 
 
       {/* Coming Up label removed */}
