@@ -1235,9 +1235,277 @@ function ProjectDialog({
   );
 }
 
+interface SubtaskRow {
+  id: number;
+  taskId: number;
+  title: string;
+  isCompleted: boolean;
+  position?: number;
+}
+
+function TaskRowExpanded({
+  task,
+  allProjectTasks,
+  taskLinks,
+}: {
+  task: Task;
+  allProjectTasks: Task[];
+  taskLinks: TaskLink[];
+}) {
+  const { toast } = useToast();
+  const [open, setOpen] = useState(false);
+  const [addSubOpen, setAddSubOpen] = useState(false);
+  const [newSubTitle, setNewSubTitle] = useState("");
+
+  const { data: subtasks = [] } = useQuery<SubtaskRow[]>({
+    queryKey: ["/api/tasks", task.id, "subtasks"],
+    queryFn: async () => {
+      const res = await fetch(`/api/tasks/${task.id}/subtasks`, { credentials: "include" });
+      if (!res.ok) return [];
+      return res.json();
+    },
+    enabled: open,
+  });
+
+  const invalidate = () => {
+    queryClient.invalidateQueries({ queryKey: ["/api/tasks", task.id, "subtasks"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/subtasks"] });
+  };
+
+  const toggleTaskMutation = useMutation({
+    mutationFn: async () => apiRequest("PATCH", `/api/tasks/${task.id}`, { isCompleted: !task.isCompleted }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/tasks"] }),
+  });
+
+  const addSubMutation = useMutation({
+    mutationFn: async (title: string) => apiRequest("POST", `/api/tasks/${task.id}/subtasks`, { title, isCompleted: false }),
+    onSuccess: () => { setNewSubTitle(""); setAddSubOpen(false); invalidate(); },
+    onError: (e: any) => toast({ title: "Failed to add subtask", description: e?.message || "", variant: "destructive" }),
+  });
+
+  const toggleSubMutation = useMutation({
+    mutationFn: async (s: SubtaskRow) => apiRequest("PATCH", `/api/subtasks/${s.id}`, { isCompleted: !s.isCompleted }),
+    onSuccess: () => invalidate(),
+  });
+
+  const deleteSubMutation = useMutation({
+    mutationFn: async (id: number) => apiRequest("DELETE", `/api/subtasks/${id}`, undefined),
+    onSuccess: () => invalidate(),
+  });
+
+  const taskMap = useMemo(() => {
+    const m = new Map<number, Task>();
+    allProjectTasks.forEach(t => m.set(t.id, t));
+    return m;
+  }, [allProjectTasks]);
+
+  const blockedByTasks: Task[] = [];
+  const blocksTasks: Task[] = [];
+  for (const link of taskLinks) {
+    if (link.linkType === "blocks") {
+      if (link.sourceId === task.id && link.targetId != null) {
+        const t = taskMap.get(link.targetId);
+        if (t) blocksTasks.push(t);
+      }
+      if (link.targetId === task.id && link.sourceId != null) {
+        const t = taskMap.get(link.sourceId);
+        if (t) blockedByTasks.push(t);
+      }
+    } else if (link.linkType === "blocked_by") {
+      if (link.sourceId === task.id && link.targetId != null) {
+        const t = taskMap.get(link.targetId);
+        if (t) blockedByTasks.push(t);
+      }
+    }
+  }
+
+  const isOverdue = !task.isCompleted && task.dueDate && new Date(task.dueDate) < new Date(new Date().toDateString());
+  const isBlocked = !task.isCompleted && blockedByTasks.some(t => !t.isCompleted);
+  const isAtRisk = isBlocked && isOverdue;
+
+  const sameDayConflicts = task.dueDate
+    ? allProjectTasks.filter(t => t.id !== task.id && !t.isCompleted && t.dueDate && new Date(t.dueDate).toDateString() === new Date(task.dueDate!).toDateString())
+    : [];
+
+  const reminders: number[] = [];
+  const t: any = task;
+  [t.reminder1, t.reminder2, t.reminder3, t.reminder4].forEach((r) => {
+    if (typeof r === "number" && r > 0) reminders.push(r);
+  });
+
+  const fmtMins = (m: number) => m >= 1440 ? `${Math.round(m/1440)}d` : m >= 60 ? `${Math.round(m/60)}h` : `${m}m`;
+
+  const completedSubs = subtasks.filter(s => s.isCompleted).length;
+
+  return (
+    <div className={`rounded-md border ${
+      task.isCompleted ? "bg-green-500/10 border-green-400/30"
+      : isAtRisk ? "bg-red-500/15 border-red-400/40"
+      : isBlocked ? "bg-orange-500/15 border-orange-400/40"
+      : isOverdue ? "bg-yellow-500/15 border-yellow-400/40"
+      : "bg-white/15 border-white/30"
+    }`} data-testid={`task-row-${task.id}`}>
+      <div className="flex items-center gap-2 p-2 text-xs">
+        <button
+          type="button"
+          onClick={() => toggleTaskMutation.mutate()}
+          className="flex-shrink-0"
+          data-testid={`button-toggle-task-${task.id}`}
+          aria-label={task.isCompleted ? "Mark incomplete" : "Mark complete"}
+        >
+          {task.isCompleted ? (
+            <CheckCircle2 className="w-4 h-4 text-green-400" />
+          ) : (
+            <div className="w-4 h-4 rounded-full border-2 border-white/60" />
+          )}
+        </button>
+        <span className={`flex-1 truncate text-white ${task.isCompleted ? "line-through opacity-60" : ""}`}>
+          {task.title}
+        </span>
+        {task.dueDate && (
+          <span className={`text-[10px] ${isOverdue ? "text-red-200 font-semibold" : "text-white/70"}`}>
+            {format(new Date(task.dueDate), "MMM d")}
+          </span>
+        )}
+        <button
+          type="button"
+          onClick={() => setOpen(o => !o)}
+          className="text-white/70 hover:text-white"
+          data-testid={`button-expand-task-${task.id}`}
+          aria-label={open ? "Collapse" : "Expand"}
+        >
+          {open ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+        </button>
+      </div>
+
+      {(blockedByTasks.length > 0 || blocksTasks.length > 0 || sameDayConflicts.length > 0 || reminders.length > 0 || isAtRisk) && (
+        <div className="flex flex-wrap items-center gap-1 px-2 pb-2 text-[10px]">
+          {isAtRisk && (
+            <Badge className="bg-red-500/40 text-red-100 border border-red-400/60" data-testid={`badge-risk-${task.id}`}>
+              ⚠ AT RISK
+            </Badge>
+          )}
+          {blockedByTasks.length > 0 && (
+            <span className="flex items-center gap-1 text-orange-200">
+              <Lock className="w-3 h-3" /> Blocked by:
+              {blockedByTasks.map(b => (
+                <Badge key={b.id} variant="outline" className={`text-[10px] border-orange-300/60 text-orange-100 ${b.isCompleted ? "line-through opacity-50" : ""}`} data-testid={`badge-blocked-by-${task.id}-${b.id}`}>
+                  {b.title}
+                </Badge>
+              ))}
+            </span>
+          )}
+          {blocksTasks.length > 0 && (
+            <span className="flex items-center gap-1 text-blue-200">
+              <ArrowRight className="w-3 h-3" /> Blocks:
+              {blocksTasks.map(b => (
+                <Badge key={b.id} variant="outline" className="text-[10px] border-blue-300/60 text-blue-100" data-testid={`badge-blocks-${task.id}-${b.id}`}>
+                  {b.title}
+                </Badge>
+              ))}
+            </span>
+          )}
+          {sameDayConflicts.length > 0 && (
+            <Badge className="bg-yellow-500/30 text-yellow-100 border border-yellow-400/50" data-testid={`badge-conflict-${task.id}`}>
+              ⚡ Conflict: {sameDayConflicts.length} other task{sameDayConflicts.length === 1 ? "" : "s"} same day
+            </Badge>
+          )}
+          {reminders.length > 0 && (
+            <span className="flex items-center gap-1 text-white/70">
+              <Clock className="w-3 h-3" /> Reminders: {reminders.map(fmtMins).join(", ")} before
+            </span>
+          )}
+        </div>
+      )}
+
+      {open && (
+        <div className="px-2 pb-2 space-y-2 border-t border-white/20 pt-2">
+          {(task as any).notes && (
+            <div className="text-[10px] text-white/80 whitespace-pre-wrap">
+              <span className="font-semibold text-white/60">Notes: </span>{(task as any).notes}
+            </div>
+          )}
+          {(task as any).estimatedMinutes != null && (task as any).estimatedMinutes > 0 && (
+            <div className="text-[10px] text-white/70">
+              <span className="font-semibold">Est. time:</span> {fmtMins((task as any).estimatedMinutes)}
+            </div>
+          )}
+          {Array.isArray((task as any).tags) && (task as any).tags.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {(task as any).tags.map((tg: string, i: number) => (
+                <Badge key={i} variant="outline" className="text-[9px] border-white/30 text-white/80">{tg}</Badge>
+              ))}
+            </div>
+          )}
+
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-semibold text-white/70">
+              Subtasks {subtasks.length > 0 && `(${completedSubs}/${subtasks.length})`}
+            </span>
+            <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              onClick={() => setAddSubOpen(o => !o)}
+              className="h-6 text-[10px] text-white hover:bg-white/20"
+              data-testid={`button-add-subtask-row-${task.id}`}
+            >
+              <Plus className="w-3 h-3 mr-1" /> Subtask
+            </Button>
+          </div>
+
+          {addSubOpen && (
+            <div className="flex gap-2">
+              <input
+                type="text"
+                autoFocus
+                value={newSubTitle}
+                onChange={(e) => setNewSubTitle(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && newSubTitle.trim()) addSubMutation.mutate(newSubTitle.trim());
+                  if (e.key === "Escape") { setAddSubOpen(false); setNewSubTitle(""); }
+                }}
+                placeholder="Subtask title..."
+                className="flex-1 bg-white/20 border border-white/30 rounded px-2 py-1 text-white text-[10px] placeholder-white/50 focus:outline-none"
+                data-testid={`input-subtask-title-row-${task.id}`}
+              />
+              <Button
+                size="sm"
+                onClick={() => newSubTitle.trim() && addSubMutation.mutate(newSubTitle.trim())}
+                disabled={!newSubTitle.trim() || addSubMutation.isPending}
+                className="text-[10px] h-6"
+                data-testid={`button-confirm-add-subtask-row-${task.id}`}
+              >
+                Add
+              </Button>
+            </div>
+          )}
+
+          {subtasks.length > 0 && (
+            <div className="space-y-1">
+              {subtasks.map(s => (
+                <div key={s.id} className="flex items-center gap-2 text-[10px] bg-white/10 rounded px-2 py-1" data-testid={`subtask-row-${s.id}`}>
+                  <button type="button" onClick={() => toggleSubMutation.mutate(s)} data-testid={`button-toggle-subtask-${s.id}`}>
+                    {s.isCompleted ? <CheckCircle2 className="w-3 h-3 text-green-400" /> : <div className="w-3 h-3 rounded-full border border-white/60" />}
+                  </button>
+                  <span className={`flex-1 truncate text-white ${s.isCompleted ? "line-through opacity-60" : ""}`}>{s.title}</span>
+                  <button type="button" onClick={() => deleteSubMutation.mutate(s.id)} className="text-white/50 hover:text-red-300" data-testid={`button-delete-subtask-${s.id}`}>
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ProjectCard({ 
   project, 
   tasks, 
+  taskLinks,
   onEdit, 
   onDelete,
   expanded,
@@ -1249,6 +1517,7 @@ function ProjectCard({
 }: { 
   project: Project;
   tasks: Task[];
+  taskLinks: TaskLink[];
   onEdit: () => void;
   onDelete: () => void;
   expanded: boolean;
@@ -1529,29 +1798,14 @@ function ProjectCard({
         )}
 
         {expanded && tasks.length > 0 && (
-          <div className="space-y-1 pt-2 mt-2 border-t border-white/30">
+          <div className="space-y-2 pt-2 mt-2 border-t border-white/30">
             {tasks.map((task) => (
-              <div 
+              <TaskRowExpanded
                 key={task.id}
-                className={`flex items-center gap-2 p-2 rounded-md text-xs ${
-                  task.isCompleted 
-                    ? "bg-green-500/20 line-through text-white/60" 
-                    : "bg-white/20 text-white"
-                }`}
-                data-testid={`task-item-${task.id}`}
-              >
-                {task.isCompleted ? (
-                  <CheckCircle2 className="w-3.5 h-3.5 text-green-400 flex-shrink-0" />
-                ) : (
-                  <div className="w-3.5 h-3.5 rounded-full border-2 border-white/50 flex-shrink-0" />
-                )}
-                <span className="flex-1 truncate">{task.title}</span>
-                {task.dueDate && (
-                  <span className="text-[10px] text-white/60">
-                    {format(new Date(task.dueDate), "MMM d")}
-                  </span>
-                )}
-              </div>
+                task={task}
+                allProjectTasks={tasks}
+                taskLinks={taskLinks}
+              />
             ))}
           </div>
         )}
@@ -1760,7 +2014,6 @@ export default function ProjectsPage() {
 
   const { data: allTaskLinks = [] } = useQuery<TaskLink[]>({
     queryKey: ["/api/links"],
-    enabled: viewMode === "workflow",
   });
 
   const tasksByProject = useMemo(() => {
@@ -2334,6 +2587,7 @@ export default function ProjectsPage() {
                 key={project.id}
                 project={project}
                 tasks={tasksByProject.get(project.id) || []}
+                taskLinks={allTaskLinks}
                 onEdit={() => handleEditProject(project)}
                 onDelete={() => handleDeleteProject(project.id)}
                 expanded={expandedProjects.has(project.id)}
