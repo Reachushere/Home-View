@@ -91,6 +91,8 @@ interface ProjectFormData {
   projectType: string;
   metadata: any;
   initialTasks?: string;
+  tags?: string[];
+  dependsOnProjectIds?: number[];
 }
 
 function uid(prefix = 'id') {
@@ -349,21 +351,39 @@ function LegalComplaintEditor({
   );
 }
 
+interface WizardSubtask {
+  title: string;
+  dueDate: string;
+}
+
 interface WizardTask {
   title: string;
   dueDate: string;
   priority: string;
   blockedByIdx: number[];
+  expanded?: boolean;
+  notes?: string;
+  estimatedMinutes?: number | "";
+  tags?: string;
+  attachments?: string;
+  repeatType?: string;
+  reminder1?: number | "";
+  reminder2?: number | "";
+  reminder3?: number | "";
+  reminder4?: number | "";
+  subtasks?: WizardSubtask[];
 }
 
 function ProjectWizard({
   open,
   onOpenChange,
   onComplete,
+  existingProjects = [],
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onComplete: (data: ProjectFormData, tasks: WizardTask[]) => Promise<void> | void;
+  existingProjects?: Project[];
 }) {
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
@@ -407,7 +427,45 @@ function ProjectWizard({
 
   const addTaskRow = () => {
     const dflt = format(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), "yyyy-MM-dd");
-    setTasks((t) => [...t, { title: "", dueDate: dflt, priority: "medium", blockedByIdx: [] }]);
+    setTasks((t) => [...t, {
+      title: "", dueDate: dflt, priority: "medium", blockedByIdx: [],
+      expanded: false, notes: "", estimatedMinutes: "", tags: "", attachments: "",
+      repeatType: "none", reminder1: 30, reminder2: 120, reminder3: "", reminder4: "",
+      subtasks: [],
+    }]);
+  };
+
+  const addSubtask = (taskIdx: number) => {
+    setTasks((ts) => ts.map((t, i) => i === taskIdx ? {
+      ...t,
+      subtasks: [...(t.subtasks || []), { title: "", dueDate: t.dueDate }],
+    } : t));
+  };
+
+  const updateSubtask = (taskIdx: number, subIdx: number, patch: Partial<WizardSubtask>) => {
+    setTasks((ts) => ts.map((t, i) => i === taskIdx ? {
+      ...t,
+      subtasks: (t.subtasks || []).map((s, j) => j === subIdx ? { ...s, ...patch } : s),
+    } : t));
+  };
+
+  const removeSubtask = (taskIdx: number, subIdx: number) => {
+    setTasks((ts) => ts.map((t, i) => i === taskIdx ? {
+      ...t,
+      subtasks: (t.subtasks || []).filter((_, j) => j !== subIdx),
+    } : t));
+  };
+
+  const toggleProjectLink = (projectId: number) => {
+    setData((d) => {
+      const cur = d.dependsOnProjectIds || [];
+      return {
+        ...d,
+        dependsOnProjectIds: cur.includes(projectId)
+          ? cur.filter((id) => id !== projectId)
+          : [...cur, projectId],
+      };
+    });
   };
 
   const updateTask = (idx: number, patch: Partial<WizardTask>) => {
@@ -442,9 +500,9 @@ function ProjectWizard({
 
   const validTasks = tasks.filter((t) => t.title.trim().length > 0);
   const showDepStep = true;
-  const totalSteps = 7;
+  const totalSteps = 8;
 
-  const labels = ["Name", "Description", "Style", "Schedule", "Tasks", "Dependencies", "Review"];
+  const labels = ["Name", "Description", "Style", "Schedule", "Tags & Links", "Tasks", "Dependencies", "Review"];
 
   const canAdvance = () => {
     if (step === 0) return data.name.trim().length > 0;
@@ -612,6 +670,45 @@ function ProjectWizard({
           )}
 
           {step === 4 && (
+            <div className="space-y-3">
+              <div className="space-y-2">
+                <label className="text-[11px] font-medium">Tags / Labels (comma-separated)</label>
+                <Input
+                  data-testid="input-wizard-project-tags"
+                  value={(data.tags || []).join(", ")}
+                  onChange={(e) => setData({ ...data, tags: e.target.value.split(",").map((s) => s.trim()).filter(Boolean) })}
+                  placeholder="e.g. urgent, school, group-project"
+                />
+                <p className="text-[10px] text-white/50">Use tags to categorize and filter projects.</p>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[11px] font-medium">This project depends on (other projects)</label>
+                {existingProjects.length === 0 ? (
+                  <p className="text-[10px] text-white/60">No other projects yet — you'll be able to add project-to-project dependencies later.</p>
+                ) : (
+                  <div className="flex flex-wrap gap-1 max-h-[180px] overflow-y-auto">
+                    {existingProjects.map((p) => {
+                      const active = (data.dependsOnProjectIds || []).includes(p.id);
+                      return (
+                        <button
+                          key={p.id}
+                          type="button"
+                          data-testid={`button-project-link-${p.id}`}
+                          onClick={() => toggleProjectLink(p.id)}
+                          className={`px-2 py-0.5 rounded text-[10px] truncate max-w-[180px] ${active ? "bg-orange-500 text-white" : "bg-white/10 text-white/70 hover:bg-white/20"}`}
+                          title={active ? `Depends on: ${p.name}` : `Click to mark depends on: ${p.name}`}
+                        >
+                          {active ? "✓ " : ""}{p.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {step === 5 && (
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <label className="text-[11px] font-medium">Tasks for this project</label>
@@ -620,45 +717,179 @@ function ProjectWizard({
                 </Button>
               </div>
               {tasks.length === 0 && (
-                <p className="text-[10px] text-white/60">No tasks yet. Click "Add Task" to add one. You can skip this step and add tasks later.</p>
+                <p className="text-[10px] text-white/60">No tasks yet. Click "Add Task" to add one. Click the chevron on each task to set notes, reminders, recurring, files, time estimate, tags, and subtasks.</p>
               )}
-              <div className="space-y-2 max-h-[260px] overflow-y-auto">
+              <div className="space-y-2 max-h-[360px] overflow-y-auto">
                 {tasks.map((t, i) => (
-                  <div key={i} className="flex gap-1 items-center bg-white/5 p-2 rounded">
-                    <Input
-                      data-testid={`input-wizard-task-title-${i}`}
-                      value={t.title}
-                      onChange={(e) => updateTask(i, { title: e.target.value })}
-                      placeholder="Task title"
-                      className="flex-1 h-7"
-                    />
-                    <Input
-                      type="date"
-                      data-testid={`input-wizard-task-due-${i}`}
-                      value={t.dueDate}
-                      onChange={(e) => updateTask(i, { dueDate: e.target.value })}
-                      className="w-32 h-7"
-                    />
-                    <Select value={t.priority} onValueChange={(v) => updateTask(i, { priority: v })}>
-                      <SelectTrigger data-testid={`select-wizard-task-priority-${i}`} className="w-24 h-7 bg-white text-black text-[10px]">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {["low", "medium", "high", "urgent"].map((p) => (
-                          <SelectItem key={p} value={p}>{p[0].toUpperCase() + p.slice(1)}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Button type="button" size="icon" variant="ghost" onClick={() => removeTask(i)} className="h-7 w-7 text-white/70 hover:text-red-400" data-testid={`button-remove-task-${i}`}>
-                      <X className="h-3 w-3" />
-                    </Button>
+                  <div key={i} className="bg-white/5 p-2 rounded space-y-2">
+                    <div className="flex gap-1 items-center">
+                      <button
+                        type="button"
+                        onClick={() => updateTask(i, { expanded: !t.expanded })}
+                        className="text-white/70 hover:text-white"
+                        data-testid={`button-task-expand-${i}`}
+                        title={t.expanded ? "Collapse" : "Expand for more options"}
+                      >
+                        {t.expanded ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
+                      </button>
+                      <Input
+                        data-testid={`input-wizard-task-title-${i}`}
+                        value={t.title}
+                        onChange={(e) => updateTask(i, { title: e.target.value })}
+                        placeholder="Task title"
+                        className="flex-1 h-7"
+                      />
+                      <Input
+                        type="date"
+                        data-testid={`input-wizard-task-due-${i}`}
+                        value={t.dueDate}
+                        onChange={(e) => updateTask(i, { dueDate: e.target.value })}
+                        className="w-32 h-7 !text-black !bg-white"
+                        style={{ colorScheme: "light" }}
+                      />
+                      <Select value={t.priority} onValueChange={(v) => updateTask(i, { priority: v })}>
+                        <SelectTrigger data-testid={`select-wizard-task-priority-${i}`} className="w-24 h-7 bg-white text-black text-[10px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {["low", "medium", "high", "urgent"].map((p) => (
+                            <SelectItem key={p} value={p}>{p[0].toUpperCase() + p.slice(1)}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Button type="button" size="icon" variant="ghost" onClick={() => removeTask(i)} className="h-7 w-7 text-white/70 hover:text-red-400" data-testid={`button-remove-task-${i}`}>
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+
+                    {t.expanded && (
+                      <div className="pl-5 pt-1 space-y-2 border-l border-white/10">
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-medium text-white/70">Estimated time (min)</label>
+                            <Input
+                              type="number"
+                              min={0}
+                              data-testid={`input-task-est-${i}`}
+                              value={t.estimatedMinutes ?? ""}
+                              onChange={(e) => updateTask(i, { estimatedMinutes: e.target.value === "" ? "" : Number(e.target.value) })}
+                              placeholder="e.g. 60"
+                              className="h-7"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-medium text-white/70">Tags (comma-separated)</label>
+                            <Input
+                              data-testid={`input-task-tags-${i}`}
+                              value={t.tags || ""}
+                              onChange={(e) => updateTask(i, { tags: e.target.value })}
+                              placeholder="e.g. essay, draft"
+                              className="h-7"
+                            />
+                          </div>
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-medium text-white/70">Notes</label>
+                          <Textarea
+                            data-testid={`input-task-notes-${i}`}
+                            value={t.notes || ""}
+                            onChange={(e) => updateTask(i, { notes: e.target.value })}
+                            placeholder="Anything to remember about this task…"
+                            rows={2}
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-medium text-white/70">File attachments (one URL per line)</label>
+                          <Textarea
+                            data-testid={`input-task-attachments-${i}`}
+                            value={t.attachments || ""}
+                            onChange={(e) => updateTask(i, { attachments: e.target.value })}
+                            placeholder="https://drive.google.com/…"
+                            rows={2}
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-medium text-white/70">Repeat</label>
+                            <Select value={t.repeatType || "none"} onValueChange={(v) => updateTask(i, { repeatType: v })}>
+                              <SelectTrigger data-testid={`select-task-repeat-${i}`} className="h-7 bg-white text-black text-[10px]">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {["none", "daily", "weekly", "monthly"].map((r) => (
+                                  <SelectItem key={r} value={r}>{r[0].toUpperCase() + r.slice(1)}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-medium text-white/70">Reminders (minutes before due)</label>
+                          <div className="grid grid-cols-4 gap-1">
+                            {[1, 2, 3, 4].map((n) => {
+                              const key = `reminder${n}` as "reminder1" | "reminder2" | "reminder3" | "reminder4";
+                              const val = t[key];
+                              return (
+                                <Input
+                                  key={n}
+                                  type="number"
+                                  min={0}
+                                  data-testid={`input-task-reminder${n}-${i}`}
+                                  value={val ?? ""}
+                                  onChange={(e) => updateTask(i, { [key]: e.target.value === "" ? "" : Number(e.target.value) } as Partial<WizardTask>)}
+                                  placeholder={n === 1 ? "30" : n === 2 ? "120" : "—"}
+                                  className="h-7"
+                                />
+                              );
+                            })}
+                          </div>
+                          <p className="text-[9px] text-white/50">Common: 30 (30 min), 120 (2 h), 1440 (1 day), 10080 (1 week). Leave blank for none.</p>
+                        </div>
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between">
+                            <label className="text-[10px] font-medium text-white/70">Subtasks</label>
+                            <Button type="button" size="sm" variant="outline" onClick={() => addSubtask(i)} className="border-white/30 text-white hover:bg-white/10 hover:text-white h-6 text-[10px]" data-testid={`button-add-subtask-${i}`}>
+                              <Plus className="h-3 w-3 mr-1" /> Subtask
+                            </Button>
+                          </div>
+                          {(t.subtasks || []).length === 0 ? (
+                            <p className="text-[9px] text-white/50">No subtasks.</p>
+                          ) : (
+                            <div className="space-y-1">
+                              {(t.subtasks || []).map((s, j) => (
+                                <div key={j} className="flex gap-1 items-center">
+                                  <Input
+                                    data-testid={`input-subtask-title-${i}-${j}`}
+                                    value={s.title}
+                                    onChange={(e) => updateSubtask(i, j, { title: e.target.value })}
+                                    placeholder="Subtask title"
+                                    className="flex-1 h-7"
+                                  />
+                                  <Input
+                                    type="date"
+                                    data-testid={`input-subtask-due-${i}-${j}`}
+                                    value={s.dueDate}
+                                    onChange={(e) => updateSubtask(i, j, { dueDate: e.target.value })}
+                                    className="w-32 h-7 !text-black !bg-white"
+                                    style={{ colorScheme: "light" }}
+                                  />
+                                  <Button type="button" size="icon" variant="ghost" onClick={() => removeSubtask(i, j)} className="h-6 w-6 text-white/70 hover:text-red-400" data-testid={`button-remove-subtask-${i}-${j}`}>
+                                    <X className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          {step === 5 && (
+          {step === 6 && (
             <div className="space-y-2">
               <label className="text-[11px] font-medium">Task Dependencies</label>
               <p className="text-[10px] text-white/60">For each task, click any task that must be completed first (it will be marked as a "blocked by" dependency).</p>
@@ -697,7 +928,7 @@ function ProjectWizard({
             </div>
           )}
 
-          {step === 6 && (
+          {step === 7 && (
             <div className="space-y-2 text-[11px]">
               <div className="bg-white/5 p-3 rounded space-y-1">
                 <div><span className="text-white/60">Name:</span> <span className="font-medium">{data.name || "(unnamed)"}</span></div>
@@ -708,6 +939,12 @@ function ProjectWizard({
                   {data.courseName && <span><span className="text-white/60">Course:</span> {data.courseName}</span>}
                   {data.targetDate && <span><span className="text-white/60">Due:</span> {data.targetDate}</span>}
                 </div>
+                {data.tags && data.tags.length > 0 && (
+                  <div><span className="text-white/60">Tags:</span> {data.tags.join(", ")}</div>
+                )}
+                {data.dependsOnProjectIds && data.dependsOnProjectIds.length > 0 && (
+                  <div><span className="text-white/60">Depends on projects:</span> {data.dependsOnProjectIds.map((id) => existingProjects.find((p) => p.id === id)?.name || `#${id}`).join(", ")}</div>
+                )}
               </div>
               <div className="bg-white/5 p-3 rounded">
                 <div className="text-white/60 mb-1">Tasks ({validTasks.length})</div>
@@ -1557,7 +1794,7 @@ export default function ProjectsPage() {
   });
 
   const updateProjectMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: ProjectFormData }) => {
+    mutationFn: async ({ id, data }: { id: number; data: Partial<ProjectFormData> }) => {
       return await apiRequest("PATCH", `/api/projects/${id}`, data);
     },
     onSuccess: () => {
@@ -1621,19 +1858,52 @@ export default function ProjectsPage() {
       if (!newProjectId) return;
 
       const newTaskIds: number[] = [];
+      let subtaskCount = 0;
       for (const wt of wizardTasks) {
         try {
-          const tRes: any = await apiRequest("POST", "/api/tasks", {
+          const attachmentList = (wt.attachments || "")
+            .split(/\r?\n/)
+            .map((s) => s.trim())
+            .filter(Boolean);
+          const tagList = (wt.tags || "")
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean);
+          const taskPayload: any = {
             title: wt.title,
             dueDate: wt.dueDate,
             projectId: newProjectId,
             taskType: "homework",
             type: "task",
             priority: wt.priority,
-          });
+          };
+          if (wt.notes) taskPayload.notes = wt.notes;
+          if (typeof wt.estimatedMinutes === "number" && wt.estimatedMinutes > 0) {
+            taskPayload.estimatedMinutes = wt.estimatedMinutes;
+          }
+          if (tagList.length > 0) taskPayload.tags = tagList;
+          if (attachmentList.length > 0) taskPayload.attachments = attachmentList;
+          if (wt.repeatType && wt.repeatType !== "none") taskPayload.repeatType = wt.repeatType;
+          if (typeof wt.reminder1 === "number") taskPayload.reminder1 = wt.reminder1;
+          if (typeof wt.reminder2 === "number") taskPayload.reminder2 = wt.reminder2;
+          if (typeof wt.reminder3 === "number") taskPayload.reminder3 = wt.reminder3;
+          if (typeof wt.reminder4 === "number") taskPayload.reminder4 = wt.reminder4;
+          const tRes: any = await apiRequest("POST", "/api/tasks", taskPayload);
           const tCreated: any = tRes && typeof tRes.json === "function" ? await tRes.json() : tRes;
           const tid = tCreated?.id ?? tCreated?.task?.id;
           newTaskIds.push(tid);
+          if (tid && wt.subtasks && wt.subtasks.length > 0) {
+            for (const sub of wt.subtasks) {
+              if (!sub.title.trim()) continue;
+              try {
+                await apiRequest("POST", `/api/tasks/${tid}/subtasks`, {
+                  title: sub.title.trim(),
+                  dueDate: sub.dueDate || wt.dueDate,
+                });
+                subtaskCount++;
+              } catch { /* ignore individual subtask failures */ }
+            }
+          }
         } catch {
           newTaskIds.push(0);
         }
@@ -1662,8 +1932,15 @@ export default function ProjectsPage() {
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
       queryClient.invalidateQueries({ queryKey: ["/api/links"] });
       const taskCount = newTaskIds.filter(Boolean).length;
-      if (taskCount > 0 || depCount > 0) {
-        toast({ title: `Created project with ${taskCount} task${taskCount === 1 ? "" : "s"}${depCount > 0 ? ` and ${depCount} dependency link${depCount === 1 ? "" : "s"}` : ""}` });
+      if (taskCount > 0 || depCount > 0 || subtaskCount > 0) {
+        const parts: string[] = [];
+        if (taskCount > 0) parts.push(`${taskCount} task${taskCount === 1 ? "" : "s"}`);
+        if (subtaskCount > 0) parts.push(`${subtaskCount} subtask${subtaskCount === 1 ? "" : "s"}`);
+        if (depCount > 0) parts.push(`${depCount} dependency link${depCount === 1 ? "" : "s"}`);
+        toast({ title: `Created project with ${parts.join(", ")}` });
+      }
+      if (subtaskCount > 0) {
+        queryClient.invalidateQueries({ queryKey: ["/api/subtasks"] });
       }
     } catch {
       // createProjectMutation already shows an error toast
@@ -2083,6 +2360,7 @@ export default function ProjectsPage() {
         />
       ) : (
         <ProjectWizard
+          existingProjects={projects}
           open={dialogOpen}
           onOpenChange={(open) => {
             setDialogOpen(open);
