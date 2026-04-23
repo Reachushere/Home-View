@@ -533,3 +533,9 @@ id = "u2TeV5PAAn1vVfX43EYv0"
 uri = "file://exports/Replit_Folder_All_Emails.pdf"
 type = "pdf"
 title = "Replit Folder — All 111 Emails (Chronological)"
+
+[[outputs]]
+id = "xsNVR348LIJaRt2RCqctT"
+uri = "file://attached_assets/Replit_Billing_Dispute_Timeline.pptx"
+type = "slides"
+title = "Replit Billing Dispute Timeline (editable)"
