@@ -11984,6 +11984,30 @@ async function pollStatus(timeout){
     }
   });
 
+  // ============= POLITICAL EMAIL CLEANUP =============
+  // Manually trigger a one-shot trash of all matching political-newsletter
+  // emails currently in the inbox. The 5-min monitor in server/index.ts runs
+  // this automatically; this endpoint is for the "do it now" button.
+  app.post("/api/gmail/political-cleanup", async (req, res) => {
+    try {
+      const { cleanupPoliticalEmails } = await import("./politicalEmailFilter");
+      const limit = Math.min(parseInt(String(req.body?.limit || req.query?.limit || "5000"), 10) || 5000, 10000);
+      const r = await cleanupPoliticalEmails(limit);
+      if (r.error) return res.status(500).json({ ok: false, ...r });
+      res.json({ ok: true, ...r });
+    } catch (e: any) {
+      res.status(500).json({ ok: false, error: e?.message || String(e) });
+    }
+  });
+  app.get("/api/gmail/political-blocklist", async (_req, res) => {
+    try {
+      const { getPoliticalBlocklist } = await import("./politicalEmailFilter");
+      res.json(getPoliticalBlocklist());
+    } catch (e: any) {
+      res.status(500).json({ error: e?.message || String(e) });
+    }
+  });
+
   // ============= COPY APP SOURCE CODE =============
   app.get("/api/source-code/all", async (_req, res) => {
     try {
