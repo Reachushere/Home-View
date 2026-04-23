@@ -3209,3 +3209,20 @@ body[data-auth-1010="1"] [role="tooltip"]:not([data-allow-1010="1"]) {
   visibility: hidden !important;
   pointer-events: none !important;
 }
+
+/* Wizard date inputs — appended last so source-order tiebreak wins. Bulletproof override for the global input[type=date]{color:white!important} rule earlier in this file. */
+input[type="date"].date-black-text,
+input[type="date"].date-black-text::-webkit-datetime-edit,
+input[type="date"].date-black-text::-webkit-datetime-edit-fields-wrapper,
+input[type="date"].date-black-text::-webkit-datetime-edit-text,
+input[type="date"].date-black-text::-webkit-datetime-edit-year-field,
+input[type="date"].date-black-text::-webkit-datetime-edit-month-field,
+input[type="date"].date-black-text::-webkit-datetime-edit-day-field {
+  color: #000000 !important;
+  background-color: #ffffff !important;
+  color-scheme: light !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+input[type="date"].date-black-text::-webkit-calendar-picker-indicator {
+  filter: none !important;
+}
