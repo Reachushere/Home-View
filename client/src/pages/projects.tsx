@@ -441,10 +441,10 @@ function ProjectWizard({
   };
 
   const validTasks = tasks.filter((t) => t.title.trim().length > 0);
-  const showDepStep = validTasks.length >= 2;
-  const totalSteps = showDepStep ? 7 : 6;
+  const showDepStep = true;
+  const totalSteps = 7;
 
-  const labels = ["Name", "Description", "Style", "Schedule", "Tasks", showDepStep ? "Dependencies" : null, "Review"].filter(Boolean) as string[];
+  const labels = ["Name", "Description", "Style", "Schedule", "Tasks", "Dependencies", "Review"];
 
   const canAdvance = () => {
     if (step === 0) return data.name.trim().length > 0;
@@ -579,6 +579,8 @@ function ProjectWizard({
                     data-testid="input-wizard-start"
                     value={data.startDate}
                     onChange={(e) => setData({ ...data, startDate: e.target.value })}
+                    className="!text-black !bg-white"
+                    style={{ colorScheme: "light" }}
                   />
                 </div>
                 <div className="space-y-2">
@@ -588,6 +590,8 @@ function ProjectWizard({
                     data-testid="input-wizard-target"
                     value={data.targetDate}
                     onChange={(e) => setData({ ...data, targetDate: e.target.value })}
+                    className="!text-black !bg-white"
+                    style={{ colorScheme: "light" }}
                   />
                 </div>
               </div>
@@ -654,10 +658,15 @@ function ProjectWizard({
             </div>
           )}
 
-          {step === 5 && showDepStep && (
+          {step === 5 && (
             <div className="space-y-2">
               <label className="text-[11px] font-medium">Task Dependencies</label>
               <p className="text-[10px] text-white/60">For each task, click any task that must be completed first (it will be marked as a "blocked by" dependency).</p>
+              {validTasks.length < 2 && (
+                <div className="bg-white/5 p-3 rounded text-[11px] text-white/70">
+                  Add at least 2 tasks in the previous step to set up dependencies between them. You can also skip this step and add dependencies later from the workflow view on the project card.
+                </div>
+              )}
               <div className="space-y-2 max-h-[280px] overflow-y-auto">
                 {validTasks.map((t, i) => (
                   <div key={i} className="bg-white/5 p-2 rounded">
@@ -688,7 +697,7 @@ function ProjectWizard({
             </div>
           )}
 
-          {((step === 5 && !showDepStep) || step === 6) && (
+          {step === 6 && (
             <div className="space-y-2 text-[11px]">
               <div className="bg-white/5 p-3 rounded space-y-1">
                 <div><span className="text-white/60">Name:</span> <span className="font-medium">{data.name || "(unnamed)"}</span></div>
