@@ -315,6 +315,8 @@ export const projects = pgTable("projects", {
   completedAt: timestamp("completed_at"),
   priority: text("priority").default("medium"), // low, medium, high
   notes: text("notes"),
+  projectType: text("project_type").default("general"), // general, legal_complaint
+  metadata: jsonb("metadata"), // Type-specific structured data (e.g. legal complaint fields)
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -322,6 +324,22 @@ export const projects = pgTable("projects", {
 export const insertProjectSchema = createInsertSchema(projects).omit({ id: true, createdAt: true, updatedAt: true });
 export type Project = typeof projects.$inferSelect;
 export type InsertProject = z.infer<typeof insertProjectSchema>;
+
+// Legal complaint structured metadata (stored in projects.metadata JSONB when projectType='legal_complaint')
+export type LegalParty = { name: string; role?: string; contact?: string };
+export type LegalClaim = { id: string; title: string; description?: string; elements: string[]; status?: 'open' | 'pleaded' | 'discovery' | 'resolved' | 'dismissed' };
+export type LegalKeyDate = { id: string; date: string; label: string; type: 'hearing' | 'deadline' | 'filing' | 'service' | 'other'; notes?: string };
+export type LegalAttachment = { id: string; filename: string; url: string; size?: number; uploadedAt: string; label?: string };
+export type LegalComplaintMetadata = {
+  parties?: { plaintiffs?: LegalParty[]; defendants?: LegalParty[]; counsel?: LegalParty[]; judge?: string };
+  jurisdiction?: { court?: string; caseNumber?: string; venue?: string };
+  filing?: { filedDate?: string; servedDate?: string; responseDeadline?: string };
+  claims?: LegalClaim[];
+  keyDates?: LegalKeyDate[];
+  attachments?: LegalAttachment[];
+  reliefSought?: string;
+  summary?: string;
+};
 
 // Subtasks table - child items of tasks with full scheduling support
 export const subtasks = pgTable("subtasks", {

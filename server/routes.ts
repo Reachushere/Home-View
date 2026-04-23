@@ -15072,7 +15072,7 @@ async function pollStatus(timeout){
   // POST /api/projects - Create a new project
   app.post("/api/projects", async (req, res) => {
     try {
-      const { name, description, color, status, courseName, startDate, targetDate, priority, notes } = req.body;
+      const { name, description, color, status, courseName, startDate, targetDate, priority, notes, projectType, metadata } = req.body;
       const project = await storage.createProject({
         name,
         description,
@@ -15083,6 +15083,8 @@ async function pollStatus(timeout){
         targetDate: targetDate ? new Date(targetDate) : null,
         priority,
         notes,
+        projectType: projectType || 'general',
+        metadata: metadata ?? null,
       });
       res.status(201).json(project);
     } catch (err) {
@@ -15140,6 +15142,80 @@ async function pollStatus(timeout){
     } catch (err) {
       console.error("Error removing task from project:", err);
       res.status(500).json({ message: "Failed to remove task from project" });
+    }
+  });
+
+  // ============================================
+  // LEGAL COMPLAINT ATTACHMENTS — Pi-local filesystem (no cloud)
+  // ============================================
+  const legalUploadsRoot = path.join(process.cwd(), 'persistent-uploads', 'legal');
+  try { fs.mkdirSync(legalUploadsRoot, { recursive: true }); } catch {}
+  const legalUpload = multer({
+    storage: multer.diskStorage({
+      destination: (req, _file, cb) => {
+        const projectId = String((req.params as any).id || 'misc').replace(/[^0-9]/g, '') || 'misc';
+        const dir = path.join(legalUploadsRoot, projectId);
+        try { fs.mkdirSync(dir, { recursive: true }); } catch {}
+        cb(null, dir);
+      },
+      filename: (_req, file, cb) => {
+        const safe = file.originalname.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 120);
+        cb(null, `${Date.now()}_${safe}`);
+      },
+    }),
+    limits: { fileSize: 50 * 1024 * 1024 },
+  });
+
+  // Serve uploaded legal files (auth-gated by reusing existing auth middleware on /api)
+  app.use('/api/projects/legal-files', express.static(legalUploadsRoot));
+
+  // POST /api/projects/:id/legal/upload — upload one or more attachments tied to a legal-complaint project
+  app.post("/api/projects/:id/legal/upload", legalUpload.array('files', 10), async (req: any, res) => {
+    try {
+      const projectId = Number(req.params.id);
+      const project = await storage.getProject(projectId);
+      if (!project) return res.status(404).json({ message: "Project not found" });
+      const files = (req.files as Express.Multer.File[]) || [];
+      const newAttachments = files.map(f => ({
+        id: `att_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+        filename: f.originalname,
+        url: `/api/projects/legal-files/${projectId}/${path.basename(f.path)}`,
+        size: f.size,
+        uploadedAt: new Date().toISOString(),
+        label: (req.body?.label as string) || undefined,
+      }));
+      const meta: any = (project as any).metadata || {};
+      meta.attachments = [...(meta.attachments || []), ...newAttachments];
+      const updated = await storage.updateProject(projectId, { metadata: meta } as any);
+      res.json({ project: updated, added: newAttachments });
+    } catch (err: any) {
+      console.error("Error uploading legal attachment:", err);
+      res.status(500).json({ message: "Failed to upload attachment", error: err.message });
+    }
+  });
+
+  // DELETE /api/projects/:id/legal/attachments/:attachmentId — remove an attachment
+  app.delete("/api/projects/:id/legal/attachments/:attachmentId", async (req, res) => {
+    try {
+      const projectId = Number(req.params.id);
+      const attachmentId = req.params.attachmentId;
+      const project = await storage.getProject(projectId);
+      if (!project) return res.status(404).json({ message: "Project not found" });
+      const meta: any = (project as any).metadata || {};
+      const target = (meta.attachments || []).find((a: any) => a.id === attachmentId);
+      if (target?.url) {
+        const filename = target.url.split('/').pop();
+        if (filename) {
+          const filePath = path.join(legalUploadsRoot, String(projectId), filename);
+          try { fs.unlinkSync(filePath); } catch {}
+        }
+      }
+      meta.attachments = (meta.attachments || []).filter((a: any) => a.id !== attachmentId);
+      const updated = await storage.updateProject(projectId, { metadata: meta } as any);
+      res.json(updated);
+    } catch (err: any) {
+      console.error("Error deleting legal attachment:", err);
+      res.status(500).json({ message: "Failed to delete attachment" });
     }
   });
 

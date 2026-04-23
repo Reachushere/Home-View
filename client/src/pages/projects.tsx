@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -85,6 +85,264 @@ interface ProjectFormData {
   targetDate: string;
   priority: string;
   notes: string;
+  projectType: string;
+  metadata: any;
+}
+
+function uid(prefix = 'id') {
+  return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
+}
+
+function LegalComplaintEditor({
+  metadata,
+  onChange,
+  projectId,
+  onAttachmentsChanged,
+}: {
+  metadata: any;
+  onChange: (m: any) => void;
+  projectId?: number;
+  onAttachmentsChanged?: () => void;
+}) {
+  const m = metadata || {};
+  const update = (patch: any) => onChange({ ...m, ...patch });
+  const updateNested = (key: string, patch: any) => onChange({ ...m, [key]: { ...(m[key] || {}), ...patch } });
+
+  const parties = m.parties || {};
+  const jurisdiction = m.jurisdiction || {};
+  const filing = m.filing || {};
+  const claims: any[] = m.claims || [];
+  const keyDates: any[] = m.keyDates || [];
+  const attachments: any[] = m.attachments || [];
+
+  const addPartyTo = (group: 'plaintiffs' | 'defendants' | 'counsel') => {
+    const next = { ...(parties || {}) };
+    next[group] = [...(next[group] || []), { name: '', role: '', contact: '' }];
+    update({ parties: next });
+  };
+  const updatePartyAt = (group: string, idx: number, patch: any) => {
+    const next = { ...(parties || {}) };
+    next[group] = [...(next[group] || [])];
+    next[group][idx] = { ...next[group][idx], ...patch };
+    update({ parties: next });
+  };
+  const removePartyAt = (group: string, idx: number) => {
+    const next = { ...(parties || {}) };
+    next[group] = (next[group] || []).filter((_: any, i: number) => i !== idx);
+    update({ parties: next });
+  };
+
+  const addClaim = () => update({ claims: [...claims, { id: uid('claim'), title: '', description: '', elements: [], status: 'open' }] });
+  const updateClaim = (idx: number, patch: any) => {
+    const next = [...claims]; next[idx] = { ...next[idx], ...patch }; update({ claims: next });
+  };
+  const removeClaim = (idx: number) => update({ claims: claims.filter((_, i) => i !== idx) });
+  const addElement = (idx: number) => {
+    const next = [...claims];
+    next[idx] = { ...next[idx], elements: [...(next[idx].elements || []), ''] };
+    update({ claims: next });
+  };
+  const updateElement = (cIdx: number, eIdx: number, val: string) => {
+    const next = [...claims];
+    const els = [...(next[cIdx].elements || [])]; els[eIdx] = val;
+    next[cIdx] = { ...next[cIdx], elements: els };
+    update({ claims: next });
+  };
+  const removeElement = (cIdx: number, eIdx: number) => {
+    const next = [...claims];
+    next[cIdx] = { ...next[cIdx], elements: (next[cIdx].elements || []).filter((_: any, i: number) => i !== eIdx) };
+    update({ claims: next });
+  };
+
+  const addKeyDate = () => update({ keyDates: [...keyDates, { id: uid('kd'), date: '', label: '', type: 'deadline', notes: '' }] });
+  const updateKeyDate = (idx: number, patch: any) => {
+    const next = [...keyDates]; next[idx] = { ...next[idx], ...patch }; update({ keyDates: next });
+  };
+  const removeKeyDate = (idx: number) => update({ keyDates: keyDates.filter((_, i) => i !== idx) });
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const handleUpload = async (files: FileList | null) => {
+    if (!files || !files.length || !projectId) return;
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      Array.from(files).forEach(f => fd.append('files', f));
+      const res = await fetch(`/api/projects/${projectId}/legal/upload`, { method: 'POST', body: fd, credentials: 'include' });
+      if (!res.ok) throw new Error('Upload failed');
+      const data = await res.json();
+      if (data.added?.length) {
+        update({ attachments: [...attachments, ...data.added] });
+      }
+      onAttachmentsChanged?.();
+    } catch (e) {
+      console.error('Legal attachment upload failed', e);
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+  const handleDeleteAttachment = async (attId: string) => {
+    if (!projectId) {
+      update({ attachments: attachments.filter(a => a.id !== attId) });
+      return;
+    }
+    try {
+      await fetch(`/api/projects/${projectId}/legal/attachments/${attId}`, { method: 'DELETE', credentials: 'include' });
+      update({ attachments: attachments.filter(a => a.id !== attId) });
+      onAttachmentsChanged?.();
+    } catch (e) { console.error(e); }
+  };
+
+  const partyGroup = (label: string, group: 'plaintiffs' | 'defendants' | 'counsel') => (
+    <div className="space-y-1">
+      <div className="flex items-center justify-between">
+        <label className="text-[11px] font-semibold text-white/90">{label}</label>
+        <Button type="button" size="sm" variant="ghost" className="h-6 text-[10px] text-blue-300 hover:text-blue-200" onClick={() => addPartyTo(group)} data-testid={`button-add-${group}`}>
+          + Add
+        </Button>
+      </div>
+      {(parties[group] || []).map((p: any, i: number) => (
+        <div key={i} className="grid grid-cols-[1fr_1fr_1fr_auto] gap-1 items-center">
+          <Input className="text-[11px] h-7" placeholder="Name" value={p.name || ''} onChange={(e) => updatePartyAt(group, i, { name: e.target.value })} data-testid={`input-${group}-name-${i}`} />
+          <Input className="text-[11px] h-7" placeholder="Role" value={p.role || ''} onChange={(e) => updatePartyAt(group, i, { role: e.target.value })} />
+          <Input className="text-[11px] h-7" placeholder="Contact" value={p.contact || ''} onChange={(e) => updatePartyAt(group, i, { contact: e.target.value })} />
+          <Button type="button" size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-300 hover:text-red-200" onClick={() => removePartyAt(group, i)} data-testid={`button-remove-${group}-${i}`}>×</Button>
+        </div>
+      ))}
+    </div>
+  );
+
+  return (
+    <div className="space-y-4 p-3 rounded-md border border-amber-400/30 bg-amber-500/5" data-testid="legal-complaint-editor">
+      <div className="text-[10px] uppercase tracking-wider text-amber-300 font-semibold">Legal Complaint Details</div>
+
+      {/* Summary + relief */}
+      <div className="space-y-2">
+        <label className="text-[11px] font-medium">Case Summary</label>
+        <Textarea className="text-[11px]" rows={2} placeholder="Brief description of the dispute" value={m.summary || ''} onChange={(e) => update({ summary: e.target.value })} data-testid="input-legal-summary" />
+        <label className="text-[11px] font-medium">Relief Sought</label>
+        <Textarea className="text-[11px]" rows={2} placeholder="Damages, injunctive relief, refund, etc." value={m.reliefSought || ''} onChange={(e) => update({ reliefSought: e.target.value })} data-testid="input-legal-relief" />
+      </div>
+
+      {/* Jurisdiction */}
+      <div className="space-y-2">
+        <div className="text-[11px] font-semibold text-white/90">Jurisdiction</div>
+        <div className="grid grid-cols-2 gap-2">
+          <Input className="text-[11px] h-7" placeholder="Court (e.g. ON Superior Court)" value={jurisdiction.court || ''} onChange={(e) => updateNested('jurisdiction', { court: e.target.value })} data-testid="input-legal-court" />
+          <Input className="text-[11px] h-7" placeholder="Case / File Number" value={jurisdiction.caseNumber || ''} onChange={(e) => updateNested('jurisdiction', { caseNumber: e.target.value })} data-testid="input-legal-case-number" />
+          <Input className="text-[11px] h-7 col-span-2" placeholder="Venue / Location" value={jurisdiction.venue || ''} onChange={(e) => updateNested('jurisdiction', { venue: e.target.value })} />
+        </div>
+      </div>
+
+      {/* Filing dates */}
+      <div className="space-y-2">
+        <div className="text-[11px] font-semibold text-white/90">Filing & Service</div>
+        <div className="grid grid-cols-3 gap-2">
+          <div><label className="text-[10px] text-white/70">Filed</label><Input type="date" className="text-[11px] h-7" value={filing.filedDate || ''} onChange={(e) => updateNested('filing', { filedDate: e.target.value })} data-testid="input-legal-filed-date" /></div>
+          <div><label className="text-[10px] text-white/70">Served</label><Input type="date" className="text-[11px] h-7" value={filing.servedDate || ''} onChange={(e) => updateNested('filing', { servedDate: e.target.value })} /></div>
+          <div><label className="text-[10px] text-white/70">Response Due</label><Input type="date" className="text-[11px] h-7" value={filing.responseDeadline || ''} onChange={(e) => updateNested('filing', { responseDeadline: e.target.value })} data-testid="input-legal-response-deadline" /></div>
+        </div>
+      </div>
+
+      {/* Parties */}
+      <div className="space-y-3">
+        <div className="text-[11px] font-semibold text-white/90">Parties</div>
+        {partyGroup('Plaintiffs', 'plaintiffs')}
+        {partyGroup('Defendants', 'defendants')}
+        {partyGroup('Counsel', 'counsel')}
+        <div className="grid grid-cols-[80px_1fr] items-center gap-2">
+          <label className="text-[11px] text-white/90">Judge</label>
+          <Input className="text-[11px] h-7" placeholder="Presiding judge (if assigned)" value={parties.judge || ''} onChange={(e) => updateNested('parties', { judge: e.target.value })} />
+        </div>
+      </div>
+
+      {/* Claims */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="text-[11px] font-semibold text-white/90">Claims / Causes of Action</div>
+          <Button type="button" size="sm" variant="ghost" className="h-6 text-[10px] text-blue-300 hover:text-blue-200" onClick={addClaim} data-testid="button-add-claim">+ Add Claim</Button>
+        </div>
+        {claims.map((c, i) => (
+          <div key={c.id} className="border border-white/15 rounded-md p-2 space-y-2 bg-black/20" data-testid={`claim-${i}`}>
+            <div className="flex items-start gap-2">
+              <Input className="text-[11px] h-7 flex-1" placeholder="Claim title (e.g. Breach of Contract)" value={c.title} onChange={(e) => updateClaim(i, { title: e.target.value })} data-testid={`input-claim-title-${i}`} />
+              <Select value={c.status || 'open'} onValueChange={(v) => updateClaim(i, { status: v })}>
+                <SelectTrigger className="bg-white text-black text-[11px] h-7 w-[110px]"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {['open', 'pleaded', 'discovery', 'resolved', 'dismissed'].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              <Button type="button" size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-300 hover:text-red-200" onClick={() => removeClaim(i)} data-testid={`button-remove-claim-${i}`}>×</Button>
+            </div>
+            <Textarea className="text-[11px]" rows={2} placeholder="Description of this claim" value={c.description || ''} onChange={(e) => updateClaim(i, { description: e.target.value })} />
+            <div className="space-y-1">
+              <div className="flex items-center justify-between">
+                <div className="text-[10px] uppercase text-white/60">Elements to prove</div>
+                <Button type="button" size="sm" variant="ghost" className="h-5 text-[10px] text-blue-300" onClick={() => addElement(i)} data-testid={`button-add-element-${i}`}>+ Element</Button>
+              </div>
+              {(c.elements || []).map((el: string, ei: number) => (
+                <div key={ei} className="flex items-center gap-1">
+                  <span className="text-[10px] text-white/40 w-4">{ei + 1}.</span>
+                  <Input className="text-[11px] h-6 flex-1" value={el} onChange={(e) => updateElement(i, ei, e.target.value)} placeholder="e.g. Existence of valid contract" />
+                  <Button type="button" size="sm" variant="ghost" className="h-6 w-6 p-0 text-red-300" onClick={() => removeElement(i, ei)}>×</Button>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Key Dates */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="text-[11px] font-semibold text-white/90">Key Dates & Deadlines</div>
+          <Button type="button" size="sm" variant="ghost" className="h-6 text-[10px] text-blue-300 hover:text-blue-200" onClick={addKeyDate} data-testid="button-add-key-date">+ Add Date</Button>
+        </div>
+        {keyDates.map((kd, i) => (
+          <div key={kd.id} className="grid grid-cols-[120px_1fr_120px_auto] gap-1 items-center" data-testid={`keydate-${i}`}>
+            <Input type="date" className="text-[11px] h-7" value={kd.date} onChange={(e) => updateKeyDate(i, { date: e.target.value })} data-testid={`input-keydate-date-${i}`} />
+            <Input className="text-[11px] h-7" placeholder="Label" value={kd.label} onChange={(e) => updateKeyDate(i, { label: e.target.value })} data-testid={`input-keydate-label-${i}`} />
+            <Select value={kd.type} onValueChange={(v) => updateKeyDate(i, { type: v })}>
+              <SelectTrigger className="bg-white text-black text-[11px] h-7"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {['hearing', 'deadline', 'filing', 'service', 'other'].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Button type="button" size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-300" onClick={() => removeKeyDate(i)}>×</Button>
+          </div>
+        ))}
+      </div>
+
+      {/* Attachments — Pi-local, only after project exists */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="text-[11px] font-semibold text-white/90">Attachments / Evidence</div>
+          {projectId ? (
+            <Button type="button" size="sm" variant="ghost" className="h-6 text-[10px] text-blue-300 hover:text-blue-200" onClick={() => fileInputRef.current?.click()} disabled={uploading} data-testid="button-upload-legal-files">
+              {uploading ? 'Uploading…' : '+ Upload File(s)'}
+            </Button>
+          ) : (
+            <span className="text-[10px] text-white/50 italic">Save project first to upload</span>
+          )}
+        </div>
+        <input ref={fileInputRef} type="file" multiple className="hidden" onChange={(e) => handleUpload(e.target.files)} data-testid="input-legal-file" />
+        {attachments.length === 0 ? (
+          <div className="text-[10px] text-white/40 italic">No files attached yet.</div>
+        ) : (
+          <div className="space-y-1">
+            {attachments.map((a: any) => (
+              <div key={a.id} className="flex items-center justify-between gap-2 px-2 py-1 rounded bg-black/20 border border-white/10" data-testid={`attachment-${a.id}`}>
+                <a href={a.url} target="_blank" rel="noopener noreferrer" className="text-[11px] text-blue-300 hover:text-blue-200 truncate flex-1" data-testid={`link-attachment-${a.id}`}>{a.filename}</a>
+                <span className="text-[10px] text-white/40">{a.size ? `${Math.round(a.size / 1024)} KB` : ''}</span>
+                <Button type="button" size="sm" variant="ghost" className="h-6 w-6 p-0 text-red-300" onClick={() => handleDeleteAttachment(a.id)} data-testid={`button-delete-attachment-${a.id}`}>×</Button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
 
 function ProjectDialog({ 
@@ -108,6 +366,8 @@ function ProjectDialog({
     targetDate: project?.targetDate ? format(new Date(project.targetDate), "yyyy-MM-dd") : "",
     priority: project?.priority || "medium",
     notes: project?.notes || "",
+    projectType: (project as any)?.projectType || "general",
+    metadata: (project as any)?.metadata || null,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -243,6 +503,30 @@ function ProjectDialog({
               />
             </div>
           </div>
+
+          <div className="space-y-2">
+            <label className="text-[11px] font-medium">Project Type</label>
+            <Select
+              value={formData.projectType}
+              onValueChange={(v) => setFormData({ ...formData, projectType: v })}
+            >
+              <SelectTrigger data-testid="select-project-type" className="bg-white text-black text-[11px] [&>span]:text-black [&>span]:text-[11px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="general">General Project</SelectItem>
+                <SelectItem value="legal_complaint">Legal Complaint</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {formData.projectType === 'legal_complaint' && (
+            <LegalComplaintEditor
+              metadata={formData.metadata}
+              onChange={(m) => setFormData({ ...formData, metadata: m })}
+              projectId={project?.id}
+            />
+          )}
 
           <div className="space-y-2">
             <label className="text-[11px] font-medium">Notes</label>
@@ -410,7 +694,46 @@ function ProjectCard({
               {project.courseName}
             </Badge>
           )}
+          {(project as any).projectType === 'legal_complaint' && (
+            <Badge className="text-xs bg-amber-500/30 text-amber-100 border border-amber-400/50" data-testid={`badge-legal-${project.id}`}>
+              ⚖ LEGAL
+            </Badge>
+          )}
         </div>
+
+        {(project as any).projectType === 'legal_complaint' && (() => {
+          const meta: any = (project as any).metadata || {};
+          const caseNum = meta.jurisdiction?.caseNumber;
+          const court = meta.jurisdiction?.court;
+          const allDates: { date: string; label: string }[] = [];
+          if (meta.filing?.responseDeadline) allDates.push({ date: meta.filing.responseDeadline, label: 'Response due' });
+          (meta.keyDates || []).forEach((kd: any) => kd.date && allDates.push({ date: kd.date, label: kd.label || kd.type }));
+          const upcoming = allDates
+            .filter(d => new Date(d.date) >= new Date(new Date().toDateString()))
+            .sort((a, b) => a.date.localeCompare(b.date))[0];
+          const claimsCount = (meta.claims || []).length;
+          const attCount = (meta.attachments || []).length;
+          const daysUntil = upcoming ? Math.ceil((new Date(upcoming.date).getTime() - Date.now()) / (1000 * 60 * 60 * 24)) : null;
+          return (
+            <div className="mb-3 px-2 py-1.5 rounded-md bg-amber-500/10 border border-amber-400/30 text-[11px] text-amber-100 space-y-0.5" data-testid={`legal-summary-${project.id}`}>
+              {(caseNum || court) && (
+                <div className="flex items-center gap-2 truncate">
+                  {caseNum && <span className="font-semibold" data-testid={`text-case-number-${project.id}`}>{caseNum}</span>}
+                  {court && <span className="text-amber-200/80 truncate">{court}</span>}
+                </div>
+              )}
+              <div className="flex items-center gap-3 text-[10px] text-amber-200/90">
+                <span>{claimsCount} claim{claimsCount === 1 ? '' : 's'}</span>
+                <span>{attCount} file{attCount === 1 ? '' : 's'}</span>
+                {upcoming && (
+                  <span data-testid={`text-next-deadline-${project.id}`}>
+                    Next: {upcoming.label} in <span className={daysUntil != null && daysUntil <= 7 ? 'text-red-300 font-semibold' : 'font-semibold'}>{daysUntil}d</span>
+                  </span>
+                )}
+              </div>
+            </div>
+          );
+        })()}
 
         <div className="flex items-center gap-4 text-xs text-white/70 mb-3">
           {project.startDate && (

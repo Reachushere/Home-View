@@ -419,6 +419,8 @@ const adminDb = new PgPool({ connectionString: process.env.DATABASE_URL });
     console.log('[Admin] profile_settings table ready');
     await adminDb.query(`ALTER TABLE scholarships ADD COLUMN IF NOT EXISTS documents_deadline TEXT`).catch(() => {});
     await adminDb.query(`ALTER TABLE scholarships ADD COLUMN IF NOT EXISTS interview_date TEXT`).catch(() => {});
+    await adminDb.query(`ALTER TABLE projects ADD COLUMN IF NOT EXISTS project_type TEXT DEFAULT 'general'`).catch(() => {});
+    await adminDb.query(`ALTER TABLE projects ADD COLUMN IF NOT EXISTS metadata JSONB`).catch(() => {});
   } catch (e: any) { console.error('[Admin] profile_settings init error:', e.message); }
 })();
 
