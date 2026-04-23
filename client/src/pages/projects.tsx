@@ -369,6 +369,7 @@ function ProjectDialog({
     notes: project?.notes || "",
     projectType: (project as any)?.projectType || "general",
     metadata: (project as any)?.metadata || null,
+    initialTasks: "",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -539,6 +540,20 @@ function ProjectDialog({
               rows={2}
             />
           </div>
+
+          {!project && (
+            <div className="space-y-2">
+              <label className="text-[11px] font-medium">Initial tasks (optional)</label>
+              <Textarea
+                data-testid="input-project-initial-tasks"
+                value={formData.initialTasks || ""}
+                onChange={(e) => setFormData({ ...formData, initialTasks: e.target.value })}
+                placeholder={"One task per line. Each will get a 1-week due date by default.\nExample:\nDraft outline\nResearch sources\nWrite first draft"}
+                rows={4}
+              />
+              <p className="text-[10px] text-white/60">Tasks will be created and linked to this project. You can edit due dates afterwards.</p>
+            </div>
+          )}
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="border-white/30 text-white hover:bg-white/10 hover:text-white">
@@ -1163,11 +1178,45 @@ export default function ProjectsPage() {
     },
   });
 
-  const handleSaveProject = (data: ProjectFormData) => {
+  const handleSaveProject = async (data: ProjectFormData) => {
+    const { initialTasks, ...projectData } = data;
     if (editingProject) {
-      updateProjectMutation.mutate({ id: editingProject.id, data });
+      updateProjectMutation.mutate({ id: editingProject.id, data: projectData as ProjectFormData });
     } else {
-      createProjectMutation.mutate(data);
+      try {
+        const res: any = await createProjectMutation.mutateAsync(projectData as ProjectFormData);
+        const created: any = res && typeof res.json === "function" ? await res.json() : res;
+        const newProjectId = created?.id ?? created?.project?.id;
+        const lines = (initialTasks || "")
+          .split("\n")
+          .map((s) => s.trim())
+          .filter(Boolean);
+        if (newProjectId && lines.length > 0) {
+          const defaultDue = format(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), "yyyy-MM-dd");
+          let createdCount = 0;
+          for (const title of lines) {
+            try {
+              await apiRequest("POST", "/api/tasks", {
+                title,
+                dueDate: defaultDue,
+                projectId: newProjectId,
+                taskType: "homework",
+                type: "task",
+                priority: "medium",
+              });
+              createdCount++;
+            } catch (e) {
+              // continue with remaining tasks
+            }
+          }
+          queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+          if (createdCount > 0) {
+            toast({ title: `Created ${createdCount} task${createdCount === 1 ? "" : "s"} in project` });
+          }
+        }
+      } catch (e) {
+        // createProjectMutation already shows an error toast
+      }
     }
     setEditingProject(null);
     setDialogOpen(false);
