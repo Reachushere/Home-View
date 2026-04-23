@@ -1342,7 +1342,7 @@ export const AI_COMMAND_TOOLS = [
     type: "function" as const,
     function: {
       name: "onedrive_reauth_start",
-      description: "Initiate OneDrive device-code reauth flow when token is dead (status?verify=1 returns tokenWorks:false). Returns the user_code Bryn must type at microsoft.com/link. THIS IS THE ONLY TOKEN RECOVERY PATH — Bryn MUST physically open microsoft.com/link, type the code, sign in. You cannot do that step. After Bryn confirms done, verify with /api/onedrive/status?verify=1&force=1.",
+      description: "Initiate OneDrive device-code reauth flow when token is dead (status?verify=1 returns tokenWorks:false). Returns the user_code Bryn must type at microsoft.com/link. PREFER THE IN-UI WIZARD INSTEAD when Bryn is at the dashboard: tell Bryn to open any semester box → click the right cog (small triangle/health icon) → top-right of the expanded panel click 'Reconnect OneDrive' → walk through the 3-step wizard (commit 7370d775f, 2026-04-23). Only call this tool yourself when Bryn is on the Pi terminal with no browser, or when the UI is unreachable. Either way: Bryn MUST physically open microsoft.com/link, type the code, sign in — you cannot do that step. After Bryn confirms done, verify with /api/onedrive/status?verify=1&force=1.",
       parameters: { type: "object", properties: {} },
     },
   },
