@@ -2680,6 +2680,12 @@ iframe{width:100vw;height:100vh;border:none;position:fixed;top:0;left:0}
       if (!oldCode || !newCode) return res.status(400).json({ error: 'oldCode and newCode required' });
       const oldFull = oldName ? `${oldCode} - ${oldName}` : oldCode;
       const newFull = newName ? `${newCode} - ${newName}` : newCode;
+      if (oldCode === newCode && oldFull === newFull) {
+        return res.json({ ok: true, oldCode, newCode, counts: {}, noop: true });
+      }
+      if (newFull.includes(oldFull) && oldFull !== newFull) {
+        return res.status(400).json({ error: 'Refusing rename: new name contains the old name and would cause recursive substring expansion. Pick a fully distinct name.' });
+      }
       const oldCodeSpaced = oldCode.replace(/^([A-Z]+)(\d.*)$/i, '$1 $2');
       const newCodeSpaced = newCode.replace(/^([A-Z]+)(\d.*)$/i, '$1 $2');
       const counts: Record<string, number> = {};
@@ -5759,12 +5765,18 @@ Be thorough but practical. Focus on real issues, not false positives. If the doc
             const classMaxWeek = getSemesterTotalWeeks(activeSemester?.semesterType);
             if (weekNum >= FIRST_WEEK && weekNum <= classMaxWeek) {
               const dateStr = formatLocalDate(taskDate);
+              const extractCode = (cn: string | null | undefined): string => {
+                if (!cn) return '';
+                const m = cn.match(/\b([A-Z]{2,5}\s?\d{3,4}[A-Z]?)\b/i);
+                return m ? m[1].replace(/\s+/g, '').toUpperCase() : cn.trim().toUpperCase();
+              };
+              const targetCode = extractCode(courseName);
               const isDuplicate = existingClassTasks.some(t => {
                 if (!t.dueDate) return false;
                 const existingDateStr = formatLocalDate(new Date(t.dueDate));
-                return existingDateStr === dateStr 
-                  && t.courseName === courseName 
-                  && t.eventStartTime === effectiveClassTime;
+                if (existingDateStr !== dateStr) return false;
+                if (t.eventStartTime !== effectiveClassTime) return false;
+                return extractCode(t.courseName) === targetCode;
               });
 
               if (isDuplicate) {
