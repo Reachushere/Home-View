@@ -1,4 +1,10 @@
-import { pgTable, text, serial, boolean, integer, timestamp, real, doublePrecision, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, boolean, integer, timestamp, real, doublePrecision, jsonb, customType } from "drizzle-orm/pg-core";
+
+const tsvector = customType<{ data: string }>({
+  dataType() {
+    return "tsvector";
+  },
+});
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -271,6 +277,7 @@ export const filePages = pgTable("file_pages", {
   fileId: integer("file_id").notNull(),
   pageNum: integer("page_num").notNull(),
   pageText: text("page_text").notNull(),
+  searchVector: tsvector("search_vector"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
