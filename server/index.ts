@@ -703,16 +703,14 @@ app.use((req, res, next) => {
   setTimeout(onedriveKeepAlive, 8000);
   setInterval(onedriveKeepAlive, 25 * 60 * 1000);
 
-  // Political-newsletter auto-trasher: every 5 min, list inbox emails matching
-  // the political-news blocklist (Politico, Raw Story, CNN newsletters, Fox,
-  // MSNBC, etc. + Trump/MAGA/etc. subjects with list-unsubscribe header) and
-  // batch-trash them. Uses existing gmail.modify scope; trashed mail stays
-  // recoverable for 30 days in Gmail.
+  // Raw Story auto-trasher: every 5 min, trash inbox emails from rawstory.com
+  // and its newsletter subdomains. Uses gmail.modify; trashed mail stays in
+  // Gmail Trash for 30 days. Nothing else is touched.
   try {
     const { startPoliticalEmailMonitor } = await import("./politicalEmailFilter");
     startPoliticalEmailMonitor(5);
   } catch (e: any) {
-    console.warn("[PoliticalEmail] Failed to start monitor:", e?.message || e);
+    console.warn("[RawStoryFilter] Failed to start monitor:", e?.message || e);
   }
 
   app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
