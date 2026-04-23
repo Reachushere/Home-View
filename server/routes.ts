@@ -5813,6 +5813,58 @@ Be thorough but practical. Focus on real issues, not false positives. If the doc
     }
   });
 
+  // POST /api/admin/dedupe-class-tasks - Remove duplicate class tasks created by past rename bugs.
+  // Groups by (calendar date, eventStartTime, extracted course code) and keeps the OLDEST row in each group.
+  // Pass ?dryRun=true to preview counts without deleting.
+  app.post("/api/admin/dedupe-class-tasks", async (req, res) => {
+    try {
+      const dryRun = String(req.query.dryRun || '').toLowerCase() === 'true';
+      const all = await storage.getTasks();
+      const classTasks = all.filter(t => t.type === 'class' && t.dueDate);
+      const extractCode = (cn: string | null | undefined): string => {
+        if (!cn) return '';
+        const m = cn.match(/\b([A-Z]{2,5}\s?\d{3,4}[A-Z]?)\b/i);
+        return m ? m[1].replace(/\s+/g, '').toUpperCase() : cn.trim().toUpperCase();
+      };
+      const groups = new Map<string, typeof classTasks>();
+      for (const t of classTasks) {
+        const d = new Date(t.dueDate as any);
+        const dateStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        const code = extractCode(t.courseName);
+        const key = `${dateStr}|${t.eventStartTime || ''}|${code}`;
+        if (!groups.has(key)) groups.set(key, [] as any);
+        groups.get(key)!.push(t);
+      }
+      const toDelete: number[] = [];
+      const groupReport: Array<{ key: string; kept: number; deleted: number[] }> = [];
+      for (const [key, rows] of Array.from(groups.entries())) {
+        if (rows.length < 2) continue;
+        const sorted = [...rows].sort((a: any, b: any) => (a.id || 0) - (b.id || 0));
+        const keep = sorted[0];
+        const dropIds = sorted.slice(1).map((r: any) => r.id).filter((id: any) => typeof id === 'number');
+        toDelete.push(...dropIds);
+        groupReport.push({ key, kept: keep.id as number, deleted: dropIds });
+      }
+      let deleted = 0;
+      if (!dryRun && toDelete.length > 0) {
+        for (const id of toDelete) {
+          try { await storage.deleteTask(id); deleted++; } catch (e) { console.error(`[dedupe] failed to delete task ${id}:`, e); }
+        }
+      }
+      res.json({
+        dryRun,
+        totalClassTasks: classTasks.length,
+        duplicateGroups: groupReport.length,
+        wouldDelete: toDelete.length,
+        actuallyDeleted: deleted,
+        sampleGroups: groupReport.slice(0, 20),
+      });
+    } catch (err: any) {
+      console.error("Error deduping class tasks:", err);
+      res.status(500).json({ error: err?.message || 'Failed to dedupe class tasks' });
+    }
+  });
+
   // ============= FILE MANAGEMENT ROUTES =============
 
   // POST /api/files/sync-names - Sync file names to include course names and module numbers
