@@ -655,6 +655,21 @@ app.use((req, res, next) => {
     }
   }
 
+  // Ensure newly-added columns exist before any code (e.g. seedDatabase → getTasks)
+  // queries them. These mirror the ALTER block in the upper IIFE but are awaited
+  // synchronously here so we cannot race past them. IF NOT EXISTS makes re-runs free.
+  try {
+    await adminDb.query(`ALTER TABLE projects ADD COLUMN IF NOT EXISTS project_type TEXT DEFAULT 'general'`);
+    await adminDb.query(`ALTER TABLE projects ADD COLUMN IF NOT EXISTS metadata JSONB`);
+    await adminDb.query(`ALTER TABLE projects ADD COLUMN IF NOT EXISTS tags TEXT[]`);
+    await adminDb.query(`ALTER TABLE projects ADD COLUMN IF NOT EXISTS depends_on_project_ids INTEGER[]`);
+    await adminDb.query(`ALTER TABLE tasks ADD COLUMN IF NOT EXISTS tags TEXT[]`);
+    await adminDb.query(`ALTER TABLE tasks ADD COLUMN IF NOT EXISTS estimated_minutes INTEGER`);
+    console.log('[DB] Pre-route column guards applied (projects.tags, tasks.tags, etc.)');
+  } catch (e: any) {
+    console.warn('[DB] Pre-route column guard failed (non-fatal):', e.message);
+  }
+
   await registerRoutes(httpServer, app);
 
   try {
