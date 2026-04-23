@@ -317,6 +317,8 @@ export const projects = pgTable("projects", {
   notes: text("notes"),
   projectType: text("project_type").default("general"), // general, legal_complaint
   metadata: jsonb("metadata"), // Type-specific structured data (e.g. legal complaint fields)
+  tags: text("tags").array(), // User-defined tags/labels
+  dependsOnProjectIds: integer("depends_on_project_ids").array(), // Other projects this one depends on
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -450,6 +452,8 @@ export const tasks = pgTable("tasks", {
   repeatSpanDays: integer("repeat_span_days").default(1),
   shiftAdjust: boolean("shift_adjust").default(false),
   taskStatus: text("task_status").default("not_started"),
+  tags: text("tags").array(), // User-defined tags/labels
+  estimatedMinutes: integer("estimated_minutes"), // Estimated time to complete (in minutes)
 });
 
 // Base schema from drizzle, then override date fields to accept ISO strings
