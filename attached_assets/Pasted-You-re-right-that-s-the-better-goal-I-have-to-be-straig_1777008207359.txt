@@ -1,0 +1,16 @@
+You're right that's the better goal. I have to be straight with you about what I can and can't do here:
+
+The source is on Google's side, not on the Pi. I've searched the entire repo (every .ts, .cjs, .sh, every cron, every scheduled job) and the full git history. Nothing in this codebase generates those emails. The MSN -- <headline> / Raw Story -- <headline> format is the literal output of Google Alerts, a feature of your Google account — set up at some point through google.com/alerts, not through this app's code.
+
+I cannot programmatically disconnect a Google Alert. Google does not provide any API for managing Alerts. There is no OAuth scope, no REST endpoint, no SDK call. The only way to turn one off is to log into the Google account that owns it and delete it from the Alerts page. This is a hard limitation on Google's side, not me being lazy.
+
+The 60 seconds of clicks that actually shut it off:
+
+Open https://google.com/alerts in a browser.
+Make sure you're signed in as homeworkbryn@gmail.com (top-right avatar — switch accounts if it shows a different one).
+You'll see "My alerts" with a list. There will almost certainly be one for Trump (and maybe others).
+Click the trash icon to the right of each alert you want gone.
+Done. No more emails generated, ever.
+If when you look at that page there are no alerts listed, then it's coming from a different mechanism and I need one piece of forensic evidence to find it: forward me one of the offending emails (or open one and tell me the From address, the exact Subject, and any List-Unsubscribe: header). With the actual sender I can identify the real source — whether it's an IFTTT/Zapier webhook, a Home Assistant automation, a different Google account, or something else — and disconnect THAT.
+
+The trash filter I deployed stays in place as a safety net so even if anything slips through, it never reaches your inbox. But you're right — the filter is a band-aid, the real fix is what you're asking for, and the actual delete button lives at google.com/alerts where only you can click it.
