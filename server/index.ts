@@ -703,15 +703,11 @@ app.use((req, res, next) => {
   setTimeout(onedriveKeepAlive, 8000);
   setInterval(onedriveKeepAlive, 25 * 60 * 1000);
 
-  // Raw Story auto-trasher: every 5 min, trash inbox emails from rawstory.com
-  // and its newsletter subdomains. Uses gmail.modify; trashed mail stays in
-  // Gmail Trash for 30 days. Nothing else is touched.
-  try {
-    const { startPoliticalEmailMonitor } = await import("./politicalEmailFilter");
-    startPoliticalEmailMonitor(5);
-  } catch (e: any) {
-    console.warn("[RawStoryFilter] Failed to start monitor:", e?.message || e);
-  }
+  // Raw Story auto-trasher disabled: the gmail integration only has gmail.send
+  // scope, not gmail.modify, so every tick was throwing Gmail 403 every 5 min
+  // and never actually trashing anything. Removed the auto-start to stop the
+  // log spam. The manual endpoints in routes.ts still exist if scope ever gets
+  // added, but they will keep returning 403 until then.
 
   app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
