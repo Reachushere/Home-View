@@ -1,0 +1,23 @@
+byhomeyyz@raspberrypi:~/Home-View $ ps -ef | grep -E "node|tsx" | grep -v grep
+crontab -l 2>/dev/null
+sudo systemctl list-timers --all --no-pager 2>/dev/null | head -20
+root        1395    1386  0 Apr21 ?        00:00:00 fusermount3 -o rw,nosuid,nodev,fsname=portal,auto_unmount,subtype=portal -- /run/user/1000/doc
+byhomey+   35826   35815  0 Apr23 pts/0    00:00:00 sh -c tsx script/build.ts
+byhomey+   35827   35826  0 Apr23 pts/0    00:00:00 node /home/byhomeyyz/Home-View/node_modules/.bin/tsx script/build.ts
+byhomey+   35838   35827  0 Apr23 pts/0    00:00:19 /home/linuxbrew/.linuxbrew/Cellar/node/25.9.0_2/bin/node --require /home/byhomeyyz/Home-View/node_modules/tsx/dist/preflight.cjs --import file:///home/byhomeyyz/Home-View/node_modules/tsx/dist/loader.mjs script/build.ts
+byhomey+   35850   35838  0 Apr23 pts/0    00:00:01 /home/byhomeyyz/Home-View/node_modules/vite/node_modules/@esbuild/linux-arm64/bin/esbuild --service=0.27.2 --ping
+byhomey+   54468    1228  7 01:23 ?        01:10:07 node /home/byhomeyyz/Home-View/dist/index.cjs
+byhomey+   54521       1 10 01:23 ?        01:35:54 /usr/bin/node -e require('dotenv').config(); require('./dist/index.cjs')
+NEXT                             LEFT LAST                         PASSED UNIT                         ACTIVATES
+Sat 2026-04-25 00:00:00 EDT        7h Fri 2026-04-24 00:00:16 EDT 16h ago dpkg-db-backup.timer         dpkg-db-backup.service
+Sat 2026-04-25 00:23:03 EDT        7h Fri 2026-04-24 00:21:16 EDT 16h ago logrotate.timer              logrotate.service
+Sat 2026-04-25 04:34:47 EDT       12h Fri 2026-04-24 04:34:47 EDT 11h ago systemd-tmpfiles-clean.timer systemd-tmpfiles-clean.service
+Sat 2026-04-25 05:56:58 EDT       13h Fri 2026-04-24 06:22:44 EDT 10h ago apt-daily.timer              apt-daily.service
+Sat 2026-04-25 06:04:54 EDT       13h Fri 2026-04-24 06:56:44 EDT  9h ago apt-daily-upgrade.timer      apt-daily-upgrade.service
+Sat 2026-04-25 06:21:16 EDT       13h Fri 2026-04-24 06:53:16 EDT  9h ago man-db.timer                 man-db.service
+Sat 2026-04-25 07:20:16 EDT       14h Fri 2026-04-24 07:20:16 EDT  9h ago rpi-zram-writeback.timer     rpi-zram-writeback.service
+Sun 2026-04-26 03:10:03 EDT 1 day 10h Sun 2026-04-19 03:11:10 EDT       - e2scrub_all.timer            e2scrub_all.service
+Mon 2026-04-27 01:34:58 EDT    2 days Mon 2026-04-20 00:17:10 EDT       - fstrim.timer                 fstrim.service
+
+9 timers listed.
+byhomeyyz@raspberrypi:~/Home-View $
