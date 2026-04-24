@@ -8839,9 +8839,12 @@ export default function Dashboard() {
         }
         currentSemIdx = latestEndedIdx;
       }
-      const relevantSemKeys = currentSemIdx >= 0 ? semKeyOrder.slice(0, currentSemIdx + 1) : [];
+      const inActiveSemester = getCurrentSemKey(now, '') !== '';
+      const relevantSemKeys = currentSemIdx >= 0
+        ? (inActiveSemester ? semKeyOrder.slice(0, currentSemIdx) : semKeyOrder.slice(0, currentSemIdx + 1))
+        : [];
       const letterToGpa: Record<string, number> = { 'A+': 4.33, 'A': 4.0, 'A-': 3.67, 'B+': 3.33, 'B': 3.0, 'B-': 2.67, 'C+': 2.33, 'C': 2.0, 'C-': 1.67, 'D': 1.0, 'F': 0 };
-      const pToGpa = (p: number) => p >= 90 ? 4.33 : p >= 85 ? 4.0 : p >= 80 ? 3.67 : p >= 77 ? 3.33 : p >= 73 ? 3.0 : p >= 70 ? 2.67 : p >= 67 ? 2.33 : p >= 63 ? 2.0 : p >= 60 ? 1.67 : p >= 50 ? 1.0 : 0;
+      const pToGpa = (p: number) => { if (isNaN(p)) return 0; if (p >= 90) return 4.33; if (p < 50) return 0; const a: Array<[number, number]> = [[50,1.0],[60,1.67],[63,2.0],[67,2.33],[70,2.67],[73,3.0],[77,3.33],[80,3.67],[85,4.0],[90,4.33]]; for (let i = a.length - 1; i >= 0; i--) { const [lo, gLo] = a[i]; if (p >= lo) { const nx = a[i+1]; if (!nx) return gLo; const ratio = (p - lo) / (nx[0] - lo); return Math.round((gLo + ratio * (nx[1] - gLo)) * 100) / 100; } } return 0; };
       const allVals: number[] = [];
       for (const semKey of relevantSemKeys) {
         const courses = semesterCourseAssignments[semKey] || [];
@@ -20163,7 +20166,7 @@ export default function Dashboard() {
                 }
                 const relevantSemKeys = currentSemIdx >= 0 ? semKeyOrder.slice(0, currentSemIdx + 1) : [];
                 const letterToGpa: Record<string, number> = { 'A+': 4.33, 'A': 4.0, 'A-': 3.67, 'B+': 3.33, 'B': 3.0, 'B-': 2.67, 'C+': 2.33, 'C': 2.0, 'C-': 1.67, 'D': 1.0, 'F': 0 };
-                const pToGpa = (p: number) => p >= 90 ? 4.33 : p >= 85 ? 4.0 : p >= 80 ? 3.67 : p >= 77 ? 3.33 : p >= 73 ? 3.0 : p >= 70 ? 2.67 : p >= 67 ? 2.33 : p >= 63 ? 2.0 : p >= 60 ? 1.67 : p >= 50 ? 1.0 : 0;
+                const pToGpa = (p: number) => { if (isNaN(p)) return 0; if (p >= 90) return 4.33; if (p < 50) return 0; const a: Array<[number, number]> = [[50,1.0],[60,1.67],[63,2.0],[67,2.33],[70,2.67],[73,3.0],[77,3.33],[80,3.67],[85,4.0],[90,4.33]]; for (let i = a.length - 1; i >= 0; i--) { const [lo, gLo] = a[i]; if (p >= lo) { const nx = a[i+1]; if (!nx) return gLo; const ratio = (p - lo) / (nx[0] - lo); return Math.round((gLo + ratio * (nx[1] - gLo)) * 100) / 100; } } return 0; };
 
                 const semAllCourses: Record<string, { code: string }[]> = {};
                 const allDefCodes = new Set<string>();
@@ -20228,12 +20231,10 @@ export default function Dashboard() {
                 }
                 const prevGpa = prevGpaVals.length > 0 ? prevGpaVals.reduce((a, b) => a + b, 0) / prevGpaVals.length : null;
 
-                const allGpaVals: number[] = [...prevGpaVals];
-                if (currentSemKey) {
-                  for (const v of getGpaValsForSem(currentSemKey)) allGpaVals.push(v);
-                }
-                const runningGpa = allGpaVals.length > 0 ? allGpaVals.reduce((a, b) => a + b, 0) / allGpaVals.length : null;
-                try { if (runningGpa !== null) localStorage.setItem('currentRunningGpa', runningGpa.toFixed(2)); } catch {}
+                const termGpaVals: number[] = currentSemKey ? getGpaValsForSem(currentSemKey) : [];
+                const termGpa = termGpaVals.length > 0 ? termGpaVals.reduce((a, b) => a + b, 0) / termGpaVals.length : null;
+                const overallGpa = prevGpa;
+                try { if (overallGpa !== null) localStorage.setItem('currentRunningGpa', overallGpa.toFixed(2)); } catch {}
 
                 const gpaToLetter = (gpa: number): string => {
                   if (gpa >= 4.33) return 'A+';
@@ -20249,33 +20250,31 @@ export default function Dashboard() {
                   return 'F';
                 };
                 return (
-                  <div className="rounded-md flex items-center justify-center gap-1.5 px-3" style={{ backgroundColor: '#ffffff', height: '36px', boxSizing: 'border-box', opacity: 1 }} data-testid="l1-gpa-box">
+                  <div className="rounded-md flex items-center justify-center gap-2 px-3" style={{ backgroundColor: '#ffffff', height: '36px', boxSizing: 'border-box', opacity: 1 }} data-testid="l1-gpa-box">
                     <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: '#555' }}>GPA</span>
-                    {prevGpa !== null ? (
-                      <>
-                        <span className="flex flex-col items-center leading-none" style={{ gap: '1px' }}>
-                          <span className="text-[7px] font-medium uppercase tracking-wider" style={{ color: '#888' }}>To last semester</span>
-                          <span className="flex items-center gap-0.5">
-                            <span className="font-bold text-[14px] leading-none" style={{ color: '#000' }}>{prevGpa.toFixed(2)}</span>
-                            <span className="text-[10px] font-bold leading-none" style={{ color: '#333' }}>({gpaToLetter(prevGpa)})</span>
-                          </span>
+                    <span className="flex flex-col items-center leading-none" style={{ gap: '1px' }} data-testid="gpa-term">
+                      <span className="text-[7px] font-medium uppercase tracking-wider" style={{ color: '#888' }}>Term</span>
+                      {termGpa !== null ? (
+                        <span className="flex items-center gap-0.5">
+                          <span className="font-bold text-[14px] leading-none" style={{ color: '#000' }}>{termGpa.toFixed(2)}</span>
+                          <span className="text-[10px] font-bold leading-none" style={{ color: '#333' }}>({gpaToLetter(termGpa)})</span>
                         </span>
-                      </>
-                    ) : (
-                      <span className="text-[10px]" style={{ color: '#aaa' }}>—</span>
-                    )}
-                    {currentSemKey !== null && runningGpa !== null && (
-                      <>
-                        <span style={{ color: '#ccc', fontSize: '16px', fontWeight: 300 }}>|</span>
-                        <span className="flex flex-col items-center leading-none" style={{ gap: '1px' }}>
-                          <span className="text-[7px] font-medium uppercase tracking-wider" style={{ color: '#888' }}>Current</span>
-                          <span className="flex items-center gap-0.5">
-                            <span className="font-bold text-[14px] leading-none" style={{ color: '#000' }}>{runningGpa.toFixed(2)}</span>
-                            <span className="text-[10px] font-bold leading-none" style={{ color: '#333' }}>({gpaToLetter(runningGpa)})</span>
-                          </span>
+                      ) : (
+                        <span className="text-[12px] font-bold leading-none" style={{ color: '#bbb' }}>—</span>
+                      )}
+                    </span>
+                    <span style={{ color: '#ccc', fontSize: '16px', fontWeight: 300 }}>|</span>
+                    <span className="flex flex-col items-center leading-none" style={{ gap: '1px' }} data-testid="gpa-overall">
+                      <span className="text-[7px] font-medium uppercase tracking-wider" style={{ color: '#888' }}>Overall</span>
+                      {overallGpa !== null ? (
+                        <span className="flex items-center gap-0.5">
+                          <span className="font-bold text-[14px] leading-none" style={{ color: '#000' }}>{overallGpa.toFixed(2)}</span>
+                          <span className="text-[10px] font-bold leading-none" style={{ color: '#333' }}>({gpaToLetter(overallGpa)})</span>
                         </span>
-                      </>
-                    )}
+                      ) : (
+                        <span className="text-[12px] font-bold leading-none" style={{ color: '#bbb' }}>—</span>
+                      )}
+                    </span>
                   </div>
                 );
               })()}
@@ -28849,7 +28848,7 @@ export default function Dashboard() {
                         })()}</span>
                         {(() => {
                           const letterToGpa: Record<string, number> = { 'A+': 4.33, 'A': 4.0, 'A-': 3.67, 'B+': 3.33, 'B': 3.0, 'B-': 2.67, 'C+': 2.33, 'C': 2.0, 'C-': 1.67, 'D': 1.0, 'F': 0 };
-                          const pToGpa = (p: number) => p >= 90 ? 4.33 : p >= 85 ? 4.0 : p >= 80 ? 3.67 : p >= 77 ? 3.33 : p >= 73 ? 3.0 : p >= 70 ? 2.67 : p >= 67 ? 2.33 : p >= 63 ? 2.0 : p >= 60 ? 1.67 : p >= 50 ? 1.0 : 0;
+                          const pToGpa = (p: number) => { if (isNaN(p)) return 0; if (p >= 90) return 4.33; if (p < 50) return 0; const a: Array<[number, number]> = [[50,1.0],[60,1.67],[63,2.0],[67,2.33],[70,2.67],[73,3.0],[77,3.33],[80,3.67],[85,4.0],[90,4.33]]; for (let i = a.length - 1; i >= 0; i--) { const [lo, gLo] = a[i]; if (p >= lo) { const nx = a[i+1]; if (!nx) return gLo; const ratio = (p - lo) / (nx[0] - lo); return Math.round((gLo + ratio * (nx[1] - gLo)) * 100) / 100; } } return 0; };
                           const code = semCourse.code.replace(/\s/g, '');
                           const codeNoC = code.toUpperCase().replace(/^C(?=[A-Z]{2,})/, '');
                           const cg = (rowCertKey && courseGrades[rowCertKey]) || courseGrades[codeNorm] || courseGrades[semCourse.code] || courseGrades[code] || courseGrades[codeNoC] || null;
@@ -29120,7 +29119,7 @@ export default function Dashboard() {
                                     // certCourseMap → courseGrades (with electives + pastCourseInfo
                                     // fallback) for every course in this semester, then averages.
                                     const letterToGpa: Record<string, number> = { 'A+': 4.33, 'A': 4.0, 'A-': 3.67, 'B+': 3.33, 'B': 3.0, 'B-': 2.67, 'C+': 2.33, 'C': 2.0, 'C-': 1.67, 'D': 1.0, 'F': 0 };
-                                    const pToGpa = (p: number) => p >= 90 ? 4.33 : p >= 85 ? 4.0 : p >= 80 ? 3.67 : p >= 77 ? 3.33 : p >= 73 ? 3.0 : p >= 70 ? 2.67 : p >= 67 ? 2.33 : p >= 63 ? 2.0 : p >= 60 ? 1.67 : p >= 50 ? 1.0 : 0;
+                                    const pToGpa = (p: number) => { if (isNaN(p)) return 0; if (p >= 90) return 4.33; if (p < 50) return 0; const a: Array<[number, number]> = [[50,1.0],[60,1.67],[63,2.0],[67,2.33],[70,2.67],[73,3.0],[77,3.33],[80,3.67],[85,4.0],[90,4.33]]; for (let i = a.length - 1; i >= 0; i--) { const [lo, gLo] = a[i]; if (p >= lo) { const nx = a[i+1]; if (!nx) return gLo; const ratio = (p - lo) / (nx[0] - lo); return Math.round((gLo + ratio * (nx[1] - gLo)) * 100) / 100; } } return 0; };
                                     // Approximate inverse for letter-only grades, so the % badge
                                     // still renders even when only a letter has been entered.
                                     const letterToPct: Record<string, number> = { 'A+': 92, 'A': 87, 'A-': 82, 'B+': 78, 'B': 75, 'B-': 72, 'C+': 68, 'C': 65, 'C-': 62, 'D': 55, 'F': 40 };
