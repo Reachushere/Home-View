@@ -6245,8 +6245,23 @@ export default function Dashboard() {
         if (data.openElectives) {
           setOpenElectives(prev => {
             const merged = { ...prev, ...data.openElectives };
-            localStorage.setItem('openElectives', JSON.stringify(merged));
-            return merged;
+            let changed = false;
+            const healed: Record<string, string> = {};
+            for (const [k, v] of Object.entries(merged)) {
+              const sv = (v as string) || '';
+              const norm = normalizeElectiveValue(sv);
+              healed[k] = norm;
+              if (norm !== sv) changed = true;
+            }
+            localStorage.setItem('openElectives', JSON.stringify(healed));
+            if (changed) {
+              fetch('/api/degree-tracking', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ key: 'openElectives', value: healed }),
+              }).catch(() => {});
+            }
+            return healed;
           });
         }
         if (data.coursesData) {
@@ -6434,11 +6449,26 @@ export default function Dashboard() {
         const parts = currentVal.split(' ');
         const code = parts.slice(0, 2).join(' ');
         const name = parts.slice(2).join(' ');
-        options.unshift({ key: `saved-${code}`, value: currentVal, label: `${code} - ${name}` });
+        const canonical = courseList.find(c => c.code === code);
+        const displayLabel = canonical ? `${canonical.code} - ${canonical.name}` : `${code} - ${name}`;
+        options.unshift({ key: `saved-${code}`, value: currentVal, label: displayLabel });
       }
     }
     return options;
   };
+
+  const normalizeElectiveValue = useCallback((val: string): string => {
+    if (!val?.trim()) return val;
+    const parts = val.split(' ');
+    if (parts.length < 2) return val;
+    const code = parts.slice(0, 2).join(' ');
+    const allLists: ElectiveCourse[][] = [LIBERAL_STUDIES_COURSES, OPEN_ELECTIVE_COURSES, POG_COURSES];
+    for (const list of allLists) {
+      const found = list.find(c => c.code === code);
+      if (found) return `${found.code} ${found.name}`;
+    }
+    return val;
+  }, []);
 
   const noGradeIds = new Set(['L1_PPA122']);
 
