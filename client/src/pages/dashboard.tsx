@@ -21790,6 +21790,66 @@ export default function Dashboard() {
             })()}
             readingWeekStart={readingWeekStart}
             onPushUndo={(action) => pushUndo(action as UndoAction)}
+            availableCourses={(() => {
+              // Build the autocomplete list for the "Course Code" field in
+              // the edit-course dialog. Sources, in order of priority:
+              //   1. Real cert-program course codes from certCourseMap
+              //      (skipping slot placeholders like OPEN/LIB/POG which
+              //      aren't real course codes the user can pick).
+              //   2. The Liberal Studies elective catalog (LIBERAL_STUDIES_COURSES)
+              //      so courses like CHST501 American Civil War are pickable.
+              //   3. The user's curated COURSES list from shared/schema.
+              // Deduped by normalized code (uppercase, no spaces). Completed
+              // courses are removed so the autocomplete only shows things
+              // still on the table.
+              const out: { code: string; name: string }[] = [];
+              const seen = new Set<string>();
+              const isPlaceholder = (cc: string) => (
+                !cc
+                || cc.startsWith('OPEN')
+                || cc.startsWith('LIB')
+                || cc.startsWith('POG')
+                || cc.startsWith('TBD')
+                || /^L[23]OPEN\d*$/i.test(cc)
+              );
+              for (const info of Object.values(certCourseMap)) {
+                const cc = (info.code || '').replace(/\s/g, '').toUpperCase();
+                if (isPlaceholder(cc) || seen.has(cc)) continue;
+                seen.add(cc);
+                out.push({ code: cc, name: info.name });
+              }
+              for (const e of LIBERAL_STUDIES_COURSES) {
+                const cc = (e.code || '').replace(/\s/g, '').toUpperCase();
+                if (!cc || seen.has(cc)) continue;
+                seen.add(cc);
+                out.push({ code: cc, name: e.name });
+              }
+              for (const c of COURSES) {
+                const cc = (c.code || '').replace(/\s/g, '').toUpperCase();
+                if (!cc || seen.has(cc)) continue;
+                seen.add(cc);
+                out.push({ code: cc, name: c.name });
+              }
+              // Build the "completed" set: anything the user has marked done
+              // in degree tracking, resolved against any elective they picked
+              // for that slot.
+              const completed = new Set<string>();
+              for (const [ck, isChecked] of Object.entries(checkedCourses)) {
+                if (!isChecked) continue;
+                const info = certCourseMap[ck];
+                if (!info) continue;
+                let actualCode = info.code;
+                const elective = openElectives[ck]?.trim();
+                if (elective) {
+                  const m = elective.match(/^([A-Z]{2,5}\s?\d{3}[A-Z]?)/i);
+                  if (m) actualCode = m[1];
+                }
+                completed.add(actualCode.replace(/\s/g, '').toUpperCase());
+              }
+              return out
+                .filter(c => !completed.has(c.code))
+                .sort((a, b) => a.code.localeCompare(b.code));
+            })()}
           />
         );
       })()}

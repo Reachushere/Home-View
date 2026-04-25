@@ -140,6 +140,10 @@ interface CourseDetailDialogProps {
   allAssignmentsAdded?: boolean;
   onAllAssignmentsAddedChange?: (val: boolean) => void;
   automationsRenderer?: () => React.ReactNode;
+  // Optional autocomplete source for the "Course Code" field in edit mode.
+  // Each entry is a course the user can pick (cert program slots + electives,
+  // already filtered by the parent to exclude completed courses).
+  availableCourses?: { code: string; name: string }[];
 }
 
 interface NewTaskForm {
@@ -262,7 +266,7 @@ function semesterKeyFromTermYear(term?: string, year?: string): string {
   return '';
 }
 
-export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLiveColorChange, onGradeCalculated, onDeleteCourse, onOpenEditTask, semesterStart, readingWeekStart, certificateName, onPushUndo, initialEditMode, courseRank, usedRanks, isSpringSummer, courseSpSuTerm, courseRankA, courseRankB, usedRanksA, usedRanksB, onRankChange, semesterSettings, allAssignmentsAdded, onAllAssignmentsAddedChange, automationsRenderer }: CourseDetailDialogProps) {
+export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLiveColorChange, onGradeCalculated, onDeleteCourse, onOpenEditTask, semesterStart, readingWeekStart, certificateName, onPushUndo, initialEditMode, courseRank, usedRanks, isSpringSummer, courseSpSuTerm, courseRankA, courseRankB, usedRanksA, usedRanksB, onRankChange, semesterSettings, allAssignmentsAdded, onAllAssignmentsAddedChange, automationsRenderer, availableCourses }: CourseDetailDialogProps) {
   const maxWeek = isSpringSummer ? 14 : 13;
   const { toast } = useToast();
   const [showAddForm, setShowAddForm] = useState(false);
@@ -628,6 +632,27 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
   const [browsePath, setBrowsePath] = useState('/');
   const [browseFolders, setBrowseFolders] = useState<Array<{ name: string; path: string }>>([]);
   const [browseLoading, setBrowseLoading] = useState(false);
+  // Autocomplete dropdown state for the "Course Code" field in edit mode.
+  // Filtered against `availableCourses` (cert program slots + electives,
+  // already excluding completed courses). Selecting a suggestion fills BOTH
+  // the code and the name so the saved course aligns with what the degree
+  // tracking page knows about.
+  const [showCodeAutocomplete, setShowCodeAutocomplete] = useState(false);
+  const codeAutocompleteSuggestions = useMemo(() => {
+    if (!availableCourses || availableCourses.length === 0) return [];
+    const q = (editInfo.courseCode || '').toUpperCase().replace(/\s/g, '');
+    const seen = new Set<string>();
+    const matches = availableCourses.filter(c => {
+      const cc = (c.code || '').toUpperCase().replace(/\s/g, '');
+      if (!cc || seen.has(cc)) return false;
+      seen.add(cc);
+      // Empty query → show full list (capped below). Otherwise prefix or
+      // substring match on either code or name (case-insensitive).
+      if (!q) return true;
+      return cc.includes(q) || (c.name || '').toUpperCase().includes(q);
+    });
+    return matches.slice(0, 12);
+  }, [availableCourses, editInfo.courseCode]);
 
   useEffect(() => {
     if (!isEditingInfo) return;
@@ -2601,9 +2626,48 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                       />
                 </div>
                 <div className="grid grid-cols-[1fr_1.5fr_1fr] gap-2 mb-2">
-                  <div>
+                  <div className="relative">
                     <label className="text-white text-[9px] mb-0.5 block font-semibold">Course Code</label>
-                    <input className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1.5 placeholder:text-white/25 uppercase" value={editInfo.courseCode} onChange={(e) => setEditInfo({...editInfo, courseCode: e.target.value.toUpperCase()})} placeholder="CPPA122" data-testid="input-edit-course-code" />
+                    <input
+                      className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1.5 placeholder:text-white/25 uppercase"
+                      value={editInfo.courseCode}
+                      onChange={(e) => { setEditInfo({...editInfo, courseCode: e.target.value.toUpperCase()}); setShowCodeAutocomplete(true); }}
+                      onFocus={() => setShowCodeAutocomplete(true)}
+                      onBlur={() => { setTimeout(() => setShowCodeAutocomplete(false), 180); }}
+                      placeholder="CPPA122"
+                      autoComplete="off"
+                      data-testid="input-edit-course-code"
+                    />
+                    {showCodeAutocomplete && codeAutocompleteSuggestions.length > 0 && (
+                      <div
+                        className="absolute left-0 right-0 top-full mt-0.5 rounded border shadow-2xl overflow-y-auto"
+                        style={{ zIndex: 9999, background: 'rgba(15,20,35,0.98)', borderColor: 'rgba(255,255,255,0.35)', maxHeight: '220px' }}
+                        data-testid="autocomplete-course-code-list"
+                      >
+                        {codeAutocompleteSuggestions.map(s => {
+                          const cleanCode = (s.code || '').replace(/\s/g, '').toUpperCase();
+                          return (
+                            <button
+                              key={cleanCode}
+                              type="button"
+                              className="block w-full text-left px-1.5 py-1 text-[10px] text-white hover:bg-white/15 border-b border-white/5 last:border-b-0"
+                              onMouseDown={(e) => {
+                                // onMouseDown (not onClick) so the input's onBlur
+                                // doesn't close the dropdown before the selection
+                                // registers.
+                                e.preventDefault();
+                                setEditInfo({ ...editInfo, courseCode: cleanCode, courseName: s.name || editInfo.courseName });
+                                setShowCodeAutocomplete(false);
+                              }}
+                              data-testid={`autocomplete-course-${cleanCode}`}
+                            >
+                              <span className="font-bold">{cleanCode}</span>
+                              <span className="ml-1.5 text-white/70">{s.name}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                   <div>
                     <label className="text-white text-[9px] mb-0.5 block font-semibold">Course Name</label>

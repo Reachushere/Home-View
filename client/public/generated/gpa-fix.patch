@@ -1,5 +1,108 @@
---- a/client/src/pages/dashboard.tsx
-+++ b/client/src/pages/dashboard.tsx
+diff -urN oldroot/client/src/components/CourseDetailDialog.tsx newroot/client/src/components/CourseDetailDialog.tsx
+--- a/client/src/components/CourseDetailDialog.tsx	2026-04-24 20:15:56.042299412 -0400
++++ b/client/src/components/CourseDetailDialog.tsx	2026-04-24 20:15:56.107299412 -0400
+@@ -140,6 +140,10 @@
+   allAssignmentsAdded?: boolean;
+   onAllAssignmentsAddedChange?: (val: boolean) => void;
+   automationsRenderer?: () => React.ReactNode;
++  // Optional autocomplete source for the "Course Code" field in edit mode.
++  // Each entry is a course the user can pick (cert program slots + electives,
++  // already filtered by the parent to exclude completed courses).
++  availableCourses?: { code: string; name: string }[];
+ }
+ 
+ interface NewTaskForm {
+@@ -262,7 +266,7 @@
+   return '';
+ }
+ 
+-export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLiveColorChange, onGradeCalculated, onDeleteCourse, onOpenEditTask, semesterStart, readingWeekStart, certificateName, onPushUndo, initialEditMode, courseRank, usedRanks, isSpringSummer, courseSpSuTerm, courseRankA, courseRankB, usedRanksA, usedRanksB, onRankChange, semesterSettings, allAssignmentsAdded, onAllAssignmentsAddedChange, automationsRenderer }: CourseDetailDialogProps) {
++export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLiveColorChange, onGradeCalculated, onDeleteCourse, onOpenEditTask, semesterStart, readingWeekStart, certificateName, onPushUndo, initialEditMode, courseRank, usedRanks, isSpringSummer, courseSpSuTerm, courseRankA, courseRankB, usedRanksA, usedRanksB, onRankChange, semesterSettings, allAssignmentsAdded, onAllAssignmentsAddedChange, automationsRenderer, availableCourses }: CourseDetailDialogProps) {
+   const maxWeek = isSpringSummer ? 14 : 13;
+   const { toast } = useToast();
+   const [showAddForm, setShowAddForm] = useState(false);
+@@ -628,6 +632,27 @@
+   const [browsePath, setBrowsePath] = useState('/');
+   const [browseFolders, setBrowseFolders] = useState<Array<{ name: string; path: string }>>([]);
+   const [browseLoading, setBrowseLoading] = useState(false);
++  // Autocomplete dropdown state for the "Course Code" field in edit mode.
++  // Filtered against `availableCourses` (cert program slots + electives,
++  // already excluding completed courses). Selecting a suggestion fills BOTH
++  // the code and the name so the saved course aligns with what the degree
++  // tracking page knows about.
++  const [showCodeAutocomplete, setShowCodeAutocomplete] = useState(false);
++  const codeAutocompleteSuggestions = useMemo(() => {
++    if (!availableCourses || availableCourses.length === 0) return [];
++    const q = (editInfo.courseCode || '').toUpperCase().replace(/\s/g, '');
++    const seen = new Set<string>();
++    const matches = availableCourses.filter(c => {
++      const cc = (c.code || '').toUpperCase().replace(/\s/g, '');
++      if (!cc || seen.has(cc)) return false;
++      seen.add(cc);
++      // Empty query → show full list (capped below). Otherwise prefix or
++      // substring match on either code or name (case-insensitive).
++      if (!q) return true;
++      return cc.includes(q) || (c.name || '').toUpperCase().includes(q);
++    });
++    return matches.slice(0, 12);
++  }, [availableCourses, editInfo.courseCode]);
+ 
+   useEffect(() => {
+     if (!isEditingInfo) return;
+@@ -2601,9 +2626,48 @@
+                       />
+                 </div>
+                 <div className="grid grid-cols-[1fr_1.5fr_1fr] gap-2 mb-2">
+-                  <div>
++                  <div className="relative">
+                     <label className="text-white text-[9px] mb-0.5 block font-semibold">Course Code</label>
+-                    <input className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1.5 placeholder:text-white/25 uppercase" value={editInfo.courseCode} onChange={(e) => setEditInfo({...editInfo, courseCode: e.target.value.toUpperCase()})} placeholder="CPPA122" data-testid="input-edit-course-code" />
++                    <input
++                      className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1.5 placeholder:text-white/25 uppercase"
++                      value={editInfo.courseCode}
++                      onChange={(e) => { setEditInfo({...editInfo, courseCode: e.target.value.toUpperCase()}); setShowCodeAutocomplete(true); }}
++                      onFocus={() => setShowCodeAutocomplete(true)}
++                      onBlur={() => { setTimeout(() => setShowCodeAutocomplete(false), 180); }}
++                      placeholder="CPPA122"
++                      autoComplete="off"
++                      data-testid="input-edit-course-code"
++                    />
++                    {showCodeAutocomplete && codeAutocompleteSuggestions.length > 0 && (
++                      <div
++                        className="absolute left-0 right-0 top-full mt-0.5 rounded border shadow-2xl overflow-y-auto"
++                        style={{ zIndex: 9999, background: 'rgba(15,20,35,0.98)', borderColor: 'rgba(255,255,255,0.35)', maxHeight: '220px' }}
++                        data-testid="autocomplete-course-code-list"
++                      >
++                        {codeAutocompleteSuggestions.map(s => {
++                          const cleanCode = (s.code || '').replace(/\s/g, '').toUpperCase();
++                          return (
++                            <button
++                              key={cleanCode}
++                              type="button"
++                              className="block w-full text-left px-1.5 py-1 text-[10px] text-white hover:bg-white/15 border-b border-white/5 last:border-b-0"
++                              onMouseDown={(e) => {
++                                // onMouseDown (not onClick) so the input's onBlur
++                                // doesn't close the dropdown before the selection
++                                // registers.
++                                e.preventDefault();
++                                setEditInfo({ ...editInfo, courseCode: cleanCode, courseName: s.name || editInfo.courseName });
++                                setShowCodeAutocomplete(false);
++                              }}
++                              data-testid={`autocomplete-course-${cleanCode}`}
++                            >
++                              <span className="font-bold">{cleanCode}</span>
++                              <span className="ml-1.5 text-white/70">{s.name}</span>
++                            </button>
++                          );
++                        })}
++                      </div>
++                    )}
+                   </div>
+                   <div>
+                     <label className="text-white text-[9px] mb-0.5 block font-semibold">Course Name</label>
+diff -urN oldroot/client/src/pages/dashboard.tsx newroot/client/src/pages/dashboard.tsx
+--- a/client/src/pages/dashboard.tsx	2026-04-24 20:15:56.026299412 -0400
++++ b/client/src/pages/dashboard.tsx	2026-04-24 20:15:56.085299412 -0400
 @@ -20165,7 +20165,11 @@
                    currentSemIdx = latestEndedIdx;
                  }
@@ -126,7 +229,74 @@
                          </span>
                        ) : (
                          <span className="text-[12px] font-bold leading-none" style={{ color: '#bbb' }}>—</span>
-@@ -29152,7 +29173,13 @@
+@@ -21769,6 +21790,66 @@
+             })()}
+             readingWeekStart={readingWeekStart}
+             onPushUndo={(action) => pushUndo(action as UndoAction)}
++            availableCourses={(() => {
++              // Build the autocomplete list for the "Course Code" field in
++              // the edit-course dialog. Sources, in order of priority:
++              //   1. Real cert-program course codes from certCourseMap
++              //      (skipping slot placeholders like OPEN/LIB/POG which
++              //      aren't real course codes the user can pick).
++              //   2. The Liberal Studies elective catalog (LIBERAL_STUDIES_COURSES)
++              //      so courses like CHST501 American Civil War are pickable.
++              //   3. The user's curated COURSES list from shared/schema.
++              // Deduped by normalized code (uppercase, no spaces). Completed
++              // courses are removed so the autocomplete only shows things
++              // still on the table.
++              const out: { code: string; name: string }[] = [];
++              const seen = new Set<string>();
++              const isPlaceholder = (cc: string) => (
++                !cc
++                || cc.startsWith('OPEN')
++                || cc.startsWith('LIB')
++                || cc.startsWith('POG')
++                || cc.startsWith('TBD')
++                || /^L[23]OPEN\d*$/i.test(cc)
++              );
++              for (const info of Object.values(certCourseMap)) {
++                const cc = (info.code || '').replace(/\s/g, '').toUpperCase();
++                if (isPlaceholder(cc) || seen.has(cc)) continue;
++                seen.add(cc);
++                out.push({ code: cc, name: info.name });
++              }
++              for (const e of LIBERAL_STUDIES_COURSES) {
++                const cc = (e.code || '').replace(/\s/g, '').toUpperCase();
++                if (!cc || seen.has(cc)) continue;
++                seen.add(cc);
++                out.push({ code: cc, name: e.name });
++              }
++              for (const c of COURSES) {
++                const cc = (c.code || '').replace(/\s/g, '').toUpperCase();
++                if (!cc || seen.has(cc)) continue;
++                seen.add(cc);
++                out.push({ code: cc, name: c.name });
++              }
++              // Build the "completed" set: anything the user has marked done
++              // in degree tracking, resolved against any elective they picked
++              // for that slot.
++              const completed = new Set<string>();
++              for (const [ck, isChecked] of Object.entries(checkedCourses)) {
++                if (!isChecked) continue;
++                const info = certCourseMap[ck];
++                if (!info) continue;
++                let actualCode = info.code;
++                const elective = openElectives[ck]?.trim();
++                if (elective) {
++                  const m = elective.match(/^([A-Z]{2,5}\s?\d{3}[A-Z]?)/i);
++                  if (m) actualCode = m[1];
++                }
++                completed.add(actualCode.replace(/\s/g, '').toUpperCase());
++              }
++              return out
++                .filter(c => !completed.has(c.code))
++                .sort((a, b) => a.code.localeCompare(b.code));
++            })()}
+           />
+         );
+       })()}
+@@ -29152,7 +29233,13 @@
                                      if (gpaVals.length === 0) return null;
                                      const avgGpa = gpaVals.reduce((a, b) => a + b, 0) / gpaVals.length;
                                      const avgPct = pctVals.reduce((a, b) => a + b, 0) / pctVals.length;
@@ -141,3 +311,54 @@
                                      return (
                                        <span
                                          className="font-bold tracking-wider uppercase rounded border flex-shrink"
+diff -urN oldroot/server/index.ts newroot/server/index.ts
+--- a/server/index.ts	2026-04-24 20:15:56.059299412 -0400
++++ b/server/index.ts	2026-04-24 20:15:56.129299412 -0400
+@@ -837,19 +837,34 @@
+             }
+           }
+           const ss2026 = all.find((s: any) => s.semesterName === 'Spring/Summer 2026');
+-          if (ss2026 && !ss2026.course1DisplayName) {
+-            const displayUpdates: Record<string, string> = {};
+-            if (ss2026.course1Code === 'CECN210') displayUpdates.course1DisplayName = 'Economics';
+-            if (ss2026.course2Code === 'CPHL110') displayUpdates.course2DisplayName = 'Philosophy of Religion';
+-            if (ss2026.course3Code === 'CHIS105') displayUpdates.course3DisplayName = 'Popular Culture';
+-            if (ss2026.course3Code === 'CHST501') displayUpdates.course3DisplayName = 'American Civil War';
+-            if (ss2026.course1Name?.includes('CECN210 - ')) displayUpdates.course1Name = ss2026.course1Name.replace('CECN210 - ', '');
+-            if (ss2026.course2Name?.includes('CPHL110 - ')) displayUpdates.course2Name = ss2026.course2Name.replace('CPHL110 - ', '');
+-            if (ss2026.course3Name?.includes('CHIS105 - ')) displayUpdates.course3Name = ss2026.course3Name.replace('CHIS105 - ', '');
+-            if (ss2026.course3Name?.includes('CHST501 - ')) displayUpdates.course3Name = ss2026.course3Name.replace('CHST501 - ', '');
+-            if (Object.keys(displayUpdates).length > 0) {
+-              await storage.updateSemesterSettings(ss2026.id, displayUpdates);
+-              console.log(`[Semesters] Set SS2026 display names: ${JSON.stringify(displayUpdates)}`);
++          if (ss2026) {
++            const updates: Record<string, string> = {};
++            // FORCE-FIX: user replaced CHIS105 (Inventing Popular Culture) with
++            // CHST501 (The American Civil War) for SS2026 slot 3. The old
++            // migration only ran when course1DisplayName was empty, so once
++            // it set display names it never re-ran — leaving course3Code
++            // stale at CHIS105. This block is unconditional and idempotent:
++            // if the code is still CHIS105 it gets force-rewritten to
++            // CHST501, AND name/displayName are kept consistent. Safe to run
++            // every startup.
++            if (ss2026.course3Code === 'CHIS105') {
++              updates.course3Code = 'CHST501';
++              updates.course3Name = 'The American Civil War';
++              updates.course3DisplayName = 'American Civil War';
++            } else if (ss2026.course3Code === 'CHST501') {
++              if (ss2026.course3Name !== 'The American Civil War') updates.course3Name = 'The American Civil War';
++              if (ss2026.course3DisplayName !== 'American Civil War') updates.course3DisplayName = 'American Civil War';
++              if (ss2026.course3Name?.includes('CHST501 - ')) updates.course3Name = ss2026.course3Name.replace('CHST501 - ', '');
++            }
++            // Slot 1 + 2 display-name backfill (only when missing — these
++            // never changed code, so no force-rewrite needed).
++            if (!ss2026.course1DisplayName && ss2026.course1Code === 'CECN210') updates.course1DisplayName = 'Economics';
++            if (!ss2026.course2DisplayName && ss2026.course2Code === 'CPHL110') updates.course2DisplayName = 'Philosophy of Religion';
++            if (ss2026.course1Name?.includes('CECN210 - ')) updates.course1Name = ss2026.course1Name.replace('CECN210 - ', '');
++            if (ss2026.course2Name?.includes('CPHL110 - ')) updates.course2Name = ss2026.course2Name.replace('CPHL110 - ', '');
++            if (Object.keys(updates).length > 0) {
++              await storage.updateSemesterSettings(ss2026.id, updates);
++              console.log(`[Semesters] SS2026 force-fix: ${JSON.stringify(updates)}`);
+             }
+           }
+         } catch (e: any) {

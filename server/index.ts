@@ -837,19 +837,34 @@ app.use((req, res, next) => {
             }
           }
           const ss2026 = all.find((s: any) => s.semesterName === 'Spring/Summer 2026');
-          if (ss2026 && !ss2026.course1DisplayName) {
-            const displayUpdates: Record<string, string> = {};
-            if (ss2026.course1Code === 'CECN210') displayUpdates.course1DisplayName = 'Economics';
-            if (ss2026.course2Code === 'CPHL110') displayUpdates.course2DisplayName = 'Philosophy of Religion';
-            if (ss2026.course3Code === 'CHIS105') displayUpdates.course3DisplayName = 'Popular Culture';
-            if (ss2026.course3Code === 'CHST501') displayUpdates.course3DisplayName = 'American Civil War';
-            if (ss2026.course1Name?.includes('CECN210 - ')) displayUpdates.course1Name = ss2026.course1Name.replace('CECN210 - ', '');
-            if (ss2026.course2Name?.includes('CPHL110 - ')) displayUpdates.course2Name = ss2026.course2Name.replace('CPHL110 - ', '');
-            if (ss2026.course3Name?.includes('CHIS105 - ')) displayUpdates.course3Name = ss2026.course3Name.replace('CHIS105 - ', '');
-            if (ss2026.course3Name?.includes('CHST501 - ')) displayUpdates.course3Name = ss2026.course3Name.replace('CHST501 - ', '');
-            if (Object.keys(displayUpdates).length > 0) {
-              await storage.updateSemesterSettings(ss2026.id, displayUpdates);
-              console.log(`[Semesters] Set SS2026 display names: ${JSON.stringify(displayUpdates)}`);
+          if (ss2026) {
+            const updates: Record<string, string> = {};
+            // FORCE-FIX: user replaced CHIS105 (Inventing Popular Culture) with
+            // CHST501 (The American Civil War) for SS2026 slot 3. The old
+            // migration only ran when course1DisplayName was empty, so once
+            // it set display names it never re-ran — leaving course3Code
+            // stale at CHIS105. This block is unconditional and idempotent:
+            // if the code is still CHIS105 it gets force-rewritten to
+            // CHST501, AND name/displayName are kept consistent. Safe to run
+            // every startup.
+            if (ss2026.course3Code === 'CHIS105') {
+              updates.course3Code = 'CHST501';
+              updates.course3Name = 'The American Civil War';
+              updates.course3DisplayName = 'American Civil War';
+            } else if (ss2026.course3Code === 'CHST501') {
+              if (ss2026.course3Name !== 'The American Civil War') updates.course3Name = 'The American Civil War';
+              if (ss2026.course3DisplayName !== 'American Civil War') updates.course3DisplayName = 'American Civil War';
+              if (ss2026.course3Name?.includes('CHST501 - ')) updates.course3Name = ss2026.course3Name.replace('CHST501 - ', '');
+            }
+            // Slot 1 + 2 display-name backfill (only when missing — these
+            // never changed code, so no force-rewrite needed).
+            if (!ss2026.course1DisplayName && ss2026.course1Code === 'CECN210') updates.course1DisplayName = 'Economics';
+            if (!ss2026.course2DisplayName && ss2026.course2Code === 'CPHL110') updates.course2DisplayName = 'Philosophy of Religion';
+            if (ss2026.course1Name?.includes('CECN210 - ')) updates.course1Name = ss2026.course1Name.replace('CECN210 - ', '');
+            if (ss2026.course2Name?.includes('CPHL110 - ')) updates.course2Name = ss2026.course2Name.replace('CPHL110 - ', '');
+            if (Object.keys(updates).length > 0) {
+              await storage.updateSemesterSettings(ss2026.id, updates);
+              console.log(`[Semesters] SS2026 force-fix: ${JSON.stringify(updates)}`);
             }
           }
         } catch (e: any) {
