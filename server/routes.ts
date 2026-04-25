@@ -17470,8 +17470,13 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const fs = await import('fs');
     if (fs.existsSync(COURSE_PRIORITY_FILE)) {
       const diskPriority = JSON.parse(fs.readFileSync(COURSE_PRIORITY_FILE, 'utf-8'));
-      coursePlayPriority = { ...diskPriority, ...DEFAULT_COURSE_PRIORITY };
-      console.log(`[Course Priority] Loaded from disk (defaults override): ${JSON.stringify(coursePlayPriority)}`);
+      // CRITICAL: defaults must be the FALLBACK, not the override. The previous
+      // order (`{...diskPriority, ...DEFAULT_COURSE_PRIORITY}`) silently reset
+      // every user-customised priority for any course present in the defaults
+      // map on every server restart, then the next client sync pushed those
+      // reset values into localStorage — wiping the user's choices for good.
+      coursePlayPriority = { ...DEFAULT_COURSE_PRIORITY, ...diskPriority };
+      console.log(`[Course Priority] Loaded from disk (disk overrides defaults): ${JSON.stringify(coursePlayPriority)}`);
     } else {
       console.log(`[Course Priority] Using defaults: ${JSON.stringify(coursePlayPriority)}`);
     }

@@ -1,0 +1,56 @@
+diff --git a/client/src/pages/dashboard.tsx b/client/src/pages/dashboard.tsx
+index 1f45cdc23..783ed73a1 100644
+--- a/client/src/pages/dashboard.tsx
++++ b/client/src/pages/dashboard.tsx
+@@ -6378,9 +6378,28 @@ export default function Dashboard() {
+             return merged;
+           });
+         }
+-        if (data.coursePlayPriority) {
+-          setCoursePlayPriority(data.coursePlayPriority);
+-          localStorage.setItem('coursePlayPriority', JSON.stringify(data.coursePlayPriority));
++        if (data.coursePlayPriority && Object.keys(data.coursePlayPriority).length > 0) {
++          setCoursePlayPriority(prev => {
++            // Local is the source of truth (Bryn ranks on this device); only
++            // adopt server values for keys the local copy doesn't already
++            // have, so a stale/defaulted server payload can NEVER overwrite
++            // a priority the user has already set locally.
++            const merged = { ...data.coursePlayPriority, ...prev };
++            localStorage.setItem('coursePlayPriority', JSON.stringify(merged));
++            // If the merge produced anything the server didn't have, push it
++            // back so the disk file stays in sync.
++            const serverKeys = Object.keys(data.coursePlayPriority);
++            const hasNewKeys = Object.keys(merged).some(k => !(k in data.coursePlayPriority)) ||
++              serverKeys.some(k => merged[k] !== data.coursePlayPriority[k]);
++            if (hasNewKeys) {
++              fetch('/api/course-play-priority', {
++                method: 'POST',
++                headers: { 'Content-Type': 'application/json' },
++                body: JSON.stringify(merged),
++              }).catch(() => {});
++            }
++            return merged;
++          });
+         }
+         if (data.profileData) {
+           setProfileData(prev => {
+diff --git a/server/routes.ts b/server/routes.ts
+index 4876f5fe0..4188eb9c3 100644
+--- a/server/routes.ts
++++ b/server/routes.ts
+@@ -17470,8 +17470,13 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
+     const fs = await import('fs');
+     if (fs.existsSync(COURSE_PRIORITY_FILE)) {
+       const diskPriority = JSON.parse(fs.readFileSync(COURSE_PRIORITY_FILE, 'utf-8'));
+-      coursePlayPriority = { ...diskPriority, ...DEFAULT_COURSE_PRIORITY };
+-      console.log(`[Course Priority] Loaded from disk (defaults override): ${JSON.stringify(coursePlayPriority)}`);
++      // CRITICAL: defaults must be the FALLBACK, not the override. The previous
++      // order (`{...diskPriority, ...DEFAULT_COURSE_PRIORITY}`) silently reset
++      // every user-customised priority for any course present in the defaults
++      // map on every server restart, then the next client sync pushed those
++      // reset values into localStorage — wiping the user's choices for good.
++      coursePlayPriority = { ...DEFAULT_COURSE_PRIORITY, ...diskPriority };
++      console.log(`[Course Priority] Loaded from disk (disk overrides defaults): ${JSON.stringify(coursePlayPriority)}`);
+     } else {
+       console.log(`[Course Priority] Using defaults: ${JSON.stringify(coursePlayPriority)}`);
+     }

@@ -6378,9 +6378,28 @@ export default function Dashboard() {
             return merged;
           });
         }
-        if (data.coursePlayPriority) {
-          setCoursePlayPriority(data.coursePlayPriority);
-          localStorage.setItem('coursePlayPriority', JSON.stringify(data.coursePlayPriority));
+        if (data.coursePlayPriority && Object.keys(data.coursePlayPriority).length > 0) {
+          setCoursePlayPriority(prev => {
+            // Local is the source of truth (Bryn ranks on this device); only
+            // adopt server values for keys the local copy doesn't already
+            // have, so a stale/defaulted server payload can NEVER overwrite
+            // a priority the user has already set locally.
+            const merged = { ...data.coursePlayPriority, ...prev };
+            localStorage.setItem('coursePlayPriority', JSON.stringify(merged));
+            // If the merge produced anything the server didn't have, push it
+            // back so the disk file stays in sync.
+            const serverKeys = Object.keys(data.coursePlayPriority);
+            const hasNewKeys = Object.keys(merged).some(k => !(k in data.coursePlayPriority)) ||
+              serverKeys.some(k => merged[k] !== data.coursePlayPriority[k]);
+            if (hasNewKeys) {
+              fetch('/api/course-play-priority', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(merged),
+              }).catch(() => {});
+            }
+            return merged;
+          });
         }
         if (data.profileData) {
           setProfileData(prev => {
