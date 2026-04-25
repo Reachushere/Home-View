@@ -29276,7 +29276,9 @@ export default function Dashboard() {
                                 return { background: bgCol, borderColor: borderCol, ...shadow, position: 'relative' as const, borderWidth: isCurrentSem ? '2px' : undefined };
                               })()}>
                                 <div className="px-2 py-2.5 flex items-center justify-between">
-                                <div className="flex items-center flex-wrap" style={{ flexWrap: 'nowrap', overflow: 'hidden', minWidth: 0, gap: '7px' }}>
+                                <div className="flex items-center" style={{ flex: '1 1 0%', minWidth: 0, overflow: 'hidden' }}>
+                                  {/* Cogs — fixed slot, never moves */}
+                                  <div className="flex items-center flex-shrink-0" style={{ gap: '7px' }}>
                                   <img
                                     src={semCogIconPath}
                                     alt="Semester settings"
@@ -29303,16 +29305,21 @@ export default function Dashboard() {
                                           setSemTriHover({ semKey: sem.key, x: r.left + r.width / 2, y: r.bottom + 6 });
                                         }}
                                         onMouseLeave={() => setSemTriHover(null)}
-                                        style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '23px', height: '23px', marginLeft: '3px', marginRight: '5px', flexShrink: 0, cursor: 'pointer', filter: `drop-shadow(0 0 3px ${triColor}88)` }}
+                                        style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '24px', height: '24px', flexShrink: 0, cursor: 'pointer', filter: `drop-shadow(0 0 3px ${triColor}88)` }}
                                       >
                                         <img src={semHealthIconPath} alt="" style={{ width: '21px', height: '21px', display: 'block' }} />
-                                        <svg width="9" height="8" viewBox="0 0 9 8" style={{ position: 'absolute', top: '0px', right: '0px', pointerEvents: 'none', filter: `drop-shadow(0 0 2px ${triColor})` }}>
+                                        <svg width="13" height="12" viewBox="0 0 9 8" style={{ position: 'absolute', top: '-2px', right: '-3px', pointerEvents: 'none', filter: `drop-shadow(0 0 2px ${triColor})` }}>
                                           <polygon points="4.5,0.6 8.4,7.4 0.6,7.4" fill={fillColor} stroke={triColor} strokeWidth="0.9" strokeLinejoin="round" />
-                                          <circle cx="4.5" cy="5.4" r="0.55" fill={markColor} />
+                                          <circle cx="4.5" cy="5.4" r="0.6" fill={markColor} />
                                         </svg>
                                       </span>
                                     );
                                   })()}
+                                  </div>
+                                  {/* Separator on right side of right cog */}
+                                  <div style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.28)', margin: '0 8px', flexShrink: 0 }} aria-hidden="true" />
+                                  {/* Header content — evenly spaced */}
+                                  <div className="flex items-center" style={{ flex: '1 1 auto', justifyContent: 'space-between', gap: '6px', minWidth: 0, overflow: 'hidden' }}>
                                   <span className="text-[10px] font-bold whitespace-nowrap" style={{ color: '#ffffff' }}>{sem.label}</span>
                                   {!sem.key.startsWith('ss') ? (
                                     <span className="whitespace-nowrap rounded border cursor-pointer hover:bg-white/15 transition-colors" style={{ color: '#ffffff', background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)', lineHeight: '14px', fontSize: '9px', padding: '0 6px' }} onClick={(e) => { e.stopPropagation(); setSemDatePickerKey(sem.key); setSemDatePickerHalf('full'); }} data-testid={`dates-pill-${sem.key}`}>{(() => {
@@ -29495,6 +29502,7 @@ export default function Dashboard() {
                                     );
                                   })()}
                                   {(() => { const isPast = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })(); const isConfirmedEnded = semesterEndConfirmed[sem.key]; return (isPast || isConfirmedEnded) ? <span className="font-bold tracking-wider uppercase rounded border flex-shrink" style={{ color: '#ffffff', background: colorSettings.headerBar, borderColor: 'rgba(255,255,255,0.2)', lineHeight: '14px', fontSize: '9px', padding: '0 6px', whiteSpace: 'nowrap', flexShrink: 0 }}>COMPLETE</span> : null; })()}
+                                  </div>
                                 </div>
                                 <ChevronRight
                                   className="text-white/40 hover:text-white cursor-pointer transition-colors flex-shrink-0 ml-1"
