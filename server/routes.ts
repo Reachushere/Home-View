@@ -8501,17 +8501,25 @@ When Bryn references one of these, you already have context — don't make him r
       if (image && typeof image === 'string' && image.startsWith('data:image/')) {
         console.log(`[AI] Image received: ${image.substring(0, 50)}... (${Math.round(image.length / 1024)}KB)`);
         try {
-          const visionResp = await openaiRetry(() => openai.chat.completions.create({
-            model: "gpt-4.1",
-            messages: [{
-              role: "user",
+          const visionResp = await openaiRetry(async () => {
+            const visionMessages = [{
+              role: "user" as const,
               content: [
-                { type: "text", text: "Briefly describe this screenshot: visible UI elements, text, colors, layout, errors. Focus on what's actionable. Be concise (under 500 words)." },
-                { type: "image_url", image_url: { url: image, detail: "high" } },
+                { type: "text" as const, text: "Briefly describe this screenshot: visible UI elements, text, colors, layout, errors. Focus on what's actionable. Be concise (under 500 words)." },
+                { type: "image_url" as const, image_url: { url: image, detail: "high" as const } },
               ],
-            }],
-            max_tokens: 1000,
-          }));
+            }];
+            try {
+              return await openai.chat.completions.create({ model: "gpt-4.1", messages: visionMessages, max_tokens: 1000 });
+            } catch (e: any) {
+              const errMsg = String(e?.error?.message || e?.message || '');
+              if (e?.status === 429 && /Request too large/i.test(errMsg)) {
+                console.log(`[AI] Vision request too large for gpt-4.1, falling back to gpt-4.1-mini`);
+                return await openai.chat.completions.create({ model: "gpt-4.1-mini", messages: visionMessages, max_tokens: 1000 });
+              }
+              throw e;
+            }
+          });
           imageDescription = visionResp.choices[0]?.message?.content || '';
           console.log(`[AI] Vision analysis: ${imageDescription.substring(0, 200)}...`);
         } catch (visionErr: any) {
@@ -8588,14 +8596,41 @@ When Bryn references one of these, you already have context — don't make him r
           await new Promise(r => setTimeout(r, delayMs));
         }
         const replyTokens = round === 1 ? 4096 : 8192;
-        const completion = await openaiRetry(() => openai.chat.completions.create({
-          model,
-          messages,
-          tools: filteredTools,
-          tool_choice: "auto",
-          parallel_tool_calls: true,
-          max_completion_tokens: replyTokens,
-        }));
+        const completion = await openaiRetry(async () => {
+          try {
+            return await openai.chat.completions.create({
+              model,
+              messages,
+              tools: filteredTools,
+              tool_choice: "auto",
+              parallel_tool_calls: true,
+              max_completion_tokens: replyTokens,
+            });
+          } catch (e: any) {
+            // 429 "Request too large" means the SINGLE request exceeds the model's per-minute
+            // capacity — waiting won't help. Swap to gpt-4.1-mini (200K TPM, same vision/tool
+            // capabilities) and continue immediately so BA isn't blocked.
+            const errMsg = String(e?.error?.message || e?.message || '');
+            const tooLarge = e?.status === 429 && /Request too large/i.test(errMsg);
+            if (tooLarge && model !== 'gpt-4.1-mini' && model !== 'gpt-4.1-nano') {
+              const oldModel = model;
+              model = 'gpt-4.1-mini';
+              console.log(`[AI] ${oldModel} request too large (${errMsg.match(/Requested (\d+)/)?.[1] || '?'} tokens vs 30K TPM cap). Falling back to ${model} for this turn.`);
+              if (stream && !res.headersSent) {
+                try { res.write(`data: ${JSON.stringify({ type: 'tool_start', name: 'model_fallback', round })}\n\n`); } catch {}
+              }
+              return await openai.chat.completions.create({
+                model,
+                messages,
+                tools: filteredTools,
+                tool_choice: "auto",
+                parallel_tool_calls: true,
+                max_completion_tokens: replyTokens,
+              });
+            }
+            throw e;
+          }
+        });
         totalTokens += completion.usage?.total_tokens || 0;
 
         const choice = completion.choices[0];
