@@ -1182,7 +1182,6 @@ export default function Dashboard() {
   const [maxTaskNameWidth, setMaxTaskNameWidth] = useState<number>(0);
   const [rescheduleTask, setRescheduleTask] = useState<Task | null>(null);
   const [isTodayExpanded, setIsTodayExpanded] = useState(false);
-  const [clusterDialog, setClusterDialog] = useState<{ day: Date; hour: number; items: Array<{ kind: 'task' | 'event'; id: string | number; title: string; color: string; minute: number; rank: number; sourceLabel: string; raw: any }> } | null>(null);
   const [bookAnimState, setBookAnimState] = useState<{ isOpen: boolean; courseCode: string; title: string; color: string; onDone: () => void } | null>(null);
   const [bookReaderOverlay, setBookReaderOverlayRaw] = useState<{ url: string; courseCode: string; title: string; color: string } | null>(null);
   const setBookReaderOverlay = useCallback((val: { url: string; courseCode: string; title: string; color: string } | null) => {
@@ -35701,115 +35700,6 @@ export default function Dashboard() {
                               </div>
                             );
                           })()}
-                          {/* Conflict-cluster: when 4+ items overlap in this hour, replace narrow side-by-side
-                              "barcode" columns with a single full-width summary block. Click opens a dialog with
-                              the full grouped list. The original task/event renders below early-return when in
-                              cluster mode so we don't render both. */}
-                          {totalItems >= 4 && (() => {
-                            const clusterItems = (() => {
-                              type ClusterItem = { kind: 'task' | 'event'; id: string | number; title: string; color: string; minute: number; rank: number; sourceLabel: string; raw: any };
-                              const out: ClusterItem[] = [];
-                              visibleCalendarEvents.forEach(e => {
-                                out.push({
-                                  kind: 'event',
-                                  id: e.id,
-                                  title: (e.title || 'Untitled').replace(/^\[[^\]]*\]\s*/, ''),
-                                  color: (e as any).color || '#4285F4',
-                                  minute: e.startDate ? getETMinutes(new Date(e.startDate)) : 0,
-                                  rank: 1,
-                                  sourceLabel: 'Calendar',
-                                  raw: e,
-                                });
-                              });
-                              inlineFilteredTasks.forEach(t => {
-                                const code = t.courseName?.split(' ')[0]?.toUpperCase() || (t.title?.match(/^\[([^\]\s]+)/)?.[1]?.toUpperCase() || '');
-                                const grad = code ? getCourseGradientColors(code) : null;
-                                const colorFromCourse = grad && grad.start !== '#6b7280' ? grad.start : null;
-                                const isAcademic = !!t.courseName;
-                                const isReminder = t.type === 'reminder';
-                                const hasFixedTime = !!t.eventStartTime;
-                                const dueSoon = t.dueDate ? (new Date(t.dueDate).getTime() - Date.now()) < 3 * 24 * 60 * 60 * 1000 : false;
-                                const typeColors: Record<string, string> = { reading: '#3882ff', module: '#b478dc', essay: '#ffb41e', project: '#ff6432', discussion: '#00d2f0', poll: '#ff46a0', exam: '#dc1e1e', quiz: '#10c878', reminder: '#5064dc', meeting: '#ca8a04', scholarship: '#e04c17', medical: '#dc3c3c', school: '#004c9c', household: '#f59e0b', financial: '#10b981', personal: '#8b5cf6', outside: '#22c55e', other: '#b4a028' };
-                                const fallbackColor = typeColors[t.type as string] || '#9ca3af';
-                                out.push({
-                                  kind: 'task',
-                                  id: t.id,
-                                  title: (t.title || '').replace(/^\[[^\]]*\]\s*/, '').trim() || 'Untitled task',
-                                  color: colorFromCourse || fallbackColor,
-                                  minute: hasFixedTime ? Number(t.eventStartTime!.split(':')[1]) : (t.dueDate ? new Date(t.dueDate).getMinutes() : 0),
-                                  rank: hasFixedTime ? 1 : (isAcademic && dueSoon ? 2 : (isReminder ? 3 : 4)),
-                                  sourceLabel: t.courseName || (isReminder ? 'Reminders' : (t.type ? String(t.type).charAt(0).toUpperCase() + String(t.type).slice(1) : 'Tasks')),
-                                  raw: t,
-                                });
-                              });
-                              out.sort((a, b) => a.rank - b.rank || a.minute - b.minute || a.title.localeCompare(b.title));
-                              return out;
-                            })();
-                            const hLabel = (() => { const h = hour % 12 || 12; const ap = hour >= 12 ? 'PM' : 'AM'; return `${h}:00 ${ap}`; })();
-                            const previewItems = clusterItems.slice(0, 4);
-                            const more = clusterItems.length - previewItems.length;
-                            return (
-                              <div
-                                key="conflict-cluster"
-                                onClick={(e) => { e.stopPropagation(); setClusterDialog({ day: new Date(day), hour, items: clusterItems }); }}
-                                onDoubleClick={(e) => { e.stopPropagation(); setClusterDialog({ day: new Date(day), hour, items: clusterItems }); }}
-                                title={`${clusterItems.length} overlapping items at ${hLabel} — click to view all`}
-                                data-testid={`conflict-cluster-${format(day, 'yyyy-MM-dd')}-${hour}`}
-                                style={{
-                                  position: 'absolute',
-                                  left: 2,
-                                  right: 2,
-                                  top: 2,
-                                  bottom: 2,
-                                  background: '#ffffff',
-                                  border: '2px solid #1976d2',
-                                  borderRadius: 5,
-                                  boxShadow: '0 1px 4px rgba(0,0,0,0.18), inset 0 0 0 1px rgba(255,255,255,0.9)',
-                                  cursor: 'pointer',
-                                  overflow: 'hidden',
-                                  display: 'flex',
-                                  flexDirection: 'column',
-                                  padding: '2px 3px 1px',
-                                  zIndex: 55,
-                                  fontFamily: 'system-ui, sans-serif',
-                                }}
-                              >
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 9, fontWeight: 700, color: '#1976d2', lineHeight: 1.1, marginBottom: 1, flexShrink: 0 }}>
-                                  <span>{hLabel}</span>
-                                  <span style={{ background: '#1976d2', color: '#fff', borderRadius: 8, padding: '0 5px', fontSize: 8 }}>{clusterItems.length} items</span>
-                                </div>
-                                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1, overflow: 'hidden', minHeight: 0 }}>
-                                  {previewItems.map(it => (
-                                    <div
-                                      key={`${it.kind}-${it.id}`}
-                                      style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: 3,
-                                        fontSize: 9,
-                                        color: '#111',
-                                        lineHeight: 1.15,
-                                        padding: '1px 3px 1px 0',
-                                        background: 'rgba(0,0,0,0.04)',
-                                        borderLeft: `3px solid ${it.color}`,
-                                        borderRadius: 2,
-                                        minHeight: 11,
-                                        overflow: 'hidden',
-                                      }}
-                                      data-testid={`cluster-row-${it.kind}-${it.id}`}
-                                    >
-                                      <span style={{ flex: 1, marginLeft: 3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 500 }}>{it.title}</span>
-                                    </div>
-                                  ))}
-                                  {more > 0 && (
-                                    <div style={{ fontSize: 8, color: '#1976d2', fontWeight: 700, padding: '1px 3px', textAlign: 'center', background: 'rgba(25,118,210,0.08)', borderRadius: 2 }}>
-                                      +{more} more
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            );
-                          })()}
                           {hourTasks.filter(task => {
                             if (is1010View && /joanne/i.test(task.title || '')) return false;
                             if (task.eventStartTime && task.eventEndTime) {
@@ -35819,7 +35709,6 @@ export default function Dashboard() {
                             }
                             return true;
                           }).map((task, taskIdx) => {
-                            if (totalItems >= 4) return null;
                             const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || (task.title?.match(/^\[([^\]\s]+)/)?.[1]?.toUpperCase() || (() => { const t = (task.title || '').toUpperCase(); const alpha = t.match(/^([A-Z]+)/)?.[1]; if (!alpha) return ''; return Object.keys(dynamicCourseColors).find(k => k.startsWith(alpha) && k.length > alpha.length) || ''; })());
                             const colors = dynamicCourseColors[courseCode];
                             const tomorrow = addDays(stableToday, 1);
@@ -36050,7 +35939,6 @@ export default function Dashboard() {
                             const bMulti = b.endDate ? (getETHours(new Date(b.endDate)) > getETHours(new Date(b.startDate)) + 1 ? 1 : 0) : 0;
                             return aMulti - bMulti;
                           }).map((event, eventIdx) => {
-                            if (totalItems >= 4) return null;
                             const eventMin = getETMinutes(new Date(event.startDate));
                             const conflictExtra = getConflictExtraHeight(hour);
                             const stackInConflict = conflictExtra > 0 || calEventConflict;
@@ -42624,56 +42512,6 @@ export default function Dashboard() {
           existingCourses={coursesData?.courses}
         />
       )}
-      {/* Conflict-cluster expand dialog: opens when the user clicks a 4+-item cluster block on the calendar */}
-      <Dialog open={!!clusterDialog} onOpenChange={(o) => { if (!o) setClusterDialog(null); }}>
-        <DialogContent className="max-w-lg max-h-[80vh] overflow-hidden flex flex-col" data-testid="dialog-conflict-cluster">
-          <DialogHeader>
-            <DialogTitle>
-              {clusterDialog ? `${format(clusterDialog.day, 'EEE MMM d')} · ${(clusterDialog.hour % 12 || 12)}:00 ${clusterDialog.hour >= 12 ? 'PM' : 'AM'}` : 'Overlapping items'}
-            </DialogTitle>
-            <DialogDescription>
-              {clusterDialog ? `${clusterDialog.items.length} items overlap in this hour, grouped by source. Click any item to open it.` : ''}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex-1 overflow-y-auto space-y-3 pr-1">
-            {clusterDialog && (() => {
-              const groupOrder = ['Calendar'];
-              const groups: Record<string, typeof clusterDialog.items> = {};
-              clusterDialog.items.forEach(it => {
-                const key = it.sourceLabel || 'Other';
-                if (!groups[key]) { groups[key] = []; if (!groupOrder.includes(key)) groupOrder.push(key); }
-                groups[key].push(it);
-              });
-              return groupOrder.filter(k => groups[k]).map(groupName => (
-                <div key={groupName} data-testid={`cluster-group-${groupName.replace(/\s+/g, '-').toLowerCase()}`}>
-                  <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground mb-1 px-1">{groupName}</div>
-                  <div className="space-y-1">
-                    {groups[groupName].map(it => (
-                      <button
-                        key={`${it.kind}-${it.id}`}
-                        onClick={() => {
-                          if (it.kind === 'task') {
-                            setClusterDialog(null);
-                            setEditingTask(it.raw);
-                          } else {
-                            setClusterDialog(null);
-                          }
-                        }}
-                        className="w-full flex items-center gap-2 p-2 rounded border bg-background hover:bg-muted text-left transition-colors"
-                        data-testid={`cluster-item-${it.kind}-${it.id}`}
-                      >
-                        <span style={{ width: 4, alignSelf: 'stretch', background: it.color, borderRadius: 2, flexShrink: 0 }} />
-                        <span className="flex-1 text-sm truncate">{it.title}</span>
-                        <span className="text-[10px] uppercase text-muted-foreground tracking-wide">{it.kind}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ));
-            })()}
-          </div>
-        </DialogContent>
-      </Dialog>
       {odStatus && !odReauthOpen && (
         odStatus.tokenWorks === true ? (
           <div
