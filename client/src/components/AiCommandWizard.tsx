@@ -501,7 +501,91 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
-  const queuedMessageRef = useRef<string | null>(null);
+  type QueueItem = {
+    id: string;
+    message: string;
+    image?: string;
+    status: 'queued' | 'running' | 'done' | 'failed';
+    error?: string;
+    createdAt: number;
+  };
+  const [queue, setQueue] = useState<QueueItem[]>([]);
+  const queueRef = useRef<QueueItem[]>([]);
+  useEffect(() => { queueRef.current = queue; }, [queue]);
+  const persistQueueDebounceRef = useRef<any>(null);
+  const persistQueue = useCallback((items: QueueItem[]) => {
+    if (persistQueueDebounceRef.current) clearTimeout(persistQueueDebounceRef.current);
+    persistQueueDebounceRef.current = setTimeout(() => {
+      fetch('/api/ai/queue', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items }),
+      }).catch(() => {});
+    }, 150);
+  }, []);
+  useEffect(() => {
+    fetch('/api/ai/queue')
+      .then(r => r.json())
+      .then(d => {
+        if (!Array.isArray(d.items)) return;
+        // Any item left as 'running' is stale (page reloaded mid-turn) — flip back to queued.
+        const cleaned = d.items.map((it: QueueItem) => it.status === 'running' ? { ...it, status: 'queued' as const } : it);
+        setQueue(cleaned);
+        if (cleaned.some((it: QueueItem, i: number) => it !== d.items[i])) persistQueue(cleaned);
+      })
+      .catch(() => {});
+  }, [persistQueue]);
+  const addToQueue = useCallback((message: string, image?: string | null, atFront = false): QueueItem => {
+    const item: QueueItem = {
+      id: `q_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`,
+      message,
+      image: image || undefined,
+      status: 'queued',
+      createdAt: Date.now(),
+    };
+    setQueue(curr => {
+      const next = atFront ? [item, ...curr] : [...curr, item];
+      persistQueue(next);
+      return next;
+    });
+    return item;
+  }, [persistQueue]);
+  const removeFromQueue = useCallback((id: string) => {
+    setQueue(curr => {
+      const next = curr.filter(it => it.id !== id);
+      persistQueue(next);
+      return next;
+    });
+  }, [persistQueue]);
+  const updateQueueItem = useCallback((id: string, patch: Partial<QueueItem>) => {
+    setQueue(curr => {
+      const next = curr.map(it => it.id === id ? { ...it, ...patch } : it);
+      persistQueue(next);
+      return next;
+    });
+    if (patch.status === 'done') {
+      setTimeout(() => {
+        setQueue(curr => {
+          const next = curr.filter(it => it.id !== id);
+          persistQueue(next);
+          return next;
+        });
+      }, 3000);
+    }
+  }, [persistQueue]);
+  const moveQueueItem = useCallback((id: string, dir: -1 | 1) => {
+    setQueue(curr => {
+      const idx = curr.findIndex(it => it.id === id);
+      if (idx < 0) return curr;
+      const newIdx = idx + dir;
+      if (newIdx < 0 || newIdx >= curr.length) return curr;
+      const next = [...curr];
+      const [it] = next.splice(idx, 1);
+      next.splice(newIdx, 0, it);
+      persistQueue(next);
+      return next;
+    });
+  }, [persistQueue]);
   const [pendingConfirm, setPendingConfirm] = useState<any[] | null>(null);
   const [expanded, setExpanded] = useState(false);
   const [minimized, setMinimized] = useState(false);
@@ -865,15 +949,18 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
     queryClient.invalidateQueries({ queryKey: ['/api/degree-tracking'] });
   }, []);
 
-  const sendMessage = useCallback(async (overrideMsg?: string) => {
+  const sendMessage = useCallback(async (overrideMsg?: string, overrideImage?: string | null, queueItemId?: string) => {
     const msg = overrideMsg || input.trim();
-    if ((!msg && !pastedImage) || loading) return;
-    const finalMsg = msg || (pastedImage ? 'What do you see in this screenshot?' : '');
+    const imgSource = overrideImage !== undefined ? overrideImage : pastedImage;
+    if ((!msg && !imgSource) || loading) return;
+    const finalMsg = msg || (imgSource ? 'What do you see in this screenshot?' : '');
     if (!finalMsg) return;
-    const currentImage = pastedImage;
+    const currentImage = imgSource;
     const userMsg: Message = { role: 'user', content: finalMsg, image: currentImage || undefined };
     setMessages(prev => [...prev, userMsg]);
     if (!overrideMsg) { setInput(''); setPastedImage(null); }
+    if (queueItemId) updateQueueItem(queueItemId, { status: 'running' });
+    let sendError: any = null;
     setLoading(true);
     setThinkingPhase('Working...');
     const controller = new AbortController();
@@ -1023,17 +1110,21 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
     } catch (err: any) {
       setThinkingPhase(null);
       setActiveToolName(null);
-      if (err.name === 'AbortError') {
-        setMessages(prev => [...prev, { role: 'assistant', content: 'Timed out or stopped. Try again.' }]);
-      } else {
-        setMessages(prev => [...prev, { role: 'assistant', content: `Error: ${err.message}` }]);
+      const errText = err.name === 'AbortError' ? 'Timed out or stopped. Try again.' : `Error: ${err.message}`;
+      setMessages(prev => [...prev, { role: 'assistant', content: errText }]);
+      if (queueItemId) {
+        updateQueueItem(queueItemId, { status: 'failed', error: errText });
       }
+      sendError = err;
     } finally {
       clearTimeout(fetchTimeout);
       abortRef.current = null;
       setLoading(false);
       setThinkingPhase(null);
       setActiveToolName(null);
+      if (queueItemId && !sendError) {
+        updateQueueItem(queueItemId, { status: 'done' });
+      }
       setTimeout(() => {
         setMessages(curr => {
           const saveable = curr.filter(m => m.role !== 'thinking').map(m => ({ role: m.role, content: m.content }));
@@ -1045,13 +1136,29 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
           return curr;
         });
       }, 100);
-      const queued = queuedMessageRef.current;
-      if (queued) {
-        queuedMessageRef.current = null;
-        setTimeout(() => sendMessage(queued), 300);
-      }
+      // Auto-advance is handled by the queue-runner useEffect (watches queue + loading).
     }
-  }, [input, loading, messages, invalidateAll, pastedImage]);
+  }, [input, loading, messages, invalidateAll, pastedImage, updateQueueItem]);
+
+  // Queue runner: whenever BA is idle and the queue has a queued item, start the next turn.
+  // This handles mount-time-loaded items, retried items, and the normal "BA finished, run next" case.
+  // A ref-based lock prevents double-trigger from rapid state changes.
+  const runnerLockRef = useRef(false);
+  useEffect(() => {
+    if (loading) return;
+    if (runnerLockRef.current) return;
+    const next = queue.find(it => it.status === 'queued');
+    if (!next) return;
+    runnerLockRef.current = true;
+    const t = setTimeout(() => {
+      runnerLockRef.current = false;
+      sendMessage(next.message, next.image ?? null, next.id);
+    }, 200);
+    return () => {
+      clearTimeout(t);
+      runnerLockRef.current = false;
+    };
+  }, [queue, loading, sendMessage]);
 
   const handleConfirm = useCallback(async (confirm: boolean) => {
     if (!pendingConfirm) return;
@@ -1096,15 +1203,17 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      if (loading && input.trim()) {
-        queuedMessageRef.current = (queuedMessageRef.current ? queuedMessageRef.current + '\n' : '') + input.trim();
-        setMessages(prev => [...prev, { role: 'user', content: input.trim() }]);
+      if (loading && (input.trim() || pastedImage)) {
+        // Default behaviour when busy: queue this as the NEXT turn (insert at front).
+        // Match send button's image-only fallback so Enter behaves identically.
+        addToQueue(input.trim() || (pastedImage ? 'What do you see in this screenshot?' : ''), pastedImage, true);
         setInput('');
+        setPastedImage(null);
       } else {
         sendMessage();
       }
     }
-  }, [sendMessage, loading, input]);
+  }, [sendMessage, loading, input, addToQueue, pastedImage]);
 
   const handlePaste = useCallback((e: React.ClipboardEvent) => {
     const items = e.clipboardData?.items;
@@ -1543,6 +1652,38 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <Zap size={18} color="#ffffff" />
             <span style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.3px' }}>BrynAssist</span>
+            {(() => {
+              const pendingCount = queue.filter(it => it.status === 'queued' || it.status === 'running').length;
+              if (pendingCount === 0) return null;
+              return (
+                <span
+                  data-testid="badge-queue-count"
+                  title={`${pendingCount} task${pendingCount === 1 ? '' : 's'} in queue`}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                    padding: '2px 9px',
+                    borderRadius: '999px',
+                    background: 'rgba(124,58,237,0.28)',
+                    border: '1px solid rgba(180,150,255,0.45)',
+                    color: '#e9d8ff',
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    letterSpacing: '0.2px',
+                  }}
+                >
+                  <span style={{
+                    width: '6px',
+                    height: '6px',
+                    borderRadius: '50%',
+                    background: '#c4b5fd',
+                    boxShadow: '0 0 6px rgba(196,181,253,0.8)',
+                  }} />
+                  {pendingCount} queued
+                </span>
+              );
+            })()}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <div style={{ position: 'relative' }}>
@@ -2175,6 +2316,226 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
           flexDirection: 'column',
           gap: '8px',
         }}>
+          {queue.length > 0 && (
+            <div
+              data-testid="queue-panel"
+              style={{
+                background: 'rgba(15,25,55,0.55)',
+                backdropFilter: 'blur(14px)',
+                WebkitBackdropFilter: 'blur(14px)',
+                border: '1px solid rgba(140,180,255,0.25)',
+                borderRadius: '14px',
+                padding: '8px 8px 6px',
+                boxShadow: '0 4px 18px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.06)',
+                maxHeight: '180px',
+                overflowY: 'auto',
+              }}
+            >
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '2px 8px 6px',
+                borderBottom: '1px solid rgba(140,180,255,0.12)',
+                marginBottom: '4px',
+              }}>
+                <span style={{ fontSize: '11px', fontWeight: 600, color: 'rgba(180,200,255,0.85)', letterSpacing: '0.4px', textTransform: 'uppercase' }}>
+                  Task queue · {queue.filter(it => it.status === 'queued' || it.status === 'running').length} pending
+                </span>
+                <button
+                  onClick={() => {
+                    setQueue(curr => {
+                      const next = curr.filter(it => it.status === 'running');
+                      persistQueue(next);
+                      return next;
+                    });
+                  }}
+                  data-testid="button-queue-clear"
+                  title="Clear all but the running task"
+                  style={{
+                    background: 'transparent',
+                    border: '1px solid rgba(140,180,255,0.2)',
+                    color: 'rgba(180,200,255,0.75)',
+                    fontSize: '10px',
+                    fontWeight: 600,
+                    padding: '2px 8px',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Clear
+                </button>
+              </div>
+              {queue.map((it, idx) => {
+                const title = (it.message.split('\n')[0] || '').slice(0, 60) + ((it.message.length > 60 || it.message.includes('\n')) ? '…' : '');
+                const dotColor =
+                  it.status === 'running' ? '#fbbf24' :
+                  it.status === 'done' ? '#4ade80' :
+                  it.status === 'failed' ? '#f87171' :
+                  '#94a3b8';
+                const statusLabel =
+                  it.status === 'running' ? 'Running' :
+                  it.status === 'done' ? 'Done' :
+                  it.status === 'failed' ? 'Failed' :
+                  'Queued';
+                return (
+                  <div
+                    key={it.id}
+                    data-testid={`queue-item-${it.id}`}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '2px',
+                      padding: '6px 8px',
+                      borderRadius: '8px',
+                      background: it.status === 'running' ? 'rgba(251,191,36,0.10)' : it.status === 'failed' ? 'rgba(248,113,113,0.10)' : 'transparent',
+                      transition: 'background 0.15s',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span
+                      style={{
+                        width: '8px',
+                        height: '8px',
+                        borderRadius: '50%',
+                        background: dotColor,
+                        boxShadow: it.status === 'running' ? '0 0 6px rgba(251,191,36,0.8)' : 'none',
+                        flexShrink: 0,
+                        animation: it.status === 'running' ? 'queue-pulse 1.4s ease-in-out infinite' : undefined,
+                      }}
+                    />
+                    {it.image && (
+                      <img
+                        src={it.image}
+                        alt=""
+                        style={{ width: '20px', height: '20px', borderRadius: '4px', objectFit: 'cover', flexShrink: 0, border: '1px solid rgba(140,180,255,0.2)' }}
+                      />
+                    )}
+                    <span
+                      title={it.message}
+                      style={{
+                        flex: 1,
+                        fontSize: '12px',
+                        color: it.status === 'queued' ? '#cbd5ff' : '#e2e8ff',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        opacity: it.status === 'done' ? 0.6 : 1,
+                      }}
+                    >
+                      {title || '(empty)'}
+                    </span>
+                    <span style={{
+                      fontSize: '10px',
+                      fontWeight: 600,
+                      color: dotColor,
+                      letterSpacing: '0.3px',
+                      textTransform: 'uppercase',
+                      flexShrink: 0,
+                    }}>
+                      {statusLabel}
+                    </span>
+                    {it.status === 'queued' && (
+                      <>
+                        <button
+                          onClick={() => moveQueueItem(it.id, -1)}
+                          disabled={idx === 0 || queue[idx - 1]?.status === 'running'}
+                          data-testid={`button-queue-up-${it.id}`}
+                          title="Move up"
+                          style={{
+                            background: 'transparent',
+                            border: 'none',
+                            color: 'rgba(180,200,255,0.7)',
+                            cursor: (idx === 0 || queue[idx - 1]?.status === 'running') ? 'not-allowed' : 'pointer',
+                            opacity: (idx === 0 || queue[idx - 1]?.status === 'running') ? 0.3 : 1,
+                            padding: '2px 4px',
+                            fontSize: '12px',
+                            lineHeight: 1,
+                          }}
+                        >▲</button>
+                        <button
+                          onClick={() => moveQueueItem(it.id, 1)}
+                          disabled={idx === queue.length - 1}
+                          data-testid={`button-queue-down-${it.id}`}
+                          title="Move down"
+                          style={{
+                            background: 'transparent',
+                            border: 'none',
+                            color: 'rgba(180,200,255,0.7)',
+                            cursor: idx === queue.length - 1 ? 'not-allowed' : 'pointer',
+                            opacity: idx === queue.length - 1 ? 0.3 : 1,
+                            padding: '2px 4px',
+                            fontSize: '12px',
+                            lineHeight: 1,
+                          }}
+                        >▼</button>
+                      </>
+                    )}
+                    {it.status === 'failed' && (
+                      <button
+                        onClick={() => updateQueueItem(it.id, { status: 'queued', error: undefined })}
+                        data-testid={`button-queue-retry-${it.id}`}
+                        title={it.error || 'Retry'}
+                        style={{
+                          background: 'rgba(251,191,36,0.18)',
+                          border: '1px solid rgba(251,191,36,0.4)',
+                          color: '#fde68a',
+                          fontSize: '10px',
+                          fontWeight: 600,
+                          padding: '2px 8px',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        Retry
+                      </button>
+                    )}
+                    {it.status !== 'running' && (
+                      <button
+                        onClick={() => removeFromQueue(it.id)}
+                        data-testid={`button-queue-remove-${it.id}`}
+                        title="Remove"
+                        style={{
+                          background: 'transparent',
+                          border: 'none',
+                          color: 'rgba(220,150,150,0.75)',
+                          cursor: 'pointer',
+                          padding: '2px 4px',
+                          display: 'flex',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <X size={12} />
+                      </button>
+                    )}
+                    </div>
+                    {it.status === 'failed' && it.error && (
+                      <div
+                        data-testid={`text-queue-error-${it.id}`}
+                        style={{
+                          marginLeft: '16px',
+                          paddingLeft: '8px',
+                          borderLeft: '2px solid rgba(248,113,113,0.5)',
+                          fontSize: '11px',
+                          color: '#fca5a5',
+                          lineHeight: 1.35,
+                          wordBreak: 'break-word',
+                        }}
+                      >
+                        {it.error}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+              <style>{`
+                @keyframes queue-pulse {
+                  0%, 100% { opacity: 1; transform: scale(1); }
+                  50% { opacity: 0.55; transform: scale(0.85); }
+                }
+              `}</style>
+            </div>
+          )}
           {pastedImage && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div style={{ position: 'relative', width: 'fit-content' }}>
@@ -2282,12 +2643,47 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
             >
               <Scissors size={14} />
             </button>
+            {loading && (input.trim() || pastedImage) && (
+              <button
+                onClick={() => {
+                  // Append to END of queue — user explicitly wants this to wait its turn behind everything already queued.
+                  addToQueue(input.trim() || (pastedImage ? 'What do you see in this screenshot?' : ''), pastedImage, false);
+                  setInput('');
+                  setPastedImage(null);
+                }}
+                style={{
+                  background: 'rgba(124,58,237,0.18)',
+                  border: '1px solid rgba(180,150,255,0.4)',
+                  borderRadius: '20px',
+                  padding: '4px 12px',
+                  height: '32px',
+                  cursor: 'pointer',
+                  color: '#e9d8ff',
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  letterSpacing: '0.2px',
+                  flexShrink: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  whiteSpace: 'nowrap',
+                  transition: 'background 0.15s',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(124,58,237,0.32)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'rgba(124,58,237,0.18)')}
+                title="Add to the END of the queue (runs after everything already queued)"
+                data-testid="button-ai-queue-end"
+              >
+                + Queue
+              </button>
+            )}
             <button
               onClick={() => {
-                if (loading && input.trim()) {
-                  queuedMessageRef.current = (queuedMessageRef.current ? queuedMessageRef.current + '\n' : '') + input.trim();
-                  setMessages(prev => [...prev, { role: 'user', content: input.trim() }]);
+                if (loading && (input.trim() || pastedImage)) {
+                  // Default busy action: insert at FRONT — runs as soon as the current turn finishes.
+                  addToQueue(input.trim() || (pastedImage ? 'What do you see in this screenshot?' : ''), pastedImage, true);
                   setInput('');
+                  setPastedImage(null);
                 } else {
                   sendMessage();
                 }
