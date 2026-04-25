@@ -3492,6 +3492,7 @@ export default function Dashboard() {
   const [healthBrowsePath, setHealthBrowsePath] = useState('/School/1. TMU/Courses');
   const [healthBrowseItems, setHealthBrowseItems] = useState<Array<{ name: string; type: string; path: string }>>([]);
   const [healthBrowseLoading, setHealthBrowseLoading] = useState(false);
+  const [pendingWeekSelect, setPendingWeekSelect] = useState<{ basePath: string } | null>(null);
   const [hiddenCalendarSources, setHiddenCalendarSources] = useState<Set<string>>(() => {
     try {
       const raw = localStorage.getItem('hiddenCalendarSources');
@@ -15659,8 +15660,12 @@ export default function Dashboard() {
                                                           backgroundSize: hasImg ? '100% 100%' : undefined,
                                                           backgroundRepeat: hasImg ? 'no-repeat' : undefined,
                                                           minHeight: hasArt ? '110px' : undefined,
-                                                          border: hasGrad ? '1px solid rgba(0,0,0,0.22)' : (hasImg ? 'none' : `1px solid ${isProblem ? accent + '88' : 'rgba(0,0,0,0.15)'}`),
-                                                          boxShadow: hasGrad ? 'inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.25)' : 'none',
+                                                          border: hasGrad ? (isProblem ? `2px solid ${accent}` : '1px solid rgba(0,0,0,0.22)') : (hasImg ? 'none' : `1px solid ${isProblem ? accent + '88' : 'rgba(0,0,0,0.15)'}`),
+                                                          boxShadow: hasGrad
+                                                            ? (isProblem
+                                                              ? `0 0 0 2px ${accent}66, 0 0 14px ${accent}55, inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.15)`
+                                                              : 'inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.25)')
+                                                            : (isProblem ? `0 0 0 2px ${accent}aa` : 'none'),
                                                           overflow: 'hidden',
                                                           transition: 'all 0.18s ease',
                                                         };
@@ -27939,6 +27944,48 @@ export default function Dashboard() {
                       {healthBrowsePath}
                     </div>
                     <div style={{ flex: 1, overflowY: 'auto', padding: '0 16px 12px' }}>
+                      {pendingWeekSelect ? (
+                        <div style={{ padding: '12px 4px' }}>
+                          <div style={{ fontSize: '11px', color: '#fbd21e', marginBottom: '8px', lineHeight: 1.4 }}>
+                            That looks like a course root (or above-week) folder.
+                            <br />Pick which week's <b>{healthFolderBrowse?.field === 'reading' ? 'Reading' : 'Module'}</b> folder you're linking:
+                          </div>
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginTop: '8px' }}>
+                            {Array.from({ length: 14 }, (_, i) => i + 1).map(w => (
+                              <button
+                                key={w}
+                                onClick={() => {
+                                  if (!healthFolderBrowse || !pendingWeekSelect) return;
+                                  const { semId, courseIdx, field } = healthFolderBrowse;
+                                  const wantedSub = field === 'reading' ? 'Reading' : 'Module';
+                                  const finalPath = `${pendingWeekSelect.basePath}/Week ${w}/${wantedSub}`;
+                                  const body = { [field === 'module' ? `course${courseIdx}ModuleFolder` : `course${courseIdx}ReadingFolder`]: finalPath };
+                                  fetch(`/api/semesters/${semId}`, {
+                                    method: 'PATCH',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify(body),
+                                  }).then(r => r.json()).then(updated => {
+                                    setAllSemestersForHealth(prev => prev.map(s => s.id === semId ? updated : s));
+                                    setHealthFolderBrowse(null);
+                                    setPendingWeekSelect(null);
+                                    if (semFlowWizard && expandedSemKey) {
+                                      setWizActionDone(`${field === 'module' ? 'Module' : 'Reading'} folder linked → ${finalPath}`);
+                                      fetch(`/api/semester-health-check/${expandedSemKey}`, { credentials: 'include' }).then(r => r.ok ? r.json() : null).then(h => { if (h) setExpandedSemHealth(h); }).catch(() => {});
+                                    }
+                                  }).catch(() => { setHealthFolderBrowse(null); setPendingWeekSelect(null); });
+                                }}
+                                style={{ padding: '8px 4px', fontSize: '11px', borderRadius: '4px', background: 'rgba(59,130,246,0.18)', border: '1px solid rgba(59,130,246,0.45)', color: 'white', cursor: 'pointer', fontWeight: 600 }}
+                                data-testid={`week-pick-${w}`}
+                              >Week {w}</button>
+                            ))}
+                          </div>
+                          <button
+                            onClick={() => setPendingWeekSelect(null)}
+                            style={{ marginTop: '10px', fontSize: '10px', padding: '4px 10px', borderRadius: '4px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)', color: 'white', cursor: 'pointer' }}
+                            data-testid="week-pick-back"
+                          >← Back to folder browser</button>
+                        </div>
+                      ) : (<>
                       {healthBrowsePath !== '/' && (
                         <div
                           style={{ padding: '6px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', borderRadius: '4px', marginBottom: '2px' }}
@@ -27984,6 +28031,7 @@ export default function Dashboard() {
                           </div>
                         ))
                       )}
+                      </>)}
                     </div>
                     <div style={{ padding: '10px 16px', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'space-between' }}>
                       <button
@@ -27996,12 +28044,28 @@ export default function Dashboard() {
                           if (!healthFolderBrowse) return;
                           const { semId, courseIdx, field } = healthFolderBrowse;
                           const isRoot = (healthFolderBrowse as any).isRoot;
+                          const path = healthBrowsePath;
+                          const endsWithModuleOrReading = /\/(Module|Reading)\/?$/i.test(path);
+                          const endsWithWeek = /\/Week\s*\d+\/?$/i.test(path);
+                          const wantedSub = field === 'reading' ? 'Reading' : 'Module';
+                          // Auto-build path if user picked the right level but missed the subfolder
+                          let finalPath = path;
+                          if (!isRoot && !endsWithModuleOrReading) {
+                            if (endsWithWeek) {
+                              // Path ends in /Week N → append /Module or /Reading
+                              finalPath = `${path.replace(/\/$/, '')}/${wantedSub}`;
+                            } else {
+                              // Path is above week level → ask which week
+                              setPendingWeekSelect({ basePath: path.replace(/\/$/, '') });
+                              return;
+                            }
+                          }
                           const body = isRoot
                             ? {
-                                [`course${courseIdx}ModuleFolder`]: `${healthBrowsePath}/Week 1/Module`,
-                                [`course${courseIdx}ReadingFolder`]: `${healthBrowsePath}/Week 1/Reading`,
+                                [`course${courseIdx}ModuleFolder`]: `${path}/Week 1/Module`,
+                                [`course${courseIdx}ReadingFolder`]: `${path}/Week 1/Reading`,
                               }
-                            : { [field === 'module' ? `course${courseIdx}ModuleFolder` : `course${courseIdx}ReadingFolder`]: healthBrowsePath };
+                            : { [field === 'module' ? `course${courseIdx}ModuleFolder` : `course${courseIdx}ReadingFolder`]: finalPath };
                           fetch(`/api/semesters/${semId}`, {
                             method: 'PATCH',
                             headers: { 'Content-Type': 'application/json' },
@@ -28009,12 +28073,13 @@ export default function Dashboard() {
                           }).then(r => r.json()).then(updated => {
                             setAllSemestersForHealth(prev => prev.map(s => s.id === semId ? updated : s));
                             setHealthFolderBrowse(null);
+                            setPendingWeekSelect(null);
                             // If launched from the wizard, refresh wizard's health view + show success
                             if (semFlowWizard && expandedSemKey) {
-                              setWizActionDone(isRoot ? 'Course folder linked! (Module + Reading set for Week 1)' : `${field === 'module' ? 'Module' : 'Reading'} folder linked!`);
+                              setWizActionDone(isRoot ? 'Course folder linked! (Module + Reading set for Week 1)' : `${field === 'module' ? 'Module' : 'Reading'} folder linked → ${finalPath}`);
                               fetch(`/api/semester-health-check/${expandedSemKey}`, { credentials: 'include' }).then(r => r.ok ? r.json() : null).then(h => { if (h) setExpandedSemHealth(h); }).catch(() => {});
                             }
-                          }).catch(() => setHealthFolderBrowse(null));
+                          }).catch(() => { setHealthFolderBrowse(null); setPendingWeekSelect(null); });
                         }}
                         style={{ fontSize: '10px', padding: '4px 16px', borderRadius: '4px', background: 'rgba(59,130,246,0.5)', border: '1px solid rgba(59,130,246,0.7)', cursor: 'pointer', color: 'white', fontWeight: 600 }}
                         data-testid="health-browser-select"
@@ -29609,13 +29674,22 @@ export default function Dashboard() {
                             data-testid="btn-generate-class-tasks-from-sem"
                             title="Generate class calendar entries for virtual courses in the active semester"
                           >{generateClassTasksMutation.isPending ? 'Generating…' : 'Generate Class Tasks'}</button>
-                          <button
-                            onClick={() => setOdReconnect({ step: 'idle' })}
-                            className="text-[10.5px] px-3 py-1 rounded text-amber-100 hover:text-white transition-colors"
-                            style={{ background: 'rgba(245,158,11,0.18)', border: '1px solid rgba(245,158,11,0.45)' }}
-                            data-testid="btn-reconnect-onedrive"
-                            title="Re-authenticate OneDrive via Microsoft device-code flow (use when token has expired and folders/syncs are failing)"
-                          >Reconnect OneDrive</button>
+                          {(() => {
+                            const needsReauth = odStatus?.tokenWorks === false;
+                            return (
+                              <button
+                                onClick={() => setOdReconnect({ step: 'idle' })}
+                                className={`text-[10.5px] px-3 py-1 rounded transition-colors ${needsReauth ? 'text-amber-100 hover:text-white' : 'text-white/55 hover:text-white/85'}`}
+                                style={needsReauth
+                                  ? { background: 'rgba(245,158,11,0.22)', border: '1px solid rgba(245,158,11,0.55)', boxShadow: '0 0 10px rgba(245,158,11,0.35)' }
+                                  : { background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)' }}
+                                data-testid="btn-reconnect-onedrive"
+                                title={needsReauth
+                                  ? "OneDrive token has expired. Click to re-link via Microsoft device-code flow."
+                                  : "Re-link OneDrive (use this if syncs/folders ever start failing — it walks you through the Microsoft device-code login)"}
+                              >Reconnect OneDrive{needsReauth ? ' ⚠' : ''}</button>
+                            );
+                          })()}
                           <button className="text-white/60 hover:text-white transition-colors text-[18px] font-light ml-1" onClick={() => setExpandedSemKey(null)} data-testid="button-close-expanded-sem">&times;</button>
                         </div>
                       </div>
@@ -29863,12 +29937,12 @@ export default function Dashboard() {
                             ['Force Full Sync', 'Click below to force a complete re-scan of all OneDrive folders.', 'force_sync'],
                           ] },
                           sync: { title: 'Fix Folder Sync', testCheck: 'totalModules', steps: [
-                            ['Upload Course Files', `Upload module and reading files for ${semFlowWizard.courseCode}. Click "Upload Files" to select PDFs, DOCX, or PPTX files.`, 'upload_file'],
-                            ['Sync from OneDrive', `Or sync automatically from OneDrive. Click below to trigger a sync for this course.`, 'sync_course'],
+                            ['Link Module Folder', `Browse OneDrive and pick the Module folder for ${semFlowWizard.courseCode}.\n\nIf you pick the course root folder (or any folder above the week level), the picker will ask you which week to link.\n\nExpected location:\n${odPath}/Week {n}/Module/`, 'link_module_folder'],
+                            ['Link Reading Folder', `Now pick the Reading folder for the same week.\n\nIf you only need to fix one of the two, you can close this wizard after Step 1.\n\nExpected location:\n${odPath}/Week {n}/Reading/`, 'link_reading_folder'],
+                            ['Sync from OneDrive', `Once both folders are linked, click below to pull the file list into the app.`, 'sync_course'],
                           ], secondary: [
-                            ['Check File Format', 'Only PDF, DOCX, and PPTX files are supported. Make sure your files have the correct extension.'],
+                            ['Force Full Sync', 'Re-scan every week folder for this course (use if files seem missing).', 'force_sync'],
                             ['Check Folder Structure', `Each week folder must contain a "Module" or "Reading" subfolder. Example:\n${odPath}/Week 1/Module/lecture.pdf`, 'open_onedrive'],
-                            ['Manual Upload', 'Upload files directly using the button below.', 'upload_file'],
                           ] },
                           tts: { title: 'Fix TTS Processing', testCheck: 'ttsReady', steps: [
                             ['Prepare Audio', 'Click below to start TTS processing for all unprocessed files in this course.', 'prepare_tts'],
