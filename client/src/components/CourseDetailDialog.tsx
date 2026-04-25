@@ -309,6 +309,9 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [activeGradientStop, setActiveGradientStop] = useState<'start' | 'end' | number | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deletePassword, setDeletePassword] = useState('');
+  const [deletePasswordError, setDeletePasswordError] = useState(false);
+  const DELETE_PASSWORD = '5747';
   const [isParsingPdf, setIsParsingPdf] = useState(false);
   const [isParsingSyllabus, setIsParsingSyllabus] = useState(false);
   const [showSyllabusPdf, setShowSyllabusPdf] = useState(false);
@@ -5019,7 +5022,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
         <div
           className="fixed inset-0 z-[10004] flex items-center justify-center"
           style={{ background: 'rgba(0,0,0,0.6)', pointerEvents: 'auto' }}
-          onClick={() => setShowDeleteConfirm(false)}
+          onClick={() => { setShowDeleteConfirm(false); setDeletePassword(''); setDeletePasswordError(false); }}
           data-testid="delete-course-confirm-overlay"
         >
           <div
@@ -5037,23 +5040,60 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
               <h3 className="text-sm font-semibold">Delete Course</h3>
             </div>
             <div className="px-5 py-4">
-              <p className="text-sm text-white/80 leading-relaxed">
+              <p className="text-sm text-white/80 leading-relaxed mb-3">
                 Are you sure you want to delete <strong>{courseInfo.courseCode}</strong>? This will remove the course from your list.
               </p>
+              <p className="text-[11px] text-white/55 mb-2">
+                Enter the 4-digit confirmation code to proceed. You can undo this from the top bar after deleting.
+              </p>
+              <input
+                type="password"
+                inputMode="numeric"
+                autoComplete="off"
+                autoFocus
+                maxLength={8}
+                value={deletePassword}
+                onChange={(e) => { setDeletePassword(e.target.value); if (deletePasswordError) setDeletePasswordError(false); }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && deletePassword === DELETE_PASSWORD) {
+                    onDeleteCourse?.();
+                    setShowDeleteConfirm(false);
+                    setDeletePassword('');
+                    setDeletePasswordError(false);
+                  } else if (e.key === 'Enter') {
+                    setDeletePasswordError(true);
+                  }
+                }}
+                placeholder="Code"
+                className="w-full px-3 py-1.5 rounded text-[12px] bg-black/30 border focus:outline-none transition-colors"
+                style={{
+                  borderColor: deletePasswordError ? 'rgba(239,68,68,0.7)' : 'rgba(255,255,255,0.18)',
+                  color: '#fff',
+                  letterSpacing: '0.3em',
+                }}
+                data-testid="input-delete-course-password"
+              />
+              {deletePasswordError && (
+                <p className="text-[10px] text-red-400 mt-1.5" data-testid="text-delete-course-password-error">Incorrect code.</p>
+              )}
             </div>
             <div className="flex items-center justify-end gap-3 px-5 py-3 border-t border-white/15">
               <button
                 className="px-4 py-1.5 text-[11px] bg-white/10 hover:bg-white/20 rounded text-white transition-colors"
-                onClick={() => setShowDeleteConfirm(false)}
+                onClick={() => { setShowDeleteConfirm(false); setDeletePassword(''); setDeletePasswordError(false); }}
                 data-testid="button-cancel-delete-course"
               >
                 Cancel
               </button>
               <button
-                className="px-4 py-1.5 text-[11px] bg-red-500/80 hover:bg-red-500 rounded text-white transition-colors"
+                className={`px-4 py-1.5 text-[11px] rounded text-white transition-colors ${deletePassword === DELETE_PASSWORD ? 'bg-red-500/80 hover:bg-red-500 cursor-pointer' : 'bg-red-500/25 cursor-not-allowed'}`}
+                disabled={deletePassword !== DELETE_PASSWORD}
                 onClick={() => {
+                  if (deletePassword !== DELETE_PASSWORD) { setDeletePasswordError(true); return; }
                   onDeleteCourse?.();
                   setShowDeleteConfirm(false);
+                  setDeletePassword('');
+                  setDeletePasswordError(false);
                 }}
                 data-testid="button-confirm-delete-course"
               >

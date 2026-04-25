@@ -3248,7 +3248,7 @@ export default function Dashboard() {
   });
 
   type UndoAction = {
-    type: 'complete' | 'uncomplete' | 'delete' | 'edit' | 'move' | 'settings' | 'resize';
+    type: 'complete' | 'uncomplete' | 'delete' | 'edit' | 'move' | 'settings' | 'resize' | 'deleteCourse';
     description: string;
     data: any;
   };
@@ -11862,6 +11862,33 @@ export default function Dashboard() {
           queryClient.invalidateQueries({ queryKey: ["/api/weeks"] });
         });
         toast({ title: "Undone", description: `Restored "${action.data.taskTitle || 'task'}"` });
+        break;
+      }
+      case 'deleteCourse': {
+        // Restore course list, semester slot fields, and semester assignments to their pre-delete state
+        try {
+          const d = action.data || {};
+          if (Array.isArray(d.coursesSnapshot)) {
+            saveCourses({ courses: d.coursesSnapshot });
+          }
+          if (d.assignmentsSnapshot && typeof d.assignmentsSnapshot === 'object') {
+            saveSemesterAssignments(d.assignmentsSnapshot);
+          }
+          if (Array.isArray(d.semesterPatches)) {
+            for (const patch of d.semesterPatches) {
+              if (!patch || patch.semId === undefined || patch.semId === null) continue;
+              apiRequest("PATCH", `/api/semesters/${patch.semId}`, patch.payload || {}).then(() => {
+                queryClient.invalidateQueries({ queryKey: ["/api/semesters"] });
+                queryClient.invalidateQueries({ queryKey: ["/api/semester"] });
+                queryClient.invalidateQueries({ queryKey: ["/api/semester-settings"] });
+              }).catch(err => console.error('[Undo deleteCourse] semester PATCH error:', err));
+            }
+          }
+          toast({ title: "Course restored", description: `Restored "${d.courseCode || 'course'}".` });
+        } catch (err) {
+          console.error('[Undo deleteCourse] error:', err);
+          toast({ title: "Undo failed", description: "Could not fully restore the course.", variant: "destructive" });
+        }
         break;
       }
       case 'edit':
@@ -21769,7 +21796,14 @@ export default function Dashboard() {
             }}
             onDeleteCourse={() => {
               const courseCode = selectedCertCourse!.courseCode;
+              const courseName = selectedCertCourse!.courseName || '';
               const codeNorm = courseCode.replace(/\s/g, '');
+
+              // === Capture BEFORE state for undo ===
+              const undoCoursesSnapshot = JSON.parse(JSON.stringify(coursesData.courses));
+              const undoAssignmentsSnapshot = JSON.parse(JSON.stringify(semesterCourseAssignments));
+              const undoSemesterPatches: Array<{ semId: any; payload: Record<string, any> }> = [];
+
               const updatedCourses = coursesData.courses.filter(c => {
                 const cCode = c.name.split(' - ')[0]?.trim().replace(/\s/g, '');
                 return cCode !== codeNorm;
@@ -21783,6 +21817,18 @@ export default function Dashboard() {
                   const semCode = ((sem as any)[`course${i}Code`] || '').replace(/\s/g, '');
                   if (semCode === codeNorm) {
                     const prefix = `course${i}`;
+                    // Snapshot original slot fields BEFORE clearing so undo can restore them
+                    const slotFieldKeys = [
+                      `${prefix}Code`, `${prefix}Name`, `${prefix}Professor`, `${prefix}ProfessorEmail`,
+                      `${prefix}DeliveryMode`, `${prefix}ClassDay`, `${prefix}ClassDay2`,
+                      `${prefix}ClassTime`, `${prefix}ClassEndTime`, `${prefix}ClassTime2`, `${prefix}ClassEndTime2`,
+                      `${prefix}ZoomLink`, `${prefix}Color`, `${prefix}ColorEnd`, `${prefix}CourseType`,
+                      `${prefix}ModuleFolder`, `${prefix}ReadingFolder`, `${prefix}ModuleBoxColor`, `${prefix}ReadingBoxColor`,
+                      `${prefix}SpringSummerTerm`,
+                    ];
+                    const originalSlot: Record<string, any> = {};
+                    for (const k of slotFieldKeys) originalSlot[k] = (sem as any)[k] ?? '';
+                    undoSemesterPatches.push({ semId: sem.id, payload: originalSlot });
                     const clearPayload: Record<string, any> = {};
                     clearPayload[`${prefix}Code`] = '';
                     clearPayload[`${prefix}Name`] = '';
@@ -21884,8 +21930,21 @@ export default function Dashboard() {
               }
               saveSemesterAssignments(updatedAssignments);
 
+              // Capture this delete in the undo stack so it can be reversed from the top bar
+              pushUndo({
+                type: 'deleteCourse',
+                description: `Restore "${courseCode}"`,
+                data: {
+                  courseCode,
+                  courseName,
+                  coursesSnapshot: undoCoursesSnapshot,
+                  assignmentsSnapshot: undoAssignmentsSnapshot,
+                  semesterPatches: undoSemesterPatches,
+                },
+              });
+
               startTransition(() => setSelectedCertCourse(null));
-              toast({ title: "Course deleted", description: `${courseCode} has been removed.` });
+              toast({ title: "Course deleted", description: `${courseCode} has been removed. Undo from the top bar to restore.` });
             }}
             onOpenEditTask={(task) => {
               startTransition(() => setSelectedCertCourse(null));
