@@ -29217,7 +29217,7 @@ export default function Dashboard() {
                                     src={semCogIconPath}
                                     alt="Semester settings"
                                     className="cursor-pointer flex-shrink-0"
-                                    style={{ width: '13px', height: '13px', opacity: 0.6, transition: 'opacity 0.15s ease' }}
+                                    style={{ width: '18px', height: '18px', opacity: 0.6, transition: 'opacity 0.15s ease' }}
                                     onMouseEnter={(e) => { (e.currentTarget as HTMLImageElement).style.opacity = '1'; }}
                                     onMouseLeave={(e) => { (e.currentTarget as HTMLImageElement).style.opacity = '0.6'; }}
                                     onClick={(e) => { e.stopPropagation(); setSemSettingsDialogKey(sem.key); }}
@@ -29239,10 +29239,10 @@ export default function Dashboard() {
                                           setSemTriHover({ semKey: sem.key, x: r.left + r.width / 2, y: r.bottom + 6 });
                                         }}
                                         onMouseLeave={() => setSemTriHover(null)}
-                                        style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '18px', height: '18px', marginLeft: '3px', marginRight: '5px', flexShrink: 0, cursor: 'pointer', filter: `drop-shadow(0 0 3px ${triColor}88)` }}
+                                        style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '23px', height: '23px', marginLeft: '3px', marginRight: '5px', flexShrink: 0, cursor: 'pointer', filter: `drop-shadow(0 0 3px ${triColor}88)` }}
                                       >
-                                        <img src={semHealthIconPath} alt="" style={{ width: '16px', height: '16px', display: 'block' }} />
-                                        <svg width="9" height="8" viewBox="0 0 9 8" style={{ position: 'absolute', top: '-2px', right: '-3px', pointerEvents: 'none', filter: `drop-shadow(0 0 2px ${triColor})` }}>
+                                        <img src={semHealthIconPath} alt="" style={{ width: '21px', height: '21px', display: 'block' }} />
+                                        <svg width="9" height="8" viewBox="0 0 9 8" style={{ position: 'absolute', top: '0px', right: '0px', pointerEvents: 'none', filter: `drop-shadow(0 0 2px ${triColor})` }}>
                                           <polygon points="4.5,0.6 8.4,7.4 0.6,7.4" fill={fillColor} stroke={triColor} strokeWidth="0.9" strokeLinejoin="round" />
                                           <circle cx="4.5" cy="5.4" r="0.55" fill={markColor} />
                                         </svg>
