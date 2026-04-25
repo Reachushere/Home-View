@@ -30221,6 +30221,476 @@ You have ${selected.length} source chunks from ${byFile.size} different files av
     }
   });
 
+  // ============================================================
+  // ESSAY AUTHENTICITY CHECKER — Turnitin-style with primary
+  // AI-similarity score and secondary source-similarity score.
+  // Heuristic only; not for disciplinary use.
+  // ============================================================
+  {
+    const fs = await import('fs');
+    const path = await import('path');
+    const crypto = await import('crypto');
+
+    const AUTH_DIR = path.join(process.cwd(), 'persistent-uploads', 'authenticity-reports');
+    if (!fs.existsSync(AUTH_DIR)) fs.mkdirSync(AUTH_DIR, { recursive: true });
+
+    const splitSentences = (t: string): string[] => {
+      const cleaned = t.replace(/\s+/g, ' ').trim();
+      if (!cleaned) return [];
+      const out: string[] = [];
+      const re = /[^.!?]+(?:[.!?]+|$)/g;
+      let m: RegExpExecArray | null;
+      while ((m = re.exec(cleaned)) !== null) {
+        const s = m[0].trim();
+        if (s.length >= 4) out.push(s);
+      }
+      return out;
+    };
+
+    const splitParagraphs = (t: string): string[] =>
+      t.split(/\n{2,}|\r\n\r\n+/).map(p => p.trim()).filter(p => p.length > 0);
+
+    const wordsOf = (t: string): string[] => t.toLowerCase().match(/\b[\w']+\b/g) || [];
+
+    const avg = (xs: number[]): number => xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0;
+    const stdDev = (xs: number[]): number => {
+      if (xs.length < 2) return 0;
+      const m = avg(xs);
+      return Math.sqrt(xs.reduce((s, v) => s + (v - m) ** 2, 0) / xs.length);
+    };
+    const clamp01 = (x: number): number => Math.max(0, Math.min(1, x));
+
+    const AI_PHRASES: RegExp[] = [
+      /\bin conclusion\b/i, /\bit is important to note\b/i,
+      /\bplays a (crucial|vital|key|significant|pivotal) role\b/i,
+      /\bin today'?s (world|society|fast-paced|digital age)\b/i,
+      /\bit is worth noting\b/i, /\bdelve into\b/i, /\bnavigate the\b/i,
+      /\bever-evolving\b/i, /\btapestry\b/i, /\bunderscore[sd]?\b/i,
+      /\bshed light on\b/i, /\bin essence\b/i, /\bmyriad\b/i,
+      /\brobust\b/i, /\bseamless(ly)?\b/i, /\bleverage\b/i,
+      /\bshowcase\b/i, /\bdive into\b/i, /\bin the realm of\b/i,
+      /\bfurthermore\b/i, /\bmoreover\b/i, /\bit can be argued\b/i,
+      /\ba deeper understanding\b/i,
+      /\bthe importance of [\w\s]+ cannot be overstated\b/i,
+      /\bby examining\b/i, /\bcrucial\b/i, /\bpivotal\b/i,
+      /\bparamount\b/i, /\bgalvanize/i,
+      /\bembark on (a |the )?journey\b/i, /\bnavigating the complexities\b/i,
+      /\ba multifaceted approach\b/i, /\bunderstanding the nuances\b/i,
+      /\bin recent years\b/i, /\bplay a significant role\b/i,
+      /\bit is essential to\b/i, /\bcomprehensive understanding\b/i,
+    ];
+
+    const TRANSITIONS: RegExp[] = [
+      /^\s*(however|moreover|furthermore|additionally|consequently|nevertheless|nonetheless|therefore|thus|hence|in addition|on the other hand|in contrast|similarly|likewise|conversely|accordingly|subsequently|specifically|notably|importantly|ultimately)\b/i,
+    ];
+
+    const analyzeAi = (text: string) => {
+      const sentences = splitSentences(text);
+      const paragraphs = splitParagraphs(text);
+      const words = wordsOf(text);
+      const wordCount = words.length;
+
+      const sentLens = sentences.map(s => wordsOf(s).length).filter(n => n > 0);
+      const meanLen = avg(sentLens);
+      const cv = meanLen ? stdDev(sentLens) / meanLen : 1;
+      const uniformityScore = clamp01(1 - cv / 0.6);
+
+      const starts = sentences.map(s => wordsOf(s).slice(0, 3).join(' ')).filter(Boolean);
+      const startCounts = new Map<string, number>();
+      starts.forEach(s => startCounts.set(s, (startCounts.get(s) || 0) + 1));
+      const repeatedSentenceCount = Array.from(startCounts.values()).filter(c => c > 1).reduce((a, b) => a + b, 0);
+      const repeatedRate = sentences.length ? repeatedSentenceCount / sentences.length : 0;
+      const repeatedScore = clamp01(repeatedRate * 2.5);
+
+      const phraseHits = AI_PHRASES.reduce((c, re) => {
+        const matches = text.match(new RegExp(re.source, re.flags + (re.flags.includes('g') ? '' : 'g')));
+        return c + (matches ? matches.length : 0);
+      }, 0);
+      const per100 = wordCount ? phraseHits / (wordCount / 100) : 0;
+      const phraseScore = clamp01(per100 / 2.5);
+
+      const numCount = (text.match(/\b\d[\d,.]*\b/g) || []).length;
+      const propNounCount = (text.match(/\b[A-Z][a-z]{2,}(?:\s[A-Z][a-z]+){0,2}\b/g) || []).length;
+      const specRate = wordCount ? (numCount + propNounCount * 0.5) / wordCount : 0;
+      const specScore = clamp01(1 - specRate * 18);
+
+      const transHits = sentences.filter(s => TRANSITIONS.some(re => re.test(s))).length;
+      const transRate = sentences.length ? transHits / sentences.length : 0;
+      const transScore = clamp01(transRate * 4);
+
+      const paraLens = paragraphs.map(p => wordsOf(p).length).filter(n => n > 0);
+      const paraCV = paraLens.length > 1 ? stdDev(paraLens) / (avg(paraLens) || 1) : 1;
+      const rhythmScore = paraLens.length > 1 ? clamp01(1 - paraCV / 0.5) : 0;
+
+      const fpHits = (text.match(/\b(I|my|me|mine|we|us|our|myself|ours)\b/g) || []).length;
+      const personalRate = wordCount ? fpHits / wordCount : 0;
+      const personalScore = clamp01(1 - personalRate * 60);
+
+      const semiCount = (text.match(/;/g) || []).length;
+      const longClauseSentences = sentences.filter(s => (s.match(/,/g) || []).length >= 3).length;
+      const polishedRate = sentences.length ? (semiCount + longClauseSentences) / sentences.length : 0;
+      const polishScore = clamp01(polishedRate * 1.4);
+
+      const signals = [
+        { name: 'sentence uniformity', score: uniformityScore, weight: 1.5,
+          detail: cv < 0.3 ? `Very uniform (CV=${cv.toFixed(2)})` : `Variable (CV=${cv.toFixed(2)})` },
+        { name: 'repeated sentence openings', score: repeatedScore, weight: 1.2,
+          detail: `${repeatedSentenceCount} of ${sentences.length} sentences share an opening` },
+        { name: 'AI-favoured phrasing', score: phraseScore, weight: 2.0,
+          detail: `${phraseHits} formulaic phrase${phraseHits === 1 ? '' : 's'}` },
+        { name: 'low specificity', score: specScore, weight: 1.5,
+          detail: specScore > 0.5 ? 'Few specific names/numbers' : 'Specific details present' },
+        { name: 'predictable transitions', score: transScore, weight: 1.0,
+          detail: `${transHits} sentences open with formal transitions` },
+        { name: 'paragraph rhythm', score: rhythmScore, weight: 1.0,
+          detail: paraLens.length > 1 ? (paraCV < 0.25 ? 'Similarly sized paragraphs' : 'Varied paragraph sizes') : 'Single paragraph' },
+        { name: 'lack of personal voice', score: personalScore, weight: 1.5,
+          detail: fpHits === 0 ? 'No first-person voice' : `${fpHits} first-person references` },
+        { name: 'overly polished wording', score: polishScore, weight: 1.3,
+          detail: polishedRate > 0.4 ? 'Frequent multi-clause sentences' : 'Natural complexity' },
+      ];
+
+      const totalW = signals.reduce((a, s) => a + s.weight, 0);
+      const totalS = signals.reduce((a, s) => a + s.weight * s.score, 0);
+      const aiScore = totalW ? Math.round((totalS / totalW) * 100) : 0;
+
+      const flagged: { passage: string; reason: string; confidence: number }[] = [];
+      for (const para of paragraphs) {
+        const reasons: string[] = [];
+        let confidence = 0;
+        const ps = splitSentences(para);
+        const psLens = ps.map(s => wordsOf(s).length).filter(n => n > 0);
+        if (psLens.length >= 3) {
+          const pcv = stdDev(psLens) / (avg(psLens) || 1);
+          if (pcv < 0.3) { reasons.push('uniform sentence lengths'); confidence += 0.25; }
+        }
+        const phHits = AI_PHRASES.reduce((c, re) => {
+          const m = para.match(new RegExp(re.source, re.flags + (re.flags.includes('g') ? '' : 'g')));
+          return c + (m ? m.length : 0);
+        }, 0);
+        if (phHits >= 1) {
+          reasons.push(`${phHits} formulaic phrase${phHits > 1 ? 's' : ''}`);
+          confidence += 0.2 * Math.min(phHits, 3);
+        }
+        const pTrans = ps.filter(s => TRANSITIONS.some(re => re.test(s))).length;
+        if (pTrans >= 2) { reasons.push('predictable transitional openings'); confidence += 0.18; }
+        const pFp = (para.match(/\b(I|my|me|we|us|our)\b/g) || []).length;
+        const pWords = wordsOf(para).length;
+        if (pWords > 60 && pFp === 0) { reasons.push('no personal voice'); confidence += 0.15; }
+        if (reasons.length >= 2 && confidence >= 0.3) {
+          const trimmed = para.length > 600 ? para.slice(0, 600).trim() + '…' : para;
+          flagged.push({
+            passage: trimmed,
+            reason: reasons.join('; '),
+            confidence: Math.min(0.95, Math.round(confidence * 100) / 100),
+          });
+        }
+      }
+      flagged.sort((a, b) => b.confidence - a.confidence);
+
+      return { aiScore, signals, flagged: flagged.slice(0, 25), sentenceCount: sentences.length, wordCount, paragraphCount: paragraphs.length };
+    };
+
+    const shingleSet = (text: string, n = 5): Set<string> => {
+      const ws = wordsOf(text);
+      const set = new Set<string>();
+      for (let i = 0; i + n <= ws.length; i++) set.add(ws.slice(i, i + n).join(' '));
+      return set;
+    };
+    const jaccard = (a: Set<string>, b: Set<string>): number => {
+      if (!a.size || !b.size) return 0;
+      let inter = 0;
+      for (const s of a) if (b.has(s)) inter++;
+      const uni = a.size + b.size - inter;
+      return uni ? inter / uni : 0;
+    };
+
+    const bestSentenceMatch = (
+      inputSentence: string,
+      inputShingles: Set<string>,
+      sourceSentences: { text: string; shingles: Set<string> }[],
+    ): { matched_text: string; similarity: number } | null => {
+      let best: { matched_text: string; similarity: number } | null = null;
+      for (const ss of sourceSentences) {
+        const sim = jaccard(inputShingles, ss.shingles);
+        if (sim > 0 && (!best || sim > best.similarity)) {
+          best = { matched_text: ss.text, similarity: sim };
+        }
+      }
+      return best;
+    };
+
+    type SourceDoc = { id: string; label: string; sentences: { text: string; shingles: Set<string> }[]; };
+
+    const buildSourceIndex = async (excludeId?: string): Promise<SourceDoc[]> => {
+      const docs: SourceDoc[] = [];
+      try {
+        const allFiles = await storage.getFiles();
+        for (const f of allFiles) {
+          if (!f.extractedText || f.extractedText.length < 200) continue;
+          const sents = splitSentences(f.extractedText)
+            .filter(s => wordsOf(s).length >= 8)
+            .slice(0, 400);
+          if (sents.length === 0) continue;
+          docs.push({
+            id: `course:${f.id}`,
+            label: (f.displayName || f.originalName || f.id) + (f.folder ? ` (${f.folder})` : ''),
+            sentences: sents.map(text => ({ text, shingles: shingleSet(text) })),
+          });
+        }
+      } catch (err: any) {
+        console.warn('[Authenticity] course material indexing failed:', err.message);
+      }
+      try {
+        const entries = fs.readdirSync(AUTH_DIR);
+        for (const fn of entries) {
+          if (!fn.endsWith('.json')) continue;
+          const id = fn.slice(0, -5);
+          if (id === excludeId) continue;
+          try {
+            const raw = fs.readFileSync(path.join(AUTH_DIR, fn), 'utf-8');
+            const doc = JSON.parse(raw);
+            if (!doc.text || typeof doc.text !== 'string' || doc.text.length < 100) continue;
+            const sents = splitSentences(doc.text)
+              .filter(s => wordsOf(s).length >= 8)
+              .slice(0, 400);
+            if (sents.length === 0) continue;
+            docs.push({
+              id: `prior:${id}`,
+              label: `Previous submission: ${doc.filename || 'untitled'} (${new Date(doc.createdAt).toLocaleDateString()})`,
+              sentences: sents.map(text => ({ text, shingles: shingleSet(text) })),
+            });
+          } catch {}
+        }
+      } catch {}
+      return docs;
+    };
+
+    // Web-search comparison hook. Returns [] until a search API is wired up.
+    // To enable: implement a search call (e.g. Bing/SerpAPI) inside this function,
+    // perform a phrase query for each candidate sentence, fetch snippets, and
+    // return matches in the same shape. The rest of the pipeline already
+    // consumes this output, so no other code needs to change.
+    const webSearchSimilarity = async (
+      _candidateSentences: string[],
+    ): Promise<{ passage: string; matched_text: string; source_url_or_id: string; similarity: number }[]> => {
+      return [];
+    };
+
+    const computeSourceSimilarity = async (text: string, excludeId?: string) => {
+      const inputSentences = splitSentences(text)
+        .filter(s => wordsOf(s).length >= 8);
+      if (inputSentences.length === 0) {
+        return { sourceScore: 0, matched: [] as any[] };
+      }
+      const sources = await buildSourceIndex(excludeId);
+      const matched: { passage: string; matched_text: string; source_url_or_id: string; similarity: number }[] = [];
+      let matchedCount = 0;
+      for (const sent of inputSentences) {
+        const sentShingles = shingleSet(sent);
+        if (sentShingles.size === 0) continue;
+        let bestForSent: { source: SourceDoc; m: { matched_text: string; similarity: number } } | null = null;
+        for (const src of sources) {
+          const m = bestSentenceMatch(sent, sentShingles, src.sentences);
+          if (m && (!bestForSent || m.similarity > bestForSent.m.similarity)) {
+            bestForSent = { source: src, m };
+          }
+        }
+        if (bestForSent && bestForSent.m.similarity >= 0.3) {
+          matchedCount++;
+          matched.push({
+            passage: sent,
+            matched_text: bestForSent.m.matched_text,
+            source_url_or_id: bestForSent.source.label,
+            similarity: Math.round(bestForSent.m.similarity * 1000) / 1000,
+          });
+        }
+      }
+      const candidateSentencesForWeb = inputSentences
+        .filter(s => wordsOf(s).length >= 12)
+        .slice(0, 20);
+      try {
+        const webMatches = await webSearchSimilarity(candidateSentencesForWeb);
+        for (const wm of webMatches) {
+          if (wm.similarity >= 0.3) matched.push(wm);
+        }
+      } catch (err: any) {
+        console.warn('[Authenticity] web search hook failed:', err.message);
+      }
+      matched.sort((a, b) => b.similarity - a.similarity);
+      const sourceScore = Math.round((matchedCount / inputSentences.length) * 100);
+      return { sourceScore, matched: matched.slice(0, 50) };
+    };
+
+    const buildOverallAssessment = (aiScore: number, sourceScore: number, flaggedCount: number, matchedCount: number): string => {
+      const aiBand = aiScore >= 70 ? 'high' : aiScore >= 45 ? 'moderate' : aiScore >= 25 ? 'low-to-moderate' : 'low';
+      const srcBand = sourceScore >= 40 ? 'high' : sourceScore >= 20 ? 'moderate' : sourceScore >= 5 ? 'low' : 'minimal';
+      const parts = [
+        `AI-similarity is ${aiBand} (${aiScore}/100), based on writing-pattern heuristics across ${flaggedCount} flagged passage${flaggedCount === 1 ? '' : 's'}.`,
+        `Source-similarity is ${srcBand} (${sourceScore}/100), with ${matchedCount} sentence-level overlap${matchedCount === 1 ? '' : 's'} found against indexed documents.`,
+        `These scores are heuristic indicators only — they cannot prove that text is AI-generated and must not be used for disciplinary conclusions.`,
+      ];
+      return parts.join(' ');
+    };
+
+    const extractTextFromUpload = async (buffer: Buffer, filename: string): Promise<string> => {
+      const ext = (filename.toLowerCase().split('.').pop() || '').trim();
+      if (ext === 'txt' || ext === 'md' || ext === '') return buffer.toString('utf-8');
+      if (ext === 'docx' || ext === 'doc') {
+        const mammoth = await import('mammoth');
+        const result = await mammoth.default.extractRawText({ buffer });
+        return result.value || '';
+      }
+      if (ext === 'pdf') {
+        const { PDFParse } = await import('pdf-parse');
+        const parser = new PDFParse({ data: buffer });
+        const result = await parser.getText();
+        return result.text || '';
+      }
+      return buffer.toString('utf-8');
+    };
+
+    const stripHtml = (html: string): string => {
+      if (!html) return '';
+      return html
+        .replace(/<\s*br\s*\/?\s*>/gi, '\n')
+        .replace(/<\/(p|div|h[1-6]|li|tr)\s*>/gi, '\n\n')
+        .replace(/<[^>]+>/g, '')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/[ \t]+\n/g, '\n')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
+    };
+
+    app.post('/api/essays/authenticity-check', async (req, res) => {
+      try {
+        const { text: rawText, htmlContent, fileBase64, fileName, title, save } = req.body || {};
+        let text = '';
+        let sourceLabel = (typeof title === 'string' && title.trim()) ? title.trim() : '';
+
+        if (typeof fileBase64 === 'string' && fileBase64.length > 0) {
+          const cleanB64 = fileBase64.includes(',') ? fileBase64.split(',').pop()! : fileBase64;
+          let buf: Buffer;
+          try {
+            buf = Buffer.from(cleanB64, 'base64');
+          } catch (e: any) {
+            return res.status(400).json({ error: 'Invalid file data' });
+          }
+          if (buf.length > 10 * 1024 * 1024) {
+            return res.status(413).json({ error: 'File too large (max 10MB)' });
+          }
+          text = await extractTextFromUpload(buf, String(fileName || 'upload.txt'));
+          if (!sourceLabel) sourceLabel = String(fileName || 'uploaded file');
+        } else if (typeof htmlContent === 'string' && htmlContent.trim()) {
+          text = stripHtml(htmlContent);
+          if (!sourceLabel) sourceLabel = 'editor content';
+        } else if (typeof rawText === 'string' && rawText.trim()) {
+          text = rawText;
+          if (!sourceLabel) sourceLabel = 'pasted text';
+        } else {
+          return res.status(400).json({ error: 'No text, htmlContent or fileBase64 provided' });
+        }
+
+        text = text.replace(/\u00a0/g, ' ').replace(/\r\n/g, '\n').trim();
+        if (text.length < 200) {
+          return res.status(400).json({ error: 'Text is too short to analyze (need at least 200 characters)' });
+        }
+        if (text.length > 200000) text = text.slice(0, 200000);
+
+        const id = crypto.randomBytes(8).toString('hex');
+        const ai = analyzeAi(text);
+        const src = await computeSourceSimilarity(text, id);
+        const overall = buildOverallAssessment(ai.aiScore, src.sourceScore, ai.flagged.length, src.matched.length);
+
+        const report = {
+          ai_similarity_score: ai.aiScore,
+          source_similarity_score: src.sourceScore,
+          flagged_ai_passages: ai.flagged,
+          matched_source_passages: src.matched,
+          overall_assessment: overall,
+          stats: {
+            wordCount: ai.wordCount,
+            sentenceCount: ai.sentenceCount,
+            paragraphCount: ai.paragraphCount,
+            signals: ai.signals,
+          },
+        };
+
+        const shouldSave = save !== false;
+        const createdAt = new Date().toISOString();
+        if (shouldSave) {
+          const record = { id, filename: sourceLabel, text, createdAt, report };
+          try {
+            fs.writeFileSync(path.join(AUTH_DIR, `${id}.json`), JSON.stringify(record));
+          } catch (writeErr: any) {
+            console.warn('[Authenticity] could not persist report:', writeErr.message);
+          }
+        }
+
+        res.json({ id: shouldSave ? id : null, filename: sourceLabel, createdAt, report });
+      } catch (err: any) {
+        console.error('[authenticity-check]', err);
+        res.status(500).json({ error: String(err?.message || err) });
+      }
+    });
+
+    app.get('/api/essays/authenticity-reports', async (_req, res) => {
+      try {
+        const entries = fs.existsSync(AUTH_DIR) ? fs.readdirSync(AUTH_DIR) : [];
+        const list: any[] = [];
+        for (const fn of entries) {
+          if (!fn.endsWith('.json')) continue;
+          try {
+            const raw = fs.readFileSync(path.join(AUTH_DIR, fn), 'utf-8');
+            const doc = JSON.parse(raw);
+            list.push({
+              id: doc.id,
+              filename: doc.filename,
+              createdAt: doc.createdAt,
+              ai_similarity_score: doc.report?.ai_similarity_score ?? 0,
+              source_similarity_score: doc.report?.source_similarity_score ?? 0,
+              wordCount: doc.report?.stats?.wordCount ?? 0,
+            });
+          } catch {}
+        }
+        list.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+        res.json(list);
+      } catch (err: any) {
+        res.status(500).json({ error: String(err?.message || err) });
+      }
+    });
+
+    app.get('/api/essays/authenticity-reports/:id', async (req, res) => {
+      try {
+        const id = String(req.params.id || '').replace(/[^a-f0-9]/gi, '');
+        if (!id) return res.status(400).json({ error: 'Invalid id' });
+        const fp = path.join(AUTH_DIR, `${id}.json`);
+        if (!fs.existsSync(fp)) return res.status(404).json({ error: 'Report not found' });
+        const raw = fs.readFileSync(fp, 'utf-8');
+        res.json(JSON.parse(raw));
+      } catch (err: any) {
+        res.status(500).json({ error: String(err?.message || err) });
+      }
+    });
+
+    app.delete('/api/essays/authenticity-reports/:id', async (req, res) => {
+      try {
+        const id = String(req.params.id || '').replace(/[^a-f0-9]/gi, '');
+        if (!id) return res.status(400).json({ error: 'Invalid id' });
+        const fp = path.join(AUTH_DIR, `${id}.json`);
+        if (fs.existsSync(fp)) fs.unlinkSync(fp);
+        res.json({ success: true });
+      } catch (err: any) {
+        res.status(500).json({ error: String(err?.message || err) });
+      }
+    });
+  }
+
   return httpServer;
 }
 
