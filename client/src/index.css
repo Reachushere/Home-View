@@ -3226,3 +3226,18 @@ input[type="date"].date-black-text::-webkit-datetime-edit-day-field {
 input[type="date"].date-black-text::-webkit-calendar-picker-indicator {
   filter: none !important;
 }
+
+/* Hover-expand for in-cell calendar tasks. When multiple tasks share a single
+   hour cell, each is rendered side-by-side at a fraction of the cell width
+   (e.g. four tasks in one 8 PM cell each get ~25% width and become unreadable).
+   On hover, expand the hovered card to fill the full cell width and lift it
+   above its siblings so the title becomes readable without clicking. */
+[data-testid^="time-task-"] {
+  transition: width 0.12s ease, left 0.12s ease, box-shadow 0.12s ease;
+}
+[data-testid^="time-task-"]:hover {
+  left: 2px !important;
+  width: calc(100% - 4px) !important;
+  z-index: 100 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.95) !important;
+}
