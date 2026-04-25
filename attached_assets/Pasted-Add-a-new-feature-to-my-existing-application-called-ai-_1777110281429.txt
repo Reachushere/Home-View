@@ -1,0 +1,80 @@
+Add a new feature to my existing application called “ai_similarity_checker”. Do NOT build a new app. Integrate this into the current app without refactoring unrelated files.
+
+PRIMARY GOAL:
+Create a Turnitin-style checking feature, but with AI-similarity checking as the primary function.
+
+CORE FUNCTIONS:
+
+* Upload or paste text from PDF, DOCX, TXT, or plain text
+* Extract clean text
+* Split text into paragraphs and sentences
+* Analyze writing for AI-similarity indicators
+* Compare writing against previously uploaded documents
+* Perform web search comparison for overlapping public text
+* Generate a report with scores and flagged passages
+
+PRIMARY SCORE:
+Return an AI similarity score based on writing-pattern analysis, including:
+
+* sentence uniformity
+* repeated structure
+* generic phrasing
+* low specificity
+* predictable transitions
+* repetitive paragraph rhythm
+* lack of personal examples
+* overly polished or formulaic wording
+
+SECONDARY SCORE:
+Return a source similarity score based on:
+
+* matches against stored documents
+* matches found through web search
+* sentence-level fuzzy matching
+* overlapping phrases or passages
+
+WEB SEARCH:
+Add web-search comparison if API access exists in the project. If no web-search API exists, build the feature so it can be plugged in later, but do not break the app.
+
+REPORT OUTPUT:
+Return JSON with:
+{
+ai_similarity_score: number,
+source_similarity_score: number,
+flagged_ai_passages: [
+{
+passage: string,
+reason: string,
+confidence: number
+}
+],
+matched_source_passages: [
+{
+passage: string,
+matched_text: string,
+source_url_or_id: string,
+similarity: number
+}
+],
+overall_assessment: string
+}
+
+STORAGE:
+Use existing storage if available. Otherwise create simple local storage for:
+
+* uploaded document text
+* sentence chunks
+* filename
+* upload date
+* source matches
+
+IMPORTANT CONSTRAINTS:
+
+* Do NOT build a separate app
+* Do NOT replace the existing UI
+* Do NOT refactor unrelated files
+* Do NOT claim certainty that text is AI-generated
+* Do NOT use this for disciplinary conclusions
+* Keep the feature modular and reliable
+* Do not leave TODOs or stub functions
+* Fix errors without rewriting unrelated parts of the codebase

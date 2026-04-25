@@ -47,6 +47,7 @@ import {
   AlertTriangle,
   Undo2,
   RotateCcw,
+  Pipette,
 } from "lucide-react";
 import zoomLogoPath from "@assets/Zoom2_1773776262533.png";
 import wifiLogoPath from "@assets/Wifi_1773656687145.png";
@@ -3156,6 +3157,30 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                           <div className="flex items-center gap-2 mt-1.5">
                             <input type="color" value={getActiveColor()} onChange={(e) => setActiveColor(e.target.value)} className="w-5 h-5 rounded border border-white/30 cursor-pointer shrink-0" style={{ padding: 0, background: 'transparent', WebkitAppearance: 'none', appearance: 'none' }} data-testid={`input-edit-color-${activeGradientStop}`} />
                             <input type="text" value={getActiveColor().toUpperCase()} onChange={(e) => { let v = e.target.value; if (!v.startsWith('#')) v = '#' + v; if (/^#[0-9A-Fa-f]{6}$/.test(v)) setActiveColor(v); }} className="flex-1 bg-white border border-gray-300 rounded text-black text-[9px] px-1.5 py-0.5 font-mono" style={{ minWidth: 0 }} data-testid={`input-hex-${activeGradientStop}`} />
+                            <button
+                              type="button"
+                              className="shrink-0 w-5 h-5 rounded border border-white/30 flex items-center justify-center text-white/70 hover:text-white hover:border-white/50 hover:bg-white/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                              title={typeof (window as any).EyeDropper === 'function' ? 'Pick a colour from anywhere on screen' : 'Eyedropper not supported in this browser'}
+                              disabled={typeof (window as any).EyeDropper !== 'function'}
+                              onClick={async () => {
+                                try {
+                                  const EDCtor = (window as any).EyeDropper;
+                                  if (typeof EDCtor !== 'function') return;
+                                  const ed = new EDCtor();
+                                  const result = await ed.open();
+                                  if (result?.sRGBHex && /^#[0-9A-Fa-f]{6}$/.test(result.sRGBHex)) {
+                                    setActiveColor(result.sRGBHex);
+                                  }
+                                } catch (err: any) {
+                                  if (err?.name !== 'AbortError') {
+                                    console.error('[EyeDropper] error:', err);
+                                  }
+                                }
+                              }}
+                              data-testid={`button-eyedropper-${activeGradientStop}`}
+                            >
+                              <Pipette className="w-3 h-3" />
+                            </button>
                           </div>
                         </div>
                       )}
