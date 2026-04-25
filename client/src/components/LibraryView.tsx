@@ -5331,7 +5331,7 @@ export default function LibraryView({ isOpen, onClose, onMinimize, semesters: se
           {(() => {
             const groups: { year: string; items: { sem: any; idx: number }[] }[] = [];
             semesters.forEach((sem, idx) => {
-              const year = sem.key.match(/\d{4}/)?.[0] || '????';
+              const year = sem.key.match(/\d{4}/)?.[0] || 'DOCS';
               const last = groups[groups.length - 1];
               if (last && last.year === year) last.items.push({ sem, idx });
               else groups.push({ year, items: [{ sem, idx }] });
