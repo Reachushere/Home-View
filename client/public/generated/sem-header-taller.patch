@@ -1,0 +1,86 @@
+diff --git a/client/src/pages/dashboard.tsx b/client/src/pages/dashboard.tsx
+index d97319a48..1f45cdc23 100644
+--- a/client/src/pages/dashboard.tsx
++++ b/client/src/pages/dashboard.tsx
+@@ -1721,6 +1721,39 @@ export default function Dashboard() {
+       if (!r.ok) return;
+       const d = await r.json();
+       const serverHtml = typeof d?.content === 'string' ? d.content : '';
++
++      // SAFETY: if the server says "empty" but we have local content (either
++      // in the editor or in localStorage), do NOT wipe. Push the local
++      // content up to the server instead. This prevents the classic
++      // "notes vanished after a deploy" bug, where any earlier silent save
++      // failure left the server row empty and then the next hydrate would
++      // overwrite the user's still-good local copy with that emptiness.
++      const localStorageContent = (() => {
++        try { return localStorage.getItem('blankCanvasNotesHtml') || ''; } catch { return ''; }
++      })();
++      const editorContent = blankEditorRef.current?.innerHTML ?? '';
++      const stripped = (s: string) => s.replace(/<br\s*\/?\s*>/gi, '').replace(/&nbsp;/gi, '').replace(/<[^>]*>/g, '').trim();
++      const haveLocal = stripped(editorContent) !== '' || stripped(localStorageContent) !== '';
++      if (serverHtml === '' && haveLocal) {
++        const recover = stripped(editorContent) !== '' ? editorContent : localStorageContent;
++        // eslint-disable-next-line no-console
++        console.warn('[blank-canvas-notes] server returned empty but local content exists — re-uploading instead of wiping');
++        try {
++          await fetch('/api/blank-canvas-notes', {
++            method: 'PUT', keepalive: true,
++            headers: { 'Content-Type': 'application/json' },
++            body: JSON.stringify({ content: recover }),
++          });
++        } catch {}
++        blankCanvasNotesLastSavedRef.current = recover;
++        try { localStorage.setItem('blankCanvasNotesHtml', recover); } catch {}
++        if (blankEditorRef.current && blankEditorRef.current.innerHTML !== recover) {
++          blankEditorRef.current.innerHTML = recover;
++        }
++        blankCanvasNotesLoadedRef.current = true;
++        return;
++      }
++
+       try { localStorage.setItem('blankCanvasNotesHtml', serverHtml); } catch {}
+       blankCanvasNotesLastSavedRef.current = serverHtml;
+       if (blankEditorRef.current) {
+@@ -1769,6 +1802,8 @@ export default function Dashboard() {
+   }, [hydrateBlankCanvasNotesFromServer]);
+   const flushBlankCanvasNotes = useCallback((html: string) => {
+     // Notes are private to the 5747 profile — never write from any other.
++    // NOTE: authLevel is in the deps array below so this callback always
++    // sees the latest value rather than a stale render-0 capture.
+     if (authLevel !== '5747') return;
+     blankCanvasNotesLastSavedRef.current = html;
+     blankCanvasNotesPendingRef.current = null;
+@@ -1783,8 +1818,12 @@ export default function Dashboard() {
+       method: 'PUT', keepalive: true,
+       headers: { 'Content-Type': 'application/json' },
+       body: JSON.stringify({ content: html }),
+-    }).catch(err => console.error('[blank-canvas-notes] save failed', err));
+-  }, []);
++    })
++      .then(r => {
++        if (!r.ok) console.error('[blank-canvas-notes] save returned', r.status, r.statusText);
++      })
++      .catch(err => console.error('[blank-canvas-notes] save failed', err));
++  }, [authLevel]);
+   const persistBlankCanvasNotes = useCallback((html: string) => {
+     try { localStorage.setItem('blankCanvasNotesHtml', html); } catch {}
+     blankCanvasNotesPendingRef.current = html;
+@@ -29111,7 +29150,7 @@ export default function Dashboard() {
+                           const isCurrentSem = sem.key === currentSemKey;
+                           const colMap: Record<string, number> = { 'ss2025': 2, 'f2025': 3 };
+                           return (
+-                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'transparent', borderColor: isCurrentSem ? 'rgba(10,15,30,0.85)' : 'rgba(255,255,255,0.45)', borderWidth: isCurrentSem ? '3px' : '1px', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), minHeight: `${28 + 12 + 3 * 40}px`, alignSelf: 'stretch' }}
++                            <div key={sem.key} className="rounded-lg border overflow-hidden flex flex-col" style={{ background: 'transparent', borderColor: isCurrentSem ? 'rgba(10,15,30,0.85)' : 'rgba(255,255,255,0.45)', borderWidth: isCurrentSem ? '3px' : '1px', ...(colMap[sem.key] ? { gridColumn: colMap[sem.key] } : {}), minHeight: `${36 + 12 + 3 * 40}px`, alignSelf: 'stretch' }}
+                               onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; e.currentTarget.style.boxShadow = '0 0 8px rgba(255,255,255,0.5)'; }}
+                               onDragLeave={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
+                               onDrop={(e) => {
+@@ -29152,7 +29191,7 @@ export default function Dashboard() {
+                                 const shadow = isCurrentSem ? (needsRedBorder ? { boxShadow: '0 0 6px rgba(239,68,68,0.6), 0 0 12px rgba(239,68,68,0.4), 0 0 18px rgba(239,68,68,0.3)' } : {}) : {};
+                                 return { background: bgCol, borderColor: borderCol, ...shadow, position: 'relative' as const, borderWidth: isCurrentSem ? '2px' : undefined };
+                               })()}>
+-                                <div className="px-2 py-1.5 flex items-center justify-between">
++                                <div className="px-2 py-2.5 flex items-center justify-between">
+                                 <div className="flex items-center flex-wrap" style={{ flexWrap: 'nowrap', overflow: 'hidden', minWidth: 0, gap: '7px' }}>
+                                   <img
+                                     src={semCogIconPath}
