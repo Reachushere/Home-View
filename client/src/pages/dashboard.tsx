@@ -29293,12 +29293,61 @@ export default function Dashboard() {
                                     // tells the user the semester is over, so the redundant grey
                                     // INACTIVE pill just adds noise. Mirror the same isPast /
                                     // isConfirmedEnded check the COMPLETE pill uses.
-                                    if (!isAct) {
-                                      const isPastForActive = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })();
-                                      const isConfirmedEndedForActive = semesterEndConfirmed[sem.key];
-                                      if (isPastForActive || isConfirmedEndedForActive) return null;
+                                    const isPastForActive = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })();
+                                    const isConfirmedEndedForActive = semesterEndConfirmed[sem.key];
+                                    const isCompleteForActive = isPastForActive || isConfirmedEndedForActive;
+                                    if (!isAct && isCompleteForActive) return null;
+                                    // "ACTIVE IN N DAYS" pill — only shown when (a) no semester
+                                    // is currently active anywhere, (b) this semester is the
+                                    // soonest one starting in the future, and (c) it isn't
+                                    // already past or confirmed-ended. Sits right beside the
+                                    // INACTIVE badge so Bryn can see at a glance how long until
+                                    // the next term kicks in.
+                                    let activeInPill: any = null;
+                                    if (!isAct && !isCompleteForActive) {
+                                      const anyActive = (allSemesterSettings || []).some((s: any) => {
+                                        if (!s.isActive) return false;
+                                        const e = s.semesterEndDate ? new Date(s.semesterEndDate) : null;
+                                        if (e && Date.now() > e.getTime() + 24*60*60*1000) return false;
+                                        const ym = s.semesterName?.match(/\d{4}/);
+                                        const sy = ym ? parseInt(ym[0]) : 0;
+                                        const stype = s.semesterType;
+                                        const prefix = stype === 'spring_summer' ? 'ss' : stype === 'fall' ? 'f' : 'w';
+                                        const k = `${prefix}${sy}`;
+                                        if (semesterEndConfirmed[k]) return false;
+                                        return true;
+                                      });
+                                      if (!anyActive) {
+                                        const order = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029'];
+                                        const nowMs = Date.now();
+                                        let nextKey: string | null = null;
+                                        let nextMs = Infinity;
+                                        for (const k of order) {
+                                          const startStr = (semStartDates as Record<string, string>)[k];
+                                          if (!startStr) continue;
+                                          const startMs = new Date(startStr + 'T00:00:00').getTime();
+                                          if (startMs > nowMs && startMs < nextMs) {
+                                            nextMs = startMs;
+                                            nextKey = k;
+                                          }
+                                        }
+                                        if (nextKey === sem.key) {
+                                          const days = Math.max(0, Math.ceil((nextMs - nowMs) / (24*60*60*1000)));
+                                          activeInPill = (
+                                            <span
+                                              className="font-bold tracking-wider uppercase rounded border whitespace-nowrap"
+                                              style={{ color: '#0a0f1e', background: 'rgba(34,197,94,0.85)', borderColor: 'rgba(34,197,94,1)', lineHeight: '14px', fontSize: '9px', padding: '0 6px', marginLeft: '4px' }}
+                                              title={`Next semester starts in ${days} ${days === 1 ? 'day' : 'days'}`}
+                                              data-testid={`active-in-days-${sem.key}`}
+                                            >
+                                              ACTIVE IN {days} {days === 1 ? 'DAY' : 'DAYS'}
+                                            </span>
+                                          );
+                                        }
+                                      }
                                     }
                                     return (
+                                      <>
                                       <span
                                         className="font-bold tracking-wider uppercase rounded border cursor-pointer transition-colors whitespace-nowrap"
                                         style={{ color: isAct ? '#0a0f1e' : '#ffffff', background: isAct ? 'rgba(34,197,94,0.95)' : 'rgba(120,120,120,0.35)', borderColor: isAct ? 'rgba(34,197,94,1)' : 'rgba(255,255,255,0.4)', lineHeight: '14px', fontSize: '9px', padding: '0 6px' }}
@@ -29320,6 +29369,8 @@ export default function Dashboard() {
                                       >
                                         {isAct ? 'ACTIVE' : 'INACTIVE'}
                                       </span>
+                                      {activeInPill}
+                                      </>
                                     );
                                   })()}
                                   {(() => {
