@@ -34864,7 +34864,7 @@ export default function Dashboard() {
                       const isOtherBeforeToday = !isOtherToday && startOfDayET(day) < stableToday;
                       const otherBaseBg = otherRowColors.courseRowColor || otherRowColors.cellBg;
                       const isOtherNextSchoolWeek = !isOtherToday && day.getDay() !== 6 && startOfDayET(day) >= stableNextSat;
-                      const otherCellBg = isOtherToday ? '#e4ecf5' : isOtherNextSchoolWeek ? dimColor(otherBaseBg, 0.75) : dimColor(otherBaseBg, 0.375);
+                      const otherCellBg = isOtherToday ? '#cce5ff' : isOtherNextSchoolWeek ? dimColor(otherBaseBg, 0.75) : dimColor(otherBaseBg, 0.375);
                       return (
                         <div
                           key={dayIdx}
@@ -35382,13 +35382,13 @@ export default function Dashboard() {
                           key={dayIdx} 
                           className={`relative p-0.5 ${dragOverSlot && isSameDayET(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "ring-2 ring-primary ring-inset" : ""}`}
                           style={{
-                            borderLeft: (day.getDay() === 6 && isWholeWeekBreak) ? 'none' : (isSameDayET(day, new Date()) && day.getDay() !== 0 ? '3px solid #64b5f6' : day.getDay() === 0 ? 'none' : '1.5px dotted rgba(0,0,0,0.25)'),
-                            borderRight: isSameDayET(day, new Date()) ? '2px solid rgba(100,181,246,0.35)' : undefined,
+                            borderLeft: (day.getDay() === 6 && isWholeWeekBreak) ? 'none' : (isSameDayET(day, new Date()) && day.getDay() !== 0 ? '4px solid #1976d2' : day.getDay() === 0 ? 'none' : '1.5px dotted rgba(0,0,0,0.25)'),
+                            borderRight: isSameDayET(day, new Date()) ? '3px solid rgba(25,118,210,0.6)' : undefined,
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined,
                             overflow: 'hidden',
                             minWidth: 0,
                             backgroundColor: (() => {
-                              if (isToday) return isCurrentHour ? '#d4e6f9' : '#e8f0fb';
+                              if (isToday) return isCurrentHour ? '#a8d4ff' : '#cce5ff';
                               if (isCurrentHour) return '#e4ecf5';
                               if (isNightShiftSleepHour) return nightSleepColor;
                               if (isDayShiftSleepHour) return 'rgba(180, 180, 180, 0.22)';
