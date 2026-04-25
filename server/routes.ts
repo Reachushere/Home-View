@@ -8622,10 +8622,47 @@ When Bryn references one of these, you already have context — don't make him r
       }
 
       const readOnlyTools = new Set(["read_file", "list_directory", "search_code", "search_tasks", "get_semester_info", "check_build", "read_logs", "git_diff", "get_project_map", "db_schema", "http_check", "memory_read", "memory_append", "onedrive_reauth_start", "process_check", "analyze_ui", "smoke_test", "take_screenshot", "browser_test", "check_performance", "conversation_history", "health_check", "web_search", "web_fetch", "plan_task", "codebase_explore", "code_reference", "github_search", "github_file", "github_tree", "npm_info", "ai_subtask", "project_snapshot", "explain_code", "http_test", "analyze_dependencies", "stack_analyze", "convert_code", "code_complete", "code_review_tool", "generate_tests", "smart_context", "deep_research", "pair_program", "auto_discover", "auto_test", "retro"]);
-      const destructiveTools = new Set(["delete_task", "bulk_delete_tasks", "bulk_complete_tasks", "run_shell_command", "git_commit_and_push", "install_package", "generate_image", "db_migrate", "multi_file_edit"]);
+      const destructiveTools = new Set(["delete_task", "bulk_delete_tasks", "bulk_complete_tasks", "git_commit_and_push", "install_package", "generate_image", "db_migrate", "multi_file_edit"]);
+
+      // Whitelist of demonstrably safe, read-only shell invocations. If a run_shell_command
+      // matches one of these patterns it executes immediately without bothering Bryn for a
+      // confirm click. Anything else still requires confirmation.
+      function isSafeShellCommand(rawCmd: string): boolean {
+        const cmd = String(rawCmd || '').trim();
+        if (!cmd) return false;
+        // Reject any shell composition that could chain to destructive sinks or redirect output.
+        // Single pipe `|` is handled separately below by splitting and re-checking each segment.
+        if (/[;`$()<>]|&&|\|\||>>/.test(cmd)) return false;
+        const safePatterns: RegExp[] = [
+          /^(ls|pwd|cat|head|tail|file|stat|wc)\b/,
+          /^(echo|printf|date|whoami|id|hostname|uname|uptime|env|locale)\b/,
+          /^(df|du|free|ps|pgrep|pidof)\b/,
+          /^(which|whereis|type|readlink|realpath|basename|dirname)\b/,
+          /^(find|grep|rg|sort|uniq|awk|sed|tr|cut|column|jq|yq|xxd|md5sum|sha1sum|sha256sum|tree)\b/,
+          /^git\s+(status|log|diff|show|branch(\s|$)|tag(\s|$)|remote|config\s+--get|describe|rev-parse|ls-files|ls-tree|reflog|stash\s+list|blame|grep|cat-file|fsck|count-objects)/,
+          /^npm\s+(list|ls|outdated|view|info|show|config\s+get|prefix|root|bin|help|doctor|version|-v|--version)\b/,
+          /^(node|npx|pnpm|yarn|tsc)\s+(-v|--version)\b/,
+          /^pm2\s+(list|ls|status|show|describe|logs|prettylist|jlist|info|monit)/,
+          /^systemctl\s+(status|show|list-units|list-unit-files|is-active|is-enabled|is-failed|cat)\b/,
+          /^journalctl\b/,
+          /^(ping|traceroute|dig|nslookup|host|ss|netstat)\b/,
+          /^ip\s+(addr|route|link)\b/,
+        ];
+        // No pipes: simple single command, just match a safe pattern
+        if (!/\|/.test(cmd)) {
+          return safePatterns.some(p => p.test(cmd));
+        }
+        // Pipe chain: every segment must individually match a safe pattern
+        const segments = cmd.split(/\s*\|\s*/).map(s => s.trim()).filter(Boolean);
+        return segments.length > 0 && segments.every(seg => safePatterns.some(p => p.test(seg)));
+      }
 
       function isToolDestructive(fnName: string, fnArgs: any): boolean {
         if (destructiveTools.has(fnName)) return true;
+        if (fnName === "run_shell_command") {
+          const cmd = fnArgs?.command ?? fnArgs?.cmd ?? '';
+          return !isSafeShellCommand(cmd);
+        }
         if (fnName === "manage_sticky_note" && fnArgs.action === "delete") return true;
         if (fnName === "notepad_crud" && fnArgs.action === "delete") return true;
         if (fnName === "staging_manage" && ["apply", "discard"].includes(fnArgs.action)) return true;
@@ -8678,7 +8715,7 @@ When Bryn references one of these, you already have context — don't make him r
       while (round < MAX_ROUNDS) {
         round++;
         if (round > 1) {
-          const delayMs = Math.min(round * 800, 3000);
+          const delayMs = Math.min(round * 200, 1000);
           console.log(`[AI] Pacing: ${delayMs / 1000}s before round ${round}`);
           await new Promise(r => setTimeout(r, delayMs));
         }
@@ -8816,8 +8853,8 @@ When Bryn references one of these, you already have context — don't make him r
         const allReadOnly = roundToolNames.every((n: string) => readOnlyTools.has(n));
         if (allReadOnly) {
           consecutiveReadOnlyRounds++;
-          if (consecutiveReadOnlyRounds >= 8) {
-            messages.push({ role: "user", content: "[SYSTEM] You have spent 8 rounds reading without acting. You MUST respond to Bryn NOW with what you know. Do NOT call any more tools. Summarize your findings and respond." });
+          if (consecutiveReadOnlyRounds >= 15) {
+            messages.push({ role: "user", content: "[SYSTEM] You have spent 15 rounds reading without acting. You MUST respond to Bryn NOW with what you know. Do NOT call any more tools. Summarize your findings and respond." });
           }
         } else {
           consecutiveReadOnlyRounds = 0;
