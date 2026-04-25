@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Zap, Send, X, Loader2, CheckCircle, XCircle, AlertTriangle, Trash2, RotateCcw, Maximize2, Minimize2, Pencil, Circle, ArrowRight, ArrowDown, Undo2, Check, Scissors, Square, Copy, Download, FileText, BookOpen, Paperclip, Minus } from 'lucide-react';
+import { Zap, Send, X, Loader2, CheckCircle, XCircle, AlertTriangle, Trash2, RotateCcw, Maximize2, Minimize2, Pencil, Circle, ArrowRight, ArrowDown, Undo2, Check, Scissors, Square, Copy, Download, FileText, BookOpen, Paperclip, Minus, History as HistoryIcon, Bookmark, Play, Save } from 'lucide-react';
 import { queryClient } from '@/lib/queryClient';
 import brynAvatar from '@assets/generated_images/brynassist_avatar.png';
 import defaultProfilePhoto from '@assets/image_1772579486577.png';
@@ -308,6 +308,25 @@ interface Message {
   toolResults?: any[];
   actionTaken?: boolean;
   pendingConfirmations?: any[];
+  turnId?: string;
+}
+
+interface QueueHistoryItem {
+  id: string;
+  message: string;
+  image?: string;
+  status: 'done' | 'failed';
+  error?: string;
+  replyPreview?: string;
+  turnId?: string;
+  completedAt: number;
+}
+
+interface QueuePreset {
+  id: string;
+  name: string;
+  items: { message: string; image?: string }[];
+  createdAt: number;
 }
 
 interface AiCommandWizardProps {
@@ -509,9 +528,17 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
     error?: string;
     createdAt: number;
     startedAt?: number;
+    turnId?: string;
   };
   const [queue, setQueue] = useState<QueueItem[]>([]);
   const [queueCollapsed, setQueueCollapsed] = useState(false);
+  const [history, setHistory] = useState<QueueHistoryItem[]>([]);
+  const [presets, setPresets] = useState<QueuePreset[]>([]);
+  const [activeQueueTab, setActiveQueueTab] = useState<'queue' | 'history' | 'presets'>('queue');
+  const [queuePanelForceOpen, setQueuePanelForceOpen] = useState(false);
+  const [savePresetState, setSavePresetState] = useState<{ source: 'queue' | 'history'; selectedIds?: string[] } | null>(null);
+  const [presetNameInput, setPresetNameInput] = useState('');
+  const [highlightedTurnId, setHighlightedTurnId] = useState<string | null>(null);
   const [nowTick, setNowTick] = useState(() => Date.now());
   useEffect(() => {
     const hasRunning = queue.some(it => it.status === 'running');
@@ -543,7 +570,49 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
         if (cleaned.some((it: QueueItem, i: number) => it !== d.items[i])) persistQueue(cleaned);
       })
       .catch(() => {});
+    fetch('/api/ai/queue-history')
+      .then(r => r.json())
+      .then(d => { if (Array.isArray(d.items)) setHistory(d.items); })
+      .catch(() => {});
+    fetch('/api/ai/queue-presets')
+      .then(r => r.json())
+      .then(d => { if (Array.isArray(d.items)) setPresets(d.items); })
+      .catch(() => {});
   }, [persistQueue]);
+
+  const appendHistoryItem = useCallback((entry: Omit<QueueHistoryItem, 'id'>) => {
+    fetch('/api/ai/queue-history', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(entry),
+    })
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (Array.isArray(d?.items)) setHistory(d.items); })
+      .catch(() => {});
+  }, []);
+  const removeHistoryItem = useCallback((id: string) => {
+    setHistory(curr => curr.filter(it => it.id !== id));
+    fetch(`/api/ai/queue-history/${encodeURIComponent(id)}`, { method: 'DELETE' }).catch(() => {});
+  }, []);
+  const clearAllHistory = useCallback(() => {
+    setHistory([]);
+    fetch('/api/ai/queue-history', { method: 'DELETE' }).catch(() => {});
+  }, []);
+  const removePreset = useCallback((id: string) => {
+    setPresets(curr => curr.filter(it => it.id !== id));
+    fetch(`/api/ai/queue-presets/${encodeURIComponent(id)}`, { method: 'DELETE' }).catch(() => {});
+  }, []);
+  const scrollToTurn = useCallback((turnId?: string) => {
+    if (!turnId) return;
+    requestAnimationFrame(() => {
+      const el = document.querySelector(`[data-turn-id="${turnId}"]`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setHighlightedTurnId(turnId);
+        setTimeout(() => setHighlightedTurnId(prev => (prev === turnId ? null : prev)), 1800);
+      }
+    });
+  }, []);
   const addToQueue = useCallback((message: string, image?: string | null, atFront = false): QueueItem => {
     // Optimistic insert with a client-generated id; the server POST will canonicalise the id and
     // we'll patch the local item with the server-assigned id once the response lands.
@@ -604,6 +673,26 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       return next;
     });
   }, [persistQueue]);
+  const queueAllPresetItems = useCallback((preset: QueuePreset) => {
+    // Append the preset's items in order to the END of the queue (so they run sequentially).
+    for (const it of preset.items) {
+      addToQueue(it.message, it.image || null, false);
+    }
+  }, [addToQueue]);
+  const savePreset = useCallback(async (name: string, items: { message: string; image?: string }[]) => {
+    const trimmed = name.trim();
+    if (!trimmed || items.length === 0) return;
+    try {
+      const r = await fetch('/api/ai/queue-presets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: trimmed, items }),
+      });
+      if (!r.ok) return;
+      const d = await r.json();
+      if (Array.isArray(d?.items)) setPresets(d.items);
+    } catch {}
+  }, []);
   const [pendingConfirm, setPendingConfirm] = useState<any[] | null>(null);
   const [expanded, setExpanded] = useState(false);
   const [minimized, setMinimized] = useState(false);
@@ -974,11 +1063,13 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
     const finalMsg = msg || (imgSource ? 'What do you see in this screenshot?' : '');
     if (!finalMsg) return;
     const currentImage = imgSource;
-    const userMsg: Message = { role: 'user', content: finalMsg, image: currentImage || undefined };
+    const turnId = `t_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+    const userMsg: Message = { role: 'user', content: finalMsg, image: currentImage || undefined, turnId };
     setMessages(prev => [...prev, userMsg]);
     if (!overrideMsg) { setInput(''); setPastedImage(null); }
-    if (queueItemId) updateQueueItem(queueItemId, { status: 'running', startedAt: Date.now() });
+    if (queueItemId) updateQueueItem(queueItemId, { status: 'running', startedAt: Date.now(), turnId });
     let sendError: any = null;
+    let lastReplyContent = '';
     setLoading(true);
     setThinkingPhase('Working...');
     const controller = new AbortController();
@@ -1065,10 +1156,10 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                   const last = prev[prev.length - 1];
                   if (last && last.role === 'assistant') {
                     const updated = [...prev];
-                    updated[updated.length - 1] = { role: 'assistant', content: streamedContent, toolResults, actionTaken };
+                    updated[updated.length - 1] = { role: 'assistant', content: streamedContent, toolResults, actionTaken, turnId };
                     return updated;
                   }
-                  return [...prev, { role: 'assistant', content: streamedContent, toolResults, actionTaken }];
+                  return [...prev, { role: 'assistant', content: streamedContent, toolResults, actionTaken, turnId }];
                 });
               } else if (event.type === 'confirm') {
                 if (event.pendingConfirmations) {
@@ -1097,13 +1188,15 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
             const last = prev[prev.length - 1];
             if (last && last.role === 'assistant') {
               const updated = [...prev];
-              updated[updated.length - 1] = { role: 'assistant', content: streamedContent, toolResults, actionTaken };
+              updated[updated.length - 1] = { role: 'assistant', content: streamedContent, toolResults, actionTaken, turnId };
               return updated;
             }
-            return [...prev, { role: 'assistant', content: streamedContent, toolResults, actionTaken }];
+            return [...prev, { role: 'assistant', content: streamedContent, toolResults, actionTaken, turnId }];
           });
+          lastReplyContent = streamedContent;
         } else {
-          setMessages(prev => [...prev, { role: 'assistant', content: 'Done!', toolResults, actionTaken }]);
+          setMessages(prev => [...prev, { role: 'assistant', content: 'Done!', toolResults, actionTaken, turnId }]);
+          lastReplyContent = 'Done!';
         }
       } else {
         const data = await resp.json();
@@ -1123,13 +1216,15 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
           toolResults: data.toolResults,
           actionTaken: data.actionTaken,
           pendingConfirmations: data.pendingConfirmations,
+          turnId,
         }]);
+        lastReplyContent = data.reply || '';
       }
     } catch (err: any) {
       setThinkingPhase(null);
       setActiveToolName(null);
       const errText = err.name === 'AbortError' ? 'Timed out or stopped. Try again.' : `Error: ${err.message}`;
-      setMessages(prev => [...prev, { role: 'assistant', content: errText }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: errText, turnId }]);
       if (queueItemId) {
         updateQueueItem(queueItemId, { status: 'failed', error: errText });
       }
@@ -1143,9 +1238,29 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       if (queueItemId && !sendError) {
         updateQueueItem(queueItemId, { status: 'done' });
       }
+      // Per the task spec ("last 50 sent queue items"), only log queue-originated sends
+      // to the persistent history tab. Direct chat input sends are not recorded here.
+      if (queueItemId) {
+        const replyPreview = (lastReplyContent || '').replace(/```[\s\S]*?```/g, '[code]').replace(/\s+/g, ' ').trim().slice(0, 280);
+        appendHistoryItem({
+          message: finalMsg,
+          image: currentImage || undefined,
+          status: sendError ? 'failed' : 'done',
+          error: sendError ? (sendError.name === 'AbortError' ? 'Timed out or stopped.' : (sendError.message || String(sendError))) : undefined,
+          replyPreview: replyPreview || undefined,
+          turnId,
+          completedAt: Date.now(),
+        });
+      }
       setTimeout(() => {
         setMessages(curr => {
-          const saveable = curr.filter(m => m.role !== 'thinking').map(m => ({ role: m.role, content: m.content }));
+          // Persist turnId alongside role/content so history-tab "jump to turn" links
+          // remain valid after reloads / on other devices (server keeps last 50 messages).
+          const saveable = curr.filter(m => m.role !== 'thinking').map(m => ({
+            role: m.role,
+            content: m.content,
+            ...(m.turnId ? { turnId: m.turnId } : {}),
+          }));
           fetch('/api/ai/conversation', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1156,7 +1271,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       }, 100);
       // Auto-advance is handled by the queue-runner useEffect (watches queue + loading).
     }
-  }, [input, loading, messages, invalidateAll, pastedImage, updateQueueItem]);
+  }, [input, loading, messages, invalidateAll, pastedImage, updateQueueItem, appendHistoryItem]);
 
   // Queue runner: whenever BA is idle and the queue has a queued item, start the next turn.
   // This handles mount-time-loaded items, retried items, and the normal "BA finished, run next" case.
@@ -1760,6 +1875,17 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
             <HeaderBtn tip={screenCopied ? 'Copied!' : 'Copy entire chat'} onClick={copyScreen} testId="button-ai-command-copy-screen">
               {screenCopied ? <Check size={15} color="#4ade80" /> : <Copy size={15} />}
             </HeaderBtn>
+            <HeaderBtn
+              tip="Queue history & presets"
+              onClick={() => {
+                setQueuePanelForceOpen(true);
+                setActiveQueueTab(history.length > 0 ? 'history' : 'presets');
+                setQueueCollapsed(false);
+              }}
+              testId="button-ai-command-history"
+            >
+              <HistoryIcon size={15} />
+            </HeaderBtn>
             <HeaderBtn tip="Clear conversation" onClick={clearChat} testId="button-ai-command-clear"><RotateCcw size={15} /></HeaderBtn>
             <HeaderBtn tip={expanded ? 'Restore' : 'Expand'} onClick={() => { setExpanded(!expanded); setCustomWidth(null); if (expanded) setPosition(null); }} testId="button-ai-command-expand">
               {expanded ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
@@ -1860,12 +1986,22 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
             }
             return [{ ...msg, _idx: `${i}` }];
           }).map((msg: any, i: number) => (
-            <div key={msg._idx || i} style={{
-              display: 'flex',
-              justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start',
-              ...(msg.role === 'system' || msg.role === 'thinking' ? { justifyContent: 'flex-start' } : {}),
-              ...(msg.role === 'system' ? { justifyContent: 'center' } : {}),
-            }}>
+            <div
+              key={msg._idx || i}
+              data-turn-id={msg.turnId || undefined}
+              style={{
+                display: 'flex',
+                justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start',
+                ...(msg.role === 'system' || msg.role === 'thinking' ? { justifyContent: 'flex-start' } : {}),
+                ...(msg.role === 'system' ? { justifyContent: 'center' } : {}),
+                background: highlightedTurnId && msg.turnId === highlightedTurnId
+                  ? 'rgba(124,58,237,0.18)'
+                  : 'transparent',
+                borderRadius: '12px',
+                padding: highlightedTurnId && msg.turnId === highlightedTurnId ? '6px 4px' : 0,
+                transition: 'background 0.6s ease, padding 0.2s ease',
+              }}
+            >
               {msg.role === 'thinking' ? (
                 <div style={{
                   display: 'flex', alignItems: 'flex-start', gap: '6px',
@@ -2334,10 +2470,11 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
           flexDirection: 'column',
           gap: '8px',
         }}>
-          {queue.length > 0 && (
+          {(queue.length > 0 || queuePanelForceOpen) && (
             <div
               data-testid="queue-panel"
               style={{
+                position: 'relative',
                 background: 'rgba(15,25,55,0.55)',
                 backdropFilter: 'blur(14px)',
                 WebkitBackdropFilter: 'blur(14px)',
@@ -2345,7 +2482,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 borderRadius: '14px',
                 padding: '8px 8px 6px',
                 boxShadow: '0 4px 18px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.06)',
-                maxHeight: '180px',
+                maxHeight: '240px',
                 overflowY: 'auto',
               }}
             >
@@ -2356,57 +2493,369 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 padding: '2px 8px 6px',
                 borderBottom: queueCollapsed ? 'none' : '1px solid rgba(140,180,255,0.12)',
                 marginBottom: queueCollapsed ? 0 : '4px',
+                gap: '8px',
               }}>
-                <button
-                  onClick={() => setQueueCollapsed(c => !c)}
-                  data-testid="button-queue-collapse"
-                  title={queueCollapsed ? 'Expand queue' : 'Collapse queue'}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    cursor: 'pointer',
-                    padding: 0,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                  }}
-                >
-                  <span style={{
-                    fontSize: '10px',
-                    color: 'rgba(180,200,255,0.6)',
-                    transition: 'transform 0.15s',
-                    transform: queueCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
-                    display: 'inline-block',
-                  }}>▼</span>
-                  <span style={{ fontSize: '11px', fontWeight: 600, color: 'rgba(180,200,255,0.85)', letterSpacing: '0.4px', textTransform: 'uppercase' }}>
-                    Task queue · {queue.filter(it => it.status === 'queued' || it.status === 'running').length} pending
-                  </span>
-                </button>
-                <button
-                  onClick={() => {
-                    setQueue(curr => {
-                      const next = curr.filter(it => it.status === 'running');
-                      persistQueue(next);
-                      return next;
-                    });
-                  }}
-                  data-testid="button-queue-clear"
-                  title="Clear all but the running task"
-                  style={{
-                    background: 'transparent',
-                    border: '1px solid rgba(140,180,255,0.2)',
-                    color: 'rgba(180,200,255,0.75)',
-                    fontSize: '10px',
-                    fontWeight: 600,
-                    padding: '2px 8px',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Clear
-                </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flex: 1, minWidth: 0 }}>
+                  <button
+                    onClick={() => setQueueCollapsed(c => !c)}
+                    data-testid="button-queue-collapse"
+                    title={queueCollapsed ? 'Expand panel' : 'Collapse panel'}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: '2px 4px',
+                      display: 'flex',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <span style={{
+                      fontSize: '10px',
+                      color: 'rgba(180,200,255,0.6)',
+                      transition: 'transform 0.15s',
+                      transform: queueCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
+                      display: 'inline-block',
+                    }}>▼</span>
+                  </button>
+                  {(['queue','history','presets'] as const).map(tab => {
+                    const count = tab === 'queue'
+                      ? queue.filter(it => it.status === 'queued' || it.status === 'running').length
+                      : tab === 'history'
+                        ? history.length
+                        : presets.length;
+                    const isActive = activeQueueTab === tab;
+                    const label = tab === 'queue' ? 'Queue' : tab === 'history' ? 'History' : 'Presets';
+                    return (
+                      <button
+                        key={tab}
+                        onClick={() => { setActiveQueueTab(tab); setQueueCollapsed(false); }}
+                        data-testid={`button-queue-tab-${tab}`}
+                        style={{
+                          background: isActive ? 'rgba(124,58,237,0.22)' : 'transparent',
+                          border: isActive ? '1px solid rgba(180,150,255,0.45)' : '1px solid transparent',
+                          color: isActive ? '#e9d8ff' : 'rgba(180,200,255,0.7)',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          letterSpacing: '0.3px',
+                          padding: '3px 9px',
+                          borderRadius: '999px',
+                          cursor: 'pointer',
+                          textTransform: 'uppercase',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                        }}
+                      >
+                        {label}
+                        {count > 0 && (
+                          <span style={{
+                            fontSize: '10px',
+                            background: isActive ? 'rgba(255,255,255,0.18)' : 'rgba(140,180,255,0.18)',
+                            color: isActive ? '#fff' : 'rgba(200,215,255,0.85)',
+                            borderRadius: '999px',
+                            padding: '0 6px',
+                            minWidth: '16px',
+                            textAlign: 'center',
+                            lineHeight: '14px',
+                          }}>{count}</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+                {activeQueueTab === 'queue' && queue.length > 0 && (
+                  <button
+                    onClick={() => {
+                      setQueue(curr => {
+                        const next = curr.filter(it => it.status === 'running');
+                        persistQueue(next);
+                        return next;
+                      });
+                    }}
+                    data-testid="button-queue-clear"
+                    title="Clear all but the running task"
+                    style={{
+                      background: 'transparent',
+                      border: '1px solid rgba(140,180,255,0.2)',
+                      color: 'rgba(180,200,255,0.75)',
+                      fontSize: '10px',
+                      fontWeight: 600,
+                      padding: '2px 8px',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      flexShrink: 0,
+                    }}
+                  >
+                    Clear
+                  </button>
+                )}
+                {activeQueueTab === 'history' && history.length > 0 && (
+                  <button
+                    onClick={() => { if (window.confirm('Clear all queue history?')) clearAllHistory(); }}
+                    data-testid="button-history-clear"
+                    title="Clear all history"
+                    style={{
+                      background: 'transparent',
+                      border: '1px solid rgba(140,180,255,0.2)',
+                      color: 'rgba(180,200,255,0.75)',
+                      fontSize: '10px',
+                      fontWeight: 600,
+                      padding: '2px 8px',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      flexShrink: 0,
+                    }}
+                  >
+                    Clear
+                  </button>
+                )}
+                {queuePanelForceOpen && queue.length === 0 && (
+                  <button
+                    onClick={() => setQueuePanelForceOpen(false)}
+                    data-testid="button-queue-panel-close"
+                    title="Hide panel"
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: 'rgba(220,150,150,0.7)',
+                      cursor: 'pointer',
+                      padding: '2px 4px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <X size={12} />
+                  </button>
+                )}
               </div>
-              {!queueCollapsed && queue.map((it, idx) => {
+              {!queueCollapsed && activeQueueTab === 'queue' && queue.length === 0 && (
+                <div data-testid="text-queue-empty" style={{ padding: '12px 8px', fontSize: '12px', color: 'rgba(180,200,255,0.55)', textAlign: 'center' }}>
+                  No items in the queue. Add a task while BA is busy and it'll wait its turn here.
+                </div>
+              )}
+              {!queueCollapsed && activeQueueTab === 'history' && (
+                <div data-testid="history-list">
+                  {history.length === 0 ? (
+                    <div style={{ padding: '12px 8px', fontSize: '12px', color: 'rgba(180,200,255,0.55)', textAlign: 'center' }}>
+                      No history yet. Sent queue items will appear here.
+                    </div>
+                  ) : (
+                    <>
+                      {history.map((h) => {
+                        const title = (h.message.split('\n')[0] || '').slice(0, 80) + ((h.message.length > 80 || h.message.includes('\n')) ? '…' : '');
+                        const dot = h.status === 'failed' ? '#f87171' : '#4ade80';
+                        const ts = new Date(h.completedAt);
+                        const tsLabel = (() => {
+                          const diffMs = Date.now() - h.completedAt;
+                          const min = Math.floor(diffMs / 60000);
+                          if (min < 1) return 'just now';
+                          if (min < 60) return `${min}m ago`;
+                          const hr = Math.floor(min / 60);
+                          if (hr < 24) return `${hr}h ago`;
+                          const d = Math.floor(hr / 24);
+                          if (d < 7) return `${d}d ago`;
+                          return ts.toLocaleDateString();
+                        })();
+                        const canJump = !!h.turnId && messages.some(m => m.turnId === h.turnId);
+                        return (
+                          <div
+                            key={h.id}
+                            data-testid={`history-item-${h.id}`}
+                            style={{
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: '2px',
+                              padding: '6px 8px',
+                              borderRadius: '8px',
+                              background: 'transparent',
+                              borderBottom: '1px solid rgba(140,180,255,0.06)',
+                            }}
+                          >
+                            <div
+                              onClick={() => canJump && scrollToTurn(h.turnId)}
+                              title={canJump ? 'Jump to this conversation turn' : 'Conversation no longer in view'}
+                              style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: canJump ? 'pointer' : 'default' }}
+                              data-testid={`history-item-row-${h.id}`}
+                            >
+                              <span style={{
+                                width: '8px', height: '8px', borderRadius: '50%',
+                                background: dot, flexShrink: 0,
+                              }} />
+                              {h.image && (
+                                <img src={h.image} alt="" style={{ width: '20px', height: '20px', borderRadius: '4px', objectFit: 'cover', flexShrink: 0, border: '1px solid rgba(140,180,255,0.2)' }} />
+                              )}
+                              <span style={{
+                                flex: 1,
+                                fontSize: '12px',
+                                color: '#e2e8ff',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                                textDecoration: canJump ? 'underline dotted rgba(180,200,255,0.35)' : 'none',
+                              }}>
+                                {title || '(empty)'}
+                              </span>
+                              <span style={{ fontSize: '10px', color: 'rgba(180,200,255,0.55)', flexShrink: 0 }} title={ts.toLocaleString()}>
+                                {tsLabel}
+                              </span>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); addToQueue(h.message, h.image || null, true); }}
+                                data-testid={`button-history-rerun-${h.id}`}
+                                title="Re-run (queue at front)"
+                                style={{
+                                  background: 'rgba(34,197,94,0.18)',
+                                  border: '1px solid rgba(34,197,94,0.4)',
+                                  color: '#bbf7d0',
+                                  fontSize: '10px',
+                                  fontWeight: 600,
+                                  padding: '2px 7px',
+                                  borderRadius: '6px',
+                                  cursor: 'pointer',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '3px',
+                                  flexShrink: 0,
+                                }}
+                              >
+                                <RotateCcw size={10} /> Re-run
+                              </button>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); removeHistoryItem(h.id); }}
+                                data-testid={`button-history-remove-${h.id}`}
+                                title="Remove from history"
+                                style={{
+                                  background: 'transparent',
+                                  border: 'none',
+                                  color: 'rgba(220,150,150,0.65)',
+                                  cursor: 'pointer',
+                                  padding: '2px 4px',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  flexShrink: 0,
+                                }}
+                              >
+                                <X size={12} />
+                              </button>
+                            </div>
+                            {(h.replyPreview || h.error) && (
+                              <div
+                                data-testid={`history-reply-${h.id}`}
+                                style={{
+                                  marginLeft: '16px',
+                                  paddingLeft: '8px',
+                                  borderLeft: `2px solid ${h.status === 'failed' ? 'rgba(248,113,113,0.5)' : 'rgba(140,180,255,0.25)'}`,
+                                  fontSize: '11px',
+                                  color: h.status === 'failed' ? '#fca5a5' : 'rgba(200,215,255,0.7)',
+                                  lineHeight: 1.4,
+                                  wordBreak: 'break-word',
+                                  display: '-webkit-box',
+                                  WebkitLineClamp: 2,
+                                  WebkitBoxOrient: 'vertical',
+                                  overflow: 'hidden',
+                                }}
+                              >
+                                {h.status === 'failed' ? (h.error || 'Failed') : h.replyPreview}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                      <div style={{ display: 'flex', justifyContent: 'center', padding: '8px 4px 2px' }}>
+                        <button
+                          onClick={() => { setSavePresetState({ source: 'history', selectedIds: [] }); setPresetNameInput(''); }}
+                          data-testid="button-history-save-preset"
+                          style={{
+                            background: 'rgba(124,58,237,0.18)',
+                            border: '1px solid rgba(180,150,255,0.4)',
+                            color: '#e9d8ff',
+                            fontSize: '11px',
+                            fontWeight: 600,
+                            padding: '4px 12px',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '5px',
+                          }}
+                          title="Pick history items to save as a reusable preset"
+                        >
+                          <Bookmark size={11} /> Save selection as preset
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+              {!queueCollapsed && activeQueueTab === 'presets' && (
+                <div data-testid="presets-list">
+                  {presets.length === 0 ? (
+                    <div style={{ padding: '12px 8px', fontSize: '12px', color: 'rgba(180,200,255,0.55)', textAlign: 'center' }}>
+                      No presets yet. Save a queue or batch from history to create one.
+                    </div>
+                  ) : (
+                    presets.map((p) => (
+                      <div
+                        key={p.id}
+                        data-testid={`preset-item-${p.id}`}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          padding: '6px 8px',
+                          borderRadius: '8px',
+                          borderBottom: '1px solid rgba(140,180,255,0.06)',
+                        }}
+                      >
+                        <Bookmark size={12} style={{ color: 'rgba(196,181,253,0.85)', flexShrink: 0 }} />
+                        <span style={{ flex: 1, fontSize: '12px', color: '#e2e8ff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={`${p.name}\n\n${p.items.map(i => '• ' + i.message).join('\n')}`}>
+                          {p.name}
+                        </span>
+                        <span style={{ fontSize: '10px', color: 'rgba(180,200,255,0.6)', flexShrink: 0 }}>{p.items.length} item{p.items.length === 1 ? '' : 's'}</span>
+                        <button
+                          onClick={() => queueAllPresetItems(p)}
+                          data-testid={`button-preset-queue-${p.id}`}
+                          title="Add all preset items to the end of the queue"
+                          style={{
+                            background: 'rgba(34,197,94,0.18)',
+                            border: '1px solid rgba(34,197,94,0.4)',
+                            color: '#bbf7d0',
+                            fontSize: '10px',
+                            fontWeight: 600,
+                            padding: '2px 8px',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '3px',
+                            flexShrink: 0,
+                          }}
+                        >
+                          <Play size={10} /> Queue
+                        </button>
+                        <button
+                          onClick={() => { if (window.confirm(`Delete preset "${p.name}"?`)) removePreset(p.id); }}
+                          data-testid={`button-preset-remove-${p.id}`}
+                          title="Delete preset"
+                          style={{
+                            background: 'transparent',
+                            border: 'none',
+                            color: 'rgba(220,150,150,0.65)',
+                            cursor: 'pointer',
+                            padding: '2px 4px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            flexShrink: 0,
+                          }}
+                        >
+                          <X size={12} />
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+              {!queueCollapsed && activeQueueTab === 'queue' && queue.map((it, idx) => {
                 const title = (it.message.split('\n')[0] || '').slice(0, 60) + ((it.message.length > 60 || it.message.includes('\n')) ? '…' : '');
                 const dotColor =
                   it.status === 'running' ? '#fbbf24' :
@@ -2579,6 +3028,163 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                   </div>
                 );
               })}
+              {!queueCollapsed && activeQueueTab === 'queue' && queue.length > 0 && (
+                <div style={{ display: 'flex', justifyContent: 'center', padding: '8px 4px 2px' }}>
+                  <button
+                    onClick={() => { setSavePresetState({ source: 'queue' }); setPresetNameInput(''); }}
+                    data-testid="button-queue-save-preset"
+                    style={{
+                      background: 'rgba(124,58,237,0.18)',
+                      border: '1px solid rgba(180,150,255,0.4)',
+                      color: '#e9d8ff',
+                      fontSize: '11px',
+                      fontWeight: 600,
+                      padding: '4px 12px',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                    }}
+                    title="Save the current queue as a named, reusable batch"
+                  >
+                    <Save size={11} /> Save queue as preset
+                  </button>
+                </div>
+              )}
+              {savePresetState && (
+                <div
+                  data-testid="save-preset-overlay"
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    background: 'rgba(5,12,30,0.86)',
+                    backdropFilter: 'blur(8px)',
+                    borderRadius: '14px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    padding: '12px 14px',
+                    gap: '8px',
+                    zIndex: 5,
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#e9d8ff', letterSpacing: '0.4px', textTransform: 'uppercase' }}>
+                      Save preset
+                    </span>
+                    <button
+                      onClick={() => { setSavePresetState(null); setPresetNameInput(''); }}
+                      data-testid="button-save-preset-cancel"
+                      style={{ background: 'transparent', border: 'none', color: 'rgba(220,150,150,0.8)', cursor: 'pointer', padding: '2px 4px', display: 'flex' }}
+                      title="Cancel"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                  <input
+                    autoFocus
+                    type="text"
+                    value={presetNameInput}
+                    onChange={(e) => setPresetNameInput(e.target.value)}
+                    placeholder="Preset name (e.g. Sunday planning)"
+                    data-testid="input-preset-name"
+                    style={{
+                      background: 'rgba(15,25,55,0.65)',
+                      border: '1px solid rgba(180,150,255,0.35)',
+                      borderRadius: '8px',
+                      padding: '6px 10px',
+                      color: '#fff',
+                      fontSize: '13px',
+                      outline: 'none',
+                    }}
+                  />
+                  {savePresetState.source === 'history' && (
+                    <div style={{ flex: 1, overflowY: 'auto', maxHeight: '180px', border: '1px solid rgba(140,180,255,0.15)', borderRadius: '8px', padding: '4px' }}>
+                      {history.length === 0 ? (
+                        <div style={{ padding: '8px', fontSize: '12px', color: 'rgba(180,200,255,0.55)', textAlign: 'center' }}>No history items.</div>
+                      ) : history.map(h => {
+                        const checked = !!savePresetState.selectedIds?.includes(h.id);
+                        const t = (h.message.split('\n')[0] || '').slice(0, 60) + (h.message.length > 60 ? '…' : '');
+                        return (
+                          <label
+                            key={h.id}
+                            data-testid={`preset-history-pick-${h.id}`}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '8px',
+                              padding: '4px 6px',
+                              cursor: 'pointer',
+                              borderRadius: '6px',
+                              background: checked ? 'rgba(124,58,237,0.18)' : 'transparent',
+                            }}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={checked}
+                              onChange={(e) => {
+                                setSavePresetState(s => {
+                                  if (!s) return s;
+                                  const ids = new Set(s.selectedIds || []);
+                                  if (e.target.checked) ids.add(h.id); else ids.delete(h.id);
+                                  return { ...s, selectedIds: Array.from(ids) };
+                                });
+                              }}
+                              style={{ flexShrink: 0 }}
+                            />
+                            <span style={{ flex: 1, fontSize: '12px', color: '#e2e8ff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {t || '(empty)'}
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  )}
+                  {savePresetState.source === 'queue' && (
+                    <div style={{ fontSize: '11px', color: 'rgba(180,200,255,0.7)' }}>
+                      Will save {queue.length} item{queue.length === 1 ? '' : 's'} from the current queue.
+                    </div>
+                  )}
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '6px' }}>
+                    <button
+                      onClick={async () => {
+                        const name = presetNameInput.trim();
+                        if (!name) return;
+                        let items: { message: string; image?: string }[] = [];
+                        if (savePresetState.source === 'queue') {
+                          items = queue.map(q => ({ message: q.message, image: q.image }));
+                        } else {
+                          const ids = new Set(savePresetState.selectedIds || []);
+                          items = history
+                            .filter(h => ids.has(h.id))
+                            .reverse()
+                            .map(h => ({ message: h.message, image: h.image }));
+                        }
+                        if (items.length === 0) return;
+                        await savePreset(name, items);
+                        setSavePresetState(null);
+                        setPresetNameInput('');
+                        setActiveQueueTab('presets');
+                      }}
+                      disabled={!presetNameInput.trim() || (savePresetState.source === 'history' && (savePresetState.selectedIds || []).length === 0) || (savePresetState.source === 'queue' && queue.length === 0)}
+                      data-testid="button-save-preset-confirm"
+                      style={{
+                        background: 'rgba(124,58,237,0.35)',
+                        border: '1px solid rgba(180,150,255,0.5)',
+                        color: '#fff',
+                        fontSize: '12px',
+                        fontWeight: 600,
+                        padding: '6px 14px',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        opacity: (!presetNameInput.trim() || (savePresetState.source === 'history' && (savePresetState.selectedIds || []).length === 0) || (savePresetState.source === 'queue' && queue.length === 0)) ? 0.5 : 1,
+                      }}
+                    >
+                      Save preset
+                    </button>
+                  </div>
+                </div>
+              )}
               <style>{`
                 @keyframes queue-pulse {
                   0%, 100% { opacity: 1; transform: scale(1); }

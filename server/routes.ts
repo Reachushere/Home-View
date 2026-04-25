@@ -7322,6 +7322,157 @@ ${fileContents.join('\n\n')}`;
     }
   });
 
+  // BrynAssist queue history — persistent log of the last ~50 completed/failed queue items.
+  // Each item: { id, message, image?, status, error?, replyPreview?, turnId?, completedAt }
+  const BA_HISTORY_KEY = 'bryn_assist_queue_history';
+  const BA_HISTORY_LIMIT = 50;
+  const readBaHistory = async (): Promise<any[]> => {
+    const row = await db.select().from(appState).where(eq(appState.key, BA_HISTORY_KEY)).limit(1);
+    if (row.length === 0) return [];
+    try {
+      const parsed = JSON.parse(row[0].value);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch { return []; }
+  };
+  const writeBaHistory = async (items: any[]): Promise<void> => {
+    const value = JSON.stringify(items);
+    const existing = await db.select().from(appState).where(eq(appState.key, BA_HISTORY_KEY)).limit(1);
+    if (existing.length > 0) {
+      await db.update(appState).set({ value, updatedAt: new Date() }).where(eq(appState.key, BA_HISTORY_KEY));
+    } else {
+      await db.insert(appState).values({ key: BA_HISTORY_KEY, value });
+    }
+  };
+
+  app.get("/api/ai/queue-history", async (req, res) => {
+    try {
+      if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ error: "Access denied" });
+      return res.json({ items: await readBaHistory() });
+    } catch {
+      return res.json({ items: [] });
+    }
+  });
+
+  app.post("/api/ai/queue-history", async (req, res) => {
+    try {
+      if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ error: "Access denied" });
+      const { message, image, status, error, replyPreview, turnId, completedAt } = req.body || {};
+      if (typeof message !== 'string' || !message.trim()) {
+        return res.status(400).json({ error: "message required" });
+      }
+      const items = await readBaHistory();
+      const item = {
+        id: `h_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`,
+        message: message.trim(),
+        image: typeof image === 'string' && image ? image : undefined,
+        status: status === 'failed' ? 'failed' : 'done',
+        error: error ? String(error).slice(0, 500) : undefined,
+        replyPreview: typeof replyPreview === 'string' ? replyPreview.slice(0, 280) : undefined,
+        turnId: typeof turnId === 'string' ? turnId : undefined,
+        completedAt: typeof completedAt === 'number' ? completedAt : Date.now(),
+      };
+      items.unshift(item);
+      const trimmed = items.slice(0, BA_HISTORY_LIMIT);
+      await writeBaHistory(trimmed);
+      return res.json({ item, items: trimmed });
+    } catch (e: any) {
+      return res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.delete("/api/ai/queue-history/:id", async (req, res) => {
+    try {
+      if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ error: "Access denied" });
+      const { id } = req.params;
+      const items = (await readBaHistory()).filter((it: any) => it && it.id !== id);
+      await writeBaHistory(items);
+      return res.json({ ok: true, items });
+    } catch (e: any) {
+      return res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.delete("/api/ai/queue-history", async (req, res) => {
+    try {
+      if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ error: "Access denied" });
+      await db.delete(appState).where(eq(appState.key, BA_HISTORY_KEY));
+      return res.json({ ok: true });
+    } catch (e: any) {
+      return res.status(500).json({ error: e.message });
+    }
+  });
+
+  // BrynAssist queue presets — named, reusable batches of queue items.
+  // Each preset: { id, name, items: [{ message, image? }], createdAt }
+  const BA_PRESETS_KEY = 'bryn_assist_queue_presets';
+  const readBaPresets = async (): Promise<any[]> => {
+    const row = await db.select().from(appState).where(eq(appState.key, BA_PRESETS_KEY)).limit(1);
+    if (row.length === 0) return [];
+    try {
+      const parsed = JSON.parse(row[0].value);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch { return []; }
+  };
+  const writeBaPresets = async (items: any[]): Promise<void> => {
+    const value = JSON.stringify(items);
+    const existing = await db.select().from(appState).where(eq(appState.key, BA_PRESETS_KEY)).limit(1);
+    if (existing.length > 0) {
+      await db.update(appState).set({ value, updatedAt: new Date() }).where(eq(appState.key, BA_PRESETS_KEY));
+    } else {
+      await db.insert(appState).values({ key: BA_PRESETS_KEY, value });
+    }
+  };
+
+  app.get("/api/ai/queue-presets", async (req, res) => {
+    try {
+      if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ error: "Access denied" });
+      return res.json({ items: await readBaPresets() });
+    } catch {
+      return res.json({ items: [] });
+    }
+  });
+
+  app.post("/api/ai/queue-presets", async (req, res) => {
+    try {
+      if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ error: "Access denied" });
+      const { name, items } = req.body || {};
+      if (typeof name !== 'string' || !name.trim()) return res.status(400).json({ error: "name required" });
+      if (!Array.isArray(items) || items.length === 0) return res.status(400).json({ error: "items array required" });
+      const cleanItems = items
+        .filter((it: any) => it && typeof it.message === 'string' && it.message.trim())
+        .map((it: any) => ({
+          message: String(it.message).trim(),
+          image: typeof it.image === 'string' && it.image ? it.image : undefined,
+        }))
+        .slice(0, 30);
+      if (cleanItems.length === 0) return res.status(400).json({ error: "no valid items" });
+      const presets = await readBaPresets();
+      const preset = {
+        id: `p_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`,
+        name: name.trim().slice(0, 60),
+        items: cleanItems,
+        createdAt: Date.now(),
+      };
+      presets.unshift(preset);
+      await writeBaPresets(presets);
+      return res.json({ preset, items: presets });
+    } catch (e: any) {
+      return res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.delete("/api/ai/queue-presets/:id", async (req, res) => {
+    try {
+      if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ error: "Access denied" });
+      const { id } = req.params;
+      const items = (await readBaPresets()).filter((it: any) => it && it.id !== id);
+      await writeBaPresets(items);
+      return res.json({ ok: true, items });
+    } catch (e: any) {
+      return res.status(500).json({ error: e.message });
+    }
+  });
+
   app.post("/api/ai/command", async (req, res) => {
     let heartbeatTimer: any = null;
     try {
