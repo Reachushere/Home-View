@@ -29288,6 +29288,16 @@ export default function Dashboard() {
                                     const semEndForBadge = dbSem?.semesterEndDate ? new Date(dbSem.semesterEndDate) : null;
                                     const isPastEndForBadge = !!(semEndForBadge && Date.now() > semEndForBadge.getTime() + 24*60*60*1000);
                                     const isAct = !!(dbSem && dbSem.isActive) && !isPastEndForBadge && !semesterEndConfirmed[sem.key];
+                                    // Hide the INACTIVE badge when the semester is also marked
+                                    // COMPLETE — the COMPLETE pill (rendered just below) already
+                                    // tells the user the semester is over, so the redundant grey
+                                    // INACTIVE pill just adds noise. Mirror the same isPast /
+                                    // isConfirmedEnded check the COMPLETE pill uses.
+                                    if (!isAct) {
+                                      const isPastForActive = !isCurrentSem && hasSemStarted(sem.key) && (() => { const semOrder = ['ss2025','f2025','w2026','ss2026','f2026','w2027','ss2027','f2027','w2028','ss2028','f2028','w2029']; const curIdx = semOrder.indexOf(currentSemKey); const semIdx = semOrder.indexOf(sem.key); return curIdx >= 0 && semIdx >= 0 && semIdx < curIdx; })();
+                                      const isConfirmedEndedForActive = semesterEndConfirmed[sem.key];
+                                      if (isPastForActive || isConfirmedEndedForActive) return null;
+                                    }
                                     return (
                                       <span
                                         className="font-bold tracking-wider uppercase rounded border cursor-pointer transition-colors whitespace-nowrap"
