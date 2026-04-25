@@ -654,6 +654,25 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
     return matches.slice(0, 12);
   }, [availableCourses, editInfo.courseCode]);
 
+  // Same predictive dropdown for the Course Name field — matches against the
+  // current courseName text and (like the code field) populates BOTH the code
+  // and name when a suggestion is picked, so the saved course stays aligned
+  // with what the degree-tracking page knows.
+  const [showNameAutocomplete, setShowNameAutocomplete] = useState(false);
+  const nameAutocompleteSuggestions = useMemo(() => {
+    if (!availableCourses || availableCourses.length === 0) return [];
+    const q = (editInfo.courseName || '').toUpperCase().trim();
+    const seen = new Set<string>();
+    const matches = availableCourses.filter(c => {
+      const cc = (c.code || '').toUpperCase().replace(/\s/g, '');
+      if (!cc || seen.has(cc)) return false;
+      seen.add(cc);
+      if (!q) return true;
+      return (c.name || '').toUpperCase().includes(q) || cc.includes(q);
+    });
+    return matches.slice(0, 12);
+  }, [availableCourses, editInfo.courseName]);
+
   useEffect(() => {
     if (!isEditingInfo) return;
     const validateFolders = async () => {
@@ -2669,9 +2688,48 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                       </div>
                     )}
                   </div>
-                  <div>
+                  <div className="relative">
                     <label className="text-white text-[9px] mb-0.5 block font-semibold">Course Name</label>
-                    <input className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1.5 placeholder:text-white/25" value={editInfo.courseName} onChange={(e) => setEditInfo({...editInfo, courseName: e.target.value})} placeholder="Local Politics" data-testid="input-edit-course-name" />
+                    <input
+                      className="w-full h-6 text-[10px] bg-white/10 border border-white/15 text-white rounded px-1.5 placeholder:text-white/25"
+                      value={editInfo.courseName}
+                      onChange={(e) => { setEditInfo({...editInfo, courseName: e.target.value}); setShowNameAutocomplete(true); }}
+                      onFocus={() => setShowNameAutocomplete(true)}
+                      onBlur={() => { setTimeout(() => setShowNameAutocomplete(false), 180); }}
+                      placeholder="Local Politics"
+                      autoComplete="off"
+                      data-testid="input-edit-course-name"
+                    />
+                    {showNameAutocomplete && nameAutocompleteSuggestions.length > 0 && (
+                      <div
+                        className="absolute left-0 right-0 top-full mt-0.5 rounded border shadow-2xl overflow-y-auto"
+                        style={{ zIndex: 9999, background: 'rgba(15,20,35,0.98)', borderColor: 'rgba(255,255,255,0.35)', maxHeight: '220px' }}
+                        data-testid="autocomplete-course-name-list"
+                      >
+                        {nameAutocompleteSuggestions.map(s => {
+                          const cleanCode = (s.code || '').replace(/\s/g, '').toUpperCase();
+                          return (
+                            <button
+                              key={cleanCode}
+                              type="button"
+                              className="block w-full text-left px-1.5 py-1 text-[10px] text-white hover:bg-white/15 border-b border-white/5 last:border-b-0"
+                              onMouseDown={(e) => {
+                                // onMouseDown (not onClick) so the input's onBlur
+                                // doesn't close the dropdown before the selection
+                                // registers.
+                                e.preventDefault();
+                                setEditInfo({ ...editInfo, courseCode: cleanCode, courseName: s.name || editInfo.courseName });
+                                setShowNameAutocomplete(false);
+                              }}
+                              data-testid={`autocomplete-course-name-${cleanCode}`}
+                            >
+                              <span className="font-bold">{cleanCode}</span>
+                              <span className="ml-1.5 text-white/70">{s.name}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                   <div>
                     <label className="text-white text-[9px] mb-0.5 block font-semibold">Display Name</label>
