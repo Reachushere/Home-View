@@ -1,0 +1,143 @@
+--- a/client/src/pages/dashboard.tsx
++++ b/client/src/pages/dashboard.tsx
+@@ -20165,7 +20165,11 @@
+                   currentSemIdx = latestEndedIdx;
+                 }
+                 const relevantSemKeys = currentSemIdx >= 0 ? semKeyOrder.slice(0, currentSemIdx + 1) : [];
+-                const letterToGpa: Record<string, number> = { 'A+': 4.33, 'A': 4.0, 'A-': 3.67, 'B+': 3.33, 'B': 3.0, 'B-': 2.67, 'C+': 2.33, 'C': 2.0, 'C-': 1.67, 'D': 1.0, 'F': 0 };
++                const letterToGpa: Record<string, number> = { 'A+': 4.33, 'A': 4.0, 'A-': 3.67, 'B+': 3.33, 'B': 3.0, 'B-': 2.67, 'C+': 2.33, 'C': 2.0, 'C-': 1.67, 'D+': 1.33, 'D': 1.0, 'D-': 0.67, 'F': 0 };
++                // Approximate percent for letter-only grades, so a percent average
++                // can still be computed (and a percent-based letter shown) even
++                // when the user only entered a letter for a course.
++                const letterToPct: Record<string, number> = { 'A+': 92, 'A': 87, 'A-': 82, 'B+': 78, 'B': 75, 'B-': 71, 'C+': 68, 'C': 65, 'C-': 61, 'D+': 58, 'D': 55, 'D-': 51, 'F': 40 };
+                 const pToGpa = (p: number) => { if (isNaN(p)) return 0; if (p >= 90) return 4.33; if (p < 50) return 0; const a: Array<[number, number]> = [[50,1.0],[60,1.67],[63,2.0],[67,2.33],[70,2.67],[73,3.0],[77,3.33],[80,3.67],[85,4.0],[90,4.33]]; for (let i = a.length - 1; i >= 0; i--) { const [lo, gLo] = a[i]; if (p >= lo) { const nx = a[i+1]; if (!nx) return gLo; const ratio = (p - lo) / (nx[0] - lo); return Math.round((gLo + ratio * (nx[1] - gLo)) * 100) / 100; } } return 0; };
+ 
+                 const semAllCourses: Record<string, { code: string }[]> = {};
+@@ -20175,9 +20179,13 @@
+                   semAllCourses[semKey].forEach(c => allDefCodes.add(c.code.toUpperCase().replace(/\s/g, '')));
+                 }
+ 
+-                const getGpaValsForSem = (semKey: string) => {
++                // Returns BOTH the GPA values and the percent values for the
++                // semester. Percent vals feed the percent-based letter lookup
++                // (rubric is keyed on percent) and the percent display itself.
++                const getValsForSem = (semKey: string): { gpa: number[]; pct: number[] } => {
+                   const courses = semAllCourses[semKey] || [];
+-                  const vals: number[] = [];
++                  const gpaVals: number[] = [];
++                  const pctVals: number[] = [];
+                   for (const c of courses) {
+                     const code = c.code.replace(/\s/g, '');
+                     const codeNorm = code.toUpperCase();
+@@ -20200,15 +20208,15 @@
+                         }
+                       }
+                     }
+-                    if (cg?.percent && cg.percent.trim()) { const p = parseFloat(cg.percent); if (!isNaN(p)) vals.push(pToGpa(p)); }
+-                    else if (cg?.grade && cg.grade.trim() && letterToGpa[cg.grade] !== undefined) { vals.push(letterToGpa[cg.grade]); }
+-                    else if (directGrade?.percent && directGrade.percent.trim()) { const p = parseFloat(directGrade.percent); if (!isNaN(p)) vals.push(pToGpa(p)); }
+-                    else if (directGrade?.grade && directGrade.grade.trim() && letterToGpa[directGrade.grade] !== undefined) { vals.push(letterToGpa[directGrade.grade]); }
+-                    else if (info?.grade && info.grade.trim() && letterToGpa[info.grade] !== undefined) { vals.push(letterToGpa[info.grade]); }
+-                    else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const p = parseFloat(electiveGrade.percent); if (!isNaN(p)) vals.push(pToGpa(p)); }
+-                    else if (electiveGrade?.grade && electiveGrade.grade.trim() && letterToGpa[electiveGrade.grade] !== undefined) { vals.push(letterToGpa[electiveGrade.grade]); }
++                    if (cg?.percent && cg.percent.trim()) { const p = parseFloat(cg.percent); if (!isNaN(p)) { gpaVals.push(pToGpa(p)); pctVals.push(p); } }
++                    else if (cg?.grade && cg.grade.trim() && letterToGpa[cg.grade] !== undefined) { gpaVals.push(letterToGpa[cg.grade]); if (letterToPct[cg.grade] !== undefined) pctVals.push(letterToPct[cg.grade]); }
++                    else if (directGrade?.percent && directGrade.percent.trim()) { const p = parseFloat(directGrade.percent); if (!isNaN(p)) { gpaVals.push(pToGpa(p)); pctVals.push(p); } }
++                    else if (directGrade?.grade && directGrade.grade.trim() && letterToGpa[directGrade.grade] !== undefined) { gpaVals.push(letterToGpa[directGrade.grade]); if (letterToPct[directGrade.grade] !== undefined) pctVals.push(letterToPct[directGrade.grade]); }
++                    else if (info?.grade && info.grade.trim() && letterToGpa[info.grade] !== undefined) { gpaVals.push(letterToGpa[info.grade]); if (letterToPct[info.grade] !== undefined) pctVals.push(letterToPct[info.grade]); }
++                    else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const p = parseFloat(electiveGrade.percent); if (!isNaN(p)) { gpaVals.push(pToGpa(p)); pctVals.push(p); } }
++                    else if (electiveGrade?.grade && electiveGrade.grade.trim() && letterToGpa[electiveGrade.grade] !== undefined) { gpaVals.push(letterToGpa[electiveGrade.grade]); if (letterToPct[electiveGrade.grade] !== undefined) pctVals.push(letterToPct[electiveGrade.grade]); }
+                   }
+-                  return vals;
++                  return { gpa: gpaVals, pct: pctVals };
+                 };
+ 
+                 // Are we ACTUALLY in an active semester right now? Distinct from
+@@ -20226,27 +20234,40 @@
+                   : null;
+ 
+                 const prevGpaVals: number[] = [];
++                const prevPctVals: number[] = [];
+                 for (const semKey of prevSemKeys) {
+-                  for (const v of getGpaValsForSem(semKey)) prevGpaVals.push(v);
++                  const v = getValsForSem(semKey);
++                  for (const g of v.gpa) prevGpaVals.push(g);
++                  for (const p of v.pct) prevPctVals.push(p);
+                 }
+                 const prevGpa = prevGpaVals.length > 0 ? prevGpaVals.reduce((a, b) => a + b, 0) / prevGpaVals.length : null;
++                const prevPct = prevPctVals.length > 0 ? prevPctVals.reduce((a, b) => a + b, 0) / prevPctVals.length : null;
+ 
+-                const termGpaVals: number[] = currentSemKey ? getGpaValsForSem(currentSemKey) : [];
+-                const termGpa = termGpaVals.length > 0 ? termGpaVals.reduce((a, b) => a + b, 0) / termGpaVals.length : null;
++                const termVals = currentSemKey ? getValsForSem(currentSemKey) : { gpa: [], pct: [] };
++                const termGpa = termVals.gpa.length > 0 ? termVals.gpa.reduce((a, b) => a + b, 0) / termVals.gpa.length : null;
++                const termPct = termVals.pct.length > 0 ? termVals.pct.reduce((a, b) => a + b, 0) / termVals.pct.length : null;
+                 const overallGpa = prevGpa;
++                const overallPct = prevPct;
+                 try { if (overallGpa !== null) localStorage.setItem('currentRunningGpa', overallGpa.toFixed(2)); } catch {}
+ 
+-                const gpaToLetter = (gpa: number): string => {
+-                  if (gpa >= 4.33) return 'A+';
+-                  if (gpa >= 4.0) return 'A';
+-                  if (gpa >= 3.67) return 'A-';
+-                  if (gpa >= 3.33) return 'B+';
+-                  if (gpa >= 3.0) return 'B';
+-                  if (gpa >= 2.67) return 'B-';
+-                  if (gpa >= 2.33) return 'C+';
+-                  if (gpa >= 2.0) return 'C';
+-                  if (gpa >= 1.67) return 'C-';
+-                  if (gpa >= 1.0) return 'D';
++                // Letter must come from the AVERAGE PERCENT, not the average
++                // GPA. The rubric maps percent→letter (A=85-89%, A-=80-84%);
++                // averaging GPAs and bucketing by GPA bands can pick a wrong
++                // letter (e.g. 85.2% is A per rubric, but its averaged-GPA
++                // equivalent of 3.83 falls in the A- band 3.67+).
++                const pctToLetter = (p: number): string => {
++                  if (p >= 90) return 'A+';
++                  if (p >= 85) return 'A';
++                  if (p >= 80) return 'A-';
++                  if (p >= 77) return 'B+';
++                  if (p >= 73) return 'B';
++                  if (p >= 70) return 'B-';
++                  if (p >= 67) return 'C+';
++                  if (p >= 63) return 'C';
++                  if (p >= 60) return 'C-';
++                  if (p >= 57) return 'D+';
++                  if (p >= 53) return 'D';
++                  if (p >= 50) return 'D-';
+                   return 'F';
+                 };
+                 return (
+@@ -20257,7 +20278,7 @@
+                       {termGpa !== null ? (
+                         <span className="flex items-center gap-0.5">
+                           <span className="font-bold text-[14px] leading-none" style={{ color: '#000' }}>{termGpa.toFixed(2)}</span>
+-                          <span className="text-[10px] font-bold leading-none" style={{ color: '#333' }}>({gpaToLetter(termGpa)})</span>
++                          <span className="text-[10px] font-bold leading-none" style={{ color: '#333' }}>({termPct !== null ? pctToLetter(termPct) : '—'})</span>
+                         </span>
+                       ) : (
+                         <span className="text-[12px] font-bold leading-none" style={{ color: '#bbb' }}>—</span>
+@@ -20269,7 +20290,7 @@
+                       {overallGpa !== null ? (
+                         <span className="flex items-center gap-0.5">
+                           <span className="font-bold text-[14px] leading-none" style={{ color: '#000' }}>{overallGpa.toFixed(2)}</span>
+-                          <span className="text-[10px] font-bold leading-none" style={{ color: '#333' }}>({gpaToLetter(overallGpa)})</span>
++                          <span className="text-[10px] font-bold leading-none" style={{ color: '#333' }}>({overallPct !== null ? pctToLetter(overallPct) : '—'})</span>
+                         </span>
+                       ) : (
+                         <span className="text-[12px] font-bold leading-none" style={{ color: '#bbb' }}>—</span>
+@@ -29152,7 +29173,13 @@
+                                     if (gpaVals.length === 0) return null;
+                                     const avgGpa = gpaVals.reduce((a, b) => a + b, 0) / gpaVals.length;
+                                     const avgPct = pctVals.reduce((a, b) => a + b, 0) / pctVals.length;
+-                                    const gpaLetter = avgGpa >= 4.33 ? 'A+' : avgGpa >= 4.0 ? 'A' : avgGpa >= 3.67 ? 'A-' : avgGpa >= 3.33 ? 'B+' : avgGpa >= 3.0 ? 'B' : avgGpa >= 2.67 ? 'B-' : avgGpa >= 2.33 ? 'C+' : avgGpa >= 2.0 ? 'C' : avgGpa >= 1.67 ? 'C-' : avgGpa >= 1.0 ? 'D' : 'F';
++                                    // Letter must come from the AVERAGE PERCENT, not the average
++                                    // GPA. The rubric maps percent→letter (A=85-89%, A-=80-84%,
++                                    // etc), and averaging GPAs and then bucketing by GPA bands
++                                    // can pick a different letter than averaging percents and
++                                    // bucketing by percent bands. Example: 85.2% is A per rubric
++                                    // but 3.83 (its averaged-GPA equivalent) falls in A- (3.67+).
++                                    const gpaLetter = avgPct >= 90 ? 'A+' : avgPct >= 85 ? 'A' : avgPct >= 80 ? 'A-' : avgPct >= 77 ? 'B+' : avgPct >= 73 ? 'B' : avgPct >= 70 ? 'B-' : avgPct >= 67 ? 'C+' : avgPct >= 63 ? 'C' : avgPct >= 60 ? 'C-' : avgPct >= 57 ? 'D+' : avgPct >= 53 ? 'D' : avgPct >= 50 ? 'D-' : 'F';
+                                     return (
+                                       <span
+                                         className="font-bold tracking-wider uppercase rounded border flex-shrink"
