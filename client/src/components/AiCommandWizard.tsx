@@ -508,8 +508,17 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
     status: 'queued' | 'running' | 'done' | 'failed';
     error?: string;
     createdAt: number;
+    startedAt?: number;
   };
   const [queue, setQueue] = useState<QueueItem[]>([]);
+  const [queueCollapsed, setQueueCollapsed] = useState(false);
+  const [nowTick, setNowTick] = useState(() => Date.now());
+  useEffect(() => {
+    const hasRunning = queue.some(it => it.status === 'running');
+    if (!hasRunning) return;
+    const t = setInterval(() => setNowTick(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, [queue]);
   const queueRef = useRef<QueueItem[]>([]);
   useEffect(() => { queueRef.current = queue; }, [queue]);
   const persistQueueDebounceRef = useRef<any>(null);
@@ -959,7 +968,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
     const userMsg: Message = { role: 'user', content: finalMsg, image: currentImage || undefined };
     setMessages(prev => [...prev, userMsg]);
     if (!overrideMsg) { setInput(''); setPastedImage(null); }
-    if (queueItemId) updateQueueItem(queueItemId, { status: 'running' });
+    if (queueItemId) updateQueueItem(queueItemId, { status: 'running', startedAt: Date.now() });
     let sendError: any = null;
     setLoading(true);
     setThinkingPhase('Working...');
@@ -2336,12 +2345,34 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 padding: '2px 8px 6px',
-                borderBottom: '1px solid rgba(140,180,255,0.12)',
-                marginBottom: '4px',
+                borderBottom: queueCollapsed ? 'none' : '1px solid rgba(140,180,255,0.12)',
+                marginBottom: queueCollapsed ? 0 : '4px',
               }}>
-                <span style={{ fontSize: '11px', fontWeight: 600, color: 'rgba(180,200,255,0.85)', letterSpacing: '0.4px', textTransform: 'uppercase' }}>
-                  Task queue · {queue.filter(it => it.status === 'queued' || it.status === 'running').length} pending
-                </span>
+                <button
+                  onClick={() => setQueueCollapsed(c => !c)}
+                  data-testid="button-queue-collapse"
+                  title={queueCollapsed ? 'Expand queue' : 'Collapse queue'}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    padding: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                  }}
+                >
+                  <span style={{
+                    fontSize: '10px',
+                    color: 'rgba(180,200,255,0.6)',
+                    transition: 'transform 0.15s',
+                    transform: queueCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
+                    display: 'inline-block',
+                  }}>▼</span>
+                  <span style={{ fontSize: '11px', fontWeight: 600, color: 'rgba(180,200,255,0.85)', letterSpacing: '0.4px', textTransform: 'uppercase' }}>
+                    Task queue · {queue.filter(it => it.status === 'queued' || it.status === 'running').length} pending
+                  </span>
+                </button>
                 <button
                   onClick={() => {
                     setQueue(curr => {
@@ -2366,7 +2397,7 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                   Clear
                 </button>
               </div>
-              {queue.map((it, idx) => {
+              {!queueCollapsed && queue.map((it, idx) => {
                 const title = (it.message.split('\n')[0] || '').slice(0, 60) + ((it.message.length > 60 || it.message.includes('\n')) ? '…' : '');
                 const dotColor =
                   it.status === 'running' ? '#fbbf24' :
@@ -2434,6 +2465,17 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
                       flexShrink: 0,
                     }}>
                       {statusLabel}
+                      {it.status === 'running' && it.startedAt && (
+                        <span data-testid={`text-queue-elapsed-${it.id}`} style={{ marginLeft: '4px', opacity: 0.8, fontVariantNumeric: 'tabular-nums' }}>
+                          {(() => {
+                            const sec = Math.max(0, Math.floor((nowTick - it.startedAt) / 1000));
+                            if (sec < 60) return `${sec}s`;
+                            const m = Math.floor(sec / 60);
+                            const s = sec % 60;
+                            return `${m}m${s.toString().padStart(2, '0')}s`;
+                          })()}
+                        </span>
+                      )}
                     </span>
                     {it.status === 'queued' && (
                       <>
@@ -2713,8 +2755,9 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
               }}
               onMouseEnter={e => { if (!e.currentTarget.disabled) e.currentTarget.style.transform = 'scale(1.08)'; }}
               onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
-              title={loading ? 'Add context (will be included in next response)' : 'Send message'}
+              title={loading ? 'Send next (queue at front — runs as soon as current task finishes)' : 'Send message'}
               data-testid="button-ai-command-send"
+              aria-label={loading ? 'Send next' : 'Send message'}
             >
               {loading ? <ArrowRight size={18} /> : <Send size={16} />}
             </button>
