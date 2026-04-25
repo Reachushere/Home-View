@@ -6608,6 +6608,14 @@ export default function Dashboard() {
     const active = section.members.filter(m => !isActiveInOtherLevel(m) && (checkedCourses[m] || inProgressCourses[m] || isL2InProgressFromL1(m) || (courseGrades[m]?.percent && courseGrades[m]?.percent?.trim() !== ''))).length;
     return Math.max(0, section.required - active);
   };
+  const isLevelComplete = (level: 'L1' | 'L2' | 'L3') => {
+    const sections = certSections[level];
+    if (!sections || sections.length === 0) return false;
+    return sections.every(s => {
+      const checked = s.members.filter(m => checkedCourses[m]).length;
+      return checked >= s.required;
+    });
+  };
   const isSectionAllGreen = (sectionIndex: number, level: 'L1' | 'L2' | 'L3') => {
     const section = certSections[level][sectionIndex];
     if (!section) return false;
@@ -20332,7 +20340,14 @@ export default function Dashboard() {
             </div>
             <div className="flex gap-3 items-stretch flex-1 min-h-0">
               {/* Level I */}
-              <div className={`flex-1 min-w-0 rounded-md pt-2 px-2 pb-1.5 text-[9px] flex flex-col ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`}>
+              <div className={`flex-1 min-w-0 rounded-md pt-2 px-2 pb-1.5 text-[9px] flex flex-col relative ${isLevelComplete('L1') ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`}>
+              {isLevelComplete('L1') && (
+                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', zIndex: 50, overflow: 'hidden' }} data-testid="stamp-complete-L1">
+                  <div style={{ transform: 'rotate(-20deg)', fontFamily: 'Impact, "Arial Black", sans-serif', fontWeight: 900, fontSize: 'clamp(4rem, 14vw, 10rem)', color: '#16a34a', opacity: 0.5, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', textShadow: '0 0 2px #16a34a' }}>
+                    COMPLETE
+                  </div>
+                </div>
+              )}
               <div className="border-2 border-black flex flex-col min-h-0 flex-1">
                 <div className="shrink-0">
                   <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l1Progress) }}>
@@ -20470,7 +20485,14 @@ export default function Dashboard() {
               </div>
 
               {/* Level II */}
-              <div className={`flex-1 min-w-0 rounded-md p-2 text-[9px] flex flex-col ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`}>
+              <div className={`flex-1 min-w-0 rounded-md p-2 text-[9px] flex flex-col relative ${isLevelComplete('L2') ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`}>
+              {isLevelComplete('L2') && (
+                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', zIndex: 50, overflow: 'hidden' }} data-testid="stamp-complete-L2">
+                  <div style={{ transform: 'rotate(-20deg)', fontFamily: 'Impact, "Arial Black", sans-serif', fontWeight: 900, fontSize: 'clamp(4rem, 14vw, 10rem)', color: '#16a34a', opacity: 0.5, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', textShadow: '0 0 2px #16a34a' }}>
+                    COMPLETE
+                  </div>
+                </div>
+              )}
               <div className="border-2 border-black flex flex-col min-h-0 flex-1">
                 <div className="shrink-0">
                   <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l2Progress) }}>
@@ -20629,7 +20651,14 @@ export default function Dashboard() {
               </div>
 
               {/* Level III */}
-              <div className="flex-1 min-w-0 rounded-md p-2 text-[9px] bg-white text-black flex flex-col">
+              <div className={`flex-1 min-w-0 rounded-md p-2 text-[9px] flex flex-col relative ${isLevelComplete('L3') ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`}>
+              {isLevelComplete('L3') && (
+                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', zIndex: 50, overflow: 'hidden' }} data-testid="stamp-complete-L3">
+                  <div style={{ transform: 'rotate(-20deg)', fontFamily: 'Impact, "Arial Black", sans-serif', fontWeight: 900, fontSize: 'clamp(4rem, 14vw, 10rem)', color: '#16a34a', opacity: 0.5, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', textShadow: '0 0 2px #16a34a' }}>
+                    COMPLETE
+                  </div>
+                </div>
+              )}
               <div className="border-2 border-black flex flex-col min-h-0 flex-1">
                 <div className="shrink-0">
                   <div className="flex border-b border-black transition-colors duration-300" style={{ backgroundColor: getHeaderColor(l3Progress) }}>
