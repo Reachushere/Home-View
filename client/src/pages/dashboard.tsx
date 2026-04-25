@@ -20402,7 +20402,7 @@ export default function Dashboard() {
               <div className={`flex-1 min-w-0 rounded-md pt-2 px-2 pb-1.5 text-[9px] flex flex-col relative ${isLevelComplete('L1') ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`}>
               {isLevelComplete('L1') && (
                 <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', zIndex: 50, overflow: 'hidden' }} data-testid="stamp-complete-L1">
-                  <div style={{ transform: 'rotate(-20deg)', fontFamily: 'Impact, "Arial Black", sans-serif', fontWeight: 900, fontSize: 'clamp(4rem, 14vw, 10rem)', color: '#16a34a', opacity: 0.5, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', textShadow: '0 0 2px #16a34a' }}>
+                  <div style={{ transform: 'rotate(-35deg)', fontFamily: 'Impact, "Arial Black", sans-serif', fontWeight: 900, fontSize: 'clamp(3rem, 11vw, 7.5rem)', color: '#16a34a', opacity: 0.5, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', textShadow: '0 0 2px #16a34a' }}>
                     COMPLETE
                   </div>
                 </div>
@@ -20547,7 +20547,7 @@ export default function Dashboard() {
               <div className={`flex-1 min-w-0 rounded-md p-2 text-[9px] flex flex-col relative ${isLevelComplete('L2') ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`}>
               {isLevelComplete('L2') && (
                 <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', zIndex: 50, overflow: 'hidden' }} data-testid="stamp-complete-L2">
-                  <div style={{ transform: 'rotate(-20deg)', fontFamily: 'Impact, "Arial Black", sans-serif', fontWeight: 900, fontSize: 'clamp(4rem, 14vw, 10rem)', color: '#16a34a', opacity: 0.5, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', textShadow: '0 0 2px #16a34a' }}>
+                  <div style={{ transform: 'rotate(-35deg)', fontFamily: 'Impact, "Arial Black", sans-serif', fontWeight: 900, fontSize: 'clamp(3rem, 11vw, 7.5rem)', color: '#16a34a', opacity: 0.5, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', textShadow: '0 0 2px #16a34a' }}>
                     COMPLETE
                   </div>
                 </div>
@@ -20713,7 +20713,7 @@ export default function Dashboard() {
               <div className={`flex-1 min-w-0 rounded-md p-2 text-[9px] flex flex-col relative ${isLevelComplete('L3') ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`}>
               {isLevelComplete('L3') && (
                 <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', zIndex: 50, overflow: 'hidden' }} data-testid="stamp-complete-L3">
-                  <div style={{ transform: 'rotate(-20deg)', fontFamily: 'Impact, "Arial Black", sans-serif', fontWeight: 900, fontSize: 'clamp(4rem, 14vw, 10rem)', color: '#16a34a', opacity: 0.5, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', textShadow: '0 0 2px #16a34a' }}>
+                  <div style={{ transform: 'rotate(-35deg)', fontFamily: 'Impact, "Arial Black", sans-serif', fontWeight: 900, fontSize: 'clamp(3rem, 11vw, 7.5rem)', color: '#16a34a', opacity: 0.5, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', textShadow: '0 0 2px #16a34a' }}>
                     COMPLETE
                   </div>
                 </div>
