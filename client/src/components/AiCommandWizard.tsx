@@ -545,27 +545,36 @@ export function AiCommandWizard({ isOpen, onClose }: AiCommandWizardProps) {
       .catch(() => {});
   }, [persistQueue]);
   const addToQueue = useCallback((message: string, image?: string | null, atFront = false): QueueItem => {
+    // Optimistic insert with a client-generated id; the server POST will canonicalise the id and
+    // we'll patch the local item with the server-assigned id once the response lands.
+    const tempId = `q_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
     const item: QueueItem = {
-      id: `q_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`,
+      id: tempId,
       message,
       image: image || undefined,
       status: 'queued',
       createdAt: Date.now(),
     };
-    setQueue(curr => {
-      const next = atFront ? [item, ...curr] : [...curr, item];
-      persistQueue(next);
-      return next;
-    });
+    setQueue(curr => (atFront ? [item, ...curr] : [...curr, item]));
+    fetch('/api/ai/queue', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message, image: image || undefined, position: atFront ? 'front' : 'end' }),
+    })
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (d?.item?.id) {
+          setQueue(curr => curr.map(q => q.id === tempId ? { ...q, id: d.item.id, createdAt: d.item.createdAt } : q));
+        }
+      })
+      .catch(() => {});
     return item;
-  }, [persistQueue]);
+  }, []);
   const removeFromQueue = useCallback((id: string) => {
-    setQueue(curr => {
-      const next = curr.filter(it => it.id !== id);
-      persistQueue(next);
-      return next;
-    });
-  }, [persistQueue]);
+    // Optimistic removal + server-side per-item DELETE (no full-array overwrite).
+    setQueue(curr => curr.filter(it => it.id !== id));
+    fetch(`/api/ai/queue/${encodeURIComponent(id)}`, { method: 'DELETE' }).catch(() => {});
+  }, []);
   const updateQueueItem = useCallback((id: string, patch: Partial<QueueItem>) => {
     setQueue(curr => {
       const next = curr.map(it => it.id === id ? { ...it, ...patch } : it);
