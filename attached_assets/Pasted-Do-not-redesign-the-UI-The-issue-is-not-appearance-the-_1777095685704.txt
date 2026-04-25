@@ -1,0 +1,95 @@
+Do not redesign the UI.
+
+The issue is not appearance — the assistant fails to execute core functionality and returns errors instead of performing actions.
+
+Your task is to repair the existing local Raspberry Pi AI assistant so it functions as a reliable, Replit-style coding assistant.
+
+IMPORTANT:
+“Replit-style” means specific capabilities, not a full clone. Do not attempt to rebuild Replit. Instead, implement the following working features:
+
+REQUIRED CAPABILITIES:
+
+1. Project Awareness
+
+* Open/select a project folder
+* Recursively read directory structure
+* Display file tree
+
+2. File Operations
+
+* Read files reliably
+* Write/edit files safely
+* Handle Linux/Raspberry Pi paths correctly
+* Respect permissions
+
+3. AI Integration
+
+* Send file content to the model
+* Receive usable responses (not errors)
+* Handle token limits or chunking if needed
+
+4. Code Assistance
+
+* Explain files and structure
+* Suggest code changes
+* Generate edits based on instructions
+
+5. Safe Editing Workflow
+
+* Show diff before applying changes
+* Require user confirmation before writing
+* Log all changes
+
+6. Stability
+
+* No repeated runtime errors
+* Proper error handling with meaningful messages
+* No silent failures
+
+7. Local Execution
+
+* Runs fully on Raspberry Pi (or uses a clearly defined API)
+* No hidden Replit dependencies
+* All environment variables documented
+
+CONSTRAINTS:
+
+* Do not change UI unless required to connect functionality
+* Do not stop after partial fixes
+* Do not leave any core feature non-functional
+* Do not replace working components unnecessarily
+
+DEBUG PROCESS (MANDATORY):
+
+1. Inspect entire codebase
+2. Trace UI → backend → filesystem → AI calls
+3. Identify all failure points
+4. Fix them systematically
+5. Test after each fix, then continue
+
+ACCEPTANCE TEST (MUST PASS):
+
+Using a test project folder:
+
+* assistant lists files
+* assistant reads a file
+* assistant explains it
+* assistant proposes a change
+* assistant shows a diff
+* assistant applies the change after confirmation
+* file is actually modified on disk
+
+If any step fails, continue fixing until all pass.
+
+FINAL OUTPUT MUST INCLUDE:
+
+* root causes of failures
+* files modified
+* exact fixes applied
+* required environment variables
+* exact commands to run on Raspberry Pi
+* any remaining limitations
+
+Do not give a summary without fixing the system.
+
+Complete the repair fully.
