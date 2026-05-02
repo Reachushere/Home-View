@@ -436,6 +436,9 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
             status={editDetailsStatus}
             onClick={onOpenCourseDetails}
             width={300}
+            // Match the Course Details dialog's own page gradient so the
+            // pipeline's entry-point box visually echoes the page it opens.
+            background="linear-gradient(180deg, #3a8bbf 0%, color-mix(in srgb, #164a72 70%, black) 100%)"
             testId={`pipeline-edit-details-${course.code.toLowerCase()}`}
           />
         </div>
