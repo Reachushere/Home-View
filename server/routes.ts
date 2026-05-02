@@ -4334,6 +4334,16 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 
       const syllabusRow = await db.select().from(appState).where(eq(appState.key, 'courseSyllabusPaths')).limit(1);
       const syllabusPaths: Record<string, string> = syllabusRow.length ? JSON.parse(syllabusRow[0].value || '{}') : {};
+      // User-provided custom OneDrive paths for the course's Assignments
+      // and Textbook folders. Stored as a per-course map keyed by course
+      // code (or normalized variants). When set, the health check uses
+      // these paths instead of (or in addition to) probing for an
+      // "Assignments" / "Textbook" subfolder by name inside the matched
+      // course folder.
+      const assignmentsRow = await db.select().from(appState).where(eq(appState.key, 'courseAssignmentsPaths')).limit(1);
+      const assignmentsPaths: Record<string, string> = assignmentsRow.length ? JSON.parse(assignmentsRow[0].value || '{}') : {};
+      const textbookRow = await db.select().from(appState).where(eq(appState.key, 'courseTextbookPaths')).limit(1);
+      const textbookPaths: Record<string, string> = textbookRow.length ? JSON.parse(textbookRow[0].value || '{}') : {};
 
       const courses: {
         code: string;
@@ -4341,6 +4351,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         slotNum: number;
         syllabusLinked: boolean;
         syllabusPath: string | null;
+        assignmentsPath?: string | null;
+        textbookPath?: string | null;
         moduleWeeks: Record<number, { count: number; ttsReady: number }>;
         readingWeeks: Record<number, { count: number; ttsReady: number }>;
         totalModules: number;
@@ -4363,6 +4375,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         // syllabusPath may be filled in below by the OneDrive probe if the
         // file lives in the course's Syllabus subfolder; recompute after.
         let syllabusPath: string | null = syllabusPaths[code] || syllabusPaths[code.toUpperCase()] || syllabusPaths[cleanCode] || null;
+        // User-provided custom OneDrive paths for Assignments / Textbook
+        // (resolved with the same multi-key lookup as syllabusPaths so it
+        // doesn't matter whether the user keyed by raw code, uppercase
+        // code, or whitespace-stripped lowercase variant).
+        const userAssignmentsPath: string | null = assignmentsPaths[code] || assignmentsPaths[code.toUpperCase()] || assignmentsPaths[cleanCode] || null;
+        const userTextbookPath: string | null = textbookPaths[code] || textbookPaths[code.toUpperCase()] || textbookPaths[cleanCode] || null;
 
         const moduleWeeks: Record<number, { count: number; ttsReady: number }> = {};
         const readingWeeks: Record<number, { count: number; ttsReady: number }> = {};
@@ -4512,9 +4530,47 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         const isNewSyllabusEra = semKey.startsWith('ss') && parseInt(semKey.slice(2)) >= 2026;
         const effectiveSyllabusLinked = isNewSyllabusEra ? (syllabusFileInFolder || hasSyllabus) : hasSyllabus;
 
+        // ────────── Honor user-provided custom paths ──────────
+        // If the user has explicitly provided a path for syllabus /
+        // assignments / textbook, treat the corresponding "FolderExists"
+        // flag as true. For assignments + textbook, additionally try to
+        // verify the path actually resolves on OneDrive — if it does,
+        // we're confident it exists; if listing fails (e.g. no token), we
+        // STILL trust the user's path so the UI doesn't keep nagging
+        // them about something they've already configured.
+        let resolvedAssignmentsPath: string | null = userAssignmentsPath;
+        let resolvedTextbookPath: string | null = userTextbookPath;
+        if (hasSyllabus) {
+          // The user has linked a syllabus — that's all the "folder check"
+          // is really trying to confirm. Don't keep flagging it missing.
+          syllabusFolderExists = true;
+        }
+        if (userAssignmentsPath) {
+          assignmentsFolderExists = true;
+          try {
+            const { listOneDriveFolderChildren } = await import("./onedrive");
+            await listOneDriveFolderChildren(userAssignmentsPath);
+          } catch (e: any) {
+            // Listing failed — keep the user's path but log so we can
+            // surface a different, more accurate warning later.
+            console.log(`[Health Check] User assignments path for ${code} failed to list: ${e?.message}`);
+          }
+        }
+        if (userTextbookPath) {
+          textbookFolderExists = true;
+          try {
+            const { listOneDriveFolderChildren } = await import("./onedrive");
+            await listOneDriveFolderChildren(userTextbookPath);
+          } catch (e: any) {
+            console.log(`[Health Check] User textbook path for ${code} failed to list: ${e?.message}`);
+          }
+        }
+
         courses.push({
           code, name, slotNum: i,
           syllabusLinked: effectiveSyllabusLinked, syllabusPath,
+          assignmentsPath: resolvedAssignmentsPath,
+          textbookPath: resolvedTextbookPath,
           syllabusFolderExists, assignmentsFolderExists, textbookFolderExists,
           courseFolderPath,
           moduleWeeks, readingWeeks,
@@ -27705,6 +27761,49 @@ document.body.removeChild(a);
       res.json({});
     }
   });
+
+  // ────────── Per-course Assignments + Textbook folder paths ──────────
+  // Mirrors /api/syllabus/paths so the user can paste a custom OneDrive
+  // path for either folder when they live somewhere other than the
+  // expected ${courseFolderPath}/Assignments or ${courseFolderPath}/Textbook
+  // subfolder. The health check honors these paths via courseAssignmentsPaths
+  // and courseTextbookPaths in app_state.
+  for (const kind of ['assignments', 'textbook'] as const) {
+    const stateKey = kind === 'assignments' ? 'courseAssignmentsPaths' : 'courseTextbookPaths';
+    app.get(`/api/${kind}/paths`, async (_req, res) => {
+      try {
+        const row = await db.select().from(appState).where(eq(appState.key, stateKey)).limit(1);
+        const paths = row.length > 0 ? JSON.parse(row[0].value) : {};
+        res.json(paths);
+      } catch (err: any) {
+        console.error(`Error getting ${kind} paths:`, err);
+        res.json({});
+      }
+    });
+    app.post(`/api/${kind}/paths`, async (req, res) => {
+      try {
+        const { courseCode, folderPath } = req.body;
+        if (!courseCode) return res.status(400).json({ error: "courseCode required" });
+        const row = await db.select().from(appState).where(eq(appState.key, stateKey)).limit(1);
+        const paths = row.length > 0 ? JSON.parse(row[0].value) : {};
+        if (folderPath && typeof folderPath === 'string' && folderPath.trim()) {
+          paths[courseCode] = folderPath.trim();
+        } else {
+          delete paths[courseCode];
+        }
+        const value = JSON.stringify(paths);
+        if (row.length > 0) {
+          await db.update(appState).set({ value, updatedAt: new Date() }).where(eq(appState.key, stateKey));
+        } else {
+          await db.insert(appState).values({ key: stateKey, value });
+        }
+        res.json({ success: true });
+      } catch (err: any) {
+        console.error(`Error saving ${kind} path:`, err);
+        res.status(500).json({ error: err.message });
+      }
+    });
+  }
 
   app.post("/api/syllabus/paths", async (req, res) => {
     try {
