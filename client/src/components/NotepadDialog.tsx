@@ -733,10 +733,10 @@ export default function NotepadDialog({ isOpen, onClose, colorSettings, onUndock
 
         {activeNote && (
           <div className="flex items-center gap-1 px-3 py-1.5 border-b border-white/15 flex-shrink-0" style={{ background: 'rgba(0,0,0,0.15)' }}>
-            <button onClick={() => execCommand('bold')} className="p-1 rounded hover:bg-white/10 text-white/70 hover:text-white" title="Bold" data-testid="format-bold"><Bold className="h-3.5 w-3.5" /></button>
-            <button onClick={() => execCommand('italic')} className="p-1 rounded hover:bg-white/10 text-white/70 hover:text-white" title="Italic" data-testid="format-italic"><Italic className="h-3.5 w-3.5" /></button>
-            <button onClick={() => execCommand('insertUnorderedList')} className="p-1 rounded hover:bg-white/10 text-white/70 hover:text-white" title="Bullet List" data-testid="format-list"><List className="h-3.5 w-3.5" /></button>
-            <button onClick={insertCheckbox} className="p-1 rounded hover:bg-white/10 text-white/70 hover:text-white" title="Checkbox" data-testid="format-checkbox"><CheckSquare2 className="h-3.5 w-3.5" /></button>
+            <button onMouseDown={(e) => e.preventDefault()} onClick={() => execCommand('bold')} className="p-1 rounded hover:bg-white/10 text-white/70 hover:text-white" title="Bold" data-testid="format-bold"><Bold className="h-3.5 w-3.5" /></button>
+            <button onMouseDown={(e) => e.preventDefault()} onClick={() => execCommand('italic')} className="p-1 rounded hover:bg-white/10 text-white/70 hover:text-white" title="Italic" data-testid="format-italic"><Italic className="h-3.5 w-3.5" /></button>
+            <button onMouseDown={(e) => e.preventDefault()} onClick={() => execCommand('insertUnorderedList')} className="p-1 rounded hover:bg-white/10 text-white/70 hover:text-white" title="Bullet List" data-testid="format-list"><List className="h-3.5 w-3.5" /></button>
+            <button onMouseDown={(e) => e.preventDefault()} onClick={insertCheckbox} className="p-1 rounded hover:bg-white/10 text-white/70 hover:text-white" title="Checkbox" data-testid="format-checkbox"><CheckSquare2 className="h-3.5 w-3.5" /></button>
             <div className="w-px h-4 bg-white/20 mx-1" />
             <div className="relative">
               <button onClick={() => { setShowFontSize(!showFontSize); setShowFontColor(false); }} className="p-1 rounded hover:bg-white/10 text-white/70 hover:text-white flex items-center gap-0.5" title="Font Size" data-testid="format-font-size"><Type className="h-3.5 w-3.5" /><span className="text-[9px]">▼</span></button>
