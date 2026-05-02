@@ -451,53 +451,193 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
           />
         </div>
 
-        {/* Branch into Module & Reading paths */}
-        <div style={{ position: 'relative', height: 22, margin: '4px 0' }}>
-          <div style={{ position: 'absolute', left: '50%', top: 0, width: 2, height: 8, background: STATUS_COLOR[worst(moduleFolderStatus, readingFolderStatus)], boxShadow: `0 0 6px ${STATUS_GLOW[worst(moduleFolderStatus, readingFolderStatus)]}`, transform: 'translateX(-1px)' }} />
-          <div style={{ position: 'absolute', left: '20%', right: '20%', top: 8, height: 2, background: STATUS_COLOR[worst(moduleFolderStatus, readingFolderStatus)], boxShadow: `0 0 6px ${STATUS_GLOW[worst(moduleFolderStatus, readingFolderStatus)]}` }} />
-          <div style={{ position: 'absolute', left: '20%', top: 8, width: 2, height: 12, background: STATUS_COLOR[moduleFolderStatus], boxShadow: `0 0 6px ${STATUS_GLOW[moduleFolderStatus]}` }} />
-          <div style={{ position: 'absolute', right: '20%', top: 8, width: 2, height: 12, background: STATUS_COLOR[readingFolderStatus], boxShadow: `0 0 6px ${STATUS_GLOW[readingFolderStatus]}` }} />
-        </div>
+        {/* ════════ SECTION: WEEKLY CONTENT FOLDERS ════════
+            Module + Reading folder boxes are STACKED (module on top with
+            chip-on-left, reading below with chip-on-right). The weeks for
+            each folder live INSIDE that row's status-colored "orange box"
+            because a module/reading folder is only meaningful in the
+            context of the per-week files it actually holds.
 
-        {/* ════════ SECTION: WEEKLY CONTENT FOLDERS ════════ */}
+            Wire routing (per user spec):
+              [Calendar Row]
+                    |
+                ____|____
+               |         |   ← right arm continues DOWN past module row
+               V         |
+              [Mod chip][weeks ───────────]
+                                          |
+                                   _______|
+                                  |       |
+                                  V       V
+                                 [weeks ──][Read chip]
+                                          |
+                                          V
+                                        [Sync]
+        */}
         <SectionLabel>Weekly Content Folders</SectionLabel>
-        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, padding: '0 6%' }}>
-          <NodeBox
-            label="Module Folder"
-            sublabel={moduleFolder || `${oneDrivePath}/Week N/Module/`}
-            Icon={Folder}
-            status={moduleFolderStatus}
-            pencil
-            pencilTitle="Update OneDrive path for weekly module folders"
-            pencilInitialValue={moduleFolder || ''}
-            pencilPlaceholder="/path/to/module/root"
-            onPencilSubmit={(v) => renameSemFolder('moduleFolder', v)}
-            onClick={() => onOpenWizard('module_folder' as any)}
-            width={210}
-            testId={`pipeline-module-folder-${course.code.toLowerCase()}`}
-          />
-          <NodeBox
-            label="Reading Folder"
-            sublabel={readingFolder || `${oneDrivePath}/Week N/Reading/`}
-            Icon={Folder}
-            status={readingFolderStatus}
-            pencil
-            pencilTitle="Update OneDrive path for weekly reading folders"
-            pencilInitialValue={readingFolder || ''}
-            pencilPlaceholder="/path/to/reading/root"
-            onPencilSubmit={(v) => renameSemFolder('readingFolder', v)}
-            onClick={() => onOpenWizard('reading_folder' as any)}
-            width={210}
-            testId={`pipeline-reading-folder-${course.code.toLowerCase()}`}
-          />
-        </div>
+        {(() => {
+          // Layout constants used by the wire-routing absolute elements so
+          // the right arm always runs cleanly from the top splitter down
+          // past the module row to the pre-reading splitter.
+          const TOP_SPLIT_H = 18;
+          const ROW_MIN_H = 60;
+          const ROW_GAP = 10;
+          const PRE_READ_SPLIT_H = 18;
+          const TOP_BUS_Y = 6;             // y of the top H-bus inside the splitter
+          const PRE_READ_BUS_Y = 12;       // y of the H-bus inside the pre-read splitter
+          const ARM_TOP = TOP_BUS_Y;       // wrapper-relative
+          const ARM_BOTTOM_Y = TOP_SPLIT_H + ROW_MIN_H + ROW_GAP + PRE_READ_BUS_Y;
+          const ARM_HEIGHT = ARM_BOTTOM_Y - ARM_TOP;
 
-        {/* Merge into Sync */}
-        <div style={{ position: 'relative', height: 22, margin: '4px 0' }}>
-          <div style={{ position: 'absolute', left: '20%', top: 0, width: 2, height: 10, background: STATUS_COLOR[moduleFolderStatus], boxShadow: `0 0 6px ${STATUS_GLOW[moduleFolderStatus]}` }} />
-          <div style={{ position: 'absolute', right: '20%', top: 0, width: 2, height: 10, background: STATUS_COLOR[readingFolderStatus], boxShadow: `0 0 6px ${STATUS_GLOW[readingFolderStatus]}` }} />
-          <div style={{ position: 'absolute', left: '20%', right: '20%', top: 10, height: 2, background: STATUS_COLOR[syncStatus], boxShadow: `0 0 6px ${STATUS_GLOW[syncStatus]}` }} />
-          <div style={{ position: 'absolute', left: '50%', top: 12, width: 2, height: 10, background: STATUS_COLOR[syncStatus], boxShadow: `0 0 6px ${STATUS_GLOW[syncStatus]}`, transform: 'translateX(-1px)' }} />
+          // Builds a single week cell that lives inside one of the orange boxes.
+          // Status comes from per-week count (file present?) and the cell is
+          // tinted with the course's Module or Reading color when populated.
+          const renderWeekCell = (
+            w: number,
+            slot: { count: number; ttsReady: number } | undefined,
+            kind: 'module' | 'reading',
+          ) => {
+            const count = slot?.count || 0;
+            const ttsReady = slot?.ttsReady || 0;
+            const cellColor = kind === 'module' ? modColor : readColor;
+            const ok = count > 0;
+            return (
+              <div
+                key={w}
+                onClick={(e) => { e.stopPropagation(); onOpenWizard(kind === 'module' ? 'module_folder' : 'reading_folder', { weekNum: w, uploadType: kind }); }}
+                title={`Week ${w} · ${kind}: ${count} file${count === 1 ? '' : 's'} indexed${count > 0 ? ` · TTS ${ttsReady}/${count}` : ''}`}
+                data-testid={`pipeline-week-${kind}-${course.code.toLowerCase()}-${w}`}
+                style={{
+                  flex: 1,
+                  minWidth: 24,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 1,
+                  padding: '4px 2px',
+                  borderRadius: 5,
+                  background: ok ? cellColor : 'rgba(255,255,255,0.05)',
+                  opacity: ok ? 1 : 0.55,
+                  boxShadow: ok
+                    ? 'inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.18), 0 1px 2px rgba(0,0,0,0.25)'
+                    : 'none',
+                  border: ok ? '1px solid rgba(0,0,0,0.18)' : '1px dashed rgba(255,255,255,0.18)',
+                  cursor: 'pointer',
+                  transition: 'transform 120ms ease',
+                }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-1px)'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = ''; }}
+              >
+                <span style={{ fontSize: 8, fontWeight: 700, color: '#fff', textShadow: '0 1px 1px rgba(0,0,0,0.7)', lineHeight: 1 }}>W{w}</span>
+                <span style={{ fontSize: 10, fontWeight: 800, color: '#fff', textShadow: '0 1px 1px rgba(0,0,0,0.7)', lineHeight: 1 }}>{count}</span>
+                {ok && ttsReady === count && (
+                  <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 3px #10b981' }} title="TTS ready" />
+                )}
+              </div>
+            );
+          };
+
+          const orangeBoxStyle = (s: Status): React.CSSProperties => ({
+            flex: 1,
+            borderRadius: 8,
+            border: `1.5px solid ${STATUS_COLOR[s]}aa`,
+            background: `linear-gradient(180deg, ${STATUS_COLOR[s]}1f 0%, ${STATUS_COLOR[s]}08 100%)`,
+            boxShadow: `0 0 8px ${STATUS_GLOW[s]}`,
+            padding: '6px 8px',
+            display: 'flex',
+            gap: 3,
+            alignItems: 'stretch',
+            minHeight: ROW_MIN_H - 12,
+          });
+
+          return (
+            <div style={{ position: 'relative', padding: '0 4%' }}>
+              {/* ───── Top splitter: drops from Calendar Row, splits L+R ───── */}
+              <div style={{ position: 'relative', height: TOP_SPLIT_H }}>
+                {/* down from Calendar Row */}
+                <div style={{ position: 'absolute', left: '50%', top: 0, width: 2, height: TOP_BUS_Y, background: STATUS_COLOR[worst(moduleFolderStatus, readingFolderStatus)], boxShadow: `0 0 6px ${STATUS_GLOW[worst(moduleFolderStatus, readingFolderStatus)]}`, transform: 'translateX(-1px)' }} />
+                {/* horizontal bus */}
+                <div style={{ position: 'absolute', left: '4%', right: '4%', top: TOP_BUS_Y, height: 2, background: STATUS_COLOR[worst(moduleFolderStatus, readingFolderStatus)], boxShadow: `0 0 6px ${STATUS_GLOW[worst(moduleFolderStatus, readingFolderStatus)]}` }} />
+                {/* drops to Module chip on the LEFT */}
+                <div style={{ position: 'absolute', left: '4%', top: TOP_BUS_Y, width: 2, height: TOP_SPLIT_H - TOP_BUS_Y, background: STATUS_COLOR[moduleFolderStatus], boxShadow: `0 0 6px ${STATUS_GLOW[moduleFolderStatus]}` }} />
+              </div>
+
+              {/* ───── Module row: chip on LEFT, weeks orange-box on RIGHT ───── */}
+              <div style={{ display: 'flex', gap: 8, alignItems: 'stretch', minHeight: ROW_MIN_H }}>
+                <NodeBox
+                  label="Module Folder"
+                  sublabel={moduleFolder || `${oneDrivePath}/Week N/Module/`}
+                  Icon={Folder}
+                  status={moduleFolderStatus}
+                  pencil
+                  pencilTitle="Update OneDrive path for weekly module folders"
+                  pencilInitialValue={moduleFolder || ''}
+                  pencilPlaceholder="/path/to/module/root"
+                  onPencilSubmit={(v) => renameSemFolder('moduleFolder', v)}
+                  onClick={() => onOpenWizard('module_folder' as any)}
+                  width={170}
+                  testId={`pipeline-module-folder-${course.code.toLowerCase()}`}
+                />
+                <div style={orangeBoxStyle(moduleFolderStatus)} data-testid={`pipeline-module-weeks-${course.code.toLowerCase()}`}>
+                  {weekRange.map(w => renderWeekCell(w, courseHealth?.moduleWeeks?.[w], 'module'))}
+                </div>
+              </div>
+
+              {/* gap between the two rows */}
+              <div style={{ height: ROW_GAP }} />
+
+              {/* ───── Pre-reading splitter: H-bus + drop into Reading chip ───── */}
+              <div style={{ position: 'relative', height: PRE_READ_SPLIT_H }}>
+                {/* horizontal bus */}
+                <div style={{ position: 'absolute', left: '4%', right: '4%', top: PRE_READ_BUS_Y, height: 2, background: STATUS_COLOR[readingFolderStatus], boxShadow: `0 0 6px ${STATUS_GLOW[readingFolderStatus]}` }} />
+                {/* drops to Reading chip on the RIGHT */}
+                <div style={{ position: 'absolute', right: '4%', top: PRE_READ_BUS_Y, width: 2, height: PRE_READ_SPLIT_H - PRE_READ_BUS_Y, background: STATUS_COLOR[readingFolderStatus], boxShadow: `0 0 6px ${STATUS_GLOW[readingFolderStatus]}` }} />
+              </div>
+
+              {/* ───── Reading row: weeks orange-box on LEFT, chip on RIGHT ───── */}
+              <div style={{ display: 'flex', gap: 8, alignItems: 'stretch', minHeight: ROW_MIN_H }}>
+                <div style={orangeBoxStyle(readingFolderStatus)} data-testid={`pipeline-reading-weeks-${course.code.toLowerCase()}`}>
+                  {weekRange.map(w => renderWeekCell(w, courseHealth?.readingWeeks?.[w], 'reading'))}
+                </div>
+                <NodeBox
+                  label="Reading Folder"
+                  sublabel={readingFolder || `${oneDrivePath}/Week N/Reading/`}
+                  Icon={Folder}
+                  status={readingFolderStatus}
+                  pencil
+                  pencilTitle="Update OneDrive path for weekly reading folders"
+                  pencilInitialValue={readingFolder || ''}
+                  pencilPlaceholder="/path/to/reading/root"
+                  onPencilSubmit={(v) => renameSemFolder('readingFolder', v)}
+                  onClick={() => onOpenWizard('reading_folder' as any)}
+                  width={170}
+                  testId={`pipeline-reading-folder-${course.code.toLowerCase()}`}
+                />
+              </div>
+
+              {/* ───── Right arm — runs from top splitter H-bus all the way
+                   down past the module row into the pre-reading H-bus,
+                   delivering the "right-turn" branch to the reading row. */}
+              <div style={{
+                position: 'absolute',
+                right: 'calc(4% + 4%)',  // matches the H-bus right endpoint inside the wrapper's 4% padding
+                top: ARM_TOP,
+                width: 2,
+                height: ARM_HEIGHT,
+                background: STATUS_COLOR[readingFolderStatus],
+                boxShadow: `0 0 6px ${STATUS_GLOW[readingFolderStatus]}`,
+                pointerEvents: 'none',
+              }} />
+            </div>
+          );
+        })()}
+
+        {/* Merge into Sync — short vertical from reading row down to Sync */}
+        <div style={{ position: 'relative', height: 18, margin: '4px 0' }}>
+          <div style={{ position: 'absolute', right: 'calc(4% + 4%)', top: 0, width: 2, height: 8, background: STATUS_COLOR[readingFolderStatus], boxShadow: `0 0 6px ${STATUS_GLOW[readingFolderStatus]}` }} />
+          <div style={{ position: 'absolute', left: 'calc(4% + 4%)', right: 'calc(4% + 4%)', top: 8, height: 2, background: STATUS_COLOR[syncStatus], boxShadow: `0 0 6px ${STATUS_GLOW[syncStatus]}` }} />
+          <div style={{ position: 'absolute', left: '50%', top: 8, width: 2, height: 10, background: STATUS_COLOR[syncStatus], boxShadow: `0 0 6px ${STATUS_GLOW[syncStatus]}`, transform: 'translateX(-1px)' }} />
         </div>
 
         {/* ════════ SECTION: SYNC ════════ */}
