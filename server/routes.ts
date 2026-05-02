@@ -18679,11 +18679,38 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     if (extractionFailedFileIds.size > 0) {
       console.log(`[FileOrder] Skipping ${extractionFailedFileIds.size} extraction-failed file IDs: [${[...extractionFailedFileIds].join(', ')}]`);
     }
+    // Restrict to courses in the active semester so leftover folders from past
+    // semesters (e.g. week-1-cppa122-module from Winter 2026) don't leak into
+    // the current semester's "week N" pick.
+    let activeCourseCodes: Set<string> | null = null;
+    try {
+      const activeSem = await storage.getActiveSemesterSettings();
+      if (activeSem) {
+        const codes = [activeSem.course1Code, activeSem.course2Code, activeSem.course3Code]
+          .filter((c): c is string => !!c && !/^TBD/i.test(c))
+          .map(c => c.toUpperCase().replace(/\s/g, ''));
+        if (codes.length > 0) activeCourseCodes = new Set(codes);
+      }
+    } catch (e: any) {
+      console.warn(`[FileOrder] Could not load active semester course codes — not filtering: ${e.message}`);
+    }
+    const fileCourseCode = (f: any): string => {
+      const folder = (f.folder || '').toLowerCase();
+      const name = (f.originalName || '').toLowerCase();
+      return (folder.match(/([a-z]{3,5}\s?\d{3})/i)?.[1] ||
+              name.match(/([a-z]{3,5}\s?\d{3})/i)?.[1] || '')
+        .toUpperCase().replace(/\s/g, '');
+    };
     const allForWeek = allFiles.filter((f: any) => {
       if (excludeFileId && f.id === excludeFileId) return false;
       if (extractionFailedFileIds.has(f.id)) return false;
       const weekMatch = f.folder?.match(/week-(\d+)/i);
-      return weekMatch && parseInt(weekMatch[1], 10) === currentWeekNumber;
+      if (!weekMatch || parseInt(weekMatch[1], 10) !== currentWeekNumber) return false;
+      if (activeCourseCodes) {
+        const code = fileCourseCode(f);
+        if (code && !activeCourseCodes.has(code)) return false;
+      }
+      return true;
     });
     const allEligible = allForWeek.filter((f: any) => !f.listened);
     const listenedForWeek = allForWeek.filter((f: any) => f.listened);
@@ -20704,16 +20731,35 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     };
 
     const w = weekNumber;
-    const weekPartials = allFiles.filter((f: any) => isPartiallyListened(f) && getFileWeek(f) === w);
+    // Restrict to courses in the active semester so leftover folders from past
+    // semesters don't leak into the current semester's "week N" pick.
+    let activeCourseCodes: Set<string> | null = null;
+    try {
+      const activeSem = await storageRef.getActiveSemesterSettings();
+      if (activeSem) {
+        const codes = [activeSem.course1Code, activeSem.course2Code, activeSem.course3Code]
+          .filter((c: any): c is string => !!c && !/^TBD/i.test(c))
+          .map((c: string) => c.toUpperCase().replace(/\s/g, ''));
+        if (codes.length > 0) activeCourseCodes = new Set(codes);
+      }
+    } catch (e: any) {
+      console.warn(`[CatWashFile] Could not load active semester course codes — not filtering: ${e.message}`);
+    }
+    const inActiveSemester = (f: any): boolean => {
+      if (!activeCourseCodes) return true;
+      const code = getCourseCodeForFile(f);
+      return code === 'UNKNOWN' || activeCourseCodes.has(code);
+    };
+    const weekPartials = allFiles.filter((f: any) => isPartiallyListened(f) && getFileWeek(f) === w && inActiveSemester(f));
     const allPartialIds = new Set(weekPartials.map((f: any) => f.id));
 
     const unlistenedFiles = allFiles.filter((f: any) => {
       if (f.listened || f.id === excludeFileId || extractionFailedFileIds.has(f.id)) return false;
       if (allPartialIds.has(f.id)) return false;
-      return getFileWeek(f) === w;
+      return getFileWeek(f) === w && inActiveSemester(f);
     });
 
-    const allWeekUnlistened = allFiles.filter((f: any) => !f.listened && f.id !== excludeFileId && !extractionFailedFileIds.has(f.id) && getFileWeek(f) === w);
+    const allWeekUnlistened = allFiles.filter((f: any) => !f.listened && f.id !== excludeFileId && !extractionFailedFileIds.has(f.id) && getFileWeek(f) === w && inActiveSemester(f));
 
     if (allWeekUnlistened.length === 0 && weekPartials.length === 0) {
       console.log(`[CatWashFile] No unlistened files found in week ${weekNumber}`);
