@@ -23124,12 +23124,13 @@ export default function Dashboard() {
           onClick={() => {
             if (hwMinimizeAnim !== 'idle' || blankMinimizeAnim !== 'idle') return;
             if (!homeworkMinimized) return;
-            // NOTE: notes overlay is a child of homework section, so applying
-            // hw-anim-restoring to homework would compound transforms and make
-            // notes' shrink invisible (scale 0 × scale (1→0) = 0). Instead, leave
-            // homework untransformed (already mounted, covered by notes) and only
-            // animate notes shrinking down — homework reveals naturally underneath.
+            // Sequence: shrink notes FIRST while homework stays wipe-clipped
+            // (homeworkMinimized && !blankBoxOpen → hwWipeClipped=true), then
+            // after notes is gone, reveal homework with its restore animation.
+            // Avoids the previous bug where homework was visible underneath
+            // shrinking notes — Bryn wants HW to pop up only AFTER notes goes down.
             applyMinimizeOrigin('blank', 'notes', false);
+            applyMinimizeOrigin('hw', 'homework', false);
             if (blankBoxOpen) {
               setBlankBoxOpen(false);
               localStorage.removeItem('blankBoxOpen');
@@ -23137,10 +23138,14 @@ export default function Dashboard() {
               localStorage.setItem('blankBoxMinimizedToTab', '1');
               setBlankMinimizeAnim('minimizing');
             }
-            setHomeworkMinimized(false);
-            localStorage.removeItem('homeworkMinimized');
             setTimeout(() => {
               setBlankMinimizeAnim('idle');
+              setHomeworkMinimized(false);
+              localStorage.removeItem('homeworkMinimized');
+              setHwMinimizeAnim('restoring');
+              setTimeout(() => {
+                setHwMinimizeAnim('idle');
+              }, 580);
             }, 580);
           }}
           className="fixed cursor-pointer"
