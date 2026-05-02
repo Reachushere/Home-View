@@ -5441,6 +5441,10 @@ export default function Dashboard() {
   };
 
   const getCourseGradientColors = (courseCode: string): { start: string; end: string } => {
+    // Built-in "reading end" defaults for the three w2026 courses. These are
+    // ONLY used when the user has not chosen their own end color. Previously
+    // they ran first and clobbered any custom color Bryn set in Edit Course
+    // Details, which is why CASL kept reverting on every push/pull.
     const readingEndOverrides: Record<string, string> = {
       'CASL101': '#E9C6F0',
       'CPPA122': '#AACD9F',
@@ -5458,8 +5462,21 @@ export default function Dashboard() {
       const cCode = c.name?.split(' - ')[0]?.toUpperCase() || '';
       return cCode === upperCode || cCode.replace(/\s/g, '') === normCode;
     });
-    if (readingEndOverrides[upperCode] || readingEndOverrides[normCode]) return { start: course?.color || '#6b7280', end: readingEndOverrides[upperCode] || readingEndOverrides[normCode] };
+    // User's own colors win over the built-in overrides.
     if (course?.colorEnd) return { start: course.color, end: course.colorEnd };
+    // Also respect DB-stored colors before falling back to the override.
+    const sems0 = allSemesterSettingsRef.current || [];
+    for (const sem of sems0) {
+      for (let i = 1; i <= 3; i++) {
+        const sc = ((sem as any)[`course${i}Code`] || '').toUpperCase().replace(/\s/g, '');
+        if (sc === normCode) {
+          const dbColor = (sem as any)[`course${i}Color`] || '';
+          const dbColorEnd = (sem as any)[`course${i}ColorEnd`] || '';
+          if (dbColor && dbColorEnd) return { start: dbColor, end: dbColorEnd };
+        }
+      }
+    }
+    if (readingEndOverrides[upperCode] || readingEndOverrides[normCode]) return { start: course?.color || '#6b7280', end: readingEndOverrides[upperCode] || readingEndOverrides[normCode] };
     if (course) {
       const rgb = hexToRgb(course.color);
       return { start: course.color, end: `rgb(${Math.min(255, rgb.r + 100)}, ${Math.min(255, rgb.g + 100)}, ${Math.min(255, rgb.b + 100)})` };
