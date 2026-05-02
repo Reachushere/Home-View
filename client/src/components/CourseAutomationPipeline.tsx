@@ -40,6 +40,31 @@ interface NodeBoxProps {
   testId?: string;
 }
 
+// One-time keyframes for the orange/red "click me to fix" pulse on dots
+// and connecting lines. Mounted once at the bottom of the component tree
+// inside <PipelinePulseStyles />.
+const PIPELINE_PULSE_STYLE_ID = 'pipeline-pulse-keyframes';
+function PipelinePulseStyles() {
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    if (document.getElementById(PIPELINE_PULSE_STYLE_ID)) return;
+    const el = document.createElement('style');
+    el.id = PIPELINE_PULSE_STYLE_ID;
+    el.textContent = `
+      @keyframes pipelinePulseDot {
+        0%, 100% { box-shadow: 0 0 4px var(--pp-c), 0 0 1px var(--pp-c); transform: scale(1); }
+        50%      { box-shadow: 0 0 14px var(--pp-c), 0 0 4px var(--pp-c); transform: scale(1.18); }
+      }
+      @keyframes pipelinePulseLine {
+        0%, 100% { box-shadow: 0 0 4px var(--pp-c); opacity: 0.85; }
+        50%      { box-shadow: 0 0 12px var(--pp-c); opacity: 1; }
+      }
+    `;
+    document.head.appendChild(el);
+  }, []);
+  return null;
+}
+
 function NodeBox(props: NodeBoxProps) {
   const {
     label, sublabel, Icon, iconUrl, iconSize = 14, status = 'ok', pencil, pencilTitle, onClick,
@@ -94,11 +119,20 @@ function NodeBox(props: NodeBoxProps) {
       onMouseLeave={(e) => { e.currentTarget.style.transform = ''; }}
     >
       <span
+        onClick={(e) => { if (onClick && (status === 'warning' || status === 'error')) { e.stopPropagation(); onClick(); } }}
         style={{
-          position: 'absolute', top: 5, right: 6, width: 8, height: 8, borderRadius: '50%',
-          background: dotColor, boxShadow: `0 0 6px ${dotColor}, 0 0 2px ${dotColor}`,
+          position: 'absolute', top: 5, right: 6, width: 9, height: 9, borderRadius: '50%',
+          background: dotColor,
+          boxShadow: `0 0 6px ${dotColor}, 0 0 2px ${dotColor}`,
+          cursor: (status === 'warning' || status === 'error') && onClick ? 'pointer' : 'default',
+          // Orange/red dots pulse to advertise that they're actionable —
+          // clicking them (or the parent box) opens the corresponding wizard.
+          animation: (status === 'warning' || status === 'error')
+            ? 'pipelinePulseDot 1.4s ease-in-out infinite'
+            : undefined,
+          ['--pp-c' as any]: dotColor,
         }}
-        title={`Status: ${status}`}
+        title={status === 'warning' || status === 'error' ? `${status === 'warning' ? 'Needs attention' : 'Error'} — click to fix` : `Status: ${status}`}
       />
       {iconUrl ? (
         <img
@@ -188,20 +222,24 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 
 function FlowLine({ status, onClick, title, height = 14, testId }: FlowLineProps) {
   const color = STATUS_COLOR[status];
+  const isWarn = status === 'warning' || status === 'error';
   return (
     <div
       onClick={(e) => { if (onClick) { e.stopPropagation(); onClick(); } }}
-      title={title}
+      title={isWarn && onClick ? `${title || 'Issue detected'} — click to fix` : title}
       data-testid={testId}
       style={{
-        height, width: 2, margin: '0 auto', background: color,
+        height, width: isWarn ? 3 : 2, margin: '0 auto', background: color,
         boxShadow: `0 0 6px ${STATUS_GLOW[status]}`,
         cursor: onClick ? 'pointer' : 'default',
         position: 'relative',
+        // Orange/red lines pulse to mark them as actionable.
+        animation: isWarn ? 'pipelinePulseLine 1.4s ease-in-out infinite' : undefined,
+        ['--pp-c' as any]: color,
       }}
     >
       {/* widen click target */}
-      {onClick && <div style={{ position: 'absolute', inset: '-2px -8px', cursor: 'pointer' }} />}
+      {onClick && <div style={{ position: 'absolute', inset: '-2px -10px', cursor: 'pointer' }} />}
     </div>
   );
 }
@@ -296,6 +334,20 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
   const weekRange: number[] = [];
   for (let w = firstWeek; w <= lastWeek; w++) weekRange.push(w);
 
+  // Per-kind file totals + TTS-ready counts so the Calendar Module / Reading
+  // boxes can mirror the actual calendar's homework boxes (label + progress
+  // ring + file count).
+  let modTtsReady = 0;
+  let readTtsReady = 0;
+  for (const w of weekRange) {
+    modTtsReady += courseHealth?.moduleWeeks?.[w]?.ttsReady || 0;
+    readTtsReady += courseHealth?.readingWeeks?.[w]?.ttsReady || 0;
+  }
+  const modulePct = totalMod > 0 ? Math.round((modTtsReady / totalMod) * 100) : 0;
+  const readingPct = totalRead > 0 ? Math.round((readTtsReady / totalRead) * 100) : 0;
+  const moduleHasFiles = totalMod > 0;
+  const readingHasFiles = totalRead > 0;
+
   // Worst-of helper for connection lines.
   const worst = (...s: Status[]): Status => {
     if (s.includes('error')) return 'error';
@@ -358,6 +410,7 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
 
   return (
     <div style={{ position: 'relative' }}>
+      <PipelinePulseStyles />
       {/* Status chip strip — single row, click to fix */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14 }}>
         {summaryChips.map((chip) => (
@@ -737,30 +790,119 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
         </div>
 
         {/* ════════ SECTION: CALENDAR BOXES ════════ */}
-        {/* Mirror the actual calendar page: solid course-Module / Reading
-            color, soft inner highlight + outer shadow, FILE-style label. */}
+        {/* Visual replicas of the actual calendar's Module / Reading boxes:
+            square, solid course-Module / Reading color, "Module" / "Reading"
+            label at the top, progress ring with TTS percent in the middle,
+            file count below. Same info as the homework panel. */}
         <SectionLabel>Calendar Boxes</SectionLabel>
-        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, padding: '0 6%' }}>
-          <NodeBox
-            label="Calendar Module Box"
-            sublabel={`${totalMod} module file${totalMod === 1 ? '' : 's'} on calendar`}
-            Icon={FileText}
-            status={calModuleStatus}
-            onClick={() => onOpenWizard('library')}
-            width={210}
-            background={`linear-gradient(180deg, ${modColor} 0%, ${modColor}cc 100%)`}
-            testId={`pipeline-calendar-module-${course.code.toLowerCase()}`}
-          />
-          <NodeBox
-            label="Calendar Reading Box"
-            sublabel={`${totalRead} reading file${totalRead === 1 ? '' : 's'} on calendar`}
-            Icon={BookOpen}
-            status={calReadingStatus}
-            onClick={() => onOpenWizard('library')}
-            width={210}
-            background={`linear-gradient(180deg, ${readColor} 0%, ${readColor}cc 100%)`}
-            testId={`pipeline-calendar-reading-${course.code.toLowerCase()}`}
-          />
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 16, padding: '0 6%' }}>
+          {([
+            { kind: 'module' as const, label: 'Module', bg: modColor, status: calModuleStatus, pct: modulePct, hasFiles: moduleHasFiles, total: totalMod, ready: modTtsReady, testId: `pipeline-calendar-module-${course.code.toLowerCase()}` },
+            { kind: 'reading' as const, label: 'Reading', bg: readColor, status: calReadingStatus, pct: readingPct, hasFiles: readingHasFiles, total: totalRead, ready: readTtsReady, testId: `pipeline-calendar-reading-${course.code.toLowerCase()}` },
+          ]).map(b => {
+            // Auto-pick black or white text/ring based on box luminance, the
+            // same rule the actual calendar boxes use (YIQ > 165 → black).
+            const autoFg = (() => {
+              try {
+                const c = String(b.bg || '');
+                let r = 0, g = 0, bl = 0, ok = false;
+                const hm = c.match(/#([0-9a-fA-F]{6})/);
+                if (hm) { r = parseInt(hm[1].substring(0, 2), 16); g = parseInt(hm[1].substring(2, 4), 16); bl = parseInt(hm[1].substring(4, 6), 16); ok = true; }
+                if (!ok) { const rm = c.match(/rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/); if (rm) { r = parseInt(rm[1]); g = parseInt(rm[2]); bl = parseInt(rm[3]); ok = true; } }
+                if (ok) return ((r * 299 + g * 587 + bl * 114) / 1000) > 165 ? '#000' : '#fff';
+              } catch {}
+              return '#fff';
+            })();
+            const fg = (course as any).courseFontColor || autoFg;
+            const isWarn = b.status === 'warning' || b.status === 'error';
+            const dotC = STATUS_COLOR[b.status];
+            const size = 116;
+            const circleSize = 46;
+            const stroke = 4;
+            const radius = (circleSize - stroke) / 2;
+            const circumference = 2 * Math.PI * radius;
+            const offset = circumference - (b.pct / 100) * circumference;
+            return (
+              <div
+                key={b.kind}
+                onClick={() => onOpenWizard('library')}
+                title={isWarn ? `${b.label} — click to fix` : `${b.label} box`}
+                data-testid={b.testId}
+                style={{
+                  position: 'relative',
+                  width: size, height: size,
+                  background: b.bg,
+                  borderRadius: 6,
+                  border: `1.5px solid ${dotC}aa`,
+                  boxShadow: `0 0 0 1px rgba(255,255,255,0.06) inset, 0 4px 14px rgba(0,0,0,0.35), 0 0 8px ${STATUS_GLOW[b.status]}`,
+                  cursor: 'pointer',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                  padding: '8px 6px',
+                  transition: 'transform 120ms ease',
+                  flexShrink: 0,
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = ''; }}
+              >
+                {/* Status dot — pulses + clickable when warning/error */}
+                <span
+                  onClick={(e) => { if (isWarn) { e.stopPropagation(); onOpenWizard('library'); } }}
+                  style={{
+                    position: 'absolute', top: 5, right: 6, width: 9, height: 9, borderRadius: '50%',
+                    background: dotC, boxShadow: `0 0 6px ${dotC}, 0 0 2px ${dotC}`,
+                    cursor: isWarn ? 'pointer' : 'default',
+                    animation: isWarn ? 'pipelinePulseDot 1.4s ease-in-out infinite' : undefined,
+                    ['--pp-c' as any]: dotC,
+                  }}
+                  title={isWarn ? `${b.label} needs attention — click to fix` : `Status: ${b.status}`}
+                />
+                {/* Top label, mirrors the real "Module" / "Reading" caption */}
+                <span style={{
+                  position: 'absolute', top: 5, left: 0, right: 0,
+                  textAlign: 'center', fontSize: 10, fontWeight: 500,
+                  color: fg, letterSpacing: '0.5px',
+                  fontFamily: "'Raleway', sans-serif",
+                  textShadow: fg === '#fff' ? '0 1px 1px rgba(0,0,0,0.4)' : undefined,
+                }}>
+                  {b.label}
+                </span>
+                {/* Progress ring with TTS-ready percent inside */}
+                <div style={{ position: 'relative', width: circleSize, height: circleSize, marginTop: 12 }}>
+                  <svg width={circleSize} height={circleSize} style={{ transform: 'rotate(-90deg)' }}>
+                    <circle
+                      cx={circleSize / 2} cy={circleSize / 2} r={radius} fill="none"
+                      stroke={fg === '#000' ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.3)'}
+                      strokeWidth={stroke}
+                    />
+                    {b.hasFiles && b.pct > 0 && (
+                      <circle
+                        cx={circleSize / 2} cy={circleSize / 2} r={radius} fill="none"
+                        stroke={fg} strokeWidth={stroke} strokeLinecap="round"
+                        strokeDasharray={circumference} strokeDashoffset={offset}
+                      />
+                    )}
+                  </svg>
+                  <span style={{
+                    position: 'absolute', inset: 0,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 11, fontWeight: 700, color: fg,
+                    fontFamily: "system-ui, -apple-system, 'Segoe UI', sans-serif",
+                    letterSpacing: '-0.3px',
+                  }}>
+                    {b.hasFiles ? `${b.pct}%` : 'N/A'}
+                  </span>
+                </div>
+                {/* File count caption underneath the ring */}
+                <span style={{
+                  marginTop: 6, fontSize: 9, fontWeight: 600, color: fg,
+                  opacity: 0.9, fontFamily: 'JetBrains Mono, ui-monospace, monospace',
+                  textShadow: fg === '#fff' ? '0 1px 1px rgba(0,0,0,0.4)' : undefined,
+                }}>
+                  {b.total} file{b.total === 1 ? '' : 's'}
+                </span>
+              </div>
+            );
+          })}
         </div>
 
         {/* Merge into Library */}
