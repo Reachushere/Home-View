@@ -5357,6 +5357,30 @@ export default function Dashboard() {
       toast({ title: "Error", description: "Failed to generate class tasks.", variant: "destructive" });
     },
   });
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // Re-syncs every existing virtual-class-row task in the database with the
+  // live course config (class times, course code/name, display name). Use
+  // this after editing a course's class hours or display name on the Edit
+  // Course Details page so the calendar's existing rows stretch to the new
+  // hours and show the new header — without having to delete + regenerate.
+  // ──────────────────────────────────────────────────────────────────────────
+  const fixVirtualClassTasksMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest("POST", "/api/admin/fix-virtual-class-tasks", {});
+    },
+    onSuccess: async (response: any) => {
+      const data = await response.json();
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+      toast({
+        title: "Class Tasks Re-Synced",
+        description: `${data.actuallyUpdated || 0} class row${(data.actuallyUpdated || 0) === 1 ? '' : 's'} updated to match the latest course details.`,
+      });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to re-sync virtual class tasks.", variant: "destructive" });
+    },
+  });
   
   // TTS settings for word highlighting synchronization
   const [ttsSettings, setTtsSettings] = useState<{
@@ -29934,6 +29958,14 @@ export default function Dashboard() {
                             data-testid="btn-generate-class-tasks-from-sem"
                             title="Generate class calendar entries for virtual courses in the active semester"
                           >{generateClassTasksMutation.isPending ? 'Generating…' : 'Generate Class Tasks'}</button>
+                          <button
+                            onClick={() => fixVirtualClassTasksMutation.mutate()}
+                            disabled={fixVirtualClassTasksMutation.isPending}
+                            className="text-[10.5px] px-3 py-1 rounded text-amber-100 hover:text-white transition-colors disabled:opacity-50"
+                            style={{ background: 'rgba(245,158,11,0.18)', border: '1px solid rgba(245,158,11,0.5)' }}
+                            data-testid="btn-fix-virtual-class-tasks-from-sem"
+                            title="Re-sync existing class rows in the calendar to the latest course details (class hours, name, display) for every virtual course"
+                          >{fixVirtualClassTasksMutation.isPending ? 'Re-syncing…' : 'Re-sync Class Rows'}</button>
                           {(() => {
                             const needsReauth = odStatus?.tokenWorks === false;
                             return (
