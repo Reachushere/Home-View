@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Pencil, Folder, FileText, BookOpen, Volume2, Calendar, Cloud, RefreshCw, AlertCircle, CheckCircle2, Loader2, ExternalLink, Library, Settings } from 'lucide-react';
+import courseDetailsFolderIcon from '@/assets/course-details-folder.png';
 
 type Status = 'ok' | 'warning' | 'error' | 'pending';
 
@@ -21,6 +22,11 @@ interface NodeBoxProps {
   label: string;
   sublabel?: string;
   Icon?: any;
+  // When provided, an <img> at this URL is rendered instead of the Lucide
+  // Icon — used for Course Details where the user wants the OS-style
+  // yellow folder picture instead of a tinted line icon.
+  iconUrl?: string;
+  iconSize?: number;
   status?: Status;
   pencil?: boolean;
   pencilTitle?: string;
@@ -36,7 +42,7 @@ interface NodeBoxProps {
 
 function NodeBox(props: NodeBoxProps) {
   const {
-    label, sublabel, Icon, status = 'ok', pencil, pencilTitle, onClick,
+    label, sublabel, Icon, iconUrl, iconSize = 14, status = 'ok', pencil, pencilTitle, onClick,
     onPencilClick, onPencilSubmit, pencilInitialValue = '', pencilPlaceholder,
     width = 150, background, testId,
   } = props;
@@ -94,7 +100,15 @@ function NodeBox(props: NodeBoxProps) {
         }}
         title={`Status: ${status}`}
       />
-      {Icon && <Icon style={{ width: 14, height: 14, color: '#e2e8f0', flexShrink: 0 }} />}
+      {iconUrl ? (
+        <img
+          src={iconUrl}
+          alt=""
+          style={{ width: iconSize + 6, height: iconSize + 6, flexShrink: 0, objectFit: 'contain', filter: 'drop-shadow(0 1px 1px rgba(0,0,0,0.5))' }}
+        />
+      ) : Icon ? (
+        <Icon style={{ width: iconSize, height: iconSize, color: '#e2e8f0', flexShrink: 0 }} />
+      ) : null}
       <div style={{ minWidth: 0, flex: 1 }}>
         {!editing ? (
           <>
@@ -417,7 +431,8 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
           <NodeBox
             label="Course Details"
             sublabel={`${course.code}  ·  ${course.fullName || course.name || '—'}  ·  ${displayName || '—'}`}
-            Icon={Settings}
+            iconUrl={courseDetailsFolderIcon}
+            iconSize={18}
             status={editDetailsStatus}
             onClick={onOpenCourseDetails}
             width={300}
