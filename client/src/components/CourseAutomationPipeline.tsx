@@ -38,6 +38,9 @@ interface NodeBoxProps {
   width?: number;
   background?: string;
   testId?: string;
+  // When true, renders a half-height variant used by the TTS strips so they
+  // don't visually overpower the folder rows above them.
+  slim?: boolean;
 }
 
 // One-time keyframes for the orange/red "click me to fix" pulse on dots
@@ -69,7 +72,7 @@ function NodeBox(props: NodeBoxProps) {
   const {
     label, sublabel, Icon, iconUrl, iconSize = 14, status = 'ok', pencil, pencilTitle, onClick,
     onPencilClick, onPencilSubmit, pencilInitialValue = '', pencilPlaceholder,
-    width = 150, background, testId,
+    width = 150, background, testId, slim = false,
   } = props;
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(pencilInitialValue);
@@ -103,8 +106,8 @@ function NodeBox(props: NodeBoxProps) {
       style={{
         position: 'relative',
         width,
-        minHeight: 50,
-        padding: '8px 10px',
+        minHeight: slim ? 28 : 50,
+        padding: slim ? '3px 10px' : '8px 10px',
         borderRadius: 8,
         background: background || 'linear-gradient(180deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.04) 100%)',
         border: `1.5px solid ${dotColor}66`,
@@ -425,9 +428,9 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
     { label: 'TTS', s: ttsStatus, click: () => onOpenWizard('tts') },
     { label: 'Storage', s: 'ok' as Status, click: () => onOpenWizard('storage') },
     { label: 'Library', s: ((totalMod + totalRead) > 0 ? 'ok' : 'error') as Status, click: () => onOpenWizard('library') },
-    { label: 'Syllabus', s: sylStatus, click: () => onOpenWizard(sylFolder ? 'syllabus' : 'syllabus_folder') },
-    { label: 'Assignments', s: asgStatus, click: () => onOpenWizard('assignments') },
-    { label: 'Textbook', s: tbkStatus, click: () => onOpenWizard('textbook') },
+    { label: 'Syllabus', s: sylStatus, click: () => onOpenWizard('syllabus_folder') },
+    { label: 'Assignments', s: asgStatus, click: () => onOpenWizard('assignments_folder') },
+    { label: 'Textbook', s: tbkStatus, click: () => onOpenWizard('textbook_folder') },
   ];
 
   return (
@@ -609,8 +612,11 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
           // (folder + TTS) per kind, so ARM_BOTTOM_Y picks up the extra
           // height of one TTS row + intra-pair gap before reaching the
           // pre-read splitter.
-          const TTS_ROW_MIN_H = ROW_MIN_H;
-          const INTRA_PAIR_GAP = 4;
+          // TTS strips are half height (folder rows still need full height
+          // for their pencil/sublabel chip; TTS strips just carry W{n} cells
+          // and a slim chip so they can be much shorter).
+          const TTS_ROW_MIN_H = Math.round(ROW_MIN_H / 2);
+          const INTRA_PAIR_GAP = 2;
           const ARM_TOP = TOP_BUS_Y;       // wrapper-relative
           const ARM_BOTTOM_Y =
             TOP_SPLIT_H + ROW_MIN_H + INTRA_PAIR_GAP + TTS_ROW_MIN_H + ROW_GAP + PRE_READ_BUS_Y;
@@ -801,7 +807,7 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
                    cells line up column-for-column. Same chip width (170),
                    same orange-box flex layout, same cell flex/minWidth/gap
                    as renderWeekCell so the columns are the same width. ───── */}
-              <div style={{ display: 'flex', gap: 8, alignItems: 'stretch', minHeight: TTS_ROW_MIN_H }}>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', minHeight: TTS_ROW_MIN_H, height: TTS_ROW_MIN_H }}>
                 <NodeBox
                   label="TTS · Modules"
                   sublabel={moduleHasFiles ? `${modTtsReady}/${totalMod} ready (${modulePct}%)` : 'No files yet'}
@@ -809,6 +815,7 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
                   status={moduleTtsStatus}
                   onClick={() => onOpenWizard('tts')}
                   width={170}
+                  slim
                   testId={`pipeline-module-tts-${course.code.toLowerCase()}`}
                 />
                 <div style={orangeBoxStyle(moduleTtsStatus)} data-testid={`pipeline-module-tts-weeks-${course.code.toLowerCase()}`}>
@@ -857,7 +864,7 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
                    Mirrors the Reading Folder row above (chip-on-right
                    layout) so the per-week cells line up column-for-column
                    with the reading folder weeks directly above. ───── */}
-              <div style={{ display: 'flex', gap: 8, alignItems: 'stretch', minHeight: TTS_ROW_MIN_H }}>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', minHeight: TTS_ROW_MIN_H, height: TTS_ROW_MIN_H }}>
                 <div style={orangeBoxStyle(readingTtsStatus)} data-testid={`pipeline-reading-tts-weeks-${course.code.toLowerCase()}`}>
                   {weekRange.map(w => renderTtsCell(w, courseHealth?.readingWeeks?.[w], 'reading'))}
                 </div>
@@ -868,6 +875,7 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
                   status={readingTtsStatus}
                   onClick={() => onOpenWizard('tts')}
                   width={170}
+                  slim
                   testId={`pipeline-reading-tts-${course.code.toLowerCase()}`}
                 />
               </div>
@@ -1092,9 +1100,9 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
         <SectionLabel>Course Materials</SectionLabel>
         <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
           {[
-            { key: sylFolder ? 'syllabus' : 'syllabus_folder', label: 'Syllabus', s: sylStatus, Icon: FileText, sub: sylLinked ? 'PDF linked' : sylFolder ? 'Folder ok, no PDF' : 'No folder' },
-            { key: 'assignments', label: 'Assignments Folder', s: asgStatus, Icon: Folder, sub: asgFolder ? 'OneDrive folder ok' : 'Missing folder' },
-            { key: 'textbook', label: 'Textbook Folder', s: tbkStatus, Icon: BookOpen, sub: tbkFolder ? 'OneDrive folder ok' : 'Missing folder' },
+            { key: 'syllabus_folder', label: 'Syllabus', s: sylStatus, Icon: FileText, sub: sylLinked ? 'PDF linked' : sylFolder ? 'Folder ok, no PDF' : 'No folder' },
+            { key: 'assignments_folder', label: 'Assignments Folder', s: asgStatus, Icon: Folder, sub: asgFolder ? 'OneDrive folder ok' : 'Missing folder' },
+            { key: 'textbook_folder', label: 'Textbook Folder', s: tbkStatus, Icon: BookOpen, sub: tbkFolder ? 'OneDrive folder ok' : 'Missing folder' },
           ].map(item => (
             <NodeBox
               key={item.label}
