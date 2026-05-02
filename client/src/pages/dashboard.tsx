@@ -3618,6 +3618,29 @@ export default function Dashboard() {
     const key = courseCode.replace(/\s/g, '').toUpperCase();
     return (readingExemptWeeks[key] || []).includes(week);
   };
+  // Per-(course, week, type) TTS opt-out toggle. Lives next to the
+  // Module / Reading boxes on the Auto Resolution Centre page. When
+  // OFF, that slot is excluded from the pipeline TTS indicator (its
+  // file existence + audio-ready status no longer count). Default is
+  // ON for module / non-exempt reading, OFF for reading-exempt weeks.
+  const [ttsOptOutMap, setTtsOptOutMap] = useState<Record<string, boolean>>(() => {
+    try { return JSON.parse(localStorage.getItem('unical_ttsOptOut') || '{}'); } catch { return {}; }
+  });
+  const ttsKeyFor = (courseCode: string, week: number, type: 'module' | 'reading') => `${courseCode.replace(/\s/g, '').toUpperCase()}-w${week}-${type}`;
+  const isTtsCounted = (courseCode: string, week: number, type: 'module' | 'reading') => {
+    const k = ttsKeyFor(courseCode, week, type);
+    if (k in ttsOptOutMap) return ttsOptOutMap[k];
+    if (type === 'reading' && isReadingExempt(courseCode, week)) return false;
+    return true;
+  };
+  const setTtsCounted = (courseCode: string, week: number, type: 'module' | 'reading', counted: boolean) => {
+    const k = ttsKeyFor(courseCode, week, type);
+    setTtsOptOutMap(prev => {
+      const updated = { ...prev, [k]: counted };
+      localStorage.setItem('unical_ttsOptOut', JSON.stringify(updated));
+      return updated;
+    });
+  };
   const [healthItemDisabled, setHealthItemDisabled] = useState<Record<string, string[]>>(() => {
     try { return JSON.parse(localStorage.getItem('unical_healthItemDisabled') || '{}'); } catch { return {}; }
   });
@@ -15728,11 +15751,26 @@ export default function Dashboard() {
                                       const syncedWeeks = courseHealth ? weekListForPipe.filter(w => (courseHealth.moduleWeeks?.[w]?.count || 0) > 0).length : 0;
                                       const syncStatus: 'ok' | 'warning' | 'error' = allModulesSynced ? 'ok' : (syncedWeeks > 0 ? 'warning' : 'error');
                                       const syncValue = allModulesSynced ? 'all linked' : `${syncedWeeks}/${numWeeksForPipe}`;
-                                      // TTS green only when Sync is green AND every weekly
-                                      // module + non-exempt reading file has audio chunks ready.
-                                      const ttsStatus: 'ok' | 'warning' | 'error' = (allModulesSynced && allReadingsSynced && ttsNeeded > 0 && ttsReady === ttsNeeded)
+                                      // TTS green only when EVERY toggle-on slot (module +
+                                      // reading, per week) has both a synced file AND audio
+                                      // chunks ready. Toggle-off slots are excluded entirely.
+                                      let ttsAnyEnabled = false;
+                                      let ttsAllReady = true;
+                                      for (const w of weekListForPipe) {
+                                        for (const type of ['module', 'reading'] as const) {
+                                          if (!isTtsCounted(c.code, w, type)) continue;
+                                          ttsAnyEnabled = true;
+                                          const slot = type === 'module' ? courseHealth?.moduleWeeks?.[w] : courseHealth?.readingWeeks?.[w];
+                                          const slotCount = slot?.count || 0;
+                                          const slotTts = slot?.ttsReady || 0;
+                                          if (slotCount === 0 || slotTts < slotCount) { ttsAllReady = false; }
+                                        }
+                                      }
+                                      const ttsStatus: 'ok' | 'warning' | 'error' = !ttsAnyEnabled
                                         ? 'ok'
-                                        : (ttsReady > 0 ? 'warning' : 'error');
+                                        : ttsAllReady
+                                          ? 'ok'
+                                          : (ttsReady > 0 ? 'warning' : 'error');
                                       const ttsPct = ttsNeeded > 0 ? Math.round((ttsReady / ttsNeeded) * 100) : (totalMod > 0 ? 0 : null);
                                       const sylFolderOk = courseHealth?.syllabusFolderExists === true;
                                       const asgFolderOk = courseHealth?.assignmentsFolderExists === true;
@@ -16146,45 +16184,96 @@ export default function Dashboard() {
                                   </div>
 
                                   {courseHealth && (() => {
-                                    // Each week is rendered as TWO read-only boxes
-                                    // (Module on top, Reading on bottom) that mirror the
-                                    // colored Module / Reading boxes on the main calendar.
-                                    // Green dot = OneDrive has at least one file in that
-                                    // week's folder. Red box + red dot = no file synced.
-                                    // Read-only: no click action, no upload button.
+                                    // Each week renders TWO read-only boxes (Module top,
+                                    // Reading bottom) using the same colors as the main
+                                    // calendar's Module / Reading boxes. Each box has:
+                                    //   • Top-LEFT dot — TTS audio status (green = audio
+                                    //     ready for every file in that folder, red = at
+                                    //     least one file is missing audio). Hidden when
+                                    //     the box's TTS toggle is OFF.
+                                    //   • Top-RIGHT dot — file sync status (green =
+                                    //     OneDrive has ≥1 file, red = none). Hidden when
+                                    //     the box's TTS toggle is OFF.
+                                    //   • Bottom-RIGHT toggle — include this slot in the
+                                    //     pipeline TTS indicator. Off = excluded entirely.
+                                    // The pipeline TTS step only goes green when every
+                                    // toggle-on slot has BOTH dots green.
                                     const RED_GRAD = 'linear-gradient(135deg, #FAB6BE 0%, #C46D75 43%, #8F252E 100%)';
                                     const moduleColor = (c as any).moduleBoxColor || c.color || '#3b82f6';
                                     const readingColor = (c as any).readingBoxColor || c.color || '#a855f7';
                                     const numWeeks = expHealth?.numberOfWeeks || 13;
                                     const weeks = Array.from({ length: numWeeks }, (_, i) => i + 1);
-                                    const dotStyle = (ok: boolean) => ({ position: 'absolute' as const, top: '3px', right: '4px', width: '6px', height: '6px', borderRadius: '50%', background: ok ? '#10b981' : '#ef4444', boxShadow: `0 0 5px ${ok ? '#10b981' : '#ef4444'}, 0 0 2px ${ok ? '#10b981' : '#ef4444'}` });
-                                    const cellBase = { position: 'relative' as const, borderRadius: '4px', padding: '4px 4px 3px', minHeight: '22px', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.25)', border: '1px solid rgba(0,0,0,0.18)' };
+                                    const cornerDot = (corner: 'tl' | 'tr', ok: boolean, title: string, testId: string) => (
+                                      <span
+                                        title={title}
+                                        data-testid={testId}
+                                        style={{ position: 'absolute', top: '2px', [corner === 'tl' ? 'left' : 'right']: '2px', width: '6px', height: '6px', borderRadius: '50%', background: ok ? '#10b981' : '#ef4444', boxShadow: `0 0 4px ${ok ? '#10b981' : '#ef4444'}, 0 0 2px ${ok ? '#10b981' : '#ef4444'}` }}
+                                      />
+                                    );
+                                    const toggleSwitch = (counted: boolean, onClick: () => void, testId: string) => (
+                                      <button
+                                        onClick={(e) => { e.stopPropagation(); onClick(); }}
+                                        data-testid={testId}
+                                        title={counted ? 'Counted toward pipeline TTS — click to exclude' : 'Excluded from pipeline TTS — click to include'}
+                                        style={{ position: 'absolute', bottom: '2px', right: '2px', width: '16px', height: '9px', borderRadius: '5px', background: counted ? 'rgba(16,185,129,0.9)' : 'rgba(0,0,0,0.45)', border: '1px solid rgba(0,0,0,0.4)', cursor: 'pointer', padding: 0, transition: 'background 0.15s' }}
+                                      >
+                                        <span style={{ display: 'block', width: '6px', height: '6px', background: 'white', borderRadius: '50%', position: 'absolute', top: '0.5px', left: counted ? '8px' : '1px', transition: 'left 0.15s', boxShadow: '0 1px 1px rgba(0,0,0,0.4)' }} />
+                                      </button>
+                                    );
+                                    const cellBase = { position: 'relative' as const, borderRadius: '4px', padding: '10px 4px 4px', minHeight: '38px', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.25)', border: '1px solid rgba(0,0,0,0.18)' };
                                     return (
                                       <div style={{ paddingLeft: '18px', paddingRight: '18px' }}>
-                                        <div className="text-[13px] font-semibold text-white uppercase tracking-wider mb-3">Weekly Content Status</div>
+                                        <div className="flex items-center justify-between mb-3">
+                                          <div className="text-[13px] font-semibold text-white uppercase tracking-wider">Weekly Content Status</div>
+                                          <div className="flex items-center gap-3 text-[9px] text-white/60">
+                                            <span className="flex items-center gap-1"><span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 4px #10b981' }} /> top-left = TTS audio ready</span>
+                                            <span className="flex items-center gap-1"><span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 4px #10b981' }} /> top-right = file synced</span>
+                                            <span className="flex items-center gap-1"><span style={{ width: '14px', height: '8px', borderRadius: '4px', background: 'rgba(16,185,129,0.9)', border: '1px solid rgba(0,0,0,0.4)' }} /> bottom-right = count toward TTS</span>
+                                          </div>
+                                        </div>
                                         <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${numWeeks}, 1fr)` }}>
                                           {weeks.map(w => {
-                                            const mCount = courseHealth.moduleWeeks?.[w]?.count || 0;
-                                            const rCount = courseHealth.readingWeeks?.[w]?.count || 0;
+                                            const mSlot = courseHealth.moduleWeeks?.[w];
+                                            const rSlot = courseHealth.readingWeeks?.[w];
+                                            const mCount = mSlot?.count || 0;
+                                            const rCount = rSlot?.count || 0;
+                                            const mTts = mSlot?.ttsReady || 0;
+                                            const rTts = rSlot?.ttsReady || 0;
+                                            const mFileOk = mCount > 0;
+                                            const rFileOk = rCount > 0;
+                                            const mTtsOk = mFileOk && mTts >= mCount;
+                                            const rTtsOk = rFileOk && rTts >= rCount;
+                                            const mCounted = isTtsCounted(c.code, w, 'module');
+                                            const rCounted = isTtsCounted(c.code, w, 'reading');
                                             const rExempt = isReadingExempt(c.code, w);
-                                            const moduleOk = mCount > 0;
-                                            const readingOk = rCount > 0 || rExempt;
                                             return (
                                               <div key={w} className="flex flex-col gap-1" data-testid={`week-cell-${c.code}-${w}`}>
                                                 <div className="text-[9px] text-center text-white/60 font-bold" style={{ lineHeight: 1, marginBottom: '1px' }}>W{w}</div>
-                                                <div style={{ ...cellBase, background: moduleOk ? moduleColor : RED_GRAD }} title={`Module: ${moduleOk ? `${mCount} file${mCount === 1 ? '' : 's'} synced` : 'no file in OneDrive'}`} data-testid={`week-module-${c.code}-${w}`}>
-                                                  <span style={dotStyle(moduleOk)} />
+                                                <div
+                                                  style={{ ...cellBase, background: !mCounted ? 'rgba(255,255,255,0.06)' : (mFileOk ? moduleColor : RED_GRAD), opacity: mCounted ? 1 : 0.55 }}
+                                                  title={!mCounted ? 'Module excluded from TTS — toggle on to count' : `Module W${w}: ${mFileOk ? `${mCount} file${mCount === 1 ? '' : 's'}` : 'no file'} • TTS ${mTts}/${mCount}`}
+                                                  data-testid={`week-module-${c.code}-${w}`}
+                                                >
+                                                  {mCounted && cornerDot('tl', mTtsOk, `TTS audio ${mTtsOk ? 'ready' : `${mTts}/${mCount}`}`, `dot-tts-module-${c.code}-${w}`)}
+                                                  {mCounted && cornerDot('tr', mFileOk, mFileOk ? `${mCount} file${mCount === 1 ? '' : 's'} synced` : 'no file in OneDrive', `dot-file-module-${c.code}-${w}`)}
                                                   <div className="text-[8px] font-bold text-white text-center" style={{ textShadow: '0 1px 1px rgba(0,0,0,0.7)', lineHeight: 1 }}>M</div>
+                                                  {toggleSwitch(mCounted, () => setTtsCounted(c.code, w, 'module', !mCounted), `toggle-tts-module-${c.code}-${w}`)}
                                                 </div>
-                                                <div style={{ ...cellBase, background: readingOk ? (rExempt && rCount === 0 ? 'rgba(255,255,255,0.08)' : readingColor) : RED_GRAD, opacity: rExempt && rCount === 0 ? 0.5 : 1 }} title={rExempt && rCount === 0 ? 'Reading: not expected this week' : `Reading: ${readingOk ? `${rCount} file${rCount === 1 ? '' : 's'} synced` : 'no file in OneDrive'}`} data-testid={`week-reading-${c.code}-${w}`}>
-                                                  <span style={dotStyle(readingOk)} />
-                                                  <div className="text-[8px] font-bold text-white text-center" style={{ textShadow: '0 1px 1px rgba(0,0,0,0.7)', lineHeight: 1 }}>R{rExempt && rCount === 0 ? '*' : ''}</div>
+                                                <div
+                                                  style={{ ...cellBase, background: !rCounted ? 'rgba(255,255,255,0.06)' : (rFileOk ? readingColor : RED_GRAD), opacity: rCounted ? 1 : 0.55 }}
+                                                  title={!rCounted ? (rExempt ? 'Reading not expected this week — excluded from TTS' : 'Reading excluded from TTS — toggle on to count') : `Reading W${w}: ${rFileOk ? `${rCount} file${rCount === 1 ? '' : 's'}` : 'no file'} • TTS ${rTts}/${rCount}`}
+                                                  data-testid={`week-reading-${c.code}-${w}`}
+                                                >
+                                                  {rCounted && cornerDot('tl', rTtsOk, `TTS audio ${rTtsOk ? 'ready' : `${rTts}/${rCount}`}`, `dot-tts-reading-${c.code}-${w}`)}
+                                                  {rCounted && cornerDot('tr', rFileOk, rFileOk ? `${rCount} file${rCount === 1 ? '' : 's'} synced` : 'no file in OneDrive', `dot-file-reading-${c.code}-${w}`)}
+                                                  <div className="text-[8px] font-bold text-white text-center" style={{ textShadow: '0 1px 1px rgba(0,0,0,0.7)', lineHeight: 1 }}>R{rExempt ? '*' : ''}</div>
+                                                  {toggleSwitch(rCounted, () => setTtsCounted(c.code, w, 'reading', !rCounted), `toggle-tts-reading-${c.code}-${w}`)}
                                                 </div>
                                               </div>
                                             );
                                           })}
                                         </div>
-                                        <div className="text-[10px] text-white/40 mt-1">Green dot = OneDrive has files for that week's folder. Red = no file synced. * = reading not expected this week.</div>
+                                        <div className="text-[10px] text-white/40 mt-1">Toggle off = slot is excluded from the pipeline TTS indicator (no dots shown). * = reading not expected this week.</div>
                                       </div>
                                     );
                                   })()}
