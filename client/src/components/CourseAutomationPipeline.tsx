@@ -901,7 +901,11 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
             label at the top, progress ring with TTS percent in the middle,
             file count below. Same info as the homework panel. */}
         <SectionLabel>Calendar Boxes</SectionLabel>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 16, padding: '0 6%' }}>
+        {/* Module box anchors LEFT under the 20% wire-drop, Reading box
+            anchors RIGHT under the 80% wire-drop, so the verticals from
+            the merge bus above land on the box centers — instead of the
+            two boxes bunching together in the middle of the section. */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0 calc(20% - 58px)' }}>
           {([
             { kind: 'module' as const, label: 'Module', bg: modColor, status: calModuleStatus, pct: modulePct, hasFiles: moduleHasFiles, total: totalMod, ready: modTtsReady, testId: `pipeline-calendar-module-${course.code.toLowerCase()}` },
             { kind: 'reading' as const, label: 'Reading', bg: readColor, status: calReadingStatus, pct: readingPct, hasFiles: readingHasFiles, total: totalRead, ready: readTtsReady, testId: `pipeline-calendar-reading-${course.code.toLowerCase()}` },
