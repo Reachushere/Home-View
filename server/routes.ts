@@ -9561,7 +9561,9 @@ Always cite which file/document each finding comes from. Be thorough but concise
                 const weekFolder = courseFolders.find((f: any) => f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${weekNum}`));
                 if (!weekFolder) continue;
                 const weekContents = await listOneDriveItems(weekFolder.path);
-                const typeFolder = weekContents.find((f: any) => f.type === 'folder' && f.name.toLowerCase().includes(subType));
+                const _stRe = new RegExp(`(^|[^a-z])${subType}([^a-z]|$)`, 'i');
+                const _stCands = weekContents.filter((f: any) => f.type === 'folder' && _stRe.test(f.name)).sort((a: any, b: any) => a.name.length - b.name.length);
+                const typeFolder = _stCands[0];
                 if (!typeFolder) continue;
                 const files = await listOneDriveItems(typeFolder.path);
                 const matchedFile = files.find((f: any) => f.name === file.originalName);
@@ -9644,7 +9646,9 @@ Always cite which file/document each finding comes from. Be thorough but concise
                   if (!weekFolder) { console.log(`[FileDownload] No week ${weekNum} folder found`); continue; }
                   console.log(`[FileDownload] Found week folder: ${weekFolder.name}`);
                   const weekContents = await listOneDriveItems(weekFolder.path);
-                  const typeFolder = weekContents.find((f: any) => f.type === 'folder' && f.name.toLowerCase().includes(subType));
+                  const _stRe = new RegExp(`(^|[^a-z])${subType}([^a-z]|$)`, 'i');
+                const _stCands = weekContents.filter((f: any) => f.type === 'folder' && _stRe.test(f.name)).sort((a: any, b: any) => a.name.length - b.name.length);
+                const typeFolder = _stCands[0];
                   if (!typeFolder) { console.log(`[FileDownload] No ${subType} subfolder found in ${weekFolder.name}`); continue; }
                   console.log(`[FileDownload] Found type folder: ${typeFolder.name}`);
                   const odFiles = await listOneDriveItems(typeFolder.path);
@@ -9952,35 +9956,54 @@ Always cite which file/document each finding comes from. Be thorough but concise
               if (folderWeekNum < 1 || folderWeekNum > 13) continue;
               const weekContents = await listOneDriveItems(weekDir.path);
               for (const subType of ['module', 'reading']) {
-                const subFolder = weekContents.find((f: any) => f.type === 'folder' && f.name.toLowerCase().includes(subType));
-                if (!subFolder) continue;
-                const subFiles = await listOneDriveItems(subFolder.path);
-                for (const file of subFiles) {
-                  if (file.type !== 'file' || !file.name.toLowerCase().endsWith('.pdf')) continue;
-                  const folderName = `week-${folderWeekNum}-${course.code.toLowerCase()}-${subType}`;
-                  const key = `${folderName}::${file.name}`;
-                  if (existingSet.has(key)) continue;
-                  let objectPath = `onedrive://${folderName}/${file.name}`;
-                  if (file.downloadUrl) {
-                    try {
-                      const fs = await import("fs");
-                      const path = await import("path");
-                      const localUploadsDir = path.join(process.cwd(), 'persistent-uploads');
-                      if (!fs.existsSync(localUploadsDir)) fs.mkdirSync(localUploadsDir, { recursive: true });
-                      const dlResp = await fetch(file.downloadUrl);
-                      if (dlResp.ok) {
-                        const buf = Buffer.from(await dlResp.arrayBuffer());
-                        const localFileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
-                        fs.writeFileSync(path.join(localUploadsDir, localFileName), buf);
-                        objectPath = `/local/uploads/${localFileName}`;
+                // Word-boundary match on the folder name so "Reading Notes"
+                // can't be misread as a Module folder. Pick the shortest
+                // matching name as a heuristic for the canonical "Module"
+                // or "Reading" subfolder when multiple match.
+                const re = new RegExp(`(^|[^a-z])${subType}([^a-z]|$)`, 'i');
+                const candidates = weekContents.filter((f: any) => f.type === 'folder' && re.test(f.name));
+                candidates.sort((a: any, b: any) => a.name.length - b.name.length);
+                const subFolder = candidates[0];
+                const folderName = `week-${folderWeekNum}-${course.code.toLowerCase()}-${subType}`;
+                const odNamesInFolder = new Set<string>();
+                if (subFolder) {
+                  const subFiles = await listOneDriveItems(subFolder.path);
+                  for (const file of subFiles) {
+                    if (file.type !== 'file' || !file.name.toLowerCase().endsWith('.pdf')) continue;
+                    odNamesInFolder.add(file.name);
+                    const key = `${folderName}::${file.name}`;
+                    if (existingSet.has(key)) continue;
+                    let objectPath = `onedrive://${folderName}/${file.name}`;
+                    if (file.downloadUrl) {
+                      try {
+                        const fs = await import("fs");
+                        const path = await import("path");
+                        const localUploadsDir = path.join(process.cwd(), 'persistent-uploads');
+                        if (!fs.existsSync(localUploadsDir)) fs.mkdirSync(localUploadsDir, { recursive: true });
+                        const dlResp = await fetch(file.downloadUrl);
+                        if (dlResp.ok) {
+                          const buf = Buffer.from(await dlResp.arrayBuffer());
+                          const localFileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+                          fs.writeFileSync(path.join(localUploadsDir, localFileName), buf);
+                          objectPath = `/local/uploads/${localFileName}`;
+                        }
+                      } catch (dlErr: any) {
+                        console.log(`[LibrarySync:Semester] Download failed for ${file.name}: ${dlErr.message}`);
                       }
-                    } catch (dlErr: any) {
-                      console.log(`[LibrarySync:Semester] Download failed for ${file.name}: ${dlErr.message}`);
                     }
+                    await storage.createFile({ originalName: file.name, displayName: file.name, objectPath, contentType: 'application/pdf', size: file.size || 0, folder: folderName, listened: false });
+                    existingSet.add(key);
+                    synced++;
                   }
-                  await storage.createFile({ originalName: file.name, displayName: file.name, objectPath, contentType: 'application/pdf', size: file.size || 0, folder: folderName, listened: false });
-                  existingSet.add(key);
-                  synced++;
+                }
+                // Prune DB rows for this (week, course, type) that are no
+                // longer present in the OneDrive subfolder. Without this,
+                // moving or deleting a file in OneDrive leaves the WCS
+                // box stuck on a stale "synced" state forever.
+                const stale = existingFiles.filter((f: any) => f.folder === folderName && !odNamesInFolder.has(f.originalName));
+                for (const f of stale) {
+                  try { await storage.deleteFile(f.id); existingSet.delete(`${folderName}::${f.originalName}`); }
+                  catch (delErr: any) { console.log(`[LibrarySync:Semester] Prune failed for ${f.originalName}: ${delErr.message}`); }
                 }
               }
             }
@@ -10095,7 +10118,9 @@ Always cite which file/document each finding comes from. Be thorough but concise
                     const wFolder = wFolders.find((f: any) => f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${weekNum}`));
                     if (!wFolder) continue;
                     const wContents = await listOneDriveItems(wFolder.path);
-                    const tFolder = wContents.find((f: any) => f.type === 'folder' && f.name.toLowerCase().includes(subType));
+                    const _tRe = new RegExp(`(^|[^a-z])${subType}([^a-z]|$)`, 'i');
+                    const _tCands = wContents.filter((f: any) => f.type === 'folder' && _tRe.test(f.name)).sort((a: any, b: any) => a.name.length - b.name.length);
+                    const tFolder = _tCands[0];
                     if (!tFolder) continue;
                     const tFiles = await listOneDriveItems(tFolder.path);
                     const matchFile = tFiles.find((f: any) => f.name === fileName);
@@ -18286,44 +18311,56 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
 
                 const weekContents = await listOneDriveItems(weekDir.path);
                 for (const subType of ['module', 'reading']) {
-                  const subFolder = weekContents.find((f: any) => f.type === 'folder' && f.name.toLowerCase().includes(subType));
-                  if (!subFolder) continue;
-                  const subFiles = await listOneDriveItems(subFolder.path);
-                  for (const file of subFiles) {
-                    if (file.type !== 'file' || !file.name.toLowerCase().endsWith('.pdf')) continue;
-                    const folderName = `week-${folderWeekNum}-${course.code.toLowerCase()}-${subType}`;
-                    const key = `${folderName}::${file.name}`;
-                    if (existingSet.has(key)) continue;
-                    let objectPath = `onedrive://${folderName}/${file.name}`;
-                    if (file.downloadUrl) {
-                      try {
-                        const fs = await import("fs");
-                        const path = await import("path");
-                        const localUploadsDir = path.join(process.cwd(), 'persistent-uploads');
-                        if (!fs.existsSync(localUploadsDir)) fs.mkdirSync(localUploadsDir, { recursive: true });
-                        const dlResp = await fetch(file.downloadUrl);
-                        if (dlResp.ok) {
-                          const buf = Buffer.from(await dlResp.arrayBuffer());
-                          const localFileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
-                          const localFilePath = path.join(localUploadsDir, localFileName);
-                          fs.writeFileSync(localFilePath, buf);
-                          objectPath = `/local/uploads/${localFileName}`;
+                  const re = new RegExp(`(^|[^a-z])${subType}([^a-z]|$)`, 'i');
+                  const candidates = weekContents.filter((f: any) => f.type === 'folder' && re.test(f.name));
+                  candidates.sort((a: any, b: any) => a.name.length - b.name.length);
+                  const subFolder = candidates[0];
+                  const folderName = `week-${folderWeekNum}-${course.code.toLowerCase()}-${subType}`;
+                  const odNamesInFolder = new Set<string>();
+                  if (subFolder) {
+                    const subFiles = await listOneDriveItems(subFolder.path);
+                    for (const file of subFiles) {
+                      if (file.type !== 'file' || !file.name.toLowerCase().endsWith('.pdf')) continue;
+                      odNamesInFolder.add(file.name);
+                      const key = `${folderName}::${file.name}`;
+                      if (existingSet.has(key)) continue;
+                      let objectPath = `onedrive://${folderName}/${file.name}`;
+                      if (file.downloadUrl) {
+                        try {
+                          const fs = await import("fs");
+                          const path = await import("path");
+                          const localUploadsDir = path.join(process.cwd(), 'persistent-uploads');
+                          if (!fs.existsSync(localUploadsDir)) fs.mkdirSync(localUploadsDir, { recursive: true });
+                          const dlResp = await fetch(file.downloadUrl);
+                          if (dlResp.ok) {
+                            const buf = Buffer.from(await dlResp.arrayBuffer());
+                            const localFileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+                            const localFilePath = path.join(localUploadsDir, localFileName);
+                            fs.writeFileSync(localFilePath, buf);
+                            objectPath = `/local/uploads/${localFileName}`;
+                          }
+                        } catch (dlErr: any) {
+                          console.log(`${logPrefix} Download failed for ${file.name}, using onedrive:// ref: ${dlErr.message}`);
                         }
-                      } catch (dlErr: any) {
-                        console.log(`${logPrefix} Download failed for ${file.name}, using onedrive:// ref: ${dlErr.message}`);
                       }
+                      await storage.createFile({
+                        originalName: file.name,
+                        displayName: file.name,
+                        objectPath,
+                        contentType: 'application/pdf',
+                        size: file.size || 0,
+                        folder: folderName,
+                        listened: false,
+                      });
+                      existingSet.add(key);
+                      totalSynced++;
                     }
-                    await storage.createFile({
-                      originalName: file.name,
-                      displayName: file.name,
-                      objectPath,
-                      contentType: 'application/pdf',
-                      size: file.size || 0,
-                      folder: folderName,
-                      listened: false,
-                    });
-                    existingSet.add(key);
-                    totalSynced++;
+                  }
+                  // Prune stale DB rows for files no longer in this OneDrive subfolder.
+                  const stale = existingFiles.filter((f: any) => f.folder === folderName && !odNamesInFolder.has(f.originalName));
+                  for (const f of stale) {
+                    try { await storage.deleteFile(f.id); existingSet.delete(`${folderName}::${f.originalName}`); }
+                    catch (delErr: any) { console.log(`${logPrefix} Prune failed for ${f.originalName}: ${delErr.message}`); }
                   }
                 }
               }
@@ -18408,7 +18445,9 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
           if (!currentWeekFolder) continue;
           const weekContents = await listOneDriveItems(currentWeekFolder.path);
           for (const subType of ['module', 'reading']) {
-            const subFolder = weekContents.find((f: any) => f.type === 'folder' && f.name.toLowerCase().includes(subType));
+            const _stRe2 = new RegExp(`(^|[^a-z])${subType}([^a-z]|$)`, 'i');
+            const _stCands2 = weekContents.filter((f: any) => f.type === 'folder' && _stRe2.test(f.name)).sort((a: any, b: any) => a.name.length - b.name.length);
+            const subFolder = _stCands2[0];
             if (!subFolder) continue;
             const subFiles = await listOneDriveItems(subFolder.path);
             for (const file of subFiles) {
@@ -20358,7 +20397,9 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
                 const weekFolder = weekFolders.find((f: any) => f.type === 'folder' && f.name.match(/Week\s+(\d+)/i)?.[1] && parseInt(f.name.match(/Week\s+(\d+)/i)![1], 10) === weekNum);
                 if (weekFolder) {
                   const weekContents = await listOneDriveItems(weekFolder.path);
-                  const subFolder = weekContents.find((f: any) => f.type === 'folder' && f.name.toLowerCase().includes(subType));
+                  const _stRe3 = new RegExp(`(^|[^a-z])${subType}([^a-z]|$)`, 'i');
+                  const _stCands3 = weekContents.filter((f: any) => f.type === 'folder' && _stRe3.test(f.name)).sort((a: any, b: any) => a.name.length - b.name.length);
+                  const subFolder = _stCands3[0];
                   if (subFolder) {
                     const subFiles = await listOneDriveItems(subFolder.path);
                     const target = subFiles.find((sf: any) => sf.type === 'file' && sf.name === file.originalName);
