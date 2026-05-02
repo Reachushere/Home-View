@@ -15869,6 +15869,9 @@ export default function Dashboard() {
                                           onCourseFolderRenamed={() => { queryClient.invalidateQueries({ queryKey: [`/api/semester-health-check/${expandedSemKey}`] }); queryClient.invalidateQueries({ queryKey: ['/api/semesters'] }); }}
                                           onModuleFolderRenamed={() => { queryClient.invalidateQueries({ queryKey: [`/api/semester-health-check/${expandedSemKey}`] }); queryClient.invalidateQueries({ queryKey: ['/api/semesters'] }); }}
                                           onReadingFolderRenamed={() => { queryClient.invalidateQueries({ queryKey: [`/api/semester-health-check/${expandedSemKey}`] }); queryClient.invalidateQueries({ queryKey: ['/api/semesters'] }); }}
+                                          isTtsCounted={(week, type) => isTtsCounted(c.code, week, type)}
+                                          setTtsCounted={(week, type, counted) => setTtsCounted(c.code, week, type, counted)}
+                                          isReadingExempt={(week) => isReadingExempt(c.code, week)}
                                         />
                                       );
                                     })()}
