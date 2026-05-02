@@ -8947,10 +8947,14 @@ export default function Dashboard() {
       const allVals: number[] = [];
       for (const semKey of relevantSemKeys) {
         const courses = semesterCourseAssignments[semKey] || [];
+        const seenCodes = new Set<string>();
         for (const c of courses) {
           const code = c.code.replace(/\s/g, '');
           const codeNorm = code.toUpperCase();
           const codeNoC = codeNorm.replace(/^C(?=[A-Z]{2,})/, '');
+          const dedupKey = codeNoC || codeNorm;
+          if (seenCodes.has(dedupKey)) continue;
+          seenCodes.add(dedupKey);
           const info = pastCourseInfo[code] || pastCourseInfo[codeNoC];
           const certKey = Object.keys(certCourseMap).find(k => {
             const mc = certCourseMap[k].code.replace(/\s/g, '').toUpperCase();
@@ -20327,10 +20331,14 @@ export default function Dashboard() {
                   const courses = semAllCourses[semKey] || [];
                   const gpaVals: number[] = [];
                   const pctVals: number[] = [];
+                  const seenCodes = new Set<string>();
                   for (const c of courses) {
                     const code = c.code.replace(/\s/g, '');
                     const codeNorm = code.toUpperCase();
                     const codeNoC = codeNorm.replace(/^C(?=[A-Z]{2,})/, '');
+                    const dedupKey = codeNoC || codeNorm;
+                    if (seenCodes.has(dedupKey)) continue;
+                    seenCodes.add(dedupKey);
                     const info = pastCourseInfo[code] || pastCourseInfo[codeNoC];
                     const certKey = Object.keys(certCourseMap).find(k => {
                       const mc = certCourseMap[k].code.replace(/\s/g, '').toUpperCase();
@@ -29552,9 +29560,13 @@ export default function Dashboard() {
                                     const letterToPct: Record<string, number> = { 'A+': 92, 'A': 87, 'A-': 82, 'B+': 78, 'B': 75, 'B-': 72, 'C+': 68, 'C': 65, 'C-': 62, 'D': 55, 'F': 40 };
                                     const gpaVals: number[] = [];
                                     const pctVals: number[] = [];
+                                    const seenCodes = new Set<string>();
                                     for (const c of sem.courses) {
                                       const code = c.code.replace(/\s/g, '');
                                       const codeNoC = code.toUpperCase().replace(/^C(?=[A-Z]{2,})/, '');
+                                      const dedupKey = codeNoC || code.toUpperCase();
+                                      if (seenCodes.has(dedupKey)) continue;
+                                      seenCodes.add(dedupKey);
                                       const info = pastCourseInfo[code] || pastCourseInfo[codeNoC];
                                       const certKey = Object.keys(certCourseMap).find(k => { const mc = certCourseMap[k].code.replace(/\s/g, '').toUpperCase(); return mc === code.toUpperCase() || ('C' + mc) === code.toUpperCase() || mc === codeNoC; });
                                       const cg = certKey ? courseGrades[certKey] : null;
