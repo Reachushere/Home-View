@@ -4467,15 +4467,19 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
                 try {
                   const subs = await listOneDriveFolderChildren(courseFolderPath);
                   const subNames = (subs || []).filter((s: any) => s.folder).map((s: any) => s.name.toLowerCase());
-                  syllabusFolderExists = subNames.includes('syllabus');
-                  assignmentsFolderExists = subNames.includes('assignments');
-                  textbookFolderExists = subNames.includes('textbook');
+                  // Loosened matching: real-world folder names are often
+                  // "Syllabus & Outline", "Assignments and Tests",
+                  // "Textbook PDFs", etc. Treat any folder whose lowercased
+                  // name STARTS WITH the keyword as a match.
+                  syllabusFolderExists = subNames.some(n => n.startsWith('syllabus'));
+                  assignmentsFolderExists = subNames.some(n => n.startsWith('assignment'));
+                  textbookFolderExists = subNames.some(n => n.startsWith('textbook'));
                   // If the Syllabus folder exists, look inside it for an
                   // actual PDF. The folder existing on its own does NOT mean
                   // a syllabus has been linked — we must see a file.
                   if (syllabusFolderExists) {
                     try {
-                      const sylName = (subs || []).find((s: any) => s.folder && s.name.toLowerCase() === 'syllabus')?.name || 'Syllabus';
+                      const sylName = (subs || []).find((s: any) => s.folder && s.name.toLowerCase().startsWith('syllabus'))?.name || 'Syllabus';
                       const sylFolderPath = `${courseFolderPath}/${sylName}`;
                       const sylChildren = await listOneDriveFolderChildren(sylFolderPath);
                       const sylPdf = (sylChildren || []).find((f: any) => !f.folder && /\.pdf$/i.test(f.name || ''));
