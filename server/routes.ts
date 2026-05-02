@@ -18708,7 +18708,9 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       if (!weekMatch || parseInt(weekMatch[1], 10) !== currentWeekNumber) return false;
       if (activeCourseCodes) {
         const code = fileCourseCode(f);
-        if (code && !activeCourseCodes.has(code)) return false;
+        // Strict: must have a detectable course code AND that code must be in
+        // the current semester. No code at all => reject (only manual play).
+        if (!code || !activeCourseCodes.has(code)) return false;
       }
       return true;
     });
@@ -20748,7 +20750,10 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     const inActiveSemester = (f: any): boolean => {
       if (!activeCourseCodes) return true;
       const code = getCourseCodeForFile(f);
-      return code === 'UNKNOWN' || activeCourseCodes.has(code);
+      // Strict: must have a detectable course code AND that code must be in
+      // the current semester. No code at all => reject (only manual play).
+      if (code === 'UNKNOWN') return false;
+      return activeCourseCodes.has(code);
     };
     const weekPartials = allFiles.filter((f: any) => isPartiallyListened(f) && getFileWeek(f) === w && inActiveSemester(f));
     const allPartialIds = new Set(weekPartials.map((f: any) => f.id));
