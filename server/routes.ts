@@ -10035,9 +10035,12 @@ Always cite which file/document each finding comes from. Be thorough but concise
                         console.log(`[LibrarySync:Semester] Download failed for ${file.name}: ${dlErr.message}`);
                       }
                     }
-                    await storage.createFile({ originalName: file.name, displayName: file.name, objectPath, contentType: 'application/pdf', size: file.size || 0, folder: folderName, listened: false });
+                    const newFile = await storage.createFile({ originalName: file.name, displayName: file.name, objectPath, contentType: 'application/pdf', size: file.size || 0, folder: folderName, listened: false });
                     existingSet.add(key);
                     synced++;
+                    if (newFile?.id) {
+                      try { queueFileForPreparation(newFile.id); } catch {}
+                    }
                   }
                 }
                 // Prune DB rows for this (week, course, type) that are no
@@ -18540,9 +18543,29 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         console.log(`[AudioPrep] File ${fileId} not found — skipping`);
         return;
       }
+
+      // Resume support: if a partial run wrote some audio paths but never
+      // reached `preparedAt`, we want to fill the gaps instead of redoing
+      // every chunk. If `preparedAt` is set AND every path is non-empty
+      // AND every audio file exists on disk, we can skip entirely.
+      const fs = await import("fs");
+      let existingPaths: string[] | null = null;
       if (file.preparedAudioPaths) {
-        console.log(`[AudioPrep] File ${fileId} (${file.originalName}) already prepared — skipping`);
-        return;
+        try { existingPaths = JSON.parse(file.preparedAudioPaths); } catch { existingPaths = null; }
+      }
+      if (file.preparedAt && existingPaths && existingPaths.length > 0) {
+        const everyOk = existingPaths.every(p => p && p.length > 0 && (() => {
+          try {
+            const local = p.startsWith('/local/') ? p.replace(/^\/local\//, '') : p.replace(/^\//, '');
+            const abs = local.startsWith('/') ? local : `${process.cwd()}/${local}`;
+            return fs.existsSync(abs);
+          } catch { return false; }
+        })());
+        if (everyOk) {
+          console.log(`[AudioPrep] File ${fileId} (${file.originalName}) already prepared and verified — skipping`);
+          return;
+        }
+        console.log(`[AudioPrep] File ${fileId} (${file.originalName}) prepared but some chunks missing on disk — re-filling gaps`);
       }
 
       console.log(`[AudioPrep] ===== Preparing file ${fileId}: ${file.originalName} =====`);
@@ -18561,19 +18584,38 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       }
 
       console.log(`[AudioPrep] ${file.originalName}: ${text.length} chars → ${chunks.length} chunks`);
-      const audioPaths: string[] = [];
+      // Seed audioPaths from any existing run so we only fill missing slots.
+      const audioPaths: string[] = (existingPaths && existingPaths.length === chunks.length)
+        ? existingPaths.slice()
+        : new Array(chunks.length).fill('');
       const voice = 'echo';
+      const PROGRESS_FLUSH_EVERY = 5;
+      let chunksGeneratedThisRun = 0;
+
+      const isPathValid = (p: string): boolean => {
+        if (!p || p.length === 0) return false;
+        try {
+          const local = p.startsWith('/local/') ? p.replace(/^\/local\//, '') : p.replace(/^\//, '');
+          const abs = local.startsWith('/') ? local : `${process.cwd()}/${local}`;
+          return fs.existsSync(abs);
+        } catch { return false; }
+      };
 
       let consecutiveRateLimits = 0;
       for (let i = 0; i < chunks.length; i++) {
         while (audioPreparationPaused) {
           await new Promise(r => setTimeout(r, 2000));
         }
+        // Skip slots that already have a valid audio file on disk.
+        if (isPathValid(audioPaths[i])) {
+          continue;
+        }
         try {
           console.log(`[AudioPrep] Generating chunk ${i + 1}/${chunks.length} for ${file.originalName} (${chunks[i].length} chars)`);
           const audioPath = await generateAndSaveTTSAudio(chunks[i], `prep-${fileId}-chunk-${i}`, voice, true);
-          audioPaths.push(audioPath);
+          audioPaths[i] = audioPath;
           consecutiveRateLimits = 0;
+          chunksGeneratedThisRun++;
         } catch (e: any) {
           const isRateLimit = e.message?.includes('429') || e.message?.includes('rate limit') || e.message?.includes('Rate limit');
           console.error(`[AudioPrep] Failed to generate chunk ${i + 1} for ${file.originalName}: ${e.message}`);
@@ -18585,21 +18627,40 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
             i--;
             continue;
           }
-          audioPaths.push('');
+          audioPaths[i] = '';
           await new Promise(r => setTimeout(r, 2000));
+        }
+        // Incremental persistence: flush progress every N chunks so a
+        // crash mid-prep doesn't lose work.
+        if (chunksGeneratedThisRun > 0 && chunksGeneratedThisRun % PROGRESS_FLUSH_EVERY === 0) {
+          try {
+            await storage.updateFile(fileId, {
+              extractedText: text,
+              totalChunks: chunks.length,
+              preparedAudioPaths: JSON.stringify(audioPaths),
+            });
+            console.log(`[AudioPrep] Flushed progress for ${file.originalName}: ${audioPaths.filter(p => p).length}/${chunks.length} chunks`);
+          } catch (flushErr: any) {
+            console.log(`[AudioPrep] Progress flush failed: ${flushErr.message}`);
+          }
         }
         await new Promise(r => setTimeout(r, 800));
       }
 
+      // Only stamp preparedAt when every chunk is non-empty (i.e. no gaps
+      // remain). If gaps are still present, the repair loop will re-queue
+      // and finish them off later.
+      const everyComplete = audioPaths.every(p => p && p.length > 0);
       await storage.updateFile(fileId, {
         extractedText: text,
         totalChunks: chunks.length,
         preparedAudioPaths: JSON.stringify(audioPaths),
-        preparedAt: new Date(),
+        ...(everyComplete ? { preparedAt: new Date() } : {}),
       });
 
       const elapsed = Math.round((Date.now() - startTime) / 1000);
-      console.log(`[AudioPrep] ===== Completed ${file.originalName}: ${chunks.length} chunks in ${elapsed}s =====`);
+      const goodCount = audioPaths.filter(p => p && p.length > 0).length;
+      console.log(`[AudioPrep] ===== Completed ${file.originalName}: ${goodCount}/${chunks.length} chunks in ${elapsed}s${everyComplete ? '' : ' (gaps remain — will retry)'} =====`);
     } catch (e: any) {
       console.error(`[AudioPrep] Error preparing file ${fileId}: ${e.message}`);
     }
@@ -18622,10 +18683,37 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     }
   }
 
+  // Priority insertion: files closer to the current week are prepared
+  // first. The queue is re-sorted in-place every time we add so the
+  // first-in-line slot always reflects the most-relevant pending file.
+  async function reprioritizeQueue(): Promise<void> {
+    if (audioPreparationQueue.length <= 1) return;
+    try {
+      const semesterSettings = await storage.getActiveSemesterSettings();
+      const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date();
+      const rwStart = (semesterSettings as any)?.readingWeekStart ? new Date((semesterSettings as any).readingWeekStart) : null;
+      const currentWeek = getWeekNumber(torontoDate(), semStart, rwStart);
+      const allFiles = await storage.getFiles();
+      const fileById = new Map<number, any>(allFiles.map((f: any) => [f.id, f]));
+      const weekOf = (id: number): number => {
+        const f = fileById.get(id);
+        const m = f?.folder?.match(/week-(\d+)/i);
+        return m ? parseInt(m[1], 10) : 999;
+      };
+      audioPreparationQueue.sort((a, b) => {
+        const da = Math.abs(weekOf(a) - currentWeek);
+        const db = Math.abs(weekOf(b) - currentWeek);
+        if (da !== db) return da - db;
+        return a - b; // tiebreak: smaller id (older row) first
+      });
+    } catch {}
+  }
+
   function queueFileForPreparation(fileId: number): void {
     if (!audioPreparationQueue.includes(fileId)) {
       audioPreparationQueue.push(fileId);
       console.log(`[AudioPrep] Queued file ${fileId} for preparation (queue size: ${audioPreparationQueue.length})`);
+      reprioritizeQueue().catch(() => {});
       processAudioPreparationQueue().catch(e => console.error(`[AudioPrep] Queue processing error: ${e.message}`));
     }
   }
@@ -18694,27 +18782,43 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       console.error(`[AudioPrep] Startup scan error: ${e.message}`);
     }
 
-    const AUDIO_REPAIR_INTERVAL_MS = 30 * 60 * 1000;
+    // Repair loop: every 5 minutes (was 30) — works alongside the
+    // priority-queue + resume-from-partial logic in prepareFileAudio so
+    // we no longer need to blow away preparedAudioPaths to retry; the
+    // queue will fill in just the missing slots. We also verify each
+    // path exists on disk so renamed/cleared persistent-uploads dirs
+    // get repaired automatically.
+    const AUDIO_REPAIR_INTERVAL_MS = 5 * 60 * 1000;
     setInterval(async () => {
       if (audioPreparationActive || audioPreparationPaused || catWashPlaybackActive) return;
       try {
+        const fs = await import("fs");
         const allFiles = await storage.getFiles();
+        const isPathOnDisk = (p: string): boolean => {
+          if (!p || p.length === 0) return false;
+          try {
+            const local = p.startsWith('/local/') ? p.replace(/^\/local\//, '') : p.replace(/^\//, '');
+            const abs = local.startsWith('/') ? local : `${process.cwd()}/${local}`;
+            return fs.existsSync(abs);
+          } catch { return false; }
+        };
         const filesWithGaps = allFiles.filter((f: any) => {
           if (!f.preparedAudioPaths || f.listened) return false;
           try {
             const paths: string[] = JSON.parse(f.preparedAudioPaths);
-            return paths.some(p => !p || p.length === 0);
+            // gap = empty slot OR missing-from-disk slot
+            return paths.some(p => !p || p.length === 0 || !isPathOnDisk(p));
           } catch { return false; }
         });
         if (filesWithGaps.length > 0) {
-          console.log(`[AudioPrep Repair] Found ${filesWithGaps.length} file(s) with incomplete audio — re-preparing`);
-          for (const f of filesWithGaps) {
-            await storage.updateFile(f.id, { preparedAudioPaths: null });
-            queueFileForPreparation(f.id);
-          }
+          console.log(`[AudioPrep Repair] Found ${filesWithGaps.length} file(s) with incomplete or missing audio — re-queuing (will fill gaps only)`);
+          // No more nuking preparedAudioPaths — prepareFileAudio resumes
+          // from existing slots and only generates the empty/missing ones.
+          for (const f of filesWithGaps) queueFileForPreparation(f.id);
         }
         // Pick up newly-synced files (no preparedAudioPaths, not listened) so page-marker extraction
-        // happens within ~30min of upload instead of waiting for next server restart.
+        // happens within ~5min of upload (in addition to the immediate
+        // queueing on createFile during sync).
         const newUnprepared = allFiles.filter((f: any) => !f.preparedAudioPaths && !f.listened);
         if (newUnprepared.length > 0) {
           console.log(`[AudioPrep Repair] Queueing ${newUnprepared.length} unprepared file(s) for extraction + audio prep`);
