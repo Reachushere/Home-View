@@ -1,0 +1,436 @@
+READ THIS FIRST.
+
+The work plan below is the master plan. Do NOT rewrite it, shorten it, reorder it, reinterpret it, or replace it with a summary.
+
+Only add context from the uploaded archive, current logs, and layout map where needed. The checklist itself is the source of truth.
+
+FIRST: Use the uploaded handoff archive:
+unical_handoff_bundle.tar(1).gz
+
+If working on the Pi, extract/check it with:
+
+cd ~/Home-View
+tar -xzf unical_handoff_bundle.tar\(1\).gz
+ls -lah
+
+The archive should contain or support review of:
+- server/routes.ts
+- server/onedrive.ts
+- current_diff.txt
+- recent_pm2_logs.txt
+- files_recent.txt
+- files_schema.txt
+- semesters_rows.txt
+- npm_check.txt
+
+CRITICAL ENVIRONMENT RULE:
+This app runs under PM2 as process dashboard and serves a built frontend bundle.
+
+Backend changes:
+- Usually require:
+pm2 restart dashboard
+
+Frontend/client changes:
+- Anything under client/src, including dashboard.tsx, requires:
+npm run build
+pm2 restart dashboard
+
+Do not evaluate frontend/UI changes unless npm run build has completed successfully.
+
+CRITICAL UI LAYOUT LEARNINGS:
+These are added context only. They do NOT replace the work plan.
+
+- The countdown bar is a separate fixed layer.
+- The countdown bar is NOT part of the calendar layout flow.
+- The calendar/glass areas have multiple render paths/views.
+- There are separate week/month/overlay render branches.
+- Do not patch calendar layout from isolated grep snippets.
+- Before any calendar/layout patch, generate a layout map first.
+
+MANDATORY LAYOUT MAP BEFORE UI WORK:
+Only run this if calendar/UI work becomes necessary. Do not do calendar work before automation unless it directly blocks use.
+
+cd ~/Home-View
+
+{
+  echo "===== DASHBOARD RENDER / LAYOUT MAP ====="
+  grep -n "data-testid=\"next-task-countdown\"\|data-testid=\"section-coming-up\"\|calendarView === \"week\"\|calendarView === \"month\"\|calendarWrapperRef\|calendarBorderRef\|position:\"fixed\"\|position: \"fixed\"\|calendarHeight\|calendarTop\|calendarBorderTop" client/src/pages/dashboard.tsx
+
+  echo
+  echo "===== COUNTDOWN BAR CONTEXT ====="
+  grep -n "next-task-countdown" client/src/pages/dashboard.tsx | head -20
+
+  echo
+  echo "===== CALENDAR BRANCH CONTEXT ====="
+  sed -n '32430,32820p' client/src/pages/dashboard.tsx
+
+  echo
+  echo "===== SECOND CALENDAR / OVERLAY CONTEXT ====="
+  sed -n '37200,37920p' client/src/pages/dashboard.tsx
+} > dashboard_layout_map.txt
+
+cat dashboard_layout_map.txt
+
+PREVIOUS AGENT MISTAKES TO AVOID:
+- Do not treat the calendar as one simple block.
+- Do not assume the countdown bar pushes calendar content down; it is fixed.
+- Do not patch the wrong duplicate calendar branch.
+- Do not make frontend changes without npm run build.
+- Do not diagnose cat-lights flow from truncated logs.
+- Do not assume webhook failure when logs show semester/week logic is reached.
+- Do not change DB semester dates.
+- Do not delete semesters.
+- Do not hardcode course names or week folder names.
+
+AUTOMATION LOG SOURCE OF TRUTH:
+After triggering cat lights, use:
+
+pm2 logs dashboard --lines 500 | grep -Ei "CatLights|Cat Lights|weekNumber|semester|CHUM|Selected|file|prompt|reading|module_reading|checking your readings|voice|follow"
+
+CURRENT CONFIRMED AUTOMATION BLOCKER:
+Cat lights ON
+→ webhook received
+→ state resolved as ON
+→ effective semester = Spring/Summer 2026
+→ weekNumber = -1
+→ app says semester has not started
+→ CHUM FM plays instead of reading automation
+
+This is not a Home Assistant problem.
+This is not a webhook problem.
+This is not a TTS problem.
+This is a semester/week gating issue in server/routes.ts.
+
+Now follow the master work plan below exactly.
+
+UniCal / Home-View Priority Work Plan
+
+1. Completed Already
+☑ Home Assistant connection confirmed healthy.
+☑ Cat-lights webhook confirmed reaching the Pi.
+☑ Cat-lights handler confirmed parsing state: on.
+☑ Spring/Summer 2026 semester is in the database.
+☑ Spring/Summer 2026 is active and dated May 4, 2026 to August 4, 2026.
+☑ Current blocker identified: May 1 is before semester start, so weekNumber=-1 and the app defaults to CHUM FM.
+☑ TTS is confirmed working on file 517, but very slowly because Edge TTS retries/timeouts on huge PDFs.
+☑ Handoff archive bundle was created successfully.
+☑ Replit did not meaningfully split the backend; server/routes.ts is still central and required.
+
+1. Completed Already
+☑ Home Assistant connection confirmed healthy.
+☑ Cat-lights webhook confirmed reaching the Pi.
+☑ Cat-lights handler confirmed parsing state: on.
+☑ Cat-lights flow confirmed reaching semester/week logic.
+☑ Spring/Summer 2026 exists in the database.
+☑ Spring/Summer 2026 is active and dated May 4, 2026 to August 4, 2026.
+☑ Current blocker identified: May 1 is before semester start, so weekNumber=-1 and the app defaults to CHUM FM.
+☑ TTS is confirmed working on file 517, but slowly because Edge TTS retries/timeouts on huge PDFs.
+☑ Handoff archive bundle was created successfully.
+☑ Replit did not meaningfully split the backend; server/routes.ts remains central and required.
+
+________________________________________
+2. Currently Confirmed
+☑ Pi app is running under PM2 as dashboard.
+☑ Database is PostgreSQL/Drizzle, not SQLite.
+☑ Home Assistant API connection is working.
+☑ Cat-lights webhook route exists in server/routes.ts.
+☑ Cat-lights flow reaches semester/week logic.
+☑ The system finds Spring/Summer 2026 as the effective semester.
+☑ The system blocks automation because currentWeekNumber < 1.
+☑ Calendar/Gmail errors are present but are not the current automation blocker.
+☑ dashboard.tsx alone is not enough for future debugging because automation lives mostly in backend/server files.
+________________________________________
+3. Still Unknown
+☐ Whether Week 1 files are correctly selected after the pre-semester block is bypassed.
+☐ Whether Reading and Module folders fully match the database.
+☐ Whether all Spring/Summer 2026 folders follow expected OneDrive structure.
+☐ Whether text extraction is complete for all required Spring/Summer files.
+☐ Whether prepared_at and prepared_audio_paths are populated for all needed readings.
+☐ Whether the voice prompt waits properly for confirmation.
+☐ Whether tablet, TV, follow-player, and speaker all activate correctly after confirmation.
+☐ Whether future-semester folder structures work dynamically without hardcoding.
+☐ Whether reverse OneDrive rename sync is globally reliable.
+☐ Whether calendar display issues are frontend-only or tied to backend auth failures.
+________________________________________
+4. Current Blocker
+☐ Cat-lights automation is being stopped by the pre-semester week check.
+Current flow:
+Cat lights ON
+→ webhook received
+→ state resolved as ON
+→ effective semester = Spring/Summer 2026
+→ weekNumber = -1
+→ app says semester has not started
+→ CHUM FM plays instead of reading automation
+This is not a Home Assistant problem.
+This is not a webhook problem.
+This is not a TTS problem.
+This is a semester/week gating issue.
+________________________________________
+5. Step-by-Step Priority Checklist
+Phase 1 — Cat-Lights Pre-Semester Behavior
+
+Verification Only
+☑ Confirm webhook reaches Pi.
+☑ Confirm Spring/Summer 2026 is selected.
+☑ Confirm weekNumber=-1.
+☑ Confirm CHUM fallback is caused by currentWeekNumber < 1.
+
+Fix Required
+☐ Modify pre-semester behavior so the automation does not immediately default to CHUM FM.
+☐ The safest implementation may be either:
+   ☐ Use Week 1 during an approved pre-semester buffer, or
+   ☐ Preserve the voice prompt / delay / response window before fallback.
+☐ Do not change semester dates.
+☐ Do not delete Winter 2026 yet.
+☐ Do not make broad semester refactors.
+
+Validation After Fix
+☐ Trigger cat lights again.
+☐ Confirm it no longer plays CHUM immediately.
+☐ Confirm it proceeds to file selection.
+☐ Confirm it prompts for reading/module confirmation.
+________________________________________
+Phase 2 — Voice Prompt / Delay / Response Window
+Verification Only
+☐ Confirm prompt plays after cat lights turn on.
+☐ Confirm pending confirmation state is set.
+☐ Confirm response window stays open long enough.
+☐ Confirm late confirmation still starts playback if within allowed window.
+Fix Required If Needed
+☐ Adjust prompt pending logic only if the prompt fails.
+☐ Adjust response timeout only if confirmation expires too fast.
+☐ Do not redesign the confirmation system.
+Validation After Fix
+☐ Cat lights ON triggers prompt.
+☐ Confirmation webhook starts playback.
+☐ No duplicate prompts fire.
+☐ Turning lights OFF clears pending state.
+________________________________________
+Phase 3 — Spring/Summer 2026 Semester Readiness
+Verification Only
+☑ Spring/Summer 2026 exists.
+☑ Spring/Summer 2026 is active.
+☑ Dates are correct: May 4 to August 4, 2026.
+☐ Confirm only the correct semester should be treated as active during normal runtime.
+☐ Confirm Week 1 calculation works once pre-semester bypass is applied.
+Fix Required If Needed
+☐ Later clean up multiple active semesters if it causes wrong semester selection.
+☐ Do not make this the first fix unless it directly blocks automation.
+Validation After Fix
+☐ Cat-lights flow selects Spring/Summer 2026.
+☐ Week 1 files are selected.
+☐ No Winter 2026 files are selected.
+________________________________________
+Phase 4 — Reading + Module Folder Validation
+Verification Only
+☐ Confirm Spring/Summer folders exist in OneDrive.
+☐ Confirm each course has expected week folders.
+☐ Confirm each week has Reading and/or Module folders as needed.
+☐ Confirm current semester may use different folder naming than future semesters.
+Fix Required If Needed
+☐ Fix path matching only where folder names mismatch.
+☐ Do not hardcode week names.
+☐ Do not hardcode course names.
+☐ Preserve flexible folder matching.
+Validation After Fix
+☐ Week 1 Reading files appear.
+☐ Week 1 Module files appear.
+☐ The app can find files without relying on exact old folder slugs.
+________________________________________
+Phase 5 — OneDrive Folder / Path Matching
+Verification Only
+☐ Confirm database folders match actual OneDrive paths.
+☐ Confirm monitor-sync can locate current course folders.
+☐ Confirm fetch failures are real network/path issues, not stale files.
+Fix Required If Needed
+☐ Fix folder/path matching dynamically.
+☐ Preserve item-ID-based OneDrive rename logic.
+☐ Avoid path-only rename calls if item-ID rename is working.
+Validation After Fix
+☐ Sync finds files for Week 1.
+☐ No unnecessary duplicate files are created.
+☐ Existing file records remain intact.
+________________________________________
+Phase 6 — Text Extraction / Conversion
+Verification Only
+☐ Confirm PDFs extract text.
+☐ Confirm DOCX/TXT/plain text extraction works if used.
+☐ Confirm extracted text is stored.
+☐ Confirm total chunks are generated.
+Fix Required If Needed
+☐ Fix only extraction failures that affect current semester readings.
+☐ Do not rewrite extraction pipeline unless necessary.
+Validation After Fix
+☐ Required Week 1 files have text_len > 0.
+☐ Required Week 1 files have total_chunks > 0.
+☐ Files with no usable text are intentionally skipped, not silently broken.
+________________________________________
+Phase 7 — AudioPrep / TTS Readiness
+Verification Only
+☑ Edge TTS works.
+☑ Large file 517 generated many audio chunks.
+☑ Timeouts occur but retries can recover.
+☐ Confirm completion writes prepared_at.
+☐ Confirm completion writes prepared_audio_paths.
+☐ Confirm has_audio becomes true for usable readings.
+Fix Required If Needed
+☐ Fix only if TTS completes but DB fields are not updated.
+☐ Fix only if small test PDF fails.
+☐ Do not use huge file 517 as first validation target.
+Validation After Fix
+☐ Small 1–2 page PDF prepares fully.
+☐ prepared_at is populated.
+☐ prepared_audio_paths contains audio paths.
+☐ Playback uses prepared audio.
+________________________________________
+Phase 8 — Tablet / TV / Follow-Player / Speaker Behavior
+Verification Only
+☐ Confirm tablet wakes.
+☐ Confirm tablet brightness command works.
+☐ Confirm follow-player page loads.
+☐ Confirm TV/Fire Stick behavior works after confirmation.
+☐ Confirm Nest / speaker group receives audio.
+☐ Confirm lights OFF stops playback and saves progress.
+Fix Required If Needed
+☐ Fix device-specific failures one at a time.
+☐ Do not touch calendar UI while validating playback devices.
+☐ Do not add new device fallbacks unless existing flow fails.
+Validation After Fix
+☐ Cat lights ON → prompt.
+☐ Confirmation → speaker playback.
+☐ Tablet/follow-player syncs.
+☐ TV behavior works if enabled.
+☐ Cat lights OFF → stop + progress save.
+________________________________________
+Phase 9 — Dynamic Folder Logic for This Semester and Future Semesters
+Verification Only
+☐ Confirm current semester uses one folder naming pattern.
+☐ Confirm future semesters may use another pattern.
+☐ Confirm automation does not depend on exact week folder names.
+☐ Confirm course folders are resolved dynamically.
+Fix Required If Needed
+☐ Replace hardcoded folder/course assumptions.
+☐ Use semester/course/week metadata rather than fixed names.
+☐ Do not hardcode cecn210, cphl110, or chst501.
+Validation After Fix
+☐ Current Spring/Summer files still work.
+☐ Future semester folder structure can be detected.
+☐ Renamed folders do not break automation.
+________________________________________
+Phase 10 — isActiveCourse Startup Scan Bug
+Verification Only
+☑ Startup scan error exists: isActiveCourse is not defined.
+☐ Confirm whether startup scan is needed for current week automation.
+☐ Confirm whether it blocks AudioPrep for future files.
+Fix Required
+☐ Define or replace isActiveCourse with dynamic semester/course logic.
+☐ Do not patch this before cat-lights flow works.
+Validation After Fix
+☐ Restart PM2.
+☐ Confirm startup scan no longer errors.
+☐ Confirm it queues only appropriate current-semester files.
+________________________________________
+Phase 11 — Hardcoded Course Filtering
+Verification Only
+☑ Hardcoded course filtering likely exists.
+☐ Confirm exact hardcoded blocks.
+☐ Confirm whether they affect current semester file selection.
+Fix Required
+☐ Remove hardcoded course filtering.
+☐ Replace with active semester + enrolled course logic.
+☐ Keep current working file selection intact.
+Validation After Fix
+☐ Current courses still appear.
+☐ Future courses appear without code edits.
+☐ Old courses do not incorrectly take priority.
+________________________________________
+Phase 12 — Reverse OneDrive Rename Sync
+Verification Only
+☑ OneDrive rename-by-ID patch appears correct and should be preserved.
+☐ Confirm reverse rename sync still works globally.
+☐ Confirm folder rename updates DB and OneDrive consistently.
+Fix Required If Needed
+☐ Fix only after automation works.
+☐ Preserve item-ID rename approach.
+☐ Do not revert to path-based rename if item-ID version works.
+Validation After Fix
+☐ Rename folder in app.
+☐ Confirm OneDrive folder changes.
+☐ Confirm DB path updates.
+☐ Confirm automation still finds files.
+________________________________________
+Phase 13 — Calendar Display Issues
+Verification Only
+☐ Confirm calendar errors are separate from reading automation.
+☐ Confirm third-account calendar unauthorized errors.
+☐ Confirm Gmail/D2L errors are not blocking cat-lights flow.
+Fix Required Later
+☐ Fix Google third-account auth.
+☐ Fix Gmail/D2L API issue if needed.
+☐ Fix missing Google calendars/tasks.
+☐ Fix white-screen refresh only after automation is stable.
+Deferred Until After Automation Works
+☐ Calendar layout.
+☐ Calendar stacking.
+☐ Google task display.
+☐ Dashboard UI cleanup.
+☐ Refresh white-screen issue unless it blocks automation.
+________________________________________
+Phase 14 — Replit Code Split / Upload Requirements
+Confirmed
+☑ Backend was not meaningfully split.
+☑ server/routes.ts remains essential.
+☑ dashboard.tsx alone is not enough.
+Why dashboard.tsx Alone Is Not Enough
+☐ Cat-lights automation lives in backend routes.
+☐ TTS preparation lives in backend routes/storage.
+☐ OneDrive sync lives in backend files.
+☐ Semester DB logic is backend.
+☐ PM2 logs and DB snapshots are needed for diagnosis.
+☐ Frontend alone cannot diagnose automation flow.
+Files Needed for Future Agent
+☐ unical_handoff_bundle.tar.gz
+☐ server/routes.ts
+☐ server/onedrive.ts
+☐ current_diff.txt
+☐ recent_pm2_logs.txt
+☐ files_recent.txt
+☐ files_schema.txt
+☐ semesters_rows.txt
+☐ npm_check.txt
+________________________________________
+6. Immediate Priority Order
+☐ 1. Patch pre-semester weekNumber < 1 branch to use Week 1 during buffer.
+☐ 2. Validate cat-lights prompt appears instead of CHUM.
+☐ 3. Validate Week 1 file selection.
+☐ 4. Validate confirmation response starts playback.
+☐ 5. Validate tablet / speaker / follow-player behavior.
+☐ 6. Validate text extraction and AudioPrep for a small current file.
+☐ 7. Validate OneDrive folder matching for Spring/Summer 2026.
+☐ 8. Fix dynamic folder/course logic.
+☐ 9. Fix isActiveCourse startup scan bug.
+☐ 10. Fix hardcoded course filtering.
+☐ 11. Fix reverse OneDrive rename sync if still needed.
+☐ 12. Fix calendar display issues last.
+________________________________________
+7. Deferred Until Automation Works
+☐ Calendar visual layout.
+☐ Google calendar third-account auth.
+☐ Gmail/D2L API errors.
+☐ Dashboard styling.
+☐ Codebase refactor.
+☐ Backend modularization.
+☐ Replit cleanup.
+☐ Large-file TTS optimization.
+☐ Nonessential UI improvements.
+________________________________________
+8. Working Rule for Next Steps
+☐ One command at a time.
+☐ One fix at a time.
+☐ Verify after every fix.
+☐ No broad refactors.
+☐ No semester date edits unless proven necessary.
+☐ No deleting DB records.
+☐ No hardcoded course/week fixes.
+☐ Keep current working systems intact.
