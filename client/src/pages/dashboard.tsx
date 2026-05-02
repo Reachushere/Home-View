@@ -3531,7 +3531,7 @@ export default function Dashboard() {
   const [btWizardStep, setBtWizardStep] = useState(0);
   const [btScanResult, setBtScanResult] = useState<any>(null);
   const [btScanLoading, setBtScanLoading] = useState(false);
-  const [healthFolderBrowse, setHealthFolderBrowse] = useState<{ semId: number; courseIdx: number; field: 'module' | 'reading' } | null>(null);
+  const [healthFolderBrowse, setHealthFolderBrowse] = useState<{ semId: number; courseIdx: number; field: 'module' | 'reading'; isRoot?: boolean; weekNum?: number } | null>(null);
   const [healthBrowsePath, setHealthBrowsePath] = useState('/School/1. TMU/Courses');
   const [healthBrowseItems, setHealthBrowseItems] = useState<Array<{ name: string; type: string; path: string }>>([]);
   const [healthBrowseLoading, setHealthBrowseLoading] = useState(false);
@@ -16144,7 +16144,7 @@ export default function Dashboard() {
                                           );
                                         })}
                                       </div>
-                                      <div className="text-[10px] text-white/40 mt-1">* = reading not expected for this week. Click a week to upload files or toggle reading requirement.</div>
+                                      <div className="text-[10px] text-white/40 mt-1">* = reading not expected for this week. Click a week to link or upload its Module/Reading folder, or toggle reading requirement.</div>
                                     </div>
                                   )}
 
@@ -16154,6 +16154,26 @@ export default function Dashboard() {
                                     const rCount = courseHealth?.readingWeeks?.[wd.week]?.count || 0;
                                     const rExempt = isReadingExempt(wd.courseCode, wd.week);
                                     const cleanCode = wd.courseCode.replace(/\s/g, '').toLowerCase();
+                                    const openWeekLink = (field: 'module' | 'reading') => {
+                                      const semKeyToType: Record<string, { type: string; year: number }> = {};
+                                      semesterMetaLocal.forEach(m => { const type = m.key.startsWith('ss') ? 'spring_summer' : m.key.startsWith('f') ? 'fall' : 'winter'; semKeyToType[m.key] = { type, year: m.year }; });
+                                      const mapping = semKeyToType[expandedSemKey || ''];
+                                      const dbSem = mapping && allSemesterSettings ? allSemesterSettings.find((s: any) => { const ym = s.semesterName?.match(/\d{4}/); const sy = ym ? parseInt(ym[0]) : 0; return s.semesterType === mapping.type && sy === mapping.year; }) : null;
+                                      if (!dbSem) { toast({ title: 'Cannot link folder', description: 'Semester not found.', variant: 'destructive' }); return; }
+                                      const cc = wd.courseCode;
+                                      const courseIdx = dbSem.course1Code === cc ? 1 : dbSem.course2Code === cc ? 2 : dbSem.course3Code === cc ? 3 : 0;
+                                      if (!courseIdx) { toast({ title: 'Cannot link folder', description: `${cc} not found in semester slots.`, variant: 'destructive' }); return; }
+                                      const startPath = `${getOneDrivePath(c.code)}/Week ${wd.week}`;
+                                      setHealthFolderBrowse({ semId: dbSem.id, courseIdx, field, weekNum: wd.week });
+                                      setHealthBrowsePath(startPath);
+                                      setHealthBrowseLoading(true);
+                                      fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(startPath)}`).then(r => r.json()).then(items => { setHealthBrowseItems(Array.isArray(items) ? items : []); setHealthBrowseLoading(false); }).catch(() => {
+                                        // Fall back to course root if Week N folder doesn't exist yet
+                                        const fallback = getOneDrivePath(c.code);
+                                        setHealthBrowsePath(fallback);
+                                        fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(fallback)}`).then(r => r.json()).then(items => { setHealthBrowseItems(Array.isArray(items) ? items : []); setHealthBrowseLoading(false); }).catch(() => setHealthBrowseLoading(false));
+                                      });
+                                    };
                                     return (
                                       <div className="rounded-lg overflow-hidden mt-2" style={{ border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(0,0,0,0.25)' }}>
                                         <div className="px-4 py-2.5 flex items-center justify-between border-b border-white/15" style={{ background: 'rgba(255,255,255,0.06)' }}>
@@ -16166,6 +16186,14 @@ export default function Dashboard() {
                                               <span className={`inline-block w-2 h-2 rounded-full ${mCount > 0 ? 'bg-emerald-500' : 'bg-red-500'}`} />
                                               <span className="text-[12px] font-semibold text-white">Module Files ({mCount})</span>
                                             </div>
+                                            <button
+                                              className="w-full px-3 py-2 rounded text-[12px] font-medium text-white/80 hover:text-white hover:brightness-110 transition-all flex items-center justify-center gap-2"
+                                              style={{ background: 'rgba(168,85,247,0.15)', border: '1px solid rgba(168,85,247,0.35)' }}
+                                              onClick={() => openWeekLink('module')}
+                                              data-testid={`link-module-w${wd.week}`}
+                                            >
+                                              <span>🔗</span> Link Module Folder
+                                            </button>
                                             <button
                                               className="w-full px-3 py-2.5 rounded text-[12px] font-medium text-white/80 hover:text-white hover:brightness-110 transition-all flex items-center justify-center gap-2"
                                               style={{ background: 'rgba(59,130,246,0.15)', border: '1px solid rgba(59,130,246,0.3)' }}
@@ -16183,6 +16211,14 @@ export default function Dashboard() {
                                               <span className={`inline-block w-2 h-2 rounded-full ${rCount > 0 ? 'bg-emerald-500' : rExempt ? 'bg-emerald-500' : 'bg-red-500'}`} />
                                               <span className="text-[12px] font-semibold text-white">Reading Files ({rCount})</span>
                                             </div>
+                                            <button
+                                              className="w-full px-3 py-2 rounded text-[12px] font-medium text-white/80 hover:text-white hover:brightness-110 transition-all flex items-center justify-center gap-2"
+                                              style={{ background: rExempt ? 'rgba(255,255,255,0.06)' : 'rgba(168,85,247,0.15)', border: `1px solid ${rExempt ? 'rgba(255,255,255,0.15)' : 'rgba(168,85,247,0.35)'}`, opacity: rExempt ? 0.5 : 1 }}
+                                              onClick={() => { if (!rExempt) openWeekLink('reading'); }}
+                                              data-testid={`link-reading-w${wd.week}`}
+                                            >
+                                              <span>🔗</span> Link Reading Folder
+                                            </button>
                                             <button
                                               className="w-full px-3 py-2.5 rounded text-[12px] font-medium text-white/80 hover:text-white hover:brightness-110 transition-all flex items-center justify-center gap-2"
                                               style={{ background: rExempt ? 'rgba(255,255,255,0.06)' : 'rgba(59,130,246,0.15)', border: `1px solid ${rExempt ? 'rgba(255,255,255,0.15)' : 'rgba(59,130,246,0.3)'}`, opacity: rExempt ? 0.5 : 1 }}
@@ -28266,7 +28302,9 @@ export default function Dashboard() {
                     <div style={{ padding: '12px 16px 10px', borderBottom: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
                       <span style={{ fontWeight: 600, fontSize: '12px' }}>
-                        Select {healthFolderBrowse.field === 'module' ? 'Module' : 'Reading'} Folder
+                        {healthFolderBrowse.isRoot
+                          ? 'Select Course Root Folder'
+                          : `Select ${healthFolderBrowse.field === 'module' ? 'Module' : 'Reading'} Folder${healthFolderBrowse.weekNum ? ` for Week ${healthFolderBrowse.weekNum}` : ''}`}
                       </span>
                     </div>
                     <div style={{ padding: '8px 16px', fontSize: '10px', color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -28383,6 +28421,9 @@ export default function Dashboard() {
                             if (endsWithWeek) {
                               // Path ends in /Week N → append /Module or /Reading
                               finalPath = `${path.replace(/\/$/, '')}/${wantedSub}`;
+                            } else if (healthFolderBrowse.weekNum) {
+                              // Per-week link: use the known week, no prompt
+                              finalPath = `${path.replace(/\/$/, '')}/Week ${healthFolderBrowse.weekNum}/${wantedSub}`;
                             } else {
                               // Path is above week level → ask which week
                               setPendingWeekSelect({ basePath: path.replace(/\/$/, '') });
@@ -30294,9 +30335,8 @@ export default function Dashboard() {
                             ['Force Full Sync', 'Click below to force a complete re-scan of all OneDrive folders.', 'force_sync'],
                           ] },
                           sync: { title: 'Fix Folder Sync', testCheck: 'totalModules', steps: [
-                            ['Link Module Folder', `Browse OneDrive and pick the Module folder for ${semFlowWizard.courseCode}.\n\nIf you pick the course root folder (or any folder above the week level), the picker will ask you which week to link.\n\nExpected location:\n${odPath}/Week {n}/Module/`, 'link_module_folder'],
-                            ['Link Reading Folder', `Now pick the Reading folder for the same week.\n\nIf you only need to fix one of the two, you can close this wizard after Step 1.\n\nExpected location:\n${odPath}/Week {n}/Reading/`, 'link_reading_folder'],
-                            ['Sync from OneDrive', `Once both folders are linked, click below to pull the file list into the app.`, 'sync_course'],
+                            ['Link Course Folder', `Browse OneDrive and pick the course root folder for ${semFlowWizard.courseCode}.\n\nThis sets the OneDrive root for this course. To link a specific week's Module or Reading folder, use the Weekly Content Status boxes at the bottom of the course card.\n\nExpected location:\n${odPath}`, 'link_root_folder'],
+                            ['Sync from OneDrive', `Once linked, click below to pull the file list into the app.`, 'sync_course'],
                           ], secondary: [
                             ['Force Full Sync', 'Re-scan every week folder for this course (use if files seem missing).', 'force_sync'],
                             ['Check Folder Structure', `Each week folder must contain a "Module" or "Reading" subfolder. Example:\n${odPath}/Week 1/Module/lecture.pdf`, 'open_onedrive'],
