@@ -27,356 +27,65 @@ import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles, createOneDrive
 import * as spotifyApi from "./spotify";
 import { hasOpenAI, getApprovedOpenAIConfig, resolveApproval, getPendingApprovals, getRecentApprovals, subscribeToApprovals } from "./openai-approval";
 import multer from "multer";
-
-function getRequestAuthLevel(req: any): string {
-  const cookie = req.cookies?.uni_cal_session;
-  if (!cookie) {
-    if (!process.env.SITE_PASSWORD) return '5747';
-    return '';
-  }
-  const parts = cookie.split('.');
-  if (parts.length === 3) return parts[0];
-  if (parts.length === 2) return '5747';
-  return '';
-}
-
-// Helper function to generate repeated task due dates
-function generateRepeatDates(
-  startDueDate: Date,
-  repeatType: RepeatType,
-  repeatEndDate: Date | null,
-  repeatInterval?: number,
-  repeatIntervalUnit?: RepeatIntervalUnit,
-  repeatSpanDays?: number
-): Date[] {
-  const dates: Date[] = [];
-  if (repeatType === "none") return dates;
-  
-  const spanDays = (repeatSpanDays && repeatSpanDays > 1) ? repeatSpanDays : 1;
-  
-  // Default end date: 6 months from start (or 5 years for yearly)
-  const defaultMs = repeatType === "yearly" ? 5 * 365 * 24 * 60 * 60 * 1000 : 180 * 24 * 60 * 60 * 1000;
-  const endDate = repeatEndDate || new Date(startDueDate.getTime() + defaultMs);
-  let currentDate = new Date(startDueDate);
-  
-  // Add interval based on repeat type
-  const addInterval = (date: Date): Date => {
-    const newDate = new Date(date);
-    switch (repeatType) {
-      case "daily":
-        newDate.setDate(newDate.getDate() + 1);
-        break;
-      case "weekly":
-        newDate.setDate(newDate.getDate() + 7);
-        break;
-      case "monthly":
-        newDate.setMonth(newDate.getMonth() + 1);
-        break;
-      case "yearly":
-        newDate.setFullYear(newDate.getFullYear() + 1);
-        break;
-      case "custom":
-        if (repeatIntervalUnit === "days") {
-          newDate.setDate(newDate.getDate() + (repeatInterval || 1));
-        } else if (repeatIntervalUnit === "weeks") {
-          newDate.setDate(newDate.getDate() + (repeatInterval || 1) * 7);
-        } else if (repeatIntervalUnit === "months") {
-          newDate.setMonth(newDate.getMonth() + (repeatInterval || 1));
-        } else if (repeatIntervalUnit === "years") {
-          newDate.setFullYear(newDate.getFullYear() + (repeatInterval || 1));
-        }
-        break;
-    }
-    return newDate;
-  };
-  
-  // Generate dates until end date (max 200 to prevent infinite loops)
-  let count = 0;
-  while (count < 200) {
-    currentDate = addInterval(currentDate);
-    if (currentDate > endDate) break;
-    if (spanDays > 1) {
-      for (let d = 0; d < spanDays; d++) {
-        const spanDate = new Date(currentDate);
-        spanDate.setDate(spanDate.getDate() + d);
-        if (spanDate > endDate) break;
-        dates.push(spanDate);
-        count++;
-      }
-    } else {
-      dates.push(new Date(currentDate));
-      count++;
-    }
-  }
-  
-  return dates;
-}
-
-// Dynamic import for pdf-parse v2
-async function getPdfParser() {
-  const { PDFParse } = await import("pdf-parse");
-  return PDFParse;
-}
-
-// ===== CENTRALIZED CONFIGURATION =====
-// Change these values in ONE place if URLs or devices change.
-const DEPLOYED_APP_URL = process.env.DEPLOYED_APP_URL || (process.env.REPL_ID ? `https://${process.env.REPL_SLUG}--${process.env.REPL_OWNER}.repl.co` : "http://localhost:5000");
-const HOME_ASSISTANT_URL = process.env.HOME_ASSISTANT_URL_OVERRIDE || "https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa";
-const tokenFromEnv = process.env.HOME_ASSISTANT_TOKEN || "";
-const urlFromEnv = process.env.HOME_ASSISTANT_URL || "";
-const HOME_ASSISTANT_TOKEN = tokenFromEnv.startsWith("eyJ") ? tokenFromEnv : (urlFromEnv.startsWith("eyJ") ? urlFromEnv : tokenFromEnv);
-
-const BATHROOM_ECHO_ENTITY = "media_player.bathroom_speaker";
-const KITCHEN_ECHO_ENTITY = "media_player.echo_kitchen_studio_black_am";
-const NEST_SPEAKER_ENTITY = "media_player.bathroom_speaker";
-const CAT_WR_HA_VOICE_ENTITY = "media_player.home_assistant_voice_097c38_media_player";
-const NON_ALEXA_ENTITIES = [NEST_SPEAKER_ENTITY, CAT_WR_HA_VOICE_ENTITY];
-const MODULE_READING_PENDING = "input_boolean.module_reading_pending";
-const MODULE_READING_CONFIRMED = "input_boolean.module_reading_confirmed";
-const PARTNER_PHONE_ENTITY = "device_tracker.y_phone_app";
-const HA_CLOUD_TTS_ENTITY = "tts.home_assistant_cloud";
-const CAT_LIGHTS_ENTITY = "light.cat_lights";
-const CAT_TV_ENTITY = "media_player.tv_cat_wr";
-const FIRE_STICK_ADB_ENTITY = "media_player.fire_tv_172_24_0_88";
-const CAT_WR_MEDIA_GROUP = "media_player.cat_washroom_media_group";
-const CAT_ECHO_ENTITIES = [
-  "media_player.echo_cat_left_am",
-  "media_player.echo_cat_right_am",
-  "media_player.echo_cat_washroom_middle",
-];
-
-const SPOTIFYPLUS_ENTITY = "media_player.spotifyplus_byhomeyyz";
-const EVERYWHERE_GROUP_ENTITY = "media_player.byhome";
-
-const NABU_CASA_URL = "https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa";
-
-interface AutomationLogEntry {
-  ts: string;
-  tag: string;
-  msg: string;
-  data?: any;
-}
-const automationLog: AutomationLogEntry[] = [];
-function aLog(tag: string, msg: string, data?: any) {
-  const entry: AutomationLogEntry = { ts: new Date().toISOString(), tag, msg, ...(data !== undefined ? { data } : {}) };
-  automationLog.push(entry);
-  if (automationLog.length > 500) automationLog.shift();
-  console.log(`[${tag}] ${msg}${data ? ' ' + JSON.stringify(data) : ''}`);
-}
-
-async function haFetch(url: string, options: RequestInit = {}, maxRetries = 3, label = 'HA'): Promise<Response> {
-  for (let attempt = 0; attempt < maxRetries; attempt++) {
-    let timer: ReturnType<typeof setTimeout> | null = null;
-    try {
-      const controller = new AbortController();
-      timer = setTimeout(() => controller.abort(), 12000);
-      const resp = await fetch(url, { ...options, signal: controller.signal });
-      clearTimeout(timer);
-      timer = null;
-      if (!resp.ok) {
-        const errText = await resp.text().catch(() => '');
-        throw new Error(`HTTP ${resp.status}: ${errText.substring(0, 200)}`);
-      }
-      return resp;
-    } catch (e: any) {
-      if (timer) clearTimeout(timer);
-      const msg = e?.message || String(e);
-      if (attempt < maxRetries - 1) {
-        const delay = 1500 * (attempt + 1);
-        console.warn(`[${label}] fetch attempt ${attempt + 1}/${maxRetries} failed: ${msg} — retrying in ${delay}ms`);
-        await new Promise(r => setTimeout(r, delay));
-      } else {
-        throw new Error(`[${label}] All ${maxRetries} fetch attempts failed: ${msg}`);
-      }
-    }
-  }
-  throw new Error(`[${label}] Unreachable`);
-}
-
-async function haServiceCall(service: string, data: object, label = 'HA'): Promise<Response> {
-  const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-  return haFetch(`${haUrl}/api/services/${service}`, {
-    method: 'POST',
-    headers: { 'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  }, 3, label);
-}
-
-interface QueuedHACommand {
-  service: string;
-  data: object;
-  label: string;
-  queuedAt: number;
-  attempts: number;
-}
-const haCommandQueue: QueuedHACommand[] = [];
-const HA_QUEUE_MAX_AGE_MS = 5 * 60 * 1000;
-const HA_QUEUE_MAX_SIZE = 50;
-let haQueueProcessing = false;
-
-async function processHACommandQueue(): Promise<void> {
-  if (haQueueProcessing || haCommandQueue.length === 0) return;
-  haQueueProcessing = true;
-  try {
-    let remaining = haCommandQueue.length;
-    for (let processed = 0; processed < remaining; processed++) {
-      const cmd = haCommandQueue.shift();
-      if (!cmd) break;
-      const now = Date.now();
-      if (now - cmd.queuedAt > HA_QUEUE_MAX_AGE_MS) {
-        console.log(`[HA Queue] Expired command dropped: ${cmd.label} ${cmd.service} (queued ${Math.round((now - cmd.queuedAt) / 1000)}s ago)`);
-        continue;
-      }
-      try {
-        await haServiceCall(cmd.service, cmd.data, `${cmd.label} [Replayed]`);
-        console.log(`[HA Queue] Successfully replayed: ${cmd.label} ${cmd.service} (was queued ${Math.round((now - cmd.queuedAt) / 1000)}s ago)`);
-      } catch (e: any) {
-        cmd.attempts++;
-        if (cmd.attempts >= 3) {
-          console.warn(`[HA Queue] Giving up on: ${cmd.label} ${cmd.service} after ${cmd.attempts} attempts`);
-        } else {
-          haCommandQueue.push(cmd);
-          console.warn(`[HA Queue] Replay failed (attempt ${cmd.attempts}): ${cmd.label} ${cmd.service} — moved to back of queue`);
-        }
-      }
-    }
-  } finally {
-    haQueueProcessing = false;
-  }
-}
-
-async function haServiceCallSafe(service: string, data: object, label = 'HA'): Promise<boolean> {
-  try {
-    await haServiceCall(service, data, label);
-    if (haCommandQueue.length > 0 && !haQueueProcessing) {
-      processHACommandQueue().catch(() => {});
-    }
-    return true;
-  } catch (e: any) {
-    console.warn(`[HA Safe] ${label} ${service} failed: ${e.message} — queuing for retry`);
-    if (haCommandQueue.length < HA_QUEUE_MAX_SIZE) {
-      haCommandQueue.push({ service, data, label, queuedAt: Date.now(), attempts: 1 });
-    } else {
-      console.warn(`[HA Queue] Queue full (${HA_QUEUE_MAX_SIZE}) — dropping: ${label} ${service}`);
-    }
-    return false;
-  }
-}
-
 import { easternNow as torontoDate, easternDateStr, easternHour, easternMidnight, taskDateStr, addDays } from "./timezone";
 
-function formatLocalDate(d: Date): string {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-}
+// ─────────────────────────────────────────────────────────────────────────
+// Phase 1 of the routes.ts code split: pull in the module-scope helpers
+// (constants, HA fetch utils, Flick device registry, TTS pure helpers)
+// from server/serverHelpers.ts. Anything with closure-coupled mutable state
+// (TTSSession, isTravellingMode, sendNextChunk/scheduleNextChunk) still
+// lives in this file below.
+// ─────────────────────────────────────────────────────────────────────────
+import {
+  getRequestAuthLevel,
+  generateRepeatDates,
+  getPdfParser,
+  DEPLOYED_APP_URL,
+  HOME_ASSISTANT_URL,
+  HOME_ASSISTANT_TOKEN,
+  BATHROOM_ECHO_ENTITY,
+  KITCHEN_ECHO_ENTITY,
+  NEST_SPEAKER_ENTITY,
+  CAT_WR_HA_VOICE_ENTITY,
+  NON_ALEXA_ENTITIES,
+  MODULE_READING_PENDING,
+  MODULE_READING_CONFIRMED,
+  PARTNER_PHONE_ENTITY,
+  HA_CLOUD_TTS_ENTITY,
+  CAT_LIGHTS_ENTITY,
+  CAT_TV_ENTITY,
+  FIRE_STICK_ADB_ENTITY,
+  CAT_WR_MEDIA_GROUP,
+  CAT_ECHO_ENTITIES,
+  SPOTIFYPLUS_ENTITY,
+  EVERYWHERE_GROUP_ENTITY,
+  NABU_CASA_URL,
+  automationLog,
+  aLog,
+  haFetch,
+  haServiceCall,
+  haCommandQueue,
+  HA_QUEUE_MAX_AGE_MS,
+  HA_QUEUE_MAX_SIZE,
+  processHACommandQueue,
+  haServiceCallSafe,
+  formatLocalDate,
+  FLICK_DEVICES,
+  MAX_CONSECUTIVE_ERRORS,
+  MAX_SESSION_AGE_MS,
+  CHARS_PER_SECOND,
+  CHUNK_SIZE,
+  generateAndSaveTTSAudio,
+  parsePublicObjectPath,
+  cleanTextForTTS,
+  getChunkWithSentenceBoundary,
+  BUILD_VERSION,
+} from "./serverHelpers";
+export type { FlickDevice, FlickRoomGroup, AutomationLogEntry } from "./serverHelpers";
 
-interface FlickDevice {
-  id: string;
-  name: string;
-  entityId: string;
-  type: "tablet" | "echo" | "echo_show" | "tv" | "speaker" | "group";
-  canDisplay: boolean;
-  room: string;
-}
-
-interface FlickRoomGroup {
-  room: string;
-  icon: string;
-  devices: FlickDevice[];
-}
-
-const FLICK_DEVICES: FlickRoomGroup[] = [
-  {
-    room: "Hallway", icon: "🚪",
-    devices: [
-      { id: "hallway_tablet_entrance", name: "Tablet (Entrance)", entityId: "media_player.tablet_hallway_entrance", type: "tablet", canDisplay: true, room: "Hallway" },
-      { id: "hallway_tablet", name: "Tablet (Main)", entityId: "media_player.tablet_hallway", type: "tablet", canDisplay: true, room: "Hallway" },
-      { id: "hallway_echo_entrance", name: "Echo (Entrance)", entityId: "media_player.echo_hallway_entrance_am", type: "echo", canDisplay: false, room: "Hallway" },
-      { id: "hallway_group", name: "All Hallway", entityId: "media_player.hallway_media_group", type: "group", canDisplay: false, room: "Hallway" },
-    ]
-  },
-  {
-    room: "Living Room", icon: "🛋️",
-    devices: [
-      { id: "lr_tablet", name: "Fire Tablet (11)", entityId: "media_player.tablet_11", type: "tablet", canDisplay: true, room: "Living Room" },
-      { id: "lr_echo_couch_l", name: "Echo (Couch L)", entityId: "media_player.echo_lr_couch_l_am", type: "echo", canDisplay: false, room: "Living Room" },
-      { id: "lr_echo_couch_r", name: "Echo (Couch R)", entityId: "media_player.echo_lr_couch_r_am", type: "echo", canDisplay: false, room: "Living Room" },
-      { id: "lr_echo_hub", name: "Echo (Hub)", entityId: "media_player.echo_lr_hub_am", type: "echo", canDisplay: false, room: "Living Room" },
-      { id: "lr_echo_studio", name: "Echo Studio (White)", entityId: "media_player.echo_lr_studio_white_am", type: "echo", canDisplay: false, room: "Living Room" },
-      { id: "lr_echo_tv_shelf", name: "Echo (TV Shelf)", entityId: "media_player.echo_lr_tv_shelf_am", type: "echo", canDisplay: false, room: "Living Room" },
-      { id: "lr_tv", name: "TV (70\")", entityId: "media_player.tv_living_room_70", type: "tv", canDisplay: true, room: "Living Room" },
-      { id: "lr_group", name: "All Living Room", entityId: "media_player.living_room_media_group", type: "group", canDisplay: false, room: "Living Room" },
-    ]
-  },
-  {
-    room: "King Bedroom", icon: "🛏️",
-    devices: [
-      { id: "king_tablet", name: "Tablet", entityId: "media_player.bd24bb29_04a116d8_king", type: "tablet", canDisplay: true, room: "King Bedroom" },
-      { id: "king_echo_l", name: "Echo (Left)", entityId: "media_player.echo_king_l_am", type: "echo", canDisplay: false, room: "King Bedroom" },
-      { id: "king_echo_r", name: "Echo (Right)", entityId: "media_player.echo_king_r_am", type: "echo", canDisplay: false, room: "King Bedroom" },
-      { id: "king_echo_tv", name: "Echo (TV)", entityId: "media_player.echo_king_tv_am", type: "echo", canDisplay: false, room: "King Bedroom" },
-      { id: "king_tv", name: "TV", entityId: "media_player.tv_king", type: "tv", canDisplay: true, room: "King Bedroom" },
-      { id: "king_group", name: "All King Bedroom", entityId: "media_player.king_bedroom_media_group", type: "group", canDisplay: false, room: "King Bedroom" },
-    ]
-  },
-  {
-    room: "Queen Bedroom", icon: "👑",
-    devices: [
-      { id: "queen_tablet", name: "Tablet", entityId: "media_player.tablet_queen", type: "tablet", canDisplay: true, room: "Queen Bedroom" },
-      { id: "queen_echo_balcony", name: "Echo (Balcony)", entityId: "media_player.echo_queen_balcony_am", type: "echo", canDisplay: false, room: "Queen Bedroom" },
-      { id: "queen_echo_bed_l", name: "Echo (Bed L)", entityId: "media_player.echo_queen_bed_l_am", type: "echo", canDisplay: false, room: "Queen Bedroom" },
-      { id: "queen_echo_bed_r", name: "Echo (Bed R)", entityId: "media_player.echo_queen_bed_r_am", type: "echo", canDisplay: false, room: "Queen Bedroom" },
-      { id: "queen_group", name: "All Queen Bedroom", entityId: "media_player.queen_bedroom_media_group", type: "group", canDisplay: false, room: "Queen Bedroom" },
-    ]
-  },
-  {
-    room: "Kitchen", icon: "🍳",
-    devices: [
-      { id: "kitchen_tablet", name: "Tablet (Kitchen Island)", entityId: "media_player.tablet_kitchen_island", type: "tablet", canDisplay: true, room: "Kitchen" },
-      { id: "kitchen_echo_cupboards_l", name: "Echo (Cupboards L)", entityId: "media_player.echo_kitchen_cupboards_left_am", type: "echo", canDisplay: false, room: "Kitchen" },
-      { id: "kitchen_echo_cupboards_r", name: "Echo (Cupboards R)", entityId: "media_player.echo_kitchen_cupboards_r_am", type: "echo", canDisplay: false, room: "Kitchen" },
-      { id: "kitchen_echo_fridge", name: "Echo (Fridge)", entityId: "media_player.echo_kitchen_fridge_am", type: "echo", canDisplay: false, room: "Kitchen" },
-      { id: "kitchen_echo_hutch", name: "Echo (Hutch)", entityId: "media_player.echo_kitchen_hutch_am", type: "echo", canDisplay: false, room: "Kitchen" },
-      { id: "kitchen_echo_island", name: "Echo (Island Corner)", entityId: "media_player.echo_kitchen_island_corner_am", type: "echo", canDisplay: false, room: "Kitchen" },
-      { id: "kitchen_echo_studio", name: "Echo Studio (Black)", entityId: "media_player.echo_kitchen_studio_black_am", type: "echo", canDisplay: false, room: "Kitchen" },
-      { id: "kitchen_tv", name: "TV", entityId: "media_player.tv_kitchen", type: "tv", canDisplay: true, room: "Kitchen" },
-      { id: "kitchen_group", name: "All Kitchen", entityId: "media_player.kitchen_media_group", type: "group", canDisplay: false, room: "Kitchen" },
-    ]
-  },
-  {
-    room: "Cat Washroom", icon: "🐱",
-    devices: [
-      { id: "cat_tablet", name: "Tablet", entityId: "media_player.tablet_cat", type: "tablet", canDisplay: true, room: "Cat Washroom" },
-      { id: "cat_echo_middle", name: "Echo (Middle)", entityId: "media_player.echo_cat_washroom_middle", type: "echo", canDisplay: false, room: "Cat Washroom" },
-      { id: "cat_echo_left", name: "Echo (Left)", entityId: "media_player.echo_cat_left_am", type: "echo", canDisplay: false, room: "Cat Washroom" },
-      { id: "cat_echo_right", name: "Echo (Right)", entityId: "media_player.echo_cat_right_am", type: "echo", canDisplay: false, room: "Cat Washroom" },
-      { id: "cat_nest", name: "Nest Speaker", entityId: "media_player.bathroom_speaker", type: "speaker", canDisplay: false, room: "Cat Washroom" },
-      { id: "cat_tv", name: "TV", entityId: CAT_TV_ENTITY, type: "tv", canDisplay: true, room: "Cat Washroom" },
-      { id: "cat_group", name: "All Cat Washroom", entityId: CAT_WR_MEDIA_GROUP, type: "group", canDisplay: false, room: "Cat Washroom" },
-    ]
-  },
-  {
-    room: "Pug Washroom", icon: "🐶",
-    devices: [
-      { id: "pug_echo_show", name: "Echo Show", entityId: "media_player.echo_show_pug_am", type: "echo_show", canDisplay: true, room: "Pug Washroom" },
-      { id: "pug_group", name: "All Pug Washroom", entityId: "media_player.pug_media_group", type: "group", canDisplay: false, room: "Pug Washroom" },
-    ]
-  },
-  {
-    room: "Closet", icon: "👔",
-    devices: [
-      { id: "closet_echo", name: "Echo", entityId: "media_player.echo_closet_am", type: "echo", canDisplay: false, room: "Closet" },
-      { id: "closet_group", name: "All Closet", entityId: "media_player.closet_media_group", type: "group", canDisplay: false, room: "Closet" },
-    ]
-  },
-  {
-    room: "Everywhere", icon: "🏠",
-    devices: [
-      { id: "everywhere", name: "All Speakers", entityId: EVERYWHERE_GROUP_ENTITY, type: "group", canDisplay: false, room: "Everywhere" },
-    ]
-  },
-];
-
-// Track travelling state (synced from client) to suppress Echo announcements
+// ─────────────────────────────────────────────────────────────────────────
+// Travelling-mode flag (mutable; setters live in route handlers below).
+// ─────────────────────────────────────────────────────────────────────────
 let isTravellingMode = false;
 let travelStartDate: string | null = null;
 let travelEndDate: string | null = null;
@@ -392,7 +101,11 @@ export function getIsTravellingMode(): boolean {
   return isTravellingMode;
 }
 
-// Track TTS reading session for resume functionality
+// ─────────────────────────────────────────────────────────────────────────
+// TTS reading session for resume functionality (closure state).
+// Pure TTS helpers (cleanTextForTTS, generateAndSaveTTSAudio,
+// getChunkWithSentenceBoundary) live in ./serverHelpers.
+// ─────────────────────────────────────────────────────────────────────────
 interface TTSSession {
   fullText: string;
   currentPosition: number;
@@ -404,269 +117,6 @@ interface TTSSession {
   sessionCreatedAt: number;
 }
 let currentTTSSession: TTSSession | null = null;
-const MAX_CONSECUTIVE_ERRORS = 5;
-const MAX_SESSION_AGE_MS = 4 * 60 * 60 * 1000; // 4 hours max session
-// Alexa TTS at 90% speed: ~180 wpm = ~900 chars/min = ~15 chars/sec
-// Use conservative estimate to avoid cutting off speech mid-sentence
-const CHARS_PER_SECOND = 13; // Conservative: let chunk finish before sending next
-const CHUNK_SIZE = 2000; // Characters per TTS chunk
-
-// Helper to generate OpenAI TTS audio and save locally for playback
-async function generateAndSaveTTSAudio(text: string, fileId: string, voice: string = "echo", slowPace: boolean = false): Promise<string> {
-  const fs = await import("fs");
-  const path = await import("path");
-  const ttsDir = path.join(process.cwd(), 'dist', 'public', 'tts-audio');
-  if (!fs.existsSync(ttsDir)) fs.mkdirSync(ttsDir, { recursive: true });
-
-  // Normalize text for TTS
-  let normalizedText = text
-    .replace(/https?:\/\/[^\s]+/gi, '')
-    .replace(/doi:[^\s]+/gi, '')
-    .replace(/\[\d+(?:,\s*\d+)*\]/g, '')
-    .replace(/\([A-Z][a-z]+(?:\s+(?:&|and)\s+[A-Z][a-z]+)*,?\s*\d{4}[a-z]?\)/g, '')
-    .replace(/pp?\.\s*\d+(?:\s*[-–]\s*\d+)?/gi, '')
-    .replace(/\([^)]{50,}\)/g, '')
-    .replace(/[–—]/g, ', ')
-    .replace(/[""]/g, '"')
-    .replace(/['']/g, "'")
-    .replace(/\s+/g, ' ')
-    .trim()
-    .slice(0, 4096); // OpenAI limit
-
-  console.log(`Generating Edge TTS for ${normalizedText.length} chars, file: ${fileId}`);
-
-  const ttsStart = Date.now();
-  const audioBuffer = await textToSpeech(normalizedText, voice as "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer", "mp3", slowPace);
-  console.log(`Edge TTS completed in ${Date.now() - ttsStart}ms, ${audioBuffer.length} bytes`);
-
-  if (audioBuffer.length === 0) {
-    throw new Error(`TTS returned empty audio buffer for file: ${fileId}`);
-  }
-
-  const audioFileName = `${fileId}-${Date.now()}.mp3`;
-  fs.writeFileSync(path.join(ttsDir, audioFileName), audioBuffer);
-  const proxyUrl = `/tts-audio/${audioFileName}`;
-  console.log(`TTS audio saved locally: ${proxyUrl}`);
-  return proxyUrl;
-}
-
-// Parse public object path to bucket/object name
-function parsePublicObjectPath(path: string): { bucketName: string; objectName: string } {
-  if (!path.startsWith("/")) path = `/${path}`;
-  const parts = path.split("/").filter(Boolean);
-  if (parts.length < 2) throw new Error("Invalid path");
-  return { bucketName: parts[0], objectName: parts.slice(1).join("/") };
-}
-
-// Clean text for TTS - remove special characters that cause errors
-function cleanTextForTTS(text: string): string {
-  console.log("cleanTextForTTS input length:", text.length);
-  
-  // First pass: Remove URLs, emails, video/audio references, timestamps
-  let cleanedText = text
-    .replace(/https?:\/\/[^\s]+/g, '')
-    .replace(/www\.[^\s]+/g, '')
-    .replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, '') // Remove email addresses
-    .replace(/^Video\s+.+$/gm, '') // Lines starting with "Video"
-    .replace(/^Audio\s+.+$/gm, '') // Lines starting with "Audio"
-    .replace(/^Link\s+.+$/gm, '') // Lines starting with "Link"
-    .replace(/^Watch\s+.+$/gm, '') // Lines starting with "Watch"
-    .replace(/^Listen\s+.+$/gm, '') // Lines starting with "Listen"
-    .replace(/^Click\s+.+$/gm, '') // Lines starting with "Click"
-    .replace(/click[\s-]*n[\s-]*reveal/gi, '') // Remove "click-n-reveal" references
-    .replace(/\bn\.d\.\b/g, '') // Remove standalone "n.d."
-    .replace(/\([^)]*n\.d\.[^)]*\)/g, '') // Remove bracketed citations containing "n.d." like "(Author, n.d.)"
-    .replace(/\[[^\]]*n\.d\.[^\]]*\]/g, '') // Remove square-bracketed references containing "n.d."
-    .replace(/\d+:\d+:\d+/g, '') // Remove timestamps like 1:23:45
-    .replace(/\d+:\d+/g, '') // Remove timestamps like 1:23
-    .replace(/\((?:[A-Z][a-z]+(?:\s+(?:&|and)\s+[A-Z][a-z]+)*(?:,?\s*(?:et\s+al\.?)?)?(?:,?\s*\d{4}[a-z]?)?\s*(?:,\s*(?:p+\.\s*\d[\d\s,-]*|ch(?:apter)?\.?\s*\d+))?)\)/gi, '') // Remove parenthetical citations like (Smith, 2019), (Jones & Lee, 2020, pp. 45-67), (Brown et al., 2018)
-    .replace(/\((?:\d{4}[a-z]?)\)/g, '') // Remove standalone year citations like (2019)
-    .replace(/\([^)]{0,5}\d{4}[a-z]?[^)]{0,5}\)/g, '') // Remove short bracketed items with years like (2019a), (p. 2019)
-    .replace(/\[[^\]]*\d{4}[^\]]*\]/g, '') // Remove square-bracketed references with years like [Smith, 2019]
-    .replace(/\[\d+(?:[,;\s]+\d+)*\]/g, '') // Remove numeric citations like [1], [2,3], [1; 2; 3]
-    .replace(/\b(?:et\s+al\.?)\b/gi, '') // Remove standalone "et al."
-    .replace(/\b(?:pp?\.)\s*\d[\d\s,-]*/g, '') // Remove page references like p. 45, pp. 123-456
-    .replace(/\b(?:vol\.?|issue|no\.)\s*\d+/gi, '') // Remove volume/issue references
-    .replace(/\b(?:doi|DOI)\s*[:.]?\s*\S+/g, '') // Remove DOI references
-    .replace(/\b(?:ISBN|ISSN)\s*[:.]?\s*[\d-]+/g, '') // Remove ISBN/ISSN
-    .replace(/\b(?:Retrieved|Accessed)\s+(?:from|on)\b[^.]*\./gi, '') // Remove "Retrieved from..." lines
-    .replace(/^\s*(?:References?|Works?\s+Cited|Bibliography)\s*$/gim, '') // Remove reference section headers
-    .replace(/^[A-Z][a-z]+(?:,\s*[A-Z]\.?\s*(?:[A-Z]\.?\s*)?)?(?:,?\s*(?:&|and)\s+[A-Z][a-z]+(?:,\s*[A-Z]\.?\s*(?:[A-Z]\.?\s*)?)?)*\s*\(\d{4}[a-z]?\)\.\s*.+$/gm, '') // Remove full reference entries like "Smith, J. A. (2019). Title of article..."
-    .replace(/^[A-Z][a-z]+(?:,\s*[A-Z]\.?\s*)+(?:,?\s*(?:&|and)\s+[A-Z][a-z]+(?:,\s*[A-Z]\.?\s*)+)*\.\s*\(\d{4}[a-z]?\)\./gm, ''); // Remove APA author-date entries
-  
-  console.log("After URL/timestamp/citation cleanup:", cleanedText.length);
-  
-  // Remove JSTOR-specific lines (not entire paragraphs - just specific lines)
-  cleanedText = cleanedText
-    .replace(/^This content downloaded from.*$/gm, '')
-    .replace(/^All use subject to.*$/gm, '')
-    .replace(/---PAGE---/g, '. ')  // Replace page markers with sentence breaks
-    .replace(/^\d+\s*$/gm, '')  // Remove standalone page numbers
-    .replace(/^CJUR?\s*\d+:\d+.*$/gm, '')  // Remove journal reference lines like "CJUR 4:1 (June 1995) 83"
-    .replace(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}.*$/gm, ''); // Remove IP address lines
-
-  // Remove copyright notices and publisher boilerplate (Nelson Education full block)
-  cleanedText = cleanedText
-    .replace(/Copyright\s+\d{4}\s+Nelson Education Ltd\.?\s*All Rights Reserved\.?\s*May not be copied[\s\S]*?(?:require it|permitted)\./gi, '')
-    .replace(/Copyright\s+\d{4}\s+.*?All Rights Reserved\.?/gi, '')
-    .replace(/May not be copied,?\s*scanned,?\s*or duplicated.*?(?:require it|permitted)\./gi, '')
-    .replace(/Due to electronic rights,?\s*some third.party content may be suppressed.*?(?:require it)\./gi, '')
-    .replace(/Nelson Education reserves the right to remove additional content at any time if subsequent rights restrictions require it\./gi, '')
-    .replace(/Nelson Education Ltd\.?/gi, '')
-    .replace(/\(c\)\s+[^\n.]+(?:Press|Publishing|Books|Media|Photos?|Images?|Reuters|Getty|AP|Corbis|Alamy|Shutterstock|iStock|ZUMA)[^\n.]*/gi, '')
-    .replace(/^\s*\d{1,3}\s+(?:Local Government|NEL)\b.*$/gm, '')
-    .replace(/\bNEL\b/g, '')
-    .replace(/^\d+\s+See\s+.*$/gm, '')
-    .replace(/^\d+\s+[A-Z][a-z]+\s+[A-Z]\.?\s+[A-Z][a-z]+,\s+.*$/gm, '');
-  
-  console.log("After JSTOR cleanup:", cleanedText.length);
-  
-  // Remove French abstract sections entirely (common in Canadian academic papers)
-  // Look for "R sum" or "Résumé" followed by French text until "Abstract" or English section
-  cleanedText = cleanedText
-    .replace(/R\s*sum[^]*?(?=Abstract|Introduction|The\s|This\s|In\s)/gi, '')
-    .replace(/Résumé[^]*?(?=Abstract|Introduction|The\s|This\s|In\s)/gi, '');
-  
-  // Split into chunks (by sentences or line breaks) and filter French ones
-  const chunks = cleanedText.split(/(?<=[.!?])\s+|\n+/);
-  const englishChunks = chunks.filter(chunk => {
-    const trimmed = chunk.trim();
-    if (trimmed.length < 20) return true;  // Keep short chunks
-    
-    // Count French indicators
-    const frenchWordPatterns = [
-      /\b(le|la|les|du|des|au|aux|un|une)\b/gi,  // French articles
-      /\b(et|ou|que|qui|dont|dans|sur|pour|par|avec|sans)\b/gi,  // French prepositions/conjunctions
-      /\b(je|tu|il|elle|nous|vous|ils|elles|on)\b/gi,  // French pronouns
-      /\b(est|sont|ont|fait|peut|doit|cette|ces|cette)\b/gi,  // Common French words
-      /\b(gouvernement|municipale?|canadien|question|politique)\b/gi,  // French versions of English words
-    ];
-    
-    let frenchWordCount = 0;
-    for (const pattern of frenchWordPatterns) {
-      const matches = trimmed.match(pattern);
-      if (matches) frenchWordCount += matches.length;
-    }
-    
-    // Count accented characters (strong French indicator)
-    const accentedCount = (trimmed.match(/[àâäéèêëïîôùûüÿçÀÂÄÉÈÊËÏÎÔÙÛÜŸÇ]/g) || []).length;
-    
-    const words = trimmed.split(/\s+/).length;
-    const frenchScore = frenchWordCount + (accentedCount * 2);  // Weight accents more
-    const frenchRatio = frenchScore / words;
-    
-    // Filter if more than 25% French indicators
-    return frenchRatio < 0.25;
-  });
-  cleanedText = englishChunks.join(' ');
-  
-  console.log("After French filter:", cleanedText.length);
-  
-  // Remove entire References/Bibliography/Works Cited sections (heading + all content after)
-  // Works with both newline-separated and space-joined text
-  cleanedText = cleanedText
-    .replace(/(?:^|\n)\s*(?:References|Bibliography|Works?\s*Cited|Literature\s*Cited|Sources?\s*Cited|Endnotes|Footnotes|Notes)\s*\n[\s\S]*$/gim, '')
-    .replace(/(?:^|\n)\s*(?:References|Bibliography|Works?\s*Cited)\s*(?:\n|$)[\s\S]*$/gim, '')
-    .replace(/\b(?:References|Bibliography|Works?\s*Cited|Reference\s*List)\s+(?:[A-Z][a-z]+,?\s+[A-Z]\.[\s\S]*$)/gim, '');
-
-  // Remove inline APA/MLA-style citations like (Smith, 2020) or (Smith & Jones, 2019, p. 45)
-  cleanedText = cleanedText
-    .replace(/\([A-Z][a-z]+(?:\s+(?:and|&)\s+[A-Z][a-z]+)*(?:,?\s*(?:et\s+al\.?))?,?\s*\d{4}[a-z]?(?:,\s*p{1,2}\.\s*\d+(?:-\d+)?)?\)/g, '')
-    .replace(/\([A-Z][a-z]+(?:\s+(?:and|&)\s+[A-Z][a-z]+)*,?\s*n\.d\.(?:,\s*p{1,2}\.\s*\d+(?:-\d+)?)?\)/g, '');
-
-  // Remove standalone citation-style lines (Author, Year. Title. Journal...)
-  cleanedText = cleanedText
-    .replace(/^[A-Z][a-z]+,\s+[A-Z]\.(?:\s*[A-Z]\.)*\s+\(\d{4}\)\..*$/gm, '')
-    .replace(/^[A-Z][a-z]+,\s+[A-Z]\.(?:\s*[A-Z]\.)*\s+(?:and|&)\s+[A-Z][a-z]+,\s+[A-Z]\..*\(\d{4}\)\..*$/gm, '')
-    .replace(/^[A-Z][a-z]+,\s+[A-Z]\.\s+\(\d{4},\s+\w+\s+\d+\)\..*$/gm, '');
-
-  // Remove dense citation blocks that survive other filters (sequences of Author, Year patterns)
-  cleanedText = cleanedText
-    .replace(/(?:[A-Z][a-z]+,\s+[A-Z]\.(?:\s*[A-Z]\.)*\s*(?:,?\s*(?:&|and)\s+[A-Z][a-z]+,\s+[A-Z]\.(?:\s*[A-Z]\.)*\s*)*\(\d{4}[a-z]?\)\.\s*[^.]*\.\s*(?:[A-Z][a-z]+[^.]*\.\s*)?(?:\d+\([^)]*\)[^.]*\.\s*)?){2,}/g, '');
-
-  // Remove section headings (standalone or at start of lines followed by content)
-  cleanedText = cleanedText
-    .replace(/^(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents|Readings?|Key Takeaways|Coming Up Next|Discussions? and Assignments?|Reminder|Tab Panels?.*|Tab:.*)\s*$/gim, '')
-    .replace(/^(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents|Readings?)\s+/gim, '');
-
-  // Remove tab/accordion UI artifacts from PDFs (e.g. "Tab 1", "tab expand", "Tab Panel", "Tab Panels", etc.)
-  // These are navigation elements from D2L/Brightspace LMS that get embedded when saving course pages as PDF
-  cleanedText = cleanedText
-    .replace(/\bTab\s*Panels?\b/g, '')
-    .replace(/\btab\s*panels?\b/gi, '')
-    .replace(/\btab\s*\d+\b/gi, '')
-    .replace(/\btab\s+expand\b/gi, '')
-    .replace(/\btab\s+collapse\b/gi, '')
-    .replace(/\btab\s+selected\b/gi, '')
-    .replace(/\btab\s+unselected\b/gi, '')
-    .replace(/\bselected\s+tab\b/gi, '')
-    .replace(/\bcurrent\s+tab\b/gi, '')
-    .replace(/\bexpand\s+tab\b/gi, '')
-    .replace(/\bcollapse\s+tab\b/gi, '')
-    .replace(/\btabs?\s*:/gi, '')
-    .replace(/\bexpand\s+all\b/gi, '')
-    .replace(/\bcollapse\s+all\b/gi, '')
-    .replace(/\(expanded\)/gi, '')
-    .replace(/\(collapsed\)/gi, '')
-    .replace(/\(selected\)/gi, '')
-    .replace(/\(unselected\)/gi, '')
-    .replace(/\(active\)/gi, '')
-    .replace(/\(inactive\)/gi, '')
-    .replace(/\bTab\b/g, '')
-    .replace(/\btab\b/g, '');
-
-  cleanedText = cleanedText
-    .replace(/x{3,}/gi, '')
-    .replace(/(?:X[\s,;]+){2,}X?\b/g, '')
-    .replace(/(?:\bX\b[\s,;]*){3,}/g, '')
-    .replace(/\s+X(?=\s+[A-Z]|\s*$)/g, ' ')
-    .replace(/\b(?:AB|BC|MB|NB|NL|NS|ON|PE[I]?|QC|SK)(?:[,;\s/]+(?:AB|BC|MB|NB|NL|NS|ON|PE[I]?|QC|SK)){1,}\b/g, '')
-    .replace(/\bMunicipal Responsibility\s+(?:NL|PEI?|NS|NB|QC|ON|MB|SK|AB|BC)[\s\w]*(?:AB|BC)\b/g, '')
-    .replace(/^.*(?:AB|BC|MB|NB|NL|NS|ON|PE[I]?|QC|SK)\s+(?:AB|BC|MB|NB|NL|NS|ON|PE[I]?|QC|SK).*$/gm, '');
-
-  // Remove spaced-out headings like "ar e po l i T i c a l pa r T i e s" (single letters with spaces)
-  cleanedText = cleanedText
-    .replace(/(?:[a-zA-Z]\s+){5,}[a-zA-Z]/g, '');
-
-  // Remove inline footnote numbers (superscript references like 65, 66, 67 appearing mid-sentence)
-  cleanedText = cleanedText
-    .replace(/(?<=\w)(\d{1,3})(?=\s+[A-Z])/g, '')
-    .replace(/\b\d{1,2}\s+(?:See|Ibid|Op\.?\s*cit|Supra|Infra)\b.*$/gm, '');
-
-  // Final cleanup
-  let result = cleanedText
-    .replace(/&amp;/g, 'and')
-    .replace(/&/g, 'and')
-    .replace(/[<>]/g, '')
-    .replace(/[^\w\s.,!?;:'"()-]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-
-  // Post-cleanup: remove heading words that ended up inline after whitespace collapse
-  result = result
-    .replace(/(\.\s+)(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents|Readings?|Key Takeaways|Coming Up Next|Discussions? and Assignments?|Reminder)\s+/gi, '$1')
-    .replace(/^(Introduction|Conclusion|Summary|Overview|Abstract|Preface|Foreword|Acknowledgements?|References|Bibliography|Appendix|Module \d+|Chapter \d+|Section \d+|Learning Objectives?|Learning Outcomes?|Table of Contents|Readings?|Key Takeaways|Coming Up Next|Discussions? and Assignments?|Reminder)\s+/i, '');
-  
-  console.log("Final cleaned length:", result.length);
-  return result;
-}
-
-// Get chunk with sentence boundary detection
-function getChunkWithSentenceBoundary(text: string, maxLength: number): string {
-  if (text.length <= maxLength) return text;
-  
-  let cutoff = maxLength;
-  const lastPeriod = text.lastIndexOf('.', cutoff);
-  const lastQuestion = text.lastIndexOf('?', cutoff);
-  const lastExclaim = text.lastIndexOf('!', cutoff);
-  const bestBreak = Math.max(lastPeriod, lastQuestion, lastExclaim);
-  
-  if (bestBreak > maxLength * 0.5) {
-    cutoff = bestBreak + 1;
-  }
-  
-  return text.substring(0, cutoff);
-}
 
 // Function to fully stop and clean up TTS session
 function stopTTSSession(reason: string) {
@@ -699,53 +149,53 @@ async function sendNextChunk() {
     stopTTSSession(`Too many consecutive errors (${currentTTSSession.consecutiveErrors})`);
     return;
   }
-  
+
   console.log("[TTS] sendNextChunk called, currentPosition:", currentTTSSession.currentPosition);
-  
+
   // Check if we've finished
   if (currentTTSSession.currentPosition >= currentTTSSession.fullText.length) {
     stopTTSSession("Finished entire document");
     return;
   }
-  
+
   // Get next chunk from cleaned text
   let rawChunk = currentTTSSession.fullText.substring(
     currentTTSSession.currentPosition,
     currentTTSSession.currentPosition + CHUNK_SIZE
   );
-  
+
   if (rawChunk.trim().length === 0) {
     stopTTSSession("No more content");
     return;
   }
-  
+
   // Clean the chunk and apply sentence boundary
   let nextChunk = cleanTextForTTS(rawChunk);
   nextChunk = getChunkWithSentenceBoundary(nextChunk, CHUNK_SIZE);
-  
-  // Update position BEFORE sending - advance by the chunk length we're about to send
+
+  // Update position BEFORE sending
   const chunkLength = nextChunk.length;
   currentTTSSession.currentPosition += chunkLength;
   currentTTSSession.startTime = Date.now();
-  
+
   const targetEntity = currentTTSSession.targetEntity || NEST_SPEAKER_ENTITY;
   const isNonAlexa = NON_ALEXA_ENTITIES.includes(targetEntity);
-  console.log("[TTS] Auto-continuing, chunk length:", chunkLength, 
+  console.log("[TTS] Auto-continuing, chunk length:", chunkLength,
     "new position:", currentTTSSession.currentPosition,
     "remaining:", currentTTSSession.fullText.length - currentTTSSession.currentPosition,
     "to:", targetEntity, isNonAlexa ? "(non-Alexa, using play_media)" : "(Alexa)");
-  
+
   const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-  
+
   try {
     let response: Response;
-    
+
     if (isNonAlexa) {
       const audioPath = await generateAndSaveTTSAudio(nextChunk, `tts-chunk-${Date.now()}`, "echo");
       const appUrl = DEPLOYED_APP_URL;
       const fullAudioUrl = `${appUrl}${audioPath}`;
       aLog('TTS-Chunk', `Non-Alexa: Generated audio at ${audioPath}, playing on ${targetEntity}`, { fullAudioUrl, appUrl, targetEntity });
-      
+
       response = await fetch(`${haUrl}/api/services/media_player/play_media`, {
         method: 'POST',
         headers: {
@@ -760,7 +210,7 @@ async function sendNextChunk() {
       });
     } else {
       const ssmlChunk = `<speak><prosody rate="90%">${nextChunk}</prosody></speak>`;
-      
+
       response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
         method: 'POST',
         headers: {
@@ -774,7 +224,7 @@ async function sendNextChunk() {
         }),
       });
     }
-    
+
     if (!response.ok) {
       const errorText = await response.text();
       console.error("[TTS] Chunk send error, status:", response.status, errorText);
@@ -790,11 +240,10 @@ async function sendNextChunk() {
       currentTTSSession.consecutiveErrors = 0;
       console.log("[TTS] Chunk sent successfully");
     }
-    
+
     // Schedule next chunk only if session is still active and healthy
-    if (currentTTSSession && currentTTSSession.isPlaying && 
+    if (currentTTSSession && currentTTSSession.isPlaying &&
         currentTTSSession.currentPosition < currentTTSSession.fullText.length) {
-      // On error, wait longer before retrying to let transient issues resolve
       if (currentTTSSession.consecutiveErrors > 0) {
         console.log(`[TTS] Retry in 10s due to error (attempt ${currentTTSSession.consecutiveErrors}/${MAX_CONSECUTIVE_ERRORS})`);
         currentTTSSession.autoTimer = setTimeout(() => {
@@ -811,13 +260,11 @@ async function sendNextChunk() {
     console.error("[TTS] Auto-continue error:", error);
     if (currentTTSSession) {
       currentTTSSession.consecutiveErrors++;
-      // Rewind position for retry
       currentTTSSession.currentPosition -= chunkLength;
       if (currentTTSSession.consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {
         stopTTSSession(`Network error, giving up after ${MAX_CONSECUTIVE_ERRORS} consecutive errors`);
         return;
       }
-      // Retry after delay
       console.log(`[TTS] Network error retry in 10s (attempt ${currentTTSSession.consecutiveErrors}/${MAX_CONSECUTIVE_ERRORS})`);
       currentTTSSession.autoTimer = setTimeout(() => {
         console.log("[TTS] Network retry timer fired");
@@ -837,32 +284,29 @@ function scheduleNextChunk() {
     return;
   }
 
-  // Safety: don't schedule if too many errors
   if (currentTTSSession.consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {
     stopTTSSession("Too many errors, not scheduling more chunks");
     return;
   }
-  
-  // Clear any existing timer
+
   if (currentTTSSession.autoTimer) {
     clearTimeout(currentTTSSession.autoTimer);
     currentTTSSession.autoTimer = null;
   }
-  
+
   const baseSeconds = CHUNK_SIZE / CHARS_PER_SECOND;
   const adjustedSeconds = baseSeconds / SPEED_RATE;
   // Add 3-second buffer for Alexa processing overhead
   const delayMs = adjustedSeconds * 1000 + 3000;
-  
+
   console.log(`[TTS] Scheduling next chunk in ${(delayMs / 1000).toFixed(1)}s`);
-  
+
   currentTTSSession.autoTimer = setTimeout(() => {
     console.log("[TTS] Timer fired, calling sendNextChunk");
     sendNextChunk();
   }, delayMs);
 }
 
-const BUILD_VERSION = Date.now().toString();
 
 export async function registerRoutes(
   httpServer: Server,
