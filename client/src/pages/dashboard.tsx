@@ -1955,7 +1955,12 @@ export default function Dashboard() {
     }
   };
   const [blankBoxMinimizedToTab, setBlankBoxMinimizedToTab] = useState(() => localStorage.getItem('blankBoxMinimizedToTab') === '1');
-  const hwWipeClipped = homeworkMinimized && !blankBoxOpen;
+  // The notes overlay is a CHILD of the homework <section>, so applying the
+  // clip-path to the section while the notes shrink animation is running
+  // wipes the notes overlay along with it (Bryn: "notes doesn't close down,
+  // it just disappears"). Defer the clip until the notes overlay is fully
+  // out of the DOM (blankMinimizeAnim back to idle AND blankBoxOpen false).
+  const hwWipeClipped = homeworkMinimized && !blankBoxOpen && blankMinimizeAnim === 'idle';
   const blankWipeClipped = !blankBoxOpen;
   const [isResizingHomework, setIsResizingHomework] = useState(false);
   const resizingHomeworkRef = useRef<{ startX: number; startReduction: number } | null>(null);
