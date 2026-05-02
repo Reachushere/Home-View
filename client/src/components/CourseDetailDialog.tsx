@@ -2361,23 +2361,6 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     : <span key={i}>{p}</span>);
                 })()}
               </h2>
-              {/* Library icon lives in the course-name bar (next to the title)
-                  so it shares the course-color gradient and never gets a
-                  white background. It used to live in the Course Details
-                  strip below but that strip should be the pure blue
-                  gradient body, not a chrome bar with action icons. */}
-              <button
-                onClick={(e) => { e.stopPropagation(); setIsLibraryOpen(true); }}
-                className="flex items-center justify-center transition-opacity hover:opacity-80 flex-shrink-0"
-                title="Open Library"
-                style={{ padding: 0, background: 'transparent', border: 'none' }}
-                data-testid="button-open-library"
-              >
-                <Library
-                  className="w-[15px] h-[15px]"
-                  style={{ color: (editInfo.courseFontColor || courseInfo.courseFontColor) || 'white' }}
-                />
-              </button>
             </div>
           </div>
           <button
@@ -2405,16 +2388,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           })()}
         </div>
 
-        <div
-          className="flex items-center justify-between px-3 py-2 border-b border-white/10 flex-shrink-0"
-          style={{
-            // Match the dialog body's blue gradient — same #3a8bbf → dark
-            // navy stops as the wrapper at the top of this file — so the
-            // Course Details strip reads as part of the body, not as a
-            // separate chrome bar.
-            background: 'linear-gradient(180deg, #3a8bbf 0%, color-mix(in srgb, #164a72 70%, black) 100%)',
-          }}
-        >
+        <div className="flex items-center justify-between px-3 py-2 border-b border-white/10 flex-shrink-0">
           <div className="flex items-center gap-2">
             <span className="text-[11px] text-white uppercase font-medium">Course Details</span>
             {syllabusObjectPath && (
@@ -2490,6 +2464,15 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
           </div>
               {!isEditingInfo ? (
                 <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setIsLibraryOpen(true)}
+                    className="flex items-center justify-center text-white/80 hover:text-white transition-colors"
+                    title="Open Library"
+                    style={{ padding: '2px' }}
+                    data-testid="button-open-library"
+                  >
+                    <Library className="w-[18px] h-[18px]" style={{ color: courseInfo.colorEnd || courseInfo.color || '#3b82f6' }} />
+                  </button>
                   <button
                     onClick={() => setIsEditingInfo(true)}
                     className="flex items-center gap-1.5 text-[11px] text-white hover:text-white transition-colors font-semibold"
