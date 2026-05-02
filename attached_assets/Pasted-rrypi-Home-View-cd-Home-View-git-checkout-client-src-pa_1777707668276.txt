@@ -1,0 +1,54 @@
+rrypi:~/Home-View $ cd ~/Home-View
+git checkout -- client/src/pages/dashboard.tsx server/routes.ts
+git merge origin/replit-sync-1777707228
+git push origin main
+./deploy.sh
+Merge made by the 'ort' strategy.
+ ...dd-a-new-feature-to-my-existing-application-called-ai-_1777110281429.txt |  80 ++++
+ ...ithin-the-Essay-Generator-feature-add-an-Authenticity-_1777110435082.txt |  80 ++++
+ attached_assets/image_1777104193323.png                                     | Bin 0 -> 19835 bytes
+ attached_assets/image_1777104196684.png                                     | Bin 0 -> 19835 bytes
+ client/src/components/AiCommandWizard.tsx                                   | 742 ++++++++++++++++++++++++++++++++----
+ client/src/components/CourseDetailDialog.tsx                                |  73 +++-
+ client/src/pages/dashboard.tsx                                              | 189 +++++++--
+ server/routes.ts                                                            | 666 +++++++++++++++++++++++++++++++-
+ 8 files changed, 1730 insertions(+), 100 deletions(-)
+ create mode 100644 attached_assets/Pasted-Add-a-new-feature-to-my-existing-application-called-ai-_1777110281429.txt
+ create mode 100644 attached_assets/Pasted-Within-the-Essay-Generator-feature-add-an-Authenticity-_1777110435082.txt
+ create mode 100644 attached_assets/image_1777104193323.png
+ create mode 100644 attached_assets/image_1777104196684.png
+Username for 'https://github.com': reachushere
+Password for 'https://reachushere@github.com':
+remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/Reachushere/Home-View.git/'
+=== UniCal Deploy ===
+
+[1/7] Stopping old process FIRST...
+[PM2] Applying action stopProcessId on app [dashboard](ids: [ 0 ])
+[PM2] [dashboard](0) ✓
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+├────┼────────────────────┼──────────┼──────┼───────────┼──────────┼──────────┤
+│ 0  │ dashboard          │ fork     │ 0    │ stopped   │ 0%       │ 0b       │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+[PM2] Applying action deleteProcessId on app [dashboard](ids: [ 0 ])
+[PM2] [dashboard](0) ✓
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+[2/7] Pulling latest from GitHub...
+
+Changes incoming:
+ ...isting-application-called-ai-_1777110281429.txt |  80 ---
+ ...-feature-add-an-Authenticity-_1777110435082.txt |  80 ---
+ attached_assets/image_1777104193323.png            | Bin 19835 -> 0 bytes
+ attached_assets/image_1777104196684.png            | Bin 19835 -> 0 bytes
+ client/src/components/AiCommandWizard.tsx          | 742 ++-------------------
+ client/src/components/CourseDetailDialog.tsx       |  73 +-
+ client/src/pages/dashboard.tsx                     | 189 +-----
+ server/routes.ts                                   | 666 +-----------------
+ 8 files changed, 100 insertions(+), 1730 deletions(-)
+
+[3/7] Generating changelog...
+Changelog written: 54949facf (2026-05-02T07:40:54Z)
+[4/7] Installing dependencies...
