@@ -631,6 +631,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
   });
   const [moduleFolderValid, setModuleFolderValid] = useState<boolean | null>(null);
   const [readingFolderValid, setReadingFolderValid] = useState<boolean | null>(null);
+  const [resyncing, setResyncing] = useState(false);
   const [folderValidating, setFolderValidating] = useState(false);
   const [browsingFor, setBrowsingFor] = useState<'module' | 'reading' | null>(null);
   const [browsePath, setBrowsePath] = useState('/');
@@ -2894,6 +2895,35 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     OneDrive File Folders
                   </label>
                   <p className="text-[10px] text-white mb-1.5">Set the OneDrive folder where the reader finds Module & Reading files.</p>
+                  <div className="mb-1.5">
+                    <button
+                      type="button"
+                      disabled={resyncing}
+                      onClick={async () => {
+                        const semKey = semesterKeyFromTermYear(editInfo.semesterTerm, editInfo.year);
+                        if (!semKey) { toast({ title: 'No semester selected', variant: 'destructive' }); return; }
+                        setResyncing(true);
+                        try {
+                          const res = await fetch('/api/library/sync-semester', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ semesterKey: semKey }) });
+                          if (res.ok) {
+                            toast({ title: `Resyncing ${semKey.toUpperCase()} from OneDrive`, description: 'Module/Reading dots will refresh in a few seconds.' });
+                            setTimeout(() => { queryClient.invalidateQueries({ queryKey: ['/api/files'] }); queryClient.invalidateQueries({ queryKey: ['/api/files/counts'] }); }, 5000);
+                          } else {
+                            toast({ title: 'Resync failed', variant: 'destructive' });
+                          }
+                        } catch (e: any) {
+                          toast({ title: 'Resync error', description: e.message, variant: 'destructive' });
+                        } finally {
+                          setTimeout(() => setResyncing(false), 3000);
+                        }
+                      }}
+                      className="h-6 px-2 rounded bg-blue-600/30 border border-blue-500/40 text-[9px] text-blue-200 hover:bg-blue-600/50 transition-colors flex items-center gap-1 disabled:opacity-50"
+                      data-testid="btn-resync-semester"
+                    >
+                      {resyncing ? <Loader2 className="h-3 w-3 animate-spin" /> : <RotateCcw className="h-3 w-3" />}
+                      {resyncing ? 'Resyncing…' : 'Resync semester from OneDrive'}
+                    </button>
+                  </div>
                   <div className="space-y-1.5 mb-2">
                     {(['module', 'reading'] as const).map(type => {
                       const folder = type === 'module' ? editInfo.moduleFolder : editInfo.readingFolder;
