@@ -27710,6 +27710,57 @@ Return ONLY the JSON object, no markdown formatting.`;
     console.error('[Startup Fix] Error fixing class task times:', e);
   }
 
+  // Startup cleanup: remove duplicate class entries whose title is just
+  // "{CourseCode} - {Course Full Name}" (e.g. "CPHL110 - Philosophy of
+  // Religion I"). These are leftover imports from Google Calendar / older
+  // syllabus parses. The canonical recurring lecture is a separate task
+  // titled "[CODE] Class" or "Online ... Class" generated from the
+  // semester-slot config (the blue-header one in Edit Course Details), so
+  // keeping the generic duplicates produces visible double/triple lecture
+  // blocks on the calendar.
+  try {
+    const allSems = await storage.getAllSemesterSettings();
+    const targetTitles = new Set<string>();
+    for (const sem of (allSems || [])) {
+      for (let i = 1; i <= 3; i++) {
+        const code = ((sem as any)[`course${i}Code`] || '').toString().trim();
+        const name = ((sem as any)[`course${i}Name`] || '').toString().trim();
+        if (!code) continue;
+        // The "full name" form we render in the UI: "CODE - Name" unless the
+        // stored name already starts with the code.
+        const full = name.startsWith(code) ? name : (name ? `${code} - ${name}` : code);
+        targetTitles.add(full.toLowerCase());
+        // Also catch the bare code title and the bare name title.
+        targetTitles.add(code.toLowerCase());
+        if (name) targetTitles.add(name.toLowerCase());
+      }
+    }
+    if (targetTitles.size > 0) {
+      const allTasksDup = await storage.getTasks();
+      let deletedDup = 0;
+      for (const task of allTasksDup) {
+        const titleNorm = String(task.title || '').trim().toLowerCase();
+        if (!titleNorm) continue;
+        // Never delete the canonical class lecture (those titles match
+        // `class$` or `^online ... class$`, never the bare course-name form).
+        const stripped = titleNorm.replace(/[\[\]]/g, '').trim();
+        if (/class$/i.test(stripped) || /^online\s+.*class$/i.test(stripped)) continue;
+        if (!targetTitles.has(titleNorm)) continue;
+        try {
+          await storage.deleteTask(task.id);
+          deletedDup++;
+        } catch (e) {
+          console.error(`[Startup Cleanup] Failed to delete duplicate class task #${task.id}:`, e);
+        }
+      }
+      if (deletedDup > 0) {
+        console.log(`[Startup Cleanup] Removed ${deletedDup} duplicate class entries (generic "{Code} - {Name}" titles)`);
+      }
+    }
+  } catch (e) {
+    console.error('[Startup Cleanup] Error removing duplicate class entries:', e);
+  }
+
   // Auto-sync CRCU shifts on startup
   (async () => {
     try {
