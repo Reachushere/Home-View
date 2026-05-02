@@ -8595,19 +8595,31 @@ export default function Dashboard() {
     // Dedupe duplicate class events by course-code + day + start hour:minute.
     // Multiple Google calendars (TMU, primary, secondary) often surface the
     // same class period under slightly different titles (e.g. "CPHL110 -
-    // Philosophy of Religion", "CPHL110 - Philosophy of Religion I",
+    // Philosophy of Religion", "PHL 110 - Philosophy of Religion I",
     // "CPHL110 - FA0 - LEC"); collapse them to a single block.
+    //
+    // Normalization rules so duplicates actually collide:
+    //   • Strip whitespace inside the code (PHL 110 → PHL110).
+    //   • Strip a leading "C" before another letter (CPHL110 → PHL110)
+    //     so the TMU-prefixed and short forms match.
+    //   • Bucket the start time to the nearest 10-minute slot so a
+    //     1-2 minute drift between calendar sources still collapses.
     const seen = new Set<string>();
     const out: any[] = [];
+    const normCode = (raw: string) => {
+      const noSpace = raw.replace(/\s+/g, '').toUpperCase();
+      return noSpace.replace(/^C(?=[A-Z]{2,})/, '');
+    };
     for (const e of evs) {
       const title = (e.title || '').toUpperCase();
       const m = title.match(/[A-Z]{2,5}\s*\d{3}[A-Z]?/);
       if (!m) { out.push(e); continue; }
-      const courseCode = m[0].replace(/\s+/g, '');
+      const courseCode = normCode(m[0]);
       let key = '';
       try {
         const d = new Date(e.startDate);
-        key = `${courseCode}|${d.getFullYear()}-${d.getMonth()}-${d.getDate()}|${d.getHours()}:${d.getMinutes()}`;
+        const tenMinBucket = Math.floor(d.getMinutes() / 10);
+        key = `${courseCode}|${d.getFullYear()}-${d.getMonth()}-${d.getDate()}|${d.getHours()}:${tenMinBucket}`;
       } catch { out.push(e); continue; }
       if (seen.has(key)) continue;
       seen.add(key);
