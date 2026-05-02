@@ -5896,6 +5896,180 @@ Be thorough but practical. Focus on real issues, not false positives. If the doc
     }
   });
 
+  // POST /api/admin/fix-virtual-class-tasks
+  // ──────────────────────────────────────────────────────────────────────────
+  // For every course slot across every semester whose deliveryMode is "virtual",
+  // walk through all existing class-row tasks and re-sync them to the live
+  // course config. This fixes class tasks that were created with a stale
+  // courseName / null eventEndTime / wrong start time after the user later
+  // edited the course's class hours, display name, or course code.
+  //
+  // For each existing class task we:
+  //   • recompute the canonical courseName  ("{CODE} - {DisplayName}")
+  //   • recompute the title ("{Online|Virtual} {DisplayName} Class")
+  //   • set eventStartTime / eventEndTime from the live semester settings,
+  //     using day2 fields when the calendar weekday matches classDay2
+  //   • rebuild dueDate's UTC time to match the new start time in ET
+  //
+  // Pass ?dryRun=true to preview which rows would change.
+  // Pass ?courseCode=CPHL110 to limit to a single course.
+  app.post("/api/admin/fix-virtual-class-tasks", async (req, res) => {
+    try {
+      const dryRun = String(req.query.dryRun || '').toLowerCase() === 'true';
+      const onlyCode = String(req.query.courseCode || '').toUpperCase().replace(/\s/g, '') || null;
+
+      const allSems = await storage.getAllSemesterSettings();
+      const allTasks = await storage.getTasks();
+      const classTasks = allTasks.filter(t => t.type === 'class' && t.dueDate);
+
+      const extractCode = (cn: string | null | undefined): string => {
+        if (!cn) return '';
+        const m = cn.match(/\b([A-Z]{2,5}\s?\d{3,4}[A-Z]?)\b/i);
+        return m ? m[1].replace(/\s+/g, '').toUpperCase() : cn.trim().toUpperCase();
+      };
+      const dayToNumber: Record<string, number> = {
+        sunday: 0, monday: 1, tuesday: 2, wednesday: 3,
+        thursday: 4, friday: 5, saturday: 6,
+      };
+
+      // Build a flat list of {semester, slot, code, …config…} for every
+      // slot whose deliveryMode is virtual.
+      type SlotCfg = {
+        sem: any;
+        slot: number;
+        code: string;
+        canonicalCourseName: string;
+        classTitle: string;
+        classTime: string; classEndTime: string;
+        classTime2: string; classEndTime2: string;
+        classDay2Num: number;
+        startMs: number; endMs: number;
+      };
+      const slotCfgs: SlotCfg[] = [];
+      for (const sem of allSems) {
+        for (const slot of [1, 2, 3]) {
+          const dm = (sem as any)[`course${slot}DeliveryMode`];
+          if (dm !== 'virtual') continue;
+          const code = ((sem as any)[`course${slot}Code`] || '').toUpperCase().replace(/\s/g, '');
+          if (!code) continue;
+          if (onlyCode && code !== onlyCode) continue;
+          const name = (sem as any)[`course${slot}Name`] || '';
+          const displayName = (sem as any)[`course${slot}DisplayName`] || (name.startsWith(code) ? name.replace(`${code} - `, '') : name);
+          const canonicalCourseName = name && name.startsWith(code) ? name : (name ? `${code} - ${name}` : code);
+          const classTitle = `Online ${displayName} Class`;
+          const classTime = (sem as any)[`course${slot}ClassTime`] || '09:00';
+          const classEndTime = (sem as any)[`course${slot}ClassEndTime`] || '12:00';
+          const classTime2 = (sem as any)[`course${slot}ClassTime2`] || classTime;
+          const classEndTime2 = (sem as any)[`course${slot}ClassEndTime2`] || classEndTime;
+          const classDay2 = (sem as any)[`course${slot}ClassDay2`];
+          const classDay2Num = classDay2 && dayToNumber[classDay2] !== undefined ? dayToNumber[classDay2] : -1;
+
+          // Date range for matching tasks to this slot. Prefer per-course dates,
+          // fall back to semester window.
+          const startSrc = (sem as any)[`course${slot}StartDate`] || (sem as any).semesterStartDate;
+          const endSrc = (sem as any)[`course${slot}EndDate`] || (sem as any).semesterEndDate;
+          const startMs = startSrc ? new Date(startSrc).getTime() : 0;
+          const endMs = endSrc ? new Date(endSrc).getTime() + 24 * 3600 * 1000 : Number.MAX_SAFE_INTEGER;
+
+          slotCfgs.push({
+            sem, slot, code, canonicalCourseName, classTitle,
+            classTime, classEndTime, classTime2, classEndTime2,
+            classDay2Num, startMs, endMs,
+          });
+        }
+      }
+
+      const changes: Array<{ id: number; before: any; after: any }> = [];
+      let updated = 0;
+
+      for (const t of classTasks) {
+        const tCode = extractCode((t as any).courseName);
+        if (onlyCode && tCode !== onlyCode) continue;
+        const tMs = new Date(t.dueDate as any).getTime();
+
+        // Pick the slot config whose code matches AND whose date window
+        // contains this task. If multiple slot configs match (same code in
+        // different semesters), prefer the one whose window contains tMs.
+        let cfg: SlotCfg | undefined;
+        const codeMatches = slotCfgs.filter(s => s.code === tCode);
+        if (codeMatches.length === 0) continue;
+        cfg = codeMatches.find(s => tMs >= s.startMs && tMs <= s.endMs) || codeMatches[0];
+        if (!cfg) continue;
+
+        // Decide which class time set to use (day1 vs day2) using the
+        // task's calendar weekday in America/Toronto.
+        const taskDate = new Date(t.dueDate as any);
+        const etDow = parseInt(taskDate.toLocaleString('en-US', { timeZone: 'America/Toronto', weekday: 'short' }) === 'Sun' ? '0' :
+          ({ Mon: '1', Tue: '2', Wed: '3', Thu: '4', Fri: '5', Sat: '6' } as any)[taskDate.toLocaleString('en-US', { timeZone: 'America/Toronto', weekday: 'short' })] || '0', 10);
+        const isDay2 = cfg.classDay2Num >= 0 && etDow === cfg.classDay2Num;
+        const newStartTime = isDay2 ? cfg.classTime2 : cfg.classTime;
+        const newEndTime = isDay2 ? cfg.classEndTime2 : cfg.classEndTime;
+
+        // Rebuild dueDate's UTC instant so its ET wall-clock equals newStartTime
+        // on the same calendar date.
+        const yyyy = taskDate.toLocaleString('en-US', { timeZone: 'America/Toronto', year: 'numeric' });
+        const mm = taskDate.toLocaleString('en-US', { timeZone: 'America/Toronto', month: '2-digit' });
+        const dd = taskDate.toLocaleString('en-US', { timeZone: 'America/Toronto', day: '2-digit' });
+        const [nh, nm] = newStartTime.split(':').map(Number);
+        const naive = new Date(`${yyyy}-${mm}-${dd}T${String(nh).padStart(2,'0')}:${String(nm).padStart(2,'0')}:00Z`);
+        const probeETHour = parseInt(naive.toLocaleString('en-US', { timeZone: 'America/Toronto', hour: 'numeric', hour12: false }), 10) % 24;
+        const offsetHours = probeETHour - naive.getUTCHours();
+        const newDueDate = new Date(naive.getTime() - offsetHours * 3600000);
+
+        const beforeName = (t as any).courseName;
+        const beforeTitle = (t as any).title;
+        const beforeStart = (t as any).eventStartTime;
+        const beforeEnd = (t as any).eventEndTime;
+        const beforeDue = new Date(t.dueDate as any).toISOString();
+
+        const dirty =
+          beforeName !== cfg.canonicalCourseName ||
+          beforeTitle !== cfg.classTitle ||
+          beforeStart !== newStartTime ||
+          !beforeEnd || beforeEnd !== newEndTime ||
+          beforeDue !== newDueDate.toISOString();
+
+        if (!dirty) continue;
+
+        const after = {
+          courseName: cfg.canonicalCourseName,
+          title: cfg.classTitle,
+          eventStartTime: newStartTime,
+          eventEndTime: newEndTime,
+          dueDate: newDueDate,
+        };
+
+        changes.push({
+          id: t.id as number,
+          before: { courseName: beforeName, title: beforeTitle, eventStartTime: beforeStart, eventEndTime: beforeEnd, dueDate: beforeDue },
+          after: { ...after, dueDate: newDueDate.toISOString() },
+        });
+
+        if (!dryRun) {
+          try {
+            await storage.updateTask(t.id as number, after as any);
+            updated++;
+          } catch (e: any) {
+            console.error(`[fix-virtual-class-tasks] update ${t.id} failed:`, e?.message);
+          }
+        }
+      }
+
+      res.json({
+        dryRun,
+        onlyCode,
+        slotsConsidered: slotCfgs.length,
+        totalClassTasks: classTasks.length,
+        changedRows: changes.length,
+        actuallyUpdated: updated,
+        sample: changes.slice(0, 10),
+      });
+    } catch (err: any) {
+      console.error("Error fixing virtual class tasks:", err);
+      res.status(500).json({ error: err?.message || 'Failed to fix virtual class tasks' });
+    }
+  });
+
   // ============= FILE MANAGEMENT ROUTES =============
 
   // POST /api/files/sync-names - Sync file names to include course names and module numbers
