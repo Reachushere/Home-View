@@ -15799,6 +15799,31 @@ export default function Dashboard() {
                                       const modFolder = slotMatch ? ((slotMatch.sem as any)[`course${slotMatch.slot}ModuleFolder`] || '') : '';
                                       const readFolder = slotMatch ? ((slotMatch.sem as any)[`course${slotMatch.slot}ReadingFolder`] || '') : '';
                                       const numWeeks = expHealth?.numberOfWeeks || 13;
+                                      // Per-course week range. Half-term courses
+                                      // (e.g. Phil = May 5–Jun 16, 7 weeks) only
+                                      // run for a slice of the semester. Compute
+                                      // the slice from course{N}StartDate /
+                                      // course{N}EndDate vs the semester's
+                                      // week-1 anchor.
+                                      const semObj: any = slotMatch?.sem || {};
+                                      const courseStart = slot ? semObj[`course${slot}StartDate`] : null;
+                                      const courseEnd = slot ? semObj[`course${slot}EndDate`] : null;
+                                      const semWeek1 = semObj.week1StartDate || semObj.semesterStartDate;
+                                      const weekMs = 7 * 24 * 60 * 60 * 1000;
+                                      let firstWeek = 1;
+                                      let lastWeek = numWeeks;
+                                      if (semWeek1) {
+                                        const w1Time = new Date(semWeek1).getTime();
+                                        if (courseStart) {
+                                          const csTime = new Date(courseStart).getTime();
+                                          firstWeek = Math.max(1, Math.floor((csTime - w1Time) / weekMs) + 1);
+                                        }
+                                        if (courseEnd) {
+                                          const ceTime = new Date(courseEnd).getTime();
+                                          lastWeek = Math.min(numWeeks, Math.floor((ceTime - w1Time) / weekMs) + 1);
+                                        }
+                                        if (firstWeek > lastWeek) { firstWeek = 1; lastWeek = numWeeks; }
+                                      }
                                       return (
                                         <CourseAutomationPipeline
                                           course={c}
@@ -15811,6 +15836,8 @@ export default function Dashboard() {
                                           moduleFolder={modFolder}
                                           readingFolder={readFolder}
                                           numberOfWeeks={numWeeks}
+                                          firstWeek={firstWeek}
+                                          lastWeek={lastWeek}
                                           onOpenWizard={(issueKey, opts) => setSemFlowWizard({ courseCode: c.code, issue: issueKey, step: 0, phase: 'primary', weekNum: opts?.weekNum, uploadType: opts?.uploadType })}
                                           onOpenCourseDetails={() => startTransition(() => setSelectedCertCourse({ courseCode: c.code, courseName: c.name || '', certKey: c.code, semKey: expandedSemKey, openInEdit: true }))}
                                           onCourseFolderRenamed={() => { queryClient.invalidateQueries({ queryKey: [`/api/semester-health-check/${expandedSemKey}`] }); queryClient.invalidateQueries({ queryKey: ['/api/semesters'] }); }}
@@ -15839,7 +15866,25 @@ export default function Dashboard() {
                                     const moduleColor = (c as any).moduleBoxColor || c.color || '#3b82f6';
                                     const readingColor = (c as any).readingBoxColor || c.color || '#a855f7';
                                     const numWeeks = expHealth?.numberOfWeeks || 13;
-                                    const weeks = Array.from({ length: numWeeks }, (_, i) => i + 1);
+                                    // Trim weekly grid to course-active weeks
+                                    // (Phil = W1..W7, etc.). Same per-course
+                                    // start/end logic as the pipeline above.
+                                    const _slotMatch = findSemSlot(expandedSemKey, c.code, allSemesterSettings);
+                                    const _slot = _slotMatch?.slot;
+                                    const _semObj: any = _slotMatch?.sem || {};
+                                    const _courseStart = _slot ? _semObj[`course${_slot}StartDate`] : null;
+                                    const _courseEnd = _slot ? _semObj[`course${_slot}EndDate`] : null;
+                                    const _semWeek1 = _semObj.week1StartDate || _semObj.semesterStartDate;
+                                    const _weekMs = 7 * 24 * 60 * 60 * 1000;
+                                    let _firstWeek = 1;
+                                    let _lastWeek = numWeeks;
+                                    if (_semWeek1) {
+                                      const _w1 = new Date(_semWeek1).getTime();
+                                      if (_courseStart) _firstWeek = Math.max(1, Math.floor((new Date(_courseStart).getTime() - _w1) / _weekMs) + 1);
+                                      if (_courseEnd) _lastWeek = Math.min(numWeeks, Math.floor((new Date(_courseEnd).getTime() - _w1) / _weekMs) + 1);
+                                      if (_firstWeek > _lastWeek) { _firstWeek = 1; _lastWeek = numWeeks; }
+                                    }
+                                    const weeks = Array.from({ length: _lastWeek - _firstWeek + 1 }, (_, i) => _firstWeek + i);
                                     // Each indicator inside a box is rendered as
                                     // [dot/toggle] [tiny label] so it's clear at
                                     // a glance what each thing controls without
