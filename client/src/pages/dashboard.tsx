@@ -23060,22 +23060,32 @@ export default function Dashboard() {
           }}
           className="fixed cursor-pointer"
           style={{
-            bottom: `${calendarBottom + 5}px`,
-            right: `${calendarRight - 17 - 84 - 10}px`,
+            bottom: `${calendarBottom - 12}px`,
+            right: `${calendarRight - 17 - 85 - 10}px`,
+            width: '85px',
+            height: '14px',
+            background: 'rgba(255,255,255,0.55)',
+            border: '1px solid rgba(255,255,255,0.6)',
+            borderTop: 'none',
+            borderRadius: '0 0 6px 6px',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
             transition: 'right 0.3s ease-in-out, bottom 0.3s ease-in-out',
-            display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : 'block',
+            display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             zIndex: 10002,
-            background: 'none',
-            border: 'none',
+            color: '#000',
+            fontSize: '9px',
+            fontWeight: 600,
+            fontFamily: 'system-ui, -apple-system, sans-serif',
             padding: 0,
+            lineHeight: 1,
           }}
           data-testid="bottom-tab-homework"
           title="Restore homework panel"
         >
-          <svg width="84" height="18" viewBox="0 0 84 18" style={{ display: 'block', overflow: 'hidden' }}>
-            <path d="M0,20 L84,20 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill="#1a2332" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
-            <text x="42" y="8" textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.95)" fontSize="10" fontWeight="600" fontFamily="system-ui, -apple-system, sans-serif">Homework</text>
-          </svg>
+          Homework
         </button>
       )}
       {/* Bottom tab — Notes. Only visible when HW box is currently active; click to switch to Notes. */}
@@ -23101,22 +23111,32 @@ export default function Dashboard() {
           }}
           className="fixed cursor-pointer"
           style={{
-            bottom: `${calendarBottom + 1}px`,
-            right: `${calendarRight - 17 - 84 - 10}px`,
+            bottom: `${calendarBottom - 12}px`,
+            right: `${calendarRight - 17 - 85 - 10}px`,
+            width: '85px',
+            height: '14px',
+            background: 'rgba(255,255,255,0.55)',
+            border: '1px solid rgba(255,255,255,0.6)',
+            borderTop: 'none',
+            borderRadius: '0 0 6px 6px',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
             transition: 'right 0.3s ease-in-out, bottom 0.3s ease-in-out',
-            display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : 'block',
+            display: (isSettingsPanelOpen || isSchoolCoursesDialogOpen || isQuickAddOpen || isAddDialogOpen) ? 'none' : 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             zIndex: 10002,
-            background: 'none',
-            border: 'none',
+            color: '#000',
+            fontSize: '9px',
+            fontWeight: 600,
+            fontFamily: 'system-ui, -apple-system, sans-serif',
             padding: 0,
+            lineHeight: 1,
           }}
           data-testid="bottom-tab-blankbox"
           title="Open temporary notes"
         >
-          <svg width="84" height="18" viewBox="0 0 84 18" style={{ display: 'block', overflow: 'hidden' }}>
-            <path d="M0,20 L84,20 L84,16 Q75,16 75,10 L75,9 Q75,0 63,0 L21,0 Q9,0 9,9 L9,10 Q9,16 0,16 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
-            <text x="42" y="10" textAnchor="middle" dominantBaseline="central" fill="rgba(255,255,255,0.95)" fontSize="11" fontWeight="600" fontFamily="system-ui, -apple-system, sans-serif">Notes</text>
-          </svg>
+          Notes
         </button>
       )}
       {showNewSemChecklist && newSemChecklistKey && (
