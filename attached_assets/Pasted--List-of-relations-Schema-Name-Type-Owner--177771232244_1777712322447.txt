@@ -1,0 +1,36 @@
+                  List of relations
+ Schema |             Name              | Type  |   Owner
+--------+-------------------------------+-------+-----------
+ public | access_tokens                 | table | dashboard
+ public | announcements                 | table | dashboard
+ public | app_state                     | table | dashboard
+ public | conversations                 | table | dashboard
+ public | course_week_mappings          | table | dashboard
+ public | custom_folders                | table | dashboard
+ public | degree_tracking_data          | table | dashboard
+ public | deleted_folders               | table | dashboard
+ public | dismissed_review_titles       | table | dashboard
+ public | entity_comments               | table | dashboard
+ public | feedback_notes                | table | dashboard
+ public | file_pages                    | table | dashboard
+ public | files                         | table | dashboard
+ public | ha_automations                | table | dashboard
+ public | key_contacts                  | table | dashboard
+ public | messages                      | table | dashboard
+ public | new_semester_checklist        | table | dashboard
+ public | notepad_attachments           | table | dashboard
+ public | notepad_notes                 | table | dashboard
+ public | pdf_annotations               | table | dashboard
+ public | pending_review_items          | table | dashboard
+ public | profile_settings              | table | dashboard
+ public | projects                      | table | dashboard
+ public | saved_email_searches          | table | dashboard
+ public | scheduled_alexa_announcements | table | dashboard
+ public | scholarships                  | table | dashboard
+ public | second_google_account         | table | dashboard
+ public | semester_checklist            | table | dashboard
+ public | semester_settings             | table | dashboard
+ public | shared_library_tokens         | table | dashboard
+ public | shared_notebook_links         | table | dashboard
+ public | shift_schedule                | table | dashboard
+:
