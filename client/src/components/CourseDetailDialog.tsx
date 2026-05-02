@@ -2414,7 +2414,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                         if (onRankChange) onRankChange('A', val);
                       }} data-testid="select-course-rank-header-A">
                         <option value={0} className="bg-gray-800">—</option>
-                        {[1, 2, 3].map(n => {
+                        {[1, 2].map(n => {
                           const taken = (usedRanksA || []).includes(n) && (courseRankA ?? 0) !== n;
                           return <option key={n} value={n} className="bg-gray-800" disabled={taken} style={taken ? { color: '#555' } : {}}>{n}A</option>;
                         })}
@@ -2432,7 +2432,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                         if (onRankChange) onRankChange('B', val);
                       }} data-testid="select-course-rank-header-B">
                         <option value={0} className="bg-gray-800">—</option>
-                        {[1, 2, 3].map(n => {
+                        {[1, 2].map(n => {
                           const taken = (usedRanksB || []).includes(n) && (courseRankB ?? 0) !== n;
                           return <option key={n} value={n} className="bg-gray-800" disabled={taken} style={taken ? { color: '#555' } : {}}>{n}B</option>;
                         })}
