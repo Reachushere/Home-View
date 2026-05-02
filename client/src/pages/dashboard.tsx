@@ -8592,38 +8592,84 @@ export default function Dashboard() {
           if (!src) return true;
           return !hiddenCalendarSources.has(src);
         });
-    // Dedupe duplicate class events by course-code + day + start hour:minute.
-    // Multiple Google calendars (TMU, primary, secondary) often surface the
-    // same class period under slightly different titles (e.g. "CPHL110 -
-    // Philosophy of Religion", "PHL 110 - Philosophy of Religion I",
-    // "CPHL110 - FA0 - LEC"); collapse them to a single block.
+    // Dedupe duplicate class events. Two passes:
+    //
+    // Pass 1 — exact-period dedup. Multiple Google calendars (TMU, primary,
+    // secondary) often surface the same class period under slightly
+    // different titles (e.g. "CPHL110 - Philosophy of Religion",
+    // "PHL 110 - Philosophy of Religion I", "CPHL110 - FA0 - LEC");
+    // collapse them by course-code + day + 10-minute start bucket.
+    //
+    // Pass 2 — per-day collapse. If a single course still has multiple
+    // events on the same day at different times (e.g. one source
+    // imported the actual 1-4 PM lecture, another guessed at 9-10 AM,
+    // another at 12-1 PM — all titled "CPHL110"), keep only the
+    // longest one. Bryn's courses don't legitimately meet twice in one
+    // day, so the shorter blocks are always stale duplicates.
     //
     // Normalization rules so duplicates actually collide:
     //   • Strip whitespace inside the code (PHL 110 → PHL110).
     //   • Strip a leading "C" before another letter (CPHL110 → PHL110)
     //     so the TMU-prefixed and short forms match.
-    //   • Bucket the start time to the nearest 10-minute slot so a
-    //     1-2 minute drift between calendar sources still collapses.
-    const seen = new Set<string>();
-    const out: any[] = [];
     const normCode = (raw: string) => {
       const noSpace = raw.replace(/\s+/g, '').toUpperCase();
       return noSpace.replace(/^C(?=[A-Z]{2,})/, '');
     };
+    const codeFromTitle = (title: string): string | null => {
+      const m = (title || '').toUpperCase().match(/[A-Z]{2,5}\s*\d{3}[A-Z]?/);
+      return m ? normCode(m[0]) : null;
+    };
+
+    // Pass 1: exact-period dedup.
+    const seen = new Set<string>();
+    const stage1: any[] = [];
     for (const e of evs) {
-      const title = (e.title || '').toUpperCase();
-      const m = title.match(/[A-Z]{2,5}\s*\d{3}[A-Z]?/);
-      if (!m) { out.push(e); continue; }
-      const courseCode = normCode(m[0]);
+      const courseCode = codeFromTitle(e.title);
+      if (!courseCode) { stage1.push(e); continue; }
       let key = '';
       try {
         const d = new Date(e.startDate);
         const tenMinBucket = Math.floor(d.getMinutes() / 10);
         key = `${courseCode}|${d.getFullYear()}-${d.getMonth()}-${d.getDate()}|${d.getHours()}:${tenMinBucket}`;
-      } catch { out.push(e); continue; }
+      } catch { stage1.push(e); continue; }
       if (seen.has(key)) continue;
       seen.add(key);
-      out.push(e);
+      stage1.push(e);
+    }
+
+    // Pass 2: per (course, day) keep longest.
+    const byCourseDay = new Map<string, any[]>();
+    const passthrough: any[] = [];
+    for (const e of stage1) {
+      const courseCode = codeFromTitle(e.title);
+      if (!courseCode) { passthrough.push(e); continue; }
+      let dayKey = '';
+      try {
+        const d = new Date(e.startDate);
+        dayKey = `${courseCode}|${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+      } catch { passthrough.push(e); continue; }
+      const arr = byCourseDay.get(dayKey) || [];
+      arr.push(e);
+      byCourseDay.set(dayKey, arr);
+    }
+    const out: any[] = [...passthrough];
+    for (const arr of byCourseDay.values()) {
+      if (arr.length <= 1) { out.push(...arr); continue; }
+      // Keep the event with the longest duration; ties broken by earliest start.
+      let best = arr[0];
+      let bestDur = -1;
+      let bestStart = Infinity;
+      for (const e of arr) {
+        try {
+          const s = new Date(e.startDate).getTime();
+          const en = new Date(e.endDate || e.startDate).getTime();
+          const dur = Math.max(0, en - s);
+          if (dur > bestDur || (dur === bestDur && s < bestStart)) {
+            best = e; bestDur = dur; bestStart = s;
+          }
+        } catch {}
+      }
+      out.push(best);
     }
     return out;
   }, [calendarEvents, authLevel, hiddenCalendarSources]);
