@@ -29775,30 +29775,27 @@ export default function Dashboard() {
                                     );
                                   })()}
                                   {(() => {
-                                    // Semester GPA + average % badge: shown inline next to the date
-                                    // pills, just before the COMPLETE badge. Pulls grades from
-                                    // certCourseMap → courseGrades (with electives + pastCourseInfo
-                                    // fallback) for every course in this semester, then averages.
+                                    // Semester GPA = simple average of EXACTLY the
+                                    // courses shown in the rows below. We mirror the
+                                    // row badge's lookup byte-for-byte so the header
+                                    // value is always (sum of visible row GPAs)/N.
+                                    // No phantom 4th course, no certCourseMap-only
+                                    // path, no pToGpa interpolation drift.
                                     const letterToGpa: Record<string, number> = { 'A+': 4.33, 'A': 4.0, 'A-': 3.67, 'B+': 3.33, 'B': 3.0, 'B-': 2.67, 'C+': 2.33, 'C': 2.0, 'C-': 1.67, 'D': 1.0, 'F': 0 };
-                                    const pToGpa = (p: number) => { if (isNaN(p)) return 0; if (p >= 90) return 4.33; if (p < 50) return 0; const a: Array<[number, number]> = [[50,1.0],[60,1.67],[63,2.0],[67,2.33],[70,2.67],[73,3.0],[77,3.33],[80,3.67],[85,4.0],[90,4.33]]; for (let i = a.length - 1; i >= 0; i--) { const [lo, gLo] = a[i]; if (p >= lo) { const nx = a[i+1]; if (!nx) return gLo; const ratio = (p - lo) / (nx[0] - lo); return Math.round((gLo + ratio * (nx[1] - gLo)) * 100) / 100; } } return 0; };
-                                    // Approximate inverse for letter-only grades, so the % badge
-                                    // still renders even when only a letter has been entered.
                                     const letterToPct: Record<string, number> = { 'A+': 92, 'A': 87, 'A-': 82, 'B+': 78, 'B': 75, 'B-': 72, 'C+': 68, 'C': 65, 'C-': 62, 'D': 55, 'F': 40 };
+                                    const pctToLetter = (p: number) => p >= 90 ? 'A+' : p >= 85 ? 'A' : p >= 80 ? 'A-' : p >= 77 ? 'B+' : p >= 73 ? 'B' : p >= 70 ? 'B-' : p >= 67 ? 'C+' : p >= 63 ? 'C' : p >= 60 ? 'C-' : p >= 50 ? 'D' : 'F';
                                     const gpaVals: number[] = [];
                                     const pctVals: number[] = [];
-                                    const seenCodes = new Set<string>();
-                                    for (const c of sem.courses) {
-                                      const code = c.code.replace(/\s/g, '');
-                                      const codeNoC = code.toUpperCase().replace(/^C(?=[A-Z]{2,})/, '');
-                                      const dedupKey = codeNoC || code.toUpperCase();
-                                      if (seenCodes.has(dedupKey)) continue;
-                                      seenCodes.add(dedupKey);
-                                      const info = pastCourseInfo[code] || pastCourseInfo[codeNoC];
-                                      const certKey = Object.keys(certCourseMap).find(k => { const mc = certCourseMap[k].code.replace(/\s/g, '').toUpperCase(); return mc === code.toUpperCase() || ('C' + mc) === code.toUpperCase() || mc === codeNoC; });
-                                      const cg = certKey ? courseGrades[certKey] : null;
+                                    for (const semCourse of sem.courses.slice(0, 3)) {
+                                      const codeNorm = semCourse.code.toUpperCase().replace(/\s/g, '');
+                                      const code = semCourse.code.replace(/\s/g, '');
+                                      const codeNoC = codeNorm.replace(/^C(?=[A-Z]{2,})/, '');
+                                      const pastEntry = allPastEntries.get(codeNorm);
+                                      const profInfo: any = pastCourseInfo[semCourse.code] || pastCourseInfo[codeNorm] || { grade: '' };
+                                      const rowCertKey = pastEntry?.certKey || Object.keys(certCourseMap).find(k => { const mc = certCourseMap[k].code.replace(/\s/g, '').toUpperCase(); return mc === codeNorm || ('C' + mc) === codeNorm || mc === codeNoC; }) || '';
+                                      const cg = (rowCertKey && courseGrades[rowCertKey]) || courseGrades[codeNorm] || courseGrades[semCourse.code] || courseGrades[code] || courseGrades[codeNoC] || null;
                                       let electiveGrade: { grade: string; percent: string } | null = null;
                                       if (!cg?.percent && !cg?.grade) {
-                                        const codeNorm = code.toUpperCase();
                                         for (const [slot, elVal] of Object.entries(openElectives)) {
                                           if (elVal && elVal.replace(/\s/g, '').toUpperCase().startsWith(codeNorm)) {
                                             if (courseGrades[slot]?.percent || courseGrades[slot]?.grade) {
@@ -29808,21 +29805,17 @@ export default function Dashboard() {
                                           }
                                         }
                                       }
-                                      // Use the SAME pct→letter→GPA rule as the
-                                      // course row badge, so the header GPA is
-                                      // the simple average of the row GPAs.
-                                      const pctToLetterHdr = (p: number) => p >= 90 ? 'A+' : p >= 85 ? 'A' : p >= 80 ? 'A-' : p >= 77 ? 'B+' : p >= 73 ? 'B' : p >= 70 ? 'B-' : p >= 67 ? 'C+' : p >= 63 ? 'C' : p >= 60 ? 'C-' : p >= 50 ? 'D' : 'F';
-                                      let pHdr: number | null = null;
-                                      if (cg?.percent && cg.percent.trim()) { const p = parseFloat(cg.percent); if (!isNaN(p)) pHdr = p; }
-                                      else if (cg?.grade && cg.grade.trim() && letterToPct[cg.grade] !== undefined) pHdr = letterToPct[cg.grade];
-                                      else if (info?.grade && info.grade.trim() && letterToPct[info.grade] !== undefined) pHdr = letterToPct[info.grade];
-                                      else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const p = parseFloat(electiveGrade.percent); if (!isNaN(p)) pHdr = p; }
-                                      else if (electiveGrade?.grade && electiveGrade.grade.trim() && letterToPct[electiveGrade.grade] !== undefined) pHdr = letterToPct[electiveGrade.grade];
-                                      if (pHdr !== null) {
-                                        const lHdr = pctToLetterHdr(pHdr);
-                                        const gHdr = letterToGpa[lHdr];
-                                        if (gHdr !== undefined) { gpaVals.push(gHdr); pctVals.push(pHdr); }
-                                      }
+                                      let pct: number | null = null;
+                                      if (cg?.percent && cg.percent.trim()) { const p = parseFloat(cg.percent); if (!isNaN(p)) pct = p; }
+                                      else if (cg?.grade && cg.grade.trim() && letterToPct[cg.grade] !== undefined) pct = letterToPct[cg.grade];
+                                      else if (profInfo?.grade && profInfo.grade.trim() && letterToPct[profInfo.grade] !== undefined) pct = letterToPct[profInfo.grade];
+                                      else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const p = parseFloat(electiveGrade.percent); if (!isNaN(p)) pct = p; }
+                                      else if (electiveGrade?.grade && electiveGrade.grade.trim() && letterToPct[electiveGrade.grade] !== undefined) pct = letterToPct[electiveGrade.grade];
+                                      if (pct === null) continue;
+                                      const rowLetter = pctToLetter(pct);
+                                      const rowGpa = letterToGpa[rowLetter] ?? 0;
+                                      gpaVals.push(rowGpa);
+                                      pctVals.push(pct);
                                     }
                                     if (gpaVals.length === 0) return null;
                                     const avgGpa = gpaVals.reduce((a, b) => a + b, 0) / gpaVals.length;
