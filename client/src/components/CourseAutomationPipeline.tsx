@@ -484,7 +484,8 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
           <NodeBox
             label={odFolderName}
             sublabel={oneDrivePath}
-            Icon={Folder}
+            iconUrl={courseDetailsFolderIcon}
+            iconSize={18}
             status={courseFolderStatus}
             pencil
             pencilTitle="Rename this OneDrive folder (renames live; two-way sync)"
@@ -516,8 +517,7 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
           <NodeBox
             label="Course Details"
             sublabel={`${course.code}  ·  ${course.fullName || course.name || '—'}  ·  ${displayName || '—'}`}
-            iconUrl={courseDetailsFolderIcon}
-            iconSize={18}
+            Icon={FileText}
             status={editDetailsStatus}
             onClick={onOpenCourseDetails}
             width={300}
