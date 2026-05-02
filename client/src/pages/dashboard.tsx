@@ -38394,7 +38394,10 @@ export default function Dashboard() {
                 const d = semDatesAll[y];
                 if (!d) continue;
                 if (now >= d.wStart && now < d.wEnd) return { year: y, sem: 'w', currentWk: selectedWeek };
-                if (now >= d.wEnd && now < d.ssStart) return { year: y, sem: 'aprilGap', currentWk: 1 };
+                if (now >= d.wEnd && now < d.ssStart) {
+                  if (now.getMonth() === 3) return { year: y, sem: 'aprilGap', currentWk: 1 };
+                  return { year: y, sem: 'ss', currentWk: 1 };
+                }
                 if (now >= d.ssStart && now < d.ssEnd) {
                   const wkNum = Math.max(1, Math.ceil((now.getTime() - d.ssStart.getTime()) / (7 * 86400000)) + 1);
                   return { year: y, sem: 'ss', currentWk: Math.min(wkNum, maxSSWeeks) };
