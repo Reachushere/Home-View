@@ -4424,6 +4424,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 
         // Probe Syllabus / Assignments / Textbook subfolders inside the course OneDrive folder
         let syllabusFolderExists = false;
+        let syllabusFileInFolder = false;
         let assignmentsFolderExists = false;
         let textbookFolderExists = false;
         let courseFolderPath: string | null = null;
@@ -4468,6 +4469,16 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
                   syllabusFolderExists = subNames.includes('syllabus');
                   assignmentsFolderExists = subNames.includes('assignments');
                   textbookFolderExists = subNames.includes('textbook');
+                  // If the Syllabus folder exists, look inside it for an
+                  // actual PDF. The folder existing on its own does NOT mean
+                  // a syllabus has been linked — we must see a file.
+                  if (syllabusFolderExists) {
+                    try {
+                      const sylName = (subs || []).find((s: any) => s.folder && s.name.toLowerCase() === 'syllabus')?.name || 'Syllabus';
+                      const sylChildren = await listOneDriveFolderChildren(`${courseFolderPath}/${sylName}`);
+                      syllabusFileInFolder = (sylChildren || []).some((f: any) => !f.folder && /\.pdf$/i.test(f.name || ''));
+                    } catch {}
+                  }
                 } catch {}
                 break;
               }
@@ -4477,9 +4488,11 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
           }
         }
 
-        // For Spring/Summer 2026 onward, treat Syllabus folder as the canonical syllabus link
+        // For Spring/Summer 2026 onward, treat the Syllabus folder as the
+        // canonical syllabus link — but ONLY if a PDF actually lives inside
+        // it. An empty Syllabus folder must not mark the syllabus as linked.
         const isNewSyllabusEra = semKey.startsWith('ss') && parseInt(semKey.slice(2)) >= 2026;
-        const effectiveSyllabusLinked = isNewSyllabusEra ? (syllabusFolderExists || hasSyllabus) : hasSyllabus;
+        const effectiveSyllabusLinked = isNewSyllabusEra ? (syllabusFileInFolder || hasSyllabus) : hasSyllabus;
 
         courses.push({
           code, name, slotNum: i,
