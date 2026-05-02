@@ -15838,6 +15838,8 @@ export default function Dashboard() {
                                           numberOfWeeks={numWeeks}
                                           firstWeek={firstWeek}
                                           lastWeek={lastWeek}
+                                          moduleBoxColor={(c as any).moduleBoxColor || c.color || '#3b82f6'}
+                                          readingBoxColor={(c as any).readingBoxColor || c.color || '#a855f7'}
                                           onOpenWizard={(issueKey, opts) => setSemFlowWizard({ courseCode: c.code, issue: issueKey, step: 0, phase: 'primary', weekNum: opts?.weekNum, uploadType: opts?.uploadType })}
                                           onOpenCourseDetails={() => startTransition(() => setSelectedCertCourse({ courseCode: c.code, courseName: c.name || '', certKey: c.code, semKey: expandedSemKey, openInEdit: true }))}
                                           onCourseFolderRenamed={() => { queryClient.invalidateQueries({ queryKey: [`/api/semester-health-check/${expandedSemKey}`] }); queryClient.invalidateQueries({ queryKey: ['/api/semesters'] }); }}
