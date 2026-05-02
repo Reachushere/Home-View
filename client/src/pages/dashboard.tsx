@@ -8967,12 +8967,12 @@ export default function Dashboard() {
               }
             }
           }
-          if (cg?.percent && cg.percent.trim()) { const p = parseFloat(cg.percent); if (!isNaN(p)) allVals.push(pToGpa(p)); }
+          if (cg?.percent && cg.percent.trim()) { const letter = percentToGrade(cg.percent); if (letter && letterToGpa[letter] !== undefined) allVals.push(letterToGpa[letter]); }
           else if (cg?.grade && cg.grade.trim() && letterToGpa[cg.grade] !== undefined) allVals.push(letterToGpa[cg.grade]);
-          else if (directGrade?.percent && directGrade.percent.trim()) { const p = parseFloat(directGrade.percent); if (!isNaN(p)) allVals.push(pToGpa(p)); }
+          else if (directGrade?.percent && directGrade.percent.trim()) { const letter = percentToGrade(directGrade.percent); if (letter && letterToGpa[letter] !== undefined) allVals.push(letterToGpa[letter]); }
           else if (directGrade?.grade && directGrade.grade.trim() && letterToGpa[directGrade.grade] !== undefined) allVals.push(letterToGpa[directGrade.grade]);
           else if (info?.grade && info.grade.trim() && letterToGpa[info.grade] !== undefined) allVals.push(letterToGpa[info.grade]);
-          else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const p = parseFloat(electiveGrade.percent); if (!isNaN(p)) allVals.push(pToGpa(p)); }
+          else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const letter = percentToGrade(electiveGrade.percent); if (letter && letterToGpa[letter] !== undefined) allVals.push(letterToGpa[letter]); }
           else if (electiveGrade?.grade && electiveGrade.grade.trim() && letterToGpa[electiveGrade.grade] !== undefined) allVals.push(letterToGpa[electiveGrade.grade]);
         }
       }
@@ -20336,12 +20336,12 @@ export default function Dashboard() {
                         }
                       }
                     }
-                    if (cg?.percent && cg.percent.trim()) { const p = parseFloat(cg.percent); if (!isNaN(p)) { gpaVals.push(pToGpa(p)); pctVals.push(p); } }
+                    if (cg?.percent && cg.percent.trim()) { const p = parseFloat(cg.percent); const letter = percentToGrade(cg.percent); if (!isNaN(p) && letter && letterToGpa[letter] !== undefined) { gpaVals.push(letterToGpa[letter]); pctVals.push(p); } }
                     else if (cg?.grade && cg.grade.trim() && letterToGpa[cg.grade] !== undefined) { gpaVals.push(letterToGpa[cg.grade]); if (letterToPct[cg.grade] !== undefined) pctVals.push(letterToPct[cg.grade]); }
-                    else if (directGrade?.percent && directGrade.percent.trim()) { const p = parseFloat(directGrade.percent); if (!isNaN(p)) { gpaVals.push(pToGpa(p)); pctVals.push(p); } }
+                    else if (directGrade?.percent && directGrade.percent.trim()) { const p = parseFloat(directGrade.percent); const letter = percentToGrade(directGrade.percent); if (!isNaN(p) && letter && letterToGpa[letter] !== undefined) { gpaVals.push(letterToGpa[letter]); pctVals.push(p); } }
                     else if (directGrade?.grade && directGrade.grade.trim() && letterToGpa[directGrade.grade] !== undefined) { gpaVals.push(letterToGpa[directGrade.grade]); if (letterToPct[directGrade.grade] !== undefined) pctVals.push(letterToPct[directGrade.grade]); }
                     else if (info?.grade && info.grade.trim() && letterToGpa[info.grade] !== undefined) { gpaVals.push(letterToGpa[info.grade]); if (letterToPct[info.grade] !== undefined) pctVals.push(letterToPct[info.grade]); }
-                    else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const p = parseFloat(electiveGrade.percent); if (!isNaN(p)) { gpaVals.push(pToGpa(p)); pctVals.push(p); } }
+                    else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const p = parseFloat(electiveGrade.percent); const letter = percentToGrade(electiveGrade.percent); if (!isNaN(p) && letter && letterToGpa[letter] !== undefined) { gpaVals.push(letterToGpa[letter]); pctVals.push(p); } }
                     else if (electiveGrade?.grade && electiveGrade.grade.trim() && letterToGpa[electiveGrade.grade] !== undefined) { gpaVals.push(letterToGpa[electiveGrade.grade]); if (letterToPct[electiveGrade.grade] !== undefined) pctVals.push(letterToPct[electiveGrade.grade]); }
                   }
                   return { gpa: gpaVals, pct: pctVals };
@@ -20361,15 +20361,19 @@ export default function Dashboard() {
                   ? relevantSemKeys[currentSemIdx]
                   : null;
 
-                const prevGpaVals: number[] = [];
-                const prevPctVals: number[] = [];
+                // Per spec: Overall GPA = average of each COMPLETED semester's
+                // own GPA, NOT a flat average of every course across all
+                // semesters. So compute each semester's GPA first, then average
+                // those single numbers.
+                const semGpas: number[] = [];
+                const semPcts: number[] = [];
                 for (const semKey of prevSemKeys) {
                   const v = getValsForSem(semKey);
-                  for (const g of v.gpa) prevGpaVals.push(g);
-                  for (const p of v.pct) prevPctVals.push(p);
+                  if (v.gpa.length > 0) semGpas.push(v.gpa.reduce((a, b) => a + b, 0) / v.gpa.length);
+                  if (v.pct.length > 0) semPcts.push(v.pct.reduce((a, b) => a + b, 0) / v.pct.length);
                 }
-                const prevGpa = prevGpaVals.length > 0 ? prevGpaVals.reduce((a, b) => a + b, 0) / prevGpaVals.length : null;
-                const prevPct = prevPctVals.length > 0 ? prevPctVals.reduce((a, b) => a + b, 0) / prevPctVals.length : null;
+                const prevGpa = semGpas.length > 0 ? semGpas.reduce((a, b) => a + b, 0) / semGpas.length : null;
+                const prevPct = semPcts.length > 0 ? semPcts.reduce((a, b) => a + b, 0) / semPcts.length : null;
 
                 const termVals = currentSemKey ? getValsForSem(currentSemKey) : { gpa: [], pct: [] };
                 const termGpa = termVals.gpa.length > 0 ? termVals.gpa.reduce((a, b) => a + b, 0) / termVals.gpa.length : null;
@@ -20409,7 +20413,7 @@ export default function Dashboard() {
                           <span className="text-[10px] font-bold leading-none" style={{ color: '#333' }}>({termPct !== null ? pctToLetter(termPct) : '—'})</span>
                         </span>
                       ) : (
-                        <span className="text-[12px] font-bold leading-none" style={{ color: '#bbb' }}>—</span>
+                        <span className="text-[11px] font-bold leading-none" style={{ color: '#bbb' }}>N/A</span>
                       )}
                     </span>
                     <span style={{ color: '#ccc', fontSize: '16px', fontWeight: 300 }}>|</span>
@@ -29186,10 +29190,10 @@ export default function Dashboard() {
                             }
                           }
                           let gpa: number | null = null;
-                          if (cg?.percent && cg.percent.trim()) { const p = parseFloat(cg.percent); if (!isNaN(p)) gpa = pToGpa(p); }
+                          if (cg?.percent && cg.percent.trim()) { const letter = percentToGrade(cg.percent); if (letter && letterToGpa[letter] !== undefined) gpa = letterToGpa[letter]; }
                           else if (cg?.grade && cg.grade.trim() && letterToGpa[cg.grade] !== undefined) gpa = letterToGpa[cg.grade];
                           else if (profInfo?.grade && profInfo.grade.trim() && letterToGpa[profInfo.grade] !== undefined) gpa = letterToGpa[profInfo.grade];
-                          else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const p = parseFloat(electiveGrade.percent); if (!isNaN(p)) gpa = pToGpa(p); }
+                          else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const letter = percentToGrade(electiveGrade.percent); if (letter && letterToGpa[letter] !== undefined) gpa = letterToGpa[letter]; }
                           else if (electiveGrade?.grade && electiveGrade.grade.trim() && letterToGpa[electiveGrade.grade] !== undefined) gpa = letterToGpa[electiveGrade.grade];
                           if (gpa === null) return null;
                           return (
@@ -29533,10 +29537,10 @@ export default function Dashboard() {
                                           }
                                         }
                                       }
-                                      if (cg?.percent && cg.percent.trim()) { const p = parseFloat(cg.percent); if (!isNaN(p)) { gpaVals.push(pToGpa(p)); pctVals.push(p); } }
+                                      if (cg?.percent && cg.percent.trim()) { const p = parseFloat(cg.percent); const letter = percentToGrade(cg.percent); if (!isNaN(p) && letter && letterToGpa[letter] !== undefined) { gpaVals.push(letterToGpa[letter]); pctVals.push(p); } }
                                       else if (cg?.grade && cg.grade.trim() && letterToGpa[cg.grade] !== undefined) { gpaVals.push(letterToGpa[cg.grade]); pctVals.push(letterToPct[cg.grade]); }
                                       else if (info?.grade && info.grade.trim() && letterToGpa[info.grade] !== undefined) { gpaVals.push(letterToGpa[info.grade]); pctVals.push(letterToPct[info.grade]); }
-                                      else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const p = parseFloat(electiveGrade.percent); if (!isNaN(p)) { gpaVals.push(pToGpa(p)); pctVals.push(p); } }
+                                      else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const p = parseFloat(electiveGrade.percent); const letter = percentToGrade(electiveGrade.percent); if (!isNaN(p) && letter && letterToGpa[letter] !== undefined) { gpaVals.push(letterToGpa[letter]); pctVals.push(p); } }
                                       else if (electiveGrade?.grade && electiveGrade.grade.trim() && letterToGpa[electiveGrade.grade] !== undefined) { gpaVals.push(letterToGpa[electiveGrade.grade]); pctVals.push(letterToPct[electiveGrade.grade]); }
                                     }
                                     if (gpaVals.length === 0) return null;
