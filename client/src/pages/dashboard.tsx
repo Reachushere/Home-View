@@ -1857,11 +1857,48 @@ export default function Dashboard() {
   }, [flushBlankCanvasNotes]);
   const [blankShowFontSize, setBlankShowFontSize] = useState(false);
   const [blankShowFontColor, setBlankShowFontColor] = useState(false);
+  const blankSavedRangeRef = useRef<Range | null>(null);
+  useEffect(() => {
+    const save = () => {
+      const sel = window.getSelection();
+      if (!sel || sel.rangeCount === 0) return;
+      const r = sel.getRangeAt(0);
+      const editor = blankEditorRef.current;
+      if (editor && editor.contains(r.commonAncestorContainer)) {
+        blankSavedRangeRef.current = r.cloneRange();
+      }
+    };
+    document.addEventListener('selectionchange', save);
+    return () => document.removeEventListener('selectionchange', save);
+  }, []);
+  const restoreBlankSelection = () => {
+    const editor = blankEditorRef.current;
+    if (!editor) return;
+    editor.focus();
+    const saved = blankSavedRangeRef.current;
+    const sel = window.getSelection();
+    if (!sel) return;
+    if (saved && editor.contains(saved.commonAncestorContainer)) {
+      sel.removeAllRanges();
+      sel.addRange(saved);
+    } else {
+      // Fallback: place caret at end of editor
+      const r = document.createRange();
+      r.selectNodeContents(editor);
+      r.collapse(false);
+      sel.removeAllRanges();
+      sel.addRange(r);
+    }
+  };
   const blankExecCommand = useCallback((cmd: string, value?: string) => {
+    restoreBlankSelection();
     document.execCommand(cmd, false, value);
-    blankEditorRef.current?.focus();
+    // Re-snapshot the new selection after the command applied
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) blankSavedRangeRef.current = sel.getRangeAt(0).cloneRange();
   }, []);
   const blankInsertCheckbox = useCallback(() => {
+    restoreBlankSelection();
     const cb = document.createElement('input');
     cb.type = 'checkbox';
     cb.style.cssText = 'margin-right:6px;cursor:pointer;vertical-align:middle;';
@@ -1884,6 +1921,7 @@ export default function Dashboard() {
       range.collapse(true);
       sel.removeAllRanges();
       sel.addRange(range);
+      blankSavedRangeRef.current = range.cloneRange();
     }
   }, []);
   const BLANK_FONT_SIZES = ['12px', '14px', '16px', '18px', '24px', '32px'];
@@ -20204,7 +20242,10 @@ export default function Dashboard() {
           style={{ height: '13px', width: '13px', position: 'fixed', bottom: `${calendarBottom - 14}px`, right: `${calendarRight - calendarReduction + 19 + 69 + 7 + 14}px`, zIndex: 70 }}
           onClick={async () => {
             try {
-              const res = await fetch('/api/source-code/all');
+              const res = await fetch(`/api/source-code/all?t=${Date.now()}`, { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
+              if (!res.ok) {
+                throw new Error(res.status === 403 ? 'Access denied (login required)' : `HTTP ${res.status}`);
+              }
               const text = await res.text();
               await navigator.clipboard.writeText(text);
               toast({ title: 'Copied!', description: `All app source code copied to clipboard (${(text.length / 1024).toFixed(0)} KB)` });

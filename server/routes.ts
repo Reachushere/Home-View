@@ -12319,11 +12319,16 @@ async function pollStatus(timeout){
   });
 
   // ============= COPY APP SOURCE CODE =============
-  app.get("/api/source-code/all", async (_req, res) => {
+  app.get("/api/source-code/all", async (req, res) => {
     try {
+      if (getRequestAuthLevel(req) !== '5747') return res.status(403).json({ error: "Access denied" });
       const fs = await import('fs');
       const path = await import('path');
       const root = process.cwd();
+      // Always reflect the live filesystem, never a cached copy.
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
       const output: string[] = [];
       const includeExts = ['.ts', '.tsx', '.js', '.jsx', '.css', '.json', '.html', '.sql', '.cjs', '.mjs'];
       const excludeDirs = ['node_modules', '.git', 'dist', '.replit', '.cache', '.local', 'attached_assets', 'artifacts'];
