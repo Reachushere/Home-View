@@ -5702,15 +5702,28 @@ export default function Dashboard() {
       .catch(() => setDashboardCommentText(''))
       .finally(() => setDashboardCommentLoading(false));
   }, [dashboardCommentTarget?.type, dashboardCommentTarget?.id]);
-  const saveDashboardComment = useCallback(() => {
+  const saveDashboardComment = useCallback(async () => {
     if (!dashboardCommentTarget) return;
     setDashboardCommentSaving(true);
-    fetch(`/api/entity-comments/${dashboardCommentTarget.type}/${dashboardCommentTarget.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: dashboardCommentText }),
-    }).finally(() => setDashboardCommentSaving(false));
-  }, [dashboardCommentTarget, dashboardCommentText]);
+    try {
+      const r = await fetch(`/api/entity-comments/${dashboardCommentTarget.type}/${dashboardCommentTarget.id}`, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: dashboardCommentText }),
+      });
+      if (!r.ok) {
+        const msg = await r.text().catch(() => `HTTP ${r.status}`);
+        toast({ title: 'Save failed', description: msg.slice(0, 200), variant: 'destructive' });
+        return;
+      }
+      setDashboardCommentTarget(null);
+    } catch (e: any) {
+      toast({ title: 'Save failed', description: String(e?.message || e), variant: 'destructive' });
+    } finally {
+      setDashboardCommentSaving(false);
+    }
+  }, [dashboardCommentTarget, dashboardCommentText, toast]);
   const [selectedCertCourse, setSelectedCertCourse] = useState<{
     courseCode: string;
     courseName: string;
@@ -40664,7 +40677,8 @@ export default function Dashboard() {
                 <div className="flex items-center justify-center h-full"><Loader2 className="h-5 w-5 animate-spin text-amber-800" /></div>
               ) : (
                 <textarea
-                  className="w-full h-[160px] bg-transparent text-[12px] text-amber-950 placeholder:text-amber-700/50 resize-none focus:outline-none"
+                  className="w-full h-[160px] text-[12px] resize-none focus:outline-none rounded p-2"
+                  style={{ background: '#ffffff', color: '#000000', border: '1px solid rgba(0,0,0,0.15)' }}
                   placeholder="Write your comments here..."
                   value={dashboardCommentText}
                   onChange={(e) => setDashboardCommentText(e.target.value)}
