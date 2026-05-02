@@ -18683,9 +18683,11 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     }
   }
 
-  // Priority insertion: files closer to the current week are prepared
-  // first. The queue is re-sorted in-place every time we add so the
-  // first-in-line slot always reflects the most-relevant pending file.
+  // Priority insertion: files in the CURRENT week always come first;
+  // within each tier, course rank from the semesters page (lower number
+  // = higher priority) decides order. No week-distance. The queue is
+  // re-sorted in-place on every add so the head always reflects the
+  // most-relevant pending file.
   async function reprioritizeQueue(): Promise<void> {
     if (audioPreparationQueue.length <= 1) return;
     try {
@@ -18698,13 +18700,25 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       const weekOf = (id: number): number => {
         const f = fileById.get(id);
         const m = f?.folder?.match(/week-(\d+)/i);
-        return m ? parseInt(m[1], 10) : 999;
+        return m ? parseInt(m[1], 10) : -1;
       };
+      // Pre-compute course rank per file (the ranking number beside the
+      // course row on the semesters page, also used for playback order).
+      const rankCache = new Map<number, number>();
+      for (const id of audioPreparationQueue) {
+        const f = fileById.get(id);
+        if (!f) { rankCache.set(id, 999); continue; }
+        try { rankCache.set(id, await getCoursePriorityForFile(f)); }
+        catch { rankCache.set(id, 999); }
+      }
       audioPreparationQueue.sort((a, b) => {
-        const da = Math.abs(weekOf(a) - currentWeek);
-        const db = Math.abs(weekOf(b) - currentWeek);
-        if (da !== db) return da - db;
-        return a - b; // tiebreak: smaller id (older row) first
+        const aIsCurrent = weekOf(a) === currentWeek ? 0 : 1;
+        const bIsCurrent = weekOf(b) === currentWeek ? 0 : 1;
+        if (aIsCurrent !== bIsCurrent) return aIsCurrent - bIsCurrent;
+        const ar = rankCache.get(a) ?? 999;
+        const br = rankCache.get(b) ?? 999;
+        if (ar !== br) return ar - br;
+        return a - b; // final tiebreak: oldest row first
       });
     } catch {}
   }
@@ -18756,21 +18770,12 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
       }
       const unprepared = allFiles.filter((f: any) => !f.preparedAudioPaths && !f.listened);
       if (unprepared.length > 0) {
+        // Sorting is delegated to reprioritizeQueue (called after every
+        // add) which uses: current-week-yes-first → course rank → id.
         const semesterSettings = await storage.getActiveSemesterSettings();
         const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date();
         const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : null;
         const currentWeek = getWeekNumber(torontoDate(), semStart, rwStart);
-
-        const getFileWeek = (f: any) => {
-          const m = f.folder?.match(/week-(\d+)/i);
-          return m ? parseInt(m[1], 10) : 999;
-        };
-        unprepared.sort((a: any, b: any) => {
-          const aw = getFileWeek(a), bw = getFileWeek(b);
-          const aDist = Math.abs(aw - currentWeek), bDist = Math.abs(bw - currentWeek);
-          return aDist - bDist;
-        });
-
         console.log(`[AudioPrep] Startup: ${unprepared.length} unprepared files found, queuing (current week ${currentWeek})`);
         for (const f of unprepared) {
           queueFileForPreparation(f.id);
