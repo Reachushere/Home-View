@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Pencil, Folder, FileText, BookOpen, Calendar, Cloud, RefreshCw, AlertCircle, CheckCircle2, Loader2, ExternalLink, Library, Settings } from 'lucide-react';
+import { Pencil, Folder, FileText, BookOpen, Calendar, Cloud, RefreshCw, AlertCircle, CheckCircle2, Loader2, ExternalLink, Library, Settings, Volume2 } from 'lucide-react';
 import courseDetailsFolderIcon from '@/assets/course-details-folder.png';
 
 type Status = 'ok' | 'warning' | 'error' | 'pending';
@@ -316,6 +316,13 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
 
   const moduleFolderStatus: Status = totalMod > 0 ? 'ok' : odLinked ? 'warning' : 'error';
   const readingFolderStatus: Status = totalRead > 0 ? 'ok' : odLinked ? 'warning' : 'error';
+  // Per-kind TTS readiness — drives the colour of the dedicated TTS strip
+  // that sits directly beneath each weekly-content folder row. Pending if
+  // there are no source files yet (so we don't paint red just because we
+  // haven't synced anything); otherwise green when fully ready, orange
+  // when partially ready, red when nothing is ready despite files existing.
+  // (NOTE: actual ttsReady totals per kind are computed lower down — these
+  // declarations are evaluated AFTER that block, see below.)
   const calModuleStatus: Status = totalMod > 0 ? 'ok' : 'warning';
   const calReadingStatus: Status = totalRead > 0 ? 'ok' : 'warning';
 
@@ -347,6 +354,21 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
   const readingPct = totalRead > 0 ? Math.round((readTtsReady / totalRead) * 100) : 0;
   const moduleHasFiles = totalMod > 0;
   const readingHasFiles = totalRead > 0;
+
+  // ────────── Per-kind TTS status ──────────
+  // Drives the dedicated TTS strip beneath each folder row. We treat
+  // "no source files" as pending (grey) instead of error so the strip
+  // doesn't scream when the user simply hasn't uploaded anything yet.
+  const moduleTtsStatus: Status =
+    totalMod === 0 ? 'pending'
+    : modTtsReady === totalMod ? 'ok'
+    : modTtsReady > 0 ? 'warning'
+    : 'error';
+  const readingTtsStatus: Status =
+    totalRead === 0 ? 'pending'
+    : readTtsReady === totalRead ? 'ok'
+    : readTtsReady > 0 ? 'warning'
+    : 'error';
 
   // Worst-of helper for connection lines.
   const worst = (...s: Status[]): Status => {
@@ -579,8 +601,19 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
           const PRE_READ_SPLIT_H = 18;
           const TOP_BUS_Y = 6;             // y of the top H-bus inside the splitter
           const PRE_READ_BUS_Y = 12;       // y of the H-bus inside the pre-read splitter
+          // ────────── TTS strip layout ──────────
+          // The TTS strip sits IMMEDIATELY below its folder row (small
+          // intra-pair gap), with the same min-height so the per-week
+          // cells inside it line up column-for-column with the orange-box
+          // weeks above. The right arm has to skip past TWO rows now
+          // (folder + TTS) per kind, so ARM_BOTTOM_Y picks up the extra
+          // height of one TTS row + intra-pair gap before reaching the
+          // pre-read splitter.
+          const TTS_ROW_MIN_H = ROW_MIN_H;
+          const INTRA_PAIR_GAP = 4;
           const ARM_TOP = TOP_BUS_Y;       // wrapper-relative
-          const ARM_BOTTOM_Y = TOP_SPLIT_H + ROW_MIN_H + ROW_GAP + PRE_READ_BUS_Y;
+          const ARM_BOTTOM_Y =
+            TOP_SPLIT_H + ROW_MIN_H + INTRA_PAIR_GAP + TTS_ROW_MIN_H + ROW_GAP + PRE_READ_BUS_Y;
           const ARM_HEIGHT = ARM_BOTTOM_Y - ARM_TOP;
 
           // Builds a single week cell that lives inside one of the orange boxes.
@@ -635,17 +668,73 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
               >
                 <span style={{ fontSize: 8, fontWeight: 700, color: '#fff', textShadow: '0 1px 1px rgba(0,0,0,0.7)', lineHeight: 1 }}>W{w}</span>
                 <span style={{ fontSize: 10, fontWeight: 800, color: '#fff', textShadow: '0 1px 1px rgba(0,0,0,0.7)', lineHeight: 1 }}>{count}</span>
-                {/* TTS status bar — green = all audio ready, orange = some,
-                    red = none ready, hidden when no files exist. Replaces
-                    the standalone bottom TTS strip. */}
-                {ok && (
+                {/* TTS readiness now lives in the dedicated TTS strip
+                    directly below this row (one per kind), so the
+                    inline bar that used to live here is gone. */}
+              </div>
+            );
+          };
+
+          // ────────── Per-week TTS cell ──────────
+          // Sits in the dedicated TTS strip below each folder row. Mirrors
+          // the geometry of renderWeekCell exactly (flex:1, minWidth:24,
+          // same padding/gap) so columns line up vertically with the week
+          // cells in the orange box above. Shows ready/total + a coloured
+          // status bar; pending (grey-dashed) when there are no source
+          // files for the week.
+          const renderTtsCell = (
+            w: number,
+            slot: { count: number; ttsReady: number } | undefined,
+            kind: 'module' | 'reading',
+          ) => {
+            const count = slot?.count || 0;
+            const ttsReady = slot?.ttsReady || 0;
+            const cellTtsStatus: Status =
+              count === 0 ? 'pending'
+              : ttsReady === count ? 'ok'
+              : ttsReady > 0 ? 'warning'
+              : 'error';
+            const c = STATUS_COLOR[cellTtsStatus];
+            const hasFiles = count > 0;
+            return (
+              <div
+                key={`tts-${w}`}
+                onClick={(e) => { e.stopPropagation(); onOpenWizard('tts', { weekNum: w, uploadType: kind }); }}
+                title={`Week ${w} · ${kind} TTS: ${hasFiles ? `${ttsReady}/${count} ready` : 'no files yet'}`}
+                data-testid={`pipeline-tts-${kind}-${course.code.toLowerCase()}-${w}`}
+                style={{
+                  flex: 1,
+                  minWidth: 24,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 1,
+                  padding: '4px 2px',
+                  borderRadius: 5,
+                  background: hasFiles ? `${c}33` : 'rgba(255,255,255,0.05)',
+                  opacity: hasFiles ? 1 : 0.55,
+                  boxShadow: hasFiles
+                    ? `inset 0 0 0 1px ${c}66, 0 1px 2px rgba(0,0,0,0.25)`
+                    : 'none',
+                  border: hasFiles ? `1px solid ${c}aa` : '1px dashed rgba(255,255,255,0.18)',
+                  cursor: 'pointer',
+                  transition: 'transform 120ms ease',
+                }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-1px)'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = ''; }}
+              >
+                <span style={{ fontSize: 8, fontWeight: 700, color: '#fff', textShadow: '0 1px 1px rgba(0,0,0,0.7)', lineHeight: 1 }}>W{w}</span>
+                <span style={{ fontSize: 9, fontWeight: 800, color: '#fff', textShadow: '0 1px 1px rgba(0,0,0,0.7)', lineHeight: 1 }}>
+                  {hasFiles ? `${ttsReady}/${count}` : '—'}
+                </span>
+                {hasFiles && (
                   <span
-                    title={`TTS: ${ttsReady}/${count} ready`}
                     style={{
                       width: '80%',
                       height: 3,
                       borderRadius: 2,
-                      background: STATUS_COLOR[cellTtsStatus],
+                      background: c,
                       boxShadow: `0 0 4px ${STATUS_GLOW[cellTtsStatus]}`,
                       marginTop: 1,
                     }}
@@ -704,7 +793,30 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
                 </div>
               </div>
 
-              {/* gap between the two rows */}
+              {/* tight intra-pair gap between Module Folder row and its TTS strip */}
+              <div style={{ height: INTRA_PAIR_GAP }} />
+
+              {/* ───── Module TTS strip: chip on LEFT, TTS weeks on RIGHT.
+                   Mirrors the Module Folder row above so the per-week
+                   cells line up column-for-column. Same chip width (170),
+                   same orange-box flex layout, same cell flex/minWidth/gap
+                   as renderWeekCell so the columns are the same width. ───── */}
+              <div style={{ display: 'flex', gap: 8, alignItems: 'stretch', minHeight: TTS_ROW_MIN_H }}>
+                <NodeBox
+                  label="TTS · Modules"
+                  sublabel={moduleHasFiles ? `${modTtsReady}/${totalMod} ready (${modulePct}%)` : 'No files yet'}
+                  Icon={Volume2}
+                  status={moduleTtsStatus}
+                  onClick={() => onOpenWizard('tts')}
+                  width={170}
+                  testId={`pipeline-module-tts-${course.code.toLowerCase()}`}
+                />
+                <div style={orangeBoxStyle(moduleTtsStatus)} data-testid={`pipeline-module-tts-weeks-${course.code.toLowerCase()}`}>
+                  {weekRange.map(w => renderTtsCell(w, courseHealth?.moduleWeeks?.[w], 'module'))}
+                </div>
+              </div>
+
+              {/* gap between the two row pairs */}
               <div style={{ height: ROW_GAP }} />
 
               {/* ───── Pre-reading splitter: H-bus + drop into Reading chip.
@@ -735,6 +847,28 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
                   onClick={() => onOpenWizard('reading_folder' as any)}
                   width={170}
                   testId={`pipeline-reading-folder-${course.code.toLowerCase()}`}
+                />
+              </div>
+
+              {/* tight intra-pair gap between Reading Folder row and its TTS strip */}
+              <div style={{ height: INTRA_PAIR_GAP }} />
+
+              {/* ───── Reading TTS strip: TTS weeks on LEFT, chip on RIGHT.
+                   Mirrors the Reading Folder row above (chip-on-right
+                   layout) so the per-week cells line up column-for-column
+                   with the reading folder weeks directly above. ───── */}
+              <div style={{ display: 'flex', gap: 8, alignItems: 'stretch', minHeight: TTS_ROW_MIN_H }}>
+                <div style={orangeBoxStyle(readingTtsStatus)} data-testid={`pipeline-reading-tts-weeks-${course.code.toLowerCase()}`}>
+                  {weekRange.map(w => renderTtsCell(w, courseHealth?.readingWeeks?.[w], 'reading'))}
+                </div>
+                <NodeBox
+                  label="TTS · Readings"
+                  sublabel={readingHasFiles ? `${readTtsReady}/${totalRead} ready (${readingPct}%)` : 'No files yet'}
+                  Icon={Volume2}
+                  status={readingTtsStatus}
+                  onClick={() => onOpenWizard('tts')}
+                  width={170}
+                  testId={`pipeline-reading-tts-${course.code.toLowerCase()}`}
                 />
               </div>
 
