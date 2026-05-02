@@ -15717,18 +15717,34 @@ export default function Dashboard() {
                                       const ttsReady = courseHealth?.totalTtsReady || 0;
                                       const ttsNeeded = courseHealth?.totalTtsNeeded || 0;
                                       const odPct = courseHealth?.oneDriveFolderConfigured ? 100 : 0;
+                                      // Sync = "all weekly module folders have files in OneDrive".
+                                      // Drives the top Sync pill and gates the TTS step (TTS can
+                                      // only be green once sync is green and every required week
+                                      // also has audio generated).
+                                      const numWeeksForPipe = expHealth?.numberOfWeeks || 13;
+                                      const weekListForPipe = Array.from({ length: numWeeksForPipe }, (_, i) => i + 1);
+                                      const allModulesSynced = courseHealth ? weekListForPipe.every(w => (courseHealth.moduleWeeks?.[w]?.count || 0) > 0) : false;
+                                      const allReadingsSynced = courseHealth ? weekListForPipe.every(w => (courseHealth.readingWeeks?.[w]?.count || 0) > 0 || isReadingExempt(c.code, w)) : false;
+                                      const syncedWeeks = courseHealth ? weekListForPipe.filter(w => (courseHealth.moduleWeeks?.[w]?.count || 0) > 0).length : 0;
+                                      const syncStatus: 'ok' | 'warning' | 'error' = allModulesSynced ? 'ok' : (syncedWeeks > 0 ? 'warning' : 'error');
+                                      const syncValue = allModulesSynced ? 'all linked' : `${syncedWeeks}/${numWeeksForPipe}`;
+                                      // TTS green only when Sync is green AND every weekly
+                                      // module + non-exempt reading file has audio chunks ready.
+                                      const ttsStatus: 'ok' | 'warning' | 'error' = (allModulesSynced && allReadingsSynced && ttsNeeded > 0 && ttsReady === ttsNeeded)
+                                        ? 'ok'
+                                        : (ttsReady > 0 ? 'warning' : 'error');
                                       const ttsPct = ttsNeeded > 0 ? Math.round((ttsReady / ttsNeeded) * 100) : (totalMod > 0 ? 0 : null);
                                       const sylFolderOk = courseHealth?.syllabusFolderExists === true;
                                       const asgFolderOk = courseHealth?.assignmentsFolderExists === true;
                                       const tbkFolderOk = courseHealth?.textbookFolderExists === true;
                                       const steps: { label: string; Icon: any; value: string; status: 'ok' | 'warning' | 'error'; issueKey: string; pct: number | null; desc: string }[] = [
                                         { label: 'OneDrive', Icon: Cloud, value: courseHealth?.oneDriveFolderConfigured ? 'linked' : 'unlinked', status: courseHealth?.oneDriveFolderConfigured ? 'ok' : 'error', issueKey: 'onedrive', pct: odPct, desc: 'Cloud folder for this course. Everything starts here — drop your files in OneDrive and the app pulls them down.' },
-                                        { label: 'Sync', Icon: RefreshCw, value: `${totalMod}M·${totalRead}R`, status: (courseHealth?.oneDriveFolderConfigured || totalMod > 0 || totalRead > 0) ? ((totalMod + totalRead) > 0 ? 'ok' : 'warning') : 'error', issueKey: 'sync', pct: (totalMod + totalRead) > 0 ? 100 : (courseHealth?.oneDriveFolderConfigured ? 50 : 0), desc: 'How many module + reading files have been pulled from OneDrive into the app. M = modules, R = readings.' },
+                                        { label: 'Sync', Icon: RefreshCw, value: syncValue, status: syncStatus, issueKey: 'sync', pct: allModulesSynced ? 100 : Math.round((syncedWeeks / Math.max(numWeeksForPipe, 1)) * 100), desc: 'Whether every week has at least one module file in OneDrive. Click to pick the course root folder.' },
                                         { label: 'Syllabus', Icon: FileText, value: (sylFolderOk && courseHealth?.syllabusLinked) ? 'ready' : sylFolderOk ? 'empty' : 'missing', status: (sylFolderOk && courseHealth?.syllabusLinked) ? 'ok' : sylFolderOk ? 'warning' : 'error', issueKey: sylFolderOk ? 'syllabus' : 'syllabus_folder', pct: (sylFolderOk && courseHealth?.syllabusLinked) ? 100 : sylFolderOk ? 50 : 0, desc: 'Two checks: (1) the Syllabus subfolder exists in OneDrive, (2) a syllabus PDF is actually inside it. Drop the syllabus PDF in the folder so the app can show it on the course page.' },
                                         { label: 'Assignments', Icon: ClipboardList, value: asgFolderOk ? 'linked' : 'missing', status: asgFolderOk ? 'ok' : 'error', issueKey: 'assignments_folder', pct: asgFolderOk ? 100 : 0, desc: 'The Assignments subfolder in OneDrive. Drop assignment briefs / instructions here.' },
                                         { label: 'Textbook', Icon: BookOpen, value: tbkFolderOk ? 'linked' : 'missing', status: tbkFolderOk ? 'ok' : 'error', issueKey: 'textbook_folder', pct: tbkFolderOk ? 100 : 0, desc: 'The Textbook subfolder in OneDrive. Drop the textbook PDF here and it gets imported into the Library and indexed for search.' },
                                         { label: 'Storage', Icon: Folder, value: 'persistent', status: 'ok', issueKey: 'storage', pct: 100, desc: 'Long-term storage on the Pi. Files synced from OneDrive get cached here so the app stays fast and works offline.' },
-                                        { label: 'TTS', Icon: Volume2, value: ttsNeeded > 0 ? `${ttsReady}/${ttsNeeded}` : 'idle', status: ttsNeeded === 0 ? 'ok' : ttsReady === ttsNeeded ? 'ok' : ttsReady > 0 ? 'warning' : 'error', issueKey: 'tts', pct: ttsPct !== null ? ttsPct : 100, desc: 'Audio narration. The app reads PDFs aloud — count is how many files already have audio generated.' },
+                                        { label: 'TTS', Icon: Volume2, value: ttsNeeded > 0 ? `${ttsReady}/${ttsNeeded}` : 'idle', status: ttsStatus, issueKey: 'tts', pct: ttsPct !== null ? ttsPct : 100, desc: 'Audio narration. The app reads PDFs aloud — count is how many files already have audio generated. Goes green only after every module + reading folder is synced and audio is ready.' },
                                         { label: 'Library', Icon: BookOpen, value: (totalMod + totalRead) > 0 ? `${totalMod + totalRead} files` : (courseHealth?.oneDriveFolderConfigured ? 'ready' : 'empty'), status: (courseHealth?.oneDriveFolderConfigured || totalMod > 0 || totalRead > 0) ? 'ok' : 'error', issueKey: 'library', pct: (totalMod + totalRead) > 0 ? 100 : (courseHealth?.oneDriveFolderConfigured ? 50 : 0), desc: 'Your reading library. All synced PDFs show up here as books on the course shelf for quick browsing.' },
                                       ];
                                       const okCount = steps.filter(s => s.status === 'ok').length;
@@ -15780,7 +15796,7 @@ export default function Dashboard() {
                                                           flex: '1 1 0',
                                                           minWidth: 0,
                                                           padding: hasArt ? '0' : '8px 6px 6px',
-                                                          cursor: isProblem ? 'pointer' : 'default',
+                                                          cursor: (isProblem || step.label === 'Sync') ? 'pointer' : 'default',
                                                           borderRadius: hasGrad ? '8px' : (hasImg ? '0' : '8px'),
                                                           background: hasGrad ? cellGrad : (hasImg ? 'transparent' : '#ffffff'),
                                                           backgroundImage: hasImg ? `url(${stepBg})` : undefined,
@@ -15797,7 +15813,34 @@ export default function Dashboard() {
                                                           transition: 'all 0.18s ease',
                                                         };
                                                       })()}
-                                                      onClick={(e) => { if (isProblem) { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: step.issueKey, step: 0, phase: 'primary' }); } }}
+                                                      onClick={(e) => {
+                                                        // Sync is always clickable: it opens the OneDrive
+                                                        // picker so the user can pick / re-pick the course
+                                                        // root folder. The picker walks the structure to set
+                                                        // every week's module + reading folders. All other
+                                                        // problem steps still launch the wizard as before.
+                                                        if (step.label === 'Sync') {
+                                                          e.stopPropagation();
+                                                          const semKeyToType: Record<string, { type: string; year: number }> = {};
+                                                          semesterMetaLocal.forEach(m => { const type = m.key.startsWith('ss') ? 'spring_summer' : m.key.startsWith('f') ? 'fall' : 'winter'; semKeyToType[m.key] = { type, year: m.year }; });
+                                                          const mapping = semKeyToType[expandedSemKey || ''];
+                                                          const dbSem = mapping && allSemesterSettings ? allSemesterSettings.find((s: any) => { const ym = s.semesterName?.match(/\d{4}/); const sy = ym ? parseInt(ym[0]) : 0; return s.semesterType === mapping.type && sy === mapping.year; }) : null;
+                                                          if (!dbSem) { toast({ title: 'Cannot link folder', description: 'Semester not found.', variant: 'destructive' }); return; }
+                                                          const courseIdx = dbSem.course1Code === c.code ? 1 : dbSem.course2Code === c.code ? 2 : dbSem.course3Code === c.code ? 3 : 0;
+                                                          if (!courseIdx) { toast({ title: 'Cannot link folder', description: `${c.code} not found in semester slots.`, variant: 'destructive' }); return; }
+                                                          const startPath = getOneDrivePath(c.code);
+                                                          setHealthFolderBrowse({ semId: dbSem.id, courseIdx, field: 'module', isRoot: true } as any);
+                                                          setHealthBrowsePath(startPath);
+                                                          setHealthBrowseLoading(true);
+                                                          fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(startPath)}`).then(r => r.json()).then(items => { setHealthBrowseItems(Array.isArray(items) ? items : []); setHealthBrowseLoading(false); }).catch(() => {
+                                                            const fallback = '/School/1. TMU/Courses';
+                                                            setHealthBrowsePath(fallback);
+                                                            fetch(`/api/onedrive/browse-folders?path=${encodeURIComponent(fallback)}`).then(r => r.json()).then(items => { setHealthBrowseItems(Array.isArray(items) ? items : []); setHealthBrowseLoading(false); }).catch(() => setHealthBrowseLoading(false));
+                                                          });
+                                                          return;
+                                                        }
+                                                        if (isProblem) { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: step.issueKey, step: 0, phase: 'primary' }); }
+                                                      }}
                                                       onMouseEnter={(e) => { const lbl = step.label; const hasArt = lbl === 'OneDrive' || lbl === 'TTS' || lbl === 'Sync' || lbl === 'Storage' || lbl === 'Library' || lbl === 'Syllabus' || lbl === 'Assignments' || lbl === 'Textbook'; if (!hasArt) { (e.currentTarget as HTMLDivElement).style.borderColor = accent; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 0 0 2px ${accent}55`; } else { (e.currentTarget as HTMLDivElement).style.filter = 'brightness(1.08)'; } }}
                                                       onMouseLeave={(e) => { const lbl = step.label; const hasArt = lbl === 'OneDrive' || lbl === 'TTS' || lbl === 'Sync' || lbl === 'Storage' || lbl === 'Library' || lbl === 'Syllabus' || lbl === 'Assignments' || lbl === 'Textbook'; if (!hasArt) { (e.currentTarget as HTMLDivElement).style.borderColor = isProblem ? accent + '88' : 'rgba(0,0,0,0.15)'; (e.currentTarget as HTMLDivElement).style.boxShadow = isProblem ? `0 0 0 1px ${accent}44` : 'none'; } else { (e.currentTarget as HTMLDivElement).style.filter = 'none'; } }}
                                                     >
@@ -16102,51 +16145,49 @@ export default function Dashboard() {
                                     })()}
                                   </div>
 
-                                  {courseHealth && (
-                                    <div style={{ paddingLeft: '18px', paddingRight: '18px' }}>
-                                      <div className="text-[13px] font-semibold text-white uppercase tracking-wider mb-3">Weekly Content Status</div>
-                                      <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${Math.min(courseHealth.moduleWeeks ? Object.keys(courseHealth.moduleWeeks).length : 13, 13)}, 1fr)` }}>
-                                        {Array.from({ length: expHealth?.numberOfWeeks || 13 }, (_, i) => i + 1).map(w => {
-                                          const mCount = courseHealth.moduleWeeks?.[w]?.count || 0;
-                                          const rCount = courseHealth.readingWeeks?.[w]?.count || 0;
-                                          const mTts = courseHealth.moduleWeeks?.[w]?.ttsReady || 0;
-                                          const rExempt = isReadingExempt(c.code, w);
-                                          const moduleOk = mCount > 0;
-                                          const readingOk = rCount > 0 || rExempt;
-                                          const weekGreen = moduleOk && readingOk;
-                                          const weekRed = !moduleOk || !readingOk;
-                                          return (
-                                            <div
-                                              key={w}
-                                              className="text-center cursor-pointer hover:brightness-125 transition-all relative"
-                                              style={{
-                                                // Both states use CSS so cells stretch at any size with crisp rounded
-                                                // corners. Green = #64BA4D flat fill. Red = pink->red diagonal gradient
-                                                // sampled from the supplied SVG palette
-                                                // (#FAB6BE -> #C46D75 -> #8F252E).
-                                                background: weekRed
-                                                  ? 'linear-gradient(135deg, #FAB6BE 0%, #C46D75 43%, #8F252E 100%)'
-                                                  : undefined,
-                                                backgroundColor: weekGreen ? '#64BA4D' : weekRed ? undefined : 'rgba(255,255,255,0.03)',
-                                                border: weekRed ? '1px solid rgba(0,0,0,0.18)' : weekGreen ? '1px solid rgba(0,0,0,0.18)' : '1px solid rgba(255,255,255,0.1)',
-                                                borderRadius: '4px',
-                                                boxShadow: (weekGreen || weekRed) ? 'inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.25)' : undefined,
-                                                padding: '6px 4px',
-                                                minHeight: '46px',
-                                              }}
-                                              onClick={(e) => { e.stopPropagation(); setWeekDetailOpen({ courseCode: c.code, week: w }); }}
-                                              data-testid={`week-cell-${c.code}-${w}`}
-                                            >
-                                              <div className="text-[10px] font-bold text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.7)' }}>W{w}</div>
-                                              <div className="text-[9px] text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.7)' }}>{mCount}M {rCount}R{rExempt && rCount === 0 ? '*' : ''}</div>
-                                              {mCount > 0 && mTts < mCount && <div className="text-[8px] text-yellow-200" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.7)' }}>TTS {mTts}/{mCount}</div>}
-                                            </div>
-                                          );
-                                        })}
+                                  {courseHealth && (() => {
+                                    // Each week is rendered as TWO read-only boxes
+                                    // (Module on top, Reading on bottom) that mirror the
+                                    // colored Module / Reading boxes on the main calendar.
+                                    // Green dot = OneDrive has at least one file in that
+                                    // week's folder. Red box + red dot = no file synced.
+                                    // Read-only: no click action, no upload button.
+                                    const RED_GRAD = 'linear-gradient(135deg, #FAB6BE 0%, #C46D75 43%, #8F252E 100%)';
+                                    const moduleColor = (c as any).moduleBoxColor || c.color || '#3b82f6';
+                                    const readingColor = (c as any).readingBoxColor || c.color || '#a855f7';
+                                    const numWeeks = expHealth?.numberOfWeeks || 13;
+                                    const weeks = Array.from({ length: numWeeks }, (_, i) => i + 1);
+                                    const dotStyle = (ok: boolean) => ({ position: 'absolute' as const, top: '3px', right: '4px', width: '6px', height: '6px', borderRadius: '50%', background: ok ? '#10b981' : '#ef4444', boxShadow: `0 0 5px ${ok ? '#10b981' : '#ef4444'}, 0 0 2px ${ok ? '#10b981' : '#ef4444'}` });
+                                    const cellBase = { position: 'relative' as const, borderRadius: '4px', padding: '4px 4px 3px', minHeight: '22px', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.25)', border: '1px solid rgba(0,0,0,0.18)' };
+                                    return (
+                                      <div style={{ paddingLeft: '18px', paddingRight: '18px' }}>
+                                        <div className="text-[13px] font-semibold text-white uppercase tracking-wider mb-3">Weekly Content Status</div>
+                                        <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${numWeeks}, 1fr)` }}>
+                                          {weeks.map(w => {
+                                            const mCount = courseHealth.moduleWeeks?.[w]?.count || 0;
+                                            const rCount = courseHealth.readingWeeks?.[w]?.count || 0;
+                                            const rExempt = isReadingExempt(c.code, w);
+                                            const moduleOk = mCount > 0;
+                                            const readingOk = rCount > 0 || rExempt;
+                                            return (
+                                              <div key={w} className="flex flex-col gap-1" data-testid={`week-cell-${c.code}-${w}`}>
+                                                <div className="text-[9px] text-center text-white/60 font-bold" style={{ lineHeight: 1, marginBottom: '1px' }}>W{w}</div>
+                                                <div style={{ ...cellBase, background: moduleOk ? moduleColor : RED_GRAD }} title={`Module: ${moduleOk ? `${mCount} file${mCount === 1 ? '' : 's'} synced` : 'no file in OneDrive'}`} data-testid={`week-module-${c.code}-${w}`}>
+                                                  <span style={dotStyle(moduleOk)} />
+                                                  <div className="text-[8px] font-bold text-white text-center" style={{ textShadow: '0 1px 1px rgba(0,0,0,0.7)', lineHeight: 1 }}>M</div>
+                                                </div>
+                                                <div style={{ ...cellBase, background: readingOk ? (rExempt && rCount === 0 ? 'rgba(255,255,255,0.08)' : readingColor) : RED_GRAD, opacity: rExempt && rCount === 0 ? 0.5 : 1 }} title={rExempt && rCount === 0 ? 'Reading: not expected this week' : `Reading: ${readingOk ? `${rCount} file${rCount === 1 ? '' : 's'} synced` : 'no file in OneDrive'}`} data-testid={`week-reading-${c.code}-${w}`}>
+                                                  <span style={dotStyle(readingOk)} />
+                                                  <div className="text-[8px] font-bold text-white text-center" style={{ textShadow: '0 1px 1px rgba(0,0,0,0.7)', lineHeight: 1 }}>R{rExempt && rCount === 0 ? '*' : ''}</div>
+                                                </div>
+                                              </div>
+                                            );
+                                          })}
+                                        </div>
+                                        <div className="text-[10px] text-white/40 mt-1">Green dot = OneDrive has files for that week's folder. Red = no file synced. * = reading not expected this week.</div>
                                       </div>
-                                      <div className="text-[10px] text-white/40 mt-1">* = reading not expected for this week. Click a week to link or upload its Module/Reading folder, or toggle reading requirement.</div>
-                                    </div>
-                                  )}
+                                    );
+                                  })()}
 
                                   {weekDetailOpen && weekDetailOpen.courseCode === c.code && (() => {
                                     const wd = weekDetailOpen;
@@ -28460,10 +28501,16 @@ export default function Dashboard() {
                               return;
                             }
                           }
+                          // Course root: store the SINGLE root path on both
+                          // module + reading folder columns. The library
+                          // walks every Week N/Module and Week N/Reading
+                          // subfolder under that root, so each week's box
+                          // on the Auto Resolution Centre lights up as
+                          // soon as the corresponding subfolder has files.
                           const body = isRoot
                             ? {
-                                [`course${courseIdx}ModuleFolder`]: `${path}/Week 1/Module`,
-                                [`course${courseIdx}ReadingFolder`]: `${path}/Week 1/Reading`,
+                                [`course${courseIdx}ModuleFolder`]: path,
+                                [`course${courseIdx}ReadingFolder`]: path,
                               }
                             : { [field === 'module' ? `course${courseIdx}ModuleFolder` : `course${courseIdx}ReadingFolder`]: finalPath };
                           fetch(`/api/semesters/${semId}`, {
@@ -28476,7 +28523,7 @@ export default function Dashboard() {
                             setPendingWeekSelect(null);
                             // If launched from the wizard, refresh wizard's health view + show success
                             if (semFlowWizard && expandedSemKey) {
-                              setWizActionDone(isRoot ? 'Course folder linked! (Module + Reading set for Week 1)' : `${field === 'module' ? 'Module' : 'Reading'} folder linked → ${finalPath}`);
+                              setWizActionDone(isRoot ? `Course root linked → ${path}. App will walk Week N/Module + Week N/Reading subfolders for every week.` : `${field === 'module' ? 'Module' : 'Reading'} folder linked → ${finalPath}`);
                               fetch(`/api/semester-health-check/${expandedSemKey}`, { credentials: 'include' }).then(r => r.ok ? r.json() : null).then(h => { if (h) setExpandedSemHealth(h); }).catch(() => {});
                             }
                           }).catch(() => { setHealthFolderBrowse(null); setPendingWeekSelect(null); });
