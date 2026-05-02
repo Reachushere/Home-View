@@ -1,0 +1,32 @@
+                            Table "public.semester_settings"
+           Column           |            Type             | Collation | Nullable |                    Default
+----------------------------+-----------------------------+-----------+----------+-----------------------------------------------
+ id                         | integer                     |           | not null | nextval('semester_settings_id_seq'::regclass)
+ semester_name              | text                        |           | not null | 'Winter 2026 Semester'::text
+ semester_start_date        | timestamp without time zone |           | not null |
+ semester_end_date          | timestamp without time zone |           |          |
+ semester_type              | text                        |           |          | 'winter'::text
+ course1_code               | text                        |           | not null |
+ course1_name               | text                        |           | not null |
+ course1_professor          | text                        |           |          |
+ course1_professor_email    | text                        |           |          |
+ course1_semester_type      | text                        |           |          |
+ course1_delivery_mode      | text                        |           |          |
+ course1_class_day          | text                        |           |          |
+ course1_class_day2         | text                        |           |          |
+ course1_class_time         | text                        |           |          |
+ course1_class_end_time     | text                        |           |          |
+ course1_class_time2        | text                        |           |          |
+ course1_class_end_time2    | text                        |           |          |
+ course1_start_date         | timestamp without time zone |           |          |
+ course1_end_date           | timestamp without time zone |           |          |
+ course1_spring_summer_term | text                        |           |          |
+ course1_course_type        | text                        |           |          |
+ course1_zoom_link          | text                        |           |          |
+ course1_color              | text                        |           |          |
+ course1_color_end          | text                        |           |          |
+ course1_color_stops        | text                        |           |          |
+ course1_border_color       | text                        |           |          |
+ course1_course_row_color   | text                        |           |          |
+ course1_task_bg_color      | text                        |           |          |
+:
