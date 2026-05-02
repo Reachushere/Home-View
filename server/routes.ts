@@ -4360,7 +4360,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 
         const cleanCode = code.replace(/\s/g, '').toLowerCase();
         const hasSyllabus = !!(syllabusPaths[code] || syllabusPaths[code.toUpperCase()] || syllabusPaths[cleanCode]);
-        const syllabusPath = syllabusPaths[code] || syllabusPaths[code.toUpperCase()] || syllabusPaths[cleanCode] || null;
+        // syllabusPath may be filled in below by the OneDrive probe if the
+        // file lives in the course's Syllabus subfolder; recompute after.
+        let syllabusPath: string | null = syllabusPaths[code] || syllabusPaths[code.toUpperCase()] || syllabusPaths[cleanCode] || null;
 
         const moduleWeeks: Record<number, { count: number; ttsReady: number }> = {};
         const readingWeeks: Record<number, { count: number; ttsReady: number }> = {};
@@ -4474,8 +4476,16 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
                   if (syllabusFolderExists) {
                     try {
                       const sylName = (subs || []).find((s: any) => s.folder && s.name.toLowerCase() === 'syllabus')?.name || 'Syllabus';
-                      const sylChildren = await listOneDriveFolderChildren(`${courseFolderPath}/${sylName}`);
-                      syllabusFileInFolder = (sylChildren || []).some((f: any) => !f.folder && /\.pdf$/i.test(f.name || ''));
+                      const sylFolderPath = `${courseFolderPath}/${sylName}`;
+                      const sylChildren = await listOneDriveFolderChildren(sylFolderPath);
+                      const sylPdf = (sylChildren || []).find((f: any) => !f.folder && /\.pdf$/i.test(f.name || ''));
+                      syllabusFileInFolder = !!sylPdf;
+                      // Capture the real OneDrive path of the PDF so the
+                      // "Syllabus Linked" row in the WCS opens the actual
+                      // file (via Word Online) instead of the placeholder.
+                      if (sylPdf && !syllabusPath) {
+                        syllabusPath = `${sylFolderPath}/${sylPdf.name}`;
+                      }
                     } catch {}
                   }
                 } catch {}
