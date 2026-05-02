@@ -23124,7 +23124,11 @@ export default function Dashboard() {
           onClick={() => {
             if (hwMinimizeAnim !== 'idle' || blankMinimizeAnim !== 'idle') return;
             if (!homeworkMinimized) return;
-            applyMinimizeOrigin('hw', 'homework', false);
+            // NOTE: notes overlay is a child of homework section, so applying
+            // hw-anim-restoring to homework would compound transforms and make
+            // notes' shrink invisible (scale 0 × scale (1→0) = 0). Instead, leave
+            // homework untransformed (already mounted, covered by notes) and only
+            // animate notes shrinking down — homework reveals naturally underneath.
             applyMinimizeOrigin('blank', 'notes', false);
             if (blankBoxOpen) {
               setBlankBoxOpen(false);
@@ -23135,9 +23139,7 @@ export default function Dashboard() {
             }
             setHomeworkMinimized(false);
             localStorage.removeItem('homeworkMinimized');
-            setHwMinimizeAnim('restoring');
             setTimeout(() => {
-              setHwMinimizeAnim('idle');
               setBlankMinimizeAnim('idle');
             }, 580);
           }}
