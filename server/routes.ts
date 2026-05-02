@@ -9948,7 +9948,41 @@ Always cite which file/document each finding comes from. Be thorough but concise
           return key === semesterKey;
         });
         if (semIdx < 0) return;
-        const sem = sortedSems[semIdx];
+        let sem = sortedSems[semIdx];
+        // Validate stored module/reading folder overrides against live OneDrive.
+        // If the user has restructured their OneDrive (e.g. moved courses into
+        // half-term wrappers), stale overrides will hide the new layout from
+        // dynamic discovery. Clear any path that no longer resolves so the
+        // sync below falls back to the structural walk.
+        try {
+          const { getOneDriveItemByPath } = await import("./onedrive");
+          const remapUpdates: Record<string, any> = {};
+          for (let i = 1; i <= 3; i++) {
+            const code = ((sem as any)[`course${i}Code`] || '').trim();
+            if (!code) continue;
+            for (const fld of [`course${i}ModuleFolder`, `course${i}ReadingFolder`]) {
+              const stored = ((sem as any)[fld] || '').trim();
+              if (!stored) continue;
+              try {
+                const item = await getOneDriveItemByPath(stored);
+                if (!item) {
+                  console.log(`[LibrarySync:Remap] ${semesterKey} ${fld} stale (missing): ${stored} — clearing`);
+                  remapUpdates[fld] = '';
+                }
+              } catch {
+                console.log(`[LibrarySync:Remap] ${semesterKey} ${fld} stale (lookup failed): ${stored} — clearing`);
+                remapUpdates[fld] = '';
+              }
+            }
+          }
+          if (Object.keys(remapUpdates).length > 0) {
+            await storage.updateSemesterSettings(sem.id, remapUpdates);
+            sem = { ...sem, ...remapUpdates };
+            console.log(`[LibrarySync:Remap] ${semesterKey}: cleared ${Object.keys(remapUpdates).length} stale folder override(s)`);
+          }
+        } catch (remapErr: any) {
+          console.log(`[LibrarySync:Remap] ${semesterKey} validation error: ${remapErr.message}`);
+        }
         const existingFiles = await storage.getFiles();
         const existingSet = new Set(existingFiles.map((f: any) => `${f.folder}::${f.originalName}`));
         let synced = 0;
