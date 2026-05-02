@@ -281,6 +281,13 @@ interface CourseAutomationPipelineProps {
   onCourseFolderRenamed?: () => void;
   onModuleFolderRenamed?: () => void;
   onReadingFolderRenamed?: () => void;
+  // Per-week TTS-toggle wiring. When supplied, each week cell in the
+  // folder-row orange box becomes the same rich card as the Weekly
+  // Content Status panel (TTS dot, FILE dot, "Module"/"Reading" label,
+  // USE toggle) instead of a bare file-count chip.
+  isTtsCounted?: (week: number, type: 'module' | 'reading') => boolean;
+  setTtsCounted?: (week: number, type: 'module' | 'reading', counted: boolean) => void;
+  isReadingExempt?: (week: number) => boolean;
 }
 
 export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
@@ -291,6 +298,7 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
     moduleBoxColor, readingBoxColor,
     onOpenWizard, onOpenCourseDetails,
     onCourseFolderRenamed, onModuleFolderRenamed, onReadingFolderRenamed,
+    isTtsCounted, setTtsCounted, isReadingExempt,
   } = props;
   const firstWeek = Math.max(1, propFirstWeek ?? 1);
   const lastWeek = Math.max(firstWeek, Math.min(numberOfWeeks, propLastWeek ?? numberOfWeeks));
@@ -599,7 +607,7 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
           // the right arm always runs cleanly from the top splitter down
           // past the module row to the pre-reading splitter.
           const TOP_SPLIT_H = 18;
-          const ROW_MIN_H = 60;
+          const ROW_MIN_H = 76;
           const ROW_GAP = 10;
           const PRE_READ_SPLIT_H = 18;
           const TOP_BUS_Y = 6;             // y of the top H-bus inside the splitter
@@ -623,47 +631,97 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
             TOP_SPLIT_H + ROW_MIN_H + INTRA_PAIR_GAP + TTS_ROW_MIN_H + ROW_GAP + PRE_READ_BUS_Y;
           const ARM_HEIGHT = ARM_BOTTOM_Y - ARM_TOP;
 
-          // Builds a single week cell that lives inside one of the orange boxes.
-          // Folder-row cells stay simple — file count + kind tint — and the
-          // per-week TTS readiness lives in the dedicated TTS strip below.
+          // Each orange-box cell mirrors the Weekly Content Status panel
+          // card at the bottom of the dashboard: TTS dot top-left, FILE
+          // dot top-right, "Module" / "Reading" centred label, USE toggle
+          // bottom-right. Toggling USE off mutes the cell to grey and
+          // excludes the slot from the pipeline TTS rollup.
+          const RED_GRAD = 'linear-gradient(135deg, #FAB6BE 0%, #C46D75 43%, #8F252E 100%)';
+          const cornerDotWithLabel = (corner: 'tl' | 'tr', ok: boolean, label: string, title: string, testId: string) => (
+            <span
+              title={title}
+              style={{
+                position: 'absolute', top: 2,
+                [corner === 'tl' ? 'left' : 'right']: 2,
+                display: 'flex', alignItems: 'center', gap: 2,
+                flexDirection: corner === 'tl' ? 'row' : 'row-reverse',
+              }}
+            >
+              <span
+                data-testid={testId}
+                style={{
+                  width: 6, height: 6, borderRadius: '50%',
+                  background: ok ? '#10b981' : '#ef4444',
+                  boxShadow: `0 0 4px ${ok ? '#10b981' : '#ef4444'}, 0 0 2px ${ok ? '#10b981' : '#ef4444'}`,
+                  flexShrink: 0,
+                }}
+              />
+              <span style={{ fontSize: 7, fontWeight: 700, color: 'rgba(255,255,255,0.85)', textShadow: '0 1px 1px rgba(0,0,0,0.7)', lineHeight: 1, letterSpacing: '0.3px' }}>{label}</span>
+            </span>
+          );
+          const useToggle = (counted: boolean, onToggle: () => void, testId: string) => (
+            <span style={{ position: 'absolute', bottom: 2, right: 2, display: 'flex', alignItems: 'center', gap: 2, flexDirection: 'row-reverse' }}>
+              <button
+                onClick={(e) => { e.stopPropagation(); onToggle(); }}
+                data-testid={testId}
+                title={counted ? 'Counted toward pipeline TTS — click to exclude' : 'Excluded from pipeline TTS — click to include'}
+                style={{
+                  width: 16, height: 9, borderRadius: 5,
+                  background: counted ? 'rgba(16,185,129,0.9)' : 'rgba(0,0,0,0.45)',
+                  border: '1px solid rgba(0,0,0,0.4)',
+                  cursor: 'pointer', padding: 0, position: 'relative', flexShrink: 0,
+                  transition: 'background 0.15s',
+                }}
+              >
+                <span style={{ display: 'block', width: 6, height: 6, background: 'white', borderRadius: '50%', position: 'absolute', top: 0.5, left: counted ? 8 : 1, transition: 'left 0.15s', boxShadow: '0 1px 1px rgba(0,0,0,0.4)' }} />
+              </button>
+              <span style={{ fontSize: 7, fontWeight: 700, color: 'rgba(255,255,255,0.85)', textShadow: '0 1px 1px rgba(0,0,0,0.7)', lineHeight: 1, letterSpacing: '0.3px' }}>USE</span>
+            </span>
+          );
+
           const renderWeekCell = (
             w: number,
             slot: { count: number; ttsReady: number } | undefined,
             kind: 'module' | 'reading',
           ) => {
             const count = slot?.count || 0;
+            const ttsReadyCnt = slot?.ttsReady || 0;
             const cellColor = kind === 'module' ? modColor : readColor;
-            const ok = count > 0;
+            const fileOk = count > 0;
+            const ttsOk = fileOk && ttsReadyCnt >= count;
+            const counted = isTtsCounted ? isTtsCounted(w, kind) : true;
+            const rExempt = kind === 'reading' && isReadingExempt ? isReadingExempt(w) : false;
             return (
               <div
                 key={w}
                 onClick={(e) => { e.stopPropagation(); onOpenWizard(kind === 'module' ? 'module_folder' : 'reading_folder', { weekNum: w, uploadType: kind }); }}
-                title={`Week ${w} · ${kind}: ${count} file${count === 1 ? '' : 's'} indexed`}
+                title={!counted
+                  ? `${kind === 'module' ? 'Module' : 'Reading'} excluded from TTS — toggle on to count`
+                  : `Week ${w} · ${kind}: ${fileOk ? `${count} file${count === 1 ? '' : 's'}` : 'no file'} • TTS ${ttsReadyCnt}/${count}`}
                 data-testid={`pipeline-week-${kind}-${course.code.toLowerCase()}-${w}`}
                 style={{
+                  position: 'relative',
                   flex: 1,
                   minWidth: 24,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 1,
-                  padding: '4px 2px',
-                  borderRadius: 5,
-                  background: ok ? cellColor : 'rgba(255,255,255,0.05)',
-                  opacity: ok ? 1 : 0.55,
-                  boxShadow: ok
-                    ? 'inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.18), 0 1px 2px rgba(0,0,0,0.25)'
-                    : 'none',
-                  border: ok ? '1px solid rgba(0,0,0,0.18)' : '1px dashed rgba(255,255,255,0.18)',
+                  borderRadius: 4,
+                  padding: '12px 4px',
+                  minHeight: 52,
+                  background: !counted ? 'rgba(255,255,255,0.06)' : (fileOk ? cellColor : RED_GRAD),
+                  opacity: counted ? 1 : 0.55,
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.25)',
+                  border: '1px solid rgba(0,0,0,0.18)',
                   cursor: 'pointer',
                   transition: 'transform 120ms ease',
                 }}
                 onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-1px)'; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = ''; }}
               >
-                <span style={{ fontSize: 8, fontWeight: 700, color: '#fff', textShadow: '0 1px 1px rgba(0,0,0,0.7)', lineHeight: 1 }}>W{w}</span>
-                <span style={{ fontSize: 10, fontWeight: 800, color: '#fff', textShadow: '0 1px 1px rgba(0,0,0,0.7)', lineHeight: 1 }}>{count}</span>
+                {counted && cornerDotWithLabel('tl', ttsOk, 'TTS', `TTS audio ${ttsOk ? 'ready' : `${ttsReadyCnt}/${count}`}`, `dot-tts-${kind}-${course.code.toLowerCase()}-${w}`)}
+                {counted && cornerDotWithLabel('tr', fileOk, 'FILE', fileOk ? `${count} file${count === 1 ? '' : 's'} synced` : 'no file in OneDrive', `dot-file-${kind}-${course.code.toLowerCase()}-${w}`)}
+                <div style={{ fontSize: 9, fontWeight: 800, color: '#fff', textAlign: 'center', textShadow: '0 1px 1px rgba(0,0,0,0.7)', lineHeight: 1, marginTop: 2 }}>
+                  {kind === 'module' ? 'Module' : `Reading${rExempt ? '*' : ''}`}
+                </div>
+                {setTtsCounted && useToggle(counted, () => setTtsCounted(w, kind, !counted), `pipeline-toggle-tts-${kind}-${course.code.toLowerCase()}-${w}`)}
               </div>
             );
           };
