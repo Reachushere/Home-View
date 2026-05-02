@@ -18433,7 +18433,7 @@ export default function Dashboard() {
                   </div>
                 </div>
                 {pomodoroInline}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', position: 'absolute', left: '150px', right: '150px', top: '8px', bottom: '4px', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', overflow: 'hidden', maxHeight: '50px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', position: 'absolute', left: '150px', right: '150px', top: '0', bottom: '0', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', overflow: 'hidden' }}>
                   {(() => {
                     const prepDaysNum = prepDaysText === 'today' ? 0 : prepDaysText === 'now' ? -1 : Number(prepDaysText);
                   const showPrepFirst = prepDaysText && nextPrep && prepDaysNum < diffDays && diffDays > 0;
