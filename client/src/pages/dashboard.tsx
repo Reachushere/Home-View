@@ -20464,10 +20464,43 @@ export default function Dashboard() {
                 const letterToPct: Record<string, number> = { 'A+': 92, 'A': 87, 'A-': 82, 'B+': 78, 'B': 75, 'B-': 71, 'C+': 68, 'C': 65, 'C-': 61, 'D+': 58, 'D': 55, 'D-': 51, 'F': 40 };
                 const pToGpa = (p: number) => { if (isNaN(p)) return 0; if (p >= 90) return 4.33; if (p < 50) return 0; const a: Array<[number, number]> = [[50,1.0],[60,1.67],[63,2.0],[67,2.33],[70,2.67],[73,3.0],[77,3.33],[80,3.67],[85,4.0],[90,4.33]]; for (let i = a.length - 1; i >= 0; i--) { const [lo, gLo] = a[i]; if (p >= lo) { const nx = a[i+1]; if (!nx) return gLo; const ratio = (p - lo) / (nx[0] - lo); return Math.round((gLo + ratio * (nx[1] - gLo)) * 100) / 100; } } return 0; };
 
+                // Pull the canonical course list for each semester from the DB
+                // semester slots (course1/course2/course3), exactly like the
+                // per-semester header GPA badge does. Falling back to localStorage
+                // assignments only when the DB has nothing for that semester.
+                // This keeps the overall GPA in sync with the semester boxes so
+                // grade edits in CASL101 (or any course) actually propagate up.
+                const semKeyToDbType: Record<string, { type: string; year: number }> = {
+                  'ss2025': { type: 'spring_summer', year: 2025 }, 'f2025': { type: 'fall', year: 2025 }, 'w2026': { type: 'winter', year: 2026 },
+                  'ss2026': { type: 'spring_summer', year: 2026 }, 'f2026': { type: 'fall', year: 2026 }, 'w2027': { type: 'winter', year: 2027 },
+                  'ss2027': { type: 'spring_summer', year: 2027 }, 'f2027': { type: 'fall', year: 2027 }, 'w2028': { type: 'winter', year: 2028 },
+                  'ss2028': { type: 'spring_summer', year: 2028 }, 'f2028': { type: 'fall', year: 2028 }, 'w2029': { type: 'winter', year: 2029 },
+                };
                 const semAllCourses: Record<string, { code: string }[]> = {};
                 const allDefCodes = new Set<string>();
                 for (const semKey of semKeyOrder) {
-                  semAllCourses[semKey] = [...(semesterCourseAssignments[semKey] || [])];
+                  const mapping = semKeyToDbType[semKey];
+                  let dbCourses: { code: string }[] = [];
+                  if (mapping && allSemesterSettings) {
+                    const dbSem = (allSemesterSettings as any[]).find((s: any) => {
+                      const yearMatch = s.semesterName?.match(/\d{4}/);
+                      const semYear = yearMatch ? parseInt(yearMatch[0]) : 0;
+                      return s.semesterType === mapping.type && semYear === mapping.year;
+                    });
+                    if (dbSem) {
+                      const slots = [dbSem.course1Code, dbSem.course2Code, dbSem.course3Code];
+                      for (const code of slots) {
+                        if (code && dbCourses.length < 3) dbCourses.push({ code });
+                      }
+                    }
+                  }
+                  // DB is the source of truth; only fall back to localStorage if
+                  // DB had nothing at all. Hard cap at 3 either way so a stale
+                  // 4th entry from a prior bug can never sneak in.
+                  semAllCourses[semKey] = (dbCourses.length > 0
+                    ? dbCourses
+                    : (semesterCourseAssignments[semKey] || [])
+                  ).slice(0, 3);
                   semAllCourses[semKey].forEach(c => allDefCodes.add(c.code.toUpperCase().replace(/\s/g, '')));
                 }
 
@@ -29123,7 +29156,10 @@ export default function Dashboard() {
                         });
                       }
                     }
-                    return courses.length > 0 ? courses : (semesterCourseAssignments[semKey] || []);
+                    // Hard cap at 3 courses per semester. Bryn only ever takes 3
+                    // courses per term, and a stale 4th was sneaking into the
+                    // GPA average (3.83 instead of 3.78) from older bugs.
+                    return (courses.length > 0 ? courses : (semesterCourseAssignments[semKey] || [])).slice(0, 3);
                   };
 
                   const semesterDefs = semesterMeta.map(m => ({ ...m, courses: buildCoursesFromDb(m.key) }));
@@ -29132,10 +29168,15 @@ export default function Dashboard() {
                   const currentSemKey = getCurrentSemKey(new Date(), '');
                   if (currentSemKey) {
                     const currentSem = semesterDefs.find(s => s.key === currentSemKey);
-                    if (currentSem) {
+                    if (currentSem && currentSem.courses.length < 3) {
+                      // Only ever fill UP to 3 slots. The previous version pushed
+                      // unconditionally, which is what produced phantom 4th courses
+                      // (e.g. ss2026 averaging 4 grades and showing 3.83 instead
+                      // of 3.78).
                       const currentAssigned = semesterCourseAssignments[currentSemKey] || [];
                       const currentAssignedCodes = new Set(currentAssigned.map(c => c.code.replace(/\s/g, '').toUpperCase()));
                       coursesData.courses.filter(c => c.name.trim()).forEach(c => {
+                        if (currentSem.courses.length >= 3) return;
                         const code = c.name.split(' - ')[0]?.trim().toUpperCase().replace(/\s/g, '');
                         const name = c.name.split(' - ').slice(1).join(' - ').trim();
                         if (code && !allDefCodes.has(code) && currentAssignedCodes.has(code)) {
