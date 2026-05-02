@@ -16215,32 +16215,44 @@ export default function Dashboard() {
                                     const readingColor = (c as any).readingBoxColor || c.color || '#a855f7';
                                     const numWeeks = expHealth?.numberOfWeeks || 13;
                                     const weeks = Array.from({ length: numWeeks }, (_, i) => i + 1);
-                                    const cornerDot = (corner: 'tl' | 'tr', ok: boolean, title: string, testId: string) => (
+                                    // Each indicator inside a box is rendered as
+                                    // [dot/toggle] [tiny label] so it's clear at
+                                    // a glance what each thing controls without
+                                    // having to hunt back to the legend.
+                                    const cornerDotWithLabel = (corner: 'tl' | 'tr', ok: boolean, label: string, title: string, testId: string) => (
                                       <span
                                         title={title}
-                                        data-testid={testId}
-                                        style={{ position: 'absolute', top: '2px', [corner === 'tl' ? 'left' : 'right']: '2px', width: '6px', height: '6px', borderRadius: '50%', background: ok ? '#10b981' : '#ef4444', boxShadow: `0 0 4px ${ok ? '#10b981' : '#ef4444'}, 0 0 2px ${ok ? '#10b981' : '#ef4444'}` }}
-                                      />
+                                        style={{ position: 'absolute', top: '2px', [corner === 'tl' ? 'left' : 'right']: '2px', display: 'flex', alignItems: 'center', gap: '2px', flexDirection: corner === 'tl' ? 'row' : 'row-reverse' }}
+                                      >
+                                        <span
+                                          data-testid={testId}
+                                          style={{ width: '6px', height: '6px', borderRadius: '50%', background: ok ? '#10b981' : '#ef4444', boxShadow: `0 0 4px ${ok ? '#10b981' : '#ef4444'}, 0 0 2px ${ok ? '#10b981' : '#ef4444'}`, flexShrink: 0 }}
+                                        />
+                                        <span style={{ fontSize: '7px', fontWeight: 700, color: 'rgba(255,255,255,0.85)', textShadow: '0 1px 1px rgba(0,0,0,0.7)', lineHeight: 1, letterSpacing: '0.3px' }}>{label}</span>
+                                      </span>
                                     );
                                     const toggleSwitch = (counted: boolean, onClick: () => void, testId: string) => (
-                                      <button
-                                        onClick={(e) => { e.stopPropagation(); onClick(); }}
-                                        data-testid={testId}
-                                        title={counted ? 'Counted toward pipeline TTS — click to exclude' : 'Excluded from pipeline TTS — click to include'}
-                                        style={{ position: 'absolute', bottom: '2px', right: '2px', width: '16px', height: '9px', borderRadius: '5px', background: counted ? 'rgba(16,185,129,0.9)' : 'rgba(0,0,0,0.45)', border: '1px solid rgba(0,0,0,0.4)', cursor: 'pointer', padding: 0, transition: 'background 0.15s' }}
-                                      >
-                                        <span style={{ display: 'block', width: '6px', height: '6px', background: 'white', borderRadius: '50%', position: 'absolute', top: '0.5px', left: counted ? '8px' : '1px', transition: 'left 0.15s', boxShadow: '0 1px 1px rgba(0,0,0,0.4)' }} />
-                                      </button>
+                                      <span style={{ position: 'absolute', bottom: '2px', right: '2px', display: 'flex', alignItems: 'center', gap: '2px', flexDirection: 'row-reverse' }}>
+                                        <button
+                                          onClick={(e) => { e.stopPropagation(); onClick(); }}
+                                          data-testid={testId}
+                                          title={counted ? 'Counted toward pipeline TTS — click to exclude' : 'Excluded from pipeline TTS — click to include'}
+                                          style={{ width: '16px', height: '9px', borderRadius: '5px', background: counted ? 'rgba(16,185,129,0.9)' : 'rgba(0,0,0,0.45)', border: '1px solid rgba(0,0,0,0.4)', cursor: 'pointer', padding: 0, position: 'relative', flexShrink: 0, transition: 'background 0.15s' }}
+                                        >
+                                          <span style={{ display: 'block', width: '6px', height: '6px', background: 'white', borderRadius: '50%', position: 'absolute', top: '0.5px', left: counted ? '8px' : '1px', transition: 'left 0.15s', boxShadow: '0 1px 1px rgba(0,0,0,0.4)' }} />
+                                        </button>
+                                        <span style={{ fontSize: '7px', fontWeight: 700, color: 'rgba(255,255,255,0.85)', textShadow: '0 1px 1px rgba(0,0,0,0.7)', lineHeight: 1, letterSpacing: '0.3px' }}>USE</span>
+                                      </span>
                                     );
-                                    const cellBase = { position: 'relative' as const, borderRadius: '4px', padding: '10px 4px 4px', minHeight: '38px', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.25)', border: '1px solid rgba(0,0,0,0.18)' };
+                                    const cellBase = { position: 'relative' as const, borderRadius: '4px', padding: '12px 4px 12px', minHeight: '52px', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.25)', border: '1px solid rgba(0,0,0,0.18)' };
                                     return (
                                       <div style={{ paddingLeft: '18px', paddingRight: '18px' }}>
                                         <div className="flex items-center justify-between mb-3">
                                           <div className="text-[13px] font-semibold text-white uppercase tracking-wider">Weekly Content Status</div>
                                           <div className="flex items-center gap-3 text-[9px] text-white/60">
-                                            <span className="flex items-center gap-1"><span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 4px #10b981' }} /> top-left = TTS audio ready</span>
-                                            <span className="flex items-center gap-1"><span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 4px #10b981' }} /> top-right = file synced</span>
-                                            <span className="flex items-center gap-1"><span style={{ width: '14px', height: '8px', borderRadius: '4px', background: 'rgba(16,185,129,0.9)', border: '1px solid rgba(0,0,0,0.4)' }} /> bottom-right = count toward TTS</span>
+                                            <span className="flex items-center gap-1"><span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 4px #10b981' }} /> <b>TTS</b> = audio narration ready</span>
+                                            <span className="flex items-center gap-1"><span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 4px #10b981' }} /> <b>FILE</b> = OneDrive has a file</span>
+                                            <span className="flex items-center gap-1"><span style={{ width: '14px', height: '8px', borderRadius: '4px', background: 'rgba(16,185,129,0.9)', border: '1px solid rgba(0,0,0,0.4)' }} /> <b>USE</b> = count toward pipeline TTS</span>
                                           </div>
                                         </div>
                                         <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${numWeeks}, 1fr)` }}>
@@ -16266,9 +16278,9 @@ export default function Dashboard() {
                                                   title={!mCounted ? 'Module excluded from TTS — toggle on to count' : `Module W${w}: ${mFileOk ? `${mCount} file${mCount === 1 ? '' : 's'}` : 'no file'} • TTS ${mTts}/${mCount}`}
                                                   data-testid={`week-module-${c.code}-${w}`}
                                                 >
-                                                  {mCounted && cornerDot('tl', mTtsOk, `TTS audio ${mTtsOk ? 'ready' : `${mTts}/${mCount}`}`, `dot-tts-module-${c.code}-${w}`)}
-                                                  {mCounted && cornerDot('tr', mFileOk, mFileOk ? `${mCount} file${mCount === 1 ? '' : 's'} synced` : 'no file in OneDrive', `dot-file-module-${c.code}-${w}`)}
-                                                  <div className="text-[8px] font-bold text-white text-center" style={{ textShadow: '0 1px 1px rgba(0,0,0,0.7)', lineHeight: 1 }}>M</div>
+                                                  {mCounted && cornerDotWithLabel('tl', mTtsOk, 'TTS', `TTS audio ${mTtsOk ? 'ready' : `${mTts}/${mCount}`}`, `dot-tts-module-${c.code}-${w}`)}
+                                                  {mCounted && cornerDotWithLabel('tr', mFileOk, 'FILE', mFileOk ? `${mCount} file${mCount === 1 ? '' : 's'} synced` : 'no file in OneDrive', `dot-file-module-${c.code}-${w}`)}
+                                                  <div className="text-[9px] font-bold text-white text-center" style={{ textShadow: '0 1px 1px rgba(0,0,0,0.7)', lineHeight: 1, marginTop: '2px' }}>Module</div>
                                                   {toggleSwitch(mCounted, () => setTtsCounted(c.code, w, 'module', !mCounted), `toggle-tts-module-${c.code}-${w}`)}
                                                 </div>
                                                 <div
@@ -16276,9 +16288,9 @@ export default function Dashboard() {
                                                   title={!rCounted ? (rExempt ? 'Reading not expected this week — excluded from TTS' : 'Reading excluded from TTS — toggle on to count') : `Reading W${w}: ${rFileOk ? `${rCount} file${rCount === 1 ? '' : 's'}` : 'no file'} • TTS ${rTts}/${rCount}`}
                                                   data-testid={`week-reading-${c.code}-${w}`}
                                                 >
-                                                  {rCounted && cornerDot('tl', rTtsOk, `TTS audio ${rTtsOk ? 'ready' : `${rTts}/${rCount}`}`, `dot-tts-reading-${c.code}-${w}`)}
-                                                  {rCounted && cornerDot('tr', rFileOk, rFileOk ? `${rCount} file${rCount === 1 ? '' : 's'} synced` : 'no file in OneDrive', `dot-file-reading-${c.code}-${w}`)}
-                                                  <div className="text-[8px] font-bold text-white text-center" style={{ textShadow: '0 1px 1px rgba(0,0,0,0.7)', lineHeight: 1 }}>R{rExempt ? '*' : ''}</div>
+                                                  {rCounted && cornerDotWithLabel('tl', rTtsOk, 'TTS', `TTS audio ${rTtsOk ? 'ready' : `${rTts}/${rCount}`}`, `dot-tts-reading-${c.code}-${w}`)}
+                                                  {rCounted && cornerDotWithLabel('tr', rFileOk, 'FILE', rFileOk ? `${rCount} file${rCount === 1 ? '' : 's'} synced` : 'no file in OneDrive', `dot-file-reading-${c.code}-${w}`)}
+                                                  <div className="text-[9px] font-bold text-white text-center" style={{ textShadow: '0 1px 1px rgba(0,0,0,0.7)', lineHeight: 1, marginTop: '2px' }}>Reading{rExempt ? '*' : ''}</div>
                                                   {toggleSwitch(rCounted, () => setTtsCounted(c.code, w, 'reading', !rCounted), `toggle-tts-reading-${c.code}-${w}`)}
                                                 </div>
                                               </div>

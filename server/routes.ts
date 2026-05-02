@@ -4374,16 +4374,15 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
           readingWeeks[w] = { count: 0, ttsReady: 0 };
         }
 
-        // If this semester hasn't started yet, do not count any synced files
-        // toward this course. Stale records from prior terms (same course code)
-        // would otherwise inflate the Library tile (e.g. "12 files" before the
-        // course has even begun). The folders themselves still report linked/
-        // missing as normal — this only zeros out the file totals.
-        const semStartTs = matchedSem?.semesterStartDate ? new Date(matchedSem.semesterStartDate as any).getTime() : 0;
-        const semHasStarted = !semStartTs || semStartTs <= Date.now();
-
+        // Previously we zeroed out file counts for any semester that hadn't
+        // started yet, to avoid stale prior-term records inflating the
+        // Library tile. That suppression is wrong: Bryn often pre-loads the
+        // module/reading folders in the days before a term begins (e.g. she
+        // dropped CECN W1 reading on May 2 for a May 4 start) and the WCS
+        // boxes need to reflect that immediately. Count files for any active
+        // or upcoming semester; week-N folders are uniquely scoped per term
+        // so cross-term bleed is not actually a concern here.
         for (const file of allFiles) {
-          if (!semHasStarted) break;
           if (!file.folder) continue;
           const fl = file.folder.toLowerCase();
           const weekMatch = fl.match(/^week-(\d+)-(.+?)-(module|reading)$/i);
