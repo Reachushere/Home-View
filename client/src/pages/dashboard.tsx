@@ -36161,7 +36161,7 @@ export default function Dashboard() {
                             })();
                             
                             const conflictExtra = getConflictExtraHeight(hour);
-                            const stackInConflict = conflictExtra > 0 || calEventConflict;
+                            const stackInConflict = conflictExtra > 0 || calEventConflict || totalItems > 1;
                             let taskHeight = stackInConflict ? 28 : rowHeight - 4;
                             let topOffset = 2;
                             
@@ -36360,7 +36360,7 @@ export default function Dashboard() {
                           }).map((event, eventIdx) => {
                             const eventMin = getETMinutes(new Date(event.startDate));
                             const conflictExtra = getConflictExtraHeight(hour);
-                            const stackInConflict = conflictExtra > 0 || calEventConflict;
+                            const stackInConflict = conflictExtra > 0 || calEventConflict || totalItems > 1;
                             const isMultiHourEvent = event.endDate && getETHours(new Date(event.endDate)) > getETHours(new Date(event.startDate)) + 1;
                             const stackedTaskCount = stackInConflict ? hourTasks.filter(task => {
                               if (task.eventStartTime && task.eventEndTime) {
