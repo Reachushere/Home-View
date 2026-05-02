@@ -15965,7 +15965,79 @@ export default function Dashboard() {
                                                               <td className="px-3 py-2 font-medium" style={{ borderBottom: isLast ? 'none' : '1px solid rgba(0,0,0,0.08)', color: '#000000', whiteSpace: 'nowrap', width: '120px', minWidth: '120px' }}>{row.label}</td>
                                                               <td className="font-mono text-[11px]" style={{ borderBottom: isLast ? 'none' : '1px solid rgba(0,0,0,0.08)', color: '#000000', textAlign: 'left', width: '100%', paddingLeft: '24px', paddingRight: '12px', paddingTop: '8px', paddingBottom: '8px' }}>
                                                                 <span className="inline-flex items-center gap-2" style={{ textAlign: 'left' }}>
-                                                                  <span>{row.path}</span>
+                                                                  {(() => {
+                                                                    // Determine if this row is a clickable path/file/folder.
+                                                                    // OneDrive cloud rows → resolve webUrl and open in new tab.
+                                                                    // Syllabus Linked → open via /api/syllabus/view (local) or webUrl.
+                                                                    // Library Shelf → switch to Library page.
+                                                                    // Synced Course Files / Audio Narration / etc → not clickable.
+                                                                    const isCloud = section.key === 'cloud';
+                                                                    const isSyllabusFile = row.issueKey === 'syllabus';
+                                                                    const isLibraryShelf = row.issueKey === 'library';
+                                                                    const clickable = isCloud || isSyllabusFile || isLibraryShelf;
+                                                                    if (!clickable) {
+                                                                      return <span>{row.path}</span>;
+                                                                    }
+                                                                    return (
+                                                                      <span
+                                                                        className="hover:underline cursor-pointer"
+                                                                        style={{ color: section.accent, textDecorationColor: section.accent }}
+                                                                        title="Click to open"
+                                                                        data-testid={`open-path-${c.code}-${row.issueKey}`}
+                                                                        onClick={async (e) => {
+                                                                          e.stopPropagation();
+                                                                          try {
+                                                                            if (isLibraryShelf) {
+                                                                              // Library pulls from the course's OneDrive folder.
+                                                                              const odPath = getOneDrivePath(c.code);
+                                                                              const r = await fetch(`/api/onedrive/word-online-url?path=${encodeURIComponent(odPath)}`, { credentials: 'include' });
+                                                                              if (!r.ok) { toast({ title: 'Cannot open library folder', description: `OneDrive returned ${r.status}.`, variant: 'destructive' }); return; }
+                                                                              const j = await r.json();
+                                                                              if (j.webUrl) window.open(j.webUrl, '_blank');
+                                                                              return;
+                                                                            }
+                                                                            if (isCloud) {
+                                                                              // Strip /Week {n}/... placeholders down to a real folder.
+                                                                              let openPath = row.path.replace(/\/Week\s*\{n\}.*$/i, '');
+                                                                              // Drop trailing slash for the Graph API.
+                                                                              openPath = openPath.replace(/\/+$/, '');
+                                                                              const r = await fetch(`/api/onedrive/word-online-url?path=${encodeURIComponent(openPath)}`, { credentials: 'include' });
+                                                                              if (!r.ok) {
+                                                                                toast({ title: 'Cannot open folder', description: `OneDrive returned ${r.status}. Folder may not exist yet.`, variant: 'destructive' });
+                                                                                return;
+                                                                              }
+                                                                              const j = await r.json();
+                                                                              if (j.webUrl) window.open(j.webUrl, '_blank');
+                                                                              else toast({ title: 'No web URL', description: 'OneDrive did not return a link.', variant: 'destructive' });
+                                                                              return;
+                                                                            }
+                                                                            if (isSyllabusFile) {
+                                                                              const p = row.path;
+                                                                              if (p.startsWith('/School/') || p.startsWith('School/')) {
+                                                                                // Treat as OneDrive path.
+                                                                                const odPath = p.startsWith('/') ? p : `/${p}`;
+                                                                                const r = await fetch(`/api/onedrive/word-online-url?path=${encodeURIComponent(odPath.replace(/\/+$/, ''))}`, { credentials: 'include' });
+                                                                                if (!r.ok) {
+                                                                                  toast({ title: 'Cannot open syllabus', description: `OneDrive returned ${r.status}.`, variant: 'destructive' });
+                                                                                  return;
+                                                                                }
+                                                                                const j = await r.json();
+                                                                                if (j.webUrl) window.open(j.webUrl, '_blank');
+                                                                                return;
+                                                                              }
+                                                                              // Local/object-storage path → stream the PDF.
+                                                                              window.open(`/api/syllabus/view?path=${encodeURIComponent(p)}`, '_blank');
+                                                                              return;
+                                                                            }
+                                                                          } catch (err: any) {
+                                                                            toast({ title: 'Failed to open', description: String(err?.message || err), variant: 'destructive' });
+                                                                          }
+                                                                        }}
+                                                                      >
+                                                                        {row.path}
+                                                                      </span>
+                                                                    );
+                                                                  })()}
                                                                   <Pencil className="w-3 h-3 text-black/40 hover:text-black/80 cursor-pointer flex-shrink-0 transition-colors" onClick={(e) => { e.stopPropagation(); setSemFlowWizard({ courseCode: c.code, issue: row.issueKey, step: 0, phase: 'primary' }); }} />
                                                                 </span>
                                                               </td>
