@@ -29292,12 +29292,13 @@ export default function Dashboard() {
                               }
                             }
                           }
-                          // Row badge shows the course's PERCENT (from assignment
-                          // totals when entered as a percent, else the
-                          // letter→percent fallback). Semester header GPA is
-                          // computed elsewhere by averaging each row's
-                          // letter-bucketed GPA.
+                          // Row badge shows the course's GPA. GPA is derived
+                          // from the course's percent via letter buckets:
+                          //   pct -> letter (A=85-89, A-=80-84, ...) -> GPA.
+                          // The semester header GPA is the simple average of
+                          // each row's GPA value (computed with this same rule).
                           const letterToPct: Record<string, number> = { 'A+': 92, 'A': 87, 'A-': 82, 'B+': 78, 'B': 75, 'B-': 72, 'C+': 68, 'C': 65, 'C-': 62, 'D': 55, 'F': 40 };
+                          const pctToLetter = (p: number) => p >= 90 ? 'A+' : p >= 85 ? 'A' : p >= 80 ? 'A-' : p >= 77 ? 'B+' : p >= 73 ? 'B' : p >= 70 ? 'B-' : p >= 67 ? 'C+' : p >= 63 ? 'C' : p >= 60 ? 'C-' : p >= 50 ? 'D' : 'F';
                           let pct: number | null = null;
                           if (cg?.percent && cg.percent.trim()) { const p = parseFloat(cg.percent); if (!isNaN(p)) pct = p; }
                           else if (cg?.grade && cg.grade.trim() && letterToPct[cg.grade] !== undefined) pct = letterToPct[cg.grade];
@@ -29305,15 +29306,16 @@ export default function Dashboard() {
                           else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const p = parseFloat(electiveGrade.percent); if (!isNaN(p)) pct = p; }
                           else if (electiveGrade?.grade && electiveGrade.grade.trim() && letterToPct[electiveGrade.grade] !== undefined) pct = letterToPct[electiveGrade.grade];
                           if (pct === null) return null;
-                          const pctStr = Number.isInteger(pct) ? pct.toString() : pct.toFixed(1);
+                          const rowLetter = pctToLetter(pct);
+                          const rowGpa = letterToGpa[rowLetter] ?? 0;
                           return (
                             <span
                               className="font-bold flex-shrink-0"
                               style={{ color: '#ffffff', background: 'rgba(80,130,210,0.45)', border: '1px solid rgba(170,210,255,0.5)', borderRadius: '4px', fontSize: '9px', padding: '0 5px', lineHeight: '14px', whiteSpace: 'nowrap', marginLeft: '4px', marginRight: '4px' }}
-                              data-testid={`course-pct-${semCourse.code}`}
-                              title="Course percent"
+                              data-testid={`course-gpa-${semCourse.code}`}
+                              title={`Course GPA (${pct.toFixed(1)}% = ${rowLetter})`}
                             >
-                              {pctStr}%
+                              {rowGpa.toFixed(2)}
                             </span>
                           );
                         })()}
@@ -29651,22 +29653,28 @@ export default function Dashboard() {
                                           }
                                         }
                                       }
-                                      if (cg?.percent && cg.percent.trim()) { const p = parseFloat(cg.percent); const letter = percentToGrade(cg.percent); if (!isNaN(p) && letter && letterToGpa[letter] !== undefined) { gpaVals.push(letterToGpa[letter]); pctVals.push(p); } }
-                                      else if (cg?.grade && cg.grade.trim() && letterToGpa[cg.grade] !== undefined) { gpaVals.push(letterToGpa[cg.grade]); pctVals.push(letterToPct[cg.grade]); }
-                                      else if (info?.grade && info.grade.trim() && letterToGpa[info.grade] !== undefined) { gpaVals.push(letterToGpa[info.grade]); pctVals.push(letterToPct[info.grade]); }
-                                      else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const p = parseFloat(electiveGrade.percent); const letter = percentToGrade(electiveGrade.percent); if (!isNaN(p) && letter && letterToGpa[letter] !== undefined) { gpaVals.push(letterToGpa[letter]); pctVals.push(p); } }
-                                      else if (electiveGrade?.grade && electiveGrade.grade.trim() && letterToGpa[electiveGrade.grade] !== undefined) { gpaVals.push(letterToGpa[electiveGrade.grade]); pctVals.push(letterToPct[electiveGrade.grade]); }
+                                      // Use the SAME pct→letter→GPA rule as the
+                                      // course row badge, so the header GPA is
+                                      // the simple average of the row GPAs.
+                                      const pctToLetterHdr = (p: number) => p >= 90 ? 'A+' : p >= 85 ? 'A' : p >= 80 ? 'A-' : p >= 77 ? 'B+' : p >= 73 ? 'B' : p >= 70 ? 'B-' : p >= 67 ? 'C+' : p >= 63 ? 'C' : p >= 60 ? 'C-' : p >= 50 ? 'D' : 'F';
+                                      let pHdr: number | null = null;
+                                      if (cg?.percent && cg.percent.trim()) { const p = parseFloat(cg.percent); if (!isNaN(p)) pHdr = p; }
+                                      else if (cg?.grade && cg.grade.trim() && letterToPct[cg.grade] !== undefined) pHdr = letterToPct[cg.grade];
+                                      else if (info?.grade && info.grade.trim() && letterToPct[info.grade] !== undefined) pHdr = letterToPct[info.grade];
+                                      else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const p = parseFloat(electiveGrade.percent); if (!isNaN(p)) pHdr = p; }
+                                      else if (electiveGrade?.grade && electiveGrade.grade.trim() && letterToPct[electiveGrade.grade] !== undefined) pHdr = letterToPct[electiveGrade.grade];
+                                      if (pHdr !== null) {
+                                        const lHdr = pctToLetterHdr(pHdr);
+                                        const gHdr = letterToGpa[lHdr];
+                                        if (gHdr !== undefined) { gpaVals.push(gHdr); pctVals.push(pHdr); }
+                                      }
                                     }
                                     if (gpaVals.length === 0) return null;
                                     const avgGpa = gpaVals.reduce((a, b) => a + b, 0) / gpaVals.length;
                                     const avgPct = pctVals.reduce((a, b) => a + b, 0) / pctVals.length;
-                                    // Letter must come from the AVERAGE PERCENT, not the average
-                                    // GPA. The rubric maps percent→letter (A=85-89%, A-=80-84%,
-                                    // etc), and averaging GPAs and then bucketing by GPA bands
-                                    // can pick a different letter than averaging percents and
-                                    // bucketing by percent bands. Example: 85.2% is A per rubric
-                                    // but 3.83 (its averaged-GPA equivalent) falls in A- (3.67+).
-                                    const gpaLetter = avgPct >= 90 ? 'A+' : avgPct >= 85 ? 'A' : avgPct >= 80 ? 'A-' : avgPct >= 77 ? 'B+' : avgPct >= 73 ? 'B' : avgPct >= 70 ? 'B-' : avgPct >= 67 ? 'C+' : avgPct >= 63 ? 'C' : avgPct >= 60 ? 'C-' : avgPct >= 57 ? 'D+' : avgPct >= 53 ? 'D' : avgPct >= 50 ? 'D-' : 'F';
+                                    // Letter is bucketed from the average GPA so it always
+                                    // matches the displayed GPA value (3.78 -> A-, 4.0 -> A, etc).
+                                    const gpaLetter = avgGpa >= 4.33 ? 'A+' : avgGpa >= 4.0 ? 'A' : avgGpa >= 3.67 ? 'A-' : avgGpa >= 3.33 ? 'B+' : avgGpa >= 3.0 ? 'B' : avgGpa >= 2.67 ? 'B-' : avgGpa >= 2.33 ? 'C+' : avgGpa >= 2.0 ? 'C' : avgGpa >= 1.67 ? 'C-' : avgGpa >= 1.0 ? 'D' : 'F';
                                     return (
                                       <span
                                         className="font-bold tracking-wider uppercase rounded border flex-shrink"
