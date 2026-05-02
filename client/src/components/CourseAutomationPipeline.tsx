@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Pencil, Folder, FileText, BookOpen, Volume2, Calendar, Cloud, RefreshCw, AlertCircle, CheckCircle2, Loader2, ExternalLink } from 'lucide-react';
+import { Pencil, Folder, FileText, BookOpen, Volume2, Calendar, Cloud, RefreshCw, AlertCircle, CheckCircle2, Loader2, ExternalLink, Library, Settings } from 'lucide-react';
 
 type Status = 'ok' | 'warning' | 'error' | 'pending';
 
@@ -207,6 +207,10 @@ interface CourseAutomationPipelineProps {
   // 1..numberOfWeeks. Phil-style half-term courses pass e.g. 1..7.
   firstWeek?: number;
   lastWeek?: number;
+  // Per-course colors used for the Module / Reading calendar boxes so they
+  // visually match the actual calendar page.
+  moduleBoxColor?: string;
+  readingBoxColor?: string;
   onOpenWizard: (issueKey: string, opts?: { weekNum?: number; uploadType?: 'module' | 'reading' }) => void;
   onOpenCourseDetails: () => void;
   onCourseFolderRenamed?: () => void;
@@ -219,11 +223,19 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
     course, courseHealth, semesterId, courseSlot, oneDrivePath, displayName,
     moduleFolder, readingFolder, numberOfWeeks,
     firstWeek: propFirstWeek, lastWeek: propLastWeek,
+    moduleBoxColor, readingBoxColor,
     onOpenWizard, onOpenCourseDetails,
     onCourseFolderRenamed, onModuleFolderRenamed, onReadingFolderRenamed,
   } = props;
   const firstWeek = Math.max(1, propFirstWeek ?? 1);
   const lastWeek = Math.max(firstWeek, Math.min(numberOfWeeks, propLastWeek ?? numberOfWeeks));
+
+  // Actual OneDrive folder name (e.g. "CPHL110 - Philosophy of Religion").
+  // Falls back to the course's fullName/code if the health probe didn't
+  // surface a matched folder yet.
+  const odFolderName: string = courseHealth?.folderName || course.fullName || course.name || course.code;
+  const modColor = moduleBoxColor || course.color || '#3b82f6';
+  const readColor = readingBoxColor || course.color || '#a855f7';
 
   // ────────── Derived statuses (mirrors original auto-resolution logic) ──────────
   const odLinked = !!courseHealth?.oneDriveFolderConfigured;
@@ -371,14 +383,14 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
         <SectionLabel>OneDrive</SectionLabel>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <NodeBox
-            label="Course Folder"
+            label={odFolderName}
             sublabel={oneDrivePath}
             Icon={Folder}
             status={courseFolderStatus}
             pencil
-            pencilTitle="Rename course folder in OneDrive"
-            pencilInitialValue={course.fullName || course.name || ''}
-            pencilPlaceholder="e.g. CPPA122 - Politics"
+            pencilTitle="Rename this OneDrive folder (renames live; two-way sync)"
+            pencilInitialValue={odFolderName}
+            pencilPlaceholder="e.g. CPHL110 - Philosophy of Religion"
             onPencilSubmit={renameCourseFolder}
             onClick={() => onOpenWizard('onedrive')}
             width={260}
@@ -388,8 +400,14 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
 
         <FlowLine
           status={worst(courseFolderStatus, editDetailsStatus)}
-          onClick={() => onOpenWizard('onedrive')}
-          title="Course folder → details linkage"
+          onClick={() => onOpenWizard(courseFolderStatus !== 'ok' ? 'onedrive' : 'sync')}
+          title={
+            courseFolderStatus !== 'ok'
+              ? 'Why orange/red: OneDrive folder for this course is not linked. Click to fix.'
+              : editDetailsStatus !== 'ok'
+                ? 'Why orange: course full name or display name is missing. Click to fix.'
+                : 'Course folder → details linkage'
+          }
           testId={`pipeline-line-folder-details-${course.code.toLowerCase()}`}
         />
 
@@ -397,12 +415,12 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
         <SectionLabel>Course Metadata</SectionLabel>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <NodeBox
-            label="Edit Course Details"
-            sublabel="Name, professor, color, ranks"
-            Icon={ExternalLink}
+            label="Course Details"
+            sublabel={`${course.code}  ·  ${course.fullName || course.name || '—'}  ·  ${displayName || '—'}`}
+            Icon={Settings}
             status={editDetailsStatus}
             onClick={onOpenCourseDetails}
-            width={260}
+            width={300}
             testId={`pipeline-edit-details-${course.code.toLowerCase()}`}
           />
         </div>
@@ -410,7 +428,11 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
         <FlowLine
           status={displayNameStatus}
           onClick={onOpenCourseDetails}
-          title="Display name flows into the calendar row label"
+          title={
+            displayNameStatus !== 'ok'
+              ? 'Why orange: display name is empty, so the calendar row will use the raw course code. Click to set it.'
+              : 'Display name flows into the calendar row label'
+          }
           testId={`pipeline-line-details-row-${course.code.toLowerCase()}`}
         />
 
@@ -457,7 +479,7 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
           <NodeBox
             label="Reading Folder"
             sublabel={readingFolder || `${oneDrivePath}/Week N/Reading/`}
-            Icon={BookOpen}
+            Icon={Folder}
             status={readingFolderStatus}
             pencil
             pencilTitle="Update OneDrive path for weekly reading folders"
@@ -502,26 +524,28 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
         </div>
 
         {/* ════════ SECTION: CALENDAR BOXES ════════ */}
+        {/* Mirror the actual calendar page: solid course-Module / Reading
+            color, soft inner highlight + outer shadow, FILE-style label. */}
         <SectionLabel>Calendar Boxes</SectionLabel>
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, padding: '0 6%' }}>
           <NodeBox
             label="Calendar Module Box"
-            sublabel={`${totalMod} module file${totalMod === 1 ? '' : 's'} indexed`}
+            sublabel={`${totalMod} module file${totalMod === 1 ? '' : 's'} on calendar`}
             Icon={FileText}
             status={calModuleStatus}
             onClick={() => onOpenWizard('library')}
             width={210}
-            background="linear-gradient(135deg, #3b82f633 0%, #1e3a8a22 100%)"
+            background={`linear-gradient(180deg, ${modColor} 0%, ${modColor}cc 100%)`}
             testId={`pipeline-calendar-module-${course.code.toLowerCase()}`}
           />
           <NodeBox
             label="Calendar Reading Box"
-            sublabel={`${totalRead} reading file${totalRead === 1 ? '' : 's'} indexed`}
+            sublabel={`${totalRead} reading file${totalRead === 1 ? '' : 's'} on calendar`}
             Icon={BookOpen}
             status={calReadingStatus}
             onClick={() => onOpenWizard('library')}
             width={210}
-            background="linear-gradient(135deg, #a855f733 0%, #581c8722 100%)"
+            background={`linear-gradient(180deg, ${readColor} 0%, ${readColor}cc 100%)`}
             testId={`pipeline-calendar-reading-${course.code.toLowerCase()}`}
           />
         </div>
@@ -534,16 +558,16 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
           <div style={{ position: 'absolute', left: '50%', top: 12, width: 2, height: 10, background: STATUS_COLOR[libraryStatus], boxShadow: `0 0 6px ${STATUS_GLOW[libraryStatus]}`, transform: 'translateX(-1px)' }} />
         </div>
 
-        {/* ════════ SECTION: FILE LIBRARY ════════ */}
-        <SectionLabel>File Library</SectionLabel>
+        {/* ════════ SECTION: LIBRARY ════════ */}
+        <SectionLabel>Library</SectionLabel>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <NodeBox
-            label="File Library"
+            label="Library"
             sublabel={`${totalMod + totalRead} file${(totalMod + totalRead) === 1 ? '' : 's'} catalogued for course`}
-            Icon={FileText}
+            Icon={Library}
             status={libraryStatus}
             onClick={() => onOpenWizard('library')}
-            width={260}
+            width={180}
             background="linear-gradient(135deg, #6366f133 0%, #312e8122 100%)"
             testId={`pipeline-library-${course.code.toLowerCase()}`}
           />
@@ -562,7 +586,8 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
           <div
             onClick={(e) => { e.stopPropagation(); onOpenWizard('tts'); }}
             style={{
-              width: '96%',
+              width: '92%',
+              margin: '0 auto',
               padding: '8px 10px',
               borderRadius: 10,
               background: 'linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.25) 100%)',
