@@ -21345,7 +21345,7 @@ document.body.removeChild(a);
           if (!s.semesterStartDate) return false;
           const sStartStr = easternDateStr(new Date(s.semesterStartDate));
           const sEndStr = s.semesterEndDate ? easternDateStr(new Date(s.semesterEndDate)) : null;
-          const bufferStartStr = addDaysStr(sStartStr, -7);
+          const bufferStartStr = addDaysStr(sStartStr, -4);
           return todayTorontoStr >= bufferStartStr && (!sEndStr || todayTorontoStr <= sEndStr);
         });
         if (matchingSem) {
@@ -21362,6 +21362,14 @@ document.body.removeChild(a);
       const semStart = semesterSettings?.semesterStartDate ? new Date(semesterSettings.semesterStartDate) : new Date("2026-01-12T00:00:00");
       const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
       currentWeekNumber = getWeekNumber(today, semStart, rwStart);
+      if (currentWeekNumber < 1) {
+        const semStartStr = easternDateStr(semStart);
+        const todayStrSb = easternDateStr(today);
+        if (todayStrSb < semStartStr) {
+          console.log(`[Shower Button] Pre-semester buffer active (today ${todayStrSb} < semStart ${semStartStr}) — clamping weekNumber to 1`);
+          currentWeekNumber = 1;
+        }
+      }
 
       const allFilesBefore = await storage.getFiles();
       let nextFile = await findNextFileByPriority(allFilesBefore, currentWeekNumber);
@@ -21714,7 +21722,7 @@ document.body.removeChild(a);
               if (!s.semesterStartDate) return false;
               const sStartStr = easternDateStr(new Date(s.semesterStartDate));
               const sEndStr = s.semesterEndDate ? easternDateStr(new Date(s.semesterEndDate)) : null;
-              const bufferStartStr = addDaysStr(sStartStr, -7);
+              const bufferStartStr = addDaysStr(sStartStr, -4);
               return breakTodayStr >= bufferStartStr && (!sEndStr || breakTodayStr <= sEndStr);
             });
             if (matchingSem) {
@@ -21828,6 +21836,14 @@ document.body.removeChild(a);
       const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
       currentWeekNumber = getWeekNumber(today, semStart, rwStart);
       console.log(`[Cat Lights][TRACE] Step 3b: weekNumber=${currentWeekNumber}`);
+      if (currentWeekNumber < 1) {
+        const semStartStrCl = easternDateStr(semStart);
+        const todayStrCl = easternDateStr(today);
+        if (todayStrCl < semStartStrCl) {
+          console.log(`[Cat Lights] Pre-semester buffer active (today ${todayStrCl} < semStart ${semStartStrCl}) — clamping weekNumber to 1`);
+          currentWeekNumber = 1;
+        }
+      }
 
       console.log(`[Cat Lights][TRACE] Step 4: Getting cached files`);
       const allFilesBefore = await storage.getFiles();
