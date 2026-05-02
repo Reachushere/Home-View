@@ -207,7 +207,17 @@ function FlowLine({ status, onClick, title, height = 14, testId }: FlowLineProps
 }
 
 interface CourseAutomationPipelineProps {
-  course: { code: string; name?: string; fullName?: string; color?: string };
+  course: {
+    code: string;
+    name?: string;
+    fullName?: string;
+    color?: string;
+    // Used to mirror the actual calendar row label cell's gradient on
+    // the pipeline's "Calendar Row" NodeBox.
+    colorEnd?: string;
+    colorStops?: string;
+    courseFontColor?: string;
+  };
   courseHealth: any;
   expandedSemKey: string;
   semesterId?: string;
@@ -454,19 +464,43 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
           testId={`pipeline-line-details-row-${course.code.toLowerCase()}`}
         />
 
-        {/* ════════ SECTION: CALENDAR HEADER ════════ */}
+        {/* ════════ SECTION: CALENDAR HEADER ════════
+            Background mirrors the gradient that the actual calendar row's
+            label cell paints itself with — start color → optional mid stops
+            → end color, all vertical. This way the pipeline's Calendar Row
+            box is a literal preview of the course's header on the grid. */}
         <SectionLabel>Calendar Header Row</SectionLabel>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <NodeBox
-            label={`Calendar Row: ${displayName || course.code}`}
-            sublabel="Header label on every weekly calendar row"
-            Icon={Calendar}
-            status={displayNameStatus}
-            onClick={onOpenCourseDetails}
-            width={300}
-            background={`linear-gradient(180deg, ${course.color || '#3b82f6'}33 0%, ${course.color || '#3b82f6'}11 100%)`}
-            testId={`pipeline-calendar-row-${course.code.toLowerCase()}`}
-          />
+          {(() => {
+            const startColor = course.color || '#3b82f6';
+            const endColor = course.colorEnd || course.color || '#3b82f6';
+            let labelGradient = `linear-gradient(180deg, ${startColor} 0%, ${endColor} 100%)`;
+            if (course.colorStops) {
+              try {
+                const stops: Array<{ position: number; color: string }> = JSON.parse(course.colorStops);
+                if (Array.isArray(stops) && stops.length > 0) {
+                  const allParts = [
+                    `${startColor} 0%`,
+                    ...stops.map(s => `${s.color} ${s.position}%`),
+                    `${endColor} 100%`,
+                  ];
+                  labelGradient = `linear-gradient(180deg, ${allParts.join(', ')})`;
+                }
+              } catch { /* fall through to two-stop gradient */ }
+            }
+            return (
+              <NodeBox
+                label={`Calendar Row: ${displayName || course.code}`}
+                sublabel="Header label on every weekly calendar row"
+                Icon={Calendar}
+                status={displayNameStatus}
+                onClick={onOpenCourseDetails}
+                width={300}
+                background={labelGradient}
+                testId={`pipeline-calendar-row-${course.code.toLowerCase()}`}
+              />
+            );
+          })()}
         </div>
 
         {/* ════════ SECTION: WEEKLY CONTENT FOLDERS ════════
