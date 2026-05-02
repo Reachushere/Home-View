@@ -7397,9 +7397,11 @@ export default function Dashboard() {
       moduleFolder = (sem as any)[`${prefix}ModuleFolder`] || '';
       readingFolder = (sem as any)[`${prefix}ReadingFolder`] || '';
       displayName = (sem as any)[`${prefix}DisplayName`] || '';
-      color = (sem as any)[`${prefix}Color`] || color || '';
-      colorEnd = (sem as any)[`${prefix}ColorEnd`] || colorEnd || '';
-      colorStops = (sem as any)[`${prefix}ColorStops`] || colorStops || '';
+      // Single source of truth: coursesData (matched in dialog) is authoritative.
+      // Fall back to per-semester slot colour only when coursesData is blank.
+      color = color || (sem as any)[`${prefix}Color`] || '';
+      colorEnd = colorEnd || (sem as any)[`${prefix}ColorEnd`] || '';
+      colorStops = colorStops || (sem as any)[`${prefix}ColorStops`] || '';
       // Fallback to the same per-semester default palette the calendar uses
       // so the gradient selector in the edit dialog opens with the colours
       // already shown on the course row (instead of generic gray).
@@ -7434,12 +7436,12 @@ export default function Dashboard() {
         if (!color) color = pair.start;
         if (!colorEnd) colorEnd = pair.end;
       }
-      borderColor = (sem as any)[`${prefix}BorderColor`] || borderColor || '';
-      courseRowColor = (sem as any)[`${prefix}CourseRowColor`] || courseRowColor || '';
-      taskBgColor = (sem as any)[`${prefix}TaskBgColor`] || taskBgColor || '';
-      courseFontColor = (sem as any)[`${prefix}CourseFontColor`] || courseFontColor || '';
-      moduleBoxColor = (sem as any)[`${prefix}ModuleBoxColor`] || moduleBoxColor || '';
-      readingBoxColor = (sem as any)[`${prefix}ReadingBoxColor`] || readingBoxColor || '';
+      borderColor = borderColor || (sem as any)[`${prefix}BorderColor`] || '';
+      courseRowColor = courseRowColor || (sem as any)[`${prefix}CourseRowColor`] || '';
+      taskBgColor = taskBgColor || (sem as any)[`${prefix}TaskBgColor`] || '';
+      courseFontColor = courseFontColor || (sem as any)[`${prefix}CourseFontColor`] || '';
+      moduleBoxColor = moduleBoxColor || (sem as any)[`${prefix}ModuleBoxColor`] || '';
+      readingBoxColor = readingBoxColor || (sem as any)[`${prefix}ReadingBoxColor`] || '';
       if (!professor) professor = (sem as any)[`${prefix}Professor`] || '';
       if (!professorEmail) professorEmail = (sem as any)[`${prefix}ProfessorEmail`] || '';
       const semType = (sem as any).semesterType || '';
@@ -33742,15 +33744,15 @@ export default function Dashboard() {
                     const semDisplayName = semPrefix && semSettings ? (semSettings as any)[`${semPrefix}DisplayName`] : '';
                     allDisplayCourses.push({
                       name: fullName ? `${displayCode} - ${fullName}` : displayCode,
-                      color: semColor || matchedCourse?.color || defaultPair.start,
-                      colorEnd: semColorEnd || matchedCourse?.colorEnd || defaultPair.end,
-                      colorStops: semColorStops || matchedCourse?.colorStops || '',
-                      borderColor: semBorderColor || matchedCourse?.borderColor || '',
-                      courseRowColor: semCourseRowColor || matchedCourse?.courseRowColor || '',
-                      taskBgColor: semTaskBgColor || matchedCourse?.taskBgColor || '',
-                      courseFontColor: semCourseFontColor || matchedCourse?.courseFontColor || '',
-                      moduleBoxColor: (semPrefix && semSettings ? (semSettings as any)[`${semPrefix}ModuleBoxColor`] : '') || matchedCourse?.moduleBoxColor || '',
-                      readingBoxColor: (semPrefix && semSettings ? (semSettings as any)[`${semPrefix}ReadingBoxColor`] : '') || matchedCourse?.readingBoxColor || '',
+                      color: matchedCourse?.color || semColor || defaultPair.start,
+                      colorEnd: matchedCourse?.colorEnd || semColorEnd || defaultPair.end,
+                      colorStops: matchedCourse?.colorStops || semColorStops || '',
+                      borderColor: matchedCourse?.borderColor || semBorderColor || '',
+                      courseRowColor: matchedCourse?.courseRowColor || semCourseRowColor || '',
+                      taskBgColor: matchedCourse?.taskBgColor || semTaskBgColor || '',
+                      courseFontColor: matchedCourse?.courseFontColor || semCourseFontColor || '',
+                      moduleBoxColor: matchedCourse?.moduleBoxColor || (semPrefix && semSettings ? (semSettings as any)[`${semPrefix}ModuleBoxColor`] : '') || '',
+                      readingBoxColor: matchedCourse?.readingBoxColor || (semPrefix && semSettings ? (semSettings as any)[`${semPrefix}ReadingBoxColor`] : '') || '',
                       professor: matchedCourse?.professor || '',
                       professorEmail: matchedCourse?.professorEmail || '',
                       _semKey: semKey,
