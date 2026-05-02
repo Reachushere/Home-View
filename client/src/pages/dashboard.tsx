@@ -29503,7 +29503,7 @@ export default function Dashboard() {
                                         style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '29px', height: '29px', flexShrink: 0, cursor: 'pointer', filter: `drop-shadow(0 0 3px ${triColor}88)` }}
                                       >
                                         <img src={semHealthIconPath} alt="" style={{ width: '29px', height: '29px', display: 'block' }} />
-                                        <svg width="11" height="10" viewBox="0 0 9 8" style={{ position: 'absolute', top: '-2px', right: '-2px', pointerEvents: 'none', filter: `drop-shadow(0 0 2px ${triColor})` }}>
+                                        <svg width="11" height="10" viewBox="0 0 9 8" style={{ position: 'absolute', top: '1px', right: '0px', pointerEvents: 'none', filter: `drop-shadow(0 0 2px ${triColor})` }}>
                                           <polygon points="4.5,0.6 8.4,7.4 0.6,7.4" fill={fillColor} stroke={triColor} strokeWidth="0.9" strokeLinejoin="round" />
                                           <circle cx="4.5" cy="5.4" r="0.5" fill={markColor} />
                                         </svg>
