@@ -4429,7 +4429,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         let assignmentsFolderExists = false;
         let textbookFolderExists = false;
         let courseFolderPath: string | null = null;
-        if (odConnected && code && matchedSem) {
+        // Always run the subfolder probe when we have a course code + matched
+        // semester — don't gate on the verify cache, since the cache can be
+        // stale or empty even when OneDrive is connected. listOneDriveFolderChildren
+        // will throw if there's no working token and the outer try/catch will
+        // swallow that, so this is safe.
+        if (code && matchedSem) {
           try {
             const { listOneDriveFolderChildren } = await import("./onedrive");
             const semYear = new Date(matchedSem.semesterStartDate as any).getFullYear();
