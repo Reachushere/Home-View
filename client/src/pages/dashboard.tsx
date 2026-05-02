@@ -16047,8 +16047,24 @@ export default function Dashboard() {
                                                                                 if (j.webUrl) window.open(j.webUrl, '_blank');
                                                                                 return;
                                                                               }
-                                                                              // Local/object-storage path → stream the PDF.
-                                                                              window.open(`/api/syllabus/view?path=${encodeURIComponent(p)}`, '_blank');
+                                                                              // Real local upload (object storage or local-uploads) → stream PDF.
+                                                                              if (p.startsWith('/objects/') || p.startsWith('/local-uploads/')) {
+                                                                                window.open(`/api/syllabus/view?path=${encodeURIComponent(p)}`, '_blank');
+                                                                                return;
+                                                                              }
+                                                                              // Fallback path "syllabi/{code}_syllabus.pdf" is a placeholder
+                                                                              // shown when no syllabus is actually linked yet — open the
+                                                                              // course's OneDrive Syllabus folder so Bryn can grab the file
+                                                                              // from there (mirrors what Library Shelf does for its folder).
+                                                                              const odSyllabusFolder = `${getOneDrivePath(c.code)}/Syllabus`;
+                                                                              const r = await fetch(`/api/onedrive/word-online-url?path=${encodeURIComponent(odSyllabusFolder)}`, { credentials: 'include' });
+                                                                              if (!r.ok) {
+                                                                                toast({ title: 'Cannot open Syllabus folder', description: `OneDrive returned ${r.status}. Folder may not exist yet.`, variant: 'destructive' });
+                                                                                return;
+                                                                              }
+                                                                              const j = await r.json();
+                                                                              if (j.webUrl) window.open(j.webUrl, '_blank');
+                                                                              else toast({ title: 'No web URL', description: 'OneDrive did not return a link.', variant: 'destructive' });
                                                                               return;
                                                                             }
                                                                           } catch (err: any) {
