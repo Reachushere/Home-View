@@ -30319,12 +30319,14 @@ export default function Dashboard() {
                             ['Verify', 'After creation, click "Test It" to confirm the folder is linked.'],
                           ], secondary: [
                             ['Open OneDrive', `Browse to ${odPath} and create a "Syllabus" folder manually.`, 'open_onedrive'],
+                            ['Use Custom Path', `Already have the syllabus PDF in OneDrive at a different path? Paste the full OneDrive path to the file (e.g.\n${odPath}/My Custom Spot/Syllabus.pdf) and BA will treat that as your linked syllabus.`, 'manual_link_syllabus'],
                           ] },
                           assignments_folder: { title: 'Create Assignments Folder', testCheck: 'assignmentsFolderExists', steps: [
                             ['Auto-Create Assignments Folder', `Create the Assignments folder for ${semFlowWizard.courseCode} in OneDrive at:\n${odPath}/Assignments\n\nNon-essay attachments will land here automatically.`, 'create_subfolder_assignments'],
                             ['Verify', 'After creation, click "Test It" to confirm the folder is linked.'],
                           ], secondary: [
                             ['Open OneDrive', `Browse to ${odPath} and create an "Assignments" folder manually.`, 'open_onedrive'],
+                            ['Use Custom Path', `Already have an assignments folder in OneDrive at a different path? Paste the full OneDrive folder path (e.g.\n${odPath}/My Assignments) and BA will use that instead.`, 'manual_link_assignments'],
                           ] },
                           textbook_folder: { title: 'Create Textbook Folder', testCheck: 'textbookFolderExists', steps: [
                             ['Auto-Create Textbook Folder', `Create the Textbook folder for ${semFlowWizard.courseCode} in OneDrive at:\n${odPath}/Textbook\n\nDrop the textbook PDF here and BA will sync it to the library, add it to the course shelf, and OCR-index it for search.`, 'create_subfolder_textbook'],
@@ -30332,6 +30334,7 @@ export default function Dashboard() {
                             ['Verify', 'After syncing, click "Test It" to confirm the folder is linked.'],
                           ], secondary: [
                             ['Open OneDrive', `Browse to ${odPath} and create a "Textbook" folder manually.`, 'open_onedrive'],
+                            ['Use Custom Path', `Already have a textbook folder in OneDrive at a different path? Paste the full OneDrive folder path (e.g.\n${odPath}/My Textbooks) and BA will use that instead.`, 'manual_link_textbook'],
                           ] },
                           general: { title: 'Resolve Issue', testCheck: 'healthScore', steps: [
                             ['Open Settings', 'Review your semester settings and course configuration.', 'open_settings'],
@@ -30459,6 +30462,9 @@ export default function Dashboard() {
                                         create_subfolder_syllabus: { label: 'Create Syllabus Folder', icon: '📑' },
                                         create_subfolder_assignments: { label: 'Create Assignments Folder', icon: '📋' },
                                         create_subfolder_textbook: { label: 'Create Textbook Folder', icon: '📚' },
+                                        manual_link_syllabus: { label: 'Paste Syllabus Path', icon: '📝' },
+                                        manual_link_assignments: { label: 'Paste Assignments Path', icon: '📝' },
+                                        manual_link_textbook: { label: 'Paste Textbook Path', icon: '📝' },
                                         open_settings: { label: 'Open Settings', icon: '⚙️' },
                                         force_sync: { label: 'Force Full Sync', icon: '🔄' },
                                         upload_file: { label: 'Upload Files', icon: '📤' },
@@ -30528,6 +30534,46 @@ export default function Dashboard() {
                                             const j = await r.json().catch(() => ({}));
                                             if (r.ok && j.exists) setWizActionDone(`${sub} folder created at:\n${j.subPath}`);
                                             else setWizActionDone(`Error: ${j.message || j.error || 'Could not create folder'}`);
+                                            try { await queryClient.invalidateQueries({ queryKey: ['/api/semester-health-check', expandedSemKey] }); } catch {}
+                                          } else if (action === 'manual_link_syllabus' || action === 'manual_link_assignments' || action === 'manual_link_textbook') {
+                                            // Lets the user paste a custom OneDrive path for syllabus
+                                            // (file path) or assignments / textbook (folder paths). We
+                                            // pre-fill the prompt with whatever's already saved so they
+                                            // can edit instead of retype.
+                                            const kind = action === 'manual_link_syllabus' ? 'syllabus' : action === 'manual_link_assignments' ? 'assignments' : 'textbook';
+                                            const apiKind = kind;
+                                            const courseCode = semFlowWizard!.courseCode;
+                                            let current = '';
+                                            try {
+                                              const ge = await fetch(`/api/${apiKind}/paths`, { credentials: 'include' });
+                                              if (ge.ok) {
+                                                const map = await ge.json();
+                                                current = map[courseCode] || map[courseCode.toUpperCase()] || map[courseCode.replace(/\s/g, '').toLowerCase()] || '';
+                                              }
+                                            } catch {}
+                                            const promptText = kind === 'syllabus'
+                                              ? `Paste the full OneDrive path to the syllabus PDF for ${courseCode}:`
+                                              : `Paste the full OneDrive path to the ${kind} folder for ${courseCode}:`;
+                                            const entered = window.prompt(promptText, current || `${odPath}/`);
+                                            if (entered === null) {
+                                              setWizActionDone(null);
+                                              setWizActionLoading(false);
+                                              return;
+                                            }
+                                            const trimmed = entered.trim();
+                                            // Syllabus stores under the "objectPath" key in /api/syllabus/paths
+                                            // (legacy contract); assignments/textbook use "folderPath".
+                                            const body = kind === 'syllabus'
+                                              ? { courseCode, objectPath: trimmed || null }
+                                              : { courseCode, folderPath: trimmed || null };
+                                            const r = await fetch(`/api/${apiKind}/paths`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify(body) });
+                                            if (r.ok) {
+                                              if (trimmed) setWizActionDone(`${kind.charAt(0).toUpperCase() + kind.slice(1)} path saved:\n${trimmed}`);
+                                              else setWizActionDone(`${kind.charAt(0).toUpperCase() + kind.slice(1)} custom path cleared.`);
+                                            } else {
+                                              const j = await r.json().catch(() => ({}));
+                                              setWizActionDone(`Error: ${j.error || `Could not save ${kind} path`}`);
+                                            }
                                             try { await queryClient.invalidateQueries({ queryKey: ['/api/semester-health-check', expandedSemKey] }); } catch {}
                                           } else if (action === 'prepare_tts') {
                                             await fetch(`/api/tts/prepare-course/${semFlowWizard!.courseCode}`, { method: 'POST', credentials: 'include' });
