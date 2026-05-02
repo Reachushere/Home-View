@@ -8526,15 +8526,36 @@ export default function Dashboard() {
 
   const filteredCalendarEvents = useMemo(() => {
     if (authLevel === '1010') return [];
-    if (authLevel === '5747') {
-      if (hiddenCalendarSources.size === 0) return calendarEvents;
-      return calendarEvents.filter((e: any) => {
-        const src = (e as any).source || (e as any)._source;
-        if (!src) return true;
-        return !hiddenCalendarSources.has(src);
-      });
+    if (authLevel !== '5747') return [];
+    let evs = hiddenCalendarSources.size === 0
+      ? calendarEvents
+      : calendarEvents.filter((e: any) => {
+          const src = (e as any).source || (e as any)._source;
+          if (!src) return true;
+          return !hiddenCalendarSources.has(src);
+        });
+    // Dedupe duplicate class events by course-code + day + start hour:minute.
+    // Multiple Google calendars (TMU, primary, secondary) often surface the
+    // same class period under slightly different titles (e.g. "CPHL110 -
+    // Philosophy of Religion", "CPHL110 - Philosophy of Religion I",
+    // "CPHL110 - FA0 - LEC"); collapse them to a single block.
+    const seen = new Set<string>();
+    const out: any[] = [];
+    for (const e of evs) {
+      const title = (e.title || '').toUpperCase();
+      const m = title.match(/[A-Z]{2,5}\s*\d{3}[A-Z]?/);
+      if (!m) { out.push(e); continue; }
+      const courseCode = m[0].replace(/\s+/g, '');
+      let key = '';
+      try {
+        const d = new Date(e.startDate);
+        key = `${courseCode}|${d.getFullYear()}-${d.getMonth()}-${d.getDate()}|${d.getHours()}:${d.getMinutes()}`;
+      } catch { out.push(e); continue; }
+      if (seen.has(key)) continue;
+      seen.add(key);
+      out.push(e);
     }
-    return [];
+    return out;
   }, [calendarEvents, authLevel, hiddenCalendarSources]);
 
   const { data: upcomingCalendarEvents = [] } = useQuery<CalendarEvent[]>({
