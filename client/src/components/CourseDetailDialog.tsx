@@ -2893,7 +2893,7 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                     <FolderOpen className="h-3 w-3 text-blue-400" />
                     OneDrive File Folders
                   </label>
-                  <p className="text-[7px] text-white mb-1.5">Set the OneDrive folder where the reader finds Module & Reading files.</p>
+                  <p className="text-[10px] text-white mb-1.5">Set the OneDrive folder where the reader finds Module & Reading files.</p>
                   <div className="space-y-1.5 mb-2">
                     {(['module', 'reading'] as const).map(type => {
                       const folder = type === 'module' ? editInfo.moduleFolder : editInfo.readingFolder;
@@ -2913,12 +2913,12 @@ export function CourseDetailDialog({ courseInfo, onClose, onSaveCourseInfo, onLi
                                   {valid === false && <AlertTriangle className="h-2.5 w-2.5 text-red-400 shrink-0" />}
                                   {valid === true && <Check className="h-2.5 w-2.5 text-green-400 shrink-0" />}
                                   {valid === null && folderValidating && <Loader2 className="h-2.5 w-2.5 text-white/40 animate-spin shrink-0" />}
-                                  <span className={`text-[8px] truncate ${valid === false ? 'text-red-400' : 'text-white/80'}`}>
+                                  <span className={`text-[11px] truncate ${valid === false ? 'text-red-400' : 'text-white/80'}`}>
                                     {folder.split('/').pop()}
                                   </span>
                                 </div>
                               ) : (
-                                <span className="text-[8px] text-white/30">Not set</span>
+                                <span className="text-[11px] text-white/30">Not set</span>
                               )}
                             </div>
                             <button type="button" onClick={() => openFolderBrowser(type)} className="h-6 px-2 rounded bg-blue-600/30 border border-blue-500/40 text-[8px] text-blue-300 hover:bg-blue-600/50 transition-colors flex items-center gap-1 shrink-0" data-testid={`btn-browse-${type}-folder`}>
