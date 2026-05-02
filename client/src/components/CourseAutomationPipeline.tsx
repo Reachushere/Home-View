@@ -153,6 +153,25 @@ interface FlowLineProps {
   testId?: string;
 }
 
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      style={{
+        display: 'flex', alignItems: 'center', gap: 8,
+        margin: '14px 0 6px',
+        fontSize: 9, fontWeight: 800, letterSpacing: 1.4,
+        color: 'rgba(255,255,255,0.55)',
+        textTransform: 'uppercase',
+        fontFamily: 'JetBrains Mono, ui-monospace, monospace',
+      }}
+    >
+      <div style={{ flex: 1, height: 1, background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.18) 100%)' }} />
+      <span style={{ textShadow: '0 1px 2px rgba(0,0,0,0.6)' }}>{children}</span>
+      <div style={{ flex: 1, height: 1, background: 'linear-gradient(90deg, rgba(255,255,255,0.18) 0%, transparent 100%)' }} />
+    </div>
+  );
+}
+
 function FlowLine({ status, onClick, title, height = 14, testId }: FlowLineProps) {
   const color = STATUS_COLOR[status];
   return (
@@ -184,6 +203,10 @@ interface CourseAutomationPipelineProps {
   moduleFolder?: string;
   readingFolder?: string;
   numberOfWeeks: number;
+  // Optional course-specific week range. If omitted, falls back to
+  // 1..numberOfWeeks. Phil-style half-term courses pass e.g. 1..7.
+  firstWeek?: number;
+  lastWeek?: number;
   onOpenWizard: (issueKey: string, opts?: { weekNum?: number; uploadType?: 'module' | 'reading' }) => void;
   onOpenCourseDetails: () => void;
   onCourseFolderRenamed?: () => void;
@@ -195,9 +218,12 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
   const {
     course, courseHealth, semesterId, courseSlot, oneDrivePath, displayName,
     moduleFolder, readingFolder, numberOfWeeks,
+    firstWeek: propFirstWeek, lastWeek: propLastWeek,
     onOpenWizard, onOpenCourseDetails,
     onCourseFolderRenamed, onModuleFolderRenamed, onReadingFolderRenamed,
   } = props;
+  const firstWeek = Math.max(1, propFirstWeek ?? 1);
+  const lastWeek = Math.max(firstWeek, Math.min(numberOfWeeks, propLastWeek ?? numberOfWeeks));
 
   // ────────── Derived statuses (mirrors original auto-resolution logic) ──────────
   const odLinked = !!courseHealth?.oneDriveFolderConfigured;
@@ -223,6 +249,27 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
   const sylStatus: Status = (sylFolder && sylLinked) ? 'ok' : sylFolder ? 'warning' : 'error';
   const asgStatus: Status = asgFolder ? 'ok' : 'warning';
   const tbkStatus: Status = tbkFolder ? 'ok' : 'warning';
+
+  // Newly added section nodes.
+  const syncStatus: Status = (totalMod > 0 || totalRead > 0) ? 'ok' : odLinked ? 'warning' : 'error';
+  const libraryStatus: Status = (totalMod + totalRead) > 0 ? 'ok' : 'warning';
+  const storageStatus: Status = 'ok';
+
+  // Per-week TTS data (Module + Reading combined per week).
+  const weekRange: number[] = [];
+  for (let w = firstWeek; w <= lastWeek; w++) weekRange.push(w);
+  const weekTts = weekRange.map(w => {
+    const mw = courseHealth?.moduleWeeks?.[w] || { count: 0, ttsReady: 0 };
+    const rw = courseHealth?.readingWeeks?.[w] || { count: 0, ttsReady: 0 };
+    const count = (mw.count || 0) + (rw.count || 0);
+    const ready = (mw.ttsReady || 0) + (rw.ttsReady || 0);
+    let s: Status;
+    if (count === 0) s = 'pending';
+    else if (ready === count) s = 'ok';
+    else if (ready > 0) s = 'warning';
+    else s = 'error';
+    return { week: w, count, ready, s };
+  });
 
   // Worst-of helper for connection lines.
   const worst = (...s: Status[]): Status => {
@@ -320,7 +367,8 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
           border: '1px solid rgba(255,255,255,0.08)',
         }}
       >
-        {/* Row 1: Course Folder (root in OneDrive) */}
+        {/* ════════ SECTION: ONEDRIVE ════════ */}
+        <SectionLabel>OneDrive</SectionLabel>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <NodeBox
             label="Course Folder"
@@ -332,7 +380,7 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
             pencilInitialValue={course.fullName || course.name || ''}
             pencilPlaceholder="e.g. CPPA122 - Politics"
             onPencilSubmit={renameCourseFolder}
-            onClick={() => onOpenWizard(odLinked ? 'onedrive' : 'onedrive')}
+            onClick={() => onOpenWizard('onedrive')}
             width={260}
             testId={`pipeline-course-folder-${course.code.toLowerCase()}`}
           />
@@ -345,7 +393,8 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
           testId={`pipeline-line-folder-details-${course.code.toLowerCase()}`}
         />
 
-        {/* Row 2: Edit Course Details (opens dialog) */}
+        {/* ════════ SECTION: COURSE METADATA ════════ */}
+        <SectionLabel>Course Metadata</SectionLabel>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <NodeBox
             label="Edit Course Details"
@@ -365,7 +414,8 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
           testId={`pipeline-line-details-row-${course.code.toLowerCase()}`}
         />
 
-        {/* Row 3: Display Name → Calendar row label */}
+        {/* ════════ SECTION: CALENDAR HEADER ════════ */}
+        <SectionLabel>Calendar Header Row</SectionLabel>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <NodeBox
             label={`Calendar Row: ${displayName || course.code}`}
@@ -381,17 +431,14 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
 
         {/* Branch into Module & Reading paths */}
         <div style={{ position: 'relative', height: 22, margin: '4px 0' }}>
-          {/* central down stub */}
           <div style={{ position: 'absolute', left: '50%', top: 0, width: 2, height: 8, background: STATUS_COLOR[worst(moduleFolderStatus, readingFolderStatus)], boxShadow: `0 0 6px ${STATUS_GLOW[worst(moduleFolderStatus, readingFolderStatus)]}`, transform: 'translateX(-1px)' }} />
-          {/* horizontal */}
           <div style={{ position: 'absolute', left: '20%', right: '20%', top: 8, height: 2, background: STATUS_COLOR[worst(moduleFolderStatus, readingFolderStatus)], boxShadow: `0 0 6px ${STATUS_GLOW[worst(moduleFolderStatus, readingFolderStatus)]}` }} />
-          {/* left down */}
           <div style={{ position: 'absolute', left: '20%', top: 8, width: 2, height: 12, background: STATUS_COLOR[moduleFolderStatus], boxShadow: `0 0 6px ${STATUS_GLOW[moduleFolderStatus]}` }} />
-          {/* right down */}
           <div style={{ position: 'absolute', right: '20%', top: 8, width: 2, height: 12, background: STATUS_COLOR[readingFolderStatus], boxShadow: `0 0 6px ${STATUS_GLOW[readingFolderStatus]}` }} />
         </div>
 
-        {/* Row 4: Module Folder + Reading Folder (with pencil rename) */}
+        {/* ════════ SECTION: WEEKLY CONTENT FOLDERS ════════ */}
+        <SectionLabel>Weekly Content Folders</SectionLabel>
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, padding: '0 6%' }}>
           <NodeBox
             label="Module Folder"
@@ -423,13 +470,39 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
           />
         </div>
 
-        {/* Connector lines into calendar boxes */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0 calc(6% + 100px)' }}>
-          <FlowLine status={worst(moduleFolderStatus, calModuleStatus)} onClick={() => onOpenWizard('sync')} title="Module folder syncs into calendar Module box" />
-          <FlowLine status={worst(readingFolderStatus, calReadingStatus)} onClick={() => onOpenWizard('sync')} title="Reading folder syncs into calendar Reading box" />
+        {/* Merge into Sync */}
+        <div style={{ position: 'relative', height: 22, margin: '4px 0' }}>
+          <div style={{ position: 'absolute', left: '20%', top: 0, width: 2, height: 10, background: STATUS_COLOR[moduleFolderStatus], boxShadow: `0 0 6px ${STATUS_GLOW[moduleFolderStatus]}` }} />
+          <div style={{ position: 'absolute', right: '20%', top: 0, width: 2, height: 10, background: STATUS_COLOR[readingFolderStatus], boxShadow: `0 0 6px ${STATUS_GLOW[readingFolderStatus]}` }} />
+          <div style={{ position: 'absolute', left: '20%', right: '20%', top: 10, height: 2, background: STATUS_COLOR[syncStatus], boxShadow: `0 0 6px ${STATUS_GLOW[syncStatus]}` }} />
+          <div style={{ position: 'absolute', left: '50%', top: 12, width: 2, height: 10, background: STATUS_COLOR[syncStatus], boxShadow: `0 0 6px ${STATUS_GLOW[syncStatus]}`, transform: 'translateX(-1px)' }} />
         </div>
 
-        {/* Row 5: Calendar Module Box + Calendar Reading Box */}
+        {/* ════════ SECTION: SYNC ════════ */}
+        <SectionLabel>Sync Engine</SectionLabel>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <NodeBox
+            label="OneDrive Sync"
+            sublabel={`${totalMod + totalRead} file${(totalMod + totalRead) === 1 ? '' : 's'} indexed from OneDrive`}
+            Icon={RefreshCw}
+            status={syncStatus}
+            onClick={() => onOpenWizard('sync')}
+            width={260}
+            background="linear-gradient(135deg, #06b6d433 0%, #0e749022 100%)"
+            testId={`pipeline-sync-${course.code.toLowerCase()}`}
+          />
+        </div>
+
+        {/* Branch into calendar boxes */}
+        <div style={{ position: 'relative', height: 22, margin: '4px 0' }}>
+          <div style={{ position: 'absolute', left: '50%', top: 0, width: 2, height: 8, background: STATUS_COLOR[syncStatus], boxShadow: `0 0 6px ${STATUS_GLOW[syncStatus]}`, transform: 'translateX(-1px)' }} />
+          <div style={{ position: 'absolute', left: '20%', right: '20%', top: 8, height: 2, background: STATUS_COLOR[syncStatus], boxShadow: `0 0 6px ${STATUS_GLOW[syncStatus]}` }} />
+          <div style={{ position: 'absolute', left: '20%', top: 8, width: 2, height: 12, background: STATUS_COLOR[calModuleStatus], boxShadow: `0 0 6px ${STATUS_GLOW[calModuleStatus]}` }} />
+          <div style={{ position: 'absolute', right: '20%', top: 8, width: 2, height: 12, background: STATUS_COLOR[calReadingStatus], boxShadow: `0 0 6px ${STATUS_GLOW[calReadingStatus]}` }} />
+        </div>
+
+        {/* ════════ SECTION: CALENDAR BOXES ════════ */}
+        <SectionLabel>Calendar Boxes</SectionLabel>
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, padding: '0 6%' }}>
           <NodeBox
             label="Calendar Module Box"
@@ -453,20 +526,43 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
           />
         </div>
 
-        {/* merge back to TTS */}
+        {/* Merge into Library */}
         <div style={{ position: 'relative', height: 22, margin: '4px 0' }}>
-          <div style={{ position: 'absolute', left: '20%', top: 0, width: 2, height: 12, background: STATUS_COLOR[calModuleStatus], boxShadow: `0 0 6px ${STATUS_GLOW[calModuleStatus]}` }} />
-          <div style={{ position: 'absolute', right: '20%', top: 0, width: 2, height: 12, background: STATUS_COLOR[calReadingStatus], boxShadow: `0 0 6px ${STATUS_GLOW[calReadingStatus]}` }} />
-          <div style={{ position: 'absolute', left: '20%', right: '20%', top: 12, height: 2, background: STATUS_COLOR[worst(calModuleStatus, calReadingStatus)], boxShadow: `0 0 6px ${STATUS_GLOW[worst(calModuleStatus, calReadingStatus)]}` }} />
-          <div style={{ position: 'absolute', left: '50%', top: 12, width: 2, height: 10, background: STATUS_COLOR[ttsStatus], boxShadow: `0 0 6px ${STATUS_GLOW[ttsStatus]}`, transform: 'translateX(-1px)' }} />
+          <div style={{ position: 'absolute', left: '20%', top: 0, width: 2, height: 10, background: STATUS_COLOR[calModuleStatus], boxShadow: `0 0 6px ${STATUS_GLOW[calModuleStatus]}` }} />
+          <div style={{ position: 'absolute', right: '20%', top: 0, width: 2, height: 10, background: STATUS_COLOR[calReadingStatus], boxShadow: `0 0 6px ${STATUS_GLOW[calReadingStatus]}` }} />
+          <div style={{ position: 'absolute', left: '20%', right: '20%', top: 10, height: 2, background: STATUS_COLOR[libraryStatus], boxShadow: `0 0 6px ${STATUS_GLOW[libraryStatus]}` }} />
+          <div style={{ position: 'absolute', left: '50%', top: 12, width: 2, height: 10, background: STATUS_COLOR[libraryStatus], boxShadow: `0 0 6px ${STATUS_GLOW[libraryStatus]}`, transform: 'translateX(-1px)' }} />
         </div>
 
-        {/* Row 6: TTS Pipeline (8-step compact strip) */}
+        {/* ════════ SECTION: FILE LIBRARY ════════ */}
+        <SectionLabel>File Library</SectionLabel>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <NodeBox
+            label="File Library"
+            sublabel={`${totalMod + totalRead} file${(totalMod + totalRead) === 1 ? '' : 's'} catalogued for course`}
+            Icon={FileText}
+            status={libraryStatus}
+            onClick={() => onOpenWizard('library')}
+            width={260}
+            background="linear-gradient(135deg, #6366f133 0%, #312e8122 100%)"
+            testId={`pipeline-library-${course.code.toLowerCase()}`}
+          />
+        </div>
+
+        <FlowLine
+          status={worst(libraryStatus, ttsStatus)}
+          onClick={() => onOpenWizard('tts')}
+          title="Library files feed the TTS pipeline"
+          testId={`pipeline-line-library-tts-${course.code.toLowerCase()}`}
+        />
+
+        {/* ════════ SECTION: TTS PIPELINE (per week) ════════ */}
+        <SectionLabel>{`TTS Pipeline · W${firstWeek}–W${lastWeek}`}</SectionLabel>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <div
             onClick={(e) => { e.stopPropagation(); onOpenWizard('tts'); }}
             style={{
-              width: '92%',
+              width: '96%',
               padding: '8px 10px',
               borderRadius: 10,
               background: 'linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.25) 100%)',
@@ -480,43 +576,72 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
               <Volume2 style={{ width: 13, height: 13, color: '#fff' }} />
               <span style={{ fontSize: 11, fontWeight: 700, color: '#fff' }}>TTS Pipeline</span>
               <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)', fontFamily: 'JetBrains Mono, monospace' }}>
-                {ttsReady} / {ttsNeeded} files ready
+                {ttsReady} / {ttsNeeded} files ready · {weekRange.length} week{weekRange.length === 1 ? '' : 's'}
               </span>
               <span style={{ marginLeft: 'auto', width: 8, height: 8, borderRadius: '50%', background: STATUS_COLOR[ttsStatus], boxShadow: `0 0 6px ${STATUS_COLOR[ttsStatus]}` }} />
             </div>
             <div style={{ display: 'flex', gap: 3 }}>
-              {['Queue', 'Detect', 'Extract', 'Chunk', 'Synth', 'Stitch', 'Persist', 'Verify'].map((step, i) => {
-                // Approximate per-step state: green up to ratio of ready/needed.
-                const ratio = ttsNeeded > 0 ? ttsReady / ttsNeeded : 1;
-                const filled = ratio >= (i + 1) / 8;
-                const partial = !filled && ratio > i / 8;
-                const segStatus: Status = filled ? 'ok' : partial ? 'warning' : ttsNeeded === 0 ? 'pending' : 'error';
-                return (
-                  <div
-                    key={step}
-                    title={step}
-                    style={{
-                      flex: 1,
-                      height: 6,
-                      borderRadius: 3,
-                      background: STATUS_COLOR[segStatus],
-                      boxShadow: `0 0 4px ${STATUS_GLOW[segStatus]}`,
-                      opacity: segStatus === 'pending' ? 0.5 : 1,
-                    }}
-                  />
-                );
-              })}
+              {weekTts.map(({ week, count, ready, s }) => (
+                <div
+                  key={week}
+                  title={`Week ${week}: ${ready}/${count} ready`}
+                  onClick={(e) => { e.stopPropagation(); onOpenWizard('tts', { weekNum: week }); }}
+                  style={{
+                    flex: 1,
+                    height: 10,
+                    borderRadius: 3,
+                    background: STATUS_COLOR[s],
+                    boxShadow: `0 0 4px ${STATUS_GLOW[s]}`,
+                    opacity: s === 'pending' ? 0.45 : 1,
+                    cursor: 'pointer',
+                  }}
+                />
+              ))}
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
-              {['Q','D','X','C','S','T','P','V'].map((s, i) => (
-                <span key={i} style={{ fontSize: 8, color: 'rgba(255,255,255,0.45)', fontFamily: 'JetBrains Mono, monospace' }}>{s}</span>
+            <div style={{ display: 'flex', gap: 3, marginTop: 4 }}>
+              {weekTts.map(({ week }) => (
+                <span
+                  key={week}
+                  style={{
+                    flex: 1,
+                    textAlign: 'center',
+                    fontSize: 8,
+                    color: 'rgba(255,255,255,0.55)',
+                    fontFamily: 'JetBrains Mono, monospace',
+                  }}
+                >
+                  W{week}
+                </span>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Side branch: Syllabus / Assignments / Textbook (small chips, clickable) */}
-        <div style={{ display: 'flex', gap: 8, marginTop: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+        <FlowLine
+          status={ttsStatus}
+          onClick={() => onOpenWizard('storage')}
+          title="TTS audio + cached files persist to storage"
+          testId={`pipeline-line-tts-storage-${course.code.toLowerCase()}`}
+        />
+
+        {/* ════════ SECTION: STORAGE ════════ */}
+        <SectionLabel>Storage</SectionLabel>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <NodeBox
+            label="Storage"
+            sublabel="Audio cache, TTS chunks, generated PDFs"
+            Icon={Cloud}
+            status={storageStatus}
+            onClick={() => onOpenWizard('storage')}
+            width={260}
+            background="linear-gradient(135deg, #84cc1633 0%, #3f621222 100%)"
+            testId={`pipeline-storage-${course.code.toLowerCase()}`}
+          />
+        </div>
+
+        {/* ════════ SECTION: COURSE MATERIALS (side branch) ════════ */}
+        <SectionLabel>Course Materials</SectionLabel>
+        <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
           {[
             { key: sylFolder ? 'syllabus' : 'syllabus_folder', label: 'Syllabus', s: sylStatus, Icon: FileText, sub: sylLinked ? 'PDF linked' : sylFolder ? 'Folder ok, no PDF' : 'No folder' },
             { key: 'assignments', label: 'Assignments Folder', s: asgStatus, Icon: Folder, sub: asgFolder ? 'OneDrive folder ok' : 'Missing folder' },
