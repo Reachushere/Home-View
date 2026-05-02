@@ -31006,7 +31006,7 @@ export default function Dashboard() {
                       <div className="px-4 py-3 border-b" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
                         <div className="flex items-center justify-between mb-2">
                           <span className="text-[11px] font-medium">Overall Health</span>
-                          <span className="text-[13px] font-bold" style={{ color: semHealthData.healthScore >= 80 ? '#22c55e' : semHealthData.healthScore >= 50 ? '#f59e0b' : '#ef4444' }}>
+                          <span className="text-[13px] font-bold" style={{ color: '#ffffff' }}>
                             {semHealthData.healthScore}%
                           </span>
                         </div>
@@ -31026,8 +31026,8 @@ export default function Dashboard() {
                       return (
                       <div key={course.code} className="rounded-xl border overflow-hidden" style={{ background: 'rgba(255,255,255,0.03)', borderColor: 'rgba(255,255,255,0.1)' }}>
                         <div className="px-4 py-2.5 border-b flex items-center justify-between" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
-                          <span className="text-[11px] font-bold" style={{ color: '#93c5fd' }}>{course.code}</span>
-                          <span className="text-[10px] font-bold" style={{ color: courseScore >= 80 ? '#22c55e' : courseScore >= 50 ? '#f59e0b' : '#ef4444' }}>{courseScore}%</span>
+                          <span className="text-[11px] font-bold" style={{ color: '#ffffff' }}>{course.code}</span>
+                          <span className="text-[10px] font-bold" style={{ color: '#ffffff' }}>{courseScore}%</span>
                         </div>
                         <div className="px-4 py-2.5 space-y-1.5">
                           {[
@@ -31056,12 +31056,12 @@ export default function Dashboard() {
                     {semHealthData.issues && semHealthData.issues.length > 0 && (
                       <div className="rounded-xl border overflow-hidden" style={{ background: 'rgba(239,68,68,0.05)', borderColor: 'rgba(239,68,68,0.2)' }}>
                         <div className="px-4 py-2.5 border-b" style={{ borderColor: 'rgba(239,68,68,0.15)' }}>
-                          <span className="text-[10px] font-bold text-red-400">Outstanding Issues ({semHealthData.issues.length})</span>
+                          <span className="text-[10px] font-bold text-white">Outstanding Issues ({semHealthData.issues.length})</span>
                         </div>
                         <div className="px-4 py-2.5 space-y-1">
                           {semHealthData.issues.map((issue: string, i: number) => (
-                            <div key={i} className="text-[9px] text-red-300/70 flex items-start gap-1.5">
-                              <span className="text-red-400 mt-0.5">★</span>
+                            <div key={i} className="text-[9px] text-white/70 flex items-start gap-1.5">
+                              <span className="text-white mt-0.5">★</span>
                               <span>{issue}</span>
                             </div>
                           ))}
@@ -31072,7 +31072,7 @@ export default function Dashboard() {
                     <div className="flex gap-2 mt-1">
                       <button
                         className="flex-1 py-2.5 rounded-lg text-[11px] font-bold border cursor-pointer transition-all hover:brightness-110"
-                        style={{ background: 'rgba(59,130,246,0.25)', borderColor: 'rgba(59,130,246,0.5)', color: '#93c5fd' }}
+                        style={{ background: 'rgba(59,130,246,0.25)', borderColor: 'rgba(59,130,246,0.5)', color: '#ffffff' }}
                         onClick={() => {
                           setSemHealthCheckKey(null);
                           setSemHealthData(null);
