@@ -32730,7 +32730,7 @@ export default function Dashboard() {
           />
           
           {/* Calendar wrapper - leaves space for honeycombs on right */}
-          <div ref={calendarWrapperRef} style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction - 2}px` : ' - 12px'})`, height: '100%', marginTop: '0px', marginLeft: '12px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 - 2 - 2 - 2 : 12}px`, display: desktopShowCalendar ? 'flex' : 'none', flexDirection: 'column', transition: (homeworkAnimating || blankBoxAnimating) ? 'width 0.35s cubic-bezier(0.4,0,0.2,1), margin-right 0.35s cubic-bezier(0.4,0,0.2,1)' : 'none' }} className="relative overflow-visible">
+          <div ref={calendarWrapperRef} style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction - 2}px` : ' - 12px'})`, height: 'calc(100% - 4px)', marginTop: '4px', marginLeft: '12px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 - 2 - 2 - 2 : 12}px`, display: desktopShowCalendar ? 'flex' : 'none', flexDirection: 'column', transition: (homeworkAnimating || blankBoxAnimating) ? 'width 0.35s cubic-bezier(0.4,0,0.2,1), margin-right 0.35s cubic-bezier(0.4,0,0.2,1)' : 'none' }} className="relative overflow-visible">
           
           {/* Glass effect backing box - resizes with calendar */}
           <div 
@@ -37448,7 +37448,7 @@ export default function Dashboard() {
         </div>
         ) : (
         <div className="mb-[0px] mt-[0px] relative flex gap-4 transition-opacity duration-300" style={{ height: calendarHeight - 100, flexShrink: 0, order: 1, paddingTop: '3px', marginTop: '68px' }}>
-          <div ref={calendarWrapperRef} className="relative overflow-visible" style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction - 2}px` : ' - 12px'})`, height: '100%', marginTop: '0px', marginLeft: '12px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 - 2 - 2 - 2 : 12}px`, display: 'flex', flexDirection: 'column' as const, transition: (homeworkAnimating || blankBoxAnimating) ? 'width 0.35s cubic-bezier(0.4,0,0.2,1), margin-right 0.35s cubic-bezier(0.4,0,0.2,1)' : 'none' }}>
+          <div ref={calendarWrapperRef} className="relative overflow-visible" style={{ width: `calc(100% - 68px${calendarReduction > 0 ? ` - ${calendarReduction - 2}px` : ' - 12px'})`, height: 'calc(100% - 4px)', marginTop: '4px', marginLeft: '12px', marginRight: `${calendarReduction > 0 ? calendarReduction - 3 + 6 - 2 - 2 - 2 - 2 : 12}px`, display: 'flex', flexDirection: 'column' as const, transition: (homeworkAnimating || blankBoxAnimating) ? 'width 0.35s cubic-bezier(0.4,0,0.2,1), margin-right 0.35s cubic-bezier(0.4,0,0.2,1)' : 'none' }}>
           {/* Glass effect backing box - same as main calendar */}
           <div 
             className="absolute pointer-events-none"
