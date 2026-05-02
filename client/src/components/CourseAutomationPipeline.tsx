@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Pencil, Folder, FileText, BookOpen, Volume2, Calendar, Cloud, RefreshCw, AlertCircle, CheckCircle2, Loader2, ExternalLink, Library, Settings } from 'lucide-react';
+import { Pencil, Folder, FileText, BookOpen, Calendar, Cloud, RefreshCw, AlertCircle, CheckCircle2, Loader2, ExternalLink, Library, Settings } from 'lucide-react';
 import courseDetailsFolderIcon from '@/assets/course-details-folder.png';
 
 type Status = 'ok' | 'warning' | 'error' | 'pending';
@@ -291,21 +291,10 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
   const libraryStatus: Status = (totalMod + totalRead) > 0 ? 'ok' : 'warning';
   const storageStatus: Status = 'ok';
 
-  // Per-week TTS data (Module + Reading combined per week).
+  // Week range used by the orange-box week cells. Per-week TTS readiness
+  // is computed inside renderWeekCell directly (formerly the bottom strip).
   const weekRange: number[] = [];
   for (let w = firstWeek; w <= lastWeek; w++) weekRange.push(w);
-  const weekTts = weekRange.map(w => {
-    const mw = courseHealth?.moduleWeeks?.[w] || { count: 0, ttsReady: 0 };
-    const rw = courseHealth?.readingWeeks?.[w] || { count: 0, ttsReady: 0 };
-    const count = (mw.count || 0) + (rw.count || 0);
-    const ready = (mw.ttsReady || 0) + (rw.ttsReady || 0);
-    let s: Status;
-    if (count === 0) s = 'pending';
-    else if (ready === count) s = 'ok';
-    else if (ready > 0) s = 'warning';
-    else s = 'error';
-    return { week: w, count, ready, s };
-  });
 
   // Worst-of helper for connection lines.
   const worst = (...s: Status[]): Status => {
@@ -553,6 +542,16 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
             const ttsReady = slot?.ttsReady || 0;
             const cellColor = kind === 'module' ? modColor : readColor;
             const ok = count > 0;
+            // Per-week TTS status for THIS kind (module or reading), used to
+            // paint a small status bar at the bottom of the cell. This is the
+            // same signal that used to live in the standalone "TTS Pipeline"
+            // strip below — moved up here so each week cell now carries the
+            // green/orange/red TTS readiness for its own files.
+            const cellTtsStatus: Status =
+              count === 0 ? 'pending'
+              : ttsReady === count ? 'ok'
+              : ttsReady > 0 ? 'warning'
+              : 'error';
             return (
               <div
                 key={w}
@@ -583,8 +582,21 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
               >
                 <span style={{ fontSize: 8, fontWeight: 700, color: '#fff', textShadow: '0 1px 1px rgba(0,0,0,0.7)', lineHeight: 1 }}>W{w}</span>
                 <span style={{ fontSize: 10, fontWeight: 800, color: '#fff', textShadow: '0 1px 1px rgba(0,0,0,0.7)', lineHeight: 1 }}>{count}</span>
-                {ok && ttsReady === count && (
-                  <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 3px #10b981' }} title="TTS ready" />
+                {/* TTS status bar — green = all audio ready, orange = some,
+                    red = none ready, hidden when no files exist. Replaces
+                    the standalone bottom TTS strip. */}
+                {ok && (
+                  <span
+                    title={`TTS: ${ttsReady}/${count} ready`}
+                    style={{
+                      width: '80%',
+                      height: 3,
+                      borderRadius: 2,
+                      background: STATUS_COLOR[cellTtsStatus],
+                      boxShadow: `0 0 4px ${STATUS_GLOW[cellTtsStatus]}`,
+                      marginTop: 1,
+                    }}
+                  />
                 )}
               </div>
             );
@@ -605,12 +617,15 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
 
           return (
             <div style={{ position: 'relative', padding: '0 4%' }}>
-              {/* ───── Top splitter: drops from Calendar Row, splits L+R ───── */}
-              <div style={{ position: 'relative', height: TOP_SPLIT_H }}>
+              {/* ───── Top splitter: drops from Calendar Row, splits L+R.
+                   Negative horizontal margin lets the right arm sit OUTSIDE
+                   the orange-box content area (in the wrapper's padding
+                   gutter) so it never cuts through a week cell. ───── */}
+              <div style={{ position: 'relative', height: TOP_SPLIT_H, margin: '0 -4%' }}>
                 {/* down from Calendar Row */}
                 <div style={{ position: 'absolute', left: '50%', top: 0, width: 2, height: TOP_BUS_Y, background: STATUS_COLOR[worst(moduleFolderStatus, readingFolderStatus)], boxShadow: `0 0 6px ${STATUS_GLOW[worst(moduleFolderStatus, readingFolderStatus)]}`, transform: 'translateX(-1px)' }} />
-                {/* horizontal bus */}
-                <div style={{ position: 'absolute', left: '4%', right: '4%', top: TOP_BUS_Y, height: 2, background: STATUS_COLOR[worst(moduleFolderStatus, readingFolderStatus)], boxShadow: `0 0 6px ${STATUS_GLOW[worst(moduleFolderStatus, readingFolderStatus)]}` }} />
+                {/* horizontal bus — extends right to where the arm drops in */}
+                <div style={{ position: 'absolute', left: '4%', right: 12, top: TOP_BUS_Y, height: 2, background: STATUS_COLOR[worst(moduleFolderStatus, readingFolderStatus)], boxShadow: `0 0 6px ${STATUS_GLOW[worst(moduleFolderStatus, readingFolderStatus)]}` }} />
                 {/* drops to Module chip on the LEFT */}
                 <div style={{ position: 'absolute', left: '4%', top: TOP_BUS_Y, width: 2, height: TOP_SPLIT_H - TOP_BUS_Y, background: STATUS_COLOR[moduleFolderStatus], boxShadow: `0 0 6px ${STATUS_GLOW[moduleFolderStatus]}` }} />
               </div>
@@ -639,11 +654,13 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
               {/* gap between the two rows */}
               <div style={{ height: ROW_GAP }} />
 
-              {/* ───── Pre-reading splitter: H-bus + drop into Reading chip ───── */}
-              <div style={{ position: 'relative', height: PRE_READ_SPLIT_H }}>
-                {/* horizontal bus */}
-                <div style={{ position: 'absolute', left: '4%', right: '4%', top: PRE_READ_BUS_Y, height: 2, background: STATUS_COLOR[readingFolderStatus], boxShadow: `0 0 6px ${STATUS_GLOW[readingFolderStatus]}` }} />
-                {/* drops to Reading chip on the RIGHT */}
+              {/* ───── Pre-reading splitter: H-bus + drop into Reading chip.
+                   Same negative margin trick as the top splitter so its right
+                   end aligns with the arm sitting in the wrapper's gutter. ───── */}
+              <div style={{ position: 'relative', height: PRE_READ_SPLIT_H, margin: '0 -4%' }}>
+                {/* horizontal bus — runs from far left to the arm's gutter */}
+                <div style={{ position: 'absolute', left: '4%', right: 12, top: PRE_READ_BUS_Y, height: 2, background: STATUS_COLOR[readingFolderStatus], boxShadow: `0 0 6px ${STATUS_GLOW[readingFolderStatus]}` }} />
+                {/* drops to Reading chip on the RIGHT (at content right edge) */}
                 <div style={{ position: 'absolute', right: '4%', top: PRE_READ_BUS_Y, width: 2, height: PRE_READ_SPLIT_H - PRE_READ_BUS_Y, background: STATUS_COLOR[readingFolderStatus], boxShadow: `0 0 6px ${STATUS_GLOW[readingFolderStatus]}` }} />
               </div>
 
@@ -670,10 +687,13 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
 
               {/* ───── Right arm — runs from top splitter H-bus all the way
                    down past the module row into the pre-reading H-bus,
-                   delivering the "right-turn" branch to the reading row. */}
+                   delivering the "right-turn" branch to the reading row.
+                   Sits in the wrapper's right padding gutter (right: 12px,
+                   wrapper-relative) so it stays OUTSIDE the module row's
+                   orange box and never crosses a week cell. */}
               <div style={{
                 position: 'absolute',
-                right: 'calc(4% + 4%)',  // matches the H-bus right endpoint inside the wrapper's 4% padding
+                right: 12,
                 top: ARM_TOP,
                 width: 2,
                 height: ARM_HEIGHT,
@@ -685,10 +705,11 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
           );
         })()}
 
-        {/* Merge into Sync — short vertical from reading row down to Sync */}
+        {/* Merge into Sync — short vertical from reading row down to Sync.
+            Right drop matches the right arm at right: 12px (wrapper gutter). */}
         <div style={{ position: 'relative', height: 18, margin: '4px 0' }}>
-          <div style={{ position: 'absolute', right: 'calc(4% + 4%)', top: 0, width: 2, height: 8, background: STATUS_COLOR[readingFolderStatus], boxShadow: `0 0 6px ${STATUS_GLOW[readingFolderStatus]}` }} />
-          <div style={{ position: 'absolute', left: 'calc(4% + 4%)', right: 'calc(4% + 4%)', top: 8, height: 2, background: STATUS_COLOR[syncStatus], boxShadow: `0 0 6px ${STATUS_GLOW[syncStatus]}` }} />
+          <div style={{ position: 'absolute', right: 12, top: 0, width: 2, height: 8, background: STATUS_COLOR[readingFolderStatus], boxShadow: `0 0 6px ${STATUS_GLOW[readingFolderStatus]}` }} />
+          <div style={{ position: 'absolute', left: 12, right: 12, top: 8, height: 2, background: STATUS_COLOR[syncStatus], boxShadow: `0 0 6px ${STATUS_GLOW[syncStatus]}` }} />
           <div style={{ position: 'absolute', left: '50%', top: 8, width: 2, height: 10, background: STATUS_COLOR[syncStatus], boxShadow: `0 0 6px ${STATUS_GLOW[syncStatus]}`, transform: 'translateX(-1px)' }} />
         </div>
 
@@ -765,80 +786,15 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
           />
         </div>
 
+        {/* TTS readiness now lives ON each top-row week cell (the small
+            colored bar inside the orange boxes), so the standalone TTS
+            strip + its two flow lines are removed. Library feeds Storage
+            directly. */}
         <FlowLine
-          status={worst(libraryStatus, ttsStatus)}
-          onClick={() => onOpenWizard('tts')}
-          title="Library files feed the TTS pipeline"
-          testId={`pipeline-line-library-tts-${course.code.toLowerCase()}`}
-        />
-
-        {/* ════════ SECTION: TTS PIPELINE (per week) ════════ */}
-        <SectionLabel>{`TTS Pipeline · W${firstWeek}–W${lastWeek}`}</SectionLabel>
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <div
-            onClick={(e) => { e.stopPropagation(); onOpenWizard('tts'); }}
-            style={{
-              width: '92%',
-              margin: '0 auto',
-              padding: '8px 10px',
-              borderRadius: 10,
-              background: 'linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.25) 100%)',
-              border: `1.5px solid ${STATUS_COLOR[ttsStatus]}66`,
-              boxShadow: `0 0 10px ${STATUS_GLOW[ttsStatus]}`,
-              cursor: 'pointer',
-            }}
-            data-testid={`pipeline-tts-strip-${course.code.toLowerCase()}`}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-              <Volume2 style={{ width: 13, height: 13, color: '#fff' }} />
-              <span style={{ fontSize: 11, fontWeight: 700, color: '#fff' }}>TTS Pipeline</span>
-              <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)', fontFamily: 'JetBrains Mono, monospace' }}>
-                {ttsReady} / {ttsNeeded} files ready · {weekRange.length} week{weekRange.length === 1 ? '' : 's'}
-              </span>
-              <span style={{ marginLeft: 'auto', width: 8, height: 8, borderRadius: '50%', background: STATUS_COLOR[ttsStatus], boxShadow: `0 0 6px ${STATUS_COLOR[ttsStatus]}` }} />
-            </div>
-            <div style={{ display: 'flex', gap: 3 }}>
-              {weekTts.map(({ week, count, ready, s }) => (
-                <div
-                  key={week}
-                  title={`Week ${week}: ${ready}/${count} ready`}
-                  onClick={(e) => { e.stopPropagation(); onOpenWizard('tts', { weekNum: week }); }}
-                  style={{
-                    flex: 1,
-                    height: 10,
-                    borderRadius: 3,
-                    background: STATUS_COLOR[s],
-                    boxShadow: `0 0 4px ${STATUS_GLOW[s]}`,
-                    opacity: s === 'pending' ? 0.45 : 1,
-                    cursor: 'pointer',
-                  }}
-                />
-              ))}
-            </div>
-            <div style={{ display: 'flex', gap: 3, marginTop: 4 }}>
-              {weekTts.map(({ week }) => (
-                <span
-                  key={week}
-                  style={{
-                    flex: 1,
-                    textAlign: 'center',
-                    fontSize: 8,
-                    color: 'rgba(255,255,255,0.55)',
-                    fontFamily: 'JetBrains Mono, monospace',
-                  }}
-                >
-                  W{week}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <FlowLine
-          status={ttsStatus}
+          status={worst(libraryStatus, storageStatus)}
           onClick={() => onOpenWizard('storage')}
-          title="TTS audio + cached files persist to storage"
-          testId={`pipeline-line-tts-storage-${course.code.toLowerCase()}`}
+          title="Library files (with TTS audio) persist to storage"
+          testId={`pipeline-line-library-storage-${course.code.toLowerCase()}`}
         />
 
         {/* ════════ SECTION: STORAGE ════════ */}
