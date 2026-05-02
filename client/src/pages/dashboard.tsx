@@ -29351,15 +29351,15 @@ export default function Dashboard() {
                                 const shadow = isCurrentSem ? (needsRedBorder ? { boxShadow: '0 0 6px rgba(239,68,68,0.6), 0 0 12px rgba(239,68,68,0.4), 0 0 18px rgba(239,68,68,0.3)' } : {}) : {};
                                 return { background: bgCol, borderColor: borderCol, ...shadow, position: 'relative' as const, borderWidth: isCurrentSem ? '2px' : undefined };
                               })()}>
-                                <div className="px-2 py-2.5 flex items-center justify-between">
+                                <div className="px-2 flex items-center justify-between" style={{ paddingTop: '3px', paddingBottom: '3px' }}>
                                 <div className="flex items-center" style={{ flex: '1 1 0%', minWidth: 0, overflow: 'hidden' }}>
-                                  {/* Cogs — fixed slot, never moves */}
-                                  <div className="flex items-center flex-shrink-0" style={{ gap: '7px' }}>
+                                  {/* Cogs — fixed slot, never moves. overflow:visible so the alert triangle on cog 2 isn't clipped. */}
+                                  <div className="flex items-center flex-shrink-0" style={{ gap: '7px', overflow: 'visible' }}>
                                   <img
                                     src={semCogIconPath}
                                     alt="Semester settings"
                                     className="cursor-pointer flex-shrink-0"
-                                    style={{ width: '18px', height: '18px', opacity: 0.6, transition: 'opacity 0.15s ease' }}
+                                    style={{ width: '27px', height: '27px', opacity: 0.6, transition: 'opacity 0.15s ease' }}
                                     onMouseEnter={(e) => { (e.currentTarget as HTMLImageElement).style.opacity = '1'; }}
                                     onMouseLeave={(e) => { (e.currentTarget as HTMLImageElement).style.opacity = '0.6'; }}
                                     onClick={(e) => { e.stopPropagation(); setSemSettingsDialogKey(sem.key); }}
@@ -29381,10 +29381,10 @@ export default function Dashboard() {
                                           setSemTriHover({ semKey: sem.key, x: r.left + r.width / 2, y: r.bottom + 6 });
                                         }}
                                         onMouseLeave={() => setSemTriHover(null)}
-                                        style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '24px', height: '24px', flexShrink: 0, cursor: 'pointer', filter: `drop-shadow(0 0 3px ${triColor}88)` }}
+                                        style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', flexShrink: 0, cursor: 'pointer', filter: `drop-shadow(0 0 3px ${triColor}88)` }}
                                       >
-                                        <img src={semHealthIconPath} alt="" style={{ width: '21px', height: '21px', display: 'block' }} />
-                                        <svg width="13" height="12" viewBox="0 0 9 8" style={{ position: 'absolute', top: '-2px', right: '-3px', pointerEvents: 'none', filter: `drop-shadow(0 0 2px ${triColor})` }}>
+                                        <img src={semHealthIconPath} alt="" style={{ width: '32px', height: '32px', display: 'block' }} />
+                                        <svg width="20" height="18" viewBox="0 0 9 8" style={{ position: 'absolute', top: '0px', right: '0px', pointerEvents: 'none', filter: `drop-shadow(0 0 2px ${triColor})` }}>
                                           <polygon points="4.5,0.6 8.4,7.4 0.6,7.4" fill={fillColor} stroke={triColor} strokeWidth="0.9" strokeLinejoin="round" />
                                           <circle cx="4.5" cy="5.4" r="0.6" fill={markColor} />
                                         </svg>
