@@ -35883,9 +35883,17 @@ export default function Dashboard() {
                               return new Date(t.dueDate).getTime();
                             };
                             const todayStart = startOfDayET(now);
+                            // Exclude recurring class-lecture tasks (titles like "[CECN210] Class"
+                            // or "Online ... Class") — those aren't assignments to do, just
+                            // schedule entries. Match the same rule used by routes.ts at startup.
+                            const isClassLectureTask = (t: any) => {
+                              const titleLower = String(t.title || '').toLowerCase().replace(/[\[\]]/g, '').trim();
+                              return /class$/i.test(titleLower) || /^online\s+.*class$/i.test(titleLower);
+                            };
                             const missedSchoolTasks = allTasks.filter(t => {
                               if (!t.courseName) return false;
                               if (t.isCompleted) return false;
+                              if (isClassLectureTask(t)) return false;
                               if (!t.eventStartTime) {
                                 const d = new Date(t.dueDate);
                                 if (d.getUTCHours() === 0 && d.getUTCMinutes() === 0) return false;
@@ -35900,7 +35908,7 @@ export default function Dashboard() {
                             });
                             const missedCount = missedSchoolTasks.length;
                             const nextSchoolTask = allTasks
-                              .filter(t => !t.isCompleted && t.courseName && getTaskTime(t) > now.getTime())
+                              .filter(t => !t.isCompleted && t.courseName && !isClassLectureTask(t) && getTaskTime(t) > now.getTime())
                               .sort((a, b) => getTaskTime(a) - getTaskTime(b))[0];
                             const hoursUntil = nextSchoolTask ? (getTaskTime(nextSchoolTask) - now.getTime()) / (1000 * 60 * 60) : null;
                             const displayTime = hoursUntil !== null ? (hoursUntil < 1 ? `${Math.max(1, Math.round(hoursUntil * 60))}` : hoursUntil < 10 ? `${hoursUntil.toFixed(1)}` : `${Math.round(hoursUntil)}`) : '--';
