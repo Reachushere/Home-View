@@ -29230,21 +29230,28 @@ export default function Dashboard() {
                               }
                             }
                           }
-                          let gpa: number | null = null;
-                          if (cg?.percent && cg.percent.trim()) { const letter = percentToGrade(cg.percent); if (letter && letterToGpa[letter] !== undefined) gpa = letterToGpa[letter]; }
-                          else if (cg?.grade && cg.grade.trim() && letterToGpa[cg.grade] !== undefined) gpa = letterToGpa[cg.grade];
-                          else if (profInfo?.grade && profInfo.grade.trim() && letterToGpa[profInfo.grade] !== undefined) gpa = letterToGpa[profInfo.grade];
-                          else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const letter = percentToGrade(electiveGrade.percent); if (letter && letterToGpa[letter] !== undefined) gpa = letterToGpa[letter]; }
-                          else if (electiveGrade?.grade && electiveGrade.grade.trim() && letterToGpa[electiveGrade.grade] !== undefined) gpa = letterToGpa[electiveGrade.grade];
-                          if (gpa === null) return null;
+                          // Row badge shows the course's PERCENT (from assignment
+                          // totals when entered as a percent, else the
+                          // letter→percent fallback). Semester header GPA is
+                          // computed elsewhere by averaging each row's
+                          // letter-bucketed GPA.
+                          const letterToPct: Record<string, number> = { 'A+': 92, 'A': 87, 'A-': 82, 'B+': 78, 'B': 75, 'B-': 72, 'C+': 68, 'C': 65, 'C-': 62, 'D': 55, 'F': 40 };
+                          let pct: number | null = null;
+                          if (cg?.percent && cg.percent.trim()) { const p = parseFloat(cg.percent); if (!isNaN(p)) pct = p; }
+                          else if (cg?.grade && cg.grade.trim() && letterToPct[cg.grade] !== undefined) pct = letterToPct[cg.grade];
+                          else if (profInfo?.grade && profInfo.grade.trim() && letterToPct[profInfo.grade] !== undefined) pct = letterToPct[profInfo.grade];
+                          else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const p = parseFloat(electiveGrade.percent); if (!isNaN(p)) pct = p; }
+                          else if (electiveGrade?.grade && electiveGrade.grade.trim() && letterToPct[electiveGrade.grade] !== undefined) pct = letterToPct[electiveGrade.grade];
+                          if (pct === null) return null;
+                          const pctStr = Number.isInteger(pct) ? pct.toString() : pct.toFixed(1);
                           return (
                             <span
                               className="font-bold flex-shrink-0"
                               style={{ color: '#ffffff', background: 'rgba(80,130,210,0.45)', border: '1px solid rgba(170,210,255,0.5)', borderRadius: '4px', fontSize: '9px', padding: '0 5px', lineHeight: '14px', whiteSpace: 'nowrap', marginLeft: '4px', marginRight: '4px' }}
-                              data-testid={`course-gpa-${semCourse.code}`}
-                              title="Course GPA"
+                              data-testid={`course-pct-${semCourse.code}`}
+                              title="Course percent"
                             >
-                              {gpa.toFixed(2)}
+                              {pctStr}%
                             </span>
                           );
                         })()}
