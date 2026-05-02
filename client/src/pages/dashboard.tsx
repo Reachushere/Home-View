@@ -20581,27 +20581,53 @@ export default function Dashboard() {
                 // Returns BOTH the GPA values and the percent values for the
                 // semester. Percent vals feed the percent-based letter lookup
                 // (rubric is keyed on percent) and the percent display itself.
+                // Mirror the per-semester header GPA badge logic byte-for-byte
+                // so the Overall GPA on the Degree Tracking page always agrees
+                // with the displayed semester GPAs. Previously this used a
+                // slightly different lookup chain (no allPastEntries primary
+                // certKey resolution, different B-/D bucket constants, etc.)
+                // which caused grade edits in W2026 to update the semester box
+                // GPA without flowing through to Overall.
+                const headerLetterToGpa: Record<string, number> = { 'A+': 4.33, 'A': 4.0, 'A-': 3.67, 'B+': 3.33, 'B': 3.0, 'B-': 2.67, 'C+': 2.33, 'C': 2.0, 'C-': 1.67, 'D': 1.0, 'F': 0 };
+                const headerLetterToPct: Record<string, number> = { 'A+': 92, 'A': 87, 'A-': 82, 'B+': 78, 'B': 75, 'B-': 72, 'C+': 68, 'C': 65, 'C-': 62, 'D': 55, 'F': 40 };
+                const headerPctToLetter = (p: number) => p >= 90 ? 'A+' : p >= 85 ? 'A' : p >= 80 ? 'A-' : p >= 77 ? 'B+' : p >= 73 ? 'B' : p >= 70 ? 'B-' : p >= 67 ? 'C+' : p >= 63 ? 'C' : p >= 60 ? 'C-' : p >= 50 ? 'D' : 'F';
+                // Build allPastEntries the same way the header does so cert-key
+                // resolution matches.
+                const overallAllPastEntries = new Map<string, { certKey: string; code: string; name: string }>();
+                Object.entries(checkedCourses).forEach(([certKey, isChecked]) => {
+                  if (!isChecked) return;
+                  const info = certCourseMap[certKey];
+                  if (!info) return;
+                  const elective = openElectives[certKey]?.trim();
+                  let actualCode = info.code;
+                  let actualName = info.name;
+                  if (elective) {
+                    const codeMatch = elective.match(/^([A-Z]{2,5}\s?\d{3}[A-Z]?)\s*(.*)/i);
+                    if (codeMatch) { actualCode = codeMatch[1].replace(/\s/g, ''); actualName = codeMatch[2] || actualCode; }
+                    else { actualCode = elective.split(' ')[0]; actualName = elective.split(' ').slice(1).join(' '); }
+                  }
+                  const k = actualCode.toUpperCase().replace(/\s/g, '');
+                  if (!overallAllPastEntries.has(k)) overallAllPastEntries.set(k, { certKey, code: actualCode, name: actualName });
+                });
+
                 const getValsForSem = (semKey: string): { gpa: number[]; pct: number[] } => {
                   const courses = semAllCourses[semKey] || [];
                   const gpaVals: number[] = [];
                   const pctVals: number[] = [];
                   const seenCodes = new Set<string>();
-                  for (const c of courses) {
-                    const code = c.code.replace(/\s/g, '');
+                  for (const semCourse of courses) {
+                    const code = semCourse.code.replace(/\s/g, '');
                     const codeNorm = code.toUpperCase();
                     const codeNoC = codeNorm.replace(/^C(?=[A-Z]{2,})/, '');
                     const dedupKey = codeNoC || codeNorm;
                     if (seenCodes.has(dedupKey)) continue;
                     seenCodes.add(dedupKey);
-                    const info = pastCourseInfo[code] || pastCourseInfo[codeNoC];
-                    const certKey = Object.keys(certCourseMap).find(k => {
-                      const mc = certCourseMap[k].code.replace(/\s/g, '').toUpperCase();
-                      return mc === codeNorm || ('C' + mc) === codeNorm || mc === codeNoC;
-                    });
-                    const cg = certKey ? courseGrades[certKey] : null;
-                    const directGrade = courseGrades[codeNorm] || courseGrades[code] || courseGrades[codeNoC] || null;
+                    const pastEntry = overallAllPastEntries.get(codeNorm);
+                    const profInfo: any = pastCourseInfo[semCourse.code] || pastCourseInfo[codeNorm] || { grade: '' };
+                    const rowCertKey = pastEntry?.certKey || Object.keys(certCourseMap).find(k => { const mc = certCourseMap[k].code.replace(/\s/g, '').toUpperCase(); return mc === codeNorm || ('C' + mc) === codeNorm || mc === codeNoC; }) || '';
+                    const cg = (rowCertKey && courseGrades[rowCertKey]) || courseGrades[codeNorm] || courseGrades[semCourse.code] || courseGrades[code] || courseGrades[codeNoC] || null;
                     let electiveGrade: { grade: string; percent: string } | null = null;
-                    if (!cg?.percent && !cg?.grade && !directGrade?.percent && !directGrade?.grade) {
+                    if (!cg?.percent && !cg?.grade) {
                       for (const [slot, elVal] of Object.entries(openElectives)) {
                         if (elVal && elVal.replace(/\s/g, '').toUpperCase().startsWith(codeNorm)) {
                           if (courseGrades[slot]?.percent || courseGrades[slot]?.grade) {
@@ -20611,13 +20637,17 @@ export default function Dashboard() {
                         }
                       }
                     }
-                    if (cg?.percent && cg.percent.trim()) { const p = parseFloat(cg.percent); const letter = percentToGrade(cg.percent); if (!isNaN(p) && letter && letterToGpa[letter] !== undefined) { gpaVals.push(letterToGpa[letter]); pctVals.push(p); } }
-                    else if (cg?.grade && cg.grade.trim() && letterToGpa[cg.grade] !== undefined) { gpaVals.push(letterToGpa[cg.grade]); if (letterToPct[cg.grade] !== undefined) pctVals.push(letterToPct[cg.grade]); }
-                    else if (directGrade?.percent && directGrade.percent.trim()) { const p = parseFloat(directGrade.percent); const letter = percentToGrade(directGrade.percent); if (!isNaN(p) && letter && letterToGpa[letter] !== undefined) { gpaVals.push(letterToGpa[letter]); pctVals.push(p); } }
-                    else if (directGrade?.grade && directGrade.grade.trim() && letterToGpa[directGrade.grade] !== undefined) { gpaVals.push(letterToGpa[directGrade.grade]); if (letterToPct[directGrade.grade] !== undefined) pctVals.push(letterToPct[directGrade.grade]); }
-                    else if (info?.grade && info.grade.trim() && letterToGpa[info.grade] !== undefined) { gpaVals.push(letterToGpa[info.grade]); if (letterToPct[info.grade] !== undefined) pctVals.push(letterToPct[info.grade]); }
-                    else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const p = parseFloat(electiveGrade.percent); const letter = percentToGrade(electiveGrade.percent); if (!isNaN(p) && letter && letterToGpa[letter] !== undefined) { gpaVals.push(letterToGpa[letter]); pctVals.push(p); } }
-                    else if (electiveGrade?.grade && electiveGrade.grade.trim() && letterToGpa[electiveGrade.grade] !== undefined) { gpaVals.push(letterToGpa[electiveGrade.grade]); if (letterToPct[electiveGrade.grade] !== undefined) pctVals.push(letterToPct[electiveGrade.grade]); }
+                    let pct: number | null = null;
+                    if (cg?.percent && cg.percent.trim()) { const p = parseFloat(cg.percent); if (!isNaN(p)) pct = p; }
+                    else if (cg?.grade && cg.grade.trim() && headerLetterToPct[cg.grade] !== undefined) pct = headerLetterToPct[cg.grade];
+                    else if (profInfo?.grade && profInfo.grade.trim() && headerLetterToPct[profInfo.grade] !== undefined) pct = headerLetterToPct[profInfo.grade];
+                    else if (electiveGrade?.percent && electiveGrade.percent.trim()) { const p = parseFloat(electiveGrade.percent); if (!isNaN(p)) pct = p; }
+                    else if (electiveGrade?.grade && electiveGrade.grade.trim() && headerLetterToPct[electiveGrade.grade] !== undefined) pct = headerLetterToPct[electiveGrade.grade];
+                    if (pct === null) continue;
+                    const rowLetter = headerPctToLetter(pct);
+                    const rowGpa = headerLetterToGpa[rowLetter] ?? 0;
+                    gpaVals.push(rowGpa);
+                    pctVals.push(pct);
                   }
                   return { gpa: gpaVals, pct: pctVals };
                 };
