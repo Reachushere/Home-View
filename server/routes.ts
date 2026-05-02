@@ -18446,7 +18446,17 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
     } catch (e: any) { console.log(`[Migration] Error: ${e.message}`); }
     syncAllSemesterLibraryFiles('[LibrarySync:Startup]').catch(() => {});
   }, 30000);
-  setInterval(() => { syncAllSemesterLibraryFiles('[LibrarySync:Periodic]').catch(() => {}); }, 30 * 60 * 1000);
+  // Mass library sync — every 30 seconds so OneDrive folder/file changes
+  // (renames, additions, deletions) propagate to the app near-realtime. If
+  // Graph API rate limits become an issue, raise this back to 60–300s.
+  let _libSyncInFlight = false;
+  setInterval(() => {
+    if (_libSyncInFlight) return;
+    _libSyncInFlight = true;
+    syncAllSemesterLibraryFiles('[LibrarySync:Periodic]')
+      .catch(() => {})
+      .finally(() => { _libSyncInFlight = false; });
+  }, 30 * 1000);
 
   async function syncOneDriveFilesForWeek(semesterSettings: any, currentWeekNumber: number, logPrefix: string = '[Sync]'): Promise<void> {
     try {
