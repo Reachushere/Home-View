@@ -273,6 +273,24 @@ export function DevPanel() {
     window.addEventListener("mousedown", onMD, true);
     window.addEventListener("click", onCK, true);
     window.addEventListener("touchstart", onTS, true);
+    // Hover probe — every mousemove writes "what's under cursor" to body.dataset.
+    // No click needed: just move cursor over the dead button to see the real top element.
+    let lastMM = 0;
+    const onMM = (ev: MouseEvent) => {
+      const now = Date.now();
+      if (now - lastMM < 100) return;
+      lastMM = now;
+      try {
+        const stack = document.elementsFromPoint(ev.clientX, ev.clientY);
+        const top = stack[0] as HTMLElement | undefined;
+        const second = stack[1] as HTMLElement | undefined;
+        const fmt = (n?: HTMLElement) => n ? `<${n.tagName.toLowerCase()}>${n.dataset?.testid?'#'+n.dataset.testid:''}` : '-';
+        document.body.dataset.hoverAt = `${ev.clientX},${ev.clientY}`;
+        document.body.dataset.hoverTop = fmt(top);
+        document.body.dataset.hover2nd = fmt(second);
+      } catch {}
+    };
+    window.addEventListener("mousemove", onMM, true);
     // Force re-render every 1s so DIAG reflects body.dataset live.
     const refresh = window.setInterval(() => setDiagBanner(b => b.slice()), 1000);
     return () => {
@@ -281,6 +299,7 @@ export function DevPanel() {
       window.removeEventListener("mousedown", onMD, true);
       window.removeEventListener("click", onCK, true);
       window.removeEventListener("touchstart", onTS, true);
+      window.removeEventListener("mousemove", onMM, true);
       window.clearInterval(refresh);
     };
   }, []);
@@ -949,7 +968,7 @@ export function DevPanel() {
       <div data-testid="banner-diag" style={{ padding: "6px 10px", background: "rgba(20,80,120,0.95)", borderBottom: "2px solid #38bdf8", color: "#e0f2fe", fontSize: 10, fontFamily: "ui-monospace, monospace", maxHeight: 220, overflowY: "auto" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, fontWeight: 700, flexWrap: "wrap" }}>
           <span style={{ background: "#38bdf8", color: "#000", padding: "1px 6px", borderRadius: 3 }}>DIAG</span>
-          <span style={{ flex: 1, minWidth: 200 }}>r#{renderCountRef.current} · TESTclk={clickProofCount} · PD={typeof document!=='undefined' ? (document.body.dataset.pdCount||'0') : '?'}/MD={typeof document!=='undefined' ? ((document.body.dataset as any).pdMouse||'0') : '?'}/CK={typeof document!=='undefined' ? ((document.body.dataset as any).pdClick||'0') : '?'}/TS={typeof document!=='undefined' ? ((document.body.dataset as any).pdTouch||'0') : '?'} · last={typeof document!=='undefined' ? (document.body.dataset.pdLast||'-') : '?'} · {geom.w}×{geom.h}</span>
+          <span style={{ flex: 1, minWidth: 200 }}>r#{renderCountRef.current} · TESTclk={clickProofCount} · PD={typeof document!=='undefined' ? (document.body.dataset.pdCount||'0') : '?'}/MD={typeof document!=='undefined' ? ((document.body.dataset as any).pdMouse||'0') : '?'}/CK={typeof document!=='undefined' ? ((document.body.dataset as any).pdClick||'0') : '?'}/TS={typeof document!=='undefined' ? ((document.body.dataset as any).pdTouch||'0') : '?'}<br/>HOVER@{typeof document!=='undefined' ? (document.body.dataset.hoverAt||'-') : '?'} top={typeof document!=='undefined' ? (document.body.dataset.hoverTop||'-') : '?'} 2nd={typeof document!=='undefined' ? (document.body.dataset.hover2nd||'-') : '?'}<br/>last={typeof document!=='undefined' ? (document.body.dataset.pdLast||'-') : '?'}</span>
           <button
             data-testid="button-dev-test-click"
             type="button"
