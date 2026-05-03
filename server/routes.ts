@@ -14083,6 +14083,7 @@ async function pollStatus(timeout){
 
   // POST /api/tts - Generate speech from text using OpenAI
   app.post("/api/tts", async (req, res) => {
+    if (process.env.STAGING_MODE === "1") return res.json({ skipped: true, reason: "staging mode" });
     try {
       const { text, voice = "echo" } = req.body;
       
@@ -14132,6 +14133,7 @@ async function pollStatus(timeout){
   });
 
   app.post("/api/tts/speaker", async (req, res) => {
+    if (process.env.STAGING_MODE === "1") return res.json({ skipped: true, reason: "staging mode" });
     try {
       const { text, voice = "echo", entityId } = req.body;
       console.log(`[TTS Speaker] Request received - entity: ${entityId}, voice: ${voice}, text length: ${text?.length || 0}`);
@@ -14558,6 +14560,7 @@ async function pollStatus(timeout){
 
   // POST /api/ha-announce - Send a voice announcement to Echo speakers
   app.post("/api/ha-announce", async (req, res) => {
+    if (process.env.STAGING_MODE === "1") return res.json({ skipped: true, reason: "staging mode" });
     try {
       const { message, speakers, voiceGender } = req.body;
       if (!message) {
@@ -14577,6 +14580,7 @@ async function pollStatus(timeout){
 
   // POST /api/ha-push/test - Send a test push notification via Home Assistant
   app.post("/api/ha-push/test", async (_req, res) => {
+    if (process.env.STAGING_MODE === "1") return res.json({ skipped: true, reason: "staging mode" });
     try {
       const result = await sendTestHaPush();
       if (result.success) {
@@ -14868,6 +14872,7 @@ async function pollStatus(timeout){
   });
 
   app.post("/api/ha-automations/:id/trigger", async (req, res) => {
+    if (process.env.STAGING_MODE === "1") return res.json({ skipped: true, reason: "staging mode" });
     try {
       const id = parseInt(req.params.id);
       const [auto] = await db.select().from(haAutomations).where(eq(haAutomations.id, id));
@@ -15182,6 +15187,7 @@ async function pollStatus(timeout){
 
   // POST /api/ha-push/reminder - Send a push notification reminder for a specific task via Home Assistant
   app.post("/api/ha-push/reminder", async (req, res) => {
+    if (process.env.STAGING_MODE === "1") return res.json({ skipped: true, reason: "staging mode" });
     try {
       const { taskId } = req.body;
       if (!taskId) {
@@ -21268,6 +21274,7 @@ document.body.removeChild(a);
   });
 
   app.post("/api/webhook/cat-lights-confirm", async (req, res) => {
+    if (process.env.STAGING_MODE === "1") return res.json({ skipped: true, reason: "staging mode" });
     console.log(`[Cat Lights Confirm] ====== CONFIRMATION RECEIVED ======`);
     if (catLightsConfirmResolve) {
       catLightsConfirmResolve(true);
@@ -21335,6 +21342,7 @@ document.body.removeChild(a);
   // If the current week's CPPA module hasn't been fully listened to,
   // turning the light ON starts/resumes playback on Cat Wash speaker group, turning it OFF stops and saves progress.
   app.post("/api/webhook/cat-lights", async (req, res) => {
+    if (process.env.STAGING_MODE === "1") return res.json({ skipped: true, reason: "staging mode" });
     try {
       catWashTrace('CatLights', 'WEBHOOK RECEIVED', { body: req.body });
       devLogDecision('cat_lights:webhook_received', 'received', 'HA webhook fired', { body: req.body, headers: { 'user-agent': req.headers['user-agent'] } }, { receivedAt: new Date().toISOString() }, 'cat_lights');
@@ -25584,6 +25592,7 @@ document.body.removeChild(a);
 
   // POST /api/echo/tts - Send text-to-speech to Home Assistant Echo device
   app.post("/api/echo/tts", async (req, res) => {
+    if (process.env.STAGING_MODE === "1") return res.json({ skipped: true, reason: "staging mode" });
     try {
       const { message } = req.body;
       
