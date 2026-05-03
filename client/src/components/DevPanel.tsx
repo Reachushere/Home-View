@@ -34,6 +34,15 @@ export function DevPanel() {
   const [flags, setFlagsState] = useState<any>(null);
   const [tab, setTab] = useState<TabId>("trace");
   const [busy, setBusy] = useState(false);
+  // Console error capture (last 20)
+  const [consoleErrors, setConsoleErrors] = useState<{ time: string; msg: string }[]>([]);
+  // Guided Fix wizard state
+  const [wizardOpen, setWizardOpen] = useState(false);
+  const [wizIssue, setWizIssue] = useState("");
+  const [wizArea, setWizArea] = useState<"" | "visual" | "data" | "automation" | "onedrive" | "tts" | "calendar" | "cat_lights" | "files" | "database" | "frontend" | "backend" | "unknown">("");
+  const [wizSide, setWizSide] = useState<"" | "frontend" | "backend" | "unknown">("");
+  const [wizSince, setWizSince] = useState<"" | "frontend_change" | "backend_change" | "unknown">("");
+  const [wizPrompt, setWizPrompt] = useState("");
   // Replay form state
   const [rDate, setRDate] = useState("");
   const [rWeek, setRWeek] = useState("");
@@ -43,6 +52,23 @@ export function DevPanel() {
   const [vAction, setVAction] = useState<"" | "PROMPT" | "CHUM" | "INVALID_WEEK_ABORT" | "UNKNOWN">("");
   const [validateResult, setValidateResult] = useState<any>(null);
   const tickRef = useRef<number | null>(null);
+
+  // Intercept console.error → keep last 20 (mounted always so we capture pre-open errors).
+  useEffect(() => {
+    const orig = console.error;
+    console.error = (...args: any[]) => {
+      try {
+        const msg = args.map(a => {
+          if (a instanceof Error) return a.stack || a.message;
+          if (typeof a === "string") return a;
+          try { return JSON.stringify(a); } catch { return String(a); }
+        }).join(" ").slice(0, 800);
+        setConsoleErrors(prev => [...prev.slice(-19), { time: new Date().toISOString(), msg }]);
+      } catch {}
+      orig.apply(console, args);
+    };
+    return () => { console.error = orig; };
+  }, []);
 
   // Toggle hotkey.
   useEffect(() => {
@@ -189,6 +215,260 @@ export function DevPanel() {
     finally { setBusy(false); }
   };
 
+  // ───── helpers: page introspection ─────
+  const guessPageFiles = (path: string): string[] => {
+    // Heuristic mapping route → likely client/src files. Keep coarse but useful.
+    const p = path.split("?")[0].replace(/^\/+/, "");
+    const seg = p.split("/")[0] || "dashboard";
+    const map: Record<string, string[]> = {
+      "": ["client/src/pages/Dashboard.tsx", "client/src/App.tsx"],
+      dashboard: ["client/src/pages/Dashboard.tsx", "client/src/components/DashboardGrid.tsx"],
+      "pdf-reader": ["client/src/pages/PdfReader.tsx", "client/src/components/AudioPlayer.tsx"],
+      shower: ["client/src/pages/ShowerMode.tsx"],
+      settings: ["client/src/pages/Settings.tsx"],
+      onedrive: ["client/src/pages/OneDriveBrowser.tsx", "server/onedrive.ts"],
+      calendar: ["client/src/pages/Calendar.tsx", "server/google-calendar.ts"],
+      tasks: ["client/src/pages/Tasks.tsx"],
+    };
+    const guesses = map[seg] || [`client/src/pages/${seg.charAt(0).toUpperCase() + seg.slice(1)}.tsx`];
+    return [...guesses, "client/src/components/DevPanel.tsx"];
+  };
+  const sniffSubsystem = (path: string, area?: string): "frontend" | "backend" | "both" => {
+    if (area === "automation" || area === "tts" || area === "onedrive" || area === "calendar" || area === "cat_lights" || area === "database" || area === "backend") return "backend";
+    if (area === "visual" || area === "frontend") return "frontend";
+    if (area === "files") return "both";
+    if (path.startsWith("/api/")) return "backend";
+    return "both";
+  };
+  const captureLayoutSnapshot = () => {
+    const interactive = Array.from(document.querySelectorAll('[data-testid]'))
+      .slice(0, 60)
+      .map(el => {
+        const r = (el as HTMLElement).getBoundingClientRect();
+        return {
+          testid: (el as HTMLElement).dataset.testid,
+          tag: el.tagName.toLowerCase(),
+          visible: r.width > 0 && r.height > 0 && r.top < window.innerHeight && r.bottom > 0,
+          rect: { x: Math.round(r.x), y: Math.round(r.y), w: Math.round(r.width), h: Math.round(r.height) },
+          text: (el.textContent || "").trim().slice(0, 60),
+        };
+      });
+    return interactive;
+  };
+  const redactProfile = (): any => {
+    const out: any = { hint: "no profile context detected" };
+    try {
+      const lsKeys = ["unical:user", "unical:profile", "user", "profile"];
+      for (const k of lsKeys) {
+        const v = localStorage.getItem(k);
+        if (v) {
+          const parsed = JSON.parse(v);
+          out.profile = {
+            id: parsed?.id ?? "(present)",
+            name: parsed?.name ? "(redacted)" : undefined,
+            email: parsed?.email ? "(redacted)" : undefined,
+            role: parsed?.role,
+            timezone: parsed?.timezone,
+          };
+          delete out.hint;
+          break;
+        }
+      }
+      out.devFlag = new URLSearchParams(location.search).get("dev");
+    } catch {}
+    return out;
+  };
+
+  // ───── action: copy PAGE PACK ─────
+  const copyPagePack = async () => {
+    setBusy(true);
+    try {
+      const route = window.location.pathname + window.location.search;
+      const [binfo, errs] = await Promise.all([
+        j("/api/dev/build-info").catch(() => null),
+        j("/api/dev/recent-errors").catch(() => null),
+      ]);
+      const layout = captureLayoutSnapshot();
+      const visibleRoot = document.querySelector('main, [data-testid^="page-"], #root > div') as HTMLElement | null;
+      const visibleComponent = visibleRoot?.dataset?.testid || document.title || "(unknown)";
+      const guesses = guessPageFiles(window.location.pathname);
+      const subsystem = sniffSubsystem(window.location.pathname);
+      const sep = "─".repeat(60);
+      const text = [
+        "=== CHATGPT DEBUG PACK — CURRENT PAGE ===",
+        `Generated: ${new Date().toISOString()}`,
+        `Route:           ${route}`,
+        `Visible page:    ${visibleComponent}`,
+        `Browser size:    ${window.innerWidth}×${window.innerHeight} (dpr ${window.devicePixelRatio})`,
+        `User-Agent:      ${navigator.userAgent}`,
+        sep,
+        "## INSTRUCTIONS FOR CHATGPT",
+        `This pack describes a ${subsystem.toUpperCase()} concern unless the user says otherwise.`,
+        `- Frontend changes require: \`npm run build && pm2 restart all\` on the Pi.`,
+        `- Backend changes require: \`pm2 restart all\` (no rebuild needed).`,
+        `- DO NOT modify Cat Lights logic, OneDrive sync, or TTS pipeline without confirmation.`,
+        `- If the issue is visual, focus on the file guesses below before scanning the whole repo.`,
+        sep,
+        "## SUMMARY",
+        `build outOfDate: ${binfo?.outOfDate ? "YES — needs `npm run build`" : "no"}`,
+        `bundleHash:      ${binfo?.bundleHash ?? "—"}`,
+        `console errors:  ${consoleErrors.length}`,
+        sep,
+        "## LIKELY FRONTEND FILES",
+        ...guesses.map(g => `- ${g}`),
+        sep,
+        "## LAYOUT MAP (visible interactive elements)",
+        "```json", JSON.stringify(layout, null, 2), "```", sep,
+        "## CONSOLE ERRORS (last 20)",
+        consoleErrors.length === 0 ? "(none captured since panel mounted)" : "```json\n" + JSON.stringify(consoleErrors, null, 2) + "\n```",
+        sep,
+        "## /api/dev/build-info", "```json", JSON.stringify(binfo, null, 2), "```", sep,
+        "## /api/dev/recent-errors", "```json", JSON.stringify(errs, null, 2), "```", sep,
+        "## PROFILE / USER CONTEXT (redacted)",
+        "```json", JSON.stringify(redactProfile(), null, 2), "```",
+      ].join("\n");
+      await navigator.clipboard.writeText(text);
+      alert(`Page pack copied (${(text.length / 1024).toFixed(1)} KB).`);
+    } catch (e: any) { alert("Failed: " + e.message); }
+    finally { setBusy(false); }
+  };
+
+  // ───── action: one-click preset pack (Backend / TTS / OneDrive) ─────
+  const copyPresetPack = async (kind: "backend" | "tts" | "onedrive") => {
+    setBusy(true);
+    try {
+      const presets: Record<string, { title: string; endpoints: string[]; subsystem: "frontend" | "backend" | "both"; note: string }> = {
+        backend:  { title: "BACKEND", subsystem: "backend",
+                    endpoints: ["/api/dev/status", "/api/dev/diagnose", "/api/dev/recent-errors", "/api/dev/performance", "/api/dev/build-info"],
+                    note: "Backend issue. Restart with `pm2 restart all` after fix (no rebuild)." },
+        tts:      { title: "TTS / AUDIO", subsystem: "backend",
+                    endpoints: ["/api/dev/flow-snapshot", "/api/dev/diagnose", "/api/dev/tts-ready", "/api/dev/file-map", "/api/dev/trace?subsystem=cat_lights", "/api/dev/recent-errors"],
+                    note: "TTS pipeline. PROTECTED — confirm before changing AudioPrep or speaker routing." },
+        onedrive: { title: "ONEDRIVE", subsystem: "backend",
+                    endpoints: ["/api/dev/status", "/api/dev/onedrive-audit", "/api/dev/file-map", "/api/dev/recent-errors"],
+                    note: "OneDrive sync. PROTECTED — confirm before changing folder paths or sync logic." },
+      };
+      const cfg = presets[kind];
+      const fetched: Record<string, any> = {};
+      for (const ep of cfg.endpoints) {
+        try { fetched[ep] = await j(ep); } catch (e: any) { fetched[ep] = { error: e.message }; }
+      }
+      const sep = "─".repeat(60);
+      const restartRule = cfg.subsystem === "frontend"
+        ? "Frontend → `cd ~/Home-View && git pull && npm run build && pm2 restart all`"
+        : "Backend → `cd ~/Home-View && git pull && pm2 restart all`";
+      const text = [
+        `=== CHATGPT DEBUG PACK — ${cfg.title} ===`,
+        `Generated: ${new Date().toISOString()}`,
+        `Route: ${window.location.pathname + window.location.search}`,
+        sep,
+        "## INSTRUCTIONS FOR CHATGPT",
+        cfg.note,
+        restartRule,
+        sep,
+        ...Object.entries(fetched).flatMap(([ep, val]) => [
+          `## ${ep}`, "```json", JSON.stringify(val, null, 2), "```", sep,
+        ]),
+        "## CONSOLE ERRORS (last 20)",
+        consoleErrors.length === 0 ? "(none)" : "```json\n" + JSON.stringify(consoleErrors, null, 2) + "\n```",
+      ].join("\n");
+      await navigator.clipboard.writeText(text);
+      alert(`${cfg.title} pack copied (${(text.length / 1024).toFixed(1)} KB).`);
+    } catch (e: any) { alert("Failed: " + e.message); }
+    finally { setBusy(false); }
+  };
+
+  // ───── action: build Guided Fix prompt ─────
+  const buildGuidedPrompt = async () => {
+    if (!wizIssue.trim()) { alert("Describe what is broken first."); return; }
+    setBusy(true);
+    try {
+      const route = window.location.pathname + window.location.search;
+      const subsystem = sniffSubsystem(route, wizArea);
+      const guesses = guessPageFiles(window.location.pathname);
+      const sep = "─".repeat(60);
+
+      // Section selection rules per area.
+      const includes: Record<string, string[]> = {
+        visual:     ["page-pack", "/api/dev/build-info"],
+        frontend:   ["page-pack", "/api/dev/build-info", "/api/dev/recent-errors"],
+        data:       ["/api/dev/status", "/api/dev/system-map", "/api/dev/recent-errors"],
+        database:   ["/api/dev/status", "/api/dev/system-map", "/api/dev/recent-errors"],
+        backend:    ["/api/dev/status", "/api/dev/diagnose", "/api/dev/recent-errors", "/api/dev/performance"],
+        automation: ["/api/dev/flow-snapshot", "/api/dev/diagnose", "/api/dev/trace?subsystem=cat_lights", "/api/dev/recent-errors"],
+        cat_lights: ["/api/dev/flow-snapshot", "/api/dev/diagnose", "/api/dev/file-map", "/api/dev/trace?subsystem=cat_lights", "/api/dev/recent-errors"],
+        onedrive:   ["/api/dev/status", "/api/dev/onedrive-audit", "/api/dev/file-map", "/api/dev/recent-errors"],
+        tts:        ["/api/dev/flow-snapshot", "/api/dev/trace?subsystem=cat_lights", "/api/dev/tts-ready", "/api/dev/file-map", "/api/dev/recent-errors"],
+        files:      ["/api/dev/file-map", "/api/dev/onedrive-audit", "/api/dev/recent-errors"],
+        calendar:   ["/api/dev/status", "/api/dev/recent-errors"],
+        unknown:    ["/api/dev/status", "/api/dev/diagnose", "/api/dev/recent-errors", "/api/dev/build-info"],
+      };
+      const sections = includes[wizArea] || ["/api/dev/status", "/api/dev/diagnose", "/api/dev/recent-errors", "/api/dev/build-info"];
+
+      // Live-fetch the relevant endpoints so the prompt is self-contained.
+      const fetched: Record<string, any> = {};
+      for (const ep of sections) {
+        if (ep === "page-pack") continue;
+        try { fetched[ep] = await j(ep); } catch (e: any) { fetched[ep] = { error: e.message }; }
+      }
+
+      // Build the prompt.
+      const restartRule = subsystem === "frontend"
+        ? "Frontend change → on the Pi run: `cd ~/Home-View && git pull && npm run build && pm2 restart all`"
+        : "Backend change → on the Pi run: `cd ~/Home-View && git pull && pm2 restart all` (no build needed)";
+      const protectedSystems = [
+        "PROTECTED — do not modify without explicit confirmation:",
+        "- Cat Lights handler (server/routes.ts /api/webhook/cat-lights)",
+        "- OneDrive sync logic (server/onedrive.ts)",
+        "- TTS preparation pipeline (server/tts*.ts, AudioPrep)",
+        "- DevPanel & devTrace instrumentation (do not refactor for style)",
+      ].join("\n");
+      const prompt = [
+        "=== GUIDED FIX REQUEST ===",
+        `Generated: ${new Date().toISOString()}`,
+        `Route:        ${route}`,
+        `Subsystem:    ${subsystem}`,
+        `Area:         ${wizArea || "(unspecified)"}`,
+        `Started after: ${wizSince || "(unspecified)"}`,
+        sep,
+        "## ISSUE",
+        wizIssue.trim(),
+        sep,
+        "## CONTEXT (likely files)",
+        ...guesses.map(g => `- ${g}`),
+        sep,
+        "## RESTART / BUILD RULE",
+        restartRule,
+        sep,
+        "## " + protectedSystems,
+        sep,
+        "## ENDPOINT SNAPSHOTS",
+        ...Object.entries(fetched).flatMap(([ep, val]) => [
+          `### ${ep}`, "```json", JSON.stringify(val, null, 2), "```", "",
+        ]),
+        ...(sections.includes("page-pack") ? [
+          "### page layout (visible interactive elements)",
+          "```json", JSON.stringify(captureLayoutSnapshot(), null, 2), "```",
+        ] : []),
+        sep,
+        "## CONSOLE ERRORS (last 20)",
+        consoleErrors.length === 0 ? "(none)" : "```json\n" + JSON.stringify(consoleErrors, null, 2) + "\n```",
+        sep,
+        "## PROFILE (redacted)",
+        "```json", JSON.stringify(redactProfile(), null, 2), "```",
+        sep,
+        "## INSTRUCTIONS FOR CHATGPT",
+        "1. Diagnose the issue using ONLY the snapshots above.",
+        "2. Propose the SMALLEST possible fix touching the listed files first.",
+        "3. State exactly which Pi command to run after the fix.",
+        "4. If you need data not present here, name the exact /api/dev/* endpoint to call.",
+        "5. Respect the PROTECTED list — propose, do not assume.",
+      ].join("\n");
+      setWizPrompt(prompt);
+    } catch (e: any) { alert("Failed: " + e.message); }
+    finally { setBusy(false); }
+  };
+
   return (
     <div style={panel} data-testid="dev-panel">
       <div style={{ display: "flex", alignItems: "center", padding: "6px 8px", borderBottom: "1px solid rgba(120,120,150,0.3)" }}>
@@ -243,6 +523,15 @@ export function DevPanel() {
           try { await navigator.clipboard.writeText(JSON.stringify(info, null, 2)); alert("Page inspector copied."); }
           catch (e: any) { alert("Failed: " + e.message); }
         }}>Copy Page</button>
+        <button data-testid="button-dev-page-pack" disabled={busy} style={actBtn("#fde68a", "rgba(251,191,36,0.18)")} onClick={copyPagePack}>
+          {busy ? "Collecting…" : "Page Pack"}
+        </button>
+        <button data-testid="button-dev-guided-fix" style={actBtn("#f0abfc", "rgba(217,70,239,0.18)")} onClick={() => { setWizardOpen(true); setWizPrompt(""); }}>
+          Guided Fix
+        </button>
+        <button data-testid="button-dev-pack-backend" disabled={busy} style={actBtn("#a5b4fc", "rgba(129,140,248,0.18)")} onClick={() => copyPresetPack("backend")}>Backend Pack</button>
+        <button data-testid="button-dev-pack-tts" disabled={busy} style={actBtn("#fcd34d", "rgba(251,191,36,0.18)")} onClick={() => copyPresetPack("tts")}>TTS Pack</button>
+        <button data-testid="button-dev-pack-onedrive" disabled={busy} style={actBtn("#67e8f9", "rgba(34,211,238,0.18)")} onClick={() => copyPresetPack("onedrive")}>OneDrive Pack</button>
       </div>
 
       <div style={{ overflow: "auto", padding: 8, flex: 1 }}>
@@ -430,6 +719,80 @@ export function DevPanel() {
       <div style={{ padding: "4px 8px", borderTop: "1px solid rgba(120,120,150,0.3)", color: "#777", fontSize: 9 }}>
         Ctrl+Shift+D to toggle • polling every 3s
       </div>
+
+      {wizardOpen && (
+        <div data-testid="modal-guided-fix" style={{
+          position: "absolute", inset: 0, background: "rgba(10,10,15,0.96)", padding: 12,
+          overflow: "auto", display: "flex", flexDirection: "column", gap: 8,
+        }}>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <span style={{ flex: 1, fontWeight: 700, color: "#f0abfc" }}>Guided Fix Mode</span>
+            <button data-testid="button-wizard-close" onClick={() => setWizardOpen(false)} style={{ background: "transparent", border: "none", color: "#bbb", cursor: "pointer", fontSize: 14 }}>×</button>
+          </div>
+          <div style={{ color: "#888", fontSize: 10 }}>Answer 4 questions — get a ready-to-paste ChatGPT prompt.</div>
+
+          <label style={{ color: "#cbd5e1" }}>1. What is broken?
+            <textarea data-testid="input-wizard-issue" value={wizIssue} onChange={e => setWizIssue(e.target.value)}
+              placeholder="e.g. The 'Next reading' card on the dashboard shows the wrong title"
+              style={{ width: "100%", minHeight: 50, marginTop: 4, background: "rgba(255,255,255,0.06)", color: "#e8e8ec", border: "1px solid rgba(120,120,150,0.4)", borderRadius: 4, padding: 4, fontFamily: "inherit", fontSize: 11 }} />
+          </label>
+
+          <label style={{ color: "#cbd5e1" }}>2. Which page/system? (auto-detected: <code style={{ color: "#93c5fd" }}>{window.location.pathname}</code>)
+            <select data-testid="select-wizard-side" value={wizSide} onChange={e => setWizSide(e.target.value as any)}
+              style={{ width: "100%", marginTop: 4, background: "rgba(255,255,255,0.06)", color: "#e8e8ec", border: "1px solid rgba(120,120,150,0.4)", borderRadius: 4, padding: 4, fontSize: 11 }}>
+              <option value="">— use auto-detected —</option>
+              <option value="frontend">Frontend (UI on this page)</option>
+              <option value="backend">Backend (API/data/automation)</option>
+              <option value="unknown">Not sure</option>
+            </select>
+          </label>
+
+          <label style={{ color: "#cbd5e1" }}>3. Category
+            <select data-testid="select-wizard-area" value={wizArea} onChange={e => setWizArea(e.target.value as any)}
+              style={{ width: "100%", marginTop: 4, background: "rgba(255,255,255,0.06)", color: "#e8e8ec", border: "1px solid rgba(120,120,150,0.4)", borderRadius: 4, padding: 4, fontSize: 11 }}>
+              <option value="">— pick one —</option>
+              <option value="visual">Visual / layout</option>
+              <option value="frontend">Frontend (other UI)</option>
+              <option value="data">Data / display values</option>
+              <option value="cat_lights">Cat Lights (HA webhook)</option>
+              <option value="automation">Automation / scheduler</option>
+              <option value="onedrive">OneDrive sync</option>
+              <option value="tts">TTS / audio playback</option>
+              <option value="files">Files / file selection</option>
+              <option value="calendar">Calendar / Google integration</option>
+              <option value="database">Database / persistence</option>
+              <option value="backend">Backend (other API)</option>
+              <option value="unknown">Don't know</option>
+            </select>
+          </label>
+
+          <label style={{ color: "#cbd5e1" }}>4. Did this start after a recent change?
+            <select data-testid="select-wizard-since" value={wizSince} onChange={e => setWizSince(e.target.value as any)}
+              style={{ width: "100%", marginTop: 4, background: "rgba(255,255,255,0.06)", color: "#e8e8ec", border: "1px solid rgba(120,120,150,0.4)", borderRadius: 4, padding: 4, fontSize: 11 }}>
+              <option value="">— pick one —</option>
+              <option value="frontend_change">After a frontend change (UI/build)</option>
+              <option value="backend_change">After a backend change (API/server)</option>
+              <option value="unknown">Don't know / has been broken</option>
+            </select>
+          </label>
+
+          <div style={{ display: "flex", gap: 6 }}>
+            <button data-testid="button-wizard-generate" disabled={busy} onClick={buildGuidedPrompt}
+              style={actBtn("#f0abfc", "rgba(217,70,239,0.18)")}>
+              {busy ? "Building…" : "Generate ChatGPT Prompt"}
+            </button>
+            {wizPrompt && (
+              <button data-testid="button-wizard-copy" onClick={async () => { await navigator.clipboard.writeText(wizPrompt); alert(`Copied (${(wizPrompt.length / 1024).toFixed(1)} KB).`); }}
+                style={actBtn("#86efac", "rgba(34,197,94,0.18)")}>Copy to Clipboard</button>
+            )}
+          </div>
+
+          {wizPrompt && (
+            <textarea data-testid="text-wizard-prompt" readOnly value={wizPrompt}
+              style={{ flex: 1, minHeight: 200, background: "rgba(255,255,255,0.04)", color: "#cbd5e1", border: "1px solid rgba(120,120,150,0.4)", borderRadius: 4, padding: 6, fontFamily: "monospace", fontSize: 10, whiteSpace: "pre-wrap" }} />
+          )}
+        </div>
+      )}
     </div>
   );
 }
