@@ -625,7 +625,23 @@ export function DevPanel() {
         <button data-testid="button-dev-pack-tts" disabled={busy} style={actBtn("#fcd34d", "rgba(251,191,36,0.18)")} onClick={() => copyPresetPack("tts")}>TTS Pack</button>
         <button data-testid="button-dev-pack-onedrive" disabled={busy} style={actBtn("#67e8f9", "rgba(34,211,238,0.18)")} onClick={() => copyPresetPack("onedrive")}>OneDrive Pack</button>
         <button data-testid="button-dev-minimal-prompt" disabled={busy} style={actBtn("#d8b4fe", "rgba(192,132,252,0.18)")} onClick={copyMinimalPrompt}>Minimal Prompt</button>
-        <button data-testid="button-dev-run-smoke" style={actBtn("#fca5a5", "rgba(239,68,68,0.18)")} onClick={async () => { try { await navigator.clipboard.writeText("node scripts/smoke.mjs https://uni-cal.app"); alert("Command copied:\n\nnode scripts/smoke.mjs https://uni-cal.app\n\nRun in a terminal — read-only, safe."); } catch { alert("Copy failed."); } }}>Run Smoke</button>
+        <button data-testid="button-dev-run-smoke" style={actBtn("#fca5a5", "rgba(239,68,68,0.18)")} onClick={async () => {
+          const cmd = [
+            "# Smoke tests — read-only. /api/dev/* needs auth (same session cookie the dashboard uses).",
+            "# Step 1: in your browser DevTools → Application → Cookies → copy the value of `uni_cal_session`.",
+            "# Step 2: paste it into the variable below and run.",
+            "",
+            "UNICAL_SESSION_TOKEN='paste-cookie-value-here' \\",
+            "  node scripts/smoke.mjs https://uni-cal.app",
+            "",
+            "# No auth? Public checks still run; authenticated checks SKIP (won't fail the run).",
+            "# Legacy alternative if the server has DEV_API_KEY set:",
+            "#   DEV_API_KEY='…' node scripts/smoke.mjs https://uni-cal.app",
+            "",
+            "# Full docs: docs/SMOKE_TESTS.md",
+          ].join("\n");
+          try { await navigator.clipboard.writeText(cmd); alert("Smoke command template copied.\n\nPaste your `uni_cal_session` cookie value into the script before running.\nNothing about the token is printed by smoke.\n\nSee docs/SMOKE_TESTS.md for details."); } catch { alert("Copy failed."); }
+        }}>Run Smoke</button>
       </div>
 
       {/* Last build / restart strip */}
