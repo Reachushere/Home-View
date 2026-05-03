@@ -29,6 +29,7 @@ import { db } from "../db";
 import { storage } from "../storage";
 import { isOneDriveConnected } from "../onedrive";
 import { getSchedulerStatus } from "../reminderScheduler";
+import * as crypto from "crypto";
 import {
   getSteps,
   clearSteps,
@@ -36,7 +37,10 @@ import {
   getLayoutSnapshot,
   setLayoutSnapshot,
   getRecentErrors,
+  getFlags,
+  setFlags,
   type Subsystem,
+  type TraceStep,
 } from "./devTrace";
 
 const PROJECT_ROOT = path.resolve(process.cwd());
@@ -127,8 +131,39 @@ function gitInfo() {
   };
 }
 
+function newestMtime(dir: string): number {
+  let max = 0;
+  try {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const e of entries) {
+      if (e.name.startsWith(".")) continue;
+      const p = path.join(dir, e.name);
+      if (e.isDirectory()) max = Math.max(max, newestMtime(p));
+      else { try { max = Math.max(max, fs.statSync(p).mtimeMs); } catch {} }
+    }
+  } catch {}
+  return max;
+}
+function bundleHashAndSize(dir: string) {
+  try {
+    if (!fs.existsSync(dir)) return { hash: null, sizeBytes: 0 };
+    const h = crypto.createHash("sha1");
+    let total = 0;
+    const walk = (d: string) => {
+      for (const e of fs.readdirSync(d, { withFileTypes: true })) {
+        if (e.name.startsWith(".")) continue;
+        const p = path.join(d, e.name);
+        if (e.isDirectory()) walk(p);
+        else { try { const st = fs.statSync(p); h.update(p + ":" + st.mtimeMs + ":" + st.size); total += st.size; } catch {} }
+      }
+    };
+    walk(dir);
+    return { hash: h.digest("hex").slice(0, 12), sizeBytes: total };
+  } catch { return { hash: null, sizeBytes: 0 }; }
+}
 function buildInfo() {
   const distPath = path.join(PROJECT_ROOT, "dist");
+  const clientSrc = path.join(PROJECT_ROOT, "client", "src");
   let lastBuildAt: string | null = null;
   let lastBuildAgeSec: number | null = null;
   try {
@@ -138,6 +173,11 @@ function buildInfo() {
       lastBuildAgeSec = Math.round((Date.now() - st.mtimeMs) / 1000);
     }
   } catch {}
+  // Out-of-date detection: any client/src file newer than dist?
+  const distMtime = (() => { try { return fs.statSync(distPath).mtimeMs; } catch { return 0; } })();
+  const srcMtime = newestMtime(clientSrc);
+  const outOfDate = !!(distMtime && srcMtime && srcMtime > distMtime);
+  const { hash, sizeBytes } = bundleHashAndSize(distPath);
   const pm2Detected = !!(process.env.PM2_HOME || process.env.pm_id || process.env.PM2_USAGE);
   return {
     nodeEnv: process.env.NODE_ENV || "development",
@@ -145,6 +185,11 @@ function buildInfo() {
     distExists: fs.existsSync(distPath),
     lastBuildAt,
     lastBuildAgeSec,
+    bundleHash: hash,
+    bundleSizeBytes: sizeBytes,
+    clientSrcNewestMtime: srcMtime ? new Date(srcMtime).toISOString() : null,
+    outOfDate,
+    outOfDateWarning: outOfDate ? "client/src has changes newer than dist — run `npm run build && pm2 restart all` on the Pi" : null,
     pm2Detected,
     pm2ProcessNameGuess: "dashboard",
     frontendChangesRequireRebuild: process.env.NODE_ENV === "production",
@@ -365,9 +410,37 @@ export function registerDevRoutes(app: Express): void {
       if (f.preparedAt) b.withPreparedAt++;
       if (f.preparedAudioPaths) b.withPreparedAudioPaths++;
     }
+    // Phase-2: candidate scoring for the current week — what would
+    // findNextFileByPriority pick right now, and why was each rejected?
+    let candidates: any[] = [];
+    let currentWeek: number | null = null;
+    try {
+      const sem: any = await activeSemester();
+      if (sem?.semesterStartDate) {
+        const today = new Date();
+        const start = new Date(sem.semesterStartDate);
+        currentWeek = today < start ? 1 : Math.floor((today.getTime() - start.getTime()) / (7 * 86400000)) + 1;
+      }
+      if (currentWeek != null) {
+        for (const f of files) {
+          let accepted = true; let reason = "ok";
+          if (f.weekNumber == null) { accepted = false; reason = "no week assigned"; }
+          else if (f.weekNumber !== currentWeek) { accepted = false; reason = `wrong_week (file=${f.weekNumber}, current=${currentWeek})`; }
+          else if (f.listenedAt) { accepted = false; reason = "already listened"; }
+          else if (!f.preparedAt) { accepted = false; reason = "not prepared (no preparedAt)"; }
+          else if (!f.preparedAudioPaths) { accepted = false; reason = "no preparedAudioPaths"; }
+          candidates.push({ id: f.id, name: f.originalName, folder: f.folder, week: f.weekNumber, accepted, reason });
+          if (candidates.length >= 60) break;
+        }
+        // Sort accepted first
+        candidates.sort((a, b) => Number(b.accepted) - Number(a.accepted));
+      }
+    } catch (e: any) { candidates = [{ error: e.message }]; }
     res.json({
       lastSelection: sel,
+      currentWeek,
       summary: { totalFiles: files.length, byFolder: Object.values(byFolder) },
+      candidates,
       courses,
     });
   });
@@ -517,6 +590,270 @@ export function registerDevRoutes(app: Express): void {
         return res.json({ file, lines: [start, end], totalBytes: stat.size, content: content.split("\n").slice(start - 1, end).join("\n") });
       }
       res.json({ file, totalBytes: stat.size, lineCount: content.split("\n").length, content });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  // ────────── flow snapshot (Phase-2) ──────────
+  // Walks the trace ring, finds the most recent cat_lights:webhook_received
+  // and bundles every cat_lights event after it into one structured object.
+  app.get("/api/dev/flow-snapshot", (req, res) => {
+    if (!gate(req, res)) return;
+    const all: TraceStep[] = getSteps();
+    let startIdx = -1;
+    for (let i = all.length - 1; i >= 0; i--) {
+      if (all[i].step === "cat_lights:webhook_received") { startIdx = i; break; }
+    }
+    if (startIdx < 0) {
+      return res.json({ empty: true, hint: "No cat_lights run yet — trigger Cat Lights or POST /api/dev/test/cat-lights-on." });
+    }
+    const slice = all.slice(startIdx).filter(s => s.subsystem === "cat_lights");
+    const get = (step: string) => slice.find(s => s.step === step);
+    const branch = get("cat_lights:branch");
+    const tts = get("cat_lights:tts_started");
+    const week = get("cat_lights:week_calculated");
+    const initial = get("cat_lights:initial_file_lookup");
+    const sel = getLastSelection();
+    const finalAction = (() => {
+      const action = (branch?.data as any)?.action || (branch?.outputs as any)?.action;
+      if (action === "PROMPT_FILE") return "PROMPT";
+      if (action === "CHUM_FALLBACK") return "CHUM";
+      if (tts) return "PROMPT";
+      return "UNKNOWN";
+    })();
+    res.json({
+      trigger: get("cat_lights:webhook_received")?.data?.body || null,
+      stateParsed: get("cat_lights:state_parsed")?.data || null,
+      semester: (week?.data as any)?.semesterKey || sel?.semester || null,
+      weekNumber: (week?.data as any)?.weekNumber ?? null,
+      initialFileLookup: initial?.data || null,
+      decisionPath: slice.map(s => ({
+        time: s.time,
+        step: s.step,
+        decision: s.decision || (s.data as any)?.action,
+        reason: s.reason || (s.data as any)?.reason,
+        inputs: s.inputs,
+        outputs: s.outputs,
+      })),
+      fileSelection: sel,
+      tts: tts ? { message: (tts.data as any)?.message, time: tts.time } : null,
+      finalAction,
+      runStartedAt: all[startIdx].time,
+      runEndedAt: slice[slice.length - 1]?.time,
+      durationMs: slice[slice.length - 1]?.ts - all[startIdx].ts,
+    });
+  });
+
+  // ────────── validate latest snapshot ──────────
+  app.post("/api/dev/validate", async (req, res) => {
+    if (!gate(req, res)) return;
+    const expected = (req.body || {}).expected || {};
+    // Reuse flow-snapshot logic by calling the route internally is awkward —
+    // re-derive inline.
+    const all = getSteps();
+    let startIdx = -1;
+    for (let i = all.length - 1; i >= 0; i--) {
+      if (all[i].step === "cat_lights:webhook_received") { startIdx = i; break; }
+    }
+    if (startIdx < 0) return res.json({ pass: false, explanation: "no cat_lights run captured" });
+    const slice = all.slice(startIdx).filter(s => s.subsystem === "cat_lights");
+    const week = slice.find(s => s.step === "cat_lights:week_calculated");
+    const branch = slice.find(s => s.step === "cat_lights:branch");
+    const tts = slice.find(s => s.step === "cat_lights:tts_started");
+    const action = (branch?.data as any)?.action || (tts ? "PROMPT_FILE" : null);
+    const actual = {
+      weekNumber: (week?.data as any)?.weekNumber ?? null,
+      finalAction: action === "CHUM_FALLBACK" ? "CHUM" : action === "PROMPT_FILE" ? "PROMPT" : null,
+      semester: (week?.data as any)?.semesterKey ?? null,
+    };
+    const diff: Record<string, any> = {};
+    for (const k of Object.keys(expected)) {
+      if ((actual as any)[k] !== expected[k]) diff[k] = { expected: expected[k], actual: (actual as any)[k] };
+    }
+    res.json({
+      pass: Object.keys(diff).length === 0,
+      diff,
+      expected,
+      actual,
+      explanation: Object.keys(diff).length === 0 ? "all matched" : `mismatched fields: ${Object.keys(diff).join(", ")}`,
+    });
+  });
+
+  // ────────── replay (dry run) ──────────
+  // Pure week + finalAction calculation only — does NOT touch HA, OneDrive,
+  // or TTS. Mirrors the actual cat-lights branching so ChatGPT can verify
+  // pre-semester / week-1 / mid-semester decisions safely.
+  app.post("/api/dev/replay", async (req, res) => {
+    if (!gate(req, res)) return;
+    try {
+      const { dateOverride, forceWeek } = req.body || {};
+      const sem: any = await activeSemester();
+      const today = dateOverride ? new Date(dateOverride) : new Date();
+      let weekNumber: number | null = null;
+      let weekDecision = "calc";
+      let weekReason = "";
+      if (typeof forceWeek === "number") {
+        weekNumber = forceWeek; weekDecision = "forced"; weekReason = "forceWeek param";
+      } else if (sem?.semesterStartDate) {
+        const start = new Date(sem.semesterStartDate);
+        const end = sem.semesterEndDate ? new Date(sem.semesterEndDate) : null;
+        if (today < start) { weekNumber = 1; weekDecision = "pre_semester_clamp"; weekReason = `today (${today.toISOString().slice(0,10)}) < semesterStart (${sem.semesterStartDate}) — clamped to 1`; }
+        else if (end && today > end) { weekNumber = -1; weekDecision = "post_semester"; weekReason = `today > semesterEnd (${sem.semesterEndDate})`; }
+        else { weekNumber = Math.floor((today.getTime() - start.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1; weekReason = "diff(today, semesterStart) / 7d + 1"; }
+      } else { weekDecision = "no_semester"; weekReason = "no active semester"; }
+
+      let candidate: any = null; let candidateReason = "";
+      if (weekNumber && weekNumber > 0) {
+        try {
+          const files = await storage.getFiles();
+          // Lightweight candidate scan — match week + not listened.
+          const matches = files.filter((f: any) => f.weekNumber === weekNumber && !f.listenedAt);
+          candidate = matches[0] || null;
+          candidateReason = matches.length === 0 ? "no matching files for week" : `${matches.length} candidates, picking first`;
+        } catch (e: any) { candidateReason = `lookup failed: ${e.message}`; }
+      } else {
+        candidateReason = "no valid week — file lookup skipped";
+      }
+
+      const finalAction = !weekNumber || weekNumber < 1 ? "INVALID_WEEK_ABORT" : candidate ? "PROMPT" : "CHUM";
+      res.json({
+        simulated: true,
+        sideEffects: "none",
+        dateUsed: today.toISOString(),
+        semester: sem ? { id: sem.id, key: sem.semesterKey, start: sem.semesterStartDate, end: sem.semesterEndDate } : null,
+        decisionPath: [
+          { step: "week_calculated", decision: weekDecision, reason: weekReason, inputs: { today: today.toISOString(), semesterStart: sem?.semesterStartDate, forceWeek }, outputs: { weekNumber } },
+          { step: "file_lookup", decision: candidate ? "selected" : "no_file", reason: candidateReason, outputs: { fileId: candidate?.id || null, name: candidate?.originalName || null } },
+        ],
+        finalAction,
+      });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  // ────────── one-click test triggers ──────────
+  // These call the real webhook via fetch so the live decision-trace fills
+  // in. Cat lights state is simulated via the body's `state` field.
+  const fireWebhook = async (state: 'on' | 'off') => {
+    const port = process.env.PORT || 5000;
+    const r = await fetch(`http://127.0.0.1:${port}/api/webhook/cat-lights`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ state, source: "dev_test_trigger" }),
+    });
+    const j = await r.json().catch(() => ({}));
+    return { status: r.status, body: j };
+  };
+  app.post("/api/dev/test/cat-lights-on", async (req, res) => {
+    if (!gate(req, res)) return;
+    if (!req.body?.confirm) return res.status(400).json({ error: "send { confirm: true } — this WILL trigger real Cat Lights playback" });
+    try { res.json({ fired: "on", result: await fireWebhook("on") }); } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.post("/api/dev/test/cat-lights-off", async (req, res) => {
+    if (!gate(req, res)) return;
+    if (!req.body?.confirm) return res.status(400).json({ error: "send { confirm: true }" });
+    try { res.json({ fired: "off", result: await fireWebhook("off") }); } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  // ────────── runtime flags ──────────
+  app.get("/api/dev/flags", (req, res) => { if (!gate(req, res)) return; res.json(getFlags()); });
+  app.post("/api/dev/flags", (req, res) => {
+    if (!gate(req, res)) return;
+    try { res.json(setFlags(req.body || {})); } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+
+  // ────────── performance metrics (derived from trace) ──────────
+  app.get("/api/dev/performance", (req, res) => {
+    if (!gate(req, res)) return;
+    const all = getSteps();
+    // Pair tts:chunk_start / tts:chunk_done events to measure durations.
+    const starts: Record<string, number> = {};
+    const durations: number[] = [];
+    let timeouts = 0; let retries = 0;
+    for (const s of all) {
+      const key = (s.data as any)?.chunkKey || (s.data as any)?.fileId + ':' + (s.data as any)?.chunkIndex;
+      if (s.step === 'tts:chunk_start' && key) starts[key] = s.ts;
+      else if (s.step === 'tts:chunk_done' && key && starts[key]) { durations.push(s.ts - starts[key]); delete starts[key]; }
+      if (/timeout/i.test(s.step) || /timeout/i.test(JSON.stringify(s.data || ''))) timeouts++;
+      if (/retry/i.test(s.step)) retries++;
+    }
+    const sorted = durations.slice().sort((a, b) => a - b);
+    const avg = durations.length ? Math.round(durations.reduce((a, b) => a + b, 0) / durations.length) : null;
+    const slowest = durations.length ? Math.max(...durations) : null;
+    const p95 = durations.length ? sorted[Math.floor(sorted.length * 0.95)] : null;
+    res.json({
+      ttsChunks: { samples: durations.length, avgMs: avg, p95Ms: p95, slowestMs: slowest },
+      timeouts, retries,
+      hint: durations.length === 0 ? "Add `tts:chunk_start` / `tts:chunk_done` traces to capture per-chunk timing." : undefined,
+    });
+  });
+
+  // ────────── explain-system (knowledge endpoint) ──────────
+  const EXPLAIN: Record<string, any> = {
+    tts: {
+      summary: "PDF/DOCX text → cleaned → chunked (~CHUNK_SIZE chars on sentence boundary) → per-chunk TTS audio (Replit primary, Edge fallback) → preparedAudioPaths[]. Playback reads preparedAudioPaths in order via media_player.play_media, advancing on Echo idle event.",
+      relevantFiles: ["server/replit_integrations/audio/client.ts (textToSpeech, fallbackTTS)", "server/serverHelpers.ts (CHARS_PER_SECOND, CHUNK_SIZE, generateAndSaveTTSAudio)", "server/routes.ts (currentTTSSession, sendNextChunk, scheduleNextChunk, AudioPrep queue)"],
+      keyFunctions: ["textToSpeech", "generateAndSaveTTSAudio", "sendNextChunk", "scheduleNextChunk", "stopTTSSession"],
+      knownFailureModes: ["Replit TTS rate-limited → Edge fallback engages silently", "Echo idle event never arrives → playback stalls (mitigated by scheduleNextChunk timer)", "preparedAudioPaths length ≠ totalChunks → file marked not-ready by /api/dev/tts-ready"],
+      debugWith: ["GET /api/dev/tts-ready", "GET /api/dev/trace?subsystem=tts", "GET /api/dev/performance"],
+    },
+    onedrive: {
+      summary: "Per-week sync pulls files from each course's Module + Reading folders into the `files` table. Folder paths are stored on the OneDriveCourse rows. Files are matched by (courseFolder, weekNumber).",
+      relevantFiles: ["server/onedrive.ts (auth + raw API)", "server/routes.ts (syncOneDriveFilesForWeek ~line 18148)", "server/storage.ts (getOneDriveCoursesBySemester)"],
+      keyFunctions: ["syncOneDriveFilesForWeek", "listOneDriveItems", "getOneDriveItemByPath", "isOneDriveConnected"],
+      knownFailureModes: ["Folder renamed in OneDrive → DB still points at old path → audit fails", "Device-code refresh expired → all sync calls 401", "Module/Reading folder not yet created for early weeks"],
+      debugWith: ["GET /api/dev/onedrive-audit", "GET /api/dev/file-map"],
+    },
+    semester: {
+      summary: "storage.getActiveSemesterSettings() returns the row with isActive=true. Week number = floor((today - semesterStartDate) / 7d) + 1, clamped to 1 pre-semester.",
+      relevantFiles: ["server/storage.ts", "shared/schema.ts (getWeekNumber, getSemesterTotalWeeks)"],
+      keyFunctions: ["getActiveSemesterSettings", "getWeekNumber"],
+      knownFailureModes: ["Multiple isActive=true rows → unpredictable", "semesterStartDate stored as UTC midnight but compared in local TZ → off-by-one on first day"],
+      debugWith: ["GET /api/dev/status (currentWeekNumber)", "POST /api/dev/replay { dateOverride: '...' }"],
+    },
+    automation: {
+      summary: "Cat Lights HA webhook → debounce → calc week → look up next unlistened file by priority → if found, TTS prompt 'Would you like to play X?'. Confirmation triggers playback; refusal or no-file falls back to CHUM FM.",
+      relevantFiles: ["server/routes.ts POST /api/webhook/cat-lights (~line 21340)", "server/routes.ts findNextFileByPriority (~line 18580)", "server/serverHelpers.ts (haServiceCall)"],
+      keyFunctions: ["findNextFileByPriority", "playChumFmRadio", "describeFileForTTS"],
+      knownFailureModes: ["weekNumber == -1 (post-semester) → would still try to find files; Cat Lights should abort but doesn't always", "TTS rate limit → confirmation prompt never plays → user can't respond → file marked listened anyway", "Server startup cooldown (60s) ignores webhooks"],
+      debugWith: ["GET /api/dev/flow-snapshot", "POST /api/dev/replay", "GET /api/dev/trace?subsystem=cat_lights"],
+    },
+  };
+  app.get("/api/dev/explain-system", (req, res) => {
+    if (!gate(req, res)) return;
+    const topic = String(req.query.topic || "").toLowerCase();
+    if (!topic) return res.json({ available: Object.keys(EXPLAIN), hint: "GET /api/dev/explain-system?topic=tts|onedrive|semester|automation" });
+    const entry = EXPLAIN[topic];
+    if (!entry) return res.status(404).json({ error: `unknown topic '${topic}'`, available: Object.keys(EXPLAIN) });
+    res.json({ topic, ...entry });
+  });
+
+  // ────────── targeted code export ──────────
+  // Returns just the relevant slice instead of dumping the whole 32k-line file.
+  const CODE_AREAS: Record<string, { file: string; pattern: RegExp; contextLines: number }> = {
+    tts: { file: "server/serverHelpers.ts", pattern: /generateAndSaveTTSAudio|CHUNK_SIZE|CHARS_PER_SECOND/, contextLines: 60 },
+    audioPrep: { file: "server/routes.ts", pattern: /AudioPrep|audioPrep/, contextLines: 20 },
+    onedrive: { file: "server/routes.ts", pattern: /syncOneDriveFilesForWeek/, contextLines: 80 },
+    catLights: { file: "server/routes.ts", pattern: /app\.post\("\/api\/webhook\/cat-lights"/, contextLines: 200 },
+    fileSelection: { file: "server/routes.ts", pattern: /async function findNextFileByPriority/, contextLines: 80 },
+  };
+  app.get("/api/dev/export-code", (req, res) => {
+    if (!gate(req, res)) return;
+    const area = String(req.query.area || "").toLowerCase();
+    const def = CODE_AREAS[area];
+    if (!def) return res.status(400).json({ error: `unknown area '${area}'`, available: Object.keys(CODE_AREAS) });
+    try {
+      const abs = path.resolve(PROJECT_ROOT, def.file);
+      const lines = fs.readFileSync(abs, "utf8").split("\n");
+      const slices: { file: string; startLine: number; endLine: number; code: string }[] = [];
+      for (let i = 0; i < lines.length; i++) {
+        if (def.pattern.test(lines[i])) {
+          const s = Math.max(0, i - 5);
+          const e = Math.min(lines.length, i + def.contextLines);
+          slices.push({ file: def.file, startLine: s + 1, endLine: e, code: lines.slice(s, e).join("\n") });
+          i = e; // skip past
+          if (slices.length >= 5) break;
+        }
+      }
+      res.json({ area, file: def.file, sliceCount: slices.length, slices });
     } catch (e: any) { res.status(500).json({ error: e.message }); }
   });
 
