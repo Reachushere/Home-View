@@ -552,6 +552,17 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   if (!SITE_PASSWORD) return next();
   if (process.env.NODE_ENV !== "production") return next();
   if (req.path.startsWith("/api/auth/")) return next();
+  // /api/dev/* — allow either a valid app session OR a matching DEV_API_KEY.
+  // If DEV_API_KEY is unset we fall through to the normal cookie/session check
+  // below, so production stays locked unless the operator sets the secret.
+  if (req.path.startsWith("/api/dev/") || req.path === "/api/dev") {
+    const devKeyEnv = process.env.DEV_API_KEY || "";
+    if (devKeyEnv) {
+      const presented = (req.header("x-dev-key") || (req.query as any)?.devKey || (req as any).cookies?.unical_dev_key || "").toString();
+      if (presented && presented === devKeyEnv) return next();
+    }
+    // fall through — session cookie may still authenticate this request
+  }
   if (req.path.startsWith("/api/admin/")) return next();
   if (req.path.startsWith("/api/webhook/")) return next();
   if (req.path.startsWith("/api/shower/")) return next();
