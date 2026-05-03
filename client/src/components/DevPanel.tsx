@@ -12,7 +12,7 @@ type Trace = { time: string; step: string; data?: any; decision?: string; reason
 type FileSel = any;
 type TabId =
   | "trace" | "flow" | "replay" | "validate" | "file"
-  | "build" | "perf" | "flags" | "system" | "layout" | "help";
+  | "build" | "perf" | "flags" | "system" | "layout" | "help" | "rollback";
 
 const j = async (url: string, init?: RequestInit) => {
   const r = await fetch(url, init);
@@ -43,6 +43,8 @@ export function DevPanel() {
   const [wizSide, setWizSide] = useState<"" | "frontend" | "backend" | "unknown">("");
   const [wizSince, setWizSince] = useState<"" | "frontend_change" | "backend_change" | "unknown">("");
   const [wizPrompt, setWizPrompt] = useState("");
+  const [commits, setCommits] = useState<any>(null);
+  const [pickedSha, setPickedSha] = useState<string>("");
 
   // ───── secret/PII redaction (applied to every JSON payload before clipboard) ─────
   const SECRET_KEY_RE = /(token|secret|apikey|api_key|password|passwd|bearer|authorization|client_secret|refresh_token|access_token|cookie|session|private_key|x-dev-key|graphtoken|ha_token|home_assistant_token|github_personal_access_token)/i;
@@ -157,6 +159,7 @@ export function DevPanel() {
       j("/api/dev/diagnose").then(setDiag).catch(() => {});
     }
     if (tab === "build" || !build) j("/api/dev/build-info").then(setBuild).catch(() => {});
+    if (tab === "rollback") j("/api/dev/recent-commits").then(setCommits).catch(() => setCommits({ error: "fetch failed" }));
     if (tab === "perf") j("/api/dev/performance").then(setPerf).catch(() => {});
     if (tab === "flags" && !flags) j("/api/dev/flags").then(setFlagsState).catch(() => {});
   }, [open, tab]); // eslint-disable-line
@@ -564,6 +567,7 @@ export function DevPanel() {
         <button onClick={() => setTab("system")} data-testid="tab-dev-system" style={tabBtn("system", "Sys")}>Sys</button>
         <button onClick={() => setTab("layout")} data-testid="tab-dev-layout" style={tabBtn("layout", "Layout")}>Layout</button>
         <button onClick={() => setTab("help")} data-testid="tab-dev-help" style={tabBtn("help", "Help")}>?</button>
+        <button onClick={() => setTab("rollback")} data-testid="tab-dev-rollback" style={tabBtn("rollback", "Rollback")}>↶</button>
       </div>
 
       {/* Action button row */}
@@ -802,6 +806,56 @@ export function DevPanel() {
 
         {tab === "layout" && <div style={{ color: "#bbb" }}>Layout snapshot is pushed to <code style={{ color: "#93c5fd" }}>/api/dev/layout-map</code> every 3s.</div>}
 
+        {tab === "rollback" && (
+          <div data-testid="text-dev-rollback" style={{ color: "#cbd5e1", fontSize: 11, lineHeight: 1.5 }}>
+            <div style={{ background: "rgba(239,68,68,0.10)", border: "1px solid rgba(239,68,68,0.4)", padding: 8, borderRadius: 4, marginBottom: 8 }}>
+              <b style={{ color: "#fda4af" }}>READ-ONLY</b> — this tool only generates terminal commands. It NEVER runs git, never reverts, never restarts. Copy the recipe and run it on the Pi yourself.
+            </div>
+            {!commits && <div>loading recent commits…</div>}
+            {commits?.error && <div style={{ color: "#fda4af" }}>Failed to load commits: {commits.error}</div>}
+            {commits?.commits && (
+              <>
+                <div style={{ color: "#94a3b8", marginBottom: 4 }}>HEAD: <code style={{ color: "#86efac" }}>{commits.head?.slice(0, 9)}</code></div>
+                <div style={{ maxHeight: 220, overflow: "auto", border: "1px solid rgba(120,120,150,0.2)", borderRadius: 4 }}>
+                  {commits.commits.map((c: any, i: number) => (
+                    <div
+                      key={c.sha}
+                      data-testid={`row-commit-${c.short}`}
+                      onClick={() => setPickedSha(c.sha)}
+                      style={{ padding: "4px 8px", borderBottom: "1px solid rgba(120,120,150,0.12)", cursor: "pointer", background: pickedSha === c.sha ? "rgba(96,165,250,0.18)" : (i === 0 ? "rgba(34,197,94,0.08)" : "transparent") }}
+                    >
+                      <div style={{ display: "flex", gap: 8, fontSize: 10 }}>
+                        <code style={{ color: i === 0 ? "#86efac" : "#93c5fd" }}>{c.short}</code>
+                        <span style={{ color: "#94a3b8" }}>{new Date(c.date).toLocaleString()}</span>
+                        <span style={{ color: "#cbd5e1", marginLeft: "auto", fontSize: 9 }}>{c.author}</span>
+                      </div>
+                      <div style={{ fontSize: 11, color: "#e2e8f0", marginTop: 2 }}>{i === 0 && <span style={{ color: "#86efac" }}>HEAD ← </span>}{c.message}</div>
+                    </div>
+                  ))}
+                </div>
+                {pickedSha && (() => {
+                  const r = (commits.recipes || []).find((x: any) => x.target.sha === pickedSha);
+                  if (!r) return <div style={{ color: "#fbbf24", marginTop: 8 }}>Pick one of the top 10 commits to see a recipe.</div>;
+                  return (
+                    <div style={{ marginTop: 10 }}>
+                      <div style={{ color: "#fbbf24", marginBottom: 6 }}>⚠ {r.warning}</div>
+                      <div style={{ color: "#86efac", fontWeight: 700, marginBottom: 2 }}>Option A — Safe revert (recommended)</div>
+                      <pre data-testid="text-rollback-revert" style={codeBlock}>{r.revertOnly}</pre>
+                      <button data-testid="button-copy-revert" style={actBtn("#86efac", "rgba(34,197,94,0.18)")} onClick={async () => { await navigator.clipboard.writeText(r.revertOnly); alert("Safe revert commands copied."); }}>Copy safe revert</button>
+                      <div style={{ color: "#fda4af", fontWeight: 700, marginTop: 12, marginBottom: 2 }}>Option B — Destructive reset (last resort)</div>
+                      <pre data-testid="text-rollback-reset" style={codeBlock}>{r.rollbackToHere}</pre>
+                      <button data-testid="button-copy-reset" style={actBtn("#fda4af", "rgba(239,68,68,0.18)")} onClick={async () => { if (!confirm("This recipe REWRITES history. Copy anyway?")) return; await navigator.clipboard.writeText(r.rollbackToHere); alert("Destructive reset commands copied. Confirm with the user before running."); }}>Copy destructive reset</button>
+                    </div>
+                  );
+                })()}
+                <div style={{ marginTop: 10, padding: 6, background: "rgba(251,191,36,0.08)", border: "1px solid rgba(251,191,36,0.3)", borderRadius: 4, color: "#fde68a" }}>
+                  <b>Reminder:</b> {commits.reminder}
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
         {tab === "help" && (
           <div data-testid="text-dev-help" style={{ color: "#cbd5e1", fontSize: 11, lineHeight: 1.5 }}>
             <div style={{ color: "#a78bfa", fontWeight: 700, marginBottom: 6 }}>Which button do I click?</div>
@@ -814,6 +868,7 @@ export function DevPanel() {
               <b style={{ color: "#d8b4fe" }}>Minimal Prompt</b><span>Quick chat — short summary only, no giant JSON. Use this first; ChatGPT will ask for a full pack if needed.</span>
               <b style={{ color: "#fda4af" }}>Copy Debug Pack</b><span>Generic kitchen-sink — use only when you don't know what's wrong at all.</span>
               <b style={{ color: "#fca5a5" }}>Run Smoke</b><span>Copies the read-only smoke-test command. Run in a terminal to verify all dev endpoints are alive. No devices triggered.</span>
+              <b style={{ color: "#fda4af" }}>Rollback (↶)</b><span>Lists recent commits and generates exact terminal commands for safe revert (recommended) or destructive reset (last resort). Never runs git itself — copy/paste only.</span>
             </div>
             <div style={{ color: "#a78bfa", fontWeight: 700, marginTop: 12, marginBottom: 6 }}>What to paste into ChatGPT</div>
             <ul style={{ margin: 0, paddingLeft: 18 }}>
