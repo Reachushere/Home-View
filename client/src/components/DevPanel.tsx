@@ -291,7 +291,7 @@ export function DevPanel() {
   if (!open) return null;
 
   const panel: React.CSSProperties = {
-    position: "fixed", left: geom.x, top: geom.y, zIndex: 99999,
+    position: "fixed", left: geom.x, top: geom.y, zIndex: 2147483000,
     width: geom.w, height: geom.h, overflow: "hidden",
     background: "rgba(15,15,20,0.96)", color: "#e8e8ec",
     border: "1px solid rgba(120,120,150,0.4)", borderRadius: 10,
@@ -676,7 +676,7 @@ export function DevPanel() {
   return (
     <>
     {initBlock && (
-      <div data-testid="init-checklist-modal" style={{ position: "fixed", inset: 0, zIndex: 999998, background: "rgba(5,5,10,0.92)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+      <div data-testid="init-checklist-modal" style={{ position: "fixed", inset: 0, zIndex: 2147482000, background: "rgba(5,5,10,0.92)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
         <div style={{ width: "100%", maxWidth: 640, background: "#0f0f17", border: "2px solid #ef4444", borderRadius: 12, padding: 22, color: "#e8e8ec", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
             <span style={{ background: "#ef4444", color: "#000", padding: "3px 8px", borderRadius: 4, fontSize: 11, fontWeight: 800 }}>BLOCKED</span>
