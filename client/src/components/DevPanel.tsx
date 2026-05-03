@@ -257,9 +257,31 @@ export function DevPanel() {
       pushDiag(line);
     };
     window.addEventListener("pointerdown", onWinPD, true);
+    // Separate raw counters for every input event type — proves which family fires.
+    const bump = (key: string) => (ev: Event) => {
+      try {
+        const k = `pd${key}`;
+        const cur = parseInt((document.body.dataset as any)[k] || '0', 10) || 0;
+        (document.body.dataset as any)[k] = String(cur + 1);
+        const t = ev.target as HTMLElement;
+        document.body.dataset.pdLast = `${key}:${t?.tagName?.toLowerCase()||'?'}#${t?.dataset?.testid||''}`;
+      } catch {}
+    };
+    const onMD = bump('Mouse');
+    const onCK = bump('Click');
+    const onTS = bump('Touch');
+    window.addEventListener("mousedown", onMD, true);
+    window.addEventListener("click", onCK, true);
+    window.addEventListener("touchstart", onTS, true);
+    // Force re-render every 1s so DIAG reflects body.dataset live.
+    const refresh = window.setInterval(() => setDiagBanner(b => b.slice()), 1000);
     return () => {
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("pointerdown", onWinPD, true);
+      window.removeEventListener("mousedown", onMD, true);
+      window.removeEventListener("click", onCK, true);
+      window.removeEventListener("touchstart", onTS, true);
+      window.clearInterval(refresh);
     };
   }, []);
 
@@ -927,7 +949,7 @@ export function DevPanel() {
       <div data-testid="banner-diag" style={{ padding: "6px 10px", background: "rgba(20,80,120,0.95)", borderBottom: "2px solid #38bdf8", color: "#e0f2fe", fontSize: 10, fontFamily: "ui-monospace, monospace", maxHeight: 220, overflowY: "auto" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, fontWeight: 700, flexWrap: "wrap" }}>
           <span style={{ background: "#38bdf8", color: "#000", padding: "1px 6px", borderRadius: 3 }}>DIAG</span>
-          <span style={{ flex: 1, minWidth: 200 }}>r#{renderCountRef.current} · TESTclicks={clickProofCount} · entries={diagBanner.length} · rawPD={typeof document!=='undefined' ? (document.body.dataset.pdCount||'0') : '?'} · last={typeof document!=='undefined' ? (document.body.dataset.pdLast||'-') : '?'} · geom={geom.x},{geom.y} {geom.w}×{geom.h}</span>
+          <span style={{ flex: 1, minWidth: 200 }}>r#{renderCountRef.current} · TESTclk={clickProofCount} · PD={typeof document!=='undefined' ? (document.body.dataset.pdCount||'0') : '?'}/MD={typeof document!=='undefined' ? ((document.body.dataset as any).pdMouse||'0') : '?'}/CK={typeof document!=='undefined' ? ((document.body.dataset as any).pdClick||'0') : '?'}/TS={typeof document!=='undefined' ? ((document.body.dataset as any).pdTouch||'0') : '?'} · last={typeof document!=='undefined' ? (document.body.dataset.pdLast||'-') : '?'} · {geom.w}×{geom.h}</span>
           <button
             data-testid="button-dev-test-click"
             type="button"
