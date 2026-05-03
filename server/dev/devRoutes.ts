@@ -1463,6 +1463,27 @@ export function registerDevRoutes(app: Express): void {
       else if (folderIssues.length) push({ id: "onedrive_folders", status: "fail", message: `${folderIssues.length}/${coursesList.length} courses missing folders.`, details: { issues: folderIssues }, fixAction: { id: "resync_onedrive", endpoint: "/api/dev/fix/resync-onedrive", method: "POST", risk: "low", dryRunSupported: true, requiresConfirm: true } });
       else push({ id: "onedrive_folders", status: "pass", message: `${coursesList.length} courses, all with Module/Reading paths.` });
 
+      // 4b. course term classification (Spring/Summer half-term routing)
+      try {
+        if (sem) {
+          const semType = String((sem as any).semesterType || '').toLowerCase();
+          const isSpSu = semType.includes('spring') || semType.includes('summer');
+          if (isSpSu) {
+            const missingTerms: string[] = [];
+            for (let i = 1; i <= 6; i++) {
+              const code = (sem as any)[`course${i}Code`];
+              const term = (sem as any)[`course${i}SpringSummerTerm`] ?? (sem as any)[`course${i}_spring_summer_term`];
+              if (code && !term) missingTerms.push(code);
+            }
+            if (missingTerms.length) {
+              push({ id: "course_term_classification", status: "warn", message: `${missingTerms.length} active course(s) missing Spring/Summer term — will fall back to "Full".`, details: { courses: missingTerms, allowedValues: ["full","first_half","second_half"] } });
+            } else {
+              push({ id: "course_term_classification", status: "pass", message: "All active courses have Spring/Summer term classification." });
+            }
+          }
+        }
+      } catch {}
+
       // 5. TTS queue health (stuck files)
       let allFiles: any[] = [];
       try { allFiles = await storage.getFiles(); } catch {}
