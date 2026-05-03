@@ -729,6 +729,84 @@ export function registerDevRoutes(app: Express): void {
     });
   });
 
+  // ────────── shower / bathroom flow snapshot ──────────
+  // Aggregates the most recent shower_button trace events to expose where the
+  // ack→prompt→confirm pipeline broke down. Heuristic blocker derivation
+  // helps Bryn diagnose without reading the full trace.
+  app.get("/api/dev/shower-flow-snapshot", (req, res) => {
+    if (!gate(req, res)) return;
+    const all: TraceStep[] = getSteps();
+    const slice = all.filter(s => s.subsystem === 'shower_button');
+    if (slice.length === 0) {
+      return res.json({ empty: true, hint: "No shower_button events yet — trigger Cat Lights or the shower button to populate the trace." });
+    }
+    // Anchor on the most recent ack_started — that marks the start of a single bathroom run.
+    let startIdx = -1;
+    for (let i = slice.length - 1; i >= 0; i--) {
+      if (slice[i].step === 'shower_button:ack_started') { startIdx = i; break; }
+    }
+    const run = startIdx >= 0 ? slice.slice(startIdx) : slice.slice(-20);
+    const get = (step: string) => run.find(s => s.step === step);
+    const ackStarted = get('shower_button:ack_started');
+    const ackPlayed = get('shower_button:ack_played');
+    const ackFailed = get('shower_button:ack_failed');
+    const promptPlayed = get('shower_button:prompt_played');
+    const promptHaFailed = get('shower_button:prompt_ha_failed');
+    const promptNestFailed = get('shower_button:prompt_nest_failed');
+    const promptUnreachable = get('shower_button:prompt_unreachable');
+
+    let blocker: string | null = null;
+    let stage: string = 'unknown';
+    if (!ackStarted) {
+      stage = 'pre_ack';
+      blocker = 'No ack_started event in this run — flow never reached the immediatePromptPromise.';
+    } else if (!ackPlayed && ackFailed) {
+      stage = 'ack_failed';
+      blocker = `Ack TTS failed: ${(ackFailed.outputs as any)?.error || (ackFailed.data as any)?.error || 'unknown'}`;
+    } else if (ackPlayed && !promptPlayed && !promptHaFailed && !promptNestFailed) {
+      stage = 'between_ack_and_prompt';
+      blocker = 'Ack played but no prompt event ever fired — likely the file lookup hung (OneDrive sync, DB) or the light turned off mid-flow.';
+    } else if (promptHaFailed && !promptPlayed && !promptNestFailed) {
+      stage = 'prompt_ha_failed_only';
+      blocker = `HA Cloud prompt failed and Nest fallback never ran: ${(promptHaFailed.outputs as any)?.error || 'unknown'}`;
+    } else if (promptUnreachable || (promptHaFailed && promptNestFailed && !promptPlayed)) {
+      stage = 'prompt_unreachable';
+      blocker = 'Both HA Cloud and Nest fallback failed — fell back to CHUM FM.';
+    } else if (promptPlayed) {
+      stage = 'prompt_ok';
+      blocker = null;
+    }
+
+    res.json({
+      runStartedAt: run[0]?.time || null,
+      runEndedAt: run[run.length - 1]?.time || null,
+      durationMs: run.length > 1 ? (run[run.length - 1].ts - run[0].ts) : 0,
+      ack: {
+        started: !!ackStarted,
+        played: !!ackPlayed,
+        failed: ackFailed ? ((ackFailed.outputs as any)?.error || (ackFailed.data as any)?.error || true) : false,
+        method: (ackPlayed?.outputs as any)?.method || null,
+      },
+      prompt: {
+        played: !!promptPlayed,
+        method: (promptPlayed?.outputs as any)?.method || null,
+        message: (promptPlayed?.outputs as any)?.message || null,
+        haFailed: promptHaFailed ? ((promptHaFailed.outputs as any)?.error || true) : false,
+        nestFailed: promptNestFailed ? ((promptNestFailed.outputs as any)?.error || true) : false,
+        unreachable: !!promptUnreachable,
+      },
+      stage,
+      blocker,
+      decisionPath: run.map(s => ({
+        time: s.time,
+        step: s.step,
+        decision: s.decision,
+        reason: s.reason,
+        outputs: s.outputs,
+      })),
+    });
+  });
+
   // ────────── one-command diagnosis ──────────
   app.get("/api/dev/diagnose", async (req, res) => {
     if (!gate(req, res)) return;
