@@ -5,47 +5,88 @@ Fast, **read-only** invariant checks against a running UniCal instance. No real 
 ## Run
 
 ```bash
-# against local dev (default)
+# against local dev (default — usually no auth needed in dev mode)
 node scripts/smoke.mjs
 
-# against the Pi over Cloudflare Tunnel
-node scripts/smoke.mjs https://uni-cal.app
-
-# with auth gate (if DEV_API_KEY env var is set on the server)
-DEV_API_KEY=xxx node scripts/smoke.mjs https://uni-cal.app
+# against the Pi over Cloudflare Tunnel — REQUIRES auth (see below)
+UNICAL_SESSION_TOKEN=… node scripts/smoke.mjs https://uni-cal.app
 ```
 
-Exit code is non-zero if any check FAILs. WARNs do not fail the run.
+Exit code is non-zero only if a real check **FAILs**. **WARN** and **SKIP** never fail the run.
 
-> Note: there is no `npm run smoke` entry yet — `package.json` is locked. Add manually if desired:
+> No `npm run smoke` entry — `package.json` is locked. Add manually if desired:
 > `"smoke": "node scripts/smoke.mjs"`
 
-## What each check means
+## Authentication
 
+All `/api/dev/*` endpoints sit behind the same session-cookie auth used by the dashboard (`uni_cal_session`). In production (Pi via Cloudflare Tunnel), unauthenticated requests get **HTTP 401 `{"message":"Not authenticated"}`** before even reaching the dev gate.
+
+Smoke supports three ways to authenticate. **Pick one.** Tokens are never echoed to stdout.
+
+| Env var | What it does |
+|---|---|
+| `UNICAL_SESSION_TOKEN` | Token value only. Smoke wraps it as `Cookie: uni_cal_session=<token>`. |
+| `UNICAL_COOKIE` | Raw cookie string (use if you have multiple cookies, e.g. `uni_cal_session=…; foo=bar`). |
+| `DEV_API_KEY` | Legacy `x-dev-key` header gate (only works if the server has `DEV_API_KEY` env var set; bypasses session auth on the dev gate but **not** on the outer middleware). |
+
+### How to grab a session token
+
+1. Open the dashboard in a browser and log in.
+2. Open DevTools → **Application** (or Storage) → **Cookies** → `https://uni-cal.app`.
+3. Copy the **value** of the `uni_cal_session` cookie.
+4. Paste into the env var:
+   ```bash
+   UNICAL_SESSION_TOKEN='paste-value-here' node scripts/smoke.mjs https://uni-cal.app
+   ```
+
+Tokens are long-lived (10 years) so you can save the command in your shell history; the value is never printed by smoke.
+
+### What happens with no auth
+
+Smoke prints a single notice:
+
+> **Dev endpoints require authentication.** Provide `UNICAL_SESSION_TOKEN`, `UNICAL_COOKIE`, or `DEV_API_KEY` to run authenticated checks. Public checks will still execute.
+
+…then runs the **public** subset only (server reachability, allowlisted endpoints) and marks every `/api/dev/*` check as `• SKIP`. The run still exits 0 if no real failure occurred.
+
+## Check categories
+
+### Public (always run)
+| Check | What it verifies |
+|---|---|
+| `[public] server reachable` | `GET /login` returns HTML — confirms Express + Cloudflare Tunnel are up |
+| `[public] /api/onedrive/status responds` | One of the auth-allowlisted endpoints — confirms server isn't returning 502/503 |
+
+### Authenticated (skip if no auth)
 | Check | What it verifies | Failure means |
 |---|---|---|
-| `dev/system-map` | Routes table + DB tables list | Server didn't initialise dev routes or DB is unreachable |
-| `dev/diagnose` | Returns `summary`, `primaryBlocker`, `recommendedNextStep` | Diagnose endpoint broken — debug pack will be incomplete |
-| `dev/build-info` | Returns `outOfDate`, `bundleHash`, `lastBuildAt` | Build introspection broken or `dist/` missing |
-| `dev/file-map` | Returns `candidates` array with accept/reject reasons | OneDrive sync or storage layer broken |
-| `dev/flow-snapshot` | Returns `finalAction` + `blocker` (or `empty:true` hint) | devTrace not collecting Cat Lights events |
-| `dev/replay` (dry-run) | `{dateOverride:"2026-05-01",simulate:true}` returns predicted action | Cat Lights branch logic regression — DO NOT deploy |
-| `dev/validate` | Validates last snapshot against expected action | Last real Cat Lights run produced wrong outcome |
-| `dev/tts-ready` | Returns prepared-audio readiness | AudioPrep pipeline degraded |
-| `dev/onedrive-audit` | Returns sync state per course folder | OneDrive credentials expired or graph API failure |
-| `dev/protected-systems` | Returns guardrail list | Guardrail registry missing |
+| `dev/system-map` | Routes table + DB tables list | Server didn't initialise dev routes or DB unreachable |
+| `dev/status` (DB / semester / week) | DB connection, active semester, current week in `[1,20]` | DB or semester misconfig |
+| `dev/build-info` | Returns `recommendedRestart` containing `pm2` | Build introspection broken |
+| `dev/trace` | Returns `steps[]` array | devTrace not collecting |
+| `dev/file-map` | Returns `summary` | OneDrive sync or storage layer broken |
+| `dev/onedrive-audit` | Returns `passed[]` + `failed[]` | OneDrive credentials expired or graph API failure |
+| `dev/tts-ready` | No stuck files (extractedText + chunks but no preparedAt) | AudioPrep pipeline degraded |
+| `dev/protected-systems` | Lists `Cat Lights` | Guardrail registry missing |
+| `dev/handoff` | Returns bundle with `version`, `routes`, `database` | Handoff endpoint broken |
+| `dev/patch` (negative) | Rejects unknown find string (404) and path escapes (400) | Patch endpoint security regression |
+
+If auth was provided but a check still returns 401, smoke marks it **FAIL** with: `HTTP 401 — auth provided but rejected (token expired or invalid)` — re-grab the cookie.
 
 ## What ChatGPT should ask for when smoke fails
 
-1. **Always:** the full smoke output (copy terminal text).
-2. **If `diagnose` or `flow-snapshot` failed:** the Debug Pack from the Dev Panel.
-3. **If `replay` failed:** ask user to run `curl -s $URL/api/dev/replay -d '{"dateOverride":"2026-05-01","simulate":true}' -H 'content-type: application/json'` and paste output.
-4. **If `tts-ready` failed:** TTS Pack from Dev Panel.
-5. **If `onedrive-audit` failed:** OneDrive Pack from Dev Panel.
-6. **If `build-info.outOfDate=true`:** instruct user to run `cd ~/Home-View && git pull && npm run build && pm2 restart all` on the Pi.
+1. **Always:** the full smoke output (copy terminal text). It auto-redacts because tokens are never printed.
+2. **If auth-required checks are SKIPPED:** ask user to re-run with `UNICAL_SESSION_TOKEN` set.
+3. **If `dev/diagnose` or `dev/flow-snapshot` failed:** the Debug Pack from the Dev Panel.
+4. **If `dev/replay` failed:** ask user to run `curl -s $URL/api/dev/replay -d '{"dateOverride":"2026-05-01","simulate":true}' -H 'content-type: application/json' -H "Cookie: uni_cal_session=$UNICAL_SESSION_TOKEN"` and paste output.
+5. **If `dev/tts-ready` failed:** TTS Pack from Dev Panel.
+6. **If `dev/onedrive-audit` failed:** OneDrive Pack from Dev Panel.
+7. **If `build-info.outOfDate=true`:** instruct user to run `cd ~/Home-View && git pull && npm run build && pm2 restart all` on the Pi.
 
 ## Hard rules
 
 - Smoke tests **never** call `/api/webhook/cat-lights` or any HA service.
 - Smoke tests **never** POST to `/api/dev/test/cat-lights-{on,off}` (those are confirm-gated anyway).
 - Smoke tests **never** modify DB rows, file storage, or env vars.
+- Smoke tests **never** print or log the value of `UNICAL_SESSION_TOKEN`, `UNICAL_COOKIE`, or `DEV_API_KEY`.
+- Auth gating on `/api/dev/*` is **not weakened** — smoke must authenticate the same way a browser would.
