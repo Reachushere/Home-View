@@ -5048,12 +5048,30 @@ Be thorough but practical. Focus on real issues, not false positives. If the doc
         if (!inAny) toDelete.push({ id: t.id, title: t.title, courseName: t.courseName, dueDate: t.dueDate, derivedCode: cc, matchedWindows: windows.map(w => ({ code: w.code, start: w.start, end: w.end, semester: w.semester })) });
       }
       if (debug) {
+        const filterCode = (req.query.code as string || '').toUpperCase().replace(/\s/g, '');
+        const filterTitle = (req.query.title as string || '').toLowerCase();
+        let filtered = classTasks;
+        if (filterCode) {
+          filtered = filtered.filter(t => ((t.courseName || '').toString().split(' - ')[0].replace(/\s/g, '').toUpperCase() === filterCode));
+        }
+        if (filterTitle) {
+          filtered = filtered.filter(t => ((t.title || '').toString().toLowerCase().includes(filterTitle)));
+        }
+        // Group counts by derived course code
+        const counts: Record<string, number> = {};
+        for (const t of classTasks) {
+          const k = ((t.courseName || '').toString().split(' - ')[0].replace(/\s/g, '').toUpperCase()) || '(empty)';
+          counts[k] = (counts[k] || 0) + 1;
+        }
         return res.json({
           dryRun: true,
           totalClassTasks: classTasks.length,
           totalCourseWindows: courseWindows.length,
+          countsByCode: counts,
           courseWindows: courseWindows.map(w => ({ code: w.code, name: w.name, start: w.start, end: w.end, semester: w.semester })),
-          sampleClassTasks: classTasks.slice(0, 15).map(t => ({ id: t.id, title: t.title, courseName: t.courseName, dueDate: t.dueDate })),
+          filterApplied: { code: filterCode || null, title: filterTitle || null, matchCount: filtered.length },
+          filteredTasks: filtered.slice(0, 100).map(t => ({ id: t.id, title: t.title, courseName: t.courseName, dueDate: t.dueDate })),
+          sampleClassTasks: filterCode || filterTitle ? undefined : classTasks.slice(0, 15).map(t => ({ id: t.id, title: t.title, courseName: t.courseName, dueDate: t.dueDate })),
           noMatchSample: noMatch.slice(0, 25),
           noMatchTotal: noMatch.length,
           wouldDeleteSample: toDelete.slice(0, 25),
