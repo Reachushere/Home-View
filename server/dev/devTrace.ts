@@ -15,6 +15,11 @@ export interface TraceStep {
   ts: number;
   step: string;
   subsystem: Subsystem;
+  // Phase-2 decision-trace fields (all optional — existing callers keep working).
+  decision?: string;
+  reason?: string;
+  inputs?: any;
+  outputs?: any;
   data?: any;
 }
 
@@ -45,13 +50,57 @@ function inferSubsystem(step: string): Subsystem {
 
 export function logStep(step: string, data?: any, subsystem?: Subsystem): void {
   const now = new Date();
-  const entry: TraceStep = { time: now.toISOString(), ts: now.getTime(), step, subsystem: subsystem || inferSubsystem(step), data };
+  // Backward-compat: data may carry the new decision/reason/inputs/outputs
+  // fields directly. Hoist them onto the entry for first-class queryability.
+  const d: any = data || {};
+  const entry: TraceStep = {
+    time: now.toISOString(),
+    ts: now.getTime(),
+    step,
+    subsystem: subsystem || inferSubsystem(step),
+    decision: d.decision,
+    reason: d.reason,
+    inputs: d.inputs,
+    outputs: d.outputs,
+    data,
+  };
   steps.push(entry);
   if (steps.length > MAX_STEPS) steps.splice(0, steps.length - MAX_STEPS);
-  if (data && (data.error || data.err || /error|fail|critical/i.test(step))) {
+  if ((d.error || d.err) || /error|fail|critical/i.test(step)) {
     errors.push(entry);
     if (errors.length > MAX_ERRORS) errors.splice(0, errors.length - MAX_ERRORS);
   }
+}
+
+// Phase-2 helper: structured decision logger. Equivalent to
+// logStep(step, { decision, reason, inputs, outputs }) but explicit.
+export function logDecision(step: string, decision: string, reason: string, inputs?: any, outputs?: any, subsystem?: Subsystem): void {
+  logStep(step, { decision, reason, inputs, outputs }, subsystem);
+}
+
+// ────────────── Runtime flags ──────────────
+// Read by service code at decision points; mutated via POST /api/dev/flags.
+export interface RuntimeFlags {
+  disableAudioPrepQueue: boolean;
+  disableTTS: boolean;
+  disableOneDriveSync: boolean;
+  forceSmallChunkMode: boolean;
+  verboseLogging: boolean;
+}
+const flags: RuntimeFlags = {
+  disableAudioPrepQueue: false,
+  disableTTS: false,
+  disableOneDriveSync: false,
+  forceSmallChunkMode: false,
+  verboseLogging: false,
+};
+export function getFlags(): RuntimeFlags { return { ...flags }; }
+export function setFlags(patch: Partial<RuntimeFlags>): RuntimeFlags {
+  for (const k of Object.keys(patch) as (keyof RuntimeFlags)[]) {
+    if (typeof patch[k] === 'boolean') (flags as any)[k] = patch[k];
+  }
+  logStep('flags:updated', { outputs: { ...flags } }, 'system');
+  return { ...flags };
 }
 
 export function getSteps(subsystem?: Subsystem): TraceStep[] {
