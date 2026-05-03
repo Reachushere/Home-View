@@ -819,8 +819,33 @@ export function CourseAutomationPipeline(props: CourseAutomationPipelineProps) {
             height: slim ? TTS_ROW_MIN_H : undefined,
           });
 
+          // Right-arm vertical drop length: from the bus down through the
+          // module pair (folder row + tts strip), across the row gap, past
+          // the pre-read splitter, landing on top of the Reading Folder
+          // NodeBox. Sits in the right gutter (right: 12) alongside the
+          // NodeBox right edge — does NOT cut through any week cells.
+          const RIGHT_ARM_DROP_H = (TOP_SPLIT_H - TOP_BUS_Y) + ROW_MIN_H + INTRA_PAIR_GAP + TTS_ROW_MIN_H + ROW_GAP + PRE_READ_SPLIT_H;
+
           return (
             <div style={{ position: 'relative', padding: '0 4%' }}>
+              {/* ───── Right-side continuous orange arm: bus → drop →
+                   Reading Folder. Lives in the OUTER wrapper so it can span
+                   all the intermediate rows. Sits in the 4% padding gutter
+                   so it never crosses a week cell. ───── */}
+              <div
+                aria-hidden
+                style={{
+                  position: 'absolute',
+                  top: TOP_BUS_Y,
+                  right: 12,
+                  width: 2,
+                  height: RIGHT_ARM_DROP_H,
+                  background: STATUS_COLOR[readingFolderStatus],
+                  boxShadow: `0 0 6px ${STATUS_GLOW[readingFolderStatus]}`,
+                  pointerEvents: 'none',
+                  zIndex: 0,
+                }}
+              />
               {/* ───── Top splitter: drops from Calendar Row, splits L+R.
                    Negative horizontal margin lets the right arm sit OUTSIDE
                    the orange-box content area (in the wrapper's padding
