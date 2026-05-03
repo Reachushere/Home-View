@@ -21,21 +21,21 @@ export default function StartMyDayButton() {
         background: "linear-gradient(135deg, #f59e0b, #f97316)",
         color: "#fff",
         border: "2px solid rgba(255,255,255,0.25)",
-        padding: "14px 22px",
+        padding: "7px 11px",
         borderRadius: 999,
         fontWeight: 800,
-        fontSize: 15,
+        fontSize: 8,
         cursor: "pointer",
-        boxShadow: "0 10px 30px rgba(249,115,22,0.55), 0 4px 10px rgba(0,0,0,0.4)",
+        boxShadow: "0 5px 15px rgba(249,115,22,0.55), 0 2px 5px rgba(0,0,0,0.4)",
         display: "flex",
         alignItems: "center",
-        gap: 10,
+        gap: 5,
         fontFamily: "system-ui, -apple-system, sans-serif",
-        letterSpacing: 0.4,
+        letterSpacing: 0.2,
         textTransform: "uppercase" as const,
       }}
     >
-      <Sun className="h-5 w-5" />
+      <Sun className="h-2.5 w-2.5" />
       Start My Day
     </button>
   );
