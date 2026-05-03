@@ -4968,6 +4968,35 @@ Be thorough but practical. Focus on real issues, not false positives. If the doc
     }
   });
 
+  // Derive a course's actual term window. If explicit per-course start/end dates
+  // exist, use them. Otherwise, for Spring/Summer semesters with a half-term
+  // (first_half / second_half) classification, slice the 14-week semester at
+  // the week-7/8 boundary so that second_half courses don't bleed into May/June.
+  // Falls back to the full semester window for "full" or missing term values.
+  function deriveCourseTermWindow(sem: any, n: 1|2|3|4|5|6): { start: Date; end: Date } | null {
+    const semStart = sem.semesterStartDate ? new Date(sem.semesterStartDate) : null;
+    const semEnd = sem.semesterEndDate ? new Date(sem.semesterEndDate) : null;
+    const explicitStart = (sem as any)[`course${n}StartDate`];
+    const explicitEnd = (sem as any)[`course${n}EndDate`];
+    if (explicitStart && explicitEnd) {
+      return { start: new Date(explicitStart), end: new Date(explicitEnd) };
+    }
+    if (!semStart || !semEnd) return null;
+    const term = (sem as any)[`course${n}SpringSummerTerm`];
+    const isSpSu = String(sem.semesterType || '').toLowerCase() === 'spring_summer';
+    if (isSpSu && term === 'first_half') {
+      const end = new Date(semStart);
+      end.setDate(end.getDate() + 7 * 7 - 1); // weeks 1-7
+      return { start: semStart, end };
+    }
+    if (isSpSu && term === 'second_half') {
+      const start = new Date(semStart);
+      start.setDate(start.getDate() + 7 * 7); // week 8 onward
+      return { start, end: semEnd };
+    }
+    return { start: explicitStart ? new Date(explicitStart) : semStart, end: explicitEnd ? new Date(explicitEnd) : semEnd };
+  }
+
   // POST /api/semester/cleanup-class-tasks - Delete class tasks falling outside their course's start-end window
   app.post("/api/semester/cleanup-class-tasks", async (req, res) => {
     try {
@@ -4978,10 +5007,9 @@ Be thorough but practical. Focus on real issues, not false positives. If the doc
       for (const sem of semesters) {
         for (const n of [1, 2, 3] as const) {
           const code = (sem as any)[`course${n}Code`];
-          const sd = (sem as any)[`course${n}StartDate`] || sem.semesterStartDate;
-          const ed = (sem as any)[`course${n}EndDate`] || sem.semesterEndDate;
-          if (code && sd && ed) {
-            courseWindows.push({ code: String(code).replace(/\s/g, '').toUpperCase(), start: new Date(sd), end: new Date(ed) });
+          const win = deriveCourseTermWindow(sem, n);
+          if (code && win) {
+            courseWindows.push({ code: String(code).replace(/\s/g, '').toUpperCase(), start: win.start, end: win.end });
           }
         }
       }
@@ -5043,8 +5071,6 @@ Be thorough but practical. Focus on real issues, not false positives. If the doc
         const classDay2 = (activeSemester as any)[`${config.prefix}ClassDay2`];
         const classTime = (activeSemester as any)[`${config.prefix}ClassTime`] || '09:00';
         const classEndTime = (activeSemester as any)[`${config.prefix}ClassEndTime`] || '12:00';
-        const courseStartDate = (activeSemester as any)[`${config.prefix}StartDate`];
-        const courseEndDate = (activeSemester as any)[`${config.prefix}EndDate`];
 
         if (!validDays.includes(classDay1) || !validDays.includes(classDay2)) continue;
 
@@ -5054,9 +5080,13 @@ Be thorough but practical. Focus on real issues, not false positives. If the doc
 
         if (classDays.length === 0) continue;
 
-        const semesterStart = courseStartDate ? new Date(courseStartDate) : new Date(activeSemester.semesterStartDate);
-        const semesterEnd = courseEndDate 
-          ? new Date(courseEndDate) 
+        // Use term-aware bounds so e.g. CHST501 (second_half) doesn't generate
+        // class entries during May/June when first_half is running.
+        const courseSlot = parseInt(config.prefix.replace('course', ''), 10) as 1|2|3;
+        const win = deriveCourseTermWindow(activeSemester, courseSlot);
+        const semesterStart = win ? win.start : new Date(activeSemester.semesterStartDate);
+        const semesterEnd = win
+          ? win.end
           : (activeSemester.semesterEndDate ? new Date(activeSemester.semesterEndDate) : new Date(semesterStart.getTime() + 13 * 7 * 24 * 60 * 60 * 1000));
 
         const courseName = config.name.startsWith(config.code) ? config.name : `${config.code} - ${config.name}`;
