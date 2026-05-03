@@ -314,6 +314,7 @@ export async function getOneDriveFileContent(itemId: string) {
 }
 
 export async function createOneDriveFolder(parentPath: string, folderName: string): Promise<any> {
+  if (process.env.STAGING_MODE === "1") { console.log("[staging] skipped createOneDriveFolder"); return { skipped: true, reason: "staging mode" } as any; }
   const client = await getOneDriveClient();
   try {
     const apiPath = (!parentPath || parentPath === '/')
@@ -335,6 +336,7 @@ export async function createOneDriveFolder(parentPath: string, folderName: strin
 }
 
 export async function renameOneDriveFolder(folderPath: string, newName: string): Promise<{ renamed: boolean; error?: string }> {
+  if (process.env.STAGING_MODE === "1") { console.log("[staging] skipped renameOneDriveFolder"); return { renamed: false, error: "staging mode" }; }
   const client = await getOneDriveClient();
   try {
     const encodedPath = encodeURIComponent(folderPath).replace(/%2F/g, '/');
@@ -377,6 +379,7 @@ export async function listOneDriveFolderChildren(folderPath: string): Promise<an
 }
 
 export async function renameOneDriveItem(itemId: string, newName: string): Promise<void> {
+  if (process.env.STAGING_MODE === "1") { console.log("[staging] skipped renameOneDriveItem"); return; }
   const client = await getOneDriveClient();
   await client.api(`/me/drive/items/${itemId}`).patch({ name: newName });
 }
@@ -427,6 +430,7 @@ export async function getOneDriveItemByPath(path: string): Promise<any> {
 }
 
 export async function createOneDriveTextFile(parentPath: string, fileName: string, content: string): Promise<any> {
+  if (process.env.STAGING_MODE === "1") { console.log("[staging] skipped createOneDriveTextFile"); return { skipped: true, reason: "staging mode" } as any; }
   const client = await getOneDriveClient();
   try {
     const encodedPath = encodeURIComponent(`${parentPath}/${fileName}`).replace(/%2F/g, '/');
@@ -446,6 +450,7 @@ export async function createOneDriveTextFile(parentPath: string, fileName: strin
 }
 
 export async function uploadOneDriveFile(parentPath: string, fileName: string, fileBuffer: Buffer, contentType: string = 'application/pdf'): Promise<any> {
+  if (process.env.STAGING_MODE === "1") { console.log("[staging] skipped uploadOneDriveFile"); return { skipped: true, reason: "staging mode" } as any; }
   const accessToken = await getAccessToken();
   try {
     const fullPath = `${parentPath}/${fileName}`;
@@ -478,6 +483,7 @@ export async function uploadOneDriveFile(parentPath: string, fileName: string, f
 }
 
 export async function updateOneDriveFileContent(itemId: string, content: string): Promise<any> {
+  if (process.env.STAGING_MODE === "1") { console.log("[staging] skipped updateOneDriveFileContent"); return { skipped: true, reason: "staging mode" } as any; }
   const client = await getOneDriveClient();
   try {
     const response = await client.api(`/me/drive/items/${itemId}/content`)
@@ -514,6 +520,7 @@ export async function getOneDriveItemId(path: string): Promise<string | null> {
 }
 
 export async function deleteOneDriveItem(itemId: string): Promise<void> {
+  if (process.env.STAGING_MODE === "1") { console.log("[staging] skipped deleteOneDriveItem"); return; }
   const client = await getOneDriveClient();
   try {
     await client.api(`/me/drive/items/${itemId}`).delete();
