@@ -378,6 +378,24 @@ export function DevPanel() {
   };
   const resetGeom = () => setGeom(computeDefaultGeom());
 
+  // Promote the panel to the browser's TOP LAYER via the popover API.
+  // The top layer sits above EVERY other element regardless of z-index,
+  // stacking context, or transform/filter ancestor traps. This is the only
+  // mechanism that cannot be covered by another fullscreen overlay.
+  const panelRootRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (!open) return;
+    const el = panelRootRef.current as any;
+    if (!el || typeof el.showPopover !== "function") return;
+    try {
+      // matches() throws if popover state isn't set yet — guard with try.
+      if (!el.matches?.(":popover-open")) el.showPopover();
+    } catch {}
+    return () => {
+      try { if (el.matches?.(":popover-open")) el.hidePopover(); } catch {}
+    };
+  }, [open]);
+
   if (!open) return null;
 
   const panel: React.CSSProperties = {
@@ -389,6 +407,8 @@ export function DevPanel() {
     fontSize: 11, boxShadow: "0 12px 40px rgba(0,0,0,0.55)",
     pointerEvents: "auto",
     display: "flex", flexDirection: "column",
+    // Strip popover UA defaults (margin:auto centres it; padding adds inner gap)
+    margin: 0, padding: 0, inset: "auto",
   };
   const tabBtn = (id: TabId, label: string): React.CSSProperties => ({
     padding: "5px 8px", cursor: "pointer", border: "none",
@@ -818,6 +838,8 @@ export function DevPanel() {
       </div>
     )}
     <div
+      ref={panelRootRef}
+      {...({ popover: "manual" } as any)}
       style={{ ...panel, isolation: "isolate" }}
       data-testid="dev-panel"
       onClickCapture={(e) => {
