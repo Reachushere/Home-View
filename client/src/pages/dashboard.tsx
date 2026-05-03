@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect, useMemo, memo, startTransition } from "react";
+import { DevPanel } from "@/components/DevPanel";
 import { createPortal } from "react-dom";
 import Cropper from "react-easy-crop";
 import oneDriveLogoPath from "@assets/OneDrive_1776567093048.png";
@@ -42955,6 +42956,7 @@ export default function Dashboard() {
           >OneDrive disconnected — Reconnect</button>
         )
       )}
+      <DevPanel />
       {odReauthOpen && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }} data-testid="modal-onedrive-reauth">
           <div style={{ background: '#132f4c', color: '#e0e0e0', borderRadius: 12, padding: 28, maxWidth: 460, width: '90%', textAlign: 'center', fontFamily: 'system-ui' }}>
