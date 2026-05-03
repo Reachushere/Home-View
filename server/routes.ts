@@ -5070,7 +5070,7 @@ Be thorough but practical. Focus on real issues, not false positives. If the doc
           countsByCode: counts,
           courseWindows: courseWindows.map(w => ({ code: w.code, name: w.name, start: w.start, end: w.end, semester: w.semester })),
           filterApplied: { code: filterCode || null, title: filterTitle || null, matchCount: filtered.length },
-          filteredTasks: filtered.slice(0, 100).map(t => ({ id: t.id, title: t.title, courseName: t.courseName, dueDate: t.dueDate })),
+          filteredTasks: filtered.slice(0, 100).map(t => ({ id: t.id, title: t.title, courseName: t.courseName, dueDate: t.dueDate, startDate: (t as any).startDate, type: t.type })),
           sampleClassTasks: filterCode || filterTitle ? undefined : classTasks.slice(0, 15).map(t => ({ id: t.id, title: t.title, courseName: t.courseName, dueDate: t.dueDate })),
           noMatchSample: noMatch.slice(0, 25),
           noMatchTotal: noMatch.length,
