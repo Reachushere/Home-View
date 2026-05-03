@@ -94,6 +94,7 @@ export function DevPanel() {
   const [perf, setPerf] = useState<any>(null);
   const [flags, setFlagsState] = useState<any>(null);
   const [tab, setTab] = useState<TabId>("trace");
+  const [clickProofCount, setClickProofCount] = useState(0);
   const [busy, setBusy] = useState(false);
   // Console error capture (last 20)
   const [consoleErrors, setConsoleErrors] = useState<{ time: string; msg: string }[]>([]);
@@ -378,23 +379,11 @@ export function DevPanel() {
   };
   const resetGeom = () => setGeom(computeDefaultGeom());
 
-  // Promote the panel to the browser's TOP LAYER via the popover API.
-  // The top layer sits above EVERY other element regardless of z-index,
-  // stacking context, or transform/filter ancestor traps. This is the only
-  // mechanism that cannot be covered by another fullscreen overlay.
+  // Earlier attempt used the popover API to elevate the panel to the browser's
+  // top layer. That had the side-effect of trapping ALL clicks (panel + outside)
+  // and prevented the user from closing it. Reverted to a plain max-z-index
+  // portal — relies on access-gate's overlay being z=2147482900 (lower).
   const panelRootRef = useRef<HTMLDivElement | null>(null);
-  useEffect(() => {
-    if (!open) return;
-    const el = panelRootRef.current as any;
-    if (!el || typeof el.showPopover !== "function") return;
-    try {
-      // matches() throws if popover state isn't set yet — guard with try.
-      if (!el.matches?.(":popover-open")) el.showPopover();
-    } catch {}
-    return () => {
-      try { if (el.matches?.(":popover-open")) el.hidePopover(); } catch {}
-    };
-  }, [open]);
 
   if (!open) return null;
 
@@ -407,8 +396,10 @@ export function DevPanel() {
     fontSize: 11, boxShadow: "0 12px 40px rgba(0,0,0,0.55)",
     pointerEvents: "auto",
     display: "flex", flexDirection: "column",
-    // Strip popover UA defaults (margin:auto centres it; padding adds inner gap)
-    margin: 0, padding: 0, inset: "auto",
+    // Strip popover UA defaults (margin:auto centres it; padding adds inner gap).
+    // Do NOT add `inset: "auto"` here — it would reset top/left/right/bottom and
+    // override the explicit left/top above, parking the panel at (0,0).
+    margin: 0, padding: 0,
   };
   const tabBtn = (id: TabId, label: string): React.CSSProperties => ({
     padding: "5px 8px", cursor: "pointer", border: "none",
@@ -839,7 +830,6 @@ export function DevPanel() {
     )}
     <div
       ref={panelRootRef}
-      {...({ popover: "manual" } as any)}
       style={{ ...panel, isolation: "isolate" }}
       data-testid="dev-panel"
       onClickCapture={(e) => {
@@ -909,17 +899,26 @@ export function DevPanel() {
         {build?.outOfDate && <span title={build.outOfDateWarning} style={{ marginRight: 8, color: "#fbbf24", fontSize: 10 }}>⚠ build stale</span>}
         <button onClick={() => setOpen(false)} data-testid="button-dev-close" style={{ background: "transparent", border: "none", color: "#bbb", cursor: "pointer", fontSize: 14 }}>×</button>
       </div>
-      {diagBanner.length > 0 && (
-        <div data-testid="banner-diag" style={{ padding: "6px 10px", background: "rgba(20,80,120,0.95)", borderBottom: "2px solid #38bdf8", color: "#e0f2fe", fontSize: 10, fontFamily: "ui-monospace, monospace", maxHeight: 220, overflowY: "auto" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, fontWeight: 700 }}>
-            <span style={{ background: "#38bdf8", color: "#000", padding: "1px 6px", borderRadius: 3 }}>DIAG</span>
-            <span style={{ flex: 1 }}>Click anywhere in panel to log. Shift+Alt+P=probe · Shift+Alt+C=clear · {diagBanner.length} entries</span>
-          </div>
-          {diagBanner.map((line, i) => (
-            <div key={i} style={{ whiteSpace: "pre-wrap", lineHeight: 1.35, opacity: i === 0 ? 1 : 0.7 }}>{line}</div>
-          ))}
+      <div data-testid="banner-diag" style={{ padding: "6px 10px", background: "rgba(20,80,120,0.95)", borderBottom: "2px solid #38bdf8", color: "#e0f2fe", fontSize: 10, fontFamily: "ui-monospace, monospace", maxHeight: 220, overflowY: "auto" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, fontWeight: 700, flexWrap: "wrap" }}>
+          <span style={{ background: "#38bdf8", color: "#000", padding: "1px 6px", borderRadius: 3 }}>DIAG</span>
+          <span style={{ flex: 1, minWidth: 200 }}>Click panel to log. Shift+Alt+P=probe · Shift+Alt+C=clear · {diagBanner.length} entries · clicks={clickProofCount}</span>
+          <button
+            data-testid="button-dev-test-click"
+            type="button"
+            onPointerDown={(e) => { e.stopPropagation(); pushDiag(`TEST pointerdown @ ${Date.now()%100000}`); setClickProofCount(c => c + 1); }}
+            onClick={(e) => { e.stopPropagation(); pushDiag(`TEST click @ ${Date.now()%100000}`); setClickProofCount(c => c + 1); }}
+            style={{ background: "#facc15", color: "#000", border: "2px solid #fde68a", padding: "4px 14px", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 800 }}
+          >TEST CLICK</button>
         </div>
-      )}
+        {diagBanner.length === 0 ? (
+          <div style={{ opacity: 0.6, fontStyle: "italic" }}>(no events yet — click TEST CLICK above; if that does NOT increment clicks=, React event handlers are dead)</div>
+        ) : (
+          diagBanner.map((line, i) => (
+            <div key={i} style={{ whiteSpace: "pre-wrap", lineHeight: 1.35, opacity: i === 0 ? 1 : 0.7 }}>{line}</div>
+          ))
+        )}
+      </div>
       {stagingMode && (
         <div data-testid="banner-staging-mode" style={{ padding: "6px 10px", background: "linear-gradient(90deg, rgba(251,191,36,0.25), rgba(251,191,36,0.10))", borderBottom: "2px solid #fbbf24", color: "#fde68a", fontWeight: 700, fontSize: 11, display: "flex", alignItems: "center", gap: 8 }}>
           <span style={{ background: "#fbbf24", color: "#000", padding: "1px 6px", borderRadius: 3, fontSize: 10 }}>STAGING</span>
