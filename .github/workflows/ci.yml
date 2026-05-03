@@ -1,0 +1,52 @@
+name: UniCal CI safety gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Typecheck + smoke (read-only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run check
+
+      # Smoke runs against the live Pi over Cloudflare Tunnel — read-only
+      # endpoints only. No HA devices, no TTS, no DB writes. Best-effort:
+      # if the Pi is down/offline the gate warns but does not fail the build,
+      # since CI shouldn't block on hardware availability.
+      - name: Smoke (uni-cal.app — read-only)
+        continue-on-error: true
+        run: node scripts/smoke.mjs https://uni-cal.app
+        env:
+          DEV_API_KEY: ${{ secrets.DEV_API_KEY }}
+
+      # Cat Lights replay assertion — if the Pi is reachable, verify that
+      # the protected automation still produces the expected action for a
+      # fixed historical date. Catches logic regressions before pull.
+      - name: Cat Lights replay assertion (uni-cal.app)
+        continue-on-error: true
+        run: node scripts/cat-lights-assert.mjs https://uni-cal.app
+        env:
+          DEV_API_KEY: ${{ secrets.DEV_API_KEY }}
