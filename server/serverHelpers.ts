@@ -25,6 +25,7 @@
 
 import type { RepeatType, RepeatIntervalUnit } from "@shared/schema";
 import { textToSpeech } from "./replit_integrations/audio/client";
+import { isSandboxMode, recordSuppressed } from "./helpers/sandbox";
 
 // ─────────────────────────────────────────────────────────────────────────
 // Auth helper
@@ -205,6 +206,10 @@ export async function haFetch(url: string, options: RequestInit = {}, maxRetries
 }
 
 export async function haServiceCall(service: string, data: object, label = 'HA'): Promise<Response> {
+  if (isSandboxMode()) {
+    recordSuppressed('ha_service_call', `${label} ${service}`, data);
+    return new Response(JSON.stringify({ sandbox: true, suppressed: true, service }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+  }
   const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
   return haFetch(`${haUrl}/api/services/${service}`, {
     method: 'POST',
@@ -258,6 +263,10 @@ export async function processHACommandQueue(): Promise<void> {
 }
 
 export async function haServiceCallSafe(service: string, data: object, label = 'HA'): Promise<boolean> {
+  if (isSandboxMode()) {
+    recordSuppressed('ha_service_call', `${label} ${service}`, data);
+    return true;
+  }
   try {
     await haServiceCall(service, data, label);
     if (haCommandQueue.length > 0 && !haQueueProcessing) {
@@ -406,6 +415,10 @@ export const CHUNK_SIZE = 2000;
 // Generate OpenAI TTS audio and save locally for HA media_player playback
 // ─────────────────────────────────────────────────────────────────────────
 export async function generateAndSaveTTSAudio(text: string, fileId: string, voice: string = "echo", slowPace: boolean = false): Promise<string> {
+  if (isSandboxMode()) {
+    recordSuppressed('tts_generate', `tts ${voice} ${fileId}`, { textPreview: text.slice(0, 80) });
+    return `/tts-audio/sandbox-${fileId}.mp3`;
+  }
   const fs = await import("fs");
   const path = await import("path");
   const ttsDir = path.join(process.cwd(), 'dist', 'public', 'tts-audio');
