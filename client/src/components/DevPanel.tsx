@@ -651,6 +651,33 @@ export function DevPanel() {
                 </div>
                 <div style={{ color: "#cbd5e1", marginTop: 4 }}>{diag.summary}</div>
                 <div style={{ color: "#93c5fd", marginTop: 4, fontSize: 10 }}>→ {diag.recommendedNextStep}</div>
+                {Array.isArray(diag.fixActions) && diag.fixActions.length > 0 && (
+                  <div data-testid="card-fix-actions" style={{ marginTop: 8, paddingTop: 6, borderTop: "1px dashed #fbbf24" }}>
+                    <div style={{ color: "#fbbf24", fontSize: 10, fontWeight: 600, marginBottom: 4 }}>FIX IT — safe repair actions</div>
+                    {diag.fixActions.map((fa: any) => (
+                      <div key={fa.id} data-testid={`row-fix-${fa.id}`} style={{ display: "flex", gap: 4, alignItems: "center", marginBottom: 4, padding: 4, background: "rgba(251,191,36,0.06)", borderRadius: 4 }}>
+                        <div style={{ flex: 1, color: "#fde68a", fontSize: 11 }}>{fa.label} <span style={{ fontSize: 9, opacity: 0.7 }}>(risk: {fa.risk})</span></div>
+                        <button data-testid={`button-fix-preview-${fa.id}`} style={actBtn("#86efac", "rgba(34,197,94,0.18)")} onClick={async () => {
+                          const r = await j(fa.endpoint + "?dryRun=1", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
+                          alert(`PREVIEW (dry-run) — ${fa.id}\n\n${JSON.stringify(r, null, 2)}`);
+                        }}>Preview</button>
+                        <button data-testid={`button-fix-apply-${fa.id}`} style={actBtn("#fda4af", "rgba(244,63,94,0.18)")} onClick={async () => {
+                          if (!confirm(`Apply REAL fix: ${fa.label}\n\nA snapshot will be saved to .local/fix-snapshots/ and the action logged to dev-change-log.md.\n\nContinue?`)) return;
+                          const r = await j(fa.endpoint + "?dryRun=0", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ confirm: true }) });
+                          alert(`APPLIED — ${fa.id}\n\n${JSON.stringify(r, null, 2)}`);
+                          j("/api/dev/diagnose").then(setDiag).catch(() => {});
+                        }}>Apply</button>
+                      </div>
+                    ))}
+                    <div style={{ marginTop: 4 }}>
+                      <button data-testid="button-fix-history" style={{ ...actBtn("#c4b5fd", "rgba(167,139,250,0.18)"), fontSize: 9 }} onClick={async () => {
+                        const r = await j("/api/dev/fix-history?limit=20");
+                        const lines = (r.entries || []).map((e: any) => `${e.timestamp} · ${e.action} · dryRun=${e.dryRun} · ${e.result}`).join("\n");
+                        alert(`Fix History (last ${r.entries?.length || 0} of ${r.count || 0})\n\n${lines || "(empty)"}`);
+                      }}>View Fix History</button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
             {/* Pre/post-semester warning */}
