@@ -25,6 +25,7 @@ import SharedLibraryPage from "@/pages/shared-library";
 import EssayEditorPage from "@/pages/essay-editor";
 import MobileApp from "@/pages/mobile-app";
 import StartMyDayPage from "@/pages/start-my-day";
+import DevPlainPage from "@/pages/dev-plain";
 import StartMyDayButton from "@/components/StartMyDayButton";
 
 function useAutoFullscreen() {
@@ -163,6 +164,14 @@ function Router() {
 function App() {
   useAutoFullscreen();
   const [location] = useLocation();
+
+  if (location === '/dev' || location.startsWith('/dev?')) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <DevPlainPage />
+      </QueryClientProvider>
+    );
+  }
 
   if (location === '/upload') {
     return (
