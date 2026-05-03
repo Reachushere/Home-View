@@ -150,7 +150,59 @@ cd ~/Home-View && git pull && npm run build && pm2 restart all
 | `POST /api/dev/patch` | Safe single-occurrence find/replace + auto-backup |
 | `GET/POST /api/dev/layout-map` | Frontend posts calendar/countdown bounding boxes |
 
-In the dashboard: **Ctrl+Shift+D** opens the Dev Panel. Use **Copy Handoff** to dump the full bundle into your clipboard for ChatGPT.
+### Phase-2 endpoints (decision-trace + replay + flags)
+
+| Endpoint | Purpose |
+|---|---|
+| `GET  /api/dev/flow-snapshot` | One structured object for the latest Cat Lights run — `decisionPath`, `finalAction` (PROMPT/CHUM/UNKNOWN), `durationMs` |
+| `POST /api/dev/replay` | Dry-run week + file selection. Body `{dateOverride:"YYYY-MM-DD"}` or `{forceWeek:1}`. **No side effects** |
+| `POST /api/dev/validate` | Compare latest snapshot to `{expected:{weekNumber, finalAction}}` → `{pass, diff, explanation}` |
+| `POST /api/dev/test/cat-lights-on` (`-off`) | Fires the real webhook (requires `{confirm:true}`) and returns the result |
+| `GET/POST /api/dev/flags` | Toggle `disableAudioPrepQueue`, `disableTTS`, `disableOneDriveSync`, `forceSmallChunkMode`, `verboseLogging` |
+| `GET  /api/dev/performance` | Avg / p95 / slowest TTS chunk + timeout/retry counts |
+| `GET  /api/dev/explain-system?topic=tts\|onedrive\|semester\|automation` | Plain-English subsystem briefing (files, key fns, failure modes) |
+| `GET  /api/dev/export-code?area=tts\|audioPrep\|onedrive\|catLights\|fileSelection` | Returns just the relevant slice (with line numbers) |
+
+### How to use replay / validate
+
+```bash
+# Pre-semester check: should clamp week to 1, no files → CHUM
+curl -X POST http://uni-cal.app/api/dev/replay \
+  -H 'Content-Type: application/json' \
+  -d '{"dateOverride":"2026-08-01"}'
+
+# Force a specific week to see candidate selection
+curl -X POST http://uni-cal.app/api/dev/replay \
+  -H 'Content-Type: application/json' \
+  -d '{"forceWeek":3}'
+
+# After Cat Lights fires, assert the outcome
+curl -X POST http://uni-cal.app/api/dev/validate \
+  -H 'Content-Type: application/json' \
+  -d '{"expected":{"weekNumber":3,"finalAction":"PROMPT"}}'
+```
+
+**Known limitation:** `replay` is a *simulation* of the week-calc + candidate-lookup logic. It is NOT a full pure replay of the Cat Lights handler — that requires the routes.ts module split queued in §6.
+
+### Build & restart rules
+
+| You changed | Run on the Pi |
+|---|---|
+| Anything in `client/` | `npm run build && pm2 restart all` |
+| Anything in `server/` | `pm2 restart all` |
+| `shared/schema.ts` | `npm run db:push` (after agreeing in chat) |
+| `package.json` | `npm install && npm run build && pm2 restart all` |
+
+The Dev Panel's **Build tab** shows a stale-bundle warning when `client/src` has changes newer than `dist/`.
+
+### Dev Panel UI (Ctrl+Shift+D)
+
+10 tabs: **Trace · Flow · Replay · Validate · File · Build · Perf · Flags · Sys · Layout**
+
+Top action buttons:
+- **Copy Debug Pack** — bundles status + flow-snapshot + file-map + build-info + recent-errors + performance + cat_lights trace into one clipboard payload for ChatGPT
+- **Copy Handoff** — full handoff bundle
+- **Copy Status** / **Copy Page** — focused snapshots
 
 Run `node scripts/smoke.mjs` (or `node scripts/smoke.mjs https://uni-cal.app`) for a smoke check of the dev endpoints + critical invariants.
 
