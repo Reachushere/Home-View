@@ -243,19 +243,23 @@ export function DevPanel() {
   });
   useEffect(() => { try { localStorage.setItem("unical_devpanel_geom", JSON.stringify(geom)); } catch {} }, [geom]);
   const dragRef = useRef<{ kind: "move" | "resize"; sx: number; sy: number; g: Geom; pid: number; el: HTMLElement | null } | null>(null);
-  const startDrag = (kind: "move" | "resize") => (e: React.PointerEvent<HTMLElement>) => {
+  const startDrag = (kind: "move" | "resize") => (e: React.PointerEvent<HTMLElement> | React.MouseEvent<HTMLElement>) => {
     // Don't start a drag from buttons/inputs inside the header
     const tgt = e.target as HTMLElement;
     if (tgt && (tgt.closest("button") || tgt.closest("input") || tgt.closest("select") || tgt.closest("textarea") || tgt.closest("a"))) return;
     e.preventDefault();
     e.stopPropagation();
+    const isPointer = "pointerId" in e;
+    const pid = isPointer ? (e as React.PointerEvent).pointerId : -1;
     const el = e.currentTarget;
-    try { el.setPointerCapture(e.pointerId); } catch {}
-    dragRef.current = { kind, sx: e.clientX, sy: e.clientY, g: { ...geom }, pid: e.pointerId, el };
+    if (isPointer) { try { el.setPointerCapture(pid); } catch {} }
+    dragRef.current = { kind, sx: e.clientX, sy: e.clientY, g: { ...geom }, pid, el };
     document.body.style.userSelect = "none";
+    try { console.log("[DevPanel] drag start", kind, "pid=", pid, "g=", geom); } catch {}
 
-    const onMove = (ev: PointerEvent) => {
-      const d = dragRef.current; if (!d || ev.pointerId !== d.pid) return;
+    const onMove = (ev: PointerEvent | MouseEvent) => {
+      const d = dragRef.current; if (!d) return;
+      if ("pointerId" in ev && d.pid >= 0 && (ev as PointerEvent).pointerId !== d.pid) return;
       const dx = ev.clientX - d.sx, dy = ev.clientY - d.sy;
       if (d.kind === "move") {
         setGeom({ ...d.g, x: Math.max(0, Math.min(window.innerWidth - 80, d.g.x + dx)), y: Math.max(0, Math.min(window.innerHeight - 30, d.g.y + dy)) });
@@ -263,18 +267,24 @@ export function DevPanel() {
         setGeom({ ...d.g, w: Math.max(320, Math.min(window.innerWidth - d.g.x, d.g.w + dx)), h: Math.max(220, Math.min(window.innerHeight - d.g.y, d.g.h + dy)) });
       }
     };
-    const onUp = (ev: PointerEvent) => {
-      const d = dragRef.current; if (!d || ev.pointerId !== d.pid) return;
-      try { d.el && d.el.releasePointerCapture(d.pid); } catch {}
+    const onUp = (ev: PointerEvent | MouseEvent) => {
+      const d = dragRef.current; if (!d) return;
+      if ("pointerId" in ev && d.pid >= 0 && (ev as PointerEvent).pointerId !== d.pid) return;
+      try { if (d.pid >= 0) d.el && d.el.releasePointerCapture(d.pid); } catch {}
       dragRef.current = null;
       document.body.style.userSelect = "";
-      window.removeEventListener("pointermove", onMove);
-      window.removeEventListener("pointerup", onUp);
-      window.removeEventListener("pointercancel", onUp);
+      window.removeEventListener("pointermove", onMove as any);
+      window.removeEventListener("pointerup", onUp as any);
+      window.removeEventListener("pointercancel", onUp as any);
+      window.removeEventListener("mousemove", onMove as any);
+      window.removeEventListener("mouseup", onUp as any);
     };
-    window.addEventListener("pointermove", onMove);
-    window.addEventListener("pointerup", onUp);
-    window.addEventListener("pointercancel", onUp);
+    // Listen on BOTH pointer and mouse events for maximum browser compatibility
+    window.addEventListener("pointermove", onMove as any);
+    window.addEventListener("pointerup", onUp as any);
+    window.addEventListener("pointercancel", onUp as any);
+    window.addEventListener("mousemove", onMove as any);
+    window.addEventListener("mouseup", onUp as any);
   };
   const resetGeom = () => setGeom(computeDefaultGeom());
 
@@ -287,6 +297,7 @@ export function DevPanel() {
     border: "1px solid rgba(120,120,150,0.4)", borderRadius: 10,
     fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
     fontSize: 11, boxShadow: "0 12px 40px rgba(0,0,0,0.55)",
+    pointerEvents: "auto",
     display: "flex", flexDirection: "column",
   };
   const tabBtn = (id: TabId, label: string): React.CSSProperties => ({
@@ -715,9 +726,10 @@ export function DevPanel() {
       <div
         data-testid="dev-panel-drag-handle"
         onPointerDown={startDrag("move")}
+        onMouseDown={startDrag("move")}
         onDoubleClick={resetGeom}
         title="Drag to move · Double-click to reset position/size"
-        style={{ display: "flex", alignItems: "center", padding: "6px 8px", borderBottom: "1px solid rgba(120,120,150,0.3)", cursor: "move", userSelect: "none", touchAction: "none" }}
+        style={{ display: "flex", alignItems: "center", padding: "6px 8px", borderBottom: "1px solid rgba(120,120,150,0.3)", cursor: "move", userSelect: "none", touchAction: "none", pointerEvents: "auto" }}
       >
         <span style={{ marginRight: 6, color: "#666", fontSize: 12, lineHeight: 1 }}>⋮⋮</span>
         <span style={{ flex: 1, fontWeight: 700, color: "#a78bfa" }}>UniCal Dev Panel</span>
@@ -1434,8 +1446,9 @@ export function DevPanel() {
       <div
         data-testid="dev-panel-resize-handle"
         onPointerDown={startDrag("resize")}
+        onMouseDown={startDrag("resize")}
         title="Drag to resize"
-        style={{ position: "absolute", right: 0, bottom: 0, width: 18, height: 18, cursor: "nwse-resize", background: "linear-gradient(135deg, transparent 50%, rgba(167,139,250,0.7) 50%)", borderBottomRightRadius: 10, touchAction: "none", zIndex: 10 }}
+        style={{ position: "absolute", right: 0, bottom: 0, width: 22, height: 22, cursor: "nwse-resize", background: "linear-gradient(135deg, transparent 45%, rgba(167,139,250,0.85) 45%)", borderBottomRightRadius: 10, touchAction: "none", zIndex: 10, pointerEvents: "auto" }}
       />
     </div>
     </>
