@@ -19,15 +19,24 @@ Exit code is non-zero only if a real check **FAILs**. **WARN** and **SKIP** neve
 
 ## Authentication
 
-All `/api/dev/*` endpoints sit behind the same session-cookie auth used by the dashboard (`uni_cal_session`). In production (Pi via Cloudflare Tunnel), unauthenticated requests get **HTTP 401 `{"message":"Not authenticated"}`** before even reaching the dev gate.
+All `/api/dev/*` endpoints accept **either** the dashboard session cookie (`uni_cal_session`) **or** a matching `DEV_API_KEY` (sent as the `x-dev-key` header or `?devKey=` query param). The outer auth middleware now whitelists `/api/dev/*` requests that present a valid `DEV_API_KEY`, so terminal smoke runs no longer require copying a browser cookie.
+
+If `DEV_API_KEY` is **unset** on the server (e.g. in production by accident), `/api/dev/*` falls back to session-only auth and unauthenticated requests get **HTTP 401 `{"message":"Not authenticated"}`**.
 
 Smoke supports three ways to authenticate. **Pick one.** Tokens are never echoed to stdout.
 
 | Env var | What it does |
 |---|---|
-| `UNICAL_SESSION_TOKEN` | Token value only. Smoke wraps it as `Cookie: uni_cal_session=<token>`. |
+| `DEV_API_KEY` | Recommended for terminal use. Sent as `x-dev-key`. Bypasses both the outer auth middleware and the dev gate. Server must have `DEV_API_KEY` env var set to the same value. |
+| `UNICAL_SESSION_TOKEN` | Token value only. Smoke wraps it as `Cookie: uni_cal_session=<token>`. Use when no `DEV_API_KEY` is configured. |
 | `UNICAL_COOKIE` | Raw cookie string (use if you have multiple cookies, e.g. `uni_cal_session=…; foo=bar`). |
-| `DEV_API_KEY` | Legacy `x-dev-key` header gate (only works if the server has `DEV_API_KEY` env var set; bypasses session auth on the dev gate but **not** on the outer middleware). |
+
+### Quick verify (Pi)
+
+```bash
+curl -H "x-dev-key: $DEV_API_KEY" http://localhost:5000/api/dev/status
+# → JSON. Should NOT be {"message":"Not authenticated"}.
+```
 
 ### How to grab a session token
 
@@ -89,4 +98,5 @@ If auth was provided but a check still returns 401, smoke marks it **FAIL** with
 - Smoke tests **never** POST to `/api/dev/test/cat-lights-{on,off}` (those are confirm-gated anyway).
 - Smoke tests **never** modify DB rows, file storage, or env vars.
 - Smoke tests **never** print or log the value of `UNICAL_SESSION_TOKEN`, `UNICAL_COOKIE`, or `DEV_API_KEY`.
-- Auth gating on `/api/dev/*` is **not weakened** — smoke must authenticate the same way a browser would.
+- Auth gating on `/api/dev/*` is **not weakened** — only the `DEV_API_KEY` shortcut and the same browser session cookie are accepted. Non-`/api/dev/*` routes are unaffected by `DEV_API_KEY`.
+- If `DEV_API_KEY` is **unset** on the server, `/api/dev/*` requires the session cookie. Production must either set `DEV_API_KEY` (so terminal smoke works) or accept that smoke needs the cookie.
