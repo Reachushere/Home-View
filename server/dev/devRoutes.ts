@@ -28,6 +28,7 @@ import { sql } from "drizzle-orm";
 import { db } from "../db";
 import { storage } from "../storage";
 import { isOneDriveConnected } from "../onedrive";
+import { getSandboxStatus, setSandboxMode, clearSandboxStats, isSandboxMode } from "../helpers/sandbox";
 import { getSchedulerStatus } from "../reminderScheduler";
 import * as crypto from "crypto";
 import {
@@ -408,6 +409,7 @@ export function registerDevRoutes(app: Express): void {
         ttsPlayback: process.env.DISABLE_TTS_PLAYBACK === "1",
         oneDriveWrites: process.env.DISABLE_ONEDRIVE_WRITES === "1",
       } : null,
+      sandbox: getSandboxStatus(),
       build: buildInfo(),
       git: gitInfo(),
       connections: { database: dbOk, homeAssistant: haOk, oneDrive: onedriveOk },
@@ -441,6 +443,31 @@ export function registerDevRoutes(app: Express): void {
   app.get("/api/dev/recent-errors", (req, res) => {
     if (!gate(req, res)) return;
     res.json({ count: getRecentErrors().length, errors: getRecentErrors() });
+  });
+
+  // ────────── sandbox / staging mode ──────────
+  // GET — returns current sandbox state, source (env vs runtime), counters of
+  // suppressed calls, and the most recent suppressed events.
+  // POST { enabled: true|false|null } — runtime override (null = revert to env).
+  // DELETE — clears the suppressed-call counters + recent log without changing
+  // the enabled state. Useful between test runs.
+  app.get("/api/dev/sandbox", (req, res) => {
+    if (!gate(req, res)) return;
+    res.json(getSandboxStatus());
+  });
+  app.post("/api/dev/sandbox", (req, res) => {
+    if (!gate(req, res)) return;
+    const body = (req.body || {}) as { enabled?: boolean | null };
+    if (typeof body.enabled === 'undefined') {
+      return res.status(400).json({ error: "Body must include 'enabled' (boolean or null to revert to env)." });
+    }
+    const now = setSandboxMode(body.enabled);
+    res.json({ enabled: now, status: getSandboxStatus() });
+  });
+  app.delete("/api/dev/sandbox/stats", (req, res) => {
+    if (!gate(req, res)) return;
+    clearSandboxStats();
+    res.json({ ok: true, status: getSandboxStatus() });
   });
 
   // ────────── layout ──────────
