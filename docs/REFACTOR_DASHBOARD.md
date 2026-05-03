@@ -18,6 +18,17 @@ Each base component takes its closure deps as props; thin in-component wrappers 
 ### Phase 4 — Dialogs
 Most dialogs are already in `client/src/components/`. Any dialog still inline in `dashboard.tsx` (mobile settings, OneDrive reauth modal, etc.) gets pulled into its own file under `client/src/pages/dashboard/dialogs/`.
 
+Shipped:
+- `GreyClassifyDialog` (Phase 4a, 55811a93/d7e6c82e) — ~97L removed, 8 props.
+- `MorningReviewDialog` (Phase 4b, 3a93abae/63d7ca26) — ~215L removed, 18 props.
+- `TickerDialog` (Phase 4c, 5f43e345/ec7f2705) — ~307L removed, 32 props. `TICKER_TIME_OPTIONS`, `buildExpiryISO`, `isoToDateTimeParts` moved to `pureHelpers.ts`.
+- `AlexaDialog` (Phase 4d, 1222ce18/15b6d739) — ~413L removed, 41 props. `ALEXA_MAX_CHARS` and `ECHO_SPEAKER_OPTIONS` inlined inside the dialog file.
+
+Cumulative Phase 4 reduction: ~1,032 lines. dashboard.tsx now ~41,723 lines.
+
+Skipped for safety:
+- `renderCourseRow` (~255L, ~50 closure deps inc. inner-defined helpers like `PrioritySelect`, `semDefaultPalettesRow`, `hasSemStarted`, `getCourseGradientColors`, `getReadableTextColor`, `findSemSlot`). Extraction risk too high; defer until Phase 5 calendar work pulls related state out.
+
 ### Phase 5 — Calendar grid sections
 The biggest payoff but the highest risk. Each row type becomes its own component receiving the day window + tasks as props:
 - `OtherRow.tsx`
