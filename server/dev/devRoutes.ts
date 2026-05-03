@@ -388,6 +388,12 @@ export function registerDevRoutes(app: Express): void {
       uptimeSec: Math.round(process.uptime()),
       serverBootAt: new Date(SERVER_BOOT_TS).toISOString(),
       env: process.env.NODE_ENV || "development",
+      stagingMode: process.env.STAGING_MODE === "1",
+      stagingDisables: process.env.STAGING_MODE === "1" ? {
+        haTriggers: process.env.DISABLE_HA_TRIGGERS === "1",
+        ttsPlayback: process.env.DISABLE_TTS_PLAYBACK === "1",
+        oneDriveWrites: process.env.DISABLE_ONEDRIVE_WRITES === "1",
+      } : null,
       build: buildInfo(),
       git: gitInfo(),
       connections: { database: dbOk, homeAssistant: haOk, oneDrive: onedriveOk },
@@ -792,22 +798,40 @@ export function registerDevRoutes(app: Express): void {
         summary = "Cat Lights handler started but never reached the file-selection branch.";
       }
 
-      // ── derive fixActions[] from primaryBlocker ──
-      const fixActions: { id: string; label: string; endpoint: string; risk: "low"|"medium"|"high"; dryRunSupported: boolean; requiresConfirm: boolean }[] = [];
+      // ── derive fixActions[] from primaryBlocker (full coverage) ──
+      type FixAction = { id: string; label: string; endpoint: string; method?: "GET"|"POST"; risk: "low"|"medium"|"high"; dryRunSupported: boolean; requiresConfirm: boolean; infoOnly?: boolean; hint?: string };
+      const fixActions: FixAction[] = [];
       const blk = primaryBlocker;
       if (/_files_not_prepared/.test(blk) || /priority_filter_rejected/.test(blk)) {
-        fixActions.push({ id: "regen_tts", label: "Regenerate TTS for current week", endpoint: "/api/dev/fix/regen-tts", risk: "low", dryRunSupported: true, requiresConfirm: true });
+        fixActions.push({ id: "regen_tts", label: "Regenerate TTS for current week", endpoint: "/api/dev/fix/regen-tts", method: "POST", risk: "low", dryRunSupported: true, requiresConfirm: true });
       }
       if (/no_files_for_week/.test(blk)) {
-        fixActions.push({ id: "resync_onedrive", label: "Re-audit OneDrive course folders", endpoint: "/api/dev/fix/resync-onedrive", risk: "low", dryRunSupported: true, requiresConfirm: true });
-        fixActions.push({ id: "rebuild_file_map", label: "Rebuild file-selection map", endpoint: "/api/dev/fix/rebuild-file-map", risk: "low", dryRunSupported: true, requiresConfirm: true });
+        fixActions.push({ id: "resync_onedrive", label: "Re-audit OneDrive course folders", endpoint: "/api/dev/fix/resync-onedrive", method: "POST", risk: "low", dryRunSupported: true, requiresConfirm: true });
+        fixActions.push({ id: "rebuild_file_map", label: "Rebuild file-selection map", endpoint: "/api/dev/fix/rebuild-file-map", method: "POST", risk: "low", dryRunSupported: true, requiresConfirm: true });
       }
       if (/flow_aborted_before_branch|priority_filter_rejected/.test(blk)) {
-        fixActions.push({ id: "reset_queue", label: "Reset cat-lights trace + queue marker", endpoint: "/api/dev/fix/reset-queue", risk: "medium", dryRunSupported: true, requiresConfirm: true });
+        fixActions.push({ id: "reset_queue", label: "Reset cat-lights trace + queue marker", endpoint: "/api/dev/fix/reset-queue", method: "POST", risk: "medium", dryRunSupported: true, requiresConfirm: true });
       }
       if (blk === "frontend_bundle_stale") {
-        // No safe Fix It (requires pm2). Surface recipe.
-        fixActions.push({ id: "rebuild_pi", label: "Show Pi rebuild recipe (manual)", endpoint: "/api/dev/fix/rebuild-file-map", risk: "low", dryRunSupported: true, requiresConfirm: false });
+        fixActions.push({ id: "rebuild_pi", label: "Preview Pi rebuild recipe", endpoint: "/api/dev/fix/rebuild-file-map", method: "POST", risk: "low", dryRunSupported: true, requiresConfirm: false, hint: "ssh pi: cd ~/Home-View && git pull && npm run build && pm2 restart all" });
+      }
+      if (blk === "no_cat_lights_run_captured") {
+        fixActions.push({ id: "trigger_test", label: "Trigger Cat Lights ON (real — confirm-gated)", endpoint: "/api/dev/test/cat-lights-on", method: "POST", risk: "high", dryRunSupported: false, requiresConfirm: true, hint: "Fires real HA + TTS. Use the Replay tab for dry-run instead." });
+        fixActions.push({ id: "replay_dryrun", label: "Replay flow with current date (dry-run, no side effects)", endpoint: "/api/dev/replay", method: "POST", risk: "low", dryRunSupported: true, requiresConfirm: false, infoOnly: true });
+      }
+      if (blk === "no_active_semester") {
+        fixActions.push({ id: "open_semester_settings", label: "Open Semester Settings (manual)", endpoint: "/api/dev/system-map", method: "GET", risk: "low", dryRunSupported: true, requiresConfirm: false, infoOnly: true, hint: "Visit the dashboard Settings → Semesters tab and create/activate a semester row." });
+      }
+      if (/pre_or_post_semester/.test(blk)) {
+        fixActions.push({ id: "replay_force_week_1", label: "Replay with forceWeek=1 (test in-semester logic)", endpoint: "/api/dev/replay", method: "POST", risk: "low", dryRunSupported: true, requiresConfirm: false, infoOnly: true, hint: "POST /api/dev/replay {forceWeek:1} — verifies file-selection branch will work once semester starts." });
+        fixActions.push({ id: "verify_semester_dates", label: "Verify semesterStartDate (manual)", endpoint: "/api/dev/status", method: "GET", risk: "low", dryRunSupported: true, requiresConfirm: false, infoOnly: true, hint: "Compare /api/dev/status activeSemester.start to today; correct via Settings → Semesters." });
+      }
+      if (/all_\d+_files_listened/.test(blk)) {
+        fixActions.push({ id: "advance_or_unmark", label: "Advance week or unmark a file (manual)", endpoint: "/api/dev/file-map", method: "GET", risk: "low", dryRunSupported: true, requiresConfirm: false, infoOnly: true, hint: "All week files marked listened. Either wait for next week or unmark via dashboard Files → unlisten." });
+      }
+      // Always include diagnose-info action when there are no other actions
+      if (fixActions.length === 0 && blk !== "no_blocker_detected") {
+        fixActions.push({ id: "view_recent_errors", label: "View recent errors (read-only)", endpoint: "/api/dev/recent-errors", method: "GET", risk: "low", dryRunSupported: true, requiresConfirm: false, infoOnly: true });
       }
 
       res.json({
