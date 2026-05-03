@@ -86,6 +86,8 @@ export function DevPanel() {
   const [timeline, setTimeline] = useState<any>(null);
   const [afterUpload, setAfterUpload] = useState<any>(null);
   const [afterMin, setAfterMin] = useState<number>(60);
+  const [diagBanner, setDiagBanner] = useState<string[]>([]);
+  const pushDiag = (...lines: string[]) => setDiagBanner(b => [...lines, ...b].slice(0, 40));
   const [fixFilterAction, setFixFilterAction] = useState<string>("");
   const [fixFilterMode, setFixFilterMode] = useState<"all"|"dryRun"|"real">("all");
   const [build, setBuild] = useState<any>(null);
@@ -180,55 +182,63 @@ export function DevPanel() {
         });
         return;
       }
-      // Shift+Alt+P -> run probe (works even when panel buttons are dead)
+      // Shift+Alt+P -> run probe (works even when panel buttons are dead). Output goes to VISIBLE banner.
       if (e.shiftKey && e.altKey && (e.key === "P" || e.key === "p")) {
         e.preventDefault();
+        const lines: string[] = [];
+        const log = (s: string) => { lines.push(s); console.log(s); };
         try {
           const handle = document.querySelector('[data-testid="dev-panel-drag-handle"]') as HTMLElement | null;
           const tabBar = document.querySelector('[data-testid="tab-dev-trace"]') as HTMLElement | null;
           const probeBtn = document.querySelector('[data-testid="button-dev-probe"]') as HTMLElement | null;
           const copyBtn = document.querySelector('[data-testid="button-dev-copy-debug-pack"]') as HTMLElement | null;
           const probe = (label: string, el: HTMLElement | null) => {
-            if (!el) { console.log(`[Probe] ${label}: NOT FOUND`); return; }
+            if (!el) { log(`${label}: NOT FOUND`); return; }
             const r = el.getBoundingClientRect();
             const cx = Math.round(r.left + r.width / 2);
             const cy = Math.round(r.top + r.height / 2);
             const stack = document.elementsFromPoint(cx, cy);
-            console.log(`[Probe] ${label} @ (${cx},${cy}) — rect=l${Math.round(r.left)},t${Math.round(r.top)},w${Math.round(r.width)},h${Math.round(r.height)}`);
-            stack.slice(0, 10).forEach((node, i) => {
+            log(`▼ ${label} @(${cx},${cy})`);
+            stack.slice(0, 5).forEach((node, i) => {
               const n = node as HTMLElement;
               const cs = window.getComputedStyle(n);
-              const id = n.id ? `#${n.id}` : '';
-              const tid = n.dataset?.testid ? ` testid="${n.dataset.testid}"` : '';
-              const cls = (typeof n.className === 'string' ? n.className : '').slice(0, 50);
-              console.log(`[Probe]   [${i}] <${n.tagName.toLowerCase()}>${id}${tid} class="${cls}" pe=${cs.pointerEvents} z=${cs.zIndex} pos=${cs.position}`);
+              const tid = n.dataset?.testid ? `#${n.dataset.testid}` : '';
+              const cls = (typeof n.className === 'string' ? n.className.split(' ')[0] : '').slice(0, 24);
+              log(`  [${i}] <${n.tagName.toLowerCase()}>${tid} ${cls} pe=${cs.pointerEvents} z=${cs.zIndex}`);
             });
           };
-          console.log('===== [Probe] Shift+Alt+P triggered =====');
-          probe('drag-handle (DEAD?)', handle);
-          probe('first-tab Trace (DEAD?)', tabBar);
-          probe('probe-button (DEAD?)', probeBtn);
-          probe('copy-debug-pack (WORKS)', copyBtn);
-          console.log('===== [Probe] done — top [0] is the topmost element =====');
-        } catch (err: any) { console.error('[Probe] error', err); }
+          log('===== PROBE @ ' + new Date().toLocaleTimeString() + ' =====');
+          probe('DRAG-HANDLE', handle);
+          probe('TAB-TRACE', tabBar);
+          probe('PROBE-BTN', probeBtn);
+          probe('COPY-BTN(works)', copyBtn);
+        } catch (err: any) { log(`error: ${err?.message || err}`); }
+        pushDiag(...lines.reverse());
+        return;
+      }
+      // Shift+Alt+C -> clear diag banner
+      if (e.shiftKey && e.altKey && (e.key === "C" || e.key === "c")) {
+        e.preventDefault();
+        setDiagBanner([]);
         return;
       }
     };
     window.addEventListener("keydown", onKey);
-    // Window-level pointerdown logger — fires for EVERY click anywhere, even if panel buttons are dead.
+    // Window-level pointerdown logger — captures EVERY click. Logs to visible banner if click is inside panel area.
     const onWinPD = (ev: PointerEvent) => {
       const t = ev.target as HTMLElement;
       const tid = t?.dataset?.testid || '';
       const tag = t?.tagName?.toLowerCase() || '?';
-      // Only log clicks within the dev panel area to avoid noise
       const inPanel = !!t?.closest?.('[data-testid="dev-panel"]');
+      if (!inPanel) return;
       const stack = document.elementsFromPoint(ev.clientX, ev.clientY);
       const top = stack[0] as HTMLElement | undefined;
       const topTid = top?.dataset?.testid || '';
       const topTag = top?.tagName?.toLowerCase() || '?';
-      if (inPanel || topTid.includes('dev-')) {
-        console.log(`[WinPD] (${ev.clientX},${ev.clientY}) target=<${tag}>"${tid}" topmost=<${topTag}>"${topTid}" stack=${stack.length} inPanel=${inPanel}`);
-      }
+      const match = (top === t) ? 'MATCH' : 'MISMATCH';
+      const line = `PD(${ev.clientX},${ev.clientY}) tgt=<${tag}>${tid?'#'+tid:''} top=<${topTag}>${topTid?'#'+topTid:''} ${match}`;
+      console.log('[WinPD] ' + line);
+      pushDiag(line);
     };
     window.addEventListener("pointerdown", onWinPD, true);
     return () => {
@@ -865,6 +875,17 @@ export function DevPanel() {
         {build?.outOfDate && <span title={build.outOfDateWarning} style={{ marginRight: 8, color: "#fbbf24", fontSize: 10 }}>⚠ build stale</span>}
         <button onClick={() => setOpen(false)} data-testid="button-dev-close" style={{ background: "transparent", border: "none", color: "#bbb", cursor: "pointer", fontSize: 14 }}>×</button>
       </div>
+      {diagBanner.length > 0 && (
+        <div data-testid="banner-diag" style={{ padding: "6px 10px", background: "rgba(20,80,120,0.95)", borderBottom: "2px solid #38bdf8", color: "#e0f2fe", fontSize: 10, fontFamily: "ui-monospace, monospace", maxHeight: 220, overflowY: "auto" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, fontWeight: 700 }}>
+            <span style={{ background: "#38bdf8", color: "#000", padding: "1px 6px", borderRadius: 3 }}>DIAG</span>
+            <span style={{ flex: 1 }}>Click anywhere in panel to log. Shift+Alt+P=probe · Shift+Alt+C=clear · {diagBanner.length} entries</span>
+          </div>
+          {diagBanner.map((line, i) => (
+            <div key={i} style={{ whiteSpace: "pre-wrap", lineHeight: 1.35, opacity: i === 0 ? 1 : 0.7 }}>{line}</div>
+          ))}
+        </div>
+      )}
       {stagingMode && (
         <div data-testid="banner-staging-mode" style={{ padding: "6px 10px", background: "linear-gradient(90deg, rgba(251,191,36,0.25), rgba(251,191,36,0.10))", borderBottom: "2px solid #fbbf24", color: "#fde68a", fontWeight: 700, fontSize: 11, display: "flex", alignItems: "center", gap: 8 }}>
           <span style={{ background: "#fbbf24", color: "#000", padding: "1px 6px", borderRadius: 3, fontSize: 10 }}>STAGING</span>
