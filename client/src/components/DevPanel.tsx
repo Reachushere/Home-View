@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { createPortal } from "react-dom";
 
 // Hidden developer introspection panel.
 // Toggle with Ctrl+Shift+D, or visit any page with `?dev=1`.
@@ -673,7 +674,12 @@ export function DevPanel() {
 
   const initBlock = !!initChecklist && !initChecklist.ready && !initOverride;
 
-  return (
+  // Portal to document.body so the panel escapes any ancestor stacking context
+  // (transforms, filters, position:fixed/relative ancestors all create traps
+  // that confine z-index and can let other dashboard overlays cover the panel
+  // and steal its clicks).
+  if (typeof document === "undefined") return null;
+  return createPortal(
     <>
     {initBlock && (
       <div data-testid="init-checklist-modal" style={{ position: "fixed", inset: 0, zIndex: 2147482000, background: "rgba(5,5,10,0.92)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
@@ -1451,6 +1457,7 @@ export function DevPanel() {
         style={{ position: "absolute", right: 0, bottom: 0, width: 22, height: 22, cursor: "nwse-resize", background: "linear-gradient(135deg, transparent 45%, rgba(167,139,250,0.85) 45%)", borderBottomRightRadius: 10, touchAction: "none", zIndex: 10, pointerEvents: "auto" }}
       />
     </div>
-    </>
+    </>,
+    document.body,
   );
 }
