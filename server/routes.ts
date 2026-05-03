@@ -30,7 +30,7 @@ import { spotifyActivePlaybacks } from "./helpers/spotifyState";
 import { registerSpotifyRoutes } from "./routes/spotify";
 import { buildCourseFolderName, getSemesterTypeFolder, generateWeekFolderNames } from "./serverHelpers";
 import { registerOneDriveRoutes } from "./routes/onedrive";
-import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles, createOneDriveFolder, getOneDriveFileContentAsText, getOneDriveItemByPath, createOneDriveTextFile, updateOneDriveFileContent, deleteOneDriveItem, resolveSharedNotebookUrl, getSharedNotebookSections, getPagesBySectionId, startDeviceCodeFlow, pollDeviceCodeAuth, isOneDriveConnected } from "./onedrive";
+import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles, createOneDriveFolder, getOneDriveFileContentAsText, getOneDriveItemByPath, createOneDriveTextFile, updateOneDriveFileContent, deleteOneDriveItem, resolveSharedNotebookUrl, getSharedNotebookSections, getPagesBySectionId, startDeviceCodeFlow, pollDeviceCodeAuth, isOneDriveConnected, listOneDriveFolderChildren } from "./onedrive";
 import * as spotifyApi from "./spotify";
 import { hasOpenAI, getApprovedOpenAIConfig, resolveApproval, getPendingApprovals, getRecentApprovals, subscribeToApprovals } from "./openai-approval";
 import multer from "multer";
@@ -19930,16 +19930,22 @@ document.body.removeChild(a);
           console.log(`[Cat Lights] Pre-wake sent to HA Voice + Nest speaker`);
           await new Promise(r => setTimeout(r, 1500));
           let ackPlayed = false;
+          devLogDecision('shower_button:ack_started', 'tts_attempt', 'sending ack TTS via HA Cloud', { entity: CAT_WR_HA_VOICE_ENTITY }, { message: "One moment, checking your readings." }, 'shower_button');
           try {
-            await haServiceCall('tts/speak', {
-              entity_id: HA_CLOUD_TTS_ENTITY,
-              media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
-              message: "One moment, checking your readings."
-            }, 'Cat Lights HA Ack');
+            await Promise.race([
+              haServiceCall('tts/speak', {
+                entity_id: HA_CLOUD_TTS_ENTITY,
+                media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
+                message: "One moment, checking your readings."
+              }, 'Cat Lights HA Ack'),
+              new Promise((_, reject) => setTimeout(() => reject(new Error('ack tts/speak timeout 15s')), 15000)),
+            ]);
             ackPlayed = true;
+            devLogDecision('shower_button:ack_played', 'ack_ok', 'HA Cloud ack played', null, { method: 'ha_cloud' }, 'shower_button');
             console.log(`[Cat Lights] Quick acknowledgment played via HA Cloud TTS (primary)`);
             await new Promise(r => setTimeout(r, 3500));
           } catch (ackErr: any) {
+            devLogDecision('shower_button:ack_failed', 'ack_error', `HA ack threw/timed out: ${ackErr.message}`, null, { error: ackErr.message }, 'shower_button');
             console.warn(`[Cat Lights] HA ack failed: ${ackErr.message}`);
           }
           if (!ackPlayed) {
@@ -20098,14 +20104,19 @@ document.body.removeChild(a);
 
         let ttsPlayed = false;
         try {
-          await haServiceCall('tts/speak', {
-            entity_id: HA_CLOUD_TTS_ENTITY,
-            media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
-            message: ttsMessage
-          }, 'Cat Lights HA Cloud TTS Prompt');
+          await Promise.race([
+            haServiceCall('tts/speak', {
+              entity_id: HA_CLOUD_TTS_ENTITY,
+              media_player_entity_id: CAT_WR_HA_VOICE_ENTITY,
+              message: ttsMessage
+            }, 'Cat Lights HA Cloud TTS Prompt'),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('prompt tts/speak timeout 15s')), 15000)),
+          ]);
           ttsPlayed = true;
+          devLogDecision('shower_button:prompt_played', 'prompt_ok', 'prompt TTS played via HA Cloud (primary)', null, { method: 'ha_cloud', message: ttsMessage }, 'shower_button');
           console.log(`[Cat Lights] TTS prompt played via HA Cloud TTS (primary)`);
         } catch (e: any) {
+          devLogDecision('shower_button:prompt_ha_failed', 'prompt_ha_error', `HA Cloud prompt threw/timed out: ${e.message}`, null, { error: e.message }, 'shower_button');
           console.warn(`[Cat Lights] HA Cloud TTS prompt failed: ${e.message} — falling back to Nest speaker`);
         }
         if (!ttsPlayed) {
@@ -20115,11 +20126,18 @@ document.body.removeChild(a);
             const nestResult = await playOnNestSpeaker(`${DEPLOYED_APP_URL}${audioPath}`, 2, ttsMessage);
             if (nestResult.success) {
               ttsPlayed = true;
+              devLogDecision('shower_button:prompt_played', 'prompt_ok', 'prompt TTS played on Nest (fallback)', null, { method: 'nest', message: ttsMessage }, 'shower_button');
               console.log(`[Cat Lights] TTS prompt played on Nest speaker (fallback)`);
+            } else {
+              devLogDecision('shower_button:prompt_nest_failed', 'prompt_nest_error', `Nest fallback returned success=false`, null, { nestResult }, 'shower_button');
             }
           } catch (e2: any) {
+            devLogDecision('shower_button:prompt_nest_failed', 'prompt_nest_error', `Nest fallback threw: ${e2.message}`, null, { error: e2.message }, 'shower_button');
             console.error(`[Cat Lights] All TTS methods failed: ${e2.message}`);
           }
+        }
+        if (!ttsPlayed) {
+          devLogDecision('shower_button:prompt_unreachable', 'all_methods_failed', 'both HA Cloud and Nest fallback failed — falling back to CHUM FM', null, null, 'shower_button');
         }
         if (!ttsPlayed) {
           console.error(`[Cat Lights] Could not play TTS prompt after all retries — falling back to CHUM FM`);
