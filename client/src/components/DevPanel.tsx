@@ -12,7 +12,7 @@ type Trace = { time: string; step: string; data?: any; decision?: string; reason
 type FileSel = any;
 type TabId =
   | "trace" | "flow" | "replay" | "validate" | "file"
-  | "build" | "perf" | "flags" | "system" | "layout" | "help" | "rollback";
+  | "build" | "perf" | "flags" | "system" | "layout" | "help" | "rollback" | "fixhist";
 
 const j = async (url: string, init?: RequestInit) => {
   const r = await fetch(url, init);
@@ -29,6 +29,10 @@ export function DevPanel() {
   const [sysMap, setSysMap] = useState<any>(null);
   const [flow, setFlow] = useState<any>(null);
   const [diag, setDiag] = useState<any>(null);
+  const [stagingMode, setStagingMode] = useState<boolean>(false);
+  const [fixHist, setFixHist] = useState<any>(null);
+  const [fixFilterAction, setFixFilterAction] = useState<string>("");
+  const [fixFilterMode, setFixFilterMode] = useState<"all"|"dryRun"|"real">("all");
   const [build, setBuild] = useState<any>(null);
   const [perf, setPerf] = useState<any>(null);
   const [flags, setFlagsState] = useState<any>(null);
@@ -160,6 +164,8 @@ export function DevPanel() {
     }
     if (tab === "build" || !build) j("/api/dev/build-info").then(setBuild).catch(() => {});
     if (tab === "rollback") j("/api/dev/recent-commits").then(setCommits).catch(() => setCommits({ error: "fetch failed" }));
+    if (tab === "fixhist") j("/api/dev/fix-history?limit=200").then(setFixHist).catch(() => setFixHist({ error: "fetch failed" }));
+    j("/api/dev/status").then((s: any) => setStagingMode(!!s?.stagingMode)).catch(() => {});
     if (tab === "perf") j("/api/dev/performance").then(setPerf).catch(() => {});
     if (tab === "flags" && !flags) j("/api/dev/flags").then(setFlagsState).catch(() => {});
   }, [open, tab]); // eslint-disable-line
@@ -553,6 +559,12 @@ export function DevPanel() {
         {build?.outOfDate && <span title={build.outOfDateWarning} style={{ marginRight: 8, color: "#fbbf24", fontSize: 10 }}>⚠ build stale</span>}
         <button onClick={() => setOpen(false)} data-testid="button-dev-close" style={{ background: "transparent", border: "none", color: "#bbb", cursor: "pointer", fontSize: 14 }}>×</button>
       </div>
+      {stagingMode && (
+        <div data-testid="banner-staging-mode" style={{ padding: "6px 10px", background: "linear-gradient(90deg, rgba(251,191,36,0.25), rgba(251,191,36,0.10))", borderBottom: "2px solid #fbbf24", color: "#fde68a", fontWeight: 700, fontSize: 11, display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ background: "#fbbf24", color: "#000", padding: "1px 6px", borderRadius: 3, fontSize: 10 }}>STAGING</span>
+          <span>STAGING_MODE=1 — HA / TTS / OneDrive writes are skipped on this server. Read-only DB role assumed.</span>
+        </div>
+      )}
 
       {/* Tabs row */}
       <div style={{ display: "flex", flexWrap: "wrap", borderBottom: "1px solid rgba(120,120,150,0.3)" }}>
@@ -568,6 +580,7 @@ export function DevPanel() {
         <button onClick={() => setTab("layout")} data-testid="tab-dev-layout" style={tabBtn("layout", "Layout")}>Layout</button>
         <button onClick={() => setTab("help")} data-testid="tab-dev-help" style={tabBtn("help", "Help")}>?</button>
         <button onClick={() => setTab("rollback")} data-testid="tab-dev-rollback" style={tabBtn("rollback", "Rollback")}>↶</button>
+        <button onClick={() => setTab("fixhist")} data-testid="tab-dev-fixhist" style={tabBtn("fixhist", "FixHist")}>FixHist</button>
       </div>
 
       {/* Action button row */}
@@ -880,6 +893,52 @@ export function DevPanel() {
                 </div>
               </>
             )}
+          </div>
+        )}
+
+        {tab === "fixhist" && (
+          <div data-testid="text-fix-history">
+            <div style={{ display: "flex", gap: 6, marginBottom: 8, alignItems: "center", flexWrap: "wrap" }}>
+              <button data-testid="button-fixhist-refresh" style={actBtn("#93c5fd", "rgba(96,165,250,0.18)")} onClick={() => j("/api/dev/fix-history?limit=200").then(setFixHist).catch(() => setFixHist({ error: "fetch failed" }))}>Refresh</button>
+              <select data-testid="select-fixhist-action" value={fixFilterAction} onChange={e => setFixFilterAction(e.target.value)} style={inp}>
+                <option value="">all actions</option>
+                <option value="regen-tts">regen-tts</option>
+                <option value="reset-queue">reset-queue</option>
+                <option value="resync-onedrive">resync-onedrive</option>
+                <option value="rebuild-file-map">rebuild-file-map</option>
+              </select>
+              <select data-testid="select-fixhist-mode" value={fixFilterMode} onChange={e => setFixFilterMode(e.target.value as any)} style={inp}>
+                <option value="all">all modes</option>
+                <option value="dryRun">dry-run only</option>
+                <option value="real">real runs only</option>
+              </select>
+              <span style={{ color: "#888", fontSize: 10 }}>
+                {fixHist?.entries ? `${fixHist.entries.length} entries (of ${fixHist.count})` : ""}
+              </span>
+            </div>
+            {!fixHist ? <div style={{ color: "#888" }}>loading…</div>
+              : fixHist.error ? <div style={{ color: "#fda4af" }}>{fixHist.error}</div>
+              : !fixHist.entries?.length ? <div style={{ color: "#888" }}>No fix actions recorded yet. Trigger one from the Flow tab.</div>
+              : (
+                <div>
+                  {fixHist.entries
+                    .filter((e: any) => !fixFilterAction || e.action === fixFilterAction)
+                    .filter((e: any) => fixFilterMode === "all" ? true : fixFilterMode === "dryRun" ? !!e.dryRun : !e.dryRun)
+                    .map((e: any, i: number) => (
+                      <div key={i} data-testid={`row-fixhist-${i}`} style={{ padding: 6, marginBottom: 4, borderRadius: 4, background: e.dryRun ? "rgba(96,165,250,0.08)" : "rgba(244,63,94,0.10)", borderLeft: `3px solid ${e.dryRun ? "#60a5fa" : "#f43f5e"}` }}>
+                        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                          <span style={{ color: e.dryRun ? "#93c5fd" : "#fda4af", fontWeight: 700, fontSize: 11 }}>{e.action}</span>
+                          <span style={{ background: e.dryRun ? "#1e3a8a" : "#7f1d1d", color: e.dryRun ? "#bfdbfe" : "#fecaca", padding: "1px 5px", borderRadius: 3, fontSize: 9 }}>{e.dryRun ? "DRY-RUN" : "REAL"}</span>
+                          <span style={{ flex: 1, color: "#888", fontSize: 10 }}>{e.timestamp}</span>
+                        </div>
+                        <div style={{ color: "#cbd5e1", fontSize: 10, marginTop: 3 }}>{e.result}</div>
+                        {e.snapshot && <div style={{ color: "#86efac", fontSize: 9, marginTop: 2 }}>snapshot: <code>{e.snapshot}</code></div>}
+                        {e.rollbackHint && !e.dryRun && <div style={{ color: "#fde68a", fontSize: 9, marginTop: 2 }}>↶ {e.rollbackHint}</div>}
+                        <details style={{ marginTop: 3 }}><summary style={{ cursor: "pointer", color: "#888", fontSize: 9 }}>details</summary><pre style={{ ...codeBlock, fontSize: 9, marginTop: 3 }}>{JSON.stringify(e, null, 2)}</pre></details>
+                      </div>
+                    ))}
+                </div>
+              )}
           </div>
         )}
 
