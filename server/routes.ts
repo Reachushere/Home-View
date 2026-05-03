@@ -27,6 +27,7 @@ import { generateMasterGuide, generateICS } from "./helpers/textHelpers";
 import { seedDatabase } from "./helpers/seed";
 import { tts, getIsTravellingMode, stopTTSSession, sendNextChunk, scheduleNextChunk, type TTSSession } from "./helpers/ttsSession";
 import { spotifyActivePlaybacks } from "./helpers/spotifyState";
+import { isSandboxMode, recordSuppressed, getSandboxStatus, setSandboxMode, clearSandboxStats } from "./helpers/sandbox";
 import { registerSpotifyRoutes } from "./routes/spotify";
 import { buildCourseFolderName, getSemesterTypeFolder, generateWeekFolderNames } from "./serverHelpers";
 import { registerOneDriveRoutes } from "./routes/onedrive";
@@ -14425,6 +14426,10 @@ Always cite which file/document each finding comes from. Be thorough but concise
 
 
   async function setTabletCommand(cmd: { action: string; url?: string; goodbyeText?: string; timestamp: number }, propagate = true, device = 'master') {
+    if (isSandboxMode()) {
+      recordSuppressed('tablet_command', `setTabletCommand ${device} ${cmd.action}`, cmd);
+      return;
+    }
     pendingTabletCommands[device] = cmd;
     await dbSetTabletCommand(device, cmd);
     if (propagate) {
@@ -17697,6 +17702,10 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
   }
 
   async function playOnNestSpeaker(audioUrl: string, maxRetries: number = 2, ttsText?: string): Promise<{ success: boolean; actuallyPlaying: boolean }> {
+    if (isSandboxMode()) {
+      recordSuppressed('nest_play', 'playOnNestSpeaker', { audioUrl, ttsTextPreview: ttsText?.slice(0, 80) });
+      return { success: true, actuallyPlaying: true };
+    }
     aLog('Nest-Play', `Playing audio${ttsText ? ` (${ttsText.length} chars)` : ''} via Edge TTS → HA upload`, { audioUrl, maxRetries, hasTtsText: !!ttsText });
     try {
       await haServiceCallSafe('media_player/media_stop', { entity_id: NEST_SPEAKER_ENTITY }, 'Nest Pre-Stop');
