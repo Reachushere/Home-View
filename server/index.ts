@@ -36,17 +36,19 @@ import { storage } from "./storage";
 import crypto from "crypto";
 import cookieParser from "cookie-parser";
 
-// Activation date = Saturday on/before the semester start date.
-// A semester does not become "active" until that Saturday, regardless of how
-// many days the previous semester has been over. This prevents the calendar
-// and library from "skipping" into the upcoming term during the break week.
+// Activation date = exactly 4 days before the semester start date.
+// A semester does not become "active" until that lead-in date, regardless of
+// how many days the previous semester has been over. This prevents the
+// calendar and library from "skipping" into the upcoming term during the
+// break week.
 function activationDate(startDate: Date): Date {
+  // Each semester becomes "active" exactly 4 days before its configured start
+  // date (per Bryn). Previously snapped to the preceding Saturday; replaced
+  // with a flat 4-day pre-roll so the activation lead is consistent regardless
+  // of which weekday the semester begins.
   const d = new Date(startDate);
   d.setHours(0, 0, 0, 0);
-  const dow = d.getDay(); // 0=Sun..6=Sat
-  // Move back to Saturday on/before this date
-  const back = (dow + 1) % 7; // Sat -> 0, Sun -> 1, Mon -> 2, ...
-  d.setDate(d.getDate() - back);
+  d.setDate(d.getDate() - 4);
   return d;
 }
 
