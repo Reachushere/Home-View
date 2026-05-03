@@ -1675,4 +1675,164 @@ export function registerDevRoutes(app: Express): void {
       res.json({ count: arr.length, entries: arr.slice(-limit).reverse() });
     } catch (e: any) { res.status(500).json({ error: e.message }); }
   });
+
+  // ══════════════════════════════════════════════════════════════════════
+  // PHASE 4 — TTS stuck-file classification + safe Fix It actions
+  // ══════════════════════════════════════════════════════════════════════
+  // Classifies every file by its position in the extraction → chunking →
+  // TTS pipeline. Read-only. Used by DevPanel + readiness checks.
+  function classifyTtsState(f: any, nowMs: number): string {
+    if (f.listened || f.listenedAt) return "listened";
+    if (f.preparedAt && f.preparedAudioPaths) return "prepared";
+    if (!f.extractedText) return "waiting";
+    if (!f.totalChunks || f.totalChunks === 0) return "extracting";
+    // has text + chunks but not prepared
+    let audioCount = 0;
+    try {
+      const arr = Array.isArray(f.preparedAudioPaths) ? f.preparedAudioPaths : (f.preparedAudioPaths ? JSON.parse(f.preparedAudioPaths) : []);
+      audioCount = Array.isArray(arr) ? arr.length : 0;
+    } catch { audioCount = 0; }
+    const ageHours = f.updatedAt ? (nowMs - new Date(f.updatedAt).getTime()) / 3600000 : Infinity;
+    if (audioCount > 0 && audioCount < f.totalChunks && ageHours < 1) return "generating";
+    if (ageHours > 2) return "failed";
+    return "queued";
+  }
+
+  app.get("/api/dev/tts-classification", async (req, res) => {
+    if (!gate(req, res)) return;
+    try {
+      const files: any[] = await storage.getFiles().catch(() => []);
+      const sem: any = await activeSemester();
+      const week = await getCurrentWeek();
+      const now = Date.now();
+      const buckets: Record<string, any[]> = { waiting: [], extracting: [], queued: [], generating: [], failed: [], prepared: [], listened: [] };
+      for (const f of files) {
+        const state = classifyTtsState(f, now);
+        buckets[state].push({
+          id: f.id,
+          name: f.originalName,
+          folder: f.folder,
+          week: f.weekNumber,
+          totalChunks: f.totalChunks || 0,
+          updatedAt: f.updatedAt,
+          ageHours: f.updatedAt ? Math.round((now - new Date(f.updatedAt).getTime()) / 360000) / 10 : null,
+        });
+      }
+      const counts = Object.fromEntries(Object.entries(buckets).map(([k, v]) => [k, v.length]));
+      const currentWeekFiles = files.filter(f => f.weekNumber === week);
+      const currentWeekCounts = Object.fromEntries(
+        ["waiting","extracting","queued","generating","failed","prepared","listened"].map(s => [
+          s, currentWeekFiles.filter(f => classifyTtsState(f, now) === s).length
+        ])
+      );
+      res.json({
+        ok: true,
+        activeSemester: sem?.semesterName || null,
+        currentWeek: week,
+        flags: getFlags(),
+        counts,
+        currentWeekCounts,
+        buckets,
+        legend: {
+          waiting: "no extracted text yet (PDF parser hasn't run)",
+          extracting: "has text, no totalChunks (chunker hasn't run)",
+          queued: "text+chunks present, no audio yet (waiting for AudioPrep worker)",
+          generating: "partial audio, recently updated (worker actively running)",
+          failed: "stuck >2h with no progress (likely needs retry)",
+          prepared: "fully ready for playback",
+          listened: "marked listened",
+        },
+      });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  // Retry ONE specific stuck file. Dry-run by default. Mirrors regen-tts pattern.
+  app.post("/api/dev/fix/retry-stuck-file", async (req, res) => {
+    if (!gate(req, res)) return;
+    try {
+      const fileId = parseInt(String(req.body?.fileId || req.query.fileId || "0"), 10);
+      if (!fileId) return res.status(400).json({ error: "fileId required (POST body or ?fileId=)" });
+      const files: any[] = await storage.getFiles().catch(() => []);
+      const f = files.find(x => x.id === fileId);
+      if (!f) return res.status(404).json({ error: `File ${fileId} not found` });
+      const state = classifyTtsState(f, Date.now());
+      const real = isRealRun(req);
+      const preview = {
+        fileId, name: f.originalName, folder: f.folder, week: f.weekNumber,
+        currentState: state, totalChunks: f.totalChunks || 0,
+        action: "Clear preparedAudioPaths='' so AudioPrep queue re-picks this file on next pass",
+      };
+      if (state === "prepared" || state === "listened") {
+        return res.status(412).json({ ok: false, error: `File is ${state}, not stuck — refusing to clear preparedAudioPaths.`, preview });
+      }
+      if (!real) {
+        appendFixHistory({ timestamp: new Date().toISOString(), action: "retry-stuck-file", dryRun: true, result: `would retry file ${fileId}`, snapshot: null, rollbackHint: null, preview });
+        return res.json({ dryRun: true, ok: true, preview, hint: "Re-call with ?dryRun=0 and {confirm:true} to apply." });
+      }
+      const snapPath = await captureFixSnapshot("retry-stuck-file");
+      try { await storage.updateFile(fileId, { preparedAudioPaths: "" }); }
+      catch (e: any) {
+        appendFixHistory({ timestamp: new Date().toISOString(), action: "retry-stuck-file", dryRun: false, result: `FAILED: ${e.message}`, snapshot: snapPath, rollbackHint: null, preview });
+        return res.status(500).json({ ok: false, error: e.message, snapshot: snapPath });
+      }
+      const result = `cleared preparedAudioPaths for file ${fileId}`;
+      const rollbackHint = `Restore preparedAudioPaths from ${snapPath} (manual via DB) — file ID ${fileId}`;
+      appendFixHistory({ timestamp: new Date().toISOString(), action: "retry-stuck-file", dryRun: false, result, snapshot: snapPath, rollbackHint, preview });
+      res.json({ dryRun: false, ok: true, fileId, snapshot: snapPath, rollbackHint });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  // Pause / resume the AudioPrep + TTS queues via runtime flags.
+  // Non-destructive: flips disableAudioPrepQueue/disableTTS. No data mutation.
+  app.post("/api/dev/queue-pause", (req, res) => {
+    if (!gate(req, res)) return;
+    try {
+      const next = setFlags({ disableAudioPrepQueue: true, disableTTS: true });
+      appendFixHistory({ timestamp: new Date().toISOString(), action: "queue-pause", dryRun: false, result: "AudioPrep+TTS queues paused", snapshot: null, rollbackHint: "POST /api/dev/queue-resume", preview: { flags: next } });
+      res.json({ ok: true, paused: true, flags: next, hint: "POST /api/dev/queue-resume to re-enable" });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.post("/api/dev/queue-resume", (req, res) => {
+    if (!gate(req, res)) return;
+    try {
+      const next = setFlags({ disableAudioPrepQueue: false, disableTTS: false });
+      appendFixHistory({ timestamp: new Date().toISOString(), action: "queue-resume", dryRun: false, result: "AudioPrep+TTS queues resumed", snapshot: null, rollbackHint: "POST /api/dev/queue-pause", preview: { flags: next } });
+      res.json({ ok: true, paused: false, flags: next });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  // Clear stale in-progress markers — files in 'failed' state (>2h stuck with chunks
+  // but no audio progress). Sets preparedAudioPaths='' to let the queue re-pick them.
+  // Dry-run by default. Snapshot first. Never deletes files.
+  app.post("/api/dev/fix/clear-stale-markers", async (req, res) => {
+    if (!gate(req, res)) return;
+    try {
+      const minHours = Math.max(1, Number(req.body?.minHours || req.query.minHours || 2));
+      const files: any[] = await storage.getFiles().catch(() => []);
+      const now = Date.now();
+      const stale = files.filter(f => classifyTtsState(f, now) === "failed");
+      const real = isRealRun(req);
+      const preview = {
+        minHours,
+        wouldClear: stale.length,
+        targetFileIds: stale.map(f => f.id),
+        targetSummary: stale.slice(0, 10).map(f => ({ id: f.id, name: f.originalName, ageHours: Math.round((now - new Date(f.updatedAt).getTime()) / 360000) / 10 })),
+        action: "Clear preparedAudioPaths='' on each stale file so AudioPrep queue re-picks them",
+      };
+      if (!real) {
+        appendFixHistory({ timestamp: new Date().toISOString(), action: "clear-stale-markers", dryRun: true, result: `would clear ${stale.length} stale markers`, snapshot: null, rollbackHint: null, preview });
+        return res.json({ dryRun: true, ok: true, preview, hint: "Re-call with ?dryRun=0 and {confirm:true} to apply." });
+      }
+      const snapPath = await captureFixSnapshot("clear-stale-markers");
+      let mutated = 0; const errors: any[] = [];
+      for (const f of stale) {
+        try { await storage.updateFile(f.id, { preparedAudioPaths: "" }); mutated++; }
+        catch (e: any) { errors.push({ id: f.id, error: e.message }); }
+      }
+      const result = `cleared ${mutated}/${stale.length} stale markers (errors: ${errors.length})`;
+      const rollbackHint = `Restore preparedAudioPaths from ${snapPath} (manual via DB) — affected: ${stale.map(f => f.id).join(",")}`;
+      appendFixHistory({ timestamp: new Date().toISOString(), action: "clear-stale-markers", dryRun: false, result, snapshot: snapPath, rollbackHint, preview, errors });
+      res.json({ dryRun: false, ok: errors.length === 0, mutated, errors, snapshot: snapPath, rollbackHint });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
 }
