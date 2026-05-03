@@ -24908,6 +24908,36 @@ document.body.removeChild(a);
         return res.status(400).json({ error: 'x-upload-type must be "module" or "reading"' });
       }
 
+      // ──────────────────────────────────────────────────────────────────
+      // Active-semester guard — reject uploads whose courseCode is not in
+      // the active semester (prevents TBD/stale-semester folder routing).
+      // ──────────────────────────────────────────────────────────────────
+      try {
+        const activeSem: any = await storage.getActiveSemesterSettings?.();
+        if (activeSem) {
+          const norm = (s: any) => String(s || '').replace(/\s/g, '').toUpperCase();
+          const requested = norm(courseCode);
+          const allowed: string[] = [];
+          for (let i = 1; i <= 6; i++) {
+            const c = activeSem[`course${i}Code`];
+            if (c) allowed.push(norm(c));
+          }
+          const isPlaceholder = /^TBD/i.test(requested) || /^TBD_SLOT/i.test(courseCode);
+          if (allowed.length && (!allowed.includes(requested) || isPlaceholder)) {
+            console.warn(`[CourseUpload] BLOCKED upload — courseCode ${requested} not in active semester ${activeSem.semesterName} (allowed: ${allowed.join(', ')})`);
+            return res.status(422).json({
+              error: `Upload blocked: course "${courseCode}" is not part of the active semester (${activeSem.semesterName}). Allowed courses: ${allowed.join(', ')}.`,
+              code: 'COURSE_NOT_IN_ACTIVE_SEMESTER',
+              requested,
+              allowed,
+              activeSemester: activeSem.semesterName,
+            });
+          }
+        }
+      } catch (guardErr: any) {
+        console.error('[CourseUpload] active-semester guard threw:', guardErr.message);
+      }
+
       const chunks: Buffer[] = [];
       req.on('data', (chunk: Buffer) => chunks.push(chunk));
       await new Promise<void>((resolve, reject) => {
