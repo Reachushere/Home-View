@@ -29,7 +29,7 @@ import { hasOpenAI, getApprovedOpenAIConfig, resolveApproval, getPendingApproval
 import multer from "multer";
 import { easternNow as torontoDate, easternDateStr, easternHour, easternMidnight, taskDateStr, addDays } from "./timezone";
 import { registerDevRoutes } from "./dev/devRoutes";
-import { logStep as devLogStep, setFileSelection as devSetFileSelection } from "./dev/devTrace";
+import { logStep as devLogStep, setFileSelection as devSetFileSelection, logDecision as devLogDecision } from "./dev/devTrace";
 
 // ─────────────────────────────────────────────────────────────────────────
 // Phase 1 of the routes.ts code split: pull in the module-scope helpers
@@ -21337,7 +21337,7 @@ document.body.removeChild(a);
   app.post("/api/webhook/cat-lights", async (req, res) => {
     try {
       catWashTrace('CatLights', 'WEBHOOK RECEIVED', { body: req.body });
-      devLogStep('cat_lights:webhook_received', { body: req.body });
+      devLogDecision('cat_lights:webhook_received', 'received', 'HA webhook fired', { body: req.body, headers: { 'user-agent': req.headers['user-agent'] } }, { receivedAt: new Date().toISOString() }, 'cat_lights');
       console.log(`[Cat Lights] ====== WEBHOOK TRIGGERED ======`);
       console.log(`[Cat Lights] Timestamp: ${new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' })}`);
       console.log(`[Cat Lights] Request body: ${JSON.stringify(req.body)}`);
@@ -21403,7 +21403,7 @@ document.body.removeChild(a);
         }
       }
       catWashTrace('CatLights', `STATE RESOLVED: ${lightState}`, { bodyState, bodyAction, method: bodyState === lightState ? 'body' : bodyAction ? 'action' : 'api_query' });
-      devLogStep('cat_lights:state_parsed', { lightState, bodyState, bodyAction });
+      devLogDecision('cat_lights:state_parsed', lightState === 'on' ? 'lights_on' : lightState === 'off' ? 'lights_off' : 'unknown', `lightState resolved to '${lightState}' (body=${bodyState ?? 'n/a'}, action=${bodyAction ?? 'n/a'})`, { bodyState, bodyAction }, { lightState }, 'cat_lights');
       console.log(`[Cat Lights] Light state: ${lightState} (body state: ${bodyState})`);
       console.log(`[Cat Lights] Architecture: server-side TTS → Google Nest speaker (media_player.play_media)`);
 
@@ -21693,12 +21693,12 @@ document.body.removeChild(a);
       }
 
       console.log(`[Cat Lights][TRACE] Step 4: Getting cached files`);
-      devLogStep('cat_lights:week_calculated', { weekNumber: currentWeekNumber, semesterKey: (semesterSettings as any)?.semesterKey || null });
+      devLogDecision('cat_lights:week_calculated', currentWeekNumber < 1 ? 'pre_or_post_semester' : 'in_semester', currentWeekNumber < 1 ? `weekNumber=${currentWeekNumber} — outside active semester window` : `weekNumber=${currentWeekNumber}`, { today: new Date().toISOString(), semesterStart: (semesterSettings as any)?.semesterStartDate || null, readingWeekStart: (semesterSettings as any)?.readingWeekStart || null }, { weekNumber: currentWeekNumber, semesterKey: (semesterSettings as any)?.semesterKey || null }, 'cat_lights');
       const allFilesBefore = await storage.getFiles();
       console.log(`[Cat Lights][TRACE] Step 4b: ${allFilesBefore.length} total files in DB`);
       let nextFile = await findNextFileByPriority(allFilesBefore, currentWeekNumber);
       console.log(`[Cat Lights][TRACE] Step 4c: findNextFileByPriority returned ${nextFile ? `id=${nextFile.id} "${nextFile.originalName}"` : 'null'}`);
-      devLogStep('cat_lights:initial_file_lookup', { found: !!nextFile, fileId: nextFile?.id || null, name: nextFile?.originalName || null, totalFiles: allFilesBefore.length });
+      devLogDecision('cat_lights:initial_file_lookup', nextFile ? 'file_found' : 'no_file', nextFile ? `priority pick: id=${nextFile.id} ${nextFile.originalName}` : `findNextFileByPriority returned null (week=${currentWeekNumber}, total=${allFilesBefore.length})`, { weekNumber: currentWeekNumber, totalFiles: allFilesBefore.length }, { found: !!nextFile, fileId: nextFile?.id || null, name: nextFile?.originalName || null }, 'cat_lights');
 
       const syncWithTimeout = (timeout: number) => Promise.race([
         syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Cat Lights]'),
@@ -21754,7 +21754,7 @@ document.body.removeChild(a);
       if (!nextFile) {
         console.log(`[Cat Lights][TRACE] Step 9: No nextFile — playing CHUM FM`);
         console.log(`[Cat Lights] No unlistened files for week ${currentWeekNumber} — playing CHUM FM on Echo speakers`);
-        devLogStep('cat_lights:branch', { action: 'CHUM_FALLBACK', weekNumber: currentWeekNumber, reason: 'no_unlistened_file' });
+        devLogDecision('cat_lights:branch', 'CHUM_FALLBACK', `no unlistened file for week ${currentWeekNumber} after OneDrive sync — falling back to CHUM FM radio`, { weekNumber: currentWeekNumber }, { action: 'CHUM_FALLBACK' }, 'cat_lights');
         devSetFileSelection({ source: 'cat_lights', semester: (semesterSettings as any)?.semesterKey || null, weekNumber: currentWeekNumber, course: null, selectedFileId: null, selectedFileName: null, folder: null, objectPath: null, oneDrivePath: null, reason: 'no_unlistened_file -> CHUM FM' });
         catLightsPromptPending = false;
         await playChumFmRadio(haUrl);
@@ -21762,7 +21762,7 @@ document.body.removeChild(a);
       }
 
       const fileName = nextFile.displayName || nextFile.originalName || 'Unknown file';
-      devLogStep('cat_lights:branch', { action: 'PROMPT_FILE', fileId: nextFile.id, name: fileName, folder: nextFile.folder });
+      devLogDecision('cat_lights:branch', 'PROMPT_FILE', `priority pick chosen — will prompt user about ${fileName}`, { weekNumber: currentWeekNumber, fileId: nextFile.id }, { action: 'PROMPT_FILE', fileId: nextFile.id, name: fileName, folder: nextFile.folder }, 'cat_lights');
       devSetFileSelection({
         source: 'cat_lights',
         semester: (semesterSettings as any)?.semesterKey || null,
@@ -21784,7 +21784,7 @@ document.body.removeChild(a);
       const greeting = hourNum < 12 ? 'Good morning Bryn.' : hourNum < 17 ? 'Good afternoon Bryn.' : 'Good evening Bryn.';
       const ttsMessage = `${greeting} Would you like to play ${fileDesc}?`;
       console.log(`[Cat Lights] Sending TTS prompt: "${ttsMessage}"`);
-      devLogStep('cat_lights:tts_started', { message: ttsMessage });
+      devLogDecision('cat_lights:tts_started', 'tts_prompt', `sending TTS prompt to Echo voice entity`, { fileId: nextFile.id, fileName }, { message: ttsMessage, entity: CAT_WR_HA_VOICE_ENTITY }, 'cat_lights');
       try {
         await haServiceCallSafe('media_player/volume_set', { entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.50 }, 'Cat Lights HA Vol');
 
