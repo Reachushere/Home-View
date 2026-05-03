@@ -68,6 +68,7 @@ import {
   HA_QUEUE_MAX_AGE_MS,
   HA_QUEUE_MAX_SIZE,
   processHACommandQueue,
+  isHAQueueProcessing,
   haServiceCallSafe,
   formatLocalDate,
   FLICK_DEVICES,
@@ -16583,7 +16584,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
             processHACommandQueue().catch(e => console.warn(`[HA Queue] Drain error: ${e.message}`));
           }
         }
-        if (haCommandQueue.length > 0 && !haQueueProcessing) {
+        if (haCommandQueue.length > 0 && !isHAQueueProcessing()) {
           processHACommandQueue().catch(() => {});
         }
         return true;
@@ -16816,7 +16817,7 @@ ${tvUrl ? `<iframe id="frame" src="${tvUrl}" allow="fullscreen;autoplay"></ifram
         downSince: haHealth.wasDownSince ? new Date(haHealth.wasDownSince).toISOString() : null,
         commandQueue: {
           pending: haCommandQueue.length,
-          processing: haQueueProcessing,
+          processing: isHAQueueProcessing(),
           oldest: haCommandQueue.length > 0 ? new Date(haCommandQueue[0].queuedAt).toISOString() : null,
         },
       },
