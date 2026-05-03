@@ -20091,6 +20091,27 @@ document.body.removeChild(a);
       const rwStart = semesterSettings?.readingWeekStart ? new Date(semesterSettings.readingWeekStart) : new Date("2026-02-16T00:00:00");
       currentWeekNumber = getWeekNumber(today, semStart, rwStart);
       console.log(`[Cat Lights][TRACE] Step 3b: weekNumber=${currentWeekNumber}`);
+
+      // ───── DEV-ONLY: ?forceWeek=N or { forceWeek: N } override ─────
+      // Allows testing the real cat-lights logic at any week without needing
+      // an auth-protected dev endpoint. Disabled in production. NOT persisted —
+      // affects only this single request. Real semester logic is untouched.
+      if (process.env.NODE_ENV !== 'production') {
+        const rawForce = (req.query?.forceWeek ?? (req.body && req.body.forceWeek));
+        if (rawForce !== undefined && rawForce !== null && rawForce !== '') {
+          const forced = Number(rawForce);
+          if (Number.isFinite(forced) && Number.isInteger(forced)) {
+            const before = currentWeekNumber;
+            currentWeekNumber = forced;
+            console.log(`[Cat Lights][DEV-OVERRIDE] forceWeek=${forced} (was ${before}) — non-prod test override, NOT persisted`);
+            catWashTrace('CatLights', 'DEV forceWeek override', { from: before, to: forced });
+            devLogDecision('cat_lights:dev_force_week', 'override_applied', `forceWeek=${forced} (was ${before})`, { source: req.query?.forceWeek !== undefined ? 'query' : 'body', raw: rawForce }, { from: before, to: forced }, 'cat_lights');
+          } else {
+            console.log(`[Cat Lights][DEV-OVERRIDE] Ignored forceWeek="${rawForce}" — not a valid integer`);
+          }
+        }
+      }
+
       if (currentWeekNumber < 1) {
         const semStartStrCl = easternDateStr(semStart);
         const todayStrCl = easternDateStr(today);
