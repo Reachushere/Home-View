@@ -1357,6 +1357,57 @@ export function registerDevRoutes(app: Express): void {
     } catch (e: any) { res.status(500).json({ error: e.message }); }
   });
 
+  // ────────── /api/dev/fix/cleanup-bad-uploads — DB-only cleanup of files routed to inactive/TBD courses ──────────
+  app.post("/api/dev/fix/cleanup-bad-uploads", async (req, res) => {
+    if (!gate(req, res)) return;
+    try {
+      const norm = (s: any) => String(s || '').replace(/\s/g, '').toUpperCase();
+      const sem: any = await activeSemester();
+      const allowed: string[] = [];
+      if (sem) for (let i = 1; i <= 6; i++) { const c = sem[`course${i}Code`]; if (c) allowed.push(norm(c)); }
+
+      const files: any[] = await storage.getFiles().catch(() => []);
+      const bad = files.filter((f: any) => {
+        if (!f.folder) return false;
+        const m = f.folder.match(/^week-(\d+)-([a-z0-9_]+)-(module|reading)$/i);
+        if (!m) {
+          if (/tbd[123]?/i.test(f.folder) || /^casl/i.test(f.folder.replace(/^week-\d+-/, ''))) return true;
+          return false;
+        }
+        const code = norm(m[2]);
+        if (/^TBD/.test(code)) return true;
+        if (allowed.length > 0 && !allowed.includes(code)) return true;
+        return false;
+      }).map((f: any) => ({ id: f.id, folder: f.folder, name: f.displayName || f.originalName, listened: f.listened }));
+
+      const real = isRealRun(req) && req.body?.confirm === true;
+      const preview = {
+        activeSemester: sem ? sem.semesterName : null,
+        allowedCourses: allowed,
+        candidatesFound: bad.length,
+        candidates: bad.slice(0, 50),
+        scope: "Database only — OneDrive files are NOT touched.",
+      };
+
+      if (!real) {
+        appendFixHistory({ timestamp: new Date().toISOString(), action: "cleanup-bad-uploads", dryRun: true, result: `would soft-delete ${bad.length} file rows`, snapshot: null, rollbackHint: null, preview });
+        return res.json({ dryRun: true, ok: true, preview, hint: "Re-call with ?dryRun=0 and {confirm:true} to apply. Snapshot is captured first." });
+      }
+
+      const snapPath = await captureFixSnapshot("cleanup-bad-uploads");
+      let deleted = 0;
+      const errors: any[] = [];
+      for (const f of bad) {
+        try { await storage.deleteFile?.(f.id); deleted++; }
+        catch (e: any) { errors.push({ id: f.id, error: e.message }); }
+      }
+      const result = `deleted ${deleted}/${bad.length} bad-routed file rows`;
+      const rollbackHint = `Restore from snapshot at ${snapPath} (files table rows for the listed IDs).`;
+      appendFixHistory({ timestamp: new Date().toISOString(), action: "cleanup-bad-uploads", dryRun: false, result, snapshot: snapPath, rollbackHint, preview });
+      res.json({ dryRun: false, ok: true, deleted, errors, snapshot: snapPath, rollbackHint, scope: preview.scope });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
   // ────────── /api/dev/upload-readiness — single PASS/FAIL before bulk PDF upload ──────────
   app.get("/api/dev/upload-readiness", async (req, res) => {
     if (!gate(req, res)) return;
