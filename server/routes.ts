@@ -4998,37 +4998,74 @@ Be thorough but practical. Focus on real issues, not false positives. If the doc
   }
 
   // POST /api/semester/cleanup-class-tasks - Delete class tasks falling outside their course's start-end window
+  // ?debug=1 → return diagnostic info instead of deleting (sample classTasks, derived windows, no-match list)
+  // ?byTitle=1 → also match by title contains course name keywords (catches tasks with empty/wrong courseName)
   app.post("/api/semester/cleanup-class-tasks", async (req, res) => {
     try {
       const semesters = await storage.getAllSemesterSettings();
       const allTasks = await storage.getTasks();
-      const classTasks = allTasks.filter(t => t.type === 'class' && t.dueDate && t.courseName);
-      const courseWindows: Array<{ code: string; start: Date; end: Date }> = [];
+      const classTasks = allTasks.filter(t => t.type === 'class' && t.dueDate);
+      const courseWindows: Array<{ code: string; name: string; start: Date; end: Date; semester: string }> = [];
       for (const sem of semesters) {
         for (const n of [1, 2, 3] as const) {
           const code = (sem as any)[`course${n}Code`];
+          const name = (sem as any)[`course${n}Name`] || '';
           const win = deriveCourseTermWindow(sem, n);
           if (code && win) {
-            courseWindows.push({ code: String(code).replace(/\s/g, '').toUpperCase(), start: win.start, end: win.end });
+            courseWindows.push({
+              code: String(code).replace(/\s/g, '').toUpperCase(),
+              name: String(name),
+              start: win.start, end: win.end,
+              semester: `${(sem as any).semesterType}/${(sem as any).id}`,
+            });
           }
         }
       }
-      const toDelete: any[] = [];
+      const debug = req.query.debug === '1';
+      const byTitle = req.query.byTitle === '1';
       const dryRun = req.query.dryRun === '1' || (req.body && req.body.dryRun);
+      const toDelete: any[] = [];
+      const noMatch: any[] = [];
       for (const t of classTasks) {
-        const cc = (t.courseName || '').split(' - ')[0].replace(/\s/g, '').toUpperCase();
-        const windows = courseWindows.filter(w => w.code === cc);
-        if (windows.length === 0) continue;
+        const cn = (t.courseName || '').toString();
+        const ttl = (t.title || '').toString();
+        const cc = cn.split(' - ')[0].replace(/\s/g, '').toUpperCase();
+        let windows = courseWindows.filter(w => w.code === cc);
+        // Fallback: match by name keyword in title (e.g. "Online American Civil War" → CHST501)
+        if (windows.length === 0 && byTitle) {
+          windows = courseWindows.filter(w => {
+            const key = (w.name || '').toLowerCase().replace(/\s+/g, ' ').trim();
+            if (!key || key.length < 5) return false;
+            return ttl.toLowerCase().includes(key) || cn.toLowerCase().includes(key);
+          });
+        }
+        if (windows.length === 0) {
+          noMatch.push({ id: t.id, title: t.title, courseName: t.courseName, dueDate: t.dueDate, derivedCode: cc });
+          continue;
+        }
         const due = new Date(t.dueDate as any);
         const inAny = windows.some(w => due >= w.start && due <= new Date(w.end.getTime() + 24*60*60*1000));
-        if (!inAny) toDelete.push({ id: t.id, title: t.title, courseName: t.courseName, dueDate: t.dueDate });
+        if (!inAny) toDelete.push({ id: t.id, title: t.title, courseName: t.courseName, dueDate: t.dueDate, derivedCode: cc, matchedWindows: windows.map(w => ({ code: w.code, start: w.start, end: w.end, semester: w.semester })) });
+      }
+      if (debug) {
+        return res.json({
+          dryRun: true,
+          totalClassTasks: classTasks.length,
+          totalCourseWindows: courseWindows.length,
+          courseWindows: courseWindows.map(w => ({ code: w.code, name: w.name, start: w.start, end: w.end, semester: w.semester })),
+          sampleClassTasks: classTasks.slice(0, 15).map(t => ({ id: t.id, title: t.title, courseName: t.courseName, dueDate: t.dueDate })),
+          noMatchSample: noMatch.slice(0, 25),
+          noMatchTotal: noMatch.length,
+          wouldDeleteSample: toDelete.slice(0, 25),
+          wouldDeleteTotal: toDelete.length,
+        });
       }
       if (!dryRun) {
         for (const t of toDelete) {
           try { await storage.deleteTask(t.id); } catch (_) {}
         }
       }
-      res.json({ deleted: dryRun ? 0 : toDelete.length, candidates: toDelete.length, dryRun: !!dryRun, sample: toDelete.slice(0, 20) });
+      res.json({ deleted: dryRun ? 0 : toDelete.length, candidates: toDelete.length, noMatchTotal: noMatch.length, dryRun: !!dryRun, sample: toDelete.slice(0, 20) });
     } catch (err) {
       console.error('[CleanupClassTasks] error:', err);
       res.status(500).json({ error: 'Failed to cleanup class tasks' });
