@@ -25,6 +25,7 @@ import { getSchedulerStatus } from "./reminderScheduler";
 import { fetchTMUCalendarEvents } from "./tmuCalendar";
 import { generateMasterGuide, generateICS } from "./helpers/textHelpers";
 import { seedDatabase } from "./helpers/seed";
+import { tts, getIsTravellingMode, stopTTSSession, sendNextChunk, scheduleNextChunk, type TTSSession } from "./helpers/ttsSession";
 import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles, createOneDriveFolder, getOneDriveFileContentAsText, getOneDriveItemByPath, createOneDriveTextFile, updateOneDriveFileContent, deleteOneDriveItem, resolveSharedNotebookUrl, getSharedNotebookSections, getPagesBySectionId, startDeviceCodeFlow, pollDeviceCodeAuth, isOneDriveConnected } from "./onedrive";
 import * as spotifyApi from "./spotify";
 import { hasOpenAI, getApprovedOpenAIConfig, resolveApproval, getPendingApprovals, getRecentApprovals, subscribeToApprovals } from "./openai-approval";
@@ -34,11 +35,10 @@ import { registerDevRoutes } from "./dev/devRoutes";
 import { logStep as devLogStep, setFileSelection as devSetFileSelection, logDecision as devLogDecision } from "./dev/devTrace";
 
 // ─────────────────────────────────────────────────────────────────────────
-// Phase 1 of the routes.ts code split: pull in the module-scope helpers
-// (constants, HA fetch utils, Flick device registry, TTS pure helpers)
-// from server/serverHelpers.ts. Anything with closure-coupled mutable state
-// (TTSSession, isTravellingMode, sendNextChunk/scheduleNextChunk) still
-// lives in this file below.
+// Module-scope helpers (constants, HA fetch utils, Flick device registry,
+// pure TTS helpers) live in server/serverHelpers.ts. TTS session state +
+// travelling-mode flag + sendNextChunk/scheduleNextChunk now live in
+// server/helpers/ttsSession.ts (Phase 3 of routes.ts code split).
 // ─────────────────────────────────────────────────────────────────────────
 import {
   getRequestAuthLevel,
@@ -87,230 +87,6 @@ import {
   BUILD_VERSION,
 } from "./serverHelpers";
 export type { FlickDevice, FlickRoomGroup, AutomationLogEntry } from "./serverHelpers";
-
-// ─────────────────────────────────────────────────────────────────────────
-// Travelling-mode flag (mutable; setters live in route handlers below).
-// ─────────────────────────────────────────────────────────────────────────
-let isTravellingMode = false;
-let travelStartDate: string | null = null;
-let travelEndDate: string | null = null;
-export function getIsTravellingMode(): boolean {
-  if (isTravellingMode && travelStartDate && travelEndDate) {
-    const now = new Date();
-    const start = new Date(travelStartDate);
-    const end = new Date(travelEndDate);
-    if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
-      return now >= start && now <= end;
-    }
-  }
-  return isTravellingMode;
-}
-
-// ─────────────────────────────────────────────────────────────────────────
-// TTS reading session for resume functionality (closure state).
-// Pure TTS helpers (cleanTextForTTS, generateAndSaveTTSAudio,
-// getChunkWithSentenceBoundary) live in ./serverHelpers.
-// ─────────────────────────────────────────────────────────────────────────
-interface TTSSession {
-  fullText: string;
-  currentPosition: number;
-  startTime: number;
-  isPlaying: boolean;
-  autoTimer: ReturnType<typeof setTimeout> | null;
-  targetEntity?: string;
-  consecutiveErrors: number;
-  sessionCreatedAt: number;
-}
-let currentTTSSession: TTSSession | null = null;
-
-// Function to fully stop and clean up TTS session
-function stopTTSSession(reason: string) {
-  console.log(`[TTS] Stopping session: ${reason}`);
-  if (currentTTSSession) {
-    if (currentTTSSession.autoTimer) {
-      clearTimeout(currentTTSSession.autoTimer);
-      currentTTSSession.autoTimer = null;
-    }
-    currentTTSSession.isPlaying = false;
-  }
-}
-
-// Function to send next TTS chunk automatically
-async function sendNextChunk() {
-  if (!currentTTSSession || !currentTTSSession.isPlaying) {
-    console.log("[TTS] sendNextChunk: No active session or not playing");
-    return;
-  }
-
-  // Safety: check session age to prevent zombie sessions
-  const sessionAge = Date.now() - currentTTSSession.sessionCreatedAt;
-  if (sessionAge > MAX_SESSION_AGE_MS) {
-    stopTTSSession(`Session too old (${Math.round(sessionAge / 60000)} minutes)`);
-    return;
-  }
-
-  // Safety: check consecutive errors
-  if (currentTTSSession.consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {
-    stopTTSSession(`Too many consecutive errors (${currentTTSSession.consecutiveErrors})`);
-    return;
-  }
-
-  console.log("[TTS] sendNextChunk called, currentPosition:", currentTTSSession.currentPosition);
-
-  // Check if we've finished
-  if (currentTTSSession.currentPosition >= currentTTSSession.fullText.length) {
-    stopTTSSession("Finished entire document");
-    return;
-  }
-
-  // Get next chunk from cleaned text
-  let rawChunk = currentTTSSession.fullText.substring(
-    currentTTSSession.currentPosition,
-    currentTTSSession.currentPosition + CHUNK_SIZE
-  );
-
-  if (rawChunk.trim().length === 0) {
-    stopTTSSession("No more content");
-    return;
-  }
-
-  // Clean the chunk and apply sentence boundary
-  let nextChunk = cleanTextForTTS(rawChunk);
-  nextChunk = getChunkWithSentenceBoundary(nextChunk, CHUNK_SIZE);
-
-  // Update position BEFORE sending
-  const chunkLength = nextChunk.length;
-  currentTTSSession.currentPosition += chunkLength;
-  currentTTSSession.startTime = Date.now();
-
-  const targetEntity = currentTTSSession.targetEntity || NEST_SPEAKER_ENTITY;
-  const isNonAlexa = NON_ALEXA_ENTITIES.includes(targetEntity);
-  console.log("[TTS] Auto-continuing, chunk length:", chunkLength,
-    "new position:", currentTTSSession.currentPosition,
-    "remaining:", currentTTSSession.fullText.length - currentTTSSession.currentPosition,
-    "to:", targetEntity, isNonAlexa ? "(non-Alexa, using play_media)" : "(Alexa)");
-
-  const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-
-  try {
-    let response: Response;
-
-    if (isNonAlexa) {
-      const audioPath = await generateAndSaveTTSAudio(nextChunk, `tts-chunk-${Date.now()}`, "echo");
-      const appUrl = DEPLOYED_APP_URL;
-      const fullAudioUrl = `${appUrl}${audioPath}`;
-      aLog('TTS-Chunk', `Non-Alexa: Generated audio at ${audioPath}, playing on ${targetEntity}`, { fullAudioUrl, appUrl, targetEntity });
-
-      response = await fetch(`${haUrl}/api/services/media_player/play_media`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          entity_id: targetEntity,
-          media_content_id: fullAudioUrl,
-          media_content_type: "music",
-        }),
-      });
-    } else {
-      const ssmlChunk = `<speak><prosody rate="90%">${nextChunk}</prosody></speak>`;
-
-      response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: ssmlChunk,
-          target: targetEntity,
-          data: { type: "tts" }
-        }),
-      });
-    }
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("[TTS] Chunk send error, status:", response.status, errorText);
-      currentTTSSession.consecutiveErrors++;
-      if (currentTTSSession.consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {
-        stopTTSSession(`Giving up after ${MAX_CONSECUTIVE_ERRORS} consecutive errors`);
-        return;
-      }
-      // Rewind position so the failed chunk gets retried
-      currentTTSSession.currentPosition -= chunkLength;
-      console.log(`[TTS] Rewound position to ${currentTTSSession.currentPosition} for retry`);
-    } else {
-      currentTTSSession.consecutiveErrors = 0;
-      console.log("[TTS] Chunk sent successfully");
-    }
-
-    // Schedule next chunk only if session is still active and healthy
-    if (currentTTSSession && currentTTSSession.isPlaying &&
-        currentTTSSession.currentPosition < currentTTSSession.fullText.length) {
-      if (currentTTSSession.consecutiveErrors > 0) {
-        console.log(`[TTS] Retry in 10s due to error (attempt ${currentTTSSession.consecutiveErrors}/${MAX_CONSECUTIVE_ERRORS})`);
-        currentTTSSession.autoTimer = setTimeout(() => {
-          console.log("[TTS] Retry timer fired, calling sendNextChunk");
-          sendNextChunk();
-        }, 10000);
-      } else {
-        scheduleNextChunk();
-      }
-    } else {
-      console.log("[TTS] Not scheduling next - session ended or no more content");
-    }
-  } catch (error) {
-    console.error("[TTS] Auto-continue error:", error);
-    if (currentTTSSession) {
-      currentTTSSession.consecutiveErrors++;
-      currentTTSSession.currentPosition -= chunkLength;
-      if (currentTTSSession.consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {
-        stopTTSSession(`Network error, giving up after ${MAX_CONSECUTIVE_ERRORS} consecutive errors`);
-        return;
-      }
-      console.log(`[TTS] Network error retry in 10s (attempt ${currentTTSSession.consecutiveErrors}/${MAX_CONSECUTIVE_ERRORS})`);
-      currentTTSSession.autoTimer = setTimeout(() => {
-        console.log("[TTS] Network retry timer fired");
-        sendNextChunk();
-      }, 10000);
-    }
-  }
-}
-
-// Calculate delay based on chunk size and speed
-// At 90% speed (slightly slower than normal)
-const SPEED_RATE = 0.90;
-
-function scheduleNextChunk() {
-  if (!currentTTSSession || !currentTTSSession.isPlaying) {
-    console.log("[TTS] scheduleNextChunk: No active session or not playing, aborting");
-    return;
-  }
-
-  if (currentTTSSession.consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {
-    stopTTSSession("Too many errors, not scheduling more chunks");
-    return;
-  }
-
-  if (currentTTSSession.autoTimer) {
-    clearTimeout(currentTTSSession.autoTimer);
-    currentTTSSession.autoTimer = null;
-  }
-
-  const baseSeconds = CHUNK_SIZE / CHARS_PER_SECOND;
-  const adjustedSeconds = baseSeconds / SPEED_RATE;
-  // Add 3-second buffer for Alexa processing overhead
-  const delayMs = adjustedSeconds * 1000 + 3000;
-
-  console.log(`[TTS] Scheduling next chunk in ${(delayMs / 1000).toFixed(1)}s`);
-
-  currentTTSSession.autoTimer = setTimeout(() => {
-    console.log("[TTS] Timer fired, calling sendNextChunk");
-    sendNextChunk();
-  }, delayMs);
-}
 
 
 export async function registerRoutes(
@@ -14597,16 +14373,16 @@ async function pollStatus(timeout){
   });
 
   app.get("/api/travelling", (_req, res) => {
-    res.json({ isTravelling: getIsTravellingMode(), travelStartDate, travelEndDate });
+    res.json({ isTravelling: getIsTravellingMode(), travelStartDate: tts.travelStart, travelEndDate: tts.travelEnd });
   });
 
   app.post("/api/travelling", (req, res) => {
     const { isTravelling, startDate, endDate } = req.body;
-    isTravellingMode = !!isTravelling;
-    travelStartDate = startDate || null;
-    travelEndDate = endDate || null;
+    tts.travelling = !!isTravelling;
+    tts.travelStart = startDate || null;
+    tts.travelEnd = endDate || null;
     const effectivelyTravelling = getIsTravellingMode();
-    console.log(`[Travelling] Mode set to: ${isTravellingMode}, dates: ${travelStartDate} - ${travelEndDate}, effective: ${effectivelyTravelling}`);
+    console.log(`[Travelling] Mode set to: ${tts.travelling}, dates: ${tts.travelStart} - ${tts.travelEnd}, effective: ${effectivelyTravelling}`);
     res.json({ isTravelling: effectivelyTravelling });
   });
 
@@ -21436,7 +21212,7 @@ document.body.removeChild(a);
           stopped.push(`playback:${catWashPlaybackState?.fileName || ''}`);
           await stopNestPlaybackWithGoodbye('light_off');
         }
-        if (currentTTSSession) {
+        if (tts.session) {
           console.log(`[Cat Lights] Stopping active TTS session (light off)`);
           stopTTSSession("Light turned off - stopping playback");
           stopped.push("ttsSession");
@@ -21944,7 +21720,7 @@ document.body.removeChild(a);
         await stopNestPlaybackWithGoodbye(req.body?.trigger || 'toothbrush', !!req.body?.keepOpen);
       }
 
-      if (currentTTSSession) {
+      if (tts.session) {
         console.log(`[Cat Wash Stop Webhook] Stopping active TTS session`);
         stopTTSSession("Toothbrush started running - stopping playback");
         stopped.push("ttsSession");
@@ -22247,8 +22023,8 @@ document.body.removeChild(a);
     stopToothbrushPolling();
     await clearPlaybackSession();
 
-    if (currentTTSSession) {
-      console.log(`[Cat Wash Stop] Stopping active TTS session (entity: ${currentTTSSession.targetEntity})`);
+    if (tts.session) {
+      console.log(`[Cat Wash Stop] Stopping active TTS session (entity: ${tts.session.targetEntity})`);
       stopTTSSession("Force stopped via cat-wash/stop");
       stopped.push("ttsSession");
     }
@@ -22580,7 +22356,7 @@ document.body.removeChild(a);
           } catch {}
         }
 
-        if (currentTTSSession) {
+        if (tts.session) {
           stopTTSSession("Voice command stop");
         }
 
@@ -22831,7 +22607,7 @@ document.body.removeChild(a);
         stopWordAdvancement();
         stopToothbrushPolling();
 
-        if (currentTTSSession) {
+        if (tts.session) {
           stopTTSSession("Clear player command");
         }
 
@@ -23351,7 +23127,7 @@ document.body.removeChild(a);
       console.log(`[Webhook] Selected: ${courseName} ${fileType} - ${fileName}`);
       
       // Stop any existing TTS session
-      if (currentTTSSession) {
+      if (tts.session) {
         stopTTSSession("New webhook playback requested");
       }
       
@@ -23427,7 +23203,7 @@ document.body.removeChild(a);
       const remainingText = fullCleanedText.substring(resumePosition);
       
       // Create TTS session
-      currentTTSSession = {
+      tts.session = {
         fullText: remainingText.length > 100000 ? remainingText.substring(0, 100000) : remainingText,
         currentPosition: 0,
         startTime: Date.now(),
@@ -23483,12 +23259,12 @@ document.body.removeChild(a);
       if (!response.ok) {
         const errorText = await response.text();
         console.error("[Webhook] HA TTS error:", errorText);
-        currentTTSSession = null;
+        tts.session = null;
         return res.status(response.status).json({ error: "Failed to start playback" });
       }
       
       // Update position after first chunk
-      currentTTSSession.currentPosition = firstChunk.length;
+      tts.session.currentPosition = firstChunk.length;
       
       // Save progress with correct resume chunk index
       const totalChunksForFile = Math.ceil(fullCleanedText.length / CHUNK_SIZE);
@@ -24297,26 +24073,26 @@ document.body.removeChild(a);
   
   // GET /api/tts/status - Get TTS session status
   app.get("/api/tts/status", (req, res) => {
-    if (!currentTTSSession) {
+    if (!tts.session) {
       return res.json({ active: false });
     }
     res.json({
       active: true,
-      isPlaying: currentTTSSession.isPlaying,
-      position: currentTTSSession.currentPosition,
-      totalLength: currentTTSSession.fullText.length,
-      progressPercent: Math.round((currentTTSSession.currentPosition / currentTTSSession.fullText.length) * 100),
-      consecutiveErrors: currentTTSSession.consecutiveErrors,
-      sessionAgeMinutes: Math.round((Date.now() - currentTTSSession.sessionCreatedAt) / 60000),
-      targetEntity: currentTTSSession.targetEntity
+      isPlaying: tts.session.isPlaying,
+      position: tts.session.currentPosition,
+      totalLength: tts.session.fullText.length,
+      progressPercent: Math.round((tts.session.currentPosition / tts.session.fullText.length) * 100),
+      consecutiveErrors: tts.session.consecutiveErrors,
+      sessionAgeMinutes: Math.round((Date.now() - tts.session.sessionCreatedAt) / 60000),
+      targetEntity: tts.session.targetEntity
     });
   });
 
   // POST /api/tts/force-stop - Force stop any running TTS session
   app.post("/api/tts/force-stop", (req, res) => {
-    if (currentTTSSession) {
+    if (tts.session) {
       stopTTSSession("Force stopped via API");
-      currentTTSSession = null;
+      tts.session = null;
     }
     res.json({ success: true, message: "TTS session force stopped" });
   });
@@ -25929,7 +25705,7 @@ document.body.removeChild(a);
       // Apply the same French/JSTOR filtering to the full text so all chunks are clean
       const fullCleanedText = cleanTextForTTS(textContent);
       
-      currentTTSSession = {
+      tts.session = {
         fullText: fullCleanedText.length > 100000 ? fullCleanedText.substring(0, 100000) : fullCleanedText,
         currentPosition: 0,
         startTime: Date.now(),
@@ -25947,7 +25723,7 @@ document.body.removeChild(a);
       console.log("Total document length:", fullCleanedText.length, "characters");
       
       // Store the target entity in session for resume
-      currentTTSSession.targetEntity = targetEntity;
+      tts.session.targetEntity = targetEntity;
       
       // Restore volume in case it was muted by previous stop
       await fetch(`${haUrl}/api/services/media_player/volume_set`, {
@@ -25998,13 +25774,13 @@ document.body.removeChild(a);
       
       if (!response.ok) {
         console.error("Home Assistant TTS error:", responseText);
-        currentTTSSession = null;
+        tts.session = null;
         return res.status(response.status).json({ error: "Failed to read file content" });
       }
 
       // Update position AFTER sending first chunk - advance by the chunk length we just sent
-      currentTTSSession.currentPosition = cleanedContent.length;
-      console.log("First chunk sent, updated position to:", currentTTSSession.currentPosition);
+      tts.session.currentPosition = cleanedContent.length;
+      console.log("First chunk sent, updated position to:", tts.session.currentPosition);
 
       // Schedule automatic continuation for the rest of the document
       scheduleNextChunk();
@@ -26020,7 +25796,7 @@ document.body.removeChild(a);
   app.post("/api/media/stop", async (req, res) => {
     try {
       const { entityId } = req.body || {};
-      const targetEntity = entityId || currentTTSSession?.targetEntity || NEST_SPEAKER_ENTITY;
+      const targetEntity = entityId || tts.session?.targetEntity || NEST_SPEAKER_ENTITY;
       
       if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
         return res.status(500).json({ error: "Home Assistant not configured" });
@@ -26029,28 +25805,28 @@ document.body.removeChild(a);
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       
       // Cancel auto-continuation timer and clear session completely
-      if (currentTTSSession) {
+      if (tts.session) {
         // Clear the auto timer
-        if (currentTTSSession.autoTimer) {
-          clearTimeout(currentTTSSession.autoTimer);
-          currentTTSSession.autoTimer = null;
+        if (tts.session.autoTimer) {
+          clearTimeout(tts.session.autoTimer);
+          tts.session.autoTimer = null;
         }
         
         // Calculate position before clearing
-        if (currentTTSSession.isPlaying) {
-          const elapsedSeconds = (Date.now() - currentTTSSession.startTime) / 1000;
+        if (tts.session.isPlaying) {
+          const elapsedSeconds = (Date.now() - tts.session.startTime) / 1000;
           const charsRead = Math.floor(elapsedSeconds * CHARS_PER_SECOND);
-          currentTTSSession.currentPosition = Math.min(
-            currentTTSSession.currentPosition + charsRead,
-            currentTTSSession.fullText.length
+          tts.session.currentPosition = Math.min(
+            tts.session.currentPosition + charsRead,
+            tts.session.fullText.length
           );
-          console.log(`TTS stopped at position ${currentTTSSession.currentPosition} of ${currentTTSSession.fullText.length}`);
+          console.log(`TTS stopped at position ${tts.session.currentPosition} of ${tts.session.fullText.length}`);
         }
         
         // Mark as stopped
-        currentTTSSession.isPlaying = false;
+        tts.session.isPlaying = false;
         // Clear the session entirely to prevent further chunks
-        currentTTSSession = null;
+        tts.session = null;
       }
       
       // Send stop command to the media player
@@ -26094,7 +25870,7 @@ document.body.removeChild(a);
         return res.status(500).json({ error: "Home Assistant not configured" });
       }
 
-      if (!currentTTSSession || currentTTSSession.currentPosition >= currentTTSSession.fullText.length) {
+      if (!tts.session || tts.session.currentPosition >= tts.session.fullText.length) {
         return res.status(400).json({ error: "Nothing to resume" });
       }
 
@@ -26108,13 +25884,13 @@ document.body.removeChild(a);
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          entity_id: currentTTSSession.targetEntity || NEST_SPEAKER_ENTITY,
+          entity_id: tts.session.targetEntity || NEST_SPEAKER_ENTITY,
           volume_level: 0.5
         }),
       });
       
       // Get remaining text from current position
-      let remainingText = currentTTSSession.fullText.substring(currentTTSSession.currentPosition);
+      let remainingText = tts.session.fullText.substring(tts.session.currentPosition);
       
       if (remainingText.trim().length === 0) {
         return res.status(400).json({ error: "Already finished reading" });
@@ -26137,13 +25913,13 @@ document.body.removeChild(a);
       remainingText = "Continuing. " + remainingText;
 
       // Update session
-      currentTTSSession.startTime = Date.now();
-      currentTTSSession.isPlaying = true;
-      currentTTSSession.consecutiveErrors = 0;
+      tts.session.startTime = Date.now();
+      tts.session.isPlaying = true;
+      tts.session.consecutiveErrors = 0;
       
-      console.log("Resuming TTS from position", currentTTSSession.currentPosition, "preview:", remainingText.substring(0, 100));
+      console.log("Resuming TTS from position", tts.session.currentPosition, "preview:", remainingText.substring(0, 100));
       
-      const targetEntity = currentTTSSession.targetEntity || NEST_SPEAKER_ENTITY;
+      const targetEntity = tts.session.targetEntity || NEST_SPEAKER_ENTITY;
       const isNonAlexa = NON_ALEXA_ENTITIES.includes(targetEntity);
       let response: Response;
       if (isNonAlexa) {
@@ -26196,11 +25972,11 @@ document.body.removeChild(a);
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       
       // Clear any existing session
-      if (currentTTSSession) {
-        if (currentTTSSession.autoTimer) {
-          clearTimeout(currentTTSSession.autoTimer);
+      if (tts.session) {
+        if (tts.session.autoTimer) {
+          clearTimeout(tts.session.autoTimer);
         }
-        currentTTSSession = null;
+        tts.session = null;
       }
       
       // Restore volume in case it was muted
@@ -26243,50 +26019,50 @@ document.body.removeChild(a);
   app.post("/api/media/skip-chunk", async (req, res) => {
     try {
       const { direction, entityId } = req.body; // "forward" or "backward"
-      const targetEntity = entityId || currentTTSSession?.targetEntity || NEST_SPEAKER_ENTITY;
+      const targetEntity = entityId || tts.session?.targetEntity || NEST_SPEAKER_ENTITY;
       
       if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
         return res.status(500).json({ error: "Home Assistant not configured" });
       }
 
-      if (!currentTTSSession) {
+      if (!tts.session) {
         return res.status(400).json({ error: "No active TTS session" });
       }
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       
       // Clear the auto timer
-      if (currentTTSSession.autoTimer) {
-        clearTimeout(currentTTSSession.autoTimer);
-        currentTTSSession.autoTimer = null;
+      if (tts.session.autoTimer) {
+        clearTimeout(tts.session.autoTimer);
+        tts.session.autoTimer = null;
       }
       
       // Calculate new position based on direction
       if (direction === "forward") {
         // Skip forward by one chunk
-        currentTTSSession.currentPosition = Math.min(
-          currentTTSSession.currentPosition + CHUNK_SIZE,
-          currentTTSSession.fullText.length
+        tts.session.currentPosition = Math.min(
+          tts.session.currentPosition + CHUNK_SIZE,
+          tts.session.fullText.length
         );
       } else {
         // Skip backward by one chunk
-        currentTTSSession.currentPosition = Math.max(
-          currentTTSSession.currentPosition - CHUNK_SIZE,
+        tts.session.currentPosition = Math.max(
+          tts.session.currentPosition - CHUNK_SIZE,
           0
         );
       }
       
-      console.log(`Skipping ${direction} to position ${currentTTSSession.currentPosition}`);
+      console.log(`Skipping ${direction} to position ${tts.session.currentPosition}`);
       
       // If we have more content, send the next chunk immediately
-      if (currentTTSSession.currentPosition < currentTTSSession.fullText.length) {
-        currentTTSSession.isPlaying = true;
-        currentTTSSession.consecutiveErrors = 0;
-        currentTTSSession.startTime = Date.now();
+      if (tts.session.currentPosition < tts.session.fullText.length) {
+        tts.session.isPlaying = true;
+        tts.session.consecutiveErrors = 0;
+        tts.session.startTime = Date.now();
         sendNextChunk();
-        res.json({ success: true, position: currentTTSSession.currentPosition });
+        res.json({ success: true, position: tts.session.currentPosition });
       } else {
-        currentTTSSession.isPlaying = false;
+        tts.session.isPlaying = false;
         res.json({ success: true, message: "Reached end of document" });
       }
     } catch (error) {
