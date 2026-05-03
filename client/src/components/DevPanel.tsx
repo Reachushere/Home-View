@@ -384,6 +384,28 @@ export function DevPanel() {
   // and prevented the user from closing it. Reverted to a plain max-z-index
   // portal — relies on access-gate's overlay being z=2147482900 (lower).
   const panelRootRef = useRef<HTMLDivElement | null>(null);
+  const renderCountRef = useRef(0);
+  renderCountRef.current += 1;
+
+  // Force every descendant of the panel to be interactive. Defends against any
+  // ancestor (body, dashboard root, Radix-leaked locks) setting pointer-events:
+  // none which would inherit and silently kill clicks on children that don't
+  // explicitly opt back in.
+  useEffect(() => {
+    if (!open) return;
+    const id = "devpanel-force-interactive";
+    if (document.getElementById(id)) return;
+    const s = document.createElement("style");
+    s.id = id;
+    s.textContent = `
+[data-testid="dev-panel"], [data-testid="dev-panel"] * {
+  pointer-events: auto !important;
+  visibility: visible !important;
+}
+[data-testid="dev-panel"] button { cursor: pointer !important; }
+`;
+    document.head.appendChild(s);
+  }, [open]);
 
   if (!open) return null;
 
@@ -902,7 +924,7 @@ export function DevPanel() {
       <div data-testid="banner-diag" style={{ padding: "6px 10px", background: "rgba(20,80,120,0.95)", borderBottom: "2px solid #38bdf8", color: "#e0f2fe", fontSize: 10, fontFamily: "ui-monospace, monospace", maxHeight: 220, overflowY: "auto" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, fontWeight: 700, flexWrap: "wrap" }}>
           <span style={{ background: "#38bdf8", color: "#000", padding: "1px 6px", borderRadius: 3 }}>DIAG</span>
-          <span style={{ flex: 1, minWidth: 200 }}>Click panel to log. Shift+Alt+P=probe · Shift+Alt+C=clear · {diagBanner.length} entries · clicks={clickProofCount}</span>
+          <span style={{ flex: 1, minWidth: 200 }}>r#{renderCountRef.current} · clicks={clickProofCount} · entries={diagBanner.length} · initBlock={String(initBlock)} · geom={geom.x},{geom.y} {geom.w}×{geom.h} · bodyPE={typeof document!=='undefined' ? (document.body.style.pointerEvents||'(unset)') : '?'}</span>
           <button
             data-testid="button-dev-test-click"
             type="button"
