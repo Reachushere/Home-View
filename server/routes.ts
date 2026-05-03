@@ -25065,6 +25065,128 @@ document.body.removeChild(a);
     }
   });
 
+  // ════════════════════════════════════════════════════════════════════
+  // START MY DAY — ADHD-focused single-button entry point
+  //   Picks next unlistened, prepared file in current week for an active
+  //   semester course (smaller-first), or returns blockers + diagnose hint.
+  //   No new playback logic; the frontend opens the existing PDF reader
+  //   with autoplay=1&fullscreen=1.
+  // ════════════════════════════════════════════════════════════════════
+  app.get("/api/start-my-day/next-file", async (req, res) => {
+    try {
+      const norm = (s: any) => String(s || '').replace(/\s/g, '').toUpperCase();
+      const activeSem: any = await storage.getActiveSemesterSettings?.();
+      if (!activeSem) {
+        return res.json({
+          status: 'BLOCKED',
+          blocker: 'NO_ACTIVE_SEMESTER',
+          message: 'No active semester is configured. Open Settings → Semesters and activate one.',
+          fixAction: { id: 'open_semester_settings', label: 'Open Semester Settings', endpoint: '/api/dev/system-map', method: 'GET', infoOnly: true, requiresConfirm: false },
+        });
+      }
+      const allowed: string[] = [];
+      for (let i = 1; i <= 6; i++) { const c = activeSem[`course${i}Code`]; if (c) allowed.push(norm(c)); }
+
+      const semStart = activeSem.semesterStartDate ? new Date(activeSem.semesterStartDate) : null;
+      const rwStart = activeSem.readingWeekStart ? new Date(activeSem.readingWeekStart) : null;
+      const today = new Date();
+      let currentWeek = 1;
+      try { if (semStart) currentWeek = Math.max(1, getWeekNumber(today, semStart, rwStart)); } catch {}
+
+      const allFiles = await storage.getFiles();
+
+      const matchFile = (f: any) => {
+        if (!f.folder || f.listened) return false;
+        const m = f.folder.match(/^week-(\d+)-([a-z0-9_]+)-(module|reading)$/i);
+        if (!m) return false;
+        const wk = parseInt(m[1], 10);
+        const code = norm(m[2]);
+        if (!allowed.includes(code)) return false;
+        return { wk, code, type: m[3].toLowerCase() };
+      };
+
+      const candidates = allFiles
+        .map((f: any) => ({ f, info: matchFile(f) }))
+        .filter((x: any) => x.info)
+        .map((x: any) => ({
+          ...x.f,
+          _wk: x.info.wk,
+          _code: x.info.code,
+          _type: x.info.type,
+          _hasAudio: !!x.f.preparedAudioPaths,
+          _size: Number(x.f.size || 0),
+        }));
+
+      const inCurrentWeek = candidates.filter((c: any) => c._wk === currentWeek);
+      const ranked = (inCurrentWeek.length ? inCurrentWeek : candidates).sort((a: any, b: any) => {
+        if (a._hasAudio !== b._hasAudio) return a._hasAudio ? -1 : 1;
+        return a._size - b._size;
+      });
+
+      if (ranked.length === 0) {
+        return res.json({
+          status: 'BLOCKED',
+          blocker: 'NO_UNLISTENED_FILES',
+          message: `No unlistened files for active courses (${allowed.join(', ')}) in current week ${currentWeek} or any week.`,
+          activeSemester: activeSem.semesterName,
+          currentWeek,
+          allowedCourses: allowed,
+          fixAction: { id: 'rebuild_file_map', label: 'Rebuild file selection map', endpoint: '/api/dev/fix/rebuild-file-map', method: 'POST', dryRunSupported: true, requiresConfirm: true, risk: 'low' },
+        });
+      }
+
+      const primary = ranked[0];
+      const next = ranked[1] || null;
+
+      const response: any = {
+        status: 'OK',
+        activeSemester: activeSem.semesterName,
+        currentWeek,
+        allowedCourses: allowed,
+        totalUnlistened: candidates.length,
+        inCurrentWeek: inCurrentWeek.length,
+        file: {
+          id: primary.id,
+          name: primary.displayName || primary.originalName,
+          folder: primary.folder,
+          courseCode: primary._code,
+          weekNumber: primary._wk,
+          type: primary._type,
+          totalChunks: primary.totalChunks || 0,
+          lastChunkIndex: primary.lastChunkIndex || 0,
+          hasPreparedAudio: primary._hasAudio,
+          sizeMB: Math.round((primary._size / 1024 / 1024) * 10) / 10,
+        },
+        nextFile: next ? {
+          id: next.id,
+          name: next.displayName || next.originalName,
+          folder: next.folder,
+          courseCode: next._code,
+          weekNumber: next._wk,
+          type: next._type,
+          sizeMB: Math.round((next._size / 1024 / 1024) * 10) / 10,
+        } : null,
+        flags: {
+          stagingMode: process.env.STAGING_MODE === '1',
+          disableTtsPlayback: process.env.DISABLE_TTS_PLAYBACK === '1',
+          disableHaTriggers: process.env.DISABLE_HA_TRIGGERS === '1',
+        },
+      };
+
+      if (!primary._hasAudio) {
+        response.warning = 'Primary file has no prepared audio yet — TTS will need to generate on the fly.';
+      }
+      if (process.env.DISABLE_TTS_PLAYBACK === '1') {
+        response.warning = (response.warning ? response.warning + ' · ' : '') + 'DISABLE_TTS_PLAYBACK is ON — playback will be silent.';
+      }
+
+      res.json(response);
+    } catch (err: any) {
+      console.error('[StartMyDay] error:', err);
+      res.status(500).json({ status: 'BLOCKED', blocker: 'SERVER_ERROR', message: err.message || 'Internal error' });
+    }
+  });
+
   const recentlyPreparedFiles: { id: number; name: string; folder: string; totalChunks: number; textLength: number; preparedAt: string }[] = [];
   (globalThis as any).__recentlyPreparedFiles = recentlyPreparedFiles;
 
