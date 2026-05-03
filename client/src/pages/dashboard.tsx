@@ -21411,6 +21411,31 @@ export default function Dashboard() {
                 setCoursesData(updatedData);
                 localStorage.setItem('coursesData', JSON.stringify(updatedData));
                 saveDegreeToServer('coursesData', updatedData);
+                // Persist colors to semester_settings.course{N}_* columns so
+                // they survive a refresh. Without this, /api/semesters returns
+                // the stale DB value on next load and the user's color reverts.
+                {
+                  const liveSems = allSemesterSettingsRef.current;
+                  const liveMatch = liveSems ? findSemSlot(selectedCertCourse?.semKey, courseCode, liveSems) : null;
+                  if (liveMatch) {
+                    const prefix = `course${liveMatch.slot}`;
+                    const semPayload: Record<string, string | null> = {};
+                    if (updates.color !== undefined) semPayload[`${prefix}Color`] = updates.color || null;
+                    if (updates.colorEnd !== undefined) semPayload[`${prefix}ColorEnd`] = updates.colorEnd || null;
+                    if ((updates as any).colorStops !== undefined) semPayload[`${prefix}ColorStops`] = (updates as any).colorStops || null;
+                    if ((updates as any).borderColor !== undefined) semPayload[`${prefix}BorderColor`] = (updates as any).borderColor || null;
+                    if (updates.courseRowColor !== undefined) semPayload[`${prefix}CourseRowColor`] = updates.courseRowColor || null;
+                    if (updates.taskBgColor !== undefined) semPayload[`${prefix}TaskBgColor`] = updates.taskBgColor || null;
+                    if (updates.courseFontColor !== undefined) semPayload[`${prefix}CourseFontColor`] = updates.courseFontColor || null;
+                    if (updates.moduleBoxColor !== undefined) semPayload[`${prefix}ModuleBoxColor`] = updates.moduleBoxColor || null;
+                    if (updates.readingBoxColor !== undefined) semPayload[`${prefix}ReadingBoxColor`] = updates.readingBoxColor || null;
+                    if (Object.keys(semPayload).length > 0) {
+                      apiRequest('PATCH', `/api/semesters/${liveMatch.sem.id}`, semPayload)
+                        .then(() => { queryClient.invalidateQueries({ queryKey: ['/api/semesters'] }); queryClient.invalidateQueries({ queryKey: ['/api/semester'] }); })
+                        .catch((err) => console.error('[CourseColor] failed to persist colors to semester_settings:', err));
+                    }
+                  }
+                }
                 if (updates.courseCode || updates.courseName) {
                   setSelectedCertCourse(prev => prev ? {
                     ...prev,
@@ -21484,6 +21509,30 @@ export default function Dashboard() {
                 setCoursesData(updatedData);
                 localStorage.setItem('coursesData', JSON.stringify(updatedData));
                 saveDegreeToServer('coursesData', updatedData);
+                // Persist colors to semester_settings.course{N}_* columns so
+                // they survive a refresh (mirror of save site #1).
+                {
+                  const liveSems = allSemesterSettingsRef.current;
+                  const liveMatch = liveSems ? findSemSlot(selectedCertCourse?.semKey, courseCode, liveSems) : null;
+                  if (liveMatch) {
+                    const prefix = `course${liveMatch.slot}`;
+                    const semPayload: Record<string, string | null> = {};
+                    if (updates.color !== undefined) semPayload[`${prefix}Color`] = updates.color || null;
+                    if (updates.colorEnd !== undefined) semPayload[`${prefix}ColorEnd`] = updates.colorEnd || null;
+                    if ((updates as any).colorStops !== undefined) semPayload[`${prefix}ColorStops`] = (updates as any).colorStops || null;
+                    if ((updates as any).borderColor !== undefined) semPayload[`${prefix}BorderColor`] = (updates as any).borderColor || null;
+                    if (updates.courseRowColor !== undefined) semPayload[`${prefix}CourseRowColor`] = updates.courseRowColor || null;
+                    if (updates.taskBgColor !== undefined) semPayload[`${prefix}TaskBgColor`] = updates.taskBgColor || null;
+                    if (updates.courseFontColor !== undefined) semPayload[`${prefix}CourseFontColor`] = updates.courseFontColor || null;
+                    if (updates.moduleBoxColor !== undefined) semPayload[`${prefix}ModuleBoxColor`] = updates.moduleBoxColor || null;
+                    if (updates.readingBoxColor !== undefined) semPayload[`${prefix}ReadingBoxColor`] = updates.readingBoxColor || null;
+                    if (Object.keys(semPayload).length > 0) {
+                      apiRequest('PATCH', `/api/semesters/${liveMatch.sem.id}`, semPayload)
+                        .then(() => { queryClient.invalidateQueries({ queryKey: ['/api/semesters'] }); queryClient.invalidateQueries({ queryKey: ['/api/semester'] }); })
+                        .catch((err) => console.error('[CourseColor] failed to persist colors to semester_settings:', err));
+                    }
+                  }
+                }
                 if (updates.courseCode || updates.courseName) {
                   setSelectedCertCourse(prev => prev ? {
                     ...prev,
