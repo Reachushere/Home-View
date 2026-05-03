@@ -28,6 +28,7 @@ export function DevPanel() {
   const [fileSel, setFileSel] = useState<FileSel | null>(null);
   const [sysMap, setSysMap] = useState<any>(null);
   const [flow, setFlow] = useState<any>(null);
+  const [diag, setDiag] = useState<any>(null);
   const [build, setBuild] = useState<any>(null);
   const [perf, setPerf] = useState<any>(null);
   const [flags, setFlagsState] = useState<any>(null);
@@ -98,7 +99,10 @@ export function DevPanel() {
   useEffect(() => {
     if (!open) return;
     if (tab === "system" && !sysMap) j("/api/dev/system-map").then(setSysMap).catch(() => setSysMap({ error: "fetch failed" }));
-    if (tab === "flow") j("/api/dev/flow-snapshot").then(setFlow).catch(() => {});
+    if (tab === "flow") {
+      j("/api/dev/flow-snapshot").then(setFlow).catch(() => {});
+      j("/api/dev/diagnose").then(setDiag).catch(() => {});
+    }
     if (tab === "build") j("/api/dev/build-info").then(setBuild).catch(() => {});
     if (tab === "perf") j("/api/dev/performance").then(setPerf).catch(() => {});
     if (tab === "flags" && !flags) j("/api/dev/flags").then(setFlagsState).catch(() => {});
@@ -137,7 +141,7 @@ export function DevPanel() {
   const copyDebugPack = async () => {
     setBusy(true);
     try {
-      const [status, snap, fmap, binfo, errs, p, ctrace] = await Promise.all([
+      const [status, snap, fmap, binfo, errs, p, ctrace, dx] = await Promise.all([
         j("/api/dev/status").catch(() => null),
         j("/api/dev/flow-snapshot").catch(() => null),
         j("/api/dev/file-map").catch(() => null),
@@ -145,18 +149,38 @@ export function DevPanel() {
         j("/api/dev/recent-errors").catch(() => null),
         j("/api/dev/performance").catch(() => null),
         j("/api/dev/trace?subsystem=cat_lights").catch(() => null),
+        j("/api/dev/diagnose").catch(() => null),
       ]);
+      const sep = "─".repeat(60);
       const text = [
-        "# UniCal ChatGPT Debug Pack",
+        "=== CHATGPT DEBUG PACK ===",
         `Generated: ${new Date().toISOString()}`,
         `Page: ${window.location.pathname + window.location.search}`,
-        "",
-        "## /api/dev/status", "```json", JSON.stringify(status, null, 2), "```",
-        "## /api/dev/build-info", "```json", JSON.stringify(binfo, null, 2), "```",
-        "## /api/dev/flow-snapshot (latest Cat Lights run)", "```json", JSON.stringify(snap, null, 2), "```",
-        "## /api/dev/file-map", "```json", JSON.stringify(fmap, null, 2), "```",
-        "## /api/dev/performance", "```json", JSON.stringify(p, null, 2), "```",
-        "## /api/dev/recent-errors", "```json", JSON.stringify(errs, null, 2), "```",
+        sep,
+        "## SUMMARY",
+        `semester:        ${snap?.semester ?? "—"}`,
+        `weekNumber:      ${snap?.weekNumber ?? "—"}`,
+        `finalAction:     ${snap?.finalAction ?? "—"}`,
+        `blocker:         ${snap?.blocker ?? "(none)"}`,
+        `build outOfDate: ${binfo?.outOfDate ? "YES — needs `npm run build`" : "no"}`,
+        `db connected:    ${status?.connections?.database ? "yes" : "NO"}`,
+        `oneDrive:        ${status?.connections?.oneDrive ? "connected" : "disconnected"}`,
+        ...(dx ? [
+          "",
+          "## DIAGNOSIS",
+          `primaryBlocker:    ${dx.primaryBlocker}`,
+          `recommendedNext:   ${dx.recommendedNextStep}`,
+          `confidence:        ${dx.confidence}`,
+          `summary:           ${dx.summary}`,
+        ] : []),
+        sep,
+        "## /api/dev/status", "```json", JSON.stringify(status, null, 2), "```", sep,
+        "## /api/dev/build-info", "```json", JSON.stringify(binfo, null, 2), "```", sep,
+        "## /api/dev/flow-snapshot (latest Cat Lights run)", "```json", JSON.stringify(snap, null, 2), "```", sep,
+        "## /api/dev/diagnose", "```json", JSON.stringify(dx, null, 2), "```", sep,
+        "## /api/dev/file-map", "```json", JSON.stringify(fmap, null, 2), "```", sep,
+        "## /api/dev/performance", "```json", JSON.stringify(p, null, 2), "```", sep,
+        "## /api/dev/recent-errors", "```json", JSON.stringify(errs, null, 2), "```", sep,
         "## /api/dev/trace?subsystem=cat_lights", "```json", JSON.stringify(ctrace, null, 2), "```",
       ].join("\n");
       await navigator.clipboard.writeText(text);
@@ -237,7 +261,24 @@ export function DevPanel() {
 
         {tab === "flow" && (
           <div>
-            <button style={actBtn("#93c5fd", "rgba(96,165,250,0.18)")} onClick={() => j("/api/dev/flow-snapshot").then(setFlow)}>Refresh</button>
+            <button style={actBtn("#93c5fd", "rgba(96,165,250,0.18)")} onClick={() => { j("/api/dev/flow-snapshot").then(setFlow); j("/api/dev/diagnose").then(setDiag); }}>Refresh</button>
+            {/* Diagnosis card — always at top */}
+            {diag && (
+              <div data-testid="card-diagnosis" style={{ marginTop: 8, padding: 8, borderRadius: 6, background: diag.primaryBlocker === "no_blocker_detected" ? "rgba(34,197,94,0.10)" : "rgba(251,191,36,0.10)", border: `1px solid ${diag.primaryBlocker === "no_blocker_detected" ? "#22c55e" : "#fbbf24"}` }}>
+                <div style={{ color: diag.primaryBlocker === "no_blocker_detected" ? "#86efac" : "#fbbf24", fontWeight: 700 }}>
+                  {diag.primaryBlocker === "no_blocker_detected" ? "✓ Healthy" : `⚠ ${diag.primaryBlocker}`}
+                  <span style={{ float: "right", fontSize: 9, opacity: 0.7 }}>confidence: {diag.confidence}</span>
+                </div>
+                <div style={{ color: "#cbd5e1", marginTop: 4 }}>{diag.summary}</div>
+                <div style={{ color: "#93c5fd", marginTop: 4, fontSize: 10 }}>→ {diag.recommendedNextStep}</div>
+              </div>
+            )}
+            {/* Pre/post-semester warning */}
+            {flow && flow.weekNumber != null && flow.weekNumber < 1 && flow.finalAction === "CHUM" && (
+              <div data-testid="banner-pre-semester" style={{ marginTop: 8, padding: 8, borderRadius: 6, background: "rgba(244,63,94,0.12)", border: "1px solid #f43f5e", color: "#fda4af" }}>
+                ⚠ <b>Pre/post-semester:</b> weekNumber={flow.weekNumber} → CHUM fallback. Verify semesterStartDate or use Replay tab to test in-semester behavior.
+              </div>
+            )}
             <div style={{ marginTop: 6 }}>
               {!flow ? <div style={{ color: "#888" }}>loading…</div>
                 : flow.empty ? <div style={{ color: "#888" }}>{flow.hint}</div>
@@ -245,6 +286,7 @@ export function DevPanel() {
                     <div style={{ marginBottom: 6 }}>
                       <span style={{ color: "#93c5fd" }}>{flow.semester || "?"}</span> · week <b>{String(flow.weekNumber)}</b> · final <span style={{ color: flow.finalAction === "PROMPT" ? "#86efac" : "#fbbf24" }}>{flow.finalAction}</span> · {flow.durationMs}ms
                     </div>
+                    {flow.blocker && <div style={{ marginBottom: 6, color: "#fbbf24", fontSize: 10 }}>blocker: {flow.blocker}</div>}
                     {flow.decisionPath?.map((d: any, i: number) => (
                       <div key={i} style={{ padding: "3px 6px", marginBottom: 3, background: "rgba(255,255,255,0.03)", borderLeft: "2px solid #a78bfa", borderRadius: 4 }}>
                         <div style={{ color: "#c4b5fd" }}>{d.step}{d.decision && <span style={{ color: "#86efac" }}> → {d.decision}</span>}</div>
