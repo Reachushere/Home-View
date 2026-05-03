@@ -51,12 +51,26 @@ const SERVER_BOOT_TS = Date.now();
 const CHANGE_LOG_PATH = path.join(PROJECT_ROOT, "dev-change-log.md");
 
 function authOk(req: any): boolean {
+  // In production, DEV_API_KEY MUST be set and a matching key MUST be presented.
+  // In development, allow open access for fast iteration.
+  if (process.env.NODE_ENV === "production") {
+    if (!DEV_KEY) return false; // closed by default in prod if key not configured
+    const k = (req.header?.("x-dev-key") || req.query?.devKey || (req.cookies && req.cookies.unical_dev_key) || "") as string;
+    return !!k && k === DEV_KEY;
+  }
+  // dev: open if no key, otherwise honor the key when sent
   if (!DEV_KEY) return true;
-  const k = (req.header?.("x-dev-key") || req.query?.devKey || "") as string;
-  return k === DEV_KEY;
+  const k = (req.header?.("x-dev-key") || req.query?.devKey || (req.cookies && req.cookies.unical_dev_key) || "") as string;
+  return !k || k === DEV_KEY;
 }
 function gate(req: any, res: any): boolean {
-  if (!authOk(req)) { res.status(401).json({ error: "unauthorized" }); return false; }
+  if (!authOk(req)) {
+    const reason = (process.env.NODE_ENV === "production" && !DEV_KEY)
+      ? "DEV_API_KEY is not configured on this server. Set it in the Pi env (e.g. pm2 set Home-View:DEV_API_KEY <secret>) and restart."
+      : "Missing or invalid x-dev-key header.";
+    res.status(401).json({ error: "unauthorized", reason });
+    return false;
+  }
   return true;
 }
 
