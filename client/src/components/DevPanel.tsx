@@ -970,6 +970,45 @@ export function DevPanel() {
         <button data-testid="button-dev-debug-pack" disabled={busy} style={actBtn("#fda4af", "rgba(244,63,94,0.18)")} onClick={copyDebugPack}>
           {busy ? "Collecting…" : "Copy Debug Pack"}
         </button>
+        <button data-testid="button-dev-probe-action" style={actBtn("#fde68a", "rgba(251,191,36,0.20)")} onClick={async () => {
+          const lines: string[] = [];
+          const log = (s: string) => lines.push(s);
+          try {
+            const handle = document.querySelector('[data-testid="dev-panel-drag-handle"]') as HTMLElement | null;
+            const tabBar = document.querySelector('[data-testid="tab-dev-trace"]') as HTMLElement | null;
+            const probeBtn = document.querySelector('[data-testid="button-dev-probe"]') as HTMLElement | null;
+            const copyBtn = document.querySelector('[data-testid="button-dev-debug-pack"]') as HTMLElement | null;
+            const fixHistBtn = document.querySelector('[data-testid="tab-dev-fixhist"]') as HTMLElement | null;
+            const probe = (label: string, el: HTMLElement | null) => {
+              if (!el) { log(`${label}: NOT FOUND`); return; }
+              const r = el.getBoundingClientRect();
+              const cx = Math.round(r.left + r.width / 2);
+              const cy = Math.round(r.top + r.height / 2);
+              const stack = document.elementsFromPoint(cx, cy);
+              log(`▼ ${label} @(${cx},${cy}) rect=l${Math.round(r.left)},t${Math.round(r.top)},w${Math.round(r.width)},h${Math.round(r.height)}`);
+              stack.slice(0, 6).forEach((node, i) => {
+                const n = node as HTMLElement;
+                const cs = window.getComputedStyle(n);
+                const tid = n.dataset?.testid ? `#${n.dataset.testid}` : '';
+                const id = n.id ? `@${n.id}` : '';
+                const cls = (typeof n.className === 'string' ? n.className.split(' ').slice(0,2).join(' ') : '').slice(0, 40);
+                log(`  [${i}] <${n.tagName.toLowerCase()}>${tid}${id} cls="${cls}" pe=${cs.pointerEvents} z=${cs.zIndex} pos=${cs.position}`);
+              });
+            };
+            log(`===== PROBE @ ${new Date().toLocaleTimeString()} =====`);
+            log(`viewport: ${window.innerWidth}x${window.innerHeight} dpr=${window.devicePixelRatio}`);
+            probe('DRAG-HANDLE (dead?)', handle);
+            probe('TAB-TRACE (dead?)', tabBar);
+            probe('PROBE-BTN-HEADER (dead?)', probeBtn);
+            probe('TAB-FIXHIST (dead?)', fixHistBtn);
+            probe('COPY-DEBUG-PACK (works)', copyBtn);
+            log(`===== END =====`);
+            const text = lines.join("\n");
+            setDiagBanner(lines.slice().reverse());
+            try { await navigator.clipboard.writeText(text); alert(`Probe done — ${lines.length} lines copied to clipboard. Also shown in blue DIAG banner above.`); }
+            catch { alert(`Probe done — ${lines.length} lines shown in blue DIAG banner above (clipboard failed).`); }
+          } catch (e: any) { alert("Probe failed: " + e.message); }
+        }}>Probe</button>
         <button data-testid="button-dev-handoff" style={actBtn("#c4b5fd", "rgba(167,139,250,0.18)")} onClick={async () => {
           try {
             const _devKey = getDevKey();
