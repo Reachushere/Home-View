@@ -665,3 +665,171 @@ export function getChunkWithSentenceBoundary(text: string, maxLength: number): s
 // Build version (re-evaluated on each module load)
 // ─────────────────────────────────────────────────────────────────────────
 export const BUILD_VERSION = Date.now().toString();
+
+// ============= COURSE/WEEK FOLDER HELPERS (MODULE_SPLIT_PLAN Phase 6) =============
+// Moved from server/routes.ts to be importable by server/routes/onedrive.ts
+export function buildCourseFolderName(code: string, name: string): string {
+  if (!name || name === code) return code;
+  if (name.toUpperCase().startsWith(code.toUpperCase() + ' - ') || name.toUpperCase().startsWith(code.toUpperCase() + ' – ')) {
+    return name;
+  }
+  return `${code} - ${name}`;
+}
+
+export function getSemesterTypeFolder(semType: string | null | undefined): string {
+  const t = (semType || 'winter').toLowerCase();
+  if (t.includes('spring') || t.includes('summer')) return 'Spring & Summer';
+  if (t.includes('fall')) return 'Fall';
+  return 'Winter';
+}
+
+export function generateWeekFolderNames(semester: any, courseIndex: number): string[] {
+  const semType = (semester.semesterType || 'winter').toLowerCase();
+  const isSpSu = semType.includes('spring') || semType.includes('summer');
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  function fmt(d: Date): string {
+    return `${months[d.getMonth()]} ${d.getDate()}`;
+  }
+
+  if (!isSpSu) {
+    const semStart = semester.semesterStartDate ? new Date(semester.semesterStartDate) : new Date();
+    const readingWeekStart = semester.readingWeekStart ? new Date(semester.readingWeekStart) : null;
+    const weeks: string[] = [];
+
+    const firstDay = new Date(semStart);
+    firstDay.setHours(0, 0, 0, 0);
+
+    const firstDayOfWeek = firstDay.getDay();
+    const firstFriday = new Date(firstDay);
+    const daysUntilFriday = (5 - firstDayOfWeek + 7) % 7;
+    firstFriday.setDate(firstFriday.getDate() + (daysUntilFriday === 0 ? 0 : daysUntilFriday));
+
+    let weekNum = 1;
+    let readingWeekInserted = false;
+
+    const week1Start = new Date(firstDay);
+    const week1End = new Date(firstFriday);
+
+    if (readingWeekStart && !readingWeekInserted) {
+      const rwStart = new Date(readingWeekStart);
+      rwStart.setHours(0, 0, 0, 0);
+      const rwSat = new Date(rwStart);
+      const rwDay = rwSat.getDay();
+      if (rwDay !== 6) rwSat.setDate(rwSat.getDate() - ((rwDay + 1) % 7));
+      if (week1Start.getTime() >= rwSat.getTime() && week1Start.getTime() <= new Date(rwSat.getTime() + 6 * 86400000).getTime()) {
+        weeks.push(`Reading Week - STUDY`);
+        readingWeekInserted = true;
+      }
+    }
+
+    if (!readingWeekInserted || weeks.length === 0) {
+      const startStr = fmt(week1Start);
+      const endStr = week1Start.getMonth() === week1End.getMonth() ? `${week1End.getDate()}` : fmt(week1End);
+      weeks.push(`Week ${weekNum} - ${startStr}-${endStr}`);
+      weekNum++;
+    } else {
+      weekNum++;
+    }
+
+    let satAfterFirstFriday = new Date(firstFriday);
+    satAfterFirstFriday.setDate(satAfterFirstFriday.getDate() + 1);
+
+    for (let i = 0; weekNum <= 13; i++) {
+      const wStart = new Date(satAfterFirstFriday);
+      wStart.setDate(wStart.getDate() + i * 7);
+      const wEnd = new Date(wStart);
+      wEnd.setDate(wEnd.getDate() + 6);
+
+      if (readingWeekStart && !readingWeekInserted) {
+        const rwStart = new Date(readingWeekStart);
+        rwStart.setHours(0, 0, 0, 0);
+        const rwSat = new Date(rwStart);
+        const rwDay = rwSat.getDay();
+        if (rwDay !== 6) rwSat.setDate(rwSat.getDate() - ((rwDay + 1) % 7));
+        if (wStart.getTime() === rwSat.getTime()) {
+          weeks.push(`Reading Week - STUDY`);
+          readingWeekInserted = true;
+          continue;
+        }
+      }
+
+      const startStr = fmt(wStart);
+      const endStr = wStart.getMonth() === wEnd.getMonth() ? `${wEnd.getDate()}` : fmt(wEnd);
+      weeks.push(`Week ${weekNum} - ${startStr}-${endStr}`);
+      weekNum++;
+      if (i > 20) break;
+    }
+    return weeks;
+  }
+
+  const springSummerTerm = (semester[`course${courseIndex}SpringSummerTerm`] || 'full').toLowerCase();
+  let courseStart: Date;
+  let courseEnd: Date;
+  const semStart = new Date(semester.semesterStartDate || Date.now());
+
+  if (springSummerTerm === 'first_half') {
+    courseStart = semester[`course${courseIndex}StartDate`] ? new Date(semester[`course${courseIndex}StartDate`]) : new Date(semStart);
+    courseEnd = semester[`course${courseIndex}EndDate`] ? new Date(semester[`course${courseIndex}EndDate`]) : new Date(courseStart.getTime() + 7 * 7 * 86400000);
+  } else if (springSummerTerm === 'second_half') {
+    courseStart = semester[`course${courseIndex}StartDate`] ? new Date(semester[`course${courseIndex}StartDate`]) : new Date(semStart);
+    courseEnd = semester[`course${courseIndex}EndDate`] ? new Date(semester[`course${courseIndex}EndDate`]) : new Date(courseStart.getTime() + 6 * 7 * 86400000);
+  } else {
+    courseStart = semester[`course${courseIndex}StartDate`] ? new Date(semester[`course${courseIndex}StartDate`]) : new Date(semStart);
+    courseEnd = semester[`course${courseIndex}EndDate`] ? new Date(semester[`course${courseIndex}EndDate`]) : new Date(courseStart.getTime() + 13 * 7 * 86400000);
+  }
+  courseStart.setHours(0, 0, 0, 0);
+  courseEnd.setHours(0, 0, 0, 0);
+
+  const weeks: string[] = [];
+  const firstDayOW = courseStart.getDay();
+  const firstFri = new Date(courseStart);
+  const dUntilFri = (5 - firstDayOW + 7) % 7;
+  firstFri.setDate(firstFri.getDate() + (dUntilFri === 0 ? 0 : dUntilFri));
+
+  const w1StartStr = fmt(courseStart);
+  const w1EndStr = courseStart.getMonth() === firstFri.getMonth() ? `${firstFri.getDate()}` : fmt(firstFri);
+  let weekNum = 1;
+
+  if (springSummerTerm === 'full') {
+    const midpoint = 8;
+    let secondHalfNum = 1;
+    weeks.push(`Week 1 - ${w1StartStr}-${w1EndStr}`);
+    weekNum = 2;
+
+    let satStart = new Date(firstFri);
+    satStart.setDate(satStart.getDate() + 1);
+    while (satStart.getTime() < courseEnd.getTime()) {
+      const wStart = new Date(satStart);
+      const wEnd = new Date(wStart);
+      wEnd.setDate(wEnd.getDate() + 6);
+      const startStr = fmt(wStart);
+      const endStr = wStart.getMonth() === wEnd.getMonth() ? `${wEnd.getDate()}` : fmt(wEnd);
+      if (weekNum >= midpoint) {
+        weeks.push(`Week ${weekNum} (${secondHalfNum}) - ${startStr}-${endStr}`);
+        secondHalfNum++;
+      } else {
+        weeks.push(`Week ${weekNum} - ${startStr}-${endStr}`);
+      }
+      weekNum++;
+      satStart.setDate(satStart.getDate() + 7);
+    }
+  } else {
+    weeks.push(`Week 1 - ${w1StartStr}-${w1EndStr}`);
+    weekNum = 2;
+
+    let satStart = new Date(firstFri);
+    satStart.setDate(satStart.getDate() + 1);
+    while (satStart.getTime() < courseEnd.getTime()) {
+      const wStart = new Date(satStart);
+      const wEnd = new Date(wStart);
+      wEnd.setDate(wEnd.getDate() + 6);
+      const startStr = fmt(wStart);
+      const endStr = wStart.getMonth() === wEnd.getMonth() ? `${wEnd.getDate()}` : fmt(wEnd);
+      weeks.push(`Week ${weekNum} - ${startStr}-${endStr}`);
+      weekNum++;
+      satStart.setDate(satStart.getDate() + 7);
+    }
+  }
+  return weeks;
+}
