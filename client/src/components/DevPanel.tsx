@@ -800,17 +800,19 @@ export function DevPanel() {
         <button data-testid="button-dev-minimal-prompt" disabled={busy} style={actBtn("#d8b4fe", "rgba(192,132,252,0.18)")} onClick={copyMinimalPrompt}>Minimal Prompt</button>
         <button data-testid="button-dev-run-smoke" style={actBtn("#fca5a5", "rgba(239,68,68,0.18)")} onClick={async () => {
           const cmd = [
-            "# Smoke tests — read-only. /api/dev/* needs auth (same session cookie the dashboard uses).",
-            "# Step 1: in your browser DevTools → Application → Cookies → copy the value of `uni_cal_session`.",
-            "# Step 2: paste it into the variable below and run.",
+            "# Smoke tests — read-only. /api/dev/* accepts either DEV_API_KEY or session cookie.",
             "",
-            "UNICAL_SESSION_TOKEN='paste-cookie-value-here' \\",
-            "  node scripts/smoke.mjs https://uni-cal.app",
+            "# RECOMMENDED (terminal-friendly): use DEV_API_KEY.",
+            "# On the Pi the secret is already in the env; just run:",
+            "DEV_API_KEY=\"$DEV_API_KEY\" node scripts/smoke.mjs https://uni-cal.app",
+            "",
+            "# Quick sanity probe:",
+            "curl -H \"x-dev-key: $DEV_API_KEY\" http://localhost:5000/api/dev/status",
+            "",
+            "# Alternative (browser cookie): DevTools → Application → Cookies → copy `uni_cal_session`.",
+            "#   UNICAL_SESSION_TOKEN='paste-value' node scripts/smoke.mjs https://uni-cal.app",
             "",
             "# No auth? Public checks still run; authenticated checks SKIP (won't fail the run).",
-            "# Legacy alternative if the server has DEV_API_KEY set:",
-            "#   DEV_API_KEY='…' node scripts/smoke.mjs https://uni-cal.app",
-            "",
             "# Full docs: docs/SMOKE_TESTS.md",
           ].join("\n");
           try { await navigator.clipboard.writeText(cmd); alert("Smoke command template copied.\n\nPaste your `uni_cal_session` cookie value into the script before running.\nNothing about the token is printed by smoke.\n\nSee docs/SMOKE_TESTS.md for details."); } catch { alert("Copy failed."); }
