@@ -28,6 +28,8 @@ import * as spotifyApi from "./spotify";
 import { hasOpenAI, getApprovedOpenAIConfig, resolveApproval, getPendingApprovals, getRecentApprovals, subscribeToApprovals } from "./openai-approval";
 import multer from "multer";
 import { easternNow as torontoDate, easternDateStr, easternHour, easternMidnight, taskDateStr, addDays } from "./timezone";
+import { registerDevRoutes } from "./dev/devRoutes";
+import { logStep as devLogStep, setFileSelection as devSetFileSelection } from "./dev/devTrace";
 
 // ─────────────────────────────────────────────────────────────────────────
 // Phase 1 of the routes.ts code split: pull in the module-scope helpers
@@ -315,6 +317,12 @@ export async function registerRoutes(
 ): Promise<Server> {
 
   await initTTSFallbackStatus();
+
+  // Developer introspection endpoints (system-map / automation-trace /
+  // layout-map / file-map / safe-patch). See server/dev/devRoutes.ts.
+  // Registered EARLY so they're available even if a later route fails
+  // to register for any reason.
+  registerDevRoutes(app);
 
   // Note: previously a startup migration here flipped every discussion task
   // back to isNotGraded=true on every restart, which clobbered manual moves
@@ -21329,6 +21337,7 @@ document.body.removeChild(a);
   app.post("/api/webhook/cat-lights", async (req, res) => {
     try {
       catWashTrace('CatLights', 'WEBHOOK RECEIVED', { body: req.body });
+      devLogStep('cat_lights:webhook_received', { body: req.body });
       console.log(`[Cat Lights] ====== WEBHOOK TRIGGERED ======`);
       console.log(`[Cat Lights] Timestamp: ${new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' })}`);
       console.log(`[Cat Lights] Request body: ${JSON.stringify(req.body)}`);
@@ -21394,6 +21403,7 @@ document.body.removeChild(a);
         }
       }
       catWashTrace('CatLights', `STATE RESOLVED: ${lightState}`, { bodyState, bodyAction, method: bodyState === lightState ? 'body' : bodyAction ? 'action' : 'api_query' });
+      devLogStep('cat_lights:state_parsed', { lightState, bodyState, bodyAction });
       console.log(`[Cat Lights] Light state: ${lightState} (body state: ${bodyState})`);
       console.log(`[Cat Lights] Architecture: server-side TTS → Google Nest speaker (media_player.play_media)`);
 
@@ -21683,10 +21693,12 @@ document.body.removeChild(a);
       }
 
       console.log(`[Cat Lights][TRACE] Step 4: Getting cached files`);
+      devLogStep('cat_lights:week_calculated', { weekNumber: currentWeekNumber, semesterKey: (semesterSettings as any)?.semesterKey || null });
       const allFilesBefore = await storage.getFiles();
       console.log(`[Cat Lights][TRACE] Step 4b: ${allFilesBefore.length} total files in DB`);
       let nextFile = await findNextFileByPriority(allFilesBefore, currentWeekNumber);
       console.log(`[Cat Lights][TRACE] Step 4c: findNextFileByPriority returned ${nextFile ? `id=${nextFile.id} "${nextFile.originalName}"` : 'null'}`);
+      devLogStep('cat_lights:initial_file_lookup', { found: !!nextFile, fileId: nextFile?.id || null, name: nextFile?.originalName || null, totalFiles: allFilesBefore.length });
 
       const syncWithTimeout = (timeout: number) => Promise.race([
         syncOneDriveFilesForWeek(semesterSettings, currentWeekNumber, '[Cat Lights]'),
@@ -21742,12 +21754,27 @@ document.body.removeChild(a);
       if (!nextFile) {
         console.log(`[Cat Lights][TRACE] Step 9: No nextFile — playing CHUM FM`);
         console.log(`[Cat Lights] No unlistened files for week ${currentWeekNumber} — playing CHUM FM on Echo speakers`);
+        devLogStep('cat_lights:branch', { action: 'CHUM_FALLBACK', weekNumber: currentWeekNumber, reason: 'no_unlistened_file' });
+        devSetFileSelection({ source: 'cat_lights', semester: (semesterSettings as any)?.semesterKey || null, weekNumber: currentWeekNumber, course: null, selectedFileId: null, selectedFileName: null, folder: null, objectPath: null, oneDrivePath: null, reason: 'no_unlistened_file -> CHUM FM' });
         catLightsPromptPending = false;
         await playChumFmRadio(haUrl);
         return;
       }
 
       const fileName = nextFile.displayName || nextFile.originalName || 'Unknown file';
+      devLogStep('cat_lights:branch', { action: 'PROMPT_FILE', fileId: nextFile.id, name: fileName, folder: nextFile.folder });
+      devSetFileSelection({
+        source: 'cat_lights',
+        semester: (semesterSettings as any)?.semesterKey || null,
+        weekNumber: currentWeekNumber,
+        course: nextFile.folder || null,
+        selectedFileId: nextFile.id,
+        selectedFileName: fileName,
+        folder: nextFile.folder || null,
+        objectPath: nextFile.objectPath || null,
+        oneDrivePath: (nextFile as any).oneDrivePath || (nextFile as any).onedrivePath || null,
+        reason: 'priority_pick',
+      });
       const fileDesc = describeFileForTTS(nextFile, currentWeekNumber);
       console.log(`[Cat Lights][TRACE] Step 9: Have file — building TTS prompt`);
       console.log(`[Cat Lights] Found next file: ${fileDesc} — ${fileName} (id=${nextFile.id})`);
@@ -21757,6 +21784,7 @@ document.body.removeChild(a);
       const greeting = hourNum < 12 ? 'Good morning Bryn.' : hourNum < 17 ? 'Good afternoon Bryn.' : 'Good evening Bryn.';
       const ttsMessage = `${greeting} Would you like to play ${fileDesc}?`;
       console.log(`[Cat Lights] Sending TTS prompt: "${ttsMessage}"`);
+      devLogStep('cat_lights:tts_started', { message: ttsMessage });
       try {
         await haServiceCallSafe('media_player/volume_set', { entity_id: CAT_WR_HA_VOICE_ENTITY, volume_level: 0.50 }, 'Cat Lights HA Vol');
 
