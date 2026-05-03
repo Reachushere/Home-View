@@ -65,6 +65,8 @@ export function DevPanel() {
   const [flow, setFlow] = useState<any>(null);
   const [diag, setDiag] = useState<any>(null);
   const [stagingMode, setStagingMode] = useState<boolean>(false);
+  const [sandbox, setSandbox] = useState<{ enabled: boolean; source: string; counters: Record<string, number>; recent: any[] } | null>(null);
+  const [sandboxBusy, setSandboxBusy] = useState(false);
   const [fixHist, setFixHist] = useState<any>(null);
   const [upload, setUpload] = useState<any>(null);
   const [timeline, setTimeline] = useState<any>(null);
@@ -208,7 +210,7 @@ export function DevPanel() {
     if (tab === "upload") j("/api/dev/upload-readiness").then(setUpload).catch(() => setUpload({ error: "fetch failed" }));
     if (tab === "timeline") j("/api/dev/timeline-guard").then(setTimeline).catch(() => setTimeline({ error: "fetch failed" }));
     if (tab === "afterUpload") j(`/api/dev/after-upload-check?sinceMin=${afterMin}`).then(setAfterUpload).catch(() => setAfterUpload({ error: "fetch failed" }));
-    j("/api/dev/status").then((s: any) => setStagingMode(!!s?.stagingMode)).catch(() => {});
+    j("/api/dev/status").then((s: any) => { setStagingMode(!!s?.stagingMode); if (s?.sandbox) setSandbox(s.sandbox); }).catch(() => {});
     if (tab === "perf") j("/api/dev/performance").then(setPerf).catch(() => {});
     if (tab === "flags" && !flags) j("/api/dev/flags").then(setFlagsState).catch(() => {});
   }, [open, tab]); // eslint-disable-line
@@ -606,6 +608,58 @@ export function DevPanel() {
         <div data-testid="banner-staging-mode" style={{ padding: "6px 10px", background: "linear-gradient(90deg, rgba(251,191,36,0.25), rgba(251,191,36,0.10))", borderBottom: "2px solid #fbbf24", color: "#fde68a", fontWeight: 700, fontSize: 11, display: "flex", alignItems: "center", gap: 8 }}>
           <span style={{ background: "#fbbf24", color: "#000", padding: "1px 6px", borderRadius: 3, fontSize: 10 }}>STAGING</span>
           <span>STAGING_MODE=1 — HA / TTS / OneDrive writes are skipped on this server. Read-only DB role assumed.</span>
+        </div>
+      )}
+      {sandbox && (
+        <div data-testid="banner-sandbox" style={{ padding: "6px 10px", background: sandbox.enabled ? "linear-gradient(90deg, rgba(96,165,250,0.22), rgba(96,165,250,0.08))" : "rgba(60,60,80,0.4)", borderBottom: "1px solid rgba(96,165,250,0.4)", color: sandbox.enabled ? "#bfdbfe" : "#aaa", fontSize: 11, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+          <span style={{ background: sandbox.enabled ? "#60a5fa" : "#555", color: "#000", padding: "1px 6px", borderRadius: 3, fontSize: 10, fontWeight: 700 }}>SANDBOX {sandbox.enabled ? "ON" : "OFF"}</span>
+          <span style={{ flex: 1 }}>
+            {sandbox.enabled
+              ? `Side-effects suppressed (${sandbox.source}). Suppressed: ${Object.entries(sandbox.counters).map(([k,v]) => `${k}:${v}`).join(", ") || "none"}`
+              : `Live mode (${sandbox.source}).`}
+          </span>
+          <button
+            data-testid="button-sandbox-toggle"
+            disabled={sandboxBusy}
+            onClick={async () => {
+              setSandboxBusy(true);
+              try {
+                const r = await fetch("/api/dev/sandbox", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ enabled: !sandbox.enabled }) });
+                const j2 = await r.json();
+                if (j2?.status) setSandbox(j2.status);
+              } catch {} finally { setSandboxBusy(false); }
+            }}
+            style={{ background: sandbox.enabled ? "rgba(248,113,113,0.25)" : "rgba(96,165,250,0.25)", border: "1px solid rgba(120,120,150,0.5)", color: "#e8e8ec", padding: "2px 8px", borderRadius: 3, cursor: "pointer", fontSize: 10 }}
+          >{sandboxBusy ? "…" : sandbox.enabled ? "Disable" : "Enable"}</button>
+          <button
+            data-testid="button-sandbox-revert-env"
+            disabled={sandboxBusy}
+            title="Revert runtime override; use STAGING_MODE env value"
+            onClick={async () => {
+              setSandboxBusy(true);
+              try {
+                const r = await fetch("/api/dev/sandbox", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ enabled: null }) });
+                const j2 = await r.json();
+                if (j2?.status) setSandbox(j2.status);
+              } catch {} finally { setSandboxBusy(false); }
+            }}
+            style={{ background: "transparent", border: "1px solid rgba(120,120,150,0.5)", color: "#aaa", padding: "2px 8px", borderRadius: 3, cursor: "pointer", fontSize: 10 }}
+          >env</button>
+          {Object.keys(sandbox.counters).length > 0 && (
+            <button
+              data-testid="button-sandbox-clear-stats"
+              disabled={sandboxBusy}
+              onClick={async () => {
+                setSandboxBusy(true);
+                try {
+                  const r = await fetch("/api/dev/sandbox/stats", { method: "DELETE" });
+                  const j2 = await r.json();
+                  if (j2?.status) setSandbox(j2.status);
+                } catch {} finally { setSandboxBusy(false); }
+              }}
+              style={{ background: "transparent", border: "1px solid rgba(120,120,150,0.5)", color: "#aaa", padding: "2px 8px", borderRadius: 3, cursor: "pointer", fontSize: 10 }}
+            >clear</button>
+          )}
         </div>
       )}
 
